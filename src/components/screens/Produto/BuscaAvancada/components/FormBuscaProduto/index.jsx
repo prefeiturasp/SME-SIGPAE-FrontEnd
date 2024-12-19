@@ -151,6 +151,7 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
               <Field
                 component={AutoCompleteField}
                 dataSource={state.dados.editais}
+                data-testid="edital"
                 label="Edital"
                 className="input-busca-produto"
                 name="nome_edital"

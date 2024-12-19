@@ -19,7 +19,7 @@ import { getProdutosListagem } from "services/produto.service";
 import FormBuscaProduto from "./components/FormBuscaProduto";
 import ListagemProdutos from "./components/ListagemProdutos";
 
-import { ordenaProdutos } from "./helpers";
+import { ordenaProdutos, processaStatus } from "./helpers";
 
 import "./style.scss";
 import { Paginacao } from "components/Shareable/Paginacao";
@@ -52,7 +52,11 @@ const BuscaAvancada = ({
       page_size: PAGE_SIZE,
     });
     const response = await getProdutosListagem(params);
-    setProdutos(ordenaProdutos(response.data.results));
+    let produtosComStatus = processaStatus(
+      response.data.results,
+      filtros.nome_edital
+    );
+    setProdutos(ordenaProdutos(produtosComStatus));
     setProdutosCount(response.data.count);
     setCarregando(false);
   };
