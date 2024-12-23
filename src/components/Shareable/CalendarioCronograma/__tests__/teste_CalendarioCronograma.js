@@ -44,10 +44,4 @@ describe("Teste para o componente <CalendarioCronograma>", () => {
       ).toBeInTheDocument()
     );
   });
-
-  //   it("deve renderizar o calendário", async () => {
-  //     const calendario = screen.getByRole("table");
-  //     expect(calendario).toBeInTheDocument();
-  //     expect(calendario).toHaveAttribute("aria-label", "Month View");
-  //   });
 });
