@@ -280,6 +280,7 @@ export interface EtapaCalendario {
   uuid: string;
   uuid_cronograma: string;
   status: string;
+  unidade_medida: string;
 }
 
 export interface CardItem {
