@@ -161,3 +161,11 @@ export const deleteEmailsTerceirizadasPorModulo = async (uuid) => {
     return data;
   }
 };
+
+export const getListaModalidades = async () => {
+  try {
+    return await axios.get("/modalidades/");
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response.status));
+  }
+};

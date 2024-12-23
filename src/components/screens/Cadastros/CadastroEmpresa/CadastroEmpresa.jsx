@@ -31,6 +31,7 @@ import { LotesFormSet } from "./components/Form/LotesFormSet";
 import { ModalCadastroEmpresa } from "./components/ModalCadastroEmpresa";
 
 import "./style.scss";
+import { getListaModalidades } from "../../../../services/terceirizada.service";
 
 const verificarUsuarioEhDistribuidor = () => {
   const tipoPerfil = localStorage.getItem("perfil");
@@ -113,6 +114,7 @@ export const CadastroEmpresa = () => {
       email: "",
     },
   ]);
+  const [optionsModalidade, setOptionsModalidade] = useState([]);
 
   const numerosContratosCadastrados = useRef([]);
 
@@ -370,7 +372,21 @@ export const CadastroEmpresa = () => {
     numerosContratosCadastrados.current =
       response.data.numeros_contratos_cadastrados;
 
-    setEhDistribuidor(verificarUsuarioEhDistribuidor());
+    const distribuidor = verificarUsuarioEhDistribuidor();
+
+    if (distribuidor) {
+      const modalidades = await getListaModalidades();
+      const options = [
+        {
+          nome: "Selecione...",
+          uuid: "",
+        },
+        ...modalidades.data.results,
+      ];
+      setOptionsModalidade(options);
+    }
+
+    setEhDistribuidor(distribuidor);
 
     setCarregando(false);
   };
@@ -428,6 +444,7 @@ export const CadastroEmpresa = () => {
                         numerosContratosCadastrados.current
                       }
                       form={form}
+                      optionsModalidade={optionsModalidade}
                     />
                     <LotesFormSet
                       ehDistribuidor={ehDistribuidor}

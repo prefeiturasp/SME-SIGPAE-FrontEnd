@@ -32,21 +32,6 @@ const contratosEstadoInicial = {
   vigencia_ate: null,
 };
 
-const optionsModalidade = [
-  {
-    nome: "Selecione...",
-    uuid: "",
-  },
-  {
-    nome: "Pregão Eletrônico",
-    uuid: "PREGAO_ELETRONICO",
-  },
-  {
-    nome: "Chamada Pública",
-    uuid: "CHAMADA_PUBLICA",
-  },
-];
-
 export const ContratosFormSet = ({
   ehDistribuidor,
   contratos,
@@ -55,6 +40,7 @@ export const ContratosFormSet = ({
   values,
   numerosContratosCadastrados,
   form,
+  optionsModalidade,
 }) => {
   const [contratoARemover, setContratoARemover] = useState({});
   const [exibirModalRemoverContrato, setExibirModalRemoverContrato] =
@@ -107,6 +93,9 @@ export const ContratosFormSet = ({
     setExibirModalRemoverContrato(true);
     setContratoARemover(contratos[index]);
   };
+
+  const getNomeModalidade = (value) =>
+    optionsModalidade.find((modalidade) => modalidade.uuid === value)?.nome;
 
   const contratoJaCadastrado = (value) => {
     return numerosContratosCadastrados.includes(value)
@@ -208,8 +197,8 @@ export const ContratosFormSet = ({
                           }}
                         />
                       </div>
-                      {values[`modalidade_${index}`] ===
-                        "PREGAO_ELETRONICO" && (
+                      {getNomeModalidade(values[`modalidade_${index}`]) ===
+                        "Pregão Eletrônico" && (
                         <Fragment>
                           <div className="col-4">
                             <Field
@@ -225,13 +214,12 @@ export const ContratosFormSet = ({
                               name={`numero_ata_${index}`}
                               component={InputText}
                               label="Nº da Ata"
-                              required
-                              validate={required}
                             />
                           </div>
                         </Fragment>
                       )}
-                      {values[`modalidade_${index}`] === "CHAMADA_PUBLICA" && (
+                      {getNomeModalidade(values[`modalidade_${index}`]) ===
+                        "Chamada Pública" && (
                         <div className="col-4">
                           <Field
                             name={`numero_chamada_publica_${index}`}
