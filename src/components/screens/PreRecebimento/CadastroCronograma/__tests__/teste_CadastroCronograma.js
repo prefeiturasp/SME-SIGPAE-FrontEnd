@@ -1,22 +1,5 @@
-// import { mockCategoriasMedicaoCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
-// import { mockDiasCalendarioCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockDiasCalendarioCEI";
-// import { mockFeriadosNoMesCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockFeriadosNoMesCEI";
-// import { mockInclusoesAutorizadasEscolaCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockInclusoesAutorizadasEscolaCEI.";
-// import { mockLogsDietasAutorizadasCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockLogsDietasAutorizadasCEI";
-// import { mockLogsMatriculadosCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockLogsMatriculadosCEI";
-// import { mockLogsMatriculadosCEIInclusao } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockLogsMatriculadosCEIInclusao";
-
-// import { mockUpdateValoresPeriodosLancamentosCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockUpdateValoresPeriodoLancamentoCEI";
-// import { mockValoresMedicaoCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockValoresMedicaoCEI";
-
-// import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
-// import * as periodoLancamentoMedicaoService from "services/medicaoInicial/periodoLancamentoMedicao.service";
-// import { getSolicitacoesInclusoesAutorizadasEscola } from "services/medicaoInicial/periodoLancamentoMedicao.service";
-
-// import { PeriodoLancamentoMedicaoInicialCEI } from "..";
-
 import "@testing-library/jest-dom";
-import { render, waitFor } from "@testing-library/react";
+import { render, waitFor, act } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import CadastroCronograma from "..";
@@ -24,100 +7,66 @@ import CadastroCronograma from "..";
 // import * as perfilService from "services/perfil.service";
 import { getEmpresasCronograma } from "services/terceirizada.service";
 import { getNomesDistribuidores } from "services/logistica.service";
+import { getListaFichasTecnicasSimplesAprovadas } from "services/fichaTecnica.service";
+import {
+  getRascunhos,
+  getUnidadesDeMedidaLogistica,
+} from "services/cronograma.service";
 
 import { mockListaDistribuidores } from "mocks/PreRecebimento/CadastroCronograma/mockListaDistribuidores";
 import { mockListaEmpresas } from "mocks/PreRecebimento/CadastroCronograma/mockListaEmpresas";
+import { mockListaFichasTecnicasSimplesAprovadas } from "mocks/PreRecebimento/CadastroCronograma/mockListaFichasTecnicasSimplesAprovadas";
+import { mockListaUnidadesMedidaLogistica } from "mocks/PreRecebimento/CadastroCronograma/mockListaUnidadesMedidaLogistica";
+import { mockListaRascunhos } from "mocks/PreRecebimento/CadastroCronograma/mockListaRascunhos";
 
 jest.mock("services/logistica.service");
 jest.mock("services/terceirizada.service");
-// jest.mock("services/medicaoInicial/diaSobremesaDoce.service.js");
-// jest.mock("services/medicaoInicial/periodoLancamentoMedicao.service");
+jest.mock("services/fichaTecnica.service");
+jest.mock("services/cronograma.service");
 
 describe("Test <CadastroCronograma>", () => {
-  //   const mockLocationState = {
-  //     ehEmeiDaCemei: false,
-  //     escola: "CEI DIRET VILA BRASILANDIA",
-  //     justificativa_periodo: null,
-  //     mesAnoSelecionado: new Date("2024-11-01T00:00:00-03:00"),
-  //     periodo: "PARCIAL",
-  //     periodosInclusaoContinua: undefined,
-  //     status_periodo: "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE",
-  //     status_solicitacao: "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE",
-  //     tiposAlimentacao: [],
-  //   };
-
-  beforeEach(() => {
+  beforeEach(async () => {
     getNomesDistribuidores.mockResolvedValue({
       data: mockListaDistribuidores,
       status: 200,
     });
+
     getEmpresasCronograma.mockResolvedValue({
       data: mockListaEmpresas,
       status: 200,
     });
-    // getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
-    //   data: mockInclusoesAutorizadasEscolaCEI,
-    //   status: 200,
-    // });
-    // periodoLancamentoMedicaoService.getLogMatriculadosPorFaixaEtariaDia.mockResolvedValueOnce(
-    //   {
-    //     data: mockLogsMatriculadosCEIInclusao,
-    //     status: 200,
-    //   }
-    // );
-    // periodoLancamentoMedicaoService.getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola.mockResolvedValue(
-    //   { results: [] }
-    // );
-    // periodoLancamentoMedicaoService.getLogMatriculadosPorFaixaEtariaDia.mockResolvedValueOnce(
-    //   {
-    //     data: mockLogsMatriculadosCEI,
-    //     status: 200,
-    //   }
-    // );
-    // periodoLancamentoMedicaoService.getSolicitacoesSuspensoesAutorizadasEscola.mockResolvedValue(
-    //   { results: [] }
-    // );
-    // periodoLancamentoMedicaoService.getCategoriasDeMedicao.mockResolvedValue({
-    //   data: mockCategoriasMedicaoCEI,
-    //   status: 200,
-    // });
-    // periodoLancamentoMedicaoService.getLogDietasAutorizadasCEIPeriodo.mockResolvedValue(
-    //   { data: mockLogsDietasAutorizadasCEI, status: 200 }
-    // );
-    // periodoLancamentoMedicaoService.getValoresPeriodosLancamentos.mockResolvedValue(
-    //   { data: mockValoresMedicaoCEI, status: 200 }
-    // );
-    // periodoLancamentoMedicaoService.getDiasParaCorrecao.mockResolvedValue({
-    //   data: [],
-    //   status: 200,
-    // });
-    // periodoLancamentoMedicaoService.getDiasCalendario.mockResolvedValue({
-    //   data: mockDiasCalendarioCEI,
-    //   status: 200,
-    // });
-    // periodoLancamentoMedicaoService.getFeriadosNoMes.mockResolvedValue({
-    //   data: mockFeriadosNoMesCEI,
-    //   status: 200,
-    // });
-    // periodoLancamentoMedicaoService.updateValoresPeriodosLancamentos.mockResolvedValue(
-    //   {
-    //     data: mockUpdateValoresPeriodosLancamentosCEI,
-    //     status: 200,
-    //   }
-    // );
 
-    render(
-      //   <MemoryRouter
-      //     initialEntries={[{ pathname: "/", state: mockLocationState }]}
-      //     future={{
-      //       v7_startTransition: true,
-      //       v7_relativeSplatPath: true,
-      //     }}
-      //   >
-      <MemoryRouter>
-        <CadastroCronograma />
-      </MemoryRouter>
-    );
+    getListaFichasTecnicasSimplesAprovadas.mockResolvedValue({
+      data: mockListaFichasTecnicasSimplesAprovadas,
+      status: 200,
+    });
+
+    getUnidadesDeMedidaLogistica.mockResolvedValue({
+      data: mockListaUnidadesMedidaLogistica,
+      status: 200,
+    });
+
+    getRascunhos.mockResolvedValue({
+      data: mockListaRascunhos,
+      status: 200,
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <CadastroCronograma />
+        </MemoryRouter>
+      );
+    });
+  });
+
+  it("qualquer coisa", async () => {
+    expect(true).toBe(true);
   });
 
   it("teste mock getListaDistribuidores", async () => {
@@ -138,6 +87,34 @@ describe("Test <CadastroCronograma>", () => {
     expect(getEmpresasCronograma).toHaveBeenCalledTimes(1);
     expect(getEmpresasCronograma).toHaveReturnedWith(
       Promise.resolve(mockListaEmpresas)
+    );
+  });
+
+  it("teste mock getListaFichasTecnicasSimplesAprovadas", async () => {
+    await waitFor(() =>
+      expect(getListaFichasTecnicasSimplesAprovadas).toHaveBeenCalled()
+    );
+    expect(getListaFichasTecnicasSimplesAprovadas).toHaveBeenCalledTimes(1);
+    expect(getListaFichasTecnicasSimplesAprovadas).toHaveReturnedWith(
+      Promise.resolve(mockListaFichasTecnicasSimplesAprovadas)
+    );
+  });
+
+  it("teste mock getUnidadesDeMedidaLogistica", async () => {
+    await waitFor(() =>
+      expect(getUnidadesDeMedidaLogistica).toHaveBeenCalled()
+    );
+    expect(getUnidadesDeMedidaLogistica).toHaveBeenCalledTimes(1);
+    expect(getUnidadesDeMedidaLogistica).toHaveReturnedWith(
+      Promise.resolve(mockListaUnidadesMedidaLogistica)
+    );
+  });
+
+  it("teste mock getRascunhos", async () => {
+    await waitFor(() => expect(getRascunhos).toHaveBeenCalled());
+    expect(getRascunhos).toHaveBeenCalledTimes(1);
+    expect(getRascunhos).toHaveReturnedWith(
+      Promise.resolve(mockListaRascunhos)
     );
   });
 
