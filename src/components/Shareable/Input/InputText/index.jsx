@@ -41,6 +41,7 @@ export const InputText = (props) => {
     inputOnChange,
     prefix,
     onBlur,
+    dataTestid,
   } = props;
 
   const inputProps = {
@@ -84,6 +85,7 @@ export const InputText = (props) => {
             "invalid-field"
           }`}
           id={id}
+          data-testid={dataTestid}
           disabled={disabled}
           min={min}
           max={max}

@@ -32,6 +32,7 @@ export class SelectWithHideOptions extends React.Component {
         }}
         optionLabelProp="label"
         {...input}
+        data-testid={input.name}
       >
         {filteredOptions.map((item) => (
           <Option key={item} label={item} value={item}>

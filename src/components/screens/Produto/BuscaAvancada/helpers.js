@@ -33,3 +33,17 @@ export const ordenaProdutos = (produtos) => {
   produtos = ordenaProdutosPorDataCadastro(produtos);
   return produtos;
 };
+
+export const processaStatus = (produtos, edital) => {
+  produtos.forEach((produto) => {
+    let ativos = produto.vinculos_produto_edital_ativos.split(", ");
+    let suspensos = produto.vinculos_produto_edital_suspensos.split(", ");
+    if (ativos.includes(edital)) {
+      produto.status = "Homologado";
+    } else if (suspensos.includes(edital)) {
+      produto.status = "Produtos Suspensos";
+    }
+  });
+
+  return produtos;
+};
