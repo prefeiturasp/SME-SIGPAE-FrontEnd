@@ -63,25 +63,4 @@ describe("Teste para a função formataComoEventos", () => {
     const eventos = formataComoEventos([]);
     expect(eventos).toEqual([]);
   });
-
-  //   it('verifica se a função lida corretamente com datas inválidas', () => {
-  //     const etapasComDataInvalida = [
-  //       {
-  //         nome_produto: 'Produto C',
-  //         data_programada: 'data-invalida',
-  //         etapa: 'Etapa 3',
-  //         nome_fornecedor: 'Teste 3',
-  //         numero_cronograma: '003/0003',
-  //         numero_empenho: '3',
-  //         parte: 'Parte 3',
-  //         quantidade: 3,
-  //         uuid: "ab90c5ab-bba0-4f1d-b7b7-8d98892cb7f1",
-  //         status: "Assinado CODAE",
-  //         unidade_medida: "m",
-  //         uuid_cronograma: "b9b3ed5a-e3b3-480f-8132-f412b9c9b55a",
-  //       },
-  //     ];
-
-  //     expect(() => formataComoEventos(etapasComDataInvalida)).toThrow();
-  //   });
 });
