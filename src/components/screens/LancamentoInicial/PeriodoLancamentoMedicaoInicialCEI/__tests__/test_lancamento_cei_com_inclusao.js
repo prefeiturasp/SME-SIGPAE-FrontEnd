@@ -17,10 +17,12 @@ import * as periodoLancamentoMedicaoService from "services/medicaoInicial/period
 import { getSolicitacoesInclusoesAutorizadasEscola } from "services/medicaoInicial/periodoLancamentoMedicao.service";
 import * as perfilService from "services/perfil.service";
 import { PeriodoLancamentoMedicaoInicialCEI } from "..";
+import { getFaixasEtarias } from "services/faixaEtaria.service";
 
 jest.mock("services/perfil.service.js");
 jest.mock("services/medicaoInicial/diaSobremesaDoce.service.js");
 jest.mock("services/medicaoInicial/periodoLancamentoMedicao.service");
+jest.mock("services/faixaEtaria.service.js");
 
 const awaitServices = async () => {
   await waitFor(() => expect(perfilService.meusDados).toHaveBeenCalled());
@@ -49,6 +51,7 @@ describe("Test <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não le
   beforeEach(() => {
     perfilService.meusDados.mockResolvedValue(mockMeusDadosEscolaCEI);
     getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
+    getFaixasEtarias.mockResolvedValue({ data: { results: [] }, status: 200 });
     getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
       data: mockInclusoesAutorizadasEscolaCEI,
       status: 200,
@@ -296,6 +299,7 @@ describe("Test <PeriodoLancamentoMedicaoInicialCEI> sem inclusão em dia não le
   beforeEach(() => {
     perfilService.meusDados.mockResolvedValue(mockMeusDadosEscolaCEI);
     getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
+    getFaixasEtarias.mockResolvedValue({ data: { results: [] }, status: 200 });
     getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
       data: { results: [] },
       status: 200,
