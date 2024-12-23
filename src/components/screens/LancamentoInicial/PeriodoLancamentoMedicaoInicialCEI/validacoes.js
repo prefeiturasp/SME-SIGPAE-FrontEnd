@@ -653,13 +653,7 @@ export const exibirTooltipDietasInclusaoDiaNaoLetivoCEI = (
 };
 
 export const campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao =
-  (
-    inclusoesAutorizadas,
-    column,
-    categoria,
-    formValuesAtualizados,
-    valoresMatriculadosFaixaEtariaDia
-  ) => {
+  (inclusoesAutorizadas, column, categoria, formValuesAtualizados) => {
     if (!inclusoesAutorizadas || inclusoesAutorizadas.length === 0)
       return false;
 
@@ -667,12 +661,6 @@ export const campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObserva
     inclusoesAutorizadas.forEach((inclusao) => {
       inclusao.faixas_etarias.forEach((faixa) => {
         if (
-          valoresMatriculadosFaixaEtariaDia.find(
-            (logMatriculado) =>
-              logMatriculado.dia === column.dia &&
-              logMatriculado.faixa_etaria.uuid === faixa &&
-              logMatriculado.quantidade > 0
-          ) &&
           !formValuesAtualizados[
             `frequencia__faixa_${faixa}__dia_${column.dia}__categoria_${categoria.id}`
           ]

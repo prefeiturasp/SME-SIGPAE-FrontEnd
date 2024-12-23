@@ -89,6 +89,7 @@ import {
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
 } from "services/medicaoInicial/periodoLancamentoMedicao.service";
+import { getFaixasEtarias } from "services/faixaEtaria.service";
 import * as perfilService from "services/perfil.service";
 import { escolaCorrigeMedicao } from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { DETALHAMENTO_DO_LANCAMENTO, MEDICAO_INICIAL } from "configs/constants";
@@ -132,6 +133,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [mesAnoConsiderado, setMesAnoConsiderado] = useState(null);
   const [mesAnoFormatadoState, setMesAnoFormatadoState] = useState(null);
   const [weekColumns, setWeekColumns] = useState(initialStateWeekColumns);
+  const [, setFaixasEtarias] = useState();
   const [tabelaAlimentacaoCEIRows, setTabelaAlimentacaoCEIRows] = useState([]);
   const [tabelaDietaCEIRows, setTabelaDietaCEIRows] = useState([]);
   const [tabelaDietaEnteralRows, setTabelaDietaEnteralRows] = useState([]);
@@ -255,6 +257,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
       const mes = format(mesAnoSelecionado, "MM");
       const ano = getYear(mesAnoSelecionado);
+
+      const response_faixas_etarias = await getFaixasEtarias();
+      if (response_faixas_etarias.status === HTTP_STATUS.OK) {
+        setFaixasEtarias(response_faixas_etarias.data.results);
+      }
 
       let response_sobremesa_doce = [];
       response_sobremesa_doce = await getListaDiasSobremesaDoceAsync(
@@ -449,7 +456,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             )
           : formatarLinhasTabelaAlimentacaoCEI(
               response_log_matriculados_por_faixa_etaria_dia,
-              periodoGrupo
+              periodoGrupo,
+              response_faixas_etarias.data.results,
+              response_inclusoes_autorizadas
             );
       setTabelaAlimentacaoCEIRows(linhasTabelaAlimentacaoCEI);
 
@@ -928,6 +937,20 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           ? `${Math.max(quantidade - somaDietasMesmoDia, 0)}`
           : null;
       });
+
+    valoresMatriculadosFaixaEtariaDiaInclusoes.forEach(
+      (valorMatriculadoFaixaEtariaDiaInclusao) => {
+        if (
+          !dadosValoresMatriculadosFaixaEtariaDia[
+            `matriculados__faixa_${valorMatriculadoFaixaEtariaDiaInclusao.faixa_etaria.uuid}__dia_${valorMatriculadoFaixaEtariaDiaInclusao.dia}__categoria_${idCategoriaAlimentacao}`
+          ]
+        ) {
+          dadosValoresMatriculadosFaixaEtariaDia[
+            `matriculados__faixa_${valorMatriculadoFaixaEtariaDiaInclusao.faixa_etaria.uuid}__dia_${valorMatriculadoFaixaEtariaDiaInclusao.dia}__categoria_${idCategoriaAlimentacao}`
+          ] = valorMatriculadoFaixaEtariaDiaInclusao.quantidade;
+        }
+      }
+    );
 
     ehEmeiDaCemeiLocation &&
       matriculadosEmeiDaCemei &&
@@ -1541,8 +1564,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             inclusoesAutorizadas,
             column,
             categoria,
-            formValuesAtualizados,
-            valoresMatriculadosFaixaEtariaDia
+            formValuesAtualizados
           ) ||
           exibirTooltipRPLAutorizadas(
             formValuesAtualizados,
@@ -2099,8 +2121,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                         inclusoesAutorizadas,
                                                         column,
                                                         categoria,
-                                                        formValuesAtualizados,
-                                                        valoresMatriculadosFaixaEtariaDia
+                                                        formValuesAtualizados
                                                       ) ||
                                                       campoRefeicaoComRPLAutorizadaESemObservacao(
                                                         formValuesAtualizados,
