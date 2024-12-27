@@ -1,28 +1,42 @@
 import "@testing-library/jest-dom";
-import { render, waitFor, act } from "@testing-library/react";
+import { render, waitFor, act, screen } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import CadastroCronograma from "..";
 
-// import * as perfilService from "services/perfil.service";
 import { getEmpresasCronograma } from "services/terceirizada.service";
 import { getNomesDistribuidores } from "services/logistica.service";
 import { getListaFichasTecnicasSimplesAprovadas } from "services/fichaTecnica.service";
 import {
   getRascunhos,
   getUnidadesDeMedidaLogistica,
+  getCronograma,
 } from "services/cronograma.service";
+import { getListaTiposEmbalagens } from "services/qualidade.service";
 
 import { mockListaDistribuidores } from "mocks/PreRecebimento/CadastroCronograma/mockListaDistribuidores";
 import { mockListaEmpresas } from "mocks/PreRecebimento/CadastroCronograma/mockListaEmpresas";
 import { mockListaFichasTecnicasSimplesAprovadas } from "mocks/PreRecebimento/CadastroCronograma/mockListaFichasTecnicasSimplesAprovadas";
 import { mockListaUnidadesMedidaLogistica } from "mocks/PreRecebimento/CadastroCronograma/mockListaUnidadesMedidaLogistica";
 import { mockListaRascunhos } from "mocks/PreRecebimento/CadastroCronograma/mockListaRascunhos";
+import { mockListaTiposEmbalagens } from "mocks/PreRecebimento/CadastroCronograma/mockListaTiposEmbalagens";
+import { mockGetCronograma } from "mocks/PreRecebimento/CadastroCronograma/mockGetCronograma";
+
+import { useNavigate } from "react-router-dom";
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: jest.fn(),
+}));
+
+const mockNavigate = jest.fn();
+useNavigate.mockReturnValue(mockNavigate);
 
 jest.mock("services/logistica.service");
 jest.mock("services/terceirizada.service");
 jest.mock("services/fichaTecnica.service");
 jest.mock("services/cronograma.service");
+jest.mock("services/qualidade.service");
 
 describe("Test <CadastroCronograma>", () => {
   beforeEach(async () => {
@@ -51,6 +65,16 @@ describe("Test <CadastroCronograma>", () => {
       status: 200,
     });
 
+    getListaTiposEmbalagens.mockResolvedValue({
+      data: mockListaTiposEmbalagens,
+      status: 200,
+    });
+
+    getCronograma.mockResolvedValue({
+      data: mockGetCronograma,
+      status: 200,
+    });
+
     await act(async () => {
       render(
         <MemoryRouter
@@ -63,10 +87,6 @@ describe("Test <CadastroCronograma>", () => {
         </MemoryRouter>
       );
     });
-  });
-
-  it("qualquer coisa", async () => {
-    expect(true).toBe(true);
   });
 
   it("teste mock getListaDistribuidores", async () => {
@@ -118,148 +138,53 @@ describe("Test <CadastroCronograma>", () => {
     );
   });
 
-  //   it("renderiza label `Mês do Lançamento`", () => {
-  //     expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
-  //   });
+  it("teste mock getListaTiposEmbalagens", async () => {
+    await waitFor(() => expect(getListaTiposEmbalagens).toHaveBeenCalled());
+    expect(getListaTiposEmbalagens).toHaveBeenCalledTimes(1);
+    expect(getListaTiposEmbalagens).toHaveReturnedWith(
+      Promise.resolve(mockListaTiposEmbalagens)
+    );
+  });
 
-  //   it("renderiza valor `Novembro / 2024` no input `Mês do Lançamento`", () => {
-  //     const inputElement = screen.getByTestId("input-mes-lancamento");
-  //     expect(inputElement).toHaveAttribute("value", "Novembro / 2024");
-  //   });
+  it("renderiza label `Pesquisar Empresa`", async () => {
+    expect(screen.getByText("Pesquisar Empresa")).toBeInTheDocument();
+  });
 
-  //   it("renderiza label `Período de Lançamento`", () => {
-  //     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
-  //   });
+  it("Preenche campo Empresa e verifica opções", async () => {
+    const divEmpresa = screen.getByTestId("input-empresa");
+    expect(divEmpresa).toBeInTheDocument();
 
-  //   it("renderiza valor `PARCIAL` no input `Período de Lançamento`", () => {
-  //     const inputElement = screen.getByTestId("input-periodo-lancamento");
-  //     expect(inputElement).toHaveAttribute("value", "PARCIAL");
-  //   });
+    const inputEmpresa = divEmpresa.querySelector("input");
+    inputEmpresa.value = "Empresa do Luis Zimmermann";
 
-  //   it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
-  //     expect(
-  //       screen.getByText("Semanas do Período para Lançamento da Medição Inicial")
-  //     ).toBeInTheDocument();
-  //   });
+    expect(inputEmpresa.value).toBe("Empresa do Luis Zimmermann");
 
-  //   it("renderiza label `Semana 1`", async () => {
-  //     await awaitServices();
-  //     expect(screen.getByText("Semana 1")).toBeInTheDocument();
-  //   });
+    const selectContrato = screen
+      .getByTestId("select-div")
+      .querySelector("select");
 
-  //   it("renderiza label `Semana 5`", async () => {
-  //     await awaitServices();
-  //     expect(screen.getByText("Semana 5")).toBeInTheDocument();
-  //   });
+    const option1 = document.createElement("option");
+    option1.value = "b82c8d96-8078-47b0-b5d4-2f1183458ed6";
+    option1.textContent = "12345/22";
 
-  //   it("renderiza label `ALIMENTAÇÃO`", async () => {
-  //     await awaitServices();
-  //     expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
-  //   });
+    const option2 = document.createElement("option");
+    option2.value = "f6d84d2e-80e2-4e74-a2c9-d5edf1c27b95";
+    option2.textContent = "2222/22";
 
-  //   it("renderiza label `Matriculados` dentro da seção `ALIMENTAÇÃO`", async () => {
-  //     await awaitServices();
-  //     const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
-  //     const myElement = screen.getByTestId(
-  //       `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`
-  //     );
-  //     const allMatriculados = screen.getAllByText("Matriculados");
-  //     const specificMatriculados = allMatriculados.find((element) =>
-  //       myElement.contains(element)
-  //     );
-  //     expect(specificMatriculados).toBeInTheDocument();
-  //   });
+    selectContrato.appendChild(option1);
+    selectContrato.appendChild(option2);
 
-  //   it("renderiza label `Seg.` dentro da seção `ALIMENTAÇÃO`", async () => {
-  //     await awaitServices();
-  //     const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
-  //     const myElement = screen.getByTestId(
-  //       `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`
-  //     );
-  //     const allMatriculados = screen.getAllByText("Seg.");
-  //     const specificMatriculados = allMatriculados.find((element) =>
-  //       myElement.contains(element)
-  //     );
-  //     expect(specificMatriculados).toBeInTheDocument();
-  //   });
+    const options = selectContrato.getElementsByTagName("option");
 
-  //   it("renderiza label `DIETA ESPECIAL - TIPO B - LANCHE`", async () => {
-  //     await awaitServices();
-  //     expect(
-  //       screen.getByText("DIETA ESPECIAL - TIPO B - LANCHE")
-  //     ).toBeInTheDocument();
-  //   });
+    expect(options).toHaveLength(3);
 
-  //   it("renderiza label `Seg.` dentro da seção `DIETA ESPECIAL - TIPO B - LANCHE`", async () => {
-  //     await awaitServices();
-  //     const categoriaDietaEspecialTipoBUuid =
-  //       "6ad79709-3611-4af3-a567-65fcf34b3d06";
-  //     const myElement = screen.getByTestId(
-  //       `div-lancamentos-por-categoria-${categoriaDietaEspecialTipoBUuid}`
-  //     );
-  //     const allMatriculados = screen.getAllByText("Seg.");
-  //     const specificMatriculados = allMatriculados.find((element) =>
-  //       myElement.contains(element)
-  //     );
-  //     expect(specificMatriculados).toBeInTheDocument();
-  //   });
+    expect(options[0].value).toBe("");
+    expect(options[0]).toHaveTextContent("Selecione um Contrato");
 
-  //   it("renderiza label `Dietas Autorizadas` dentro da seção `DIETA ESPECIAL - TIPO B - LANCHE`", async () => {
-  //     await awaitServices();
-  //     const categoriaDietaEspecialTipoBUuid =
-  //       "6ad79709-3611-4af3-a567-65fcf34b3d06";
-  //     const myElement = screen.getByTestId(
-  //       `div-lancamentos-por-categoria-${categoriaDietaEspecialTipoBUuid}`
-  //     );
-  //     const allMatriculados = screen.getAllByText("Dietas Autorizadas");
-  //     const specificMatriculados = allMatriculados.find((element) =>
-  //       myElement.contains(element)
-  //     );
-  //     expect(specificMatriculados).toBeInTheDocument();
-  //   });
+    expect(options[1].value).toBe("b82c8d96-8078-47b0-b5d4-2f1183458ed6");
+    expect(options[1]).toHaveTextContent("12345/22");
 
-  //   it("ao clicar na tab `Semana 2`, exibe, no dia 9, o número de matriculados 47 e 17", async () => {
-  //     await awaitServices();
-  //     const semana2Element = screen.getByText("Semana 2");
-  //     fireEvent.click(semana2Element);
-  //     const inputElementMatriculados1AnoA3anosE11Meses = screen.getByTestId(
-  //       "matriculados__faixa_802ffeb0-3d70-4be9-97fe-20992ee9c0ff__dia_09__categoria_1"
-  //     );
-  //     expect(inputElementMatriculados1AnoA3anosE11Meses).toHaveAttribute(
-  //       "value",
-  //       "47"
-  //     );
-  //     const inputElementMatriculados4a6anos = screen.getByTestId(
-  //       "matriculados__faixa_0c914b27-c7cd-4682-a439-a4874745b005__dia_09__categoria_1"
-  //     );
-  //     expect(inputElementMatriculados4a6anos).toHaveAttribute("value", "17");
-  //   });
-
-  //   it("ao clicar na tab `Semana 2`, exibe, no dia 9, nos campos frequência abaixo de 47 e 49 a borda warning", async () => {
-  //     await awaitServices();
-  //     const semana2Element = screen.getByText("Semana 2");
-  //     fireEvent.click(semana2Element);
-  //     const inputElementFrequencia1AnoA3anosE11Meses = screen.getByTestId(
-  //       "frequencia__faixa_802ffeb0-3d70-4be9-97fe-20992ee9c0ff__dia_09__categoria_1"
-  //     );
-  //     expect(inputElementFrequencia1AnoA3anosE11Meses).toHaveClass(
-  //       "border-warning"
-  //     );
-  //     const inputElementFrequencia4a6anos = screen.getByTestId(
-  //       "frequencia__faixa_0c914b27-c7cd-4682-a439-a4874745b005__dia_09__categoria_1"
-  //     );
-  //     expect(inputElementFrequencia4a6anos).toHaveClass("border-warning");
-  //   });
-
-  //   it("ao clicar na tab `Semana 2`, exibe, no dia 9, botão Adicionar obrigatório", async () => {
-  //     await awaitServices();
-  //     const semana2Element = screen.getByText("Semana 2");
-  //     fireEvent.click(semana2Element);
-  //     const botaoAdicionarDivElement = screen.getByTestId(
-  //       "div-botao-add-obs-09-1-observacoes"
-  //     );
-  //     const botaoAdicionar = botaoAdicionarDivElement.querySelector("button");
-  //     expect(botaoAdicionar).toHaveClass("red-button-outline");
-  //     expect(botaoAdicionar).toHaveTextContent("Adicionar");
-  //   });
+    expect(options[2].value).toBe("f6d84d2e-80e2-4e74-a2c9-d5edf1c27b95");
+    expect(options[2]).toHaveTextContent("2222/22");
+  });
 });
