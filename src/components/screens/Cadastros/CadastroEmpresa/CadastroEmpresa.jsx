@@ -273,7 +273,7 @@ export const CadastroEmpresa = () => {
     data.contratos.forEach((contrato, indice) => {
       data[`numero_contrato_${indice}`] = contrato.numero;
       data[`numero_processo_${indice}`] = contrato.processo;
-      data[`modalidade_${indice}`] = contrato.modalidade;
+      data[`modalidade_${indice}`] = contrato.modalidade.uuid;
       data[`numero_ata_${indice}`] = contrato.ata;
       data[`numero_pregao_${indice}`] = contrato.numero_pregao;
       data[`numero_chamada_publica_${indice}`] =
