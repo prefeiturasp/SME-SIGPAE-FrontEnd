@@ -82,7 +82,9 @@ export const ModalCronograma: React.FC<Props> = ({
           </div>
           <div className="col-4">
             <span className="fw-bold">Quantidade: </span>
-            <span>{event.objeto.quantidade}</span>
+            <span>
+              {event.objeto.quantidade} {event.objeto.unidade_medida}
+            </span>
           </div>
         </div>
       </Modal.Body>
