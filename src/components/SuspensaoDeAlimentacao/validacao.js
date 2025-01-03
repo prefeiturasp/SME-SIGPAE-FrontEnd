@@ -67,6 +67,42 @@ export const validateSubmit = (values, meusDados) => {
     }
     values["suspensoes"].push(objSuspensoes);
   }
+
+  if (values.suspensoes_VESPERTINO && values.suspensoes_VESPERTINO.check) {
+    totalAlunos += parseInt(values.suspensoes_VESPERTINO.numero_de_alunos);
+    let objSuspensoes = {
+      periodo_escolar: values.suspensoes_VESPERTINO.periodo,
+      tipos_alimentacao: values.suspensoes_VESPERTINO.tipo_de_refeicao,
+      numero_alunos: values.suspensoes_VESPERTINO.numero_de_alunos,
+    };
+    if (escolaEhCEMEI()) {
+      objSuspensoes["alunos_cei_ou_emei"] =
+        values.suspensoes_VESPERTINO.alunos_cei_ou_emei.length === 1
+          ? values.suspensoes_VESPERTINO.alunos_cei_ou_emei[0]
+          : "Todos";
+    }
+    values["suspensoes"].push(objSuspensoes);
+  }
+
+  if (
+    values.suspensoes_INTERMEDIARIO &&
+    values.suspensoes_INTERMEDIARIO.check
+  ) {
+    totalAlunos += parseInt(values.suspensoes_INTERMEDIARIO.numero_de_alunos);
+    let objSuspensoes = {
+      periodo_escolar: values.suspensoes_INTERMEDIARIO.periodo,
+      tipos_alimentacao: values.suspensoes_INTERMEDIARIO.tipo_de_refeicao,
+      numero_alunos: values.suspensoes_INTERMEDIARIO.numero_de_alunos,
+    };
+    if (escolaEhCEMEI()) {
+      objSuspensoes["alunos_cei_ou_emei"] =
+        values.suspensoes_INTERMEDIARIO.alunos_cei_ou_emei.length === 1
+          ? values.suspensoes_INTERMEDIARIO.alunos_cei_ou_emei[0]
+          : "Todos";
+    }
+    values["suspensoes"].push(objSuspensoes);
+  }
+
   if (
     meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
       "CEU GESTAO" &&
@@ -78,6 +114,8 @@ export const validateSubmit = (values, meusDados) => {
     delete values["substituicoes_TARDE"];
     delete values["substituicoes_NOITE"];
     delete values["substituicoes_INTEGRAL"];
+    delete values["substituicoes_VESPERTINO"];
+    delete values["substituicoes_INTERMEDIARIO"];
   }
 
   if (values["suspensoes"].length === 0)

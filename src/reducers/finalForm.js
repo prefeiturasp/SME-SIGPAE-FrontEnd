@@ -1,8 +1,7 @@
 // https://codesandbox.io/s/4xq2qpzw79
 
 // Actions
-const UPDATE_FORM_STATE =
-  "SME-Terceirizadas-Frontend/finalForm/UPDATE_FORM_STATE";
+const UPDATE_FORM_STATE = "SME-SIGPAE-Frontend/finalForm/UPDATE_FORM_STATE";
 
 // Reducer
 export default function reducer(state = {}, action = {}) {

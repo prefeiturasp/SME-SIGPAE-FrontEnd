@@ -1,26 +1,25 @@
 // Actions
 
 const SET_DADOS_RESULTADOS =
-  "SME-Terceirizadas-Frontend/ativas-inativas/SET_DADOS_RESULTADOS";
+  "SME-SIGPAE-Frontend/ativas-inativas/SET_DADOS_RESULTADOS";
 const SET_TOTAL_RESULTADOS =
-  "SME-Terceirizadas-Frontend/ativas-inativas/SET_TOTAL_RESULTADOS";
+  "SME-SIGPAE-Frontend/ativas-inativas/SET_TOTAL_RESULTADOS";
 
 const SET_EXIBIR_RESULTADOS =
-  "SME-Terceirizadas-Frontend/ativas-inativas/SET_EXIBIR_RESULTADOS";
+  "SME-SIGPAE-Frontend/ativas-inativas/SET_EXIBIR_RESULTADOS";
 const SET_FILTROS =
-  "SME-Terceirizadas-Frontend/dieta-especial/ativas-inativas/SET_FILTROS";
+  "SME-SIGPAE-Frontend/dieta-especial/ativas-inativas/SET_FILTROS";
 
-const SET_PAGE = "SME-Terceirizadas-Frontend/ativas-inativas/SET_PAGE";
+const SET_PAGE = "SME-SIGPAE-Frontend/ativas-inativas/SET_PAGE";
 
-const SET_ESCOLAS = "SME-Terceirizadas-Frontend/ativas-inativas/SET_ESCOLAS";
+const SET_ESCOLAS = "SME-SIGPAE-Frontend/ativas-inativas/SET_ESCOLAS";
 
 const SET_DIRETORIAS_REGIONAIS =
-  "SME-Terceirizadas-Frontend/ativas-inativas/SET_SET_DIRETORIAS_REGIONAIS";
+  "SME-SIGPAE-Frontend/ativas-inativas/SET_SET_DIRETORIAS_REGIONAIS";
 
-const SET_MEUS_DADOS =
-  "SME-Terceirizadas-Frontend/ativas-inativas/SET_SET_MEUS_DADOS";
+const SET_MEUS_DADOS = "SME-SIGPAE-Frontend/ativas-inativas/SET_SET_MEUS_DADOS";
 
-const RESET = "SME-Terceirizadas-Frontend/ativas-inativas/RESET";
+const RESET = "SME-SIGPAE-Frontend/ativas-inativas/RESET";
 
 const initialValues = {
   filtros: undefined,

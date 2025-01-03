@@ -59,7 +59,7 @@ export class Calendario extends React.Component {
     );
     if (response.status === HTTP_STATUS.OK) {
       this.setState({
-        objetos: formataComoEventos(response.data),
+        objetos: formataComoEventos(response.data.results || response.data),
       });
     }
     if (response) {

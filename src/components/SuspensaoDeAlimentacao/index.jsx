@@ -68,6 +68,8 @@ class FoodSuspensionEditor extends Component {
         TARDE: [],
         NOITE: [],
         INTEGRAL: [],
+        VESPERTINO: [],
+        INTERMEDIARIO: [],
       },
     };
     this.OnEditButtonClicked = this.OnEditButtonClicked.bind(this);
@@ -186,6 +188,8 @@ class FoodSuspensionEditor extends Component {
         TARDE: [],
         NOITE: [],
         INTEGRAL: [],
+        VESPERTINO: [],
+        INTERMEDIARIO: [],
       },
       observacao: null,
     });
@@ -241,6 +245,16 @@ class FoodSuspensionEditor extends Component {
         INTEGRAL:
           param.suspensaoDeAlimentacao.suspensoes_INTEGRAL !== undefined
             ? param.suspensaoDeAlimentacao.suspensoes_INTEGRAL.tipo_de_refeicao
+            : [],
+        VESPERTINO:
+          param.suspensaoDeAlimentacao.suspensoes_VESPERTINO !== undefined
+            ? param.suspensaoDeAlimentacao.suspensoes_VESPERTINO
+                .tipo_de_refeicao
+            : [],
+        INTERMEDIARIO:
+          param.suspensaoDeAlimentacao.suspensoes_INTERMEDIARIO !== undefined
+            ? param.suspensaoDeAlimentacao.suspensoes_INTERMEDIARIO
+                .tipo_de_refeicao
             : [],
       },
       observacao,
@@ -371,6 +385,8 @@ class FoodSuspensionEditor extends Component {
       "suspensoes_TARDE",
       "suspensoes_NOITE",
       "suspensoes_INTEGRAL",
+      "suspensoes_VESPERTINO",
+      "suspensoes_INTERMEDIARIO",
     ];
     fields.forEach(
       function (field) {
@@ -580,6 +596,8 @@ class FoodSuspensionEditor extends Component {
       suspensoes_TARDE,
       suspensoes_NOITE,
       suspensoes_INTEGRAL,
+      suspensoes_VESPERTINO,
+      suspensoes_INTERMEDIARIO,
     } = this.props;
     const {
       loading,
@@ -594,6 +612,8 @@ class FoodSuspensionEditor extends Component {
       TARDE: suspensoes_TARDE && suspensoes_TARDE.check,
       NOITE: suspensoes_NOITE && suspensoes_NOITE.check,
       INTEGRAL: suspensoes_INTEGRAL && suspensoes_INTEGRAL.check,
+      VESPERTINO: suspensoes_VESPERTINO && suspensoes_VESPERTINO.check,
+      INTERMEDIARIO: suspensoes_INTERMEDIARIO && suspensoes_INTERMEDIARIO.check,
     };
     return (
       <div>
@@ -900,6 +920,8 @@ const mapStateToProps = (state) => {
     suspensoes_TARDE: selector(state, "suspensoes_TARDE"),
     suspensoes_NOITE: selector(state, "suspensoes_NOITE"),
     suspensoes_INTEGRAL: selector(state, "suspensoes_INTEGRAL"),
+    suspensoes_VESPERTINO: selector(state, "suspensoes_VESPERTINO"),
+    suspensoes_INTERMEDIARIO: selector(state, "suspensoes_INTERMEDIARIO"),
   };
 };
 

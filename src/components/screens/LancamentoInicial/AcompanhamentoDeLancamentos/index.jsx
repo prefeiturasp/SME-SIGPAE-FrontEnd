@@ -68,9 +68,6 @@ export const AcompanhamentoDeLancamentos = () => {
   const { meusDados } = useContext(MeusDadosContext);
   const DEFAULT_STATE = usuarioEhEscolaTerceirizadaQualquerPerfil() ? [] : null;
 
-  const [carreandoEscolas, setCarregandoEscolas] = useState(false);
-  const [carreandoLotes, setCarregandoLotes] = useState(false);
-
   const [dadosDashboard, setDadosDashboard] = useState(null);
   const [statusSelecionado, setStatusSelecionado] = useState(
     searchParams.get("status")
@@ -87,7 +84,6 @@ export const AcompanhamentoDeLancamentos = () => {
   const [mudancaDre, setMudancaDre] = useState(false);
 
   const [erroAPI, setErroAPI] = useState("");
-  const [loading, setLoading] = useState(true);
   const [loadingComFiltros, setLoadingComFiltros] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
@@ -108,13 +104,6 @@ export const AcompanhamentoDeLancamentos = () => {
   });
 
   const PAGE_SIZE = 10;
-  const LOADING =
-    carreandoLotes ||
-    carreandoEscolas ||
-    (!usuarioEhMedicao && !dadosDashboard) ||
-    !mesesAnos ||
-    !tiposUnidades ||
-    loading;
 
   const getDashboardMedicaoInicialAsync = async (params = {}) => {
     if (Object.keys(params).length === 0) {
@@ -175,7 +164,6 @@ export const AcompanhamentoDeLancamentos = () => {
         "Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde."
       );
     }
-    setLoading(false);
     setLoadingComFiltros(false);
     setMudancaDre(false);
   };
@@ -239,13 +227,17 @@ export const AcompanhamentoDeLancamentos = () => {
     };
     setCurrentPage(1);
 
-    onPageChanged(1, { status: statusSelecionado, ...initialValues });
-
     getMesesAnosSolicitacoesMedicaoinicialAsync();
 
     if (!usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-      getDiretoriasRegionaisAsync();
       getTiposUnidadeEscolarAsync();
+    }
+
+    if (!usuarioEhDRE() && !usuarioEhEscolaTerceirizadaQualquerPerfil()) {
+      getDiretoriasRegionaisAsync();
+    } else {
+      onPageChanged(1, { status: statusSelecionado, ...initialValues });
+      setDiretoriasRegionais([]);
     }
   }, []);
 
@@ -256,7 +248,6 @@ export const AcompanhamentoDeLancamentos = () => {
         : diretoriaRegional;
 
       const getLotesAsync = async () => {
-        setCarregandoLotes(true);
         const response = await getLotesSimples({
           diretoria_regional__uuid: uuid,
         });
@@ -265,11 +256,9 @@ export const AcompanhamentoDeLancamentos = () => {
         } else {
           setErroAPI("Erro ao carregar lotes. Tente novamente mais tarde.");
         }
-        setCarregandoLotes(false);
       };
 
       const getEscolasTrecTotalAsync = async () => {
-        setCarregandoEscolas(true);
         const response = await getEscolasTercTotal({ dre: uuid });
         if (response.status === HTTP_STATUS.OK) {
           setNomesEscolas(
@@ -280,7 +269,6 @@ export const AcompanhamentoDeLancamentos = () => {
         } else {
           setErroAPI("Erro ao carregar escolas. Tente novamente mais tarde.");
         }
-        setCarregandoEscolas(false);
       };
 
       meusDados && uuid && getLotesAsync();
@@ -491,8 +479,8 @@ export const AcompanhamentoDeLancamentos = () => {
   return (
     <div className="acompanhamento-de-lancamentos">
       {erroAPI && <div>{erroAPI}</div>}
-      <Spin tip="Carregando..." spinning={LOADING}>
-        {!erroAPI && !LOADING && (
+      <Spin tip="Carregando..." spinning={!diretoriasRegionais}>
+        {!erroAPI && diretoriasRegionais && (
           <Form onSubmit={onSubmit} initialValues={initialValues}>
             {({ handleSubmit, form, values }) => (
               <form onSubmit={handleSubmit}>
@@ -526,7 +514,7 @@ export const AcompanhamentoDeLancamentos = () => {
                             .includes(inputValue.toLowerCase())
                         }
                         naoDesabilitarPrimeiraOpcao
-                        disabled={LOADING || loadingComFiltros}
+                        disabled={!diretoriasRegionais || loadingComFiltros}
                       >
                         {diretoriasRegionais}
                       </Field>
@@ -580,7 +568,7 @@ export const AcompanhamentoDeLancamentos = () => {
                     </div>
 
                     <div className="text-center mt-3">
-                      {!loading && !loadingComFiltros && dadosDashboard && (
+                      {!loadingComFiltros && dadosDashboard && (
                         <span>
                           Selecione os status acima para visualizar a listagem
                           detalhada

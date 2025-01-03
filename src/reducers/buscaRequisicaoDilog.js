@@ -1,13 +1,12 @@
 // Actions
 const SET_REQUISICOES =
-  "SME-Terceirizadas-Frontend/buscaRequisicaoDilog/SET_REQUISICOES";
+  "SME-SIGPAE-Frontend/buscaRequisicaoDilog/SET_REQUISICOES";
 const SET_REQUISICOES_COUNT =
-  "SME-Terceirizadas-Frontend/buscaRequisicaoDilog/SET_REQUISICOES_COUNT";
-const SET_ATIVOS = "SME-Terceirizadas-Frontend/buscaRequisicaoDilog/SET_ATIVOS";
-const SET_FILTROS =
-  "SME-Terceirizadas-Frontend/buscaRequisicaoDilog/SET_FILTROS";
-const SET_PAGE = "SME-Terceirizadas-Frontend/buscaRequisicaoDilog/SET_PAGE";
-const RESET = "SME-Terceirizadas-Frontend/buscaRequisicaoDilog/RESET";
+  "SME-SIGPAE-Frontend/buscaRequisicaoDilog/SET_REQUISICOES_COUNT";
+const SET_ATIVOS = "SME-SIGPAE-Frontend/buscaRequisicaoDilog/SET_ATIVOS";
+const SET_FILTROS = "SME-SIGPAE-Frontend/buscaRequisicaoDilog/SET_FILTROS";
+const SET_PAGE = "SME-SIGPAE-Frontend/buscaRequisicaoDilog/SET_PAGE";
+const RESET = "SME-SIGPAE-Frontend/buscaRequisicaoDilog/RESET";
 
 export default function reducer(state = {}, action = {}) {
   switch (action.type) {

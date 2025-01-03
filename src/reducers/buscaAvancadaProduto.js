@@ -1,13 +1,11 @@
 // Actions
-const SET_PRODUTOS =
-  "SME-Terceirizadas-Frontend/buscaAvancadaProduto/SET_PRODUTOS";
+const SET_PRODUTOS = "SME-SIGPAE-Frontend/buscaAvancadaProduto/SET_PRODUTOS";
 const SET_PRODUTOS_COUNT =
-  "SME-Terceirizadas-Frontend/buscaAvancadaProduto/SET_PRODUTOS_COUNT";
-const SET_ATIVOS = "SME-Terceirizadas-Frontend/buscaAvancadaProduto/SET_ATIVOS";
-const SET_FILTROS =
-  "SME-Terceirizadas-Frontend/buscaAvancadaProduto/SET_FILTROS";
-const SET_PAGE = "SME-Terceirizadas-Frontend/buscaAvancadaProduto/SET_PAGE";
-const RESET = "SME-Terceirizadas-Frontend/buscaAvancadaProduto/RESET";
+  "SME-SIGPAE-Frontend/buscaAvancadaProduto/SET_PRODUTOS_COUNT";
+const SET_ATIVOS = "SME-SIGPAE-Frontend/buscaAvancadaProduto/SET_ATIVOS";
+const SET_FILTROS = "SME-SIGPAE-Frontend/buscaAvancadaProduto/SET_FILTROS";
+const SET_PAGE = "SME-SIGPAE-Frontend/buscaAvancadaProduto/SET_PAGE";
+const RESET = "SME-SIGPAE-Frontend/buscaAvancadaProduto/RESET";
 
 // Reducer
 export default function reducer(state = {}, action = {}) {

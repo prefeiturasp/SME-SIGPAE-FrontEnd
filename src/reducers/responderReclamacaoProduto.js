@@ -1,13 +1,11 @@
 // Actions
 const SET_PRODUTOS =
-  "SME-Terceirizadas-Frontend/responderReclamacaoProduto/SET_PRODUTOS";
-const SET_ATIVOS =
-  "SME-Terceirizadas-Frontend/responderReclamacaoProduto/SET_ATIVOS";
+  "SME-SIGPAE-Frontend/responderReclamacaoProduto/SET_PRODUTOS";
+const SET_ATIVOS = "SME-SIGPAE-Frontend/responderReclamacaoProduto/SET_ATIVOS";
 const SET_PRODUTOS_COUNT =
-  "SME-Terceirizadas-Frontend/responderReclamacaoProduto/SET_PRODUTOS_COUNT";
-const SET_PAGE =
-  "SME-Terceirizadas-Frontend/responderReclamacaoProduto/SET_PAGE";
-const RESET = "SME-Terceirizadas-Frontend/responderReclamacaoProduto/RESET";
+  "SME-SIGPAE-Frontend/responderReclamacaoProduto/SET_PRODUTOS_COUNT";
+const SET_PAGE = "SME-SIGPAE-Frontend/responderReclamacaoProduto/SET_PAGE";
+const RESET = "SME-SIGPAE-Frontend/responderReclamacaoProduto/RESET";
 
 // Reducer
 export default function reducer(state = {}, action = {}) {

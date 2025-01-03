@@ -1,11 +1,10 @@
 // Actions
 const SET_HOMOLOGACOES =
-  "SME-Terceirizadas-Frontend/responderAnaliseSensorial/SET_HOMOLOGACOES";
+  "SME-SIGPAE-Frontend/responderAnaliseSensorial/SET_HOMOLOGACOES";
 const SET_UUID_HOMOLOGACAO_ATIVA =
-  "SME-Terceirizadas-Frontend/responderAnaliseSensorial/SET_UUID_HOMOLOGACAO_ATIVA";
-const SET_PAGE =
-  "SME-Terceirizadas-Frontend/responderAnaliseSensorial/SET_PAGE";
-const RESET = "SME-Terceirizadas-Frontend/responderAnaliseSensorial/RESET";
+  "SME-SIGPAE-Frontend/responderAnaliseSensorial/SET_UUID_HOMOLOGACAO_ATIVA";
+const SET_PAGE = "SME-SIGPAE-Frontend/responderAnaliseSensorial/SET_PAGE";
+const RESET = "SME-SIGPAE-Frontend/responderAnaliseSensorial/RESET";
 
 // Reducer
 export default function reducer(state = {}, action = {}) {

@@ -1,29 +1,35 @@
-import React, { Component } from "react";
-import { Field, reduxForm } from "redux-form";
-import {
-  TERCEIRIZADA,
-  SOLICITACOES_AUTORIZADAS,
-  SOLICITACOES_COM_QUESTIONAMENTO,
-  SOLICITACOES_NEGADAS,
-  SOLICITACOES_CANCELADAS,
-} from "configs/constants";
-import { PAGINACAO_DASHBOARD_DEFAULT } from "constants/shared";
-import { dataAtual, deepCopy } from "helpers/utilities";
-import {
-  getSolicitacoesCanceladasTerceirizada,
-  getSolicitacoesComQuestionamento,
-  getSolicitacoesNegadasTerceirizada,
-  getSolicitacoesAutorizadasTerceirizada,
-} from "services/painelTerceirizada.service";
+import { Spin } from "antd";
 import CardBody from "components/Shareable/CardBody";
 import CardMatriculados from "components/Shareable/CardMatriculados";
 import CardStatusDeSolicitacao, {
-  ICON_CARD_TYPE_ENUM,
   CARD_TYPE_ENUM,
+  ICON_CARD_TYPE_ENUM,
 } from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import {
+  SOLICITACOES_AUTORIZADAS,
+  SOLICITACOES_CANCELADAS,
+  SOLICITACOES_COM_QUESTIONAMENTO,
+  SOLICITACOES_NEGADAS,
+  TERCEIRIZADA,
+} from "configs/constants";
+import {
+  JS_DATE_DEZEMBRO,
+  JS_DATE_FEVEREIRO,
+  JS_DATE_JANEIRO,
+  JS_DATE_JULHO,
+  PAGINACAO_DASHBOARD_DEFAULT,
+} from "constants/shared";
+import { dataAtual, deepCopy } from "helpers/utilities";
+import React, { Component } from "react";
+import { Field, reduxForm } from "redux-form";
+import {
+  getSolicitacoesAutorizadasTerceirizada,
+  getSolicitacoesCanceladasTerceirizada,
+  getSolicitacoesComQuestionamento,
+  getSolicitacoesNegadasTerceirizada,
+} from "services/painelTerceirizada.service";
 import { ajustarFormatoLog, LOG_PARA } from "../helper";
 import { MENU_DASHBOARD_TERCEIRIZADAS } from "./constants";
-import { Spin } from "antd";
 
 const PARAMS = { limit: PAGINACAO_DASHBOARD_DEFAULT, offset: 0 };
 class DashboardTerceirizada extends Component {
@@ -58,10 +64,32 @@ class DashboardTerceirizada extends Component {
     this.setState({ collapsed: !this.state.collapsed });
   }
 
-  async getSolicitacoesAsync(params = null) {
+  async getSolicitacoesAsync(params) {
+    let parametros = { ...params };
+    let isAllUndefined = true;
+    for (let key in parametros) {
+      if (
+        key !== "limit" &&
+        key !== "offset" &&
+        parametros[key] !== undefined
+      ) {
+        isAllUndefined = false;
+        break;
+      }
+    }
+    if (isAllUndefined) {
+      parametros.periodo = [
+        JS_DATE_JANEIRO,
+        JS_DATE_FEVEREIRO,
+        JS_DATE_JULHO,
+        JS_DATE_DEZEMBRO,
+      ].includes(new Date().getMonth())
+        ? 30
+        : 7;
+    }
     this.setState({ loadingAcompanhamentoSolicitacoes: true });
 
-    getSolicitacoesComQuestionamento(params).then((request) => {
+    getSolicitacoesComQuestionamento(parametros).then((request) => {
       let questionamentosListSolicitacao = ajustarFormatoLog(
         request.data.results,
         LOG_PARA.TERCEIRIZADA
@@ -72,7 +100,7 @@ class DashboardTerceirizada extends Component {
       });
     });
 
-    getSolicitacoesCanceladasTerceirizada(params).then((request) => {
+    getSolicitacoesCanceladasTerceirizada(parametros).then((request) => {
       let canceladasListSolicitacao = ajustarFormatoLog(
         request.data.results,
         LOG_PARA.TERCEIRIZADA
@@ -82,7 +110,7 @@ class DashboardTerceirizada extends Component {
       });
     });
 
-    getSolicitacoesNegadasTerceirizada(params).then((request) => {
+    getSolicitacoesNegadasTerceirizada(parametros).then((request) => {
       let negadasListSolicitacao = ajustarFormatoLog(
         request.data.results,
         LOG_PARA.TERCEIRIZADA
@@ -92,7 +120,7 @@ class DashboardTerceirizada extends Component {
       });
     });
 
-    getSolicitacoesAutorizadasTerceirizada(params).then((request) => {
+    getSolicitacoesAutorizadasTerceirizada(parametros).then((request) => {
       let autorizadasListSolicitacao = ajustarFormatoLog(
         request.data.results,
         LOG_PARA.TERCEIRIZADA

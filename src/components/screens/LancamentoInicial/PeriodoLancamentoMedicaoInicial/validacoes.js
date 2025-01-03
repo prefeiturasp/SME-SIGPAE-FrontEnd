@@ -762,9 +762,6 @@ export const validacoesTabelasDietas = (
   const maxDietasAutorizadas = Number(
     allValues[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]
   );
-  const maxMatriculados = Number(
-    allValues[`matriculados__dia_${dia}__categoria_${idCategoriaAlimentacao}`]
-  );
   const maxFrequencia = Number(
     allValues[`frequencia__dia_${dia}__categoria_${categoria}`]
   );
@@ -776,11 +773,6 @@ export const validacoesTabelasDietas = (
   );
   const lanche_value = Number(
     allValues[`lanche__dia_${dia}__categoria_${categoria}`]
-  );
-  const maxNumeroDeAlunos = Number(
-    allValues[
-      `numero_de_alunos__dia_${dia}__categoria_${idCategoriaAlimentacao}`
-    ]
   );
   const totalLanchesDieta = lanche_4h_value + lanche_value;
   const inputName = `${rowName}__dia_${dia}__categoria_${categoria}`;
@@ -822,18 +814,6 @@ export const validacoesTabelasDietas = (
     return "A quantidade de alunos frequentes não pode ser maior do que a quantidade de alunos com dietas autorizadas.";
   } else if (
     value &&
-    Number(value) +
-      Number(
-        allValues[`frequencia__dia_${dia}__categoria_${idCategoriaAlimentacao}`]
-      ) >
-      (location.state && location.state.grupo === "Programas e Projetos"
-        ? maxNumeroDeAlunos
-        : maxMatriculados) &&
-    inputName.includes("frequencia")
-  ) {
-    return "O apontamento informado ultrapassou o número de frequentes informados no dia. É preciso subtrair o aluno com Dieta Especial Autorizada do lançamento na planilha de Alimentação.";
-  } else if (
-    value &&
     Number(value) > maxFrequencia &&
     (inputName.includes("lanche_4h") ||
       inputName.includes("lanche") ||
@@ -859,7 +839,19 @@ export const validacoesTabelasDietas = (
         allValues[`lanche__dia_${dia}__categoria_${idCategoriaAlimentacao}`]
       ) >
       maxFrequenciaAlimentacao &&
-    (inputName.includes("lanche_4h") || inputName.includes("lanche"))
+    inputName.includes("lanche") &&
+    !inputName.includes("_4h")
+  ) {
+    return "O número máximo de alimentações foi excedido. É preciso subtrair o aluno com Dieta Especial Autorizada do apontamento de Lanche na planilha de Alimentação.";
+  } else if (
+    value &&
+    Number(value) !== 0 &&
+    Number(value) +
+      Number(
+        allValues[`lanche_4h__dia_${dia}__categoria_${idCategoriaAlimentacao}`]
+      ) >
+      maxFrequenciaAlimentacao &&
+    inputName.includes("lanche_4h")
   ) {
     return "O número máximo de alimentações foi excedido. É preciso subtrair o aluno com Dieta Especial Autorizada do apontamento de Lanche na planilha de Alimentação.";
   } else if (

@@ -1025,6 +1025,8 @@ export const exibirGA = () => {
     "ITAQUERA",
     "PENHA",
     "BUTANTA",
+    "CAMPO LIMPO",
+    "SANTO AMARO",
   ];
 
   switch (localStorage.getItem("tipo_perfil")) {

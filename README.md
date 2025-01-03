@@ -1,7 +1,7 @@
 ![node-version](https://img.shields.io/badge/node-20.11.1-blue)
 ![react-version](https://img.shields.io/badge/react-18.2.0-blue)
 
-Projeto Terceirizada Frontend para a interface gráfica onde os usuários do sistema poderão interagir com a <a  href="https://github.com/prefeiturasp/SME-Terceirizadas"  target="_blank">API TERCEIRIZADAS</a>
+Projeto SIGPAE Frontend para a interface gráfica onde os usuários do sistema poderão interagir com a <a  href="https://github.com/prefeiturasp/SME-SIGPAE-API"  target="_blank">API TERCEIRIZADAS</a>
 
 **Pré-requisitos**
 
@@ -13,7 +13,7 @@ Projeto Terceirizada Frontend para a interface gráfica onde os usuários do sis
 1.  clonar o projeto
 
 ```
-git clone https://github.com/prefeiturasp/SME-Terceirizadas-Frontend
+git clone https://github.com/prefeiturasp/SME-SIGPAE-Frontend
 ```
 
 2.  criar arquivo `.env` na raiz do projeto com a variável de ambiente:

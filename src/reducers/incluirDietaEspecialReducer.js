@@ -1,6 +1,6 @@
 // Actions
 const LOAD_SOLICITACOES_VIGENTES =
-  "SME-Terceirizadas-Frontend/incluirDietaEspecial/LOAD_SOLICITACOES_VIGENTES";
+  "SME-SIGPAE-Frontend/incluirDietaEspecial/LOAD_SOLICITACOES_VIGENTES";
 
 // Reducer
 export default function reducer(state = {}, action = {}) {
