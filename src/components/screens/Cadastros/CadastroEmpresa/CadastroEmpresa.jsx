@@ -203,6 +203,7 @@ export const CadastroEmpresa = () => {
         data[`email_terceirizada_${indice}`] =
           nutri.contatos.length === 0 ? null : nutri.contatos[0].email;
       });
+      return data;
     } else {
       contatos
         .filter((contato) => contato.eh_nutricionista)
