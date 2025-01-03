@@ -376,7 +376,8 @@ export default () => {
       const escola =
         meusDados.vinculo_atual && meusDados.vinculo_atual.instituicao;
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
-        escola.uuid
+        escola.uuid,
+        { ano: getYear(mesAnoSelecionado).toString() }
       );
 
       getListaDiasSobremesaDoceAsync(escola.uuid);
