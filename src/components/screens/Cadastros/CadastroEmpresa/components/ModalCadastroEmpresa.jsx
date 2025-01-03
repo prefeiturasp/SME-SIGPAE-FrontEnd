@@ -34,7 +34,10 @@ export class ModalCadastroEmpresa extends Component {
           <Botao
             texto="Sim"
             type={BUTTON_TYPE.BUTTON}
-            onClick={() => this.onSubmit(values)}
+            onClick={() => {
+              this.onSubmit(values);
+              closeModal();
+            }}
             style={BUTTON_STYLE.GREEN}
             className="ms-3"
           />

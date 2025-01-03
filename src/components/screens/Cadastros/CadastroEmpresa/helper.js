@@ -3,18 +3,16 @@ import { getEnderecoPorCEP } from "services/cep.service";
 import HTTP_STATUS from "http-status-codes";
 import { removeCaracteresEspeciais } from "helpers/utilities";
 
-export function transformaObjetos(objetos, lista = [], obj = {}) {
-  try {
-    objetos.results.forEach((objeto) => {
-      obj.uuid = objeto["uuid"];
-      obj.label = objeto["nome"];
-      obj.value = objeto["uuid"];
-      lista.push(obj);
-      obj = {};
-    });
-  } catch (err) {
-    return lista;
-  }
+export function transformaObjetos(objetos) {
+  let lista = [];
+  let obj = {};
+  objetos.results.forEach((objeto) => {
+    obj.uuid = objeto["uuid"];
+    obj.label = objeto["nome"];
+    obj.value = objeto["uuid"];
+    lista.push(obj);
+    obj = {};
+  });
   return lista;
 }
 

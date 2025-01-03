@@ -162,6 +162,7 @@ export const ContratosFormSet = ({
                               : null
                           }
                           required
+                          validate={required}
                         />
                       </div>
                       <div className="col-2">
@@ -177,6 +178,7 @@ export const ContratosFormSet = ({
                               : dateDelta(0)
                           }
                           maxDate={null}
+                          validate={required}
                         />
                       </div>
                       <div className="col-4">

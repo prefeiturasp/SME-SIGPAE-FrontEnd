@@ -333,7 +333,7 @@ class EmpresasCadastradas extends Component {
                                               Modalidade:
                                             </span>
                                             <span className="valor-desc">
-                                              {contrato.modalidade_display}
+                                              {contrato.modalidade.nome}
                                             </span>
                                           </div>
                                           {contrato.modalidade ===
