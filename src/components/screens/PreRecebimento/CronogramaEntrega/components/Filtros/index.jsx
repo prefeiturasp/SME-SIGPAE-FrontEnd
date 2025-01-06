@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import { Field } from "react-final-form";
 import { NavLink } from "react-router-dom";
@@ -15,12 +15,13 @@ import { InputText } from "components/Shareable/Input/InputText";
 import { usuarioEhEmpresaFornecedor } from "helpers/utilities";
 import { CADASTRO_CRONOGRAMA, PRE_RECEBIMENTO } from "configs/constants.js";
 
-import { montarOptionsStatus } from "./utils";
 import "./style.scss";
 import {
   usuarioEhCodaeDilog,
   usuarioEhCronograma,
 } from "../../../../../../helpers/utilities";
+
+import TransferMultiSelect from "components/Shareable/TransferMultiSelect";
 
 export default ({
   setFiltros,
@@ -29,18 +30,87 @@ export default ({
   inicioResultado,
   armazens,
 }) => {
+  const [selectedKeys, setSelectedKeys] = useState([]);
+  const [targetKeys, setTargetKeys] = useState(["RASCUNHO"]);
+
+  const TransferOptionsStatus = [
+    {
+      key: "RASCUNHO",
+      title: "Rascunho",
+      chosen: false,
+      disabled: false,
+    },
+    {
+      key: "ASSINADO_E_ENVIADO_AO_FORNECEDOR",
+      title: "Assinado e Enviado ao Fornecedor",
+      chosen: false,
+      disabled: false,
+    },
+    {
+      key: "ASSINADO_FORNECEDOR",
+      title: "Assinado Fornecedor",
+      chosen: false,
+      disabled: false,
+    },
+    {
+      key: "ASSINADO_DINUTRE",
+      title: "Assinado DINUTRE",
+      chosen: false,
+      disabled: false,
+    },
+    {
+      key: "ASSINADO_CODAE",
+      title: "Assinado CODAE",
+      chosen: false,
+      disabled: false,
+    },
+    {
+      key: "ALTERACAO_CODAE",
+      title: "Alteração CODAE",
+      chosen: false,
+      disabled: false,
+    },
+    {
+      key: "SOLICITADO_ALTERACAO",
+      title: "Solicitado Alteração",
+      chosen: false,
+      disabled: false,
+    },
+  ];
+
+  const filterOption = (inputValue, option) =>
+    option.title.toLowerCase().indexOf(inputValue?.toLowerCase()) > -1;
+
+  const handleSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
+    setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
+  };
+
+  const handleChange = (newTargetKeys) => {
+    const diff = newTargetKeys.filter((item) => !targetKeys.includes(item));
+    setTargetKeys([...targetKeys, ...diff]);
+  };
+
+  // function mergeListsPreserveOrder(a, b) {
+  //   const diff = b.filter((item) => !a.includes(item));
+  //   return [...a, ...diff];
+  // }
+
   const onSubmit = async (values) => {
     const filtros = { ...values };
-    if (filtros.status) filtros.status = filtros.status.flat();
+    if (targetKeys.length) filtros.status = targetKeys;
     if (filtros.motivos) {
       filtros.motivos = filtros.motivos.toString();
     }
+
     setFiltros({ ...filtros });
   };
 
   const onClear = () => {
     setCronogramas(undefined);
     setTotal(undefined);
+
+    setSelectedKeys([]);
+    setTargetKeys([]);
   };
 
   return (
@@ -95,19 +165,6 @@ export default ({
                   />
                 </div>
               )}
-              <div
-                className={`col-${usuarioEhEmpresaFornecedor() ? "6" : "3"}`}
-              >
-                <Field
-                  component={MultiSelect}
-                  label="Filtrar por Status"
-                  disableSearch
-                  name="status"
-                  multiple
-                  nomeDoItemNoPlural="status"
-                  options={montarOptionsStatus()}
-                />
-              </div>
 
               <div className="col-3">
                 <Field
@@ -138,6 +195,31 @@ export default ({
                       : null
                   }
                   maxDate={null}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col">
+                <Field
+                  component={TransferMultiSelect}
+                  dataSource={[...TransferOptionsStatus]}
+                  showSearch
+                  filterOption={filterOption}
+                  selectedKeys={selectedKeys}
+                  targetKeys={targetKeys}
+                  onSelectChange={handleSelectChange}
+                  onChange={handleChange}
+                  render={(item) => item.title}
+                  locale={{
+                    itemUnit: "item",
+                    itemsUnit: "itens",
+                    notFoundContent: null,
+                    searchPlaceholder: "Pesquisar",
+                  }}
+                  showSelectAll
+                  label="Status"
+                  name="status"
+                  required
                 />
               </div>
             </div>
