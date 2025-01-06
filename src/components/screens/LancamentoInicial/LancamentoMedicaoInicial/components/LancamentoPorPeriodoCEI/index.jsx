@@ -102,7 +102,11 @@ export const LancamentoPorPeriodoCEI = ({
     let periodos = escolaInstituicao.periodos_escolares
       .filter((periodo) => periodo.possui_alunos_regulares)
       .map((periodo) => periodo.nome);
-    if (solicitacaoMedicaoInicial?.ue_possui_alunos_periodo_parcial) {
+
+    if (
+      solicitacaoMedicaoInicial?.ue_possui_alunos_periodo_parcial ||
+      solicitacaoMedicaoInicial?.escola_cei_com_inclusao_parcial_autorizada
+    ) {
       periodos.splice(1, 0, "PARCIAL");
     }
 
@@ -113,7 +117,11 @@ export const LancamentoPorPeriodoCEI = ({
     }
 
     setPeriodosComAlunos(periodos);
-  }, [escolaInstituicao, solicitacaoMedicaoInicial]);
+  }, [
+    escolaInstituicao,
+    solicitacaoMedicaoInicial,
+    quantidadeAlimentacoesLancadas,
+  ]);
 
   const renderBotaoFinalizar = () => {
     if (!solicitacaoMedicaoInicial) {
