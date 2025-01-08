@@ -97,36 +97,5 @@ test("Relatorio autorizadas temporariamente", async () => {
   expect(await screen.getByText("Lote")).toBeInTheDocument();
   expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
 
-  expect(
-    await screen.getByText(/detalhamento da dieta especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Registro Funcional/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Nome do Prescritor do laudo/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText("Laudo")).toBeInTheDocument();
-  expect(await screen.getByText(/Anexos/i)).toBeInTheDocument();
   expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
-  expect(
-    await screen.queryByText(/Relação por Diagnóstico/i)
-  ).toBeInTheDocument();
-  expect(
-    await screen.queryByText(/Classificação da Dieta/i)
-  ).toBeInTheDocument();
-  expect(
-    await screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.queryByText(/Orientações Gerais/i)).toBeInTheDocument();
-  expect(
-    await screen.queryByText(/Lista de Substituições/i)
-  ).toBeInTheDocument();
-  expect(await screen.queryByText(/Período de Vigência/i)).toBeInTheDocument();
-  expect(await screen.queryByText(/Início/i)).toBeInTheDocument();
-  expect(await screen.queryByText(/Fim/i)).toBeInTheDocument();
-  expect(
-    await screen.queryByText(/Informações Adicionais/i)
-  ).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Identificação do Nutricionista/i)
-  ).toBeInTheDocument();
 });

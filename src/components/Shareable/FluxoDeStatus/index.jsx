@@ -102,7 +102,10 @@ export const FluxoDeStatus = (props) => {
 
   return (
     <div className="w-100">
-      <ul className={`progressbar-titles fluxos`}>
+      <ul
+        className={`progressbar-titles fluxos`}
+        data-testid="progressbar-titles"
+      >
         {fluxoUtilizadoEFormatado.map((status, key) => {
           return (
             <li key={key}>
@@ -113,7 +116,7 @@ export const FluxoDeStatus = (props) => {
           );
         })}
       </ul>
-      <ul className="progressbar">
+      <ul className="progressbar" data-testid="progressbar">
         {fluxoUtilizadoEFormatado.map((status, key) => {
           let novoStatus = cloneListaDeStatus[key] || status;
           return (

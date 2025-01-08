@@ -35,7 +35,7 @@ fetchMock.get(`${API_URL}/tipos-dieta-especial/`, {
 fetchMock.get(`${API_URL}/classificacoes-dieta/`, {
   results: ["classificacoes", "dieta"],
 });
-fetchMock.get(`${API_URL}/motivos-negacao/`, {
+fetchMock.get(`${API_URL}/motivos-negacao/?processo=INCLUSAO`, {
   results: ["motivos", "negacao"],
 });
 fetchMock.get(`begin:${SOLICITACOES_DIETA}/`, { resultado: "dieta-especial" });

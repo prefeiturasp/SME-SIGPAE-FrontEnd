@@ -115,7 +115,7 @@ export const DadosEmpresa = ({ ehDistribuidor }) => {
           <div className="col-8">
             <Field
               component={InputText}
-              label="Nome Fantasia"
+              label="Nome Usual"
               name="nome_fantasia"
               required
               validate={required}

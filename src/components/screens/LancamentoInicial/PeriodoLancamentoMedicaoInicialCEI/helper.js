@@ -600,6 +600,8 @@ export const getSolicitacoesKitLanchesAutorizadasAsync = async (
 export const formatarLinhasTabelaAlimentacaoCEI = (
   response_log_matriculados_por_faixa_etaria_dia,
   periodoGrupo,
+  faixasEtarias = null,
+  inclusoesAutorizadas = null,
   valores_medicao = null
 ) => {
   let faixas_etarias_alimentacao = [];
@@ -612,6 +614,19 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
         (faixa) => faixa === "04 anos a 06 anos"
       );
     }
+  };
+
+  const getFaixasEtarias = () => {
+    if (!inclusoesAutorizadas || inclusoesAutorizadas.length === 0) return [];
+    const faixasEtariasSet = new Set();
+
+    for (const inclusao of inclusoesAutorizadas) {
+      for (const faixa of inclusao.faixas_etarias) {
+        faixasEtariasSet.add(faixa);
+      }
+    }
+
+    return Array.from(faixasEtariasSet);
   };
 
   if (valores_medicao) {
@@ -637,24 +652,54 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
         });
     });
   } else {
+    const faixasEtariasInclusoes = getFaixasEtarias();
+
+    const faixasEtariasSet = new Set(
+      faixas_etarias_alimentacao.map((faixa) => faixa)
+    );
+
     response_log_matriculados_por_faixa_etaria_dia.data.forEach((log) => {
-      !faixas_etarias_alimentacao.find(
-        (faixa) => faixa === log.faixa_etaria.__str__
-      ) && faixas_etarias_alimentacao.push(log.faixa_etaria.__str__);
+      if (!faixasEtariasSet.has(log.faixa_etaria.__str__)) {
+        faixasEtariasSet.add(log.faixa_etaria.__str__);
+      }
+    });
+
+    faixasEtarias.forEach((faixaEtaria) => {
+      if (
+        !faixasEtariasSet.has(faixaEtaria.__str__) &&
+        faixasEtariasInclusoes.includes(faixaEtaria.uuid)
+      ) {
+        faixasEtariasSet.add(faixaEtaria.__str__);
+      }
     });
 
     formataFaixasPeriodoManhaTarde();
 
-    faixas_etarias_alimentacao.forEach((faixa) => {
-      const log = response_log_matriculados_por_faixa_etaria_dia.data.find(
-        (log) => log.faixa_etaria.__str__ === faixa
-      );
-      log &&
-        faixas_etarias_objs_alimentacao.push({
+    const faixaStrToObj = new Map(
+      response_log_matriculados_por_faixa_etaria_dia.data.map((log) => [
+        log.faixa_etaria.__str__,
+        {
           inicio: log.faixa_etaria.inicio,
           __str__: log.faixa_etaria.__str__,
           uuid: log.faixa_etaria.uuid,
-        });
+        },
+      ])
+    );
+
+    faixasEtariasSet.forEach((faixa) => {
+      const log = faixaStrToObj.get(faixa);
+      if (log) {
+        faixas_etarias_objs_alimentacao.push(log);
+      } else {
+        const faixaEtaria = faixasEtarias.find((f) => f.__str__ === faixa);
+        if (faixaEtaria && faixasEtariasInclusoes.includes(faixaEtaria.uuid)) {
+          faixas_etarias_objs_alimentacao.push({
+            inicio: faixaEtaria.inicio,
+            __str__: faixaEtaria.__str__,
+            uuid: faixaEtaria.uuid,
+          });
+        }
+      }
     });
   }
 

@@ -2,7 +2,6 @@ import React, { Fragment } from "react";
 import { NavLink } from "react-router-dom";
 
 import "./styles.scss";
-import { retornaStatusFormatado } from "./helpers";
 
 const ListagemProdutos = ({ produtos, ativos, setAtivos }) => {
   return (
@@ -21,7 +20,6 @@ const ListagemProdutos = ({ produtos, ativos, setAtivos }) => {
         {produtos.map((produto, index) => {
           const terceirizada = produto.ultima_homologacao.rastro_terceirizada;
           const urlDetalhes = `/pesquisa-desenvolvimento/relatorio-produto?uuid=${produto.uuid}`;
-          const status = produto.ultima_homologacao.status;
           const bordas =
             ativos && ativos.includes(produto.uuid) ? "desativar-borda" : "";
           const icone =
@@ -32,9 +30,7 @@ const ListagemProdutos = ({ produtos, ativos, setAtivos }) => {
                 <div className={`${bordas}`}>
                   {produto.produto_edital_tipo_produto}
                 </div>
-                <div className={`${bordas}`}>
-                  {retornaStatusFormatado(status)}
-                </div>
+                <div className={`${bordas}`}>{produto.status}</div>
                 <div className={`${bordas}`}>
                   {produto.criado_em.split(" ")[0]}
                 </div>

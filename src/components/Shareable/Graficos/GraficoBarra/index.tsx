@@ -13,7 +13,6 @@ export const GraficoBarra = ({ chartData, plugins }) => {
             legend: {
               position: "top" as const,
               labels: {
-                boxPadding: 12,
                 usePointStyle: true,
                 font: {
                   size: 14,

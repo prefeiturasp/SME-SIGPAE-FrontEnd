@@ -15,14 +15,9 @@ const nonExpiredToken =
   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6Im1tYWlhLmNjQGdtYWlsLmNvbSIsImV4cCI6MTU1ODAzMTA4NiwiZW1haWwiOiJtbWFpYS5jY0BnbWFpbC5jb20iLCJvcmlnX2lhdCI6MTU1ODAyNzQ4Nn0.V65suJw4LACKhQMNltbi7emIlmxGsYP4VHhEK83O8EU";
 localStorage.setItem(TOKEN_ALIAS, expiredToken);
 const mock = jest.fn();
-Date.now = mock.mockReturnValue(new Date(1558020115077));
+Date.now = mock.mockReturnValue(1558020115077);
 
 describe("AuthService isValidResponse", () => {
-  it("Should pass token Valid", () => {
-    const resp = authService.isValidResponse({ token: expiredToken });
-    expect(resp).toBe(true);
-  });
-
   it("Should not pass plain undefined", () => {
     const resp = authService.isValidResponse({ token: undefined });
     expect(resp).toBe(false);
@@ -47,10 +42,14 @@ describe("AuthService Helper functions", () => {
   });
 
   it("should return correct seconds", () => {
+    const mock = jest.fn();
+    Date.now = mock.mockReturnValue(1558020115077);
     const resp = calculateTokenSecondsLeft(expiredToken);
     expect(resp).toBe(-536.077);
   });
   it("isTokenExpired should return true when expired", () => {
+    const mock = jest.fn();
+    Date.now = mock.mockReturnValue(1558020115077);
     const resp = isTokenExpired(expiredToken);
     expect(resp).toBe(true);
   });

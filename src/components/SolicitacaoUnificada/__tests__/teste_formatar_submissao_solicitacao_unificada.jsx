@@ -1,72 +1,65 @@
 import { formatarSubmissao } from "../helper";
 
 describe("Teste formatarSubmissão Solicitação Unificada", () => {
-  const solicitacaoKitLanche = {
-    data: "02/08/2019",
-    diretoria_regional: "dae78a0b-b16d-4bbe-aa96-b91d906199bc",
-    descricao: "<p></p>\n",
-    kit_lanche: ["9f86ecb8-bdba-4d70-9fb7-13844f563636"],
-    lista_kit_lanche_igual: true,
+  const formValues = {
+    data: "17/12/2024",
     local: "Ibirapuera",
-    tempo_passeio: "0",
-    escolas: [
+    evento: "Piquenique",
+    unidades_escolares: [
       {
-        checked: true,
-        tempo_passeio: "0",
-        quantidade_alunos: "22",
-        nro_alunos: "33",
-        kit_lanche: ["9f86ecb8-bdba-4d70-9fb7-13844f563636"],
-        uuid: "73605a3b-7767-4ea6-845e-fef62f84dc1c",
-        kitsChecked: ["9f86ecb8-bdba-4d70-9fb7-13844f563636"],
+        uuid: "507b804f-1b69-4cb1-b4b6-b6e32ca27044",
+        kits_selecionados: ["3ca3356d-a368-4d30-b519-3f84d9ed607a"],
+        nmr_alunos: "100",
+        quantidade_kits: "1",
+      },
+      {
+        uuid: "c3f86b1c-9fb2-4652-8a6a-2fe6c9f3bcb5",
+        kits_selecionados: [
+          "7bc52e81-c2c0-4c2e-8b71-4dfe32dbf5bf",
+          "c822d7d7-8e2b-403f-9b64-50f2c690c6b9",
+        ],
+        nmr_alunos: "200",
+        quantidade_kits: "2",
       },
     ],
   };
-
-  it("formata submissao com kit lanches iguais", () => {
-    const resposta = {
-      local: "Ibirapuera",
-      diretoria_regional: "dae78a0b-b16d-4bbe-aa96-b91d906199bc",
-      lista_kit_lanche_igual: true,
-      solicitacao_kit_lanche: {
-        kits: ["9f86ecb8-bdba-4d70-9fb7-13844f563636"],
-        data: "02/08/2019",
-        descricao: "<p></p>\n",
-        tempo_passeio: "0",
+  const dadosUsuario = {
+    vinculo_atual: {
+      instituicao: {
+        uuid: "d277fd64-1f1a-4116-811f-890c7f07b4a3",
       },
-      escolas_quantidades: [
-        {
-          tempo_passeio: null,
-          quantidade_alunos: "22",
-          kits: [],
-          escola: "73605a3b-7767-4ea6-845e-fef62f84dc1c",
-        },
-      ],
-    };
-    expect(formatarSubmissao(solicitacaoKitLanche)).toEqual(resposta);
-  });
+    },
+  };
 
-  it("formata submissao com kit lanches diferentes", () => {
-    let solicitacaoKitLancheDiferente = solicitacaoKitLanche;
-    solicitacaoKitLancheDiferente.lista_kit_lanche_igual = false;
+  it("formata submissao com kit lanches", () => {
     const resposta = {
       local: "Ibirapuera",
-      diretoria_regional: "dae78a0b-b16d-4bbe-aa96-b91d906199bc",
+      evento: "Piquenique",
+      diretoria_regional: "d277fd64-1f1a-4116-811f-890c7f07b4a3",
       lista_kit_lanche_igual: false,
-      solicitacao_kit_lanche: {
-        kits: [],
-        data: "02/08/2019",
-        descricao: "<p></p>\n",
-        tempo_passeio: null,
-      },
       escolas_quantidades: [
         {
-          tempo_passeio: "0",
-          quantidade_alunos: "33",
-          kits: ["9f86ecb8-bdba-4d70-9fb7-13844f563636"],
-          escola: "73605a3b-7767-4ea6-845e-fef62f84dc1c",
+          escola: "507b804f-1b69-4cb1-b4b6-b6e32ca27044",
+          kits: ["3ca3356d-a368-4d30-b519-3f84d9ed607a"],
+          quantidade_alunos: "100",
+          tempo_passeio: 0,
+        },
+        {
+          escola: "c3f86b1c-9fb2-4652-8a6a-2fe6c9f3bcb5",
+          kits: [
+            "7bc52e81-c2c0-4c2e-8b71-4dfe32dbf5bf",
+            "c822d7d7-8e2b-403f-9b64-50f2c690c6b9",
+          ],
+          quantidade_alunos: "200",
+          tempo_passeio: 1,
         },
       ],
+      solicitacao_kit_lanche: {
+        data: "17/12/2024",
+        descricao: "<p></p>",
+        kits: [],
+      },
     };
-    expect(formatarSubmissao(solicitacaoKitLancheDiferente)).toEqual(resposta);
+    expect(formatarSubmissao(formValues, dadosUsuario)).toEqual(resposta);
   });
 });

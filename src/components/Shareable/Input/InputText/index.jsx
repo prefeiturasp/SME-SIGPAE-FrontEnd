@@ -41,22 +41,23 @@ export const InputText = (props) => {
     inputOnChange,
     prefix,
     onBlur,
+    dataTestid,
   } = props;
 
   const inputProps = {
     ...input,
     onChange: (e) => {
-      input.onChange(e);
+      input?.onChange(e);
       inputOnChange && inputOnChange(e);
     },
     onBlur: (e) => {
-      input.onBlur(e);
+      input?.onBlur(e);
       onBlur && onBlur(e);
     },
   };
 
   return (
-    <div className={`input ${icone && "icon"}`}>
+    <div className={`input ${icone && "icon"}`} data-testid="input-div">
       {label && [
         required && !esconderAsterisco && (
           <span key={0} className="required-asterisk">
@@ -84,19 +85,20 @@ export const InputText = (props) => {
             "invalid-field"
           }`}
           id={id}
+          data-testid={dataTestid}
           disabled={disabled}
           min={min}
           max={max}
           step={step}
           name={name}
-          data-cy={input.name}
+          data-cy={input?.name}
           placeholder={placeholder}
           required={required}
-          type={input.type || "text"}
+          type={input?.type || "text"}
           title={title}
           pattern={pattern}
           maxLength={maxlength}
-          value={valorInicial || input.value}
+          value={valorInicial || input?.value}
           onInput={(e) => {
             e.target.value = toUppercaseActive
               ? e.target.value.toUpperCase()
@@ -138,7 +140,7 @@ export const InputText = (props) => {
       )}
       {icone && <i className={icone} />}
       {contador && (
-        <ContadorCaracteres atual={input.value.length} max={contador} />
+        <ContadorCaracteres atual={input?.value.length} max={contador} />
       )}
       <HelpText helpText={helpText} />
       <InputErroMensagem meta={meta} />
@@ -162,22 +164,6 @@ InputText.propTypes = {
   type: PropTypes.string,
   contador: PropTypes.number,
   valorInicial: PropTypes.string,
-};
-
-InputText.defaultProps = {
-  className: "",
-  disabled: false,
-  esconderAsterisco: false,
-  helpText: "",
-  input: {},
-  label: "",
-  step: "0.01",
-  labelClassName: "",
-  meta: {},
-  name: "",
-  placeholder: "",
-  required: false,
-  type: "text",
 };
 
 export default InputText;

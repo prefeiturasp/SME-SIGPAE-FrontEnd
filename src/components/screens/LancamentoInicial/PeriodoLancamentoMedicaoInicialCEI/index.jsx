@@ -52,6 +52,7 @@ import {
   exibirTooltipDietasInclusaoDiaNaoLetivoCEI,
   campoDietaComInclusaoAutorizadaSemObservacao,
   repeticaoSobremesaDoceComValorESemObservacao,
+  campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao,
 } from "./validacoes";
 import {
   categoriasParaExibir,
@@ -88,6 +89,7 @@ import {
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
 } from "services/medicaoInicial/periodoLancamentoMedicao.service";
+import { getFaixasEtarias } from "services/faixaEtaria.service";
 import * as perfilService from "services/perfil.service";
 import { escolaCorrigeMedicao } from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { DETALHAMENTO_DO_LANCAMENTO, MEDICAO_INICIAL } from "configs/constants";
@@ -131,6 +133,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [mesAnoConsiderado, setMesAnoConsiderado] = useState(null);
   const [mesAnoFormatadoState, setMesAnoFormatadoState] = useState(null);
   const [weekColumns, setWeekColumns] = useState(initialStateWeekColumns);
+  const [, setFaixasEtarias] = useState();
   const [tabelaAlimentacaoCEIRows, setTabelaAlimentacaoCEIRows] = useState([]);
   const [tabelaDietaCEIRows, setTabelaDietaCEIRows] = useState([]);
   const [tabelaDietaEnteralRows, setTabelaDietaEnteralRows] = useState([]);
@@ -148,6 +151,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [
     valoresMatriculadosFaixaEtariaDia,
     setValoresMatriculadosFaixaEtariaDia,
+  ] = useState([]);
+  const [
+    valoresMatriculadosFaixaEtariaDiaInclusoes,
+    setValoresMatriculadosFaixaEtariaDiaInclusoes,
   ] = useState([]);
   const [valoresMatriculadosEmeiDaCemei, setValoresMatriculadosEmeiDaCemei] =
     useState([]);
@@ -251,6 +258,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const mes = format(mesAnoSelecionado, "MM");
       const ano = getYear(mesAnoSelecionado);
 
+      const response_faixas_etarias = await getFaixasEtarias();
+      if (response_faixas_etarias.status === HTTP_STATUS.OK) {
+        setFaixasEtarias(response_faixas_etarias.data.results);
+      }
+
       let response_sobremesa_doce = [];
       response_sobremesa_doce = await getListaDiasSobremesaDoceAsync(
         escola.uuid,
@@ -271,6 +283,22 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           location
         );
       setInclusoesAutorizadas(response_inclusoes_autorizadas);
+      if (response_inclusoes_autorizadas.length > 0 && periodo === "PARCIAL") {
+        const params = {
+          escola_uuid: escola.uuid,
+          nome_periodo_escolar: "INTEGRAL",
+          mes: mes,
+          ano: ano,
+          dias: response_inclusoes_autorizadas
+            .map((inclusao) => inclusao.dia)
+            .join(","),
+        };
+        const response_log_matriculados_por_faixa_etaria_dia_inclusoes =
+          await getLogMatriculadosPorFaixaEtariaDia(params);
+        setValoresMatriculadosFaixaEtariaDiaInclusoes(
+          response_log_matriculados_por_faixa_etaria_dia_inclusoes.data
+        );
+      }
 
       let response_alteracoes_alimentacao_autorizadas = [];
       response_alteracoes_alimentacao_autorizadas =
@@ -428,7 +456,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             )
           : formatarLinhasTabelaAlimentacaoCEI(
               response_log_matriculados_por_faixa_etaria_dia,
-              periodoGrupo
+              periodoGrupo,
+              response_faixas_etarias.data.results,
+              response_inclusoes_autorizadas
             );
       setTabelaAlimentacaoCEIRows(linhasTabelaAlimentacaoCEI);
 
@@ -524,7 +554,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         response_matriculados_emei_da_cemei.data,
         response_log_dietas_autorizadas_emei_da_cemei.data,
         response_kit_lanches_autorizadas,
-        response_inclusoes_autorizadas
+        response_inclusoes_autorizadas,
+        valoresMatriculadosFaixaEtariaDiaInclusoes
       );
 
       let items = [];
@@ -561,7 +592,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     matriculadosEmeiDaCemei,
     logQtdDietasAutorizadasEmeiDaCemei,
     kitLanchesAutorizadas,
-    solInclusoesAutorizadas
+    solInclusoesAutorizadas,
+    valoresMatriculadosFaixaEtariaDiaInclusoes
   ) => {
     let dadosValoresMedicoes = {};
     let dadosValoresMatriculadosFaixaEtariaDia = {};
@@ -885,12 +917,40 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           },
           0
         );
+
+        let quantidade = objMatriculado.quantidade;
+        const inclusaoNesseDia =
+          valoresMatriculadosFaixaEtariaDiaInclusoes.length > 0 &&
+          valoresMatriculadosFaixaEtariaDiaInclusoes.find(
+            (valorMatriculados) =>
+              valorMatriculados.dia === objMatriculado.dia &&
+              valorMatriculados.faixa_etaria.uuid ===
+                objMatriculado.faixa_etaria.uuid
+          );
+        if (inclusaoNesseDia) {
+          quantidade = inclusaoNesseDia.quantidade;
+        }
+
         dadosValoresMatriculadosFaixaEtariaDia[
           `matriculados__faixa_${objMatriculado.faixa_etaria.uuid}__dia_${objMatriculado.dia}__categoria_${idCategoriaAlimentacao}`
-        ] = objMatriculado.quantidade
-          ? `${Math.max(objMatriculado.quantidade - somaDietasMesmoDia, 0)}`
+        ] = quantidade
+          ? `${Math.max(quantidade - somaDietasMesmoDia, 0)}`
           : null;
       });
+
+    valoresMatriculadosFaixaEtariaDiaInclusoes.forEach(
+      (valorMatriculadoFaixaEtariaDiaInclusao) => {
+        if (
+          !dadosValoresMatriculadosFaixaEtariaDia[
+            `matriculados__faixa_${valorMatriculadoFaixaEtariaDiaInclusao.faixa_etaria.uuid}__dia_${valorMatriculadoFaixaEtariaDiaInclusao.dia}__categoria_${idCategoriaAlimentacao}`
+          ]
+        ) {
+          dadosValoresMatriculadosFaixaEtariaDia[
+            `matriculados__faixa_${valorMatriculadoFaixaEtariaDiaInclusao.faixa_etaria.uuid}__dia_${valorMatriculadoFaixaEtariaDiaInclusao.dia}__categoria_${idCategoriaAlimentacao}`
+          ] = valorMatriculadoFaixaEtariaDiaInclusao.quantidade;
+        }
+      }
+    );
 
     ehEmeiDaCemeiLocation &&
       matriculadosEmeiDaCemei &&
@@ -1014,7 +1074,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         valoresMatriculadosEmeiDaCemei,
         logQtdDietasAutorizadasEmeiDaCemei,
         kitLanchesAutorizadas,
-        inclusoesAutorizadas
+        inclusoesAutorizadas,
+        valoresMatriculadosFaixaEtariaDiaInclusoes
       );
     };
     semanaSelecionada && formatar();
@@ -1325,7 +1386,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         valoresMatriculadosEmeiDaCemei,
         logQtdDietasAutorizadasEmeiDaCemei,
         kitLanchesAutorizadas,
-        inclusoesAutorizadas
+        inclusoesAutorizadas,
+        valoresMatriculadosFaixaEtariaDiaInclusoes
       );
     }
     setLoading(false);
@@ -1498,6 +1560,12 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             errors,
             categoriasDeMedicao
           )) ||
+          campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao(
+            inclusoesAutorizadas,
+            column,
+            categoria,
+            formValuesAtualizados
+          ) ||
           exibirTooltipRPLAutorizadas(
             formValuesAtualizados,
             row,
@@ -1803,12 +1871,12 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
               <form onSubmit={handleSubmit}>
                 <FormSpy
                   subscription={{ values: true, active: true }}
-                  onChange={(changes) =>
+                  onChange={(changes) => {
                     setFormValuesAtualizados({
                       week: semanaSelecionada,
                       ...changes.values,
-                    })
-                  }
+                    });
+                  }}
                 />
                 <div className="card mt-3">
                   <div className="card-body">
@@ -1816,6 +1884,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                       <div className="col-3 mes-lancamento">
                         <b className="pb-2 mb-2">Mês do Lançamento</b>
                         <Field
+                          dataTestid="input-mes-lancamento"
                           component={InputText}
                           name="mes_lancamento"
                           disabled={true}
@@ -1824,6 +1893,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                       <div className="col-4">
                         <b className="pb-2">Período de Lançamento</b>
                         <Field
+                          dataTestid={"input-periodo-lancamento"}
                           component={InputText}
                           name="periodo_escolar"
                           disabled={true}
@@ -1911,7 +1981,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                       {categoriasDeMedicao.length > 0 &&
                         !loading &&
                         categoriasDeMedicao.map((categoria) => (
-                          <div key={categoria.uuid}>
+                          <div
+                            key={categoria.uuid}
+                            data-testid={`div-lancamentos-por-categoria-${categoria.uuid}`}
+                          >
                             <b className="pb-2 section-title">
                               {formataNomeCategoriaSolAlimentacoesInfantil(
                                 categoria.nome
@@ -1993,6 +2066,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                           </div>
                                           {weekColumns.map((column) => (
                                             <div
+                                              data-testid={`div-botao-add-obs-${column.dia}-${categoria.id}-${row.name}`}
                                               key={column.dia}
                                               className={`${
                                                 validacaoSemana(column.dia)
@@ -2043,6 +2117,12 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           ],
                                                           formValuesAtualizados
                                                         )) ||
+                                                      campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao(
+                                                        inclusoesAutorizadas,
+                                                        column,
+                                                        categoria,
+                                                        formValuesAtualizados
+                                                      ) ||
                                                       campoRefeicaoComRPLAutorizadaESemObservacao(
                                                         formValuesAtualizados,
                                                         column,
@@ -2412,9 +2492,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           row,
                                                           column,
                                                           categoria,
-                                                          inputsInclusaoComErro,
-                                                          exibirTooltipAoSalvar,
-                                                          validacaoDiaLetivo
+                                                          formValuesAtualizados
                                                         )}
                                                         exibeTooltipSuspensoesAutorizadasCEI={exibirTooltipSuspensoesAutorizadasCEI(
                                                           formValuesAtualizados,

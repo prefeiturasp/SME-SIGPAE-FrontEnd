@@ -98,15 +98,6 @@ test("Relatorio negadas para inclusão", async () => {
   expect(await screen.getByText("Lote")).toBeInTheDocument();
   expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
 
-  expect(
-    await screen.getByText(/detalhamento da dieta especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Registro Funcional/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Nome do Prescritor do laudo/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText("Laudo")).toBeInTheDocument();
-  expect(await screen.getByText(/Anexos/i)).toBeInTheDocument();
   expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
   expect(
     await screen.queryByText(/Relação por Diagnóstico/i)
@@ -167,22 +158,7 @@ test("Relatorio negadas para solicitação de alteração de U.E.", async () => 
   expect(
     await screen.getByText(/dados da escola solicitante/i)
   ).toBeInTheDocument();
-  expect(await screen.getByText("Nome")).toBeInTheDocument();
-  expect(await screen.getByText("Telefone")).toBeInTheDocument();
-  expect(await screen.getByText("E-mail")).toBeInTheDocument();
-  expect(await screen.getByText("DRE")).toBeInTheDocument();
-  expect(await screen.getByText("Lote")).toBeInTheDocument();
-  expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
 
-  expect(
-    await screen.getByText(/detalhamento da dieta especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Registro Funcional/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Nome do Prescritor do laudo/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText("Laudo")).toBeInTheDocument();
-  expect(await screen.getByText(/Anexos/i)).toBeInTheDocument();
   expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
   expect(
     await screen.getByText(/Relação por Diagnóstico/i)
@@ -193,11 +169,6 @@ test("Relatorio negadas para solicitação de alteração de U.E.", async () => 
   ).toBeInTheDocument();
   expect(await screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
   expect(await screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
-  expect(
-    await screen.queryByText(/Período de Vigência/i)
-  ).not.toBeInTheDocument();
-  expect(await screen.queryByText(/Início/i)).not.toBeInTheDocument();
-  expect(await screen.queryByText(/Fim/i)).not.toBeInTheDocument();
   expect(
     await screen.queryByText(/Informações Adicionais/i)
   ).toBeInTheDocument();

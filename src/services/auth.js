@@ -1,4 +1,4 @@
-import decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import CONFIG from "../constants/config";
 import { toastError } from "../components/Shareable/Toast/dialogs";
 import HTTP_STATUS from "http-status-codes";
@@ -209,7 +209,7 @@ const isLoggedIn = () => {
 
 const isValidResponse = (json) => {
   try {
-    const decoded = decode(json.token);
+    const decoded = jwtDecode(json.token);
     const test2 =
       decoded.user_id !== undefined &&
       decoded.exp !== undefined &&
@@ -259,7 +259,7 @@ export const isTokenExpired = (token) => {
 };
 
 export const calculateTokenSecondsLeft = (token) => {
-  const decoded = decode(token);
+  const decoded = jwtDecode(token);
   const dateToken = new Date(decoded.exp * 1000);
   const dateVerify = new Date(Date.now());
   const secondsLeft = (dateToken - dateVerify) / 1000;
@@ -272,6 +272,7 @@ const authService = {
   getToken,
   isLoggedIn,
   isValidResponse,
+  needsToRefreshToken,
 };
 
 export default authService;
