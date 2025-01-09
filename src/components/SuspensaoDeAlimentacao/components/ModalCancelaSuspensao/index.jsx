@@ -64,7 +64,7 @@ export const ModalCancelaSuspensao = ({ ...props }) => {
     <Modal dialogClassName="modal-90w" show={showModal} onHide={closeModal}>
       <Form onSubmit={onSubmit}>
         {({ handleSubmit, submitting }) => (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} data-testid="form-cancelamento">
             <Modal.Header closeButton>
               <Modal.Title>
                 Cancelamento de Suspensão de Alimentação
