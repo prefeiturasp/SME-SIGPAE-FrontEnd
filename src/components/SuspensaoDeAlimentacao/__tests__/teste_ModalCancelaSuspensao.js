@@ -10,18 +10,28 @@ import { userEvent } from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { ModalCancelaSuspensao } from "../components/ModalCancelaSuspensao";
+import { escolaCancelaSuspensao } from "services/suspensaoDeAlimentacao.service";
 
 import { mockSuspensaoAlimentacao } from "mocks/SuspensaoDeAlimentacao/mockSuspensaoAlimentacao";
+import { mockCancelaParcialSuspensao } from "mocks/SuspensaoDeAlimentacao/mockCancelaParcialSuspensao";
+import { mockCancelaTotalSuspensao } from "mocks/SuspensaoDeAlimentacao/mockCancelaTotalSuspensao";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: jest.fn(),
 }));
 
-describe("Teste <ModalCancelaSuspensao>", () => {
+jest.mock("services/suspensaoDeAlimentacao.service");
+
+describe("Teste <ModalCancelaSuspensao> - Cancelamento Parcial", () => {
   let showModalEscolaCancela = true;
 
   beforeEach(async () => {
+    escolaCancelaSuspensao.mockResolvedValue({
+      data: mockCancelaParcialSuspensao,
+      status: 200,
+    });
+
     const props = {
       showModal: showModalEscolaCancela,
       closeModal: () => {
@@ -80,14 +90,144 @@ describe("Teste <ModalCancelaSuspensao>", () => {
   });
 
   it("Deve testar o submit selecionando algumas datas", async () => {
-    const checkbox1 = screen.getByDisplayValue("11/01/2025");
-    const checkbox2 = screen.getByDisplayValue("13/01/2025");
+    const checkbox1 = screen.getByDisplayValue("11/02/2025");
+    const checkbox2 = screen.getByDisplayValue("13/02/2025");
 
     fireEvent.click(checkbox1);
     fireEvent.click(checkbox2);
 
     expect(checkbox1).toBeChecked();
     expect(checkbox2).toBeChecked();
+
+    const justificativaInput = screen.getByRole("textbox");
+    expect(justificativaInput).toBeEnabled();
+    expect(justificativaInput).toBeVisible();
+    fireEvent.change(justificativaInput, {
+      target: { value: "Teste de justificativa" },
+    });
+
+    const formulario = screen.getByTestId("form-cancelamento");
+    fireEvent.submit(formulario);
+
+    await waitFor(() => {
+      expect(escolaCancelaSuspensao).toHaveBeenCalled();
+      expect(escolaCancelaSuspensao).toHaveReturnedWith(
+        Promise.resolve(mockCancelaParcialSuspensao)
+      );
+    });
+  });
+});
+
+describe("Teste <ModalCancelaSuspensao> - Cancelamento Total", () => {
+  let showModalEscolaCancela = true;
+
+  beforeEach(async () => {
+    escolaCancelaSuspensao.mockResolvedValue({
+      data: mockCancelaTotalSuspensao,
+      status: 200,
+    });
+
+    const props = {
+      showModal: showModalEscolaCancela,
+      closeModal: () => {
+        showModalEscolaCancela = false;
+      },
+      uuid: "cf2e2152-80fa-4b32-9c2c-56f12842cfae",
+      solicitacao: mockSuspensaoAlimentacao,
+      loadSolicitacao: jest.fn(),
+    };
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <ModalCancelaSuspensao {...props} />
+        </MemoryRouter>
+      );
+    });
+  });
+
+  it("Deve testar o submit selecionando todas as datas", async () => {
+    const checkbox1 = screen.getByDisplayValue("11/02/2025");
+    const checkbox2 = screen.getByDisplayValue("13/02/2025");
+    const checkbox3 = screen.getByDisplayValue("20/02/2025");
+
+    fireEvent.click(checkbox1);
+    fireEvent.click(checkbox2);
+    fireEvent.click(checkbox3);
+
+    expect(checkbox1).toBeChecked();
+    expect(checkbox2).toBeChecked();
+    expect(checkbox3).toBeChecked();
+
+    const justificativaInput = screen.getByRole("textbox");
+    expect(justificativaInput).toBeEnabled();
+    expect(justificativaInput).toBeVisible();
+    fireEvent.change(justificativaInput, {
+      target: { value: "Teste de justificativa" },
+    });
+
+    const formulario = screen.getByTestId("form-cancelamento");
+    fireEvent.submit(formulario);
+
+    await waitFor(() => {
+      expect(escolaCancelaSuspensao).toHaveBeenCalled();
+      expect(escolaCancelaSuspensao).toHaveReturnedWith(
+        Promise.resolve(mockCancelaTotalSuspensao)
+      );
+    });
+  });
+});
+
+describe("Teste <ModalCancelaSuspensao> - Bad Request", () => {
+  let showModalEscolaCancela = true;
+
+  beforeEach(async () => {
+    escolaCancelaSuspensao.mockResolvedValue({
+      data: {},
+      status: 404,
+    });
+
+    const props = {
+      showModal: showModalEscolaCancela,
+      closeModal: () => {
+        showModalEscolaCancela = false;
+      },
+      uuid: "cf2e2152-80fa-4b32-9c2c-56f12842cfae",
+      solicitacao: mockSuspensaoAlimentacao,
+      loadSolicitacao: jest.fn(),
+    };
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <ModalCancelaSuspensao {...props} />
+        </MemoryRouter>
+      );
+    });
+  });
+
+  it("Teste - Bad Request (status 400)", async () => {
+    const checkbox1 = screen.getByDisplayValue("11/02/2025");
+    const checkbox2 = screen.getByDisplayValue("13/02/2025");
+    const checkbox3 = screen.getByDisplayValue("20/02/2025");
+
+    fireEvent.click(checkbox1);
+    fireEvent.click(checkbox2);
+    fireEvent.click(checkbox3);
+
+    expect(checkbox1).toBeChecked();
+    expect(checkbox2).toBeChecked();
+    expect(checkbox3).toBeChecked();
 
     const justificativaInput = screen.getByRole("textbox");
     expect(justificativaInput).toBeEnabled();
