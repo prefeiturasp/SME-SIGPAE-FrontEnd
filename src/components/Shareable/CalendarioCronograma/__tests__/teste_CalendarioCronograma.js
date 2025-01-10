@@ -2,16 +2,12 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { CalendarioCronograma } from "../index.tsx";
-// import { momentLocalizer } from "react-big-calendar";
 import { mockEtapasCalendario } from "mocks/Shareable/CalendarioCronograma/mockEtapasCalendario";
-// import moment from "moment";
 
 jest.mock("react-big-calendar", () => ({
   ...jest.requireActual("react-big-calendar"),
   Calendar: jest.fn(() => <div>Mocked Calendar</div>),
 }));
-
-// const localizer = momentLocalizer(moment);
 
 describe("Teste para o componente <CalendarioCronograma>", () => {
   let getObjetosMock;
