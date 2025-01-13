@@ -16,7 +16,6 @@ import { rotasGestaoDeProdutos } from "../rotas/gestaoDeProdutos";
 import { rotasMedicaoInicial } from "../rotas/medicaoInicial";
 import { rotasPreRecebimento } from "../rotas/preRecebimento";
 import { rotasRecebimento } from "../rotas/recebimento";
-import { rotasRelatorios } from "../rotas/relatorios";
 import { rotasSupervisao } from "../rotas/supervisao";
 
 export let rotas = [
@@ -57,7 +56,6 @@ rotas = rotas.concat(rotasDietaEspecial);
 rotas = rotas.concat(rotasGestaoDeProdutos);
 rotas = rotas.concat(rotasMedicaoInicial);
 rotas = rotas.concat(rotasSupervisao);
-rotas = rotas.concat(rotasRelatorios);
 rotas = rotas.concat(rotasAbastecimento);
 rotas = rotas.concat(rotasPreRecebimento);
 rotas = rotas.concat(rotasRecebimento);
