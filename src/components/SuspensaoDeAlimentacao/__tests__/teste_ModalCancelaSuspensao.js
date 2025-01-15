@@ -6,7 +6,6 @@ import {
   waitFor,
   fireEvent,
 } from "@testing-library/react";
-import { userEvent } from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { ModalCancelaSuspensao } from "../components/ModalCancelaSuspensao";
@@ -74,7 +73,7 @@ describe("Teste <ModalCancelaSuspensao> - Cancelamento Parcial", () => {
     const botaoSim = screen.getByText("Sim");
     expect(botaoSim).toBeInTheDocument();
     botaoSim.click();
-    userEvent.click(botaoSim);
+    fireEvent.click(botaoSim);
   });
 
   it("Deve testar o submit sem selecionar data nenhuma", async () => {
