@@ -264,6 +264,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
                       solicitations={aguardandoAutorizacao}
                       icon={ICON_CARD_TYPE_ENUM.PENDENTE}
                       href={`/solicitacoes-dieta-especial/solicitacoes-pendentes`}
+                      dataTestId="card-aguardando-autorizacao"
                     />
                   </div>
                   <div className="col-6">

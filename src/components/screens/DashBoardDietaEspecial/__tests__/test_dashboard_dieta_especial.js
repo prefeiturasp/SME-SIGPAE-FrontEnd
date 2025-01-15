@@ -124,4 +124,22 @@ describe("Test <DashboardDietaEpecial>", () => {
       screen.getByText("Acompanhamento de solicitações dieta especial")
     ).toBeInTheDocument();
   });
+
+  it("renderiza label `Aguardando Autorização`", async () => {
+    await awaitServices();
+    expect(screen.getByText("Aguardando Autorização")).toBeInTheDocument();
+  });
+
+  it("renderiza alunos em `Aguardando Autorização`", async () => {
+    await awaitServices();
+    const cardAguardandoAutorizacao = screen.getByTestId(
+      `card-aguardando-autorizacao`
+    );
+    expect(cardAguardandoAutorizacao).toHaveTextContent(
+      "9999999 - JOAO BATISTA / EMEI EMIR MACEDO NOGUEIRA"
+    );
+    expect(cardAguardandoAutorizacao).toHaveTextContent(
+      "9999998 - MARIA DA SILVA / CEU EMEI PERA MARMELO"
+    );
+  });
 });
