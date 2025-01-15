@@ -17,7 +17,6 @@ import {
 } from "services/dashBoardDietaEspecial.service";
 import { renderWithProvider } from "utils/test-utils";
 import DashboardDietaEspecial from "..";
-import { getNomesUnicosEditais } from "services/produto.service";
 
 jest.mock("services/dashBoardDietaEspecial.service");
 jest.mock("services/produto.service");
@@ -34,11 +33,11 @@ const awaitServices = async () => {
   });
 };
 
-describe("Test <DashboardDietaEpecial>", () => {
+describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialPendenteAutorizacao", () => {
   beforeEach(async () => {
     getDietaEspecialPendenteAutorizacaoCODAE.mockResolvedValue({
-      data: mockDietasPendentesAutorizacao,
-      status: 200,
+      data: [],
+      status: 400,
     });
     getDietaEspecialAutorizadasTemporariamenteCODAE.mockResolvedValue({
       data: mockDietasPendentesAutorizacao,
@@ -62,11 +61,6 @@ describe("Test <DashboardDietaEpecial>", () => {
     });
     getDietaEspecialNegadasCODAE.mockResolvedValue({
       data: mockDietasPendentesAutorizacao,
-      status: 200,
-    });
-
-    getNomesUnicosEditais.mockResolvedValue({
-      data: { results: [] },
       status: 200,
     });
 
@@ -104,24 +98,10 @@ describe("Test <DashboardDietaEpecial>", () => {
     });
   });
 
-  it("renderiza label `Nº de Matriculados`", async () => {
-    await awaitServices();
-    expect(screen.getByText("Nº de Matriculados")).toBeInTheDocument();
-  });
-
-  it("renderiza texto `Informação automática...`", async () => {
+  it("renderiza label `Erro ao carregar solicitações aguardando autorização.`", async () => {
     await awaitServices();
     expect(
-      screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
-    ).toBeInTheDocument();
-  });
-
-  it("renderiza texto `Acompanhamento de solicitações dieta especial`", async () => {
-    await awaitServices();
-    expect(
-      screen.getByText("Acompanhamento de solicitações dieta especial")
+      screen.getByText("Erro ao carregar solicitações aguardando autorização.")
     ).toBeInTheDocument();
   });
 });

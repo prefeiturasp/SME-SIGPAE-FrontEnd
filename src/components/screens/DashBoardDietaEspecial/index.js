@@ -154,7 +154,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
         )
       );
     } else {
-      setErro("Erro ao carregar solicitações inativas temporariamente.");
+      setErro("Erro ao carregar solicitações autorizadas temporariamente.");
     }
 
     if (
