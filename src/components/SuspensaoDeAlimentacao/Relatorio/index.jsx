@@ -207,7 +207,6 @@ class RelatorioSuspensaoAlimentacao extends Component {
                         .filter(
                           (suspensao) => suspensao.cancelado_justificativa
                         )
-                        // eslint-disable-next-line no-undef
                         .map((suspensao, key, array) => {
                           return (
                             <div key={key}>
