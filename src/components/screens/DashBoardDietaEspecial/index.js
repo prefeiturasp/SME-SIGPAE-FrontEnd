@@ -172,7 +172,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
           )
         );
       } else {
-        setErro("Erro ao carregar solicitações inativas temporariamente.");
+        setErro("Erro ao carregar solicitações aguardando início de vigência.");
       }
     } else {
       setAguardandoVigencia([]);
@@ -338,13 +338,17 @@ export const DashboardDietaEspecial = ({ ...props }) => {
                         solicitations={aguardandoVigencia}
                         icon={ICON_CARD_TYPE_ENUM.AGUARDANDO_ANALISE_RECLAMACAO}
                         href={`/solicitacoes-dieta-especial/solicitacoes-aguardando-inicio-vigencia`}
+                        dataTestId="card-aguardando-inicio-vigencia"
                       />
                     </div>
                   )}
                 </div>
               </CardBody>
               {EXIBE_ATALHOS_SOLICITACOES && (
-                <div className="row row-shortcuts">
+                <div
+                  className="row row-shortcuts"
+                  data-testid="cards-atalhos-escola"
+                >
                   <div className="col-3">
                     <CardAtalho
                       titulo={"Inclusão de Dieta Especial"}
