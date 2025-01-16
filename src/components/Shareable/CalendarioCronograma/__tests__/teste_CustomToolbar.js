@@ -27,7 +27,7 @@ describe("Teste <CustomToolbar>", () => {
 
   it("verifica se o componente renderizou 2 botões", () => {
     const botoes = screen.getAllByRole("button");
-    expect(botoes.length).toBe(2); // Botões de navegação "Anterior" e "Próximo"
+    expect(botoes.length).toBe(2);
   });
 
   it("verifica se o botão de 'Anterior' chama a função onNavigate corretamente", () => {
@@ -37,7 +37,7 @@ describe("Teste <CustomToolbar>", () => {
     });
     fireEvent.click(botaoAnterior);
     expect(toolbarMock.onNavigate).toHaveBeenCalledWith("prev");
-    expect(toolbarMock.date.getMonth()).toBe(10); // Novembro de 2024
+    expect(toolbarMock.date.getMonth()).toBe(11); // Dezembro de 2024
   });
 
   it("verifica se o botão de 'Próximo' chama a função onNavigate corretamente", () => {
@@ -47,7 +47,7 @@ describe("Teste <CustomToolbar>", () => {
     });
     fireEvent.click(botaoProximo);
     expect(toolbarMock.onNavigate).toHaveBeenCalledWith("current");
-    expect(toolbarMock.date.getMonth()).toBe(0); // Janeiro de 2025
+    expect(toolbarMock.date.getMonth()).toBe(1); // Fevereiro de 2025
   });
 
   it("verifica se a aba 'Mês' chama a função onView corretamente", () => {

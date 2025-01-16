@@ -93,20 +93,84 @@ export const CorpoRelatorio = (props) => {
       )}
       <hr />
       <table className="table-reasons">
-        <tr className="row">
-          <th className="col-8">Motivo</th>
-          <th className="col-4">Dia(s) de suspensão</th>
-        </tr>
-        {suspensaoAlimentacao.suspensoes_alimentacao.map((suspensao, index) => (
-          <tr className="row" key={index}>
-            <td className="col-8">
-              {suspensao.motivo.nome.includes("Outro")
-                ? `${suspensao.motivo.nome} - ${suspensao.outro_motivo}`
-                : suspensao.motivo.nome}
-            </td>
-            <td className="col-4">{suspensao.data}</td>
+        <thead>
+          <tr className="row">
+            <th
+              className={
+                suspensaoAlimentacao.suspensoes_alimentacao.some(
+                  (s) => s.cancelado
+                )
+                  ? "col-3"
+                  : "col-6"
+              }
+            >
+              Motivo
+            </th>
+            <th
+              className={
+                suspensaoAlimentacao.suspensoes_alimentacao.some(
+                  (s) => s.cancelado
+                )
+                  ? "col-3"
+                  : "col-6"
+              }
+            >
+              Dia(s) de suspensão
+            </th>
+            {suspensaoAlimentacao.suspensoes_alimentacao.some(
+              (suspensao) => suspensao.cancelado
+            ) && <th className="col-6">Justificativa</th>}
           </tr>
-        ))}
+        </thead>
+        <tbody>
+          {suspensaoAlimentacao.suspensoes_alimentacao.map(
+            (suspensao, index) => (
+              <tr className="row" key={index}>
+                <td
+                  className={
+                    suspensaoAlimentacao.suspensoes_alimentacao.some(
+                      (s) => s.cancelado
+                    )
+                      ? "col-3"
+                      : "col-6"
+                  }
+                >
+                  {suspensao.motivo.nome.includes("Outro")
+                    ? `${suspensao.motivo.nome} - ${suspensao.outro_motivo}`
+                    : suspensao.motivo.nome}
+                </td>
+                <td
+                  className={`${
+                    suspensaoAlimentacao.suspensoes_alimentacao.some(
+                      (s) => s.cancelado
+                    )
+                      ? "col-3"
+                      : "col-6"
+                  } ${suspensao.cancelado ? "dia-cancelado" : ""}`}
+                >
+                  {suspensao.cancelado ? (
+                    <span className="dark-red">{suspensao.data}</span>
+                  ) : (
+                    <span>{suspensao.data}</span>
+                  )}
+                </td>
+                {suspensaoAlimentacao.suspensoes_alimentacao.some(
+                  (s) => s.cancelado
+                ) && (
+                  <td className="col-6">
+                    {suspensao.cancelado ? (
+                      <span className="dark-red">
+                        {suspensao.cancelado_justificativa}
+                      </span>
+                    ) : (
+                      ""
+                    )}
+                  </td>
+                )}
+              </tr>
+            )
+          )}
+        </tbody>
       </table>
       <table className="table-report mt-3">
         <tr>
