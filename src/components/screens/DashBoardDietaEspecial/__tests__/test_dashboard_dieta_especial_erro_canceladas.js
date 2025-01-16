@@ -3,7 +3,7 @@ import { act, screen, waitFor } from "@testing-library/react";
 import { CODAE } from "configs/constants";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { mockDietasPendentesAutorizacao } from "mocks/DietaEspecial/PainelInicial/mockDietasPendentesAutorizacao";
-import { mockMeusDadosCODAEGA } from "mocks/DietaEspecial/PainelInicial/mockMeusDadosCODAEGA";
+import { mockMeusDadosCODAEGA } from "mocks/meusDados/CODAE-GA";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import {
