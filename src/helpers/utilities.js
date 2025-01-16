@@ -300,7 +300,7 @@ export const visualizaBotoesDoFluxo = (solicitacao) => {
 
 export const visualizaBotoesDoFluxoSolicitacaoUnificada = (solicitacao) => {
   const tipoPerfil = localStorage.getItem("tipo_perfil");
-  switch (solicitacao.status) {
+  switch (solicitacao?.status) {
     case statusEnum.CODAE_A_AUTORIZAR:
     case statusEnum.TERCEIRIZADA_RESPONDEU_QUESTIONAMENTO:
       return [
@@ -309,9 +309,11 @@ export const visualizaBotoesDoFluxoSolicitacaoUnificada = (solicitacao) => {
         TIPO_PERFIL.DIETA_ESPECIAL,
       ].includes(tipoPerfil);
     case statusEnum.CODAE_AUTORIZADO:
-      return [TIPO_PERFIL.ESCOLA, TIPO_PERFIL.DIRETORIA_REGIONAL].includes(
-        tipoPerfil
-      );
+      return [
+        TIPO_PERFIL.ESCOLA,
+        TIPO_PERFIL.DIRETORIA_REGIONAL,
+        TIPO_PERFIL.TERCEIRIZADA,
+      ].includes(tipoPerfil);
     case statusEnum.CODAE_QUESTIONADO:
       return [TIPO_PERFIL.TERCEIRIZADA].includes(tipoPerfil);
     case statusEnum.ESCOLA_CANCELOU:
