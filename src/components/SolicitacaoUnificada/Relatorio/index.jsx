@@ -49,12 +49,13 @@ const Relatorio = (props) => {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const uuid = urlParams.get("uuid");
-    if (uuid) {
+    const uuidURL = urlParams.get("uuid");
+
+    if (uuidURL) {
       setCarregando(true);
-      getSolicitacaoUnificada(uuid).then((response) => {
+      getSolicitacaoUnificada(uuidURL).then((response) => {
         setSolicitacaoUnificada(response.data);
-        setUuid(uuid);
+        setUuid(uuidURL);
         setPrazoDoPedido(prazoDoPedidoMensagem(response.data.prioridade));
         setCarregando(false);
       });
@@ -130,6 +131,7 @@ const Relatorio = (props) => {
 
   const tipoPerfil = localStorage.getItem("tipo_perfil");
   const nomeEscola = localStorage.getItem("nome_instituicao");
+
   let EXIBIR_BOTAO_NAO_APROVAR =
     tipoPerfil !== TIPO_PERFIL.TERCEIRIZADA ||
     (solicitacaoUnificada &&
@@ -138,7 +140,9 @@ const Relatorio = (props) => {
       textoBotaoNaoAprova);
   if (solicitacaoUnificada && visao === ESCOLA) {
     const escolaQuantidade = solicitacaoUnificada.escolas_quantidades.filter(
-      (eq) => `"${eq.escola.nome}"` === nomeEscola
+      (eq) => {
+        return `"${eq.escola.nome}"` === nomeEscola;
+      }
     )[0];
     EXIBIR_BOTAO_NAO_APROVAR = !escolaQuantidade.cancelado;
   }
@@ -226,7 +230,7 @@ const Relatorio = (props) => {
         {solicitacaoUnificada && (
           <ModalMarcarConferencia
             showModal={showModalMarcarConferencia}
-            closeModal={() => closeModalMarcarConferencia()}
+            closeModal={closeModalMarcarConferencia}
             onMarcarConferencia={() => {
               loadSolicitacao(uuid);
             }}
@@ -293,10 +297,10 @@ const Relatorio = (props) => {
                       <Botao
                         texto={textoBotaoAprova}
                         type={BUTTON_TYPE.SUBMIT}
-                        onClick={() =>
+                        onClick={
                           EXIBIR_MODAL_AUTORIZACAO
-                            ? openAutorizarModal()
-                            : handleSubmit()
+                            ? openAutorizarModal
+                            : handleSubmit
                         }
                         style={BUTTON_STYLE.GREEN}
                         className="ms-3 me-3 mt-4"
