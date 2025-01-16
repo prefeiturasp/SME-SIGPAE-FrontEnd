@@ -3,6 +3,7 @@ import { act, screen, waitFor } from "@testing-library/react";
 import { ESCOLA } from "configs/constants";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { mockDietasPendentesAutorizacao } from "mocks/DietaEspecial/PainelInicial/mockDietasPendentesAutorizacao";
+import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
@@ -75,22 +76,6 @@ describe("Test <DashboardDietaEpecial> - Visão Escola", () => {
       data: { results: [] },
       status: 200,
     });
-
-    const localStorageMock = (() => {
-      let store = {};
-      return {
-        getItem: (key) => store[key] || null,
-        setItem: (key, value) => {
-          store[key] = value.toString();
-        },
-        removeItem: (key) => {
-          delete store[key];
-        },
-        clear: () => {
-          store = {};
-        },
-      };
-    })();
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("perfil", `"DIRETOR_UE"`);
