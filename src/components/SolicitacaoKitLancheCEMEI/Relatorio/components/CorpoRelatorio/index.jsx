@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react";
-import { Collapse } from "react-collapse";
+import React, { useContext, useState, Fragment } from "react";
 import HTTP_STATUS from "http-status-codes";
 import {
   corDaMensagem,
@@ -56,8 +55,6 @@ export const CorpoRelatorio = ({ ...props }) => {
     endpointQuestionamento,
   } = props;
 
-  const [collapseAlunosCEI, setCollapseAlunosCEI] = useState(false);
-  const [collapseAlunosEMEI, setCollapseAlunosEMEI] = useState(false);
   const [showNaoAprovaModal, setShowNaoAprovaModal] = useState(false);
   const [showModalMarcarConferencia, setShowModalMarcarConferencia] =
     useState(false);
@@ -376,45 +373,31 @@ export const CorpoRelatorio = ({ ...props }) => {
       {solicitacaoKitLancheCEMEI.solicitacao_cei &&
         solicitacaoKitLancheCEMEI.solicitacao_cei
           .alunos_com_dieta_especial_participantes.length > 0 && (
-          <>
-            <div className="row">
-              <div className="col">
-                <p className="mb-0">
+          <Fragment>
+            <div className="row report-label-value">
+              <div className="col-12 report-label-value">
+                <p>
                   <b>Aluno(s) com dieta especial</b>
                 </p>
               </div>
             </div>
-            <div className="card card-history mt-3 seletor-alunos-dieta-especial">
-              <div className="card-header">
-                <div className="row">
-                  <div className="col-2 ms-0">Código EOL</div>
-                  <div className="col-8">Nome do Aluno</div>
-                  <div className="col-2 ms-0 toggle-right">
-                    <ToggleExpandir
-                      onClick={() => setCollapseAlunosCEI(!collapseAlunosCEI)}
-                      ativo={collapseAlunosCEI}
-                    />
-                  </div>
-                </div>
-              </div>
-              <Collapse isOpened={collapseAlunosCEI}>
-                <table className="table">
-                  <tbody>
-                    {solicitacaoKitLancheCEMEI.solicitacao_cei.alunos_com_dieta_especial_participantes.map(
-                      (aluno, key) => {
-                        return (
-                          <tr className="row-alunos" key={key}>
-                            <td>{aluno.codigo_eol}</td>
-                            <td>{aluno.nome}</td>
-                          </tr>
-                        );
-                      }
-                    )}
-                  </tbody>
-                </table>
-              </Collapse>
-            </div>
-          </>
+            <section className="table-report-dieta-especial">
+              <article>
+                <div className="codigo-eol">Código EOL</div>
+                <div className="nome">Nome do Aluno</div>
+              </article>
+              {solicitacaoKitLancheCEMEI.solicitacao_cei.alunos_com_dieta_especial_participantes.map(
+                (aluno, key) => {
+                  return (
+                    <article key={key}>
+                      <div className="codigo-eol">{aluno.codigo_eol}</div>
+                      <div className="nome">{aluno.nome}</div>
+                    </article>
+                  );
+                }
+              )}
+            </section>
+          </Fragment>
         )}
       {solicitacaoKitLancheCEMEI.solicitacao_emei && (
         <>
@@ -469,45 +452,31 @@ export const CorpoRelatorio = ({ ...props }) => {
       {solicitacaoKitLancheCEMEI.solicitacao_emei &&
         solicitacaoKitLancheCEMEI.solicitacao_emei
           .alunos_com_dieta_especial_participantes.length > 0 && (
-          <>
-            <div className="row">
-              <div className="col">
-                <p className="mb-0">
+          <Fragment>
+            <div className="row report-label-value">
+              <div className="col-12 report-label-value">
+                <p>
                   <b>Aluno(s) com dieta especial</b>
                 </p>
               </div>
             </div>
-            <div className="card card-history mt-3 seletor-alunos-dieta-especial">
-              <div className="card-header">
-                <div className="row">
-                  <div className="col-2 ms-0">Código EOL</div>
-                  <div className="col-8">Nome do Aluno</div>
-                  <div className="col-2 ms-0 toggle-right">
-                    <ToggleExpandir
-                      onClick={() => setCollapseAlunosEMEI(!collapseAlunosEMEI)}
-                      ativo={collapseAlunosEMEI}
-                    />
-                  </div>
-                </div>
-              </div>
-              <Collapse isOpened={collapseAlunosEMEI}>
-                <table className="table">
-                  <tbody>
-                    {solicitacaoKitLancheCEMEI.solicitacao_emei.alunos_com_dieta_especial_participantes.map(
-                      (aluno, key) => {
-                        return (
-                          <tr className="row-alunos" key={key}>
-                            <td>{aluno.codigo_eol}</td>
-                            <td>{aluno.nome}</td>
-                          </tr>
-                        );
-                      }
-                    )}
-                  </tbody>
-                </table>
-              </Collapse>
-            </div>
-          </>
+            <section className="table-report-dieta-especial">
+              <article>
+                <div className="codigo-eol">Código EOL</div>
+                <div className="nome">Nome do Aluno</div>
+              </article>
+              {solicitacaoKitLancheCEMEI.solicitacao_emei.alunos_com_dieta_especial_participantes.map(
+                (aluno, key) => {
+                  return (
+                    <article key={key}>
+                      <div className="codigo-eol">{aluno.codigo_eol}</div>
+                      <div className="nome">{aluno.nome}</div>
+                    </article>
+                  );
+                }
+              )}
+            </section>
+          </Fragment>
         )}
       <div className="row">
         <div className="col">
