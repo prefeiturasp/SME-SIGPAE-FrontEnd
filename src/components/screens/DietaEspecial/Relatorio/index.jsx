@@ -181,6 +181,7 @@ const Relatorio = ({ visao }) => {
         icon={BUTTON_ICON.PRINT}
         className="float-end botaoImprimirDieta"
         onClick={() => gerarRelatorio(uuid)}
+        dataTestId="botao-imprimir"
       />
     );
   };
