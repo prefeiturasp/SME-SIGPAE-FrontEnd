@@ -15,7 +15,6 @@ import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import {
   CODAENegaSolicitacaoCancelamento,
-  createSolicitacaoAberta,
   deleteSolicitacaoAberta,
   escolaCancelaSolicitacao,
   getDietaEspecial,
@@ -39,12 +38,15 @@ import {
   usuarioEhEscola,
   usuarioEhNutricionistaSupervisao,
 } from "helpers/utilities";
-import { Websocket } from "services/websocket";
 import CorpoRelatorio from "./componentes/CorpoRelatorio";
 import FormAutorizaDietaEspecial from "./componentes/FormAutorizaDietaEspecial";
 import ModalAvisoDietaImportada from "./componentes/ModalAvisoDietaImportada";
 import ModalNegaDietaEspecial from "./componentes/ModalNegaDietaEspecial";
-import { cabecalhoDieta, ehSolicitacaoDeCancelamento } from "./helpers";
+import {
+  cabecalhoDieta,
+  ehSolicitacaoDeCancelamento,
+  initSocket,
+} from "./helpers";
 import "./style.scss";
 
 const Relatorio = ({ visao }) => {
@@ -67,43 +69,8 @@ const Relatorio = ({ visao }) => {
   const dietaCancelada = status ? ehSolicitacaoDeCancelamento(status) : false;
   const tipoPerfil = localStorage.getItem("tipo_perfil");
 
-  const fetchData = async (uuid) => {
-    const payload = {
-      uuid_solicitacao: uuid,
-    };
-    const response = await createSolicitacaoAberta(payload);
-    if (response.status === HTTP_STATUS.CREATED) {
-      setDadosDietaAberta(response.data);
-    }
-  };
-
-  const initSocket = (uuid) => {
-    return new Websocket(
-      "solicitacoes-abertas/",
-      ({ data }) => {
-        getDietasEspeciaisAbertas(JSON.parse(data));
-      },
-      () => {
-        if (dadosDietaAberta) {
-          deleteSolicitacaoAberta(dadosDietaAberta.id);
-        }
-        initSocket(uuid);
-      },
-      () => {
-        if (uuid) {
-          fetchData(uuid);
-          setUuidDieta(uuid);
-        }
-      }
-    );
-  };
-
   const habilitarEdicao = () => {
     setEditar(!editar);
-  };
-
-  const getDietasEspeciaisAbertas = (content) => {
-    content && setDietasAbertas(content.message);
   };
 
   const loadSolicitacao = async (uuid, setDietaNull = false) => {
@@ -149,7 +116,13 @@ const Relatorio = ({ visao }) => {
     loadSolicitacao(uuid);
     tipoPerfil === TIPO_PERFIL.DIETA_ESPECIAL &&
       card === "pendentes-aut" &&
-      initSocket(uuid);
+      initSocket(
+        uuid,
+        dadosDietaAberta,
+        setDadosDietaAberta,
+        setUuidDieta,
+        setDietasAbertas
+      );
   }, []);
 
   useEffect(() => {
