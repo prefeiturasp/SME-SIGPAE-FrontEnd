@@ -44,7 +44,7 @@ export const ModalCODAEQuestionaFinalForm = ({ ...props }) => {
         onSubmit={onSubmit}
         initialValues={{}}
         render={({ handleSubmit }) => (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} data-testid="formulario-questionamento">
             <Modal.Body>
               <p className="title">
                 É possível atender a solicitação com todos os itens previstos no
