@@ -7,6 +7,12 @@ export const SuspensaoAlimentacaoBody = ({ ...props }) => {
     ? false
     : true;
 
+  const ehDiaCancelado = (suspensao) => {
+    return suspensao.cancelado || solicitacao.status === "ESCOLA_CANCELOU"
+      ? "dia-cancelado"
+      : "";
+  };
+
   return [
     <tr className="table-body-items" key={index}>
       <td>
@@ -75,12 +81,16 @@ export const SuspensaoAlimentacaoBody = ({ ...props }) => {
                     </div>
                     <div className="col-3">
                       <p>
-                        <b>{suspensao.motivo.nome}</b>
+                        <b className={`${ehDiaCancelado(suspensao)}`}>
+                          {suspensao.motivo.nome}
+                        </b>
                       </p>
                     </div>
                     <div className="col-3">
                       <p>
-                        <b>{suspensao.data}</b>
+                        <b className={`${ehDiaCancelado(suspensao)}`}>
+                          {suspensao.data}
+                        </b>
                       </p>
                     </div>
                     <div className="col-3">
@@ -158,6 +168,27 @@ export const SuspensaoAlimentacaoBody = ({ ...props }) => {
                   </b>
                 </div>
               </div>
+            )}
+            {solicitacao.suspensoes_alimentacao.find(
+              (suspensao) => suspensao.cancelado_justificativa
+            ) && (
+              <>
+                <hr />
+                <p>
+                  <strong>Histórico de cancelamento</strong>
+                  {solicitacao.suspensoes_alimentacao
+                    .filter((suspensao) => suspensao.cancelado_justificativa)
+                    .map((suspensao, key) => {
+                      return (
+                        <div className="cancelado_justificativa" key={key}>
+                          {suspensao.data}
+                          {" - "}
+                          justificativa: {suspensao.cancelado_justificativa}
+                        </div>
+                      );
+                    })}
+                </p>
+              </>
             )}
           </div>
         </td>
