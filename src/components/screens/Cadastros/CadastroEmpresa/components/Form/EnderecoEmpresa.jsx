@@ -66,6 +66,7 @@ export const EnderecoEmpresa = ({
             <Field
               label="CEP"
               name={`cep`}
+              id={"cep"}
               component={MaskedInputText}
               mask={cepMask}
               maxlength={qtdFieldCep}
