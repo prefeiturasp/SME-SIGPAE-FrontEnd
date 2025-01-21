@@ -189,7 +189,6 @@ export const initSocket = (
   return new Websocket(
     "solicitacoes-abertas/",
     ({ data }) => {
-      console.log(data);
       data && setDietasAbertas(JSON.parse(data).message);
     },
     () =>
