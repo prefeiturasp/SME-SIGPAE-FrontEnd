@@ -21,6 +21,7 @@ export const Botao = (props) => {
     classTooltip,
     tooltipExterno,
     tabindex,
+    dataTestid,
   } = props;
 
   const [exibeMensagem, setExibeMensagem] = useState(false);
@@ -41,6 +42,7 @@ export const Botao = (props) => {
       disabled={disabled}
       accept={accept}
       tabIndex={tabindex}
+      data-testid={dataTestid}
     >
       {iconPosition !== "right" && icon && (
         <i id={iconId} className={`${icon} ${texto && "text-and-icon-left"}`} />
@@ -80,6 +82,7 @@ Botao.propTypes = {
   exibirTooltip: PropTypes.bool,
   tooltipTitulo: PropTypes.string,
   classTooltip: PropTypes.string,
+  dataTestid: PropTypes.string,
 };
 
 export default Botao;

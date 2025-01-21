@@ -111,6 +111,7 @@ export const ContatoFormSet = ({
                             component={InputText}
                             label="E-mail"
                             maxlength="140"
+                            id={`email_contato_${indiceEmpresa}`}
                             inputOnChange={(e) => {
                               const value = e.target.value;
                               setaContatosPessoaEmpresa(
@@ -129,6 +130,7 @@ export const ContatoFormSet = ({
                               type={BUTTON_TYPE.BUTTON}
                               style={BUTTON_STYLE.GREEN_OUTLINE}
                               icon="fas fa-trash"
+                              dataTestid="btn-delete-contato"
                               onClick={() => {
                                 removeContato(indiceEmpresa);
                               }}
@@ -146,6 +148,7 @@ export const ContatoFormSet = ({
                   className="adicionar-contato"
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
+                  dataTestid="btn-add-contato"
                   onClick={() => {
                     adicionaContatoPessoaEmpresa();
                   }}

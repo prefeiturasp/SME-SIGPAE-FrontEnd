@@ -144,6 +144,7 @@ export const SidebarContent = () => {
     usuarioEhMedicao() ||
     usuarioEhDilogQualidadeOuCronograma() ||
     usuarioEhEmpresaFornecedor() ||
+    usuarioEhCODAEGestaoProduto() ||
     (!exibeMenuValidandoAmbiente && usuarioEhCODAEGestaoAlimentacao()) ||
     (exibeMenuValidandoAmbiente &&
       (usuarioEhCODAEGestaoAlimentacao() ||
