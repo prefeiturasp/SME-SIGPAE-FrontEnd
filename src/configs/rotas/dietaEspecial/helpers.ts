@@ -13,6 +13,7 @@ export const dashBoardDietaEspecial = () => {
     case TIPO_PERFIL.NUTRICAO_MANIFESTACAO:
     case TIPO_PERFIL.MEDICAO:
     case TIPO_PERFIL.CODAE_GABINETE:
+    case TIPO_PERFIL.PRE_RECEBIMENTO:
       return DashBoardDietaEspecial.DietaEspecialCODAE;
     case TIPO_PERFIL.TERCEIRIZADA:
       return DashBoardDietaEspecial.DietaEspecialTerceirizada;
@@ -30,6 +31,7 @@ export const StatusSolicitacoesDietaEspecial = () => {
     case TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA:
     case TIPO_PERFIL.NUTRICAO_MANIFESTACAO:
     case TIPO_PERFIL.CODAE_GABINETE:
+    case TIPO_PERFIL.PRE_RECEBIMENTO:
       return StatusSolicitacoesDietaEspecialPage.SolicitacoesDietaEspecialCODAE;
     case TIPO_PERFIL.TERCEIRIZADA:
       return StatusSolicitacoesDietaEspecialPage.SolicitacoesDietaEspecialTerceirizada;
@@ -44,6 +46,7 @@ export const relatoriosDietaEspecial = () => {
     case TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA:
     case TIPO_PERFIL.NUTRICAO_MANIFESTACAO:
     case TIPO_PERFIL.CODAE_GABINETE:
+    case TIPO_PERFIL.PRE_RECEBIMENTO:
       return RelatoriosDietaEspecial.RelatorioEscola;
     case TIPO_PERFIL.DIETA_ESPECIAL:
       return RelatoriosDietaEspecial.RelatorioCODAE;

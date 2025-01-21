@@ -128,7 +128,8 @@ export const SidebarContent = () => {
     usuarioEhCODAEGabinete() ||
     usuarioEscolaEhGestaoDiretaParceira ||
     ehUsuarioRelatorios() ||
-    usuarioEhGticCODAE();
+    usuarioEhGticCODAE() ||
+    usuarioEhDinutreDiretoria();
   const exibirGestaoProduto =
     usuarioEhCODAEGestaoAlimentacao() ||
     usuarioEhCODAENutriManifestacao() ||
