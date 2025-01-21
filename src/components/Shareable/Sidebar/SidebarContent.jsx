@@ -1,60 +1,61 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 
+import { ENVIRONMENT } from "constants/config";
 import {
-  usuarioEhCODAEGestaoAlimentacao,
-  usuarioEhCODAENutriManifestacao,
-  usuarioEhCODAEDietaEspecial,
-  usuarioEhEscolaAbastecimento,
-  usuarioEhEmpresaTerceirizada,
-  usuarioEhCODAEGestaoProduto,
-  usuarioEhNutricionistaSupervisao,
-  usuarioEhDRE,
-  usuarioEhLogistica,
-  usuarioEhPreRecebimento,
+  ehUsuarioRelatorios,
+  exibirGA,
+  exibirModuloMedicaoInicial,
+  usuarioComAcessoTelaEntregasDilog,
   usuarioEhAdministradorGpCODAE,
   usuarioEhAdministradorNutriSupervisao,
-  usuarioEhEmpresaDistribuidora,
-  usuarioComAcessoTelaEntregasDilog,
-  usuarioEscolaEhGestaoDireta,
-  usuarioEscolaEhGestaoParceira,
-  usuarioEhMedicao,
-  exibirGA,
-  usuarioEhDilogQualidadeOuCronograma,
-  usuarioEhOutrosDilog,
-  usuarioEhPreRecebimentoSemLogistica,
-  usuarioEhEmpresaFornecedor,
   usuarioEhAdministradorRepresentanteCodae,
+  usuarioEhCODAEDietaEspecial,
+  usuarioEhCodaeDilog,
+  usuarioEhCODAEGabinete,
+  usuarioEhCODAEGestaoAlimentacao,
+  usuarioEhCODAEGestaoProduto,
+  usuarioEhCODAENutriManifestacao,
+  usuarioEhCoordenadorGpCODAE,
+  usuarioEhDilog,
+  usuarioEhDilogDiretoria,
+  usuarioEhDilogQualidadeOuCronograma,
+  usuarioEhDinutreDiretoria,
+  usuarioEhDRE,
+  usuarioEhEmpresaDistribuidora,
+  usuarioEhEmpresaFornecedor,
+  usuarioEhEmpresaTerceirizada,
+  usuarioEhEscolaAbastecimento,
+  usuarioEhEscolaAbastecimentoDiretor,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
-  usuarioEhEscolaAbastecimentoDiretor,
-  usuarioEhQualquerUsuarioEmpresa,
-  exibirModuloMedicaoInicial,
-  usuarioEhCodaeDilog,
-  usuarioEhDilog,
-  usuarioEhCoordenadorGpCODAE,
-  usuarioEhOrgaoFiscalizador,
-  usuarioEhCODAEGabinete,
-  usuarioEhDilogDiretoria,
-  usuarioEhRecebimento,
-  ehUsuarioRelatorios,
   usuarioEhGticCODAE,
+  usuarioEhLogistica,
+  usuarioEhMedicao,
+  usuarioEhNutricionistaSupervisao,
+  usuarioEhOrgaoFiscalizador,
+  usuarioEhOutrosDilog,
+  usuarioEhPreRecebimento,
+  usuarioEhPreRecebimentoSemLogistica,
+  usuarioEhQualquerUsuarioEmpresa,
+  usuarioEhRecebimento,
+  usuarioEscolaEhGestaoDireta,
+  usuarioEscolaEhGestaoParceira,
 } from "helpers/utilities";
-import { ENVIRONMENT } from "constants/config";
 
-import { ListItem } from "./menus/shared";
 import {
-  MenuGestaoDeAlimentacao,
-  MenuDietaEspecial,
   MenuCadastros,
   MenuConfiguracoes,
+  MenuDietaEspecial,
+  MenuGestaoDeAlimentacao,
   MenuGestaoDeProduto,
   MenuLancamentoInicial,
-  MenuRelatorios,
   MenuLogistica,
   MenuPreRecebimento,
   MenuRecebimento,
+  MenuRelatorios,
 } from "./menus";
 import { MenuSupervisao } from "./menus/MenuSupervisao";
+import { ListItem } from "./menus/shared";
 
 export const SidebarContent = () => {
   const [activeMenu, setActiveMenu] = useState("");
@@ -112,7 +113,8 @@ export const SidebarContent = () => {
       usuarioEhNutricionistaSupervisao() ||
       usuarioEhCODAEGabinete() ||
       ehUsuarioRelatorios() ||
-      usuarioEhGticCODAE());
+      usuarioEhGticCODAE() ||
+      usuarioEhDinutreDiretoria());
   const exibirDietaEspecial =
     usuarioEhCODAEGestaoAlimentacao() ||
     usuarioEhCODAENutriManifestacao() ||

@@ -1,42 +1,43 @@
-import React from "react";
-import { Menu, SubMenu, LeafItem } from "./shared";
 import {
-  SOLICITACOES_AUTORIZADAS,
-  SOLICITACOES_PENDENTES,
-  SOLICITACOES_NEGADAS,
-  SOLICITACOES_CANCELADAS,
-  SOLICITACOES_COM_QUESTIONAMENTO,
+  ALTERACAO_TIPO_ALIMENTACAO,
+  CADASTROS,
+  CODAE,
+  CONSULTA_KITS,
+  DRE,
   ESCOLA,
   INCLUSAO_ALIMENTACAO,
-  ALTERACAO_TIPO_ALIMENTACAO,
-  SOLICITACAO_KIT_LANCHE,
   INVERSAO_CARDAPIO,
-  SUSPENSAO_ALIMENTACAO,
   NUTRIMANIFESTACAO,
   NUTRISUPERVISAO,
-  TERCEIRIZADA,
-  DRE,
-  SOLICITACAO_KIT_LANCHE_UNIFICADA,
-  CODAE,
-  CADASTROS,
-  CONSULTA_KITS,
   RELATORIO_SOLICITACOES_ALIMENTACAO,
+  SOLICITACAO_KIT_LANCHE,
+  SOLICITACAO_KIT_LANCHE_UNIFICADA,
+  SOLICITACOES_AUTORIZADAS,
+  SOLICITACOES_CANCELADAS,
+  SOLICITACOES_COM_QUESTIONAMENTO,
+  SOLICITACOES_NEGADAS,
+  SOLICITACOES_PENDENTES,
+  SUSPENSAO_ALIMENTACAO,
+  TERCEIRIZADA,
   USUARIO_RELATORIOS,
 } from "configs/constants";
 import {
+  ehUsuarioRelatorios,
+  usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhDinutreDiretoria,
   usuarioEhDRE,
-  usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
-  usuarioEscolaEhGestaoDireta,
-  usuarioEhGticCODAE,
-  usuarioEhNutricionistaSupervisao,
-  usuarioEhMedicao,
+  usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
-  usuarioEhCODAEGabinete,
-  ehUsuarioRelatorios,
+  usuarioEhGticCODAE,
+  usuarioEhMedicao,
+  usuarioEhNutricionistaSupervisao,
+  usuarioEscolaEhGestaoDireta,
 } from "helpers/utilities";
+import React from "react";
+import { LeafItem, Menu, SubMenu } from "./shared";
 
 const MenuGestaoDeAlimentacao = ({ activeMenu, onSubmenuClick }) => {
   const exibeMenuNovasSolicitacoes =
@@ -56,7 +57,8 @@ const MenuGestaoDeAlimentacao = ({ activeMenu, onSubmenuClick }) => {
       ? CODAE
       : usuarioEhCODAENutriManifestacao() ||
         usuarioEhMedicao() ||
-        usuarioEhCODAEGabinete()
+        usuarioEhCODAEGabinete() ||
+        usuarioEhDinutreDiretoria()
       ? NUTRIMANIFESTACAO
       : usuarioEhNutricionistaSupervisao()
       ? NUTRISUPERVISAO
@@ -129,7 +131,8 @@ const MenuGestaoDeAlimentacao = ({ activeMenu, onSubmenuClick }) => {
             !usuarioEhCODAENutriManifestacao() &&
             !usuarioEscolaEhGestaoDireta() &&
             !usuarioEhMedicao() &&
-            !usuarioEhCODAEGabinete() && (
+            !usuarioEhCODAEGabinete() &&
+            !usuarioEhDinutreDiretoria() && (
               <LeafItem to={`/${PERFIL}/${SOLICITACOES_PENDENTES}`}>
                 Aguardando autorização
               </LeafItem>
@@ -182,6 +185,7 @@ const MenuGestaoDeAlimentacao = ({ activeMenu, onSubmenuClick }) => {
         usuarioEhEscolaTerceirizada() ||
         usuarioEhEscolaTerceirizadaDiretor() ||
         usuarioEhCODAEGabinete() ||
+        usuarioEhDinutreDiretoria() ||
         ehUsuarioRelatorios()) && (
         <SubMenu
           icon="fa-chevron-down"
