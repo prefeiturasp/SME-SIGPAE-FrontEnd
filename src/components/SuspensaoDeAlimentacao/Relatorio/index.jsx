@@ -197,7 +197,7 @@ class RelatorioSuspensaoAlimentacao extends Component {
                   dadosEscola={dadosEscola}
                 />
                 {suspensaoAlimentacao.suspensoes_alimentacao.find(
-                  (inclusao) => inclusao.cancelado_justificativa
+                  (suspensao) => suspensao.cancelado_justificativa
                 ) && (
                   <>
                     <hr />

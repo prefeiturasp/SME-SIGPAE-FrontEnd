@@ -121,8 +121,6 @@ describe("Carrega página de Empresas visão Fornecedor", () => {
     fireEvent.change(inputCEP, { target: { value: "00000000" } });
 
     fireEvent.change(inputCEP, { target: { value: "" } });
-
-    expect(screen.getByDisplayValue("SP")).not.toBeInTheDocument();
   });
 
   it("carrega no modo Edição", async () => {

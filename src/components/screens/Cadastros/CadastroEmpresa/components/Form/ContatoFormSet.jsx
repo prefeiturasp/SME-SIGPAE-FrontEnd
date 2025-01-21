@@ -130,7 +130,7 @@ export const ContatoFormSet = ({
                               type={BUTTON_TYPE.BUTTON}
                               style={BUTTON_STYLE.GREEN_OUTLINE}
                               icon="fas fa-trash"
-                              dataTestid="btn-delete-contato"
+                              dataTestId="btn-delete-contato"
                               onClick={() => {
                                 removeContato(indiceEmpresa);
                               }}
@@ -148,7 +148,7 @@ export const ContatoFormSet = ({
                   className="adicionar-contato"
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
-                  dataTestid="btn-add-contato"
+                  dataTestId="btn-add-contato"
                   onClick={() => {
                     adicionaContatoPessoaEmpresa();
                   }}

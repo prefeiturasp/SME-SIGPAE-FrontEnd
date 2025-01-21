@@ -21,7 +21,7 @@ export const Botao = (props) => {
     classTooltip,
     tooltipExterno,
     tabindex,
-    dataTestid,
+    dataTestId,
   } = props;
 
   const [exibeMensagem, setExibeMensagem] = useState(false);
@@ -31,6 +31,7 @@ export const Botao = (props) => {
       type={type}
       title={titulo}
       data-cy={texto}
+      data-testid={dataTestId}
       className={`general-button ${style} ${className}`}
       onClick={onClick}
       onMouseOver={() =>
@@ -42,7 +43,6 @@ export const Botao = (props) => {
       disabled={disabled}
       accept={accept}
       tabIndex={tabindex}
-      data-testid={dataTestid}
     >
       {iconPosition !== "right" && icon && (
         <i id={iconId} className={`${icon} ${texto && "text-and-icon-left"}`} />
@@ -82,7 +82,7 @@ Botao.propTypes = {
   exibirTooltip: PropTypes.bool,
   tooltipTitulo: PropTypes.string,
   classTooltip: PropTypes.string,
-  dataTestid: PropTypes.string,
+  dataTestId: PropTypes.string,
 };
 
 export default Botao;
