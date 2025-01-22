@@ -1078,7 +1078,8 @@ export const exibirModuloMedicaoInicial = () => {
       usuarioEhMedicao() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
-      usuarioEhCODAEGabinete()
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria()
     );
 
   switch (localStorage.getItem("tipo_perfil")) {
@@ -1092,6 +1093,8 @@ export const exibirModuloMedicaoInicial = () => {
     case `"gestao_alimentacao_terceirizada"`:
     case `"codae_gabinete"`:
       return acessoModuloMedicaoInicialCODAE();
+    case `"pre_recebimento"`:
+      return usuarioEhDinutreDiretoria();
     default:
       return false;
   }

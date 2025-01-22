@@ -1,30 +1,31 @@
-import React from "react";
-import { Menu, LeafItem, SubMenu } from "./shared";
 import {
   ACOMPANHAMENTO_DE_LANCAMENTOS,
   CLAUSULAS_PARA_DESCONTOS,
-  PARAMETRIZACAO_FINANCEIRA,
   CONTROLE_DE_FREQUENCIA,
   EMPENHOS,
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
   MEDICAO_INICIAL,
-  RELATORIOS,
+  PARAMETRIZACAO_FINANCEIRA,
   RELATORIO_ADESAO,
   RELATORIO_FINANCEIRO,
+  RELATORIOS,
 } from "configs/constants";
 import {
-  exibirModuloMedicaoInicial,
-  usuarioEhEscolaTerceirizadaQualquerPerfil,
-  usuarioEhDRE,
   escolaEhCei,
   escolaEhCEMEI,
-  usuarioEhEscolaTerceirizada,
-  usuarioEhMedicao,
+  exibirModuloMedicaoInicial,
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhDinutreDiretoria,
+  usuarioEhDRE,
+  usuarioEhEscolaTerceirizada,
+  usuarioEhEscolaTerceirizadaQualquerPerfil,
+  usuarioEhMedicao,
 } from "helpers/utilities";
+import React from "react";
+import { LeafItem, Menu, SubMenu } from "./shared";
 
 const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
   const exibeCadastros = usuarioEhMedicao();
@@ -32,7 +33,8 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
     usuarioEhMedicao() ||
     usuarioEhCODAEGestaoAlimentacao() ||
     usuarioEhDRE() ||
-    usuarioEhEscolaTerceirizadaQualquerPerfil();
+    usuarioEhEscolaTerceirizadaQualquerPerfil() ||
+    usuarioEhDinutreDiretoria();
 
   return (
     exibirModuloMedicaoInicial() && (
@@ -52,7 +54,8 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
           usuarioEhEscolaTerceirizadaQualquerPerfil() ||
           usuarioEhCODAEGestaoAlimentacao() ||
           usuarioEhCODAENutriManifestacao() ||
-          usuarioEhCODAEGabinete) && (
+          usuarioEhCODAEGabinete() ||
+          usuarioEhDinutreDiretoria()) && (
           <LeafItem to={`/${MEDICAO_INICIAL}/${ACOMPANHAMENTO_DE_LANCAMENTOS}`}>
             Acompanhamento de Lançamentos
           </LeafItem>

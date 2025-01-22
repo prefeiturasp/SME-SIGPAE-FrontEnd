@@ -24,6 +24,7 @@ import {
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhDinutreDiretoria,
   usuarioEhDRE,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaAbastecimento,
@@ -58,7 +59,8 @@ const PainelInicial = () => {
           usuarioEhNutricionistaSupervisao() ||
           usuarioEhEscolaTerceirizadaDiretor() ||
           usuarioEhEscolaTerceirizada() ||
-          usuarioEhCODAEGabinete()) && (
+          usuarioEhCODAEGabinete() ||
+          usuarioEhDinutreDiretoria()) && (
           <Col xs={24} sm={24} md={24} lg={8} xl={8}>
             <CardLogo
               titulo={"Gestão de Alimentação"}
@@ -78,7 +80,8 @@ const PainelInicial = () => {
         usuarioEhEscolaTerceirizadaDiretor() ||
         usuarioEhEscolaTerceirizada() ||
         usuarioEhCODAEGabinete() ||
-        usuarioEscolaEhGestaoDiretaParceira) && (
+        usuarioEscolaEhGestaoDiretaParceira ||
+        usuarioEhDinutreDiretoria()) && (
         <Col xs={24} sm={24} md={24} lg={8} xl={8}>
           <CardLogo
             titulo={"Dieta Especial"}
@@ -96,7 +99,8 @@ const PainelInicial = () => {
         usuarioEhEscolaTerceirizadaDiretor() ||
         usuarioEhEscolaTerceirizada() ||
         usuarioEhOrgaoFiscalizador() ||
-        usuarioEhCODAEGabinete()) && (
+        usuarioEhCODAEGabinete() ||
+        usuarioEhDinutreDiretoria()) && (
         <Col xs={24} sm={24} md={24} lg={8} xl={8}>
           <CardLogo
             titulo={"Gestão de Produto"}
@@ -118,7 +122,8 @@ const PainelInicial = () => {
                 usuarioEhMedicao() ||
                 usuarioEhCODAEGestaoAlimentacao() ||
                 usuarioEhCODAENutriManifestacao() ||
-                usuarioEhCODAEGabinete()) &&
+                usuarioEhCODAEGabinete() ||
+                usuarioEhDinutreDiretoria()) &&
                 navigate(`/medicao-inicial/${ACOMPANHAMENTO_DE_LANCAMENTOS}`);
             }}
           >
