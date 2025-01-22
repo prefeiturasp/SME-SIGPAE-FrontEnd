@@ -96,6 +96,35 @@
   }
 }
 
+.table-report-dieta-especial {
+  margin: 0 0 2em 0;
+
+  article {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    border-bottom: 1px solid black;
+    min-height: 45px;
+    height: auto;
+    line-height: 18px;
+    color: #686868;
+    background-color: white;
+
+    &:first-of-type {
+      font-weight: bold;
+      color: $black;
+    }
+
+    div {
+      font-style: normal;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px;
+    }
+  }
+}
+
 .total-kits {
   margin: 24px 0 24px 0;
   font-size: 16px;
