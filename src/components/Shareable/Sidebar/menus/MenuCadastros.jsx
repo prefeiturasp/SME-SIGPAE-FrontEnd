@@ -30,6 +30,7 @@ import {
   usuarioEhCodaeDilog,
   usuarioEhEmpresaFornecedor,
 } from "helpers/utilities";
+import { usuarioEhCODAEGestaoProduto } from "../../../../helpers/utilities";
 
 const MenuCadastros = () => {
   return (
@@ -42,7 +43,9 @@ const MenuCadastros = () => {
           Horários de Alimentações
         </LeafItem>
       )}
-      {(usuarioEhLogistica() || usuarioEhCronograma()) && (
+      {(usuarioEhLogistica() ||
+        usuarioEhCronograma() ||
+        usuarioEhCODAEGestaoProduto()) && (
         <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${EMPRESA}`}>
           Empresas
         </LeafItem>
