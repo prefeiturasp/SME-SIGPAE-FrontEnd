@@ -642,7 +642,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                   : "solicitacoes-kit-lanche-avulsa"
               }
             />
-            {ModalQuestionamento && (
+            {showQuestionamentoModal && ModalQuestionamento && (
               <ModalQuestionamento
                 closeModal={() => setShowQuestionamentoModal(false)}
                 showModal={showQuestionamentoModal}
@@ -653,14 +653,16 @@ export const CorpoRelatorio = ({ ...props }) => {
                 solicitacao={solicitacaoKitLancheCEMEI}
               />
             )}
-            <ModalAprovarSolicitacaoKitLanche
-              closeModal={() => setShowModalObservacaoCodae(false)}
-              showModal={showModalObservacaoCodae}
-              loadSolicitacao={fetchData}
-              endpoint={endpointAprovaSolicitacao}
-              tipoSolicitacao={tipoSolicitacao}
-              solicitacao={solicitacaoKitLancheCEMEI}
-            />
+            {showModalObservacaoCodae && (
+              <ModalAprovarSolicitacaoKitLanche
+                closeModal={() => setShowModalObservacaoCodae(false)}
+                showModal={showModalObservacaoCodae}
+                loadSolicitacao={fetchData}
+                endpoint={endpointAprovaSolicitacao}
+                tipoSolicitacao={tipoSolicitacao}
+                solicitacao={solicitacaoKitLancheCEMEI}
+              />
+            )}
           </div>
         </>
       )}

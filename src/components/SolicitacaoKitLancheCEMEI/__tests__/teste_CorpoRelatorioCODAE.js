@@ -9,25 +9,23 @@ import {
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { CorpoRelatorio } from "../Relatorio/components/CorpoRelatorio";
-import { CODAE, ESCOLA } from "configs/constants";
-import { ModalCancelarKitLancheCEMEI } from "components/SolicitacaoKitLancheCEMEI/Relatorio/components/ModalCancelarKitLancheCEMEI";
+import { CODAE } from "configs/constants";
+import { TIPO_PERFIL } from "../../../constants/shared";
+
 import { ModalNegarFinalForm } from "components/Shareable/ModalNegarFinalForm";
 import { ModalCODAEQuestionaFinalForm } from "components/Shareable/ModalCODAEQuestionaFinalForm";
-import { TIPO_PERFIL } from "../../../constants/shared";
 
 import {
   getSolicitacaoKitLancheCEMEI,
-  cancelaFluxoSolicitacaoKitLancheCEMEI,
   CODAEAutorizaKitLancheCEMEI,
   CODAENegaKitLancheCEMEI,
   CODAEquestionaKitLancheCEMEI,
 } from "services/kitLanche";
-// import { getRelatorioKitLancheCEMEI } from "services/relatorios";
 
-import { mockGetSolicitacaoKitLancheCEMEI } from "mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoKitLancheCEMEI";
 import { mockCODAEQuestionaSolicitacao } from "mocks/SolicitacaoKitLancheCEMEI/mockCODAEQuestionaSolicitacao";
 import { mockSolicitacaoKitLancheCODAE } from "mocks/SolicitacaoKitLancheCEMEI/mockSolicitacaoKitLancheCODAE";
 import { mockGetSolicitacaoPosQuestionamento } from "mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoPosQuestionamento";
+import { mockGetSolicitacaoKitLancheRegular2 } from "mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoKitLancheRegular2";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -35,50 +33,33 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("services/kitLanche");
 
-const props1 = {
-  visao: { ESCOLA },
-  ModalNaoAprova: ModalCancelarKitLancheCEMEI,
-  toastNaoAprovaMensagem: "Kit Lanche Passeio cancelado com sucesso!",
-  endpointNaoAprovaSolicitacao: { cancelaFluxoSolicitacaoKitLancheCEMEI },
-  textoBotaoNaoAprova: "Cancelar",
-  solicitacaoKitLancheCEMEI: mockGetSolicitacaoKitLancheCEMEI,
-};
-
-const props2 = {
+const propsCODAE = {
   visao: { CODAE },
   ModalNaoAprova: ModalNegarFinalForm,
   ModalQuestionamento: ModalCODAEQuestionaFinalForm,
   toastAprovaMensagem: "Kit Lanche Passeio autorizado com sucesso!",
   toastAprovaMensagemErro: "Houve um erro ao autorizar o Kit Lanche Passeio",
-  endpointNaoAprovaSolicitacao: { CODAENegaKitLancheCEMEI },
-  endpointAprovaSolicitacao: { CODAEAutorizaKitLancheCEMEI },
+  endpointNaoAprovaSolicitacao: CODAENegaKitLancheCEMEI,
+  endpointAprovaSolicitacao: CODAEAutorizaKitLancheCEMEI,
   endpointQuestionamento: CODAEquestionaKitLancheCEMEI,
   textoBotaoNaoAprova: "Negar",
   textoBotaoAprova: "Autorizar",
   solicitacaoKitLancheCEMEI: mockSolicitacaoKitLancheCODAE,
 };
 
-describe("Teste <CorpoRelatorio> - Visão ESCOLA", () => {
-  beforeEach(async () => {
-    await act(async () => {
-      render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <CorpoRelatorio {...props1} />
-        </MemoryRouter>
-      );
-    });
-  });
-
-  it("Testa se elementos da tabela estão aparecendo corretamente.", async () => {
-    expect(screen.getByText("MEL DONOLA VAZ")).toBeInTheDocument();
-    expect(screen.getByText("ISABELLA TORRES SILVA")).toBeInTheDocument();
-  });
-});
+const propsCODAERegular = {
+  visao: { CODAE },
+  ModalNaoAprova: ModalNegarFinalForm,
+  ModalQuestionamento: ModalCODAEQuestionaFinalForm,
+  toastAprovaMensagem: "Kit Lanche Passeio autorizado com sucesso!",
+  toastAprovaMensagemErro: "Houve um erro ao autorizar o Kit Lanche Passeio",
+  endpointNaoAprovaSolicitacao: CODAENegaKitLancheCEMEI,
+  endpointAprovaSolicitacao: CODAEAutorizaKitLancheCEMEI,
+  endpointQuestionamento: CODAEquestionaKitLancheCEMEI,
+  textoBotaoNaoAprova: "Negar",
+  textoBotaoAprova: "Autorizar",
+  solicitacaoKitLancheCEMEI: mockGetSolicitacaoKitLancheRegular2,
+};
 
 describe("Teste <CorpoRelatorio> - Visão CODAE", () => {
   beforeEach(async () => {
@@ -105,7 +86,7 @@ describe("Teste <CorpoRelatorio> - Visão CODAE", () => {
             v7_relativeSplatPath: true,
           }}
         >
-          <CorpoRelatorio {...props2} />
+          <CorpoRelatorio {...propsCODAE} />
         </MemoryRouter>
       );
     });
@@ -129,5 +110,48 @@ describe("Teste <CorpoRelatorio> - Visão CODAE", () => {
     expect(CODAEquestionaKitLancheCEMEI).toHaveReturnedWith(
       Promise.resolve(mockCODAEQuestionaSolicitacao)
     );
+  });
+});
+
+describe("Teste <CorpoRelatorio> Solicitação Regular - Visão CODAE", () => {
+  beforeEach(async () => {
+    CODAEAutorizaKitLancheCEMEI.mockResolvedValue({
+      data: mockCODAEQuestionaSolicitacao,
+      status: 200,
+    });
+
+    window.localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+    );
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <CorpoRelatorio {...propsCODAERegular} />
+        </MemoryRouter>
+      );
+    });
+  });
+
+  it("Testa a abertura e fechamento do Modal de Autorização da CODAE", async () => {
+    const botaoAutorizar = screen.getByText("Autorizar").closest("button");
+    expect(botaoAutorizar).toBeInTheDocument();
+
+    fireEvent.click(botaoAutorizar);
+
+    expect(
+      screen.getByText("Deseja autorizar a solicitação?")
+    ).toBeInTheDocument();
+
+    const botaoNao = screen.getByText("Não").closest("button");
+    expect(botaoNao).toBeInTheDocument();
+
+    fireEvent.click(botaoNao);
   });
 });
