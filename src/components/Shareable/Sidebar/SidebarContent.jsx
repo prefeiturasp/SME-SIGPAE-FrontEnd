@@ -141,7 +141,8 @@ export const SidebarContent = () => {
     usuarioEhDRE() ||
     usuarioEhEmpresaTerceirizada() ||
     usuarioEhOrgaoFiscalizador() ||
-    usuarioEhCODAEGabinete();
+    usuarioEhCODAEGabinete() ||
+    usuarioEhDinutreDiretoria();
   const exibirCadastros =
     usuarioEhCodaeDilog() ||
     usuarioEhMedicao() ||

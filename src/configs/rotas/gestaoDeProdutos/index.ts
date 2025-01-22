@@ -6,6 +6,7 @@ import {
   usuarioEhCODAEGestaoProduto,
   usuarioEhCODAENutriManifestacao,
   usuarioEhCogestorDRE,
+  usuarioEhDinutreDiretoria,
   usuarioEhDRE,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizada,
@@ -108,7 +109,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhDRE() ||
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhOrgaoFiscalizador() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/responder-questionamento-ue`,
@@ -140,7 +142,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhEscolaTerceirizada() ||
       usuarioEhEscolaTerceirizadaDiretor() ||
       usuarioEhOrgaoFiscalizador() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.ROTAS_SOLICITACOES_HOMOLOGACAO_PRODUTO.RECLAMACAO_DE_PRODUTO}`,
@@ -152,7 +155,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhCODAEDietaEspecial() ||
       usuarioEhNutricionistaSupervisao() ||
       usuarioEhEscolaTerceirizada() ||
-      usuarioEhEscolaTerceirizadaDiretor(),
+      usuarioEhEscolaTerceirizadaDiretor() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.ROTAS_SOLICITACOES_HOMOLOGACAO_PRODUTO.PRODUTOS_SUSPENSOS}`,
@@ -168,7 +172,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhEscolaTerceirizada() ||
       usuarioEhEscolaTerceirizadaDiretor() ||
       usuarioEhOrgaoFiscalizador() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.ROTAS_SOLICITACOES_HOMOLOGACAO_PRODUTO.CORRECAO_DE_PRODUTO}`,
@@ -189,7 +194,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhOrgaoFiscalizador() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.ROTAS_SOLICITACOES_HOMOLOGACAO_PRODUTO.RESPONDER_QUESTIONAMENTOS_DA_CODAE}`,
@@ -202,7 +208,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhCogestorDRE() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.ROTAS_SOLICITACOES_HOMOLOGACAO_PRODUTO.AGUARDANDO_ANALISE_SENSORIAL}`,
@@ -230,7 +237,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhEscolaTerceirizada() ||
       usuarioEhEscolaTerceirizadaDiretor() ||
       usuarioEhOrgaoFiscalizador() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.ROTAS_SOLICITACOES_HOMOLOGACAO_PRODUTO.SOLICITACOES_NAO_HOMOLOGADAS}`,
@@ -246,7 +254,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhEscolaTerceirizada() ||
       usuarioEhEscolaTerceirizadaDiretor() ||
       usuarioEhOrgaoFiscalizador() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: "/painel-gestao-produto",
@@ -262,7 +271,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhEscolaTerceirizadaDiretor() ||
       usuarioEhDRE() ||
       usuarioEhOrgaoFiscalizador() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.RECLAMACAO_DE_PRODUTO}`,
@@ -289,7 +299,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhOrgaoFiscalizador() ||
       usuarioEhCODAEGabinete() ||
       ehUsuarioRelatorios() ||
-      usuarioEhGticCODAE(),
+      usuarioEhGticCODAE() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.ATIVACAO_DE_PRODUTO}/consulta`,
@@ -326,7 +337,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhOrgaoFiscalizador() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/responder-reclamacao/detalhe`,
