@@ -155,17 +155,18 @@ export const SidebarContent = () => {
         usuarioEhEscolaTerceirizadaDiretor() ||
         usuarioEhEscolaTerceirizada()));
   const exibirRelatorios =
-    !usuarioEhEscolaAbastecimento() &&
-    !usuarioEhEscolaAbastecimentoDiretor() &&
-    !usuarioEhEscolaAbastecimentoDiretor() &&
-    !(usuarioComAcessoTelaEntregasDilog() && !usuarioEhCODAEGabinete()) &&
-    !usuarioEhLogistica() &&
-    !usuarioEhEmpresaDistribuidora() &&
-    !usuarioEhEmpresaFornecedor() &&
-    !usuarioEscolaEhGestaoDireta() &&
-    !usuarioEhMedicao() &&
-    !usuarioEhPreRecebimento() &&
-    !usuarioEhAdministradorRepresentanteCodae();
+    (!usuarioEhEscolaAbastecimento() &&
+      !usuarioEhEscolaAbastecimentoDiretor() &&
+      !usuarioEhEscolaAbastecimentoDiretor() &&
+      !(usuarioComAcessoTelaEntregasDilog() && !usuarioEhCODAEGabinete()) &&
+      !usuarioEhLogistica() &&
+      !usuarioEhEmpresaDistribuidora() &&
+      !usuarioEhEmpresaFornecedor() &&
+      !usuarioEscolaEhGestaoDireta() &&
+      !usuarioEhMedicao() &&
+      !usuarioEhPreRecebimento() &&
+      !usuarioEhAdministradorRepresentanteCodae()) ||
+    usuarioEhDinutreDiretoria();
 
   const exibirConfiguracoes =
     !usuarioEhEscolaTerceirizada() &&

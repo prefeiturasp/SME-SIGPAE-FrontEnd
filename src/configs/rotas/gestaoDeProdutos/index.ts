@@ -326,7 +326,8 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhOrgaoFiscalizador() ||
       usuarioEhCODAEGabinete() ||
       ehUsuarioRelatorios() ||
-      usuarioEhGticCODAE(),
+      usuarioEhGticCODAE() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/responder-reclamacao/consulta`,
