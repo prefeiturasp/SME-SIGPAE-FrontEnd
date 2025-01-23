@@ -230,6 +230,7 @@ export const CardStatusDeSolicitacao = (props) => {
         TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
         TIPO_PERFIL.NUTRICAO_MANIFESTACAO,
         TIPO_PERFIL.CODAE_GABINETE,
+        TIPO_PERFIL.PRE_RECEBIMENTO,
       ].includes(tipoPerfil)
         ? renderSolicitations(filteredSolicitations)
         : renderSolicitations(solicitations)}
@@ -239,6 +240,7 @@ export const CardStatusDeSolicitacao = (props) => {
         TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
         TIPO_PERFIL.NUTRICAO_MANIFESTACAO,
         TIPO_PERFIL.CODAE_GABINETE,
+        TIPO_PERFIL.PRE_RECEBIMENTO,
       ].includes(tipoPerfil)
         ? renderVerMais(filteredSolicitations)
         : renderVerMais(solicitations)}

@@ -1,30 +1,31 @@
 import {
-  truncarString,
-  usuarioEhCoordenadorNutriSupervisao,
-  usuarioEhEmpresaTerceirizada,
-  usuarioEhCODAEGestaoProduto,
-  parseDataHoraBrToMoment,
-  comparaObjetosMoment,
-  usuarioEhEscolaTerceirizada,
-  usuarioEhEscolaTerceirizadaDiretor,
-  usuarioEhCogestorDRE,
-  usuarioEhCODAEGabinete,
-  usuarioEhCODAEGestaoAlimentacao,
-  usuarioEhCODAENutriManifestacao,
-  usuarioEhOrgaoFiscalizador,
-} from "helpers/utilities";
-import {
-  RELATORIO,
-  GESTAO_PRODUTO,
-  EDITAR,
-  PESQUISA_DESENVOLVIMENTO,
   ATIVACAO_DE_PRODUTO,
+  EDITAR,
+  GESTAO_PRODUTO,
+  PESQUISA_DESENVOLVIMENTO,
+  RELATORIO,
 } from "configs/constants";
 import { ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS } from "constants/shared";
 import {
-  CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE,
   CARD_AGUARDANDO_ANALISE_RECLAMACAO,
+  CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE,
 } from "helpers/gestaoDeProdutos";
+import {
+  comparaObjetosMoment,
+  parseDataHoraBrToMoment,
+  truncarString,
+  usuarioEhCODAEGabinete,
+  usuarioEhCODAEGestaoAlimentacao,
+  usuarioEhCODAEGestaoProduto,
+  usuarioEhCODAENutriManifestacao,
+  usuarioEhCogestorDRE,
+  usuarioEhCoordenadorNutriSupervisao,
+  usuarioEhDinutreDiretoria,
+  usuarioEhEmpresaTerceirizada,
+  usuarioEhEscolaTerceirizada,
+  usuarioEhEscolaTerceirizadaDiretor,
+  usuarioEhOrgaoFiscalizador,
+} from "helpers/utilities";
 const {
   CODAE_PEDIU_ANALISE_RECLAMACAO,
   TERCEIRIZADA_RESPONDEU_RECLAMACAO,
@@ -55,7 +56,8 @@ const gerarLinkDoItem = (item, apontaParaEdicao, titulo) => {
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhOrgaoFiscalizador() ||
-      usuarioEhCODAEGabinete()) &&
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria()) &&
     [
       CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE.titulo,
       CARD_AGUARDANDO_ANALISE_RECLAMACAO.titulo,

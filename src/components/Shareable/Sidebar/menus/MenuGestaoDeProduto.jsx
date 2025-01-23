@@ -40,6 +40,7 @@ const MenuGestaoDeProduto = ({ activeMenu, onSubmenuClick }) => {
       id="GestaoProduto"
       icon="fa-shopping-basket"
       title={"Gestão de Produto"}
+      dataTestId="gestao-de-produto"
     >
       <LeafItem to={`/${PAINEL_GESTAO_PRODUTO}`}>
         Painel de Solicitações
@@ -105,6 +106,7 @@ const MenuGestaoDeProduto = ({ activeMenu, onSubmenuClick }) => {
         onClick={onSubmenuClick}
         title="Consulta de Solicitações"
         activeMenu={activeMenu}
+        dataTestId="consulta-solicitacoes-gp"
       >
         {menuItems.map((item, index) => (
           <LeafItem key={index} to={`/${GESTAO_PRODUTO}/${item.rota}`}>

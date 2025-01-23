@@ -1,33 +1,34 @@
-import React from "react";
+import { RelatorioSolicitacoesAlimentacao } from "components/screens/Relatorios/SolicitacoesAlimentacao";
 import Breadcrumb from "components/Shareable/Breadcrumb";
 import Page from "components/Shareable/Page/Page";
 import { RELATORIO_SOLICITACOES_ALIMENTACAO } from "configs/constants";
-import { RelatorioSolicitacoesAlimentacao } from "components/screens/Relatorios/SolicitacoesAlimentacao";
 import {
-  usuarioEhCODAEGestaoAlimentacao,
-  usuarioEhDRE,
-  usuarioEhMedicao,
-  usuarioEhEmpresaTerceirizada,
+  ehUsuarioRelatorios,
   usuarioEhCODAEGabinete,
+  usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhDinutreDiretoria,
+  usuarioEhDRE,
+  usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhGticCODAE,
-  ehUsuarioRelatorios,
+  usuarioEhMedicao,
 } from "helpers/utilities";
+import React from "react";
 import {
   filtrarSolicitacoesAlimentacaoCODAE,
   filtrarSolicitacoesAlimentacaoDRE,
+  filtrarSolicitacoesAlimentacaoEscola,
   filtrarSolicitacoesAlimentacaoTerceirizadas,
   gerarExcelRelatorioSolicitacoesAlimentacaoCODAE,
   gerarExcelRelatorioSolicitacoesAlimentacaoDRE,
-  gerarExcelRelatorioSolicitacoesAlimentacaoTerceirizadas,
-  gerarPDFRelatorioSolicitacoesAlimentacaoDRE,
-  gerarPDFRelatorioSolicitacoesAlimentacaoCODAE,
-  gerarPDFRelatorioSolicitacoesAlimentacaoTerceirizadas,
-  filtrarSolicitacoesAlimentacaoEscola,
   gerarExcelRelatorioSolicitacoesAlimentacaoEscola,
+  gerarExcelRelatorioSolicitacoesAlimentacaoTerceirizadas,
+  gerarPDFRelatorioSolicitacoesAlimentacaoCODAE,
+  gerarPDFRelatorioSolicitacoesAlimentacaoDRE,
   gerarPDFRelatorioSolicitacoesAlimentacaoEscola,
+  gerarPDFRelatorioSolicitacoesAlimentacaoTerceirizadas,
 } from "services/relatorios.service";
 
 const atual = {
@@ -55,7 +56,8 @@ const endpointPorPerfil = () => {
     usuarioEhCODAENutriManifestacao() ||
     usuarioEhCODAEGabinete() ||
     ehUsuarioRelatorios() ||
-    usuarioEhGticCODAE()
+    usuarioEhGticCODAE() ||
+    usuarioEhDinutreDiretoria()
   ) {
     return filtrarSolicitacoesAlimentacaoCODAE;
   } else if (
@@ -84,7 +86,8 @@ const endpointGerarExcel = () => {
     usuarioEhCODAENutriManifestacao() ||
     usuarioEhCODAEGabinete() ||
     ehUsuarioRelatorios() ||
-    usuarioEhGticCODAE()
+    usuarioEhGticCODAE() ||
+    usuarioEhDinutreDiretoria()
   ) {
     return gerarExcelRelatorioSolicitacoesAlimentacaoCODAE;
   } else if (usuarioEhEmpresaTerceirizada()) {
@@ -108,7 +111,8 @@ const endpointGerarPDF = () => {
     usuarioEhCODAENutriManifestacao() ||
     usuarioEhCODAEGabinete() ||
     ehUsuarioRelatorios() ||
-    usuarioEhGticCODAE()
+    usuarioEhGticCODAE() ||
+    usuarioEhDinutreDiretoria()
   ) {
     return gerarPDFRelatorioSolicitacoesAlimentacaoCODAE;
   } else if (usuarioEhEmpresaTerceirizada()) {
