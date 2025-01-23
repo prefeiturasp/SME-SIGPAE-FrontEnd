@@ -16,32 +16,36 @@ export const SubMenu = ({
   title,
   onClick,
   activeMenu,
+  dataTestId,
   children,
 }) => (
-  <>
+  <div>
     <div
       onClick={(e) => {
         e.stopPropagation();
         onClick(path);
       }}
+      data-testid={dataTestId}
       className={`collapse-item ${activeMenu === path ? "active" : ""}`}
     >
       {title}
       <i className={`fas ${icon}`} />
     </div>
     {activeMenu === path && <div className="submenu">{children}</div>}
-  </>
+  </div>
 );
 
-export const LeafItem = ({ to, children }) => (
-  <NavLink className="collapse-item" to={to}>
-    {" "}
-    {children}
-  </NavLink>
-);
+export const LeafItem = ({ to, dataTestId, children }) => {
+  return (
+    <NavLink data-testid={dataTestId} className="collapse-item" to={to}>
+      {" "}
+      {children}
+    </NavLink>
+  );
+};
 
-export const Menu = ({ id, title, icon, children }) => (
-  <li className="nav-item">
+export const Menu = ({ id, title, icon, dataTestId, children }) => (
+  <li className="nav-item" data-testid={dataTestId}>
     <div
       className={`nav-link collapsed`}
       data-toggle="collapse"

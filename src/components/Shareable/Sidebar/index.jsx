@@ -32,8 +32,13 @@ export const Sidebar = ({ ...props }) => {
         id="accordionSidebar"
       >
         <div className="sidebar-divider my-0" />
-        <p onClick={() => toggle()} className="text-end c-pointer">
+        <p
+          onClick={() => toggle()}
+          className="text-end c-pointer"
+          data-testid="sidebar-divider-p"
+        >
           <i
+            data-testid="icon-chevron-circle"
             className={
               toggled
                 ? `fas fa-chevron-circle-right`

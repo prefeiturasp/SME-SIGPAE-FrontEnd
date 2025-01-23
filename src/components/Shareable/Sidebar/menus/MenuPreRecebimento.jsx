@@ -1,39 +1,44 @@
-import React from "react";
-import { Menu, LeafItem, SubMenu } from "./shared";
 import {
-  PRE_RECEBIMENTO,
+  CALENDARIO_CRONOGRAMA,
   CRONOGRAMA_ENTREGA,
+  DOCUMENTOS_RECEBIMENTO,
+  FICHA_TECNICA,
+  LAYOUT_EMBALAGEM,
   PAINEL_APROVACOES,
+  PAINEL_DOCUMENTOS_RECEBIMENTO,
+  PAINEL_FICHAS_TECNICAS,
+  PAINEL_LAYOUT_EMBALAGEM,
+  PRE_RECEBIMENTO,
+  RELATORIO_CRONOGRAMA,
   SOLICITACAO_ALTERACAO_CRONOGRAMA,
   SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR,
-  DOCUMENTOS_RECEBIMENTO,
-  LAYOUT_EMBALAGEM,
-  PAINEL_DOCUMENTOS_RECEBIMENTO,
-  PAINEL_LAYOUT_EMBALAGEM,
-  FICHA_TECNICA,
-  CALENDARIO_CRONOGRAMA,
-  PAINEL_FICHAS_TECNICAS,
 } from "configs/constants";
 import {
-  usuarioEhCronograma,
-  usuarioEhDilogDiretoria,
-  usuarioEhDinutreDiretoria,
-  usuarioEhPreRecebimento,
-  usuarioEhEmpresaFornecedor,
+  usuarioComAcessoAoCalendarioCronograma,
   usuarioComAcessoAoPainelAprovacoes,
   usuarioComAcessoAoPainelDocumentos,
   usuarioComAcessoAoPainelEmbalagens,
   usuarioComAcessoAoPainelFichasTecnicas,
-  usuarioComAcessoAoCalendarioCronograma,
+  usuarioComAcessoAoRelatorioCronogramas,
+  usuarioEhCodaeDilog,
   usuarioEhCODAEGabinete,
+  usuarioEhCronograma,
+  usuarioEhDilogDiretoria,
+  usuarioEhDinutreDiretoria,
+  usuarioEhEmpresaFornecedor,
+  usuarioEhPreRecebimento,
 } from "helpers/utilities";
-import { usuarioComAcessoAoRelatorioCronogramas } from "../../../../helpers/utilities";
-import { RELATORIO_CRONOGRAMA } from "../../../../configs/constants";
-import { usuarioEhCodaeDilog } from "../../../../helpers/utilities";
+import React from "react";
+import { LeafItem, Menu, SubMenu } from "./shared";
 
 const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
   return (
-    <Menu id="PreRecebimento" icon="fa-calendar-check" title="Pré-Recebimento">
+    <Menu
+      id="PreRecebimento"
+      icon="fa-calendar-check"
+      title="Pré-Recebimento"
+      dataTestId="pre-recebimento"
+    >
       {usuarioComAcessoAoPainelAprovacoes() && (
         <LeafItem to={`/${PRE_RECEBIMENTO}/${PAINEL_APROVACOES}`}>
           Painel de Aprovações
@@ -104,6 +109,7 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
           onClick={onSubmenuClick}
           title="Relatórios"
           activeMenu={activeMenu}
+          dataTestId="relatorios-pr"
         >
           {usuarioComAcessoAoRelatorioCronogramas() && (
             <LeafItem to={`/${PRE_RECEBIMENTO}/${RELATORIO_CRONOGRAMA}/`}>

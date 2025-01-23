@@ -374,6 +374,7 @@ const Relatorio = ({ visao }) => {
                   TIPO_PERFIL.NUTRICAO_MANIFESTACAO,
                   TIPO_PERFIL.MEDICAO,
                   TIPO_PERFIL.CODAE_GABINETE,
+                  TIPO_PERFIL.PRE_RECEBIMENTO,
                 ].includes(tipoPerfil) && (
                   <EscolaCancelaDietaEspecial
                     uuid={dietaEspecial.uuid}
@@ -401,7 +402,6 @@ const Relatorio = ({ visao }) => {
                 cancelar={() => habilitarEdicao()}
               />
             )}
-
           {dietaEspecial &&
             status === statusEnum.ESCOLA_SOLICITOU_INATIVACAO &&
             visao === CODAE && [

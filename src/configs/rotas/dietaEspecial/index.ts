@@ -8,6 +8,7 @@ import {
   usuarioEhCoordenadorNutriCODAE,
   usuarioEhCoordenadorNutriSupervisao,
   usuarioEhDRE,
+  usuarioEhDinutreDiretoria,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
@@ -59,7 +60,8 @@ export const rotasDietaEspecial: Array<RotaInterface> = [
       usuarioEhMedicao() ||
       usuarioEscolaEhGestaoDireta() ||
       usuarioEscolaEhGestaoParceira() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.SOLICITACOES_DIETA_ESPECIAL}/${constants.SOLICITACOES_PENDENTES}`,
@@ -216,7 +218,8 @@ export const rotasDietaEspecial: Array<RotaInterface> = [
       usuarioEhCODAEGabinete() ||
       usuarioEhEmpresaTerceirizada() ||
       ehUsuarioRelatorios() ||
-      usuarioEhGticCODAE(),
+      usuarioEhGticCODAE() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.DIETA_ESPECIAL}/${constants.RELATORIO_DIETAS_CANCELADAS}`,
@@ -234,7 +237,8 @@ export const rotasDietaEspecial: Array<RotaInterface> = [
       usuarioEhCODAEGabinete() ||
       usuarioEhEmpresaTerceirizada() ||
       ehUsuarioRelatorios() ||
-      usuarioEhGticCODAE(),
+      usuarioEhGticCODAE() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.DIETA_ESPECIAL}/${constants.RELATORIO_GERENCIAL_DIETAS}`,
