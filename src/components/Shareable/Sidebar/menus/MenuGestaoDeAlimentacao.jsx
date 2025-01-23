@@ -70,6 +70,7 @@ const MenuGestaoDeAlimentacao = ({ activeMenu, onSubmenuClick }) => {
       id="GestaoAlimentacao"
       icon="fa-utensils"
       title={"Gestão de Alimentação"}
+      dataTestId="gestao-alimentacao"
     >
       {!ehUsuarioRelatorios() && !usuarioEhGticCODAE() && (
         <LeafItem to="/painel-gestao-alimentacao">
@@ -116,6 +117,7 @@ const MenuGestaoDeAlimentacao = ({ activeMenu, onSubmenuClick }) => {
           path="consulta-solicitacoes"
           onClick={onSubmenuClick}
           title="Consulta de Solicitações"
+          dataTestId="consulta-solicitacoes"
           activeMenu={activeMenu}
         >
           {PERFIL === "nutrisupervisao" && (
@@ -138,8 +140,10 @@ const MenuGestaoDeAlimentacao = ({ activeMenu, onSubmenuClick }) => {
               </LeafItem>
             )
           )}
-
-          <LeafItem to={`/${PERFIL}/${SOLICITACOES_AUTORIZADAS}`}>
+          <LeafItem
+            to={`/${PERFIL}/${SOLICITACOES_AUTORIZADAS}`}
+            dataTestId="autorizadas-ga"
+          >
             Autorizadas
           </LeafItem>
           <LeafItem to={`/${PERFIL}/${SOLICITACOES_NEGADAS}`}>Negadas</LeafItem>

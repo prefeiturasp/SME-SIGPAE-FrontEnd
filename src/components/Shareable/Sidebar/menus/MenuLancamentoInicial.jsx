@@ -42,6 +42,7 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
         id="LancamentoInicial"
         icon="fas fa-tachometer-alt"
         title={"Medição Inicial"}
+        dataTestId="medicao-inicial"
       >
         {(usuarioEhEscolaTerceirizada() ||
           usuarioEhEscolaTerceirizadaQualquerPerfil()) && (
@@ -93,6 +94,7 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
             onClick={onSubmenuLancamentoClick}
             title="Relatórios"
             activeMenu={activeSubmenu}
+            dataTestId="relatorios-me"
           >
             <LeafItem
               to={`/${MEDICAO_INICIAL}/${RELATORIOS}/${RELATORIO_ADESAO}`}

@@ -77,7 +77,12 @@ const MenuRelatorios = () => {
     usuarioEhEscolaTerceirizadaDiretor();
 
   return (
-    <Menu id="Relatorios" icon="fa-file-alt" title={"Relatórios"}>
+    <Menu
+      id="Relatorios"
+      icon="fa-file-alt"
+      title={"Relatórios"}
+      dataTestId="relatorios"
+    >
       {exibirProdutosHomologados && (
         <LeafItem
           to={`/${constants.GESTAO_PRODUTO}/relatorios/produtos-homologados`}

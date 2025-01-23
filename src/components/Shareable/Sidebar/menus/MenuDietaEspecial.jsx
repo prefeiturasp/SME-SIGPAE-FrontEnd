@@ -83,7 +83,12 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
     usuarioEhDinutreDiretoria();
 
   return (
-    <Menu id="DietaEspecial" icon="fa-apple-alt" title={"Dieta Especial"}>
+    <Menu
+      id="DietaEspecial"
+      icon="fa-apple-alt"
+      title={"Dieta Especial"}
+      dataTestId="dieta-especial"
+    >
       {exibePainelInicial && (
         <LeafItem to="/painel-dieta-especial">Painel de Solicitações</LeafItem>
       )}
@@ -124,6 +129,7 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
           onClick={onSubmenuClick}
           title="Relatórios"
           activeMenu={activeMenu}
+          dataTestId="relatorios-de"
         >
           <LeafItem to={`/${DIETA_ESPECIAL}/${RELATORIO_DIETAS_AUTORIZADAS}`}>
             Relatório de Dietas Autorizadas
