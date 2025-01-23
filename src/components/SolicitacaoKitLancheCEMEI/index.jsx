@@ -220,7 +220,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
       </div>
       {erroRascunhos && (
         <div className="card mt-3 mb-3">
-          Erro ao carregar rascunhos de Inclusão de Alimentação.
+          Erro ao carregar rascunhos de Solicitações de Kit Lanche CEMEI.
         </div>
       )}
       <Form
