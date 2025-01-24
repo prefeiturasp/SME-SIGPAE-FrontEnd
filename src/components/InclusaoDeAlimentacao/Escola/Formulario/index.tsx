@@ -558,6 +558,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                           <div className="col-6">
                             <Field
                               component={Select}
+                              dataTestId="select-motivo"
                               name={`${name}.motivo`}
                               label="Motivo"
                               options={
@@ -798,10 +799,13 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                 </div>
               </div>
             </div>
-            <ModalDataPrioritaria
-              showModal={showModal}
-              closeModal={() => setShowModal(false)}
-            />
+            {showModal && (
+              <ModalDataPrioritaria
+                showModal={showModal}
+                closeModal={() => setShowModal(false)}
+                dataTestId="botao-ok-modal-data-prioritaria"
+              />
+            )}
           </form>
         )}
       </Form>

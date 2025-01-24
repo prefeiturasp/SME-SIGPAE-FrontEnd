@@ -59,6 +59,7 @@ export const DataInclusaoNormal = ({ ...props }) => {
                   onDataChanged(value);
                 }
               }}
+              dataTestId={`data-motivo-normal-${index}`}
             />
           </div>
           {index > 0 && (
