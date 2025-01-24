@@ -273,15 +273,13 @@ const Relatorio = ({ visao }) => {
   const exibeBotaoImprimir = () => {
     let exibir = true;
     if (dietaEspecial && !editar) {
-      if (
-        usuarioEhEmpresaTerceirizada() ||
-        usuarioEhCogestorDRE() ||
-        usuarioEhNutricionistaSupervisao()
-      ) {
+      if (usuarioEhEmpresaTerceirizada()) {
         exibir = false;
       }
       if (
-        usuarioEhEscola() &&
+        (usuarioEhCogestorDRE() ||
+          usuarioEhNutricionistaSupervisao() ||
+          usuarioEhEscola()) &&
         dietaEspecial.ativo &&
         dietaEspecial.status_solicitacao === "CODAE_AUTORIZADO"
       ) {
