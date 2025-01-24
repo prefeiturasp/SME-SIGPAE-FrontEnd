@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { Container } from "components/InclusaoDeAlimentacao/Escola/Formulario/componentes/Container";
 import { MeusDadosContext } from "context/MeusDadosContext";
@@ -56,6 +57,8 @@ const awaitServices = async () => {
   });
 };
 
+let container;
+
 describe("Teste Formulário Inclusão de Alimentação", () => {
   beforeEach(async () => {
     getMotivosInclusaoNormal.mockResolvedValue({
@@ -102,13 +105,13 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     );
 
     await act(async () => {
-      render(
+      ({ container } = render(
         <MeusDadosContext.Provider
           value={{ meusDados: mockMeusDadosEscolaEMEFPericles }}
         >
           <Container />
         </MeusDadosContext.Provider>
-      );
+      ));
     });
   });
 
@@ -180,5 +183,47 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
         "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
       )
     ).toBeInTheDocument();
+  });
+
+  it("renderiza Períodos `MANHA` e `TARDE`", async () => {
+    await awaitServices();
+    setMotivoValueReposicaoDeAula();
+
+    expect(screen.getByText("Período")).toBeInTheDocument();
+    expect(screen.getByText("MANHA")).toBeInTheDocument();
+    expect(screen.getByText("TARDE")).toBeInTheDocument();
+
+    const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
+    const spanElement = divCheckboxMANHA.querySelector("span");
+
+    // check período MANHA
+    await act(async () => {
+      fireEvent.click(spanElement);
+    });
+
+    const divMultiselectMANHA = screen.getByTestId("multiselect-div-MANHA");
+    const dropdown = within(divMultiselectMANHA).getByRole("combobox");
+
+    const spanSelecione = within(dropdown.parentElement).getByText("Selecione");
+    const divDropdownHeading = spanSelecione.parentElement.parentElement;
+
+    // expande seletor Tipo de Alimentação
+    await act(async () => {
+      fireEvent.click(divDropdownHeading);
+    });
+
+    expect(screen.getByText("Todos")).toBeInTheDocument();
+    expect(screen.getByText("Lanche")).toBeInTheDocument();
+    expect(screen.getByText("Refeição")).toBeInTheDocument();
+    expect(screen.getByText("Sobremesa")).toBeInTheDocument();
+
+    const divDropdownContent = container.querySelector(".dropdown-content");
+    const checkboxLanche =
+      within(divDropdownContent).getAllByRole("checkbox")[1];
+
+    // seleciona tipo de alimentação Lanche
+    await act(async () => {
+      fireEvent.click(checkboxLanche);
+    });
   });
 });

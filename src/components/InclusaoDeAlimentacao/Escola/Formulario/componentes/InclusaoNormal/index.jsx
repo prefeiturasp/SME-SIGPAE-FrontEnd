@@ -226,6 +226,7 @@ export const PeriodosInclusaoNormal = ({
                 <div className="col-3">
                   <div
                     className={`period-quantity number-${indice} ps-5 pt-2 pb-2`}
+                    data-testid={`div-checkbox-${getPeriodo(indice).nome}`}
                   >
                     <label htmlFor="check" className="checkbox-label">
                       <Field
@@ -254,7 +255,10 @@ export const PeriodosInclusaoNormal = ({
                   </div>
                 </div>
                 <div className="col-6">
-                  <div className={getPeriodo(indice).multiselect}>
+                  <div
+                    className={getPeriodo(indice).multiselect}
+                    data-testid={`multiselect-div-${getPeriodo(indice).nome}`}
+                  >
                     <Field
                       component={StatefulMultiSelect}
                       name="tipos_alimentacao"
