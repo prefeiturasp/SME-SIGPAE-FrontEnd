@@ -2,17 +2,17 @@ import React from "react";
 import { render, act, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { InclusaoBody } from "../componentes/InclusaoBody";
+import { InclusaoContinuaBody } from "../componentes/InclusaoContinuaBody";
 
-import { mockItemInclusao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItemInclusao";
-import { mockFiltrosSuspensao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
-import { mockSolicitacaoInclusao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacaoInclusao";
+import { mockItemInclusaoContinua } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemInclusaoContinua";
+import { mockFiltrosInclusao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
+import { mockSolicitacaoInclusaoContinua } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoInclusaoContinua";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-describe("Teste <InclusaoBody>", () => {
+describe("Teste <InclusaoContinuaBody>", () => {
   const index = 1;
 
   beforeEach(async () => {
@@ -24,11 +24,11 @@ describe("Teste <InclusaoBody>", () => {
             v7_relativeSplatPath: true,
           }}
         >
-          <InclusaoBody
-            solicitacao={mockSolicitacaoInclusao}
-            item={mockItemInclusao}
+          <InclusaoContinuaBody
+            solicitacao={mockSolicitacaoInclusaoContinua}
+            item={mockItemInclusaoContinua}
             index={index}
-            filtros={mockFiltrosSuspensao}
+            filtros={mockFiltrosInclusao}
             key={index}
             labelData="Data de Autorização"
           />
@@ -38,14 +38,14 @@ describe("Teste <InclusaoBody>", () => {
   });
 
   it("Testa a renderização dos elementos da Tabela", async () => {
-    const numero150 = screen.getByText("150");
+    const numero150 = screen.getByText("10");
 
     const botaoExpandir = numero150
       .closest("tr")
       .querySelector(".fas.fa-angle-down");
     fireEvent.click(botaoExpandir);
 
-    const historico = screen.getByText("Histórico de cancelamento");
-    expect(historico).toBeInTheDocument();
+    const observacao = screen.getByText("TESTE REVIEW");
+    expect(observacao).toBeInTheDocument();
   });
 });
