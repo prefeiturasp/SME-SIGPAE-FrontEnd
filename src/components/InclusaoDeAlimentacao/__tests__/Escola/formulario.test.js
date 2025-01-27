@@ -210,8 +210,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     ).toBeInTheDocument();
   });
 
-  it("renderiza Períodos `MANHA` e `TARDE`", async () => {
-    await awaitServices();
+  const setupInclusaoNormal = async () => {
     setMotivoValueReposicaoDeAula();
 
     const divDia = screen.getByTestId("data-motivo-normal-0");
@@ -266,10 +265,31 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
         target: { value: 100 },
       });
     });
+  };
 
+  it("envia inclusão de alimentação com sucesso", async () => {
+    await awaitServices();
+    await setupInclusaoNormal();
     const botaoEnviarSolicitacao = screen.getByTestId("botao-enviar-inclusao");
     await act(async () => {
       fireEvent.click(botaoEnviarSolicitacao);
+    });
+  });
+
+  it("salva rascunho com sucesso", async () => {
+    await awaitServices();
+    await setupInclusaoNormal();
+    const botaoSalvarRascunho = screen.getByTestId("botao-salvar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoSalvarRascunho);
+    });
+  });
+
+  it("carrega rascunho e atualiza", async () => {
+    await awaitServices();
+    const botaoCarregarRascunho = screen.getByTestId("rascunho-06E82");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
     });
   });
 });

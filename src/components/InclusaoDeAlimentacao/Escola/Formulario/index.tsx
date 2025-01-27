@@ -772,6 +772,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                       texto={
                         values.uuid ? "Atualizar rascunho" : "Salvar rascunho"
                       }
+                      dataTestId="botao-salvar-rascunho"
                       className="ms-3"
                       disabled={submitting}
                       type={BUTTON_TYPE.SUBMIT}

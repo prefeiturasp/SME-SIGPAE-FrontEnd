@@ -266,7 +266,7 @@ export const PeriodosInclusaoNormal = ({
                         getPeriodo(indice).tipos_alimentacao_selecionados || []
                       }
                       options={formatarParaMultiselect(
-                        getPeriodo(indice).tipos_alimentacao
+                        getPeriodo(indice).tipos_alimentacao || []
                       )}
                       onSelectedChanged={(values_) =>
                         onTiposAlimentacaoChanged(values_, indice)

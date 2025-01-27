@@ -42,6 +42,7 @@ export const Rascunhos = ({
                 <i className="fas fa-trash" />
               </span>
               <span
+                data-testid={`rascunho-${id_externo}`}
                 onClick={() =>
                   carregarRascunho(form, values, inclusaoDeAlimentacao)
                 }
