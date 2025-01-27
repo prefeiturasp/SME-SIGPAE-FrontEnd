@@ -43,9 +43,9 @@ export const Rascunhos = ({
               </span>
               <span
                 data-testid={`rascunho-${id_externo}`}
-                onClick={() =>
-                  carregarRascunho(form, values, inclusaoDeAlimentacao)
-                }
+                onClick={async () => {
+                  await carregarRascunho(form, values, inclusaoDeAlimentacao);
+                }}
               >
                 <i className="fas fa-edit" />
               </span>

@@ -242,8 +242,8 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
     setCarregandoRascunho(true);
     setUuid(inclusao.uuid);
     setIdExterno(inclusao.id_externo);
-    await form.change("uuid", inclusao.uuid);
-    await form.change("id_externo", inclusao.id_externo);
+    form.change("uuid", inclusao.uuid);
+    form.change("id_externo", inclusao.id_externo);
     const inclusao_ = deepCopy(inclusao);
     if (inclusao_.inclusoes) {
       carregarRascunhoNormal(form, inclusao_);
@@ -299,16 +299,16 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
           (qp_) => qp_.nome === qp.periodo_escolar.nome
         );
       }
-      await form.change(`quantidades_periodo[${index}].checked`, true);
-      await form.change(
+      form.change(`quantidades_periodo[${index}].checked`, true);
+      form.change(
         `quantidades_periodo[${index}].multiselect`,
         "multiselect-wrapper-enabled"
       );
-      await form.change(
+      form.change(
         `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
         qp.tipos_alimentacao.map((t) => t.uuid)
       );
-      await form.change(
+      form.change(
         `quantidades_periodo[${index}].numero_alunos`,
         qp.numero_alunos
       );
@@ -346,14 +346,14 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
       });
     }
 
-    await form.change("inclusoes", [
+    form.change("inclusoes", [
       {
         motivo: inclusao_.motivo.uuid,
         data_inicial: inclusao_.data_inicial,
         data_final: inclusao_.data_final,
       },
     ]);
-    await form.change("quantidades_periodo", quantidades_periodo_);
+    form.change("quantidades_periodo", quantidades_periodo_);
   };
 
   const refresh = (form: FormApi<any, Partial<any>>): void => {
@@ -412,7 +412,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
       toastError(erro);
       return;
     }
-    if (!values.uuid) {
+    if (!uuid) {
       const response = await createInclusaoAlimentacao(
         tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_NORMAL
           ? formatarSubmissaoSolicitacaoNormal(values_)
@@ -435,7 +435,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
       }
     } else {
       const response = await updateInclusaoAlimentacao(
-        values.uuid,
+        uuid,
         tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_NORMAL
           ? formatarSubmissaoSolicitacaoNormal(values_)
           : motivoETECSelecionado(values)
@@ -447,7 +447,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
       );
       if (response.status === HTTP_STATUS.OK) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(values.uuid, tipoSolicitacao, form);
+          iniciarPedido(uuid, tipoSolicitacao, form);
         } else {
           toastSuccess("Rascunho atualizado com sucesso");
         }
@@ -544,9 +544,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
               </div>
             )}
             <div className="mt-2 page-title">
-              {values.uuid
-                ? `Solicitação # ${values.id_externo}`
-                : "Nova Solicitação"}
+              {uuid ? `Solicitação # ${idExterno}` : "Nova Solicitação"}
             </div>
             <div className="card solicitation mt-2">
               <div className="card-body">
@@ -769,13 +767,14 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                     />
                     <Botao
-                      texto={
-                        values.uuid ? "Atualizar rascunho" : "Salvar rascunho"
-                      }
+                      texto={uuid ? "Atualizar rascunho" : "Salvar rascunho"}
                       dataTestId="botao-salvar-rascunho"
                       className="ms-3"
                       disabled={submitting}
-                      type={BUTTON_TYPE.SUBMIT}
+                      type={BUTTON_TYPE.BUTTON}
+                      onClick={async () => {
+                        await handleSubmit(values);
+                      }}
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                     />
                     <Botao

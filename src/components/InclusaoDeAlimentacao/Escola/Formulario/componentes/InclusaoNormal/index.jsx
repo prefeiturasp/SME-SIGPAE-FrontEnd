@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
@@ -140,8 +140,11 @@ export const PeriodosInclusaoNormal = ({
   const getPeriodo = (indice) => {
     return values.quantidades_periodo[indice];
   };
-  form.change("uuid", uuid);
-  form.change("id_externo", idExterno);
+  useEffect(() => {
+    form.change("uuid", uuid);
+    form.change("id_externo", idExterno);
+  }, [form, uuid, idExterno]);
+
   const onTiposAlimentacaoChanged = (values_, indice) => {
     if (ehETEC) {
       const LANCHE_4H_UUID = periodos[0].tipos_alimentacao.find(
