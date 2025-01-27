@@ -291,6 +291,7 @@ export const PeriodosInclusaoNormal = ({
                     min="0"
                     className="form-control quantidade-aluno"
                     required={getPeriodo(indice).checked}
+                    dataTestIdDiv={`numero-alunos-${indice}`}
                     validate={
                       meusDados.vinculo_atual.instituicao
                         .tipo_unidade_escolar_iniciais !== "CEU GESTAO"

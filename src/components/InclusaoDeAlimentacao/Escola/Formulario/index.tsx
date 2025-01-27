@@ -527,7 +527,10 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
           },
           values,
         }) => (
-          <form onSubmit={handleSubmit}>
+          <form
+            onSubmit={handleSubmit}
+            data-testid="formulario-inclusao-alimentacao"
+          >
             {rascunhos && rascunhos.length > 0 && (
               <div className="mt-3">
                 <span className="page-title">Rascunhos</span>
@@ -776,6 +779,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                     />
                     <Botao
                       texto="Enviar inclusão"
+                      dataTestId="botao-enviar-inclusao"
                       type={BUTTON_TYPE.BUTTON}
                       disabled={
                         submitting ||
@@ -788,9 +792,9 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                               !q.tipos_alimentacao_selecionados.length
                           ))
                       }
-                      onClick={() => {
+                      onClick={async () => {
                         values["status"] = STATUS_DRE_A_VALIDAR;
-                        handleSubmit(values);
+                        await handleSubmit(values);
                       }}
                       style={BUTTON_STYLE.GREEN}
                       className="ms-3"

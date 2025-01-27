@@ -8,7 +8,10 @@ import {
   within,
 } from "@testing-library/react";
 import { Container } from "components/InclusaoDeAlimentacao/Escola/Formulario/componentes/Container";
+import { TIPO_SOLICITACAO } from "constants/shared";
 import { MeusDadosContext } from "context/MeusDadosContext";
+import { mockCreateGrupoInclusaoNormal } from "mocks/InclusaoAlimentacao/mockCreateGrupoInclusaoNormal";
+import { mockInicioPedidoGrupoInclusaoAlimentacao } from "mocks/InclusaoAlimentacao/mockInicioPedidoGrupoInclusaoAlimentacao";
 import { mockMinhasSolicitacoesInclusaoNormal } from "mocks/InclusaoAlimentacao/mockMinhasSolicitacoesInclusaoNormal";
 import { mockMotivoInclusaoEspecifico } from "mocks/InclusaoAlimentacao/mockMotivoInclusaoEspecifico";
 import { mockMotivosInclusaoContinua } from "mocks/InclusaoAlimentacao/mockMotivosInclusaoContinua";
@@ -30,8 +33,10 @@ import {
   getQuantidadeAlunosEscola,
 } from "services/escola.service";
 import {
+  createInclusaoAlimentacao,
   getMotivosInclusaoContinua,
   getMotivosInclusaoNormal,
+  iniciaFluxoInclusaoAlimentacao,
   obterMinhasSolicitacoesDeInclusaoDeAlimentacao,
 } from "services/inclusaoDeAlimentacao";
 
@@ -89,12 +94,32 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       data: mockDiasUteis,
       status: 200,
     });
-    obterMinhasSolicitacoesDeInclusaoDeAlimentacao.mockResolvedValueOnce({
-      data: mockMinhasSolicitacoesInclusaoNormal,
-      status: 200,
+    obterMinhasSolicitacoesDeInclusaoDeAlimentacao.mockImplementation(
+      (tipo) => {
+        if (tipo === TIPO_SOLICITACAO.SOLICITACAO_NORMAL) {
+          return Promise.resolve({
+            data: mockMinhasSolicitacoesInclusaoNormal,
+            status: 200,
+          });
+        }
+        if (tipo === TIPO_SOLICITACAO.SOLICITACAO_CONTINUA) {
+          return Promise.resolve({
+            data: { results: [] },
+            status: 200,
+          });
+        }
+        return Promise.resolve({
+          data: { results: [] },
+          status: 500,
+        });
+      }
+    );
+    createInclusaoAlimentacao.mockResolvedValue({
+      data: mockCreateGrupoInclusaoNormal,
+      status: 201,
     });
-    obterMinhasSolicitacoesDeInclusaoDeAlimentacao.mockResolvedValueOnce({
-      data: { results: [] },
+    iniciaFluxoInclusaoAlimentacao.mockResolvedValue({
+      data: mockInicioPedidoGrupoInclusaoAlimentacao,
       status: 200,
     });
 
@@ -189,6 +214,12 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     await awaitServices();
     setMotivoValueReposicaoDeAula();
 
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    const inputElement = divDia.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "30/01/2025" },
+    });
+
     expect(screen.getByText("Período")).toBeInTheDocument();
     expect(screen.getByText("MANHA")).toBeInTheDocument();
     expect(screen.getByText("TARDE")).toBeInTheDocument();
@@ -209,6 +240,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
 
     // expande seletor Tipo de Alimentação
     await act(async () => {
+      createInclusaoAlimentacao;
       fireEvent.click(divDropdownHeading);
     });
 
@@ -224,6 +256,20 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     // seleciona tipo de alimentação Lanche
     await act(async () => {
       fireEvent.click(checkboxLanche);
+    });
+
+    const divNumeroAlunos = screen.getByTestId("numero-alunos-0");
+    const inputElementNumeroAlunos = divNumeroAlunos.querySelector("input");
+
+    await act(async () => {
+      fireEvent.change(inputElementNumeroAlunos, {
+        target: { value: 100 },
+      });
+    });
+
+    const botaoEnviarSolicitacao = screen.getByTestId("botao-enviar-inclusao");
+    await act(async () => {
+      fireEvent.click(botaoEnviarSolicitacao);
     });
   });
 });
