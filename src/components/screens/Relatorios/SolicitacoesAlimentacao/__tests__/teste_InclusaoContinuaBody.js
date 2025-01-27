@@ -38,9 +38,9 @@ describe("Teste <InclusaoContinuaBody>", () => {
   });
 
   it("Testa a renderização dos elementos da Tabela", async () => {
-    const numero150 = screen.getByText("10");
+    const numero = screen.getByText("10");
 
-    const botaoExpandir = numero150
+    const botaoExpandir = numero
       .closest("tr")
       .querySelector(".fas.fa-angle-down");
     fireEvent.click(botaoExpandir);
