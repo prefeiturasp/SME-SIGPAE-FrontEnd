@@ -38,6 +38,7 @@ import {
   getMotivosInclusaoNormal,
   iniciaFluxoInclusaoAlimentacao,
   obterMinhasSolicitacoesDeInclusaoDeAlimentacao,
+  updateInclusaoAlimentacao,
 } from "services/inclusaoDeAlimentacao";
 
 jest.mock("services/cadastroTipoAlimentacao.service");
@@ -118,6 +119,10 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       data: mockCreateGrupoInclusaoNormal,
       status: 201,
     });
+    updateInclusaoAlimentacao.mockResolvedValue({
+      data: mockCreateGrupoInclusaoNormal,
+      status: 200,
+    });
     iniciaFluxoInclusaoAlimentacao.mockResolvedValue({
       data: mockInicioPedidoGrupoInclusaoAlimentacao,
       status: 200,
@@ -168,11 +173,11 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.getByText("Motivo")).toBeInTheDocument();
   });
 
-  const setMotivoValueReposicaoDeAula = () => {
+  const setMotivoValueEventoEspecífico = () => {
     const selectMotivo = screen.getByTestId("select-motivo");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoReposicaoDeAula = mockMotivosInclusaoNormal.results.find(
-      (motivo) => motivo.nome === "Reposição de aula"
+      (motivo) => motivo.nome === "Evento Específico"
     ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoReposicaoDeAula },
@@ -181,13 +186,13 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
 
   it("renderiza label `Dia` após selecionar um motivo", async () => {
     await awaitServices();
-    setMotivoValueReposicaoDeAula();
+    setMotivoValueEventoEspecífico();
     expect(screen.getByText("Dia")).toBeInTheDocument();
   });
 
   it("renderiza modal para dia selecionado ser menor que 5 dias úteis", async () => {
     await awaitServices();
-    setMotivoValueReposicaoDeAula();
+    setMotivoValueEventoEspecífico();
     const divDia = screen.getByTestId("data-motivo-normal-0");
     const inputElement = divDia.querySelector("input");
 
@@ -210,8 +215,8 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     ).toBeInTheDocument();
   });
 
-  const setupInclusaoNormal = async () => {
-    setMotivoValueReposicaoDeAula();
+  const setupInclusaoNormalMotivoEspecifico = async () => {
+    setMotivoValueEventoEspecífico();
 
     const divDia = screen.getByTestId("data-motivo-normal-0");
     const inputElement = divDia.querySelector("input");
@@ -222,17 +227,21 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.getByText("Período")).toBeInTheDocument();
     expect(screen.getByText("MANHA")).toBeInTheDocument();
     expect(screen.getByText("TARDE")).toBeInTheDocument();
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+    expect(screen.getByText("NOITE")).toBeInTheDocument();
 
-    const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
-    const spanElement = divCheckboxMANHA.querySelector("span");
+    const divCheckboxINTEGRAL = screen.getByTestId("div-checkbox-INTEGRAL");
+    const spanElement = divCheckboxINTEGRAL.querySelector("span");
 
-    // check período MANHA
+    // check período INTEGRAL
     await act(async () => {
       fireEvent.click(spanElement);
     });
 
-    const divMultiselectMANHA = screen.getByTestId("multiselect-div-MANHA");
-    const dropdown = within(divMultiselectMANHA).getByRole("combobox");
+    const divMultiselectINTEGRAL = screen.getByTestId(
+      "multiselect-div-INTEGRAL"
+    );
+    const dropdown = within(divMultiselectINTEGRAL).getByRole("combobox");
 
     const spanSelecione = within(dropdown.parentElement).getByText("Selecione");
     const divDropdownHeading = spanSelecione.parentElement.parentElement;
@@ -247,6 +256,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.getByText("Lanche")).toBeInTheDocument();
     expect(screen.getByText("Refeição")).toBeInTheDocument();
     expect(screen.getByText("Sobremesa")).toBeInTheDocument();
+    expect(screen.getByText("Lanche 4h")).toBeInTheDocument();
 
     const divDropdownContent = container.querySelector(".dropdown-content");
     const checkboxLanche =
@@ -257,7 +267,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       fireEvent.click(checkboxLanche);
     });
 
-    const divNumeroAlunos = screen.getByTestId("numero-alunos-0");
+    const divNumeroAlunos = screen.getByTestId("numero-alunos-2");
     const inputElementNumeroAlunos = divNumeroAlunos.querySelector("input");
 
     await act(async () => {
@@ -269,7 +279,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
 
   it("envia inclusão de alimentação com sucesso", async () => {
     await awaitServices();
-    await setupInclusaoNormal();
+    await setupInclusaoNormalMotivoEspecifico();
     const botaoEnviarSolicitacao = screen.getByTestId("botao-enviar-inclusao");
     await act(async () => {
       fireEvent.click(botaoEnviarSolicitacao);
@@ -278,7 +288,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
 
   it("salva rascunho com sucesso", async () => {
     await awaitServices();
-    await setupInclusaoNormal();
+    await setupInclusaoNormalMotivoEspecifico();
     const botaoSalvarRascunho = screen.getByTestId("botao-salvar-rascunho");
     await act(async () => {
       fireEvent.click(botaoSalvarRascunho);
@@ -287,9 +297,26 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
 
   it("carrega rascunho e atualiza", async () => {
     await awaitServices();
-    const botaoCarregarRascunho = screen.getByTestId("rascunho-06E82");
+    const botaoCarregarRascunho = screen.getByTestId("rascunho-9C037");
     await act(async () => {
       fireEvent.click(botaoCarregarRascunho);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Solicitação # 9C037")).toBeInTheDocument();
+
+      expect(screen.getByText("Período")).toBeInTheDocument();
+      expect(screen.getByText("MANHA")).toBeInTheDocument();
+      expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+
+      const divNumeroAlunos = screen.getByTestId("numero-alunos-2");
+      const inputElementNumeroAlunos = divNumeroAlunos.querySelector("input");
+      expect(inputElementNumeroAlunos).toHaveValue(12);
+    });
+
+    const botaoSalvarRascunho = screen.getByTestId("botao-salvar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoSalvarRascunho);
     });
   });
 });

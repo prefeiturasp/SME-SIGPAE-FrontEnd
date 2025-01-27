@@ -13,7 +13,7 @@ export const mockMotivosInclusaoNormal = {
     },
     {
       nome: "Evento Específico",
-      uuid: "241f5771-f67b-4738-b919-e360bf913e20",
+      uuid: "28ccf14d-a6a7-4089-b8d6-f8b1b5098102",
     },
     {
       nome: "Outro",
