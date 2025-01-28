@@ -4,7 +4,11 @@ import Botao from "../Botao";
 import { BUTTON_TYPE, BUTTON_STYLE } from "../Botao/constants";
 
 export default (props) => (
-  <Modal show={props.showModal} onHide={props.closeModal}>
+  <Modal
+    show={props.showModal}
+    onHide={props.closeModal}
+    data-testid="modal-data-prioritaria"
+  >
     <Modal.Header closeButton>
       <Modal.Title>Atenção</Modal.Title>
     </Modal.Header>
@@ -20,6 +24,7 @@ export default (props) => (
         onClick={props.closeModal}
         style={BUTTON_STYLE.GREEN}
         className="ms-3"
+        dataTestId={props.dataTestId}
       />
     </Modal.Footer>
   </Modal>

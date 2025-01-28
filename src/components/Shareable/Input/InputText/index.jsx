@@ -42,6 +42,7 @@ export const InputText = (props) => {
     prefix,
     onBlur,
     dataTestid,
+    dataTestIdDiv,
   } = props;
 
   const inputProps = {
@@ -57,7 +58,10 @@ export const InputText = (props) => {
   };
 
   return (
-    <div className={`input ${icone && "icon"}`} data-testid="input-div">
+    <div
+      className={`input ${icone && "icon"}`}
+      data-testid={dataTestIdDiv || "input-div"}
+    >
       {label && [
         required && !esconderAsterisco && (
           <span key={0} className="required-asterisk">

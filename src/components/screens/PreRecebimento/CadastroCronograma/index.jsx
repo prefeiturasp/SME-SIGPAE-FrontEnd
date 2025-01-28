@@ -460,6 +460,7 @@ export default () => {
                         required
                         validate={required}
                         disabled={!values.empresa}
+                        dataTestId="select-div"
                       />
                     </div>
                   </div>

@@ -17,8 +17,6 @@ import {
 } from "../../../../../services/terceirizada.service";
 import {
   mockContratosCadastrados,
-  mockEmpresa,
-  mockEmpresaSemNutri,
   mockListaModalidades,
 } from "../../../../../mocks/Cadastros/CadastroEmpresa/mocksCadastroEmpresa";
 import { getLotesSimples } from "services/lote.service";
@@ -28,6 +26,10 @@ import {
 } from "../../../../../mocks/Cadastros/CadastroEmpresa/mocksHelper";
 import { TIPO_PERFIL } from "../../../../../constants/shared";
 import { getEnderecoPorCEP } from "services/cep.service";
+import {
+  mockEmpresa,
+  mockEmpresaSemNutri,
+} from "../../../../../mocks/terceirizada.service/mockGetTerceirizadaUUID";
 
 jest.mock("services/terceirizada.service.js");
 jest.mock("services/lote.service.js");
