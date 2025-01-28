@@ -12,7 +12,9 @@ export const prepararPayloadCronograma = (
   let recebimentosPayload = prepararPayloadRecebimentos(values, recebimentos);
   return {
     cronograma: cronograma.uuid,
-    qtd_total_programada: values.quantidade_total.replaceAll(".", ""),
+    qtd_total_programada: values.quantidade_total
+      ?.replaceAll(".", "")
+      .replace(",", "."),
     etapas: etapasPayload,
     programacoes_de_recebimento: recebimentosPayload,
     justificativa: values.justificativa,

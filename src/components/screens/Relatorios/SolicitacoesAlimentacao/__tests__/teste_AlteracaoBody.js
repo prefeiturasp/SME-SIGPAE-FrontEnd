@@ -2,17 +2,17 @@ import React from "react";
 import { render, act, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { SuspensaoAlimentacaoBody } from "../componentes/SuspensaoAlimentacaoBody";
+import { AlteracaoBody } from "../componentes/AlteracaoBody";
 
-import { mockSolicitacaoSuspensaoAlimentacao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoSuspensaoAlimentacao";
-import { mockItemSuspensao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemSuspensao";
+import { mockItemAlteracao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemAlteracao";
 import { mockFiltrosSuspensao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
+import { mockSolicitacaoAlteracao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoAlteracao";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-describe("Teste <SuspensaoAlimentacaoBody>", () => {
+describe("Teste <AlteracaoBody>", () => {
   const index = 1;
 
   beforeEach(async () => {
@@ -24,13 +24,13 @@ describe("Teste <SuspensaoAlimentacaoBody>", () => {
             v7_relativeSplatPath: true,
           }}
         >
-          <SuspensaoAlimentacaoBody
-            solicitacao={mockSolicitacaoSuspensaoAlimentacao}
-            item={mockItemSuspensao}
+          <AlteracaoBody
+            solicitacao={mockSolicitacaoAlteracao}
+            item={mockItemAlteracao}
             index={index}
             filtros={mockFiltrosSuspensao}
             key={index}
-            labelData="Data de Suspensão"
+            labelData="Data de Autorização"
           />
         </MemoryRouter>
       );
@@ -38,15 +38,14 @@ describe("Teste <SuspensaoAlimentacaoBody>", () => {
   });
 
   it("Testa a renderização dos elementos da Tabela", async () => {
-    const numero150 = screen.getByText("150");
+    const numero = screen.getByText("150");
 
-    // Encontra o elemento <i> mais próximo do número
-    const botaoExpandir = numero150
+    const botaoExpandir = numero
       .closest("tr")
       .querySelector(".fas.fa-angle-down");
     fireEvent.click(botaoExpandir);
 
-    const historico = screen.getByText("Histórico de cancelamento");
-    expect(historico).toBeInTheDocument();
+    const observacao = screen.getByText("teste dani");
+    expect(observacao).toBeInTheDocument();
   });
 });

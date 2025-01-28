@@ -2,17 +2,17 @@ import React from "react";
 import { render, act, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { SuspensaoAlimentacaoBody } from "../componentes/SuspensaoAlimentacaoBody";
+import { AlteracaoCEMEIBody } from "../componentes/AlteracaoCEMEIBody";
 
-import { mockSolicitacaoSuspensaoAlimentacao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoSuspensaoAlimentacao";
-import { mockItemSuspensao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemSuspensao";
+import { mockItemAlteracaoCEMEI } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemAlteracaoCEMEI";
 import { mockFiltrosSuspensao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
+import { mockSolicitacaoAlteracaoCEMEI } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoAlteracaoCEMEI";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-describe("Teste <SuspensaoAlimentacaoBody>", () => {
+describe("Teste <AlteracaoCEMEIBody>", () => {
   const index = 1;
 
   beforeEach(async () => {
@@ -24,13 +24,13 @@ describe("Teste <SuspensaoAlimentacaoBody>", () => {
             v7_relativeSplatPath: true,
           }}
         >
-          <SuspensaoAlimentacaoBody
-            solicitacao={mockSolicitacaoSuspensaoAlimentacao}
-            item={mockItemSuspensao}
+          <AlteracaoCEMEIBody
+            solicitacao={mockSolicitacaoAlteracaoCEMEI}
+            item={mockItemAlteracaoCEMEI}
             index={index}
             filtros={mockFiltrosSuspensao}
             key={index}
-            labelData="Data de Suspensão"
+            labelData="Data de Autorização"
           />
         </MemoryRouter>
       );
@@ -38,15 +38,14 @@ describe("Teste <SuspensaoAlimentacaoBody>", () => {
   });
 
   it("Testa a renderização dos elementos da Tabela", async () => {
-    const numero150 = screen.getByText("150");
+    const data = screen.getByText("02/08/2023");
 
-    // Encontra o elemento <i> mais próximo do número
-    const botaoExpandir = numero150
+    const botaoExpandir = data
       .closest("tr")
       .querySelector(".fas.fa-angle-down");
     fireEvent.click(botaoExpandir);
 
-    const historico = screen.getByText("Histórico de cancelamento");
-    expect(historico).toBeInTheDocument();
+    const observacao = screen.getByText("TESTE APRESENTAÇÃO REVIEW 17/07");
+    expect(observacao).toBeInTheDocument();
   });
 });
