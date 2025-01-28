@@ -39,6 +39,7 @@ import {
   getMotivosInclusaoNormal,
   iniciaFluxoInclusaoAlimentacao,
   obterMinhasSolicitacoesDeInclusaoDeAlimentacao,
+  updateInclusaoAlimentacao,
 } from "services/inclusaoDeAlimentacao";
 
 jest.mock("services/cadastroTipoAlimentacao.service");
@@ -120,6 +121,10 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     createInclusaoAlimentacao.mockResolvedValue({
       data: mockCreateInclusaoContinua,
       status: 201,
+    });
+    updateInclusaoAlimentacao.mockResolvedValue({
+      data: mockCreateInclusaoContinua,
+      status: 200,
     });
     iniciaFluxoInclusaoAlimentacao.mockResolvedValue({
       data: mockInicioPedidoInclusaoContinua,
@@ -268,11 +273,9 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     });
   });
 
-  /*
-
   it("salva rascunho com sucesso", async () => {
     await awaitServices();
-    await setupInclusaoNormal();
+    await setupInclusaoContinua();
     const botaoSalvarRascunho = screen.getByTestId("botao-salvar-rascunho");
     await act(async () => {
       fireEvent.click(botaoSalvarRascunho);
@@ -281,25 +284,18 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
 
   it("carrega rascunho e atualiza", async () => {
     await awaitServices();
-    const botaoCarregarRascunho = screen.getByTestId("rascunho-06E82");
+    const botaoCarregarRascunho = screen.getByTestId("rascunho-12CDB");
     await act(async () => {
       fireEvent.click(botaoCarregarRascunho);
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Solicitação # 06E82")).toBeInTheDocument();
-
-      expect(screen.getByText("Período")).toBeInTheDocument();
-      expect(screen.getByText("MANHA")).toBeInTheDocument();
-
-      const divNumeroAlunos = screen.getByTestId("numero-alunos-0");
-      const inputElementNumeroAlunos = divNumeroAlunos.querySelector("input");
-      expect(inputElementNumeroAlunos).toHaveValue(100);
+      expect(screen.getByText("Solicitação # 12CDB")).toBeInTheDocument();
     });
 
     const botaoSalvarRascunho = screen.getByTestId("botao-salvar-rascunho");
     await act(async () => {
       fireEvent.click(botaoSalvarRascunho);
     });
-  });*/
+  });
 });
