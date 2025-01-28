@@ -559,7 +559,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                           <div className="col-6">
                             <Field
                               component={Select}
-                              dataTestId="select-motivo"
+                              dataTestId={`select-motivo-${index}`}
                               name={`${name}.motivo`}
                               label="Motivo"
                               options={

@@ -187,7 +187,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
   });
 
   const setMotivoValueProgramasProjetosContinuos = () => {
-    const selectMotivo = screen.getByTestId("select-motivo");
+    const selectMotivo = screen.getByTestId("select-motivo-0");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoProgramasProjetosContinuos =
       mockMotivosInclusaoContinua.results.find(

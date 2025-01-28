@@ -174,7 +174,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
   });
 
   const setMotivoValueReposicaoDeAula = () => {
-    const selectMotivo = screen.getByTestId("select-motivo");
+    const selectMotivo = screen.getByTestId("select-motivo-0");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoReposicaoDeAula = mockMotivosInclusaoNormal.results.find(
       (motivo) => motivo.nome === "Reposição de aula"
@@ -310,6 +310,47 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     const botaoSalvarRascunho = screen.getByTestId("botao-salvar-rascunho");
     await act(async () => {
       fireEvent.click(botaoSalvarRascunho);
+    });
+  });
+
+  it("adiciona e remove dia do array de dias", async () => {
+    await awaitServices();
+
+    const selectMotivo = screen.getByTestId("select-motivo-0");
+    let selectElement = selectMotivo.querySelector("select");
+    const uuidMotivoOutro = mockMotivosInclusaoNormal.results.find(
+      (motivo) => motivo.nome === "Outro"
+    ).uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidMotivoOutro },
+    });
+
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    let inputElement = divDia.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "30/01/2025" },
+    });
+
+    const botaoAdicionarDia = screen.getByTestId("botao-adicionar-dia");
+    await act(async () => {
+      fireEvent.click(botaoAdicionarDia);
+    });
+
+    const selectMotivo1 = screen.getByTestId("select-motivo-1");
+    selectElement = selectMotivo1.querySelector("select");
+    fireEvent.change(selectElement, {
+      target: { value: uuidMotivoOutro },
+    });
+
+    const divDia1 = screen.getByTestId("data-motivo-normal-1");
+    inputElement = divDia1.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "31/01/2025" },
+    });
+
+    const botaoRemoverDia = screen.getByTestId("botao-remover-dia-1");
+    await act(async () => {
+      fireEvent.click(botaoRemoverDia);
     });
   });
 });

@@ -174,7 +174,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
   });
 
   const setMotivoValueEventoEspecífico = () => {
-    const selectMotivo = screen.getByTestId("select-motivo");
+    const selectMotivo = screen.getByTestId("select-motivo-0");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoReposicaoDeAula = mockMotivosInclusaoNormal.results.find(
       (motivo) => motivo.nome === "Evento Específico"

@@ -78,6 +78,7 @@ export const DataInclusaoNormal = ({ ...props }) => {
                 style={BUTTON_STYLE.BLUE_OUTLINE}
                 icon={BUTTON_ICON.TRASH}
                 className="botao-remover-dia"
+                dataTestId={`botao-remover-dia-${index}`}
               />
             </div>
           )}
@@ -95,6 +96,7 @@ export const AdicionarDia = ({ push, nameFieldArray }) => {
       onClick={() => push(nameFieldArray || "inclusoes")}
       style={BUTTON_STYLE.GREEN_OUTLINE}
       type={BUTTON_TYPE.BUTTON}
+      dataTestId="botao-adicionar-dia"
     />
   );
 };
