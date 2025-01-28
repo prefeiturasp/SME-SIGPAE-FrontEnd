@@ -30,6 +30,7 @@ export const Rascunhos = ({
             <div className="icon-draft-card float-end">
               Criado em: {inclusaoDeAlimentacao.criado_em}
               <span
+                data-testid={`remover-rascunho-${id_externo}`}
                 onClick={() =>
                   removerRascunho(
                     id_externo,
@@ -42,9 +43,10 @@ export const Rascunhos = ({
                 <i className="fas fa-trash" />
               </span>
               <span
-                onClick={() =>
-                  carregarRascunho(form, values, inclusaoDeAlimentacao)
-                }
+                data-testid={`rascunho-${id_externo}`}
+                onClick={async () => {
+                  await carregarRascunho(form, values, inclusaoDeAlimentacao);
+                }}
               >
                 <i className="fas fa-edit" />
               </span>

@@ -30,6 +30,7 @@ describe("teste Select", () => {
         label="mylabel"
         required
         validate={required}
+        dataTestId="select-div"
         {...props}
       />
     );

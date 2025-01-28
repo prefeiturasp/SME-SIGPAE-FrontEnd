@@ -27,13 +27,11 @@ export const validarSubmissaoNormal = (
 
   if (
     meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
-    "CEU GESTAO"
+      "CEU GESTAO" &&
+    !ehMotivoEspecifico &&
+    meusDados.vinculo_atual.instituicao.quantidade_alunos < totalAlunos
   ) {
-    if (
-      !ehMotivoEspecifico &&
-      meusDados.vinculo_atual.instituicao.quantidade_alunos < totalAlunos
-    )
-      return "Número total de alunos do pedido ultrapassa quantidade de alunos da escola";
+    return "Número total de alunos do pedido ultrapassa quantidade de alunos da escola";
   }
   return false;
 };
