@@ -1,4 +1,7 @@
-import { validarSubmissaoNormal } from "components/InclusaoDeAlimentacao/Escola/Formulario/validacao";
+import {
+  validarSubmissaoContinua,
+  validarSubmissaoNormal,
+} from "components/InclusaoDeAlimentacao/Escola/Formulario/validacao";
 
 const values = {
   escola: "b5e1f9b4-d5f3-44bb-9018-57d0c78b2e8a",
@@ -119,6 +122,32 @@ describe("teste validarSubmissaoNormal", () => {
     ];
 
     expect(validarSubmissaoNormal(values, meusDados, false)).toEqual(
+      "Número total de alunos do pedido ultrapassa quantidade de alunos da escola"
+    );
+  });
+});
+
+describe("teste validarSubmissaoContinua", () => {
+  test("retorna erro `Necessário adicionar ao menos uma recorrência`", () => {
+    expect(validarSubmissaoContinua({}, meusDados, false)).toEqual(
+      "Necessário adicionar ao menos uma recorrência"
+    );
+  });
+
+  test("retorna erro `Número total de alunos do pedido ultrapassa quantidade de alunos da escola`", () => {
+    values["quantidades_periodo"][0]["checked"] = true;
+    values["quantidades_periodo"][0]["numero_alunos"] = 300;
+    values["quantidades_periodo"][0]["tipos_alimentacao_selecionados"] = [
+      "685ce431-dd9f-4eaf-89af-7027929707fb",
+    ];
+
+    values["quantidades_periodo"][1]["checked"] = true;
+    values["quantidades_periodo"][1]["numero_alunos"] = 300;
+    values["quantidades_periodo"][1]["tipos_alimentacao_selecionados"] = [
+      "685ce431-dd9f-4eaf-89af-7027929707fb",
+    ];
+
+    expect(validarSubmissaoContinua(values, meusDados, false)).toEqual(
       "Número total de alunos do pedido ultrapassa quantidade de alunos da escola"
     );
   });
