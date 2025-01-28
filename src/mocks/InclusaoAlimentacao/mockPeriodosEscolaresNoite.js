@@ -53,7 +53,7 @@ export const mockPeriodosEscolaresNoite = {
       ],
       possui_alunos_regulares: null,
       nome: "NOITE",
-      uuid: "6a1f2dde-424c-4900-8f7f-e6198d7df395",
+      uuid: "fb5bed07-9705-4bae-87e4-7accb3250d61",
       posicao: 4,
       tipo_turno: 5,
     },

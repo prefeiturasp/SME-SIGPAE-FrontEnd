@@ -9,7 +9,7 @@ export const mockMotivosInclusaoContinua = {
     },
     {
       nome: "ETEC",
-      uuid: "6c881fab-a9d6-4193-bbba-22132956fc2d",
+      uuid: "d1ccc288-c941-4ffe-9a19-ff586d971f02",
     },
     {
       nome: "Programas/Projetos Específicos",

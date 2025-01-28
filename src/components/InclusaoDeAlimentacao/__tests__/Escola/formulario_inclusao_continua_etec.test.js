@@ -10,9 +10,9 @@ import {
 import { Container } from "components/InclusaoDeAlimentacao/Escola/Formulario/componentes/Container";
 import { TIPO_SOLICITACAO } from "constants/shared";
 import { MeusDadosContext } from "context/MeusDadosContext";
-import { mockCreateGrupoInclusaoNormal } from "mocks/InclusaoAlimentacao/mockCreateGrupoInclusaoNormal";
-import { mockInicioPedidoGrupoInclusaoAlimentacao } from "mocks/InclusaoAlimentacao/mockInicioPedidoGrupoInclusaoAlimentacao";
-import { mockMinhasSolicitacoesInclusaoNormal } from "mocks/InclusaoAlimentacao/mockMinhasSolicitacoesInclusaoNormal";
+import { mockCreateInclusaoContinua } from "mocks/InclusaoAlimentacao/mockCreateInclusaoContinua";
+import { mockInicioPedidoInclusaoContinua } from "mocks/InclusaoAlimentacao/mockInicioPedidoInclusaoContinua";
+import { mockMinhasSolicitacoesInclusaoContinua } from "mocks/InclusaoAlimentacao/mockMinhasSolicitacoesInclusaoContinua";
 import { mockMotivoInclusaoEspecifico } from "mocks/InclusaoAlimentacao/mockMotivoInclusaoEspecifico";
 import { mockMotivosInclusaoContinua } from "mocks/InclusaoAlimentacao/mockMotivosInclusaoContinua";
 import { mockMotivosInclusaoNormal } from "mocks/InclusaoAlimentacao/mockMotivosInclusaoNormal";
@@ -99,13 +99,13 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       (tipo) => {
         if (tipo === TIPO_SOLICITACAO.SOLICITACAO_NORMAL) {
           return Promise.resolve({
-            data: mockMinhasSolicitacoesInclusaoNormal,
+            data: { results: [] },
             status: 200,
           });
         }
         if (tipo === TIPO_SOLICITACAO.SOLICITACAO_CONTINUA) {
           return Promise.resolve({
-            data: { results: [] },
+            data: mockMinhasSolicitacoesInclusaoContinua,
             status: 200,
           });
         }
@@ -116,15 +116,15 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       }
     );
     createInclusaoAlimentacao.mockResolvedValue({
-      data: mockCreateGrupoInclusaoNormal,
+      data: mockCreateInclusaoContinua,
       status: 201,
     });
     updateInclusaoAlimentacao.mockResolvedValue({
-      data: mockCreateGrupoInclusaoNormal,
+      data: mockCreateInclusaoContinua,
       status: 200,
     });
     iniciaFluxoInclusaoAlimentacao.mockResolvedValue({
-      data: mockInicioPedidoGrupoInclusaoAlimentacao,
+      data: mockInicioPedidoInclusaoContinua,
       status: 200,
     });
 
@@ -133,6 +133,12 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       "nome_instituicao",
       `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
     );
+
+    global.window.ResizeObserver = jest.fn().mockImplementation(() => ({
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+      disconnect: jest.fn(),
+    }));
 
     await act(async () => {
       ({ container } = render(
@@ -160,11 +166,15 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     await awaitServices();
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Inclusão de Alimentação # 06E82")
+      screen.getByText("Inclusão de Alimentação # 12CDB")
     ).toBeInTheDocument();
-    expect(screen.getByText("1 dia(s)")).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 24/01/2025 09:43:08")
+      screen.getByText(
+        "Programas/Projetos Contínuos - (12/02/2025 - 27/02/2025)"
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Criado em: 27/01/2025 16:34:09")
     ).toBeInTheDocument();
   });
 
@@ -173,71 +183,55 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.getByText("Motivo")).toBeInTheDocument();
   });
 
-  const setMotivoValueReposicaoDeAula = () => {
+  const setMotivoValueETEC = () => {
     const selectMotivo = screen.getByTestId("select-motivo");
     const selectElement = selectMotivo.querySelector("select");
-    const uuidMotivoReposicaoDeAula = mockMotivosInclusaoNormal.results.find(
-      (motivo) => motivo.nome === "Reposição de aula"
+    const uuidMotivoETEC = mockMotivosInclusaoContinua.results.find(
+      (motivo) => motivo.nome === "ETEC"
     ).uuid;
     fireEvent.change(selectElement, {
-      target: { value: uuidMotivoReposicaoDeAula },
+      target: { value: uuidMotivoETEC },
     });
   };
 
-  it("renderiza label `Dia` após selecionar um motivo", async () => {
-    await awaitServices();
-    setMotivoValueReposicaoDeAula();
-    expect(screen.getByText("Dia")).toBeInTheDocument();
-  });
+  const setupInclusaoContinuaETEC = async () => {
+    setMotivoValueETEC();
 
-  it("renderiza modal para dia selecionado ser menor que 5 dias úteis", async () => {
-    await awaitServices();
-    setMotivoValueReposicaoDeAula();
-    const divDia = screen.getByTestId("data-motivo-normal-0");
-    const inputElement = divDia.querySelector("input");
+    expect(screen.getByText("De")).toBeInTheDocument();
+    expect(screen.getByText("Até")).toBeInTheDocument();
 
-    expect(screen.queryByText("Atenção")).not.toBeInTheDocument();
+    const divDataInicial = screen.getByTestId("data-inicial-div");
+    const inputDataInicial = divDataInicial.querySelector("input");
+    fireEvent.change(inputDataInicial, {
+      target: { value: "30/01/2025" },
+    });
+
+    const divDataFinal = screen.getByTestId("data-final-div");
+    const inputDataFinal = divDataFinal.querySelector("input");
+    fireEvent.change(inputDataFinal, {
+      target: { value: "01/12/2025" },
+    });
+
     expect(
-      screen.queryByText(
-        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
-      )
+      screen.queryByText("Recorrência e detalhes")
     ).not.toBeInTheDocument();
 
-    fireEvent.change(inputElement, {
-      target: { value: "30/01/2025" },
-    });
-
-    expect(screen.queryByText("Atenção")).toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
-      )
-    ).toBeInTheDocument();
-  });
-
-  const setupInclusaoNormal = async () => {
-    setMotivoValueReposicaoDeAula();
-
-    const divDia = screen.getByTestId("data-motivo-normal-0");
-    const inputElement = divDia.querySelector("input");
-    fireEvent.change(inputElement, {
-      target: { value: "30/01/2025" },
-    });
-
     expect(screen.getByText("Período")).toBeInTheDocument();
-    expect(screen.getByText("MANHA")).toBeInTheDocument();
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
+    expect(screen.getByText("NOITE")).toBeInTheDocument();
 
-    const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
-    const spanElement = divCheckboxMANHA.querySelector("span");
+    expect(screen.queryByText("MANHA")).not.toBeInTheDocument();
+    expect(screen.queryByText("TARDE")).not.toBeInTheDocument();
 
-    // check período MANHA
+    const divCheckboxNOITE = screen.getByTestId("div-checkbox-NOITE");
+    const spanElement = divCheckboxNOITE.querySelector("span");
+
+    // check período NOITE
     await act(async () => {
       fireEvent.click(spanElement);
     });
 
-    const divMultiselectMANHA = screen.getByTestId("multiselect-div-MANHA");
-    const dropdown = within(divMultiselectMANHA).getByRole("combobox");
+    const divMultiselectNOITE = screen.getByTestId("multiselect-div-NOITE");
+    const dropdown = within(divMultiselectNOITE).getByRole("combobox");
 
     const spanSelecione = within(dropdown.parentElement).getByText("Selecione");
     const divDropdownHeading = spanSelecione.parentElement.parentElement;
@@ -247,8 +241,6 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       fireEvent.click(divDropdownHeading);
     });
 
-    expect(screen.getByText("Todos")).toBeInTheDocument();
-    expect(screen.getByText("Lanche")).toBeInTheDocument();
     expect(screen.getByText("Refeição")).toBeInTheDocument();
     expect(screen.getByText("Sobremesa")).toBeInTheDocument();
 
@@ -271,9 +263,9 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     });
   };
 
-  it("envia inclusão de alimentação com sucesso", async () => {
+  it("envia inclusão de alimentação continua com sucesso", async () => {
     await awaitServices();
-    await setupInclusaoNormal();
+    await setupInclusaoContinuaETEC();
     const botaoEnviarSolicitacao = screen.getByTestId("botao-enviar-inclusao");
     await act(async () => {
       fireEvent.click(botaoEnviarSolicitacao);
@@ -282,7 +274,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
 
   it("salva rascunho com sucesso", async () => {
     await awaitServices();
-    await setupInclusaoNormal();
+    await setupInclusaoContinuaETEC();
     const botaoSalvarRascunho = screen.getByTestId("botao-salvar-rascunho");
     await act(async () => {
       fireEvent.click(botaoSalvarRascunho);
@@ -291,20 +283,13 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
 
   it("carrega rascunho e atualiza", async () => {
     await awaitServices();
-    const botaoCarregarRascunho = screen.getByTestId("rascunho-06E82");
+    const botaoCarregarRascunho = screen.getByTestId("rascunho-667F9");
     await act(async () => {
       fireEvent.click(botaoCarregarRascunho);
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Solicitação # 06E82")).toBeInTheDocument();
-
-      expect(screen.getByText("Período")).toBeInTheDocument();
-      expect(screen.getByText("MANHA")).toBeInTheDocument();
-
-      const divNumeroAlunos = screen.getByTestId("numero-alunos-0");
-      const inputElementNumeroAlunos = divNumeroAlunos.querySelector("input");
-      expect(inputElementNumeroAlunos).toHaveValue(100);
+      expect(screen.getByText("Solicitação # 667F9")).toBeInTheDocument();
     });
 
     const botaoSalvarRascunho = screen.getByTestId("botao-salvar-rascunho");
