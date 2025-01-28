@@ -39,6 +39,7 @@ import {
   iniciaFluxoInclusaoAlimentacao,
   obterMinhasSolicitacoesDeInclusaoDeAlimentacao,
   updateInclusaoAlimentacao,
+  escolaExcluirSolicitacaoDeInclusaoDeAlimentacao,
 } from "services/inclusaoDeAlimentacao";
 
 jest.mock("services/cadastroTipoAlimentacao.service");
@@ -126,6 +127,9 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     iniciaFluxoInclusaoAlimentacao.mockResolvedValue({
       data: mockInicioPedidoInclusaoContinua,
       status: 200,
+    });
+    escolaExcluirSolicitacaoDeInclusaoDeAlimentacao.mockResolvedValue({
+      status: 204,
     });
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
@@ -295,6 +299,15 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     const botaoSalvarRascunho = screen.getByTestId("botao-salvar-rascunho");
     await act(async () => {
       fireEvent.click(botaoSalvarRascunho);
+    });
+  });
+
+  it("remove rascunho", async () => {
+    window.confirm = jest.fn().mockImplementation(() => true);
+    await awaitServices();
+    const botaoRemoverRascunho = screen.getByTestId("remover-rascunho-667F9");
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
     });
   });
 });
