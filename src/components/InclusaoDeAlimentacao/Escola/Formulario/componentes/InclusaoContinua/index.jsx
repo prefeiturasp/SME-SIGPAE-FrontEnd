@@ -106,8 +106,11 @@ export const Recorrencia = ({
     getTiposDeAlimentacaoAsync();
   }, []);
 
-  form.change("uuid", uuid);
-  form.change("id_externo", idExterno);
+  useEffect(() => {
+    form.change("uuid", uuid);
+    form.change("id_externo", idExterno);
+  }, [form, uuid, idExterno]);
+
   const handleWeekly = async (value) => {
     const dias_semana = values.dias_semana || [];
     if (dias_semana.includes(value)) {
