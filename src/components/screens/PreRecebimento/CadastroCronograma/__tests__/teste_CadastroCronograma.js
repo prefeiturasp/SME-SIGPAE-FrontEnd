@@ -17,7 +17,7 @@ import { getListaTiposEmbalagens } from "services/qualidade.service";
 import { mockListaDistribuidores } from "mocks/PreRecebimento/CadastroCronograma/mockListaDistribuidores";
 import { mockListaEmpresas } from "mocks/PreRecebimento/CadastroCronograma/mockListaEmpresas";
 import { mockListaFichasTecnicasSimplesAprovadas } from "mocks/PreRecebimento/CadastroCronograma/mockListaFichasTecnicasSimplesAprovadas";
-import { mockListaUnidadesMedidaLogistica } from "mocks/PreRecebimento/CadastroCronograma/mockListaUnidadesMedidaLogistica";
+import { mockListaUnidadesMedidaLogistica } from "../../../../../mocks/cronograma.service/mockGetUnidadesDeMedidaLogistica";
 import { mockListaRascunhos } from "mocks/PreRecebimento/CadastroCronograma/mockListaRascunhos";
 import { mockListaTiposEmbalagens } from "mocks/PreRecebimento/CadastroCronograma/mockListaTiposEmbalagens";
 import { mockGetCronograma } from "mocks/PreRecebimento/CadastroCronograma/mockGetCronograma";
