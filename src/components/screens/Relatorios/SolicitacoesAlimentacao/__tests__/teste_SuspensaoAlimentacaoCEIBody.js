@@ -4,8 +4,8 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { SuspensaoAlimentacaoCEIBody } from "../componentes/SuspensaoAlimentacaoCEIBody";
 
-import { mockSolicitacaoSuspensaoAlimentacaoCEI } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacaoSuspensaoAlimentacaoCEI";
-import { mockItemSuspensao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItemSuspensao";
+import { mockSolicitacaoSuspensaoAlimentacaoCEI } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoSuspensaoAlimentacaoCEI";
+import { mockItemSuspensao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemSuspensao";
 import { mockFiltrosSuspensao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
 
 jest.mock("react-router-dom", () => ({
