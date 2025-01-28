@@ -47,7 +47,7 @@ import {
   RecorrenciaTabela,
 } from "components/InclusaoDeAlimentacao/Escola/Formulario/componentes/InclusaoContinua";
 import { TIPO_SOLICITACAO } from "constants/shared";
-import { validarSubmissaoContinua } from "components/InclusaoDeAlimentacao/validacao";
+import { validarSubmissaoContinua } from "components/InclusaoDeAlimentacao/Escola/Formulario/validacao";
 import { formatarSubmissaoSolicitacaoContinua } from "components/InclusaoDeAlimentacao/helper";
 import { TextArea } from "components/Shareable/TextArea/TextArea";
 

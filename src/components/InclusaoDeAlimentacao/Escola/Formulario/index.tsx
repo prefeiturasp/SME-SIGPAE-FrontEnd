@@ -39,7 +39,7 @@ import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
 import {
   validarSubmissaoNormal,
   validarSubmissaoContinua,
-} from "components/InclusaoDeAlimentacao/validacao";
+} from "components/InclusaoDeAlimentacao/Escola/Formulario/validacao";
 import {
   formatarSubmissaoSolicitacaoContinua,
   formatarSubmissaoSolicitacaoNormal,
