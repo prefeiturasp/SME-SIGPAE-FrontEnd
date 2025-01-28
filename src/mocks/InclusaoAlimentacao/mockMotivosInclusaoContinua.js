@@ -5,7 +5,7 @@ export const mockMotivosInclusaoContinua = {
   results: [
     {
       nome: "Programas/Projetos Contínuos",
-      uuid: "4bb5d830-9419-4170-97d0-543c84e860e6",
+      uuid: "a32cfa53-0197-4c2c-95f7-cf68611ed98a",
     },
     {
       nome: "ETEC",

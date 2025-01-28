@@ -3,9 +3,12 @@ import React from "react";
 import "./style.scss";
 
 export const Weekly = ({ ...props }) => {
-  const { handleWeekly, arrayDiasSemana } = props;
+  const { handleWeekly, arrayDiasSemana, dataTestId } = props;
   return (
-    <div className={`weekly ${props.classNameArgs || ""}`}>
+    <div
+      className={`weekly ${props.classNameArgs || ""}`}
+      data-testid={dataTestId}
+    >
       {props.label && [
         props.required && <span className="required-asterisk">*</span>,
         <label key={1} htmlFor={props.name} className="col-form-label">
@@ -25,6 +28,7 @@ export const Weekly = ({ ...props }) => {
               }
               data-cy={`dia-${key}`}
               value={day.value}
+              data-testid={`${dataTestId}-${key}`}
             >
               {day.label}
             </span>

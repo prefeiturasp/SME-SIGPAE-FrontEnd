@@ -1,6 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { Field } from "react-final-form";
-import { FieldArray } from "react-final-form-arrays";
 import Botao from "components/Shareable/Botao";
 import {
   BUTTON_ICON,
@@ -29,8 +26,11 @@ import {
   fimDoCalendario,
   getDataObj,
 } from "helpers/utilities";
-import "./style.scss";
+import React, { useEffect, useState } from "react";
+import { Field } from "react-final-form";
+import { FieldArray } from "react-final-form-arrays";
 import { getTiposDeAlimentacao } from "services/cadastroTipoAlimentacao.service";
+import "./style.scss";
 
 const REFEICAO_E_SOBREMESA = "Refeição e Sobremesa";
 
@@ -51,6 +51,7 @@ export const DatasInclusaoContinua = ({ ...props }) => {
               minDate={proximosDoisDiasUteis}
               maxDate={fimDoCalendario()}
               inputOnChange={(value) => onDataChanged(value)}
+              dataTestId={`data-inicial-div`}
             />
           </div>
           <div className="col-6">
@@ -66,6 +67,7 @@ export const DatasInclusaoContinua = ({ ...props }) => {
               label="Até"
               required
               validate={required}
+              dataTestId={`data-final-div`}
             />
           </div>
         </div>
@@ -275,6 +277,7 @@ export const Recorrencia = ({
               name={`dias_semana`}
               arrayDiasSemana={values.dias_semana}
               handleWeekly={handleWeekly}
+              dataTestId="dias-semana"
             />
           )}
         </div>
@@ -284,6 +287,7 @@ export const Recorrencia = ({
             name={`periodo_escolar`}
             options={agregarDefault(periodos)}
             naoDesabilitarPrimeiraOpcao
+            dataTestId="div-select-periodo-escolar"
           />
         </div>
         <div className="col-4">
@@ -292,6 +296,7 @@ export const Recorrencia = ({
             name={`tipos_alimentacao`}
             options={optionsTiposAlimentacao()}
             naoDesabilitarPrimeiraOpcao
+            dataTestId="div-select-tipo-alimentacao"
           />
         </div>
         <div className="col-2">
@@ -309,6 +314,7 @@ export const Recorrencia = ({
             min="0"
             className="form-control quantidade-aluno"
             disabled={!values.periodo_escolar}
+            dataTestIdDiv="numero-alunos"
           />
         </div>
       </div>
@@ -327,6 +333,7 @@ export const Recorrencia = ({
             }}
             type={BUTTON_TYPE.BUTTON}
             style={BUTTON_STYLE.GREEN_OUTLINE}
+            dataTestId="botao-adicionar-recorrencia"
           />
         </div>
       </div>
