@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { calcularNumeroDeEscolasUnicas } from "./helper";
 import {
   talvezPluralizar,
@@ -176,8 +176,8 @@ export class CardPendenteAcao extends Component {
                     ? pedido.dias_motivos_da_inclusao_cemei[0].data
                     : pedido.data;
                   return (
-                    <>
-                      <tr className="row" key={key}>
+                    <Fragment key={key}>
+                      <tr className="row">
                         <td className="col-2">
                           <Link
                             className="text-dark"
@@ -257,7 +257,7 @@ export class CardPendenteAcao extends Component {
                             );
                           }
                         )}
-                    </>
+                    </Fragment>
                   );
                 })}
               </tbody>

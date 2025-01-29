@@ -107,10 +107,17 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
 
   it("renderiza blocos de solicitações vencendo, limite e regular", async () => {
     await awaitServices();
+
     expect(
       screen.getByText(
         "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
       )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Solicitações no prazo limite")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Solicitações no prazo regular")
     ).toBeInTheDocument();
   });
 });
