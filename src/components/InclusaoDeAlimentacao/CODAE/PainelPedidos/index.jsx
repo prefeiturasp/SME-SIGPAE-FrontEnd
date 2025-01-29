@@ -172,7 +172,7 @@ export const PainelPedidos = ({ ...props }) => {
       {loading ? (
         <div>Carregando...</div>
       ) : (
-        <Form onSubmit={onSubmit}>
+        <Form initialValues={{ ...filtrosProps }} onSubmit={onSubmit}>
           {({ handleSubmit, form }) => (
             <form onSubmit={handleSubmit}>
               <div className="card mt-3">
