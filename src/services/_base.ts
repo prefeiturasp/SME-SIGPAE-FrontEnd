@@ -7,6 +7,10 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
+export const apiLoggedOut = axios.create({
+  baseURL: API_URL,
+});
+
 api.interceptors.request.use(function (config) {
   if (config.url.includes("/media/")) return config;
   if (!config.url.endsWith("/")) {
@@ -49,7 +53,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response && error.response.status === 401) {
+    if (
+      authService.isLoggedIn() &&
+      error.response &&
+      error.response.status === 401
+    ) {
       if (!isRefreshing) {
         isRefreshing = true;
         try {
