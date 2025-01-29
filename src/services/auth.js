@@ -4,7 +4,7 @@ import { toastError } from "../components/Shareable/Toast/dialogs";
 import HTTP_STATUS from "http-status-codes";
 import { getError } from "helpers/utilities";
 import { criarUsuarioCES } from "./ces.service";
-import axios from "./_base";
+import axios, { apiLoggedOut } from "./_base";
 import { ErrorHandlerFunction } from "./service-helpers";
 
 export const TOKEN_ALIAS = "TOKEN_JWT";
@@ -223,19 +223,15 @@ const isValidResponse = (json) => {
   }
 };
 
-export const refreshToken = async (refresh) => {
-  try {
-    const response = await fetch(`${CONFIG.API_URL}/api-token-refresh/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ refresh }),
-    });
-    const json = await response.json();
-    return json;
-  } catch (error) {
-    console.log(`refreshToken ${error}`);
+const refreshToken = async () => {
+  const response = await apiLoggedOut
+    .post("/api-token-refresh/", {
+      refresh: localStorage.getItem(TOKEN_REFRESH_ALIAS),
+    })
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
   }
 };
 
@@ -273,6 +269,7 @@ const authService = {
   isLoggedIn,
   isValidResponse,
   needsToRefreshToken,
+  refreshToken,
 };
 
 export default authService;
