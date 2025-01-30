@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { TIPO_PERFIL, TIPO_SOLICITACAO } from "constants/shared";
 import { mockDiretoriaRegionalSimplissima } from "mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
 import { mockPedidosCODAEInclusaoCEI } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoCEI";
@@ -113,11 +119,55 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
         "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
       )
     ).toBeInTheDocument();
+    const divPrioritarios = screen.getByTestId("prioritario");
+    expect(divPrioritarios).toHaveTextContent("1 escola solicitante");
+    expect(divPrioritarios).toHaveTextContent("F85D5");
+    expect(divPrioritarios).toHaveTextContent("017981");
+    expect(divPrioritarios).toHaveTextContent(
+      "EMEF PERICLES EUGENIO DA SILVA RAMOS"
+    );
+    expect(divPrioritarios).toHaveTextContent("30/01/2025");
+
     expect(
       screen.getByText("Solicitações no prazo limite")
     ).toBeInTheDocument();
     expect(
       screen.getByText("Solicitações no prazo regular")
     ).toBeInTheDocument();
+  });
+
+  it("busca por dre e por lote", async () => {
+    await awaitServices();
+    await act(async () => {
+      fireEvent.mouseDown(
+        screen
+          .getByTestId("select-diretoria-regional")
+          .querySelector(".ant-select-selection-search-input")
+      );
+    });
+
+    await waitFor(() => screen.getByText("IPIRANGA"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("IPIRANGA"));
+    });
+    expect(
+      codaeListarSolicitacoesDeInclusaoDeAlimentacao
+    ).toHaveBeenCalledTimes(8);
+
+    await act(async () => {
+      fireEvent.mouseDown(
+        screen
+          .getByTestId("select-lote")
+          .querySelector(".ant-select-selection-search-input")
+      );
+    });
+
+    await waitFor(() => screen.getByText("BT - 1"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("BT - 1"));
+    });
+    expect(
+      codaeListarSolicitacoesDeInclusaoDeAlimentacao
+    ).toHaveBeenCalledTimes(12);
   });
 });

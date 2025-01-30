@@ -18,7 +18,7 @@ export class CardPendenteAcao extends Component {
     super(props);
     this.state = {
       collapsed: true,
-      pedidosFiltrados: this.props.pedidos.map((solicitacao) => {
+      pedidosFiltrados: this.props.pedidos?.map((solicitacao) => {
         solicitacao["solicitacoes_similares"] =
           solicitacao.solicitacoes_similares.map((sol_similar) => {
             sol_similar.collapsed = false;
@@ -99,10 +99,19 @@ export class CardPendenteAcao extends Component {
   }
 
   render() {
-    const { pedidos, titulo, tipoDeCard, colunaDataLabel } = this.props;
-    const { collapsed, pedidosFiltrados } = this.state;
+    const {
+      pedidos = [],
+      titulo,
+      tipoDeCard,
+      colunaDataLabel,
+      dataTestId,
+    } = this.props;
+    const { collapsed, pedidosFiltrados = [] } = this.state;
     return (
-      <div className="card card-pendency-approval food-inclusion">
+      <div
+        className="card card-pendency-approval food-inclusion"
+        data-testid={dataTestId}
+      >
         <div className={"card-title " + tipoDeCard}>{titulo}</div>
         <div className="row">
           <div className="col-2">
