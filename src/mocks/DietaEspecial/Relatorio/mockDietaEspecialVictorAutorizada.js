@@ -42,7 +42,7 @@ export const mockDietaEspecialVictorAutorizada = {
       },
       terceirizada: {
         uuid: "6eb2aa7b-5387-4e7c-833b-fb09b1f119ee",
-        cnpj: "03706826000169",
+
         nome_fantasia: "PRM",
       },
     },
@@ -72,7 +72,7 @@ export const mockDietaEspecialVictorAutorizada = {
       },
       terceirizada: {
         uuid: "6eb2aa7b-5387-4e7c-833b-fb09b1f119ee",
-        cnpj: "03706826000169",
+
         nome_fantasia: "PRM",
       },
     },

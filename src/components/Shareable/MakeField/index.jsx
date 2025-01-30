@@ -34,11 +34,12 @@ const MyPicker = (props) => {
 
 export const makeField =
   (Component) =>
-  ({ input, meta, children, hasFeedback, label, ...rest }) => {
+  ({ input, meta, children, hasFeedback, label, dataTestId, ...rest }) => {
     const hasError = meta.touched && meta.invalid;
     return (
       <FormItem
         label={label}
+        data-testid={dataTestId}
         validateStatus={hasError ? "error" : "success"}
         hasFeedback={hasFeedback && hasError}
         help={hasError && meta.error}
