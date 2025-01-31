@@ -155,8 +155,8 @@ export default () => {
                     <div className="row mt-4">
                       <div className="col-6">
                         <Field
-                          id="produto"
                           component={AutoCompleteSelectField}
+                          dataTestId={"produto"}
                           options={getListaFiltradaAutoCompleteSelect(
                             produtosOptions.map((e) => e.nome),
                             values["produto"],
@@ -197,6 +197,7 @@ export default () => {
                       <div className="col-4">
                         <Field
                           component={Select}
+                          dataTestId={"categoria"}
                           naoDesabilitarPrimeiraOpcao
                           options={[
                             { nome: "Selecione uma Categoria", uuid: "" },
@@ -212,6 +213,7 @@ export default () => {
                       <div className="col-6">
                         <Field
                           component={Select}
+                          dataTestId={"marca"}
                           naoDesabilitarPrimeiraOpcao
                           options={[
                             { nome: "Selecione uma Marca", uuid: "" },
@@ -245,6 +247,7 @@ export default () => {
                       <div className="col-4">
                         <Field
                           component={InputText}
+                          dataTestId={"pregao_chamada_publica"}
                           label="Nº do Pregão/Chamada Pública"
                           name={`pregao_chamada_publica`}
                           placeholder="Nº do Pregão/Chamada Pública"
@@ -287,6 +290,7 @@ export default () => {
                           <div className="col-6">
                             <Field
                               component={AutoCompleteSelectField}
+                              dataTestId={"fabricante"}
                               options={getListaFiltradaAutoCompleteSelect(
                                 fabricantesOptions.map((e) => e.nome),
                                 values["fabricante"],

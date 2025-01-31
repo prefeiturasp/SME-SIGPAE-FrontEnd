@@ -1,6 +1,11 @@
 import React from "react";
-
-import { render, screen, act, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  act,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import Cadastrar from "../components/Cadastrar";
@@ -15,9 +20,12 @@ import {
   getNomesMarcas,
   getNomesFabricantes,
   getInformacoesNutricionaisOrdenadas,
+  cadastrarProdutoEdital,
+  cadastrarItem,
 } from "services/produto.service";
 import { getUnidadesDeMedidaLogistica } from "services/cronograma.service";
 import { getTerceirizadaUUID } from "services/terceirizada.service";
+import { CATEGORIA_OPTIONS } from "../constants";
 
 jest.mock("services/terceirizada.service.js");
 jest.mock("services/cronograma.service.js");
@@ -53,6 +61,16 @@ beforeEach(() => {
     data: mockEmpresa,
     status: 200,
   });
+
+  cadastrarProdutoEdital.mockResolvedValue({
+    data: {},
+    status: 201,
+  });
+
+  cadastrarItem.mockResolvedValue({
+    data: {},
+    status: 201,
+  });
 });
 
 const setup = async () => {
@@ -67,6 +85,13 @@ const setup = async () => {
         <Cadastrar />
       </MemoryRouter>
     );
+  });
+};
+
+const preencheInput = (testId: string, value: string) => {
+  let selectMarca = screen.getByTestId(testId);
+  fireEvent.change(selectMarca, {
+    target: { value: value },
   });
 };
 
@@ -92,22 +117,75 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     expect(screen.getByText(/Informações Nutricionais/i)).toBeInTheDocument();
     expect(getListaCompletaProdutosLogistica).toHaveBeenCalled();
 
-    let inputProduto = document.getElementById("produto");
-    fireEvent.change(inputProduto, {
-      target: { value: mockListaProdutosLogistica.results[0].uuid },
+    preencheInput("produto", mockListaProdutosLogistica.results[0].uuid);
+
+    let selectCategoria = screen
+      .getByTestId("categoria")
+      .querySelector("select");
+    fireEvent.change(selectCategoria, {
+      target: { value: CATEGORIA_OPTIONS[0].uuid },
     });
-    expect(inputProduto).toBeInTheDocument();
+
+    let selectMarca = screen.getByTestId("marca").querySelector("select");
+    fireEvent.change(selectMarca, {
+      target: { value: mockListaMarcas.results[0].uuid },
+    });
+
+    preencheInput("pregao_chamada_publica", "123");
+    preencheInput("fabricante", mockListaFabricantes.results[0].uuid);
+    preencheInput("prazo_validade", "12 Meses");
+    preencheInput("numero_registro", "11111");
   });
 
-  it("cadastra um produto pelo Modal+", async () => {
+  it("cadastra um produto pelo Modal", async () => {
     await setup();
 
-    expect(screen.getByText(/Informações Nutricionais/i)).toBeInTheDocument();
-    expect(getListaCompletaProdutosLogistica).toHaveBeenCalled();
+    const btnCadastrarProduto = screen
+      .getByText("Cadastrar Produto")
+      .closest("button");
+    expect(btnCadastrarProduto).toBeInTheDocument();
 
-    const botaoCadastrarProduto = screen.getByTestId("btnCadastrarProduto");
-    expect(botaoCadastrarProduto).toBeInTheDocument();
+    fireEvent.click(btnCadastrarProduto);
 
-    // Tentar disparar o click usando act/await no fireEvent
+    preencheInput("cadastroItem", "Novo Produto");
+    const btnSalvar = screen.getByText("Cadastrar").closest("button");
+    fireEvent.click(btnSalvar);
+
+    await waitFor(() => expect(btnSalvar).not.toBeInTheDocument());
+    expect(cadastrarProdutoEdital).toHaveBeenCalled();
+  });
+
+  it("cadastra uma marca pelo Modal", async () => {
+    await setup();
+
+    const btnCadastrarMarca = screen
+      .getByText("Cadastrar Marca")
+      .closest("button");
+    expect(btnCadastrarMarca).toBeInTheDocument();
+
+    fireEvent.click(btnCadastrarMarca);
+
+    preencheInput("cadastroItem", "Nova Marca");
+    const btnSalvar = screen.getByText("Cadastrar").closest("button");
+    fireEvent.click(btnSalvar);
+
+    await waitFor(() => expect(btnSalvar).not.toBeInTheDocument());
+  });
+
+  it("cadastra um Fabricante pelo Modal", async () => {
+    await setup();
+
+    const btnCadastrarFabricante = screen
+      .getByText("Cadastrar Fabricante")
+      .closest("button");
+    expect(btnCadastrarFabricante).toBeInTheDocument();
+
+    fireEvent.click(btnCadastrarFabricante);
+
+    preencheInput("cadastroItem", "Novo Fabricante");
+    const btnSalvar = screen.getByText("Cadastrar").closest("button");
+    fireEvent.click(btnSalvar);
+
+    await waitFor(() => expect(btnSalvar).not.toBeInTheDocument());
   });
 });

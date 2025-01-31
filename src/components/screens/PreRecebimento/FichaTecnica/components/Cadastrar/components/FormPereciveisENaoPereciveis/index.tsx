@@ -20,6 +20,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
         <div className="col-4">
           <Field
             component={InputText}
+            dataTestId="prazo_validade"
             label="Prazo de Validade"
             name={`prazo_validade`}
             placeholder="Informe o Prazo de Validade"
@@ -35,6 +36,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
         <div className="col-8">
           <Field
             component={InputText}
+            dataTestId="numero_registro"
             label="Nº do Registro do Rótulo do Produto e Nome do Órgão Competente"
             name={`numero_registro`}
             placeholder="Digite o Número do Registro do Órgão Competente"

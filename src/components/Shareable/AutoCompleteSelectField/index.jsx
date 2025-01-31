@@ -22,6 +22,7 @@ export default ({
   proibeLetras,
   proibeNumeros,
   onChange,
+  dataTestId,
   ...props
 }) => {
   const handleInput = (e) => {
@@ -64,6 +65,7 @@ export default ({
       >
         <Input
           {...input}
+          data-testid={dataTestId}
           className={`${className} ${
             meta &&
             meta.touched &&
