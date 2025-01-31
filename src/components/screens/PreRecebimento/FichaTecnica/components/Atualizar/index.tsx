@@ -349,10 +349,7 @@ export default () => {
                             placeholder="Quantidade Numérica"
                             className="input-ficha-tecnica"
                             required
-                            validate={composeValidators(
-                              required,
-                              inteiroOuDecimalComVirgula
-                            )}
+                            validate={required}
                           />
                         </div>
                         <div className="col-3">
@@ -376,10 +373,7 @@ export default () => {
                             placeholder="Quantidade Numérica"
                             className="input-ficha-tecnica"
                             required
-                            validate={composeValidators(
-                              required,
-                              inteiroOuDecimalComVirgula
-                            )}
+                            validate={required}
                           />
                         </div>
                         <div className="col-3">
