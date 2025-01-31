@@ -390,10 +390,7 @@ export default () => {
                             placeholder="Quantidade Numérica"
                             className="input-ficha-tecnica"
                             required
-                            validate={composeValidators(
-                              required,
-                              inteiroOuDecimalComVirgula
-                            )}
+                            validate={required}
                             disabled={conferidos.informacoes_nutricionais}
                           />
                         </div>
@@ -419,10 +416,7 @@ export default () => {
                             placeholder="Quantidade Numérica"
                             className="input-ficha-tecnica"
                             required
-                            validate={composeValidators(
-                              required,
-                              inteiroOuDecimalComVirgula
-                            )}
+                            validate={required}
                             disabled={conferidos.informacoes_nutricionais}
                           />
                         </div>
