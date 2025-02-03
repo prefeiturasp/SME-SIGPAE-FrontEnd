@@ -433,8 +433,8 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
     gluten: booleanToString(ficha.gluten),
     lactose: booleanToString(ficha.lactose),
     lactose_detalhe: ficha.lactose_detalhe,
-    porcao: numberToStringDecimal(ficha.porcao),
-    valor_unidade_caseira: numberToStringDecimal(ficha.valor_unidade_caseira),
+    porcao: ficha.porcao,
+    valor_unidade_caseira: ficha.valor_unidade_caseira,
     unidade_medida_caseira: ficha.unidade_medida_caseira,
     ...valuesInformacoesNutricionais,
     ...valuesSelect,
@@ -703,9 +703,9 @@ const gerarCamposDetalhesProduto = (values: Record<string, any>) => {
 
 const gerarCamposInformacoesNutricionais = (values: Record<string, any>) => {
   return {
-    porcao: stringDecimalToNumber(values.porcao),
+    porcao: values.porcao,
     unidade_medida_porcao: values.unidade_medida_porcao || null,
-    valor_unidade_caseira: stringDecimalToNumber(values.valor_unidade_caseira),
+    valor_unidade_caseira: values.valor_unidade_caseira,
     unidade_medida_caseira: values.unidade_medida_caseira || "",
     informacoes_nutricionais: formataInformacoesNutricionais(values),
   };

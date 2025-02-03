@@ -1,0 +1,183 @@
+export const mockMeusDadosEscolaEMEFPericles = {
+  uuid: "36750ded-5790-433e-b765-0507303828df",
+  cpf: "11111111119",
+  nome: "SUPER USUARIO ESCOLA EMEF",
+  email: "escolaemef@admin.com",
+  tipo_email: null,
+  registro_funcional: "8115257",
+  tipo_usuario: "escola",
+  date_joined: "10/07/2020 13:15:23",
+  vinculo_atual: {
+    uuid: "ecd9bf52-df4b-43d7-ba35-4f52d088eb8f",
+    instituicao: {
+      nome: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+      uuid: "3c32be8e-f191-468d-a4e2-3dd8751e5e7a",
+      codigo_eol: "017981",
+      quantidade_alunos: 524,
+      lotes: [],
+      periodos_escolares: [
+        {
+          tipos_alimentacao: [
+            {
+              nome: "Refeição",
+              uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+              posicao: 2,
+            },
+            {
+              nome: "Lanche",
+              uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+              posicao: 2,
+            },
+            {
+              nome: "Sobremesa",
+              uuid: "5aa2c32b-1df2-46b6-b2e7-514b885fa9a4",
+              posicao: 4,
+            },
+            {
+              nome: "Almoço",
+              uuid: "7990ca99-55b7-4fc7-b5cc-8a51b23d0102",
+              posicao: null,
+            },
+            {
+              nome: "Colação",
+              uuid: "8e0917e0-70d0-41a8-a5bb-f85bbdd790bb",
+              posicao: null,
+            },
+            {
+              nome: "Refeição da tarde",
+              uuid: "5bd9ad5c-e0ab-4812-b2b6-336fc89886b1",
+              posicao: null,
+            },
+            {
+              nome: "Lanche Emergencial",
+              uuid: "c4255a14-85fd-412f-b35f-30828215e4d5",
+              posicao: null,
+            },
+            {
+              nome: "Desjejum",
+              uuid: "96cad31e-acb8-4dc3-8861-df0731b375ea",
+              posicao: null,
+            },
+          ],
+          possui_alunos_regulares: true,
+          nome: "MANHA",
+          uuid: "5067e137-e5f3-4876-a63f-7f58cce93f33",
+          posicao: 2,
+          tipo_turno: 1,
+        },
+        {
+          tipos_alimentacao: [
+            {
+              nome: "Lanche 4h",
+              uuid: "83fefd96-e476-42a0-81fc-75b9853b726c",
+              posicao: 1,
+            },
+            {
+              nome: "Refeição",
+              uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+              posicao: 2,
+            },
+            {
+              nome: "Lanche",
+              uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+              posicao: 2,
+            },
+            {
+              nome: "Sobremesa",
+              uuid: "5aa2c32b-1df2-46b6-b2e7-514b885fa9a4",
+              posicao: 4,
+            },
+            {
+              nome: "Desjejum",
+              uuid: "96cad31e-acb8-4dc3-8861-df0731b375ea",
+              posicao: null,
+            },
+            {
+              nome: "Almoço",
+              uuid: "7990ca99-55b7-4fc7-b5cc-8a51b23d0102",
+              posicao: null,
+            },
+            {
+              nome: "Colação",
+              uuid: "8e0917e0-70d0-41a8-a5bb-f85bbdd790bb",
+              posicao: null,
+            },
+            {
+              nome: "Refeição da tarde",
+              uuid: "5bd9ad5c-e0ab-4812-b2b6-336fc89886b1",
+              posicao: null,
+            },
+            {
+              nome: "Lanche Emergencial",
+              uuid: "c4255a14-85fd-412f-b35f-30828215e4d5",
+              posicao: null,
+            },
+          ],
+          possui_alunos_regulares: true,
+          nome: "TARDE",
+          uuid: "20bd9ca9-d499-456a-bd86-fb8f297947d6",
+          posicao: 3,
+          tipo_turno: 3,
+        },
+      ],
+      diretoria_regional: {
+        uuid: "3972e0e9-2d8e-472a-9dfa-30cd219a6d9a",
+        nome: "IPIRANGA",
+        codigo_eol: "108600",
+        iniciais: "IP",
+        acesso_modulo_medicao_inicial: false,
+      },
+      tipo_unidade_escolar: "1cc69b3e-6210-4825-bf67-274d3c050bc0",
+      tipo_unidade_escolar_iniciais: "EMEF",
+      tipo_gestao: "TERC TOTAL",
+      tipos_contagem: [
+        {
+          uuid: "a5c6942b-fbb2-4e52-88db-e284e5b7b49f",
+          nome: "Balança (autosserviço)",
+        },
+        {
+          uuid: "176dd543-aca8-434b-97af-d6411af9a84a",
+          nome: "Ficha colorida",
+        },
+        {
+          uuid: "0ed4b196-d383-4425-876b-4a5d9fc41b3e",
+          nome: "Catraca",
+        },
+        {
+          uuid: "a6ce4a90-1e44-4ec0-805e-7e7ce9c5bb69",
+          nome: "Contagem de utensílios",
+        },
+      ],
+      endereco: {
+        logradouro: "Rua BARBINOS",
+        numero: 111,
+        complemento: "",
+        bairro: "SÃO JOÃO CLÍMACO",
+        cep: 4240110,
+      },
+      contato: {
+        nome: "rodolpho lobo",
+        telefone: "22725205",
+        telefone2: "",
+        celular: "",
+        email: "fake_emefpesramos@sme.prefeitura.sp.gov.br",
+        eh_nutricionista: false,
+        crn_numero: "1231231",
+      },
+      acesso_modulo_medicao_inicial: true,
+      eh_cei: false,
+      eh_cemei: false,
+      eh_emebs: false,
+      modulo_gestao: "TERCEIRIZADA",
+    },
+    perfil: {
+      nome: "DIRETOR_UE",
+      visao: "ESCOLA",
+      uuid: "62e9bf2b-f0e5-41a0-8f33-c5e80fd71ebb",
+    },
+    ativo: true,
+  },
+  crn_numero: null,
+  cargo: "ANALISTA DE SAUDE NIVEL II",
+  aceitou_termos: true,
+};

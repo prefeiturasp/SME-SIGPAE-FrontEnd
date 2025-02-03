@@ -12,9 +12,9 @@ describe("Teste mensagemCancelamento", () => {
       "Esta solicitação já foi validada pela DRE. "
     );
   });
-  it("retorna mensagem dre validou", () => {
+  it("retorna mensagem codae a autorizar", () => {
     expect(mensagemCancelamento(statusEnum.CODAE_A_AUTORIZAR)).toEqual(
-      "Esta solicitação já foi validada pela DRE. "
+      "Esta solicitação está aguardando validação da CODAE. "
     );
   });
   it("retorna mensagem codae autorizou", () => {

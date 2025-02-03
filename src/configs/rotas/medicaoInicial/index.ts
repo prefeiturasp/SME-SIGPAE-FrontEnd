@@ -2,6 +2,7 @@ import {
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhDinutreDiretoria,
   usuarioEhDRE,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
   usuarioEhMedicao,
@@ -65,7 +66,8 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
       usuarioEhEscolaTerceirizadaQualquerPerfil() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.CONFERENCIA_DOS_LANCAMENTOS}`,
@@ -75,7 +77,8 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
       usuarioEhMedicao() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.DETALHAMENTO_DO_LANCAMENTO}`,
@@ -139,7 +142,8 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
       usuarioEhMedicao() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhDRE() ||
-      usuarioEhEscolaTerceirizadaQualquerPerfil(),
+      usuarioEhEscolaTerceirizadaQualquerPerfil() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.RELATORIO_FINANCEIRO}`,

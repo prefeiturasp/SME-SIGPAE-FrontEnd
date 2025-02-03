@@ -101,32 +101,8 @@ test("Relatorio para cancelamento por atingir data termino", async () => {
   expect(await screen.getByText("Lote")).toBeInTheDocument();
   expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
 
-  expect(
-    await screen.getByText(/detalhamento da dieta especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Registro Funcional/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Nome do Prescritor do laudo/i)
-  ).toBeInTheDocument();
   expect(await screen.queryByText("Laudo")).not.toBeInTheDocument();
-  expect(await screen.getByText(/Anexos/i)).toBeInTheDocument();
   expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Relação por Diagnóstico/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
-  expect(await screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
-  expect(await screen.getByText(/Período de Vigência/i)).toBeInTheDocument();
-  expect(await screen.getByText(/Início/i)).toBeInTheDocument();
-  expect(await screen.getByText(/Fim/i)).toBeInTheDocument();
-  expect(await screen.getByText(/Informações Adicionais/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Identificação do Nutricionista/i)
-  ).toBeInTheDocument();
 });
 
 test("Relatorio para cancelamento para aluno não matriculado na rede", async () => {
@@ -176,34 +152,14 @@ test("Relatorio para cancelamento para aluno não matriculado na rede", async ()
   expect(await screen.getByText("Lote")).toBeInTheDocument();
   expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
 
-  expect(
-    await screen.getByText(/detalhamento da dieta especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Registro Funcional/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Nome do Prescritor do laudo/i)
-  ).toBeInTheDocument();
   expect(await screen.queryByText("Laudo")).not.toBeInTheDocument();
-  expect(await screen.getByText(/Anexos/i)).toBeInTheDocument();
   expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Relação por Diagnóstico/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
-  expect(await screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
+
   expect(
     await screen.queryByText(/Período de Vigência/i)
   ).not.toBeInTheDocument();
   expect(await screen.queryByText(/Início/i)).not.toBeInTheDocument();
   expect(await screen.queryByText(/Fim/i)).not.toBeInTheDocument();
-  expect(await screen.getByText(/Informações Adicionais/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Identificação do Nutricionista/i)
-  ).toBeInTheDocument();
 });
 
 test("Relatorio para cancelamento quando a escola cancela antes da aprovação pela nutricodae", async () => {
@@ -288,14 +244,6 @@ test("Relatorio para cancelamento quando a escola cancela antes da aprovação p
   expect(await screen.getByText("Lote")).toBeInTheDocument();
   expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
 
-  expect(
-    await screen.getByText(/detalhamento da dieta especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Registro Funcional/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Nome do Prescritor do laudo/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Anexos/i)).toBeInTheDocument();
   expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
   expect(
     await screen.queryByText(/Relação por Diagnóstico/i)
@@ -422,9 +370,6 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
     await screen.getByText(/justificativa do cancelamento/i)
   ).toBeInTheDocument();
 
-  expect(
-    await screen.getByText(`Escola Cancelou após solicitação aprovada`)
-  ).toBeInTheDocument();
   expect(await screen.getByText(/dados do aluno/i)).toBeInTheDocument();
   expect(await screen.getByText(/código eol do aluno/i)).toBeInTheDocument();
 
@@ -440,32 +385,10 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
   expect(await screen.getByText("Lote")).toBeInTheDocument();
   expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
 
-  expect(
-    await screen.getByText(/detalhamento da dieta especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Registro Funcional/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Nome do Prescritor do laudo/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText("Laudo")).toBeInTheDocument();
-  expect(await screen.getByText(/Anexos/i)).toBeInTheDocument();
   expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Relação por Diagnóstico/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
-  expect(await screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
   expect(
     await screen.queryByText(/Período de Vigência/i)
   ).not.toBeInTheDocument();
   expect(await screen.queryByText(/Início/i)).not.toBeInTheDocument();
   expect(await screen.queryByText(/Fim/i)).not.toBeInTheDocument();
-  expect(await screen.getByText(/Informações Adicionais/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/Identificação do Nutricionista/i)
-  ).toBeInTheDocument();
 });

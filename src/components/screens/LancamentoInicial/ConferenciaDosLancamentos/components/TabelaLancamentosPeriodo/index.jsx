@@ -430,6 +430,8 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
               formatarLinhasTabelaAlimentacaoCEI(
                 [],
                 periodoGrupo.nome_periodo_grupo,
+                null,
+                null,
                 response_valores_periodos.data.filter(
                   (valor) => valor.categoria_medicao === idCategoriaAlimentacao
                 )

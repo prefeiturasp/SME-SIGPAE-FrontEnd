@@ -25,13 +25,13 @@ export const TextArea = (props) => {
   const inputProps = {
     ...input,
     onChange: (e) => {
-      input.onChange(e);
+      input?.onChange(e);
       inputOnChange && inputOnChange(e);
     },
   };
 
   return (
-    <div className="textarea">
+    <div className="textarea" data-testid="textarea-div">
       {label && [
         required && (
           <span key={1} className="required-asterisk">
@@ -47,17 +47,17 @@ export const TextArea = (props) => {
         {...input}
         {...inputProps}
         className={`form-control ${className} ${
-          meta.touched && meta.error && "invalid-field"
+          meta?.touched && meta?.error && "invalid-field"
         }`}
         disabled={disabled}
         name={name}
         placeholder={placeholder}
         maxLength={maxLength}
         required={required}
-        value={valorInicial || input.value}
+        value={valorInicial || input?.value}
       />
       {contador && (
-        <ContadorCaracteres atual={input.value.length} max={contador} />
+        <ContadorCaracteres atual={input?.value.length} max={contador} />
       )}
       <div className="help-text">{helpText}</div>
       <InputErroMensagem meta={meta} />
@@ -77,16 +77,4 @@ TextArea.propTypes = {
   required: PropTypes.bool,
   contador: PropTypes.number,
   valorInicial: PropTypes.string,
-};
-
-TextArea.defaultProps = {
-  className: "",
-  disabled: false,
-  helpText: "",
-  input: {},
-  label: "",
-  meta: {},
-  name: "",
-  placeholder: "",
-  required: false,
 };

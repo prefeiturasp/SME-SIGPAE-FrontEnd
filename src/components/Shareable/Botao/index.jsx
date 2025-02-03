@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import React, { useState } from "react";
-import { BUTTON_STYLE, BUTTON_TYPE } from "./constants";
 import { Tooltip } from "antd";
 import "./style.scss";
 
@@ -22,6 +21,7 @@ export const Botao = (props) => {
     classTooltip,
     tooltipExterno,
     tabindex,
+    dataTestId,
   } = props;
 
   const [exibeMensagem, setExibeMensagem] = useState(false);
@@ -31,6 +31,7 @@ export const Botao = (props) => {
       type={type}
       title={titulo}
       data-cy={texto}
+      data-testid={dataTestId}
       className={`general-button ${style} ${className}`}
       onClick={onClick}
       onMouseOver={() =>
@@ -81,18 +82,7 @@ Botao.propTypes = {
   exibirTooltip: PropTypes.bool,
   tooltipTitulo: PropTypes.string,
   classTooltip: PropTypes.string,
-};
-
-Botao.defaultProps = {
-  className: "",
-  disabled: false,
-  style: BUTTON_STYLE.GREEN,
-  texto: "",
-  titulo: "",
-  type: BUTTON_TYPE.BUTTON,
-  exibirTooltip: false,
-  tooltipTitulo: "",
-  classTooltip: "",
+  dataTestId: PropTypes.string,
 };
 
 export default Botao;

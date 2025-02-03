@@ -42,6 +42,7 @@ import {
   usuarioEhEscolaTerceirizadaQualquerPerfil,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
+  usuarioEhDinutreDiretoria,
 } from "helpers/utilities";
 import { ASelect } from "components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
@@ -124,6 +125,7 @@ export const AcompanhamentoDeLancamentos = () => {
         (!usuarioEhMedicao() &&
           !usuarioEhCODAENutriManifestacao() &&
           !usuarioEhQualquerCODAE() &&
+          !usuarioEhDinutreDiretoria() &&
           !usuarioEhCODAEGabinete()) ||
         diretoriaRegional
       ) {
@@ -133,6 +135,7 @@ export const AcompanhamentoDeLancamentos = () => {
           usuarioEhMedicao() ||
           usuarioEhCODAENutriManifestacao() ||
           usuarioEhQualquerCODAE() ||
+          usuarioEhDinutreDiretoria() ||
           usuarioEhCODAEGabinete()
         ) {
           NovoDashboardResults = NovoDashboardResults.filter(
@@ -428,6 +431,7 @@ export const AcompanhamentoDeLancamentos = () => {
       (usuarioEhMedicao() ||
         usuarioEhCODAENutriManifestacao() ||
         usuarioEhQualquerCODAE() ||
+        usuarioEhDinutreDiretoria() ||
         usuarioEhCODAEGabinete()) &&
       loadingComFiltros
     ) {
@@ -488,6 +492,7 @@ export const AcompanhamentoDeLancamentos = () => {
                   {usuarioEhMedicao() ||
                   usuarioEhCODAENutriManifestacao() ||
                   usuarioEhQualquerCODAE() ||
+                  usuarioEhDinutreDiretoria() ||
                   usuarioEhCODAEGabinete() ? (
                     <div className="col-5">
                       <Field

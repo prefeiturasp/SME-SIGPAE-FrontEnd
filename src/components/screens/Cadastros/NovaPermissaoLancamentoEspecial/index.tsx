@@ -5,7 +5,6 @@ import HTTP_STATUS from "http-status-codes";
 import { Checkbox, Spin } from "antd";
 import { FormApi } from "final-form";
 import { format, parseISO } from "date-fns";
-import type { CheckboxValueType } from "antd/es/checkbox/Group";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 
 import AutoCompleteField from "components/Shareable/AutoCompleteField";
@@ -62,7 +61,7 @@ export const NovaPermissaoLancamentoEspecial: React.FC = () => {
     { nome: string; uuid: string }[]
   >([]);
   const [aliLancEspeciaisSelecionadas, setAliLancEspeciaisSelecionadas] =
-    useState<CheckboxValueType[]>([]);
+    useState<string[]>([]);
 
   const ehEscolaValida = (labelEscola: string) => {
     return escolas?.find((escola) => escola.label === labelEscola);
@@ -206,7 +205,7 @@ export const NovaPermissaoLancamentoEspecial: React.FC = () => {
   }, []);
 
   const onChangeCheckBox = (form: FormApi, e: CheckboxChangeEvent) => {
-    let listaSelecionados: CheckboxValueType[] = [];
+    let listaSelecionados: string[] = [];
 
     if (
       e.target.value ===

@@ -652,30 +652,58 @@ export const exibirTooltipDietasInclusaoDiaNaoLetivoCEI = (
   );
 };
 
+export const campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao =
+  (inclusoesAutorizadas, column, categoria, formValuesAtualizados) => {
+    if (!inclusoesAutorizadas || inclusoesAutorizadas.length === 0)
+      return false;
+
+    let campoNaoPreenchido = false;
+    inclusoesAutorizadas.forEach((inclusao) => {
+      inclusao.faixas_etarias.forEach((faixa) => {
+        if (
+          !formValuesAtualizados[
+            `frequencia__faixa_${faixa}__dia_${column.dia}__categoria_${categoria.id}`
+          ]
+        ) {
+          campoNaoPreenchido = true;
+        }
+      });
+    });
+
+    return (
+      categoria.nome === "ALIMENTAÇÃO" &&
+      campoNaoPreenchido &&
+      !formValuesAtualizados[
+        `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+      ]
+    );
+  };
+
 export const exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI = (
   inclusoesAutorizadas,
   row,
   column,
   categoria,
-  inputsInclusaoComErro,
-  exibirTooltipAoSalvar,
-  validacaoDiaLetivo
+  formValuesAtualizados
 ) => {
+  const value =
+    formValuesAtualizados[
+      `${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
   return (
+    categoria.nome === "ALIMENTAÇÃO" &&
+    row.name === "frequencia" &&
+    !["Mês anterior", "Mês posterior"].includes(value) &&
+    !value &&
     inclusoesAutorizadas.some(
       (inclusao) =>
-        String(inclusao.dia) === String(column.dia) &&
-        inclusao.faixas_etarias.includes(row.uuid) &&
-        row.name === "frequencia" &&
-        categoria.nome === "ALIMENTAÇÃO"
+        parseInt(inclusao.dia) === parseInt(column.dia) &&
+        inclusao.faixas_etarias.includes(row.uuid)
     ) &&
-    inputsInclusaoComErro.some(
-      (inputComErro) =>
-        inputComErro.nome ===
-        `${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`
-    ) &&
-    !validacaoDiaLetivo(column.dia) &&
-    exibirTooltipAoSalvar
+    !formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ]
   );
 };
 

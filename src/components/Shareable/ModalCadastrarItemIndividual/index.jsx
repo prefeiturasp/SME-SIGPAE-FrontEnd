@@ -74,7 +74,12 @@ export default ({
   };
 
   return (
-    <Modal dialogClassName="modal-50w" show={showModal} onHide={closeModal}>
+    <Modal
+      dialogClassName="modal-50w"
+      show={showModal}
+      onHide={closeModal}
+      container={document.body}
+    >
       <Modal.Header closeButton>
         <Modal.Title>{`Cadastrar ${tipoCadastroVisualizacao}`}</Modal.Title>
       </Modal.Header>
@@ -89,6 +94,7 @@ export default ({
                     <Field
                       name="nome"
                       label="Nome"
+                      dataTestId="cadastroItem"
                       placeholder="Digite o Nome"
                       component={InputText}
                       required

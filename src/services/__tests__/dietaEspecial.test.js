@@ -58,7 +58,7 @@ describe("test CODAEAutorizaDietaEspecial", () => {
 
 describe("test getSolicitacaoDietaEspecial", () => {
   const uuid = "asdf-1234-qwer";
-  const baseUrl = `${API_URL}/${SOLICITACOES_DIETA}/${uuid}/`;
+  const baseUrl = `${SOLICITACOES_DIETA}/${uuid}/`;
   mock.onGet(baseUrl).reply(200, { resultado: "dieta-especial" });
   test("obtém dados corretamente", async () => {
     const response = await getSolicitacaoDietaEspecial(uuid);

@@ -31,14 +31,15 @@ import { LotesFormSet } from "./components/Form/LotesFormSet";
 import { ModalCadastroEmpresa } from "./components/ModalCadastroEmpresa";
 
 import "./style.scss";
+import { getListaModalidades } from "../../../../services/terceirizada.service";
+import { usuarioEhCODAEGestaoProduto } from "../../../../helpers/utilities";
 
 const verificarUsuarioEhDistribuidor = () => {
   const tipoPerfil = localStorage.getItem("perfil");
-  if (tipoPerfil === PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA) {
-    return false;
-  } else if (
+  if (
     tipoPerfil === PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA ||
-    tipoPerfil === PERFIL.DILOG_CRONOGRAMA
+    tipoPerfil === PERFIL.DILOG_CRONOGRAMA ||
+    usuarioEhCODAEGestaoProduto()
   ) {
     return true;
   }
@@ -113,6 +114,7 @@ export const CadastroEmpresa = () => {
       email: "",
     },
   ]);
+  const [optionsModalidade, setOptionsModalidade] = useState([]);
 
   const numerosContratosCadastrados = useRef([]);
 
@@ -201,6 +203,7 @@ export const CadastroEmpresa = () => {
         data[`email_terceirizada_${indice}`] =
           nutri.contatos.length === 0 ? null : nutri.contatos[0].email;
       });
+      return data;
     } else {
       contatos
         .filter((contato) => contato.eh_nutricionista)
@@ -271,7 +274,7 @@ export const CadastroEmpresa = () => {
     data.contratos.forEach((contrato, indice) => {
       data[`numero_contrato_${indice}`] = contrato.numero;
       data[`numero_processo_${indice}`] = contrato.processo;
-      data[`modalidade_${indice}`] = contrato.modalidade;
+      data[`modalidade_${indice}`] = contrato.modalidade.uuid;
       data[`numero_ata_${indice}`] = contrato.ata;
       data[`numero_pregao_${indice}`] = contrato.numero_pregao;
       data[`numero_chamada_publica_${indice}`] =
@@ -370,7 +373,21 @@ export const CadastroEmpresa = () => {
     numerosContratosCadastrados.current =
       response.data.numeros_contratos_cadastrados;
 
-    setEhDistribuidor(verificarUsuarioEhDistribuidor());
+    const distribuidor = verificarUsuarioEhDistribuidor();
+
+    if (distribuidor) {
+      const modalidades = await getListaModalidades();
+      const options = [
+        {
+          nome: "Selecione...",
+          uuid: "",
+        },
+        ...modalidades.data.results,
+      ];
+      setOptionsModalidade(options);
+    }
+
+    setEhDistribuidor(distribuidor);
 
     setCarregando(false);
   };
@@ -428,6 +445,7 @@ export const CadastroEmpresa = () => {
                         numerosContratosCadastrados.current
                       }
                       form={form}
+                      optionsModalidade={optionsModalidade}
                     />
                     <LotesFormSet
                       ehDistribuidor={ehDistribuidor}

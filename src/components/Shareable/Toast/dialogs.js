@@ -6,22 +6,22 @@ let baseConfig = {
   icon: false,
 };
 
-export const toastSuccess = (message) => {
-  toast.success(message, baseConfig);
+export const toastSuccess = (message, toastId = null) => {
+  toast.success(message, { ...baseConfig, toastId });
 };
 
-export const toastError = (message) => {
-  toast.error(message, baseConfig);
+export const toastError = (message, toastId = null) => {
+  toast.error(message, { ...baseConfig, toastId });
 };
 
-export const toastWarn = (message) => {
-  toast.warn(message, baseConfig);
+export const toastWarn = (message, toastId = null) => {
+  toast.warn(message, { ...baseConfig, toastId });
 };
 
-export const toastInfo = (message) => {
-  toast.info(message, baseConfig);
+export const toastInfo = (message, toastId = null) => {
+  toast.info(message, { ...baseConfig, toastId });
 };
 
-export const toastDefault = (message) => {
-  toast(message, baseConfig);
+export const toastDefault = (message, toastId = null) => {
+  toast(message, { ...baseConfig, toastId });
 };

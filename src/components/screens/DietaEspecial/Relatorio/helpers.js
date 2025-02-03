@@ -1,4 +1,8 @@
 import { statusEnum } from "constants/shared";
+import { createSolicitacaoAberta } from "services/dietaEspecial.service";
+import HTTP_STATUS from "http-status-codes";
+import { deleteSolicitacaoAberta } from "../../../../services/dietaEspecial.service";
+import { Websocket } from "services/websocket";
 
 const DESCRICAO_SOLICITACAO = {
   CODAE_A_AUTORIZAR: "Solicitação de Inclusão",
@@ -133,4 +137,68 @@ export const solicitacaoEhDoCardAutorizadas = (status) => {
 
 export const ehAlunoNaoMatriculado = (tipoSolicitacao) => {
   return tipoSolicitacao === "ALUNO_NAO_MATRICULADO";
+};
+
+export const setDadosDietaAbertaAsync = async (
+  uuid_solicitacao,
+  setDadosDietaAberta
+) => {
+  const response = await createSolicitacaoAberta({ uuid_solicitacao });
+  if (response.status === HTTP_STATUS.CREATED) {
+    setDadosDietaAberta(response.data);
+  }
+};
+
+const fetchData = async (uuid, setDadosDietaAberta) => {
+  const payload = {
+    uuid_solicitacao: uuid,
+  };
+  const response = await createSolicitacaoAberta(payload);
+  if (response.status === HTTP_STATUS.CREATED) {
+    setDadosDietaAberta(response.data);
+  }
+};
+
+const onClose = (
+  uuid,
+  dadosDietaAberta,
+  setDadosDietaAberta,
+  setUuidDieta,
+  setDietasAbertas
+) => {
+  if (dadosDietaAberta) {
+    deleteSolicitacaoAberta(dadosDietaAberta.id);
+  }
+  initSocket(uuid, setDadosDietaAberta, setUuidDieta, setDietasAbertas);
+};
+
+const onOpen = (uuid, setDadosDietaAberta, setUuidDieta) => {
+  if (uuid) {
+    fetchData(uuid, setDadosDietaAberta);
+    setUuidDieta(uuid);
+  }
+};
+
+export const initSocket = (
+  uuid,
+  dadosDietaAberta,
+  setDadosDietaAberta,
+  setUuidDieta,
+  setDietasAbertas
+) => {
+  return new Websocket(
+    "solicitacoes-abertas/",
+    ({ data }) => {
+      data && setDietasAbertas(JSON.parse(data).message);
+    },
+    () =>
+      onClose(
+        uuid,
+        dadosDietaAberta,
+        setDadosDietaAberta,
+        setUuidDieta,
+        setDietasAbertas
+      ),
+    () => onOpen(uuid, setDadosDietaAberta, setUuidDieta)
+  );
 };

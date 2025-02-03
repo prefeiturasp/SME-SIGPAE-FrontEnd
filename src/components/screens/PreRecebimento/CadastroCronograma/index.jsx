@@ -432,6 +432,7 @@ export default () => {
                   <div className="row">
                     <div className="col-8">
                       <Field
+                        data-testid="input-empresa"
                         className="input-cronograma"
                         component={AutoCompleteField}
                         options={getEmpresaFiltrado(
@@ -459,6 +460,7 @@ export default () => {
                         required
                         validate={required}
                         disabled={!values.empresa}
+                        dataTestId="select-div"
                       />
                     </div>
                   </div>

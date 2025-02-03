@@ -1,51 +1,53 @@
-import React, { useState, useEffect } from "react";
+import Botao from "components/Shareable/Botao";
 import {
-  getDietaEspecial,
-  escolaCancelaSolicitacao,
-  getDietasEspeciaisVigentesDeUmAluno,
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "components/Shareable/Botao/constants";
+import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import { CODAE, ESCOLA, TERCEIRIZADA } from "configs/constants";
+import {
+  statusEnum,
+  TIPO_PERFIL,
+  TIPO_SOLICITACAO_DIETA,
+} from "constants/shared";
+import HTTP_STATUS from "http-status-codes";
+import React, { useEffect, useState } from "react";
+import {
+  CODAENegaSolicitacaoCancelamento,
   deleteSolicitacaoAberta,
-  createSolicitacaoAberta,
+  escolaCancelaSolicitacao,
+  getDietaEspecial,
+  getDietasEspeciaisVigentesDeUmAluno,
+  getMotivosNegarSolicitacaoCancelamento,
   updateSolicitacaoAberta,
 } from "services/dietaEspecial.service";
 import {
   getProtocoloDietaEspecial,
   getRelatorioDietaEspecial,
 } from "services/relatorios";
-import {
-  CODAENegaSolicitacaoCancelamento,
-  getMotivosNegarSolicitacaoCancelamento,
-} from "services/dietaEspecial.service";
-import { toastSuccess, toastError } from "components/Shareable/Toast/dialogs";
-import Botao from "components/Shareable/Botao";
-import {
-  BUTTON_TYPE,
-  BUTTON_STYLE,
-  BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import HTTP_STATUS from "http-status-codes";
-import { ESCOLA, CODAE, TERCEIRIZADA } from "configs/constants";
-import {
-  statusEnum,
-  TIPO_PERFIL,
-  TIPO_SOLICITACAO_DIETA,
-} from "constants/shared";
 import EscolaCancelaDietaEspecial from "./componentes/EscolaCancelaDietaEspecial";
 
-import { cabecalhoDieta, ehSolicitacaoDeCancelamento } from "./helpers";
-import CorpoRelatorio from "./componentes/CorpoRelatorio";
-import FormAutorizaDietaEspecial from "./componentes/FormAutorizaDietaEspecial";
-import ModalNegaDietaEspecial from "./componentes/ModalNegaDietaEspecial";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
-import ModalHistorico from "components/Shareable/ModalHistorico";
 import { Spin } from "antd";
-import "./style.scss";
-import ModalAvisoDietaImportada from "./componentes/ModalAvisoDietaImportada";
-import { Websocket } from "services/websocket";
+import ModalHistorico from "components/Shareable/ModalHistorico";
+import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
 import {
+  usuarioEhCogestorDRE,
   usuarioEhCoordenadorNutriCODAE,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscola,
+  usuarioEhNutricionistaSupervisao,
 } from "helpers/utilities";
+import CorpoRelatorio from "./componentes/CorpoRelatorio";
+import FormAutorizaDietaEspecial from "./componentes/FormAutorizaDietaEspecial";
+import ModalAvisoDietaImportada from "./componentes/ModalAvisoDietaImportada";
+import ModalNegaDietaEspecial from "./componentes/ModalNegaDietaEspecial";
+import {
+  cabecalhoDieta,
+  ehSolicitacaoDeCancelamento,
+  initSocket,
+} from "./helpers";
+import "./style.scss";
 
 const Relatorio = ({ visao }) => {
   const [dietaEspecial, setDietaEspecial] = useState(null);
@@ -67,43 +69,8 @@ const Relatorio = ({ visao }) => {
   const dietaCancelada = status ? ehSolicitacaoDeCancelamento(status) : false;
   const tipoPerfil = localStorage.getItem("tipo_perfil");
 
-  const fetchData = async (uuid) => {
-    const payload = {
-      uuid_solicitacao: uuid,
-    };
-    const response = await createSolicitacaoAberta(payload);
-    if (response.status === HTTP_STATUS.CREATED) {
-      setDadosDietaAberta(response.data);
-    }
-  };
-
-  const initSocket = (uuid) => {
-    return new Websocket(
-      "solicitacoes-abertas/",
-      ({ data }) => {
-        getDietasEspeciaisAbertas(JSON.parse(data));
-      },
-      () => {
-        if (dadosDietaAberta) {
-          deleteSolicitacaoAberta(dadosDietaAberta.id);
-        }
-        initSocket(uuid);
-      },
-      () => {
-        if (uuid) {
-          fetchData(uuid);
-          setUuidDieta(uuid);
-        }
-      }
-    );
-  };
-
   const habilitarEdicao = () => {
     setEditar(!editar);
-  };
-
-  const getDietasEspeciaisAbertas = (content) => {
-    content && setDietasAbertas(content.message);
   };
 
   const loadSolicitacao = async (uuid, setDietaNull = false) => {
@@ -149,7 +116,13 @@ const Relatorio = ({ visao }) => {
     loadSolicitacao(uuid);
     tipoPerfil === TIPO_PERFIL.DIETA_ESPECIAL &&
       card === "pendentes-aut" &&
-      initSocket(uuid);
+      initSocket(
+        uuid,
+        dadosDietaAberta,
+        setDadosDietaAberta,
+        setUuidDieta,
+        setDietasAbertas
+      );
   }, []);
 
   useEffect(() => {
@@ -208,6 +181,7 @@ const Relatorio = ({ visao }) => {
         icon={BUTTON_ICON.PRINT}
         className="float-end botaoImprimirDieta"
         onClick={() => gerarRelatorio(uuid)}
+        dataTestId="botao-imprimir"
       />
     );
   };
@@ -303,7 +277,9 @@ const Relatorio = ({ visao }) => {
         exibir = false;
       }
       if (
-        usuarioEhEscola() &&
+        (usuarioEhCogestorDRE() ||
+          usuarioEhNutricionistaSupervisao() ||
+          usuarioEhEscola()) &&
         dietaEspecial.ativo &&
         dietaEspecial.status_solicitacao === "CODAE_AUTORIZADO"
       ) {
@@ -396,6 +372,7 @@ const Relatorio = ({ visao }) => {
                   TIPO_PERFIL.NUTRICAO_MANIFESTACAO,
                   TIPO_PERFIL.MEDICAO,
                   TIPO_PERFIL.CODAE_GABINETE,
+                  TIPO_PERFIL.PRE_RECEBIMENTO,
                 ].includes(tipoPerfil) && (
                   <EscolaCancelaDietaEspecial
                     uuid={dietaEspecial.uuid}
@@ -423,7 +400,6 @@ const Relatorio = ({ visao }) => {
                 cancelar={() => habilitarEdicao()}
               />
             )}
-
           {dietaEspecial &&
             status === statusEnum.ESCOLA_SOLICITOU_INATIVACAO &&
             visao === CODAE && [

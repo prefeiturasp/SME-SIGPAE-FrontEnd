@@ -367,6 +367,7 @@ export const InputText = (props) => {
         step={step}
         name={input.name}
         data-cy={input.name}
+        data-testid={input.name}
         placeholder={placeholder}
         required={required}
         type={inputType ? inputType : type}

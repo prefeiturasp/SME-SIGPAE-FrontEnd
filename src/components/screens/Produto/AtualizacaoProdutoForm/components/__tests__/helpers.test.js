@@ -1,4 +1,4 @@
-import { httpTohttps } from "../helpers/";
+import { httpTohttps } from "../helpers";
 
 describe("Teste httpTohttps", () => {
   test("se URL começa com http://, retorna a url começando em https", () => {

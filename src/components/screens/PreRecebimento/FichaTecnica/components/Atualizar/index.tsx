@@ -346,14 +346,10 @@ export default () => {
                           <Field
                             component={InputText}
                             name={`porcao`}
-                            placeholder="Apenas Números"
+                            placeholder="Quantidade Numérica"
                             className="input-ficha-tecnica"
                             required
-                            proibeLetras
-                            validate={composeValidators(
-                              required,
-                              inteiroOuDecimalComVirgula
-                            )}
+                            validate={required}
                           />
                         </div>
                         <div className="col-3">
@@ -374,14 +370,10 @@ export default () => {
                           <Field
                             component={InputText}
                             name={`valor_unidade_caseira`}
-                            placeholder="Apenas Números"
+                            placeholder="Quantidade Numérica"
                             className="input-ficha-tecnica"
                             required
-                            proibeLetras
-                            validate={composeValidators(
-                              required,
-                              inteiroOuDecimalComVirgula
-                            )}
+                            validate={required}
                           />
                         </div>
                         <div className="col-3">

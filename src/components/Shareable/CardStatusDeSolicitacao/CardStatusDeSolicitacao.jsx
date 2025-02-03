@@ -37,8 +37,16 @@ export const ICON_CARD_TYPE_ENUM = {
 };
 
 export const CardStatusDeSolicitacao = (props) => {
-  const { cardTitle, cardType, solicitations, icon, href, loading, hrefCard } =
-    props;
+  const {
+    cardTitle,
+    cardType,
+    solicitations,
+    icon,
+    href,
+    loading,
+    hrefCard,
+    dataTestId,
+  } = props;
 
   const [dietasAbertas, setDietasAbertas] = useState([]);
   const [filteredSolicitations, setFilteredSolicitations] = useState(undefined);
@@ -196,7 +204,10 @@ export const CardStatusDeSolicitacao = (props) => {
   };
 
   return (
-    <div className={`card card-panel card-colored ${cardType}`}>
+    <div
+      className={`card card-panel card-colored ${cardType}`}
+      data-testid={dataTestId}
+    >
       <div
         className={`card-title-status ajuste-icones ${
           hrefCard ? "card-com-href" : undefined
@@ -219,6 +230,7 @@ export const CardStatusDeSolicitacao = (props) => {
         TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
         TIPO_PERFIL.NUTRICAO_MANIFESTACAO,
         TIPO_PERFIL.CODAE_GABINETE,
+        TIPO_PERFIL.PRE_RECEBIMENTO,
       ].includes(tipoPerfil)
         ? renderSolicitations(filteredSolicitations)
         : renderSolicitations(solicitations)}
@@ -228,6 +240,7 @@ export const CardStatusDeSolicitacao = (props) => {
         TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
         TIPO_PERFIL.NUTRICAO_MANIFESTACAO,
         TIPO_PERFIL.CODAE_GABINETE,
+        TIPO_PERFIL.PRE_RECEBIMENTO,
       ].includes(tipoPerfil)
         ? renderVerMais(filteredSolicitations)
         : renderVerMais(solicitations)}

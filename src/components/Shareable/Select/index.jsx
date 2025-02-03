@@ -23,9 +23,10 @@ export const Select = (props) => {
     width,
     usarDirty,
     onChangeEffect,
+    dataTestId,
   } = props;
   return (
-    <div className="select">
+    <div className="select" data-testid={dataTestId}>
       {label && [
         required && !disabled && (
           <span key={0} className="required-asterisk">
@@ -94,11 +95,6 @@ Select.propTypes = {
     })
   ),
   name: PropTypes.string,
-};
-Select.defaultProps = {
-  naoDesabilitarPrimeiraOpcao: false,
-  options: [{ nome: "Selecione", uuid: "" }],
-  disabled: false,
 };
 
 export default Select;
