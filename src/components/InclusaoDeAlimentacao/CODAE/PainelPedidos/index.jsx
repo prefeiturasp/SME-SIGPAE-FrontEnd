@@ -60,6 +60,10 @@ export const PainelPedidos = ({ ...props }) => {
 
   const atualizarDadosDasInclusoes = async (filtro, paramsFromPrevPage) => {
     setLoading(true);
+    setPedidosPrioritarios();
+    setPedidosNoPrazoLimite();
+    setPedidosNoPrazoRegular();
+
     const [responseAvulsas, responseContinuas, responseCEI, responseCEMEI] =
       await Promise.all([
         fetchSolicitacoes(
@@ -230,37 +234,43 @@ export const PainelPedidos = ({ ...props }) => {
                   <Spin tip="Carregando solicitações..." spinning={loading}>
                     <div className="row pt-3">
                       <div className="col-12">
-                        <CardPendenteAcao
-                          titulo={
-                            "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
-                          }
-                          tipoDeCard={TIPODECARD.PRIORIDADE}
-                          pedidos={pedidosPrioritarios}
-                          colunaDataLabel={"Data da Inclusão"}
-                          dataTestId="prioritario"
-                        />
+                        {pedidosPrioritarios && (
+                          <CardPendenteAcao
+                            titulo={
+                              "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
+                            }
+                            tipoDeCard={TIPODECARD.PRIORIDADE}
+                            pedidos={pedidosPrioritarios}
+                            colunaDataLabel={"Data da Inclusão"}
+                            dataTestId="prioritario"
+                          />
+                        )}
                       </div>
                     </div>
                     <div className="row pt-3">
                       <div className="col-12">
-                        <CardPendenteAcao
-                          titulo={"Solicitações no prazo limite"}
-                          tipoDeCard={TIPODECARD.NO_LIMITE}
-                          pedidos={pedidosNoPrazoLimite}
-                          colunaDataLabel={"Data da Inclusão"}
-                          dataTestId="limite"
-                        />
+                        {pedidosNoPrazoLimite && (
+                          <CardPendenteAcao
+                            titulo={"Solicitações no prazo limite"}
+                            tipoDeCard={TIPODECARD.NO_LIMITE}
+                            pedidos={pedidosNoPrazoLimite}
+                            colunaDataLabel={"Data da Inclusão"}
+                            dataTestId="limite"
+                          />
+                        )}
                       </div>
                     </div>
                     <div className="row pt-3">
                       <div className="col-12">
-                        <CardPendenteAcao
-                          titulo={"Solicitações no prazo regular"}
-                          tipoDeCard={TIPODECARD.REGULAR}
-                          pedidos={pedidosNoPrazoRegular}
-                          colunaDataLabel={"Data da Inclusão"}
-                          dataTestId="regular"
-                        />
+                        {pedidosNoPrazoRegular && (
+                          <CardPendenteAcao
+                            titulo={"Solicitações no prazo regular"}
+                            tipoDeCard={TIPODECARD.REGULAR}
+                            pedidos={pedidosNoPrazoRegular}
+                            colunaDataLabel={"Data da Inclusão"}
+                            dataTestId="regular"
+                          />
+                        )}
                       </div>
                     </div>
                   </Spin>
