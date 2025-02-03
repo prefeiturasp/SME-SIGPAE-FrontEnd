@@ -3,6 +3,7 @@ import {
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhDinutreDiretoria,
   usuarioEhDRE,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizada,
@@ -92,7 +93,8 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
       usuarioEhNutricionistaSupervisao() ||
       usuarioEhEmpresaTerceirizada() ||
       usuarioEhMedicao() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.ESCOLA}/${constants.INCLUSAO_ALIMENTACAO}`,
@@ -347,7 +349,8 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhMedicao() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.NUTRIMANIFESTACAO}/${constants.SOLICITACOES_NEGADAS}`,
@@ -355,7 +358,8 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhMedicao() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.NUTRIMANIFESTACAO}/${constants.SOLICITACOES_CANCELADAS}`,
@@ -363,7 +367,8 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhMedicao() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.TERCEIRIZADA}/${constants.ALTERACAO_TIPO_ALIMENTACAO}`,
@@ -433,7 +438,8 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
       usuarioEhEscolaTerceirizadaDiretor() ||
       usuarioEhCODAEGabinete() ||
       ehUsuarioRelatorios() ||
-      usuarioEhGticCODAE(),
+      usuarioEhGticCODAE() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.RELATORIO_ALUNOS_MATRICULADOS}`,
@@ -447,6 +453,7 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
       usuarioEhMedicao() ||
       usuarioEhCODAEGabinete() ||
       ehUsuarioRelatorios() ||
-      usuarioEhGticCODAE(),
+      usuarioEhGticCODAE() ||
+      usuarioEhDinutreDiretoria(),
   },
 ];

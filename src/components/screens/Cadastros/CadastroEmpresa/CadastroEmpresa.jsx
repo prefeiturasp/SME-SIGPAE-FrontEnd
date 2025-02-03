@@ -32,14 +32,14 @@ import { ModalCadastroEmpresa } from "./components/ModalCadastroEmpresa";
 
 import "./style.scss";
 import { getListaModalidades } from "../../../../services/terceirizada.service";
+import { usuarioEhCODAEGestaoProduto } from "../../../../helpers/utilities";
 
 const verificarUsuarioEhDistribuidor = () => {
   const tipoPerfil = localStorage.getItem("perfil");
-  if (tipoPerfil === PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA) {
-    return false;
-  } else if (
+  if (
     tipoPerfil === PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA ||
-    tipoPerfil === PERFIL.DILOG_CRONOGRAMA
+    tipoPerfil === PERFIL.DILOG_CRONOGRAMA ||
+    usuarioEhCODAEGestaoProduto()
   ) {
     return true;
   }

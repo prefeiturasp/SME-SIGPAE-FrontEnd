@@ -196,6 +196,31 @@ class RelatorioSuspensaoAlimentacao extends Component {
                   suspensaoAlimentacao={suspensaoAlimentacao}
                   dadosEscola={dadosEscola}
                 />
+                {suspensaoAlimentacao.suspensoes_alimentacao.find(
+                  (suspensao) => suspensao.cancelado_justificativa
+                ) && (
+                  <>
+                    <hr />
+                    <p>
+                      <strong>Histórico de cancelamento</strong>
+                      {suspensaoAlimentacao.suspensoes_alimentacao
+                        .filter(
+                          (suspensao) => suspensao.cancelado_justificativa
+                        )
+                        .map((suspensao, key, array) => {
+                          return (
+                            <div key={key}>
+                              {suspensao.data}
+                              {" - "}
+                              justificativa: {suspensao.cancelado_justificativa}
+                              <br />
+                              {key < array.length - 1 && <br />}
+                            </div>
+                          );
+                        })}
+                    </p>
+                  </>
+                )}
                 <RelatorioHistoricoJustificativaEscola
                   solicitacao={suspensaoAlimentacao}
                 />

@@ -3,12 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Field, Form } from "react-final-form";
 import Label from "components/Shareable/Label";
 
-import {
-  required,
-  email,
-  composeValidators,
-  inteiroOuDecimalComVirgula,
-} from "helpers/fieldValidators";
+import { required, email } from "helpers/fieldValidators";
 import { Spin, Tooltip } from "antd";
 import { CATEGORIA_OPTIONS } from "../../constants";
 import InputText from "components/Shareable/Input/InputText";
@@ -161,6 +156,7 @@ export default () => {
                       <div className="col-6">
                         <Field
                           component={AutoCompleteSelectField}
+                          dataTestId={"produto"}
                           options={getListaFiltradaAutoCompleteSelect(
                             produtosOptions.map((e) => e.nome),
                             values["produto"],
@@ -184,6 +180,7 @@ export default () => {
                       </div>
                       <div className="col-2 cadastro-externo">
                         <Botao
+                          dataTestId="btnCadastrarProduto"
                           texto="Cadastrar Produto"
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN_OUTLINE}
@@ -200,6 +197,7 @@ export default () => {
                       <div className="col-4">
                         <Field
                           component={Select}
+                          dataTestId={"categoria"}
                           naoDesabilitarPrimeiraOpcao
                           options={[
                             { nome: "Selecione uma Categoria", uuid: "" },
@@ -215,6 +213,7 @@ export default () => {
                       <div className="col-6">
                         <Field
                           component={Select}
+                          dataTestId={"marca"}
                           naoDesabilitarPrimeiraOpcao
                           options={[
                             { nome: "Selecione uma Marca", uuid: "" },
@@ -248,6 +247,7 @@ export default () => {
                       <div className="col-4">
                         <Field
                           component={InputText}
+                          dataTestId={"pregao_chamada_publica"}
                           label="Nº do Pregão/Chamada Pública"
                           name={`pregao_chamada_publica`}
                           placeholder="Nº do Pregão/Chamada Pública"
@@ -290,6 +290,7 @@ export default () => {
                           <div className="col-6">
                             <Field
                               component={AutoCompleteSelectField}
+                              dataTestId={"fabricante"}
                               options={getListaFiltradaAutoCompleteSelect(
                                 fabricantesOptions.map((e) => e.nome),
                                 values["fabricante"],
@@ -454,14 +455,10 @@ export default () => {
                         <Field
                           component={InputText}
                           name={`porcao`}
-                          placeholder="Apenas Números"
+                          placeholder="Quantidade Numérica"
                           className="input-ficha-tecnica"
                           required
-                          proibeLetras
-                          validate={composeValidators(
-                            required,
-                            inteiroOuDecimalComVirgula
-                          )}
+                          validate={required}
                         />
                       </div>
                       <div className="col-3">
@@ -482,14 +479,10 @@ export default () => {
                         <Field
                           component={InputText}
                           name={`valor_unidade_caseira`}
-                          placeholder="Apenas Números"
+                          placeholder="Quantidade Numérica"
                           className="input-ficha-tecnica"
                           required
-                          proibeLetras
-                          validate={composeValidators(
-                            required,
-                            inteiroOuDecimalComVirgula
-                          )}
+                          validate={required}
                         />
                       </div>
                       <div className="col-3">

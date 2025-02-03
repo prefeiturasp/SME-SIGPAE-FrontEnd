@@ -5,10 +5,16 @@ import { CustomToolbar } from "../componentes/CustomToolbar";
 
 describe("Teste <CustomToolbar>", () => {
   let toolbarMock;
+  const today = new Date();
+
+  const calculateMonth = (offset) => {
+    const date = new Date(today.getFullYear(), today.getMonth() + offset, 1);
+    return date;
+  };
 
   beforeEach(() => {
     toolbarMock = {
-      date: new Date(2024, 11, 19),
+      date: calculateMonth(0),
       onNavigate: jest.fn(),
       onView: jest.fn(),
       view: "month",
@@ -18,16 +24,25 @@ describe("Teste <CustomToolbar>", () => {
   });
 
   it("verifica se a label do mês e ano é exibida corretamente", () => {
-    const dateLabel = screen.getByText((content, element) => {
-      const hasText = (node) => node.textContent === "December 2024";
-      return hasText(element) && element.classList.contains("label-month");
+    const expectedMonth = toolbarMock.date.toLocaleString("en-US", {
+      month: "long",
     });
+
+    const dateLabel = screen.getByText((_, element) => {
+      return (
+        element.textContent
+          ?.toLowerCase()
+          .includes(expectedMonth.toLowerCase()) &&
+        element.classList.contains("label-month")
+      );
+    });
+
     expect(dateLabel).toBeInTheDocument();
   });
 
   it("verifica se o componente renderizou 2 botões", () => {
     const botoes = screen.getAllByRole("button");
-    expect(botoes.length).toBe(2); // Botões de navegação "Anterior" e "Próximo"
+    expect(botoes.length).toBe(2);
   });
 
   it("verifica se o botão de 'Anterior' chama a função onNavigate corretamente", () => {
@@ -37,7 +52,9 @@ describe("Teste <CustomToolbar>", () => {
     });
     fireEvent.click(botaoAnterior);
     expect(toolbarMock.onNavigate).toHaveBeenCalledWith("prev");
-    expect(toolbarMock.date.getMonth()).toBe(10); // Novembro de 2024
+
+    const expectedDate = calculateMonth(-1);
+    expect(toolbarMock.date.getMonth()).toBe(expectedDate.getMonth());
   });
 
   it("verifica se o botão de 'Próximo' chama a função onNavigate corretamente", () => {
@@ -47,7 +64,9 @@ describe("Teste <CustomToolbar>", () => {
     });
     fireEvent.click(botaoProximo);
     expect(toolbarMock.onNavigate).toHaveBeenCalledWith("current");
-    expect(toolbarMock.date.getMonth()).toBe(0); // Janeiro de 2025
+
+    const expectedDate = calculateMonth(1);
+    expect(toolbarMock.date.getMonth()).toBe(expectedDate.getMonth());
   });
 
   it("verifica se a aba 'Mês' chama a função onView corretamente", () => {

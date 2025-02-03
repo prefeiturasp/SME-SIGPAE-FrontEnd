@@ -41,7 +41,8 @@ export const InputText = (props) => {
     inputOnChange,
     prefix,
     onBlur,
-    dataTestid,
+    dataTestId,
+    dataTestIdDiv,
   } = props;
 
   const inputProps = {
@@ -57,7 +58,10 @@ export const InputText = (props) => {
   };
 
   return (
-    <div className={`input ${icone && "icon"}`} data-testid="input-div">
+    <div
+      className={`input ${icone && "icon"}`}
+      data-testid={dataTestIdDiv || "input-div"}
+    >
       {label && [
         required && !esconderAsterisco && (
           <span key={0} className="required-asterisk">
@@ -85,7 +89,7 @@ export const InputText = (props) => {
             "invalid-field"
           }`}
           id={id}
-          data-testid={dataTestid}
+          data-testid={dataTestId}
           disabled={disabled}
           min={min}
           max={max}

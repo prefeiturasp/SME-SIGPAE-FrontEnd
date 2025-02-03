@@ -130,10 +130,11 @@ export class InputComData extends Component {
       onClickTrash,
       indexTrash,
       form,
+      dataTestId,
     } = this.props;
 
     return (
-      <div className="datepicker">
+      <div className="datepicker" data-testid={dataTestId}>
         {label && [
           required && (
             <span className="required-asterisk float-start" key={0}>

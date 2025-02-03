@@ -23,9 +23,10 @@ export const Select = (props) => {
     width,
     usarDirty,
     onChangeEffect,
+    dataTestId,
   } = props;
   return (
-    <div className="select" data-testid="select-div">
+    <div className="select" data-testid={dataTestId}>
       {label && [
         required && !disabled && (
           <span key={0} className="required-asterisk">

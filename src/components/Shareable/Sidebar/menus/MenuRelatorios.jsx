@@ -1,21 +1,22 @@
-import React from "react";
-import { Menu, LeafItem } from "./shared";
+import * as constants from "configs/constants";
 import {
+  ehUsuarioRelatorios,
   usuarioEhCODAEDietaEspecial,
   usuarioEhCODAEGabinete,
-  usuarioEhCODAEGestaoProduto,
   usuarioEhCODAEGestaoAlimentacao,
+  usuarioEhCODAEGestaoProduto,
   usuarioEhCODAENutriManifestacao,
-  usuarioEhNutricionistaSupervisao,
-  usuarioEhEmpresaTerceirizada,
-  usuarioEhEscolaTerceirizadaDiretor,
-  usuarioEhEscolaTerceirizada,
+  usuarioEhDinutreDiretoria,
   usuarioEhDRE,
+  usuarioEhEmpresaTerceirizada,
+  usuarioEhEscolaTerceirizada,
+  usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhGticCODAE,
+  usuarioEhNutricionistaSupervisao,
   usuarioEhOrgaoFiscalizador,
-  ehUsuarioRelatorios,
 } from "helpers/utilities";
-import * as constants from "configs/constants";
+import React from "react";
+import { LeafItem, Menu } from "./shared";
 
 const MenuRelatorios = () => {
   const exibirProdutosHomologados =
@@ -31,7 +32,8 @@ const MenuRelatorios = () => {
     usuarioEhOrgaoFiscalizador() ||
     usuarioEhCODAEGabinete() ||
     ehUsuarioRelatorios() ||
-    usuarioEhGticCODAE();
+    usuarioEhGticCODAE() ||
+    usuarioEhDinutreDiretoria();
 
   const exibirQuantitativoPorTerceirizada = usuarioEhCODAEGestaoProduto();
   const exibirRelatorioAnaliseSensorial =
@@ -48,7 +50,8 @@ const MenuRelatorios = () => {
     usuarioEhCODAEGestaoAlimentacao() ||
     usuarioEhDRE() ||
     usuarioEhOrgaoFiscalizador() ||
-    usuarioEhCODAEGabinete();
+    usuarioEhCODAEGabinete() ||
+    usuarioEhDinutreDiretoria();
 
   const exibirProdutosSuspensos =
     usuarioEhCODAEGestaoProduto() ||
@@ -63,7 +66,8 @@ const MenuRelatorios = () => {
     usuarioEhOrgaoFiscalizador() ||
     usuarioEhCODAEGabinete() ||
     ehUsuarioRelatorios() ||
-    usuarioEhGticCODAE();
+    usuarioEhGticCODAE() ||
+    usuarioEhDinutreDiretoria();
 
   const exibirRelatorioQuantitativoSolicDietaEsp =
     usuarioEhCODAEDietaEspecial() ||
@@ -73,7 +77,12 @@ const MenuRelatorios = () => {
     usuarioEhEscolaTerceirizadaDiretor();
 
   return (
-    <Menu id="Relatorios" icon="fa-file-alt" title={"Relatórios"}>
+    <Menu
+      id="Relatorios"
+      icon="fa-file-alt"
+      title={"Relatórios"}
+      dataTestId="relatorios"
+    >
       {exibirProdutosHomologados && (
         <LeafItem
           to={`/${constants.GESTAO_PRODUTO}/relatorios/produtos-homologados`}

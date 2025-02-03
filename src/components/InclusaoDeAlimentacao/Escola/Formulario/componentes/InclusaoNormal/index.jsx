@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
@@ -59,6 +59,7 @@ export const DataInclusaoNormal = ({ ...props }) => {
                   onDataChanged(value);
                 }
               }}
+              dataTestId={`data-motivo-normal-${index}`}
             />
           </div>
           {index > 0 && (
@@ -77,6 +78,7 @@ export const DataInclusaoNormal = ({ ...props }) => {
                 style={BUTTON_STYLE.BLUE_OUTLINE}
                 icon={BUTTON_ICON.TRASH}
                 className="botao-remover-dia"
+                dataTestId={`botao-remover-dia-${index}`}
               />
             </div>
           )}
@@ -94,6 +96,7 @@ export const AdicionarDia = ({ push, nameFieldArray }) => {
       onClick={() => push(nameFieldArray || "inclusoes")}
       style={BUTTON_STYLE.GREEN_OUTLINE}
       type={BUTTON_TYPE.BUTTON}
+      dataTestId="botao-adicionar-dia"
     />
   );
 };
@@ -139,8 +142,11 @@ export const PeriodosInclusaoNormal = ({
   const getPeriodo = (indice) => {
     return values.quantidades_periodo[indice];
   };
-  form.change("uuid", uuid);
-  form.change("id_externo", idExterno);
+  useEffect(() => {
+    form.change("uuid", uuid);
+    form.change("id_externo", idExterno);
+  }, [form, uuid, idExterno]);
+
   const onTiposAlimentacaoChanged = (values_, indice) => {
     if (ehETEC) {
       const LANCHE_4H_UUID = periodos[0].tipos_alimentacao.find(
@@ -225,6 +231,7 @@ export const PeriodosInclusaoNormal = ({
                 <div className="col-3">
                   <div
                     className={`period-quantity number-${indice} ps-5 pt-2 pb-2`}
+                    data-testid={`div-checkbox-${getPeriodo(indice).nome}`}
                   >
                     <label htmlFor="check" className="checkbox-label">
                       <Field
@@ -253,7 +260,10 @@ export const PeriodosInclusaoNormal = ({
                   </div>
                 </div>
                 <div className="col-6">
-                  <div className={getPeriodo(indice).multiselect}>
+                  <div
+                    className={getPeriodo(indice).multiselect}
+                    data-testid={`multiselect-div-${getPeriodo(indice).nome}`}
+                  >
                     <Field
                       component={StatefulMultiSelect}
                       name="tipos_alimentacao"
@@ -261,7 +271,7 @@ export const PeriodosInclusaoNormal = ({
                         getPeriodo(indice).tipos_alimentacao_selecionados || []
                       }
                       options={formatarParaMultiselect(
-                        getPeriodo(indice).tipos_alimentacao
+                        getPeriodo(indice).tipos_alimentacao || []
                       )}
                       onSelectedChanged={(values_) =>
                         onTiposAlimentacaoChanged(values_, indice)
@@ -286,6 +296,7 @@ export const PeriodosInclusaoNormal = ({
                     min="0"
                     className="form-control quantidade-aluno"
                     required={getPeriodo(indice).checked}
+                    dataTestIdDiv={`numero-alunos-${indice}`}
                     validate={
                       meusDados.vinculo_atual.instituicao
                         .tipo_unidade_escolar_iniciais !== "CEU GESTAO"

@@ -1,33 +1,34 @@
-import React from "react";
-import { Menu, LeafItem, SubMenu } from "./shared";
 import {
-  DIETA_ESPECIAL,
   CANCELAMENTO,
   CONSULTA_PROTOCOLO_PADRAO_DIETA,
+  DIETA_ESPECIAL,
   RELATORIO_DIETAS_AUTORIZADAS,
   RELATORIO_DIETAS_CANCELADAS,
   RELATORIO_GERENCIAL_DIETAS,
 } from "configs/constants";
+import { getNomeCardAguardandoAutorizacao } from "helpers/dietaEspecial";
 import {
-  usuarioEhEmpresaTerceirizada,
+  ehUsuarioRelatorios,
+  usuarioEhAdministradorNutriCODAE,
   usuarioEhCODAEDietaEspecial,
-  usuarioEhDRE,
-  usuarioEhMedicao,
-  usuarioEhNutricionistaSupervisao,
+  usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhCoordenadorNutriCODAE,
+  usuarioEhCoordenadorNutriSupervisao,
+  usuarioEhDinutreDiretoria,
+  usuarioEhDRE,
+  usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
-  usuarioEhAdministradorNutriCODAE,
-  usuarioEhCoordenadorNutriSupervisao,
-  usuarioEhCoordenadorNutriCODAE,
   usuarioEhGticCODAE,
+  usuarioEhMedicao,
+  usuarioEhNutricionistaSupervisao,
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
-  usuarioEhCODAEGabinete,
-  ehUsuarioRelatorios,
 } from "helpers/utilities";
-import { getNomeCardAguardandoAutorizacao } from "helpers/dietaEspecial";
+import React from "react";
+import { LeafItem, Menu, SubMenu } from "./shared";
 
 const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
   const exibePainelInicial =
@@ -42,7 +43,8 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
     usuarioEhNutricionistaSupervisao() ||
     usuarioEscolaEhGestaoDireta() ||
     usuarioEscolaEhGestaoParceira() ||
-    usuarioEhCODAEGabinete();
+    usuarioEhCODAEGabinete() ||
+    usuarioEhDinutreDiretoria();
   const exibeNovaSolicitacao =
     usuarioEhEscolaTerceirizadaDiretor() ||
     usuarioEhEscolaTerceirizada() ||
@@ -61,7 +63,8 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
     usuarioEhDRE() ||
     usuarioEscolaEhGestaoDireta() ||
     usuarioEscolaEhGestaoParceira() ||
-    usuarioEhCODAEGabinete();
+    usuarioEhCODAEGabinete() ||
+    usuarioEhDinutreDiretoria();
   const exibeAtivasInativas = usuarioEhCODAEDietaEspecial();
   const exibeRelatorioDietasEspeciais =
     usuarioEhEmpresaTerceirizada() ||
@@ -76,10 +79,16 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
     usuarioEhMedicao() ||
     usuarioEhCODAEGabinete() ||
     ehUsuarioRelatorios() ||
-    usuarioEhGticCODAE();
+    usuarioEhGticCODAE() ||
+    usuarioEhDinutreDiretoria();
 
   return (
-    <Menu id="DietaEspecial" icon="fa-apple-alt" title={"Dieta Especial"}>
+    <Menu
+      id="DietaEspecial"
+      icon="fa-apple-alt"
+      title={"Dieta Especial"}
+      dataTestId="dieta-especial"
+    >
       {exibePainelInicial && (
         <LeafItem to="/painel-dieta-especial">Painel de Solicitações</LeafItem>
       )}
@@ -120,6 +129,7 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
           onClick={onSubmenuClick}
           title="Relatórios"
           activeMenu={activeMenu}
+          dataTestId="relatorios-de"
         >
           <LeafItem to={`/${DIETA_ESPECIAL}/${RELATORIO_DIETAS_AUTORIZADAS}`}>
             Relatório de Dietas Autorizadas
