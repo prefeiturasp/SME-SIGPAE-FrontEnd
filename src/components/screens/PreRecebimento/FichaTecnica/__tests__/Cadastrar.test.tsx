@@ -89,10 +89,17 @@ const setup = async () => {
 };
 
 const preencheInput = (testId: string, value: string) => {
-  let selectMarca = screen.getByTestId(testId);
-  fireEvent.change(selectMarca, {
+  let select = screen.getByTestId(testId);
+  fireEvent.change(select, {
     target: { value: value },
   });
+};
+
+const clickRadio = (testId: string) => {
+  let radioBtn = screen.getByTestId(testId);
+  expect(radioBtn).not.toBeChecked();
+  fireEvent.click(radioBtn);
+  expect(radioBtn).toBeChecked();
 };
 
 describe("Carrega página de Cadastro de Ficha técnica", () => {
@@ -135,6 +142,63 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     preencheInput("fabricante", mockListaFabricantes.results[0].uuid);
     preencheInput("prazo_validade", "12 Meses");
     preencheInput("numero_registro", "11111");
+
+    clickRadio("agroecologico-nao");
+    clickRadio("organico-nao");
+    preencheInput("componentes_produto", "aaaaa");
+    clickRadio("alergenicos-nao");
+    clickRadio("gluten-nao");
+    clickRadio("lactose-nao");
+
+    const btnProximo = screen.getByText("Próximo").closest("button");
+    expect(btnProximo).not.toBeDisabled();
+    fireEvent.click(btnProximo);
+
+    const btnAnterior = screen.getByText("Anterior").closest("button");
+    fireEvent.click(btnAnterior);
+    fireEvent.click(btnProximo);
+
+    expect(
+      screen.getByText(/Quantidade por 100g ou 100 ml/i)
+    ).toBeInTheDocument();
+
+    const inputsStep2 = screen.getAllByRole("textbox");
+
+    inputsStep2.forEach((input) => {
+      fireEvent.change(input, {
+        target: { value: "10" },
+      });
+    });
+
+    let selectUnidadeMedida = screen
+      .getByTestId("unidade_medida_porcao")
+      .querySelector("select");
+    fireEvent.change(selectUnidadeMedida, {
+      target: { value: mockListaUnidadesMedidaLogistica.results[0].uuid },
+    });
+
+    expect(btnProximo).not.toBeDisabled();
+    fireEvent.click(btnProximo);
+
+    const inputsStep3 = screen.getAllByRole("textbox");
+    inputsStep3.forEach((input) => {
+      fireEvent.change(input, {
+        target: { value: "Teste" },
+      });
+    });
+
+    const selectsStep3 = screen.getAllByRole("combobox");
+    selectsStep3.forEach((select) => {
+      fireEvent.change(select, {
+        target: { value: mockListaUnidadesMedidaLogistica.results[0].uuid },
+      });
+    });
+
+    clickRadio("embalagens_de_acordo_com_anexo");
+    clickRadio("rotulo_legivel");
+
+    const btnAssinar = screen.getByText("Assinar e Enviar").closest("button");
+    fireEvent.click(btnAssinar);
   });
 
   it("cadastra um produto pelo Modal", async () => {

@@ -41,8 +41,6 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             name={`numero_registro`}
             placeholder="Digite o Número do Registro do Órgão Competente"
             className="input-ficha-tecnica"
-            required
-            validate={required}
             disabled={desabilitar}
           />
         </div>
@@ -57,6 +55,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             Não
             <Field
               component="input"
+              data-testid="agroecologico-nao"
               type="radio"
               value="0"
               name={`agroecologico`}
@@ -69,6 +68,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             Sim
             <Field
               component="input"
+              data-testid="agroecologico-sim"
               type="radio"
               value="1"
               name={`agroecologico`}
@@ -86,6 +86,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             Não
             <Field
               component="input"
+              data-testid="organico-nao"
               type="radio"
               value="0"
               name={`organico`}
@@ -98,6 +99,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             Sim
             <Field
               component="input"
+              data-testid="organico-sim"
               type="radio"
               value="1"
               name={`organico`}
@@ -157,6 +159,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
         <div className="col-12">
           <Field
             component={InputText}
+            dataTestId={"componentes_produto"}
             label="Componentes do Produto"
             name={`componentes_produto`}
             placeholder="Digite Todos os Componentes Utilizados na Composição do Produto"
@@ -180,6 +183,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             Não
             <Field
               component="input"
+              data-testid="alergenicos-nao"
               type="radio"
               value="0"
               name={`alergenicos`}
@@ -192,6 +196,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             Sim
             <Field
               component="input"
+              data-testid="alergenicos-sim"
               type="radio"
               value="1"
               name={`alergenicos`}
@@ -227,6 +232,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             Não contém glúten
             <Field
               component="input"
+              data-testid="gluten-nao"
               type="radio"
               value="0"
               name={`gluten`}
@@ -239,6 +245,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             Contém glúten
             <Field
               component="input"
+              data-testid="gluten-sim"
               type="radio"
               value="1"
               name={`gluten`}
@@ -259,6 +266,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             Não
             <Field
               component="input"
+              data-testid="lactose-nao"
               type="radio"
               value="0"
               name={`lactose`}
@@ -271,6 +279,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             Sim
             <Field
               component="input"
+              data-testid="lactose-sim"
               type="radio"
               value="1"
               name={`lactose`}
