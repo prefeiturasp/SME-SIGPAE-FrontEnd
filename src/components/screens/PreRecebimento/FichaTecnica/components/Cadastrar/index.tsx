@@ -464,6 +464,7 @@ export default () => {
                       <div className="col-3">
                         <Field
                           component={Select}
+                          dataTestId={"unidade_medida_porcao"}
                           naoDesabilitarPrimeiraOpcao
                           options={[
                             { nome: "Unidade de Medida", uuid: "" },
