@@ -41,8 +41,6 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             name={`numero_registro`}
             placeholder="Digite o Número do Registro do Órgão Competente"
             className="input-ficha-tecnica"
-            required
-            validate={required}
             disabled={desabilitar}
           />
         </div>
