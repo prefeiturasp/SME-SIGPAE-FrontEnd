@@ -155,13 +155,13 @@ export const carregarDadosCadastrar = async (
       setFicha(fichaTecnica);
       setInitialValues(geraInitialValuesCadastrar(fichaTecnica));
 
+      const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
+      setProponente(response.data);
+
       if (fichaTecnica.arquivo) {
         const arquivo = await carregarArquivo(fichaTecnica.arquivo);
         setArquivo(arquivo);
       }
-
-      const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
-      setProponente(response.data);
     } else if (meusDados) {
       const response = await getTerceirizadaUUID(
         meusDados.vinculo_atual.instituicao.uuid

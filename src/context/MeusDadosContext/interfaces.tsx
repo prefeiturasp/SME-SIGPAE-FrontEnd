@@ -8,7 +8,7 @@ import {
 import { ContratoTerceirizadaInterface } from "interfaces/terceirizada.interface";
 
 export interface InstituicaoInterface {
-  acesso_modulo_medicao_inicial: boolean;
+  acesso_modulo_medicao_inicial?: boolean;
   codigo_eol: string | null;
   contato: ContratoTerceirizadaInterface;
   diretoria_regional: DiretoriaRegionalInterface;
@@ -16,10 +16,11 @@ export interface InstituicaoInterface {
   eh_cemei?: boolean;
   endereco: EnderecoInterface;
   lotes: Array<LoteInterface>;
-  modulo_gestao: string;
+  modulo_gestao?: string;
   nome: string;
   periodos_escolares: Array<PeriodoEscolarInterface>;
   quantidade_alunos?: number;
+  tipo_servico?: string;
   tipo_gestao: string;
   tipo_unidade_escolar: string;
   tipo_unidade_escolar_iniciais: string;
@@ -44,6 +45,7 @@ export interface MeusDadosInterface {
   cargo: string | null;
   cpf: string | null;
   crn_numero: string | null;
+  nome: string | null;
   date_joined: string;
   email: string;
   registro_funcional: string | null;
@@ -51,4 +53,5 @@ export interface MeusDadosInterface {
   tipo_usuario: string;
   uuid: string;
   vinculo_atual: VinculoAtualInterface;
+  aceitou_termos: boolean;
 }

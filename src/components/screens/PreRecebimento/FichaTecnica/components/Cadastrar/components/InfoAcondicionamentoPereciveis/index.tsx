@@ -483,6 +483,7 @@ export default ({
             component={InputFile}
             arquivosPreCarregados={arquivo}
             className="inputfile"
+            dataTestId="arquivo"
             texto="Anexar Ficha Assinada pelo RT"
             name={"arquivo"}
             accept="PDF"
