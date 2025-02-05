@@ -28,7 +28,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             required
             validate={required}
             tooltipText={
-              "Deve ser declarado do prazo real em dias, meses ou anos a partir da data de fabricação."
+              "Deve ser declarado o prazo em dias, meses ou anos a partir da data de fabricação."
             }
             disabled={desabilitar}
           />
