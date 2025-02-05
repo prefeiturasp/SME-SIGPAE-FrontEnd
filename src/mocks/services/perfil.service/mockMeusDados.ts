@@ -1,0 +1,40 @@
+import { MeusDadosInterface } from "context/MeusDadosContext/interfaces";
+
+export const mockMeusDadosFornecedor: MeusDadosInterface = {
+  uuid: "9f34bc68-ae58-41b1-a605-189824c9f7ef",
+  cpf: "89059358007",
+  nome: "FORNECEDOR ADMIN",
+  email: "fornecedor@admin.com",
+  tipo_email: null,
+  registro_funcional: "3434343",
+  tipo_usuario: "terceirizada",
+  date_joined: "13/12/2022 22:45:31",
+  vinculo_atual: {
+    uuid: "2542e338-41f2-4342-8bb4-78f37dd82f05",
+    instituicao: {
+      nome: "JP Alimentos",
+      uuid: "d0630b2b-8e45-472c-b9c6-90451b60b081",
+      codigo_eol: null,
+      quantidade_alunos: 0,
+      lotes: [],
+      periodos_escolares: [],
+      diretoria_regional: null,
+      tipo_unidade_escolar: null,
+      tipo_unidade_escolar_iniciais: null,
+      tipo_gestao: null,
+      tipos_contagem: null,
+      endereco: null,
+      contato: null,
+      tipo_servico: "FORNECEDOR",
+    },
+    perfil: {
+      nome: "ADMINISTRADOR_EMPRESA",
+      visao: "EMPRESA",
+      uuid: "34f80804-152b-4066-9cfd-f26bc215ad99",
+    },
+    ativo: true,
+  },
+  crn_numero: null,
+  cargo: "COORDENADOR",
+  aceitou_termos: true,
+};
