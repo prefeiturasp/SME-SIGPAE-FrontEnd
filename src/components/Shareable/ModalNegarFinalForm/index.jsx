@@ -26,12 +26,15 @@ export const ModalNegarFinalForm = ({ ...props }) => {
     tipoSolicitacao,
   } = props;
   const [justificativa, setJustificativa] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const solicitacaoAlimentacaoContext = useContext(
     SolicitacaoAlimentacaoContext
   );
 
   const onSubmit = async (values) => {
+    setIsSubmitting(true);
+
     const resp = await endpoint(solicitacao.uuid, values, tipoSolicitacao);
     if (resp.status === HTTP_STATUS.OK) {
       closeModal();
@@ -48,6 +51,8 @@ export const ModalNegarFinalForm = ({ ...props }) => {
       closeModal();
       toastError(`Houve um erro ao negar solicitação: ${getError(resp.data)}`);
     }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -94,7 +99,11 @@ export const ModalNegarFinalForm = ({ ...props }) => {
                 texto="Sim"
                 type={BUTTON_TYPE.SUBMIT}
                 style={BUTTON_STYLE.GREEN}
-                disabled={justificativa === "" || justificativa === undefined}
+                disabled={
+                  justificativa === "" ||
+                  justificativa === undefined ||
+                  isSubmitting
+                }
                 className="ms-3"
               />
             </Modal.Footer>

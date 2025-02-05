@@ -41,9 +41,11 @@ class Relatorio extends Component {
       prazoDoPedidoMensagem: null,
       resposta_sim_nao: null,
       showModalMarcarConferencia: false,
+      submitting: false,
     };
 
     //FIXME: migrar para padrao sem binding
+    this.setSubmitting = this.setSubmitting.bind(this);
     this.closeQuestionamentoModal = this.closeQuestionamentoModal.bind(this);
     this.closeNaoAprovaModal = this.closeNaoAprovaModal.bind(this);
     this.closeAutorizarModal = this.closeAutorizarModal.bind(this);
@@ -78,6 +80,10 @@ class Relatorio extends Component {
         }
       );
     }
+  }
+
+  setSubmitting(valor) {
+    this.setState({ submitting: valor });
   }
 
   showQuestionamentoModal(resposta_sim_nao) {
@@ -131,6 +137,7 @@ class Relatorio extends Component {
   }
 
   handleSubmit() {
+    this.setSubmitting(true);
     const { toastAprovaMensagem, toastAprovaMensagemErro } = this.props;
     this.props
       .endpointAprovaSolicitacao(
@@ -150,7 +157,10 @@ class Relatorio extends Component {
         function () {
           toastError(toastAprovaMensagemErro);
         }
-      );
+      )
+      .finally(() => {
+        this.setSubmitting(false);
+      });
   }
 
   render() {
@@ -166,6 +176,7 @@ class Relatorio extends Component {
       showModalCodaeAutorizar,
       meusDados,
       showModalMarcarConferencia,
+      submitting,
     } = this.state;
     const {
       endpointAprovaSolicitacao,
@@ -407,6 +418,7 @@ class Relatorio extends Component {
                                 ? this.showAutorizarModal()
                                 : this.showModalCodaeAutorizar()
                             }
+                            disabled={submitting}
                             style={BUTTON_STYLE.GREEN}
                             className="ms-3"
                           />

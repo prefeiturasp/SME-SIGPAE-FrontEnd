@@ -1,5 +1,5 @@
 import HTTP_STATUS from "http-status-codes";
-import React from "react";
+import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import Botao from "components/Shareable/Botao";
 import {
@@ -17,7 +17,11 @@ const ModalMarcarConferencia = ({
   uuid,
   endpoint,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const marcaConferencia = async () => {
+    setIsSubmitting(true);
+
     const resp = await terceirizadaMarcaConferencia(uuid, endpoint);
     if (resp.status === HTTP_STATUS.OK) {
       toastSuccess("Solicitação conferida com sucesso!");
@@ -26,6 +30,8 @@ const ModalMarcarConferencia = ({
     } else {
       toastError(resp.data.detail);
     }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -63,6 +69,7 @@ const ModalMarcarConferencia = ({
               style={BUTTON_STYLE.GREEN}
               className="ms-3"
               onClick={() => marcaConferencia()}
+              disabled={isSubmitting}
             />
           </div>
         </div>
