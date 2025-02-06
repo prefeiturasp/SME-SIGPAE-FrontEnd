@@ -13,7 +13,6 @@ interface Props {
   name: string;
   aprovaCollapse: (_name: string) => void;
   reprovaCollapse: (_name: string) => void;
-  cancelaCollapse: (_name: string) => void;
   values: Record<string, any>;
 }
 
@@ -54,6 +53,7 @@ const FormAprovacao: React.FC<Props> = ({
             <Field
               component={TextArea}
               label="Solicitação de Correção"
+              dataTestId={`${name}_correcoes`}
               name={`${name}_correcoes`}
               placeholder="Descreva as correções necessárias."
               className="textarea-ficha-tecnica"
