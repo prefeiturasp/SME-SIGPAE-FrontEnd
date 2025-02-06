@@ -420,7 +420,7 @@ export default ({ analiseSolicitacao }) => {
                                 label="Quantidade Total Programada"
                                 name="quantidade_total"
                                 className="input-busca-produto"
-                                disabled={false}
+                                disabled={true}
                                 agrupadorMilharComDecimal
                                 required
                                 validate={required}
@@ -569,7 +569,9 @@ export default ({ analiseSolicitacao }) => {
                         handleSubmitCronograma={(justificativa) =>
                           handleSubmitCronograma(values, justificativa)
                         }
-                        podeSubmeter={Object.keys(errors).length === 0}
+                        podeSubmeter={
+                          Object.keys(errors).length === 0 && restante === 0
+                        }
                         disabledDinutre={disabledDinutre(values)}
                         disabledDilog={disabledDilog(values)}
                       />
