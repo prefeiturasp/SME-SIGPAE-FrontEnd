@@ -255,7 +255,7 @@ export default () => {
                           required
                           validate={required}
                           tooltipText={
-                            "Pode ser informado o número do Edital do Pregão Eletrônico ou Chamada Pública referente ao Produto."
+                            "Deve ser informado o número do Edital do Pregão Eletrônico ou Chamada Pública referente ao Produto."
                           }
                         />
                       </div>
@@ -464,6 +464,7 @@ export default () => {
                       <div className="col-3">
                         <Field
                           component={Select}
+                          dataTestId={"unidade_medida_porcao"}
                           naoDesabilitarPrimeiraOpcao
                           options={[
                             { nome: "Unidade de Medida", uuid: "" },
@@ -604,24 +605,40 @@ export default () => {
                 )}
 
                 <div className="mt-4 mb-4">
-                  <Botao
-                    texto="Salvar Rascunho"
-                    type={BUTTON_TYPE.BUTTON}
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                    className="float-end ms-3"
-                    onClick={() => {
-                      const payload = formataPayloadCadastroFichaTecnica(
-                        values,
-                        proponente,
-                        produtosOptions,
-                        fabricantesOptions,
-                        arquivo
-                      );
+                  <Tooltip
+                    className="float-end"
+                    title={
+                      validaRascunho(values as FichaTecnicaPayload)
+                        ? "Há campos de preenchimento obrigatório sem informação na seção de Identificação do Produto."
+                        : undefined
+                    }
+                  >
+                    <div>
+                      <Botao
+                        texto="Salvar Rascunho"
+                        type={BUTTON_TYPE.BUTTON}
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                        className="float-end ms-3"
+                        onClick={() => {
+                          const payload = formataPayloadCadastroFichaTecnica(
+                            values,
+                            proponente,
+                            produtosOptions,
+                            fabricantesOptions,
+                            arquivo
+                          );
 
-                      salvarRascunho(payload, ficha, setFicha, setCarregando);
-                    }}
-                    disabled={validaRascunho(values as FichaTecnicaPayload)}
-                  />
+                          salvarRascunho(
+                            payload,
+                            ficha,
+                            setFicha,
+                            setCarregando
+                          );
+                        }}
+                        disabled={validaRascunho(values as FichaTecnicaPayload)}
+                      />
+                    </div>
+                  </Tooltip>
                 </div>
 
                 {stepAtual > 0 && (

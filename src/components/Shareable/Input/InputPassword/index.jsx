@@ -57,6 +57,7 @@ export const InputPassword = (props) => {
         disabled={disabled}
         name={name}
         data-cy={input.name}
+        data-testid={input.name}
         placeholder={placeholder}
         required={required}
         type={passwordShown ? "text" : "password"}

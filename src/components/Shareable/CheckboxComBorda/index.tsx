@@ -7,6 +7,7 @@ interface CheckboxComBordaProps {
   meta: any;
   label: string;
   disabled?: boolean;
+  dataTestId?: string;
 }
 
 const CheckboxComBorda = ({
@@ -14,6 +15,7 @@ const CheckboxComBorda = ({
   input,
   meta,
   disabled,
+  dataTestId,
 }: CheckboxComBordaProps) => {
   const estiloDaBorda = input.value ? "marcado" : "desmarcado";
 
@@ -27,6 +29,7 @@ const CheckboxComBorda = ({
         id={input.name}
         checked={input.value}
         disabled={disabled}
+        data-testid={dataTestId}
       />
       <label htmlFor={input.name} className="checkbox-label">
         {label}

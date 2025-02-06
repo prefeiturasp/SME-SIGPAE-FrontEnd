@@ -105,7 +105,7 @@ const TabelaNutricional: React.FC<Props> = ({
       <article>
         <div className="grid-table header-table">
           <div>Informação Nutricional</div>
-          <div>Quantidade por 100g</div>
+          <div>Quantidade por 100g ou 100 ml</div>
           <div>Quantidade por porção</div>
           <div>% VD(*)</div>
         </div>
