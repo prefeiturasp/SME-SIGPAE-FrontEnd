@@ -1,5 +1,5 @@
 import HTTP_STATUS from "http-status-codes";
-import React from "react";
+import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form, FormSpy } from "react-final-form";
 import { textAreaRequiredAndAtLeastOneCharacter } from "../../helpers/fieldValidators";
@@ -17,6 +17,8 @@ const ModalNegarSolicitacao = ({
   tipoSolicitacao,
   loadSolicitacao,
 }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const negarSolicitacaoEscolaOuDre = async (uuid, justificativa) => {
     if (justificativa === MENSAGEM_VAZIA) {
       toastWarn("Justificativa é obrigatória.");
@@ -32,6 +34,7 @@ const ModalNegarSolicitacao = ({
         toastError(resp.data.detail);
       }
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -71,13 +74,15 @@ const ModalNegarSolicitacao = ({
                       <Botao
                         texto="Sim"
                         type={BUTTON_TYPE.BUTTON}
-                        onClick={() =>
+                        onClick={() => {
+                          setIsSubmitting(true);
                           negarSolicitacaoEscolaOuDre(
                             uuid,
                             values.justificativa
-                          )
-                        }
+                          );
+                        }}
                         style={BUTTON_STYLE.GREEN}
+                        disabled={isSubmitting}
                         className="ms-3"
                       />
                     )}
