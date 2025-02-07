@@ -72,6 +72,7 @@ export const ModalNegarFinalForm = ({ ...props }) => {
                     component={CKEditorField}
                     label="Justificativa"
                     name="justificativa"
+                    dataTestId="justificativa-editor"
                     required
                     validate={composeValidators(
                       textAreaRequired,

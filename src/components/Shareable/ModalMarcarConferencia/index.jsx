@@ -10,7 +10,7 @@ import { toastSuccess, toastError } from "components/Shareable/Toast/dialogs";
 import { terceirizadaMarcaConferencia } from "services/dietaEspecial.service";
 import "./style.scss";
 
-const ModalMarcarConferencia = ({
+export const ModalMarcarConferencia = ({
   showModal,
   closeModal,
   onMarcarConferencia,
