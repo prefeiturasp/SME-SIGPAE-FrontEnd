@@ -1,5 +1,5 @@
 import HTTP_STATUS from "http-status-codes";
-import React from "react";
+import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import Botao from "../Botao";
@@ -18,7 +18,11 @@ export const ModalCODAEQuestiona = ({ ...props }) => {
     tipoSolicitacao,
   } = props;
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const enviarQuestionamento = async (values) => {
+    setIsSubmitting(true);
+
     let resp = "";
     resp = await endpoint(uuid, values, tipoSolicitacao);
     if (resp.status === HTTP_STATUS.OK) {
@@ -28,6 +32,8 @@ export const ModalCODAEQuestiona = ({ ...props }) => {
     } else {
       toastError(resp.data.detail);
     }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -73,6 +79,7 @@ export const ModalCODAEQuestiona = ({ ...props }) => {
                     texto="Enviar"
                     type={BUTTON_TYPE.SUBMIT}
                     style={BUTTON_STYLE.GREEN}
+                    disabled={isSubmitting}
                     className="ms-3"
                   />
                 </div>

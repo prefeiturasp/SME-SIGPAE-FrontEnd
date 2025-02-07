@@ -1,6 +1,6 @@
 import { agregarDefault } from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
-import React from "react";
+import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import { required } from "../../../helpers/fieldValidators";
@@ -21,15 +21,21 @@ export const ModalNaoValidarSolicitacao = ({ ...props }) => {
     loadSolicitacao,
   } = props;
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const onSubmit = () => {};
 
   const naoValidarSolicitacao = async (uuid, values) => {
+    setIsLoading(true);
+
     if (!values.motivo_cancelamento) {
       toastError("O campo motivo é obrigatório");
+      setIsLoading(false);
       return;
     }
     if (!values.justificativa) {
       toastError("O campo Justificativa é obrigatório");
+      setIsLoading(false);
       return;
     }
     const resp = await endpoint(
@@ -52,6 +58,7 @@ export const ModalNaoValidarSolicitacao = ({ ...props }) => {
     } else {
       toastError(resp.detail);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -101,6 +108,7 @@ export const ModalNaoValidarSolicitacao = ({ ...props }) => {
                 onClick={() => {
                   naoValidarSolicitacao(uuid, values);
                 }}
+                disabled={isLoading}
                 style={BUTTON_STYLE.GREEN}
                 className="ms-3"
               />
