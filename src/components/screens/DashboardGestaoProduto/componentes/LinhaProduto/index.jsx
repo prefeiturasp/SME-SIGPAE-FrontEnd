@@ -26,8 +26,8 @@ export const LinhasProdutos = ({ ...props }) => {
     return (
       <NavLink to={produto.link} key={key} data-cy={`${cardType}-${key}`}>
         <p className="data">
-          {!exibeTooltip() && produto.text}
-          {exibeTooltip() && (
+          {!exibeTooltip(cardTitle) && produto.text}
+          {exibeTooltip(cardTitle) && (
             <Tooltip
               color="#42474a"
               overlayStyle={{
@@ -35,7 +35,7 @@ export const LinhasProdutos = ({ ...props }) => {
                 fontSize: "12px",
                 fontWeight: "700",
               }}
-              title={getTextoTooltip(cardTitle)}
+              title={getTextoTooltip(produto)}
             >
               <span style={{ fontWeight: "bold" }}>{produto.text}</span>
             </Tooltip>

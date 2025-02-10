@@ -1,4 +1,5 @@
 import { Spin } from "antd";
+import CardAtalho from "components/Shareable/CardAtalho";
 import { InputText } from "components/Shareable/Input/InputText";
 import { ASelect } from "components/Shareable/MakeField";
 import { GESTAO_PRODUTO } from "configs/constants";
@@ -7,6 +8,11 @@ import { dataAtual, usuarioEhEmpresa } from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
+
+import {
+  usuarioEhCODAEGestaoProduto,
+  usuarioEhEscolaTerceirizadaQualquerPerfil,
+} from "helpers/utilities";
 import {
   getProdutosAguardandoAmostraAnaliseSensorial,
   getProdutosAguardandoAnaliseReclamacao,
@@ -21,20 +27,42 @@ import { getNomesUnicosEditais } from "services/produto.service";
 import { CardPainel } from "./componentes/CardPainel";
 import { formataCards } from "./helper";
 
+const exibeCardPendenteHomologação = () => {
+  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
+};
+
+const exibeCardAguardandoAmostraAnaliseSensorial = () => {
+  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
+};
+
+const exibeCardQuestionamentoDaCODAE = () => {
+  !usuarioEhCODAEGestaoProduto();
+};
+
+const exibeCardCorrecaoDeProduto = () => {
+  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
+};
+
 export const DashboardGestaoProduto = () => {
   const [editais, setEditais] = useState();
-  const [pendenteHomologacao, setPendenteHomologacao] = useState();
   const [suspensos, setSuspensos] = useState();
   const [homologados, setHomologados] = useState();
   const [naoHomologados, setNaoHomologados] = useState();
   const [aguardandoAnaliseReclamacoes, setAguardandoAnaliseReclamacoes] =
     useState();
-  const [correcaoDeProdutos, setCorrecaoDeProdutos] = useState();
+  const [pendenteHomologacao, setPendenteHomologacao] = useState(
+    exibeCardPendenteHomologação() ? undefined : []
+  );
+  const [correcaoDeProdutos, setCorrecaoDeProdutos] = useState(
+    exibeCardCorrecaoDeProduto() ? undefined : []
+  );
   const [
     aguardandoAmostraAnaliseSensorial,
     setAguardandoAmostraAnaliseSensorial,
-  ] = useState();
-  const [questionamentoDaCODAE, setQuestionamentoDaCODAE] = useState();
+  ] = useState(exibeCardAguardandoAmostraAnaliseSensorial() ? undefined : []);
+  const [questionamentoDaCODAE, setQuestionamentoDaCODAE] = useState(
+    exibeCardQuestionamentoDaCODAE() ? undefined : []
+  );
 
   const [cards] = useState(listarCardsPermitidos());
 
@@ -145,14 +173,20 @@ export const DashboardGestaoProduto = () => {
   };
 
   const getProdutosAsync = async (params = {}) => {
-    await getProdutosPendenteHomologacaoAsync(params);
-    await getProdutosSuspensosAsync(params);
-    await getProdutosHomologadosAsync(params);
-    await getProdutosNaoHomologadosAsync(params);
-    await getProdutosAguardandoAnaliseReclamacaoAsync(params);
-    await getProdutosCorrecaoDeProdutosAsync(params);
-    await getProdutosAguardandoAmostraAnaliseSensorialAsync(params);
-    await getProdutosQuestionamentoDaCODAEAsync(params);
+    await Promise.all([
+      getProdutosAguardandoAnaliseReclamacaoAsync(params),
+      getProdutosSuspensosAsync(params),
+      getProdutosHomologadosAsync(params),
+      getProdutosNaoHomologadosAsync(params),
+      exibeCardQuestionamentoDaCODAE() &&
+        getProdutosQuestionamentoDaCODAEAsync(params),
+      exibeCardPendenteHomologação() &&
+        getProdutosPendenteHomologacaoAsync(params),
+      exibeCardAguardandoAmostraAnaliseSensorial() &&
+        getProdutosAguardandoAmostraAnaliseSensorialAsync(params),
+      exibeCardCorrecaoDeProduto() &&
+        getProdutosCorrecaoDeProdutosAsync(params),
+    ]);
   };
 
   const apontaParaFormularioDeAlteracao = (titulo) => {
@@ -325,6 +359,34 @@ export const DashboardGestaoProduto = () => {
                     </form>
                   )}
                 />
+                {usuarioEhEscolaTerceirizadaQualquerPerfil() && (
+                  <div className="row row-shortcuts">
+                    <div className="col-sm-3 col-12">
+                      <CardAtalho
+                        titulo={"Reclamação de Produtos"}
+                        nome="card-inclusao"
+                        texto={
+                          "Quando houver necessidade de registrar" +
+                          " Reclamação de Produtos para os produtos homologados"
+                        }
+                        textoLink={"Nova Reclamação"}
+                        href={"/gestao-produto/nova-reclamacao-de-produto"}
+                      />
+                    </div>
+                    <div className="col-sm-3 col-12">
+                      <CardAtalho
+                        titulo={"Responder Questionamentos de CODAE"}
+                        nome="card-alteracao"
+                        texto={
+                          "Quando houver necessidade de responder os questionamentos " +
+                          "da CODAE referente a uma reclamação de produto. "
+                        }
+                        textoLink={"Responder Questionamentos"}
+                        href={"/gestao-produto/responder-questionamento-ue"}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </Spin>
