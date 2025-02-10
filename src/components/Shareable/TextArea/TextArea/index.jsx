@@ -20,6 +20,7 @@ export const TextArea = (props) => {
     valorInicial,
     height,
     inputOnChange,
+    dataTestId,
   } = props;
 
   const inputProps = {
@@ -49,6 +50,7 @@ export const TextArea = (props) => {
         className={`form-control ${className} ${
           meta?.touched && meta?.error && "invalid-field"
         }`}
+        data-testid={dataTestId}
         disabled={disabled}
         name={name}
         placeholder={placeholder}
