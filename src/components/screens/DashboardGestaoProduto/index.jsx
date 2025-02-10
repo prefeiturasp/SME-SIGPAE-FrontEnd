@@ -41,6 +41,8 @@ export const DashboardGestaoProduto = () => {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
+  let typingTimeout = null;
+
   const getEditaisAsync = async () => {
     const response = await getNomesUnicosEditais();
     if (response.status === HTTP_STATUS.OK) {
@@ -54,8 +56,8 @@ export const DashboardGestaoProduto = () => {
     }
   };
 
-  const getProdutosPendenteHomologacaoAsync = async () => {
-    const response = await getProdutosPendenteHomologacao();
+  const getProdutosPendenteHomologacaoAsync = async (params) => {
+    const response = await getProdutosPendenteHomologacao(params);
     if (response.status === HTTP_STATUS.OK) {
       setPendenteHomologacao(response.data.results);
     } else {
@@ -65,8 +67,8 @@ export const DashboardGestaoProduto = () => {
     }
   };
 
-  const getProdutosSuspensosAsync = async () => {
-    const response = await getProdutosSuspensos();
+  const getProdutosSuspensosAsync = async (params) => {
+    const response = await getProdutosSuspensos(params);
     if (response.status === HTTP_STATUS.OK) {
       setSuspensos(response.data.results);
     } else {
@@ -76,8 +78,8 @@ export const DashboardGestaoProduto = () => {
     }
   };
 
-  const getProdutosHomologadosAsync = async () => {
-    const response = await getProdutosHomologados();
+  const getProdutosHomologadosAsync = async (params) => {
+    const response = await getProdutosHomologados(params);
     if (response.status === HTTP_STATUS.OK) {
       setHomologados(response.data.results);
     } else {
@@ -87,8 +89,8 @@ export const DashboardGestaoProduto = () => {
     }
   };
 
-  const getProdutosNaoHomologadosAsync = async () => {
-    const response = await getProdutosNaoHomologados();
+  const getProdutosNaoHomologadosAsync = async (params) => {
+    const response = await getProdutosNaoHomologados(params);
     if (response.status === HTTP_STATUS.OK) {
       setNaoHomologados(response.data.results);
     } else {
@@ -98,8 +100,8 @@ export const DashboardGestaoProduto = () => {
     }
   };
 
-  const getProdutosAguardandoAnaliseReclamacaoAsync = async () => {
-    const response = await getProdutosAguardandoAnaliseReclamacao();
+  const getProdutosAguardandoAnaliseReclamacaoAsync = async (params) => {
+    const response = await getProdutosAguardandoAnaliseReclamacao(params);
     if (response.status === HTTP_STATUS.OK) {
       setAguardandoAnaliseReclamacoes(response.data.results);
     } else {
@@ -109,8 +111,8 @@ export const DashboardGestaoProduto = () => {
     }
   };
 
-  const getProdutosCorrecaoDeProdutosAsync = async () => {
-    const response = await getProdutosCorrecaoDeProdutos();
+  const getProdutosCorrecaoDeProdutosAsync = async (params) => {
+    const response = await getProdutosCorrecaoDeProdutos(params);
     if (response.status === HTTP_STATUS.OK) {
       setCorrecaoDeProdutos(response.data.results);
     } else {
@@ -120,8 +122,8 @@ export const DashboardGestaoProduto = () => {
     }
   };
 
-  const getProdutosAguardandoAmostraAnaliseSensorialAsync = async () => {
-    const response = await getProdutosAguardandoAmostraAnaliseSensorial();
+  const getProdutosAguardandoAmostraAnaliseSensorialAsync = async (params) => {
+    const response = await getProdutosAguardandoAmostraAnaliseSensorial(params);
     if (response.status === HTTP_STATUS.OK) {
       setAguardandoAmostraAnaliseSensorial(response.data.results);
     } else {
@@ -131,8 +133,8 @@ export const DashboardGestaoProduto = () => {
     }
   };
 
-  const getProdutosQuestionamentoDaCODAEAsync = async () => {
-    const response = await getProdutosQuestionamentoDaCODAE();
+  const getProdutosQuestionamentoDaCODAEAsync = async (params) => {
+    const response = await getProdutosQuestionamentoDaCODAE(params);
     if (response.status === HTTP_STATUS.OK) {
       setQuestionamentoDaCODAE(response.data.results);
     } else {
@@ -142,15 +144,15 @@ export const DashboardGestaoProduto = () => {
     }
   };
 
-  const getProdutosAsync = async () => {
-    await getProdutosPendenteHomologacaoAsync();
-    await getProdutosSuspensosAsync();
-    await getProdutosHomologadosAsync();
-    await getProdutosNaoHomologadosAsync();
-    await getProdutosAguardandoAnaliseReclamacaoAsync();
-    await getProdutosCorrecaoDeProdutosAsync();
-    await getProdutosAguardandoAmostraAnaliseSensorialAsync();
-    await getProdutosQuestionamentoDaCODAEAsync();
+  const getProdutosAsync = async (params = {}) => {
+    await getProdutosPendenteHomologacaoAsync(params);
+    await getProdutosSuspensosAsync(params);
+    await getProdutosHomologadosAsync(params);
+    await getProdutosNaoHomologadosAsync(params);
+    await getProdutosAguardandoAnaliseReclamacaoAsync(params);
+    await getProdutosCorrecaoDeProdutosAsync(params);
+    await getProdutosAguardandoAmostraAnaliseSensorialAsync(params);
+    await getProdutosQuestionamentoDaCODAEAsync(params);
   };
 
   const apontaParaFormularioDeAlteracao = (titulo) => {
@@ -179,11 +181,42 @@ export const DashboardGestaoProduto = () => {
     "Responder Questionamentos da CODAE": questionamentoDaCODAE,
   };
 
+  const clearCards = () => {
+    setHomologados([]);
+    setNaoHomologados([]);
+    setPendenteHomologacao([]);
+    setAguardandoAmostraAnaliseSensorial([]);
+    setCorrecaoDeProdutos([]);
+    setQuestionamentoDaCODAE([]);
+    setAguardandoAnaliseReclamacoes([]);
+    setSuspensos([]);
+  };
+
   useEffect(() => {
     Promise.all([getEditaisAsync(), getProdutosAsync()]).then(() => {
       setLoading(false);
     });
   }, []);
+
+  const onPesquisaChanged = (values) => {
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(async () => {
+      clearCards();
+      setLoading(true);
+      const data = {};
+      if (values.titulo && values.titulo.length > 2) {
+        data["titulo_produto"] = values.titulo;
+      }
+      if (values.marca && values.marca.length > 2) {
+        data["marca_produto"] = values.marca;
+      }
+      if (values.edital) {
+        data["edital_produto"] = values.edital;
+      }
+      await getProdutosAsync(data);
+      setLoading(false);
+    }, 1000);
+  };
 
   const LOADING_INICIAL =
     !editais ||
@@ -201,7 +234,10 @@ export const DashboardGestaoProduto = () => {
       <div className="card-body dash-terc">
         {erro && <div>{erro}</div>}
         {!erro && (
-          <Spin tip="Carregando painel..." spinning={LOADING_INICIAL}>
+          <Spin
+            tip="Carregando painel..."
+            spinning={LOADING_INICIAL || loading}
+          >
             {!LOADING_INICIAL && (
               <div className="card-title fw-bold dashboard-card-title">
                 <Form
@@ -229,6 +265,7 @@ export const DashboardGestaoProduto = () => {
                             ].concat(editais)}
                             onChange={(value) => {
                               form.change("edital", value);
+                              onPesquisaChanged(form.getState().values);
                             }}
                           />
                         </div>
@@ -241,6 +278,7 @@ export const DashboardGestaoProduto = () => {
                             inputOnChange={(e) => {
                               const value = e.target.value;
                               form.change("titulo", value);
+                              onPesquisaChanged(form.getState().values);
                             }}
                           />
                           <div className="warning-num-charac">
@@ -256,6 +294,7 @@ export const DashboardGestaoProduto = () => {
                             inputOnChange={(e) => {
                               const value = e.target.value;
                               form.change("marca", value);
+                              onPesquisaChanged(form.getState().values);
                             }}
                           />
                           <div className="warning-num-charac">
