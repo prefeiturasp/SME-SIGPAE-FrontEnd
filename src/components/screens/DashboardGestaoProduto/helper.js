@@ -163,11 +163,7 @@ const getText = (item) => {
 export const formataCards = (items, apontaParaEdicao, titulo) => {
   return items.map((item) => ({
     text: getText(item),
-    date:
-      item.status === "CODAE_HOMOLOGADO" &&
-      item.data_edital_suspenso_mais_recente
-        ? item.data_edital_suspenso_mais_recente
-        : item.log_mais_recente,
+    date: item.log_mais_recente,
     link: gerarLinkDoItem(item, apontaParaEdicao, titulo),
     nome_usuario_log_de_reclamacao: item.nome_usuario_log_de_reclamacao,
     status: item.status,
