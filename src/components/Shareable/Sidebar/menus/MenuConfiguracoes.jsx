@@ -30,6 +30,7 @@ import {
   usuarioEhCODAEGabinete,
   usuarioEhDilogDiretoria,
   usuarioEhGticCODAE,
+  usuarioEhAdministradorDICAE,
 } from "helpers/utilities";
 
 const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
@@ -132,7 +133,7 @@ const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
         </SubMenu>
       )}
 
-      {usuarioEhAdmQualquerEmpresa() && (
+      {(usuarioEhAdmQualquerEmpresa() || usuarioEhAdministradorDICAE()) && (
         <SubMenu
           icon="fa-chevron-down"
           onClick={onSubmenuClick}

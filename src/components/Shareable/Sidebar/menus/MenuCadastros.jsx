@@ -19,6 +19,7 @@ import {
   FABRICANTES,
 } from "configs/constants";
 import {
+  usuarioEhAdministradorDICAE,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCronograma,
   usuarioEhDilogQualidade,
@@ -44,6 +45,7 @@ const MenuCadastros = () => {
         </LeafItem>
       )}
       {(usuarioEhLogistica() ||
+        usuarioEhAdministradorDICAE() ||
         usuarioEhCronograma() ||
         usuarioEhCODAEGestaoProduto()) && (
         <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${EMPRESA}`}>

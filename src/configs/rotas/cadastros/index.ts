@@ -9,6 +9,7 @@ import {
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhMedicao,
   usuarioEhQualquerCODAE,
+  usuarioEhAdministradorDICAE,
 } from "helpers/utilities";
 
 import CadastroEmpresaPage from "pages/Cadastros/CadastroEmpresaPage";
@@ -109,7 +110,8 @@ export const rotasCadastros: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhQualquerCODAE() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCronograma(),
+      usuarioEhCronograma() ||
+      usuarioEhAdministradorDICAE(),
   },
   {
     path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/empresa`,
@@ -117,7 +119,8 @@ export const rotasCadastros: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhQualquerCODAE() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCronograma(),
+      usuarioEhCronograma() ||
+      usuarioEhAdministradorDICAE(),
   },
   {
     path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.EDITAR_EMPRESA}`,
@@ -125,7 +128,8 @@ export const rotasCadastros: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhQualquerCODAE() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCronograma(),
+      usuarioEhCronograma() ||
+      usuarioEhAdministradorDICAE(),
   },
   {
     path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/editais-contratos`,

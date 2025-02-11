@@ -116,6 +116,10 @@ export default ({ diretor_escola, empresa, geral, cogestor, codae }) => {
       filtros.visao = "CODAE";
     }
 
+    if (empresa) {
+      filtros.visao = "EMPRESA";
+    }
+
     let payload = gerarParametrosConsulta({ page, ...filtros });
     let data = await getVinculosAtivos(payload);
 
