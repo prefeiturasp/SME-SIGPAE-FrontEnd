@@ -21,6 +21,7 @@ import {
   usuarioEhCogestorDRE,
   usuarioEhCoordenadorNutriSupervisao,
   usuarioEhDinutreDiretoria,
+  usuarioEhEmpresa,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
@@ -198,4 +199,34 @@ export const formataCards = (items, apontaParaEdicao, titulo) => {
     editais: item.editais,
     produto_editais: item.produto_editais,
   }));
+};
+
+export const exibeCardPendenteHomologacao = () => {
+  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
+};
+
+export const exibeCardAguardandoAmostraAnaliseSensorial = () => {
+  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
+};
+
+export const exibeCardQuestionamentoDaCODAE = () => {
+  !usuarioEhCODAEGestaoProduto();
+};
+
+export const exibeCardCorrecaoDeProduto = () => {
+  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
+};
+
+export const apontaParaFormularioDeAlteracao = (titulo) => {
+  if (!usuarioEhEmpresa()) return false;
+  switch (titulo) {
+    case "Produtos suspensos":
+    case "Reclamação de produto":
+    case "Correções de Produtos":
+    case "Homologados":
+    case "Não homologados":
+      return true;
+    default:
+      return false;
+  }
 };

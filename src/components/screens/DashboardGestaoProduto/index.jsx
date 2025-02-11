@@ -4,15 +4,13 @@ import { InputText } from "components/Shareable/Input/InputText";
 import { ASelect } from "components/Shareable/MakeField";
 import { GESTAO_PRODUTO } from "configs/constants";
 import { listarCardsPermitidos } from "helpers/gestaoDeProdutos";
-import { dataAtual, usuarioEhEmpresa } from "helpers/utilities";
+import {
+  dataAtual,
+  usuarioEhEscolaTerceirizadaQualquerPerfil,
+} from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
-
-import {
-  usuarioEhCODAEGestaoProduto,
-  usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "helpers/utilities";
 import {
   getProdutosAguardandoAmostraAnaliseSensorial,
   getProdutosAguardandoAnaliseReclamacao,
@@ -25,23 +23,15 @@ import {
 } from "services/dashboardGestaoProduto";
 import { getNomesUnicosEditais } from "services/produto.service";
 import { CardPainel } from "./componentes/CardPainel";
-import { formataCards } from "./helper";
-
-const exibeCardPendenteHomologação = () => {
-  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
-};
-
-const exibeCardAguardandoAmostraAnaliseSensorial = () => {
-  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
-};
-
-const exibeCardQuestionamentoDaCODAE = () => {
-  !usuarioEhCODAEGestaoProduto();
-};
-
-const exibeCardCorrecaoDeProduto = () => {
-  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
-};
+import {
+  apontaParaFormularioDeAlteracao,
+  exibeCardAguardandoAmostraAnaliseSensorial,
+  exibeCardCorrecaoDeProduto,
+  exibeCardPendenteHomologacao,
+  exibeCardQuestionamentoDaCODAE,
+  formataCards,
+} from "./helper";
+import "./style.scss";
 
 export const DashboardGestaoProduto = () => {
   const [editais, setEditais] = useState();
@@ -51,7 +41,7 @@ export const DashboardGestaoProduto = () => {
   const [aguardandoAnaliseReclamacoes, setAguardandoAnaliseReclamacoes] =
     useState();
   const [pendenteHomologacao, setPendenteHomologacao] = useState(
-    exibeCardPendenteHomologação() ? undefined : []
+    exibeCardPendenteHomologacao() ? undefined : []
   );
   const [correcaoDeProdutos, setCorrecaoDeProdutos] = useState(
     exibeCardCorrecaoDeProduto() ? undefined : []
@@ -180,7 +170,7 @@ export const DashboardGestaoProduto = () => {
       getProdutosNaoHomologadosAsync(params),
       exibeCardQuestionamentoDaCODAE() &&
         getProdutosQuestionamentoDaCODAEAsync(params),
-      exibeCardPendenteHomologação() &&
+      exibeCardPendenteHomologacao() &&
         getProdutosPendenteHomologacaoAsync(params),
       exibeCardAguardandoAmostraAnaliseSensorial() &&
         getProdutosAguardandoAmostraAnaliseSensorialAsync(params),
@@ -189,18 +179,15 @@ export const DashboardGestaoProduto = () => {
     ]);
   };
 
-  const apontaParaFormularioDeAlteracao = (titulo) => {
-    if (!usuarioEhEmpresa()) return false;
-    switch (titulo) {
-      case "Produtos suspensos":
-      case "Reclamação de produto":
-      case "Correções de Produtos":
-      case "Homologados":
-      case "Não homologados":
-        return true;
-      default:
-        return false;
-    }
+  const clearCards = () => {
+    setHomologados([]);
+    setNaoHomologados([]);
+    setPendenteHomologacao([]);
+    setAguardandoAmostraAnaliseSensorial([]);
+    setCorrecaoDeProdutos([]);
+    setQuestionamentoDaCODAE([]);
+    setAguardandoAnaliseReclamacoes([]);
+    setSuspensos([]);
   };
 
   const getProdutosPorCard = {
@@ -213,17 +200,6 @@ export const DashboardGestaoProduto = () => {
       aguardandoAmostraAnaliseSensorial,
     "Pendentes de homologação": pendenteHomologacao,
     "Responder Questionamentos da CODAE": questionamentoDaCODAE,
-  };
-
-  const clearCards = () => {
-    setHomologados([]);
-    setNaoHomologados([]);
-    setPendenteHomologacao([]);
-    setAguardandoAmostraAnaliseSensorial([]);
-    setCorrecaoDeProdutos([]);
-    setQuestionamentoDaCODAE([]);
-    setAguardandoAnaliseReclamacoes([]);
-    setSuspensos([]);
   };
 
   useEffect(() => {
@@ -269,6 +245,8 @@ export const DashboardGestaoProduto = () => {
         {erro && <div>{erro}</div>}
         {!erro && (
           <Spin
+            size="large"
+            className="centered-spin"
             tip="Carregando painel..."
             spinning={LOADING_INICIAL || loading}
           >
@@ -360,7 +338,7 @@ export const DashboardGestaoProduto = () => {
                   )}
                 />
                 {usuarioEhEscolaTerceirizadaQualquerPerfil() && (
-                  <div className="row row-shortcuts">
+                  <div className="row row-shortcuts mt-3">
                     <div className="col-sm-3 col-12">
                       <CardAtalho
                         titulo={"Reclamação de Produtos"}
