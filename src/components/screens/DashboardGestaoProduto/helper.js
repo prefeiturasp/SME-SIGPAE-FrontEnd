@@ -210,7 +210,7 @@ export const exibeCardAguardandoAmostraAnaliseSensorial = () => {
 };
 
 export const exibeCardQuestionamentoDaCODAE = () => {
-  !usuarioEhCODAEGestaoProduto();
+  return !usuarioEhCODAEGestaoProduto();
 };
 
 export const exibeCardCorrecaoDeProduto = () => {
