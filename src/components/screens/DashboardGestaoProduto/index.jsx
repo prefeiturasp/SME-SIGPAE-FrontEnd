@@ -135,7 +135,7 @@ export const DashboardGestaoProduto = () => {
       setCorrecaoDeProdutos(response.data.results);
     } else {
       setErro(
-        "Erro ao carregar produtos em correção de produtos. Tente novamente mais tarde."
+        "Erro ao carregar produtos em correção de produto. Tente novamente mais tarde."
       );
     }
   };
