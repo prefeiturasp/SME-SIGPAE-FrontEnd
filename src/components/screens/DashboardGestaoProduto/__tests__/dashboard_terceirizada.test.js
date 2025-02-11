@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { TIPO_PERFIL } from "constants/shared";
 import { mockAguardandoAnaliseReclamacao } from "mocks/dashboardGestaoProduto/mockAguardandoAmostraAnaliseSensorial";
 import { mockAguardandoAnaliseSensorial } from "mocks/dashboardGestaoProduto/mockAguardandoAnaliseSensorial";
@@ -225,5 +231,83 @@ describe("Teste Dashboard Gestão Produto - Visão Terceirizada", () => {
       "12345 - SUCO DE UVA"
     );
     expect(divCardQuestionamentosDaCODAE).not.toHaveTextContent("Ver Mais");
+  });
+
+  it("busca por edital", async () => {
+    jest.useFakeTimers();
+
+    await awaitServices();
+    await act(async () => {
+      fireEvent.mouseDown(
+        screen
+          .getByTestId("select-edital")
+          .querySelector(".ant-select-selection-search-input")
+      );
+    });
+
+    await waitFor(() =>
+      screen.queryAllByText("Edital de Pregão n°70/SME/2022")
+    );
+    await act(async () => {
+      fireEvent.click(
+        screen.queryAllByText("Edital de Pregão n°70/SME/2022")[1]
+      );
+    });
+
+    await act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    await waitFor(() => {
+      expect(getProdutosPendenteHomologacao).toHaveBeenCalledTimes(2);
+    });
+
+    jest.useRealTimers();
+  });
+
+  it("busca por titulo", async () => {
+    jest.useFakeTimers();
+
+    await awaitServices();
+    const divInputBuscaPorTitulo = screen.getByTestId("div-input-titulo");
+    const inputElement = divInputBuscaPorTitulo.querySelector("input");
+    await waitFor(() => {
+      fireEvent.change(inputElement, {
+        target: { value: "ARROZ" },
+      });
+    });
+
+    await act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    await waitFor(() => {
+      expect(getProdutosPendenteHomologacao).toHaveBeenCalledTimes(2);
+    });
+
+    jest.useRealTimers();
+  });
+
+  it("busca por marca", async () => {
+    jest.useFakeTimers();
+
+    await awaitServices();
+    const divInputBuscaPorMarca = screen.getByTestId("div-input-marca");
+    const inputElement = divInputBuscaPorMarca.querySelector("input");
+    await waitFor(() => {
+      fireEvent.change(inputElement, {
+        target: { value: "TIO JOAO" },
+      });
+    });
+
+    await act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+
+    await waitFor(() => {
+      expect(getProdutosPendenteHomologacao).toHaveBeenCalledTimes(2);
+    });
+
+    jest.useRealTimers();
   });
 });

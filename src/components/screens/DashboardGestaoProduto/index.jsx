@@ -268,6 +268,7 @@ export const DashboardGestaoProduto = () => {
                         <div className="col-4 produtos-edital">
                           <Field
                             component={ASelect}
+                            dataTestId="select-edital"
                             showSearch
                             name="edital"
                             placeholder="Número do Edital"
@@ -284,6 +285,7 @@ export const DashboardGestaoProduto = () => {
                         <div className="col-4">
                           <Field
                             component={InputText}
+                            dataTestIdDiv="div-input-titulo"
                             name="titulo"
                             placeholder="Pesquisar"
                             disabled={LOADING_INICIAL || loading}
@@ -300,6 +302,7 @@ export const DashboardGestaoProduto = () => {
                         <div className="col-4">
                           <Field
                             component={InputText}
+                            dataTestIdDiv="div-input-marca"
                             name="marca"
                             placeholder="Busca da Marca"
                             disabled={LOADING_INICIAL || loading}
@@ -329,7 +332,6 @@ export const DashboardGestaoProduto = () => {
                                 )}
                                 icon={card.icon}
                                 href={`/${GESTAO_PRODUTO}/${card.rota}`}
-                                hrefCard={card.href_card}
                               />
                             </div>
                           );
