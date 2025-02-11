@@ -90,4 +90,15 @@
       margin-right: 8px;
     }
   }
+
+  .campo-correcao {
+    label {
+      color: $orange !important;
+      font-weight: bold;
+    }
+
+    textarea {
+      resize: none;
+    }
+  }
 }
