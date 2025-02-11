@@ -11,8 +11,6 @@ import {
   CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE,
 } from "helpers/gestaoDeProdutos";
 import {
-  comparaObjetosMoment,
-  parseDataHoraBrToMoment,
   truncarString,
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
@@ -21,6 +19,7 @@ import {
   usuarioEhCogestorDRE,
   usuarioEhCoordenadorNutriSupervisao,
   usuarioEhDinutreDiretoria,
+  usuarioEhEmpresa,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
@@ -39,16 +38,6 @@ const {
   CODAE_QUESTIONOU_UE,
   TERCEIRIZADA_CANCELOU_SOLICITACAO_HOMOLOGACAO,
 } = ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS;
-
-export const incluirDados = (statuses, arr) => {
-  const result = [];
-  arr.forEach((el) => {
-    if (el.dados.length && statuses.includes(el.status.toLowerCase())) {
-      result.push(...el.dados);
-    }
-  });
-  return result;
-};
 
 const gerarLinkDoItem = (item, apontaParaEdicao, titulo) => {
   if (
@@ -144,18 +133,6 @@ const gerarLinkDoItem = (item, apontaParaEdicao, titulo) => {
     : `/${GESTAO_PRODUTO}/${RELATORIO}?uuid=${item.uuid}`;
 };
 
-export const ordenaPorLogMaisRecente = (a, b) => {
-  let data_a = parseDataHoraBrToMoment(a.log_mais_recente);
-  let data_b = parseDataHoraBrToMoment(b.log_mais_recente);
-  if (a.status === "CODAE_HOMOLOGADO" && a.data_edital_suspenso_mais_recente) {
-    data_a = parseDataHoraBrToMoment(a.data_edital_suspenso_mais_recente);
-  }
-  if (b.status === "CODAE_HOMOLOGADO" && b.data_edital_suspenso_mais_recente) {
-    data_b = parseDataHoraBrToMoment(b.data_edital_suspenso_mais_recente);
-  }
-  return comparaObjetosMoment(data_b, data_a);
-};
-
 const getText = (item) => {
   const TAMANHO_MAXIMO = 48;
   let appendix = "";
@@ -184,7 +161,7 @@ const getText = (item) => {
 };
 
 export const formataCards = (items, apontaParaEdicao, titulo) => {
-  return items.sort(ordenaPorLogMaisRecente).map((item) => ({
+  return items.map((item) => ({
     text: getText(item),
     date:
       item.status === "CODAE_HOMOLOGADO" &&
@@ -198,4 +175,34 @@ export const formataCards = (items, apontaParaEdicao, titulo) => {
     editais: item.editais,
     produto_editais: item.produto_editais,
   }));
+};
+
+export const exibeCardPendenteHomologacao = () => {
+  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
+};
+
+export const exibeCardAguardandoAmostraAnaliseSensorial = () => {
+  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
+};
+
+export const exibeCardQuestionamentoDaCODAE = () => {
+  return !usuarioEhCODAEGestaoProduto();
+};
+
+export const exibeCardCorrecaoDeProduto = () => {
+  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
+};
+
+export const apontaParaFormularioDeAlteracao = (titulo) => {
+  if (!usuarioEhEmpresa()) return false;
+  switch (titulo) {
+    case "Produtos suspensos":
+    case "Reclamação de produto":
+    case "Correções de Produtos":
+    case "Homologados":
+    case "Não homologados":
+      return true;
+    default:
+      return false;
+  }
 };

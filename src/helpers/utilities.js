@@ -745,6 +745,10 @@ export const usuarioEhQualquerCODAE = () => {
   );
 };
 
+export const usuarioEhEmpresa = () => {
+  return localStorage.getItem("tipo_perfil") === TIPO_PERFIL.TERCEIRIZADA;
+};
+
 export const usuarioEhEmpresaTerceirizada = () => {
   return (
     [PERFIL.ADMINISTRADOR_EMPRESA, PERFIL.USUARIO_EMPRESA].includes(
