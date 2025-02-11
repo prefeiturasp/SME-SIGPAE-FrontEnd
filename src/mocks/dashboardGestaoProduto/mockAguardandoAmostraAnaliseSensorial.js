@@ -1,4 +1,4 @@
-export const mockAguardandoAmostraAnaliseSensorial = {
+export const mockAguardandoAnaliseReclamacao = {
   count: 2,
   next: null,
   previous: null,

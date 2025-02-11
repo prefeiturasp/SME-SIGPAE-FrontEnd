@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { TIPO_PERFIL } from "constants/shared";
-import { mockAguardandoAmostraAnaliseSensorial } from "mocks/dashboardGestaoProduto/mockAguardandoAmostraAnaliseSensorial";
+import { mockAguardandoAnaliseReclamacao } from "mocks/dashboardGestaoProduto/mockAguardandoAmostraAnaliseSensorial";
 import { mockAguardandoAnaliseSensorial } from "mocks/dashboardGestaoProduto/mockAguardandoAnaliseSensorial";
 import { mockCorrecaoDeProduto } from "mocks/dashboardGestaoProduto/mockCorrecaoDeProduto";
 import { mockHomologados } from "mocks/dashboardGestaoProduto/mockHomologados";
@@ -68,11 +68,11 @@ describe("Teste Dashboard Gestão Produto - Visão Terceirizada", () => {
       status: 200,
     });
     getProdutosAguardandoAmostraAnaliseSensorial.mockResolvedValue({
-      data: mockAguardandoAmostraAnaliseSensorial,
+      data: mockAguardandoAnaliseSensorial,
       status: 200,
     });
     getProdutosAguardandoAnaliseReclamacao.mockResolvedValue({
-      data: mockAguardandoAnaliseSensorial,
+      data: mockAguardandoAnaliseReclamacao,
       status: 200,
     });
     getProdutosCorrecaoDeProdutos.mockResolvedValue({
@@ -116,5 +116,114 @@ describe("Teste Dashboard Gestão Produto - Visão Terceirizada", () => {
   it("renderiza card `Produtos Suspensos`", async () => {
     await awaitServices();
     expect(screen.getByText("Produtos suspensos")).toBeInTheDocument();
+    const divCardProdutosSuspensos = screen.getByTestId("Produtos suspensos");
+    expect(divCardProdutosSuspensos).toHaveTextContent(
+      "79356 - ARROZ LONGO FINO TIPO 1"
+    );
+    expect(divCardProdutosSuspensos).toHaveTextContent(
+      "6F20A - CARNE BOVINA CONGELADA PATINHO CUBOS"
+    );
+    expect(divCardProdutosSuspensos).toHaveTextContent("Ver Mais");
+  });
+
+  it("renderiza card `Correções de Produtos`", async () => {
+    await awaitServices();
+    expect(screen.getByText("Correções de Produtos")).toBeInTheDocument();
+    const divCardCorrecaoDeProdutos = screen.getByTestId(
+      "Correções de Produtos"
+    );
+    expect(divCardCorrecaoDeProdutos).toHaveTextContent(
+      "D4A3C - CARNE BOVINA CONGELADA PATINHO MOÍDO"
+    );
+    expect(divCardCorrecaoDeProdutos).toHaveTextContent(
+      "89287 - QUEIJO FATIADO MUÇARELA"
+    );
+    expect(divCardCorrecaoDeProdutos).toHaveTextContent("Ver Mais");
+  });
+
+  it("renderiza card `Aguardando análise das reclamações`", async () => {
+    await awaitServices();
+    expect(
+      screen.getByText("Aguardando análise das reclamações")
+    ).toBeInTheDocument();
+    const divCardAnaliseDasReclamacoes = screen.getByTestId(
+      "Aguardando análise das reclamações"
+    );
+    expect(divCardAnaliseDasReclamacoes).toHaveTextContent(
+      "79356 - ARROZ LONGO FINO TIPO 1"
+    );
+    expect(divCardAnaliseDasReclamacoes).toHaveTextContent(
+      "13A5D - CARNE BOVINA CONGELADA PATINHO MOÍDO"
+    );
+    expect(divCardAnaliseDasReclamacoes).not.toHaveTextContent("Ver Mais");
+  });
+
+  it("renderiza card `Aguardando amostra para análise sensorial`", async () => {
+    await awaitServices();
+    expect(
+      screen.getByText("Aguardando amostra para análise sensorial")
+    ).toBeInTheDocument();
+    const divCardAnaliseSensorial = screen.getByTestId(
+      "Aguardando amostra para análise sensorial"
+    );
+    expect(divCardAnaliseSensorial).toHaveTextContent(
+      "FA648 - EMPANADO DE FRANGO"
+    );
+    expect(divCardAnaliseSensorial).toHaveTextContent(
+      "C96A5 - BISCOITO DOCE INTEGRAL SEM ADIÇÃO DE AÇÚCARES"
+    );
+    expect(divCardAnaliseSensorial).not.toHaveTextContent("Ver Mais");
+  });
+
+  it("renderiza card `Pendentes de homologação`", async () => {
+    await awaitServices();
+    expect(screen.getByText("Pendentes de homologação")).toBeInTheDocument();
+    const divCardPendenteHomologacao = screen.getByTestId(
+      "Pendentes de homologação"
+    );
+    expect(divCardPendenteHomologacao).toHaveTextContent(
+      "0026B - SUCO CONCENTRADO DE MARACUJA"
+    );
+    expect(divCardPendenteHomologacao).not.toHaveTextContent("Ver Mais");
+  });
+
+  it("renderiza card `Homologados`", async () => {
+    await awaitServices();
+    expect(screen.getByText("Homologados")).toBeInTheDocument();
+    const divCardHomologados = screen.getByTestId("Homologados");
+    expect(divCardHomologados).toHaveTextContent(
+      "53445 - PÃO TIPO HOT DOG INTEGRAL"
+    );
+    expect(divCardHomologados).toHaveTextContent(
+      "31248 - CARNE BOVINA CONGELADA PATINHO MOÍDO"
+    );
+    expect(divCardHomologados).toHaveTextContent("Ver Mais");
+  });
+
+  it("renderiza card `Não homologados`", async () => {
+    await awaitServices();
+    expect(screen.getByText("Não homologados")).toBeInTheDocument();
+    const divCardNaoHomologados = screen.getByTestId("Não homologados");
+    expect(divCardNaoHomologados).toHaveTextContent(
+      "325AF - SUCO CONCENTRADO DE MARACUJA"
+    );
+    expect(divCardNaoHomologados).toHaveTextContent(
+      "B3170 - BISCOITO DOCE SEM GLÚTEN SEM LACTOSE SABOR"
+    );
+    expect(divCardNaoHomologados).toHaveTextContent("Ver Mais");
+  });
+
+  it("renderiza card `Responder Questionamentos da CODAE`", async () => {
+    await awaitServices();
+    expect(
+      screen.getByText("Responder Questionamentos da CODAE")
+    ).toBeInTheDocument();
+    const divCardQuestionamentosDaCODAE = screen.getByTestId(
+      "Responder Questionamentos da CODAE"
+    );
+    expect(divCardQuestionamentosDaCODAE).toHaveTextContent(
+      "12345 - SUCO DE UVA"
+    );
+    expect(divCardQuestionamentosDaCODAE).not.toHaveTextContent("Ver Mais");
   });
 });

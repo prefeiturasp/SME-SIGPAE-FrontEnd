@@ -319,6 +319,7 @@ export const DashboardGestaoProduto = () => {
                           return (
                             <div key={index} className="col-6 mt-3">
                               <CardPainel
+                                dataTestId={card.titulo}
                                 cardTitle={card.titulo}
                                 cardType={card.style}
                                 produtos={formataCards(
