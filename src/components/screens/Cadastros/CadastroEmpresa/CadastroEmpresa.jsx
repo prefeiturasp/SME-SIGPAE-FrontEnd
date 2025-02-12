@@ -39,6 +39,7 @@ const verificarUsuarioEhDistribuidor = () => {
   if (
     tipoPerfil === PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA ||
     tipoPerfil === PERFIL.DILOG_CRONOGRAMA ||
+    tipoPerfil === PERFIL.ADMINISTRADOR_DICAE ||
     usuarioEhCODAEGestaoProduto()
   ) {
     return true;
