@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Field, Form, FormSpy } from "react-final-form";
@@ -187,7 +187,7 @@ export default () => {
     useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingLancamentos, setLoadingLancamentos] = useState(true);
-  const [formValuesAtualizados, setFormValuesAtualizados] = useState(null);
+  const [formValuesAtualizados, setFormValuesAtualizados] = useState({});
   const [diasDaSemanaSelecionada, setDiasDaSemanaSelecionada] = useState(null);
   const [ultimaAtualizacaoMedicao, setUltimaAtualizacaoMedicao] =
     useState(null);
@@ -2328,6 +2328,16 @@ export default () => {
     );
   };
 
+  const handleFormChange = useCallback((changes) => {
+    // Use a timeout to defer the state update
+    setTimeout(() => {
+      setFormValuesAtualizados({
+        week: semanaSelecionada,
+        ...changes.values,
+      });
+    }, 0);
+  }, []);
+
   return (
     <>
       <div className="text-end botao-voltar-lancamento-medicao">
@@ -2351,12 +2361,7 @@ export default () => {
               <form onSubmit={handleSubmit}>
                 <FormSpy
                   subscription={{ values: true, active: true }}
-                  onChange={(changes) =>
-                    setFormValuesAtualizados({
-                      week: semanaSelecionada,
-                      ...changes.values,
-                    })
-                  }
+                  onChange={handleFormChange}
                 />
                 <div className="card mt-3">
                   <div className="card-body">
@@ -2365,6 +2370,7 @@ export default () => {
                         <b className="pb-2 mb-2">Mês do Lançamento</b>
                         <Field
                           component={InputText}
+                          dataTestId="input-mes-lancamento"
                           name="mes_lancamento"
                           disabled={true}
                         />
@@ -2373,6 +2379,7 @@ export default () => {
                         <b className="pb-2">Período de Lançamento</b>
                         <Field
                           component={InputText}
+                          dataTestId="input-periodo-lancamento"
                           name="periodo_escolar"
                           disabled={true}
                         />
