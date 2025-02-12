@@ -35,7 +35,12 @@ import { usuarioEhCODAEGestaoProduto } from "../../../../helpers/utilities";
 
 const MenuCadastros = () => {
   return (
-    <Menu id="Cadastros" icon="fa-user-plus" title={"Cadastros"}>
+    <Menu
+      id="Cadastros"
+      icon="fa-user-plus"
+      title={"Cadastros"}
+      dataTestId="menu-cadastros"
+    >
       {(usuarioEhEscolaTerceirizadaDiretor() ||
         usuarioEhEscolaTerceirizada()) && (
         <LeafItem
