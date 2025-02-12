@@ -420,7 +420,7 @@ export default ({ analiseSolicitacao }) => {
                                 label="Quantidade Total Programada"
                                 name="quantidade_total"
                                 className="input-busca-produto"
-                                disabled={true}
+                                disabled={false}
                                 agrupadorMilharComDecimal
                                 required
                                 validate={required}
