@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Field, Form, FormSpy } from "react-final-form";
@@ -2328,16 +2328,6 @@ export default () => {
     );
   };
 
-  const handleFormChange = useCallback((changes) => {
-    // Use a timeout to defer the state update
-    setTimeout(() => {
-      setFormValuesAtualizados({
-        week: semanaSelecionada,
-        ...changes.values,
-      });
-    }, 0);
-  }, []);
-
   return (
     <>
       <div className="text-end botao-voltar-lancamento-medicao">
@@ -2361,7 +2351,12 @@ export default () => {
               <form onSubmit={handleSubmit}>
                 <FormSpy
                   subscription={{ values: true, active: true }}
-                  onChange={handleFormChange}
+                  onChange={(changes) => {
+                    setFormValuesAtualizados({
+                      week: semanaSelecionada,
+                      ...changes.values,
+                    });
+                  }}
                 />
                 <div className="card mt-3">
                   <div className="card-body">
@@ -2481,7 +2476,10 @@ export default () => {
                       {categoriasDeMedicao.length > 0 &&
                         !loading &&
                         categoriasDeMedicao.map((categoria) => (
-                          <div key={categoria.uuid}>
+                          <div
+                            key={categoria.uuid}
+                            data-testid={`div-lancamentos-por-categoria-${categoria.uuid}`}
+                          >
                             <b className="pb-2 section-title">
                               {categoria.nome}
                             </b>

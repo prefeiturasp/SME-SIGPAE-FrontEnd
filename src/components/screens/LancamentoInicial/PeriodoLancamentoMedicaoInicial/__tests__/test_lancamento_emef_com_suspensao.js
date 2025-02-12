@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
 import { mockCategoriasMedicaoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicaoEMEF";
 import { mockDiasCalendarioEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/diasCalendarioEMEF";
@@ -26,6 +32,7 @@ import {
   getSolicitacoesInclusoesAutorizadasEscola,
   getSolicitacoesSuspensoesAutorizadasEscola,
   getValoresPeriodosLancamentos,
+  updateValoresPeriodosLancamentos,
 } from "services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "services/medicaoInicial/permissaoLancamentosEspeciais.service";
 import * as perfilService from "services/perfil.service";
@@ -112,6 +119,10 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
       data: mockFeriadosNoMesEMEF,
       status: 200,
     });
+    updateValoresPeriodosLancamentos.mockResolvedValue({
+      data: mockValoresMedicaoEMEF,
+      status: 200,
+    });
 
     await act(async () => {
       render(
@@ -173,5 +184,113 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
     expect(
       screen.getByText("Semanas do Período para Lançamento da Medição Inicial")
     ).toBeInTheDocument();
+  });
+
+  it("renderiza label `Semana 1`", async () => {
+    await awaitServices();
+    expect(screen.getByText("Semana 1")).toBeInTheDocument();
+  });
+
+  it("renderiza label `Semana 5`", async () => {
+    await awaitServices();
+    expect(screen.getByText("Semana 5")).toBeInTheDocument();
+  });
+
+  it("renderiza label `ALIMENTAÇÃO`", async () => {
+    await awaitServices();
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+  });
+
+  it("renderiza label `ALIMENTAÇÃO`", async () => {
+    await awaitServices();
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+  });
+
+  it("renderiza label `Matriculados` dentro da seção `ALIMENTAÇÃO`", async () => {
+    await awaitServices();
+    const categoriaAlimentacaoUuid = "6a183159-32bb-4a3b-a69b-f0601ee677c1";
+    const myElement = screen.getByTestId(
+      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`
+    );
+    const allMatriculados = screen.getAllByText("Matriculados");
+    const specificMatriculados = allMatriculados.find((element) =>
+      myElement.contains(element)
+    );
+    expect(specificMatriculados).toBeInTheDocument();
+  });
+
+  it("renderiza label `Seg.` dentro da seção `ALIMENTAÇÃO`", async () => {
+    await awaitServices();
+    const categoriaAlimentacaoUuid = "6a183159-32bb-4a3b-a69b-f0601ee677c1";
+    const myElement = screen.getByTestId(
+      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`
+    );
+    const allMatriculados = screen.getAllByText("Seg.");
+    const specificMatriculados = allMatriculados.find((element) =>
+      myElement.contains(element)
+    );
+    expect(specificMatriculados).toBeInTheDocument();
+  });
+
+  it("ao clicar na tab `Semana 5`, exibe, nos dias 30 e 31, o número de matriculados 306", async () => {
+    await awaitServices();
+    const semana5Element = screen.getByText("Semana 5");
+    fireEvent.click(semana5Element);
+    const inputElementMatriculadosDia30 = screen.getByTestId(
+      "matriculados__dia_30__categoria_1"
+    );
+    expect(inputElementMatriculadosDia30).toHaveAttribute("value", "306");
+    const inputElementMatriculadosDia31 = screen.getByTestId(
+      "matriculados__dia_31__categoria_1"
+    );
+    expect(inputElementMatriculadosDia31).toHaveAttribute("value", "306");
+  });
+
+  it("ao clicar na tab `Semana 5`, preencher matriculados e lanche do dia 30, exibe warning de suspensão", async () => {
+    await awaitServices();
+    const semana5Element = screen.getByText("Semana 5");
+    fireEvent.click(semana5Element);
+
+    const inputElementFrequenciaDia30 = screen.getByTestId(
+      "frequencia__dia_30__categoria_1"
+    );
+    fireEvent.change(inputElementFrequenciaDia30, {
+      target: { value: "10" },
+    });
+
+    const inputElementLancheDia30 = screen.getByTestId(
+      "lanche__dia_30__categoria_1"
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementLancheDia30, {
+        target: { value: "10" },
+      });
+    });
+
+    expect(inputElementLancheDia30).toHaveClass("border-warning");
+  });
+
+  it("ao clicar na tab `Semana 5`, preencher matriculados e lanche do dia 31, NÃO exibe warning de suspensão", async () => {
+    await awaitServices();
+    const semana5Element = screen.getByText("Semana 5");
+    fireEvent.click(semana5Element);
+
+    const inputElementFrequenciaDia31 = screen.getByTestId(
+      "frequencia__dia_31__categoria_1"
+    );
+    fireEvent.change(inputElementFrequenciaDia31, {
+      target: { value: "10" },
+    });
+
+    const inputElementLancheDia31 = screen.getByTestId(
+      "lanche__dia_31__categoria_1"
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementLancheDia31, {
+        target: { value: "10" },
+      });
+    });
+
+    expect(inputElementLancheDia31).not.toHaveClass("border-warning");
   });
 });
