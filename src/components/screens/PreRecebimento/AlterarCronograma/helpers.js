@@ -48,7 +48,9 @@ export const prepararPayloadEtapas = (values, etapas) => {
           "YYYY-MM-DD"
         )
       : undefined,
-    quantidade: values[`quantidade_${index}`].replaceAll(".", ""),
+    quantidade: values[`quantidade_${index}`]
+      ?.replaceAll(".", "")
+      .replace(",", "."),
     total_embalagens: stringDecimalToNumber(
       values[`total_embalagens_${index}`]
     ),
