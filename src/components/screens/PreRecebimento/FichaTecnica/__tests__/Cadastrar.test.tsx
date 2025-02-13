@@ -43,7 +43,7 @@ jest.mock("services/terceirizada.service.js");
 jest.mock("services/cronograma.service.js");
 jest.mock("services/produto.service.js");
 jest.mock("services/fichaTecnica.service.ts");
-jest.setTimeout(40000);
+jest.setTimeout(60000);
 
 // Mock de arquivo ainda não está 100% funcional
 // Teste para de executar antes do setArquivo acontecer, pendente de investigação

@@ -12,12 +12,12 @@ import { mockUpdateValoresPeriodosLancamentosCEI } from "mocks/medicaoInicial/Pe
 import { mockValoresMedicaoCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockValoresMedicaoCEI";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
+import { getFaixasEtarias } from "services/faixaEtaria.service";
 import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
 import * as periodoLancamentoMedicaoService from "services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getSolicitacoesInclusoesAutorizadasEscola } from "services/medicaoInicial/periodoLancamentoMedicao.service";
 import * as perfilService from "services/perfil.service";
 import { PeriodoLancamentoMedicaoInicialCEI } from "..";
-import { getFaixasEtarias } from "services/faixaEtaria.service";
 
 jest.mock("services/perfil.service.js");
 jest.mock("services/medicaoInicial/diaSobremesaDoce.service.js");
@@ -35,7 +35,7 @@ const awaitServices = async () => {
   );
 };
 
-describe("Test <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não letivo", () => {
+describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não letivo", () => {
   const mockLocationState = {
     ehEmeiDaCemei: false,
     escola: "CEI DIRET VILA BRASILANDIA",

@@ -19,6 +19,8 @@ import {
   DETALHAMENTO_DO_LANCAMENTO,
   LANCAMENTO_MEDICAO_INICIAL,
 } from "configs/constants";
+import { EscolaSimplesContext } from "context/EscolaSimplesContext";
+import { MeusDadosContext } from "context/MeusDadosContext";
 import { ehEscolaTipoCEI, ehEscolaTipoCEMEI } from "helpers/utilities";
 import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
 import { getPanoramaEscola } from "services/dietaEspecial.service";
@@ -31,11 +33,10 @@ import {
   getSolicitacoesLancadas,
   updateSolicitacaoMedicaoInicial,
 } from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import * as perfilService from "services/perfil.service";
 import "./styles.scss";
-import { EscolaSimplesContext } from "context/EscolaSimplesContext";
 
 export default () => {
+  const { meusDados } = useContext(MeusDadosContext);
   const [ano, setAno] = useState(null);
   const [mes, setMes] = useState(null);
   const [panoramaGeral, setPanoramaGeral] = useState();
@@ -118,7 +119,6 @@ export default () => {
 
   useEffect(() => {
     async function fetch() {
-      const meusDados = await perfilService.meusDados();
       const escola =
         meusDados.vinculo_atual && meusDados.vinculo_atual.instituicao;
       const respostaPanorama = await getPanoramaEscola({ escola: escola.uuid });
@@ -249,8 +249,8 @@ export default () => {
       await getSolicitacaoMedInicial(periodoInicialSelecionado, escola.uuid);
       setLoadingSolicitacaoMedicaoInicial(false);
     }
-    fetch();
-  }, []);
+    if (meusDados) fetch();
+  }, [meusDados]);
 
   const getSolicitacaoMedInicial = async (periodo, escolaUuid) => {
     const payload = {

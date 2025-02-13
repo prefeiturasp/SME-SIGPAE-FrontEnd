@@ -204,10 +204,11 @@ export const PeriodosInclusaoNormal = ({
 
   const validacaoNumeroAlunos = (periodos, indice) => {
     return motivoEspecifico
-      ? composeValidators(naoPodeSerZero, numericInteger)
+      ? composeValidators(naoPodeSerZero, numericInteger, required)
       : composeValidators(
           naoPodeSerZero,
           numericInteger,
+          required,
           maxValue(
             periodos.find((p) => p.uuid === getPeriodo(indice).uuid) &&
               periodos.find((p) => p.uuid === getPeriodo(indice).uuid)
