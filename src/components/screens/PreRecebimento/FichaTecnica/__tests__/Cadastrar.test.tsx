@@ -9,7 +9,6 @@ import {
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "context/MeusDadosContext";
-import Cadastrar from "../components/Cadastrar";
 import { mockListaUnidadesMedidaLogistica } from "mocks/cronograma.service/mockGetUnidadesDeMedidaLogistica";
 import { mockListaProdutosLogistica } from "mocks/produto.service/mockGetListaCompletaProdutosLogistica";
 import { mockListaMarcas } from "mocks/produto.service/mockGetNomesMarcas";
@@ -38,12 +37,13 @@ import { mockFichaTecnica } from "mocks/services/fichaTecnica.service/mockGetFic
 import { mockMeusDadosFornecedor } from "mocks/services/perfil.service/mockMeusDados";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
+import CadastroFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
 
 jest.mock("services/terceirizada.service.js");
 jest.mock("services/cronograma.service.js");
 jest.mock("services/produto.service.js");
 jest.mock("services/fichaTecnica.service.ts");
-jest.setTimeout(20000);
+jest.setTimeout(40000);
 
 // Mock de arquivo ainda não está 100% funcional
 // Teste para de executar antes do setArquivo acontecer, pendente de investigação
@@ -132,7 +132,7 @@ const setup = async () => {
             setMeusDados: jest.fn(),
           }}
         >
-          <Cadastrar />
+          <CadastroFichaTecnicaPage />
         </MeusDadosContext.Provider>
       </MemoryRouter>
     );

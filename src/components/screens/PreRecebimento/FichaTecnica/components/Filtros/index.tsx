@@ -1,7 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
 import moment from "moment";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
 import Botao from "components/Shareable/Botao";
 import {
   BUTTON_TYPE,
@@ -22,8 +21,6 @@ import { getListaFiltradaAutoCompleteSelect } from "../../../../../../helpers/au
 import { FiltrosFichaTecnica } from "../../interfaces";
 import { ProdutoLogistica } from "interfaces/produto.interface";
 import { FichaTecnica } from "interfaces/pre_recebimento.interface";
-
-const FORM_NAME = "filtrosFichaTecnica";
 
 interface Props {
   setFiltros: Dispatch<SetStateAction<FiltrosFichaTecnica>>;
@@ -86,7 +83,6 @@ const Filtros: React.FC<Props> = ({
         initialValues={{}}
         render={({ form, handleSubmit, values }) => (
           <form onSubmit={handleSubmit}>
-            <FinalFormToRedux form={FORM_NAME} />
             <div className="row">
               <div className="col-6 mt-2">
                 <Field

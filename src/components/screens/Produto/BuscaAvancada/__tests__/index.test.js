@@ -2,7 +2,7 @@ import React from "react";
 
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import BuscaAvancada from "../";
+import BuscaAvancadaProdutoPage from "pages/Produto/BuscaAvancadaProdutoPage";
 import { renderWithProvider } from "../../../../../utils/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import {
@@ -57,7 +57,7 @@ const setup = () => {
         v7_relativeSplatPath: true,
       }}
     >
-      <BuscaAvancada />
+      <BuscaAvancadaProdutoPage />
     </MemoryRouter>,
     initialState
   );
