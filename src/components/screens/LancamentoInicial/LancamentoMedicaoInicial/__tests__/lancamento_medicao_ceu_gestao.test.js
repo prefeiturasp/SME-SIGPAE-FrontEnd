@@ -10,6 +10,10 @@ import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosEscolaCEUGESTAO } from "mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "mocks/services/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { mockGetEscolaSimplesCEUGESTAO } from "mocks/services/escola.service/mockGetEscolaSimplesCEUGESTAO";
+import { mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/getCEUGESTAOPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
+import { mockGetPeriodosInclusaoContinuaCEUGESTAO } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/getPeriodosInclusaoContinuaCEUGESTAO";
+import { mockGetSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/getSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO";
+import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/getQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO";
 import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "mocks/services/solicitacaoMedicaoInicial.service/getSolicitacaoMedicaoInicialCEUGESTAO";
 import { mockGetTiposDeContagemAlimentacao } from "mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
@@ -50,6 +54,43 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
     mock
       .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
       .reply(200, mockGetTiposDeContagemAlimentacao);
+    mock
+      .onGet("/periodos-escolares/inclusao-continua-por-mes/")
+      .reply(200, mockGetPeriodosInclusaoContinuaCEUGESTAO);
+    mock
+      .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
+      .reply(200, mockGetSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO);
+    mock
+      .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet("/escola-solicitacoes/inclusoes-etec-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet(
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/"
+      )
+      .reply(200, []);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/"
+      )
+      .reply(200, []);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/"
+      )
+      .reply(200, mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO);
+    mock
+      .onGet(
+        "/escola-solicitacoes/ceu-gestao-periodos-com-solicitacoes-autorizadas/"
+      )
+      .reply(200, mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/"
+      )
+      .reply(200, []);
 
     const search = `?mes=11&ano=2024`;
     Object.defineProperty(window, "location", {
@@ -88,5 +129,17 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
 
   it("Renderiza label `Período de Lançamento`", () => {
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
+  });
+
+  it("Renderiza período `TARDE`", () => {
+    expect(screen.getByText("TARDE")).toBeInTheDocument();
+  });
+
+  it("Renderiza período `Programas e Projetos`", () => {
+    expect(screen.getByText("Programas e Projetos")).toBeInTheDocument();
+  });
+
+  it("Renderiza período `Solicitações de Alimentação`", () => {
+    expect(screen.getByText("Solicitações de Alimentação")).toBeInTheDocument();
   });
 });
