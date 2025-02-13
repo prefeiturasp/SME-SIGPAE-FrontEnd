@@ -3,7 +3,7 @@ import { ENVIRONMENT } from "constants/config";
 import { Header } from "../Header";
 import { Sidebar } from "../Sidebar";
 import BotaoVoltar from "./BotaoVoltar";
-import { meusDados as getMeusDados } from "../../../services/perfil.service";
+import { getMeusDados } from "../../../services/perfil.service";
 import "./style.scss";
 import {
   usuarioEhLogistica,
@@ -40,7 +40,8 @@ export const Page = ({ ...props }) => {
 
   useEffect(() => {
     if (!localStorage.getItem("meusDados")) {
-      getMeusDados().then((meusDados) => {
+      getMeusDados().then((response) => {
+        const meusDados = response.data;
         setMeusDados(meusDados);
         localStorage.setItem("nome", JSON.stringify(meusDados.nome));
         if (meusDados.tipo_usuario === "dieta_especial") {
@@ -65,7 +66,7 @@ export const Page = ({ ...props }) => {
         setModalTermosDeUso(!meusDados.aceitou_termos);
       });
     } else {
-      this.setState({ nome: localStorage.getItem("nome") });
+      setNome(localStorage.getItem("nome"));
     }
   }, []);
 
@@ -105,7 +106,6 @@ export const Page = ({ ...props }) => {
       />
 
       {mostrarModalCestaBasica() && <ModalCestasBasicas />}
-
       {modalTermosDeUso && (
         <ModalTermosDeUso
           nomeUsuario={meusDados.nome}

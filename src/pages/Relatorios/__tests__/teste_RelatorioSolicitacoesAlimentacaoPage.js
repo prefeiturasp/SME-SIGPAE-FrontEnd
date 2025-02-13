@@ -108,7 +108,7 @@ describe("Teste <SolicitacoesAlimentacao> (RelatorioSolicitacoesAlimentacao)", (
           }}
         >
           <MeusDadosContext.Provider
-            value={{ meusDados: mockMeusDadosCODAEGA }}
+            value={{ meusDados: mockMeusDadosCODAEGA, setMeusDados: jest.fn() }}
           >
             <RelatorioSolicitacoesAlimentacaoPage />
           </MeusDadosContext.Provider>
