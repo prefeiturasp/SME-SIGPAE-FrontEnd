@@ -281,7 +281,7 @@ export const desabilitarField = (
   if (nomeCategoria.includes("DIETA") && EH_INCLUSAO_SOMENTE_SOBREMESA) {
     return true;
   }
-  const valorFieldParaCorrecao = valoresPeriodosLancamentos.some(
+  const valorFieldParaCorrecao = valoresPeriodosLancamentos?.some(
     (valor) =>
       String(valor.categoria_medicao) === String(categoria) &&
       String(valor.dia) === String(dia) &&
