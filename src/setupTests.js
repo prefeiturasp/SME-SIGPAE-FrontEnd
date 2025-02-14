@@ -1,4 +1,7 @@
 import { jestPreviewConfigure } from "jest-preview";
+import { APIMockVersion } from "mocks/apiVersionMock";
+import mock from "services/_mock";
+import { mockMeusDadosFornecedor } from "mocks/services/perfil.service/mockMeusDados";
 
 jestPreviewConfigure({
   // Opt-in to automatic mode to preview failed test case automatically.
@@ -37,4 +40,18 @@ beforeEach(() => {
       dispatchEvent: jest.fn(),
     })),
   });
+
+  mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosFornecedor);
+
+  mock.onGet("/api-version/").reply(200, APIMockVersion);
+  mock.onGet("/notificacoes/").reply(200, {
+    next: null,
+    previous: null,
+    count: 0,
+    page_size: 4,
+    results: [],
+  });
+  mock
+    .onGet("/notificacoes/quantidade-nao-lidos/")
+    .reply(200, { quantidade_nao_lidos: 0 });
 });

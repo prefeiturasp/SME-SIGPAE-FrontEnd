@@ -18,6 +18,7 @@ import {
   getFichaTecnicaComAnalise,
   corrigirFichaTecnica,
   atualizarFichaTecnica,
+  imprimirFichaTecnica,
 } from "services/fichaTecnica.service";
 
 import { removeCaracteresEspeciais, exibeError } from "helpers/utilities";
@@ -955,4 +956,19 @@ export const gerenciaModalCadastroExterno = (
 ) => {
   setTipoCadastro(tipo);
   setShowModalCadastro(true);
+};
+
+export const imprimirFicha = (
+  uuid: string,
+  numero: string,
+  setCarregando: Dispatch<SetStateAction<boolean>>
+) => {
+  imprimirFichaTecnica(uuid, numero)
+    .then(() => {
+      setCarregando(false);
+    })
+    .catch((error) => {
+      error.response.data.text().then((text) => toastError(text));
+      setCarregando(false);
+    });
 };

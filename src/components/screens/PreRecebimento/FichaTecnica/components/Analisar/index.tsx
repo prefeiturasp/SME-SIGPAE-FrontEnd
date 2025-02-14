@@ -15,6 +15,7 @@ import Botao from "components/Shareable/Botao";
 import {
   carregaListaCompletaInformacoesNutricionais,
   carregarDadosAnalisarDetalhar,
+  imprimirFicha,
 } from "../../helpers";
 import FormPereciveisENaoPereciveis from "../Cadastrar/components/FormPereciveisENaoPereciveis";
 import { InformacaoNutricional } from "interfaces/produto.interface";
@@ -45,7 +46,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { getMensagemDeErro } from "helpers/statusErrors";
 import { usuarioEhEmpresaFornecedor } from "helpers/utilities";
-import { imprimirFichaTecnica } from "services/fichaTecnica.service";
 import "./styles.scss";
 
 const idCollapse = "collapseAnalisarFichaTecnica";
@@ -91,18 +91,11 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
     })();
   }, []);
 
-  const imprimirFicha = () => {
+  const imprimirFichaTecnica = () => {
     setCarregando(true);
     let uuid = ficha.uuid;
     let numero = ficha.numero;
-    imprimirFichaTecnica(uuid, numero)
-      .then(() => {
-        setCarregando(false);
-      })
-      .catch((error) => {
-        error.response.data.text().then((text) => toastError(text));
-        setCarregando(false);
-      });
+    imprimirFicha(uuid, numero, setCarregando);
   };
 
   const fechaCollapses = () => {
@@ -1168,7 +1161,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                             type={BUTTON_TYPE.BUTTON}
                             style={BUTTON_STYLE.GREEN_OUTLINE}
                             className="float-end ms-3"
-                            onClick={() => imprimirFicha()}
+                            onClick={() => imprimirFichaTecnica()}
                             icon="fas fa-print"
                           />
                         )}
