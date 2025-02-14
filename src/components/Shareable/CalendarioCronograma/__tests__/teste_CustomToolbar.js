@@ -24,7 +24,7 @@ describe("Teste <CustomToolbar>", () => {
   });
 
   it("verifica se a label do mês e ano é exibida corretamente", () => {
-    const expectedMonth = toolbarMock.date.toLocaleString("en-US", {
+    const expectedMonth = toolbarMock.date.toLocaleString("pt-BR", {
       month: "long",
     });
 

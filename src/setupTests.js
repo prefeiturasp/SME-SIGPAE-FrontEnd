@@ -1,5 +1,7 @@
 import { jestPreviewConfigure } from "jest-preview";
 import { getNotificacoes, getQtdNaoLidas } from "services/notificacoes.service";
+import mock from "services/_mock";
+import { mockMeusDadosFornecedor } from "mocks/services/perfil.service/mockMeusDados";
 
 jestPreviewConfigure({
   // Opt-in to automatic mode to preview failed test case automatically.
@@ -40,6 +42,8 @@ beforeEach(() => {
       dispatchEvent: jest.fn(),
     })),
   });
+
+  mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosFornecedor);
 
   getNotificacoes.mockResolvedValue({
     data: {},

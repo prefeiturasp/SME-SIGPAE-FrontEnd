@@ -88,6 +88,7 @@ const Filtros: React.FC<Props> = ({
                 <Field
                   component={InputText}
                   label="Filtrar por N° da Ficha"
+                  dataTestId="numero_ficha"
                   name="numero_ficha"
                   placeholder="Digite o Nº da Ficha"
                   className="input-busca-ficha"

@@ -8,12 +8,11 @@ import {
   ALTERAR_FICHA_TECNICA,
 } from "configs/constants";
 import { FichaTecnica } from "interfaces/pre_recebimento.interface";
-import { toastError } from "components/Shareable/Toast/dialogs";
-
 import "./styles.scss";
-import { imprimirFichaTecnica } from "services/fichaTecnica.service";
+
 import { Tooltip } from "antd";
 import { truncarString } from "../../../../../../helpers/utilities";
+import { imprimirFicha } from "../../helpers";
 
 interface Props {
   objetos: Array<FichaTecnica>;
@@ -30,16 +29,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
 
   const baixarPDFFichaTecnica = (ficha: FichaTecnica) => {
     setCarregando(true);
-    let uuid = ficha.uuid;
-    let numero = ficha.numero;
-    imprimirFichaTecnica(uuid, numero)
-      .then(() => {
-        setCarregando(false);
-      })
-      .catch((error) => {
-        error.response.data.text().then((text) => toastError(text));
-        setCarregando(false);
-      });
+    imprimirFicha(ficha.uuid, ficha.numero, setCarregando);
   };
 
   const renderizarAcoes = (objeto: FichaTecnica): ReactElement => {
@@ -80,6 +70,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
       <span
         className="float-start ms-1 link-acoes green"
         onClick={() => baixarPDFFichaTecnica(objeto)}
+        data-testid="btnImprimir"
       >
         <i className="fas fa-print" title="Ficha em PDF" />
       </span>
