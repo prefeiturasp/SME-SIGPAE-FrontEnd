@@ -1,5 +1,5 @@
 import { jestPreviewConfigure } from "jest-preview";
-import { getNotificacoes, getQtdNaoLidas } from "services/notificacoes.service";
+import { APIMockVersion } from "mocks/apiVersionMock";
 import mock from "services/_mock";
 import { mockMeusDadosFornecedor } from "mocks/services/perfil.service/mockMeusDados";
 
@@ -26,8 +26,6 @@ window.Element.prototype.matches = function (selector) {
   }
 };
 
-jest.mock("services/notificacoes.service");
-
 beforeEach(() => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
@@ -45,23 +43,15 @@ beforeEach(() => {
 
   mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosFornecedor);
 
-  getNotificacoes.mockResolvedValue({
-    data: {},
-    status: 200,
+  mock.onGet("/api-version/").reply(200, APIMockVersion);
+  mock.onGet("/notificacoes/").reply(200, {
+    next: null,
+    previous: null,
+    count: 0,
+    page_size: 4,
+    results: [],
   });
-
-  getQtdNaoLidas.mockResolvedValue({
-    data: {},
-    status: 200,
-  });
+  mock
+    .onGet("/notificacoes/quantidade-nao-lidos/")
+    .reply(200, { quantidade_nao_lidos: 0 });
 });
-
-global.console = {
-  ...console,
-  // uncomment to ignore a specific log level
-  //log: jest.fn(),
-  //debug: jest.fn(),
-  //info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-};
