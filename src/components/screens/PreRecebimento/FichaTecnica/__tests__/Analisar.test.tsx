@@ -5,46 +5,38 @@ import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { mockListaInformacoesNutricionais } from "mocks/produto.service/mockGetInformacoesNutricionaisOrdenadas";
 import { mockEmpresa } from "mocks/terceirizada.service/mockGetTerceirizadaUUID";
-import { getInformacoesNutricionaisOrdenadas } from "services/produto.service";
-import {
-  cadastraAnaliseFichaTecnica,
-  cadastraRascunhoAnaliseFichaTecnica,
-  getFichaTecnicaComAnalise,
-  imprimirFichaTecnica,
-} from "services/fichaTecnica.service";
-import { getTerceirizadaUUID } from "services/terceirizada.service";
 import { debug } from "jest-preview";
 import { mockMeusDadosFornecedor } from "mocks/services/perfil.service/mockMeusDados";
-import Analisar from "../components/Analisar";
 import {
   mockFichaTecnicaComDetalhe,
   mockFichaTecnicaComDetalheSemAnalise,
 } from "mocks/services/fichaTecnica.service/mockGetFichaTecnicaComAnalise";
+import DetalharFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/DetalharFichaTecnicaPage";
+import AnalisarFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/AnalisarFichaTecnicaPage";
+import mock from "services/_mock";
 
-jest.mock("services/terceirizada.service.js");
-jest.mock("services/produto.service.js");
-jest.mock("services/fichaTecnica.service.ts");
 jest.setTimeout(20000);
 
 beforeEach(() => {
-  getInformacoesNutricionaisOrdenadas.mockResolvedValue({
-    data: mockListaInformacoesNutricionais,
-    status: 200,
-  });
+  mock
+    .onGet(`/informacoes-nutricionais/ordenadas/`)
+    .reply(200, mockListaInformacoesNutricionais);
 
-  getTerceirizadaUUID.mockResolvedValue({
-    data: mockEmpresa,
-    status: 200,
-  });
+  mock
+    .onGet(`/terceirizadas/${mockFichaTecnicaComDetalhe.empresa.uuid}/`)
+    .reply(200, mockEmpresa);
 
-  jest.mocked(getFichaTecnicaComAnalise).mockResolvedValue({
-    data: mockFichaTecnicaComDetalheSemAnalise,
-    status: 200,
-  });
+  mock
+    .onGet(
+      `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/detalhar-com-analise/`
+    )
+    .reply(200, mockFichaTecnicaComDetalheSemAnalise);
 
-  jest.mocked(cadastraAnaliseFichaTecnica).mockResolvedValue({
-    status: 200,
-  });
+  mock
+    .onPost(
+      `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/analise-gpcodae/`
+    )
+    .reply(201);
 });
 
 const setup = async (somenteLeitura = false) => {
@@ -69,7 +61,11 @@ const setup = async (somenteLeitura = false) => {
             setMeusDados: jest.fn(),
           }}
         >
-          <Analisar somenteLeitura={somenteLeitura} />
+          {somenteLeitura ? (
+            <DetalharFichaTecnicaPage />
+          ) : (
+            <AnalisarFichaTecnicaPage />
+          )}
         </MeusDadosContext.Provider>
       </MemoryRouter>
     );
@@ -83,12 +79,12 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     expect(
       screen.getAllByText(`Indicações de Correções CODAE`)[0]
     ).toBeInTheDocument();
-    expect(getFichaTecnicaComAnalise).toHaveBeenCalled();
 
-    jest.mocked(cadastraRascunhoAnaliseFichaTecnica).mockResolvedValue({
-      data: mockFichaTecnicaComDetalhe,
-      status: 200,
-    });
+    mock
+      .onPost(
+        `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/rascunho-analise-gpcodae/`
+      )
+      .reply(201);
 
     const btnRascunho = screen.getByText("Salvar Rascunho").closest("button");
     expect(btnRascunho).not.toBeDisabled();
@@ -103,7 +99,6 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     expect(
       screen.getAllByText(`Indicações de Correções CODAE`)[0]
     ).toBeInTheDocument();
-    expect(getFichaTecnicaComAnalise).toHaveBeenCalled();
 
     let botoesCiente = screen.getAllByText("Ciente");
     let botoesConferido = screen.getAllByText("Conferido");
@@ -146,10 +141,11 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
   });
 
   it("carrega no modo Detalhar", async () => {
-    jest.mocked(getFichaTecnicaComAnalise).mockResolvedValue({
-      data: mockFichaTecnicaComDetalhe,
-      status: 200,
-    });
+    mock
+      .onGet(
+        `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/detalhar-com-analise/`
+      )
+      .reply(200, mockFichaTecnicaComDetalhe);
 
     await setup(true);
     expect(
@@ -158,14 +154,17 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     expect(
       screen.getAllByText(`Indicações de Correções CODAE`)[0]
     ).toBeInTheDocument();
-    expect(getFichaTecnicaComAnalise).toHaveBeenCalled();
   });
 
   it("carrega no modo Detalhar e imprime a ficha", async () => {
+    window.URL.createObjectURL = jest.fn();
     await setup(true);
-    expect(getFichaTecnicaComAnalise).toHaveBeenCalled();
 
-    jest.mocked(imprimirFichaTecnica).mockResolvedValue();
+    mock
+      .onGet(
+        `/ficha-tecnica/${mockFichaTecnicaComDetalhe.uuid}/gerar-pdf-ficha/`
+      )
+      .reply(200, new Blob());
 
     const btnImprimir = screen.getByText("Ficha em PDF").closest("button");
     fireEvent.click(btnImprimir);

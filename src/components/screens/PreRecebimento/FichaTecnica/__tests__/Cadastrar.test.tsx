@@ -9,7 +9,6 @@ import {
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "context/MeusDadosContext";
-import Cadastrar from "../components/Cadastrar";
 import { mockListaUnidadesMedidaLogistica } from "mocks/cronograma.service/mockGetUnidadesDeMedidaLogistica";
 import { mockListaProdutosLogistica } from "mocks/produto.service/mockGetListaCompletaProdutosLogistica";
 import { mockListaMarcas } from "mocks/produto.service/mockGetNomesMarcas";
@@ -36,29 +35,14 @@ import { debug } from "jest-preview";
 import { FichaTecnicaDetalhada } from "interfaces/pre_recebimento.interface";
 import { mockFichaTecnica } from "mocks/services/fichaTecnica.service/mockGetFichaTecnica";
 import { mockMeusDadosFornecedor } from "mocks/services/perfil.service/mockMeusDados";
-import { rest } from "msw";
-import { setupServer } from "msw/node";
+import CadastroFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
+import mock from "services/_mock";
 
 jest.mock("services/terceirizada.service.js");
 jest.mock("services/cronograma.service.js");
 jest.mock("services/produto.service.js");
 jest.mock("services/fichaTecnica.service.ts");
 jest.setTimeout(60000);
-
-// Mock de arquivo ainda não está 100% funcional
-// Teste para de executar antes do setArquivo acontecer, pendente de investigação
-const server = setupServer(
-  rest.get(mockFichaTecnica.arquivo, (req, res, ctx) => {
-    return res(
-      ctx.set("Content-Type", "application/pdf"),
-      ctx.body("11111111")
-    );
-  })
-);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
 
 beforeEach(() => {
   getListaCompletaProdutosLogistica.mockResolvedValue({
@@ -132,7 +116,7 @@ const setup = async () => {
             setMeusDados: jest.fn(),
           }}
         >
-          <Cadastrar />
+          <CadastroFichaTecnicaPage />
         </MeusDadosContext.Provider>
       </MemoryRouter>
     );
@@ -361,6 +345,8 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
   });
 
   it("carrega dados pré-existentes de rascunho", async () => {
+    mock.onGet(mockFichaTecnica.arquivo).reply(200, new Blob());
+
     const search = `?uuid=${mockFichaTecnica.uuid}`;
     Object.defineProperty(window, "location", {
       value: {

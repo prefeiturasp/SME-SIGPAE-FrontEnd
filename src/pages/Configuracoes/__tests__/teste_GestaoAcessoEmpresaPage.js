@@ -49,7 +49,10 @@ describe("Teste <GestaoAcessoEmpresaPage>", () => {
           }}
         >
           <MeusDadosContext.Provider
-            value={{ meusDados: mockMeusDadosAdmDICAE }}
+            value={{
+              meusDados: mockMeusDadosAdmDICAE,
+              setMeusDados: jest.fn(),
+            }}
           >
             <GestaoAcessoEmpresaPage />
           </MeusDadosContext.Provider>
