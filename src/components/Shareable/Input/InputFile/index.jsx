@@ -181,6 +181,7 @@ const InputFile = (props) => {
     texto,
     ehPlanilhaMedicaoInicial,
     validationFile,
+    dataTestId,
   } = props;
 
   return (
@@ -275,6 +276,7 @@ const InputFile = (props) => {
             (meta.error || meta.warning) &&
             "invalid-field"
           }`}
+          data-testid={dataTestId}
           disabled={disabled}
           name={name}
           onChange={(event) => onInputChange(event)}

@@ -49,6 +49,8 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     toastAprovaMensagemErro,
   } = props;
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const getVinculosMotivoEspecificoCEMEIAsync = async (
     escola,
     periodosNormais
@@ -108,6 +110,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   };
 
   const getInclusaoCEMEIAsync = async (uuid_ = uuid) => {
+    setIsSubmitting(true);
     const response = await getInclusaoCEMEI(uuid_);
     if (response.status === HTTP_STATUS.OK) {
       setSolicitacao(response.data);
@@ -115,9 +118,11 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
         getVinculosTipoAlimentacaoPorEscolaAsync(response.data);
       }
     }
+    setIsSubmitting(false);
   };
 
   const onSubmit = (values) => {
+    setIsSubmitting(true);
     endpointAprovaSolicitacao(uuid, values.justificativa, tipoSolicitacao).then(
       (response) => {
         if (response.status === HTTP_STATUS.OK) {
@@ -245,6 +250,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                                     ? handleSubmit()
                                     : setShowModalCodaeAutorizar(true)
                                 }
+                                disabled={isSubmitting}
                                 style={BUTTON_STYLE.GREEN}
                                 className="ms-3"
                               />
@@ -265,6 +271,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                                   onClick={() => {
                                     setShowModalMarcarConferencia(true);
                                   }}
+                                  disabled={isSubmitting}
                                 />
                               )}
                             </div>

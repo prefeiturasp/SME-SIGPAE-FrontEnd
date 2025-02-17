@@ -421,22 +421,4 @@ InputText.propTypes = {
   contador: PropTypes.number,
 };
 
-InputText.defaultProps = {
-  className: "",
-  classNameToNextInput: undefined,
-  classNameToPrevInput: undefined,
-  disabled: false,
-  esconderAsterisco: false,
-  helpText: "",
-  input: {},
-  label: "",
-  step: "0.01",
-  labelClassName: "",
-  meta: {},
-  name: "",
-  placeholder: "",
-  required: false,
-  type: "text",
-};
-
 export default InputText;

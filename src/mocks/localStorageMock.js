@@ -3,7 +3,7 @@ export const localStorageMock = (() => {
   return {
     getItem: (key) => store[key] || null,
     setItem: (key, value) => {
-      store[key] = value.toString();
+      store[key] = value === undefined ? "undefined" : value.toString();
     },
     removeItem: (key) => {
       delete store[key];

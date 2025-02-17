@@ -638,6 +638,10 @@ export const usuarioEhCronograma = () => {
   return [PERFIL.DILOG_CRONOGRAMA].includes(localStorage.getItem("perfil"));
 };
 
+export const usuarioEhAdministradorDICAE = () => {
+  return [PERFIL.ADMINISTRADOR_DICAE].includes(localStorage.getItem("perfil"));
+};
+
 export const usuarioEhEmpresaDistribuidora = () => {
   return (
     [PERFIL.ADMINISTRADOR_EMPRESA, PERFIL.USUARIO_EMPRESA].includes(
@@ -743,6 +747,10 @@ export const usuarioEhQualquerCODAE = () => {
     usuarioEhCODAEDietaEspecial() ||
     usuarioEhCODAEGestaoProduto()
   );
+};
+
+export const usuarioEhEmpresa = () => {
+  return localStorage.getItem("tipo_perfil") === TIPO_PERFIL.TERCEIRIZADA;
 };
 
 export const usuarioEhEmpresaTerceirizada = () => {

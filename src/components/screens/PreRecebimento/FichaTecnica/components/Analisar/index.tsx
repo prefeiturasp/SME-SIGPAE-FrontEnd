@@ -15,6 +15,7 @@ import Botao from "components/Shareable/Botao";
 import {
   carregaListaCompletaInformacoesNutricionais,
   carregarDadosAnalisarDetalhar,
+  imprimirFicha,
 } from "../../helpers";
 import FormPereciveisENaoPereciveis from "../Cadastrar/components/FormPereciveisENaoPereciveis";
 import { InformacaoNutricional } from "interfaces/produto.interface";
@@ -45,7 +46,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { getMensagemDeErro } from "helpers/statusErrors";
 import { usuarioEhEmpresaFornecedor } from "helpers/utilities";
-import { imprimirFichaTecnica } from "services/fichaTecnica.service";
 import "./styles.scss";
 
 const idCollapse = "collapseAnalisarFichaTecnica";
@@ -91,18 +91,11 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
     })();
   }, []);
 
-  const imprimirFicha = () => {
+  const imprimirFichaTecnica = () => {
     setCarregando(true);
     let uuid = ficha.uuid;
     let numero = ficha.numero;
-    imprimirFichaTecnica(uuid, numero)
-      .then(() => {
-        setCarregando(false);
-      })
-      .catch((error) => {
-        error.response.data.text().then((text) => toastError(text));
-        setCarregando(false);
-      });
+    imprimirFicha(uuid, numero, setCarregando);
   };
 
   const fechaCollapses = () => {
@@ -126,13 +119,6 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
     setConferidos({
       ...conferidos,
       [name]: false,
-    });
-  };
-
-  const cancelaCollapse = (name: string) => {
-    setConferidos({
-      ...conferidos,
-      [name]: null,
     });
   };
 
@@ -513,6 +499,19 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                     </section>
 
                     <section id="detalhes_produto">
+                      {!conferidos.detalhes_produto && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.detalhes_produto_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <FormPereciveisENaoPereciveis
                         values={values}
                         desabilitar={true}
@@ -523,12 +522,25 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                           aprovaCollapse={aprovaCollapse}
                           values={values}
                           reprovaCollapse={reprovaCollapse}
-                          cancelaCollapse={cancelaCollapse}
                         />
                       )}
                     </section>
 
                     <section id="informacoes_nutricionais">
+                      {!conferidos.informacoes_nutricionais && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise
+                                  ?.informacoes_nutricionais_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="row">
                         <div className="col-6">
                           <Label content="Porção" required />
@@ -588,12 +600,24 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                           aprovaCollapse={aprovaCollapse}
                           values={values}
                           reprovaCollapse={reprovaCollapse}
-                          cancelaCollapse={cancelaCollapse}
                         />
                       )}
                     </section>
 
                     <section id="conservacao">
+                      {!conferidos.conservacao && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.conservacao_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       {ehPerecivel && (
                         <div className="row">
                           <div className="col">
@@ -624,13 +648,27 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                           aprovaCollapse={aprovaCollapse}
                           values={values}
                           reprovaCollapse={reprovaCollapse}
-                          cancelaCollapse={cancelaCollapse}
                         />
                       )}
                     </section>
 
                     {ehPerecivel && (
                       <section id="temperatura_e_transporte">
+                        {!conferidos.temperatura_e_transporte && (
+                          <div className="row campo-correcao mb-4">
+                            <div className="col-12">
+                              <TextArea
+                                label="Indicações de Correções CODAE"
+                                valorInicial={
+                                  ficha?.analise
+                                    ?.temperatura_e_transporte_correcoes
+                                }
+                                disabled={true}
+                              />
+                            </div>
+                          </div>
+                        )}
+
                         <div className="row">
                           <div className="col-5">
                             <Field
@@ -674,13 +712,25 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                             aprovaCollapse={aprovaCollapse}
                             values={values}
                             reprovaCollapse={reprovaCollapse}
-                            cancelaCollapse={cancelaCollapse}
                           />
                         )}
                       </section>
                     )}
 
                     <section id="armazenamento">
+                      {!conferidos.armazenamento && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.armazenamento_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="row">
                         <div className="col">
                           Informações que constarão da rotulagem das embalagens
@@ -715,12 +765,24 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                           aprovaCollapse={aprovaCollapse}
                           values={values}
                           reprovaCollapse={reprovaCollapse}
-                          cancelaCollapse={cancelaCollapse}
                         />
                       )}
                     </section>
 
                     <section id="embalagem_e_rotulagem">
+                      {!conferidos.embalagem_e_rotulagem && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.embalagem_e_rotulagem_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="row">
                         <div className="subtitulo">Embalagem</div>
                       </div>
@@ -981,7 +1043,6 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                           aprovaCollapse={aprovaCollapse}
                           values={values}
                           reprovaCollapse={reprovaCollapse}
-                          cancelaCollapse={cancelaCollapse}
                         />
                       )}
                     </section>
@@ -1100,7 +1161,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                             type={BUTTON_TYPE.BUTTON}
                             style={BUTTON_STYLE.GREEN_OUTLINE}
                             className="float-end ms-3"
-                            onClick={() => imprimirFicha()}
+                            onClick={() => imprimirFichaTecnica()}
                             icon="fas fa-print"
                           />
                         )}
