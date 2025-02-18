@@ -48,6 +48,7 @@ const FormBuscaProduto = ({
   initialValues,
   formName,
   novaReclamacao,
+  setEdital,
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loading, setLoading] = useState(true);
@@ -55,6 +56,7 @@ const FormBuscaProduto = ({
   const navigationType = useNavigationType();
 
   const tipoPerfil = localStorage.getItem("tipo_perfil");
+  const ehEscola = tipoPerfil === TIPO_PERFIL.ESCOLA;
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -123,14 +125,13 @@ const FormBuscaProduto = ({
       } catch (error) {
         //console.error("Erro ao buscar dados:", error);
       } finally {
+        ehEscola && setEdital(state.dados.editais);
         setLoading(false);
       }
     }
 
     fetchData();
   }, [novaReclamacao]);
-
-  const ehEscola = tipoPerfil === TIPO_PERFIL.ESCOLA;
 
   const valorInicialEdital =
     !loading && ehEscola && state.dados.editais.length > 0
@@ -158,6 +159,9 @@ const FormBuscaProduto = ({
               required
               validate={required}
               disabled={ehEscola}
+              inputOnChange={(value) => {
+                setEdital({ edital: value });
+              }}
             />
           </div>
 

@@ -27,6 +27,7 @@ class ReclamacaoProduto extends Component {
       loading: false,
       error: "",
       formValues: undefined,
+      edital: null,
     };
     this.TAMANHO_PAGINA = 10;
   }
@@ -47,6 +48,10 @@ class ReclamacaoProduto extends Component {
     };
     this.onSubmitFormBuscaProduto(parametrosBusca);
   }
+
+  setEdital = (edital) => {
+    this.setState({ edital });
+  };
 
   onAtualizarProduto = (page) => {
     this.setState({
@@ -103,6 +108,7 @@ class ReclamacaoProduto extends Component {
               formName="reclamacao"
               onSubmit={this.onSubmitFormBuscaProduto}
               onAtualizaProdutos={(produtos) => setProdutos(produtos)}
+              setEdital={this.setEdital}
             />
 
             {produtos && produtos.length > 0 && (
