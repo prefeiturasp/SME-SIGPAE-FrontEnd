@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Form, Field } from "react-final-form";
 import { connect } from "react-redux";
 import { useNavigationType } from "react-router-dom";
@@ -10,6 +10,9 @@ import {
   BUTTON_STYLE,
 } from "components/Shareable/Botao/constants";
 import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
+import AutoCompleteField from "components/Shareable/AutoCompleteField";
+import { required } from "helpers/fieldValidators";
+import { TIPO_PERFIL } from "constants/shared";
 
 import {
   getAvaliarReclamacaoNomesProdutos,
@@ -18,6 +21,7 @@ import {
   getNovaReclamacaoNomesProdutos,
   getNovaReclamacaoNomesMarcas,
   getNovaReclamacaoNomesFabricantes,
+  getNomesUnicosEditais,
 } from "services/produto.service";
 
 const initialState = {
@@ -25,6 +29,7 @@ const initialState = {
   produtos: [],
   marcas: [],
   fabricantes: [],
+  editais: [],
 };
 
 function reducer(state, { type: actionType, payload }) {
@@ -45,46 +50,117 @@ const FormBuscaProduto = ({
   novaReclamacao,
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [loading, setLoading] = useState(true);
 
   const navigationType = useNavigationType();
 
+  const tipoPerfil = localStorage.getItem("tipo_perfil");
+
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     let endpoints;
+  //     if (novaReclamacao) {
+  //       endpoints = [
+  //         getNovaReclamacaoNomesProdutos(),
+  //         getNovaReclamacaoNomesMarcas(),
+  //         getNovaReclamacaoNomesFabricantes(),
+  //         getNomesUnicosEditais(),
+  //       ];
+  //     } else {
+  //       endpoints = [
+  //         getAvaliarReclamacaoNomesProdutos(),
+  //         getAvaliarReclamacaoNomesMarcas(),
+  //         getAvaliarReclamacaoNomesFabricantes(),
+  //       ];
+  //     }
+  //     Promise.all(endpoints).then(([produtos, marcas, fabricantes, editais]) => {
+  //       dispatch({
+  //         type: "popularDados",
+  //         payload: {
+  //           produtos: produtos.data.results.map((el) => el.nome),
+  //           marcas: marcas.data.results.map((el) => el.nome),
+  //           fabricantes: fabricantes.data.results.map((el) => el.nome),
+  //           editais: editais.data.results,
+  //         },
+  //       });
+  //     });
+  //   }
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
     async function fetchData() {
-      let endpoints;
-      if (novaReclamacao) {
-        endpoints = [
-          getNovaReclamacaoNomesProdutos(),
-          getNovaReclamacaoNomesMarcas(),
-          getNovaReclamacaoNomesFabricantes(),
-        ];
-      } else {
-        endpoints = [
-          getAvaliarReclamacaoNomesProdutos(),
-          getAvaliarReclamacaoNomesMarcas(),
-          getAvaliarReclamacaoNomesFabricantes(),
-        ];
-      }
-      Promise.all(endpoints).then(([produtos, marcas, fabricantes]) => {
+      try {
+        let endpoints;
+        if (novaReclamacao) {
+          endpoints = [
+            getNovaReclamacaoNomesProdutos(),
+            getNovaReclamacaoNomesMarcas(),
+            getNovaReclamacaoNomesFabricantes(),
+            getNomesUnicosEditais(),
+          ];
+        } else {
+          endpoints = [
+            getAvaliarReclamacaoNomesProdutos(),
+            getAvaliarReclamacaoNomesMarcas(),
+            getAvaliarReclamacaoNomesFabricantes(),
+          ];
+        }
+
+        const [produtos, marcas, fabricantes, editais] = await Promise.all(
+          endpoints
+        );
+
         dispatch({
           type: "popularDados",
           payload: {
             produtos: produtos.data.results.map((el) => el.nome),
             marcas: marcas.data.results.map((el) => el.nome),
             fabricantes: fabricantes.data.results.map((el) => el.nome),
+            editais: editais ? editais.data.results : [],
           },
         });
-      });
+      } catch (error) {
+        //console.error("Erro ao buscar dados:", error);
+      } finally {
+        setLoading(false);
+      }
     }
+
     fetchData();
-  }, []);
+  }, [novaReclamacao]);
+
+  const ehEscola = tipoPerfil === TIPO_PERFIL.ESCOLA;
+
+  const valorInicialEdital =
+    !loading && ehEscola && state.dados.editais.length > 0
+      ? state.dados.editais[0]
+      : undefined;
 
   return (
     <Form
       onSubmit={onSubmit}
-      initialValues={navigationType === "POP" && initialValues}
+      initialValues={{
+        ...(navigationType === "POP" && initialValues),
+        nome_edital: valorInicialEdital,
+      }}
       render={({ form, handleSubmit, submitting }) => (
         <form onSubmit={handleSubmit} className="busca-produtos-formulario">
           <FinalFormToRedux form={formName} />
+          <div className="col-6 p-0">
+            <Field
+              component={AutoCompleteField}
+              dataSource={state.dados.editais}
+              data-testid="edital"
+              label="Edital"
+              className="input-busca-produto"
+              name="nome_edital"
+              required
+              validate={required}
+              disabled={ehEscola}
+            />
+          </div>
+
           <Field
             component={AutoCompleteFieldUnaccent}
             dataSource={state.dados.produtos}
