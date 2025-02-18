@@ -110,33 +110,33 @@ export class Calendario extends React.Component {
     const nextEvents = [...objetos];
     nextEvents.splice(idx, 1, updatedEvent);
 
-    const cadastros_sobremesa_doce_payload = [];
+    const cadastros_calendario_payload = [];
     nextEvents
       .filter((e) => e.data === getDDMMYYYfromDate(event.start))
       .forEach((evento) =>
-        cadastros_sobremesa_doce_payload.push({
+        cadastros_calendario_payload.push({
           editais: evento.editais_uuids,
           tipo_unidades: [evento.tipo_unidade.uuid],
         })
       );
     const payload = {
-      cadastros_sobremesa_doce: cadastros_sobremesa_doce_payload,
+      cadastros_calendario: cadastros_calendario_payload,
       data: getYYYYMMDDfromDate(event.start),
     };
 
     await setObjeto(payload);
 
-    const cadastros_sobremesa_doce_payload2 = [];
+    const cadastros_calendario_payload2 = [];
     nextEvents
       .filter((e) => e.data === getDDMMYYYfromDate(start))
       .forEach((evento) =>
-        cadastros_sobremesa_doce_payload2.push({
+        cadastros_calendario_payload2.push({
           editais: evento.editais_uuids,
           tipo_unidades: [evento.tipo_unidade.uuid],
         })
       );
     const payload2 = {
-      cadastros_sobremesa_doce: cadastros_sobremesa_doce_payload2,
+      cadastros_calendario: cadastros_calendario_payload2,
       data: getYYYYMMDDfromDate(start),
     };
 
