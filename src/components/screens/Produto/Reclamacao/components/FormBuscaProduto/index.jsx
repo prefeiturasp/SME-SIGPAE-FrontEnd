@@ -114,8 +114,10 @@ const FormBuscaProduto = ({
     <Form
       onSubmit={onSubmit}
       initialValues={{
-        ...(navigationType === "POP" && initialValues),
-        nome_edital: valorInicialEdital,
+        ...(navigationType === "POP" && {
+          nome_edital: valorInicialEdital,
+          ...initialValues,
+        }),
       }}
       render={({ form, handleSubmit, submitting }) => (
         <form

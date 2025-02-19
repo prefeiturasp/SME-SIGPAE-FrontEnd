@@ -55,7 +55,7 @@ class ReclamacaoProduto extends Component {
   };
 
   setConsultaEfetuada = (consultaEfetuada) => {
-    this.setState(consultaEfetuada);
+    this.setState({ consultaEfetuada });
   };
 
   onAtualizarProduto = (page) => {
