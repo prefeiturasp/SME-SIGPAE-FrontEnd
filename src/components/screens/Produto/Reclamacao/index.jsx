@@ -28,6 +28,7 @@ class ReclamacaoProduto extends Component {
       error: "",
       formValues: undefined,
       edital: null,
+      consultaEfetuada: false,
     };
     this.TAMANHO_PAGINA = 10;
   }
@@ -51,6 +52,10 @@ class ReclamacaoProduto extends Component {
 
   setEdital = (edital) => {
     this.setState({ edital });
+  };
+
+  setConsultaEfetuada = (consultaEfetuada) => {
+    this.setState(consultaEfetuada);
   };
 
   onAtualizarProduto = (page) => {
@@ -99,6 +104,7 @@ class ReclamacaoProduto extends Component {
       page,
       setPage,
     } = this.props;
+    const editalValido = this.state.edital && this.state.edital !== "";
     return (
       <Spin tip="Carregando..." spinning={this.state.loading}>
         <div className="card mt-3 page-reclamacao-produto">
@@ -109,9 +115,9 @@ class ReclamacaoProduto extends Component {
               onSubmit={this.onSubmitFormBuscaProduto}
               onAtualizaProdutos={(produtos) => setProdutos(produtos)}
               setEdital={this.setEdital}
+              setConsultaEfetuada={this.setConsultaEfetuada}
             />
-
-            {produtos && produtos.length > 0 && (
+            {editalValido && produtos && produtos.length > 0 && (
               <>
                 <div className="label-resultados-busca">
                   {formValues && formValues.nome_produto
@@ -123,6 +129,7 @@ class ReclamacaoProduto extends Component {
                   onAtualizarProduto={this.onAtualizarProduto}
                   indiceProdutoAtivo={indiceProdutoAtivo}
                   setIndiceProdutoAtivo={setIndiceProdutoAtivo}
+                  edital={this.state.edital}
                 />
                 <Paginacao
                   className="mt-3 mb-3"
@@ -137,11 +144,14 @@ class ReclamacaoProduto extends Component {
                 />
               </>
             )}
-            {produtos && produtos.length === 0 && formValues !== undefined && (
-              <div className="text-center mt-5">
-                A consulta retornou 0 resultados.
-              </div>
-            )}
+            {this.state.edital &&
+              produtos &&
+              produtos.length === 0 &&
+              formValues !== undefined && (
+                <div className="text-center mt-5">
+                  A consulta retornou 0 resultados.
+                </div>
+              )}
           </div>
         </div>
       </Spin>

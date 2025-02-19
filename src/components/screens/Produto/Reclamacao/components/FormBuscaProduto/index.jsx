@@ -13,6 +13,7 @@ import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
 import AutoCompleteField from "components/Shareable/AutoCompleteField";
 import { required } from "helpers/fieldValidators";
 import { TIPO_PERFIL } from "constants/shared";
+import { toastError } from "components/Shareable/Toast/dialogs";
 
 import {
   getAvaliarReclamacaoNomesProdutos,
@@ -49,6 +50,7 @@ const FormBuscaProduto = ({
   formName,
   novaReclamacao,
   setEdital,
+  setConsultaEfetuada,
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loading, setLoading] = useState(true);
@@ -57,38 +59,6 @@ const FormBuscaProduto = ({
 
   const tipoPerfil = localStorage.getItem("tipo_perfil");
   const ehEscola = tipoPerfil === TIPO_PERFIL.ESCOLA;
-
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     let endpoints;
-  //     if (novaReclamacao) {
-  //       endpoints = [
-  //         getNovaReclamacaoNomesProdutos(),
-  //         getNovaReclamacaoNomesMarcas(),
-  //         getNovaReclamacaoNomesFabricantes(),
-  //         getNomesUnicosEditais(),
-  //       ];
-  //     } else {
-  //       endpoints = [
-  //         getAvaliarReclamacaoNomesProdutos(),
-  //         getAvaliarReclamacaoNomesMarcas(),
-  //         getAvaliarReclamacaoNomesFabricantes(),
-  //       ];
-  //     }
-  //     Promise.all(endpoints).then(([produtos, marcas, fabricantes, editais]) => {
-  //       dispatch({
-  //         type: "popularDados",
-  //         payload: {
-  //           produtos: produtos.data.results.map((el) => el.nome),
-  //           marcas: marcas.data.results.map((el) => el.nome),
-  //           fabricantes: fabricantes.data.results.map((el) => el.nome),
-  //           editais: editais.data.results,
-  //         },
-  //       });
-  //     });
-  //   }
-  //   fetchData();
-  // }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -123,7 +93,9 @@ const FormBuscaProduto = ({
           },
         });
       } catch (error) {
-        //console.error("Erro ao buscar dados:", error);
+        toastError(
+          "Houve um erro ao buscar os dados de produtos, marcas, fabricantes ou editais"
+        );
       } finally {
         ehEscola && setEdital(state.dados.editais);
         setLoading(false);
@@ -146,7 +118,13 @@ const FormBuscaProduto = ({
         nome_edital: valorInicialEdital,
       }}
       render={({ form, handleSubmit, submitting }) => (
-        <form onSubmit={handleSubmit} className="busca-produtos-formulario">
+        <form
+          onSubmit={(event) => {
+            setConsultaEfetuada(true);
+            handleSubmit(event);
+          }}
+          className="busca-produtos-formulario"
+        >
           <FinalFormToRedux form={formName} />
           <div className="col-6 p-0">
             <Field
@@ -160,7 +138,7 @@ const FormBuscaProduto = ({
               validate={required}
               disabled={ehEscola}
               inputOnChange={(value) => {
-                setEdital({ edital: value });
+                setEdital(value);
               }}
             />
           </div>
@@ -192,19 +170,20 @@ const FormBuscaProduto = ({
               type={BUTTON_TYPE.SUBMIT}
               style={BUTTON_STYLE.GREEN}
               className="float-end ms-3"
-              disabled={submitting}
+              disabled={submitting || !form.getState().values.nome_edital}
             />
             <Botao
               texto="Limpar Filtros"
               type={BUTTON_TYPE.BUTTON}
               style={BUTTON_STYLE.GREEN_OUTLINE}
-              onClick={() =>
+              onClick={() => {
                 form.reset({
                   nome_fabricante: undefined,
                   nome_marca: undefined,
                   nome_produto: undefined,
-                })
-              }
+                });
+                setEdital(null);
+              }}
               className="float-end ms-3"
               disabled={submitting}
             />
