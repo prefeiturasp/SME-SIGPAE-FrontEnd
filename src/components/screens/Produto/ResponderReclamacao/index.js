@@ -37,8 +37,6 @@ const TabelaProdutos = ({
   ativos,
   setAtivos,
 }) => {
-  if (!produtos) return false;
-
   return (
     <>
       <LabelResultadoDaBusca filtros={filtros} />
