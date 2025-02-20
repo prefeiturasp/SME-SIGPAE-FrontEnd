@@ -1,7 +1,8 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { Form, Field } from "react-final-form";
 import { connect } from "react-redux";
-import { useNavigationType } from "react-router-dom";
+// import { useNavigationType } from "react-router-dom";
+import { Spin } from "antd";
 
 import AutoCompleteFieldUnaccent from "components/Shareable/AutoCompleteField/unaccent";
 import Botao from "components/Shareable/Botao";
@@ -46,153 +47,175 @@ function reducer(state, { type: actionType, payload }) {
 
 const FormBuscaProduto = ({
   onSubmit,
-  initialValues,
   formName,
   novaReclamacao,
   setEdital,
-  setConsultaEfetuada,
+  edital,
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loading, setLoading] = useState(true);
 
-  const navigationType = useNavigationType();
+  // const navigationType = useNavigationType();
 
   const tipoPerfil = localStorage.getItem("tipo_perfil");
   const ehEscola = tipoPerfil === TIPO_PERFIL.ESCOLA;
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchEditais() {
       try {
-        let endpoints;
-        if (novaReclamacao) {
-          endpoints = [
-            getNovaReclamacaoNomesProdutos(),
-            getNovaReclamacaoNomesMarcas(),
-            getNovaReclamacaoNomesFabricantes(),
-            getNomesUnicosEditais(),
-          ];
-        } else {
-          endpoints = [
-            getAvaliarReclamacaoNomesProdutos(),
-            getAvaliarReclamacaoNomesMarcas(),
-            getAvaliarReclamacaoNomesFabricantes(),
-          ];
-        }
-
-        const [produtos, marcas, fabricantes, editais] = await Promise.all(
-          endpoints
-        );
-
+        const response = await getNomesUnicosEditais();
         dispatch({
           type: "popularDados",
           payload: {
-            produtos: produtos.data.results.map((el) => el.nome),
-            marcas: marcas.data.results.map((el) => el.nome),
-            fabricantes: fabricantes.data.results.map((el) => el.nome),
-            editais: editais ? editais.data.results : [],
+            ...state.dados,
+            editais: response.data.results,
           },
         });
+        ehEscola && setEdital(response.data.results[0]);
       } catch (error) {
-        toastError(
-          "Houve um erro ao buscar os dados de produtos, marcas, fabricantes ou editais"
-        );
+        toastError("Houve um erro ao buscar os dados de editais");
       } finally {
-        ehEscola && setEdital(state.dados.editais);
         setLoading(false);
       }
     }
 
-    fetchData();
-  }, [novaReclamacao]);
+    fetchEditais();
+  }, []);
 
-  const valorInicialEdital =
-    !loading && ehEscola && state.dados.editais.length > 0
-      ? state.dados.editais[0]
-      : undefined;
+  const handleEditalChange = async (nomeEdital) => {
+    try {
+      setLoading(true);
+
+      let endpoints;
+      if (novaReclamacao) {
+        endpoints = [
+          getNovaReclamacaoNomesProdutos({ nome_edital: nomeEdital }),
+          getNovaReclamacaoNomesMarcas({ nome_edital: nomeEdital }),
+          getNovaReclamacaoNomesFabricantes({ nome_edital: nomeEdital }),
+        ];
+      } else {
+        endpoints = [
+          getAvaliarReclamacaoNomesProdutos(),
+          getAvaliarReclamacaoNomesMarcas(),
+          getAvaliarReclamacaoNomesFabricantes(),
+        ];
+      }
+
+      const [produtos, marcas, fabricantes] = await Promise.all(endpoints);
+
+      dispatch({
+        type: "popularDados",
+        payload: {
+          ...state.dados,
+          produtos: produtos.data.results.map((el) => el.nome),
+          marcas: marcas.data.results.map((el) => el.nome),
+          fabricantes: fabricantes.data.results.map((el) => el.nome),
+        },
+      });
+    } catch (error) {
+      toastError(
+        "Houve um erro ao buscar os dados de produtos, marcas ou fabricantes"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (edital) {
+      handleEditalChange(edital);
+    }
+  }, [edital]);
 
   return (
-    <Form
-      onSubmit={onSubmit}
-      initialValues={{
-        ...(navigationType === "POP" && {
-          nome_edital: valorInicialEdital,
-          ...initialValues,
-        }),
-      }}
-      render={({ form, handleSubmit, submitting }) => (
-        <form
-          onSubmit={(event) => {
-            setConsultaEfetuada(true);
-            handleSubmit(event);
+    <Spin tip="Carregando..." spinning={loading}>
+      {!loading && (
+        <Form
+          onSubmit={onSubmit}
+          initialValues={{
+            nome_edital: edital,
           }}
-          className="busca-produtos-formulario"
-        >
-          <FinalFormToRedux form={formName} />
-          <div className="col-6 p-0">
-            <Field
-              component={AutoCompleteField}
-              dataSource={state.dados.editais}
-              data-testid="edital"
-              label="Edital"
-              className="input-busca-produto"
-              name="nome_edital"
-              required
-              validate={required}
-              disabled={ehEscola}
-              inputOnChange={(value) => {
-                setEdital(value);
-              }}
-            />
-          </div>
+          render={({ form, handleSubmit, submitting }) => (
+            <form onSubmit={handleSubmit} className="busca-produtos-formulario">
+              <FinalFormToRedux form={formName} />
+              {novaReclamacao && (
+                <div className="col-12 p-0">
+                  <Field
+                    component={AutoCompleteField}
+                    dataSource={state.dados.editais}
+                    data-testid="edital"
+                    label="Edital"
+                    className="input-busca-produto"
+                    name="nome_edital"
+                    required
+                    validate={required}
+                    disabled={ehEscola}
+                    inputOnChange={(value) => {
+                      setEdital(value);
+                      handleEditalChange(value);
+                    }}
+                  />
+                </div>
+              )}
+              <Field
+                component={AutoCompleteFieldUnaccent}
+                dataSource={state.dados.produtos}
+                label="Nome do Produto"
+                className="input-busca-produto"
+                name="nome_produto"
+                disabled={novaReclamacao && !form.getState().values.nome_edital}
+              />
+              <div className="marca-fabricante-inputs">
+                <Field
+                  component={AutoCompleteFieldUnaccent}
+                  dataSource={state.dados.marcas}
+                  label="Marca do Produto"
+                  name="nome_marca"
+                  disabled={
+                    novaReclamacao && !form.getState().values.nome_edital
+                  }
+                />
+                <Field
+                  component={AutoCompleteFieldUnaccent}
+                  dataSource={state.dados.fabricantes}
+                  label="Fabricante do Produto"
+                  name="nome_fabricante"
+                  disabled={
+                    novaReclamacao && !form.getState().values.nome_edital
+                  }
+                />
+              </div>
+              <div className="mt-4 mb-4">
+                <Botao
+                  texto="Consultar"
+                  type={BUTTON_TYPE.SUBMIT}
+                  style={BUTTON_STYLE.GREEN}
+                  className="float-end ms-3"
+                  disabled={submitting || !form.getState().values.nome_edital}
+                />
+                <Botao
+                  texto="Limpar Filtros"
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                  onClick={() => {
+                    form.change("nome_produto", undefined);
+                    form.change("nome_marca", undefined);
+                    form.change("nome_fabricante", undefined);
 
-          <Field
-            component={AutoCompleteFieldUnaccent}
-            dataSource={state.dados.produtos}
-            label="Nome do Produto"
-            className="input-busca-produto"
-            name="nome_produto"
-          />
-          <div className="marca-fabricante-inputs">
-            <Field
-              component={AutoCompleteFieldUnaccent}
-              dataSource={state.dados.marcas}
-              label="Marca do Produto"
-              name="nome_marca"
-            />
-            <Field
-              component={AutoCompleteFieldUnaccent}
-              dataSource={state.dados.fabricantes}
-              label="Fabricante do Produto"
-              name="nome_fabricante"
-            />
-          </div>
-          <div className="mt-4 mb-4">
-            <Botao
-              texto="Consultar"
-              type={BUTTON_TYPE.SUBMIT}
-              style={BUTTON_STYLE.GREEN}
-              className="float-end ms-3"
-              disabled={submitting || !form.getState().values.nome_edital}
-            />
-            <Botao
-              texto="Limpar Filtros"
-              type={BUTTON_TYPE.BUTTON}
-              style={BUTTON_STYLE.GREEN_OUTLINE}
-              onClick={() => {
-                form.reset({
-                  nome_fabricante: undefined,
-                  nome_marca: undefined,
-                  nome_produto: undefined,
-                });
-                setEdital(null);
-              }}
-              className="float-end ms-3"
-              disabled={submitting}
-            />
-          </div>
-        </form>
+                    if (!ehEscola) {
+                      form.change("nome_edital", undefined);
+                      setEdital(null);
+                    }
+                  }}
+                  className="float-end ms-3"
+                  disabled={submitting}
+                />
+              </div>
+            </form>
+          )}
+        />
       )}
-    />
+    </Spin>
   );
 };
 

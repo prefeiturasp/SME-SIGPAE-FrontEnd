@@ -29,6 +29,7 @@ class ReclamacaoProduto extends Component {
       formValues: undefined,
       edital: null,
       consultaEfetuada: false,
+      firstLoad: true,
     };
     this.TAMANHO_PAGINA = 10;
   }
@@ -66,6 +67,15 @@ class ReclamacaoProduto extends Component {
     this.atualizaListaProdutos(this.state.formValues, page);
   };
 
+  componentDidUpdate(_, prevState) {
+    if (
+      prevState.edital !== this.state.edital &&
+      (!this.state.edital || this.state.edital === "")
+    ) {
+      this.setState({ consultaEfetuada: false });
+    }
+  }
+
   atualizaListaProdutos = async (formValues, page) => {
     const response = await getProdutosPorParametros(
       formValues,
@@ -87,6 +97,10 @@ class ReclamacaoProduto extends Component {
       error: "",
     });
     try {
+      if (!this.state.firstLoad) {
+        this.setConsultaEfetuada(true);
+      }
+      this.setState({ firstLoad: false }); // Desativa a flag de primeiro carrgamento
       this.atualizaListaProdutos(formValues);
     } catch (e) {
       this.setState({ error: "Erro ao consultar a lista de produtos." });
@@ -115,35 +129,38 @@ class ReclamacaoProduto extends Component {
               onSubmit={this.onSubmitFormBuscaProduto}
               onAtualizaProdutos={(produtos) => setProdutos(produtos)}
               setEdital={this.setEdital}
-              setConsultaEfetuada={this.setConsultaEfetuada}
+              edital={this.state.edital}
             />
-            {editalValido && produtos && produtos.length > 0 && (
-              <>
-                <div className="label-resultados-busca">
-                  {formValues && formValues.nome_produto
-                    ? `Veja os resultados para: "${formValues.nome_produto}"`
-                    : "Veja os resultados para a busca:"}
-                </div>
-                <TabelaProdutos
-                  listaProdutos={produtos}
-                  onAtualizarProduto={this.onAtualizarProduto}
-                  indiceProdutoAtivo={indiceProdutoAtivo}
-                  setIndiceProdutoAtivo={setIndiceProdutoAtivo}
-                  edital={this.state.edital}
-                />
-                <Paginacao
-                  className="mt-3 mb-3"
-                  current={page || 1}
-                  total={produtosCount}
-                  showSizeChanger={false}
-                  onChange={(page) => {
-                    setPage(page);
-                    this.onAtualizarProduto(page);
-                  }}
-                  pageSize={this.TAMANHO_PAGINA}
-                />
-              </>
-            )}
+            {editalValido &&
+              this.state.consultaEfetuada &&
+              produtos &&
+              produtos.length > 0 && (
+                <>
+                  <div className="label-resultados-busca">
+                    {formValues && formValues.nome_produto
+                      ? `Veja os resultados para: "${formValues.nome_produto}"`
+                      : "Veja os resultados para a busca:"}
+                  </div>
+                  <TabelaProdutos
+                    listaProdutos={produtos}
+                    onAtualizarProduto={this.onAtualizarProduto}
+                    indiceProdutoAtivo={indiceProdutoAtivo}
+                    setIndiceProdutoAtivo={setIndiceProdutoAtivo}
+                    edital={this.state.edital}
+                  />
+                  <Paginacao
+                    className="mt-3 mb-3"
+                    current={page || 1}
+                    total={produtosCount}
+                    showSizeChanger={false}
+                    onChange={(page) => {
+                      setPage(page);
+                      this.onAtualizarProduto(page);
+                    }}
+                    pageSize={this.TAMANHO_PAGINA}
+                  />
+                </>
+              )}
             {this.state.edital &&
               produtos &&
               produtos.length === 0 &&
