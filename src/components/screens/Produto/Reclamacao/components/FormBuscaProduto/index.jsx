@@ -122,7 +122,7 @@ const FormBuscaProduto = ({
   };
 
   useEffect(() => {
-    if (edital) {
+    if (edital || !novaReclamacao) {
       handleEditalChange(edital);
     }
   }, [edital]);
@@ -202,7 +202,7 @@ const FormBuscaProduto = ({
                     form.change("nome_marca", undefined);
                     form.change("nome_fabricante", undefined);
 
-                    if (!ehEscola) {
+                    if (!ehEscola && novaReclamacao) {
                       form.change("nome_edital", undefined);
                       setEdital(null);
                     }
