@@ -108,18 +108,18 @@ const Reclamacao = ({
 
   const responder_deve_aparecer = (reclamacao_status) => {
     if (rastro_terceirizada === null) {
-      return true;
+      return false;
     } else if (
       `"${rastro_terceirizada.nome_fantasia}"` !==
       localStorage.getItem("nome_instituicao")
     ) {
-      return true;
+      return false;
     } else if (
       reclamacao_status !== STATUS_RECLAMACAO.AGUARDANDO_RESPOSTA_TERCEIRIZADA
     ) {
-      return true;
-    } else {
       return false;
+    } else {
+      return true;
     }
   };
 
