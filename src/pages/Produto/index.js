@@ -60,9 +60,14 @@ export const AtivacaoDeProdutoPage = () => {
 };
 
 export const ConsultaResponderReclamacaoPage = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const uuid = urlParams.get("uuid");
+
   const atual = {
     href: `/${GESTAO_PRODUTO}/responder-reclamacao/consulta`,
-    titulo: "Responder Questionamento da CODAE",
+    titulo: uuid
+      ? "Aguardando análise das Reclamações"
+      : "Responder Questionamento da CODAE",
   };
 
   return (
