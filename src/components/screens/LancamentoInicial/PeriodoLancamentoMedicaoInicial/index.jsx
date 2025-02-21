@@ -1199,7 +1199,7 @@ export default () => {
                     `dietas_autorizadas__dia_${log.dia}__categoria_${categoria.id}`
                   ] = `${log.quantidade}`);
                 categoria.nome.includes("TIPO B") &&
-                  log.classificacao.toUpperCase() === "TIPO B - LANCHE" &&
+                  log.classificacao.toUpperCase() === "TIPO B" &&
                   (dadosValoresDietasAutorizadas[
                     `dietas_autorizadas__dia_${log.dia}__categoria_${categoria.id}`
                   ] = `${log.quantidade}`);
@@ -1235,7 +1235,7 @@ export default () => {
                   `dietas_autorizadas__dia_${log.dia}__categoria_${categoria.id}`
                 ] = `${log.quantidade}`);
               categoria.nome.includes("TIPO B") &&
-                log.classificacao.toUpperCase() === "TIPO B - LANCHE" &&
+                log.classificacao.toUpperCase() === "TIPO B" &&
                 (dadosValoresDietasAutorizadas[
                   `dietas_autorizadas__dia_${log.dia}__categoria_${categoria.id}`
                 ] = `${log.quantidade}`);
@@ -2473,6 +2473,7 @@ export default () => {
                       </div>
                     ) : null}
                     <Spin tip="Carregando..." spinning={loadingLancamentos}>
+                      {console.log(categoriasDeMedicao)}
                       {categoriasDeMedicao.length > 0 &&
                         !loading &&
                         categoriasDeMedicao.map((categoria) => (

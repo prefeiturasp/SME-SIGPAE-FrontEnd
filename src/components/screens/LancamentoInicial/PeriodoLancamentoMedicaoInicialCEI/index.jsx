@@ -672,7 +672,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         logQtdDietasAutorizadasCEI &&
           logQtdDietasAutorizadasCEI.forEach((log) => {
             categoria.nome.includes("TIPO B") &&
-              log.classificacao.toUpperCase() === "TIPO B - LANCHE" &&
+              log.classificacao.toUpperCase() === "TIPO B" &&
               (dadosValoresDietasAutorizadas[
                 `dietas_autorizadas__faixa_${log.faixa_etaria.uuid}__dia_${log.dia}__categoria_${categoria.id}`
               ] = `${log.quantidade}`);
@@ -714,7 +714,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                 `dietas_autorizadas__dia_${log.dia}__categoria_${categoria.id}`
               ] = `${log.quantidade}`);
             categoria.nome.includes("TIPO B") &&
-              log.classificacao.toUpperCase() === "TIPO B - LANCHE" &&
+              log.classificacao.toUpperCase() === "TIPO B" &&
               (dadosValoresDietasAutorizadasEmeiDaCemei[
                 `dietas_autorizadas__dia_${log.dia}__categoria_${categoria.id}`
               ] = `${log.quantidade}`);

@@ -202,14 +202,12 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
     expect(specificMatriculados).toBeInTheDocument();
   });
 
-  it("renderiza label `DIETA ESPECIAL - TIPO B - LANCHE`", async () => {
+  it("renderiza label `DIETA ESPECIAL - TIPO B`", async () => {
     await awaitServices();
-    expect(
-      screen.getByText("DIETA ESPECIAL - TIPO B - LANCHE")
-    ).toBeInTheDocument();
+    expect(screen.getByText("DIETA ESPECIAL - TIPO B")).toBeInTheDocument();
   });
 
-  it("renderiza label `Seg.` dentro da seção `DIETA ESPECIAL - TIPO B - LANCHE`", async () => {
+  it("renderiza label `Seg.` dentro da seção `DIETA ESPECIAL - TIPO B`", async () => {
     await awaitServices();
     const categoriaDietaEspecialTipoBUuid =
       "6ad79709-3611-4af3-a567-65fcf34b3d06";
@@ -223,7 +221,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
     expect(specificMatriculados).toBeInTheDocument();
   });
 
-  it("renderiza label `Dietas Autorizadas` dentro da seção `DIETA ESPECIAL - TIPO B - LANCHE`", async () => {
+  it("renderiza label `Dietas Autorizadas` dentro da seção `DIETA ESPECIAL - TIPO B`", async () => {
     await awaitServices();
     const categoriaDietaEspecialTipoBUuid =
       "6ad79709-3611-4af3-a567-65fcf34b3d06";
@@ -246,7 +244,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
     );
     expect(inputElementMatriculados1AnoA3anosE11Meses).toHaveAttribute(
       "value",
-      "47"
+      "34"
     );
     const inputElementMatriculados4a6anos = screen.getByTestId(
       "matriculados__faixa_0c914b27-c7cd-4682-a439-a4874745b005__dia_09__categoria_1"
@@ -367,7 +365,7 @@ describe("Test <PeriodoLancamentoMedicaoInicialCEI> sem inclusão em dia não le
     );
     expect(inputElementMatriculados1AnoA3anosE11Meses).toHaveAttribute(
       "value",
-      "2"
+      "0"
     );
     const inputElementMatriculados4a6anos = screen.getByTestId(
       "matriculados__faixa_0c914b27-c7cd-4682-a439-a4874745b005__dia_09__categoria_1"
