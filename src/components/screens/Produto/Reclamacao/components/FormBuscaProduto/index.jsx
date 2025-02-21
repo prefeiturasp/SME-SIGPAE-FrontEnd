@@ -60,15 +60,17 @@ const FormBuscaProduto = ({
   useEffect(() => {
     async function fetchEditais() {
       try {
-        const response = await getNomesUnicosEditais();
-        dispatch({
-          type: "popularDados",
-          payload: {
-            ...state.dados,
-            editais: response.data.results,
-          },
-        });
-        ehEscola && setEdital(response.data.results[0]);
+        if (novaReclamacao) {
+          const response = await getNomesUnicosEditais();
+          dispatch({
+            type: "popularDados",
+            payload: {
+              ...state.dados,
+              editais: response.data.results,
+            },
+          });
+          ehEscola && setEdital(response.data.results[0]);
+        }
       } catch (error) {
         toastError("Houve um erro ao buscar os dados de editais");
       } finally {
@@ -188,7 +190,11 @@ const FormBuscaProduto = ({
                   type={BUTTON_TYPE.SUBMIT}
                   style={BUTTON_STYLE.GREEN}
                   className="float-end ms-3"
-                  disabled={submitting || !form.getState().values.nome_edital}
+                  disabled={
+                    submitting ||
+                    (form.getState().values.nome_edital !== undefined &&
+                      !form.getState().values.nome_edital)
+                  }
                 />
                 <Botao
                   texto="Limpar Filtros"
