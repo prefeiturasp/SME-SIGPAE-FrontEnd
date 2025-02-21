@@ -188,14 +188,15 @@ const Reclamacao = ({
         })}
       </div>
       <div className="text-end">
-        <Botao
-          texto="Responder"
-          type={BUTTON_TYPE.BUTTON}
-          style={BUTTON_STYLE.GREEN}
-          onClick={() => setExibirModal(true)}
-          className="ms-3 me-3"
-          disabled={responder_deve_aparecer(reclamacao.status)}
-        />
+        {responder_deve_aparecer(reclamacao.status) && (
+          <Botao
+            texto="Responder"
+            type={BUTTON_TYPE.BUTTON}
+            style={BUTTON_STYLE.GREEN}
+            onClick={() => setExibirModal(true)}
+            className="ms-3 me-3"
+          />
+        )}
       </div>
     </Fragment>
   );
