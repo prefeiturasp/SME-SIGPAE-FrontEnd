@@ -1,7 +1,6 @@
 import React, { useEffect, useReducer, useState } from "react";
 import { Form, Field } from "react-final-form";
 import { connect } from "react-redux";
-// import { useNavigationType } from "react-router-dom";
 import { Spin } from "antd";
 
 import AutoCompleteFieldUnaccent from "components/Shareable/AutoCompleteField/unaccent";
@@ -54,8 +53,6 @@ const FormBuscaProduto = ({
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loading, setLoading] = useState(true);
-
-  // const navigationType = useNavigationType();
 
   const tipoPerfil = localStorage.getItem("tipo_perfil");
   const ehEscola = tipoPerfil === TIPO_PERFIL.ESCOLA;
