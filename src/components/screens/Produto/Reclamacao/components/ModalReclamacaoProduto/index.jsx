@@ -49,7 +49,9 @@ export default class ModalReclamacaoProduto extends Component {
 
   UNSAFE_componentWillMount = async () => {
     const meusDadosResposta = await meusDados();
-    const escolasResposta = await getEscolasTercTotal();
+    const escolasResposta = await getEscolasTercTotal({
+      nome_edital: this.props.edital,
+    });
     this.setState({
       meusDados: meusDadosResposta,
       escolas: escolasResposta.data.map((escola) => {
@@ -119,7 +121,7 @@ export default class ModalReclamacaoProduto extends Component {
   };
 
   render() {
-    const { showModal, closeModal, produto } = this.props;
+    const { showModal, closeModal, produto, edital } = this.props;
     const { meusDados, escolas } = this.state;
     const escola = meusDados ? meusDados.vinculo_atual.instituicao : undefined;
     const deveEscolherUmaEscola =
@@ -191,6 +193,14 @@ export default class ModalReclamacaoProduto extends Component {
                       )}
                     </div>
                   )}
+                <div className="form-row">
+                  <div className="col-12">
+                    <label htmlFor="escola" className="col-form-label">
+                      Edital
+                    </label>
+                    <div>{edital}</div>
+                  </div>
+                </div>
                 {deveEscolherUmaEscola && (
                   <div className="form-row">
                     <div className="col-12">
