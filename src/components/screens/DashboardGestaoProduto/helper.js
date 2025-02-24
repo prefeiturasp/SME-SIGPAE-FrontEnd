@@ -47,6 +47,7 @@ const gerarLinkDoItem = (item, apontaParaEdicao, titulo) => {
       usuarioEhOrgaoFiscalizador() ||
       usuarioEhCODAEGabinete() ||
       usuarioEhEmpresaTerceirizada() ||
+      usuarioEhCoordenadorNutriSupervisao() ||
       usuarioEhDinutreDiretoria()) &&
     [
       CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE.titulo,
