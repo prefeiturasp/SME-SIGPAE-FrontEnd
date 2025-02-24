@@ -26,6 +26,7 @@ export const LANCAMENTO_INICIAL = "lancamento-inicial";
 export const MEDICAO_INICIAL = "medicao-inicial";
 export const LOGISTICA = "logistica";
 
+export const ABASTECIMENTO = "abastecimento";
 export const CODAE = "codae";
 export const TERCEIRIZADA = "terceirizada";
 export const DRE = "dre";
