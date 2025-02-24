@@ -7,17 +7,17 @@ import {
   getDashboardSolicitacoesAlteracaoComFiltros,
 } from "services/cronograma.service";
 import { SolicitacoesCronogramaStatusGenerico } from "components/screens/SolicitacoesCronogramaStatusGenerico";
-import { CARD_SOLICITACOES_APROVADAS_DINUTRE } from "components/screens/PreRecebimento/PainelAprovacoes/constants";
+import { CARD_SOLICITACOES_ALTERACOES_ABASTECIMENTO } from "components/screens/PreRecebimento/PainelAprovacoes/constants";
 
 const atual = {
-  href: CARD_SOLICITACOES_APROVADAS_DINUTRE.href,
-  titulo: CARD_SOLICITACOES_APROVADAS_DINUTRE.titulo,
+  href: CARD_SOLICITACOES_ALTERACOES_ABASTECIMENTO.href,
+  titulo: CARD_SOLICITACOES_ALTERACOES_ABASTECIMENTO.titulo,
 };
 
 const limit = 10;
 
 const paramsDefault = {
-  status: CARD_SOLICITACOES_APROVADAS_DINUTRE.incluir_status,
+  status: CARD_SOLICITACOES_ALTERACOES_ABASTECIMENTO.incluir_status,
   offset: 0,
   limit: limit,
 };
@@ -42,9 +42,9 @@ export default () => {
     >
       <Breadcrumb home="/" atual={atual} anteriores={anteriores} />
       <SolicitacoesCronogramaStatusGenerico
-        icone={CARD_SOLICITACOES_APROVADAS_DINUTRE.icon}
-        titulo={CARD_SOLICITACOES_APROVADAS_DINUTRE.titulo}
-        cardType={CARD_SOLICITACOES_APROVADAS_DINUTRE.style}
+        icone={CARD_SOLICITACOES_ALTERACOES_ABASTECIMENTO.icon}
+        titulo={CARD_SOLICITACOES_ALTERACOES_ABASTECIMENTO.titulo}
+        cardType={CARD_SOLICITACOES_ALTERACOES_ABASTECIMENTO.style}
         getSolicitacoes={getDashboardSolicitacoesAlteracao}
         getSolicitacoesComFiltros={getDashboardSolicitacoesAlteracaoComFiltros}
         params={paramsDefault}

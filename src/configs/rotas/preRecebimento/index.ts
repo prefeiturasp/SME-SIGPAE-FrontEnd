@@ -8,9 +8,9 @@ import {
   usuarioEhCODAEGabinete,
   usuarioEhCodaeDilog,
   usuarioEhCronograma,
+  usuarioEhDilogAbastecimento,
   usuarioEhDilogDiretoria,
   usuarioEhDilogQualidade,
-  usuarioEhDinutreDiretoria,
   usuarioEhEmpresaFornecedor,
   usuarioEhPreRecebimento,
 } from "helpers/utilities";
@@ -19,15 +19,15 @@ import StatusAguardandoAssinaturasCronograma from "pages/Dinutre/Cronogramas/Sta
 import StatusCronogramasAguardandoDilog from "pages/Dinutre/Cronogramas/StatusCronogramasAguardandoDilog";
 import StatusCronogramasAssinadoCODAE from "pages/Dinutre/Cronogramas/StatusCronogramasAssinadoCODAE";
 import StatusCronogramasPendentesDilog from "pages/Dinutre/Cronogramas/StatusCronogramasPendentesDilog";
-import StatusCronogramasPendentesDinutre from "pages/Dinutre/Cronogramas/StatusCronogramasPendentesDinutre";
+import StatusCronogramasPendentesAbastecimento from "pages/Dinutre/Cronogramas/StatusCronogramasPendentesAbastecimento";
 import StatusSolicitacoesAlteracoesAprovadasDilog from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesAprovadasDilog";
-import StatusSolicitacoesAlteracoesAprovadasDinutre from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesAprovadasDinutre";
+import StatusSolicitacoesAlteracoesAprovadasAbastecimento from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesAprovadasAbastecimento";
 import StatusSolicitacoesAlteracoesCodae from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesCodae";
 import StatusSolicitacoesAlteracoesCronograma from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesCronograma";
 import StatusSolicitacoesAlteracoesDilog from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesDilog";
-import StatusSolicitacoesAlteracoesDinutre from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesDinutre";
+import StatusSolicitacoesAlteracoesAbastecimento from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesAbastecimento";
 import StatusSolicitacoesAlteracoesReprovadasDilog from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesReprovadasDilog";
-import StatusSolicitacoesAlteracoesReprovadasDinutre from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesReprovadasDinutre";
+import StatusSolicitacoesAlteracoesReprovadasAbastecimento from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesReprovadasAbastecimento";
 import AlterarCronogramaPage from "pages/PreRecebimento/AlterarCronogramaPage";
 import AnalisarDocumentosRecebimentoPage from "pages/PreRecebimento/AnalisarDocumentosRecebimentoPage";
 import AnalisarLayoutEmbalagemPage from "pages/PreRecebimento/AnalisarLayoutEmbalagemPage";
@@ -80,6 +80,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     path: `/${constants.PRE_RECEBIMENTO}/${constants.CRONOGRAMA_ENTREGA}`,
     component: CronogramaEntregaPage,
     tipoUsuario:
+      usuarioEhDilogAbastecimento() ||
       usuarioEhPreRecebimento() ||
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCODAEGabinete(),
@@ -89,7 +90,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     component: SolicitacaoAlteracaoCronogramaPage,
     tipoUsuario:
       usuarioEhCronograma() ||
-      usuarioEhDinutreDiretoria() ||
+      usuarioEhDilogAbastecimento() ||
       usuarioEhCodaeDilog() ||
       usuarioEhDilogDiretoria(),
   },
@@ -119,7 +120,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     component: AnaliseDilogCronogramaPage,
     tipoUsuario:
       usuarioEhCronograma() ||
-      usuarioEhDinutreDiretoria() ||
+      usuarioEhDilogAbastecimento() ||
       usuarioEhDilogDiretoria() ||
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCodaeDilog() ||
@@ -320,29 +321,29 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     tipoUsuario: usuarioComAcessoAoRelatorioCronogramas(),
   },
   {
-    path: `/${constants.DINUTRE}/${constants.SOLICITACOES_PENDENTES}`,
-    component: StatusCronogramasPendentesDinutre,
-    tipoUsuario: usuarioEhDinutreDiretoria(),
+    path: `/${constants.ABASTECIMENTO}/${constants.SOLICITACOES_PENDENTES}`,
+    component: StatusCronogramasPendentesAbastecimento,
+    tipoUsuario: usuarioEhDilogAbastecimento(),
   },
   {
-    path: `/${constants.DINUTRE}/${constants.AGUARDANDO_DILOG}`,
+    path: `/${constants.ABASTECIMENTO}/${constants.AGUARDANDO_DILOG}`,
     component: StatusCronogramasAguardandoDilog,
-    tipoUsuario: usuarioEhDinutreDiretoria(),
+    tipoUsuario: usuarioEhDilogAbastecimento(),
   },
   {
-    path: `/${constants.DINUTRE}/${constants.SOLICITACOES_ALTERACOES}`,
-    component: StatusSolicitacoesAlteracoesDinutre,
-    tipoUsuario: usuarioEhDinutreDiretoria(),
+    path: `/${constants.ABASTECIMENTO}/${constants.SOLICITACOES_ALTERACOES}`,
+    component: StatusSolicitacoesAlteracoesAbastecimento,
+    tipoUsuario: usuarioEhDilogAbastecimento(),
   },
   {
-    path: `/${constants.DINUTRE}/${constants.ALTERACOES_APROVADAS}`,
-    component: StatusSolicitacoesAlteracoesAprovadasDinutre,
-    tipoUsuario: usuarioEhDinutreDiretoria(),
+    path: `/${constants.ABASTECIMENTO}/${constants.ALTERACOES_APROVADAS}`,
+    component: StatusSolicitacoesAlteracoesAprovadasAbastecimento,
+    tipoUsuario: usuarioEhDilogAbastecimento(),
   },
   {
-    path: `/${constants.DINUTRE}/${constants.ALTERACOES_REPROVADAS}`,
-    component: StatusSolicitacoesAlteracoesReprovadasDinutre,
-    tipoUsuario: usuarioEhDinutreDiretoria(),
+    path: `/${constants.ABASTECIMENTO}/${constants.ALTERACOES_REPROVADAS}`,
+    component: StatusSolicitacoesAlteracoesReprovadasAbastecimento,
+    tipoUsuario: usuarioEhDilogAbastecimento(),
   },
   {
     path: `/${constants.DILOG}/${constants.SOLICITACOES_PENDENTES}`,
@@ -384,7 +385,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     path: `/${constants.ASSINADO_CODAE}`,
     component: StatusCronogramasAssinadoCODAE,
     tipoUsuario:
-      usuarioEhDinutreDiretoria() ||
+      usuarioEhDilogAbastecimento() ||
       usuarioEhDilogDiretoria() ||
       usuarioEhCodaeDilog() ||
       usuarioEhCronograma() ||
@@ -405,7 +406,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhCronograma() ||
       usuarioEhDilogDiretoria() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhDinutreDiretoria() ||
+      usuarioEhDilogAbastecimento() ||
       usuarioEhCODAEGabinete(),
   },
 ];

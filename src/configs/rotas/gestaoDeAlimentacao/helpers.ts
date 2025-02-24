@@ -36,7 +36,7 @@ export const painelGestaoAlimentacao = () => {
     case TIPO_PERFIL.NUTRICAO_MANIFESTACAO:
     case TIPO_PERFIL.MEDICAO:
     case TIPO_PERFIL.CODAE_GABINETE:
-    case TIPO_PERFIL.PRE_RECEBIMENTO:
+    case TIPO_PERFIL.DINUTRE:
       return DashboardNutriManifestacaoPage;
     default:
       return DashboardEscolaPage;
