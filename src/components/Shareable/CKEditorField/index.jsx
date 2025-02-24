@@ -15,6 +15,7 @@ const CKEditorField = (props) => {
     name,
     required,
     placeholder,
+    dataTestId,
     ...rest
   } = props;
 
@@ -38,7 +39,7 @@ const CKEditorField = (props) => {
   };
 
   return (
-    <div className="select">
+    <div className="select" data-testid={dataTestId}>
       {label && [
         required && (
           <span key={1} className="required-asterisk">

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Field, Form } from "react-final-form";
 import { Modal } from "react-bootstrap";
 import HTTP_STATUS from "http-status-codes";
@@ -21,7 +21,11 @@ export const ModalCODAEQuestionaFinalForm = ({ ...props }) => {
     tipoSolicitacao,
   } = props;
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const onSubmit = async (values) => {
+    setIsSubmitting(true);
+
     const resp = await endpoint(solicitacao.uuid, values, tipoSolicitacao);
     if (resp.status === HTTP_STATUS.OK) {
       closeModal();
@@ -33,6 +37,8 @@ export const ModalCODAEQuestionaFinalForm = ({ ...props }) => {
         `Houve um erro ao enviar o questionamento: ${getError(resp.data)}`
       );
     }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -73,6 +79,7 @@ export const ModalCODAEQuestionaFinalForm = ({ ...props }) => {
                 texto="Enviar"
                 type={BUTTON_TYPE.SUBMIT}
                 style={BUTTON_STYLE.GREEN}
+                disabled={isSubmitting}
                 className="ms-3"
               />
             </Modal.Footer>

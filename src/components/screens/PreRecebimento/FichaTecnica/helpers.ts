@@ -18,6 +18,7 @@ import {
   getFichaTecnicaComAnalise,
   corrigirFichaTecnica,
   atualizarFichaTecnica,
+  imprimirFichaTecnica,
 } from "services/fichaTecnica.service";
 
 import { removeCaracteresEspeciais, exibeError } from "helpers/utilities";
@@ -155,13 +156,13 @@ export const carregarDadosCadastrar = async (
       setFicha(fichaTecnica);
       setInitialValues(geraInitialValuesCadastrar(fichaTecnica));
 
+      const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
+      setProponente(response.data);
+
       if (fichaTecnica.arquivo) {
         const arquivo = await carregarArquivo(fichaTecnica.arquivo);
         setArquivo(arquivo);
       }
-
-      const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
-      setProponente(response.data);
     } else if (meusDados) {
       const response = await getTerceirizadaUUID(
         meusDados.vinculo_atual.instituicao.uuid
@@ -955,4 +956,19 @@ export const gerenciaModalCadastroExterno = (
 ) => {
   setTipoCadastro(tipo);
   setShowModalCadastro(true);
+};
+
+export const imprimirFicha = (
+  uuid: string,
+  numero: string,
+  setCarregando: Dispatch<SetStateAction<boolean>>
+) => {
+  imprimirFichaTecnica(uuid, numero)
+    .then(() => {
+      setCarregando(false);
+    })
+    .catch((error) => {
+      error.response.data.text().then((text) => toastError(text));
+      setCarregando(false);
+    });
 };

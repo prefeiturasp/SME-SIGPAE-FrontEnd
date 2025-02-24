@@ -30,6 +30,7 @@ import {
   usuarioEhCODAEGabinete,
   usuarioEhDilogDiretoria,
   usuarioEhGticCODAE,
+  usuarioEhAdministradorDICAE,
 } from "helpers/utilities";
 
 const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
@@ -56,7 +57,12 @@ const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
     usuarioEhCODAEGabinete() || usuarioEhDilogDiretoria();
 
   return (
-    <Menu id="Configuracoes" icon="fa-cog" title={"Configurações"}>
+    <Menu
+      id="Configuracoes"
+      icon="fa-cog"
+      title={"Configurações"}
+      dataTestId="menu-configuracoes"
+    >
       {exibirConfigEmail && (
         <>
           <LeafItem to={`/${CONFIGURACOES}`}>Disparo de E-mail</LeafItem>
@@ -96,6 +102,7 @@ const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
           onClick={onSubmenuClick}
           title="Gestão de Usuários"
           activeMenu={activeMenu}
+          dataTestId="submenu-gst-usuarios"
         >
           <LeafItem to={`/${CONFIGURACOES}/${GESTAO_ACESSO_CODAE_DILOG}/`}>
             Gestão de Acesso
@@ -132,12 +139,13 @@ const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
         </SubMenu>
       )}
 
-      {usuarioEhAdmQualquerEmpresa() && (
+      {(usuarioEhAdmQualquerEmpresa() || usuarioEhAdministradorDICAE()) && (
         <SubMenu
           icon="fa-chevron-down"
           onClick={onSubmenuClick}
           title="Gestão de Usuários"
           activeMenu={activeMenu}
+          dataTestId="submenu-gst-usuarios"
         >
           <LeafItem to={`/${CONFIGURACOES}/${GESTAO_ACESSO_EMPRESA}/`}>
             Gestão de Acesso

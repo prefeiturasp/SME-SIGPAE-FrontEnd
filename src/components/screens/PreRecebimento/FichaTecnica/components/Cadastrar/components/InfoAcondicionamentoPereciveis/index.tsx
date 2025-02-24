@@ -202,6 +202,7 @@ export default ({
           <div className="col">
             <Field
               name={`embalagens_de_acordo_com_anexo`}
+              dataTestId="embalagens_de_acordo_com_anexo"
               component={CheckboxComBorda}
               label="Declaro que as embalagens primária e secundária em que
               serão entregues o produto estarão de acordo com as
@@ -430,6 +431,7 @@ export default ({
             <Field
               name={`rotulo_legivel`}
               component={CheckboxComBorda}
+              dataTestId="rotulo_legivel"
               label="Declaro que no rótulo da embalagem primária e, se for o
               caso, da secundária, constarão, de forma legível e indelével,
               todas as informações solicitadas do Anexo I do Edital."
@@ -481,6 +483,7 @@ export default ({
             component={InputFile}
             arquivosPreCarregados={arquivo}
             className="inputfile"
+            dataTestId="arquivo"
             texto="Anexar Ficha Assinada pelo RT"
             name={"arquivo"}
             accept="PDF"

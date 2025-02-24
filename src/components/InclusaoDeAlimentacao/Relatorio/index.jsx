@@ -41,9 +41,13 @@ class Relatorio extends Component {
       prazoDoPedidoMensagem: null,
       resposta_sim_nao: null,
       showModalMarcarConferencia: false,
+      submitting: false,
+      carregando: false,
     };
 
     //FIXME: migrar para padrao sem binding
+    this.setSubmitting = this.setSubmitting.bind(this);
+    this.setCarregando = this.setCarregando.bind(this);
     this.closeQuestionamentoModal = this.closeQuestionamentoModal.bind(this);
     this.closeNaoAprovaModal = this.closeNaoAprovaModal.bind(this);
     this.closeAutorizarModal = this.closeAutorizarModal.bind(this);
@@ -78,6 +82,14 @@ class Relatorio extends Component {
         }
       );
     }
+  }
+
+  setSubmitting(valor) {
+    this.setState({ submitting: valor });
+  }
+
+  setCarregando(valor) {
+    this.setState({ carregando: valor });
   }
 
   showQuestionamentoModal(resposta_sim_nao) {
@@ -121,16 +133,19 @@ class Relatorio extends Component {
   }
 
   loadSolicitacao(uuid, tipoSolicitacao) {
+    this.setCarregando(true);
     obterSolicitacaoDeInclusaoDeAlimentacao(uuid, tipoSolicitacao).then(
       (response) => {
         this.setState({
           inclusaoDeAlimentacao: response,
         });
+        this.setCarregando(false);
       }
     );
   }
 
   handleSubmit() {
+    this.setSubmitting(true);
     const { toastAprovaMensagem, toastAprovaMensagemErro } = this.props;
     this.props
       .endpointAprovaSolicitacao(
@@ -150,7 +165,10 @@ class Relatorio extends Component {
         function () {
           toastError(toastAprovaMensagemErro);
         }
-      );
+      )
+      .finally(() => {
+        this.setSubmitting(false);
+      });
   }
 
   render() {
@@ -166,6 +184,8 @@ class Relatorio extends Component {
       showModalCodaeAutorizar,
       meusDados,
       showModalMarcarConferencia,
+      submitting,
+      carregando,
     } = this.state;
     const {
       endpointAprovaSolicitacao,
@@ -235,6 +255,7 @@ class Relatorio extends Component {
           onClick={() => {
             this.showModalMarcarConferencia();
           }}
+          disabled={carregando}
         />
       );
     };
@@ -407,6 +428,7 @@ class Relatorio extends Component {
                                 ? this.showAutorizarModal()
                                 : this.showModalCodaeAutorizar()
                             }
+                            disabled={submitting}
                             style={BUTTON_STYLE.GREEN}
                             className="ms-3"
                           />

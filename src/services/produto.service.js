@@ -431,17 +431,6 @@ export const excluirRascunhoDeProduto = async (uuid) => {
   return await axios.delete(`/homologacoes-produtos/${uuid}/`);
 };
 
-export const getDashboardGestaoProdutos = async () => {
-  return await axios.get(`/painel-gerencial-homologacoes-produtos/dashboard/`);
-};
-
-export const getHomologacoesPorTituloMarca = async (parametros) => {
-  return await axios.post(
-    `/painel-gerencial-homologacoes-produtos/filtro-homologacoes-por-titulo-marca-edital/`,
-    parametros
-  );
-};
-
 export const getHomologacoesDeProdutoPorStatus = async (status, page = 0) => {
   const url = `/painel-gerencial-homologacoes-produtos/filtro-por-status/${status}/`;
   if (page > 0) {

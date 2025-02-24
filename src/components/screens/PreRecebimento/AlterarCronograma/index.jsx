@@ -569,7 +569,9 @@ export default ({ analiseSolicitacao }) => {
                         handleSubmitCronograma={(justificativa) =>
                           handleSubmitCronograma(values, justificativa)
                         }
-                        podeSubmeter={Object.keys(errors).length === 0}
+                        podeSubmeter={
+                          Object.keys(errors).length === 0 && restante === 0
+                        }
                         disabledDinutre={disabledDinutre(values)}
                         disabledDilog={disabledDilog(values)}
                       />

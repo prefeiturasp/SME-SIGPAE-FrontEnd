@@ -1,5 +1,5 @@
 import HTTP_STATUS from "http-status-codes";
-import React from "react";
+import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import Botao from "../Botao";
 import {
@@ -24,7 +24,11 @@ export const ModalTerceirizadaRespondeQuestionamento = ({ ...props }) => {
     loadSolicitacao,
   } = props;
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const responderQuestionamento = async (uuid, values) => {
+    setIsSubmitting(true);
+
     values["resposta_sim_nao"] = resposta_sim_nao === "Sim";
     const response = await endpoint(uuid, values, tipoSolicitacao);
     if (response.status === HTTP_STATUS.OK) {
@@ -34,6 +38,8 @@ export const ModalTerceirizadaRespondeQuestionamento = ({ ...props }) => {
     } else {
       toastError(getError(response.data));
     }
+
+    setIsSubmitting(false);
   };
 
   const onSubmit = () => {};
@@ -86,7 +92,7 @@ export const ModalTerceirizadaRespondeQuestionamento = ({ ...props }) => {
                     onClick={() => {
                       responderQuestionamento(uuid, values);
                     }}
-                    disabled={!values.justificativa}
+                    disabled={!values.justificativa || isSubmitting}
                     style={BUTTON_STYLE.GREEN}
                     className="ms-3"
                   />

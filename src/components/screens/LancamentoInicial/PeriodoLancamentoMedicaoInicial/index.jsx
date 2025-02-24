@@ -187,7 +187,7 @@ export default () => {
     useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingLancamentos, setLoadingLancamentos] = useState(true);
-  const [formValuesAtualizados, setFormValuesAtualizados] = useState(null);
+  const [formValuesAtualizados, setFormValuesAtualizados] = useState({});
   const [diasDaSemanaSelecionada, setDiasDaSemanaSelecionada] = useState(null);
   const [ultimaAtualizacaoMedicao, setUltimaAtualizacaoMedicao] =
     useState(null);
@@ -2351,12 +2351,12 @@ export default () => {
               <form onSubmit={handleSubmit}>
                 <FormSpy
                   subscription={{ values: true, active: true }}
-                  onChange={(changes) =>
+                  onChange={(changes) => {
                     setFormValuesAtualizados({
                       week: semanaSelecionada,
                       ...changes.values,
-                    })
-                  }
+                    });
+                  }}
                 />
                 <div className="card mt-3">
                   <div className="card-body">
@@ -2365,6 +2365,7 @@ export default () => {
                         <b className="pb-2 mb-2">Mês do Lançamento</b>
                         <Field
                           component={InputText}
+                          dataTestId="input-mes-lancamento"
                           name="mes_lancamento"
                           disabled={true}
                         />
@@ -2373,6 +2374,7 @@ export default () => {
                         <b className="pb-2">Período de Lançamento</b>
                         <Field
                           component={InputText}
+                          dataTestId="input-periodo-lancamento"
                           name="periodo_escolar"
                           disabled={true}
                         />
@@ -2474,7 +2476,10 @@ export default () => {
                       {categoriasDeMedicao.length > 0 &&
                         !loading &&
                         categoriasDeMedicao.map((categoria) => (
-                          <div key={categoria.uuid}>
+                          <div
+                            key={categoria.uuid}
+                            data-testid={`div-lancamentos-por-categoria-${categoria.uuid}`}
+                          >
                             <b className="pb-2 section-title">
                               {categoria.nome}
                             </b>
