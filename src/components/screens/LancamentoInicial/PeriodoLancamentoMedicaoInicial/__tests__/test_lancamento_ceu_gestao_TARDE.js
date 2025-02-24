@@ -1,12 +1,16 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
 } from "configs/constants";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { APIMockVersion } from "mocks/apiVersionMock";
-import { localStorageMock } from "mocks/localStorageMock";
+import { mockCategoriasMedicaoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicaoEMEF";
+import { mockDiasCalendarioCEUGESTAO_NOVEMBRO24 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/diasCalendarioCEUGESTAO_NOVEMBRO24";
+import { mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/logQuantidadeDietasAutorizadasCEUGESTAO";
+import { mockLocationStateCEUGESTAO_TARDE } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockStateCEUGESTAO";
+import { mockValoresMedicaoCEUGESTAO_TARDE } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/valoresMedicaoCEUGESTAO_TARDE";
 import { mockMeusDadosEscolaCEUGESTAO } from "mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "mocks/services/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { mockGetEscolaSimplesCEUGESTAO } from "mocks/services/escola.service/mockGetEscolaSimplesCEUGESTAO";
@@ -49,6 +53,23 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Usuário CEU GESTAO", () => 
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO);
     mock
+      .onGet("/medicao-inicial/categorias-medicao/")
+      .reply(200, mockCategoriasMedicaoEMEF);
+    mock
+      .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
+      .reply(200, []);
+    mock
+      .onGet("/log-quantidade-dietas-autorizadas/")
+      .reply(200, mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE);
+    mock
+      .onGet("/medicao-inicial/valores-medicao/")
+      .reply(200, mockValoresMedicaoCEUGESTAO_TARDE);
+    mock.onGet("/medicao-inicial/dias-para-corrigir/").reply(200, []);
+    mock.onGet("/matriculados-no-mes/").reply(200, []);
+    mock
+      .onGet("/escolas-solicitacoes/suspensoes-autorizadas/")
+      .reply(200, { results: [] });
+    mock
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
       .reply(200, mockGetSolicitacaoMedicaoInicialCEUGESTAO);
     mock
@@ -66,6 +87,23 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Usuário CEU GESTAO", () => 
     mock
       .onGet("/escola-solicitacoes/inclusoes-etec-autorizadas/")
       .reply(200, { results: [] });
+    mock
+      .onGet(
+        "/medicao-inicial/permissao-lancamentos-especiais/permissoes-lancamentos-especiais-mes-ano-por-periodo/"
+      )
+      .reply(200, {
+        results: {
+          alimentacoes_lancamentos_especiais: [],
+          permissoes_por_dia: [],
+          data_inicio_permissoes: null,
+        },
+      });
+    mock
+      .onGet("/dias-calendario/")
+      .reply(200, mockDiasCalendarioCEUGESTAO_NOVEMBRO24);
+    mock
+      .onGet("/medicao-inicial/medicao/feriados-no-mes/")
+      .reply(200, { results: ["02", "15", "20"] });
     mock
       .onGet(
         "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/"
@@ -92,18 +130,19 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Usuário CEU GESTAO", () => 
       )
       .reply(200, []);
 
-    const search = `?mes=11&ano=2024`;
+    const search = `?uuid=546505cb-eef1-4080-a8e8-7538faccf969&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,
       },
     });
 
-    Object.defineProperty(global, "localStorage", { value: localStorageMock });
-
     await act(async () => {
       render(
         <MemoryRouter
+          initialEntries={[
+            { pathname: "/", state: mockLocationStateCEUGESTAO_TARDE },
+          ]}
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true,
@@ -124,22 +163,51 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Usuário CEU GESTAO", () => 
   });
 
   it("Renderiza título da página `Lançamento Medição Inicial`", () => {
-    expect(screen.getByText("Lançamento Medição Inicial")).toBeInTheDocument();
+    expect(screen.getAllByText("Lançamento Medição Inicial").length).toBe(2);
   });
 
-  it("Renderiza label `Período de Lançamento`", () => {
+  it("Renderiza label `Mês do Lançamento` e seu valor", () => {
+    expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
+  });
+
+  it("renderiza valor `Novembro / 2024` no input `Mês do Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-mes-lancamento");
+    expect(inputElement).toHaveAttribute("value", "Novembro / 2024");
+  });
+
+  it("renderiza label `Período de Lançamento`", () => {
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("Renderiza período `TARDE`", () => {
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
+  it("renderiza valor `TARDE` no input `Período de Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-periodo-lancamento");
+    expect(inputElement).toHaveAttribute("value", "TARDE");
   });
 
-  it("Renderiza período `Programas e Projetos`", () => {
-    expect(screen.getByText("Programas e Projetos")).toBeInTheDocument();
+  it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
+    expect(
+      screen.getByText("Semanas do Período para Lançamento da Medição Inicial")
+    ).toBeInTheDocument();
   });
 
-  it("Renderiza período `Solicitações de Alimentação`", () => {
-    expect(screen.getByText("Solicitações de Alimentação")).toBeInTheDocument();
+  it("renderiza label `Semana 1`", async () => {
+    expect(screen.getByText("Semana 1")).toBeInTheDocument();
+  });
+
+  it("renderiza label `Semana 5`", async () => {
+    expect(screen.getByText("Semana 5")).toBeInTheDocument();
+  });
+
+  it("renderiza label `ALIMENTAÇÃO`", async () => {
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+  });
+
+  it("ao clicar na tab `Semana 3`, exibe, no dias 11, o número de alunos 100", async () => {
+    const semana3Element = screen.getByText("Semana 3");
+    fireEvent.click(semana3Element);
+    const inputElementNumeroAlunosDia11 = screen.getByTestId(
+      "numero_de_alunos__dia_11__categoria_1"
+    );
+    expect(inputElementNumeroAlunosDia11).toHaveAttribute("value", "100");
   });
 });

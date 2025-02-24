@@ -1,8 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
-import HTTP_STATUS from "http-status-codes";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Field, Form, FormSpy } from "react-final-form";
-import arrayMutators from "final-form-arrays";
+import { Spin, Tabs } from "antd";
 import {
   addDays,
   format,
@@ -15,26 +11,27 @@ import {
   subDays,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Spin, Tabs } from "antd";
+import arrayMutators from "final-form-arrays";
+import HTTP_STATUS from "http-status-codes";
+import React, { Fragment, useEffect, useState } from "react";
+import { Field, Form, FormSpy } from "react-final-form";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import InputText from "components/Shareable/Input/InputText";
-import InputValueMedicao from "components/Shareable/Input/InputValueMedicao";
 import Botao from "components/Shareable/Botao";
-import {
-  toastError,
-  toastSuccess,
-  toastWarn,
-} from "components/Shareable/Toast/dialogs";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "components/Shareable/Botao/constants";
-import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";
-import ModalErro from "./components/ModalErro";
-import ModalSalvarCorrecoes from "./components/ModalSalvarCorrecoes";
-import { ModalVoltarPeriodoLancamento } from "./components/ModalVoltarPeriodoLancamento";
 import CKEditorField from "components/Shareable/CKEditorField";
+import InputText from "components/Shareable/Input/InputText";
+import InputValueMedicao from "components/Shareable/Input/InputValueMedicao";
+import {
+  toastError,
+  toastSuccess,
+  toastWarn,
+} from "components/Shareable/Toast/dialogs";
+import { DETALHAMENTO_DO_LANCAMENTO, MEDICAO_INICIAL } from "configs/constants";
 import {
   deepCopy,
   deepEqual,
@@ -42,33 +39,26 @@ import {
   escolaEhEMEBS,
   tiposAlimentacaoETEC,
 } from "helpers/utilities";
+import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
+import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
 import {
-  botaoAdicionarObrigatorio,
-  botaoAdicionarObrigatorioTabelaAlimentacao,
-  campoFrequenciaValor0ESemObservacao,
-  exibirTooltipLPRAutorizadas,
-  exibirTooltipRPLAutorizadas,
-  exibirTooltipErroQtdMaiorQueAutorizado,
-  exibirTooltipSuspensoesAutorizadas,
-  exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
-  exibirTooltipKitLancheSolAlimentacoes,
-  exibirTooltipLancheEmergencialNaoAutorizado,
-  exibirTooltipLancheEmergencialAutorizado,
-  exibirTooltipLancheEmergencialZeroAutorizado,
-  exibirTooltipLancheEmergencialZeroAutorizadoJustificado,
-  exibirTooltipFrequenciaZeroTabelaEtec,
-  exibirTooltipLancheEmergTabelaEtec,
-  exibirTooltipRepeticao,
-  exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
-  exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
-  validacoesTabelaAlimentacao,
-  validacoesTabelasDietas,
-  validarFormulario,
-  campoComSuspensaoAutorizadaESemObservacao,
-  campoLancheComLPRAutorizadaESemObservacao,
-  campoRefeicaoComRPLAutorizadaESemObservacao,
-  validacoesTabelaEtecAlimentacao,
-} from "./validacoes";
+  getCategoriasDeMedicao,
+  getDiasCalendario,
+  getDiasParaCorrecao,
+  getFeriadosNoMes,
+  getLogDietasAutorizadasPeriodo,
+  getMatriculadosPeriodo,
+  getValoresPeriodosLancamentos,
+  setPeriodoLancamento,
+  updateValoresPeriodosLancamentos,
+} from "services/medicaoInicial/periodoLancamentoMedicao.service";
+import { escolaCorrigeMedicao } from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
+import { getMeusDados } from "services/perfil.service";
+import { ALUNOS_EMEBS, FUNDAMENTAL_EMEBS } from "../constants";
+import ModalErro from "./components/ModalErro";
+import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";
+import ModalSalvarCorrecoes from "./components/ModalSalvarCorrecoes";
+import { ModalVoltarPeriodoLancamento } from "./components/ModalVoltarPeriodoLancamento";
 import {
   desabilitarBotaoColunaObservacoes,
   desabilitarField,
@@ -86,24 +76,34 @@ import {
   textoBotaoObservacao,
   valorZeroFrequencia,
 } from "./helper";
-import { ALUNOS_EMEBS, FUNDAMENTAL_EMEBS } from "../constants";
-import {
-  getCategoriasDeMedicao,
-  getDiasCalendario,
-  getMatriculadosPeriodo,
-  getLogDietasAutorizadasPeriodo,
-  getValoresPeriodosLancamentos,
-  setPeriodoLancamento,
-  updateValoresPeriodosLancamentos,
-  getFeriadosNoMes,
-  getDiasParaCorrecao,
-} from "services/medicaoInicial/periodoLancamentoMedicao.service";
-import * as perfilService from "services/perfil.service";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
-import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
-import { escolaCorrigeMedicao } from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import { DETALHAMENTO_DO_LANCAMENTO, MEDICAO_INICIAL } from "configs/constants";
 import "./styles.scss";
+import {
+  botaoAdicionarObrigatorio,
+  botaoAdicionarObrigatorioTabelaAlimentacao,
+  campoComSuspensaoAutorizadaESemObservacao,
+  campoFrequenciaValor0ESemObservacao,
+  campoLancheComLPRAutorizadaESemObservacao,
+  campoRefeicaoComRPLAutorizadaESemObservacao,
+  exibirTooltipErroQtdMaiorQueAutorizado,
+  exibirTooltipFrequenciaZeroTabelaEtec,
+  exibirTooltipKitLancheSolAlimentacoes,
+  exibirTooltipLancheEmergencialAutorizado,
+  exibirTooltipLancheEmergencialNaoAutorizado,
+  exibirTooltipLancheEmergencialZeroAutorizado,
+  exibirTooltipLancheEmergencialZeroAutorizadoJustificado,
+  exibirTooltipLancheEmergTabelaEtec,
+  exibirTooltipLPRAutorizadas,
+  exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
+  exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
+  exibirTooltipRepeticao,
+  exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
+  exibirTooltipRPLAutorizadas,
+  exibirTooltipSuspensoesAutorizadas,
+  validacoesTabelaAlimentacao,
+  validacoesTabelaEtecAlimentacao,
+  validacoesTabelasDietas,
+  validarFormulario,
+} from "./validacoes";
 
 export default () => {
   const initialStateWeekColumns = [
@@ -372,7 +372,8 @@ export default () => {
     setMesAnoFormatadoState(mesAnoFormatado);
 
     const fetch = async () => {
-      const meusDados = await perfilService.meusDados();
+      const response = await getMeusDados();
+      const meusDados = response.data;
       const escola =
         meusDados.vinculo_atual && meusDados.vinculo_atual.instituicao;
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
@@ -2473,7 +2474,6 @@ export default () => {
                       </div>
                     ) : null}
                     <Spin tip="Carregando..." spinning={loadingLancamentos}>
-                      {console.log(categoriasDeMedicao)}
                       {categoriasDeMedicao.length > 0 &&
                         !loading &&
                         categoriasDeMedicao.map((categoria) => (
