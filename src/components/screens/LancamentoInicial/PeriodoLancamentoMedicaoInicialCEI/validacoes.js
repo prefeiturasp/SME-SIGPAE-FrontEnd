@@ -654,7 +654,13 @@ export const exibirTooltipDietasInclusaoDiaNaoLetivoCEI = (
 
 export const campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao =
   (inclusoesAutorizadas, column, categoria, formValuesAtualizados) => {
-    if (!inclusoesAutorizadas || inclusoesAutorizadas.length === 0)
+    if (
+      !inclusoesAutorizadas ||
+      inclusoesAutorizadas.length === 0 ||
+      !inclusoesAutorizadas.find(
+        (inclusao) => inclusao.dia.toString() === column.dia.toString()
+      )
+    )
       return false;
 
     let campoNaoPreenchido = false;
