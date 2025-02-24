@@ -73,6 +73,7 @@ export const TIPO_PERFIL = {
   MEDICAO: `"medicao"`,
   ORGAO_FISCALIZADOR: `"orgao_fiscalizador"`,
   CODAE_GABINETE: `"codae_gabinete"`,
+  DINUTRE: `"dinutre"`,
 };
 
 export const TIPO_USUARIO = {
