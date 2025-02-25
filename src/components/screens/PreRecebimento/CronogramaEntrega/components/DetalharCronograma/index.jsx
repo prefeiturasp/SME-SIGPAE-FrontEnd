@@ -7,12 +7,12 @@ import {
   imprimirCronograma,
 } from "services/cronograma.service";
 import AcoesDetalhar from "../AcoesDetalhar";
-import AcoesDetalharDinutreDiretoria from "../AcoesDetalharDinutreDiretoria";
+import AcoesDetalharAbastecimento from "../AcoesDetalharAbastecimento";
 import AcoesDetalharDilogDiretoria from "../AcoesDetalharDilogDiretoria";
 import {
   usuarioEhEmpresaFornecedor,
   usuarioEhDilogDiretoria,
-  usuarioEhDinutreDiretoria,
+  usuarioEhDilogAbastecimento,
 } from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import "./styles.scss";
@@ -40,7 +40,8 @@ export default () => {
 
   const esconderLogFornecedor = (logs) => {
     return logs.filter(
-      (log) => !["Assinado DINUTRE"].includes(log.status_evento_explicacao)
+      (log) =>
+        !["Assinado Abastecimento"].includes(log.status_evento_explicacao)
     );
   };
 
@@ -162,8 +163,8 @@ export default () => {
 
               <br />
               <div className="mt-4 mb-4">
-                {usuarioEhDinutreDiretoria() && (
-                  <AcoesDetalharDinutreDiretoria cronograma={cronograma} />
+                {usuarioEhDilogAbastecimento() && (
+                  <AcoesDetalharAbastecimento cronograma={cronograma} />
                 )}
                 {usuarioEhEmpresaFornecedor() && (
                   <AcoesDetalhar cronograma={cronograma} />

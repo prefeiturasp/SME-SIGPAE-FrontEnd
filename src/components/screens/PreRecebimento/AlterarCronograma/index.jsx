@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import {
   analiseDilogSolicitacaoAlteracaoCronograma,
-  analiseDinutreSolicitacaoAlteracaoCronograma,
+  analiseAbastecimentoSolicitacaoAlteracaoCronograma,
   cadastraSolicitacaoAlteracaoCronograma,
   dilogCienteSolicitacaoAlteracaoCronograma,
   getCronograma,
@@ -31,9 +31,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import {
   usuarioEhDilogDiretoria,
-  usuarioEhDinutreDiretoria,
   usuarioEhEmpresaFornecedor,
   usuarioEhCronogramaOuCodae,
+  usuarioEhDilogAbastecimento,
 } from "../../../../helpers/utilities";
 import { Radio, Spin } from "antd";
 import { FluxoDeStatusPreRecebimento } from "components/Shareable/FluxoDeStatusPreRecebimento";
@@ -55,7 +55,7 @@ export default ({ analiseSolicitacao }) => {
   const [etapas, setEtapas] = useState([{}]);
   const [initialValues, setInitialValues] = useState({});
   const [cronograma, setCronograma] = useState(null);
-  const [aprovacaoDinutre, setAprovacaoDinutre] = useState(null);
+  const [aprovacaoAbastecimento, setAprovacaoAbastecimento] = useState(null);
   const [aprovacaoDilog, setAprovacaoDilog] = useState(null);
   const [solicitacaoAlteracaoCronograma, setSolicitacaoAlteracaoCronograma] =
     useState(null);
@@ -70,14 +70,14 @@ export default ({ analiseSolicitacao }) => {
     );
 
   const onChangeCampos = (e) => {
-    setAprovacaoDinutre(e.target.value);
+    setAprovacaoAbastecimento(e.target.value);
   };
 
-  const exibirJustificativaDinutre = () =>
-    aprovacaoDinutre === false ||
+  const exibirJustificativaAbastecimento = () =>
+    aprovacaoAbastecimento === false ||
     usuarioEhCronogramaOuCodae() ||
-    ((usuarioEhDilogDiretoria() || usuarioEhDinutreDiretoria()) &&
-      ["Aprovado DINUTRE", "Reprovado DINUTRE"].includes(
+    ((usuarioEhDilogDiretoria() || usuarioEhDilogAbastecimento()) &&
+      ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
         solicitacaoAlteracaoCronograma.status
       ));
 
@@ -121,9 +121,9 @@ export default ({ analiseSolicitacao }) => {
         solicitacao.logs,
         "cronograma"
       ),
-      justificativa_dinutre: buscaLogJustificativaCronograma(
+      justificativa_abastecimento: buscaLogJustificativaCronograma(
         solicitacao.logs,
-        "dinutre"
+        "abastecimento"
       ),
       justificativa_dilog: buscaLogJustificativaCronograma(
         solicitacao.logs,
@@ -162,17 +162,17 @@ export default ({ analiseSolicitacao }) => {
     setInitialValues(values);
   };
 
-  const analisadoPelaDinutre = () => {
+  const analisadoPeloAbastecimento = () => {
     return solicitacaoAlteracaoCronograma?.logs.some((l) =>
-      ["Aprovado DINUTRE", "Reprovado DINUTRE"].includes(
+      ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
         l.status_evento_explicacao
       )
     );
   };
 
-  const reprovadoPelaDinutre = () => {
+  const reprovadoPeloAbastecimento = () => {
     return solicitacaoAlteracaoCronograma?.logs.some(
-      (l) => l.status_evento_explicacao === "Reprovado DINUTRE"
+      (l) => l.status_evento_explicacao === "Reprovado Abastecimento"
     );
   };
 
@@ -224,16 +224,17 @@ export default ({ analiseSolicitacao }) => {
       });
   };
 
-  const analiseDinutre = async (values, aprovado) => {
+  const analiseAbastecimento = async (values, aprovado) => {
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
     const payload = {
       aprovado: aprovado,
     };
     if (!aprovado) {
-      payload.justificativa_dinutre = values["justificativa_dinutre"];
+      payload.justificativa_abastecimento =
+        values["justificativa_abastecimento"];
     }
-    await analiseDinutreSolicitacaoAlteracaoCronograma(uuid, payload)
+    await analiseAbastecimentoSolicitacaoAlteracaoCronograma(uuid, payload)
       .then(() => {
         toastSuccess("Análise da alteração enviada com sucesso!");
         navigate(`/${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`);
@@ -243,8 +244,10 @@ export default ({ analiseSolicitacao }) => {
       });
   };
 
-  const disabledDinutre = (values) => {
-    return aprovacaoDinutre !== true && !values.justificativa_dinutre;
+  const disabledAbastecimento = (values) => {
+    return (
+      aprovacaoAbastecimento !== true && !values.justificativa_abastecimento
+    );
   };
 
   const disabledDilog = (values) => {
@@ -268,8 +271,8 @@ export default ({ analiseSolicitacao }) => {
   };
 
   const defineSubmit = (values) => {
-    if (usuarioEhDinutreDiretoria()) {
-      analiseDinutre(values, aprovacaoDinutre);
+    if (usuarioEhDilogAbastecimento()) {
+      analiseAbastecimento(values, aprovacaoAbastecimento);
     } else if (usuarioEhDilogDiretoria()) {
       analiseDilog(values, aprovacaoDilog);
     } else if (
@@ -306,7 +309,7 @@ export default ({ analiseSolicitacao }) => {
   const buscaLogJustificativaCronograma = (logs, autorJustificativa) => {
     const dict_logs = {
       cronograma: ["Cronograma Ciente"],
-      dinutre: ["Aprovado DINUTRE", "Reprovado DINUTRE"],
+      abastecimento: ["Aprovado Abastecimento", "Reprovado Abastecimento"],
       dilog: ["Aprovado DILOG", "Reprovado DILOG"],
     };
     let log_correto = logs.find((log) => {
@@ -320,7 +323,7 @@ export default ({ analiseSolicitacao }) => {
   const montarFluxoStatusFornecedor = (logs) => {
     const logsFiltrados = logs.filter(
       (log) =>
-        !["Aprovado DINUTRE", "Reprovado DINUTRE"].includes(
+        !["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
           log.status_evento_explicacao
         )
     );
@@ -461,12 +464,12 @@ export default ({ analiseSolicitacao }) => {
                     </div>
                     {((usuarioEhCronogramaOuCodae() &&
                       solicitacaoAlteracaoCronograma) ||
-                      (usuarioEhDinutreDiretoria() &&
+                      (usuarioEhDilogAbastecimento() &&
                         solicitacaoAlteracaoCronograma.status !==
                           "Em análise" &&
                         values.justificativa_cronograma) ||
                       (usuarioEhDilogDiretoria() &&
-                        analisadoPelaDinutre())) && (
+                        analisadoPeloAbastecimento())) && (
                       <>
                         <hr />
                         <p className="head-green">Análise Cronograma</p>
@@ -480,15 +483,17 @@ export default ({ analiseSolicitacao }) => {
                         </div>
                         <hr />
 
-                        {usuarioEhDinutreDiretoria() &&
+                        {usuarioEhDilogAbastecimento() &&
                           solicitacaoAlteracaoCronograma.status ===
                             "Cronograma ciente" && (
                             <>
-                              <p className="head-green">Análise DINUTRE</p>
+                              <p className="head-green">
+                                Análise Abastecimento
+                              </p>
                               <Radio.Group
                                 size="large"
                                 onChange={onChangeCampos}
-                                value={aprovacaoDinutre}
+                                value={aprovacaoAbastecimento}
                               >
                                 <Radio
                                   className="radio-entrega-sim"
@@ -505,25 +510,25 @@ export default ({ analiseSolicitacao }) => {
                               </Radio.Group>
                             </>
                           )}
-                        {exibirJustificativaDinutre() && (
+                        {exibirJustificativaAbastecimento() && (
                           <div className="mt-4">
-                            {analisadoPelaDinutre() && (
+                            {analisadoPeloAbastecimento() && (
                               <p className="head-green">
-                                {reprovadoPelaDinutre()
-                                  ? "Reprovado DINUTRE"
-                                  : "Aprovado DINUTRE"}
+                                {reprovadoPeloAbastecimento()
+                                  ? "Reprovado Abastecimento"
+                                  : "Aprovado Abastecimento"}
                               </p>
                             )}
-                            {(aprovacaoDinutre === false ||
-                              reprovadoPelaDinutre()) && (
+                            {(aprovacaoAbastecimento === false ||
+                              reprovadoPeloAbastecimento()) && (
                               <>
                                 <label className="label fw-normal">
                                   <span>* </span>Justificativa
                                 </label>
                                 <Field
                                   component={TextArea}
-                                  disabled={analisadoPelaDinutre()}
-                                  name="justificativa_dinutre"
+                                  disabled={analisadoPeloAbastecimento()}
+                                  name="justificativa_abastecimento"
                                   placeholder="Escreva as alterações necessárias"
                                   className="input-busca-produto"
                                 />
@@ -549,7 +554,8 @@ export default ({ analiseSolicitacao }) => {
                         />
                       </div>
                     )}
-                    {((usuarioEhDilogDiretoria() && analisadoPelaDinutre()) ||
+                    {((usuarioEhDilogDiretoria() &&
+                      analisadoPeloAbastecimento()) ||
                       (usuarioEhCronogramaOuCodae() &&
                         analisadoPelaDilog())) && (
                       <AnaliseDilogDiretoria
@@ -572,7 +578,7 @@ export default ({ analiseSolicitacao }) => {
                         podeSubmeter={
                           Object.keys(errors).length === 0 && restante === 0
                         }
-                        disabledDinutre={disabledDinutre(values)}
+                        disabledAbastecimento={disabledAbastecimento(values)}
                         disabledDilog={disabledDilog(values)}
                       />
                     </div>
