@@ -35,7 +35,7 @@ import {
   updateValoresPeriodosLancamentos,
 } from "services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "services/medicaoInicial/permissaoLancamentosEspeciais.service";
-import * as perfilService from "services/perfil.service";
+import { getMeusDados } from "services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "..";
 
 jest.mock("services/perfil.service.js");
@@ -46,7 +46,6 @@ jest.mock("services/medicaoInicial/permissaoLancamentosEspeciais.service");
 
 const awaitServices = async () => {
   await waitFor(() => {
-    expect(perfilService.meusDados).toHaveBeenCalled();
     expect(getListaDiasSobremesaDoce).toHaveBeenCalled();
     expect(getVinculosTipoAlimentacaoPorEscola).toHaveBeenCalled();
     expect(getSolicitacoesInclusoesAutorizadasEscola).toHaveBeenCalled();
@@ -69,7 +68,10 @@ const awaitServices = async () => {
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parcialmente", () => {
   beforeEach(async () => {
-    perfilService.meusDados.mockResolvedValue(mockMeusDadosEscolaEMEFPericles);
+    getMeusDados.mockResolvedValue({
+      data: mockMeusDadosEscolaEMEFPericles,
+      status: 200,
+    });
     getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
     getVinculosTipoAlimentacaoPorEscola.mockResolvedValue({
       data: mockVinculosTipoAlimentacaoEPeriodoEscolar,
@@ -137,28 +139,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
         </MemoryRouter>
       );
     });
-  });
-
-  it("teste mock meusDados", async () => {
-    jest.useFakeTimers();
-    await act(() => {
-      jest.advanceTimersByTime(1);
-    });
-
-    await waitFor(() => expect(perfilService.meusDados).toHaveBeenCalled());
-
-    expect(perfilService.meusDados).toHaveBeenCalledTimes(1);
-    expect(perfilService.meusDados).toHaveReturnedWith(
-      Promise.resolve(mockMeusDadosEscolaEMEFPericles)
-    );
-
-    const dados = await perfilService.meusDados();
-    expect(dados.vinculo_atual).toBeDefined();
-    expect(dados.vinculo_atual.instituicao).toBeDefined();
-    expect(dados.vinculo_atual.instituicao.nome).toBe(
-      "EMEF PERICLES EUGENIO DA SILVA RAMOS"
-    );
-    jest.useRealTimers();
   });
 
   it("renderiza label `Mês do Lançamento`", async () => {
