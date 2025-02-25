@@ -26,7 +26,7 @@ export const CARD_AGUARDANDO_ASSINATURA = {
   titulo: "Aguardando Assinatura de DILOG",
   icon: "fa-pencil-alt",
   style: "card-aguardando-dilog",
-  incluir_status: ["ASSINADO_DINUTRE"],
+  incluir_status: ["ASSINADO_DILOG_ABASTECIMENTO"],
   href: `/${ABASTECIMENTO}/${AGUARDANDO_DILOG}`,
 };
 
@@ -44,7 +44,7 @@ export const CARD_PENDENTES_ASSINATURA_DILOG = {
   titulo: "Pendentes de Assinatura",
   icon: "fa-exclamation-triangle",
   style: "card-pendente-assinatura",
-  incluir_status: ["ASSINADO_DINUTRE"],
+  incluir_status: ["ASSINADO_DILOG_ABASTECIMENTO"],
   href: `/${DILOG}/${SOLICITACOES_PENDENTES}`,
 };
 
@@ -56,7 +56,7 @@ export const CARD_VISAO_CRONOGRAMA_AGUARDANDO_ASSINATURAS = {
   incluir_status: [
     "ASSINADO_E_ENVIADO_AO_FORNECEDOR",
     "ASSINADO_FORNECEDOR",
-    "ASSINADO_DINUTRE",
+    "ASSINADO_DILOG_ABASTECIMENTO",
   ],
   href: `/${CRONOGRAMA}/${AGUARDANDO_ASSINATURAS}`,
 };
@@ -84,7 +84,7 @@ export const CARD_SOLICITACOES_APROVADAS_ABASTECIMENTO = {
   titulo: "Alterações Aprovadas",
   icon: "fa-check",
   style: "card-cronogramas-assinados",
-  incluir_status: ["APROVADO_DINUTRE"],
+  incluir_status: ["APROVADO_DILOG_ABASTECIMENTO"],
   href: `/${ABASTECIMENTO}/${ALTERACOES_APROVADAS}`,
 };
 
@@ -93,7 +93,7 @@ export const CARD_SOLICITACOES_REPROVADAS_ABASTECIMENTO = {
   titulo: "Alterações Reprovadas",
   icon: "fa-times-circle",
   style: "card-solicitacoes-reprovadas",
-  incluir_status: ["REPROVADO_DINUTRE"],
+  incluir_status: ["REPROVADO_DILOG_ABASTECIMENTO"],
   href: `/${ABASTECIMENTO}/${ALTERACOES_REPROVADAS}`,
 };
 
@@ -102,7 +102,10 @@ export const CARD_SOLICITACOES_ALTERACOES_DILOG = {
   titulo: "Solicitações de Alterações",
   icon: "fa-exclamation-triangle",
   style: "card-solicitacoes-alteracoes",
-  incluir_status: ["APROVADO_DINUTRE", "REPROVADO_DINUTRE"],
+  incluir_status: [
+    "APROVADO_DILOG_ABASTECIMENTO",
+    "REPROVADO_DILOG_ABASTECIMENTO",
+  ],
   href: `/${DILOG}/${SOLICITACOES_ALTERACOES}`,
 };
 

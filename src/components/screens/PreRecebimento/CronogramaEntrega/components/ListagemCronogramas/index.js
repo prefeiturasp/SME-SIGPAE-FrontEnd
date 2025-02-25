@@ -22,7 +22,7 @@ import { imprimirCronograma } from "services/cronograma.service";
 import {
   usuarioEhCodaeDilog,
   usuarioEhDilogDiretoria,
-  usuarioEhDinutreDiretoria,
+  usuarioEhDilogAbastecimento,
 } from "../../../../../../helpers/utilities";
 
 const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
@@ -55,9 +55,10 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
     return (
       (usuarioEhEmpresaFornecedor() &&
         cronograma.status === "Assinado e Enviado ao Fornecedor") ||
-      (usuarioEhDinutreDiretoria() &&
+      (usuarioEhDilogAbastecimento() &&
         cronograma.status === "Assinado Fornecedor") ||
-      (usuarioEhDilogDiretoria() && cronograma.status === "Assinado Dinutre")
+      (usuarioEhDilogDiretoria() &&
+        cronograma.status === "Assinado Abastecimento")
     );
   };
 
