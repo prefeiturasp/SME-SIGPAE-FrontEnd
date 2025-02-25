@@ -518,7 +518,7 @@ export const usuarioComAcessoTelaDetalharNotificacaoOcorrencia = () => {
 export const usuarioComAcessoAoRelatorioCronogramas = () => {
   return [
     PERFIL.DILOG_DIRETORIA,
-    PERFIL.DINUTRE_DIRETORIA,
+    PERFIL.DILOG_ABASTECIMENTO,
     PERFIL.DILOG_CRONOGRAMA,
     PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
     PERFIL.ADMINISTRADOR_CODAE_GABINETE,
@@ -532,7 +532,7 @@ export const usuarioComAcessoAoCalendarioCronograma = () => {
     PERFIL.DILOG_CRONOGRAMA,
     PERFIL.DILOG_QUALIDADE,
     PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
-    PERFIL.DINUTRE_DIRETORIA,
+    PERFIL.DILOG_ABASTECIMENTO,
     PERFIL.DILOG_DIRETORIA,
     PERFIL.ADMINISTRADOR_CODAE_GABINETE,
   ].includes(localStorage.getItem("perfil"));
@@ -541,7 +541,7 @@ export const usuarioComAcessoAoCalendarioCronograma = () => {
 export const usuarioComAcessoAoPainelAprovacoes = () => {
   return [
     PERFIL.DILOG_DIRETORIA,
-    PERFIL.DINUTRE_DIRETORIA,
+    PERFIL.DILOG_ABASTECIMENTO,
     PERFIL.DILOG_CRONOGRAMA,
     PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
     PERFIL.ADMINISTRADOR_CODAE_GABINETE,
@@ -640,6 +640,10 @@ export const usuarioEhCronograma = () => {
 
 export const usuarioEhAdministradorDICAE = () => {
   return [PERFIL.ADMINISTRADOR_DICAE].includes(localStorage.getItem("perfil"));
+};
+
+export const usuarioEhDilogAbastecimento = () => {
+  return [PERFIL.DILOG_ABASTECIMENTO].includes(localStorage.getItem("perfil"));
 };
 
 export const usuarioEhEmpresaDistribuidora = () => {

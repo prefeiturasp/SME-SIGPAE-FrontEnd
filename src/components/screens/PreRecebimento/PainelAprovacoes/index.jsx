@@ -2,9 +2,9 @@ import { Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import CardCronograma from "components/Shareable/CardCronograma/CardCronograma";
 import {
-  cards_dinutre,
+  cards_abastecimento,
   cards_dilog,
-  cards_alteracao_dinutre,
+  cards_alteracao_abastecimento,
   cards_alteracao_dilog,
   cards_visao_cronograma,
   cards_alteracao_visao_cronograma,
@@ -36,9 +36,9 @@ const obterCardsParaPerfilLogado = () => {
       cronograma: cards_dilog,
       alteracoes: cards_alteracao_dilog,
     },
-    DINUTRE_DIRETORIA: {
-      cronograma: cards_dinutre,
-      alteracoes: cards_alteracao_dinutre,
+    DILOG_ABASTECIMENTO: {
+      cronograma: cards_abastecimento,
+      alteracoes: cards_alteracao_abastecimento,
     },
     DILOG_CRONOGRAMA: {
       cronograma: cards_visao_cronograma,
