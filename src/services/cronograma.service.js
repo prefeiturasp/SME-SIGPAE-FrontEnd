@@ -63,12 +63,12 @@ export const dilogCienteSolicitacaoAlteracaoCronograma = async (
   );
 };
 
-export const analiseDinutreSolicitacaoAlteracaoCronograma = async (
+export const analiseAbastecimentoSolicitacaoAlteracaoCronograma = async (
   uuid,
   payload
 ) => {
   return await axios.patch(
-    `solicitacao-de-alteracao-de-cronograma/${uuid}/analise-dinutre/`,
+    `solicitacao-de-alteracao-de-cronograma/${uuid}/analise-abastecimento/`,
     payload
   );
 };
@@ -100,8 +100,8 @@ export const cronogramaAssina = async (uuid, password) => {
   });
 };
 
-export const dinutreAssinaCronograma = async (uuid, password) => {
-  const url = `/cronogramas/${uuid}/dinutre-assina/`;
+export const abastecimentoAssinaCronograma = async (uuid, password) => {
+  const url = `/cronogramas/${uuid}/abastecimento-assina/`;
   return await axios.patch(url, {
     password: password,
   });

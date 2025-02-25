@@ -162,7 +162,7 @@ export const getProdutosPorFabricante = async (nomeFabricante) => {
 };
 
 export const getProdutosPorParametros = async (parametros, page, pageSize) => {
-  return await axios.post(
+  return await axios.get(
     `/produtos/filtro-homologados-por-parametros/`,
     parametros,
     { params: { page, page_size: pageSize } }

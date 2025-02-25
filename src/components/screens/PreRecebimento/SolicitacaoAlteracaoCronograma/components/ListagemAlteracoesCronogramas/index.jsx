@@ -17,8 +17,8 @@ const ListagemAlteracoesCronogramas = ({
     USUARIO_EMPRESA: ["Alteração Enviada ao Fornecedor"],
     COORDENADOR_CODAE_DILOG_LOGISTICA: ["Em análise"],
     DILOG_CRONOGRAMA: ["Em análise"],
-    DILOG_DIRETORIA: ["Aprovado DINUTRE", "Reprovado DINUTRE"],
-    DINUTRE_DIRETORIA: ["Cronograma ciente"],
+    DILOG_DIRETORIA: ["Aprovado Abastecimento", "Reprovado Abastecimento"],
+    DILOG_ABASTECIMENTO: ["Cronograma ciente"],
   };
 
   const ehStatusPrioritario = (status) =>
