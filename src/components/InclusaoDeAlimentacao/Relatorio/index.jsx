@@ -22,6 +22,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import { getInclusaoDeAlimentacao } from "services/inclusaoDeAlimentacao";
 import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
+import { HistoricoCancelamento } from "./componentes/HistoricoCancelamento";
 import { ModalCancelarInclusaoContinua } from "./componentes/ModalCancelarInclusaoContinua";
 import {
   exibeBotaoAprovar,
@@ -87,14 +88,19 @@ export const Relatorio = ({ ...props }) => {
     const uuid_ = urlParams.get("uuid");
     const tipoSolicitacao_ = urlParams.get("tipoSolicitacao");
 
-    if (!uuid_)
+    if (!uuid_) {
       setErro(
         "Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente."
       );
-    if (!tipoSolicitacao_)
+      return;
+    }
+
+    if (!tipoSolicitacao_) {
       setErro(
         "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente."
       );
+      return;
+    }
 
     setUuid(uuid_);
     setTipoSolicitacao(tipoSolicitacao_);
@@ -214,7 +220,10 @@ export const Relatorio = ({ ...props }) => {
                       tipoSolicitacao={tipoSolicitacao}
                     />
                   )}
-                  <span className="page-title">{`Inclusão de Alimentação - Solicitação # ${inclusaoDeAlimentacao.id_externo}`}</span>
+                  <span className="page-title">
+                    Inclusão de Alimentação - Solicitação #{" "}
+                    {inclusaoDeAlimentacao.id_externo}
+                  </span>
                   <div className="card mt-3">
                     <div className="card-body">
                       <CorpoRelatorio
@@ -226,45 +235,9 @@ export const Relatorio = ({ ...props }) => {
                         tipoSolicitacao={tipoSolicitacao}
                         meusDados={meusDados}
                       />
-                      {(
-                        inclusaoDeAlimentacao.inclusoes ||
-                        inclusaoDeAlimentacao.dias_motivos_da_inclusao_cei ||
-                        inclusaoDeAlimentacao.quantidades_periodo
-                      ).find(
-                        (inclusao) => inclusao.cancelado_justificativa
-                      ) && (
-                        <>
-                          <hr />
-                          <p>
-                            <strong>Histórico de cancelamento</strong>
-                            {(
-                              inclusaoDeAlimentacao.inclusoes ||
-                              inclusaoDeAlimentacao.dias_motivos_da_inclusao_cei ||
-                              inclusaoDeAlimentacao.quantidades_periodo
-                            )
-                              .filter(
-                                (inclusao) => inclusao.cancelado_justificativa
-                              )
-                              .map((inclusao, key) => {
-                                return (
-                                  <div key={key}>
-                                    {inclusao.data ||
-                                      `${
-                                        inclusao.periodo_escolar.nome
-                                      } - ${inclusao.tipos_alimentacao
-                                        .map((ta) => ta.nome)
-                                        .join(", ")} - ${
-                                        inclusao.numero_alunos
-                                      }`}
-                                    {" - "}
-                                    justificativa:{" "}
-                                    {inclusao.cancelado_justificativa}
-                                  </div>
-                                );
-                              })}
-                          </p>
-                        </>
-                      )}
+                      <HistoricoCancelamento
+                        inclusaoDeAlimentacao={inclusaoDeAlimentacao}
+                      />
                       {inclusaoDeAlimentacao.status !== "ESCOLA_CANCELOU" && (
                         <RelatorioHistoricoJustificativaEscola
                           solicitacao={inclusaoDeAlimentacao}
