@@ -17,8 +17,9 @@ import { mockGetNomesUnicosEditais } from "mocks/services/produto.service/mockGe
 import { mockGetNovaReclamacaoNomesProdutos } from "mocks/services/produto.service/mockGetNovaReclamacaoNomesProdutos";
 import { mockGetNovaReclamacaoNomesMarcas } from "mocks/services/produto.service/mockGetNovaReclamacaoNomesMarcas";
 import { mockGetNovaReclamacaoNomesFabricantes } from "mocks/services/produto.service/mockGetNovaReclamacaoNomesFabricantes";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
 import { mockGetEscolaTercTotal } from "mocks/services/escola.service/mockGetEscolasTercTotal";
+import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
+import { mockMeusDadosNutriSupervisao } from "mocks/meusDados/nutri-supervisao";
 
 jest.mock("services/notificacoes.service");
 
@@ -148,7 +149,7 @@ describe("Teste <ReclamacaoProduto> - Perfil Nutri Supervisão", () => {
       .reply(200, mockGetProdutosPorParametros);
     mock
       .onGet(`/usuarios/meus-dados/`)
-      .reply(200, mockMeusDadosEscolaEMEFPericles);
+      .reply(200, mockMeusDadosNutriSupervisao);
     mock
       .onGet(`/api/escolas-simplissima-com-dre-unpaginated/terc-total/`)
       .reply(200, mockGetEscolaTercTotal);
@@ -178,5 +179,14 @@ describe("Teste <ReclamacaoProduto> - Perfil Nutri Supervisão", () => {
 
     const botaoConsultar = screen.getByText("Consultar").closest("button");
     expect(botaoConsultar).toBeDisabled();
+
+    await act(async () => {
+      fireEvent.mouseDown(inputEdital);
+    });
+
+    await waitFor(() => screen.getAllByText("Edital de Pregão n°70/SME/2022"));
+    await act(async () => {
+      fireEvent.click(screen.getAllByText("Edital de Pregão n°70/SME/2022")[1]);
+    });
   });
 });
