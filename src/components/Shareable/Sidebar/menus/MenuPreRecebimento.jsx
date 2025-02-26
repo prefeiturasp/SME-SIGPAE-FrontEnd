@@ -23,8 +23,8 @@ import {
   usuarioEhCodaeDilog,
   usuarioEhCODAEGabinete,
   usuarioEhCronograma,
+  usuarioEhDilogAbastecimento,
   usuarioEhDilogDiretoria,
-  usuarioEhDinutreDiretoria,
   usuarioEhEmpresaFornecedor,
   usuarioEhPreRecebimento,
 } from "helpers/utilities";
@@ -52,7 +52,7 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
         </LeafItem>
       )}
       {(usuarioEhCronograma() ||
-        usuarioEhDinutreDiretoria() ||
+        usuarioEhDilogAbastecimento() ||
         usuarioEhCodaeDilog() ||
         usuarioEhDilogDiretoria()) && (
         <LeafItem
