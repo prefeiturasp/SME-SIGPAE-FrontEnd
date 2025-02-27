@@ -153,7 +153,7 @@ export const Relatorio = ({ ...props }) => {
 
   return (
     <div className="report">
-      {ModalNaoAprova && (
+      {ModalNaoAprova && showNaoAprovaModal && (
         <ComponenteModalNaoAprova
           showModal={showNaoAprovaModal}
           closeModal={() => setShowNaoAprovaModal(false)}
