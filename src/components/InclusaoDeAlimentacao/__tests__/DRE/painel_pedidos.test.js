@@ -59,20 +59,6 @@ describe("Teste Página do Painel Pedidos - DRE - Inclusão de Alimentação", (
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
     localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
 
-    Object.defineProperty(window, "matchMedia", {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-
     await act(async () => {
       render(
         <MemoryRouter
