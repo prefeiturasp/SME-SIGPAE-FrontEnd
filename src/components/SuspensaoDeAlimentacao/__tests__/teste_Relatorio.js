@@ -9,6 +9,7 @@ import { getSuspensaoDeAlimentacaoUUID } from "services/suspensaoDeAlimentacao.s
 
 import { mockCancelaParcialSuspensao } from "mocks/SuspensaoDeAlimentacao/mockCancelaParcialSuspensao";
 import { TIPO_PERFIL } from "../../../constants/shared";
+import mock from "services/_mock";
 
 jest.mock("services/suspensaoDeAlimentacao.service");
 
@@ -24,6 +25,11 @@ describe("Teste Relatorio de Suspensão de Alimentação", () => {
       data: mockCancelaParcialSuspensao,
       status: 200,
     });
+    mock
+      .onPatch(
+        "/grupos-suspensoes-alimentacao/7ca6fa60-a886-467b-818f-ced16544f0a5/marcar-conferida/"
+      )
+      .reply(200, {});
 
     await act(async () => {
       renderWithProvider(

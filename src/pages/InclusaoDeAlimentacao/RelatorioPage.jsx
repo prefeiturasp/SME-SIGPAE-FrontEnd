@@ -1,4 +1,6 @@
+import { Relatorio } from "components/InclusaoDeAlimentacao/Relatorio";
 import { ModalCancelarInclusaoAlimentacao } from "components/Shareable/ModalCancelarInclusaoAlimentacao";
+import { ModalCODAEAutoriza } from "components/Shareable/ModalCODAEAutoriza";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import {
@@ -15,10 +17,8 @@ import {
   terceirizadaResponderQuestionamentoDeInclusaoDeAlimentacao,
 } from "services/inclusaoDeAlimentacao";
 import { getMotivosDREnaoValida } from "services/relatorios";
-import Relatorio from "../../components/InclusaoDeAlimentacao/Relatorio";
 import Breadcrumb from "../../components/Shareable/Breadcrumb";
 import { ModalCODAEQuestiona } from "../../components/Shareable/ModalCODAEQuestiona";
-import { ModalCODAEAutoriza } from "components/Shareable/ModalCODAEAutoriza";
 import { ModalNaoValidarSolicitacao } from "../../components/Shareable/ModalNaoValidarSolicitacaoReduxForm";
 import ModalNegarSolicitacao from "../../components/Shareable/ModalNegarSolicitacao";
 import { ModalTerceirizadaRespondeQuestionamento } from "../../components/Shareable/ModalTerceirizadaRespondeQuestionamento";

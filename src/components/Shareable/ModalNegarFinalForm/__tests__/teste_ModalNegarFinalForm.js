@@ -41,12 +41,6 @@ describe("Teste <ModalNegarFinalForm>", () => {
   beforeEach(async () => {
     let showModalCodaeNegar = true;
 
-    global.window.ResizeObserver = jest.fn().mockImplementation(() => ({
-      observe: jest.fn(),
-      unobserve: jest.fn(),
-      disconnect: jest.fn(),
-    }));
-
     codaeNegarSolicitacaoDeInclusaoDeAlimentacao.mockResolvedValue({
       data: mockCODAENegarSolicitacao,
       status: 200,

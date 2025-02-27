@@ -137,12 +137,6 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
     );
 
-    global.window.ResizeObserver = jest.fn().mockImplementation(() => ({
-      observe: jest.fn(),
-      unobserve: jest.fn(),
-      disconnect: jest.fn(),
-    }));
-
     await act(async () => {
       render(
         <MeusDadosContext.Provider

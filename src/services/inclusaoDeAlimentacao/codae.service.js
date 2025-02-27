@@ -1,15 +1,9 @@
-import axios from "../_base";
-import authService from "../auth";
-import { PEDIDOS, FLUXO, TIPO_SOLICITACAO } from "../constants";
-import { getPath } from "./helper";
 import { ErrorHandlerFunction } from "services/service-helpers";
+import axios from "../_base";
+import { FLUXO, PEDIDOS, TIPO_SOLICITACAO } from "../constants";
+import { getPath } from "./helper";
 
 const { SOLICITACAO_CEI } = TIPO_SOLICITACAO;
-
-const authToken = {
-  Authorization: `JWT ${authService.getToken()}`,
-  "Content-Type": "application/json",
-};
 
 export const codaeListarSolicitacoesDeInclusaoDeAlimentacao = async (
   filtroAplicado,
@@ -50,28 +44,19 @@ export const codaeListarSolicitacoesDeInclusaoDeAlimentacao = async (
   }
 };
 
-export const codaeAutorizarSolicitacaoDeInclusaoDeAlimentacao = (
+export const codaeAutorizarSolicitacaoDeInclusaoDeAlimentacao = async (
   uuid,
   justificativa = "",
   tipoSolicitacao
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${FLUXO.CODAE_AUTORIZA}/`;
-  let status = 0;
-  return fetch(url, {
-    method: "PATCH",
-    body: JSON.stringify({ justificativa: justificativa }),
-    headers: authToken,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  const response = await axios
+    .patch(url, { justificativa })
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const codaeNegarSolicitacaoDeInclusaoDeAlimentacao = async (

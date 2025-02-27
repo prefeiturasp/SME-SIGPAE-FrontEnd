@@ -19,7 +19,8 @@
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/index.js",
       "!src/reportWebVitals.js",
-      "!src/setupTests.js"
+      "!src/setupTests.js",
+      "!src/mocks"
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy"
@@ -35,6 +36,10 @@
         "lines": 1
       }
     },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/src/mocks/"
+    ],
     "transformIgnorePatterns": [
       "node_modules/(?!axios)"
     ]

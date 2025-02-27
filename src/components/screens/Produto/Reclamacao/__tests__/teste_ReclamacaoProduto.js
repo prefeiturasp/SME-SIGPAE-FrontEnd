@@ -151,7 +151,7 @@ describe("Teste <ReclamacaoProduto> - Perfil Nutri Supervisão", () => {
       .onGet(`/usuarios/meus-dados/`)
       .reply(200, mockMeusDadosNutriSupervisao);
     mock
-      .onGet(`/api/escolas-simplissima-com-dre-unpaginated/terc-total/`)
+      .onGet(`/escolas-simplissima-com-dre-unpaginated/terc-total/`)
       .reply(200, mockGetEscolaTercTotal);
 
     await act(async () => {
@@ -179,5 +179,14 @@ describe("Teste <ReclamacaoProduto> - Perfil Nutri Supervisão", () => {
 
     const botaoConsultar = screen.getByText("Consultar").closest("button");
     expect(botaoConsultar).toBeDisabled();
+
+    await act(async () => {
+      fireEvent.mouseDown(inputEdital);
+    });
+
+    await waitFor(() => screen.getAllByText("Edital de Pregão n°70/SME/2022"));
+    await act(async () => {
+      fireEvent.click(screen.getAllByText("Edital de Pregão n°70/SME/2022")[1]);
+    });
   });
 });
