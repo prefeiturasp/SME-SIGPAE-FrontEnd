@@ -146,6 +146,7 @@ export const ModalCancelarInclusaoAlimentacao = ({ ...props }) => {
                   <label>Justificativa</label>
                 </span>
                 <Field
+                  data-testid="textarea-justificativa"
                   className="col-12 pb-5"
                   component="textarea"
                   name="justificativa"

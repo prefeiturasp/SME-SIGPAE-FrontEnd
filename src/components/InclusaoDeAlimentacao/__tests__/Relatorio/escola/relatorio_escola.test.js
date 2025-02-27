@@ -9,6 +9,7 @@ import {
 import { PERFIL, TIPO_PERFIL } from "constants/shared";
 import { APIMockVersion } from "mocks/apiVersionMock";
 import { mockInclusaoAlimentacaoRegular } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoRegular";
+import { mockInclusaoAlimentacaoRegularCancelada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoRegularCancelada";
 import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
 import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
@@ -38,7 +39,12 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
       .onGet(
         "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
       )
-      .reply(200, mockInclusaoAlimentacaoRegular);
+      .replyOnce(200, mockInclusaoAlimentacaoRegular);
+    mock
+      .onPatch(
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/escola-cancela-pedido-48h-antes/"
+      )
+      .reply(200, mockInclusaoAlimentacaoRegularCancelada);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
@@ -152,13 +158,32 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
     );
     fireEvent.click(inputDia02_04_2025);
 
+    const textarea = screen.getByTestId("textarea-justificativa");
+    fireEvent.change(textarea, {
+      target: { value: "quero cancelar a solicitação." },
+    });
+
     const botaoSim = screen.getByText("Sim").closest("button");
     fireEvent.click(botaoSim);
+
+    mock
+      .onGet(
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+      )
+      .replyOnce(200, mockInclusaoAlimentacaoRegularCancelada);
 
     await waitFor(() => {
       expect(
         screen.queryByText("Cancelamento de Solicitação")
       ).not.toBeInTheDocument();
     });
+
+    expect(screen.queryByText("Cancelar")).not.toBeInTheDocument();
+
+    expect(screen.getByText("Escola cancelou")).toBeInTheDocument();
+    expect(screen.getByText("Histórico de cancelamento")).toBeInTheDocument();
+    expect(
+      screen.getByText("02/04/2025 - justificativa: teste")
+    ).toBeInTheDocument();
   });
 });
