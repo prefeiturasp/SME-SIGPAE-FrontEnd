@@ -100,7 +100,6 @@ export default class TabelaProdutos extends Component {
                     </Link>
                     <Botao
                       texto="Reclamação"
-                      data-testid="botaoReclamacao"
                       disabled={!escolasRequisicaoConcluida || !edital}
                       className="ms-3"
                       onClick={this.abreModalReclamacao}
