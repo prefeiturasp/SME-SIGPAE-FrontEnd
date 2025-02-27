@@ -10,7 +10,6 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import RelatorioSolicitacoesAlimentacaoPage from "pages/Relatorios/RelatorioSolicitacoesAlimentacaoPage";
 import { MeusDadosContext } from "context/MeusDadosContext";
-import { debug } from "jest-preview";
 
 import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
 import { getEscolasTercTotal } from "services/escola.service";
@@ -119,8 +118,6 @@ describe("Teste <SolicitacoesAlimentacao> (RelatorioSolicitacoesAlimentacao)", (
 
   it("Testa a renderização dos elementos básicos do relatório", async () => {
     await awaitServices();
-
-    debug();
 
     expect(
       screen.getByText("Relatório de Solicitações de Alimentação")

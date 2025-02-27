@@ -159,6 +159,7 @@ const FormBuscaProduto = ({
               <Field
                 component={AutoCompleteFieldUnaccent}
                 dataSource={state.dados.produtos}
+                data-testid="produto"
                 label="Nome do Produto"
                 className="input-busca-produto"
                 name="nome_produto"
