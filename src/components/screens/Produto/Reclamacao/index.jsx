@@ -15,6 +15,7 @@ import {
 } from "reducers/reclamacaoProduto";
 
 import { getProdutosPorParametros } from "services/produto.service";
+import { gerarParametrosConsulta } from "helpers/utilities";
 
 import "./style.scss";
 import { Paginacao } from "components/Shareable/Paginacao";
@@ -77,11 +78,13 @@ class ReclamacaoProduto extends Component {
   }
 
   atualizaListaProdutos = async (formValues, page) => {
-    const response = await getProdutosPorParametros(
-      formValues,
-      page,
-      this.TAMANHO_PAGINA
-    );
+    page = page || 1;
+    const params = gerarParametrosConsulta({
+      ...formValues,
+      page: page,
+      page_size: this.TAMANHO_PAGINA,
+    });
+    const response = await getProdutosPorParametros(params);
     this.setState({ loading: false });
     if (response.status === 200) {
       this.props.setIndiceProdutoAtivo(0);
@@ -97,11 +100,13 @@ class ReclamacaoProduto extends Component {
       error: "",
     });
     try {
-      if (!this.state.firstLoad) {
+      if (this.state.firstLoad) {
+        this.setState({ firstLoad: false });
+        this.setState({ loading: false });
+      } else {
         this.setConsultaEfetuada(true);
+        this.atualizaListaProdutos(formValues);
       }
-      this.setState({ firstLoad: false }); // Desativa a flag de primeiro carrgamento
-      this.atualizaListaProdutos(formValues);
     } catch (e) {
       this.setState({ error: "Erro ao consultar a lista de produtos." });
     }
