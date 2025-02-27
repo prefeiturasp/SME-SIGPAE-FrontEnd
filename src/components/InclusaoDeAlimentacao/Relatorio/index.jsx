@@ -143,9 +143,7 @@ export const Relatorio = ({ ...props }) => {
     );
   };
 
-  const ComponenteModalNaoAprova = ehEscolaEInclusaoContinua(
-    inclusaoDeAlimentacao
-  )
+  const ComponenteModalNaoAprova = ehEscolaEInclusaoContinua()
     ? ModalCancelarInclusaoContinua
     : ModalNaoAprova;
 

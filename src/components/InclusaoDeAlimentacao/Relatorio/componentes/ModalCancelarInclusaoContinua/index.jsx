@@ -98,6 +98,7 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
                         <Field
                           name={`quantidades_periodo[${key}].cancelado`}
                           component="input"
+                          data-testid={`data-cancelamento-continuo-${key}`}
                           disabled={
                             quantidade_periodo.cancelado ||
                             moment(solicitacao.data_inicial, "DD/MM/YYYY") <=
@@ -153,6 +154,7 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
               <div className="row ps-3 pe-3">
                 <Field
                   component={TextArea}
+                  dataTestId="textarea-justificativa"
                   label="Justificativa"
                   name="justificativa"
                   required
