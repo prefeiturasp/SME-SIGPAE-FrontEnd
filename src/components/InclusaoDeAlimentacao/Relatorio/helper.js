@@ -44,12 +44,16 @@ export const exibeBotaoAprovar = (
   );
 };
 
-export const exibirBotaoQuestionamento = (inclusaoDeAlimentacao, visao) => {
+export const exibirBotaoQuestionamento = (
+  inclusaoDeAlimentacao,
+  visao,
+  tipoPerfil_ = tipoPerfil
+) => {
   return (
     [
       TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
       TIPO_PERFIL.TERCEIRIZADA,
-    ].includes(tipoPerfil) &&
+    ].includes(tipoPerfil_) &&
     inclusaoDeAlimentacao &&
     (inclusaoDeAlimentacao.prioridade !== "REGULAR" ||
       (visao === CODAE && inclusaoDeAlimentacao.prioridade !== "REGULAR")) &&

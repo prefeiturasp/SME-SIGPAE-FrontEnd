@@ -287,7 +287,8 @@ export const Relatorio = ({ ...props }) => {
                             )}
                             {exibirBotaoQuestionamento(
                               inclusaoDeAlimentacao,
-                              visao
+                              visao,
+                              tipoPerfil
                             ) && (
                               <>
                                 {inclusaoDeAlimentacao.status ===
