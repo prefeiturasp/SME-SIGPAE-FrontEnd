@@ -38,6 +38,7 @@ export const ModalNaoValidarSolicitacao = ({ ...props }) => {
       setIsLoading(false);
       return;
     }
+
     const resp = await endpoint(
       uuid,
       {
@@ -74,6 +75,7 @@ export const ModalNaoValidarSolicitacao = ({ ...props }) => {
                 <div className="form-group col-12">
                   <Field
                     component={Select}
+                    dataTestId="select-motivo-cancelamento"
                     name="motivo_cancelamento"
                     label="Motivo"
                     naoDesabilitarPrimeiraOpcao
@@ -85,6 +87,7 @@ export const ModalNaoValidarSolicitacao = ({ ...props }) => {
                 <div className="form-group col-12">
                   <Field
                     component={TextArea}
+                    dataTestId="textarea-justificativa"
                     placeholder="Obrigatório"
                     label="Justificativa"
                     name="justificativa"
