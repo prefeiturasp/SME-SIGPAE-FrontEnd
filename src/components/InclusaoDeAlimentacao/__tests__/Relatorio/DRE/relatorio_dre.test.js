@@ -10,6 +10,7 @@ import { PERFIL, TIPO_PERFIL } from "constants/shared";
 import { APIMockVersion } from "mocks/apiVersionMock";
 import { mockInclusaoalimentacaoNaoValidada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoNaoValidada";
 import { mockInclusaoAlimentacaoRegular } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoRegular";
+import { mockInclusaoAlimentacaoValidada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoValidada";
 import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
 import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
@@ -41,6 +42,11 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
     mock
       .onPatch(
         "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/diretoria-regional-nao-valida-pedido/"
+      )
+      .reply(200, {});
+    mock
+      .onPatch(
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/diretoria-regional-valida-pedido/"
       )
       .reply(200, {});
 
@@ -176,5 +182,22 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
     expect(screen.queryByText("Validar")).not.toBeInTheDocument();
 
     expect(screen.getByText("DRE não validou")).toBeInTheDocument();
+  });
+
+  it("valida solicitação", async () => {
+    const botaoValidar = screen.getByText("Validar").closest("button");
+    fireEvent.click(botaoValidar);
+
+    mock
+      .onGet(
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+      )
+      .replyOnce(200, mockInclusaoAlimentacaoValidada);
+
+    await waitFor(() => {
+      expect(screen.queryByText("DRE validou")).not.toBeInTheDocument();
+    });
+
+    expect(screen.queryByText("Não validar")).not.toBeInTheDocument();
   });
 });
