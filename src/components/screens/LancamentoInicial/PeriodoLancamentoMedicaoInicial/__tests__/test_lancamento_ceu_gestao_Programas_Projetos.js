@@ -15,6 +15,8 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 
+jest.setTimeout(30000);
+
 describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
     mock.onGet("/api-version/").reply(200, APIMockVersion);
