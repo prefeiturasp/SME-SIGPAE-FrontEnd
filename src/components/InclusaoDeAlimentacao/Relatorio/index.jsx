@@ -115,7 +115,7 @@ export const Relatorio = ({ ...props }) => {
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess(toastAprovaMensagem);
-      getSolicitacaoAsync(uuid, tipoSolicitacao);
+      getSolicitacaoAsync();
     } else {
       toastError(toastAprovaMensagemErro);
     }
