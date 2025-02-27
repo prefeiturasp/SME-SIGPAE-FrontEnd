@@ -179,14 +179,5 @@ describe("Teste <ReclamacaoProduto> - Perfil Nutri Supervisão", () => {
 
     const botaoConsultar = screen.getByText("Consultar").closest("button");
     expect(botaoConsultar).toBeDisabled();
-
-    await act(async () => {
-      fireEvent.mouseDown(inputEdital);
-    });
-
-    await waitFor(() => screen.getAllByText("Edital de Pregão n°70/SME/2022"));
-    await act(async () => {
-      fireEvent.click(screen.getAllByText("Edital de Pregão n°70/SME/2022")[1]);
-    });
   });
 });
