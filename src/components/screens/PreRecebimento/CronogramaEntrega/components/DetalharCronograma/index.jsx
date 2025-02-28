@@ -174,6 +174,7 @@ export default () => {
                 )}
                 <Botao
                   texto="Voltar"
+                  dataTestId="voltar"
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
                   className="float-end ms-3"

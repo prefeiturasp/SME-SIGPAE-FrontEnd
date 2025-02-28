@@ -18,7 +18,6 @@ export default () => {
   const [total, setTotal] = useState();
   const [page, setPage] = useState();
   const [ativos, setAtivos] = useState([]);
-  const [buscaPorParametro, setBuscaPorParametro] = useState(false);
   const [armazens, setArmazens] = useState([{}]);
 
   const inicioResultado = useRef();
@@ -37,10 +36,6 @@ export default () => {
       setCronogramas();
     }
     setCarregando(false);
-    if (response.data.count === 1 && buscaPorParametro) {
-      setBuscaPorParametro(false);
-      setAtivos([response.data.results[0].uuid]);
-    }
   };
 
   const buscaArmazens = async () => {
