@@ -42,11 +42,10 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
     let uuid = cronograma.uuid;
     let numero = cronograma.numero;
     imprimirCronograma(uuid, numero)
-      .then(() => {
-        setCarregando(false);
-      })
-      .catch((error) => {
-        error.response.data.text().then((text) => toastError(text));
+      .catch((error) =>
+        error.response.data.text().then((text) => toastError(text))
+      )
+      .finally(() => {
         setCarregando(false);
       });
   };
@@ -147,6 +146,7 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
 
                           {cronograma.status === "Assinado CODAE" && (
                             <span
+                              data-testid={`imprimir_${index}`}
                               className="float-start ms-1 link-acoes green"
                               onClick={() => baixarPDFCronograma(cronograma)}
                             >
