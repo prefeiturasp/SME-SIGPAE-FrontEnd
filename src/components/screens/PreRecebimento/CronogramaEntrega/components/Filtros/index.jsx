@@ -32,9 +32,6 @@ export default ({
   const onSubmit = async (values) => {
     const filtros = { ...values };
     if (filtros.status) filtros.status = filtros.status.flat();
-    if (filtros.motivos) {
-      filtros.motivos = filtros.motivos.toString();
-    }
     setFiltros({ ...filtros });
   };
 
@@ -53,6 +50,7 @@ export default ({
                 <Field
                   component={InputText}
                   label="Filtrar por Nome do Produto"
+                  dataTestId="nome_produto"
                   name="nome_produto"
                   placeholder="Digite o produto"
                   className="input-busca-cronograma"

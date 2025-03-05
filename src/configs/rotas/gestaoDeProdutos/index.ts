@@ -337,6 +337,7 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
       usuarioEhCogestorDRE() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
+      usuarioEhNutricionistaSupervisao() ||
       usuarioEhOrgaoFiscalizador() ||
       usuarioEhCODAEGabinete() ||
       usuarioEhDinutreDiretoria(),

@@ -43,7 +43,7 @@ describe("Test <Sidebar> - Usuário DINUTRE_DIRETORIA", () => {
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("perfil", `"DINUTRE_DIRETORIA"`);
-    localStorage.setItem("tipo_perfil", `"pre_recebimento"`);
+    localStorage.setItem("tipo_perfil", `"dinutre"`);
 
     await act(async () => {
       render(
@@ -193,26 +193,5 @@ describe("Test <Sidebar> - Usuário DINUTRE_DIRETORIA", () => {
     expect(linkRelatorios).toHaveTextContent(
       "Relatório de reclamação de produto"
     );
-  });
-
-  it("renderiza link `Pré-Recebimento` com seus submenus", async () => {
-    await awaitServices();
-    expect(screen.getByText("Pré-Recebimento")).toBeInTheDocument();
-
-    const linkPreRecebimento = screen.getByTestId("pre-recebimento");
-    fireEvent.click(linkPreRecebimento);
-
-    expect(linkPreRecebimento).toHaveTextContent("Painel de Aprovações");
-    expect(linkPreRecebimento).toHaveTextContent("Cronograma de Entrega");
-    expect(linkPreRecebimento).toHaveTextContent(
-      "Verificar Alterações de Cronograma"
-    );
-    expect(linkPreRecebimento).toHaveTextContent("Calendário de Cronogramas");
-    expect(linkPreRecebimento).toHaveTextContent("Relatórios");
-
-    const linkRelatoriosPr = screen.getByTestId("relatorios-pr");
-    fireEvent.click(linkRelatoriosPr);
-
-    expect(linkPreRecebimento).toHaveTextContent("Cronogramas de Entregas");
   });
 });

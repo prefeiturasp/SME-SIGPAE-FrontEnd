@@ -10,6 +10,11 @@ export const mockLocationStateEMEF = {
   status_solicitacao: "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE",
   tiposAlimentacao: [
     {
+      nome: "Lanche 4h",
+      uuid: "83fefd96-e476-42a0-81fc-75b9853b726c",
+      posicao: 1,
+    },
+    {
       nome: "Lanche",
       uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
       posicao: 1,

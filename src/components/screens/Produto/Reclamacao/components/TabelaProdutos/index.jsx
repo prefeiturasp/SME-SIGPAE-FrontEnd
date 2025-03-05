@@ -38,6 +38,7 @@ export default class TabelaProdutos extends Component {
       onAtualizarProduto,
       indiceProdutoAtivo,
       setIndiceProdutoAtivo,
+      edital,
     } = this.props;
     const { mostraModalReclamacao, escolasRequisicaoConcluida } = this.state;
     return (
@@ -99,7 +100,7 @@ export default class TabelaProdutos extends Component {
                     </Link>
                     <Botao
                       texto="Reclamação"
-                      disabled={!escolasRequisicaoConcluida}
+                      disabled={!escolasRequisicaoConcluida || !edital}
                       className="ms-3"
                       onClick={this.abreModalReclamacao}
                       type={BUTTON_TYPE.BUTTON}
@@ -117,6 +118,7 @@ export default class TabelaProdutos extends Component {
           produto={listaProdutos[indiceProdutoAtivo]}
           onAtualizarProduto={onAtualizarProduto}
           setEscolasRequisicaoConcluida={this.setEscolasRequisicaoConcluida}
+          edital={edital}
         />
       </section>
     );

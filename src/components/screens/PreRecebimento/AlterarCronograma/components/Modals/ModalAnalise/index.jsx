@@ -77,12 +77,12 @@ export default ({ show, setShow, handleClose, loading, handleSim }) => {
           >
             <Spin tip="Carregando..." spinning={loading}>
               <Modal.Header closeButton>
-                <Modal.Title> Confirmar envio para DINUTRE </Modal.Title>
+                <Modal.Title> Confirmar envio para Abastecimento </Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <p>
                   Deseja enviar a Análise da Solicitação de Alteração de
-                  Cronograma para a <strong>DINUTRE</strong>?{" "}
+                  Cronograma para a <strong>Abastecimento</strong>?{" "}
                 </p>
               </Modal.Body>
               <Modal.Footer>

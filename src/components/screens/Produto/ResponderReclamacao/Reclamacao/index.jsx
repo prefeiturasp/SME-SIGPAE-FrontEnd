@@ -108,18 +108,18 @@ const Reclamacao = ({
 
   const responder_deve_aparecer = (reclamacao_status) => {
     if (rastro_terceirizada === null) {
-      return true;
+      return false;
     } else if (
       `"${rastro_terceirizada.nome_fantasia}"` !==
       localStorage.getItem("nome_instituicao")
     ) {
-      return true;
+      return false;
     } else if (
       reclamacao_status !== STATUS_RECLAMACAO.AGUARDANDO_RESPOSTA_TERCEIRIZADA
     ) {
-      return true;
-    } else {
       return false;
+    } else {
+      return true;
     }
   };
 
@@ -188,14 +188,15 @@ const Reclamacao = ({
         })}
       </div>
       <div className="text-end">
-        <Botao
-          texto="Responder"
-          type={BUTTON_TYPE.BUTTON}
-          style={BUTTON_STYLE.GREEN}
-          onClick={() => setExibirModal(true)}
-          className="ms-3 me-3"
-          disabled={responder_deve_aparecer(reclamacao.status)}
-        />
+        {responder_deve_aparecer(reclamacao.status) && (
+          <Botao
+            texto="Responder"
+            type={BUTTON_TYPE.BUTTON}
+            style={BUTTON_STYLE.GREEN}
+            onClick={() => setExibirModal(true)}
+            className="ms-3 me-3"
+          />
+        )}
       </div>
     </Fragment>
   );

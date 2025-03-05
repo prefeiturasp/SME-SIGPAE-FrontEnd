@@ -106,6 +106,7 @@ export const ModalCancelarInclusaoAlimentacao = ({ ...props }) => {
                             <label key={key_} className="me-3">
                               <Field
                                 name="datas"
+                                data-testid={`data_${motivo}_${dia}`}
                                 component="input"
                                 disabled={
                                   dias_motivos.find((i) => i.data === dia)
@@ -145,6 +146,7 @@ export const ModalCancelarInclusaoAlimentacao = ({ ...props }) => {
                   <label>Justificativa</label>
                 </span>
                 <Field
+                  data-testid="textarea-justificativa"
                   className="col-12 pb-5"
                   component="textarea"
                   name="justificativa"

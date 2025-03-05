@@ -8,24 +8,24 @@ import { toastError } from "components/Shareable/Toast/dialogs";
 import {
   usuarioEhCronograma,
   usuarioEhDilogDiretoria,
-  usuarioEhDinutreDiretoria,
   usuarioEhEmpresaFornecedor,
+  usuarioEhCodaeDilog,
+  usuarioEhDilogAbastecimento,
 } from "helpers/utilities";
 import ModalEnviarSolicitacao from "../Modals/ModalEnviarSolicitacao";
 import ModalAnalise from "../Modals/ModalAnalise";
-import ModalAnaliseDinutre from "../Modals/ModalAnaliseDinutre";
+import ModalAnaliseAbastecimento from "../Modals/ModalAnaliseAbastecimento";
 import ModalAnaliseDilog from "../Modals/ModalAnaliseDilog";
 import ModalEnviarAlteracao from "../Modals/ModalEnviarAlteracao";
 import ModalCienciaAlteracao from "../Modals/ModalCienciaAlteracao";
 import ModalVoltar from "../../../../../Shareable/Page/ModalVoltar";
-import { usuarioEhCodaeDilog } from "../../../../../../helpers/utilities";
 
 export default ({
   handleSubmit,
   handleSubmitCronograma,
   podeSubmeter,
   solicitacaoAlteracaoCronograma,
-  disabledDinutre,
+  disabledAbastecimento,
   disabledDilog,
 }) => {
   const [show, setShow] = useState(false);
@@ -128,7 +128,7 @@ export default ({
         solicitacaoAlteracaoCronograma.status === "Em análise" && (
           <>
             <Botao
-              texto="Enviar DINUTRE"
+              texto="Enviar Abastecimento"
               type={BUTTON_TYPE.BUTTON}
               style={BUTTON_STYLE.GREEN}
               className="float-end ms-3"
@@ -145,7 +145,7 @@ export default ({
           </>
         )}
 
-      {usuarioEhDinutreDiretoria() &&
+      {usuarioEhDilogAbastecimento() &&
         solicitacaoAlteracaoCronograma.status === "Cronograma ciente" && (
           <>
             <Botao
@@ -154,9 +154,9 @@ export default ({
               style={BUTTON_STYLE.GREEN}
               className="float-end ms-3"
               onClick={() => handleShow()}
-              disabled={disabledDinutre}
+              disabled={disabledAbastecimento}
             />
-            <ModalAnaliseDinutre
+            <ModalAnaliseAbastecimento
               show={show}
               handleClose={handleClose}
               loading={loading}
@@ -166,7 +166,7 @@ export default ({
         )}
 
       {usuarioEhDilogDiretoria() &&
-        ["Aprovado DINUTRE", "Reprovado DINUTRE"].includes(
+        ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
           solicitacaoAlteracaoCronograma.status
         ) && (
           <>

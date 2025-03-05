@@ -20,8 +20,8 @@ export const options_status = [
     label: "Assinado Fornecedor",
   },
   {
-    value: "ASSINADO_DINUTRE",
-    label: "Assinado DINUTRE",
+    value: "ASSINADO_DILOG_ABASTECIMENTO",
+    label: "Assinado Abastecimento",
   },
   {
     value: "ASSINADO_CODAE",
@@ -43,7 +43,7 @@ export const options_status_fornecedor = [
     label: "Recebido",
   },
   {
-    value: ["ASSINADO_FORNECEDOR", "ASSINADO_DINUTRE"],
+    value: ["ASSINADO_FORNECEDOR", "ASSINADO_DILOG_ABASTECIMENTO"],
     label: "Aguardando CODAE",
   },
   {
@@ -61,7 +61,7 @@ export const options_status_fornecedor = [
 ];
 
 export const deParaStatusCronograma = (status) =>
-  ["Assinado Fornecedor", "Assinado Dinutre"].includes(status) &&
+  ["Assinado Fornecedor", "Assinado Abastecimento"].includes(status) &&
   usuarioEhEmpresaFornecedor()
     ? "Aguardando CODAE"
     : status;

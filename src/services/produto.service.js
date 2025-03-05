@@ -83,14 +83,32 @@ export const getNomesFabricantes = async (queryparams) => {
 export const getNomesUnicosFabricantes = async () =>
   await axios.get("/fabricantes/lista-nomes-unicos/");
 
-export const getNovaReclamacaoNomesProdutos = async () =>
-  await axios.get("/produtos/lista-nomes-nova-reclamacao/");
+export const getNovaReclamacaoNomesProdutos = async (params) => {
+  const url = `/produtos/lista-nomes-nova-reclamacao/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
-export const getNovaReclamacaoNomesMarcas = async () =>
-  await axios.get("/marcas/lista-nomes-nova-reclamacao/");
+export const getNovaReclamacaoNomesMarcas = async (params) => {
+  const url = `/marcas/lista-nomes-nova-reclamacao/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
-export const getNovaReclamacaoNomesFabricantes = async () =>
-  await axios.get("/fabricantes/lista-nomes-nova-reclamacao/");
+export const getNovaReclamacaoNomesFabricantes = async (params) => {
+  const url = `/fabricantes/lista-nomes-nova-reclamacao/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const getAvaliarReclamacaoNomesProdutos = async () =>
   await axios.get("/produtos/lista-nomes-avaliar-reclamacao/");
@@ -143,12 +161,10 @@ export const getProdutosPorFabricante = async (nomeFabricante) => {
   return await axios.get(`/produtos/filtro-por-fabricante/${nomeFabricante}/`);
 };
 
-export const getProdutosPorParametros = async (parametros, page, pageSize) => {
-  return await axios.post(
-    `/produtos/filtro-homologados-por-parametros/`,
-    parametros,
-    { params: { page, page_size: pageSize } }
-  );
+export const getProdutosPorParametros = async (params) => {
+  return await axios.get(`/produtos/filtro-homologados-por-parametros/`, {
+    params,
+  });
 };
 
 export const getReclamacoesTerceirizadaPorFiltro = async (params) => {
