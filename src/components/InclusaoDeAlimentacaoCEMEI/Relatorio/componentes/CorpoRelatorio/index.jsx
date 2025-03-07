@@ -268,13 +268,28 @@ export const CorpoRelatorio = ({
                 {motivo === "Evento Específico" && (
                   <Fragment>
                     <tr className="row">
-                      <th className="col-12">Dercrição do evento:</th>
+                      <th className="col-12">Descrição do evento:</th>
                     </tr>
                     <tr className="row">
                       <td className="col-12 text-justify">
                         {
                           solicitacao.dias_motivos_da_inclusao_cemei[key]
                             .descricao_evento
+                        }
+                      </td>
+                    </tr>
+                  </Fragment>
+                )}
+                {motivo === "Outro" && (
+                  <Fragment>
+                    <tr className="row">
+                      <th className="col-12">Descrição do motivo:</th>
+                    </tr>
+                    <tr className="row">
+                      <td className="col-12 text-justify">
+                        {
+                          solicitacao.dias_motivos_da_inclusao_cemei[key]
+                            .outro_motivo
                         }
                       </td>
                     </tr>
