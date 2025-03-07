@@ -304,6 +304,10 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
         `quantidades_periodo[${index}].multiselect`,
         "multiselect-wrapper-enabled"
       );
+
+      // TODO
+      // console.log(qp.tipos_alimentacao.map((t) => t.uuid))
+
       form.change(
         `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
         qp.tipos_alimentacao.map((t) => t.uuid)
@@ -701,7 +705,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                             ? periodosMotivoEspecifico
                             : periodos
                         }
-                        meusDados={meusDados}
                         motivoEspecifico={motivoEspecifico}
                         uuid={uuid}
                         idExterno={idExterno}
@@ -716,7 +719,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                       form={form}
                       values={values}
                       periodos={periodoNoite}
-                      meusDados={meusDados}
                       ehETEC
                     />
                   )}
@@ -733,7 +735,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                             : periodos
                         }
                         push={push}
-                        meusDados={meusDados}
                         ehMotivoInclusaoEspecifico={ehMotivoInclusaoEspecifico(
                           form.getState().values
                         )}

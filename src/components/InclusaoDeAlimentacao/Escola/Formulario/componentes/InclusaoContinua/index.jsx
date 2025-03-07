@@ -25,6 +25,8 @@ import {
   deepEqual,
   fimDoCalendario,
   getDataObj,
+  usuarioEhEscolaCeuGestao,
+  usuarioEhEscolaCMCT,
 } from "helpers/utilities";
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
@@ -89,7 +91,6 @@ export const Recorrencia = ({
   values,
   periodos,
   push,
-  meusDados,
   ehMotivoInclusaoEspecifico,
   uuid,
   idExterno,
@@ -123,10 +124,6 @@ export const Recorrencia = ({
   };
 
   const adicionarRecorrencia = async (form, values) => {
-    const ehCEU =
-      meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais ===
-      "CEU GESTAO";
-
     let valueTipoAlimentacao = values.tipos_alimentacao;
 
     if (valueTipoAlimentacao === REFEICAO_E_SOBREMESA) {
@@ -152,7 +149,8 @@ export const Recorrencia = ({
       );
       return;
     } else if (
-      !ehCEU &&
+      !usuarioEhEscolaCeuGestao &&
+      !usuarioEhEscolaCMCT &&
       (/\D/.test(values.numero_alunos) ||
         values.numero_alunos <= 0 ||
         (!ehMotivoInclusaoEspecifico &&
@@ -306,8 +304,8 @@ export const Recorrencia = ({
           <Field
             component={InputText}
             validate={
-              meusDados.vinculo_atual.instituicao
-                .tipo_unidade_escolar_iniciais !== "CEU GESTAO" &&
+              !usuarioEhEscolaCeuGestao &&
+              !usuarioEhEscolaCMCT &&
               values.numero_alunos &&
               values.periodo_escolar &&
               values.dias_semana &&

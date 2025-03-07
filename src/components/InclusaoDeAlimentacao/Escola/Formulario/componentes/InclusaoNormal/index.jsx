@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
+import Select from "components/Shareable/Select";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { TextArea } from "components/Shareable/TextArea/TextArea";
 import Botao from "components/Shareable/Botao";
@@ -21,9 +22,12 @@ import {
   required,
 } from "helpers/fieldValidators";
 import {
+  agregarDefault,
   composeValidators,
   fimDoCalendario,
   formatarParaMultiselect,
+  usuarioEhEscolaCeuGestao,
+  usuarioEhEscolaCMCT,
 } from "helpers/utilities";
 import "../../style.scss";
 
@@ -133,7 +137,6 @@ export const PeriodosInclusaoNormal = ({
   form,
   values,
   periodos,
-  meusDados,
   ehETEC,
   motivoEspecifico,
   uuid,
@@ -217,6 +220,35 @@ export const PeriodosInclusaoNormal = ({
         );
   };
 
+  const onSelectChanged = (value, indice) => {
+    const periodo = getPeriodo(indice);
+    const tiposAlimentacao = periodo.tipos_alimentacao || [];
+
+    const refeicaoUuid = tiposAlimentacao.find(
+      (ta) => ta.nome === "Refeição"
+    )?.uuid;
+    const sobremesaUuid = tiposAlimentacao.find(
+      (ta) => ta.nome === "Sobremesa"
+    )?.uuid;
+
+    let novosSelecionados = [];
+    if (value === "Refeição e Sobremesa") {
+      // Adiciona "Refeição" e "Sobremesa" se a opção for "Refeição e Sobremesa"
+      if (refeicaoUuid) novosSelecionados.push(refeicaoUuid);
+      if (sobremesaUuid) novosSelecionados.push(sobremesaUuid);
+    } else if (value) {
+      novosSelecionados.push(value);
+    }
+
+    // TODO
+    // console.log(novosSelecionados)
+
+    form.change(
+      `quantidades_periodo[${indice}].tipos_alimentacao_selecionados`,
+      novosSelecionados
+    );
+  };
+
   return (
     <>
       <div className="row">
@@ -261,32 +293,60 @@ export const PeriodosInclusaoNormal = ({
                   </div>
                 </div>
                 <div className="col-6">
-                  <div
-                    className={getPeriodo(indice).multiselect}
-                    data-testid={`multiselect-div-${getPeriodo(indice).nome}`}
-                  >
-                    <Field
-                      component={StatefulMultiSelect}
-                      name="tipos_alimentacao"
-                      selected={
-                        getPeriodo(indice).tipos_alimentacao_selecionados || []
-                      }
-                      options={formatarParaMultiselect(
-                        getPeriodo(indice).tipos_alimentacao || []
-                      )}
-                      onSelectedChanged={(values_) =>
-                        onTiposAlimentacaoChanged(values_, indice)
-                      }
-                      disableSearch={true}
-                      hasSelectAll={!ehETEC}
-                      overrideStrings={{
-                        selectSomeItems: "Selecione",
-                        allItemsAreSelected:
-                          "Todos os itens estão selecionados",
-                        selectAll: "Todos",
-                      }}
-                    />
-                  </div>
+                  {usuarioEhEscolaCMCT() ? (
+                    // Renderiza um select simples se for CMCT
+                    <div
+                      data-testid={`select-simples-div-${
+                        getPeriodo(indice).nome
+                      }`}
+                    >
+                      <Field
+                        component={Select}
+                        name={`${getPeriodo(indice).nome}.tipos_alimentacao`}
+                        options={[
+                          ...agregarDefault(
+                            getPeriodo(indice).tipos_alimentacao
+                          ),
+                          { nome: "Refeição e Sobremesa", uuid: null },
+                        ]}
+                        onChangeEffect={(e) => {
+                          const value = e.target.value;
+                          onSelectChanged(value, indice);
+                        }}
+                        naoDesabilitarPrimeiraOpcao
+                        disabled={!getPeriodo(indice).checked}
+                      />
+                    </div>
+                  ) : (
+                    // Renderiza o StatefulMultiSelect caso contrário
+                    <div
+                      className={getPeriodo(indice).multiselect}
+                      data-testid={`multiselect-div-${getPeriodo(indice).nome}`}
+                    >
+                      <Field
+                        component={StatefulMultiSelect}
+                        name="tipos_alimentacao"
+                        selected={
+                          getPeriodo(indice).tipos_alimentacao_selecionados ||
+                          []
+                        }
+                        options={formatarParaMultiselect(
+                          getPeriodo(indice).tipos_alimentacao || []
+                        )}
+                        onSelectedChanged={(values_) =>
+                          onTiposAlimentacaoChanged(values_, indice)
+                        }
+                        disableSearch={true}
+                        hasSelectAll={!ehETEC}
+                        overrideStrings={{
+                          selectSomeItems: "Selecione",
+                          allItemsAreSelected:
+                            "Todos os itens estão selecionados",
+                          selectAll: "Todos",
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="col-3">
                   <Field
@@ -299,8 +359,7 @@ export const PeriodosInclusaoNormal = ({
                     required={getPeriodo(indice).checked}
                     dataTestIdDiv={`numero-alunos-${indice}`}
                     validate={
-                      meusDados.vinculo_atual.instituicao
-                        .tipo_unidade_escolar_iniciais !== "CEU GESTAO"
+                      !usuarioEhEscolaCeuGestao && !usuarioEhEscolaCMCT()
                         ? getPeriodo(indice).checked &&
                           validacaoNumeroAlunos(periodos, indice)
                         : false

@@ -695,6 +695,16 @@ export const usuarioEhDRE = () => {
   return localStorage.getItem("tipo_perfil") === TIPO_PERFIL.DIRETORIA_REGIONAL;
 };
 
+export const usuarioEhEscolaCeuGestao = () => {
+  const instituicao = nomeInstituicao();
+  return instituicao.includes("CEU GESTAO");
+};
+
+export const usuarioEhEscolaCMCT = () => {
+  const instituicao = nomeInstituicao();
+  return instituicao.includes("CMCT");
+};
+
 export const usuarioEhCoordenadorDRE = () => {
   return localStorage.getItem("perfil") === PERFIL.COORDENADOR_DRE;
 };

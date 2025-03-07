@@ -28,6 +28,8 @@ export const validarSubmissaoNormal = (
   if (
     meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
       "CEU GESTAO" &&
+    meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
+      "CMCT" &&
     !ehMotivoEspecifico &&
     meusDados.vinculo_atual.instituicao.quantidade_alunos < totalAlunos
   ) {
@@ -53,7 +55,8 @@ export const validarSubmissaoContinua = (
   if (
     !values.quantidades_periodo.find((qp) => qp.nome === "NOITE") &&
     meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
-      "CEU GESTAO"
+      "CEU GESTAO" &&
+    meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !== "CMCT"
   ) {
     if (
       !ehMotivoEspecifico &&
