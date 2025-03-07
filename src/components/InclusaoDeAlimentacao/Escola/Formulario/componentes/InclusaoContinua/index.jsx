@@ -150,7 +150,7 @@ export const Recorrencia = ({
       return;
     } else if (
       !usuarioEhEscolaCeuGestao &&
-      !usuarioEhEscolaCMCT &&
+      !usuarioEhEscolaCMCT() &&
       (/\D/.test(values.numero_alunos) ||
         values.numero_alunos <= 0 ||
         (!ehMotivoInclusaoEspecifico &&
@@ -304,8 +304,8 @@ export const Recorrencia = ({
           <Field
             component={InputText}
             validate={
-              !usuarioEhEscolaCeuGestao &&
-              !usuarioEhEscolaCMCT &&
+              !usuarioEhEscolaCeuGestao() &&
+              !usuarioEhEscolaCMCT() &&
               values.numero_alunos &&
               values.periodo_escolar &&
               values.dias_semana &&

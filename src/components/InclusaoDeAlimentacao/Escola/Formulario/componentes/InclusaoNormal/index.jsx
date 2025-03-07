@@ -220,6 +220,7 @@ export const PeriodosInclusaoNormal = ({
         );
   };
 
+  /*
   const onSelectChanged = (value, indice) => {
     const periodo = getPeriodo(indice);
     const tiposAlimentacao = periodo.tipos_alimentacao || [];
@@ -247,7 +248,7 @@ export const PeriodosInclusaoNormal = ({
       `quantidades_periodo[${indice}].tipos_alimentacao_selecionados`,
       novosSelecionados
     );
-  };
+  };*/
 
   return (
     <>
@@ -302,17 +303,16 @@ export const PeriodosInclusaoNormal = ({
                     >
                       <Field
                         component={Select}
-                        name={`${getPeriodo(indice).nome}.tipos_alimentacao`}
+                        name={`${name}.tipos_alimentacao_selecionados`}
                         options={[
                           ...agregarDefault(
                             getPeriodo(indice).tipos_alimentacao
                           ),
-                          { nome: "Refeição e Sobremesa", uuid: null },
+                          {
+                            nome: "Refeição e Sobremesa",
+                            uuid: "refeicao_e_sobremesa",
+                          },
                         ]}
-                        onChangeEffect={(e) => {
-                          const value = e.target.value;
-                          onSelectChanged(value, indice);
-                        }}
                         naoDesabilitarPrimeiraOpcao
                         disabled={!getPeriodo(indice).checked}
                       />

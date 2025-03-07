@@ -15,6 +15,7 @@ import Select from "components/Shareable/Select";
 import { required } from "helpers/fieldValidators";
 import {
   agregarDefault,
+  usuarioEhEscolaCMCT,
   checaSeDataEstaEntre2e5DiasUteis,
   deepCopy,
   getError,
@@ -308,10 +309,14 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
       // TODO
       // console.log(qp.tipos_alimentacao.map((t) => t.uuid))
 
-      form.change(
-        `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
-        qp.tipos_alimentacao.map((t) => t.uuid)
-      );
+      if (usuarioEhEscolaCMCT()) {
+        // carregar um single uuid OU se for refeição e sobremesa carregar o valor refeicao_e_sobremesa
+      } else {
+        form.change(
+          `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
+          qp.tipos_alimentacao.map((t) => t.uuid)
+        );
+      }
       form.change(
         `quantidades_periodo[${index}].numero_alunos`,
         qp.numero_alunos
