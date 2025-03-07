@@ -149,7 +149,7 @@ export const Recorrencia = ({
       );
       return;
     } else if (
-      !usuarioEhEscolaCeuGestao &&
+      !usuarioEhEscolaCeuGestao() &&
       !usuarioEhEscolaCMCT() &&
       (/\D/.test(values.numero_alunos) ||
         values.numero_alunos <= 0 ||

@@ -306,11 +306,18 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
         "multiselect-wrapper-enabled"
       );
 
-      // TODO
-      // console.log(qp.tipos_alimentacao.map((t) => t.uuid))
-
       if (usuarioEhEscolaCMCT()) {
-        // carregar um single uuid OU se for refeição e sobremesa carregar o valor refeicao_e_sobremesa
+        if (qp.tipos_alimentacao.length > 1) {
+          form.change(
+            `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
+            "refeicao_e_sobremesa"
+          );
+        } else {
+          form.change(
+            `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
+            qp.tipos_alimentacao[0].uuid
+          );
+        }
       } else {
         form.change(
           `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,

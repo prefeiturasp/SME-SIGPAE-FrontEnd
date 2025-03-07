@@ -1,3 +1,8 @@
+import {
+  usuarioEhEscolaCeuGestao,
+  usuarioEhEscolaCMCT,
+} from "helpers/utilities";
+
 export const validarSubmissaoNormal = (
   values,
   meusDados,
@@ -26,10 +31,8 @@ export const validarSubmissaoNormal = (
   }
 
   if (
-    meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
-      "CEU GESTAO" &&
-    meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
-      "CMCT" &&
+    !usuarioEhEscolaCeuGestao() &&
+    !usuarioEhEscolaCMCT() &&
     !ehMotivoEspecifico &&
     meusDados.vinculo_atual.instituicao.quantidade_alunos < totalAlunos
   ) {
@@ -54,9 +57,8 @@ export const validarSubmissaoContinua = (
 
   if (
     !values.quantidades_periodo.find((qp) => qp.nome === "NOITE") &&
-    meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
-      "CEU GESTAO" &&
-    meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !== "CMCT"
+    !usuarioEhEscolaCeuGestao() &&
+    !usuarioEhEscolaCMCT()
   ) {
     if (
       !ehMotivoEspecifico &&

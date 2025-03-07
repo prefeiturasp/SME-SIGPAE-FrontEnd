@@ -220,36 +220,6 @@ export const PeriodosInclusaoNormal = ({
         );
   };
 
-  /*
-  const onSelectChanged = (value, indice) => {
-    const periodo = getPeriodo(indice);
-    const tiposAlimentacao = periodo.tipos_alimentacao || [];
-
-    const refeicaoUuid = tiposAlimentacao.find(
-      (ta) => ta.nome === "Refeição"
-    )?.uuid;
-    const sobremesaUuid = tiposAlimentacao.find(
-      (ta) => ta.nome === "Sobremesa"
-    )?.uuid;
-
-    let novosSelecionados = [];
-    if (value === "Refeição e Sobremesa") {
-      // Adiciona "Refeição" e "Sobremesa" se a opção for "Refeição e Sobremesa"
-      if (refeicaoUuid) novosSelecionados.push(refeicaoUuid);
-      if (sobremesaUuid) novosSelecionados.push(sobremesaUuid);
-    } else if (value) {
-      novosSelecionados.push(value);
-    }
-
-    // TODO
-    // console.log(novosSelecionados)
-
-    form.change(
-      `quantidades_periodo[${indice}].tipos_alimentacao_selecionados`,
-      novosSelecionados
-    );
-  };*/
-
   return (
     <>
       <div className="row">
@@ -358,12 +328,19 @@ export const PeriodosInclusaoNormal = ({
                     className="form-control quantidade-aluno"
                     required={getPeriodo(indice).checked}
                     dataTestIdDiv={`numero-alunos-${indice}`}
-                    validate={
-                      !usuarioEhEscolaCeuGestao && !usuarioEhEscolaCMCT()
-                        ? getPeriodo(indice).checked &&
+                    validate={(value) => {
+                      if (usuarioEhEscolaCeuGestao() || usuarioEhEscolaCMCT()) {
+                        if (value < 1 && getPeriodo(indice).checked) {
+                          return "Deve ser maior ou igual a 1";
+                        }
+                      } else {
+                        return (
+                          getPeriodo(indice).checked &&
                           validacaoNumeroAlunos(periodos, indice)
-                        : false
-                    }
+                        );
+                      }
+                      return undefined;
+                    }}
                   />
                 </div>
               </div>
