@@ -40,9 +40,9 @@ const setup = async () => {
   });
 };
 
-describe("Carrega página de Empresas Cadastradas - Administrador DICAE", () => {
+describe("Carrega página de Empresas Cadastradas - Administrador Contratos", () => {
   beforeAll(() => {
-    localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_DICAE);
+    localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_CONTRATOS);
   });
 
   it("Verifica se empresas foram carregadas e renderizadas corretamente", async () => {

@@ -17,13 +17,13 @@ import { mockGetVisoesListagem } from "mocks/services/perfil.service/mockGetViso
 import { mockGetPerfilListagem } from "mocks/services/perfil.service/mockGetPerfilListagem";
 import { mockGetSubdivisoesCODAE } from "mocks/services/vinculos.service/mockGetSubdivisoesCODAE";
 import { mockGetVinculosAtivos } from "mocks/services/vinculos.service/mockGetVinculosAtivos";
-import { mockMeusDadosAdmDICAE } from "mocks/meusDados/adm-dicae";
+import { mockMeusDadosAdmCONTRATOS } from "mocks/meusDados/adm-contratos";
 
 jest.mock("services/notificacoes.service");
 
 describe("Teste <GestaoAcessoEmpresaPage>", () => {
   beforeEach(async () => {
-    localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_DICAE);
+    localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_CONTRATOS);
 
     getNotificacoes.mockResolvedValue({
       data: mockGetNotificacoes,
@@ -50,7 +50,7 @@ describe("Teste <GestaoAcessoEmpresaPage>", () => {
         >
           <MeusDadosContext.Provider
             value={{
-              meusDados: mockMeusDadosAdmDICAE,
+              meusDados: mockMeusDadosAdmCONTRATOS,
               setMeusDados: jest.fn(),
             }}
           >
@@ -77,7 +77,7 @@ describe("Teste <GestaoAcessoEmpresaPage>", () => {
       .closest("button");
     fireEvent.click(botaoAdicionar);
 
-    // Radio Buttons não devem aparecer para o ADMINISTRADOR_DICAE
+    // Radio Buttons não devem aparecer para o ADMINISTRADOR_CONTRATOS
     expect(screen.queryByText("Servidor")).not.toBeInTheDocument();
     expect(screen.queryByText("Não Servidor")).not.toBeInTheDocument();
     expect(screen.queryByText("Unidade Parceira")).not.toBeInTheDocument();
