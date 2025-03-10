@@ -217,7 +217,7 @@ const ModalCadastroVinculo = ({
   useEffect(() => {
     if (empresa) {
       const perfil = JSON.parse(localStorage.getItem("perfil"));
-      if (perfil !== "ADMINISTRADOR_DICAE") {
+      if (perfil !== "ADMINISTRADOR_CONTRATOS") {
         getVinculoEmpresaAsync();
       }
     }
