@@ -36,6 +36,7 @@ import ModalSalvarCorrecoes from "./components/ModalSalvarCorrecoes";
 import { ModalVoltarPeriodoLancamento } from "./components/ModalVoltarPeriodoLancamento";
 import CKEditorField from "components/Shareable/CKEditorField";
 import { deepCopy, deepEqual } from "helpers/utilities";
+import { getMeusDados } from "services/perfil.service";
 import {
   botaoAdicionarObrigatorioTabelaAlimentacao,
   validacoesTabelaAlimentacaoCEI,
@@ -90,7 +91,6 @@ import {
   updateValoresPeriodosLancamentos,
 } from "services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getFaixasEtarias } from "services/faixaEtaria.service";
-import * as perfilService from "services/perfil.service";
 import { escolaCorrigeMedicao } from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { DETALHAMENTO_DO_LANCAMENTO, MEDICAO_INICIAL } from "configs/constants";
 import "./styles.scss";
@@ -250,7 +250,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     setMesAnoFormatadoState(mesAnoFormatado);
 
     const fetch = async () => {
-      const meusDados = await perfilService.meusDados();
+      const response = await getMeusDados();
+      const meusDados = response.data;
       const escola =
         meusDados.vinculo_atual && meusDados.vinculo_atual.instituicao;
       const periodo = location.state ? location.state.periodo : "INTEGRAL";
@@ -672,7 +673,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         logQtdDietasAutorizadasCEI &&
           logQtdDietasAutorizadasCEI.forEach((log) => {
             categoria.nome.includes("TIPO B") &&
-              log.classificacao.toUpperCase() === "TIPO B - LANCHE" &&
+              log.classificacao.toUpperCase() === "TIPO B" &&
               (dadosValoresDietasAutorizadas[
                 `dietas_autorizadas__faixa_${log.faixa_etaria.uuid}__dia_${log.dia}__categoria_${categoria.id}`
               ] = `${log.quantidade}`);
@@ -714,7 +715,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                 `dietas_autorizadas__dia_${log.dia}__categoria_${categoria.id}`
               ] = `${log.quantidade}`);
             categoria.nome.includes("TIPO B") &&
-              log.classificacao.toUpperCase() === "TIPO B - LANCHE" &&
+              log.classificacao.toUpperCase() === "TIPO B" &&
               (dadosValoresDietasAutorizadasEmeiDaCemei[
                 `dietas_autorizadas__dia_${log.dia}__categoria_${categoria.id}`
               ] = `${log.quantidade}`);

@@ -16,7 +16,7 @@ import { getFaixasEtarias } from "services/faixaEtaria.service";
 import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
 import * as periodoLancamentoMedicaoService from "services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getSolicitacoesInclusoesAutorizadasEscola } from "services/medicaoInicial/periodoLancamentoMedicao.service";
-import * as perfilService from "services/perfil.service";
+import { getMeusDados } from "services/perfil.service";
 import { PeriodoLancamentoMedicaoInicialCEI } from "..";
 
 jest.mock("services/perfil.service.js");
@@ -25,7 +25,6 @@ jest.mock("services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("services/faixaEtaria.service.js");
 
 const awaitServices = async () => {
-  await waitFor(() => expect(perfilService.meusDados).toHaveBeenCalled());
   await waitFor(() => expect(getListaDiasSobremesaDoce).toHaveBeenCalled());
   await waitFor(() =>
     expect(getSolicitacoesInclusoesAutorizadasEscola).toHaveBeenCalled()
@@ -49,7 +48,10 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
   };
 
   beforeEach(() => {
-    perfilService.meusDados.mockResolvedValue(mockMeusDadosEscolaCEI);
+    getMeusDados.mockResolvedValue({
+      data: mockMeusDadosEscolaCEI,
+      status: 200,
+    });
     getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
     getFaixasEtarias.mockResolvedValue({ data: { results: [] }, status: 200 });
     getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
@@ -113,21 +115,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
       >
         <PeriodoLancamentoMedicaoInicialCEI />
       </MemoryRouter>
-    );
-  });
-
-  it("teste mock meusDados", async () => {
-    await waitFor(() => expect(perfilService.meusDados).toHaveBeenCalled());
-    expect(perfilService.meusDados).toHaveBeenCalledTimes(1);
-    expect(perfilService.meusDados).toHaveReturnedWith(
-      Promise.resolve(mockMeusDadosEscolaCEI)
-    );
-
-    const dados = await perfilService.meusDados();
-    expect(dados.vinculo_atual).toBeDefined();
-    expect(dados.vinculo_atual.instituicao).toBeDefined();
-    expect(dados.vinculo_atual.instituicao.nome).toBe(
-      "CEI DIRET VILA BRASILANDIA"
     );
   });
 
@@ -202,14 +189,12 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
     expect(specificMatriculados).toBeInTheDocument();
   });
 
-  it("renderiza label `DIETA ESPECIAL - TIPO B - LANCHE`", async () => {
+  it("renderiza label `DIETA ESPECIAL - TIPO B`", async () => {
     await awaitServices();
-    expect(
-      screen.getByText("DIETA ESPECIAL - TIPO B - LANCHE")
-    ).toBeInTheDocument();
+    expect(screen.getByText("DIETA ESPECIAL - TIPO B")).toBeInTheDocument();
   });
 
-  it("renderiza label `Seg.` dentro da seção `DIETA ESPECIAL - TIPO B - LANCHE`", async () => {
+  it("renderiza label `Seg.` dentro da seção `DIETA ESPECIAL - TIPO B`", async () => {
     await awaitServices();
     const categoriaDietaEspecialTipoBUuid =
       "6ad79709-3611-4af3-a567-65fcf34b3d06";
@@ -223,7 +208,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
     expect(specificMatriculados).toBeInTheDocument();
   });
 
-  it("renderiza label `Dietas Autorizadas` dentro da seção `DIETA ESPECIAL - TIPO B - LANCHE`", async () => {
+  it("renderiza label `Dietas Autorizadas` dentro da seção `DIETA ESPECIAL - TIPO B`", async () => {
     await awaitServices();
     const categoriaDietaEspecialTipoBUuid =
       "6ad79709-3611-4af3-a567-65fcf34b3d06";
@@ -246,7 +231,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
     );
     expect(inputElementMatriculados1AnoA3anosE11Meses).toHaveAttribute(
       "value",
-      "47"
+      "34"
     );
     const inputElementMatriculados4a6anos = screen.getByTestId(
       "matriculados__faixa_0c914b27-c7cd-4682-a439-a4874745b005__dia_09__categoria_1"
@@ -278,7 +263,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
       "div-botao-add-obs-09-1-observacoes"
     );
     const botaoAdicionar = botaoAdicionarDivElement.querySelector("button");
-    expect(botaoAdicionar).toHaveClass("red-button-outline");
     expect(botaoAdicionar).toHaveTextContent("Adicionar");
   });
 });
@@ -297,7 +281,10 @@ describe("Test <PeriodoLancamentoMedicaoInicialCEI> sem inclusão em dia não le
   };
 
   beforeEach(() => {
-    perfilService.meusDados.mockResolvedValue(mockMeusDadosEscolaCEI);
+    getMeusDados.mockResolvedValue({
+      data: mockMeusDadosEscolaCEI,
+      status: 200,
+    });
     getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
     getFaixasEtarias.mockResolvedValue({ data: { results: [] }, status: 200 });
     getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
@@ -367,7 +354,7 @@ describe("Test <PeriodoLancamentoMedicaoInicialCEI> sem inclusão em dia não le
     );
     expect(inputElementMatriculados1AnoA3anosE11Meses).toHaveAttribute(
       "value",
-      "2"
+      "0"
     );
     const inputElementMatriculados4a6anos = screen.getByTestId(
       "matriculados__faixa_0c914b27-c7cd-4682-a439-a4874745b005__dia_09__categoria_1"

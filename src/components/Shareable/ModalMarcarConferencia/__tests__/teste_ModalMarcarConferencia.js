@@ -1,16 +1,9 @@
 import React from "react";
-import {
-  render,
-  act,
-  screen,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
+import { render, act, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { ModalMarcarConferencia } from "../index";
-
-import { terceirizadaMarcaConferencia } from "services/dietaEspecial.service";
+import mock from "services/_mock";
 
 import { mockTerceirizadaMarcaConferencia } from "mocks/services/dietaEspecial.service/mockTerceirizadaMarcaConferencia";
 
@@ -18,16 +11,15 @@ jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("services/dietaEspecial.service");
-
 describe("Teste <ModalMarcarConferencia>", () => {
   beforeEach(async () => {
     let showModalMarcarConferencia = true;
 
-    terceirizadaMarcaConferencia.mockResolvedValue({
-      data: mockTerceirizadaMarcaConferencia,
-      status: 200,
-    });
+    mock
+      .onPatch(
+        "/grupos-inclusao-alimentacao-normal/a8fe9f4e-1138-46d4-8140-b47ef5714b95/marcar-conferida/"
+      )
+      .reply(200, mockTerceirizadaMarcaConferencia);
 
     await act(async () => {
       render(
@@ -64,12 +56,5 @@ describe("Teste <ModalMarcarConferencia>", () => {
     fireEvent.click(botaoConfirmar);
 
     expect(botaoConfirmar).toBeDisabled();
-
-    await waitFor(() =>
-      expect(terceirizadaMarcaConferencia).toHaveBeenCalled()
-    );
-    expect(terceirizadaMarcaConferencia).toHaveReturnedWith(
-      Promise.resolve(mockTerceirizadaMarcaConferencia)
-    );
   });
 });

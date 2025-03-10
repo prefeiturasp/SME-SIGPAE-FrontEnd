@@ -5,7 +5,7 @@ import {
   BUTTON_TYPE,
   BUTTON_STYLE,
 } from "components/Shareable/Botao/constants";
-import { dinutreAssinaCronograma } from "services/cronograma.service";
+import { abastecimentoAssinaCronograma } from "services/cronograma.service";
 import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
 import {
   CRONOGRAMA_ENTREGA,
@@ -25,7 +25,7 @@ export default ({ cronograma }) => {
 
   const handleSim = (password) => {
     setLoading(true);
-    dinutreAssinaCronograma(cronograma.uuid, password)
+    abastecimentoAssinaCronograma(cronograma.uuid, password)
       .then((response) => {
         if (response.status === 200) {
           window.scrollTo({ top: 0, behavior: "smooth" });

@@ -48,6 +48,7 @@ export const PERFIL = {
   USUARIO_RELATORIOS: `"USUARIO_RELATORIOS"`,
   USUARIO_GTIC_CODAE: `"USUARIO_GTIC_CODAE"`,
   ADMINISTRADOR_CONTRATOS: `"ADMINISTRADOR_CONTRATOS"`,
+  DILOG_ABASTECIMENTO: `"DILOG_ABASTECIMENTO"`,
 };
 
 export const VISAO = {
@@ -72,6 +73,7 @@ export const TIPO_PERFIL = {
   MEDICAO: `"medicao"`,
   ORGAO_FISCALIZADOR: `"orgao_fiscalizador"`,
   CODAE_GABINETE: `"codae_gabinete"`,
+  DINUTRE: `"dinutre"`,
 };
 
 export const TIPO_USUARIO = {
