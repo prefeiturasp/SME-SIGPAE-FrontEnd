@@ -1,11 +1,11 @@
-export const mockMeusDadosAdmDICAE = {
+export const mockMeusDadosAdmCONTRATOS = {
   uuid: "c735aa83-4aca-4d81-90c4-737b03d0315a",
   cpf: "00747007071",
-  nome: "ADMINISTRADOR DICAE",
-  email: "admdicae@admin.com",
+  nome: "ADMINISTRADOR CONTRATOS",
+  email: "administradorcontratos@admin.com",
   tipo_email: null,
   registro_funcional: null,
-  tipo_usuario: "administrador_dicae",
+  tipo_usuario: "administrador_contratos",
   date_joined: "07/02/2025 16:40:21",
   vinculo_atual: {
     uuid: "82eddc52-7e1a-4ea9-9449-1db24482961f",
@@ -26,7 +26,7 @@ export const mockMeusDadosAdmDICAE = {
       acesso_modulo_medicao_inicial: false,
     },
     perfil: {
-      nome: "ADMINISTRADOR_DICAE",
+      nome: "ADMINISTRADOR_CONTRATOS",
       visao: "CODAE",
       uuid: "c5015a57-668c-44ff-89e0-d28096d5e528",
     },

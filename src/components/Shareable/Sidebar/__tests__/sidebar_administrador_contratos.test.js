@@ -21,8 +21,8 @@ const awaitServices = async () => {
   });
 };
 
-describe("Test <Sidebar> - Usuário ADMINISTRADOR DICAE", () => {
-  const nome = "ADMINISTRADOR DICAE";
+describe("Test <Sidebar> - Usuário ADMINISTRADOR CONTRATOS", () => {
+  const nome = "ADMINISTRADOR CONTRATOS";
 
   const TestSidebarComponent = () => {
     const [toggled, setToggled] = useState(false);
@@ -42,7 +42,7 @@ describe("Test <Sidebar> - Usuário ADMINISTRADOR DICAE", () => {
     });
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
-    localStorage.setItem("perfil", `"ADMINISTRADOR_DICAE"`);
+    localStorage.setItem("perfil", `"ADMINISTRADOR_CONTRATOS"`);
 
     await act(async () => {
       render(

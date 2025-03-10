@@ -1,6 +1,6 @@
 import {
   usuarioEhAdmQualquerEmpresa,
-  usuarioEhAdministradorDICAE,
+  usuarioEhAdministradorCONTRATOS,
   usuarioEhAdministradorRepresentanteCodae,
   usuarioEhCODAEGabinete,
   usuarioEhCodaeDilog,
@@ -70,7 +70,8 @@ export const rotasConfiguracoes: Array<RotaInterface> = [
   {
     path: `/${constants.CONFIGURACOES}/${constants.GESTAO_ACESSO_EMPRESA}`,
     component: GestaoAcessoEmpresaPage,
-    tipoUsuario: usuarioEhAdmQualquerEmpresa() || usuarioEhAdministradorDICAE(),
+    tipoUsuario:
+      usuarioEhAdmQualquerEmpresa() || usuarioEhAdministradorCONTRATOS(),
   },
   {
     path: `/${constants.CONFIGURACOES}/${constants.GESTAO_ACESSO_COGESTOR}`,
