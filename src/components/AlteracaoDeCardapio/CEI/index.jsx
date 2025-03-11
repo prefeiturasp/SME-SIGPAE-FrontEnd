@@ -63,8 +63,6 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     proximosCincoDiasUteis,
     proximosDoisDiasUteis,
     vinculos,
-    // eslint-disable-next-line no-unused-vars
-    feriadosAno,
   } = props;
 
   const [rascunhos, setRascunhos] = useState(null);
@@ -438,10 +436,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                           maxDate={fimDoCalendario()}
                           label="Alterar dia"
                           required
-                          validate={composeValidators(
-                            required
-                            // ehDiaUtil(values, motivos, feriadosAno)
-                          )}
+                          validate={composeValidators(required)}
                           usarDirty={true}
                           inputOnChange={(value) => {
                             if (value) {

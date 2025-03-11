@@ -53,14 +53,19 @@ export const escolaAlterarSolicitacaoDeAlteracaoCardapio = async (
   }
 };
 
-export const escolaExcluirSolicitacaoDeAlteracaoCardapio = (
+export const escolaExcluirSolicitacaoDeAlteracaoCardapio = async (
   uuid,
   tipoSolicitacao
 ) => {
+  let url = `${ENDPOINT.ALTERACOES_CARDAPIO}/${uuid}/`;
   if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEI) {
-    return axios.delete(`${ENDPOINT.ALTERACOES_CARDAPIO_CEI}/${uuid}/`);
+    url = `${ENDPOINT.ALTERACOES_CARDAPIO_CEI}/${uuid}/`;
   }
-  return axios.delete(`${ENDPOINT.ALTERACOES_CARDAPIO}/${uuid}/`);
+  const response = await axios.delete(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getRascunhosAlteracaoTipoAlimentacao = async (tipoSolicitacao) => {

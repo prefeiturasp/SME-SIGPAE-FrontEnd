@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import AlteracaoDeCardapio from ".";
 import { agregarDefault, dataParaUTC } from "helpers/utilities";
 import { getMotivosAlteracaoCardapio } from "services/alteracaoDeCardapio";
 import { getDiasUteis, getFeriadosAno } from "services/diasUteis.service";
 import { MeusDadosContext } from "context/MeusDadosContext";
+import { AlteracaoCardapio } from ".";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -88,13 +88,13 @@ export const Container = () => {
       {!REQUISICOES_CONCLUIDAS && !erro && <div>Carregando...</div>}
       {!!erro && <div>{erro}</div>}
       {REQUISICOES_CONCLUIDAS && (
-        <AlteracaoDeCardapio
+        <AlteracaoCardapio
           meusDados={meusDados}
           motivos={motivos}
           periodos={periodos}
-          proximos_cinco_dias_uteis={proximosCincoDiasUteis}
-          proximos_dois_dias_uteis={proximosDoisDiasUteis}
-          feriados_ano={feriados}
+          proximosCincoDiasUteis={proximosCincoDiasUteis}
+          proximosDoisDiasUteis={proximosDoisDiasUteis}
+          feriadosAno={feriados}
         />
       )}
     </div>

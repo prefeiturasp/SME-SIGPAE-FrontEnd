@@ -1018,7 +1018,7 @@ class AlteracaoCardapio extends Component {
                 />
               </section>
             )}
-            <section className="card  mt-3">
+            <section className="card mt-3">
               <div className="card-body">
                 <div
                   className="card-title fw-bold descricao"
