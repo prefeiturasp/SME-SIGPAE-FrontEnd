@@ -608,7 +608,6 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                         values
                       )}
                       push={push}
-                      meusDados={meusDados}
                     />
                     {values.quantidades_periodo && (
                       <div className="mt-5">

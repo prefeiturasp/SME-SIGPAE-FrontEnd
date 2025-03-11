@@ -15,6 +15,7 @@ import Select from "components/Shareable/Select";
 import { required } from "helpers/fieldValidators";
 import {
   agregarDefault,
+  usuarioEhEscolaCMCT,
   checaSeDataEstaEntre2e5DiasUteis,
   deepCopy,
   getError,
@@ -304,10 +305,25 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
         `quantidades_periodo[${index}].multiselect`,
         "multiselect-wrapper-enabled"
       );
-      form.change(
-        `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
-        qp.tipos_alimentacao.map((t) => t.uuid)
-      );
+
+      if (usuarioEhEscolaCMCT()) {
+        if (qp.tipos_alimentacao.length > 1) {
+          form.change(
+            `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
+            "refeicao_e_sobremesa"
+          );
+        } else {
+          form.change(
+            `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
+            qp.tipos_alimentacao[0].uuid
+          );
+        }
+      } else {
+        form.change(
+          `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
+          qp.tipos_alimentacao.map((t) => t.uuid)
+        );
+      }
       form.change(
         `quantidades_periodo[${index}].numero_alunos`,
         qp.numero_alunos
@@ -701,7 +717,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                             ? periodosMotivoEspecifico
                             : periodos
                         }
-                        meusDados={meusDados}
                         motivoEspecifico={motivoEspecifico}
                         uuid={uuid}
                         idExterno={idExterno}
@@ -716,7 +731,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                       form={form}
                       values={values}
                       periodos={periodoNoite}
-                      meusDados={meusDados}
                       ehETEC
                     />
                   )}
@@ -733,7 +747,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                             : periodos
                         }
                         push={push}
-                        meusDados={meusDados}
                         ehMotivoInclusaoEspecifico={ehMotivoInclusaoEspecifico(
                           form.getState().values
                         )}
