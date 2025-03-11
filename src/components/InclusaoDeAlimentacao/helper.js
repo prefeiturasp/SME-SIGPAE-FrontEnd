@@ -1,3 +1,5 @@
+import { usuarioEhEscolaCMCT } from "helpers/utilities";
+
 export const formatarTiposDeAlimentacao = (tiposAlimentacao) => {
   return tiposAlimentacao.map((element) => {
     return { value: element.uuid, label: element.nome };
@@ -87,8 +89,24 @@ export const formatarSubmissaoSolicitacaoNormal = (values) => {
       ) {
         quantidade_periodo["periodo_escolar"] = quantidade_periodo.uuid;
       }
-      quantidade_periodo["tipos_alimentacao"] =
-        quantidade_periodo.tipos_alimentacao_selecionados;
+      if (usuarioEhEscolaCMCT()) {
+        if (
+          quantidade_periodo.tipos_alimentacao_selecionados ===
+          "refeicao_e_sobremesa"
+        ) {
+          quantidade_periodo["tipos_alimentacao"] =
+            quantidade_periodo.tipos_alimentacao
+              .filter((ta) => ["Refeição", "Sobremesa"].includes(ta.nome))
+              .map((ta) => ta.uuid);
+        } else {
+          quantidade_periodo["tipos_alimentacao"] = [
+            quantidade_periodo.tipos_alimentacao_selecionados,
+          ];
+        }
+      } else {
+        quantidade_periodo["tipos_alimentacao"] =
+          quantidade_periodo.tipos_alimentacao_selecionados;
+      }
       delete quantidade_periodo.grupo_inclusao_normal;
       delete quantidade_periodo.inclusao_alimentacao_continua;
     });
