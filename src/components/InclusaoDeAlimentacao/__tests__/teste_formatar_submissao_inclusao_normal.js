@@ -1,6 +1,13 @@
 import { formatarSubmissaoSolicitacaoNormal } from "../helper";
 
 describe("Teste formatarSubmissão Inclusão de Alimentação Normal", () => {
+  beforeEach(() => {
+    localStorage.setItem(
+      "nome_instituicao",
+      "EMEF PERICLES EUGENIO DA SILVA RAMOS"
+    );
+  });
+
   const solicitacaoInclusaoAlimentacaoNormal = {
     inclusoes: [
       {
