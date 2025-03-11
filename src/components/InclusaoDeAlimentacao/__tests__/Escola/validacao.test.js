@@ -85,6 +85,13 @@ const meusDados = {
 };
 
 describe("teste validarSubmissaoNormal", () => {
+  beforeEach(() => {
+    localStorage.setItem(
+      "nome_instituicao",
+      "EMEF PERICLES EUGENIO DA SILVA RAMOS"
+    );
+  });
+
   test("retorna erro `Necessário selecionar ao menos um período`", () => {
     expect(validarSubmissaoNormal(values, meusDados, false)).toEqual(
       "Necessário selecionar ao menos um período"
@@ -128,6 +135,13 @@ describe("teste validarSubmissaoNormal", () => {
 });
 
 describe("teste validarSubmissaoContinua", () => {
+  beforeEach(() => {
+    localStorage.setItem(
+      "nome_instituicao",
+      "EMEF PERICLES EUGENIO DA SILVA RAMOS"
+    );
+  });
+
   test("retorna erro `Necessário adicionar ao menos uma recorrência`", () => {
     expect(validarSubmissaoContinua({}, meusDados, false)).toEqual(
       "Necessário adicionar ao menos uma recorrência"
