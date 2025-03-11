@@ -94,7 +94,9 @@ export class SolicitacaoDeKitLanche extends Component {
     if (
       meusDados.vinculo_atual &&
       meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
-        "CEU GESTAO"
+        "CEU GESTAO" &&
+      meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
+        "CMCT"
     ) {
       const maximo = meusDados.vinculo_atual.instituicao.quantidade_alunos;
       if (value > maximo) {
@@ -599,7 +601,9 @@ export class SolicitacaoDeKitLanche extends Component {
                         if (
                           !meusDados.vinculo_atual ||
                           meusDados.vinculo_atual.instituicao
-                            .tipo_unidade_escolar_iniciais === "CEU GESTAO"
+                            .tipo_unidade_escolar_iniciais === "CEU GESTAO" ||
+                          meusDados.vinculo_atual.instituicao
+                            .tipo_unidade_escolar_iniciais === "CMCT"
                         ) {
                           return undefined;
                         }
@@ -663,7 +667,9 @@ export class SolicitacaoDeKitLanche extends Component {
               </div>
               {meusDados.vinculo_atual.instituicao &&
                 meusDados.vinculo_atual.instituicao
-                  .tipo_unidade_escolar_iniciais !== "CEU GESTAO" && (
+                  .tipo_unidade_escolar_iniciais !== "CEU GESTAO" &&
+                meusDados.vinculo_atual.instituicao
+                  .tipo_unidade_escolar_iniciais !== "CMCT" && (
                   <Fragment>
                     <div className="form-group row sub-title">
                       <p className="dre-name">

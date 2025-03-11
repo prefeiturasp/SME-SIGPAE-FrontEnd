@@ -82,6 +82,8 @@ export const validateSubmit = (values, meusDados) => {
   if (
     meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
       "CEU GESTAO" &&
+    meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
+      "CMCT" &&
     totalAlunos > meusDados.vinculo_atual.instituicao.quantidade_alunos
   ) {
     return "Número de alunos do pedido maior que a quantidade de alunos da escola";

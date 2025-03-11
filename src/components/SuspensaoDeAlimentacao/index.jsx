@@ -848,7 +848,10 @@ class FoodSuspensionEditor extends Component {
                             required
                             validate={
                               meusDados.vinculo_atual.instituicao
-                                .tipo_unidade_escolar_iniciais !== "CEU GESTAO"
+                                .tipo_unidade_escolar_iniciais !==
+                                "CEU GESTAO" &&
+                              meusDados.vinculo_atual.instituicao
+                                .tipo_unidade_escolar_iniciais !== "CMCT"
                                 ? period.validador
                                 : false
                             }
