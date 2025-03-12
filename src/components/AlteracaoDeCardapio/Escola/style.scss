@@ -31,16 +31,6 @@ div.formulario-alteracao-cardapio {
     }
   }
 
-  .or-div {
-    position: fixed;
-    display: flex;
-    align-items: flex-end;
-  }
-
-  .cor-teste {
-    background-color: aquamarine;
-  }
-
   .section-form-datas {
     display: grid;
     grid-template-columns: 22% 3% 22% 22% auto;
@@ -62,43 +52,6 @@ div.formulario-alteracao-cardapio {
     div {
       margin: 0;
       padding: 0;
-    }
-  }
-
-  .descricao-periodos-alimentacao {
-    display: grid;
-    grid-template-columns: 22% 28% 28% 15%;
-    grid-column-gap: 2%;
-    margin-bottom: 0.5em;
-
-    div {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      font-size: 14px;
-    }
-  }
-
-  .item-periodo-alimentacao {
-    display: grid;
-    grid-template-columns: 22% 28% 28% 15%;
-    grid-column-gap: 2%;
-    margin-bottom: 0.5em;
-
-    .checkbox-label {
-      height: auto;
-      max-height: 39px;
-      border-radius: 4px;
-
-      span {
-        left: 0;
-        margin: 0.5em;
-      }
-
-      div {
-        position: relative;
-        margin: 0.5em 0 0 3em;
-      }
     }
   }
 
