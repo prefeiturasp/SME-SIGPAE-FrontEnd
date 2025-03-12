@@ -19,7 +19,11 @@ export const validarSubmissaoNormal = (
     .filter((qp) => qp.checked)
     .forEach((quantidade_periodo) => {
       totalAlunos += parseInt(quantidade_periodo.numero_alunos);
-      if (quantidade_periodo.tipos_alimentacao_selecionados.length === 0) {
+      if (
+        (usuarioEhEscolaCMCT() &&
+          !quantidade_periodo.tipos_alimentacao_selecionados) ||
+        quantidade_periodo.tipos_alimentacao_selecionados.length === 0
+      ) {
         periodosSemTipoAlimentacao.push(quantidade_periodo.nome);
       }
     });
