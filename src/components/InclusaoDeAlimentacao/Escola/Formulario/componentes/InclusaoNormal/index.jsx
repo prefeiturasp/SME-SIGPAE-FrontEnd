@@ -330,7 +330,10 @@ export const PeriodosInclusaoNormal = ({
                     dataTestIdDiv={`numero-alunos-${indice}`}
                     validate={(value) => {
                       if (usuarioEhEscolaCeuGestao() || usuarioEhEscolaCMCT()) {
-                        if (value < 1 && getPeriodo(indice).checked) {
+                        if (
+                          (value === undefined || value < 1) &&
+                          getPeriodo(indice).checked
+                        ) {
                           return "Deve ser maior ou igual a 1";
                         }
                       } else {
