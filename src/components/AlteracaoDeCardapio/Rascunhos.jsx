@@ -2,8 +2,7 @@ import React, { Component } from "react";
 
 export class Rascunhos extends Component {
   render() {
-    const { rascunhos, removerRascunho, carregarRascunho, form, values } =
-      this.props;
+    const { rascunhos, removerRascunho, carregarRascunho, form } = this.props;
     const cardsRascunhos = rascunhos.map((alteracaoDeCardapio, key) => {
       const { uuid, id_externo } = alteracaoDeCardapio;
       let backgroundColor =
@@ -26,11 +25,7 @@ export class Rascunhos extends Component {
             <span onClick={() => removerRascunho(id_externo, uuid, form)}>
               <i className="fas fa-trash" />
             </span>
-            <span
-              onClick={() =>
-                carregarRascunho(alteracaoDeCardapio, form, values)
-              }
-            >
+            <span onClick={() => carregarRascunho(alteracaoDeCardapio, form)}>
               <i className="fas fa-edit" />
             </span>
           </div>

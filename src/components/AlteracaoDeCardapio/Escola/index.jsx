@@ -133,6 +133,35 @@ export const AlteracaoCardapio = ({ ...props }) => {
     }
   };
 
+  const carregarRascunho = async (alteracaoDeCardapio, form) => {
+    form.change("uuid", alteracaoDeCardapio.uuid);
+    form.change("id_externo", alteracaoDeCardapio.id_externo);
+    form.change("motivo", alteracaoDeCardapio.motivo.uuid);
+    if (alteracaoDeCardapio.data_inicial !== alteracaoDeCardapio.data_final) {
+      form.change("data_inicial", alteracaoDeCardapio.data_inicial);
+      form.change("data_final", alteracaoDeCardapio.data_final);
+    } else {
+      form.change("alterar_dia", alteracaoDeCardapio.data_inicial);
+    }
+
+    const substituicoesValue = deepCopy(periodos);
+
+    for (const substituicao of alteracaoDeCardapio.substituicoes) {
+      const substituicaoValue = substituicoesValue.find(
+        (subs) => subs.nome === substituicao.periodo_escolar.nome
+      );
+      substituicaoValue.check = true;
+      substituicaoValue.tipos_alimentacao_de_selecionados =
+        substituicao.tipos_alimentacao_de.map((tp) => tp.uuid);
+      substituicaoValue.tipos_alimentacao_para_selecionados =
+        substituicao.tipos_alimentacao_para.map((tp) => tp.uuid);
+      substituicaoValue.qtd_alunos = substituicao.qtd_alunos;
+    }
+
+    await form.change("substituicoes", substituicoesValue);
+    form.change("observacao", alteracaoDeCardapio.observacao);
+  };
+
   const getRascunhosAsync = async () => {
     const response = await getRascunhosAlteracaoTipoAlimentacao(
       TIPO_SOLICITACAO.SOLICITACAO_NORMAL
@@ -165,6 +194,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
 
   const resetForm = (form) => {
     form.reset();
+    form.change("substituicoes", periodos);
   };
 
   const ehMotivoPorNome = (nome, values) => {
@@ -241,11 +271,8 @@ export const AlteracaoCardapio = ({ ...props }) => {
                       <Rascunhos
                         rascunhos={rascunhos}
                         removerRascunho={handleDelete}
-                        resetForm={() => resetForm(form)}
-                        carregarRascunho={async () => {
-                          //await this.onChangeMotivo(params.motivo.uuid);
-                          //await this.OnEditButtonClicked(params);
-                        }}
+                        form={form}
+                        carregarRascunho={carregarRascunho}
                       />
                     </section>
                   )}
@@ -273,7 +300,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
                         }}*/
                       />
                     </section>
-                    <section className="section-form-datas mt-4">
+                    <section className="section-form-datas mt-2">
                       <Field
                         component={InputComData}
                         inputOnChange={(value) =>
@@ -323,18 +350,20 @@ export const AlteracaoCardapio = ({ ...props }) => {
                       </>
                     </section>
 
-                    <section className="ms-0">
-                      <div className="row mt-3 mb-3">
-                        <div className="col-3">Período</div>
-                        <div className="col-3">Alterar alimentação de:</div>
-                        <div className="col-3">Para alimentação:</div>
+                    <section>
+                      <div className="row mt-3 mb-3 g-0">
+                        <div className="col-3 pe-3">Período</div>
+                        <div className="col-3 pe-3">
+                          Alterar alimentação de:
+                        </div>
+                        <div className="col-3 pe-3">Para alimentação:</div>
                         <div className="col-3">Nº de Alunos</div>
                       </div>
                       <FieldArray name="substituicoes">
                         {({ fields }) =>
                           fields.map((name, index) => (
-                            <div className="row" key={index}>
-                              <div className="col-3">
+                            <div className="row g-0" key={index}>
+                              <div className="col-3 pe-3">
                                 <div
                                   className={`period-quantity number-${index} ps-5 pt-2 pb-2`}
                                 >
@@ -370,12 +399,12 @@ export const AlteracaoCardapio = ({ ...props }) => {
                                   </Fragment>
                                 </div>
                               </div>
-                              <div className="col-3">
+                              <div className="col-3 pe-3">
                                 <Field
                                   component={MultiselectRaw}
                                   name={`${name}.tipos_alimentacao_de`}
                                   selected={
-                                    values.substituicoes[index]
+                                    form.getState().values.substituicoes[index]
                                       .tipos_alimentacao_de_selecionados || []
                                   }
                                   options={getPeriodo(
@@ -401,7 +430,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
                                   }
                                 />
                               </div>
-                              <div className="col-3">
+                              <div className="col-3 pe-3">
                                 <Field
                                   component={MultiselectRaw}
                                   name={`${name}.tipos_alimentacao_para`}
@@ -468,31 +497,36 @@ export const AlteracaoCardapio = ({ ...props }) => {
                       )}
                     />
                   </div>
-                  <div className="footer-button">
-                    <Botao
-                      texto="Cancelar"
-                      onClick={() => resetForm(form)}
-                      disabled={submitting}
-                      style={BUTTON_STYLE.GREEN_OUTLINE}
-                    />
-                    <Botao
-                      disabled={submitting}
-                      texto={
-                        values.uuid ? "Atualizar rascunho" : "Salvar rascunho"
-                      }
-                      type={BUTTON_TYPE.SUBMIT}
-                      style={BUTTON_STYLE.GREEN_OUTLINE}
-                    />
-                    <Botao
-                      texto="Enviar"
-                      disabled={submitting}
-                      type={BUTTON_TYPE.BUTTON}
-                      onClick={async () => {
-                        values["status"] = STATUS_DRE_A_VALIDAR;
-                        await handleSubmit(values, form);
-                      }}
-                      style={BUTTON_STYLE.GREEN}
-                    />
+                  <div className="row mb-3">
+                    <div className="col-12 text-end">
+                      <Botao
+                        texto="Cancelar"
+                        onClick={() => resetForm(form)}
+                        disabled={submitting}
+                        className="me-3"
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                      />
+                      <Botao
+                        disabled={submitting}
+                        texto={
+                          values.uuid ? "Atualizar rascunho" : "Salvar rascunho"
+                        }
+                        type={BUTTON_TYPE.SUBMIT}
+                        className="me-3"
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                      />
+                      <Botao
+                        texto="Enviar"
+                        className="me-2"
+                        disabled={submitting}
+                        type={BUTTON_TYPE.BUTTON}
+                        onClick={async () => {
+                          values["status"] = STATUS_DRE_A_VALIDAR;
+                          await handleSubmit(values, form);
+                        }}
+                        style={BUTTON_STYLE.GREEN}
+                      />
+                    </div>
                   </div>
                 </div>
                 <ModalDataPrioritaria
