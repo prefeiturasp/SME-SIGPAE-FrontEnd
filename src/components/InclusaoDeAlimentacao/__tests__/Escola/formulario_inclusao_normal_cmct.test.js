@@ -163,6 +163,6 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     await act(async () => {
       fireEvent.click(botaoEnviarSolicitacao);
     });
-    expect(screen.getByText("Deve ser maior ou igual a 1")).toBeInTheDocument();
+    expect(screen.getByText("Campo obrigatório")).toBeInTheDocument();
   });
 });
