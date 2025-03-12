@@ -6,7 +6,7 @@ import { getMotivosAlteracaoCardapio } from "services/alteracaoDeCardapio";
 import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
 import { getDiasUteis } from "services/diasUteis.service";
 import { getQuantidaDeAlunosPorPeriodoEEscola } from "services/escola.service";
-import { AlteracaoCardapio } from ".";
+import { AlteracaoCardapio } from "..";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);

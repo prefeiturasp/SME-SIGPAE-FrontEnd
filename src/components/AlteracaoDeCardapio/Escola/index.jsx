@@ -45,9 +45,9 @@ import {
 } from "services/alteracaoDeCardapio";
 import { getDiasUteis } from "services/diasUteis.service";
 import { formataValues } from "../helper";
-import ModalConfirmaAlteracao from "../ModalConfirmaAlteracao";
-import { Rascunhos } from "../Rascunhos";
-import { validateSubmit } from "../validacao";
+import ModalConfirmaAlteracao from "./components/ModalConfirmaAlteracao";
+import { Rascunhos } from "./components/Rascunhos";
+import { validateSubmit } from "./components/validacao";
 import "./style.scss";
 
 export const AlteracaoCardapio = ({ ...props }) => {

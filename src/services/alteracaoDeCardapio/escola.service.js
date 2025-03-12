@@ -1,6 +1,5 @@
 import { ENDPOINT } from "constants/shared";
-import { memoize } from "lodash";
-import { AUTH_TOKEN, FLUXO, TIPO_SOLICITACAO } from "services/constants";
+import { FLUXO, TIPO_SOLICITACAO } from "services/constants";
 import { ErrorHandlerFunction } from "services/service-helpers";
 import axios from "../_base";
 import { getPath } from "./helper";
@@ -101,27 +100,6 @@ export const escolaCancelarSolicitacaoDeAlteracaoDeCardapioCEMEI = async (
     return data;
   }
 };
-
-// FIXME: Revisar nome do método
-export const getAlteracoesComLancheDoMesCorrente = memoize(
-  (escola_uuid, tipoSolicitacao) => {
-    const url = `${getPath(
-      tipoSolicitacao
-    )}/com-lanche-do-mes-corrente/${escola_uuid}/`;
-    const OBJ_REQUEST = {
-      headers: AUTH_TOKEN,
-
-      method: "GET",
-    };
-    return fetch(url, OBJ_REQUEST)
-      .then((result) => {
-        return result.json();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-);
 
 // FIXME: Revisar nome do método
 export const getAlunosPorFaixaEtariaNumaData = async (

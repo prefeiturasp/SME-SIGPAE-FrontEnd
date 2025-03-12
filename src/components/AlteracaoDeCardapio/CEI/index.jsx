@@ -44,7 +44,7 @@ import {
   getAlunosPorFaixaEtariaNumaData,
   getRascunhosAlteracaoTipoAlimentacao,
 } from "services/alteracaoDeCardapio";
-import { Rascunhos } from "../Rascunhos";
+import { Rascunhos } from "../Escola/components/Rascunhos";
 import {
   formataPayload,
   totalAlunosInputPorPeriodo,

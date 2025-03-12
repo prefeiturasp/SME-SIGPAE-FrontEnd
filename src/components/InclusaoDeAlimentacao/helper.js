@@ -35,27 +35,6 @@ export const formatarPeriodos = (periodos) => {
   return periodos;
 };
 
-export const construirPeriodosECombos = (periodos) => {
-  let periodosCombo = [];
-  periodos.forEach((periodo) => {
-    let dicionarioPeriodo = {
-      checked: false,
-      tipos_alimentacao_selecionados: [],
-      numero_alunos: null,
-      nome: periodo.periodo_escolar.nome,
-      uuid: periodo.periodo_escolar.uuid,
-      tipos_alimentacao: periodo.tipos_alimentacao.map((alimento) => {
-        return {
-          nome: alimento.nome,
-          uuid: alimento.uuid,
-        };
-      }),
-    };
-    periodosCombo.push(dicionarioPeriodo);
-  });
-  return periodosCombo;
-};
-
 export const extrairTiposALimentacao = (tiposAlimentacao) => {
   let uuidsTiposAlimentacao = [];
   tiposAlimentacao.forEach((tipoAlimentacao) => {

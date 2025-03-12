@@ -1,4 +1,4 @@
-import { Container } from "components/AlteracaoDeCardapio/Escola/Container";
+import { Container } from "components/AlteracaoDeCardapio/Escola/components/Container";
 import Breadcrumb from "components/Shareable/Breadcrumb";
 import Page from "components/Shareable/Page/Page";
 import React from "react";
