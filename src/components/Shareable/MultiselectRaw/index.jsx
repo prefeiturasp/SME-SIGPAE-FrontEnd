@@ -50,6 +50,7 @@ export const MultiselectRaw = (props) => {
       <ReactSelect
         {...input}
         options={options}
+        isDisabled={disabled}
         isMulti={isMulti}
         closeMenuOnSelect={closeMenuOnSelect}
         hideSelectedOptions={hideSelectedOptions}

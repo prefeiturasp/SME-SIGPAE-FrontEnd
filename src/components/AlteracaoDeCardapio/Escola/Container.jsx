@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
-import HTTP_STATUS from "http-status-codes";
-import { agregarDefault, dataParaUTC } from "helpers/utilities";
-import { getMotivosAlteracaoCardapio } from "services/alteracaoDeCardapio";
-import { getDiasUteis, getFeriadosAno } from "services/diasUteis.service";
 import { MeusDadosContext } from "context/MeusDadosContext";
+import { agregarDefault, dataParaUTC, deepCopy } from "helpers/utilities";
+import HTTP_STATUS from "http-status-codes";
+import React, { useContext, useEffect, useState } from "react";
+import { getMotivosAlteracaoCardapio } from "services/alteracaoDeCardapio";
+import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
+import { getDiasUteis, getFeriadosAno } from "services/diasUteis.service";
+import { getQuantidaDeAlunosPorPeriodoEEscola } from "services/escola.service";
 import { AlteracaoCardapio } from ".";
 
 export const Container = () => {
@@ -16,6 +18,47 @@ export const Container = () => {
   const [feriados, setFeriados] = useState();
 
   const [erro, setErro] = useState("");
+
+  const getVinculosAsync = async () => {
+    const escolaUuid = meusDados.vinculo_atual.instituicao.uuid;
+    const periodosEscolares =
+      meusDados.vinculo_atual.instituicao.periodos_escolares;
+
+    const response = await getVinculosTipoAlimentacaoPorEscola(escolaUuid);
+    if (response.status === HTTP_STATUS.OK) {
+      for (const vinculo of response.data.results) {
+        let periodo = periodosEscolares.find(
+          (periodo) => periodo.uuid === vinculo.periodo_escolar.uuid
+        );
+        periodo.tipos_alimentacao = vinculo.tipos_alimentacao;
+      }
+      setPeriodos(periodosEscolares);
+    } else {
+      setErro(
+        "Erro ao carregar vinculos dos períodos escolares da escola. Tente novamente mais tarde."
+      );
+    }
+  };
+
+  const setQuantidadeAlunosPorPeriodoAsync = async () => {
+    const escolaUuid = meusDados.vinculo_atual.instituicao.uuid;
+    const response = await getQuantidaDeAlunosPorPeriodoEEscola(escolaUuid);
+
+    if (response.status === HTTP_STATUS.OK) {
+      const periodosEscolares_ = deepCopy(periodos);
+
+      for (const periodo of periodosEscolares_) {
+        periodo.maximo_alunos = response.data.results.find(
+          (result) => result.periodo_escolar.uuid === periodo.uuid
+        ).quantidade_alunos;
+      }
+      setPeriodos(periodosEscolares_);
+    } else {
+      setErro(
+        "Erro ao carregar quantidades de alunos por período escolar. Tente novamente mais tarde."
+      );
+    }
+  };
 
   const getMotivosAlteracaoCardapioAsync = async () => {
     const response = await getMotivosAlteracaoCardapio();
@@ -70,10 +113,16 @@ export const Container = () => {
 
   useEffect(() => {
     if (meusDados) {
-      setPeriodos(meusDados.vinculo_atual.instituicao.periodos_escolares);
       getDiasUteisAsync();
+      getVinculosAsync();
     }
   }, [meusDados]);
+
+  useEffect(() => {
+    if (periodos && !periodos[0].maximo_alunos) {
+      setQuantidadeAlunosPorPeriodoAsync();
+    }
+  }, [periodos]);
 
   const REQUISICOES_CONCLUIDAS =
     meusDados &&

@@ -146,7 +146,7 @@ class AlteracaoCardapio extends Component {
         if (periodos.length > 0) {
           periodos = abstraiPeriodosComAlunosMatriculados(
             periodos,
-            response.results,
+            response.data.results,
             true
           );
         }

@@ -422,7 +422,7 @@ class FoodSuspensionEditor extends Component {
       });
       getQuantidaDeAlunosPorPeriodoEEscola(escola.uuid).then((response) => {
         this.vinculaQuantidadeAlunosPorPeriodo(
-          response.results,
+          response.data.results,
           this.props.periodos
         );
       });

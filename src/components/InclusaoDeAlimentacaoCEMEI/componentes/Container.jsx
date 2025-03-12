@@ -17,7 +17,7 @@ import {
   abstraiPeriodosComAlunosMatriculados,
   formatarPeriodos,
 } from "components/InclusaoDeAlimentacao/helper";
-import { getQuantidadeAlunosEscola } from "services/escola.service";
+import { getQuantidaDeAlunosPorPeriodoEEscola } from "services/escola.service";
 import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
 
 export const Container = () => {
@@ -41,7 +41,7 @@ export const Container = () => {
     periodos,
     escola_uuid
   ) => {
-    const response = await getQuantidadeAlunosEscola(escola_uuid);
+    const response = await getQuantidaDeAlunosPorPeriodoEEscola(escola_uuid);
     if (response.status === HTTP_STATUS.OK) {
       const periodos_ = abstraiPeriodosComAlunosMatriculados(
         periodos,

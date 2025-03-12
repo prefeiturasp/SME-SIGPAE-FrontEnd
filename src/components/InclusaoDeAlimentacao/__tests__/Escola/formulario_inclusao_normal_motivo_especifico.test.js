@@ -30,7 +30,7 @@ import {
 import { getDiasUteis } from "services/diasUteis.service";
 import {
   buscaPeriodosEscolares,
-  getQuantidadeAlunosEscola,
+  getQuantidaDeAlunosPorPeriodoEEscola,
 } from "services/escola.service";
 import {
   createInclusaoAlimentacao,
@@ -52,7 +52,7 @@ const awaitServices = async () => {
     expect(getMotivosInclusaoNormal).toHaveBeenCalled();
     expect(getMotivosInclusaoContinua).toHaveBeenCalled();
     expect(buscaPeriodosEscolares).toHaveBeenCalled();
-    expect(getQuantidadeAlunosEscola).toHaveBeenCalled();
+    expect(getQuantidaDeAlunosPorPeriodoEEscola).toHaveBeenCalled();
     expect(getVinculosTipoAlimentacaoPorEscola).toHaveBeenCalled();
     expect(
       getVinculosTipoAlimentacaoMotivoInclusaoEspecifico
@@ -79,7 +79,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       data: mockPeriodosEscolaresNoite,
       status: 200,
     });
-    getQuantidadeAlunosEscola.mockResolvedValue({
+    getQuantidaDeAlunosPorPeriodoEEscola.mockResolvedValue({
       data: mockQuantidadeAlunosPorPeriodo,
       status: 200,
     });
