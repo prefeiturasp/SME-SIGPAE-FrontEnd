@@ -383,7 +383,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                     <section className="mt-3">
                       <span className="page-title">Rascunhos</span>
                       <Rascunhos
-                        alteracaoCardapioList={rascunhos}
+                        rascunhos={rascunhos}
                         removerRascunho={removerRascunho}
                         resetForm={() => form.reset()}
                         carregarRascunho={carregarRascunho}

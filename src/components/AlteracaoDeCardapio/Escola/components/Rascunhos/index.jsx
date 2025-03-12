@@ -1,9 +1,9 @@
 import React from "react";
 
 export const Rascunhos = ({ ...props }) => {
-  const { rascunhos, removerRascunho, carregarRascunho, form } = props;
+  const { rascunhos, removerRascunho, carregarRascunho, form, values } = props;
 
-  return rascunhos.map((alteracaoDeCardapio, key) => {
+  return rascunhos?.map((alteracaoDeCardapio, key) => {
     const { uuid, id_externo } = alteracaoDeCardapio;
     let backgroundColor =
       alteracaoDeCardapio.status === "SALVO" ? "#82B7E8" : "#DADADA";
@@ -25,7 +25,9 @@ export const Rascunhos = ({ ...props }) => {
           <span onClick={() => removerRascunho(id_externo, uuid, form)}>
             <i className="fas fa-trash" />
           </span>
-          <span onClick={() => carregarRascunho(alteracaoDeCardapio, form)}>
+          <span
+            onClick={() => carregarRascunho(alteracaoDeCardapio, form, values)}
+          >
             <i className="fas fa-edit" />
           </span>
         </div>
