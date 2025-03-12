@@ -93,7 +93,7 @@ export const formataValues = (values, ehRPL = false) => {
       values.alterar_dia.split("/").reverse().join("-")
     ).map((data) => ({ data: data }));
   }
-  if (!escolaEhCEMEI || ehRPL) {
+  if (!escolaEhCEMEI() || ehRPL) {
     values.substituicoes.forEach((subs) => {
       if (typeof subs.tipos_alimentacao_para === "string") {
         subs.tipos_alimentacao_para = [subs.tipos_alimentacao_para];

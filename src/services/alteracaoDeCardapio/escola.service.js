@@ -1,31 +1,20 @@
-import { memoize } from "lodash";
-import axios from "../_base";
-import { FLUXO, AUTH_TOKEN, TIPO_SOLICITACAO } from "services/constants";
 import { ENDPOINT } from "constants/shared";
-import { getPath } from "./helper";
+import { memoize } from "lodash";
+import { AUTH_TOKEN, FLUXO, TIPO_SOLICITACAO } from "services/constants";
 import { ErrorHandlerFunction } from "services/service-helpers";
+import axios from "../_base";
+import { getPath } from "./helper";
 
-export const escolaIniciarSolicitacaoDeAlteracaoDeCardapio = (
+export const escolaIniciarSolicitacaoDeAlteracaoDeCardapio = async (
   uuid,
   tipoSolicitacao
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${FLUXO.INICIO_PEDIDO}/`;
-
-  let status = 0;
-  return fetch(url, {
-    method: "PATCH",
-    headers: AUTH_TOKEN,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  const response = await axios.patch(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const escolaCriarSolicitacaoDeAlteracaoCardapio = async (

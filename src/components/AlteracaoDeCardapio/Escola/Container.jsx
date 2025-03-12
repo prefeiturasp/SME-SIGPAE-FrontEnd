@@ -4,7 +4,7 @@ import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
 import { getMotivosAlteracaoCardapio } from "services/alteracaoDeCardapio";
 import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
-import { getDiasUteis, getFeriadosAno } from "services/diasUteis.service";
+import { getDiasUteis } from "services/diasUteis.service";
 import { getQuantidaDeAlunosPorPeriodoEEscola } from "services/escola.service";
 import { AlteracaoCardapio } from ".";
 
@@ -15,7 +15,6 @@ export const Container = () => {
   const [periodos, setPeriodos] = useState();
   const [proximosDoisDiasUteis, setProximosDoisDiasUteis] = useState();
   const [proximosCincoDiasUteis, setProximosCincoDiasUteis] = useState();
-  const [feriados, setFeriados] = useState();
 
   const [erro, setErro] = useState("");
 
@@ -89,22 +88,8 @@ export const Container = () => {
     }
   };
 
-  const getFeriadosAnoAsync = async () => {
-    const response = await getFeriadosAno();
-    if (response.status === HTTP_STATUS.OK) {
-      setFeriados(response.data.results);
-    } else {
-      setErro(
-        "Erro ao carregar quais são os feriados deste ano. Tente novamente mais tarde."
-      );
-    }
-  };
-
   const requisicoesPreRender = async () => {
-    await Promise.all([
-      getMotivosAlteracaoCardapioAsync(),
-      getFeriadosAnoAsync(),
-    ]);
+    await Promise.all([getMotivosAlteracaoCardapioAsync()]);
   };
 
   useEffect(() => {
@@ -129,8 +114,7 @@ export const Container = () => {
     motivos &&
     periodos &&
     proximosDoisDiasUteis &&
-    proximosCincoDiasUteis &&
-    feriados;
+    proximosCincoDiasUteis;
 
   return (
     <div className="mt-3">
@@ -143,7 +127,6 @@ export const Container = () => {
           periodos={periodos}
           proximosCincoDiasUteis={proximosCincoDiasUteis}
           proximosDoisDiasUteis={proximosDoisDiasUteis}
-          feriadosAno={feriados}
         />
       )}
     </div>

@@ -1,22 +1,35 @@
 import { Spin } from "antd";
+import { Botao } from "components/Shareable/Botao";
+import {
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "components/Shareable/Botao/constants";
 import CardMatriculados from "components/Shareable/CardMatriculados";
+import CKEditorField from "components/Shareable/CKEditorField";
 import { InputComData } from "components/Shareable/DatePicker";
 import { InputText } from "components/Shareable/Input/InputText";
 import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
 import { MultiselectRaw } from "components/Shareable/MultiselectRaw";
 import { Select } from "components/Shareable/Select";
 import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import { STATUS_DRE_A_VALIDAR } from "configs/constants";
 import { TIPO_SOLICITACAO } from "constants/shared";
 import arrayMutators from "final-form-arrays";
 import {
   composeValidators,
   maxValue,
   naoPodeSerZero,
+  peloMenosUmCaractere,
   required,
+  textAreaRequired,
 } from "helpers/fieldValidators";
 import {
   checaSeDataEstaEntre2e5DiasUteis,
+  deepCopy,
   fimDoCalendario,
+  getError,
+  usuarioEhEscolaCeuGestao,
+  usuarioEhEscolaCMCT,
 } from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
@@ -24,22 +37,27 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
 import {
+  escolaAlterarSolicitacaoDeAlteracaoCardapio,
+  escolaCriarSolicitacaoDeAlteracaoCardapio,
   escolaExcluirSolicitacaoDeAlteracaoCardapio,
+  escolaIniciarSolicitacaoDeAlteracaoDeCardapio,
   getRascunhosAlteracaoTipoAlimentacao,
 } from "services/alteracaoDeCardapio";
 import { getDiasUteis } from "services/diasUteis.service";
+import { formataValues } from "../helper";
+import ModalConfirmaAlteracao from "../ModalConfirmaAlteracao";
 import { Rascunhos } from "../Rascunhos";
+import { validateSubmit } from "../validacao";
 import "./style.scss";
-import {
-  usuarioEhEscolaCeuGestao,
-  usuarioEhEscolaCMCT,
-} from "../../../helpers/utilities";
 
 export const AlteracaoCardapio = ({ ...props }) => {
   const [rascunhos, setRascunhos] = useState();
   const [limiteDataInicial, setLimiteDataInicial] = useState();
   const [limiteDataFinal, setLimiteDataFinal] = useState();
+
   const [showModalDiasUteis, setShowModalDiasUteis] = useState(false);
+  const [showModalConfirmarAlteracao, setShowModalConfirmarAlteracao] =
+    useState(false);
 
   const [erro, setErro] = useState("");
 
@@ -49,10 +67,71 @@ export const AlteracaoCardapio = ({ ...props }) => {
     periodos,
     proximosCincoDiasUteis,
     proximosDoisDiasUteis,
-    //feriadosAno,
   } = props;
 
-  const onSubmit = () => {};
+  const enviaAlteracaoCardapio = async (uuid, form) => {
+    const response = await escolaIniciarSolicitacaoDeAlteracaoDeCardapio(
+      uuid,
+      TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+    );
+    if (response.status === HTTP_STATUS.OK) {
+      toastSuccess("Alteração do Tipo de Alimentação enviada com sucesso");
+      getRascunhosAsync();
+      resetForm(form);
+    } else {
+      toastError(
+        "Houve um erro ao enviar a Alteração do Tipo de Alimentação. Tente novamente mais tarde."
+      );
+    }
+  };
+
+  const onSubmit = async (values, form) => {
+    let values_ = deepCopy(values);
+    const status = values_.status;
+    delete values_.status;
+    const erros = validateSubmit(values_, meusDados);
+    if (!erros) {
+      values_ = formataValues(values_, ehMotivoPorNome("RPL"));
+      if (!values_.uuid) {
+        const response = await escolaCriarSolicitacaoDeAlteracaoCardapio(
+          values_,
+          TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+        );
+        if (response.status === HTTP_STATUS.CREATED) {
+          if (status === STATUS_DRE_A_VALIDAR) {
+            await enviaAlteracaoCardapio(response.data.uuid, form);
+          } else {
+            toastSuccess("Alteração do Tipo de Alimentação salva com sucesso");
+            getRascunhosAsync();
+            resetForm(form);
+          }
+        } else {
+          toastError(getError(response.data));
+        }
+      } else {
+        const response = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
+          values_.uuid,
+          values_,
+          TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+        );
+        if (response.status === HTTP_STATUS.OK) {
+          if (status === STATUS_DRE_A_VALIDAR) {
+            await enviaAlteracaoCardapio(response.data.uuid, form);
+            getRascunhosAsync();
+          } else {
+            toastSuccess("Alteração do Tipo de Alimentação salva com sucesso");
+            getRascunhosAsync();
+          }
+        } else {
+          toastError(
+            `Houve um erro ao enviar ao salvar alteração do tipo de alimentação. Tente novamente mais tarde.`
+          );
+        }
+      }
+    } else {
+      toastError(erros);
+    }
+  };
 
   const getRascunhosAsync = async () => {
     const response = await getRascunhosAlteracaoTipoAlimentacao(
@@ -64,22 +143,6 @@ export const AlteracaoCardapio = ({ ...props }) => {
       setErro("Erro ao carregar rascunhos. Tente novamente mais tarde.");
     }
   };
-
-  /*
-  const getVinculosAsync = async () => {
-    const escolaUuid = meusDados.vinculo_atual.instituicao.uuid;
-    const response = await getVinculosTipoAlimentacaoPorEscola(escolaUuid);
-
-    if (response.status === HTTP_STATUS.OK) {
-      setVinculos(response.data.results);
-      console.log(response.data.results);
-    } else {
-      setErro(
-        "Erro ao carregar vinculos dos períodos escolares da escola. Tente novamente mais tarde."
-      );
-    }
-  };
-  */
 
   useEffect(() => {
     getRascunhosAsync();
@@ -104,17 +167,17 @@ export const AlteracaoCardapio = ({ ...props }) => {
     form.reset();
   };
 
-  const ehMotivoLancheEmergencial = (values) => {
-    return (
-      motivos.find((motivo) => motivo.uuid === values.motivo)?.nome ===
-      "Lanche Emergencial"
-    );
+  const ehMotivoPorNome = (nome, values) => {
+    if (!values) return false;
+    return motivos
+      .find((motivo) => motivo.uuid === values.motivo)
+      ?.nome.includes(nome);
   };
 
   const onAlterarDiaChanged = (value, values) => {
     if (
       value &&
-      !ehMotivoLancheEmergencial(values) &&
+      !ehMotivoPorNome("Lanche Emergencial", values) &&
       checaSeDataEstaEntre2e5DiasUteis(
         value,
         proximosDoisDiasUteis,
@@ -168,7 +231,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
             }}
             onSubmit={onSubmit}
           >
-            {({ handleSubmit, form, values }) => (
+            {({ handleSubmit, form, values, submitting }) => (
               <form onSubmit={handleSubmit}>
                 <CardMatriculados meusDados={meusDados} />
                 <Spin tip="Carregando rascunhos..." spinning={!rascunhos}>
@@ -205,9 +268,9 @@ export const AlteracaoCardapio = ({ ...props }) => {
                         options={motivos}
                         validate={required}
                         required
-                        onChangeEffect={() => {
+                        /*onChangeEffect={() => {
                           //this.onChangeMotivo(evt.target.value);
-                        }}
+                        }}*/
                       />
                     </section>
                     <section className="section-form-datas mt-4">
@@ -218,7 +281,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
                         }
                         name="alterar_dia"
                         minDate={
-                          ehMotivoLancheEmergencial(values)
+                          ehMotivoPorNome("Lanche Emergencial", values)
                             ? moment().toDate()
                             : proximosDoisDiasUteis
                         }
@@ -234,7 +297,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
                           name="data_inicial"
                           label="De"
                           minDate={
-                            ehMotivoLancheEmergencial(values)
+                            ehMotivoPorNome("Lanche Emergencial", values)
                               ? moment().toDate()
                               : proximosDoisDiasUteis
                           }
@@ -242,7 +305,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
                           disabled={
                             values.alterar_dia ||
                             !values.motivo ||
-                            !ehMotivoLancheEmergencial(values)
+                            !ehMotivoPorNome("Lanche Emergencial", values)
                           }
                           inputOnChange={async (value) => {
                             await obtemDataInicial(value);
@@ -259,7 +322,8 @@ export const AlteracaoCardapio = ({ ...props }) => {
                         />
                       </>
                     </section>
-                    <section>
+
+                    <section className="ms-0">
                       <div className="row mt-3 mb-3">
                         <div className="col-3">Período</div>
                         <div className="col-3">Alterar alimentação de:</div>
@@ -375,7 +439,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
                                     !values.substituicoes[index]["check"]
                                   }
                                   type="number"
-                                  name={`${name}.numero_de_alunos`}
+                                  name={`${name}.qtd_alunos`}
                                   min="0"
                                   step="1"
                                   required={
@@ -392,11 +456,54 @@ export const AlteracaoCardapio = ({ ...props }) => {
                         }
                       </FieldArray>
                     </section>
+                    <hr />
+                    <Field
+                      component={CKEditorField}
+                      label="Motivo/Justificativa"
+                      name="observacao"
+                      required
+                      validate={composeValidators(
+                        textAreaRequired,
+                        peloMenosUmCaractere
+                      )}
+                    />
+                  </div>
+                  <div className="footer-button">
+                    <Botao
+                      texto="Cancelar"
+                      onClick={() => resetForm(form)}
+                      disabled={submitting}
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                    />
+                    <Botao
+                      disabled={submitting}
+                      texto={
+                        values.uuid ? "Atualizar rascunho" : "Salvar rascunho"
+                      }
+                      type={BUTTON_TYPE.SUBMIT}
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                    />
+                    <Botao
+                      texto="Enviar"
+                      disabled={submitting}
+                      type={BUTTON_TYPE.BUTTON}
+                      onClick={async () => {
+                        values["status"] = STATUS_DRE_A_VALIDAR;
+                        await handleSubmit(values, form);
+                      }}
+                      style={BUTTON_STYLE.GREEN}
+                    />
                   </div>
                 </div>
                 <ModalDataPrioritaria
                   showModal={showModalDiasUteis}
                   closeModal={() => setShowModalDiasUteis(false)}
+                />
+                <ModalConfirmaAlteracao
+                  showModal={showModalConfirmarAlteracao}
+                  closeModal={() => setShowModalConfirmarAlteracao(true)}
+                  values={values}
+                  onSubmit={onSubmit}
                 />
               </form>
             )}
