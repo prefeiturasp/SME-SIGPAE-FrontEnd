@@ -204,6 +204,42 @@ export const AlteracaoCardapio = ({ ...props }) => {
       ?.nome.includes(nome);
   };
 
+  const exibeApenasPorNome = (tiposAlimentacao, nome) => {
+    return tiposAlimentacao.filter((tp) => tp.label.includes(nome));
+  };
+
+  const removePorNome = (tiposAlimentacao, nome) => {
+    return tiposAlimentacao.filter((tp) => !tp.label.includes(nome));
+  };
+
+  const handleTiposAlimentacaoDe = (tiposAlimentacao, values) => {
+    if (ehMotivoPorNome("Lanche Emergencial", values))
+      return removePorNome(tiposAlimentacao, "Lanche Emergencial");
+    else if (ehMotivoPorNome("LPR", values)) {
+      return removePorNome(
+        exibeApenasPorNome(tiposAlimentacao, "Lanche"),
+        "Lanche Emergencial"
+      );
+    } else if (ehMotivoPorNome("RPL", values)) {
+      return removePorNome(tiposAlimentacao, "Lanche");
+    }
+    return tiposAlimentacao;
+  };
+
+  const handleTiposAlimentacaoPara = (tiposAlimentacao, values) => {
+    if (ehMotivoPorNome("Lanche Emergencial", values))
+      return exibeApenasPorNome(tiposAlimentacao, "Lanche Emergencial");
+    else if (ehMotivoPorNome("LPR", values)) {
+      return removePorNome(tiposAlimentacao, "Lanche");
+    } else if (ehMotivoPorNome("RPL", values)) {
+      return removePorNome(
+        exibeApenasPorNome(tiposAlimentacao, "Lanche"),
+        "Lanche Emergencial"
+      );
+    }
+    return tiposAlimentacao;
+  };
+
   const onAlterarDiaChanged = (value, values) => {
     if (
       value &&
@@ -295,207 +331,219 @@ export const AlteracaoCardapio = ({ ...props }) => {
                         options={motivos}
                         validate={required}
                         required
-                        /*onChangeEffect={() => {
-                          //this.onChangeMotivo(evt.target.value);
-                        }}*/
+                        onChangeEffect={(event) => {
+                          resetForm(form);
+                          form.change("motivo", event.target.value);
+                        }}
                       />
                     </section>
-                    <section className="section-form-datas mt-2">
-                      <Field
-                        component={InputComData}
-                        inputOnChange={(value) =>
-                          onAlterarDiaChanged(value, values)
-                        }
-                        name="alterar_dia"
-                        minDate={
-                          ehMotivoPorNome("Lanche Emergencial", values)
-                            ? moment().toDate()
-                            : proximosDoisDiasUteis
-                        }
-                        maxDate={fimDoCalendario()}
-                        label="Alterar dia"
-                        disabled={values.data_inicial || values.data_final}
-                        usarDirty
-                      />
+                    {values.motivo && (
                       <>
-                        <div className="opcao-data">Ou</div>
+                        <section className="section-form-datas mt-2">
+                          <Field
+                            component={InputComData}
+                            inputOnChange={(value) =>
+                              onAlterarDiaChanged(value, values)
+                            }
+                            name="alterar_dia"
+                            minDate={
+                              ehMotivoPorNome("Lanche Emergencial", values)
+                                ? moment().toDate()
+                                : proximosDoisDiasUteis
+                            }
+                            maxDate={fimDoCalendario()}
+                            label="Alterar dia"
+                            disabled={values.data_inicial || values.data_final}
+                            usarDirty
+                          />
+                          <>
+                            <div className="opcao-data">Ou</div>
+                            <Field
+                              component={InputComData}
+                              name="data_inicial"
+                              label="De"
+                              minDate={
+                                ehMotivoPorNome("Lanche Emergencial", values)
+                                  ? moment().toDate()
+                                  : proximosDoisDiasUteis
+                              }
+                              maxDate={fimDoCalendario()}
+                              disabled={
+                                values.alterar_dia ||
+                                !values.motivo ||
+                                !ehMotivoPorNome("Lanche Emergencial", values)
+                              }
+                              inputOnChange={async (value) => {
+                                await obtemDataInicial(value);
+                                onAlterarDiaChanged(value, values);
+                              }}
+                            />
+                            <Field
+                              component={InputComData}
+                              name="data_final"
+                              label="Até"
+                              disabled={
+                                !values.data_inicial || values.alterar_dia
+                              }
+                              minDate={limiteDataInicial}
+                              maxDate={limiteDataFinal}
+                            />
+                          </>
+                        </section>
+
+                        <section>
+                          <div className="row mt-3 mb-3 g-0">
+                            <div className="col-3 pe-3">Período</div>
+                            <div className="col-3 pe-3">
+                              Alterar alimentação de:
+                            </div>
+                            <div className="col-3 pe-3">Para alimentação:</div>
+                            <div className="col-3">Nº de Alunos</div>
+                          </div>
+                          <FieldArray name="substituicoes">
+                            {({ fields }) =>
+                              fields.map((name, index) => (
+                                <div className="row g-0" key={index}>
+                                  <div className="col-3 pe-3">
+                                    <div
+                                      className={`period-quantity number-${index} ps-5 pt-2 pb-2`}
+                                    >
+                                      <Fragment>
+                                        <label
+                                          htmlFor="check"
+                                          className="checkbox-label"
+                                        >
+                                          <Field
+                                            component={"input"}
+                                            type="checkbox"
+                                            name={`${name}.check`}
+                                          />
+                                          <span
+                                            onClick={() => {
+                                              form.change(
+                                                `${name}.check`,
+                                                !values.substituicoes[index][
+                                                  "check"
+                                                ]
+                                              );
+                                            }}
+                                            className="checkbox-custom"
+                                            data-cy={`checkbox-${
+                                              getPeriodo(index).nome
+                                            }`}
+                                          />
+                                          <div className="">
+                                            {" "}
+                                            {getPeriodo(index).nome}
+                                          </div>
+                                        </label>
+                                      </Fragment>
+                                    </div>
+                                  </div>
+                                  <div className="col-3 pe-3">
+                                    <Field
+                                      component={MultiselectRaw}
+                                      name={`${name}.tipos_alimentacao_de`}
+                                      selected={
+                                        form.getState().values.substituicoes[
+                                          index
+                                        ].tipos_alimentacao_de_selecionados ||
+                                        []
+                                      }
+                                      options={handleTiposAlimentacaoDe(
+                                        getPeriodo(index).tipos_alimentacao.map(
+                                          (tipo_alimentacao) => ({
+                                            label: tipo_alimentacao.nome,
+                                            value: tipo_alimentacao.uuid,
+                                          })
+                                        ),
+                                        values
+                                      )}
+                                      onSelectedChanged={(values_) => {
+                                        form.change(
+                                          `substituicoes[${index}].tipos_alimentacao_de_selecionados`,
+                                          values_.map((value_) => value_.value)
+                                        );
+                                      }}
+                                      placeholder="Selecione tipos de alimentação"
+                                      disabled={
+                                        !values.substituicoes[index]["check"]
+                                      }
+                                      required={
+                                        values.substituicoes[index]["check"]
+                                      }
+                                    />
+                                  </div>
+                                  <div className="col-3 pe-3">
+                                    <Field
+                                      component={MultiselectRaw}
+                                      name={`${name}.tipos_alimentacao_para`}
+                                      selected={
+                                        values.substituicoes[index]
+                                          .tipos_alimentacao_para_selecionados ||
+                                        []
+                                      }
+                                      required={
+                                        values.substituicoes[index]["check"]
+                                      }
+                                      options={handleTiposAlimentacaoPara(
+                                        getPeriodo(index).tipos_alimentacao.map(
+                                          (tipo_alimentacao) => ({
+                                            label: tipo_alimentacao.nome,
+                                            value: tipo_alimentacao.uuid,
+                                          })
+                                        ),
+                                        values
+                                      )}
+                                      onSelectedChanged={(values_) => {
+                                        form.change(
+                                          `substituicoes[${index}].tipos_alimentacao_para_selecionados`,
+                                          values_.map((value_) => value_.value)
+                                        );
+                                      }}
+                                      placeholder="Selecione tipos de alimentação"
+                                      disabled={
+                                        !values.substituicoes[index]["check"]
+                                      }
+                                    />
+                                  </div>
+                                  <div className="col-3">
+                                    <Field
+                                      component={InputText}
+                                      disabled={
+                                        !values.substituicoes[index]["check"]
+                                      }
+                                      type="number"
+                                      name={`${name}.qtd_alunos`}
+                                      min="0"
+                                      step="1"
+                                      required={
+                                        values.substituicoes[index]["check"]
+                                      }
+                                      validate={
+                                        values.substituicoes[index]["check"] &&
+                                        handleNumeroAlunosValidate(index)
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                              ))
+                            }
+                          </FieldArray>
+                        </section>
+                        <hr />
                         <Field
-                          component={InputComData}
-                          name="data_inicial"
-                          label="De"
-                          minDate={
-                            ehMotivoPorNome("Lanche Emergencial", values)
-                              ? moment().toDate()
-                              : proximosDoisDiasUteis
-                          }
-                          maxDate={fimDoCalendario()}
-                          disabled={
-                            values.alterar_dia ||
-                            !values.motivo ||
-                            !ehMotivoPorNome("Lanche Emergencial", values)
-                          }
-                          inputOnChange={async (value) => {
-                            await obtemDataInicial(value);
-                            onAlterarDiaChanged(value, values);
-                          }}
-                        />
-                        <Field
-                          component={InputComData}
-                          name="data_final"
-                          label="Até"
-                          disabled={!values.data_inicial || values.alterar_dia}
-                          minDate={limiteDataInicial}
-                          maxDate={limiteDataFinal}
+                          component={CKEditorField}
+                          label="Motivo/Justificativa"
+                          name="observacao"
+                          required
+                          validate={composeValidators(
+                            textAreaRequired,
+                            peloMenosUmCaractere
+                          )}
                         />
                       </>
-                    </section>
-
-                    <section>
-                      <div className="row mt-3 mb-3 g-0">
-                        <div className="col-3 pe-3">Período</div>
-                        <div className="col-3 pe-3">
-                          Alterar alimentação de:
-                        </div>
-                        <div className="col-3 pe-3">Para alimentação:</div>
-                        <div className="col-3">Nº de Alunos</div>
-                      </div>
-                      <FieldArray name="substituicoes">
-                        {({ fields }) =>
-                          fields.map((name, index) => (
-                            <div className="row g-0" key={index}>
-                              <div className="col-3 pe-3">
-                                <div
-                                  className={`period-quantity number-${index} ps-5 pt-2 pb-2`}
-                                >
-                                  <Fragment>
-                                    <label
-                                      htmlFor="check"
-                                      className="checkbox-label"
-                                    >
-                                      <Field
-                                        component={"input"}
-                                        type="checkbox"
-                                        name={`${name}.check`}
-                                      />
-                                      <span
-                                        onClick={() => {
-                                          form.change(
-                                            `${name}.check`,
-                                            !values.substituicoes[index][
-                                              "check"
-                                            ]
-                                          );
-                                        }}
-                                        className="checkbox-custom"
-                                        data-cy={`checkbox-${
-                                          getPeriodo(index).nome
-                                        }`}
-                                      />
-                                      <div className="">
-                                        {" "}
-                                        {getPeriodo(index).nome}
-                                      </div>
-                                    </label>
-                                  </Fragment>
-                                </div>
-                              </div>
-                              <div className="col-3 pe-3">
-                                <Field
-                                  component={MultiselectRaw}
-                                  name={`${name}.tipos_alimentacao_de`}
-                                  selected={
-                                    form.getState().values.substituicoes[index]
-                                      .tipos_alimentacao_de_selecionados || []
-                                  }
-                                  options={getPeriodo(
-                                    index
-                                  ).tipos_alimentacao.map(
-                                    (tipo_alimentacao) => ({
-                                      label: tipo_alimentacao.nome,
-                                      value: tipo_alimentacao.uuid,
-                                    })
-                                  )}
-                                  onSelectedChanged={(values_) => {
-                                    form.change(
-                                      `substituicoes[${index}].tipos_alimentacao_de_selecionados`,
-                                      values_.map((value_) => value_.value)
-                                    );
-                                  }}
-                                  placeholder="Selecione tipos de alimentação"
-                                  disabled={
-                                    !values.substituicoes[index]["check"]
-                                  }
-                                  required={
-                                    values.substituicoes[index]["check"]
-                                  }
-                                />
-                              </div>
-                              <div className="col-3 pe-3">
-                                <Field
-                                  component={MultiselectRaw}
-                                  name={`${name}.tipos_alimentacao_para`}
-                                  selected={
-                                    values.substituicoes[index]
-                                      .tipos_alimentacao_para_selecionados || []
-                                  }
-                                  required={
-                                    values.substituicoes[index]["check"]
-                                  }
-                                  options={getPeriodo(
-                                    index
-                                  ).tipos_alimentacao.map(
-                                    (tipo_alimentacao) => ({
-                                      label: tipo_alimentacao.nome,
-                                      value: tipo_alimentacao.uuid,
-                                    })
-                                  )}
-                                  onSelectedChanged={(values_) => {
-                                    form.change(
-                                      `substituicoes[${index}].tipos_alimentacao_para_selecionados`,
-                                      values_.map((value_) => value_.value)
-                                    );
-                                  }}
-                                  placeholder="Selecione tipos de alimentação"
-                                  disabled={
-                                    !values.substituicoes[index]["check"]
-                                  }
-                                />
-                              </div>
-                              <div className="col-3">
-                                <Field
-                                  component={InputText}
-                                  disabled={
-                                    !values.substituicoes[index]["check"]
-                                  }
-                                  type="number"
-                                  name={`${name}.qtd_alunos`}
-                                  min="0"
-                                  step="1"
-                                  required={
-                                    values.substituicoes[index]["check"]
-                                  }
-                                  validate={
-                                    values.substituicoes[index]["check"] &&
-                                    handleNumeroAlunosValidate(index)
-                                  }
-                                />
-                              </div>
-                            </div>
-                          ))
-                        }
-                      </FieldArray>
-                    </section>
-                    <hr />
-                    <Field
-                      component={CKEditorField}
-                      label="Motivo/Justificativa"
-                      name="observacao"
-                      required
-                      validate={composeValidators(
-                        textAreaRequired,
-                        peloMenosUmCaractere
-                      )}
-                    />
+                    )}
                   </div>
                   <div className="row mb-3">
                     <div className="col-12 text-end">
