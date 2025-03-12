@@ -1,46 +1,44 @@
+import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
 import HTTP_STATUS from "http-status-codes";
 import React, { Component } from "react";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
+import CKEditorField from "components/Shareable/CKEditorField";
+import { TextArea } from "components/Shareable/TextArea/TextArea";
+import { maxValue, naoPodeSerZero, required } from "helpers/fieldValidators";
 import {
-  createSuspensaoDeAlimentacao,
-  deleteSuspensaoDeAlimentacao,
-  getSuspensoesDeAlimentacaoSalvas,
-  updateSuspensaoDeAlimentacao,
-  enviarSuspensaoDeAlimentacao,
-} from "../../services/suspensaoDeAlimentacao.service";
-import {
-  geradorUUID,
-  getError,
   deepCopy,
   escolaEhCEMEI,
   fimDoCalendario,
-} from "../../helpers/utilities";
-import { validateSubmit } from "./validacao";
-import { Field, reduxForm, formValueSelector, FormSection } from "redux-form";
-import { InputText } from "../Shareable/Input/InputText";
-import { Select } from "../Shareable/Select";
-import {
-  required,
-  naoPodeSerZero,
-  maxValue,
-} from "../../helpers/fieldValidators";
-import { loadFoodSuspension } from "../../reducers/suspensaoDeAlimentacaoReducer";
-import CardMatriculados from "../Shareable/CardMatriculados";
-import { Rascunhos } from "./Rascunhos";
-import { toastSuccess, toastError } from "../Shareable/Toast/dialogs";
-import { InputComData } from "../Shareable/DatePicker";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import Botao from "../Shareable/Botao";
-import { BUTTON_STYLE, BUTTON_TYPE } from "../Shareable/Botao/constants";
-import CKEditorField from "components/Shareable/CKEditorField";
-import { STATUS_DRE_A_VALIDAR } from "../../configs/constants";
+  geradorUUID,
+  getError,
+  usuarioEhEscolaCeuGestao,
+  usuarioEhEscolaCMCT,
+} from "helpers/utilities";
+import { loadFoodSuspension } from "reducers/suspensaoDeAlimentacaoReducer";
+import { Field, FormSection, formValueSelector, reduxForm } from "redux-form";
 import { getQuantidadeAlunosCEMEIporPeriodoCEIEMEI } from "services/aluno.service";
+import {
+  createSuspensaoDeAlimentacao,
+  deleteSuspensaoDeAlimentacao,
+  enviarSuspensaoDeAlimentacao,
+  getSuspensoesDeAlimentacaoSalvas,
+  updateSuspensaoDeAlimentacao,
+} from "services/suspensaoDeAlimentacao.service";
+import { STATUS_DRE_A_VALIDAR } from "../../configs/constants";
 import { getVinculosTipoAlimentacaoPorEscola } from "../../services/cadastroTipoAlimentacao.service";
 import { getQuantidaDeAlunosPorPeriodoEEscola } from "../../services/escola.service";
+import Botao from "../Shareable/Botao";
+import { BUTTON_STYLE, BUTTON_TYPE } from "../Shareable/Botao/constants";
+import CardMatriculados from "../Shareable/CardMatriculados";
+import { InputComData } from "../Shareable/DatePicker";
+import { InputText } from "../Shareable/Input/InputText";
+import { Select } from "../Shareable/Select";
+import { toastError, toastSuccess } from "../Shareable/Toast/dialogs";
+import { Rascunhos } from "./Rascunhos";
 import "./style.scss";
+import { validateSubmit } from "./validacao";
 
 const ENTER = 13;
 class FoodSuspensionEditor extends Component {
@@ -847,11 +845,8 @@ class FoodSuspensionEditor extends Component {
                             className="form-control"
                             required
                             validate={
-                              meusDados.vinculo_atual.instituicao
-                                .tipo_unidade_escolar_iniciais !==
-                                "CEU GESTAO" &&
-                              meusDados.vinculo_atual.instituicao
-                                .tipo_unidade_escolar_iniciais !== "CMCT"
+                              !usuarioEhEscolaCeuGestao() &&
+                              !usuarioEhEscolaCMCT()
                                 ? period.validador
                                 : false
                             }

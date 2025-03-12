@@ -1,4 +1,8 @@
-import { escolaEhCEMEI } from "helpers/utilities";
+import {
+  escolaEhCEMEI,
+  usuarioEhEscolaCeuGestao,
+  usuarioEhEscolaCMCT,
+} from "helpers/utilities";
 
 export const validateSubmit = (values, meusDados) => {
   values["suspensoes"] = [];
@@ -104,10 +108,8 @@ export const validateSubmit = (values, meusDados) => {
   }
 
   if (
-    meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
-      "CEU GESTAO" &&
-    meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
-      "CMCT" &&
+    !usuarioEhEscolaCeuGestao() &&
+    !usuarioEhEscolaCMCT() &&
     totalAlunos > meusDados.vinculo_atual.instituicao.quantidade_alunos
   ) {
     return "Número de alunos do pedido maior que a quantidade de alunos da escola";
