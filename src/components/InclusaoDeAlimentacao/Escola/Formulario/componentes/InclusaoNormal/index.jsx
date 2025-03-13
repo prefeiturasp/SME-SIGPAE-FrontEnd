@@ -29,6 +29,7 @@ import {
   usuarioEhEscolaCeuGestao,
   usuarioEhEscolaCMCT,
 } from "helpers/utilities";
+import { renderizaSelectSimples } from "../../../../helper";
 import "../../style.scss";
 
 export const DataInclusaoNormal = ({ ...props }) => {
@@ -264,7 +265,7 @@ export const PeriodosInclusaoNormal = ({
                   </div>
                 </div>
                 <div className="col-6">
-                  {usuarioEhEscolaCMCT() ? (
+                  {renderizaSelectSimples(getPeriodo(indice).nome) ? (
                     // Renderiza um select simples se for CMCT
                     <div
                       data-testid={`select-simples-div-${
