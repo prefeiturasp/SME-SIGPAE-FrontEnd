@@ -36,6 +36,7 @@ export const AlterarDiaOuPeriodo = ({ ...props }) => {
     <section className="section-form-datas mt-2">
       <Field
         component={InputComData}
+        dataTestId="div-input-alterar-dia"
         inputOnChange={(value) => onAlterarDiaChanged(value, values)}
         name="alterar_dia"
         minDate={

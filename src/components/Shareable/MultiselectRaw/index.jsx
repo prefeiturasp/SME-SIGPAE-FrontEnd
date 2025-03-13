@@ -24,6 +24,7 @@ export const MultiselectRaw = (props) => {
     selected,
     tooltipText,
     usarDirty,
+    dataTestId,
   } = props;
 
   const [opcoesSelecionadas, setOpcoesSelecionadas] = useState(
@@ -37,7 +38,7 @@ export const MultiselectRaw = (props) => {
   }, [selected]);
 
   return (
-    <div className="select">
+    <div className="select" data-testid={dataTestId}>
       {label && [
         required && !disabled && (
           <span key={0} className="required-asterisk">
@@ -55,6 +56,7 @@ export const MultiselectRaw = (props) => {
       ]}
       <ReactSelect
         {...input}
+        classNamePrefix={dataTestId}
         options={options}
         isDisabled={disabled}
         isMulti={isMulti}

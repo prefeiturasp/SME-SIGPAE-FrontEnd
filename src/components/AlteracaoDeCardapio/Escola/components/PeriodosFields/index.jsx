@@ -82,6 +82,7 @@ export const PeriodosFields = ({ ...props }) => {
               <div className="col-3 pe-3">
                 <div
                   className={`period-quantity number-${index} ps-5 pt-2 pb-2`}
+                  data-testid={`div-checkbox-${getPeriodo(index).nome}`}
                 >
                   <Fragment>
                     <label htmlFor="check" className="checkbox-label">
@@ -108,6 +109,9 @@ export const PeriodosFields = ({ ...props }) => {
               <div className="col-3 pe-3">
                 <Field
                   component={MultiselectRaw}
+                  dataTestId={`select-tipos-alimentacao-de-${
+                    getPeriodo(index).nome
+                  }`}
                   name={`${name}.tipos_alimentacao_de`}
                   selected={
                     form.getState().values.substituicoes[index]
@@ -136,6 +140,9 @@ export const PeriodosFields = ({ ...props }) => {
               <div className="col-3 pe-3">
                 <Field
                   component={MultiselectRaw}
+                  dataTestId={`select-tipos-alimentacao-para-${
+                    getPeriodo(index).nome
+                  }`}
                   name={`${name}.tipos_alimentacao_para`}
                   selected={
                     values.substituicoes[index]
@@ -164,6 +171,9 @@ export const PeriodosFields = ({ ...props }) => {
               <div className="col-3">
                 <Field
                   component={InputText}
+                  dataTestIdDiv={`div-input-numero-alunos-${
+                    getPeriodo(index).nome
+                  }`}
                   disabled={!values.substituicoes[index]["check"]}
                   type="number"
                   name={`${name}.qtd_alunos`}
