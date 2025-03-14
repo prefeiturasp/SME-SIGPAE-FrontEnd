@@ -22,10 +22,14 @@ export const Rascunhos = ({ ...props }) => {
         </div>
         <div className="icon-draft-card float-end">
           Salvo em: {alteracaoDeCardapio.criado_em}
-          <span onClick={() => removerRascunho(id_externo, uuid, form)}>
+          <span
+            data-testid="botao-remover-rascunho"
+            onClick={() => removerRascunho(id_externo, uuid, form)}
+          >
             <i className="fas fa-trash" />
           </span>
           <span
+            data-testid="botao-carregar-rascunho"
             onClick={() => carregarRascunho(alteracaoDeCardapio, form, values)}
           >
             <i className="fas fa-edit" />

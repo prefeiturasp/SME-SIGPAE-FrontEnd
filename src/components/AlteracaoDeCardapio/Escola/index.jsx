@@ -43,7 +43,6 @@ import "./style.scss";
 export const AlteracaoCardapio = ({ ...props }) => {
   const [rascunhos, setRascunhos] = useState();
   const [showModalDiasUteis, setShowModalDiasUteis] = useState(false);
-
   const [erro, setErro] = useState("");
 
   const {
@@ -179,7 +178,6 @@ export const AlteracaoCardapio = ({ ...props }) => {
 
   const resetForm = (form) => {
     form.reset();
-    form.change("substituicoes", periodos);
   };
 
   const ehMotivoPorNome = (nome, values) => {

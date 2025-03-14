@@ -32,6 +32,8 @@ jest.mock("components/Shareable/CKEditorField", () => ({
 
 describe("Teste Formulário Alteração de Cardápio - EMEF", () => {
   beforeEach(async () => {
+    process.env.IS_TEST = true;
+
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
@@ -54,7 +56,25 @@ describe("Teste Formulário Alteração de Cardápio - EMEF", () => {
       .reply(200, mockQuantidadeAlunosPorPeriodoEMEF);
     mock
       .onPost("/alteracoes-cardapio/")
+      .reply(201, mockRascunhoAlteracaoCardapioEMEF);
+    mock
+      .onPatch(
+        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/`
+      )
       .reply(200, mockRascunhoAlteracaoCardapioEMEF);
+    mock
+      .onPatch(
+        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/inicio-pedido/`
+      )
+      .reply(200, {
+        ...mockRascunhoAlteracaoCardapioEMEF,
+        status: "DRE_A_VALIDAR",
+      });
+    mock
+      .onDelete(
+        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/`
+      )
+      .reply(204, {});
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
@@ -160,7 +180,6 @@ describe("Teste Formulário Alteração de Cardápio - EMEF", () => {
   };
 
   it("Testa Alteração - Motivo RPL", async () => {
-    process.env.IS_TEST = true;
     selecionaMotivoRPL();
     expect(screen.getByText("Alterar dia")).toBeInTheDocument();
 
@@ -207,5 +226,34 @@ describe("Teste Formulário Alteração de Cardápio - EMEF", () => {
       .getByText("Salvar rascunho")
       .closest("button");
     fireEvent.click(botaoSalvarRascunho);
+  });
+
+  it("Carrega rascunho e envia", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    expect(screen.getByText("Solicitação # 807A8")).toBeInTheDocument();
+
+    const divInputNumeroAlunosMANHA = screen.getByTestId(
+      "div-input-numero-alunos-MANHA"
+    );
+    const inputElementNumeroAlunosMANHA =
+      divInputNumeroAlunosMANHA.querySelector("input");
+    expect(inputElementNumeroAlunosMANHA).toHaveAttribute("value", "123");
+
+    const botaoEnviar = screen.getByText("Enviar").closest("button");
+    fireEvent.click(botaoEnviar);
+  });
+
+  it("Exclui rascunho", async () => {
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    mock.onGet("/alteracoes-cardapio/minhas-solicitacoes/").reply(200, []);
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
+    expect(screen.queryByText("Rascunhos")).not.toBeInTheDocument();
   });
 });
