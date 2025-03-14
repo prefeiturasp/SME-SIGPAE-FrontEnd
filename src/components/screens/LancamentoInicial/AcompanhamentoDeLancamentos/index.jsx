@@ -93,6 +93,7 @@ export const AcompanhamentoDeLancamentos = () => {
     useState(false);
   const [exibirModalRelatorioConsolidado, setExibirModalRelatorioConsolidado] =
     useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [initialValues, setInitialValues] = useState({
     diretoria_regional: diretoriaRegional,
@@ -216,6 +217,12 @@ export const AcompanhamentoDeLancamentos = () => {
       );
     }
   };
+
+  useEffect(() => {
+    if (diretoriasRegionais && mesesAnos && tiposUnidades) {
+      setIsLoading(false);
+    }
+  }, [diretoriasRegionais, mesesAnos, tiposUnidades]);
 
   useEffect(() => {
     const getTiposUnidadeEscolarAsync = async () => {
@@ -483,8 +490,8 @@ export const AcompanhamentoDeLancamentos = () => {
   return (
     <div className="acompanhamento-de-lancamentos">
       {erroAPI && <div>{erroAPI}</div>}
-      <Spin tip="Carregando..." spinning={!diretoriasRegionais}>
-        {!erroAPI && diretoriasRegionais && (
+      <Spin tip="Carregando..." spinning={isLoading}>
+        {!erroAPI && diretoriasRegionais && mesesAnos && tiposUnidades && (
           <Form onSubmit={onSubmit} initialValues={initialValues}>
             {({ handleSubmit, form, values }) => (
               <form onSubmit={handleSubmit}>
@@ -520,6 +527,7 @@ export const AcompanhamentoDeLancamentos = () => {
                         }
                         naoDesabilitarPrimeiraOpcao
                         disabled={!diretoriasRegionais || loadingComFiltros}
+                        dataTestId="select-diretoria-regional"
                       >
                         {diretoriasRegionais}
                       </Field>
@@ -561,6 +569,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                       dadosPorStatus.total && "cursor-pointer"
                                     }`
                               }
+                              dataTestId={dadosPorStatus.status}
                             >
                               {
                                 MEDICAO_CARD_NOME_POR_STATUS_DRE[
@@ -588,6 +597,7 @@ export const AcompanhamentoDeLancamentos = () => {
                           <div className="row">
                             <div className="col-4">
                               <Field
+                                dataTestId="div-select-mes-referencia"
                                 component={Select}
                                 name="mes_ano"
                                 label="Mês de referência"
