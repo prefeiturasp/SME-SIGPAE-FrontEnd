@@ -161,7 +161,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
     getRascunhosAsync();
   }, []);
 
-  const handleDelete = async (id_externo, uuid) => {
+  const removerRascunho = async (id_externo, uuid) => {
     if (window.confirm("Deseja remover este rascunho?")) {
       const response = await escolaExcluirSolicitacaoDeAlteracaoCardapio(
         uuid,
@@ -171,7 +171,9 @@ export const AlteracaoCardapio = ({ ...props }) => {
         toastSuccess(`Rascunho # ${id_externo} excluído com sucesso`);
         await getRascunhosAsync();
       } else {
-        toastError("Houve um erro ao excluir o rascunho");
+        toastError(
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
+        );
       }
     }
   };
@@ -225,7 +227,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
                       <span className="page-title">Rascunhos</span>
                       <Rascunhos
                         rascunhos={rascunhos}
-                        removerRascunho={handleDelete}
+                        removerRascunho={removerRascunho}
                         form={form}
                         carregarRascunho={carregarRascunho}
                       />

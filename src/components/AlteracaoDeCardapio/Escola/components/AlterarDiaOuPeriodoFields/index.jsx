@@ -53,6 +53,7 @@ export const AlterarDiaOuPeriodo = ({ ...props }) => {
         <div className="opcao-data">Ou</div>
         <Field
           component={InputComData}
+          dataTestId="div-input-data-inicial"
           name="data_inicial"
           label="De"
           minDate={
@@ -73,6 +74,7 @@ export const AlterarDiaOuPeriodo = ({ ...props }) => {
         />
         <Field
           component={InputComData}
+          dataTestId="div-input-data-final"
           name="data_final"
           label="Até"
           disabled={!values.data_inicial || values.alterar_dia}

@@ -30,7 +30,17 @@ jest.mock("components/Shareable/CKEditorField", () => ({
   ),
 }));
 
-describe("Teste Formulário Alteração de Cardápio - EMEF", () => {
+jest.mock("react-toastify", () => ({
+  success: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+  info: jest.fn(),
+  POSITION: {
+    TOP_CENTER: "top-center",
+  },
+}));
+
+describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
   beforeEach(async () => {
     process.env.IS_TEST = true;
 
@@ -255,5 +265,18 @@ describe("Teste Formulário Alteração de Cardápio - EMEF", () => {
       fireEvent.click(botaoRemoverRascunho);
     });
     expect(screen.queryByText("Rascunhos")).not.toBeInTheDocument();
+  });
+
+  it("Erro ao excluir rascunho", async () => {
+    mock
+      .onDelete(
+        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/`
+      )
+      .reply(400, { detail: "Erro ao excluir rascunho" });
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
   });
 });
