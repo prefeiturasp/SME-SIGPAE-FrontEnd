@@ -253,10 +253,10 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     });
 
     expect(screen.getByText("Todos")).toBeInTheDocument();
-    expect(screen.getByText("Lanche")).toBeInTheDocument();
-    expect(screen.getByText("Refeição")).toBeInTheDocument();
-    expect(screen.getByText("Sobremesa")).toBeInTheDocument();
-    expect(screen.getByText("Lanche 4h")).toBeInTheDocument();
+    expect(screen.queryAllByText("Lanche").length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("Refeição").length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("Sobremesa").length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("Lanche 4h").length).toBeGreaterThan(0);
 
     const divDropdownContent = container.querySelector(".dropdown-content");
     const checkboxLanche =

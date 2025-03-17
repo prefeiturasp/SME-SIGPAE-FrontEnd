@@ -1,4 +1,4 @@
-import { usuarioEhEscolaCMCT } from "helpers/utilities";
+import { usuarioEhEscolaCMCT, usuarioEhEscolaCIEJA } from "helpers/utilities";
 
 export const formatarTiposDeAlimentacao = (tiposAlimentacao) => {
   return tiposAlimentacao.map((element) => {
@@ -68,7 +68,11 @@ export const formatarSubmissaoSolicitacaoNormal = (values) => {
       ) {
         quantidade_periodo["periodo_escolar"] = quantidade_periodo.uuid;
       }
-      if (usuarioEhEscolaCMCT()) {
+      if (
+        usuarioEhEscolaCMCT() ||
+        usuarioEhEscolaCIEJA() ||
+        quantidade_periodo.nome === "NOITE"
+      ) {
         if (
           quantidade_periodo.tipos_alimentacao_selecionados ===
           "refeicao_e_sobremesa"
@@ -133,5 +137,11 @@ export const exibeMotivoETEC = () => {
     (localStorage.getItem("nome_instituicao").startsWith(`"EMEF `) ||
       localStorage.getItem("nome_instituicao").startsWith(`"CEU EMEF `) ||
       localStorage.getItem("nome_instituicao").startsWith(`"CEU GESTAO `))
+  );
+};
+
+export const renderizaSelectSimples = (nomePeriodo) => {
+  return (
+    usuarioEhEscolaCMCT() || usuarioEhEscolaCIEJA() || nomePeriodo === "NOITE"
   );
 };

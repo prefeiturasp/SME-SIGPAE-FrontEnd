@@ -15,6 +15,7 @@ import Select from "components/Shareable/Select";
 import { required } from "helpers/fieldValidators";
 import {
   agregarDefault,
+  usuarioEhEscolaCIEJA,
   usuarioEhEscolaCMCT,
   checaSeDataEstaEntre2e5DiasUteis,
   deepCopy,
@@ -233,6 +234,12 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
     }
   };
 
+  const renderizaSelectSimples = (nomePeriodo: string): boolean => {
+    return (
+      usuarioEhEscolaCMCT() || usuarioEhEscolaCIEJA() || nomePeriodo === "NOITE"
+    );
+  };
+
   const carregarRascunho = async (
     form: FormApi<any, Partial<any>>,
     values: ValuesFormInclusaoDeAlimentacaoInterface,
@@ -305,8 +312,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
         `quantidades_periodo[${index}].multiselect`,
         "multiselect-wrapper-enabled"
       );
-
-      if (usuarioEhEscolaCMCT()) {
+      if (renderizaSelectSimples(qp.periodo_escolar.nome)) {
         if (qp.tipos_alimentacao.length > 1) {
           form.change(
             `quantidades_periodo[${index}].tipos_alimentacao_selecionados`,
