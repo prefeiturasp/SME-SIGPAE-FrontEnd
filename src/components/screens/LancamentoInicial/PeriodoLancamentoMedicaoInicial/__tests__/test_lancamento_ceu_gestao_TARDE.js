@@ -12,7 +12,7 @@ import { mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE } from "mocks/medicao
 import { mockLocationStateCEUGESTAO_TARDE } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockStateCEUGESTAO_TARDE";
 import { mockValoresMedicaoCEUGESTAO_TARDE } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/valoresMedicaoCEUGESTAO_TARDE";
 import { mockMeusDadosEscolaCEUGESTAO } from "mocks/meusDados/escolaCeuGestao";
-import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "mocks/services/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
+import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { mockGetEscolaSimplesCEUGESTAO } from "mocks/services/escola.service/mockGetEscolaSimplesCEUGESTAO";
 import { mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/getCEUGESTAOPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
 import { mockGetPeriodosInclusaoContinuaCEUGESTAO } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/getPeriodosInclusaoContinuaCEUGESTAO";

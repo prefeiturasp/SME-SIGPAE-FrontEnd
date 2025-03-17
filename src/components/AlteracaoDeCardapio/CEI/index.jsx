@@ -44,7 +44,7 @@ import {
   getAlunosPorFaixaEtariaNumaData,
   getRascunhosAlteracaoTipoAlimentacao,
 } from "services/alteracaoDeCardapio";
-import { Rascunhos } from "../Rascunhos";
+import { Rascunhos } from "../Escola/components/Rascunhos";
 import {
   formataPayload,
   totalAlunosInputPorPeriodo,
@@ -63,8 +63,6 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     proximosCincoDiasUteis,
     proximosDoisDiasUteis,
     vinculos,
-    // eslint-disable-next-line no-unused-vars
-    feriadosAno,
   } = props;
 
   const [rascunhos, setRascunhos] = useState(null);
@@ -385,7 +383,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                     <section className="mt-3">
                       <span className="page-title">Rascunhos</span>
                       <Rascunhos
-                        alteracaoCardapioList={rascunhos}
+                        rascunhos={rascunhos}
                         removerRascunho={removerRascunho}
                         resetForm={() => form.reset()}
                         carregarRascunho={carregarRascunho}
@@ -438,10 +436,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                           maxDate={fimDoCalendario()}
                           label="Alterar dia"
                           required
-                          validate={composeValidators(
-                            required
-                            // ehDiaUtil(values, motivos, feriadosAno)
-                          )}
+                          validate={composeValidators(required)}
                           usarDirty={true}
                           inputOnChange={(value) => {
                             if (value) {

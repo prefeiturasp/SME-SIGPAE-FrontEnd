@@ -6,7 +6,7 @@ import {
 } from "services/cadastroTipoAlimentacao.service";
 import {
   buscaPeriodosEscolares,
-  getQuantidadeAlunosEscola,
+  getQuantidaDeAlunosPorPeriodoEEscola,
 } from "services/escola.service";
 import InclusaoDeAlimentacao from "..";
 import {
@@ -65,7 +65,7 @@ export const Container = () => {
     escola_uuid: string
   ): Promise<void> => {
     const response: ResponseQuantidadeAlunosEscolaInterface =
-      await getQuantidadeAlunosEscola(escola_uuid);
+      await getQuantidaDeAlunosPorPeriodoEEscola(escola_uuid);
     if (response.status === HTTP_STATUS.OK) {
       const periodos_: Array<any> = abstraiPeriodosComAlunosMatriculados(
         periodos,
