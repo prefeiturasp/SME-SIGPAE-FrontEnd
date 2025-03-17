@@ -137,6 +137,7 @@ export class SolicitacaoDeKitLanche extends Component {
       solicitacaoKitLanche.solicitacao_kit_lanche.data
     );
     this.props.change("local", solicitacaoKitLanche.local);
+    this.props.change("evento", solicitacaoKitLanche.evento);
     this.props.change(
       "quantidade_alunos",
       solicitacaoKitLanche.quantidade_alunos
