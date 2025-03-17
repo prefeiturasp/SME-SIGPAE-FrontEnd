@@ -1,4 +1,4 @@
-import { Spin } from "antd";
+import { Spin, Tooltip } from "antd";
 import CKEditorField from "components/Shareable/CKEditorField";
 import HTTP_STATUS from "http-status-codes";
 import { isEqual } from "lodash";
@@ -28,6 +28,8 @@ import {
   escolaEhCei,
   fimDoCalendario,
   getError,
+  usuarioEhEscolaCeuGestao,
+  usuarioEhEscolaCMCT,
 } from "../../../helpers/utilities";
 import { getDietasAtivasInativasPorAluno } from "../../../services/dietaEspecial.service";
 import { Botao } from "../../Shareable/Botao";
@@ -48,7 +50,6 @@ import {
   validateFormKitLanchePasseio,
   validateFormKitLanchePasseioCei,
 } from "./validators";
-import { Tooltip } from "antd";
 
 const { SOLICITACAO_CEI, SOLICITACAO_NORMAL } = TIPO_SOLICITACAO;
 
@@ -91,11 +92,7 @@ export class SolicitacaoDeKitLanche extends Component {
 
   validarQuantidadeAlunos = (value) => {
     const { meusDados } = this.props;
-    if (
-      meusDados.vinculo_atual &&
-      meusDados.vinculo_atual.instituicao.tipo_unidade_escolar_iniciais !==
-        "CEU GESTAO"
-    ) {
+    if (!usuarioEhEscolaCeuGestao() && !usuarioEhEscolaCMCT()) {
       const maximo = meusDados.vinculo_atual.instituicao.quantidade_alunos;
       if (value > maximo) {
         this.setState({
@@ -597,9 +594,8 @@ export class SolicitacaoDeKitLanche extends Component {
                       required
                       validate={(value) => {
                         if (
-                          !meusDados.vinculo_atual ||
-                          meusDados.vinculo_atual.instituicao
-                            .tipo_unidade_escolar_iniciais === "CEU GESTAO"
+                          usuarioEhEscolaCeuGestao() ||
+                          usuarioEhEscolaCMCT()
                         ) {
                           return undefined;
                         }
@@ -661,20 +657,18 @@ export class SolicitacaoDeKitLanche extends Component {
                   </span>
                 </div>
               </div>
-              {meusDados.vinculo_atual.instituicao &&
-                meusDados.vinculo_atual.instituicao
-                  .tipo_unidade_escolar_iniciais !== "CEU GESTAO" && (
-                  <Fragment>
-                    <div className="form-group row sub-title">
-                      <p className="dre-name">
-                        Selecionar alunos com dieta especial
-                      </p>
-                    </div>
-                    <SeletorAlunosDietaEspecial
-                      alunosComDietaEspecial={alunosComDietaEspecial}
-                    />
-                  </Fragment>
-                )}
+              {!usuarioEhEscolaCeuGestao() && !usuarioEhEscolaCMCT() && (
+                <Fragment>
+                  <div className="form-group row sub-title">
+                    <p className="dre-name">
+                      Selecionar alunos com dieta especial
+                    </p>
+                  </div>
+                  <SeletorAlunosDietaEspecial
+                    alunosComDietaEspecial={alunosComDietaEspecial}
+                  />
+                </Fragment>
+              )}
               <div className="form-group">
                 <Field
                   component={CKEditorField}

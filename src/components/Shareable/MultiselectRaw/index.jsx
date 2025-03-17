@@ -1,5 +1,5 @@
 import TooltipIcone from "components/Shareable/TooltipIcone";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactSelect from "react-select";
 import { HelpText } from "../HelpText";
 import InputErroMensagem from "../Input/InputErroMensagem";
@@ -24,14 +24,21 @@ export const MultiselectRaw = (props) => {
     selected,
     tooltipText,
     usarDirty,
+    dataTestId,
   } = props;
 
   const [opcoesSelecionadas, setOpcoesSelecionadas] = useState(
     options.filter((option) => selected.includes(option.value))
   );
 
+  useEffect(() => {
+    setOpcoesSelecionadas(
+      options.filter((option) => selected.includes(option.value))
+    );
+  }, [selected]);
+
   return (
-    <div className="select">
+    <div className="select" data-testid={dataTestId}>
       {label && [
         required && !disabled && (
           <span key={0} className="required-asterisk">
@@ -49,7 +56,9 @@ export const MultiselectRaw = (props) => {
       ]}
       <ReactSelect
         {...input}
+        classNamePrefix={dataTestId}
         options={options}
+        isDisabled={disabled}
         isMulti={isMulti}
         closeMenuOnSelect={closeMenuOnSelect}
         hideSelectedOptions={hideSelectedOptions}

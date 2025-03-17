@@ -1,26 +1,26 @@
-import React from "react";
+import "@testing-library/jest-dom";
 import {
-  fireEvent,
   act,
+  fireEvent,
   render,
   screen,
   waitFor,
 } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { TIPO_PERFIL } from "constants/shared";
 import { MeusDadosContext } from "context/MeusDadosContext";
-import { AcompanhamentoDeLancamentos } from "./index";
-import "@testing-library/jest-dom";
 import { mockDiretoriaRegionalSimplissima } from "mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
-import { mockGetTiposUnidadeEscolar } from "mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
+import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosSuperUsuarioMedicao } from "mocks/meusDados/superUsuarioMedicao";
-import { mockGetMesesAnosSolicitacoesMedicaoinicial } from "mocks/services/medicaoInicial/dashboard.service/mockGetMesesAnosSolicitacoesMedicaoinicial";
-import mock from "services/_mock";
-import { mockGetDashboardMedicaoInicial } from "mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicial";
-import { mockGetDashboardMedicaoInicialNoresults } from "mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicialNoresults";
+import { mockGetTiposUnidadeEscolar } from "mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
 import { mockGetEscolaTercTotal } from "mocks/services/escola.service/mockGetEscolasTercTotal";
 import { mockGetLotesSimples } from "mocks/services/lote.service/mockGetLotesSimples";
-import { localStorageMock } from "mocks/localStorageMock";
-import { TIPO_PERFIL } from "constants/shared";
+import { mockGetDashboardMedicaoInicial } from "mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicial";
+import { mockGetDashboardMedicaoInicialNoresults } from "mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicialNoResults";
+import { mockGetMesesAnosSolicitacoesMedicaoinicial } from "mocks/services/medicaoInicial/dashboard.service/mockGetMesesAnosSolicitacoesMedicaoinicial";
+import React from "react";
+import { MemoryRouter } from "react-router-dom";
+import mock from "services/_mock";
+import { AcompanhamentoDeLancamentos } from "./index";
 
 const renderComponent = async (
   mockMeusDados = mockMeusDadosSuperUsuarioMedicao

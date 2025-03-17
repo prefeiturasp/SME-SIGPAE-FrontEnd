@@ -41,7 +41,7 @@ import {
 } from "services/alteracaoDeCardapio/escola.service";
 import "./style.scss";
 import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import { formataValues } from "components/AlteracaoDeCardapio/helper";
+import { formataValues } from "../AlteracaoDeCardapio/Escola/helper";
 
 export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
   const {
