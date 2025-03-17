@@ -8,19 +8,18 @@ import {
 } from "@testing-library/react";
 import { TIPO_PERFIL, TIPO_SOLICITACAO } from "constants/shared";
 import { mockDiretoriaRegionalSimplissima } from "mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
-import { mockPedidosCODAEInclusaoCEI } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoCEI";
-import { mockPedidosCODAEInclusaoContinua } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoContinua";
-import { mockPedidosCODAEInclusaoNormal } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoNormal";
 import { localStorageMock } from "mocks/localStorageMock";
 import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
+import { mockPedidosCODAEAlteracaoCardapio } from "mocks/services/alteracaoCardapio.service/CODAE/pedidosCODAEAlteracaoCardapio";
+import { mockPedidosCODAEAlteracaoCardapioCEMEI } from "mocks/services/alteracaoCardapio.service/CODAE/pedidosCODAEAlteracaoCardapioCEMEI";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
+import { codaeListarSolicitacoesDeAlteracaoDeCardapio } from "services/alteracaoDeCardapio";
 import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
-import { codaeListarSolicitacoesDeInclusaoDeAlimentacao } from "services/inclusaoDeAlimentacao";
 import { getLotesSimples } from "services/lote.service";
 import Container from "../../CODAE/PainelPedidos/Container";
 
-jest.mock("services/inclusaoDeAlimentacao");
+jest.mock("services/alteracaoDeCardapio");
 jest.mock("services/lote.service");
 jest.mock("services/diretoriaRegional.service");
 
@@ -28,13 +27,13 @@ const awaitServices = async () => {
   await waitFor(() => {
     expect(getDiretoriaregionalSimplissima).toHaveBeenCalled();
     expect(getLotesSimples).toHaveBeenCalled();
-    expect(
-      codaeListarSolicitacoesDeInclusaoDeAlimentacao
-    ).toHaveBeenCalledTimes(4);
+    expect(codaeListarSolicitacoesDeAlteracaoDeCardapio).toHaveBeenCalledTimes(
+      3
+    );
   });
 };
 
-describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentação", () => {
+describe("Teste <Container> do Painel Pedidos - CODAE - Alteração do Tipo de Alimentação", () => {
   beforeEach(async () => {
     getDiretoriaregionalSimplissima.mockResolvedValue({
       data: mockDiretoriaRegionalSimplissima,
@@ -45,26 +44,21 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
       status: 200,
     });
 
-    codaeListarSolicitacoesDeInclusaoDeAlimentacao.mockImplementation(
+    codaeListarSolicitacoesDeAlteracaoDeCardapio.mockImplementation(
       (_, tipoSolicitacao) => {
         if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_NORMAL) {
           return Promise.resolve({
-            results: mockPedidosCODAEInclusaoNormal.results,
-            status: 200,
-          });
-        } else if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CONTINUA) {
-          return Promise.resolve({
-            results: mockPedidosCODAEInclusaoContinua.results,
+            results: mockPedidosCODAEAlteracaoCardapio.results,
             status: 200,
           });
         } else if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEI) {
           return Promise.resolve({
-            results: mockPedidosCODAEInclusaoCEI.results,
+            results: [],
             status: 200,
           });
         } else if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEMEI) {
           return Promise.resolve({
-            results: [],
+            results: mockPedidosCODAEAlteracaoCardapioCEMEI.results,
             status: 200,
           });
         }
@@ -119,18 +113,17 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
         "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
       )
     ).toBeInTheDocument();
-    const divPrioritarios = screen.getByTestId("prioritario");
-    expect(divPrioritarios).toHaveTextContent("1 escola solicitante");
-    expect(divPrioritarios).toHaveTextContent("F85D5");
-    expect(divPrioritarios).toHaveTextContent("017981");
-    expect(divPrioritarios).toHaveTextContent(
-      "EMEF PERICLES EUGENIO DA SILVA RAMOS"
-    );
-    expect(divPrioritarios).toHaveTextContent("30/01/2025");
 
     expect(
       screen.getByText("Solicitações no prazo limite")
     ).toBeInTheDocument();
+    const divLimite = screen.getByTestId("limite");
+    expect(divLimite).toHaveTextContent("1 escola solicitante");
+    expect(divLimite).toHaveTextContent("996B9");
+    expect(divLimite).toHaveTextContent("017981");
+    expect(divLimite).toHaveTextContent("EMEF PERICLES EUGENIO DA SILVA RAMOS");
+    expect(divLimite).toHaveTextContent("24/03/2025");
+
     expect(
       screen.getByText("Solicitações no prazo regular")
     ).toBeInTheDocument();
@@ -150,9 +143,9 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
     await act(async () => {
       fireEvent.click(screen.getByText("IPIRANGA"));
     });
-    expect(
-      codaeListarSolicitacoesDeInclusaoDeAlimentacao
-    ).toHaveBeenCalledTimes(8);
+    expect(codaeListarSolicitacoesDeAlteracaoDeCardapio).toHaveBeenCalledTimes(
+      6
+    );
 
     await act(async () => {
       fireEvent.mouseDown(
@@ -166,8 +159,8 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
     await act(async () => {
       fireEvent.click(screen.getByText("BT - 1"));
     });
-    expect(
-      codaeListarSolicitacoesDeInclusaoDeAlimentacao
-    ).toHaveBeenCalledTimes(12);
+    expect(codaeListarSolicitacoesDeAlteracaoDeCardapio).toHaveBeenCalledTimes(
+      9
+    );
   });
 });
