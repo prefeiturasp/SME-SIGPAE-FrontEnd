@@ -1,31 +1,19 @@
-import { memoize } from "lodash";
-import axios from "../_base";
-import { FLUXO, AUTH_TOKEN, TIPO_SOLICITACAO } from "services/constants";
 import { ENDPOINT } from "constants/shared";
-import { getPath } from "./helper";
+import { FLUXO, TIPO_SOLICITACAO } from "services/constants";
 import { ErrorHandlerFunction } from "services/service-helpers";
+import axios from "../_base";
+import { getPath } from "./helper";
 
-export const escolaIniciarSolicitacaoDeAlteracaoDeCardapio = (
+export const escolaIniciarSolicitacaoDeAlteracaoDeCardapio = async (
   uuid,
   tipoSolicitacao
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${FLUXO.INICIO_PEDIDO}/`;
-
-  let status = 0;
-  return fetch(url, {
-    method: "PATCH",
-    headers: AUTH_TOKEN,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  const response = await axios.patch(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const escolaCriarSolicitacaoDeAlteracaoCardapio = async (
@@ -53,14 +41,19 @@ export const escolaAlterarSolicitacaoDeAlteracaoCardapio = async (
   }
 };
 
-export const escolaExcluirSolicitacaoDeAlteracaoCardapio = (
+export const escolaExcluirSolicitacaoDeAlteracaoCardapio = async (
   uuid,
   tipoSolicitacao
 ) => {
+  let url = `${ENDPOINT.ALTERACOES_CARDAPIO}/${uuid}/`;
   if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEI) {
-    return axios.delete(`${ENDPOINT.ALTERACOES_CARDAPIO_CEI}/${uuid}/`);
+    url = `${ENDPOINT.ALTERACOES_CARDAPIO_CEI}/${uuid}/`;
   }
-  return axios.delete(`${ENDPOINT.ALTERACOES_CARDAPIO}/${uuid}/`);
+  const response = await axios.delete(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getRascunhosAlteracaoTipoAlimentacao = async (tipoSolicitacao) => {
@@ -107,27 +100,6 @@ export const escolaCancelarSolicitacaoDeAlteracaoDeCardapioCEMEI = async (
     return data;
   }
 };
-
-// FIXME: Revisar nome do método
-export const getAlteracoesComLancheDoMesCorrente = memoize(
-  (escola_uuid, tipoSolicitacao) => {
-    const url = `${getPath(
-      tipoSolicitacao
-    )}/com-lanche-do-mes-corrente/${escola_uuid}/`;
-    const OBJ_REQUEST = {
-      headers: AUTH_TOKEN,
-
-      method: "GET",
-    };
-    return fetch(url, OBJ_REQUEST)
-      .then((result) => {
-        return result.json();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-);
 
 // FIXME: Revisar nome do método
 export const getAlunosPorFaixaEtariaNumaData = async (

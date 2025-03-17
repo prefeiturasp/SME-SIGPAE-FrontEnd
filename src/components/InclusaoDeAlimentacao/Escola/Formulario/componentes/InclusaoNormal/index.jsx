@@ -204,18 +204,18 @@ export const PeriodosInclusaoNormal = ({
       );
     }
   };
-
-  const validacaoNumeroAlunos = (periodos, indice) => {
-    return motivoEspecifico
+  const handleNumeroAlunosValidate = (motivoEspecifico, periodos, indice) => {
+    return motivoEspecifico ||
+      usuarioEhEscolaCeuGestao() ||
+      usuarioEhEscolaCMCT()
       ? composeValidators(naoPodeSerZero, numericInteger, required)
       : composeValidators(
           naoPodeSerZero,
           numericInteger,
           required,
           maxValue(
-            periodos.find((p) => p.uuid === getPeriodo(indice).uuid) &&
-              periodos.find((p) => p.uuid === getPeriodo(indice).uuid)
-                .maximo_alunos
+            periodos.find((p) => p.uuid === getPeriodo(indice).uuid)
+              ?.maximo_alunos
           )
         );
   };
@@ -328,22 +328,14 @@ export const PeriodosInclusaoNormal = ({
                     className="form-control quantidade-aluno"
                     required={getPeriodo(indice).checked}
                     dataTestIdDiv={`numero-alunos-${indice}`}
-                    validate={(value) => {
-                      if (usuarioEhEscolaCeuGestao() || usuarioEhEscolaCMCT()) {
-                        if (
-                          (value === undefined || value < 1) &&
-                          getPeriodo(indice).checked
-                        ) {
-                          return "Deve ser maior ou igual a 1";
-                        }
-                      } else {
-                        return (
-                          getPeriodo(indice).checked &&
-                          validacaoNumeroAlunos(periodos, indice)
-                        );
-                      }
-                      return undefined;
-                    }}
+                    validate={
+                      getPeriodo(indice).checked &&
+                      handleNumeroAlunosValidate(
+                        motivoEspecifico,
+                        periodos,
+                        indice
+                      )
+                    }
                   />
                 </div>
               </div>

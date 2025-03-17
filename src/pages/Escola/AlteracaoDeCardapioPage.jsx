@@ -1,7 +1,7 @@
-import React from "react";
+import { Container } from "components/AlteracaoDeCardapio/Escola/components/Container";
 import Breadcrumb from "components/Shareable/Breadcrumb";
-import { Container } from "components/AlteracaoDeCardapio/Container";
 import Page from "components/Shareable/Page/Page";
+import React from "react";
 import { HOME } from "./constants";
 
 const atual = {
