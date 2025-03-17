@@ -1,5 +1,5 @@
 import axios from "../_base";
-import { FLUXO, PEDIDOS, AUTH_TOKEN } from "services/constants";
+import { FLUXO, AUTH_TOKEN } from "services/constants";
 import { ErrorHandlerFunction } from "services/service-helpers";
 import { getPath } from "./helper";
 
@@ -46,24 +46,4 @@ export const terceirizadaRespondeQuestionamentoAlteracaoCardapio = async (
     const data = { data: response.data, status: response.status };
     return data;
   }
-};
-
-export const getTerceirizadaPedidosDeAlteracaoCardapio = (
-  filtroAplicado,
-  tipoSolicitacao
-) => {
-  const url = `${getPath(tipoSolicitacao)}/${
-    PEDIDOS.TERCEIRIZADA
-  }/${filtroAplicado}/`;
-  const OBJ_REQUEST = {
-    headers: AUTH_TOKEN,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      console.log(error);
-    });
 };

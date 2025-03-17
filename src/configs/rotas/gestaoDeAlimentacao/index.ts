@@ -50,7 +50,6 @@ import RelatorioAlunosMatriculadosPage from "pages/Relatorios/RelatorioAlunosMat
 import RelatorioSolicitacoesAlimentacaoPage from "pages/Relatorios/RelatorioSolicitacoesAlimentacaoPage";
 import * as PainelPageKitLanche from "pages/SolicitacaoDeKitLanche/ContainerPage";
 import PainelPedidosSuspensaoAlimentacaoCEIRelatorio from "pages/SuspensaoAlimentacaoCEI/RelatorioPage";
-import PainelPedidosAlteracaoDeCardapioTerceirizadaPage from "pages/Terceirizada/AlteracaoDeCardapio/PainelPedidosPage";
 import PainelPedidosInversaoDiaCardapioTerceirizadaPage from "pages/Terceirizada/InversaoDiaCardapio/PainelPedidosPage";
 import PainelPedidosSolicitacaoUnificadaTerceirizadaPage from "pages/Terceirizada/SolicitacaoUnificada/PainelPedidosPage";
 import { StatusQuestionamentosCodae } from "pages/Terceirizada/StatusSolicitacoes/StatusQuestionamentosCodae";
@@ -368,11 +367,6 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
       usuarioEhMedicao() ||
       usuarioEhCODAEGabinete() ||
       usuarioEhDinutreDiretoria(),
-  },
-  {
-    path: `/${constants.TERCEIRIZADA}/${constants.ALTERACAO_TIPO_ALIMENTACAO}`,
-    component: PainelPedidosAlteracaoDeCardapioTerceirizadaPage,
-    tipoUsuario: usuarioEhEmpresaTerceirizada(),
   },
   {
     path: `/${constants.TERCEIRIZADA}/${constants.INVERSAO_CARDAPIO}`,
