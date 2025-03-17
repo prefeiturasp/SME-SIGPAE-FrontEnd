@@ -5,7 +5,6 @@ import {
   render,
   screen,
   waitFor,
-  within,
 } from "@testing-library/react";
 import { Container } from "components/InclusaoDeAlimentacao/Escola/Formulario/componentes/Container";
 import { TIPO_SOLICITACAO } from "constants/shared";
@@ -65,8 +64,6 @@ const awaitServices = async () => {
     ).toHaveBeenCalledTimes(2);
   });
 };
-
-let container;
 
 describe("Teste Formulário Inclusão de Alimentação", () => {
   beforeEach(async () => {
@@ -141,13 +138,13 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     );
 
     await act(async () => {
-      ({ container } = render(
+      render(
         <MeusDadosContext.Provider
           value={{ meusDados: mockMeusDadosEscolaEMEFPericles }}
         >
           <Container />
         </MeusDadosContext.Provider>
-      ));
+      );
     });
   });
 
@@ -230,27 +227,12 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       fireEvent.click(spanElement);
     });
 
-    const divMultiselectNOITE = screen.getByTestId("multiselect-div-NOITE");
-    const dropdown = within(divMultiselectNOITE).getByRole("combobox");
+    const divSelectNOITE = screen.getByTestId("select-simples-div-NOITE");
+    const selectElementTipoAlimentacao = divSelectNOITE.querySelector("select");
 
-    const spanSelecione = within(dropdown.parentElement).getByText("Selecione");
-    const divDropdownHeading = spanSelecione.parentElement.parentElement;
-
-    // expande seletor Tipo de Alimentação
-    await act(async () => {
-      fireEvent.click(divDropdownHeading);
-    });
-
-    expect(screen.getByText("Refeição")).toBeInTheDocument();
-    expect(screen.getByText("Sobremesa")).toBeInTheDocument();
-
-    const divDropdownContent = container.querySelector(".dropdown-content");
-    const checkboxLanche =
-      within(divDropdownContent).getAllByRole("checkbox")[1];
-
-    // seleciona tipo de alimentação Lanche
-    await act(async () => {
-      fireEvent.click(checkboxLanche);
+    // Seleciona Refeição
+    fireEvent.change(selectElementTipoAlimentacao, {
+      target: { value: "65f11f11-630b-4629-bb17-07c875c548f1" },
     });
 
     const divNumeroAlunos = screen.getByTestId("numero-alunos-0");
