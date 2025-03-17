@@ -827,7 +827,7 @@ class FoodSuspensionEditor extends Component {
                                 selectAll: "Todos",
                               }}
                               nomeDoItemNoPlural="Tipos"
-                              required
+                              required={checkMap[period.nome]}
                               validate={period.validador}
                               disabled={
                                 escolaEhCEMEI() && !alunosCEIouEMEI[period.nome]
@@ -843,12 +843,15 @@ class FoodSuspensionEditor extends Component {
                             name="numero_de_alunos"
                             min="0"
                             className="form-control"
-                            required
+                            required={checkMap[period.nome]}
                             validate={
                               !usuarioEhEscolaCeuGestao() &&
                               !usuarioEhEscolaCMCT()
                                 ? period.validador
-                                : false
+                                : checkMap[period.nome] && [
+                                    naoPodeSerZero,
+                                    required,
+                                  ]
                             }
                           />
                         </div>
