@@ -32,7 +32,7 @@ export default function Breadcrumb({
   const navigate: NavigateFunction = useNavigate();
 
   return (
-    <div className="breadcrumb-row row">
+    <div className="breadcrumb-row row g-0">
       <div className="col-10">
         <ul className="br-breadcrumb">
           <li>
