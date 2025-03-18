@@ -1,14 +1,14 @@
+import { gerarLinkRelatorio, talvezPluralizar } from "helpers/utilities";
 import React, { Component } from "react";
 import { Collapse } from "react-collapse";
 import { Link } from "react-router-dom";
-import { calcularNumeroDeEscolasUnicas } from "./helper";
-import { talvezPluralizar, gerarLinkRelatorio } from "helpers/utilities";
 import {
   ALTERACAO_TIPO_ALIMENTACAO,
   ALTERACAO_TIPO_ALIMENTACAO_CEMEI,
 } from "../../../../configs/constants";
 import "../../../Shareable/style.scss";
 import { ToggleExpandir } from "../../../Shareable/ToggleExpandir";
+import { calcularNumeroDeEscolasUnicas } from "./helper";
 
 export class CardPendenteAcao extends Component {
   constructor(props) {
@@ -35,10 +35,11 @@ export class CardPendenteAcao extends Component {
   }
 
   render() {
-    const { pedidos, titulo, tipoDeCard, ultimaColunaLabel } = this.props;
+    const { pedidos, titulo, tipoDeCard, ultimaColunaLabel, dataTestId } =
+      this.props;
     const { collapsed, pedidosFiltrados } = this.state;
     return (
-      <div className="card card-pendency-approval">
+      <div className="card card-pendency-approval" data-testid={dataTestId}>
         <div className={"card-title " + tipoDeCard}>{titulo}</div>
         <div className="row">
           <div className="col-2">
