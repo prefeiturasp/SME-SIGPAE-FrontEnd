@@ -117,7 +117,7 @@ export const Page = ({ ...props }) => {
         <div
           className={`content-wrapper-div ${
             toggled && "toggled"
-          } d-flex flex-column p-4 mt-5`}
+          } d-flex flex-column p-4 mt-2`}
         >
           {children.length ? children[0] : children}
           <h1 className="page-title">
