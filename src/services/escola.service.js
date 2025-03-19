@@ -191,19 +191,13 @@ export const getSubprefeituras = () => {
     });
 };
 
-export const getQuantidaDeAlunosPorPeriodoEEscola = (uuidEscola) => {
+export const getQuantidaDeAlunosPorPeriodoEEscola = async (uuidEscola) => {
   const url = `${API_URL}/quantidade-alunos-por-periodo/escola/${uuidEscola}/`;
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getEscolaSimples = async (uuidEscola) => {
@@ -219,15 +213,6 @@ export const getEscolaSimples = async (uuidEscola) => {
 
 export const updateEscolaSimples = async (uuidEscola, valores) =>
   axios.patch(`/escolas-simples/${uuidEscola}/`, valores);
-
-export const getQuantidadeAlunosEscola = async (uuidEscola) => {
-  const url = `${API_URL}/quantidade-alunos-por-periodo/escola/${uuidEscola}/`;
-  const response = await axios.get(url).catch(ErrorHandlerFunction);
-  if (response) {
-    const data = { data: response.data, status: response.status };
-    return data;
-  }
-};
 
 export const getGrupoUnidadeEscolar = async () => {
   const url = `${API_URL}/grupos-unidade-escolar/`;

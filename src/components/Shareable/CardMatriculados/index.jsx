@@ -6,6 +6,9 @@ export default class CardMatriculados extends Component {
   render() {
     const { numeroAlunos, meusDados } = this.props;
 
+    const numeroAlunos_ =
+      numeroAlunos || meusDados.vinculo_atual.instituicao.quantidade_alunos;
+
     return escolaEhCEMEI() ? (
       <div className="card mt-1">
         <div className="card-body card-enrolled">
@@ -51,7 +54,7 @@ export default class CardMatriculados extends Component {
           </div>
         </div>
       </div>
-    ) : numeroAlunos > 0 ? (
+    ) : numeroAlunos_ > 0 ? (
       <div className="card">
         <div className="card-body card-enrolled">
           <div className="row title">
@@ -60,7 +63,7 @@ export default class CardMatriculados extends Component {
           <div className="row">
             <div className="col-1 px-0">
               <div className="rectangle">
-                {numeroAlunos && pontuarValor(numeroAlunos)}
+                {numeroAlunos_ && pontuarValor(numeroAlunos_)}
               </div>
             </div>
             <div className="col-6 beside-text mt-auto">

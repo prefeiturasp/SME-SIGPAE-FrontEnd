@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
+import Select from "components/Shareable/Select";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { TextArea } from "components/Shareable/TextArea/TextArea";
 import Botao from "components/Shareable/Botao";
@@ -21,10 +22,14 @@ import {
   required,
 } from "helpers/fieldValidators";
 import {
+  agregarDefault,
   composeValidators,
   fimDoCalendario,
   formatarParaMultiselect,
+  usuarioEhEscolaCeuGestao,
+  usuarioEhEscolaCMCT,
 } from "helpers/utilities";
+import { renderizaSelectSimples } from "../../../../helper";
 import "../../style.scss";
 
 export const DataInclusaoNormal = ({ ...props }) => {
@@ -133,7 +138,6 @@ export const PeriodosInclusaoNormal = ({
   form,
   values,
   periodos,
-  meusDados,
   ehETEC,
   motivoEspecifico,
   uuid,
@@ -201,18 +205,18 @@ export const PeriodosInclusaoNormal = ({
       );
     }
   };
-
-  const validacaoNumeroAlunos = (periodos, indice) => {
-    return motivoEspecifico
+  const handleNumeroAlunosValidate = (motivoEspecifico, periodos, indice) => {
+    return motivoEspecifico ||
+      usuarioEhEscolaCeuGestao() ||
+      usuarioEhEscolaCMCT()
       ? composeValidators(naoPodeSerZero, numericInteger, required)
       : composeValidators(
           naoPodeSerZero,
           numericInteger,
           required,
           maxValue(
-            periodos.find((p) => p.uuid === getPeriodo(indice).uuid) &&
-              periodos.find((p) => p.uuid === getPeriodo(indice).uuid)
-                .maximo_alunos
+            periodos.find((p) => p.uuid === getPeriodo(indice).uuid)
+              ?.maximo_alunos
           )
         );
   };
@@ -261,32 +265,59 @@ export const PeriodosInclusaoNormal = ({
                   </div>
                 </div>
                 <div className="col-6">
-                  <div
-                    className={getPeriodo(indice).multiselect}
-                    data-testid={`multiselect-div-${getPeriodo(indice).nome}`}
-                  >
-                    <Field
-                      component={StatefulMultiSelect}
-                      name="tipos_alimentacao"
-                      selected={
-                        getPeriodo(indice).tipos_alimentacao_selecionados || []
-                      }
-                      options={formatarParaMultiselect(
-                        getPeriodo(indice).tipos_alimentacao || []
-                      )}
-                      onSelectedChanged={(values_) =>
-                        onTiposAlimentacaoChanged(values_, indice)
-                      }
-                      disableSearch={true}
-                      hasSelectAll={!ehETEC}
-                      overrideStrings={{
-                        selectSomeItems: "Selecione",
-                        allItemsAreSelected:
-                          "Todos os itens estão selecionados",
-                        selectAll: "Todos",
-                      }}
-                    />
-                  </div>
+                  {renderizaSelectSimples(getPeriodo(indice).nome) ? (
+                    // Renderiza um select simples se for CMCT
+                    <div
+                      data-testid={`select-simples-div-${
+                        getPeriodo(indice).nome
+                      }`}
+                    >
+                      <Field
+                        component={Select}
+                        name={`${name}.tipos_alimentacao_selecionados`}
+                        options={[
+                          ...agregarDefault(
+                            getPeriodo(indice).tipos_alimentacao
+                          ),
+                          {
+                            nome: "Refeição e Sobremesa",
+                            uuid: "refeicao_e_sobremesa",
+                          },
+                        ]}
+                        naoDesabilitarPrimeiraOpcao
+                        disabled={!getPeriodo(indice).checked}
+                      />
+                    </div>
+                  ) : (
+                    // Renderiza o StatefulMultiSelect caso contrário
+                    <div
+                      className={getPeriodo(indice).multiselect}
+                      data-testid={`multiselect-div-${getPeriodo(indice).nome}`}
+                    >
+                      <Field
+                        component={StatefulMultiSelect}
+                        name="tipos_alimentacao"
+                        selected={
+                          getPeriodo(indice).tipos_alimentacao_selecionados ||
+                          []
+                        }
+                        options={formatarParaMultiselect(
+                          getPeriodo(indice).tipos_alimentacao || []
+                        )}
+                        onSelectedChanged={(values_) =>
+                          onTiposAlimentacaoChanged(values_, indice)
+                        }
+                        disableSearch={true}
+                        hasSelectAll={!ehETEC}
+                        overrideStrings={{
+                          selectSomeItems: "Selecione",
+                          allItemsAreSelected:
+                            "Todos os itens estão selecionados",
+                          selectAll: "Todos",
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="col-3">
                   <Field
@@ -299,11 +330,12 @@ export const PeriodosInclusaoNormal = ({
                     required={getPeriodo(indice).checked}
                     dataTestIdDiv={`numero-alunos-${indice}`}
                     validate={
-                      meusDados.vinculo_atual.instituicao
-                        .tipo_unidade_escolar_iniciais !== "CEU GESTAO"
-                        ? getPeriodo(indice).checked &&
-                          validacaoNumeroAlunos(periodos, indice)
-                        : false
+                      getPeriodo(indice).checked &&
+                      handleNumeroAlunosValidate(
+                        motivoEspecifico,
+                        periodos,
+                        indice
+                      )
                     }
                   />
                 </div>

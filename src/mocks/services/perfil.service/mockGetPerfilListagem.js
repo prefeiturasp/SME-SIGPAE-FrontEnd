@@ -134,7 +134,7 @@ export const mockGetPerfilListagem = {
       uuid: "d7dfc695-866a-4d2b-8e9d-72a7983a35ee",
     },
     {
-      nome: "ADMINISTRADOR_DICAE",
+      nome: "ADMINISTRADOR_CONTRATOS",
       visao: "CODAE",
       uuid: "c5015a57-668c-44ff-89e0-d28096d5e528",
     },

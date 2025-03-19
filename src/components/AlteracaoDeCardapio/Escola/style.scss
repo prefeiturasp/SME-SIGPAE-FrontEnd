@@ -1,0 +1,67 @@
+@import "styles/variables.scss";
+
+div.formulario-alteracao-cardapio {
+  font-size: 14px;
+
+  .period-quantity {
+    border-radius: 7px;
+    padding: 0.5em;
+    color: $blackInput;
+
+    &.number-0 {
+      background-color: #fff7cb;
+      border: 1px solid $yellow;
+    }
+    &.number-1 {
+      background-color: #ebedff;
+      border: 1px solid $blue;
+    }
+    &.number-2 {
+      background-color: #ffeed6;
+      border: 1px solid $orange;
+    }
+    &.number-3 {
+      background-color: #eaffe3;
+    }
+    &.number-4 {
+      background-color: #e4f1ff;
+    }
+    &.number-5 {
+      background-color: #d6ffea;
+    }
+  }
+
+  .section-form-datas {
+    display: grid;
+    grid-template-columns: 22% 3% 22% 22% auto;
+    grid-column-gap: 2%;
+
+    .opcao-data {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      margin-bottom: 0.3em;
+    }
+  }
+
+  .section-form-motivo {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-column-gap: 2%;
+
+    div {
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .footer-button {
+    display: flex;
+    justify-content: flex-end;
+    margin: 3em 0 2em 0;
+
+    button {
+      margin-left: 1em;
+    }
+  }
+}

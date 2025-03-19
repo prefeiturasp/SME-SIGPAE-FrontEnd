@@ -1,3 +1,5 @@
+import { usuarioEhEscolaCMCT, usuarioEhEscolaCIEJA } from "helpers/utilities";
+
 export const formatarTiposDeAlimentacao = (tiposAlimentacao) => {
   return tiposAlimentacao.map((element) => {
     return { value: element.uuid, label: element.nome };
@@ -33,27 +35,6 @@ export const formatarPeriodos = (periodos) => {
   return periodos;
 };
 
-export const construirPeriodosECombos = (periodos) => {
-  let periodosCombo = [];
-  periodos.forEach((periodo) => {
-    let dicionarioPeriodo = {
-      checked: false,
-      tipos_alimentacao_selecionados: [],
-      numero_alunos: null,
-      nome: periodo.periodo_escolar.nome,
-      uuid: periodo.periodo_escolar.uuid,
-      tipos_alimentacao: periodo.tipos_alimentacao.map((alimento) => {
-        return {
-          nome: alimento.nome,
-          uuid: alimento.uuid,
-        };
-      }),
-    };
-    periodosCombo.push(dicionarioPeriodo);
-  });
-  return periodosCombo;
-};
-
 export const extrairTiposALimentacao = (tiposAlimentacao) => {
   let uuidsTiposAlimentacao = [];
   tiposAlimentacao.forEach((tipoAlimentacao) => {
@@ -87,8 +68,28 @@ export const formatarSubmissaoSolicitacaoNormal = (values) => {
       ) {
         quantidade_periodo["periodo_escolar"] = quantidade_periodo.uuid;
       }
-      quantidade_periodo["tipos_alimentacao"] =
-        quantidade_periodo.tipos_alimentacao_selecionados;
+      if (
+        usuarioEhEscolaCMCT() ||
+        usuarioEhEscolaCIEJA() ||
+        quantidade_periodo.nome === "NOITE"
+      ) {
+        if (
+          quantidade_periodo.tipos_alimentacao_selecionados ===
+          "refeicao_e_sobremesa"
+        ) {
+          quantidade_periodo["tipos_alimentacao"] =
+            quantidade_periodo.tipos_alimentacao
+              .filter((ta) => ["Refeição", "Sobremesa"].includes(ta.nome))
+              .map((ta) => ta.uuid);
+        } else {
+          quantidade_periodo["tipos_alimentacao"] = [
+            quantidade_periodo.tipos_alimentacao_selecionados,
+          ];
+        }
+      } else {
+        quantidade_periodo["tipos_alimentacao"] =
+          quantidade_periodo.tipos_alimentacao_selecionados;
+      }
       delete quantidade_periodo.grupo_inclusao_normal;
       delete quantidade_periodo.inclusao_alimentacao_continua;
     });
@@ -136,5 +137,11 @@ export const exibeMotivoETEC = () => {
     (localStorage.getItem("nome_instituicao").startsWith(`"EMEF `) ||
       localStorage.getItem("nome_instituicao").startsWith(`"CEU EMEF `) ||
       localStorage.getItem("nome_instituicao").startsWith(`"CEU GESTAO `))
+  );
+};
+
+export const renderizaSelectSimples = (nomePeriodo) => {
+  return (
+    usuarioEhEscolaCMCT() || usuarioEhEscolaCIEJA() || nomePeriodo === "NOITE"
   );
 };

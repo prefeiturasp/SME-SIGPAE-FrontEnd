@@ -638,8 +638,10 @@ export const usuarioEhCronograma = () => {
   return [PERFIL.DILOG_CRONOGRAMA].includes(localStorage.getItem("perfil"));
 };
 
-export const usuarioEhAdministradorDICAE = () => {
-  return [PERFIL.ADMINISTRADOR_DICAE].includes(localStorage.getItem("perfil"));
+export const usuarioEhAdministradorCONTRATOS = () => {
+  return [PERFIL.ADMINISTRADOR_CONTRATOS].includes(
+    localStorage.getItem("perfil")
+  );
 };
 
 export const usuarioEhDilogAbastecimento = () => {
@@ -693,6 +695,21 @@ export const nomeInstituicao = () => {
 
 export const usuarioEhDRE = () => {
   return localStorage.getItem("tipo_perfil") === TIPO_PERFIL.DIRETORIA_REGIONAL;
+};
+
+export const usuarioEhEscolaCeuGestao = () => {
+  const instituicao = nomeInstituicao();
+  return instituicao.includes("CEU GESTAO");
+};
+
+export const usuarioEhEscolaCIEJA = () => {
+  const instituicao = nomeInstituicao();
+  return instituicao.includes("CIEJA");
+};
+
+export const usuarioEhEscolaCMCT = () => {
+  const instituicao = nomeInstituicao();
+  return instituicao.includes("CMCT");
 };
 
 export const usuarioEhCoordenadorDRE = () => {
