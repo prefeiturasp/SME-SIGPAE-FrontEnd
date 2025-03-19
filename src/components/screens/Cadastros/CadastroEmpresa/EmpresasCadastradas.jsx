@@ -26,6 +26,7 @@ class EmpresasCadastradas extends Component {
       const resp = retornArrayTerceirizadas(response.data.results);
       const tipoPerfil = localStorage.getItem("perfil");
       let empresasF = [];
+      //console.log(tipoPerfil)
       if (tipoPerfil === PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA) {
         resp.forEach((empresa) => {
           if (!empresa.eh_distribuidor) {
@@ -36,7 +37,9 @@ class EmpresasCadastradas extends Component {
         tipoPerfil === PERFIL.COORDENADOR_LOGISTICA ||
         tipoPerfil === PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA ||
         tipoPerfil === PERFIL.ADMINISTRADOR_DICAE ||
-        tipoPerfil === PERFIL.DILOG_CRONOGRAMA
+        tipoPerfil === PERFIL.DILOG_CRONOGRAMA ||
+        tipoPerfil === PERFIL.COORDENADOR_GESTAO_PRODUTO ||
+        tipoPerfil === PERFIL.ADMINISTRADOR_GESTAO_PRODUTO
       ) {
         this.setState({ ...this.state, ehDistribuidor: true });
         resp.forEach((empresa) => {
