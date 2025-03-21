@@ -551,12 +551,6 @@ export const validacoesTabelaAlimentacao = (
     ) {
       return "Frequência acima inválida ou não preenchida.";
     }
-    if (
-      !inputName.includes("numero_de_alunos") &&
-      Number(allValues[inputName]) > Number(maxFrequencia)
-    ) {
-      return `Número apontado de alimentação é maior que número de alunos frequentes. Ajuste o apontamento. `;
-    }
   }
 
   const existeAlteracaoAlimentacaoRPL =

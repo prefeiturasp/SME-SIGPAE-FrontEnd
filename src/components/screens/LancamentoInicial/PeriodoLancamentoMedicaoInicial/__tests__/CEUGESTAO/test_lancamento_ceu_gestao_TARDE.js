@@ -13,12 +13,12 @@ import { mockLocationStateCEUGESTAO_TARDE } from "mocks/medicaoInicial/PeriodoLa
 import { mockValoresMedicaoCEUGESTAO_TARDE } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/valoresMedicaoCEUGESTAO_TARDE";
 import { mockMeusDadosEscolaCEUGESTAO } from "mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
-import { mockGetEscolaSimplesCEUGESTAO } from "mocks/services/escola.service/mockGetEscolaSimplesCEUGESTAO";
-import { mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/getCEUGESTAOPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
-import { mockGetPeriodosInclusaoContinuaCEUGESTAO } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/getPeriodosInclusaoContinuaCEUGESTAO";
-import { mockGetSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/getSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO";
-import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/getQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO";
-import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "mocks/services/solicitacaoMedicaoInicial.service/getSolicitacaoMedicaoInicialCEUGESTAO";
+import { mockGetEscolaSimplesCEUGESTAO } from "mocks/services/escola.service/CEUGESTAO/mockGetEscolaSimplesCEUGESTAO";
+import { mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getCEUGESTAOPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
+import { mockGetPeriodosInclusaoContinuaCEUGESTAO } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getPeriodosInclusaoContinuaCEUGESTAO";
+import { mockGetSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO } from "mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO";
+import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEUGESTAO/getQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO";
+import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "mocks/services/solicitacaoMedicaoInicial.service/CEUGESTAO/getSolicitacaoMedicaoInicialCEUGESTAO";
 import { mockGetTiposDeContagemAlimentacao } from "mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { PeriodoLancamentoMedicaoInicialPage } from "pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import React from "react";
