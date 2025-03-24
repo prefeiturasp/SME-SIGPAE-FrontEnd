@@ -488,7 +488,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         ehProgramasEProjetosLocation,
         response_categorias_medicao,
         response_log_dietas_autorizadas_cei,
-        ehSolicitacoesAlimentacaoLocation
+        ehSolicitacoesAlimentacaoLocation,
+        logQtdDietasAutorizadasEmeiDaCemei
       );
       setCategoriasDeMedicao(response_categorias_medicao);
 

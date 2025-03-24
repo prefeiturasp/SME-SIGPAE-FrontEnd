@@ -707,6 +707,11 @@ export const usuarioEhEscolaCIEJA = () => {
   return instituicao.includes("CIEJA");
 };
 
+export const usuarioEhEscolaCEMEI = () => {
+  const instituicao = nomeInstituicao();
+  return instituicao.includes("CEMEI");
+};
+
 export const usuarioEhEscolaCMCT = () => {
   const instituicao = nomeInstituicao();
   return instituicao.includes("CMCT");

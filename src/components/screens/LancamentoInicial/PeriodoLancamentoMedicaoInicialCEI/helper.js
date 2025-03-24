@@ -1154,19 +1154,64 @@ export const desabilitarBotaoColunaObservacoes = (
   );
 };
 
+const existeDietaTipoA = (logQtdDietasAutorizadasEmeiDaCemei) => {
+  return !!logQtdDietasAutorizadasEmeiDaCemei.find(
+    (log) => log.classificacao === "Tipo A" && log.quantidade > 0
+  );
+};
+
+const existeDietaTipoAEnteralOuAminoacidos = (
+  logQtdDietasAutorizadasEmeiDaCemei
+) => {
+  return !!logQtdDietasAutorizadasEmeiDaCemei.find(
+    (log) =>
+      (log.classificacao.includes("ENTERAL") ||
+        log.classificacao.includes("AMINOÁCIDOS")) &&
+      log.quantidade > 0
+  );
+};
+
 export const categoriasParaExibir = (
   ehEmeiDaCemeiLocation,
   ehProgramasEProjetosLocation,
   response_categorias_medicao,
   response_log_dietas_autorizadas_cei,
-  ehSolicitacoesAlimentacaoLocation
+  ehSolicitacoesAlimentacaoLocation,
+  logQtdDietasAutorizadasEmeiDaCemei
 ) => {
-  if (ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) {
+  if (ehEmeiDaCemeiLocation) {
     response_categorias_medicao = response_categorias_medicao.data.filter(
       (categoria) => {
         return !categoria.nome.includes("SOLICITAÇÕES");
       }
     );
+
+    if (!existeDietaTipoA(logQtdDietasAutorizadasEmeiDaCemei)) {
+      response_categorias_medicao = response_categorias_medicao.filter(
+        (categoria) => {
+          return categoria.nome !== "DIETA ESPECIAL - TIPO A";
+        }
+      );
+    }
+
+    if (
+      !existeDietaTipoAEnteralOuAminoacidos(logQtdDietasAutorizadasEmeiDaCemei)
+    ) {
+      response_categorias_medicao = response_categorias_medicao.filter(
+        (categoria) => {
+          return !categoria.nome.includes("ENTERAL");
+        }
+      );
+    }
+
+    return response_categorias_medicao;
+  } else if (ehProgramasEProjetosLocation) {
+    response_categorias_medicao = response_categorias_medicao.data.filter(
+      (categoria) => {
+        return !categoria.nome.includes("SOLICITAÇÕES");
+      }
+    );
+
     return response_categorias_medicao;
   } else if (ehSolicitacoesAlimentacaoLocation) {
     response_categorias_medicao = response_categorias_medicao.data.filter(

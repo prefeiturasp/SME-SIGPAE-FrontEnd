@@ -665,7 +665,7 @@ export const campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObserva
 
     let campoNaoPreenchido = false;
     inclusoesAutorizadas.forEach((inclusao) => {
-      inclusao.faixas_etarias.forEach((faixa) => {
+      inclusao.faixas_etarias?.forEach((faixa) => {
         if (
           !formValuesAtualizados[
             `frequencia__faixa_${faixa}__dia_${column.dia}__categoria_${categoria.id}`
@@ -696,12 +696,17 @@ export const exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI = (
     formValuesAtualizados[
       `${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`
     ];
+  const matriculadosFaixaDia =
+    formValuesAtualizados[
+      `matriculados__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
 
   return (
     categoria.nome === "ALIMENTAÇÃO" &&
     row.name === "frequencia" &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
     !value &&
+    matriculadosFaixaDia &&
     inclusoesAutorizadas.some(
       (inclusao) =>
         parseInt(inclusao.dia) === parseInt(column.dia) &&
