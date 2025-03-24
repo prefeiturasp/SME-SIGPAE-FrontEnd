@@ -4,11 +4,11 @@ import { Container } from "components/InclusaoDeAlimentacao/Escola/Formulario/co
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { mockMotivosInclusaoContinua } from "mocks/InclusaoAlimentacao/mockMotivosInclusaoContinua";
 import { mockMotivosInclusaoNormal } from "mocks/InclusaoAlimentacao/mockMotivosInclusaoNormal";
-import { mockGetVinculosMotivoEspecificoCIEJA } from "mocks/services/cadastroTipoAlimentacao.service/CIEJA/mockGetVinculosMotivoEspecificoCIEJA";
-import { mockQuantidadeAlunosPorPeriodoCIEJA } from "mocks/services/escola.service/CIEJA/mockQuantidadeAlunosPorPeriodoCIEJA";
-import { mockGetVinculosTipoAlimentacaoPorEscolaCIEJA } from "mocks/services/cadastroTipoAlimentacao.service/CIEJA/mockGetVinculosTipoAlimentacaoPorEscolaCIEJA";
-import { mockCreateInclusaoAlimentacaoCMCT } from "mocks/services/escola.service/CMCT/mockCreateInclusaoAlimentacaoCMCT";
-import { mockIniciaFluxoInclusaoAlimentacaoCMCT } from "mocks/services/escola.service/CMCT/mockIniciaFluxoInclusaoAlimentacaoCMCT";
+import { mockGetVinculosMotivoEspecificoCIEJA } from "mocks/services/cadastroTipoAlimentacao.service/mockGetVinculosMotivoEspecificoCIEJA";
+import { mockQuantidadeAlunosPorPeriodoCIEJA } from "mocks/services/escola.service/mockQuantidadeAlunosPorPeriodoCIEJA";
+import { mockGetVinculosTipoAlimentacaoPorEscolaCIEJA } from "mocks/services/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoPorEscolaCIEJA";
+import { mockCreateInclusaoAlimentacaoCMCT } from "mocks/services/escola.service/mockCreateInclusaoAlimentacaoCMCT";
+import { mockIniciaFluxoInclusaoAlimentacaoCMCT } from "mocks/services/escola.service/mockIniciaFluxoInclusaoAlimentacaoCMCT";
 import { mockObterMinhasSolicitacoesNormalCIEJA } from "mocks/services/shared.service/mockObterMinhasSolicitacoesNormalCIEJA";
 import { mockMeusDadosEscolaCIEJA } from "mocks/meusDados/escolaCIEJA";
 import { mockDiasUteis } from "mocks/diasUseisMock";
