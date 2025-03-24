@@ -254,7 +254,12 @@ export const desabilitarField = (
         ),
       ];
     }
-
+    if (
+      ["Mês anterior", "Mês posterior"].includes(
+        values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+      )
+    )
+      return true;
     const resultado = inclusoesAutorizadas.some(
       (inclusao) =>
         dia === String(inclusao.dia) &&
@@ -263,6 +268,7 @@ export const desabilitarField = (
         ) ||
           rowName === "frequencia")
     );
+    if (!resultado) return true;
     if (nomeCategoria !== "ALIMENTAÇÃO") {
       if (resultado) {
         const valueDietasAutorizadasEhZero = () => {
@@ -1179,7 +1185,7 @@ export const categoriasParaExibir = (
   ehSolicitacoesAlimentacaoLocation,
   logQtdDietasAutorizadasEmeiDaCemei
 ) => {
-  if (ehEmeiDaCemeiLocation) {
+  if (ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) {
     response_categorias_medicao = response_categorias_medicao.data.filter(
       (categoria) => {
         return !categoria.nome.includes("SOLICITAÇÕES");
@@ -1203,14 +1209,6 @@ export const categoriasParaExibir = (
         }
       );
     }
-
-    return response_categorias_medicao;
-  } else if (ehProgramasEProjetosLocation) {
-    response_categorias_medicao = response_categorias_medicao.data.filter(
-      (categoria) => {
-        return !categoria.nome.includes("SOLICITAÇÕES");
-      }
-    );
 
     return response_categorias_medicao;
   } else if (ehSolicitacoesAlimentacaoLocation) {

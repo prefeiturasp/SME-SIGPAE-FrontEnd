@@ -1979,6 +1979,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                         items={tabItems}
                       />
                     </div>
+                    {console.log(categoriasDeMedicao)}
                     <Spin tip="Carregando..." spinning={loadingLancamentos}>
                       {categoriasDeMedicao.length > 0 &&
                         !loading &&
