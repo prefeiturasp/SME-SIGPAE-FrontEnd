@@ -262,7 +262,7 @@ export const LancamentoPorPeriodo = ({
       setFrequenciasDietasPeriodosEspeciais(response.data);
     } else {
       setErroAPI(
-        "Erro ao carregar frequência de dietas de escolas. Tente novamente mais tarde."
+        "Erro ao carregar frequência de dietas de escolas CEU GESTÃO. Tente novamente mais tarde."
       );
     }
   };
@@ -442,6 +442,7 @@ export const LancamentoPorPeriodo = ({
                 }
               />
             ))}
+
           {!ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola) &&
             frequenciasDietasPeriodosEspeciais &&
             !periodosEspecificos.length &&

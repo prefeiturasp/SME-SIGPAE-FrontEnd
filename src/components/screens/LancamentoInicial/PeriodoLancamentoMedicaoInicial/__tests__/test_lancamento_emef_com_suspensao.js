@@ -36,7 +36,7 @@ import {
 } from "services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "services/medicaoInicial/permissaoLancamentosEspeciais.service";
 import { getMeusDados } from "services/perfil.service";
-import PeriodoLancamentoMedicaoInicial from "../..";
+import PeriodoLancamentoMedicaoInicial from "..";
 
 jest.mock("services/perfil.service.js");
 jest.mock("services/medicaoInicial/diaSobremesaDoce.service.js");
