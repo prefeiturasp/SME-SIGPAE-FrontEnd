@@ -157,7 +157,7 @@ export class InversaoDeDiaDeCardapio extends Component {
 
   refresh() {
     getInversoesDeDiaDeCardapio().then((response) => {
-      const rascunhosInversoes = response.results;
+      const rascunhosInversoes = response.data.results;
       this.setState({ rascunhosInversoes });
     });
   }
