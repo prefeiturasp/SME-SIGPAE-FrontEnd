@@ -1,7 +1,9 @@
+import { toastError } from "components/Shareable/Toast/dialogs";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { deepCopy, ehEscolaTipoCEMEI } from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
   getSolicitacoesInclusoesAutorizadasEscola,
@@ -9,8 +11,6 @@ import {
   getSolicitacoesKitLanchesAutorizadasEscola,
   getSolicitacoesSuspensoesAutorizadasEscola,
 } from "services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
-import { deepCopy, ehEscolaTipoCEMEI } from "../../../../helpers/utilities";
 
 export const formatarPayloadPeriodoLancamentoCeiCemei = (
   values,
@@ -263,12 +263,15 @@ export const desabilitarField = (
     const resultado = inclusoesAutorizadas.some(
       (inclusao) =>
         dia === String(inclusao.dia) &&
-        (inclusao.alimentacoes.includes(
-          rowName.includes("repeticao") ? rowName.split("_")[1] : rowName
-        ) ||
+        (inclusao.alimentacoes
+          .split(", ")
+          .includes(
+            rowName.includes("repeticao") ? rowName.split("_")[1] : rowName
+          ) ||
           rowName === "frequencia")
     );
-    if (!resultado) return true;
+
+    if (!resultado && ehProgramasEProjetosLocation) return true;
     if (nomeCategoria !== "ALIMENTAÇÃO") {
       if (resultado) {
         const valueDietasAutorizadasEhZero = () => {
