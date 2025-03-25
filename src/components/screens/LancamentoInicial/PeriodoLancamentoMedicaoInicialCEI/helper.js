@@ -1212,7 +1212,6 @@ export const categoriasParaExibir = (
         }
       );
     }
-
     return response_categorias_medicao;
   } else if (ehSolicitacoesAlimentacaoLocation) {
     response_categorias_medicao = response_categorias_medicao.data.filter(

@@ -142,6 +142,7 @@ export const campoComInclusaoContinuaValorMaiorQueAutorizadoESemObservacao = (
 export const campoFrequenciaValor0ESemObservacao = (dia, categoria, values) => {
   let erro = false;
   if (
+    categoria.nome === "ALIMENTAÇÃO" &&
     values[`frequencia__dia_${dia}__categoria_${categoria.id}`] &&
     Number(values[`frequencia__dia_${dia}__categoria_${categoria.id}`]) === 0 &&
     !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
