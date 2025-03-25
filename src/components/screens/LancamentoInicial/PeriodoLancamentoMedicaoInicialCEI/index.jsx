@@ -1,8 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
-import HTTP_STATUS from "http-status-codes";
-import { useNavigate, useLocation } from "react-router-dom";
-import { Field, Form, FormSpy } from "react-final-form";
-import arrayMutators from "final-form-arrays";
+import { Spin, Tabs } from "antd";
 import {
   addDays,
   format,
@@ -15,85 +11,48 @@ import {
   subDays,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Spin, Tabs } from "antd";
+import arrayMutators from "final-form-arrays";
+import HTTP_STATUS from "http-status-codes";
+import React, { Fragment, useEffect, useState } from "react";
+import { Field, Form, FormSpy } from "react-final-form";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import InputText from "components/Shareable/Input/InputText";
-import InputValueMedicao from "components/Shareable/Input/InputValueMedicao";
 import Botao from "components/Shareable/Botao";
-import {
-  toastError,
-  toastSuccess,
-  toastWarn,
-} from "components/Shareable/Toast/dialogs";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "components/Shareable/Botao/constants";
-import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";
-import ModalErro from "./components/ModalErro";
-import ModalSalvarCorrecoes from "./components/ModalSalvarCorrecoes";
-import { ModalVoltarPeriodoLancamento } from "./components/ModalVoltarPeriodoLancamento";
 import CKEditorField from "components/Shareable/CKEditorField";
+import InputText from "components/Shareable/Input/InputText";
+import InputValueMedicao from "components/Shareable/Input/InputValueMedicao";
+import {
+  toastError,
+  toastSuccess,
+  toastWarn,
+} from "components/Shareable/Toast/dialogs";
+import { DETALHAMENTO_DO_LANCAMENTO, MEDICAO_INICIAL } from "configs/constants";
 import { deepCopy, deepEqual } from "helpers/utilities";
-import { getMeusDados } from "services/perfil.service";
-import {
-  botaoAdicionarObrigatorioTabelaAlimentacao,
-  validacoesTabelaAlimentacaoCEI,
-  validacoesTabelasDietasCEI,
-  validacoesTabelaAlimentacaoEmeidaCemei,
-  validacoesTabelasDietasEmeidaCemei,
-  validarFormulario,
-  validarCamposComInclusoesDeAlimentacaoSemObservacao,
-  exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI,
-  exibirTooltipSuspensoesAutorizadasCEI,
-  frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao,
-  campoComInclusaoAutorizadaValorZeroESemObservacao,
-  exibirTooltipErroQtdMaiorQueAutorizado,
-  exibirTooltipDietasInclusaoDiaNaoLetivoCEI,
-  campoDietaComInclusaoAutorizadaSemObservacao,
-  repeticaoSobremesaDoceComValorESemObservacao,
-  campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao,
-} from "./validacoes";
-import {
-  categoriasParaExibir,
-  desabilitarBotaoColunaObservacoes,
-  desabilitarField,
-  deveExistirObservacao,
-  ehDiaParaCorrigir,
-  formatarLinhasTabelaAlimentacaoCEI,
-  formatarLinhasTabelaAlimentacaoEmeiDaCemei,
-  formatarLinhasTabelasDietasCEI,
-  formatarLinhasTabelasDietasEmeiDaCemei,
-  formatarLinhasTabelaDietaEnteral,
-  formatarPayloadParaCorrecao,
-  formatarPayloadPeriodoLancamentoCeiCemei,
-  getListaDiasSobremesaDoceAsync,
-  getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync,
-  getSolicitacoesKitLanchesAutorizadasAsync,
-  getSolicitacoesSuspensoesAutorizadasAsync,
-  formataNomeCategoriaSolAlimentacoesInfantil,
-  textoBotaoObservacao,
-  valorZeroFrequenciaCEI,
-} from "./helper";
-import { getSolicitacoesInclusaoAutorizadasAsync } from "../PeriodoLancamentoMedicaoInicial/helper";
+import { getFaixasEtarias } from "services/faixaEtaria.service";
 import {
   getCategoriasDeMedicao,
   getDiasCalendario,
   getDiasParaCorrecao,
   getFeriadosNoMes,
-  getLogMatriculadosPorFaixaEtariaDia,
   getLogDietasAutorizadasCEIPeriodo,
   getLogDietasAutorizadasPeriodo,
+  getLogMatriculadosPorFaixaEtariaDia,
   getMatriculadosPeriodo,
   getValoresPeriodosLancamentos,
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
 } from "services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getFaixasEtarias } from "services/faixaEtaria.service";
 import { escolaCorrigeMedicao } from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import { DETALHAMENTO_DO_LANCAMENTO, MEDICAO_INICIAL } from "configs/constants";
-import "./styles.scss";
+import { getMeusDados } from "services/perfil.service";
+import {
+  getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync,
+  getSolicitacoesInclusaoAutorizadasAsync,
+} from "../PeriodoLancamentoMedicaoInicial/helper";
 import {
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
@@ -115,7 +74,50 @@ import {
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipSuspensoesAutorizadas,
 } from "../PeriodoLancamentoMedicaoInicial/validacoes";
-import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync } from "../PeriodoLancamentoMedicaoInicial/helper";
+import ModalErro from "./components/ModalErro";
+import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";
+import ModalSalvarCorrecoes from "./components/ModalSalvarCorrecoes";
+import { ModalVoltarPeriodoLancamento } from "./components/ModalVoltarPeriodoLancamento";
+import {
+  categoriasParaExibir,
+  desabilitarBotaoColunaObservacoes,
+  desabilitarField,
+  deveExistirObservacao,
+  ehDiaParaCorrigir,
+  formataNomeCategoriaSolAlimentacoesInfantil,
+  formatarLinhasTabelaAlimentacaoCEI,
+  formatarLinhasTabelaAlimentacaoEmeiDaCemei,
+  formatarLinhasTabelaDietaEnteral,
+  formatarLinhasTabelasDietasCEI,
+  formatarLinhasTabelasDietasEmeiDaCemei,
+  formatarPayloadParaCorrecao,
+  formatarPayloadPeriodoLancamentoCeiCemei,
+  getListaDiasSobremesaDoceAsync,
+  getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync,
+  getSolicitacoesKitLanchesAutorizadasAsync,
+  getSolicitacoesSuspensoesAutorizadasAsync,
+  textoBotaoObservacao,
+  valorZeroFrequenciaCEI,
+} from "./helper";
+import "./styles.scss";
+import {
+  botaoAdicionarObrigatorioTabelaAlimentacao,
+  campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao,
+  campoComInclusaoAutorizadaValorZeroESemObservacao,
+  campoDietaComInclusaoAutorizadaSemObservacao,
+  exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI,
+  exibirTooltipDietasInclusaoDiaNaoLetivoCEI,
+  exibirTooltipErroQtdMaiorQueAutorizado,
+  exibirTooltipSuspensoesAutorizadasCEI,
+  frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao,
+  repeticaoSobremesaDoceComValorESemObservacao,
+  validacoesTabelaAlimentacaoCEI,
+  validacoesTabelaAlimentacaoEmeidaCemei,
+  validacoesTabelasDietasCEI,
+  validacoesTabelasDietasEmeidaCemei,
+  validarCamposComInclusoesDeAlimentacaoSemObservacao,
+  validarFormulario,
+} from "./validacoes";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const initialStateWeekColumns = [
@@ -2158,7 +2160,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           column,
                                                           categoria,
                                                           suspensoesAutorizadas,
-                                                          errors,
                                                           categoriasDeMedicao
                                                         )) ||
                                                       (ehEmeiDaCemeiLocation &&

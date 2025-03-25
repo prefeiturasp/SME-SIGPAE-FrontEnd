@@ -744,7 +744,10 @@ export const exibirTooltipSuspensoesAutorizadasCEI = (
     categoria.nome === "ALIMENTAÇÃO" &&
     suspensoesAutorizadas &&
     suspensoesAutorizadas.filter((suspensao) => suspensao.dia === column.dia)
-      .length > 0
+      .length > 0 &&
+    !formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ]
   );
 };
 
@@ -753,12 +756,14 @@ export const frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao = (
   column,
   categoria,
   suspensoesAutorizadas,
-  errors,
   categoriasDeMedicao
 ) => {
+  if (!Array.isArray(categoriasDeMedicao)) return false;
+
   const categoriaAlimentacao = categoriasDeMedicao.find((categoria) =>
     categoria.nome.includes("ALIMENTAÇÃO")
   );
+
   const frequenciasMesmoDia = Object.fromEntries(
     Object.entries(formValuesAtualizados).filter(
       ([key, value]) =>
@@ -769,19 +774,13 @@ export const frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao = (
         !["Mês anterior", "Mês posterior", null].includes(value)
     )
   );
-  const errosMesmoDia = Object.fromEntries(
-    Object.entries(errors).filter(([key]) =>
-      key.includes(`__dia_${column.dia}__categoria_${categoria.id}`)
-    )
-  );
 
   return (
-    Object.keys(frequenciasMesmoDia).length > 0 &&
+    Object.values(frequenciasMesmoDia).reduce((a, b) => a + b, 0) > 0 &&
     categoria.nome === "ALIMENTAÇÃO" &&
     suspensoesAutorizadas &&
     suspensoesAutorizadas.filter((suspensao) => suspensao.dia === column.dia)
       .length > 0 &&
-    Object.keys(errosMesmoDia).length === 0 &&
     !formValuesAtualizados[
       `observacoes__dia_${column.dia}__categoria_${categoria.id}`
     ]
