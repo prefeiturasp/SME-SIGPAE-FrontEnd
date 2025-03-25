@@ -32,7 +32,7 @@ import {
   toastWarn,
 } from "components/Shareable/Toast/dialogs";
 import { DETALHAMENTO_DO_LANCAMENTO, MEDICAO_INICIAL } from "configs/constants";
-import { deepCopy, deepEqual } from "helpers/utilities";
+import { deepCopy } from "helpers/utilities";
 import { getFaixasEtarias } from "services/faixaEtaria.service";
 import {
   getCategoriasDeMedicao,
@@ -115,7 +115,6 @@ import {
   validacoesTabelaAlimentacaoEmeidaCemei,
   validacoesTabelasDietasCEI,
   validacoesTabelasDietasEmeidaCemei,
-  validarCamposComInclusoesDeAlimentacaoSemObservacao,
   validarFormulario,
 } from "./validacoes";
 
@@ -1117,16 +1116,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
     let valoresMedicao = [];
-    if (exibirTooltipAoSalvar) {
-      validarCamposComInclusoesDeAlimentacaoSemObservacao(
-        values,
-        categoriasDeMedicao,
-        inclusoesAutorizadas,
-        setInputsInclusaoComErro,
-        setExibirTooltipAoSalvar,
-        validacaoDiaLetivo
-      );
-    }
     const valuesMesmoDiaDaObservacao = Object.fromEntries(
       Object.entries(values).filter(([key]) =>
         key.includes(`__dia_${dia}__categoria_${categoria}`)
@@ -1268,26 +1257,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     chamarFuncaoFormatar = true,
     ehCorrecao = false
   ) => {
-    if (
-      validarCamposComInclusoesDeAlimentacaoSemObservacao(
-        values,
-        categoriasDeMedicao,
-        inclusoesAutorizadas,
-        setInputsInclusaoComErro,
-        setExibirTooltipAoSalvar,
-        validacaoDiaLetivo
-      )
-    ) {
-      if (ehSalvamentoAutomatico) {
-        setInputsInclusaoComErro([]);
-        setExibirTooltipAoSalvar(false);
-        return;
-      } else {
-        return toastError(
-          "Existem Inclusões autorizadas na tabela de Lançamento de Alimentações. Justifique a ausência do apontamento!"
-        );
-      }
-    }
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
     let valuesClone = deepCopy(values);
@@ -1498,10 +1467,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         tabelaDietaEnteralRows,
         formValuesAtualizados
       );
-    if (deepEqual(formValuesAtualizados, dadosIniciais)) {
-      setDisableBotaoSalvarLancamentos(true);
-      desabilitaTooltip(formValuesAtualizados);
-    } else if (
+    if (
       (value || previous) &&
       value !== previous &&
       !["Mês anterior", "Mês posterior"].includes(value) &&
@@ -1543,27 +1509,31 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     desabilitaTooltip(formValuesAtualizados);
 
     if (exibirTooltipAoSalvar) {
-      validarCamposComInclusoesDeAlimentacaoSemObservacao(
-        formValuesAtualizados,
+      formValuesAtualizados,
         categoriasDeMedicao,
         inclusoesAutorizadas,
         setInputsInclusaoComErro,
         setExibirTooltipAoSalvar,
-        validacaoDiaLetivo
-      );
+        validacaoDiaLetivo;
     }
 
     if (
       ((categoria.nome.includes("ALIMENTAÇÃO") &&
-        ((!ehEmeiDaCemeiLocation &&
-          frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao(
-            formValuesAtualizados,
-            column,
-            categoria,
-            suspensoesAutorizadas,
-            errors,
-            categoriasDeMedicao
-          )) ||
+        (exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI(
+          inclusoesAutorizadas,
+          row,
+          column,
+          categoria,
+          formValuesAtualizados
+        ) ||
+          (!ehEmeiDaCemeiLocation &&
+            frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao(
+              formValuesAtualizados,
+              column,
+              categoria,
+              suspensoesAutorizadas,
+              categoriasDeMedicao
+            )) ||
           campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao(
             inclusoesAutorizadas,
             column,
@@ -1981,7 +1951,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                         items={tabItems}
                       />
                     </div>
-                    {console.log(categoriasDeMedicao)}
                     <Spin tip="Carregando..." spinning={loadingLancamentos}>
                       {categoriasDeMedicao.length > 0 &&
                         !loading &&
