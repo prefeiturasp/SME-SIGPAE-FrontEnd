@@ -368,6 +368,15 @@ export const getSolicitacoesRelatorioDietasEspeciais = async (params) => {
   }
 };
 
+export const getSolicitacoesRelatorioHistoricoDietas = async (params) => {
+  const url = `/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
 export const getUnidadesEducacionaisComCodEol = async (parametros) => {
   return await axios.post(
     `/escolas-simplissima-com-eol/escolas-com-cod-eol/`,
