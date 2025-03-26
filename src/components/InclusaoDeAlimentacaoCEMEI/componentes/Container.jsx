@@ -156,7 +156,9 @@ export const Container = () => {
   const getMotivosInclusaoContinuaAsync = async () => {
     const response = await getMotivosInclusaoContinua();
     if (response.status === HTTP_STATUS.OK) {
-      setMotivosContinuos(response.data.results);
+      setMotivosContinuos(
+        response.data.results.filter((motivo) => motivo.nome !== "ETEC")
+      );
     } else {
       setErro(true);
     }

@@ -186,8 +186,14 @@ export const dadosDoAluno = async (codigoEol) => {
   }
 };
 
-export const getAlunosListagem = async (params) =>
-  await axios.get(`/alunos/`, { params });
+export const getAlunosListagem = async (params) => {
+  const url = `${API_URL}/alunos/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const getPerfilListagem = async (params) =>
   await axios.get(`/perfis/`, { params });
