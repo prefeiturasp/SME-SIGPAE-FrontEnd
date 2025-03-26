@@ -699,22 +699,22 @@ export const usuarioEhDRE = () => {
 
 export const usuarioEhEscolaCeuGestao = () => {
   const instituicao = nomeInstituicao();
-  return instituicao.includes("CEU GESTAO");
+  return instituicao?.includes("CEU GESTAO");
 };
 
 export const usuarioEhEscolaCIEJA = () => {
   const instituicao = nomeInstituicao();
-  return instituicao.includes("CIEJA");
+  return instituicao?.includes("CIEJA");
 };
 
 export const usuarioEhEscolaCEMEI = () => {
   const instituicao = nomeInstituicao();
-  return instituicao.includes("CEMEI");
+  return instituicao?.includes("CEMEI");
 };
 
 export const usuarioEhEscolaCMCT = () => {
   const instituicao = nomeInstituicao();
-  return instituicao.includes("CMCT");
+  return instituicao?.includes("CMCT");
 };
 
 export const usuarioEhCoordenadorDRE = () => {
