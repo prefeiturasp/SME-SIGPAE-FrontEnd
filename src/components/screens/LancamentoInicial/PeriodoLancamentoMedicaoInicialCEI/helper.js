@@ -1169,6 +1169,12 @@ const existeDietaTipoA = (logQtdDietasAutorizadasEmeiDaCemei) => {
   );
 };
 
+const existeDietaTipoB = (logQtdDietasAutorizadasEmeiDaCemei) => {
+  return !!logQtdDietasAutorizadasEmeiDaCemei.find(
+    (log) => log.classificacao === "Tipo B" && log.quantidade > 0
+  );
+};
+
 const existeDietaTipoAEnteralOuAminoacidos = (
   logQtdDietasAutorizadasEmeiDaCemei
 ) => {
@@ -1199,6 +1205,14 @@ export const categoriasParaExibir = (
       response_categorias_medicao = response_categorias_medicao.filter(
         (categoria) => {
           return categoria.nome !== "DIETA ESPECIAL - TIPO A";
+        }
+      );
+    }
+
+    if (!existeDietaTipoB(logQtdDietasAutorizadasEmeiDaCemei)) {
+      response_categorias_medicao = response_categorias_medicao.filter(
+        (categoria) => {
+          return categoria.nome !== "DIETA ESPECIAL - TIPO B";
         }
       );
     }
