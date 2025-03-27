@@ -104,7 +104,11 @@ export const Container = () => {
   }, [meusDados]);
 
   useEffect(() => {
-    if (periodos && !periodos[0].maximo_alunos) {
+    if (
+      periodos &&
+      !periodos[0].maximo_alunos &&
+      meusDados.vinculo_atual.instituicao.possui_alunos_regulares
+    ) {
       setQuantidadeAlunosPorPeriodoAsync();
     }
   }, [periodos]);
