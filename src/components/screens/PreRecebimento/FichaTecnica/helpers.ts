@@ -334,7 +334,7 @@ export const validaProximoIdentificacaoProduto = (
     values.organico === "0";
 
   const camposFormPereciveisValidos =
-    values.numero_registro && values.agroecologico && campoOrganicoValido;
+    values.agroecologico && campoOrganicoValido;
 
   return (
     Object.keys(errors).length !== 0 ||
