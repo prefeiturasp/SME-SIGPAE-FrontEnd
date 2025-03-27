@@ -134,6 +134,7 @@ export const RELATORIO_QUANTITATIVO_CLASSIFICACAO_DIETA_ESP =
   "relatorio-quantitativo-classificacao-dieta-esp";
 export const RELATORIO_DIETAS_AUTORIZADAS = "relatorio-dietas-autorizadas";
 export const RELATORIO_DIETAS_CANCELADAS = "relatorio-dietas-canceladas";
+export const RELATORIO_HISTORICO_DIETAS = "relatorio-historico-dietas";
 export const RELATORIO_GERENCIAL_DIETAS = "relatorio-gerencial-dietas";
 export const RELATORIO_GESTAO_DIETA_ESPECIAL =
   "relatorio-gestao-dieta-especial";

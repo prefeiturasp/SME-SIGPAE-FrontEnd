@@ -1,0 +1,23 @@
+@import "styles/variables.scss";
+
+.detalhes-historico-relatorio {
+  background: #dfdfdf;
+
+  .linha {
+    display: grid;
+    border-bottom: 1px solid #c2c2c2;
+  }
+  .linha-1 {
+    grid-template-columns: 73.5% 26.5%;
+    padding: 5px 5px 5px 5px;
+  }
+  .item {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 13px;
+  }
+
+  .item-periodo {
+    padding-left: 10px;
+  }
+}
