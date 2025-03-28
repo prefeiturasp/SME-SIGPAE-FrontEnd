@@ -6,18 +6,18 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { localStorageMock } from "mocks/localStorageMock";
-import { APIMockVersion } from "mocks/apiVersionMock";
 import { PERFIL, TIPO_PERFIL } from "constants/shared";
+import { APIMockVersion } from "mocks/apiVersionMock";
+import { localStorageMock } from "mocks/localStorageMock";
+import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
+import { mockGetHistoricoDietasEMEBSeCEUGESTAO } from "mocks/services/dietaEspecial.service/mockGetHistoricoDietasEMEBSeCEUGESTAO";
+import { mockGetSolicitacoesHistoricoDietasCEMEI } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasCEMEI";
+import { mockGetSolicitacoesHistoricoDietasEMEF } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasEMEF";
+import { mockGetSolicitacoesRelatorioHistoricoDietas } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesRelatorioHistoricoDietas";
 import RelatorioHistoricoDietasPage from "pages/DietaEspecial/RelatorioHistoricoDietasPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
-import { mockGetSolicitacoesRelatorioHistoricoDietas } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesRelatorioHistoricoDietas";
-import { mockGetSolicitacoesHistoricoDietasCEMEI } from "mocks/services/dietaEspecial.service/mockgetSolicitacoesHistoricoDietasCEMEI";
-import { mockGetHistoricoDietasEMEBSeCEUGESTAO } from "mocks/services/dietaEspecial.service/mockGetHistoricoDietasEMEBSeCEUGESTAO";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
-import { mockGetSolicitacoesHistoricoDietasEMEF } from "../../../mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasEMEF";
 
 describe("Teste - Relatório Histórico de Dietas Especiais", () => {
   beforeEach(async () => {
