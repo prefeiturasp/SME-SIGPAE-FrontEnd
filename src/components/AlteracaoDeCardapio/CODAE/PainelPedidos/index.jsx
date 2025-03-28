@@ -50,7 +50,7 @@ export const PainelPedidos = ({ ...props }) => {
 
     if (response.status === HTTP_STATUS.BAD_REQUEST) {
       toastError(
-        `Erro ao carregar inclusões ${tipoSolicitacao}: ${getError(
+        `Erro ao carregar alterações ${tipoSolicitacao}: ${getError(
           response.data
         )}`
       );
@@ -59,7 +59,7 @@ export const PainelPedidos = ({ ...props }) => {
     return response;
   };
 
-  const atualizarDadosDasInclusoes = async (filtro, paramsFromPrevPage) => {
+  const atualizarDadosDasAlteracoes = async (filtro, paramsFromPrevPage) => {
     setLoading(true);
     setPedidosPrioritarios();
     setPedidosNoPrazoLimite();
@@ -83,20 +83,23 @@ export const PainelPedidos = ({ ...props }) => {
       ),
     ]);
 
-    const inclusoes = safeConcatOn(
+    const alteracoes = safeConcatOn(
       "results",
       responseAvulsas,
       responseCEI,
       responseCEMEI
     );
 
-    const processarPedidos = (inclusoes, filtro) => {
-      return ordenarPedidosDataMaisRecente(filtro(inclusoes));
+    const processarPedidos = (alteracoes, filtro) => {
+      return ordenarPedidosDataMaisRecente(filtro(alteracoes));
     };
 
-    const pedidosPrioritarios = processarPedidos(inclusoes, filtraPrioritarios);
-    const pedidosNoPrazoLimite = processarPedidos(inclusoes, filtraNoLimite);
-    const pedidosNoPrazoRegular = processarPedidos(inclusoes, filtraRegular);
+    const pedidosPrioritarios = processarPedidos(
+      alteracoes,
+      filtraPrioritarios
+    );
+    const pedidosNoPrazoLimite = processarPedidos(alteracoes, filtraNoLimite);
+    const pedidosNoPrazoRegular = processarPedidos(alteracoes, filtraRegular);
 
     setPedidosPrioritarios(pedidosPrioritarios);
     setPedidosNoPrazoLimite(pedidosNoPrazoLimite);
@@ -142,7 +145,7 @@ export const PainelPedidos = ({ ...props }) => {
   const onSubmit = () => {};
 
   const filtrar = async (filtro, filtros) => {
-    await atualizarDadosDasInclusoes(filtro, filtros);
+    await atualizarDadosDasAlteracoes(filtro, filtros);
   };
 
   useEffect(() => {
@@ -150,7 +153,7 @@ export const PainelPedidos = ({ ...props }) => {
     getDiretoriasRegionaisAsync();
     const paramsFromPrevPage = filtrosProps;
     const filtro = FiltroEnum.SEM_FILTRO;
-    atualizarDadosDasInclusoes(filtro, paramsFromPrevPage);
+    atualizarDadosDasAlteracoes(filtro, paramsFromPrevPage);
   }, []);
 
   const LOADING_INICIAL =
@@ -235,7 +238,7 @@ export const PainelPedidos = ({ ...props }) => {
                             }
                             tipoDeCard={TIPODECARD.PRIORIDADE}
                             pedidos={pedidosPrioritarios}
-                            colunaDataLabel={"Data da Inclusão"}
+                            colunaDataLabel={"Data da Alteração"}
                             dataTestId="prioritario"
                           />
                         )}
@@ -248,7 +251,7 @@ export const PainelPedidos = ({ ...props }) => {
                             titulo={"Solicitações no prazo limite"}
                             tipoDeCard={TIPODECARD.NO_LIMITE}
                             pedidos={pedidosNoPrazoLimite}
-                            colunaDataLabel={"Data da Inclusão"}
+                            colunaDataLabel={"Data da Alteração"}
                             dataTestId="limite"
                           />
                         )}
@@ -261,7 +264,7 @@ export const PainelPedidos = ({ ...props }) => {
                             titulo={"Solicitações no prazo regular"}
                             tipoDeCard={TIPODECARD.REGULAR}
                             pedidos={pedidosNoPrazoRegular}
-                            colunaDataLabel={"Data da Inclusão"}
+                            colunaDataLabel={"Data da Alteração"}
                             dataTestId="regular"
                           />
                         )}
