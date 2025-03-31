@@ -6,42 +6,33 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import mock from "services/_mock";
 import { PERFIL, TIPO_PERFIL } from "constants/shared";
-import { mockPedidosCODAEInclusaoCEI } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoCEI";
-import { mockPedidosCODAEInclusaoContinua } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoContinua";
-import { mockPedidosCODAEInclusaoNormal } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoNormal";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
-import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
-import PainelPedidosInclusaoDeAlimentacaoDREPage from "pages/DRE/InclusaoDeAlimentacao/PainelPedidosPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import mock from "services/_mock";
+import { localStorageMock } from "mocks/localStorageMock";
+import { mockPedidosDREAlteracaoCardapio } from "mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapio";
+import { mockPedidosDREAlteracaoCardapioCEI } from "mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapioCEI";
+import { mockPedidosDREAlteracaoCardapioCEMEI } from "mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapioCEMEI";
+import PainelPedidosAlteracaoCardapioDREPage from "pages/DRE/AlteracaoDeCardapio/PainelPedidosPage.jsx";
+import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
+import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
 
-describe("Teste Página do Painel Pedidos - DRE - Inclusão de Alimentação", () => {
+describe("Teste Página do Painel Pedidos - DRE - Alteração do Tipo de Alimentação", () => {
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
     mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
     mock
-      .onGet(
-        "/grupos-inclusao-alimentacao-normal/pedidos-diretoria-regional/sem_filtro/"
-      )
-      .reply("200", { results: mockPedidosCODAEInclusaoNormal.results });
+      .onGet("alteracoes-cardapio/pedidos-diretoria-regional/sem_filtro/")
+      .reply("200", { results: mockPedidosDREAlteracaoCardapio.results });
+
     mock
-      .onGet(
-        "/inclusoes-alimentacao-continua/pedidos-diretoria-regional/sem_filtro/"
-      )
-      .reply("200", { results: mockPedidosCODAEInclusaoContinua.results });
+      .onGet("alteracoes-cardapio-cei/pedidos-diretoria-regional/sem_filtro/")
+      .reply("200", { results: mockPedidosDREAlteracaoCardapioCEI.results });
+
     mock
-      .onGet(
-        "/inclusoes-alimentacao-da-cei/pedidos-diretoria-regional/sem_filtro/"
-      )
-      .reply("200", { results: mockPedidosCODAEInclusaoCEI.results });
-    mock
-      .onGet(
-        "/inclusoes-alimentacao-cemei/pedidos-diretoria-regional/sem_filtro/"
-      )
-      .reply("200", { results: [] });
+      .onGet("alteracoes-cardapio-cemei/pedidos-diretoria-regional/sem_filtro/")
+      .reply("200", { results: mockPedidosDREAlteracaoCardapioCEMEI.results });
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
@@ -55,7 +46,7 @@ describe("Teste Página do Painel Pedidos - DRE - Inclusão de Alimentação", (
             v7_relativeSplatPath: true,
           }}
         >
-          <PainelPedidosInclusaoDeAlimentacaoDREPage />
+          <PainelPedidosAlteracaoCardapioDREPage />
         </MemoryRouter>
       );
     });
@@ -67,15 +58,6 @@ describe("Teste Página do Painel Pedidos - DRE - Inclusão de Alimentação", (
         "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
       )
     ).toBeInTheDocument();
-    const divPrioritarios = screen.getByTestId("prioritario");
-    expect(divPrioritarios).toHaveTextContent("1 escola solicitante");
-    expect(divPrioritarios).toHaveTextContent("F85D5");
-    expect(divPrioritarios).toHaveTextContent("017981");
-    expect(divPrioritarios).toHaveTextContent(
-      "EMEF PERICLES EUGENIO DA SILVA RAMOS"
-    );
-    expect(divPrioritarios).toHaveTextContent("30/01/2025");
-
     expect(
       screen.getByText("Solicitações no prazo limite")
     ).toBeInTheDocument();

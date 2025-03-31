@@ -1,19 +1,15 @@
-import React, { Component } from "react";
-import { visaoPorComboSomenteDatas } from "../../../../constants/shared";
-import PainelPedidos from ".";
+import React from "react";
+import { PainelPedidos } from ".";
 
-class Container extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      visaoPorCombo: visaoPorComboSomenteDatas,
-      filtros: this.props.filtros,
-    };
-  }
+const Container = ({ ...props }) => {
+  const { filtros } = props;
 
-  render() {
-    return <PainelPedidos {...this.state} />;
-  }
-}
-
+  return (
+    <PainelPedidos
+      pedidosAutorizados={[]}
+      pedidosReprovados={[]}
+      filtrosProps={filtros}
+    />
+  );
+};
 export default Container;
