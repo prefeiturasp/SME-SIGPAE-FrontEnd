@@ -1,26 +1,26 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
-import HTTP_STATUS from "http-status-codes";
-import { getYear, format } from "date-fns";
-import { Collapse, Checkbox, Modal, Spin } from "antd";
+import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import { Checkbox, Collapse, Modal, Spin } from "antd";
 import Botao from "components/Shareable/Botao";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "components/Shareable/Botao/constants";
+import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
 import { DETALHAMENTO_DO_LANCAMENTO } from "configs/constants";
+import { format, getYear } from "date-fns";
+import { ehEscolaTipoCEMEI } from "helpers/utilities";
+import HTTP_STATUS from "http-status-codes";
+import React, { useCallback, useEffect, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import {
   getTiposDeContagemAlimentacao,
   setSolicitacaoMedicaoInicial,
   updateSolicitacaoMedicaoInicial,
 } from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getAlunosListagem } from "services/perfil.service";
-import TabelaAlunosParciais from "./TabelaAlunosParciais";
-import { ehEscolaTipoCEMEI } from "../../../../../../helpers/utilities";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import ResponsaveisInputs from "../ResponsaveisInput";
+import TabelaAlunosParciais from "./TabelaAlunosParciais";
 
 const RESPONSABLES_INITIAL_STATE = [
   { nome: "", rf: "" },

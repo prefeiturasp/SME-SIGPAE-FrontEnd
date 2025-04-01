@@ -4,6 +4,7 @@ import {
   DIETA_ESPECIAL,
   RELATORIO_DIETAS_AUTORIZADAS,
   RELATORIO_DIETAS_CANCELADAS,
+  RELATORIO_HISTORICO_DIETAS,
   RELATORIO_GERENCIAL_DIETAS,
 } from "configs/constants";
 import { getNomeCardAguardandoAutorizacao } from "helpers/dietaEspecial";
@@ -29,6 +30,7 @@ import {
 } from "helpers/utilities";
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
+import { ENVIRONMENT } from "constants/config";
 
 const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
   const exibePainelInicial =
@@ -137,6 +139,11 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
           <LeafItem to={`/${DIETA_ESPECIAL}/${RELATORIO_DIETAS_CANCELADAS}`}>
             Relatório de Dietas Canceladas
           </LeafItem>
+          {ENVIRONMENT !== "production" && (
+            <LeafItem to={`/${DIETA_ESPECIAL}/${RELATORIO_HISTORICO_DIETAS}`}>
+              Relatório de Histórico de Dietas
+            </LeafItem>
+          )}
           {(usuarioEhAdministradorNutriCODAE() ||
             usuarioEhCoordenadorNutriCODAE() ||
             ehUsuarioRelatorios() ||

@@ -149,9 +149,13 @@ export const Container = () => {
       response.data.results.length > 0
     ) {
       response.data.results[0].tipos_alimentacao =
-        response.data.results[0].tipos_alimentacao.filter((tipo_alimentacao) =>
-          tiposAlimentacaoETEC().includes(tipo_alimentacao.nome)
-        );
+        response.data.results[0].tipos_alimentacao
+          .filter(
+            (tipo_alimentacao) => tipo_alimentacao.nome !== "Lanche Emergencial"
+          )
+          .filter((tipo_alimentacao) =>
+            tiposAlimentacaoETEC().includes(tipo_alimentacao.nome)
+          );
       setPeriodoNoite(formatarPeriodos(response.data.results));
     } else {
       setErro(

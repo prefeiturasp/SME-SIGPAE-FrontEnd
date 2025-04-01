@@ -7,7 +7,6 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "constants/shared";
-import { APIMockVersion } from "mocks/apiVersionMock";
 import { mockPedidosCODAEInclusaoCEI } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoCEI";
 import { mockPedidosCODAEInclusaoContinua } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoContinua";
 import { mockPedidosCODAEInclusaoNormal } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoNormal";
@@ -21,17 +20,6 @@ import mock from "services/_mock";
 
 describe("Teste Página do Painel Pedidos - DRE - Inclusão de Alimentação", () => {
   beforeEach(async () => {
-    mock.onGet("/api-version/").reply(200, APIMockVersion);
-    mock.onGet("/notificacoes/").reply(200, {
-      next: null,
-      previous: null,
-      count: 0,
-      page_size: 4,
-      results: [],
-    });
-    mock
-      .onGet("/notificacoes/quantidade-nao-lidos/")
-      .reply(200, { quantidade_nao_lidos: 0 });
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
     mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
     mock

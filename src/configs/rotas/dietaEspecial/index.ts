@@ -17,6 +17,8 @@ import {
   usuarioEhNutricionistaSupervisao,
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
+  usuarioEhCoordenadorCODAE,
+  usuarioEhEscola,
 } from "helpers/utilities";
 import {
   StatusSolicitacoesDietaEspecial,
@@ -33,6 +35,7 @@ import ProtocoloPadraoDietaEspecialPage from "pages/DietaEspecial/ProtocoloPadra
 import RelatorioAlunosDietasAtivasInativasPage from "pages/DietaEspecial/RelatorioAlunosDietasAtivasInativasPage.jsx";
 import RelatorioDietasAutorizadas from "pages/DietaEspecial/RelatorioDietasAutorizadas";
 import RelatorioDietasCanceladas from "pages/DietaEspecial/RelatorioDietasCanceladas";
+import RelatorioHistoricoDietasPage from "pages/DietaEspecial/RelatorioHistoricoDietasPage";
 import RelatorioGerencialDietas from "pages/DietaEspecial/RelatorioGerencialDietas.jsx";
 import RelatorioGestaoDietaEspecial from "pages/DietaEspecial/RelatorioGestaoDietaEspecial";
 import RelatorioQuantitativoClassificacaoDietaEspPage from "pages/DietaEspecial/RelatorioQuantitativoClassificacaoDietaEspPage";
@@ -281,5 +284,24 @@ export const rotasDietaEspecial: Array<RotaInterface> = [
     path: `/${constants.DIETA_ESPECIAL}/protocolo-padrao/:uuid/criar-copia`,
     component: CriarCopiaProtocoloPadraoDieta,
     tipoUsuario: usuarioEhCODAEDietaEspecial(),
+  },
+  {
+    path: `/${constants.DIETA_ESPECIAL}/${constants.RELATORIO_HISTORICO_DIETAS}`,
+    component: RelatorioHistoricoDietasPage,
+    tipoUsuario:
+      usuarioEhNutricionistaSupervisao() ||
+      usuarioEhEscola() ||
+      usuarioEhDRE() ||
+      usuarioEhCoordenadorCODAE() ||
+      usuarioEhCODAEGestaoAlimentacao() ||
+      usuarioEhCODAENutriManifestacao() ||
+      usuarioEhCoordenadorNutriSupervisao() ||
+      usuarioEhAdministradorNutriCODAE() ||
+      usuarioEhCoordenadorNutriCODAE() ||
+      usuarioEhMedicao() ||
+      usuarioEhCODAEGabinete() ||
+      usuarioEhEmpresaTerceirizada() ||
+      ehUsuarioRelatorios() ||
+      usuarioEhDinutreDiretoria(),
   },
 ];

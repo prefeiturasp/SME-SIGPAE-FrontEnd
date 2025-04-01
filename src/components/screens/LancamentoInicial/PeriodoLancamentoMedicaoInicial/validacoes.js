@@ -142,6 +142,7 @@ export const campoComInclusaoContinuaValorMaiorQueAutorizadoESemObservacao = (
 export const campoFrequenciaValor0ESemObservacao = (dia, categoria, values) => {
   let erro = false;
   if (
+    categoria.nome === "ALIMENTAÇÃO" &&
     values[`frequencia__dia_${dia}__categoria_${categoria.id}`] &&
     Number(values[`frequencia__dia_${dia}__categoria_${categoria.id}`]) === 0 &&
     !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
@@ -550,12 +551,6 @@ export const validacoesTabelaAlimentacao = (
         inputName.includes("repeticao"))
     ) {
       return "Frequência acima inválida ou não preenchida.";
-    }
-    if (
-      !inputName.includes("numero_de_alunos") &&
-      Number(allValues[inputName]) > Number(maxFrequencia)
-    ) {
-      return `Número apontado de alimentação é maior que número de alunos frequentes. Ajuste o apontamento. `;
     }
   }
 

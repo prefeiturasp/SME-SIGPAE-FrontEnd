@@ -17,7 +17,7 @@ import { mockRascunhoAlteracaoCardapioCMCT } from "mocks/services/alteracaoCarda
 import { mockRascunhosAlteracaoCardapioCMCT } from "mocks/services/alteracaoCardapio.service/CMCT/rascunhosAlteracaoCardapio";
 import { mockMotivosAlteracaoCardapio } from "mocks/services/alteracaoCardapio.service/motivosAlteracaoCardapio";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCMCT } from "mocks/services/cadastroTipoAlimentacao.service/CMCT/mockGetVinculosTipoAlimentacaoPorEscolaCMCT";
-import { mockQuantidadeAlunosPorPeriodoCMCT } from "mocks/services/escola.service/mockQuantidadeAlunosPorPeriodoCMCT";
+import { mockQuantidadeAlunosPorPeriodoCMCT } from "mocks/services/escola.service/CMCT/mockQuantidadeAlunosPorPeriodoCMCT";
 import AlteracaoDeCardapioPage from "pages/Escola/AlteracaoDeCardapioPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";

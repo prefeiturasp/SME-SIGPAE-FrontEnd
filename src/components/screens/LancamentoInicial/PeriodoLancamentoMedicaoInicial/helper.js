@@ -16,7 +16,10 @@ import {
   ehEscolaTipoCEUGESTAO,
   tiposAlimentacaoETEC,
 } from "helpers/utilities";
-import { ehEscolaTipoCEMEI } from "../../../../helpers/utilities";
+import {
+  ehEscolaTipoCEMEI,
+  usuarioEhEscolaCEMEI,
+} from "../../../../helpers/utilities";
 import { ALUNOS_EMEBS, FUNDAMENTAL_EMEBS, INFANTIL_EMEBS } from "../constants";
 
 export const formatarPayloadPeriodoLancamento = (
@@ -633,6 +636,13 @@ export const getSolicitacoesInclusaoAutorizadasAsync = async (
     params["tipo_doc"] = "INC_ALIMENTA_CONTINUA";
   } else {
     params["excluir_inclusoes_continuas"] = true;
+  }
+  if (usuarioEhEscolaCEMEI()) {
+    if (location.state.periodo.includes("Infantil")) {
+      params["cemei_emei"] = true;
+    } else {
+      params["cemei_cei"] = true;
+    }
   }
   const responseInclusoesAutorizadas =
     await getSolicitacoesInclusoesAutorizadasEscola(params);
