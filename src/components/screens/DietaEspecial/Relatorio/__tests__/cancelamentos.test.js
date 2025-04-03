@@ -2,9 +2,10 @@ import React from "react";
 
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { CODAE } from "../../../../../configs/constants";
+import { TIPO_PERFIL } from "constants/shared";
 import Relatorio from "../";
 import {
   respostaApiCancelamentoporDataTermino,
@@ -14,10 +15,12 @@ import {
   listaProtocolosLiberados,
   alimentos,
   solicitacoesDietaEspecial,
+  solicitacoesDietaEspecialDoAluno,
   protocoloPadraoDietaEspecial,
 } from "../dados";
 import { API_URL } from "constants/config";
 import { formataJustificativa } from "../helpers";
+import mock from "services/_mock";
 
 const cancelamento_data_termino = respostaApiCancelamentoporDataTermino();
 
@@ -49,6 +52,12 @@ const server = setupServer(
   rest.get(`${API_URL}/solicitacoes-dieta-especial/`, (req, res, ctx) => {
     return res(ctx.json(solicitacoesDietaEspecial()));
   }),
+  rest.get(
+    `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/7772877/`,
+    (req, res, ctx) => {
+      return res(ctx.json(solicitacoesDietaEspecialDoAluno()));
+    }
+  ),
   rest.get(
     `${API_URL}/protocolo-padrao-dieta-especial/${cancelamento_data_termino.protocolo_padrao}/`,
     (req, res, ctx) => {
@@ -391,4 +400,36 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
   ).not.toBeInTheDocument();
   expect(await screen.queryByText(/Início/i)).not.toBeInTheDocument();
   expect(await screen.queryByText(/Fim/i)).not.toBeInTheDocument();
+});
+
+test("Verifica botões de Gerar Protocolo - visão Terceirizada", async () => {
+  const search = `?uuid=${cancelamento_data_termino.uuid}&ehInclusaoContinua=false&card=canceladas:`;
+  Object.defineProperty(window, "location", {
+    value: {
+      search: search,
+    },
+  });
+
+  const mockPdfBlob = new Blob(["mocked PDF content"], {
+    type: "application/pdf",
+  });
+
+  global.URL.createObjectURL = jest.fn(() => "mock-url");
+
+  mock
+    .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
+    .reply(200, mockPdfBlob);
+
+  render(<Relatorio visao={CODAE} />);
+
+  localStorage.setItem("tipo_perfil", TIPO_PERFIL.NUTRICAO_MANIFESTACAO);
+
+  await waitFor(() =>
+    expect(screen.getAllByText("Gerar Protocolo")).toHaveLength(2)
+  );
+  const buttons = screen.getAllByText("Gerar Protocolo");
+  const buttonGerarProtocolo = buttons[0].closest("button");
+  expect(buttonGerarProtocolo).toBeInTheDocument();
+
+  fireEvent.click(buttonGerarProtocolo);
 });
