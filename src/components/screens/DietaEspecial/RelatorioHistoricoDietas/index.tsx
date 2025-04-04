@@ -37,7 +37,7 @@ export const RelatorioHistoricoDietas = () => {
     };
     const response = await getSolicitacoesRelatorioHistoricoDietas(params);
     if (response.status === HTTP_STATUS.OK) {
-      setDietasEspeciais(response.data.results[0]);
+      setDietasEspeciais(response.data);
       setCount(response.data.count);
     } else {
       toastError(
