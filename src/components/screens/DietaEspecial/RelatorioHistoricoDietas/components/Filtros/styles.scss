@@ -1,0 +1,31 @@
+@import "styles/variables.scss";
+
+.filtros-relatorio-dietas {
+  padding-bottom: 40px;
+
+  .botoes {
+    margin-top: 25vh;
+  }
+}
+
+.motivos-alteracao-ue {
+  display: flex;
+  flex-direction: row;
+
+  .ckbox-motivo-alteracao-ue,
+  .ckbox-recreio-nas-ferias {
+    margin-right: 12px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .ckbox-recreio-nas-ferias {
+    margin-left: 48px;
+  }
+
+  .label-motivo-alteracao-ue {
+    color: $blackInput;
+  }
+}
