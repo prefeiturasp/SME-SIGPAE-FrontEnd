@@ -42,7 +42,7 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
   const { dietasEspeciais, setDietasEspeciais, setLoadingDietas, count } =
     props;
 
-  const PAGE_SIZE = 2;
+  const PAGE_SIZE = 10;
 
   const onChangePage = async (page) => {
     setPaginaAtual(page);
@@ -50,16 +50,7 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
     let params = {
       page_size: PAGE_SIZE,
       page: page,
-      data: "24/08/2023",
-      unidades_educacionais_selecionadas: [
-        "3c32be8e-f191-468d-a4e2-3dd8751e5e7a",
-        "e675739f-534c-4bdf-8bbd-3fb037e98d73",
-        "dfba8f77-712b-4197-9dc3-9248f7237bed",
-        "01954441-c64e-4c53-987a-ad1b97450eae",
-        "49e6bf7f-36ad-418b-a5ec-2b03442aba22",
-        "e02c0499-62e1-4115-a4eb-3c4fb108ac84",
-        "61c4812e-82ae-4387-aa33-e1f0f42d6163",
-      ],
+      data: "12/02/2024",
     };
     const response = await getSolicitacoesRelatorioHistoricoDietas(params);
     if (response.status === HTTP_STATUS.OK) {
