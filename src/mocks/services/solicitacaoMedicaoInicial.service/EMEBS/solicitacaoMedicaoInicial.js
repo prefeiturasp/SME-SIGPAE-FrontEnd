@@ -1,0 +1,58 @@
+export const mockSolicitacaoMedicaoInicialEMEBS = [
+  {
+    escola: "EMEBS HELEN KELLER",
+    escola_uuid: "ed10a4fb-9274-42ba-adc5-08b9f28746bb",
+    tipos_contagem_alimentacao: [
+      {
+        nome: "Fichas Coloridas",
+        ativo: true,
+        uuid: "ecf37fa8-4f6c-4b55-9df3-868c12999015",
+      },
+    ],
+    responsaveis: [
+      {
+        nome: "teste",
+        rf: "1234567",
+      },
+    ],
+    ocorrencia: null,
+    logs: [
+      {
+        status_evento_explicacao: "Em aberto para preenchimento pela UE",
+        usuario: {
+          uuid: "04954932-36f6-4a17-9dca-3e0d61f65790",
+          cpf: null,
+          nome: "ESCOLA EMEBS",
+          email: "escolaemebs@admin.com",
+          date_joined: "24/03/2022 15:20:19",
+          registro_funcional: "9876543",
+          tipo_usuario: "escola",
+          cargo: "Diretor",
+          crn_numero: null,
+          nome_fantasia: null,
+        },
+        criado_em: "07/04/2025 19:02:04",
+        descricao: "Solicitação #916A9 -- Escola EMEBS HELEN KELLER -- 03/2025",
+        justificativa: "",
+        resposta_sim_nao: false,
+      },
+    ],
+    alunos_periodo_parcial: [],
+    historico: null,
+    escola_eh_emebs: true,
+    escola_cei_com_inclusao_parcial_autorizada: false,
+    criado_em: "07/04/2025 19:02:04",
+    uuid: "916a9e70-d853-4c19-bbfb-63b35b66d185",
+    ano: "2025",
+    mes: "03",
+    status: "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE",
+    com_ocorrencias: false,
+    ue_possui_alunos_periodo_parcial: false,
+    logs_salvos: false,
+    dre_ciencia_correcao_data: null,
+    rastro_lote: 21,
+    rastro_terceirizada: 5,
+    dre_ciencia_correcao_usuario: null,
+    relatorio_financeiro: null,
+  },
+];
