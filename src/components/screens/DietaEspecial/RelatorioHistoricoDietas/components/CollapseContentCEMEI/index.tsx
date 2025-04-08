@@ -8,9 +8,11 @@ interface CollapseProps {
 export const CollapseContentCEMEI: React.FC<CollapseProps> = ({ periodos }) => {
   return (
     <div className="detalhes-collapse-cemei">
-      <div className="linha linha-1">
-        <p>Faixas Etárias com Dietas Autorizadas</p>
-      </div>
+      {periodos.por_idade?.length > 0 && (
+        <div className="linha linha-1">
+          <p>Faixas Etárias com Dietas Autorizadas</p>
+        </div>
+      )}
       {periodos.por_idade?.map((p) => (
         <div key={p.periodo} className="linha item-periodo">
           <div className="linha item item-periodo">
@@ -24,9 +26,11 @@ export const CollapseContentCEMEI: React.FC<CollapseProps> = ({ periodos }) => {
           ))}
         </div>
       ))}
-      <div className="linha linha-1">
-        <p>Dietas Autorizadas nas Turmas do Infantil</p>
-      </div>
+      {periodos.turma_infantil?.length > 0 && (
+        <div className="linha linha-1">
+          <p>Dietas Autorizadas nas Turmas do Infantil</p>
+        </div>
+      )}
       {periodos.turma_infantil?.map((item) => (
         <div key={`infantil-${item.periodo}`} className="linha linha-2">
           <div className="item item-periodo">{item.periodo}</div>
