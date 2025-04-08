@@ -11,17 +11,14 @@ import { getSolicitacoesRelatorioHistoricoDietas } from "services/dietaEspecial.
 import "./styles.scss";
 import { toastError } from "components/Shareable/Toast/dialogs";
 
-type ClassificacaoDieta = {
-  tipo: string;
-  total: number;
-  periodos?: any[];
-};
-
-type UnidadeEducacional = {
+type RowUnidadeEducacionalTipo = {
   lote: string;
   unidade_educacional: string;
   tipo_unidade: string;
-  classificacao_dieta: ClassificacaoDieta[];
+  classificacao: string;
+  total: number;
+  data: string;
+  periodos?: any[];
 };
 
 interface TabelaHistoricoProps {
@@ -32,8 +29,7 @@ interface TabelaHistoricoProps {
 }
 
 interface RowWithCollapseProps {
-  unidade: UnidadeEducacional;
-  dieta: ClassificacaoDieta;
+  unidade: RowUnidadeEducacionalTipo;
   data: string;
   tipoUnidade: string;
 }
@@ -46,7 +42,7 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
   const { dietasEspeciais, setDietasEspeciais, setLoadingDietas, count } =
     props;
 
-  const PAGE_SIZE = 2;
+  const PAGE_SIZE = 10;
 
   const onChangePage = async (page) => {
     setPaginaAtual(page);
@@ -54,20 +50,11 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
     let params = {
       page_size: PAGE_SIZE,
       page: page,
-      data: "24/08/2023",
-      unidades_educacionais_selecionadas: [
-        "3c32be8e-f191-468d-a4e2-3dd8751e5e7a",
-        "e675739f-534c-4bdf-8bbd-3fb037e98d73",
-        "dfba8f77-712b-4197-9dc3-9248f7237bed",
-        "01954441-c64e-4c53-987a-ad1b97450eae",
-        "49e6bf7f-36ad-418b-a5ec-2b03442aba22",
-        "e02c0499-62e1-4115-a4eb-3c4fb108ac84",
-        "61c4812e-82ae-4387-aa33-e1f0f42d6163",
-      ],
+      data: "12/02/2024",
     };
     const response = await getSolicitacoesRelatorioHistoricoDietas(params);
     if (response.status === HTTP_STATUS.OK) {
-      setDietasEspeciais(response.data.results[0]);
+      setDietasEspeciais(response.data);
     } else {
       toastError(
         "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde."
@@ -76,20 +63,17 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
     setLoadingDietas(false);
   };
 
-  const unidades: UnidadeEducacional[] = dietasEspeciais.resultado;
+  const unidades: RowUnidadeEducacionalTipo[] = dietasEspeciais.results;
   const renderRows = () => {
-    return unidades.map((unidade) => {
-      return unidade.classificacao_dieta.map((dieta, indexDieta) => {
-        return (
-          <RowWithCollapse
-            key={indexDieta}
-            unidade={unidade}
-            dieta={dieta}
-            data={dietasEspeciais.data}
-            tipoUnidade={unidade.tipo_unidade}
-          />
-        );
-      });
+    return unidades.map((unidade, indexDieta) => {
+      return (
+        <RowWithCollapse
+          key={indexDieta}
+          unidade={unidade}
+          data={dietasEspeciais.data}
+          tipoUnidade={unidade.tipo_unidade}
+        />
+      );
     });
   };
 
@@ -118,7 +102,6 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
 
 const RowWithCollapse: React.FC<RowWithCollapseProps> = ({
   unidade,
-  dieta,
   data,
   tipoUnidade,
 }) => {
@@ -149,7 +132,7 @@ const RowWithCollapse: React.FC<RowWithCollapseProps> = ({
   const UNIDADES_SEM_PERIODOS = ["CMCT", "CEU GESTAO"];
 
   const shouldRenderCollapse =
-    !UNIDADES_SEM_PERIODOS.includes(tipoUnidade) && dieta.total > 0;
+    !UNIDADES_SEM_PERIODOS.includes(tipoUnidade) && unidade.total > 0;
 
   const renderCollapseContent = (tipoUnidade: string, periodos: any) => {
     if (UNIDADES_CEI.includes(tipoUnidade)) {
@@ -173,8 +156,8 @@ const RowWithCollapse: React.FC<RowWithCollapseProps> = ({
         <div className="div-tabela-historico">
           {unidade.unidade_educacional}
         </div>
-        <div className="div-tabela-historico">{dieta.tipo}</div>
-        <div className="div-tabela-historico centralizar">{dieta.total}</div>
+        <div className="div-tabela-historico">{unidade.classificacao}</div>
+        <div className="div-tabela-historico centralizar">{unidade.total}</div>
         <div className="div-tabela-historico centralizar">{data}</div>
         <div className="div-tabela-historico centralizar">
           {shouldRenderCollapse && (
@@ -187,7 +170,7 @@ const RowWithCollapse: React.FC<RowWithCollapseProps> = ({
         </div>
       </div>
       {shouldRenderCollapse && showDetail && (
-        <div>{renderCollapseContent(tipoUnidade, dieta.periodos)}</div>
+        <div>{renderCollapseContent(tipoUnidade, unidade.periodos)}</div>
       )}
     </>
   );
