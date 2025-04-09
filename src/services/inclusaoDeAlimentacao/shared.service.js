@@ -3,22 +3,13 @@ import { ErrorHandlerFunction } from "services/service-helpers";
 import { getPath } from "./helper";
 import axios from "../_base";
 
-export const obterSolicitacaoDeInclusaoDeAlimentacao = (
-  uuid,
-  tipoSolicitacao
-) => {
+export const getInclusaoDeAlimentacao = async (uuid, tipoSolicitacao) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/`;
-  const OBJ_REQUEST = {
-    headers: AUTH_TOKEN,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const obterMinhasSolicitacoesDeInclusaoDeAlimentacao = async (

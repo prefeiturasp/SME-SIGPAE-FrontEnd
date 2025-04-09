@@ -9,11 +9,11 @@ export const tipoDeStatusClasse = (status: LogSolicitacoesUsuarioSimples) => {
     case "Cronograma Criado":
     case "Assinado e Enviado ao Fornecedor":
     case "Assinado Fornecedor":
-    case "Assinado DINUTRE":
+    case "Assinado Abastecimento":
     case "Assinado CODAE":
     case "Em Análise":
     case "Cronograma Ciente":
-    case "Aprovado DINUTRE":
+    case "Aprovado Abastecimento":
     case "Aprovado DILOG":
     case "Aprovado CODAE":
     case "Alteração enviada ao fornecedor":
@@ -29,7 +29,7 @@ export const tipoDeStatusClasse = (status: LogSolicitacoesUsuarioSimples) => {
       return "questioned";
 
     case "Reprovado DILOG":
-    case "Reprovado DINUTRE":
+    case "Reprovado Abastecimento":
     case "Reprovado CODAE":
       return "disapproved";
 

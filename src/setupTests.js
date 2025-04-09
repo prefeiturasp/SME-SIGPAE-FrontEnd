@@ -41,6 +41,12 @@ beforeEach(() => {
     })),
   });
 
+  global.window.ResizeObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+  }));
+
   mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosFornecedor);
 
   mock.onGet("/api-version/").reply(200, APIMockVersion);

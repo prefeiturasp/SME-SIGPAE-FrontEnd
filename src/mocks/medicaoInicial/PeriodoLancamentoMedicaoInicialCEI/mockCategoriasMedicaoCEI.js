@@ -25,7 +25,7 @@ export const mockCategoriasMedicaoCEI = [
   },
   {
     id: 4,
-    nome: "DIETA ESPECIAL - TIPO B - LANCHE",
+    nome: "DIETA ESPECIAL - TIPO B",
     ativo: true,
     uuid: "6ad79709-3611-4af3-a567-65fcf34b3d06",
   },

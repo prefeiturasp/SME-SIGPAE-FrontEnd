@@ -78,7 +78,7 @@ class Container extends Component {
     getQuantidaDeAlunosPorPeriodoEEscola(uuidEscola).then((response) => {
       let { periodosEQuantidadeAlunos } = this.state;
       if (!periodosEQuantidadeAlunos) {
-        this.setState({ periodosEQuantidadeAlunos: response.results });
+        this.setState({ periodosEQuantidadeAlunos: response.data.results });
       }
     });
   };

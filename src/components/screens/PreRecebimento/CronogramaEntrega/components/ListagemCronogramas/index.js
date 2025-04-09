@@ -22,7 +22,7 @@ import { imprimirCronograma } from "services/cronograma.service";
 import {
   usuarioEhCodaeDilog,
   usuarioEhDilogDiretoria,
-  usuarioEhDinutreDiretoria,
+  usuarioEhDilogAbastecimento,
 } from "../../../../../../helpers/utilities";
 
 const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
@@ -42,11 +42,10 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
     let uuid = cronograma.uuid;
     let numero = cronograma.numero;
     imprimirCronograma(uuid, numero)
-      .then(() => {
-        setCarregando(false);
-      })
-      .catch((error) => {
-        error.response.data.text().then((text) => toastError(text));
+      .catch((error) =>
+        error.response.data.text().then((text) => toastError(text))
+      )
+      .finally(() => {
         setCarregando(false);
       });
   };
@@ -55,9 +54,10 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
     return (
       (usuarioEhEmpresaFornecedor() &&
         cronograma.status === "Assinado e Enviado ao Fornecedor") ||
-      (usuarioEhDinutreDiretoria() &&
+      (usuarioEhDilogAbastecimento() &&
         cronograma.status === "Assinado Fornecedor") ||
-      (usuarioEhDilogDiretoria() && cronograma.status === "Assinado Dinutre")
+      (usuarioEhDilogDiretoria() &&
+        cronograma.status === "Assinado Abastecimento")
     );
   };
 
@@ -146,6 +146,7 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
 
                           {cronograma.status === "Assinado CODAE" && (
                             <span
+                              data-testid={`imprimir_${index}`}
                               className="float-start ms-1 link-acoes green"
                               onClick={() => baixarPDFCronograma(cronograma)}
                             >

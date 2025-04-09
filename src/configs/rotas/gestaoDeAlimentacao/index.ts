@@ -50,8 +50,6 @@ import RelatorioAlunosMatriculadosPage from "pages/Relatorios/RelatorioAlunosMat
 import RelatorioSolicitacoesAlimentacaoPage from "pages/Relatorios/RelatorioSolicitacoesAlimentacaoPage";
 import * as PainelPageKitLanche from "pages/SolicitacaoDeKitLanche/ContainerPage";
 import PainelPedidosSuspensaoAlimentacaoCEIRelatorio from "pages/SuspensaoAlimentacaoCEI/RelatorioPage";
-import PainelPedidosAlteracaoDeCardapioTerceirizadaPage from "pages/Terceirizada/AlteracaoDeCardapio/PainelPedidosPage";
-import PainelPedidosInclusaoDeAlimentacaoTerceirizadaPage from "pages/Terceirizada/InclusaoDeAlimentacao/PainelPedidosPage";
 import PainelPedidosInversaoDiaCardapioTerceirizadaPage from "pages/Terceirizada/InversaoDiaCardapio/PainelPedidosPage";
 import PainelPedidosSolicitacaoUnificadaTerceirizadaPage from "pages/Terceirizada/SolicitacaoUnificada/PainelPedidosPage";
 import { StatusQuestionamentosCodae } from "pages/Terceirizada/StatusSolicitacoes/StatusQuestionamentosCodae";
@@ -371,11 +369,6 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
       usuarioEhDinutreDiretoria(),
   },
   {
-    path: `/${constants.TERCEIRIZADA}/${constants.ALTERACAO_TIPO_ALIMENTACAO}`,
-    component: PainelPedidosAlteracaoDeCardapioTerceirizadaPage,
-    tipoUsuario: usuarioEhEmpresaTerceirizada(),
-  },
-  {
     path: `/${constants.TERCEIRIZADA}/${constants.INVERSAO_CARDAPIO}`,
     component: PainelPedidosInversaoDiaCardapioTerceirizadaPage,
     tipoUsuario: usuarioEhEmpresaTerceirizada(),
@@ -408,11 +401,6 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
   {
     path: `/${constants.TERCEIRIZADA}/${constants.SOLICITACAO_KIT_LANCHE_UNIFICADA}`,
     component: PainelPedidosSolicitacaoUnificadaTerceirizadaPage,
-    tipoUsuario: usuarioEhEmpresaTerceirizada(),
-  },
-  {
-    path: `/${constants.TERCEIRIZADA}/${constants.INCLUSAO_ALIMENTACAO}`,
-    component: PainelPedidosInclusaoDeAlimentacaoTerceirizadaPage,
     tipoUsuario: usuarioEhEmpresaTerceirizada(),
   },
   {

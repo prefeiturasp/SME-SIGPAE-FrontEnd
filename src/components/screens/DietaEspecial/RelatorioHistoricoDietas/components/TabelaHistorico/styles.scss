@@ -1,0 +1,119 @@
+@import "styles/variables.scss";
+
+.tabela-historico-dietas {
+  margin-top: 10px;
+
+  header {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+    color: #42474a;
+  }
+
+  article {
+    border-radius: 4px 4px 0px 0px;
+    border: 1px solid #e9eaea;
+    box-sizing: border-box;
+    margin: 10px 0 15px 0;
+
+    .grid-table-rel-dietas {
+      min-height: 48px;
+      font-size: 14px;
+      line-height: 16px;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      display: grid;
+      grid-template-columns: 0.5fr 2fr 1fr 0.8fr 0.8fr 0.2fr;
+    }
+
+    .header-table {
+      background-color: #e5e5e5 !important;
+      color: #42474a !important;
+      font-weight: bold;
+      div {
+        text-align: left;
+        display: grid;
+        align-items: center;
+        height: 100%;
+        padding-left: 8px;
+        box-shadow: 0 0 0 0.5px rgba(204, 204, 204, 0.944);
+        border-right: none !important;
+      }
+    }
+
+    .body-table {
+      font-weight: 500;
+      color: #686868;
+
+      .fas {
+        font-weight: 900;
+        font-size: 16px;
+        line-height: 18px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        letter-spacing: 0.01em;
+      }
+
+      .laranja {
+        color: $orange;
+      }
+
+      .vermelho {
+        color: $red;
+      }
+
+      .verde {
+        color: $green;
+      }
+
+      .icon-link {
+        cursor: pointer;
+      }
+
+      button {
+        background-color: transparent;
+        background-repeat: no-repeat;
+        border: none;
+        cursor: pointer;
+        overflow: hidden;
+        outline: none;
+      }
+
+      button:disabled {
+        color: #bcbcbc;
+        cursor: no-drop;
+      }
+
+      .flex-container {
+        display: flex;
+        justify-content: space-evenly;
+        padding-left: 0;
+      }
+
+      .div-tabela-historico {
+        min-height: 48px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #e9eaea;
+        text-align: left;
+        padding-left: 8px;
+        &:not(:last-child) {
+          border-right: 1px solid #e9eaea;
+        }
+      }
+
+      div:last-child {
+        border-right: 0px solid #e9eaea;
+      }
+    }
+  }
+}
+
+.centralizar {
+  justify-content: center;
+  padding-left: 0px !important;
+}

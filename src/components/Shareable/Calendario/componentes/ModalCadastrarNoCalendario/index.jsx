@@ -34,21 +34,21 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
   const [cadastrosSalvosNoDia, setCadastrosSalvosNoDia] = useState([]);
 
   useEffect(() => {
-    const cadastros_sobremesa_doce = [];
+    const cadastros_calendario = [];
     objetos
       .filter((obj) => obj.data === getDDMMYYYfromDate(event.start))
       .forEach((obj) =>
-        cadastros_sobremesa_doce.push({
+        cadastros_calendario.push({
           editais: obj.editais_uuids,
           tipo_unidades: [obj.tipo_unidade.uuid],
         })
       );
-    setCadastrosSalvosNoDia(cadastros_sobremesa_doce);
+    setCadastrosSalvosNoDia(cadastros_calendario);
   }, [event.start]);
 
   const onSubmit = async (values) => {
     const payload = {
-      cadastros_sobremesa_doce: values.cadastros_sobremesa_doce,
+      cadastros_calendario: values.cadastros_calendario,
       data: getYYYYMMDDfromDate(event.start),
     };
     const response = await setObjetoAsync(payload);
@@ -65,7 +65,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
     }
   };
 
-  const DEFAULT_CADASTROS_SOBREMESA_DOCE = {
+  const DEFAULT_CADASTROS_CALENDARIO = {
     editais: undefined,
     tipo_unidades: undefined,
   };
@@ -77,9 +77,9 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
     >
       <Form
         initialValues={{
-          cadastros_sobremesa_doce: cadastrosSalvosNoDia.length
+          cadastros_calendario: cadastrosSalvosNoDia.length
             ? cadastrosSalvosNoDia
-            : [DEFAULT_CADASTROS_SOBREMESA_DOCE],
+            : [DEFAULT_CADASTROS_CALENDARIO],
         }}
         onSubmit={onSubmit}
         mutators={{
@@ -108,7 +108,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                   <strong>{getDDMMYYYfromDate(event.start)}</strong>:
                 </p>
               </div>
-              <FieldArray name="cadastros_sobremesa_doce">
+              <FieldArray name="cadastros_calendario">
                 {({ fields }) =>
                   fields.map((name, index) => (
                     <div key={name}>
@@ -118,9 +118,8 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                             component={MultiSelect}
                             name={`${name}.editais`}
                             selected={
-                              (values.cadastros_sobremesa_doce &&
-                                values.cadastros_sobremesa_doce[index]
-                                  .editais) ||
+                              (values.cadastros_calendario &&
+                                values.cadastros_calendario[index].editais) ||
                               []
                             }
                             options={editais.map((edital) => ({
@@ -144,8 +143,8 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                             component={MultiSelect}
                             name={`${name}.tipo_unidades`}
                             selected={
-                              (values.cadastros_sobremesa_doce &&
-                                values.cadastros_sobremesa_doce[index]
+                              (values.cadastros_calendario &&
+                                values.cadastros_calendario[index]
                                   .tipo_unidades) ||
                               []
                             }
@@ -164,8 +163,8 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                             }}
                             disabled={
                               !(
-                                values.cadastros_sobremesa_doce &&
-                                values.cadastros_sobremesa_doce[index].editais
+                                values.cadastros_calendario &&
+                                values.cadastros_calendario[index].editais
                                   ?.length > 0
                               )
                             }
@@ -178,8 +177,8 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                               texto="Remover"
                               onClick={() =>
                                 form.change(
-                                  "cadastros_sobremesa_doce",
-                                  values["cadastros_sobremesa_doce"].filter(
+                                  "cadastros_calendario",
+                                  values["cadastros_calendario"].filter(
                                     (_, i) => i !== index
                                   )
                                 )
@@ -199,10 +198,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                 <Botao
                   texto="Adicionar"
                   onClick={() =>
-                    push(
-                      "cadastros_sobremesa_doce",
-                      DEFAULT_CADASTROS_SOBREMESA_DOCE
-                    )
+                    push("cadastros_calendario", DEFAULT_CADASTROS_CALENDARIO)
                   }
                   icon={BUTTON_ICON.PLUS}
                   style={BUTTON_STYLE.GREEN_OUTLINE}

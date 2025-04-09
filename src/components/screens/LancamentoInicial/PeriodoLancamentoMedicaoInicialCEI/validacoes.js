@@ -535,92 +535,6 @@ export const validacoesTabelasDietasEmeidaCemei = (
   return undefined;
 };
 
-export const validarCamposComInclusoesDeAlimentacaoSemObservacao = (
-  values,
-  categoriasDeMedicao,
-  inclusoesAutorizadas,
-  setInputsInclusaoComErro,
-  setExibirTooltipAoSalvar,
-  validacaoDiaLetivo
-) => {
-  const categoria = categoriasDeMedicao.find(
-    (categoria) => categoria.nome === "ALIMENTAÇÃO"
-  );
-  let listaInputsComInclusoes = [];
-  let diasFaixasComErro = [];
-  ["frequencia", "observacoes"].forEach((nomeRow) => {
-    for (
-      let idxInclusao = 0;
-      idxInclusao < inclusoesAutorizadas.length;
-      idxInclusao++
-    ) {
-      const inclusao = inclusoesAutorizadas[idxInclusao];
-      if (!inclusao.faixas_etarias) return;
-      for (
-        let idxFaixaEtaria = 0;
-        idxFaixaEtaria < inclusao.faixas_etarias.length;
-        idxFaixaEtaria++
-      ) {
-        const faixa_etaria = inclusao.faixas_etarias[idxFaixaEtaria];
-        let nomeInput = "";
-        if (nomeRow === "frequencia") {
-          nomeInput = `${nomeRow}__faixa_${faixa_etaria}__dia_${inclusao.dia}__categoria_${categoria.id}`;
-        } else {
-          nomeInput = `${nomeRow}__dia_${inclusao.dia}__categoria_${categoria.id}`;
-        }
-        listaInputsComInclusoes.push({
-          nome: nomeInput,
-          valor: values[nomeInput],
-        });
-      }
-    }
-  });
-  for (
-    let idxInclusao = 0;
-    idxInclusao < inclusoesAutorizadas.length;
-    idxInclusao++
-  ) {
-    const inclusao = inclusoesAutorizadas[idxInclusao];
-    const inputFrequencias = listaInputsComInclusoes.filter(
-      (inputComInclusao) =>
-        inputComInclusao.nome.includes("frequencia") &&
-        inputComInclusao.nome.includes(`dia_${inclusao.dia}`)
-    );
-    const observacaoDaColuna = listaInputsComInclusoes.find(
-      (inputComInclusao) =>
-        inputComInclusao.nome.includes("observacoes") &&
-        inputComInclusao.nome.includes(`dia_${inclusao.dia}`)
-    );
-    const frequenciasNaoPreenchidas = inputFrequencias.filter(
-      (inputFrequencia) => !inputFrequencia.valor
-    );
-    if (
-      frequenciasNaoPreenchidas.length > 0 &&
-      !observacaoDaColuna.valor &&
-      !validacaoDiaLetivo(inclusao.dia)
-    ) {
-      frequenciasNaoPreenchidas.forEach((inputFrequencia) =>
-        diasFaixasComErro.push(inputFrequencia)
-      );
-      diasFaixasComErro.push(observacaoDaColuna);
-    }
-  }
-
-  const frequenciasDessaSemana = diasFaixasComErro.filter(
-    (element) => document.getElementsByName(element.nome).length
-  );
-
-  if (frequenciasDessaSemana.length > 0) {
-    setInputsInclusaoComErro(diasFaixasComErro);
-    setExibirTooltipAoSalvar(true);
-    return true;
-  } else {
-    setInputsInclusaoComErro([]);
-    setExibirTooltipAoSalvar(false);
-    return false;
-  }
-};
-
 export const exibirTooltipDietasInclusaoDiaNaoLetivoCEI = (
   inclusoesAutorizadas,
   row,
@@ -658,15 +572,21 @@ export const campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObserva
       !inclusoesAutorizadas ||
       inclusoesAutorizadas.length === 0 ||
       !inclusoesAutorizadas.find(
-        (inclusao) => inclusao.dia.toString() === column.dia.toString()
+        (inclusao) => parseInt(inclusao.dia) === parseInt(column.dia)
       )
-    )
+    ) {
       return false;
+    }
 
     let campoNaoPreenchido = false;
     inclusoesAutorizadas.forEach((inclusao) => {
-      inclusao.faixas_etarias.forEach((faixa) => {
+      inclusao.faixas_etarias?.forEach((faixa) => {
         if (
+          Number(
+            formValuesAtualizados[
+              `matriculados__faixa_${faixa}__dia_${column.dia}__categoria_${categoria.id}`
+            ]
+          ) > 0 &&
           !formValuesAtualizados[
             `frequencia__faixa_${faixa}__dia_${column.dia}__categoria_${categoria.id}`
           ]
@@ -696,12 +616,17 @@ export const exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI = (
     formValuesAtualizados[
       `${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`
     ];
+  const matriculadosFaixaDia =
+    formValuesAtualizados[
+      `matriculados__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
 
   return (
     categoria.nome === "ALIMENTAÇÃO" &&
     row.name === "frequencia" &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
     !value &&
+    matriculadosFaixaDia &&
     inclusoesAutorizadas.some(
       (inclusao) =>
         parseInt(inclusao.dia) === parseInt(column.dia) &&
@@ -739,7 +664,10 @@ export const exibirTooltipSuspensoesAutorizadasCEI = (
     categoria.nome === "ALIMENTAÇÃO" &&
     suspensoesAutorizadas &&
     suspensoesAutorizadas.filter((suspensao) => suspensao.dia === column.dia)
-      .length > 0
+      .length > 0 &&
+    !formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ]
   );
 };
 
@@ -748,12 +676,14 @@ export const frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao = (
   column,
   categoria,
   suspensoesAutorizadas,
-  errors,
   categoriasDeMedicao
 ) => {
+  if (!Array.isArray(categoriasDeMedicao)) return false;
+
   const categoriaAlimentacao = categoriasDeMedicao.find((categoria) =>
     categoria.nome.includes("ALIMENTAÇÃO")
   );
+
   const frequenciasMesmoDia = Object.fromEntries(
     Object.entries(formValuesAtualizados).filter(
       ([key, value]) =>
@@ -764,19 +694,13 @@ export const frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao = (
         !["Mês anterior", "Mês posterior", null].includes(value)
     )
   );
-  const errosMesmoDia = Object.fromEntries(
-    Object.entries(errors).filter(([key]) =>
-      key.includes(`__dia_${column.dia}__categoria_${categoria.id}`)
-    )
-  );
 
   return (
-    Object.keys(frequenciasMesmoDia).length > 0 &&
+    Object.values(frequenciasMesmoDia).reduce((a, b) => a + b, 0) > 0 &&
     categoria.nome === "ALIMENTAÇÃO" &&
     suspensoesAutorizadas &&
     suspensoesAutorizadas.filter((suspensao) => suspensao.dia === column.dia)
       .length > 0 &&
-    Object.keys(errosMesmoDia).length === 0 &&
     !formValuesAtualizados[
       `observacoes__dia_${column.dia}__categoria_${categoria.id}`
     ]

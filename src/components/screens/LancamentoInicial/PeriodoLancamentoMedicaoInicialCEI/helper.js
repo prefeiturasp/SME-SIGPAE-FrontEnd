@@ -1,7 +1,9 @@
+import { toastError } from "components/Shareable/Toast/dialogs";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { deepCopy, ehEscolaTipoCEMEI } from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
   getSolicitacoesInclusoesAutorizadasEscola,
@@ -9,8 +11,6 @@ import {
   getSolicitacoesKitLanchesAutorizadasEscola,
   getSolicitacoesSuspensoesAutorizadasEscola,
 } from "services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
-import { deepCopy, ehEscolaTipoCEMEI } from "../../../../helpers/utilities";
 
 export const formatarPayloadPeriodoLancamentoCeiCemei = (
   values,
@@ -254,15 +254,24 @@ export const desabilitarField = (
         ),
       ];
     }
-
+    if (
+      ["Mês anterior", "Mês posterior"].includes(
+        values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+      )
+    )
+      return true;
     const resultado = inclusoesAutorizadas.some(
       (inclusao) =>
         dia === String(inclusao.dia) &&
-        (inclusao.alimentacoes.includes(
-          rowName.includes("repeticao") ? rowName.split("_")[1] : rowName
-        ) ||
+        (inclusao.alimentacoes
+          .split(", ")
+          .includes(
+            rowName.includes("repeticao") ? rowName.split("_")[1] : rowName
+          ) ||
           rowName === "frequencia")
     );
+
+    if (!resultado && ehProgramasEProjetosLocation) return true;
     if (nomeCategoria !== "ALIMENTAÇÃO") {
       if (resultado) {
         const valueDietasAutorizadasEhZero = () => {
@@ -1154,12 +1163,36 @@ export const desabilitarBotaoColunaObservacoes = (
   );
 };
 
+const existeDietaTipoA = (logQtdDietasAutorizadasEmeiDaCemei) => {
+  return !!logQtdDietasAutorizadasEmeiDaCemei.find(
+    (log) => log.classificacao === "Tipo A" && log.quantidade > 0
+  );
+};
+
+const existeDietaTipoB = (logQtdDietasAutorizadasEmeiDaCemei) => {
+  return !!logQtdDietasAutorizadasEmeiDaCemei.find(
+    (log) => log.classificacao === "Tipo B" && log.quantidade > 0
+  );
+};
+
+const existeDietaTipoAEnteralOuAminoacidos = (
+  logQtdDietasAutorizadasEmeiDaCemei
+) => {
+  return !!logQtdDietasAutorizadasEmeiDaCemei.find(
+    (log) =>
+      (log.classificacao.includes("ENTERAL") ||
+        log.classificacao.includes("AMINOÁCIDOS")) &&
+      log.quantidade > 0
+  );
+};
+
 export const categoriasParaExibir = (
   ehEmeiDaCemeiLocation,
   ehProgramasEProjetosLocation,
   response_categorias_medicao,
   response_log_dietas_autorizadas_cei,
-  ehSolicitacoesAlimentacaoLocation
+  ehSolicitacoesAlimentacaoLocation,
+  logQtdDietasAutorizadasEmeiDaCemei
 ) => {
   if (ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) {
     response_categorias_medicao = response_categorias_medicao.data.filter(
@@ -1167,6 +1200,32 @@ export const categoriasParaExibir = (
         return !categoria.nome.includes("SOLICITAÇÕES");
       }
     );
+
+    if (!existeDietaTipoA(logQtdDietasAutorizadasEmeiDaCemei)) {
+      response_categorias_medicao = response_categorias_medicao.filter(
+        (categoria) => {
+          return categoria.nome !== "DIETA ESPECIAL - TIPO A";
+        }
+      );
+    }
+
+    if (!existeDietaTipoB(logQtdDietasAutorizadasEmeiDaCemei)) {
+      response_categorias_medicao = response_categorias_medicao.filter(
+        (categoria) => {
+          return categoria.nome !== "DIETA ESPECIAL - TIPO B";
+        }
+      );
+    }
+
+    if (
+      !existeDietaTipoAEnteralOuAminoacidos(logQtdDietasAutorizadasEmeiDaCemei)
+    ) {
+      response_categorias_medicao = response_categorias_medicao.filter(
+        (categoria) => {
+          return !categoria.nome.includes("ENTERAL");
+        }
+      );
+    }
     return response_categorias_medicao;
   } else if (ehSolicitacoesAlimentacaoLocation) {
     response_categorias_medicao = response_categorias_medicao.data.filter(

@@ -16,12 +16,12 @@ export const option_status = [
     label: "Cronograma Ciente",
   },
   {
-    value: "APROVADO_DINUTRE",
-    label: "Aprovado DINUTRE",
+    value: "APROVADO_DILOG_ABASTECIMENTO",
+    label: "Aprovado Abastecimento",
   },
   {
-    value: "REPROVADO_DINUTRE",
-    label: "Reprovado DINUTRE",
+    value: "REPROVADO_DILOG_ABASTECIMENTO",
+    label: "Reprovado Abastecimento",
   },
   {
     value: "APROVADO_DILOG",
@@ -46,8 +46,8 @@ export const option_status_fornecedor = [
     value: [
       "EM_ANALISE",
       "CRONOGRAMA_CIENTE",
-      "APROVADO_DINUTRE",
-      "REPROVADO_DINUTRE",
+      "APROVADO_DILOG_ABASTECIMENTO",
+      "REPROVADO_DILOG_ABASTECIMENTO",
     ],
     label: "Em Análise",
   },

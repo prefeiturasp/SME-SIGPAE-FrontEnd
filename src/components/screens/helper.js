@@ -298,9 +298,11 @@ export const getDataHomologacao = (logs) => {
 };
 
 export const deParaStatusAltCronograma = (status) =>
-  ["Cronograma ciente", "Aprovado DINUTRE", "Reprovado DINUTRE"].includes(
-    status
-  )
+  [
+    "Cronograma ciente",
+    "Aprovado Abastecimento",
+    "Reprovado Abastecimento",
+  ].includes(status)
     ? "Em análise"
     : ["Alteração Enviada ao Fornecedor"].includes(status)
     ? "Recebida Alteração da CODAE"

@@ -138,22 +138,6 @@ const clickRadio = (testId: string) => {
 };
 
 describe("Carrega página de Cadastro de Ficha técnica", () => {
-  beforeEach(() => {
-    Object.defineProperty(window, "matchMedia", {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
-  });
-
   it("cadastra um rascunho de ficha técnica", async () => {
     await setup();
     expect(screen.getByText(/Informações Nutricionais/i)).toBeInTheDocument();

@@ -1,6 +1,5 @@
 import { combineReducers } from "redux";
 import { reducer as formReducer } from "redux-form";
-import alteracaoCardapioReducer from "./reducers/alteracaoCardapioReducer";
 import avaliarReclamacaoProdutoReducer from "./reducers/avaliarReclamacaoProduto";
 import buscaAvancadaProdutoReducer from "./reducers/buscaAvancadaProduto";
 import dietasAtivasInativasPorAlunoReducer from "./reducers/dietasAtivasInativasPorAlunoReducer";
@@ -25,7 +24,6 @@ import loadTipoAlimentacao from "./reducers/tipoAlimentacaoReducer";
 const rootReducer = combineReducers({
   form: formReducer,
   inversaoDeDiaDeCardapioForm: inversaoDeDiaDeCardapioReducer,
-  alteracaoCardapio: alteracaoCardapioReducer,
   loteForm: loteReducer,
   suspensaoDeAlimentacao: suspensaoDeAlimentacaoReducer,
   TipoDeAlimentacaoForm: loadTipoAlimentacao,

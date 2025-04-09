@@ -6,7 +6,7 @@ import {
   exibirGA,
   exibirModuloMedicaoInicial,
   usuarioComAcessoTelaEntregasDilog,
-  usuarioEhAdministradorDICAE,
+  usuarioEhAdministradorCONTRATOS,
   usuarioEhAdministradorGpCODAE,
   usuarioEhAdministradorNutriSupervisao,
   usuarioEhAdministradorRepresentanteCodae,
@@ -147,7 +147,7 @@ export const SidebarContent = () => {
   const exibirCadastros =
     usuarioEhCodaeDilog() ||
     usuarioEhMedicao() ||
-    usuarioEhAdministradorDICAE() ||
+    usuarioEhAdministradorCONTRATOS() ||
     usuarioEhDilogQualidadeOuCronograma() ||
     usuarioEhEmpresaFornecedor() ||
     usuarioEhCODAEGestaoProduto() ||
@@ -168,7 +168,7 @@ export const SidebarContent = () => {
       !usuarioEhMedicao() &&
       !usuarioEhPreRecebimento() &&
       !usuarioEhAdministradorRepresentanteCodae() &&
-      !usuarioEhAdministradorDICAE()) ||
+      !usuarioEhAdministradorCONTRATOS()) ||
     usuarioEhDinutreDiretoria();
 
   const exibirConfiguracoes =
@@ -181,6 +181,7 @@ export const SidebarContent = () => {
     !usuarioEhQualquerUsuarioEmpresa() &&
     !usuarioEhDilog() &&
     !usuarioEhOrgaoFiscalizador() &&
+    !usuarioEhDinutreDiretoria() &&
     !ehUsuarioRelatorios();
 
   const exibirMenuLogistica =

@@ -1,223 +1,230 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Field, formValueSelector, reduxForm } from "redux-form";
-import { FiltroEnum, TIPO_SOLICITACAO } from "constants/shared";
+import { Select as SelectAntd, Spin } from "antd";
+import { ASelect } from "components/Shareable/MakeField";
+import { toastError } from "components/Shareable/Toast/dialogs";
+import { FiltroEnum, TIPODECARD, TIPO_SOLICITACAO } from "constants/shared";
 import {
   filtraNoLimite,
   filtraPrioritarios,
   filtraRegular,
   ordenarPedidosDataMaisRecente,
-} from "../../../../helpers/painelPedidos";
-import { dataAtualDDMMYYYY, safeConcatOn } from "../../../../helpers/utilities";
+} from "helpers/painelPedidos";
+import {
+  dataAtualDDMMYYYY,
+  formatarOpcoesLote,
+  getError,
+  safeConcatOn,
+} from "helpers/utilities";
+import HTTP_STATUS from "http-status-codes";
+import React, { useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
 import { dreListarSolicitacoesDeAlteracaoDeCardapio } from "services/alteracaoDeCardapio";
 import { getLotesSimples } from "services/lote.service";
-import HTTP_STATUS from "http-status-codes";
-import { ASelect } from "components/Shareable/MakeField";
-import { Select as SelectAntd } from "antd";
-import { formatarOpcoesLote } from "helpers/utilities";
-import { meusDados } from "services/perfil.service";
 import { CardPendenteAcao } from "../../components/CardPendenteAcao";
 
-const { SOLICITACAO_NORMAL, SOLICITACAO_CEI, SOLICITACAO_CEMEI } =
-  TIPO_SOLICITACAO;
+export const PainelPedidos = ({ ...props }) => {
+  const [pedidosPrioritarios, setPedidosPrioritarios] = useState();
+  const [pedidosNoPrazoLimite, setPedidosNoPrazoLimite] = useState();
+  const [pedidosNoPrazoRegular, setPedidosNoPrazoRegular] = useState();
 
-class PainelPedidos extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      meusDados: null,
-      pedidosCarregados: false,
-      pedidosPrioritarios: [],
-      pedidosNoPrazoLimite: [],
-      pedidosNoPrazoRegular: [],
-      filtros: this.props.filtros || {
-        lote: undefined,
-      },
-      lotes: [],
-    };
-  }
+  const [lotes, setLotes] = useState();
+  const [loading, setLoading] = useState(true);
 
-  filtrar(filtro, filtros) {
-    Promise.all([
-      dreListarSolicitacoesDeAlteracaoDeCardapio(
-        filtro,
-        SOLICITACAO_NORMAL,
-        filtros
-      ),
-      dreListarSolicitacoesDeAlteracaoDeCardapio(
-        filtro,
-        SOLICITACAO_CEI,
-        filtros
-      ),
-      dreListarSolicitacoesDeAlteracaoDeCardapio(
-        filtro,
-        SOLICITACAO_CEMEI,
-        filtros
-      ),
-    ]).then(([response, ceiResponse, cemeiResponse]) => {
-      const results = safeConcatOn(
-        "results",
-        response,
-        ceiResponse,
-        cemeiResponse
-      );
-      let pedidosPrioritarios = ordenarPedidosDataMaisRecente(
-        filtraPrioritarios(results)
-      );
-      let pedidosNoPrazoLimite = ordenarPedidosDataMaisRecente(
-        filtraNoLimite(results)
-      );
-      let pedidosNoPrazoRegular = ordenarPedidosDataMaisRecente(
-        filtraRegular(results)
-      );
-      this.setState({
-        pedidosCarregados: true,
-        pedidosPrioritarios,
-        pedidosNoPrazoLimite,
-        pedidosNoPrazoRegular,
-      });
-    });
-  }
+  const { filtrosProps } = props;
 
-  componentDidMount() {
-    meusDados().then((response) => {
-      if (response) {
-        this.setState({ meusDados: response });
-        this.getLotesAsync(response.vinculo_atual.instituicao.uuid);
-      }
-    });
-    const paramsFromPrevPage = this.props.filtros || {
-      lote: undefined,
-    };
-    this.filtrar(FiltroEnum.SEM_FILTRO, paramsFromPrevPage);
-    if (this.props.filtros) {
-      this.props.change("lote", this.props.filtros.lote);
+  const fetchSolicitacoes = async (
+    filtro,
+    tipoSolicitacao,
+    paramsFromPrevPage
+  ) => {
+    const response = await dreListarSolicitacoesDeAlteracaoDeCardapio(
+      filtro,
+      tipoSolicitacao,
+      paramsFromPrevPage
+    );
+
+    if (response.status === HTTP_STATUS.BAD_REQUEST) {
+      toastError(
+        `Erro ao carregar alterações ${tipoSolicitacao}: ${getError(
+          response.data
+        )}`
+      );
     }
-  }
 
-  async getLotesAsync(uuid) {
-    const response = await getLotesSimples({ diretoria_regional__uuid: uuid });
+    return response;
+  };
+
+  const atualizarDadosDasAlteracoes = async (filtro, paramsFromPrevPage) => {
+    setLoading(true);
+    setPedidosPrioritarios();
+    setPedidosNoPrazoLimite();
+    setPedidosNoPrazoRegular();
+
+    const [responseAvulsas, responseCEI, responseCEMEI] = await Promise.all([
+      fetchSolicitacoes(
+        filtro,
+        TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
+        paramsFromPrevPage
+      ),
+      fetchSolicitacoes(
+        filtro,
+        TIPO_SOLICITACAO.SOLICITACAO_CEI,
+        paramsFromPrevPage
+      ),
+      fetchSolicitacoes(
+        filtro,
+        TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
+        paramsFromPrevPage
+      ),
+    ]);
+
+    const alteracoes = safeConcatOn(
+      "results",
+      responseAvulsas,
+      responseCEI,
+      responseCEMEI
+    );
+
+    const processarPedidos = (alteracoes, filtro) => {
+      return ordenarPedidosDataMaisRecente(filtro(alteracoes));
+    };
+
+    const pedidosPrioritarios = processarPedidos(
+      alteracoes,
+      filtraPrioritarios
+    );
+    const pedidosNoPrazoLimite = processarPedidos(alteracoes, filtraNoLimite);
+    const pedidosNoPrazoRegular = processarPedidos(alteracoes, filtraRegular);
+
+    setPedidosPrioritarios(pedidosPrioritarios);
+    setPedidosNoPrazoLimite(pedidosNoPrazoLimite);
+    setPedidosNoPrazoRegular(pedidosNoPrazoRegular);
+
+    setLoading(false);
+  };
+
+  const getLotesAsync = async () => {
+    const response = await getLotesSimples();
     if (response.status === HTTP_STATUS.OK) {
       const { Option } = SelectAntd;
       const lotes_ = formatarOpcoesLote(response.data.results).map((lote) => {
         return <Option key={lote.value}>{lote.label}</Option>;
       });
-      this.setState({
-        lotes: [
+      setLotes(
+        [
           <Option value="" key={0}>
             Filtrar por Lote
           </Option>,
-        ].concat(lotes_),
-      });
+        ].concat(lotes_)
+      );
     }
-  }
-
-  setFiltros(filtros) {
-    this.setState({ filtros: filtros });
-  }
-
-  render() {
-    const {
-      pedidosCarregados,
-      pedidosPrioritarios,
-      pedidosNoPrazoLimite,
-      pedidosNoPrazoRegular,
-      lotes,
-    } = this.state;
-    const { valorDoFiltro } = this.props;
-    const todosOsPedidosForamCarregados = pedidosCarregados === true;
-    return (
-      <div>
-        {!todosOsPedidosForamCarregados ? (
-          <div>Carregando...</div>
-        ) : (
-          <form onSubmit={this.props.handleSubmit}>
-            <div className="card mt-3">
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-3 font-10 my-auto">
-                    Data: {dataAtualDDMMYYYY()}
-                  </div>
-                  <div className="offset-6 col-3">
-                    <Field
-                      component={ASelect}
-                      showSearch
-                      onChange={(value) => {
-                        const filtros_ = {
-                          lote: value || undefined,
-                        };
-                        this.setFiltros(filtros_);
-                        this.filtrar(FiltroEnum.SEM_FILTRO, filtros_);
-                      }}
-                      onBlur={(e) => {
-                        e.preventDefault();
-                      }}
-                      name="lote"
-                      filterOption={(inputValue, option) =>
-                        option.props.children
-                          .toString()
-                          .toLowerCase()
-                          .includes(inputValue.toLowerCase())
-                      }
-                    >
-                      {lotes}
-                    </Field>
-                  </div>
-                </div>
-                <div className="row pt-3">
-                  <div className="col-12">
-                    <CardPendenteAcao
-                      titulo={
-                        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
-                      }
-                      tipoDeCard={"priority"}
-                      pedidos={pedidosPrioritarios}
-                      ultimaColunaLabel={"Data da Inclusão"}
-                    />
-                  </div>
-                </div>
-                {valorDoFiltro !== "hoje" && (
-                  <div className="row pt-3">
-                    <div className="col-12">
-                      <CardPendenteAcao
-                        titulo={"Solicitações no prazo limite"}
-                        tipoDeCard={"on-limit"}
-                        pedidos={pedidosNoPrazoLimite}
-                        ultimaColunaLabel={"Data da Inclusão"}
-                      />
-                    </div>
-                  </div>
-                )}
-                {valorDoFiltro !== "hoje" && (
-                  <div className="row pt-3">
-                    <div className="col-12">
-                      <CardPendenteAcao
-                        titulo={"Solicitações no prazo regular"}
-                        tipoDeCard={"regular"}
-                        pedidos={pedidosNoPrazoRegular}
-                        ultimaColunaLabel={"Data da Inclusão"}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </form>
-        )}
-      </div>
-    );
-  }
-}
-
-const PainelPedidosForm = reduxForm({
-  form: "painelPedidos",
-  enableReinitialize: true,
-})(PainelPedidos);
-const selector = formValueSelector("painelPedidos");
-const mapStateToProps = (state) => {
-  return {
-    valorDoFiltro: selector(state, "visao_por"),
   };
-};
 
-export default connect(mapStateToProps)(PainelPedidosForm);
+  const onSubmit = () => {};
+
+  const filtrar = async (filtro, filtros) => {
+    await atualizarDadosDasAlteracoes(filtro, filtros);
+  };
+
+  useEffect(() => {
+    getLotesAsync();
+    const paramsFromPrevPage = filtrosProps;
+    const filtro = FiltroEnum.SEM_FILTRO;
+    atualizarDadosDasAlteracoes(filtro, paramsFromPrevPage);
+  }, []);
+
+  const LOADING_INICIAL =
+    !pedidosPrioritarios &&
+    !pedidosNoPrazoLimite &&
+    !pedidosNoPrazoRegular &&
+    !lotes;
+
+  return (
+    <div>
+      {LOADING_INICIAL ? (
+        <div>Carregando...</div>
+      ) : (
+        <Form initialValues={{ ...filtrosProps }} onSubmit={onSubmit}>
+          {({ handleSubmit, form }) => (
+            <form onSubmit={handleSubmit}>
+              <div className="card mt-3">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-3 font-10 my-auto">
+                      Data: {dataAtualDDMMYYYY()}
+                    </div>
+                    <div className="offset-6 col-3">
+                      <Field
+                        component={ASelect}
+                        showSearch
+                        onChange={(value) => {
+                          form.change(`lote`, value);
+                          const filtros_ = {
+                            lote: value,
+                          };
+                          filtrar(FiltroEnum.SEM_FILTRO, filtros_);
+                        }}
+                        name="lote"
+                        filterOption={(inputValue, option) =>
+                          option.props.children
+                            .toString()
+                            .toLowerCase()
+                            .includes(inputValue.toLowerCase())
+                        }
+                        dataTestId="select-lote"
+                      >
+                        {lotes}
+                      </Field>
+                    </div>
+                  </div>
+                  <Spin tip="Carregando solicitações..." spinning={loading}>
+                    <div className="row pt-3">
+                      <div className="col-12">
+                        {pedidosPrioritarios && (
+                          <CardPendenteAcao
+                            titulo={
+                              "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
+                            }
+                            tipoDeCard={TIPODECARD.PRIORIDADE}
+                            pedidos={pedidosPrioritarios}
+                            colunaDataLabel={"Data da Alteração"}
+                            dataTestId="prioritario"
+                          />
+                        )}
+                      </div>
+                    </div>
+                    <div className="row pt-3">
+                      <div className="col-12">
+                        {pedidosNoPrazoLimite && (
+                          <CardPendenteAcao
+                            titulo={"Solicitações no prazo limite"}
+                            tipoDeCard={TIPODECARD.NO_LIMITE}
+                            pedidos={pedidosNoPrazoLimite}
+                            colunaDataLabel={"Data da Alteração"}
+                            dataTestId="limite"
+                          />
+                        )}
+                      </div>
+                    </div>
+                    <div className="row pt-3">
+                      <div className="col-12">
+                        {pedidosNoPrazoRegular && (
+                          <CardPendenteAcao
+                            titulo={"Solicitações no prazo regular"}
+                            tipoDeCard={TIPODECARD.REGULAR}
+                            pedidos={pedidosNoPrazoRegular}
+                            colunaDataLabel={"Data da Alteração"}
+                            dataTestId="regular"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </Spin>
+                </div>
+              </div>
+            </form>
+          )}
+        </Form>
+      )}
+    </div>
+  );
+};

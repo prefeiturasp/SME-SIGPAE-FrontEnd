@@ -15,10 +15,12 @@ export const CardMedicaoPorStatus = ({ ...props }) => {
     setStatusSelecionado,
     total,
     resetForm,
+    dataTestId,
   } = props;
 
   return (
     <div
+      data-testid={dataTestId}
       onClick={() => {
         if (total) {
           if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {

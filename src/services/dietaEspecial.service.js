@@ -184,21 +184,11 @@ export const escolaInativaDietaEspecial = async (uuid, payload) => {
 
 export const terceirizadaMarcaConferencia = async (uuid, endpoint) => {
   const url = `${API_URL}/${endpoint}/${uuid}/marcar-conferida/`;
-  let status = 0;
-  return fetch(url, {
-    method: "PATCH",
-    headers: authToken,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error;
-    });
+  const response = await axios.patch(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const CODAEAutorizaInativacaoDietaEspecial = async (uuid) => {
@@ -371,6 +361,15 @@ export const getFiltrosRelatorioDietasEspeciais = async (params) => {
 
 export const getSolicitacoesRelatorioDietasEspeciais = async (params) => {
   const url = `/solicitacoes-dieta-especial/relatorio-dieta-especial-terceirizada/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
+export const getSolicitacoesRelatorioHistoricoDietas = async (params) => {
+  const url = `/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
