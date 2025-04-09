@@ -391,5 +391,5 @@ export const WEEK = [
   },
 ];
 
-export const USUARIO_PODE_ATUALIZAR_FOTO_DEV_HOM = "6769195";
-export const USUARIO_PODE_ATUALIZAR_FOTO_PROD = "sigpae.amcom";
+export const USUARIO_PODE_ATUALIZAR_FOTO_DEV_HOM = "7924488";
+export const USUARIO_PODE_ATUALIZAR_FOTO_PROD = "marlon.amcom";
