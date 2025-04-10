@@ -2,6 +2,7 @@ import {
   AnaliseFichaTecnicaPayload,
   FichaTecnicaPayload,
 } from "components/screens/PreRecebimento/FichaTecnica/interfaces";
+import { ErrorHandlerFunction } from "./service-helpers";
 import axios from "./_base";
 import {
   ResponseDadosCronogramaFichaTecnica,
@@ -58,8 +59,14 @@ export const cadastrarFichaTecnicaDoRascunho = async (
 // Service retorna vários status diferente dentro dos resultados, filtros são apenas strings
 export const getDashboardFichasTecnicas = async (
   params: FiltrosDashboardFichasTecnicas = null
-): Promise<ResponseFichasTecnicasDashboard> =>
-  await axios.get(`/ficha-tecnica/dashboard/`, { params });
+): Promise<ResponseFichasTecnicasDashboard> => {
+  const url = `/ficha-tecnica/dashboard/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 // Service retorna apenas um status nos resultados, filtros em formatos de array são transformados em parametros de URL
 export const getDashboardFichasTecnicasPorStatus = async (

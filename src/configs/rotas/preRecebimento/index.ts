@@ -66,8 +66,8 @@ import FichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/FichaTecnicaPage
 import LayoutEmbalagemPage from "pages/PreRecebimento/LayoutEmbalagemPage";
 import PainelAprovacoesPage from "pages/PreRecebimento/PainelAprovacoesPage";
 import PainelDocumentosRecebimentoPage from "pages/PreRecebimento/PainelDocumentosRecebimentoPage";
-import PainelFichasTecnicasPage from "pages/PreRecebimento/PainelFichasTecnicasPage";
-import PainelLayoutEmbalagemPage from "pages/PreRecebimento/PainelLayoutEmbalagemPage";
+import { PainelFichasTecnicasPage } from "pages/PreRecebimento/PainelFichasTecnicasPage";
+import { PainelLayoutEmbalagemPage } from "pages/PreRecebimento/PainelLayoutEmbalagemPage";
 import RelatorioCronogramaPage from "pages/PreRecebimento/Relatorios/RelatorioCronogramaPage";
 import SolicitacaoAlteracaoCronogramaFornecedorPage from "pages/PreRecebimento/SolicitacaoAlteracaoCronogramaFornecedorPage";
 import SolicitacaoAlteracaoCronogramaPage from "pages/PreRecebimento/SolicitacaoAlteracaoCronogramaPage";
