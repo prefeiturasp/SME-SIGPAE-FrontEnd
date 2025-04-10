@@ -1,11 +1,19 @@
-import React from "react";
-import Page from "components/Shareable/Page/Page";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import { PAINEL_LAYOUT_EMBALAGEM, PRE_RECEBIMENTO } from "configs/constants";
-import { getDashboardLayoutEmbalagem } from "services/layoutEmbalagem.service";
+import { CARD_ENVIADOS_PARA_CORRECAO } from "components/screens/PreRecebimento/PainelLayoutEmbalagem/constants";
 import { SolicitacoesLayoutStatusGenerico } from "components/screens/SolicitacoesLayoutStatusGenerico";
-import { CARD_ENVIADOS_PARA_CORRECAO } from "../../../components/screens/PreRecebimento/PainelLayoutEmbalagem/constants";
-import { DETALHAR_LAYOUT_EMBALAGEM_SOLICITACAO_ALTERACAO } from "../../../configs/constants";
+import Breadcrumb from "components/Shareable/Breadcrumb";
+import Page from "components/Shareable/Page/Page";
+import {
+  DETALHAR_LAYOUT_EMBALAGEM,
+  DETALHAR_LAYOUT_EMBALAGEM_SOLICITACAO_ALTERACAO,
+  PAINEL_LAYOUT_EMBALAGEM,
+  PRE_RECEBIMENTO,
+} from "configs/constants";
+import {
+  usuarioEhCronograma,
+  usuarioEhDilogAbastecimento,
+} from "helpers/utilities";
+import React from "react";
+import { getDashboardLayoutEmbalagem } from "services/layoutEmbalagem.service";
 
 const atual = {
   href: CARD_ENVIADOS_PARA_CORRECAO.href,
@@ -32,6 +40,13 @@ export default () => {
     },
   ];
 
+  const getURLBaseItem = () => {
+    if (usuarioEhDilogAbastecimento() || usuarioEhCronograma()) {
+      return `/${PRE_RECEBIMENTO}/${DETALHAR_LAYOUT_EMBALAGEM}`;
+    }
+    return `/${PRE_RECEBIMENTO}/${DETALHAR_LAYOUT_EMBALAGEM_SOLICITACAO_ALTERACAO}`;
+  };
+
   return (
     <Page
       titulo={atual.titulo}
@@ -46,7 +61,7 @@ export default () => {
         getSolicitacoes={getDashboardLayoutEmbalagem}
         params={paramsDefault}
         limit={limit}
-        urlBaseItem={`/${PRE_RECEBIMENTO}/${DETALHAR_LAYOUT_EMBALAGEM_SOLICITACAO_ALTERACAO}`}
+        urlBaseItem={getURLBaseItem()}
       />
     </Page>
   );
