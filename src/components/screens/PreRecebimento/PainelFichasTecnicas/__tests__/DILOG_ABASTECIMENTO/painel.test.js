@@ -1,10 +1,17 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "constants/shared";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosDILOGABASTECIMENTO } from "mocks/meusDados/CODAE/DILOGABASTECIMENTO";
 import { mockDashboardDILOGABASTECIMENTO } from "mocks/services/fichaTecnica.service/DILOGABASTECIMENTO/dashboard.ts";
+import { mockDashboardFiltradoDILOGABASTECIMENTO } from "mocks/services/fichaTecnica.service/DILOGABASTECIMENTO/dashboardFiltradoPorNumeroFicha.ts";
 import { PainelFichasTecnicasPage } from "pages/PreRecebimento/PainelFichasTecnicasPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
@@ -91,5 +98,69 @@ describe("Teste Painel Ficha Técnica - Usuário DILOG_ABASTECIMENTO", () => {
       "href",
       expect.stringContaining("detalhar-ficha-tecnica")
     );
+  });
+
+  it("testa busca por nº da ficha técnica", async () => {
+    const divInputBuscaPorNumeroFichaTecnica = screen.getByTestId(
+      "div-input-numero-ficha"
+    );
+    const inputElement =
+      divInputBuscaPorNumeroFichaTecnica.querySelector("input");
+    await waitFor(() => {
+      fireEvent.change(inputElement, {
+        target: { value: "FT070" },
+      });
+      mock
+        .onGet("/ficha-tecnica/dashboard/")
+        .reply(200, mockDashboardFiltradoDILOGABASTECIMENTO);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("FT006 - BOLO INDIVIDUAL - JP Alimentos")
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("testa busca por nome do produto", async () => {
+    const divInputBuscaPorNomeProduto = screen.getByTestId(
+      "div-input-nome-produto"
+    );
+    const inputElement = divInputBuscaPorNomeProduto.querySelector("input");
+    await waitFor(() => {
+      fireEvent.change(inputElement, {
+        target: { value: "CARAMBOLA AMARELA" },
+      });
+      mock
+        .onGet("/ficha-tecnica/dashboard/")
+        .reply(200, mockDashboardFiltradoDILOGABASTECIMENTO);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("FT006 - BOLO INDIVIDUAL - JP Alimentos")
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("testa busca por nome do fornecedor", async () => {
+    const divInputBuscaPorNomeFornecedor = screen.getByTestId(
+      "div-input-nome-empresa"
+    );
+    const inputElement = divInputBuscaPorNomeFornecedor.querySelector("input");
+    await waitFor(() => {
+      fireEvent.change(inputElement, {
+        target: { value: "JP Alimentos" },
+      });
+      mock
+        .onGet("/ficha-tecnica/dashboard/")
+        .reply(200, mockDashboardFiltradoDILOGABASTECIMENTO);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("FT006 - BOLO INDIVIDUAL - JP Alimentos")
+      ).not.toBeInTheDocument();
+    });
   });
 });
