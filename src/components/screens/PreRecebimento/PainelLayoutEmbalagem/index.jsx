@@ -152,6 +152,7 @@ export default () => {
                     <Field
                       component={InputText}
                       name="numero_cronograma"
+                      dataTestIdDiv="div-input-numero-cronograma"
                       placeholder="Filtrar por N° do Cronograma"
                       inputOnChange={(e) =>
                         filtrarLayouts(e.target.value, form.getState().values)
@@ -162,6 +163,7 @@ export default () => {
                     <Field
                       component={InputText}
                       name="nome_produto"
+                      dataTestIdDiv="div-input-nome-produto"
                       placeholder="Filtrar por Nome do Produto"
                       inputOnChange={(e) =>
                         filtrarLayouts(e.target.value, form.getState().values)
@@ -172,6 +174,7 @@ export default () => {
                     <Field
                       component={InputText}
                       name="nome_fornecedor"
+                      dataTestIdDiv="div-input-nome-fornecedor"
                       placeholder="Filtrar por Nome do Fornecedor"
                       inputOnChange={(e) =>
                         filtrarLayouts(e.target.value, form.getState().values)
