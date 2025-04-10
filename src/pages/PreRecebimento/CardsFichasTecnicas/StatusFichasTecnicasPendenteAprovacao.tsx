@@ -1,14 +1,12 @@
 import React from "react";
 import Page from "components/Shareable/Page/Page";
 import Breadcrumb from "components/Shareable/Breadcrumb";
-import {
-  PAINEL_FICHAS_TECNICAS,
-  PRE_RECEBIMENTO,
-  ANALISAR_FICHA_TECNICA,
-} from "configs/constants";
+import { PAINEL_FICHAS_TECNICAS, PRE_RECEBIMENTO } from "configs/constants";
 import { CARD_PENDENTES_APROVACAO } from "components/screens/PreRecebimento/PainelFichasTecnicas/constants";
 import { getDashboardFichasTecnicasPorStatus } from "services/fichaTecnica.service";
 import { SolicitacoesFichaTecnicaStatusGenerico } from "components/screens/SolicitacoesFichaTecnicaStatusGenerico";
+import { gerarLinkItemFichaTecnica } from "components/screens/PreRecebimento/PainelFichasTecnicas/helpers";
+import { FichaTecnicaDashboard } from "interfaces/pre_recebimento.interface";
 
 const atual = {
   href: CARD_PENDENTES_APROVACAO.href,
@@ -49,7 +47,9 @@ export default () => {
         getSolicitacoes={getDashboardFichasTecnicasPorStatus}
         params={paramsDefault}
         limit={limit}
-        urlBaseItem={`/${PRE_RECEBIMENTO}/${ANALISAR_FICHA_TECNICA}`}
+        urlBaseItem={gerarLinkItemFichaTecnica({
+          item: { status: "Enviada para Análise" },
+        } as unknown as FichaTecnicaDashboard)}
       />
     </Page>
   );
