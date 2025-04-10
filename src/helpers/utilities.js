@@ -556,6 +556,8 @@ export const usuarioComAcessoAoPainelEmbalagens = () => {
     PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
     PERFIL.ADMINISTRADOR_CODAE_GABINETE,
     PERFIL.DILOG_DIRETORIA,
+    PERFIL.DILOG_ABASTECIMENTO,
+    PERFIL.DILOG_CRONOGRAMA,
   ].includes(localStorage.getItem("perfil"));
 };
 
@@ -582,6 +584,8 @@ export const usuarioComAcessoAoPainelFichasTecnicas = () => {
     PERFIL.ADMINISTRADOR_CODAE_GABINETE,
     PERFIL.DILOG_DIRETORIA,
     PERFIL.DILOG_QUALIDADE,
+    PERFIL.DILOG_ABASTECIMENTO,
+    PERFIL.DILOG_CRONOGRAMA,
   ].includes(localStorage.getItem("perfil"));
 };
 
