@@ -26,6 +26,8 @@ interface TabelaHistoricoProps {
   setLoadingDietas: any;
   setDietasEspeciais: any;
   count: number;
+  setCount: any;
+  values: any;
 }
 
 interface RowWithCollapseProps {
@@ -39,22 +41,29 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
 }) => {
   const [paginaAtual, setPaginaAtual] = useState(1);
 
-  const { dietasEspeciais, setDietasEspeciais, setLoadingDietas, count } =
-    props;
+  const {
+    dietasEspeciais,
+    setDietasEspeciais,
+    setLoadingDietas,
+    count,
+    setCount,
+    values,
+  } = props;
 
   const PAGE_SIZE = 10;
 
-  const onChangePage = async (page) => {
+  const onChangePage = async (page, values) => {
     setPaginaAtual(page);
     setLoadingDietas(true);
     let params = {
       page_size: PAGE_SIZE,
       page: page,
-      data: "12/02/2024",
+      ...values,
     };
     const response = await getSolicitacoesRelatorioHistoricoDietas(params);
     if (response.status === HTTP_STATUS.OK) {
       setDietasEspeciais(response.data);
+      setCount(response.data.count);
     } else {
       toastError(
         "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde."
@@ -91,7 +100,7 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
         {renderRows()}
       </article>
       <Paginacao
-        onChange={(page) => onChangePage(page)}
+        onChange={(page) => onChangePage(page, values)}
         total={count}
         pageSize={PAGE_SIZE}
         current={paginaAtual}

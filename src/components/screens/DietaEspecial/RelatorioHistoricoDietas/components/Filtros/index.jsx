@@ -4,31 +4,38 @@ import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
 import Select from "components/Shareable/Select";
+import { InputComData } from "components/Shareable/DatePicker";
 import CollapseFiltros from "components/Shareable/CollapseFiltros";
 import { toastError } from "components/Shareable/Toast/dialogs";
-import { usuarioEhDRE } from "helpers/utilities";
+import { required } from "helpers/fieldValidators";
 import {
   getUnidadesEducacionaisComCodEol,
-  getSolicitacoesRelatorioDietasEspeciais,
+  getSolicitacoesRelatorioHistoricoDietas,
+  getClassificacoesDietaEspecial,
 } from "services/dietaEspecial.service";
-import { getTiposGestao } from "services/escola.service";
+import {
+  getTiposGestao,
+  buscaPeriodosEscolares,
+} from "services/escola.service";
+import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
+import { getLotesSimples } from "services/lote.service";
 import "./styles.scss";
 
 export const Filtros = ({ ...props }) => {
   const {
-    filtros,
-    meusDados,
     setDietasEspeciais,
-    setUnidadesEducacionais,
-    unidadesEducacionais,
     onClear,
     setLoadingDietas,
     setValuesForm,
-    getFiltrosRelatorioDietasEspeciaisAsync,
-    setRenderGraficosOuTabela,
+    setCount,
   } = props;
 
   const [tiposGestao, setTiposGestao] = useState(null);
+  const [tiposUnidades, setTiposUnidades] = useState(null);
+  const [lotes, setLotes] = useState(null);
+  const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
+  const [periodos, setPeriodos] = useState(null);
+  const [classificacoesDieta, setClassificacoesDieta] = useState(null);
 
   const getUnidadesEducacionaisAsync = async (values) => {
     setUnidadesEducacionais([]);
@@ -48,41 +55,81 @@ export const Filtros = ({ ...props }) => {
 
   const getTiposGestaoAsync = async () => {
     const response = await getTiposGestao();
-    if (response.status === HTTP_STATUS.OK) {
-      setTiposGestao(response.data.results);
+    if (response.results.length > 0) {
+      setTiposGestao(response.results);
     } else {
       toastError("Erro ao buscar tipos de gestão");
     }
   };
 
-  const LOADING = !filtros || !meusDados;
+  const getTiposUnidadesUEAsync = async () => {
+    const response = await getTiposUnidadeEscolar();
+    if (response.status === HTTP_STATUS.OK) {
+      setTiposUnidades(response.data.results);
+    } else {
+      toastError("Erro ao buscar tipos de unidade educacional");
+    }
+  };
 
-  const PAGE_SIZE = 10;
-  const PARAMS = { limit: PAGE_SIZE, offset: 0 };
+  const getLotesAsync = async () => {
+    const response = await getLotesSimples();
+    if (response.status === HTTP_STATUS.OK) {
+      setLotes(response.data.results);
+    } else {
+      toastError("Erro ao buscar lotes");
+    }
+  };
+
+  const getPeriodosAsync = async () => {
+    const response = await buscaPeriodosEscolares();
+    if (response.status === HTTP_STATUS.OK) {
+      setPeriodos(response.data.results);
+    } else {
+      toastError("Erro ao buscar períodos escolares");
+    }
+  };
+
+  const getClassificacoesDietaAsync = async () => {
+    const response = await getClassificacoesDietaEspecial();
+    if (response.status === HTTP_STATUS.OK) {
+      setClassificacoesDieta(response.results);
+    } else {
+      toastError("Erro ao buscar classificações de dieta");
+    }
+  };
+
+  const carregaFiltros = async () => {
+    getTiposGestaoAsync();
+    getTiposUnidadesUEAsync();
+    getLotesAsync();
+    getPeriodosAsync();
+    getClassificacoesDietaAsync();
+  };
 
   useEffect(() => {
-    getTiposGestaoAsync();
+    carregaFiltros();
   }, []);
 
+  const PAGE_SIZE = 10;
+  const PARAMS = {
+    page_size: PAGE_SIZE,
+    page: 1,
+  };
+
+  const maxDate = new Date();
+  maxDate.setDate(maxDate.getDate() - 1);
+
   const onSubmit = async (values) => {
-    setRenderGraficosOuTabela("Gráficos");
-    const filtrosValues = {
-      ...values,
-      status_selecionado: "AUTORIZADAS",
-    };
-    if (usuarioEhDRE() && filtros.lotes.length === 1) {
-      filtrosValues["lote"] = filtros.lotes[0].uuid;
-    }
-    setValuesForm(filtrosValues);
-    setLoadingDietas(true);
+    setValuesForm(values);
     let params = {
       ...PARAMS,
-      ...filtrosValues,
+      ...values,
     };
-    const response = await getSolicitacoesRelatorioDietasEspeciais(params);
-    params["relatorio_dietas_autorizadas"] = true;
+    setLoadingDietas(true);
+    const response = await getSolicitacoesRelatorioHistoricoDietas(params);
     if (response.status === HTTP_STATUS.OK) {
       setDietasEspeciais(response.data);
+      setCount(response.data.count);
     } else {
       toastError(
         "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde."
@@ -91,28 +138,28 @@ export const Filtros = ({ ...props }) => {
     setLoadingDietas(false);
   };
 
+  const LOADEDFILTROS =
+    tiposGestao && tiposUnidades && lotes && periodos && classificacoesDieta;
+
   return (
     <CollapseFiltros
       onSubmit={onSubmit}
       onClear={onClear}
       titulo="Filtrar Resultados"
-      manterFiltros={["status_selecionado"]}
     >
       {(values, form) => (
-        <Spin tip="Carregando filtros..." spinning={LOADING}>
-          {filtros && (
+        <Spin tip="Carregando filtros..." spinning={!LOADEDFILTROS}>
+          {LOADEDFILTROS && (
             <>
               <div className="row">
                 <div className="col-4">
-                  <label className="label fw-normal pb-2 pt-2">
-                    Tipo de Gestão
-                  </label>
                   <Field
+                    label="Tipo de Gestão"
                     component={Select}
                     name="tipo_gestao"
-                    placeholder="Selecione o tipo de gestão"
+                    placeholder="Selecione um tipo de gestão"
                     options={[
-                      { nome: "Selecione o tipo de gestão", uuid: "" },
+                      { nome: "Selecione um tipo de gestão", uuid: "" },
                     ].concat(
                       tiposGestao.map((tipoGestao) => ({
                         nome: tipoGestao.nome,
@@ -125,11 +172,6 @@ export const Filtros = ({ ...props }) => {
                       form.reset({
                         tipo_gestao: value,
                       });
-                      const values_ = form.getState().values;
-                      await getFiltrosRelatorioDietasEspeciaisAsync({
-                        ...values_,
-                        status_selecionado: "AUTORIZADAS",
-                      });
                     }}
                   />
                 </div>
@@ -139,10 +181,10 @@ export const Filtros = ({ ...props }) => {
                   </label>
                   <Field
                     component={StatefulMultiSelect}
-                    name="tipo_unidade"
-                    options={filtros.tipos_unidades.map((tipo_unidade) => ({
-                      label: tipo_unidade.nome,
-                      value: tipo_unidade.uuid,
+                    name="tipos_unidades_selecionadas"
+                    options={tiposUnidades.map((tiposUnidade) => ({
+                      label: tiposUnidade.iniciais,
+                      value: tiposUnidade.uuid,
                     }))}
                     selected={values.tipos_unidades_selecionadas || []}
                     onSelectedChanged={(value) =>
@@ -158,28 +200,19 @@ export const Filtros = ({ ...props }) => {
                   />
                 </div>
                 <div className="col-4">
-                  <label className="label fw-normal pb-2 pt-2">
-                    DRE e Lote
-                  </label>
                   <Field
+                    label="DRE e Lote"
                     component={Select}
                     name="lote"
-                    placeholder="Selecione a DRE/Lote"
-                    options={
-                      filtros.lotes.length === 1
-                        ? [
-                            {
-                              nome: filtros.lotes[0].nome,
-                              uuid: filtros.lotes[0].uuid,
-                            },
-                          ]
-                        : [{ nome: "Selecione a DRE/Lote", uuid: "" }].concat(
-                            filtros.lotes.map((lote) => ({
-                              nome: lote.nome,
-                              uuid: lote.uuid,
-                            }))
-                          )
-                    }
+                    required
+                    validate={required}
+                    placeholder="Selecione DRE/Lote"
+                    options={[{ nome: "Selecione DRE/Lote", uuid: "" }].concat(
+                      lotes.map((lote) => ({
+                        nome: lote.nome,
+                        uuid: lote.uuid,
+                      }))
+                    )}
                     naoDesabilitarPrimeiraOpcao
                     onChangeEffect={async (e) => {
                       const value = e.target.value;
@@ -197,21 +230,22 @@ export const Filtros = ({ ...props }) => {
                 </div>
               </div>
               <div className="row mt-3">
-                <div className="col-12">
-                  <label className="label fw-normal pb-2 pt-2">
-                    Unidades Educacionais
-                  </label>
+                <div className="col-8">
                   <Spin
                     tip="Carregando unidades educacionais..."
                     spinning={
                       values.lote !== undefined &&
-                      values.lote.length > 0 &&
                       unidadesEducacionais.length === 0
                     }
                   >
+                    <label className="label fw-normal pb-2 pt-2">
+                      Unidade Educacional
+                    </label>
                     <Field
+                      label="Unidades Educacionais"
                       component={StatefulMultiSelect}
-                      name="unidades_educacionais"
+                      name="unidades_educacionais_selecionadas"
+                      placeholder="Selecione as Unidades Educacionais"
                       options={unidadesEducacionais}
                       selected={values.unidades_educacionais_selecionadas || []}
                       onSelectedChanged={(value) => {
@@ -222,25 +256,61 @@ export const Filtros = ({ ...props }) => {
                       }}
                       overrideStrings={{
                         search: "Busca",
-                        selectSomeItems: "Selecione unidades educacionais",
+                        selectSomeItems: "Selecione as Unidades Educacionais",
                         allItemsAreSelected:
                           "Todos as unidades estão selecionadas",
                         selectAll: "Todas",
                       }}
-                      disabled={filtros.lotes.length > 1 && !values.lote}
+                      disabled={!values.lote}
                     />
                   </Spin>
+                </div>
+                <div className="col-4">
+                  <Field
+                    component={InputComData}
+                    label="Data"
+                    required
+                    validate={required}
+                    name="data"
+                    placeholder="Dia de referência"
+                    maxDate={maxDate}
+                    minDate={null}
+                  />
                 </div>
               </div>
               <div className="row mt-3">
                 <div className="col-4">
                   <label className="label fw-normal pb-2 pt-2">
-                    Classificação da dieta
+                    Períodos da Unidade
                   </label>
                   <Field
                     component={StatefulMultiSelect}
-                    name="classificacoes"
-                    options={filtros.classificacoes.map((classificacao) => ({
+                    name="periodos_escolares_selecionadas"
+                    options={periodos.map((periodo) => ({
+                      label: periodo.nome,
+                      value: periodo.uuid,
+                    }))}
+                    selected={values.periodos_escolares_selecionadas || []}
+                    onSelectedChanged={(value) =>
+                      form.change("periodos_escolares_selecionadas", value)
+                    }
+                    overrideStrings={{
+                      search: "Busca",
+                      selectSomeItems: "Selecione os períodos",
+                      allItemsAreSelected:
+                        "Todos os períodos estão selecionados",
+                      selectAll: "Todos",
+                    }}
+                  />
+                </div>
+                <div className="col-4">
+                  <label className="label fw-normal pb-2 pt-2">
+                    Classificação das Dietas
+                  </label>
+                  <Field
+                    component={StatefulMultiSelect}
+                    name="classificacoes_selecionadas"
+                    options={classificacoesDieta.map((classificacao) => ({
                       label: classificacao.nome,
                       value: classificacao.id,
                     }))}
@@ -250,64 +320,12 @@ export const Filtros = ({ ...props }) => {
                     }
                     overrideStrings={{
                       search: "Busca",
-                      selectSomeItems: "Selecione as classificações de dietas",
+                      selectSomeItems: "Selecione a classificação",
                       allItemsAreSelected:
-                        "Todos as classificações estão selecionadas",
-                      selectAll: "Todas",
-                    }}
-                  />
-                </div>
-                <div className="col-8">
-                  <label className="label fw-normal pb-2 pt-2">
-                    Relação por Diagnóstico
-                  </label>
-                  <Field
-                    component={StatefulMultiSelect}
-                    name="alergias_intolerancias"
-                    options={filtros.alergias_intolerancias.map(
-                      (alergia_intolerancia) => ({
-                        label: alergia_intolerancia.nome,
-                        value: alergia_intolerancia.id,
-                      })
-                    )}
-                    selected={values.alergias_intolerancias_selecionadas || []}
-                    onSelectedChanged={(value) =>
-                      form.change("alergias_intolerancias_selecionadas", value)
-                    }
-                    overrideStrings={{
-                      search: "Busca",
-                      selectSomeItems: "Selecione diagnósticos",
-                      allItemsAreSelected:
-                        "Todos os diagnósticos estão selecionados",
+                        "Todas as classificações estão selecionadas",
                       selectAll: "Todos",
                     }}
                   />
-                </div>
-              </div>
-              <div className="mt-4 motivos-alteracao-ue col-12">
-                <div>
-                  <span>
-                    <Field
-                      component={"input"}
-                      type="checkbox"
-                      name="cei_polo"
-                      className="ckbox-motivo-alteracao-ue"
-                    />
-                  </span>
-                  <span className="label-motivo-alteracao-ue">CEI POLO</span>
-                </div>
-                <div>
-                  <span>
-                    <Field
-                      component={"input"}
-                      type="checkbox"
-                      name="recreio_nas_ferias"
-                      className="ckbox-recreio-nas-ferias"
-                    />
-                  </span>
-                  <span className="label-motivo-alteracao-ue">
-                    RECREIO NAS FÉRIAS
-                  </span>
                 </div>
               </div>
             </>
