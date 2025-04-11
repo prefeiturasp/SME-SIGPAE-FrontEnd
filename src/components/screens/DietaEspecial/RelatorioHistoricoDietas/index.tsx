@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Spin } from "antd";
 import Botao from "components/Shareable/Botao";
 import {
@@ -6,46 +6,28 @@ import {
   BUTTON_STYLE,
 } from "components/Shareable/Botao/constants";
 import { TabelaHistorico } from "./components/TabelaHistorico";
-import HTTP_STATUS from "http-status-codes";
 import "./styles.scss";
-import { toastError } from "components/Shareable/Toast/dialogs";
-
-import { getSolicitacoesRelatorioHistoricoDietas } from "services/dietaEspecial.service";
+import { Filtros } from "./components/Filtros";
 
 export const RelatorioHistoricoDietas = () => {
+  const [valuesForm, setValuesForm] = useState(null);
   const [dietasEspeciais, setDietasEspeciais] = useState(null);
   const [loadingDietas, setLoadingDietas] = useState(false);
   const [count, setCount] = useState(0);
-
-  const PAGE_SIZE = 10;
-
-  const carregaPrimeiraPagina = async () => {
-    setLoadingDietas(true);
-    let params = {
-      page_size: PAGE_SIZE,
-      page: 1,
-      data: "12/02/2024",
-    };
-    const response = await getSolicitacoesRelatorioHistoricoDietas(params);
-    if (response.status === HTTP_STATUS.OK) {
-      setDietasEspeciais(response.data);
-      setCount(response.data.count);
-    } else {
-      toastError(
-        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde."
-      );
-    }
-    setLoadingDietas(false);
-  };
-
-  useEffect(() => {
-    carregaPrimeiraPagina();
-  }, []);
 
   return (
     <div className="card mt-3">
       <div className="card-body">
         <Spin spinning={loadingDietas} tip="Carregando histórico...">
+          <Filtros
+            onClear={() => {
+              setDietasEspeciais(null);
+            }}
+            setDietasEspeciais={setDietasEspeciais}
+            setValuesForm={setValuesForm}
+            setCount={setCount}
+            setLoadingDietas={setLoadingDietas}
+          />
           {dietasEspeciais && (
             <>
               <div className="row">
@@ -65,6 +47,8 @@ export const RelatorioHistoricoDietas = () => {
                 setLoadingDietas={setLoadingDietas}
                 setDietasEspeciais={setDietasEspeciais}
                 count={count}
+                setCount={setCount}
+                values={valuesForm}
               />
               <div className="row">
                 <div className="col-12 text-end">
