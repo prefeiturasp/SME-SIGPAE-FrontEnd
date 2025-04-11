@@ -37,7 +37,6 @@ export const listarQuestoesPorProduto = async (
   params: URLSearchParams
 ): Promise<ResponseListarQuestoesPorProduto> => {
   try {
-    console.log(params);
     return await axios.get("/questoes-por-produto/", { params });
   } catch (error) {
     toastError(getMensagemDeErro(error.response.status));
