@@ -41,6 +41,9 @@ jest.mock("react-toastify", () => ({
 }));
 
 describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
+  const escolaUuid =
+    mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
+
   beforeEach(async () => {
     process.env.IS_TEST = true;
 
@@ -56,13 +59,11 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
       .reply(200, mockRascunhosAlteracaoCardapioEMEF);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/3c32be8e-f191-468d-a4e2-3dd8751e5e7a/"
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
       )
       .reply(200, mockGetVinculosMotivoInclusaoEspecificoEMEF);
     mock
-      .onGet(
-        "/quantidade-alunos-por-periodo/escola/3c32be8e-f191-468d-a4e2-3dd8751e5e7a/"
-      )
+      .onGet(`/quantidade-alunos-por-periodo/escola/${escolaUuid}/`)
       .reply(200, mockQuantidadeAlunosPorPeriodoEMEF);
     mock
       .onPost("/alteracoes-cardapio/")
