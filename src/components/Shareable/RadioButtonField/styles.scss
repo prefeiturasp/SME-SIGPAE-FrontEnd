@@ -10,3 +10,23 @@
     padding-bottom: 16px;
   }
 }
+
+.modo-tabela{
+  display: flex;
+  justify-content: space-between;
+  
+  .label-radio{
+    font-weight: bold;
+    display: inline;
+    font-size: 14px !important;
+    margin: 0;
+
+    .required-asterisk{
+      display: none;
+    }
+  }
+
+  .container-radio{
+    padding-bottom: 0;
+  }
+}
