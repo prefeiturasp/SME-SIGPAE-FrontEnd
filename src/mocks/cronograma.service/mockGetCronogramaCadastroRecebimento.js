@@ -1,0 +1,32 @@
+export const mockCronogramaCadastroRecebimento = {
+  results: {
+    uuid: "10e0729c-eaec-4f30-a544-898fc4b880d9",
+    fornecedor: "ZZZZZZZ",
+    contrato: "111111111",
+    pregao_chamada_publica: "",
+    ata: "777",
+    produto: "FAROFA",
+    marca: "Agrolaf",
+    qtd_total_programada: "301,00 kg",
+    peso_liquido_embalagem_primaria: "200.0 kg",
+    peso_liquido_embalagem_secundaria: "100.0 kg",
+    embalagem_primaria: "Info1",
+    embalagem_secundaria: "Info2",
+    categoria: "PERECIVEIS",
+    etapas: [
+      {
+        uuid: "33169dd2-f33b-46c4-b1a1-0f26a3ce8532",
+        numero_empenho: "111",
+        qtd_total_empenho: "123,00 kg",
+        etapa: "Etapa 2",
+        parte: "Parte 1",
+        data_programada: "08/02/2024",
+        quantidade: "301,00 kg",
+        total_embalagens: "4,00 EMB",
+        desvinculada_recebimento: true,
+      },
+    ],
+    documentos_de_recebimento: [],
+    sistema_vedacao_embalagem_secundaria: "gelado",
+  },
+};
