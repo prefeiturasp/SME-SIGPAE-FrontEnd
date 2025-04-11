@@ -10,7 +10,7 @@ import { DIETA_ESPECIAL, RELATORIO_HISTORICO_DIETAS } from "configs/constants";
 
 const atual = {
   href: `/${DIETA_ESPECIAL}/${RELATORIO_HISTORICO_DIETAS}`,
-  titulo: "Relatório de Histórico de Dietas",
+  titulo: "Relatório Histórico de Dietas",
 };
 
 const anteriores = [
