@@ -148,17 +148,19 @@ export default () => {
     tipoQuestao: string
   ): QuestoesPayload[] => {
     return listaQuestoes
-      .map((questao) => {
-        let resposta = stringToBoolean(values[questao.uuid]);
-        return resposta !== undefined
-          ? {
-              questao_conferencia: questao.uuid,
-              resposta,
-              tipo_questao: tipoQuestao,
-            }
-          : null;
-      })
-      .filter((x) => x !== null);
+      ? listaQuestoes
+          .map((questao) => {
+            let resposta = stringToBoolean(values[questao.uuid]);
+            return resposta !== undefined
+              ? {
+                  questao_conferencia: questao.uuid,
+                  resposta,
+                  tipo_questao: tipoQuestao,
+                }
+              : null;
+          })
+          .filter((x) => x !== null)
+      : [];
   };
 
   const formataPayload = (
@@ -433,8 +435,9 @@ export default () => {
                             options={optionsCronograma(values)}
                             label="Cronograma"
                             name={`cronograma`}
+                            dataTestId={"cronograma"}
                             className="input-busca-produto"
-                            placeholder="Digite um cronograma "
+                            placeholder="Digite um cronograma"
                             required
                             validate={required}
                             onChange={(value: string) => {
@@ -576,6 +579,7 @@ export default () => {
                             ]}
                             label="Etapa e Parte"
                             name="etapa"
+                            dataTestId="etapa"
                             required
                             validate={required}
                             onChangeEffect={(
@@ -599,6 +603,7 @@ export default () => {
                             component={InputComData}
                             label="Data da Entrega"
                             name={`data_entrega`}
+                            dataTestId="data_entrega"
                             placeholder="Selecionar a Data"
                             required
                             validate={required}
