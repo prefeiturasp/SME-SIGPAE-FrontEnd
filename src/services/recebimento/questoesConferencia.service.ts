@@ -4,11 +4,13 @@ import {
   PayloadAtribuirQuestoesPorProduto,
   PayloadEditarAtribuicaoQuestoesPorProduto,
   ResponseAtribuirQuestoesPorProduto,
+  ResponseDetalharQuestoesPorCronograma,
   ResponseDetalharQuestoesPorProduto,
   ResponseListarQuestoesConferencia,
   ResponseListarQuestoesConferenciaSimples,
   ResponseListarQuestoesPorProduto,
 } from "interfaces/recebimento.interface";
+import { gerarParametrosConsulta } from "helpers/utilities";
 import { toastError } from "components/Shareable/Toast/dialogs";
 import { getMensagemDeErro } from "helpers/statusErrors";
 import { URLSearchParams } from "url";
@@ -35,6 +37,7 @@ export const listarQuestoesPorProduto = async (
   params: URLSearchParams
 ): Promise<ResponseListarQuestoesPorProduto> => {
   try {
+    console.log(params);
     return await axios.get("/questoes-por-produto/", { params });
   } catch (error) {
     toastError(getMensagemDeErro(error.response.status));
@@ -68,6 +71,22 @@ export const editarAtribuicaoQuestoesPorProduto = async (
   try {
     return await axios.patch(`/questoes-por-produto/${uuid}/`, payload);
   } catch (error) {
+    toastError(getMensagemDeErro(error.response.status));
+  }
+};
+
+export const detalharQuestoesPorCronograma = async (
+  uuid: string
+): Promise<ResponseDetalharQuestoesPorCronograma> => {
+  try {
+    const params: URLSearchParams = gerarParametrosConsulta({
+      cronograma_uuid: uuid,
+    });
+    return await axios.get(`/questoes-por-produto/busca-questoes-cronograma/`, {
+      params,
+    });
+  } catch (error) {
+    console.log(error);
     toastError(getMensagemDeErro(error.response.status));
   }
 };

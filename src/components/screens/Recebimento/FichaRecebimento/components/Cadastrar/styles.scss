@@ -1,3 +1,5 @@
+@import "styles/variables.scss";
+
 .card-cadastro-ficha-recebimento {
   .label-peso-embalagem {
     font-size: 20px;
@@ -20,5 +22,42 @@
     textarea {
       min-height: 125px;
     }
+  }
+
+  .tabela-conferencia-embalagens {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  
+    thead tr th {
+      text-align: left;
+      font-weight: 600;
+      color: $green;
+      background-color: $grayBackgroundTr;
+      
+        border-left: 1px solid $grayDisabled;
+        border-bottom: none;
+        border-top: none;
+      
+  
+      &:first-child {
+        border-left: none;
+      }
+    }
+  
+    tbody {
+      tr {
+        border-bottom: 1px solid $grayDisabled;
+      }
+
+      td{
+        border-left: 1px solid $grayDisabled;
+      }
+  
+      td:first-child {
+        border-left: none;
+      }
+    }
+
   }
 }

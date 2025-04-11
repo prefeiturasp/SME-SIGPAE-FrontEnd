@@ -13,6 +13,11 @@ export interface QuestaoConferencia {
   posicao?: number;
 }
 
+export interface QuestaoConferenciaSimples {
+  uuid: string;
+  questao: string;
+}
+
 export interface QuestoesPorProduto {
   uuid: string;
   numero_ficha: string;
@@ -26,6 +31,12 @@ export interface QuestoesPorProdutoSimples {
   ficha_tecnica: FichaTecnicaSimples;
   questoes_primarias: string[];
   questoes_secundarias: string[];
+}
+
+export interface QuestoesPorProdutoDetalhe {
+  uuid: string;
+  questoes_primarias: QuestaoConferenciaSimples[];
+  questoes_secundarias: QuestaoConferenciaSimples[];
 }
 
 export interface ResponseListarQuestoesConferencia extends ResponseInterface {
@@ -48,6 +59,11 @@ export interface ResponseListarQuestoesPorProduto extends ResponseInterface {
 
 export interface ResponseDetalharQuestoesPorProduto extends ResponseInterface {
   data: QuestoesPorProdutoSimples;
+}
+
+export interface ResponseDetalharQuestoesPorCronograma
+  extends ResponseInterface {
+  data: QuestoesPorProdutoDetalhe;
 }
 
 export interface PayloadAtribuirQuestoesPorProduto {

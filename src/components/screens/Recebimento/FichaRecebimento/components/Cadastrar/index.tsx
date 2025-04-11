@@ -48,10 +48,13 @@ import {
   CronogramaFicha,
   DocumentoFicha,
   FichaRecebimentoPayload,
+  QuestoesPayload,
   VeiculoPayload,
 } from "../../interfaces";
 
 import "./styles.scss";
+import { detalharQuestoesPorCronograma } from "services/recebimento/questoesConferencia.service";
+import { QuestaoConferenciaSimples } from "interfaces/recebimento.interface";
 
 const ITENS_STEPS = [
   {
@@ -95,6 +98,12 @@ export default () => {
   const [stepAtual, setStepAtual] = useState(0);
   const [veiculos, setVeiculos] = useState([{}]);
   const [arquivos, setArquivos] = useState<Arquivo[]>([]);
+  const [questoesPrimarias, setQuestoesPrimarias] = useState<
+    QuestaoConferenciaSimples[]
+  >([]);
+  const [questoesSecundarias, setQuestoesSecundarias] = useState<
+    QuestaoConferenciaSimples[]
+  >([]);
 
   const onSubmit = (): void => {};
 
@@ -133,9 +142,35 @@ export default () => {
     return options;
   };
 
+  const formataPayloadQuestoes = (
+    values: Record<string, any>,
+    listaQuestoes: QuestaoConferenciaSimples[],
+    tipoQuestao: string
+  ): QuestoesPayload[] => {
+    return listaQuestoes
+      ? listaQuestoes
+          .map((questao) => {
+            let resposta = stringToBoolean(values[questao.uuid]);
+            return resposta !== undefined
+              ? {
+                  questao_conferencia: questao.uuid,
+                  resposta,
+                  tipo_questao: tipoQuestao,
+                }
+              : null;
+          })
+          .filter((x) => x !== null)
+      : [];
+  };
+
   const formataPayload = (
     values: Record<string, any>
   ): FichaRecebimentoPayload => {
+    let payloadQuestoes: QuestoesPayload[] = [
+      ...formataPayloadQuestoes(values, questoesPrimarias, "PRIMARIA"),
+      ...formataPayloadQuestoes(values, questoesSecundarias, "SECUNDARIA"),
+    ];
+
     let payload: FichaRecebimentoPayload = {
       etapa: values.etapa,
       data_entrega: values.data_entrega
@@ -193,6 +228,8 @@ export default () => {
           : values.sistema_vedacao_embalagem_secundaria_outra_opcao,
       observacao: values.observacao,
       arquivos: arquivos,
+      observacoes_conferencia: values.observacoes_conferencia,
+      questoes: payloadQuestoes,
     };
 
     return payload;
@@ -249,6 +286,10 @@ export default () => {
         );
         let cronograma = data.results;
         setCronograma(cronograma);
+
+        let dataQuestoes = await detalharQuestoesPorCronograma(cronograma.uuid);
+        setQuestoesPrimarias(dataQuestoes.data.questoes_primarias);
+        setQuestoesSecundarias(dataQuestoes.data.questoes_secundarias);
 
         form.change("fornecedor", cronograma.fornecedor);
         form.change("numero_contrato", cronograma.contrato);
@@ -394,8 +435,9 @@ export default () => {
                             options={optionsCronograma(values)}
                             label="Cronograma"
                             name={`cronograma`}
+                            dataTestId={"cronograma"}
                             className="input-busca-produto"
-                            placeholder="Digite um cronograma "
+                            placeholder="Digite um cronograma"
                             required
                             validate={required}
                             onChange={(value: string) => {
@@ -537,6 +579,7 @@ export default () => {
                             ]}
                             label="Etapa e Parte"
                             name="etapa"
+                            dataTestId="etapa"
                             required
                             validate={required}
                             onChangeEffect={(
@@ -560,6 +603,7 @@ export default () => {
                             component={InputComData}
                             label="Data da Entrega"
                             name={`data_entrega`}
+                            dataTestId="data_entrega"
                             placeholder="Selecionar a Data"
                             required
                             validate={required}
@@ -1118,32 +1162,104 @@ export default () => {
                     </section>
 
                     <section id="conferenciaRotulagens">
-                      <div className="row">
-                        <div className="col mt-5 text-center">
-                          <p>
-                            Não há questões para conferência cadastradas para
-                            esse produto, por favor acesse a área de{" "}
-                            <strong>Questões por Produto</strong> e atribua
-                            questões.
-                          </p>
-                          <p>
-                            <strong>Salve o rascunho</strong> da Ficha de
-                            Recebimento para não perder as informações inseridas
-                            até o momento.
-                          </p>
-                        </div>
-                      </div>
+                      {questoesPrimarias || questoesSecundarias ? (
+                        <>
+                          <div>
+                            <table className="table tabela-conferencia-embalagens">
+                              <thead>
+                                <tr>
+                                  <th className="">
+                                    Conferência Embalagem Primária
+                                  </th>
+                                  <th className="">
+                                    Conferência Embalagem Secundária
+                                  </th>
+                                </tr>
+                              </thead>
 
-                      <div className="row my-5">
-                        <div className="col d-flex justify-content-center">
-                          <Botao
-                            texto="Ir para Atribuição de Questões por Produto"
-                            type={BUTTON_TYPE.BUTTON}
-                            style={BUTTON_STYLE.GREEN_OUTLINE}
-                            onClick={() => setShowModalAtribuir(true)}
-                          />
-                        </div>
-                      </div>
+                              <tbody>
+                                {Array.from({
+                                  length: Math.max(
+                                    questoesPrimarias.length,
+                                    questoesSecundarias.length
+                                  ),
+                                }).map((_, index) => {
+                                  const primaria = questoesPrimarias[index];
+                                  const secundaria = questoesSecundarias[index];
+
+                                  return (
+                                    <tr key={index} className="">
+                                      <td className="">
+                                        {primaria && (
+                                          <RadioButtonField
+                                            name={primaria.uuid}
+                                            label={primaria.questao}
+                                            options={[
+                                              { value: "1", label: "SIM" },
+                                              { value: "0", label: "NÃO" },
+                                            ]}
+                                            modoTabela={true}
+                                          />
+                                        )}
+                                      </td>
+
+                                      <td className="">
+                                        {secundaria && (
+                                          <RadioButtonField
+                                            name={secundaria.uuid}
+                                            label={secundaria.questao}
+                                            options={[
+                                              { value: "1", label: "SIM" },
+                                              { value: "0", label: "NÃO" },
+                                            ]}
+                                            modoTabela={true}
+                                          />
+                                        )}
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+
+                            <Field
+                              component={TextArea}
+                              label="Observações da Conferência"
+                              name={`observacoes_conferencia`}
+                              placeholder="Descreva as observações das conferências"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="row">
+                            <div className="col mt-5 text-center">
+                              <p>
+                                Não há questões para conferência cadastradas
+                                para esse produto, por favor acesse a área de{" "}
+                                <strong>Questões por Produto</strong> e atribua
+                                questões.
+                              </p>
+                              <p>
+                                <strong>Salve o rascunho</strong> da Ficha de
+                                Recebimento para não perder as informações
+                                inseridas até o momento.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="row my-5">
+                            <div className="col d-flex justify-content-center">
+                              <Botao
+                                texto="Ir para Atribuição de Questões por Produto"
+                                type={BUTTON_TYPE.BUTTON}
+                                style={BUTTON_STYLE.GREEN_OUTLINE}
+                                onClick={() => setShowModalAtribuir(true)}
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </section>
 
                     <section id="observacoes">
