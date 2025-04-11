@@ -24,6 +24,14 @@ export interface FichaRecebimentoPayload {
   sistema_vedacao_embalagem_secundaria?: string;
   observacao?: string;
   arquivos?: Arquivo[];
+  observacoes_conferencia?: string;
+  questoes?: QuestoesPayload[];
+}
+
+export interface QuestoesPayload {
+  questao_conferencia: string;
+  resposta: boolean;
+  tipo_questao: string;
 }
 
 export interface VeiculoPayload {
