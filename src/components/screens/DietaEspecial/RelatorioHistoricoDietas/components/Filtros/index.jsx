@@ -237,12 +237,20 @@ export const Filtros = ({ ...props }) => {
                       unidadesEducacionais.length === 0
                     }
                   >
+                    <span
+                      className="required-asterisk"
+                      style={{ color: "#a50e05" }}
+                    >
+                      *{" "}
+                    </span>
                     <label className="label fw-normal pb-2 pt-2">
                       Unidade Educacional
                     </label>
                     <Field
-                      label="Unidades Educacionais"
+                      label="Unidade Educacional"
                       component={StatefulMultiSelect}
+                      required
+                      validate={required}
                       name="unidades_educacionais_selecionadas"
                       placeholder="Selecione as Unidades Educacionais"
                       options={unidadesEducacionais}
