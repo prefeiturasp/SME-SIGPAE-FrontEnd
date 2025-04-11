@@ -19,7 +19,6 @@ import {
 } from "services/escola.service";
 import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
 import { getLotesSimples } from "services/lote.service";
-import "./styles.scss";
 
 export const Filtros = ({ ...props }) => {
   const {
