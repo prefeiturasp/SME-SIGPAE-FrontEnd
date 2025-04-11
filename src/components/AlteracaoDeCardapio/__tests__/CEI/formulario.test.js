@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "constants/shared";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { localStorageMock } from "mocks/localStorageMock";
@@ -37,6 +43,24 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     mock
       .onGet("/alteracoes-cardapio-cei/minhas-solicitacoes/")
       .reply(200, mockRascunhosAlteracaoCEI);
+    mock
+      .onGet(
+        "/periodos-escolares/e17e2405-36be-4981-a09c-35c89ae0f8b7/alunos-por-faixa-etaria/2025-04-23/"
+      )
+      .reply(200, {
+        count: 1,
+        results: [
+          {
+            faixa_etaria: {
+              __str__: "01 ano a 03 anos e 11 meses",
+              uuid: "e3030bd1-2e85-4676-87b3-96b4032370d4",
+              inicio: 12,
+              fim: 48,
+            },
+            count: 50,
+          },
+        ],
+      });
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CEI DIRET MONUMENTO"`);
@@ -90,5 +114,56 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     expect(
       screen.getByText("Salvo em: 11/04/2025 10:10:43")
     ).toBeInTheDocument();
+  });
+
+  const setMotivoRPL = () => {
+    const selectMotivo = screen.getByTestId("select-motivo");
+    const selectElement = selectMotivo.querySelector("select");
+    const uuidMotivoRPL = mockMotivosAlteracaoCardapioCEI.results.find(
+      (motivo) => motivo.nome.includes("RPL")
+    ).uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidMotivoRPL },
+    });
+  };
+
+  it("renderiza label `Período` após selecionar um motivo e um dia", async () => {
+    setMotivoRPL();
+
+    const divDia = screen.getByTestId("data-alterar-dia");
+    const inputElement = divDia.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "23/04/2025" },
+    });
+
+    expect(screen.getByText("Período")).toBeInTheDocument();
+  });
+
+  it("renderiza tabela de faixas etárias após selecionar um período", async () => {
+    setMotivoRPL();
+
+    const divDia = screen.getByTestId("data-alterar-dia");
+    const inputElement = divDia.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "23/04/2025" },
+    });
+
+    expect(screen.getByText("Período")).toBeInTheDocument();
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+
+    const divCheckboxINTEGRAL = screen.getByTestId("div-checkbox-INTEGRAL");
+    const spanElement = divCheckboxINTEGRAL.querySelector("span");
+
+    // check período INTEGRAL
+    await act(async () => {
+      fireEvent.click(spanElement);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Faixa Etária")).toBeInTheDocument();
+      expect(
+        screen.getByText("01 ano a 03 anos e 11 meses")
+      ).toBeInTheDocument();
+    });
   });
 });

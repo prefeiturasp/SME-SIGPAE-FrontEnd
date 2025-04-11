@@ -410,6 +410,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                         <Field
                           component={Select}
                           name="motivo"
+                          dataTestId={`select-motivo`}
                           label="Motivo"
                           options={motivos.filter(
                             ({ nome }) =>
@@ -432,6 +433,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                         <Field
                           component={InputComData}
                           name="data"
+                          dataTestId={`data-alterar-dia`}
                           minDate={proximosDoisDiasUteis}
                           maxDate={fimDoCalendario()}
                           label="Alterar dia"
@@ -474,6 +476,9 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                   <div className="col-4">
                                     <div
                                       className={`period-quantity number-${indice} ps-5 pt-2 pb-2`}
+                                      data-testid={`div-checkbox-${
+                                        getPeriodo(values, indice).nome
+                                      }`}
                                     >
                                       <label
                                         htmlFor="check"
