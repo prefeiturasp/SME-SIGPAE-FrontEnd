@@ -5,6 +5,8 @@ import { PAINEL_FICHAS_TECNICAS, PRE_RECEBIMENTO } from "configs/constants";
 import { CARD_ENVIADOS_PARA_CORRECAO } from "components/screens/PreRecebimento/PainelFichasTecnicas/constants";
 import { getDashboardFichasTecnicasPorStatus } from "services/fichaTecnica.service";
 import { SolicitacoesFichaTecnicaStatusGenerico } from "components/screens/SolicitacoesFichaTecnicaStatusGenerico";
+import { gerarLinkItemFichaTecnica } from "components/screens/PreRecebimento/PainelFichasTecnicas/helpers";
+import { FichaTecnicaDashboard } from "interfaces/pre_recebimento.interface";
 
 const atual = {
   href: CARD_ENVIADOS_PARA_CORRECAO.href,
@@ -45,7 +47,9 @@ export default () => {
         getSolicitacoes={getDashboardFichasTecnicasPorStatus}
         params={paramsDefault}
         limit={limit}
-        urlBaseItem={`#`}
+        urlBaseItem={gerarLinkItemFichaTecnica({
+          item: { status: "Enviada para Correção" },
+        } as unknown as FichaTecnicaDashboard)}
       />
     </Page>
   );

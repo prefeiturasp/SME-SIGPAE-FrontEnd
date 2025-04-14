@@ -99,6 +99,7 @@ export default () => {
                     <div className="col-4">
                       <Field
                         component={InputText}
+                        dataTestIdDiv="div-input-numero-ficha"
                         name="numero_ficha"
                         placeholder="Filtrar por Nº da Ficha Técnica"
                         inputOnChange={() =>
@@ -109,6 +110,7 @@ export default () => {
                     <div className="col-4">
                       <Field
                         component={InputText}
+                        dataTestIdDiv="div-input-nome-produto"
                         name="nome_produto"
                         placeholder="Filtrar por Nome do Produto"
                         inputOnChange={() =>
@@ -119,6 +121,7 @@ export default () => {
                     <div className="col-4">
                       <Field
                         component={InputText}
+                        dataTestIdDiv="div-input-nome-empresa"
                         name="nome_empresa"
                         placeholder="Filtrar por Nome do Fornecedor"
                         inputOnChange={() =>

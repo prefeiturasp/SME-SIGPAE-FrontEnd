@@ -11,6 +11,7 @@ export interface Props {
     label: string;
   }[];
   className?: string;
+  modoTabela?: boolean;
 }
 
 const RadioButtonField: React.FC<Props> = ({
@@ -18,27 +19,34 @@ const RadioButtonField: React.FC<Props> = ({
   label,
   options = [],
   className,
+  modoTabela = false,
 }) => {
   return (
-    <div className={`radio-button-sigpae ${className}`}>
+    <div
+      className={`radio-button-sigpae ${className} ${
+        modoTabela ? "modo-tabela" : ""
+      }`}
+    >
       {label && (
         <p className="label-radio">
           <span className="required-asterisk">*</span> {label}
         </p>
       )}
-      {options.map((option, index) => (
-        <label className="container-radio" key={index}>
-          {option.label}
-          <Field
-            component="input"
-            type="radio"
-            value={option.value}
-            name={name}
-            validate={required}
-          />
-          <span className="checkmark" />
-        </label>
-      ))}
+      <div className="radio-btn-container">
+        {options.map((option, index) => (
+          <label className="container-radio" key={index}>
+            {option.label}
+            <Field
+              component="input"
+              type="radio"
+              value={option.value}
+              name={name}
+              validate={required}
+            />
+            <span className="checkmark" />
+          </label>
+        ))}
+      </div>
     </div>
   );
 };
