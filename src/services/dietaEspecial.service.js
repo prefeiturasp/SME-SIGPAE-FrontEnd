@@ -139,7 +139,11 @@ export const getAlergiasIntoleranciasAxios = async () =>
 
 export const getClassificacoesDietaEspecial = async () => {
   const url = `${API_URL}/classificacoes-dieta/`;
-  return retornoBase(url);
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const escolaCancelaSolicitacao = async (uuid, payload) => {

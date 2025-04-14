@@ -15,63 +15,71 @@ export const RelatorioHistoricoDietas = () => {
   const [loadingDietas, setLoadingDietas] = useState(false);
   const [count, setCount] = useState(0);
 
-  return (
-    <div className="card mt-3">
-      <div className="card-body">
-        <Spin spinning={loadingDietas} tip="Carregando histórico...">
-          <Filtros
-            onClear={() => {
-              setDietasEspeciais(null);
-            }}
-            setDietasEspeciais={setDietasEspeciais}
-            setValuesForm={setValuesForm}
-            setCount={setCount}
-            setLoadingDietas={setLoadingDietas}
-          />
-          {dietasEspeciais && (
-            <>
-              <div className="row">
-                <div className="mt-4 pl-0">
-                  <p className="mb-2 texto-verde">
-                    <b>
-                      Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS EM{" "}
-                      {dietasEspeciais.data}:{"  "}
-                      {dietasEspeciais.total_dietas}
-                    </b>
-                  </p>
-                </div>
-              </div>
+  const [erro, setErro] = useState("");
 
-              <TabelaHistorico
-                dietasEspeciais={dietasEspeciais}
-                setLoadingDietas={setLoadingDietas}
+  return (
+    <>
+      {erro && <div>{erro}</div>}
+      {!erro && (
+        <div className="card mt-3">
+          <div className="card-body">
+            <Spin spinning={loadingDietas} tip="Carregando histórico...">
+              <Filtros
+                onClear={() => {
+                  setDietasEspeciais(null);
+                }}
                 setDietasEspeciais={setDietasEspeciais}
-                count={count}
+                setValuesForm={setValuesForm}
                 setCount={setCount}
-                values={valuesForm}
+                setLoadingDietas={setLoadingDietas}
+                setErro={setErro}
               />
-              <div className="row">
-                <div className="col-12 text-end">
-                  <Botao
-                    texto="Exportar PDF"
-                    style={BUTTON_STYLE.GREEN}
-                    icon={BUTTON_ICON.FILE_PDF}
-                    onClick={() => {}}
+              {dietasEspeciais && (
+                <>
+                  <div className="row">
+                    <div className="mt-4 pl-0">
+                      <p className="mb-2 texto-verde">
+                        <b>
+                          Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS EM{" "}
+                          {dietasEspeciais.data}:{"  "}
+                          {dietasEspeciais.total_dietas}
+                        </b>
+                      </p>
+                    </div>
+                  </div>
+
+                  <TabelaHistorico
+                    dietasEspeciais={dietasEspeciais}
+                    setLoadingDietas={setLoadingDietas}
+                    setDietasEspeciais={setDietasEspeciais}
+                    count={count}
+                    setCount={setCount}
+                    values={valuesForm}
                   />
-                  <Botao
-                    texto="Exportar XLSX"
-                    style={BUTTON_STYLE.GREEN}
-                    icon={BUTTON_ICON.FILE_EXCEL}
-                    className="ms-3"
-                    onClick={() => {}}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-        </Spin>
-      </div>
-    </div>
+                  <div className="row">
+                    <div className="col-12 text-end">
+                      <Botao
+                        texto="Exportar PDF"
+                        style={BUTTON_STYLE.GREEN}
+                        icon={BUTTON_ICON.FILE_PDF}
+                        onClick={() => {}}
+                      />
+                      <Botao
+                        texto="Exportar XLSX"
+                        style={BUTTON_STYLE.GREEN}
+                        icon={BUTTON_ICON.FILE_EXCEL}
+                        className="ms-3"
+                        onClick={() => {}}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </Spin>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
