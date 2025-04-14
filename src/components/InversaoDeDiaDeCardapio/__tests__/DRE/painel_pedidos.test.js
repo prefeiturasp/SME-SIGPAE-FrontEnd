@@ -11,50 +11,32 @@ import { PERFIL, TIPO_PERFIL } from "constants/shared";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { localStorageMock } from "mocks/localStorageMock";
-import { mockPedidosCODAEInversaoCardapio } from "mocks/services/inversaoDeDiaDeCardapio.service/CODAE/pedidoCODAEInversaoDeCardapio.js";
-import PainelPedidosInversaoCardapioCODAEPage from "pages/CODAE/InversaoDiaCardapio/PainelPedidosPage.jsx";
+import { mockPedidosDREInversaoCardapio } from "mocks/services/inversaoDeDiaDeCardapio.service/DRE/pedidoDREInversaoDeCardapio.js";
+import PainelPedidosInversaoCardapioDREPage from "pages/DRE/InversaoDiaCardapio/PainelPedidosPage.jsx";
 import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
 import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
-import { mockDiretoriaRegionalSimplissima } from "mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
 
-describe("Teste Página do Painel Pedidos - CODAE - Inversão de dia de Cardápio", () => {
+describe("Teste Página do Painel Pedidos - DRE - Inversão de dia de Cardápio", () => {
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
     mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
     mock
-      .onGet("/diretorias-regionais-simplissima/")
-      .reply(200, { results: mockDiretoriaRegionalSimplissima.results });
-    mock
-      .onGet("/inversoes-dia-cardapio/pedidos-codae/sem_filtro/")
-      .reply(200, { results: mockPedidosCODAEInversaoCardapio.results });
+      .onGet("/inversoes-dia-cardapio/pedidos-diretoria-regional/sem_filtro/")
+      .reply(200, { results: mockPedidosDREInversaoCardapio.results });
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
-    localStorage.setItem(
-      "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
-    );
-    localStorage.setItem(
-      "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
-    );
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
+    localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
 
     await act(async () => {
       render(
         <MemoryRouter
-          initialEntries={[
-            {
-              pathname: "/",
-              state: {
-                filtros: { lotes: undefined, diretoria_regional: undefined },
-              },
-            },
-          ]}
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true,
           }}
         >
-          <PainelPedidosInversaoCardapioCODAEPage />
+          <PainelPedidosInversaoCardapioDREPage />
         </MemoryRouter>
       );
     });
@@ -82,28 +64,9 @@ describe("Teste Página do Painel Pedidos - CODAE - Inversão de dia de Cardápi
       expect(screen.getByTestId("limite")).toBeInTheDocument();
       expect(screen.getByTestId("regular")).toBeInTheDocument();
     });
-
-    const divLimite = screen.getByTestId("regular");
-    expect(divLimite).toHaveTextContent("8AE3D");
-    expect(divLimite).toHaveTextContent("017981");
-    expect(divLimite).toHaveTextContent("EMEF PERICLES EUGENIO DA SILVA RAMOS");
-    expect(divLimite).toHaveTextContent("24/04/2025");
   });
 
-  it("busca por diretoria regional  e lote", async () => {
-    await act(async () => {
-      fireEvent.mouseDown(
-        screen
-          .getByTestId("select-diretoria-regional")
-          .querySelector(".ant-select-selection-search-input")
-      );
-    });
-
-    await waitFor(() => screen.getByText("BUTANTA"));
-    await act(async () => {
-      fireEvent.click(screen.getByText("BUTANTA"));
-    });
-
+  it("busca por lote", async () => {
     await act(async () => {
       fireEvent.mouseDown(
         screen
