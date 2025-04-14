@@ -1,23 +1,24 @@
+import { Spin } from "antd";
+import CollapseFiltros from "components/Shareable/CollapseFiltros";
+import { InputComData } from "components/Shareable/DatePicker";
+import { MultiselectRaw } from "components/Shareable/MultiselectRaw";
+import Select from "components/Shareable/Select";
+import { toastError } from "components/Shareable/Toast/dialogs";
+import { required, requiredMultiselect } from "helpers/fieldValidators";
+import { deepCopy } from "helpers/utilities";
+import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
-import { Spin } from "antd";
-import HTTP_STATUS from "http-status-codes";
-import Select from "components/Shareable/Select";
-import { InputComData } from "components/Shareable/DatePicker";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { required } from "helpers/fieldValidators";
+import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
 import {
-  getUnidadesEducacionaisComCodEol,
-  getSolicitacoesRelatorioHistoricoDietas,
   getClassificacoesDietaEspecial,
+  getSolicitacoesRelatorioHistoricoDietas,
+  getUnidadesEducacionaisComCodEol,
 } from "services/dietaEspecial.service";
 import {
-  getTiposGestao,
   buscaPeriodosEscolares,
+  getTiposGestao,
 } from "services/escola.service";
-import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
 import { getLotesSimples } from "services/lote.service";
 
 export const Filtros = ({ ...props }) => {
@@ -32,20 +33,30 @@ export const Filtros = ({ ...props }) => {
   const [tiposGestao, setTiposGestao] = useState(null);
   const [tiposUnidades, setTiposUnidades] = useState(null);
   const [lotes, setLotes] = useState(null);
-  const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
+  const [unidadesEducacionais, setUnidadesEducacionais] = useState(null);
   const [periodos, setPeriodos] = useState(null);
   const [classificacoesDieta, setClassificacoesDieta] = useState(null);
 
   const getUnidadesEducacionaisAsync = async (values) => {
-    setUnidadesEducacionais([]);
+    setUnidadesEducacionais(null);
     let data = values;
     const response = await getUnidadesEducacionaisComCodEol(data);
     if (response.status === HTTP_STATUS.OK) {
+      if (response.data.length === 0) {
+        toastError("Nenhuma unidade educacional encontrada");
+      }
       setUnidadesEducacionais(
-        response.data.map((unidade) => ({
-          label: unidade.codigo_eol_escola,
-          value: unidade.uuid,
-        }))
+        [
+          {
+            label: "Todas as unidades",
+            value: "todas",
+          },
+        ].concat(
+          response.data.map((unidade) => ({
+            label: unidade.codigo_eol_escola,
+            value: unidade.uuid,
+          }))
+        )
       );
     } else {
       toastError("Erro ao buscar unidades educacionais");
@@ -119,10 +130,32 @@ export const Filtros = ({ ...props }) => {
   maxDate.setDate(maxDate.getDate() - 1);
 
   const onSubmit = async (values) => {
+    const values_ = deepCopy(values);
     setValuesForm(values);
+    if (values_.unidades_educacionais_selecionadas.includes("todas")) {
+      delete values_.unidades_educacionais_selecionadas;
+    }
+    if (
+      values_.tipos_unidades_selecionadas &&
+      values_.tipos_unidades_selecionadas.includes("todos")
+    ) {
+      delete values_.tipos_unidades_selecionadas;
+    }
+    if (
+      values_.periodos_escolares_selecionadas &&
+      values_.periodos_escolares_selecionadas.includes("todos")
+    ) {
+      delete values_.periodos_escolares_selecionadas;
+    }
+    if (
+      values_.classificacoes_selecionadas &&
+      values_.classificacoes_selecionadas.includes("todas")
+    ) {
+      delete values_.classificacoes_selecionadas;
+    }
     let params = {
       ...PARAMS,
-      ...values,
+      ...values_,
     };
     setLoadingDietas(true);
     const response = await getSolicitacoesRelatorioHistoricoDietas(params);
@@ -179,22 +212,22 @@ export const Filtros = ({ ...props }) => {
                     Tipo de Unidade
                   </label>
                   <Field
-                    component={StatefulMultiSelect}
+                    component={MultiselectRaw}
                     name="tipos_unidades_selecionadas"
-                    options={tiposUnidades.map((tiposUnidade) => ({
-                      label: tiposUnidade.iniciais,
-                      value: tiposUnidade.uuid,
-                    }))}
+                    options={[
+                      { label: "Todos os tipos de unidade", value: "todos" },
+                    ].concat(
+                      tiposUnidades.map((tiposUnidade) => ({
+                        label: tiposUnidade.iniciais,
+                        value: tiposUnidade.uuid,
+                      }))
+                    )}
                     selected={values.tipos_unidades_selecionadas || []}
-                    onSelectedChanged={(value) =>
-                      form.change("tipos_unidades_selecionadas", value)
-                    }
-                    overrideStrings={{
-                      search: "Busca",
-                      selectSomeItems: "Selecione o tipo de unidade",
-                      allItemsAreSelected:
-                        "Todos os tipos de unidades estão selecionadas",
-                      selectAll: "Todos",
+                    onSelectedChanged={(values_) => {
+                      form.change(
+                        `tipos_unidades_selecionadas`,
+                        values_.map((value_) => value_.value)
+                      );
                     }}
                   />
                 </div>
@@ -208,7 +241,7 @@ export const Filtros = ({ ...props }) => {
                     placeholder="Selecione DRE/Lote"
                     options={[{ nome: "Selecione DRE/Lote", uuid: "" }].concat(
                       lotes.map((lote) => ({
-                        nome: lote.nome,
+                        nome: `${lote.nome} - ${lote.diretoria_regional.nome}`,
                         uuid: lote.uuid,
                       }))
                     )}
@@ -233,40 +266,23 @@ export const Filtros = ({ ...props }) => {
                   <Spin
                     tip="Carregando unidades educacionais..."
                     spinning={
-                      values.lote !== undefined &&
-                      unidadesEducacionais.length === 0
+                      values.lote !== undefined && unidadesEducacionais === null
                     }
                   >
-                    <span
-                      className="required-asterisk"
-                      style={{ color: "#a50e05" }}
-                    >
-                      *{" "}
-                    </span>
-                    <label className="label fw-normal pb-2 pt-2">
-                      Unidade Educacional
-                    </label>
                     <Field
                       label="Unidade Educacional"
-                      component={StatefulMultiSelect}
+                      component={MultiselectRaw}
                       required
-                      validate={required}
+                      validate={requiredMultiselect}
                       name="unidades_educacionais_selecionadas"
                       placeholder="Selecione as Unidades Educacionais"
-                      options={unidadesEducacionais}
+                      options={unidadesEducacionais || []}
                       selected={values.unidades_educacionais_selecionadas || []}
-                      onSelectedChanged={(value) => {
+                      onSelectedChanged={(values_) => {
                         form.change(
-                          "unidades_educacionais_selecionadas",
-                          value
+                          `unidades_educacionais_selecionadas`,
+                          values_.map((value_) => value_.value)
                         );
-                      }}
-                      overrideStrings={{
-                        search: "Busca",
-                        selectSomeItems: "Selecione as Unidades Educacionais",
-                        allItemsAreSelected:
-                          "Todos as unidades estão selecionadas",
-                        selectAll: "Todas",
                       }}
                       disabled={!values.lote}
                     />
@@ -287,26 +303,27 @@ export const Filtros = ({ ...props }) => {
               </div>
               <div className="row mt-3">
                 <div className="col-4">
-                  <label className="label fw-normal pb-2 pt-2">
-                    Períodos da Unidade
-                  </label>
                   <Field
-                    component={StatefulMultiSelect}
+                    label="Períodos da Unidade"
+                    component={MultiselectRaw}
                     name="periodos_escolares_selecionadas"
-                    options={periodos.map((periodo) => ({
-                      label: periodo.nome,
-                      value: periodo.uuid,
-                    }))}
+                    options={[
+                      {
+                        label: "Todos os períodos escolares",
+                        value: "todos",
+                      },
+                    ].concat(
+                      periodos.map((periodo) => ({
+                        label: periodo.nome,
+                        value: periodo.uuid,
+                      }))
+                    )}
                     selected={values.periodos_escolares_selecionadas || []}
-                    onSelectedChanged={(value) =>
-                      form.change("periodos_escolares_selecionadas", value)
-                    }
-                    overrideStrings={{
-                      search: "Busca",
-                      selectSomeItems: "Selecione os períodos",
-                      allItemsAreSelected:
-                        "Todos os períodos estão selecionados",
-                      selectAll: "Todos",
+                    onSelectedChanged={(values_) => {
+                      form.change(
+                        `periodos_escolares_selecionadas`,
+                        values_.map((value_) => value_.value)
+                      );
                     }}
                   />
                 </div>
@@ -315,22 +332,25 @@ export const Filtros = ({ ...props }) => {
                     Classificação das Dietas
                   </label>
                   <Field
-                    component={StatefulMultiSelect}
+                    component={MultiselectRaw}
                     name="classificacoes_selecionadas"
-                    options={classificacoesDieta.map((classificacao) => ({
-                      label: classificacao.nome,
-                      value: classificacao.id,
-                    }))}
+                    options={[
+                      {
+                        label: "Todas as classificações de dieta",
+                        value: "todas",
+                      },
+                    ].concat(
+                      classificacoesDieta.map((classificacao) => ({
+                        label: classificacao.nome,
+                        value: classificacao.id,
+                      }))
+                    )}
                     selected={values.classificacoes_selecionadas || []}
-                    onSelectedChanged={(value) =>
-                      form.change("classificacoes_selecionadas", value)
-                    }
-                    overrideStrings={{
-                      search: "Busca",
-                      selectSomeItems: "Selecione a classificação",
-                      allItemsAreSelected:
-                        "Todas as classificações estão selecionadas",
-                      selectAll: "Todos",
+                    onSelectedChanged={(values_) => {
+                      form.change(
+                        `classificacoes_selecionadas`,
+                        values_.map((value_) => value_.value)
+                      );
                     }}
                   />
                 </div>
