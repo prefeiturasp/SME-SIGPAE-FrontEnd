@@ -97,6 +97,9 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
           <div className="centralizar">Data de Referência</div>
           <div></div>
         </div>
+        {dietasEspeciais && dietasEspeciais.results.length === 0 && (
+          <div className="text-center mt-3">Nenhum resultado encontrado.</div>
+        )}
         {renderRows()}
       </article>
       <Paginacao
