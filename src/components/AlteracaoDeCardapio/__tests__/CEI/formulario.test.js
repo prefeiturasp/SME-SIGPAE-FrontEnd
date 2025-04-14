@@ -145,7 +145,6 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
       screen.getByText("Salvo em: 11/04/2025 10:10:43")
     ).toBeInTheDocument();
   });
-
   const setMotivoRPL = () => {
     const selectMotivo = screen.getByTestId("select-motivo");
     const selectElement = selectMotivo.querySelector("select");
@@ -156,6 +155,30 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
       target: { value: uuidMotivoRPL },
     });
   };
+
+  it("renderiza modal para dia selecionado ser menor que 5 dias úteis", async () => {
+    setMotivoRPL();
+    const divDia = screen.getByTestId("data-alterar-dia");
+    const inputElement = divDia.querySelector("input");
+
+    expect(screen.queryByText("Atenção")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
+      )
+    ).not.toBeInTheDocument();
+
+    fireEvent.change(inputElement, {
+      target: { value: "17/04/2025" },
+    });
+
+    expect(screen.queryByText("Atenção")).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
+      )
+    ).toBeInTheDocument();
+  });
 
   const setTipoAlimentacaoDeAlmoco = () => {
     const selectMotivo = screen.getByTestId("select-tipos-alimentacao-de");
