@@ -13,6 +13,12 @@ import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPeric
 import { mockGetHistoricoDietasEMEBSeCEUGESTAO } from "mocks/services/dietaEspecial.service/mockGetHistoricoDietasEMEBSeCEUGESTAO";
 import { mockGetSolicitacoesHistoricoDietasCEMEI } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasCEMEI";
 import { mockGetSolicitacoesHistoricoDietasEMEF } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasEMEF";
+import { mockGetTipoGestao } from "mocks/services/dietaEspecial.service/mockGetTipoGestao";
+import { mockGetTiposUnidadeEscolar } from "mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
+import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
+import { mockGetPeriodoEscolar } from "mocks/services/dietaEspecial.service/mockGetPeriodoEscolar.js";
+import { mockGetClassificacaoDieta } from "mocks/services/dietaEspecial.service/mockGetClassificacoesDietas.js";
+import { mockGetUnidadeEducacional } from "mocks/services/dietaEspecial.service/mockGetUnidadeEducacional.js";
 import { mockGetSolicitacoesRelatorioHistoricoDietas } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesRelatorioHistoricoDietas";
 import RelatorioHistoricoDietasPage from "pages/DietaEspecial/RelatorioHistoricoDietasPage";
 import React from "react";
@@ -39,6 +45,16 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
 
+    mock.onGet("/tipos-gestao/").reply(200, mockGetTipoGestao);
+    mock
+      .onGet("/tipos-unidade-escolar/")
+      .reply(200, mockGetTiposUnidadeEscolar);
+    mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
+    mock.onGet("/periodos-escolares/").reply(200, mockGetPeriodoEscolar);
+    mock.onGet("/classificacoes-dieta/").reply(200, mockGetClassificacaoDieta);
+    mock
+      .onGet("escolas-simplissima-com-eol/escolas-com-cod-eol/")
+      .reply(200, mockGetUnidadeEducacional);
     mock
       .onGet("/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/")
       .replyOnce(200, mockGetSolicitacoesRelatorioHistoricoDietas); //esse
@@ -59,6 +75,10 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
         </MemoryRouter>
       );
     });
+  });
+
+  it("deve renderizar o componente corretamente", async () => {
+    expect(screen.getByText("Filtrar Resultados")).toBeInTheDocument();
   });
 
   it("renderiza título `Relatório de Histórico de Dietas`", async () => {

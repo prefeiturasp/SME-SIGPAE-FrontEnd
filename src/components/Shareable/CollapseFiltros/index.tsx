@@ -20,6 +20,7 @@ type Props = {
   onClear: () => void;
   manterFiltros?: Array<string>;
   desabilitarBotoes?: boolean;
+  initialValues?: Object;
 };
 
 const CollapseFiltros: React.FC<Props> = ({
@@ -29,6 +30,7 @@ const CollapseFiltros: React.FC<Props> = ({
   onClear,
   desabilitarBotoes,
   manterFiltros,
+  initialValues = {},
 }) => {
   const id = "collapseFiltros";
   const [collapse, setCollapse] = useState(true);
@@ -99,7 +101,7 @@ const CollapseFiltros: React.FC<Props> = ({
           <div className="card-body">
             <Form
               onSubmit={onSubmit}
-              initialValues={{}}
+              initialValues={initialValues}
               render={({ form, handleSubmit, values }) => (
                 <form onSubmit={handleSubmit}>
                   <div>{children(values, form)}</div>
