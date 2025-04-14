@@ -150,7 +150,9 @@ export default () => {
     return listaQuestoes
       ? listaQuestoes
           .map((questao) => {
-            let resposta = stringToBoolean(values[questao.uuid]);
+            let resposta = stringToBoolean(
+              values[`${tipoQuestao}_${questao.uuid}`]
+            );
             return resposta !== undefined
               ? {
                   questao_conferencia: questao.uuid,
@@ -1192,7 +1194,7 @@ export default () => {
                                       <td className="">
                                         {primaria && (
                                           <RadioButtonField
-                                            name={primaria.uuid}
+                                            name={`PRIMARIA_${primaria.uuid}`}
                                             label={primaria.questao}
                                             options={[
                                               { value: "1", label: "SIM" },
@@ -1206,7 +1208,7 @@ export default () => {
                                       <td className="">
                                         {secundaria && (
                                           <RadioButtonField
-                                            name={secundaria.uuid}
+                                            name={`SECUNDARIA_${secundaria.uuid}`}
                                             label={secundaria.questao}
                                             options={[
                                               { value: "1", label: "SIM" },
