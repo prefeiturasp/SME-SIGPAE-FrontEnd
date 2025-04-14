@@ -10,6 +10,7 @@ import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "constants/shared";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosCEI } from "mocks/meusDados/escola/CEI";
+import { mockAlteracaoCardapioCEI } from "mocks/services/alteracaoCardapio.service/CEI/alteracaoCardapio";
 import { mockMotivosAlteracaoCardapioCEI } from "mocks/services/alteracaoCardapio.service/CEI/motivosAlteracaoCardapio";
 import { mockRascunhosAlteracaoCEI } from "mocks/services/alteracaoCardapio.service/CEI/rascunhos";
 import { mockVinculosTipoAlimentacaoPeriodoEscolarCEI } from "mocks/services/cadastroTipoAlimentacao.service/CEI/vinculosTipoAlimentacaoPeriodoEscolar";
@@ -19,10 +20,34 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 
+jest.mock("components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: () => (
+    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
+  ),
+}));
+
 describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
   const escolaUuid = mockMeusDadosCEI.vinculo_atual.instituicao.uuid;
 
+  const responseFaixasEtarias = {
+    count: 1,
+    results: [
+      {
+        faixa_etaria: {
+          __str__: "01 ano a 03 anos e 11 meses",
+          uuid: "e3030bd1-2e85-4676-87b3-96b4032370d4",
+          inicio: 12,
+          fim: 48,
+        },
+        count: 50,
+      },
+    ],
+  };
+
   beforeEach(async () => {
+    process.env.IS_TEST = true;
+
     mock
       .onGet("/motivos-alteracao-cardapio/")
       .reply(200, mockMotivosAlteracaoCardapioCEI);
@@ -47,20 +72,25 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
       .onGet(
         "/periodos-escolares/e17e2405-36be-4981-a09c-35c89ae0f8b7/alunos-por-faixa-etaria/2025-04-23/"
       )
-      .reply(200, {
-        count: 1,
-        results: [
-          {
-            faixa_etaria: {
-              __str__: "01 ano a 03 anos e 11 meses",
-              uuid: "e3030bd1-2e85-4676-87b3-96b4032370d4",
-              inicio: 12,
-              fim: 48,
-            },
-            count: 50,
-          },
-        ],
-      });
+      .reply(200, responseFaixasEtarias);
+    mock
+      .onPost("/alteracoes-cardapio-cei/")
+      .reply(201, mockAlteracaoCardapioCEI);
+    mock
+      .onPatch(
+        `/alteracoes-cardapio-cei/${mockRascunhosAlteracaoCEI.results[0].uuid}/`
+      )
+      .reply(200, mockAlteracaoCardapioCEI);
+    mock
+      .onPatch(
+        `/alteracoes-cardapio-cei/${mockAlteracaoCardapioCEI.uuid}/inicio-pedido/`
+      )
+      .reply(200, mockAlteracaoCardapioCEI);
+    mock
+      .onDelete(
+        `/alteracoes-cardapio-cei/${mockRascunhosAlteracaoCEI.results[0].uuid}/`
+      )
+      .reply(204);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CEI DIRET MONUMENTO"`);
@@ -110,7 +140,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     expect(
       screen.getByText("Alteração do Tipo de Alimentação # 8A5BA")
     ).toBeInTheDocument();
-    expect(screen.getByText("Dia: 29/04/2025")).toBeInTheDocument();
+    expect(screen.getByText("Dia: 23/04/2025")).toBeInTheDocument();
     expect(
       screen.getByText("Salvo em: 11/04/2025 10:10:43")
     ).toBeInTheDocument();
@@ -124,6 +154,32 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoRPL },
+    });
+  };
+
+  const setTipoAlimentacaoDeAlmoco = () => {
+    const selectMotivo = screen.getByTestId("select-tipos-alimentacao-de");
+    const selectElement = selectMotivo.querySelector("select");
+    const uuidAlmoco = mockVinculosTipoAlimentacaoPeriodoEscolarCEI.results
+      .find((vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL")
+      .tipos_alimentacao.find((tipo_alimentacao) =>
+        tipo_alimentacao.nome.includes("Almoço")
+      ).uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidAlmoco },
+    });
+  };
+
+  const setTipoAlimentacaoParaLanche = () => {
+    const selectMotivo = screen.getByTestId("select-tipos-alimentacao-para");
+    const selectElement = selectMotivo.querySelector("select");
+    const uuidLanche = mockVinculosTipoAlimentacaoPeriodoEscolarCEI.results
+      .find((vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL")
+      .tipos_alimentacao.find((tipo_alimentacao) =>
+        tipo_alimentacao.nome.includes("Lanche")
+      ).uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidLanche },
     });
   };
 
@@ -143,8 +199,8 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     setMotivoRPL();
 
     const divDia = screen.getByTestId("data-alterar-dia");
-    const inputElement = divDia.querySelector("input");
-    fireEvent.change(inputElement, {
+    const inputElementDia = divDia.querySelector("input");
+    fireEvent.change(inputElementDia, {
       target: { value: "23/04/2025" },
     });
 
@@ -164,6 +220,68 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
       expect(
         screen.getByText("01 ano a 03 anos e 11 meses")
       ).toBeInTheDocument();
+    });
+
+    setTipoAlimentacaoDeAlmoco();
+    setTipoAlimentacaoParaLanche();
+
+    const divInputQuantidade = screen.getByTestId(
+      "substituicoes[0].faixas.e3030bd1-2e85-4676-87b3-96b4032370d4"
+    );
+    const inputElementQuantidade = divInputQuantidade.querySelector("input");
+    fireEvent.change(inputElementQuantidade, {
+      target: { value: "50" },
+    });
+
+    const textarea = screen.getByTestId("ckeditor-mock");
+    fireEvent.change(textarea, {
+      target: { value: "teste observacoes" },
+    });
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+  });
+
+  it("Carrega rascunho e envia", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    expect(screen.getByText("Solicitação # 8A5BA")).toBeInTheDocument();
+
+    const divInputQuantidade = screen.getByTestId(
+      "substituicoes[0].faixas.e3030bd1-2e85-4676-87b3-96b4032370d4"
+    );
+    const inputElementQuantidade = divInputQuantidade.querySelector("input");
+    expect(inputElementQuantidade).toHaveAttribute("value", "50");
+
+    const botaoEnviar = screen.getByText("Enviar").closest("button");
+    fireEvent.click(botaoEnviar);
+  });
+
+  it("Exclui rascunho", async () => {
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    mock.onGet("/alteracoes-cardapio-cei/minhas-solicitacoes/").reply(200, []);
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
+    expect(screen.queryByText("Rascunhos")).not.toBeInTheDocument();
+  });
+
+  it("Erro ao excluir rascunho", async () => {
+    mock
+      .onDelete(
+        `/alteracoes-cardapio/${mockRascunhosAlteracaoCEI.results[0].uuid}/`
+      )
+      .reply(400, { detail: "Erro ao excluir rascunho" });
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
     });
   });
 });

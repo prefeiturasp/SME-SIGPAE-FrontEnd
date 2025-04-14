@@ -751,7 +751,7 @@ export const mockRascunhosAlteracaoCEI = {
       ],
       rastro_terceirizada: null,
       criado_em: "11/04/2025 10:10:43",
-      data: "29/04/2025",
+      data: "23/04/2025",
       uuid: "8a5ba327-f29c-4048-9086-6dc0895eaddc",
       observacao: "<p>teste</p>",
       terceirizada_conferiu_gestao: false,

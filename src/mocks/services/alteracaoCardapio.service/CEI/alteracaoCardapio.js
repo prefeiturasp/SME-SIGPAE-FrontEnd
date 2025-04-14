@@ -1,0 +1,35 @@
+export const mockAlteracaoCardapioCEI = {
+  motivo: "4a297cbe-771f-4d6a-98ee-0d5fd4ffc442",
+  escola: "8914c34b-887a-47d4-afae-86293873cd54",
+  status_explicacao: "RASCUNHO",
+  substituicoes: [
+    {
+      periodo_escolar: "e17e2405-36be-4981-a09c-35c89ae0f8b7",
+      tipos_alimentacao_de: ["7990ca99-55b7-4fc7-b5cc-8a51b23d0102"],
+      alteracao_cardapio: "101b9792-aedf-4cf7-94e1-8e760b10a151",
+      tipo_alimentacao_para: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+      faixas_etarias: [
+        {
+          substituicao_alimentacao: "7867cfc2-13ed-45dc-b758-cfe4181a70ce",
+          faixa_etaria: "e3030bd1-2e85-4676-87b3-96b4032370d4",
+          uuid: "2f5e9576-08bc-4071-9e62-da38755a3c02",
+          quantidade: 50,
+          matriculados_quando_criado: 50,
+        },
+      ],
+      uuid: "7867cfc2-13ed-45dc-b758-cfe4181a70ce",
+    },
+  ],
+  criado_em: "11/04/2025 19:40:37",
+  data: "30/04/2025",
+  uuid: "101b9792-aedf-4cf7-94e1-8e760b10a151",
+  observacao: "<p>dasdas</p>",
+  foi_solicitado_fora_do_prazo: false,
+  terceirizada_conferiu_gestao: false,
+  eh_alteracao_com_lanche_repetida: false,
+  criado_por: 8,
+  rastro_escola: null,
+  rastro_dre: null,
+  rastro_lote: null,
+  rastro_terceirizada: null,
+};
