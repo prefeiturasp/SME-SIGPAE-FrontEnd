@@ -28,6 +28,25 @@ import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 
 describe("Teste - Relatório Histórico de Dietas Especiais", () => {
+  const getMocksGetDietasEspeciais = (
+    segundaRequisicao = mockGetSolicitacoesRelatorioHistoricoDietas
+  ) => {
+    let callCount = 0;
+
+    mock
+      .onGet("/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/")
+      .reply(() => {
+        callCount++;
+
+        switch (callCount) {
+          case 1:
+            return [200, mockGetSolicitacoesRelatorioHistoricoDietas];
+          case 2:
+            return [200, segundaRequisicao];
+        }
+      });
+  };
+
   beforeEach(async () => {
     mock.onGet("/api-version/").reply(200, APIMockVersion);
     mock.onGet("/notificacoes/").reply(200, {
@@ -57,9 +76,6 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     mock
       .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
       .reply(200, mockGetUnidadeEducacional);
-    mock
-      .onGet("/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/")
-      .replyOnce(200, mockGetSolicitacoesRelatorioHistoricoDietas);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
@@ -126,6 +142,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
   });
 
   it("renderiza título `Relatório de Histórico de Dietas`", async () => {
+    getMocksGetDietasEspeciais();
     await setFiltrosEClicaEmFiltrar();
     await waitFor(() => {
       expect(
@@ -137,6 +154,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
   });
 
   it("Verifica se o botão para abrir o collaps está funcional", async () => {
+    getMocksGetDietasEspeciais();
     await setFiltrosEClicaEmFiltrar();
     const angleDownIcon = document.querySelectorAll(".fa-angle-down");
 
@@ -161,7 +179,8 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     expect(screen.getByText("MANHA")).toBeInTheDocument();
   });
 
-  it.skip("Verifica mudança de página e Collapse CEMEI", async () => {
+  it("Testa Collapse EMEBS e CEU GESTAO", async () => {
+    getMocksGetDietasEspeciais(mockGetHistoricoDietasEMEBSeCEUGESTAO);
     await setFiltrosEClicaEmFiltrar();
 
     const paginaDois = document.querySelector(
@@ -170,46 +189,6 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     fireEvent.click(paginaDois);
 
     await waitFor(() => {
-      mock
-        .onGet(
-          "/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/"
-        )
-        .replyOnce(200, mockGetSolicitacoesHistoricoDietasCEMEI);
-      expect(
-        screen.getAllByText("CEMEI MARCIA KUMBREVICIUS DE MOURA").length
-      ).toBeGreaterThan(0);
-    });
-
-    const angleDownIcon = document.querySelector(".fa-angle-down");
-    fireEvent.click(angleDownIcon);
-    expect(
-      screen.getByText("Faixas Etárias com Dietas Autorizadas")
-    ).toBeInTheDocument();
-    expect(screen.getByText("Período INTEGRAL")).toBeInTheDocument();
-    expect(screen.getByText("01 a 03 meses")).toBeInTheDocument();
-
-    expect(
-      screen.getByText("Dietas Autorizadas nas Turmas do Infantil")
-    ).toBeInTheDocument();
-    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
-    expect(screen.getByText("MANHA")).toBeInTheDocument();
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
-  });
-
-  it.skip("Testa Collapse EMEBS e CEU GESTAO", async () => {
-    await setFiltrosEClicaEmFiltrar();
-
-    const paginaDois = document.querySelector(
-      ".ant-pagination .ant-pagination-item-2"
-    );
-    fireEvent.click(paginaDois);
-
-    await waitFor(() => {
-      mock
-        .onGet(
-          "/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/"
-        )
-        .replyOnce(200, mockGetHistoricoDietasEMEBSeCEUGESTAO);
       expect(
         screen.getAllByText("EMEBS NEUSA BASSETTO, PROFA.").length
       ).toBeGreaterThan(0);
@@ -233,7 +212,39 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     expect(screen.getByText("TARDE")).toBeInTheDocument();
   });
 
-  it.skip("Verifica mudança de página e Collapse EMEI/EMEF", async () => {
+  it("Verifica mudança de página e Collapse CEMEI", async () => {
+    getMocksGetDietasEspeciais(mockGetSolicitacoesHistoricoDietasCEMEI);
+    await setFiltrosEClicaEmFiltrar();
+
+    const paginaDois = document.querySelector(
+      ".ant-pagination .ant-pagination-item-2"
+    );
+    fireEvent.click(paginaDois);
+
+    await waitFor(() => {
+      expect(
+        screen.getAllByText("CEMEI MARCIA KUMBREVICIUS DE MOURA").length
+      ).toBeGreaterThan(0);
+    });
+
+    const angleDownIcon = document.querySelector(".fa-angle-down");
+    fireEvent.click(angleDownIcon);
+    expect(
+      screen.getByText("Faixas Etárias com Dietas Autorizadas")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Período INTEGRAL")).toBeInTheDocument();
+    expect(screen.getByText("01 a 03 meses")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Dietas Autorizadas nas Turmas do Infantil")
+    ).toBeInTheDocument();
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+    expect(screen.getByText("MANHA")).toBeInTheDocument();
+    expect(screen.getByText("TARDE")).toBeInTheDocument();
+  });
+
+  it("Verifica mudança de página e Collapse EMEI/EMEF", async () => {
+    getMocksGetDietasEspeciais(mockGetSolicitacoesHistoricoDietasEMEF);
     await setFiltrosEClicaEmFiltrar();
 
     const pagina_dois = document.querySelector(
@@ -242,12 +253,6 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     fireEvent.click(pagina_dois);
 
     await waitFor(() => {
-      mock
-        .onGet(
-          "/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/"
-        )
-        .replyOnce(200, mockGetSolicitacoesHistoricoDietasEMEF);
-
       expect(
         screen.getAllByText("EMEF PERICLES EUGENIO DA SILVA RAMOS").length
       ).toBeGreaterThan(0);

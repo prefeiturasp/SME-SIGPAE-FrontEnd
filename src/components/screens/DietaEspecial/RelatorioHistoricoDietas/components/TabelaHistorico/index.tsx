@@ -52,7 +52,7 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
 
   const PAGE_SIZE = 10;
 
-  const onChangePage = async (page, values) => {
+  const onChangePage = async (page: number, values) => {
     setPaginaAtual(page);
     setLoadingDietas(true);
     let params = {
