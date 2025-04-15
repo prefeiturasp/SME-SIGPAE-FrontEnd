@@ -65,7 +65,9 @@ export const DashboardDietaEspecial = ({ ...props }) => {
     !negadas ||
     !canceladas ||
     !inativas ||
-    !inativasTemporariamente;
+    !inativasTemporariamente ||
+    !meusDados ||
+    !meusDados.vinculo_atual;
 
   const EXIBE_ATALHOS_SOLICITACOES =
     usuarioEhEscolaTerceirizadaDiretor() ||
