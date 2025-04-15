@@ -1,13 +1,14 @@
-import React, { useState } from "react";
 import { Spin } from "antd";
 import Botao from "components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
 } from "components/Shareable/Botao/constants";
+import { ENVIRONMENT } from "constants/config";
+import React, { useState } from "react";
+import { Filtros } from "./components/Filtros";
 import { TabelaHistorico } from "./components/TabelaHistorico";
 import "./styles.scss";
-import { Filtros } from "./components/Filtros";
 
 export const RelatorioHistoricoDietas = () => {
   const [valuesForm, setValuesForm] = useState(null);
@@ -56,23 +57,25 @@ export const RelatorioHistoricoDietas = () => {
                     setCount={setCount}
                     values={valuesForm}
                   />
-                  <div className="row">
-                    <div className="col-12 text-end">
-                      <Botao
-                        texto="Exportar PDF"
-                        style={BUTTON_STYLE.GREEN}
-                        icon={BUTTON_ICON.FILE_PDF}
-                        onClick={() => {}}
-                      />
-                      <Botao
-                        texto="Exportar XLSX"
-                        style={BUTTON_STYLE.GREEN}
-                        icon={BUTTON_ICON.FILE_EXCEL}
-                        className="ms-3"
-                        onClick={() => {}}
-                      />
+                  {ENVIRONMENT !== "production" && (
+                    <div className="row">
+                      <div className="col-12 text-end">
+                        <Botao
+                          texto="Exportar PDF"
+                          style={BUTTON_STYLE.GREEN}
+                          icon={BUTTON_ICON.FILE_PDF}
+                          onClick={() => {}}
+                        />
+                        <Botao
+                          texto="Exportar XLSX"
+                          style={BUTTON_STYLE.GREEN}
+                          icon={BUTTON_ICON.FILE_EXCEL}
+                          className="ms-3"
+                          onClick={() => {}}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </>
               )}
             </Spin>

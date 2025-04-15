@@ -166,6 +166,9 @@ export const Filtros = ({ ...props }) => {
     ) {
       delete values_.classificacoes_selecionadas;
     }
+    if (values_.tipo_gestao === "Selecione um tipo de gestão") {
+      delete values_.tipo_gestao;
+    }
     let params = {
       ...PARAMS,
       ...values_,
@@ -208,7 +211,7 @@ export const Filtros = ({ ...props }) => {
                     name="tipo_gestao"
                     placeholder="Selecione um tipo de gestão"
                     options={[
-                      { nome: "Selecione um tipo de gestão", uuid: "" },
+                      { nome: "Selecione um tipo de gestão", uuid: null },
                     ].concat(
                       tiposGestao.map((tipoGestao) => ({
                         nome: tipoGestao.nome,
@@ -216,12 +219,6 @@ export const Filtros = ({ ...props }) => {
                       }))
                     )}
                     naoDesabilitarPrimeiraOpcao
-                    onChangeEffect={async (e) => {
-                      const value = e.target.value;
-                      form.reset({
-                        tipo_gestao: value,
-                      });
-                    }}
                   />
                 </div>
                 <div className="col-4">
@@ -266,6 +263,7 @@ export const Filtros = ({ ...props }) => {
                     naoDesabilitarPrimeiraOpcao
                     onChangeEffect={async (e) => {
                       const value = e.target.value;
+                      form.change("unidades_educacionais_selecionadas", []);
                       if (value && value.length === 0) {
                         setUnidadesEducacionais([]);
                         form.change(

@@ -144,7 +144,6 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
   });
 
   const selecionaMotivoLancheEmergencial = () => {
-    console.log("AQASDOPKADKPOASKOP");
     const selectMotivoDiv = screen.getByTestId("div-select-motivo");
     const selectElementMotivo = selectMotivoDiv.querySelector("select");
     const uuidLancheEmergencial = mockMotivosAlteracaoCardapio.results.find(
