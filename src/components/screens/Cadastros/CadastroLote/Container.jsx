@@ -1,15 +1,14 @@
+import { agregarDefault, formatarParaMultiselect } from "helpers/utilities";
 import React, { Component } from "react";
-import { meusDados } from "../../../../services/perfil.service";
+import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
 import {
   getEscolasSimplissima,
-  getTiposGestao,
   getSubprefeituras,
-} from "../../../../services/escola.service";
-import { getDiretoriaregionalSimplissima } from "../../../../services/diretoriaRegional.service";
-import { agregarDefault } from "../../../../helpers/utilities";
-import { formatarEscolasParaMultiselect } from "./helper";
-import { formatarParaMultiselect } from "../../../../helpers/utilities";
+  getTiposGestao,
+} from "services/escola.service";
+import { meusDados } from "services/perfil.service";
 import CadastroLote from ".";
+import { formatarEscolasParaMultiselect } from "./helper";
 
 class Container extends Component {
   constructor(props) {
@@ -39,7 +38,7 @@ class Container extends Component {
 
     getTiposGestao().then((response) => {
       this.setState({
-        tiposGestao: agregarDefault(response.results),
+        tiposGestao: agregarDefault(response.data.results),
       });
     });
 
