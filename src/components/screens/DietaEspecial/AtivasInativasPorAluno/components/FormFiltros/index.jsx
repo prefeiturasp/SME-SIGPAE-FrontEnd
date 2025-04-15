@@ -58,14 +58,8 @@ const FormFiltros = ({
         setDiretoriasRegionais,
         dadosUsuario
       );
-      let dadosIniciais = await getDadosIniciais(dadosUsuario);
-      if (dadosUsuario.tipo_usuario === "escola") {
-        let { nome, codigo_eol } = dadosUsuario.vinculo_atual.instituicao;
-        dadosIniciais.escola = [`${codigo_eol} - ${nome}`];
-      }
-
+      const dadosIniciais = await getDadosIniciais(dadosUsuario);
       getAlunos(dadosIniciais);
-
       if (navigationType === "POP" && initialValues)
         setDadosIniciais({ ...initialValues, ...dadosIniciais });
       else setDadosIniciais(dadosIniciais);

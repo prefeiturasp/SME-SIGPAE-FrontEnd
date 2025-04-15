@@ -28,6 +28,7 @@ export const Filtros = ({ ...props }) => {
     setLoadingDietas,
     setValuesForm,
     setCount,
+    setErro,
   } = props;
 
   const [tiposGestao, setTiposGestao] = useState(null);
@@ -59,16 +60,22 @@ export const Filtros = ({ ...props }) => {
         )
       );
     } else {
-      toastError("Erro ao buscar unidades educacionais");
+      setErro(
+        "Erro ao carregar unidades educacionais. Tente novamente mais tarde."
+      );
     }
   };
 
   const getTiposGestaoAsync = async () => {
     const response = await getTiposGestao();
-    if (response.results.length > 0) {
-      setTiposGestao(response.results);
+    if (response.status === HTTP_STATUS.OK) {
+      if (response.data.results.length > 0) {
+        setTiposGestao(response.data.results);
+      } else {
+        toastError("Erro ao buscar tipos de gestão");
+      }
     } else {
-      toastError("Erro ao buscar tipos de gestão");
+      setErro("Erro ao carregar tipos de gestão. Tente novamente mais tarde.");
     }
   };
 
@@ -77,7 +84,9 @@ export const Filtros = ({ ...props }) => {
     if (response.status === HTTP_STATUS.OK) {
       setTiposUnidades(response.data.results);
     } else {
-      toastError("Erro ao buscar tipos de unidade educacional");
+      setErro(
+        "Erro ao carregar tipos de unidade educacional. Tente novamente mais tarde."
+      );
     }
   };
 
@@ -86,7 +95,7 @@ export const Filtros = ({ ...props }) => {
     if (response.status === HTTP_STATUS.OK) {
       setLotes(response.data.results);
     } else {
-      toastError("Erro ao buscar lotes");
+      setErro("Erro ao carregar lotes. Tente novamente mais tarde.");
     }
   };
 
@@ -95,16 +104,20 @@ export const Filtros = ({ ...props }) => {
     if (response.status === HTTP_STATUS.OK) {
       setPeriodos(response.data.results);
     } else {
-      toastError("Erro ao buscar períodos escolares");
+      setErro(
+        "Erro ao carregar períodos escolares. Tente novamente mais tarde."
+      );
     }
   };
 
   const getClassificacoesDietaAsync = async () => {
     const response = await getClassificacoesDietaEspecial();
     if (response.status === HTTP_STATUS.OK) {
-      setClassificacoesDieta(response.results);
+      setClassificacoesDieta(response.data);
     } else {
-      toastError("Erro ao buscar classificações de dieta");
+      setErro(
+        "Erro ao carregar classificações de dieta. Tente novamente mais tarde."
+      );
     }
   };
 
@@ -174,7 +187,11 @@ export const Filtros = ({ ...props }) => {
   };
 
   const LOADEDFILTROS =
-    tiposGestao && tiposUnidades && lotes && periodos && classificacoesDieta;
+    !!tiposGestao &&
+    !!tiposUnidades &&
+    !!lotes &&
+    !!periodos &&
+    !!classificacoesDieta;
 
   return (
     <CollapseFiltros
@@ -232,6 +249,7 @@ export const Filtros = ({ ...props }) => {
                   <Field
                     label="DRE e Lote"
                     component={Select}
+                    dataTestId="select-dre-lote"
                     name="lote"
                     required
                     validate={required}
@@ -270,6 +288,7 @@ export const Filtros = ({ ...props }) => {
                     <Field
                       label="Unidade Educacional"
                       component={MultiselectRaw}
+                      dataTestId="select-unidades-educacionais"
                       required
                       validate={requiredMultiselect}
                       name="unidades_educacionais_selecionadas"
@@ -289,6 +308,7 @@ export const Filtros = ({ ...props }) => {
                 <div className="col-4">
                   <Field
                     component={InputComData}
+                    dataTestId="div-input-data"
                     label="Data"
                     required
                     validate={required}

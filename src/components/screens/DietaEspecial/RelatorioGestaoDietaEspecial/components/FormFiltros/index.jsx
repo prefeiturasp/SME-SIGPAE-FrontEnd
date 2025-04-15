@@ -76,7 +76,7 @@ export default ({ onSubmit, setCarregando }) => {
       );
       getAlunos(dadosIniciaisObtidos);
       setClassificacoesDieta(
-        responseClassificacoesDieta.results.map((c) => {
+        responseClassificacoesDieta.data.map((c) => {
           return { value: c.id, label: c.nome };
         })
       );

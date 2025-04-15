@@ -1,279 +1,250 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Field, formValueSelector, reduxForm } from "redux-form";
-import { FiltroEnum, TIPODECARD } from "../../../../constants/shared";
-import {
-  filtraPrioritarios,
-  ordenarPedidosDataMaisRecente,
-} from "../../../../helpers/painelPedidos";
-import { dataAtualDDMMYYYY } from "../../../../helpers/utilities";
-import { getCODAEPedidosDeInversoes } from "../../../../services/inversaoDeDiaDeCardapio.service";
-import Select from "../../../Shareable/Select";
+import { Select as SelectAntd, Spin } from "antd";
+import { ASelect } from "components/Shareable/MakeField";
+import { toastError } from "components/Shareable/Toast/dialogs";
+import { FiltroEnum, TIPODECARD } from "constants/shared";
 import {
   filtraNoLimite,
+  filtraPrioritarios,
   filtraRegular,
-} from "../../../SolicitacaoDeKitLanche/Container/helper";
+  ordenarPedidosDataMaisRecente,
+} from "helpers/painelPedidos";
 import {
-  formatarOpcoesLote,
+  dataAtualDDMMYYYY,
   formatarOpcoesDRE,
-  usuarioEhCODAEGestaoAlimentacao,
+  formatarOpcoesLote,
+  getError,
+  safeConcatOn,
 } from "helpers/utilities";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
-import { getLotesSimples } from "services/lote.service";
 import HTTP_STATUS from "http-status-codes";
+import React, { useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
+import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
+import { getCODAEPedidosDeInversoes } from "services/inversaoDeDiaDeCardapio.service";
+import { getLotesSimples } from "services/lote.service";
 import { CardInversaoPendenciaAprovacao } from "../../components/CardPendenteAcao";
-import { ASelect } from "components/Shareable/MakeField";
-import { Select as SelectAntd } from "antd";
 
-class PainelPedidos extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      pedidosPrioritarios: [],
-      pedidosNoPrazoLimite: [],
-      pedidosNoPrazoRegular: [],
-      filtros: this.props.filtros || {
-        lote: undefined,
-        diretoria_regional: undefined,
-      },
-      lotes: [],
-      diretoriasRegionais: [],
+export const PainelPedidos = ({ ...props }) => {
+  const [pedidosPrioritarios, setPedidosPrioritarios] = useState();
+  const [pedidosNoPrazoLimite, setPedidosNoPrazoLimite] = useState();
+  const [pedidosNoPrazoRegular, setPedidosNoPrazoRegular] = useState();
+
+  const [lotes, setLotes] = useState();
+  const [diretoriasRegionais, setDiretoriasRegionais] = useState();
+  const [loading, setLoading] = useState(true);
+
+  const { filtrosProps } = props;
+
+  const [filtros, setFiltros] = useState(filtrosProps);
+
+  const fetchSolicitacoes = async (filtro, paramsFromPrevPage) => {
+    const response = await getCODAEPedidosDeInversoes(
+      filtro,
+      paramsFromPrevPage
+    );
+
+    if (response.status === HTTP_STATUS.BAD_REQUEST) {
+      toastError(`Erro ao carregar inversões: ${getError(response.data)}`);
+    }
+
+    return response;
+  };
+
+  const atualizarDadosDasInversoes = async (filtro, paramsFromPrevPage) => {
+    setLoading(true);
+    setPedidosPrioritarios();
+    setPedidosNoPrazoLimite();
+    setPedidosNoPrazoRegular();
+
+    const [response] = await Promise.all([
+      fetchSolicitacoes(filtro, paramsFromPrevPage),
+    ]);
+
+    const inversoes = safeConcatOn("results", response);
+
+    const processarPedidos = (inversoes, filtro) => {
+      return ordenarPedidosDataMaisRecente(filtro(inversoes));
     };
-    this.setFiltros = this.setFiltros.bind(this);
-  }
 
-  filtrar(filtro, paramsFromPrevPage = {}) {
-    getCODAEPedidosDeInversoes(filtro, paramsFromPrevPage).then((response) => {
-      let pedidosPrioritarios = ordenarPedidosDataMaisRecente(
-        filtraPrioritarios(response.results)
-      );
-      let pedidosNoPrazoLimite = ordenarPedidosDataMaisRecente(
-        filtraNoLimite(response.results)
-      );
-      let pedidosNoPrazoRegular = ordenarPedidosDataMaisRecente(
-        filtraRegular(response.results)
-      );
-      this.setState({
-        pedidosPrioritarios,
-        pedidosNoPrazoLimite,
-        pedidosNoPrazoRegular,
-      });
-    });
-  }
+    const pedidosPrioritarios = processarPedidos(inversoes, filtraPrioritarios);
+    const pedidosNoPrazoLimite = processarPedidos(inversoes, filtraNoLimite);
+    const pedidosNoPrazoRegular = processarPedidos(inversoes, filtraRegular);
 
-  async getLotesAsync() {
+    setPedidosPrioritarios(pedidosPrioritarios);
+    setPedidosNoPrazoLimite(pedidosNoPrazoLimite);
+    setPedidosNoPrazoRegular(pedidosNoPrazoRegular);
+
+    setLoading(false);
+  };
+
+  const getLotesAsync = async () => {
     const response = await getLotesSimples();
     if (response.status === HTTP_STATUS.OK) {
       const { Option } = SelectAntd;
       const lotes_ = formatarOpcoesLote(response.data.results).map((lote) => {
         return <Option key={lote.value}>{lote.label}</Option>;
       });
-      this.setState({
-        lotes: [
+      setLotes(
+        [
           <Option value="" key={0}>
             Filtrar por Lote
           </Option>,
-        ].concat(lotes_),
-      });
+        ].concat(lotes_)
+      );
     }
-  }
+  };
 
-  async getDiretoriasRegionaisAsync() {
+  const getDiretoriasRegionaisAsync = async () => {
     const response = await getDiretoriaregionalSimplissima();
     if (response.status === HTTP_STATUS.OK) {
       const { Option } = SelectAntd;
       const dres = formatarOpcoesDRE(response.data.results).map((dre) => {
         return <Option key={dre.value}>{dre.label}</Option>;
       });
-      this.setState({
-        diretoriasRegionais: [
+      setDiretoriasRegionais(
+        [
           <Option value="" key={0}>
             Filtrar por DRE
           </Option>,
-        ].concat(dres),
-      });
-    }
-  }
-
-  setFiltros(filtros) {
-    this.setState({ filtros: filtros });
-  }
-
-  componentDidMount() {
-    this.getLotesAsync();
-    this.getDiretoriasRegionaisAsync();
-    const paramsFromPrevPage = this.props.filtros || {
-      lote: [],
-      diretoria_regional: [],
-    };
-    this.filtrar(FiltroEnum.SEM_FILTRO, paramsFromPrevPage);
-    if (this.props.filtros) {
-      this.props.change(
-        "diretoria_regional",
-        this.props.filtros.diretoria_regional
+        ].concat(dres)
       );
-      this.props.change("lote", this.props.filtros.lote);
     }
-  }
+  };
 
-  onFiltroSelected(value) {
-    const { filtros } = this.state || { lotes: [], diretorias_regionais: [] };
-    switch (value) {
-      case FiltroEnum.HOJE:
-        this.filtrarHoje();
-        break;
-      default:
-        this.filtrar(value, filtros);
-        break;
-    }
-  }
+  const onSubmit = () => {};
 
-  render() {
-    const {
-      pedidosPrioritarios,
-      pedidosNoPrazoLimite,
-      pedidosNoPrazoRegular,
-      diretoriasRegionais,
-      lotes,
-      filtros,
-    } = this.state;
+  const filtrar = async (filtro, filtros) => {
+    await atualizarDadosDasInversoes(filtro, filtros);
+  };
 
-    const { visaoPorCombo } = this.props;
-    const todosOsPedidosForamCarregados = true;
-    return (
-      <div>
-        {!todosOsPedidosForamCarregados ? (
-          <div>Carregando...</div>
-        ) : (
-          <form onSubmit={this.props.handleSubmit}>
-            <div className="card mt-3">
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-3 font-10 my-auto">
-                    Data: {dataAtualDDMMYYYY()}
-                  </div>
-                  {usuarioEhCODAEGestaoAlimentacao() ? (
-                    <>
-                      <div className="offset-3 col-3">
-                        <Field
-                          component={ASelect}
-                          showSearch
-                          onChange={(value) => {
-                            const filtros_ = {
-                              diretoria_regional: value || undefined,
-                              lote: filtros.lote,
-                            };
-                            this.setFiltros(filtros_);
-                            this.filtrar(FiltroEnum.SEM_FILTRO, filtros_);
-                          }}
-                          onBlur={(e) => {
-                            e.preventDefault();
-                          }}
-                          name="diretoria_regional"
-                          filterOption={(inputValue, option) =>
-                            option.props.children
-                              .toString()
-                              .toLowerCase()
-                              .includes(inputValue.toLowerCase())
-                          }
-                        >
-                          {diretoriasRegionais}
-                        </Field>
-                      </div>
-                      <div className="col-3">
-                        <Field
-                          component={ASelect}
-                          showSearch
-                          onChange={(value) => {
-                            const filtros_ = {
-                              diretoria_regional: filtros.diretoria_regional,
-                              lote: value || undefined,
-                            };
-                            this.setFiltros(filtros_);
-                            this.filtrar(FiltroEnum.SEM_FILTRO, filtros_);
-                          }}
-                          onBlur={(e) => {
-                            e.preventDefault();
-                          }}
-                          name="lote"
-                          filterOption={(inputValue, option) =>
-                            option.props.children
-                              .toString()
-                              .toLowerCase()
-                              .includes(inputValue.toLowerCase())
-                          }
-                        >
-                          {lotes}
-                        </Field>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="offset-6 col-3 text-end">
-                      <Field
-                        component={Select}
-                        name="visao_por"
-                        naoDesabilitarPrimeiraOpcao
-                        onChange={(event) =>
-                          this.onFiltroSelected(event.target.value)
-                        }
-                        placeholder={"Filtro por"}
-                        options={visaoPorCombo}
-                      />
+  useEffect(() => {
+    getLotesAsync();
+    getDiretoriasRegionaisAsync();
+    const paramsFromPrevPage = filtrosProps;
+    const filtro = FiltroEnum.SEM_FILTRO;
+    atualizarDadosDasInversoes(filtro, paramsFromPrevPage);
+  }, []);
+
+  const LOADING_INICIAL =
+    !pedidosPrioritarios &&
+    !pedidosNoPrazoLimite &&
+    !pedidosNoPrazoRegular &&
+    !lotes &&
+    !diretoriasRegionais;
+
+  return (
+    <div>
+      {LOADING_INICIAL ? (
+        <div>Carregando...</div>
+      ) : (
+        <Form initialValues={{ ...filtrosProps }} onSubmit={onSubmit}>
+          {({ handleSubmit, form }) => (
+            <form onSubmit={handleSubmit}>
+              <div className="card mt-3">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-3 font-10 my-auto">
+                      Data: {dataAtualDDMMYYYY()}
                     </div>
-                  )}
-                </div>
-                <div className="row pt-3">
-                  <div className="col-12">
-                    <CardInversaoPendenciaAprovacao
-                      titulo={
-                        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
-                      }
-                      tipoDeCard={TIPODECARD.PRIORIDADE}
-                      pedidos={pedidosPrioritarios}
-                      ultimaColunaLabel={"Data"}
-                    />
+                    <div className="offset-3 col-3">
+                      <Field
+                        component={ASelect}
+                        showSearch
+                        onChange={(value) => {
+                          form.change(`diretoria_regional`, value);
+                          const filtros_ = {
+                            diretoria_regional: value,
+                            lote: filtros.lote,
+                          };
+                          setFiltros(filtros_);
+                          filtrar(FiltroEnum.SEM_FILTRO, filtros_);
+                        }}
+                        name="diretoria_regional"
+                        filterOption={(inputValue, option) =>
+                          option.props.children
+                            .toString()
+                            .toLowerCase()
+                            .includes(inputValue.toLowerCase())
+                        }
+                        dataTestId="select-diretoria-regional"
+                      >
+                        {diretoriasRegionais}
+                      </Field>
+                    </div>
+                    <div className="col-3">
+                      <Field
+                        component={ASelect}
+                        showSearch
+                        onChange={(value) => {
+                          form.change(`lote`, value);
+                          const filtros_ = {
+                            diretoria_regional: filtros.diretoria_regional,
+                            lote: value,
+                          };
+                          setFiltros(filtros_);
+                          filtrar(FiltroEnum.SEM_FILTRO, filtros_);
+                        }}
+                        name="lote"
+                        filterOption={(inputValue, option) =>
+                          option.props.children
+                            .toString()
+                            .toLowerCase()
+                            .includes(inputValue.toLowerCase())
+                        }
+                        dataTestId="select-lote"
+                      >
+                        {lotes}
+                      </Field>
+                    </div>
                   </div>
-                </div>
-
-                <div className="row pt-3">
-                  <div className="col-12">
-                    <CardInversaoPendenciaAprovacao
-                      titulo={"Solicitações no prazo limite"}
-                      tipoDeCard={TIPODECARD.NO_LIMITE}
-                      pedidos={pedidosNoPrazoLimite}
-                      ultimaColunaLabel={"Data"}
-                    />
-                  </div>
-                </div>
-
-                <div className="row pt-3">
-                  <div className="col-12">
-                    <CardInversaoPendenciaAprovacao
-                      titulo={"Solicitações no prazo regular"}
-                      tipoDeCard={TIPODECARD.REGULAR}
-                      pedidos={pedidosNoPrazoRegular}
-                      ultimaColunaLabel={"Data"}
-                    />
-                  </div>
+                  <Spin tip="Carregando solicitações..." spinning={loading}>
+                    <div className="row pt-3">
+                      <div className="col-12">
+                        {pedidosPrioritarios && (
+                          <CardInversaoPendenciaAprovacao
+                            titulo={
+                              "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
+                            }
+                            tipoDeCard={TIPODECARD.PRIORIDADE}
+                            pedidos={pedidosPrioritarios}
+                            colunaDataLabel={"Data da Inversão"}
+                            dataTestId="prioritario"
+                          />
+                        )}
+                      </div>
+                    </div>
+                    <div className="row pt-3">
+                      <div className="col-12">
+                        {pedidosNoPrazoLimite && (
+                          <CardInversaoPendenciaAprovacao
+                            titulo={"Solicitações no prazo limite"}
+                            tipoDeCard={TIPODECARD.NO_LIMITE}
+                            pedidos={pedidosNoPrazoLimite}
+                            colunaDataLabel={"Data da Inversão"}
+                            dataTestId="limite"
+                          />
+                        )}
+                      </div>
+                    </div>
+                    <div className="row pt-3">
+                      <div className="col-12">
+                        {pedidosNoPrazoRegular && (
+                          <CardInversaoPendenciaAprovacao
+                            titulo={"Solicitações no prazo regular"}
+                            tipoDeCard={TIPODECARD.REGULAR}
+                            pedidos={pedidosNoPrazoRegular}
+                            colunaDataLabel={"Data da Inversão"}
+                            dataTestId="regular"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </Spin>
                 </div>
               </div>
-            </div>
-          </form>
-        )}
-      </div>
-    );
-  }
-}
-
-const PainelPedidosForm = reduxForm({
-  form: "painelPedidos",
-  enableReinitialize: true,
-})(PainelPedidos);
-const selector = formValueSelector("painelPedidos");
-const mapStateToProps = (state) => {
-  return {
-    valorDoFiltro: selector(state, "visao_por"),
-  };
+            </form>
+          )}
+        </Form>
+      )}
+    </div>
+  );
 };
-
-export default connect(mapStateToProps)(PainelPedidosForm);
