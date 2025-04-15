@@ -7,7 +7,8 @@ export default class CardMatriculados extends Component {
     const { numeroAlunos, meusDados } = this.props;
 
     const numeroAlunos_ =
-      numeroAlunos || meusDados.vinculo_atual.instituicao.quantidade_alunos;
+      numeroAlunos ||
+      (meusDados && meusDados?.vinculo_atual?.instituicao?.quantidade_alunos);
 
     return escolaEhCEMEI() ? (
       <div className="card mt-1">
