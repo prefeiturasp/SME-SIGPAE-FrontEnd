@@ -161,19 +161,13 @@ export const getEscolasSimplissimaPorDiretoriaRegional = (dre_uuid) => {
     });
 };
 
-export const getTiposGestao = () => {
+export const getTiposGestao = async () => {
   const url = `${API_URL}/tipos-gestao/`;
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getSubprefeituras = () => {

@@ -108,6 +108,7 @@ const CollapseFiltros: React.FC<Props> = ({
 
                   <div className="pt-4 pb-4 mb-2">
                     <Botao
+                      dataTestId="botao-filtrar"
                       texto="Filtrar"
                       type={BUTTON_TYPE.SUBMIT}
                       style={BUTTON_STYLE.GREEN}

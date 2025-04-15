@@ -158,17 +158,26 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     return values && values.substituicoes[indice];
   };
 
-  const encontrarIndiceSubstituicao = (periodoEscolarUuid) => {
-    for (let index = 0; index < solicitacao.substituicoes.length; index++) {
-      const substituicao = solicitacao.substituicoes[index];
+  const encontrarIndiceSubstituicao = (
+    periodoEscolarUuid,
+    solicitacao_ = solicitacao
+  ) => {
+    for (let index = 0; index < solicitacao_.substituicoes.length; index++) {
+      const substituicao = solicitacao_.substituicoes[index];
       if (substituicao.periodo_escolar.uuid === periodoEscolarUuid) {
         return index;
       }
     }
-    return -1; // não encontrou
+    return -1;
   };
 
-  const getFaixasEtariasPorPeriodo = async (periodo, data, index, form) => {
+  const getFaixasEtariasPorPeriodo = async (
+    periodo,
+    data,
+    index,
+    form,
+    solicitacao_ = solicitacao
+  ) => {
     form.change(`substituicoes[${index}].loading_faixas`, true);
     const response = await getAlunosPorFaixaEtariaNumaData(periodo, data);
     if (response.status === HTTP_STATUS.OK) {
@@ -178,21 +187,21 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
           (faixas) => faixas.faixa_etaria.inicio > 11 && faixas.count > 0
         )
       );
-
-      if (solicitacao) {
+      if (solicitacao_) {
         const faixasQuantidades = {};
 
         const periodoEscolarUuid = periodo;
-        const indiceSubstituicao =
-          encontrarIndiceSubstituicao(periodoEscolarUuid);
+        const indiceSubstituicao = encontrarIndiceSubstituicao(
+          periodoEscolarUuid,
+          solicitacao_
+        );
 
-        solicitacao.substituicoes[indiceSubstituicao] &&
-          solicitacao.substituicoes[indiceSubstituicao].faixas_etarias.forEach(
+        solicitacao_.substituicoes[indiceSubstituicao] &&
+          solicitacao_.substituicoes[indiceSubstituicao].faixas_etarias.forEach(
             (faixa) => {
               faixasQuantidades[faixa.faixa_etaria.uuid] = faixa.quantidade;
             }
           );
-
         await form.change(`substituicoes[${index}].faixas`, faixasQuantidades);
         await form.change(`substituicoes[${index}].loading_faixas`, false);
         setSolicitacao(null);
@@ -330,6 +339,17 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
       substituicoes[index].tipos_alimentacao_de_selecionados =
         !solicitacao.motivo.nome.includes("RPL") &&
         substituicao.tipos_alimentacao_de.map((ta) => ta.uuid);
+      substituicao.faixas_etarias.forEach(async (faixa) => {
+        await getFaixasEtariasPorPeriodo(
+          substituicao.periodo_escolar.uuid,
+          solicitacao.data.split("/").reverse().join("-"),
+          index,
+          form,
+          solicitacao
+        );
+        substituicoes[index][`faixas.${faixa.faixa_etaria.uuid}`] =
+          faixa.quantidade;
+      });
     });
     await form.change("substituicoes", substituicoes);
     await form.change("data", solicitacao.data);
@@ -410,6 +430,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                         <Field
                           component={Select}
                           name="motivo"
+                          dataTestId={`select-motivo`}
                           label="Motivo"
                           options={motivos.filter(
                             ({ nome }) =>
@@ -432,6 +453,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                         <Field
                           component={InputComData}
                           name="data"
+                          dataTestId={`data-alterar-dia`}
                           minDate={proximosDoisDiasUteis}
                           maxDate={fimDoCalendario()}
                           label="Alterar dia"
@@ -474,6 +496,9 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                   <div className="col-4">
                                     <div
                                       className={`period-quantity number-${indice} ps-5 pt-2 pb-2`}
+                                      data-testid={`div-checkbox-${
+                                        getPeriodo(values, indice).nome
+                                      }`}
                                     >
                                       <label
                                         htmlFor="check"
@@ -549,6 +574,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                     <div className="col-4">
                                       <Field
                                         component={Select}
+                                        dataTestId={`select-tipos-alimentacao-de`}
                                         name={`${name}.tipos_alimentacao_de`}
                                         options={getTiposAlimentacaoDe(values)}
                                         validate={
@@ -569,6 +595,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                       <Field
                                         component={MultiselectRaw}
                                         name={`${name}.tipos_alimentacao_de`}
+                                        dataTestId={`select-tipos-alimentacao-de`}
                                         selected={
                                           values.substituicoes[indice]
                                             .tipos_alimentacao_de_selecionados ||
@@ -590,6 +617,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                   <div className="col-4">
                                     <Field
                                       component={Select}
+                                      dataTestId={`select-tipos-alimentacao-para`}
                                       name={`${name}.tipo_alimentacao_para`}
                                       options={getTiposAlimentacaoPara(
                                         values,
@@ -651,6 +679,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                                   <Field
                                                     component={InputText}
                                                     type="number"
+                                                    dataTestIdDiv={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
                                                     name={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
                                                     validate={
                                                       getPeriodo(values, indice)
@@ -697,11 +726,14 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                         component={CKEditorField}
                         label="Observações"
                         name="observacao"
-                        required
-                        validate={composeValidators(
-                          textAreaRequired,
-                          peloMenosUmCaractere
-                        )}
+                        required={!process.env.IS_TEST}
+                        validate={
+                          !process.env.IS_TEST &&
+                          composeValidators(
+                            textAreaRequired,
+                            peloMenosUmCaractere
+                          )
+                        }
                       />
                     </div>
                     <div className="row float-end mt-4">

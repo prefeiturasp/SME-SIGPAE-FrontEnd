@@ -1,7 +1,7 @@
+import Container from "components/AlteracaoDeCardapio/CEI/Container";
+import Breadcrumb from "components/Shareable/Breadcrumb";
+import Page from "components/Shareable/Page/Page";
 import React from "react";
-import Breadcrumb from "../../components/Shareable/Breadcrumb";
-import Container from "../../components/AlteracaoDeCardapio/CEI/Container";
-import Page from "../../components/Shareable/Page/Page";
 import { HOME } from "./constants";
 
 const atual = {
@@ -9,7 +9,7 @@ const atual = {
   titulo: "Alteração do Tipo de Alimentação",
 };
 
-export default () => (
+export const AlteracaoDeCardapioCEIPage = () => (
   <Page titulo={atual.titulo} botaoVoltar>
     <Breadcrumb home={HOME} atual={atual} />
     <Container />
