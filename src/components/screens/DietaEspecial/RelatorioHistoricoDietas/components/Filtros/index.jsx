@@ -199,12 +199,6 @@ export const Filtros = ({ ...props }) => {
                       }))
                     )}
                     naoDesabilitarPrimeiraOpcao
-                    onChangeEffect={async (e) => {
-                      const value = e.target.value;
-                      form.reset({
-                        tipo_gestao: value,
-                      });
-                    }}
                   />
                 </div>
                 <div className="col-4">
@@ -248,6 +242,7 @@ export const Filtros = ({ ...props }) => {
                     naoDesabilitarPrimeiraOpcao
                     onChangeEffect={async (e) => {
                       const value = e.target.value;
+                      form.change("unidades_educacionais_selecionadas", []);
                       if (value && value.length === 0) {
                         setUnidadesEducacionais([]);
                         form.change(
