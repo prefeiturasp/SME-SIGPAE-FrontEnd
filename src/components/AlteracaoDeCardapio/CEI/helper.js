@@ -53,6 +53,7 @@ export const validaForm = (values) => {
   let erro = "";
   if (!values.substituicoes.find((subs) => subs.checked)) {
     erro = "É necessário selecionar pelo menos um período";
+    return erro;
   }
   if (
     !values.substituicoes

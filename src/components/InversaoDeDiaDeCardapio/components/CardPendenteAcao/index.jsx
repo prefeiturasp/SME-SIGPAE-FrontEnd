@@ -40,10 +40,14 @@ export class CardInversaoPendenciaAprovacao extends Component {
   }
 
   render() {
-    const { pedidos, titulo, tipoDeCard, ultimaColunaLabel } = this.props;
+    const { pedidos, titulo, tipoDeCard, ultimaColunaLabel, dataTestId } =
+      this.props;
     const { collapsed, pedidosFiltrados } = this.state;
     return (
-      <div className="card card-pendency-approval food-inversion">
+      <div
+        className="card card-pendency-approval food-inversion"
+        data-testid={dataTestId}
+      >
         <div className={"card-title " + tipoDeCard}>{titulo}</div>
         <div className="row">
           <div className="col-2">

@@ -20,6 +20,7 @@ type Props = {
   onClear: () => void;
   manterFiltros?: Array<string>;
   desabilitarBotoes?: boolean;
+  initialValues?: Object;
 };
 
 const CollapseFiltros: React.FC<Props> = ({
@@ -29,6 +30,7 @@ const CollapseFiltros: React.FC<Props> = ({
   onClear,
   desabilitarBotoes,
   manterFiltros,
+  initialValues = {},
 }) => {
   const id = "collapseFiltros";
   const [collapse, setCollapse] = useState(true);
@@ -99,13 +101,14 @@ const CollapseFiltros: React.FC<Props> = ({
           <div className="card-body">
             <Form
               onSubmit={onSubmit}
-              initialValues={{}}
+              initialValues={initialValues}
               render={({ form, handleSubmit, values }) => (
                 <form onSubmit={handleSubmit}>
                   <div>{children(values, form)}</div>
 
                   <div className="pt-4 pb-4 mb-2">
                     <Botao
+                      dataTestId="botao-filtrar"
                       texto="Filtrar"
                       type={BUTTON_TYPE.SUBMIT}
                       style={BUTTON_STYLE.GREEN}

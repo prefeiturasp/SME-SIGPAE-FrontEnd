@@ -125,12 +125,20 @@ export const getSomatorioFaixas = async (escola_id, dataReferencia) => {
 
 export const getEscolaPeriodoEscolares = async () => {
   const url = `/${ENDPOINT.QUANTIDADE_ALUNOS_POR_PERIODO}/`;
-  return axios.get(url);
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getPeriodosComMatriculadosPorUE = async (uuid) => {
   const url = `/${ENDPOINT.PERIODOS_COM_MATRICULADOS_POR_UE}/?escola_uuid=${uuid}/`;
-  return axios.get(url);
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const createAlteracaoCardapioCEMEI = async (payload) => {

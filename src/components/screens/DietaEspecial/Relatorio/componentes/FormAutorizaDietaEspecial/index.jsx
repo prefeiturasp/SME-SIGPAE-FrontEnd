@@ -88,7 +88,7 @@ const FormAutorizaDietaEspecial = ({
     const respClassificacoes = await getClassificacoesDietaEspecial();
     if (respClassificacoes.status === HTTP_STATUS.OK) {
       setClassificacoesDieta(
-        formataOpcoesClassificacaoDieta(respClassificacoes.results)
+        formataOpcoesClassificacaoDieta(respClassificacoes.data)
       );
     } else {
       toastError("Houve um erro ao carregar Classificações da Dieta");

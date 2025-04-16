@@ -17,7 +17,7 @@ const anteriores = [
   },
 ];
 
-export default () => (
+export const PainelLayoutEmbalagemPage = () => (
   <Page botaoVoltar voltarPara="/" titulo={atual.titulo}>
     <Breadcrumb home={HOME} atual={atual} anteriores={anteriores} />
     <PainelLayoutEmbalagem />

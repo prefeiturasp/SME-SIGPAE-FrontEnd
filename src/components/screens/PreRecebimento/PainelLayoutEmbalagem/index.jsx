@@ -46,15 +46,19 @@ export default () => {
   };
 
   const gerarLinkLayout = (item) => {
-    if (item.status === "Aprovado") {
-      return usuarioPodeAnalisarLayoutEmbalagem()
-        ? `/${PRE_RECEBIMENTO}/${ANALISAR_LAYOUT_EMBALAGEM}?uuid=${item.uuid}`
-        : `/${PRE_RECEBIMENTO}/${DETALHAR_LAYOUT_EMBALAGEM}?uuid=${item.uuid}`;
+    if (!usuarioPodeAnalisarLayoutEmbalagem()) {
+      return `/${PRE_RECEBIMENTO}/${DETALHAR_LAYOUT_EMBALAGEM}?uuid=${item.uuid}`;
     }
 
-    return item.status === "Solicitado Correção"
-      ? `/${PRE_RECEBIMENTO}/${DETALHAR_LAYOUT_EMBALAGEM_SOLICITACAO_ALTERACAO}?uuid=${item.uuid}`
-      : `/${PRE_RECEBIMENTO}/${ANALISAR_LAYOUT_EMBALAGEM}?uuid=${item.uuid}`;
+    switch (item.status) {
+      case "Enviado para Análise":
+        return `/${PRE_RECEBIMENTO}/${ANALISAR_LAYOUT_EMBALAGEM}?uuid=${item.uuid}`;
+      case "Solicitado Correção":
+        return `/${PRE_RECEBIMENTO}/${DETALHAR_LAYOUT_EMBALAGEM_SOLICITACAO_ALTERACAO}?uuid=${item.uuid}`;
+      case "Aprovado":
+      default:
+        return `/${PRE_RECEBIMENTO}/${DETALHAR_LAYOUT_EMBALAGEM}?uuid=${item.uuid}`;
+    }
   };
 
   const formatarCardsLayout = (items) => {
@@ -131,54 +135,55 @@ export default () => {
     <Spin tip="Carregando..." spinning={carregando}>
       <div className="card mt-3 card-painel-layout-embalagem">
         <div className="card-body painel-layout-embalagem">
-          <h5 className="card-title mt-3">Aprovação de Layouts</h5>
+          <h5 className="card-title col-12 mt-3">Aprovação de Layouts</h5>
 
-          <div className="row mt-4">
-            <div className="col">
-              <Form
-                initialValues={{
-                  numero_cronograma: "",
-                  nome_produto: "",
-                  nome_fornecedor: "",
-                }}
-                onSubmit={() => {}}
-              >
-                {({ form }) => (
-                  <div className="row text-end">
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        name="numero_cronograma"
-                        placeholder="Filtrar por N° do Cronograma"
-                        inputOnChange={(e) =>
-                          filtrarLayouts(e.target.value, form.getState().values)
-                        }
-                      />
-                    </div>
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        name="nome_produto"
-                        placeholder="Filtrar por Nome do Produto"
-                        inputOnChange={(e) =>
-                          filtrarLayouts(e.target.value, form.getState().values)
-                        }
-                      />
-                    </div>
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        name="nome_fornecedor"
-                        placeholder="Filtrar por Nome do Fornecedor"
-                        inputOnChange={(e) =>
-                          filtrarLayouts(e.target.value, form.getState().values)
-                        }
-                      />
-                    </div>
+          <div className="mt-4">
+            <Form
+              initialValues={{
+                numero_cronograma: "",
+                nome_produto: "",
+                nome_fornecedor: "",
+              }}
+              onSubmit={() => {}}
+            >
+              {({ form }) => (
+                <div className="row text-end">
+                  <div className="col-4">
+                    <Field
+                      component={InputText}
+                      name="numero_cronograma"
+                      dataTestIdDiv="div-input-numero-cronograma"
+                      placeholder="Filtrar por N° do Cronograma"
+                      inputOnChange={(e) =>
+                        filtrarLayouts(e.target.value, form.getState().values)
+                      }
+                    />
                   </div>
-                )}
-              </Form>
-            </div>
+                  <div className="col-4">
+                    <Field
+                      component={InputText}
+                      name="nome_produto"
+                      dataTestIdDiv="div-input-nome-produto"
+                      placeholder="Filtrar por Nome do Produto"
+                      inputOnChange={(e) =>
+                        filtrarLayouts(e.target.value, form.getState().values)
+                      }
+                    />
+                  </div>
+                  <div className="col-4">
+                    <Field
+                      component={InputText}
+                      name="nome_fornecedor"
+                      dataTestIdDiv="div-input-nome-fornecedor"
+                      placeholder="Filtrar por Nome do Fornecedor"
+                      inputOnChange={(e) =>
+                        filtrarLayouts(e.target.value, form.getState().values)
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+            </Form>
           </div>
 
           <div className="row mt-4">
@@ -197,7 +202,7 @@ export default () => {
             ))}
           </div>
 
-          <h5 className="card-title mt-3">Alteração de Layout</h5>
+          <h5 className="card-title col-12 mt-3">Alteração de Layout</h5>
 
           <div className="row mt-4">
             {cardsAlteracaoLayout.map((card, index) => (

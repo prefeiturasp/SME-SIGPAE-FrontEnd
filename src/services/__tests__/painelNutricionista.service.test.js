@@ -9,10 +9,7 @@ import {
   getSolicitacoesNegadasNutricionista,
   getTiposDietaEspecial,
 } from "../painelNutricionista.service";
-import {
-  getClassificacoesDietaEspecial,
-  getAlergiasIntolerancias,
-} from "../dietaEspecial.service";
+import { getAlergiasIntolerancias } from "../dietaEspecial.service";
 
 fetchMock.get(`${SOLICITACOES_DIETA}/${SOLICITACOES.PENDENTES}/`, {
   results: ["resultados", "pendentes"],
@@ -31,9 +28,6 @@ fetchMock.get(`${API_URL}/alergias-intolerancias/`, {
 });
 fetchMock.get(`${API_URL}/tipos-dieta-especial/`, {
   results: ["tipos", "dieta", "especial"],
-});
-fetchMock.get(`${API_URL}/classificacoes-dieta/`, {
-  results: ["classificacoes", "dieta"],
 });
 fetchMock.get(`${API_URL}/motivos-negacao/?processo=INCLUSAO`, {
   results: ["motivos", "negacao"],
@@ -76,13 +70,6 @@ describe("test painelNutricionista.service", () => {
     const response = await getTiposDietaEspecial();
     expect(response).toEqual({
       results: ["tipos", "dieta", "especial"],
-      status: 200,
-    });
-  });
-  it("getClassificacoesDietaEspecial", async () => {
-    const response = await getClassificacoesDietaEspecial();
-    expect(response).toEqual({
-      results: ["classificacoes", "dieta"],
       status: 200,
     });
   });
