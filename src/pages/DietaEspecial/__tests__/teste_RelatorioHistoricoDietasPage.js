@@ -1,7 +1,9 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  findByText,
   fireEvent,
+  getByText,
   render,
   screen,
   waitFor,
@@ -13,6 +15,12 @@ import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPeric
 import { mockGetHistoricoDietasEMEBSeCEUGESTAO } from "mocks/services/dietaEspecial.service/mockGetHistoricoDietasEMEBSeCEUGESTAO";
 import { mockGetSolicitacoesHistoricoDietasCEMEI } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasCEMEI";
 import { mockGetSolicitacoesHistoricoDietasEMEF } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasEMEF";
+import { mockGetTipoGestao } from "mocks/services/dietaEspecial.service/mockGetTipoGestao";
+import { mockGetTiposUnidadeEscolar } from "mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
+import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
+import { mockGetPeriodoEscolar } from "mocks/services/dietaEspecial.service/mockGetPeriodoEscolar.js";
+import { mockGetClassificacaoDieta } from "mocks/services/dietaEspecial.service/mockGetClassificacoesDietas.js";
+import { mockGetUnidadeEducacional } from "mocks/services/dietaEspecial.service/mockGetUnidadeEducacional.js";
 import { mockGetSolicitacoesRelatorioHistoricoDietas } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesRelatorioHistoricoDietas";
 import RelatorioHistoricoDietasPage from "pages/DietaEspecial/RelatorioHistoricoDietasPage";
 import React from "react";
@@ -20,6 +28,25 @@ import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 
 describe("Teste - Relatório Histórico de Dietas Especiais", () => {
+  const getMocksGetDietasEspeciais = (
+    segundaRequisicao = mockGetSolicitacoesRelatorioHistoricoDietas
+  ) => {
+    let callCount = 0;
+
+    mock
+      .onGet("/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/")
+      .reply(() => {
+        callCount++;
+
+        switch (callCount) {
+          case 1:
+            return [200, mockGetSolicitacoesRelatorioHistoricoDietas];
+          case 2:
+            return [200, segundaRequisicao];
+        }
+      });
+  };
+
   beforeEach(async () => {
     mock.onGet("/api-version/").reply(200, APIMockVersion);
     mock.onGet("/notificacoes/").reply(200, {
@@ -39,9 +66,16 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
 
+    mock.onGet("/tipos-gestao/").reply(200, mockGetTipoGestao);
     mock
-      .onGet("/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/")
-      .replyOnce(200, mockGetSolicitacoesRelatorioHistoricoDietas);
+      .onGet("/tipos-unidade-escolar/")
+      .reply(200, mockGetTiposUnidadeEscolar);
+    mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
+    mock.onGet("/periodos-escolares/").reply(200, mockGetPeriodoEscolar);
+    mock.onGet("/classificacoes-dieta/").reply(200, mockGetClassificacaoDieta);
+    mock
+      .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
+      .reply(200, mockGetUnidadeEducacional);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
@@ -61,30 +95,126 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     });
   });
 
+  const setDRELote = async () => {
+    const selectDRELOTE = screen.getByTestId("select-dre-lote");
+    const selectElement = selectDRELOTE.querySelector("select");
+    const uuidLote = mockLotesSimples.results[0].uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidLote },
+    });
+  };
+
+  const keyDownEvent = {
+    key: "ArrowDown",
+  };
+
+  const selectOptionUE = async (container, optionText) => {
+    const placeholder = getByText(
+      container,
+      "Selecione as Unidades Educacionais"
+    );
+    fireEvent.keyDown(placeholder, keyDownEvent);
+    await findByText(container, optionText);
+    fireEvent.click(getByText(container, optionText));
+  };
+
+  const setFiltrosEClicaEmFiltrar = async () => {
+    await setDRELote();
+    await selectOptionUE(
+      screen.getByTestId("select-unidades-educacionais"),
+      "000566 - EMEF TERESA MARGARIDA DA SILVA E ORTA"
+    );
+
+    const divInputAlterarDia = screen.getByTestId("div-input-data");
+    const inputElement = divInputAlterarDia.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "30/01/2025" },
+    });
+
+    const botaoFiltrar = screen.getByTestId("botao-filtrar");
+    await act(async () => {
+      fireEvent.click(botaoFiltrar);
+    });
+  };
+
+  it("deve renderizar o componente corretamente", async () => {
+    expect(screen.getByText("Filtrar Resultados")).toBeInTheDocument();
+  });
+
   it("renderiza título `Relatório de Histórico de Dietas`", async () => {
-    expect(
-      screen.getByText(
-        "Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS EM 24/08/2023: 198"
-      )
-    ).toBeInTheDocument();
+    getMocksGetDietasEspeciais();
+    await setFiltrosEClicaEmFiltrar();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS EM 12/02/2024: 27"
+        )
+      ).toBeInTheDocument();
+    });
   });
 
   it("Verifica se o botão para abrir o collaps está funcional", async () => {
-    const angleDownIcon = document.querySelector(".fa-angle-down");
+    getMocksGetDietasEspeciais();
+    await setFiltrosEClicaEmFiltrar();
+    const angleDownIcon = document.querySelectorAll(".fa-angle-down");
 
-    fireEvent.click(angleDownIcon);
-
+    const escolaCei = angleDownIcon[3];
+    fireEvent.click(escolaCei);
     expect(
       screen.getByText("Faixas Etárias com Dietas Autorizadas")
     ).toBeInTheDocument();
     expect(screen.getByText("Período INTEGRAL")).toBeInTheDocument();
-    expect(screen.getByText("Período PARCIAL")).toBeInTheDocument();
+    expect(screen.getByText("07 a 11 meses")).toBeInTheDocument();
+    expect(screen.getByText("01 ano a 03 anos e 11 meses")).toBeInTheDocument();
+
+    const escolaCeuCemei = angleDownIcon[7];
+    fireEvent.click(escolaCeuCemei);
+    expect(
+      screen.getByText("Dietas Autorizadas nas Turmas do Infantil")
+    ).toBeInTheDocument();
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+
+    const escolaEmef = angleDownIcon[9];
+    fireEvent.click(escolaEmef);
+    expect(screen.getByText("MANHA")).toBeInTheDocument();
+  });
+
+  it("Testa Collapse EMEBS e CEU GESTAO", async () => {
+    getMocksGetDietasEspeciais(mockGetHistoricoDietasEMEBSeCEUGESTAO);
+    await setFiltrosEClicaEmFiltrar();
+
+    const paginaDois = document.querySelector(
+      ".ant-pagination .ant-pagination-item-2"
+    );
+    fireEvent.click(paginaDois);
+
+    await waitFor(() => {
+      expect(
+        screen.getAllByText("EMEBS NEUSA BASSETTO, PROFA.").length
+      ).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText(
+          "CEU GESTAO MENINOS - ARTUR ALBERTO DE MOTA GONCALVES, PROF. PR."
+        ).length
+      ).toBeGreaterThan(0);
+    });
+
+    const angleDownIcon = document.querySelector(".fa-angle-down");
+    fireEvent.click(angleDownIcon);
+    expect(
+      screen.getByText("Alunos do Infantil (4 a 6 anos)")
+    ).toBeInTheDocument();
+    expect(screen.getByText("MANHA")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Alunos do Fundamental (acima de 6 anos)")
+    ).toBeInTheDocument();
+    expect(screen.getByText("TARDE")).toBeInTheDocument();
   });
 
   it("Verifica mudança de página e Collapse CEMEI", async () => {
-    mock
-      .onGet("/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/")
-      .replyOnce(200, mockGetSolicitacoesHistoricoDietasCEMEI);
+    getMocksGetDietasEspeciais(mockGetSolicitacoesHistoricoDietasCEMEI);
+    await setFiltrosEClicaEmFiltrar();
 
     const paginaDois = document.querySelector(
       ".ant-pagination .ant-pagination-item-2"
@@ -99,50 +229,28 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
 
     const angleDownIcon = document.querySelector(".fa-angle-down");
     fireEvent.click(angleDownIcon);
+    expect(
+      screen.getByText("Faixas Etárias com Dietas Autorizadas")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Período INTEGRAL")).toBeInTheDocument();
+    expect(screen.getByText("01 a 03 meses")).toBeInTheDocument();
 
     expect(
       screen.getByText("Dietas Autorizadas nas Turmas do Infantil")
     ).toBeInTheDocument();
-  });
-
-  it("Testa Collapse EMEBS e CEU GESTAO", async () => {
-    mock
-      .onGet("/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/")
-      .replyOnce(200, mockGetHistoricoDietasEMEBSeCEUGESTAO);
-
-    const paginaTres = document.querySelector(
-      ".ant-pagination .ant-pagination-item-3"
-    );
-    fireEvent.click(paginaTres);
-
-    await waitFor(() => {
-      expect(
-        screen.getAllByText(
-          "CEU GESTAO MENINOS - ARTUR ALBERTO DE MOTA GONCALVES, PROF. PR."
-        ).length
-      ).toBeGreaterThan(0);
-      expect(
-        screen.getAllByText("EMEBS VERA LUCIA APARECIDA RIBEIRO, PROFA.").length
-      ).toBeGreaterThan(0);
-    });
-
-    const angleDownIcon = document.querySelector(".fa-angle-down");
-    fireEvent.click(angleDownIcon);
-
-    expect(
-      screen.getByText("Alunos do Infantil (4 a 6 anos)")
-    ).toBeInTheDocument();
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+    expect(screen.getByText("MANHA")).toBeInTheDocument();
+    expect(screen.getByText("TARDE")).toBeInTheDocument();
   });
 
   it("Verifica mudança de página e Collapse EMEI/EMEF", async () => {
-    mock
-      .onGet("/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/")
-      .replyOnce(200, mockGetSolicitacoesHistoricoDietasEMEF);
+    getMocksGetDietasEspeciais(mockGetSolicitacoesHistoricoDietasEMEF);
+    await setFiltrosEClicaEmFiltrar();
 
-    const paginaQuatro = document.querySelector(
-      ".ant-pagination .ant-pagination-item-4"
+    const pagina_dois = document.querySelector(
+      ".ant-pagination .ant-pagination-item-2"
     );
-    fireEvent.click(paginaQuatro);
+    fireEvent.click(pagina_dois);
 
     await waitFor(() => {
       expect(
@@ -152,5 +260,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
 
     const angleDownIcon = document.querySelector(".fa-angle-down");
     fireEvent.click(angleDownIcon);
+    expect(screen.getByText("TARDE")).toBeInTheDocument();
+    expect(screen.getByText("MANHA")).toBeInTheDocument();
   });
 });

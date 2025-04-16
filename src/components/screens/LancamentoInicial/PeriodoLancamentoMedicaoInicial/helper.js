@@ -1298,12 +1298,12 @@ export const tabAlunosEmebs = (
     let itemsAlunosEmebs = [];
     if (
       response_matriculados?.data
-        .filter(
+        ?.filter(
           (matriculado) => matriculado.infantil_ou_fundamental === "INFANTIL"
         )
         .some((matriculado) => matriculado.quantidade_alunos !== 0) ||
       response_log_dietas_autorizadas?.data
-        .filter(
+        ?.filter(
           (log) =>
             log.infantil_ou_fundamental === "INFANTIL" &&
             log.classificacao.toUpperCase() !== "TIPO C"

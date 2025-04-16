@@ -48,6 +48,7 @@ import {
   initSocket,
 } from "./helpers";
 import "./style.scss";
+import { usuarioEhCODAENutriManifestacao } from "../../../../helpers/utilities";
 
 const Relatorio = ({ visao }) => {
   const [dietaEspecial, setDietaEspecial] = useState(null);
@@ -202,18 +203,16 @@ const Relatorio = ({ visao }) => {
 
   const BotaoGerarProtocolo = ({ uuid, eh_importado }) => {
     return (
-      <div className="form-group float-end mt-4">
-        <Botao
-          texto="Gerar Protocolo"
-          type={BUTTON_TYPE.BUTTON}
-          style={BUTTON_STYLE.GREEN_OUTLINE}
-          icon={BUTTON_ICON.PRINT}
-          className="ms-3"
-          onClick={() => {
-            gerarProtocolo(uuid, eh_importado);
-          }}
-        />
-      </div>
+      <Botao
+        texto="Gerar Protocolo"
+        type={BUTTON_TYPE.BUTTON}
+        style={BUTTON_STYLE.GREEN_OUTLINE}
+        icon={BUTTON_ICON.PRINT}
+        className="ms-3"
+        onClick={() => {
+          gerarProtocolo(uuid, eh_importado);
+        }}
+      />
     );
   };
 
@@ -289,6 +288,19 @@ const Relatorio = ({ visao }) => {
     return exibir;
   };
 
+  const exibeBotaoGerarProtocoloSolicitacaoCancelada = () => {
+    let exibir = false;
+    if (
+      dietaEspecial &&
+      !editar &&
+      ehSolicitacaoDeCancelamento(status) &&
+      (usuarioEhCODAENutriManifestacao() || usuarioEhEmpresaTerceirizada())
+    ) {
+      exibir = true;
+    }
+    return exibir;
+  };
+
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       {dietaEspecial && status && (
@@ -327,6 +339,16 @@ const Relatorio = ({ visao }) => {
             >
               {dietaEspecial && exibeBotaoImprimir() && (
                 <BotaoImprimir uuid={dietaEspecial.uuid} />
+              )}
+              {exibeBotaoGerarProtocoloSolicitacaoCancelada() && (
+                <div
+                  className={`float-end ${exibeBotaoImprimir() ? "me-4" : ""}`}
+                >
+                  <BotaoGerarProtocolo
+                    uuid={dietaEspecial.uuid}
+                    eh_importado={dietaEspecial.eh_importado}
+                  />
+                </div>
               )}
               {dietaEspecial && !editar && historico && (
                 <Botao
@@ -438,15 +460,25 @@ const Relatorio = ({ visao }) => {
                 )}
               </div>
             )}
+          {exibeBotaoGerarProtocoloSolicitacaoCancelada() && (
+            <div className="form-group float-end mt-4">
+              <BotaoGerarProtocolo
+                uuid={dietaEspecial.uuid}
+                eh_importado={dietaEspecial.eh_importado}
+              />
+            </div>
+          )}
           {dietaEspecial &&
             status === statusEnum.CODAE_AUTORIZADO &&
             !["inativas", "inativas-temp"].includes(card) && (
               <>
                 {!editar && (
-                  <BotaoGerarProtocolo
-                    uuid={dietaEspecial.uuid}
-                    eh_importado={dietaEspecial.eh_importado}
-                  />
+                  <div className="form-group float-end mt-4">
+                    <BotaoGerarProtocolo
+                      uuid={dietaEspecial.uuid}
+                      eh_importado={dietaEspecial.eh_importado}
+                    />
+                  </div>
                 )}
                 {dietaEspecial.tipo_solicitacao !==
                   TIPO_SOLICITACAO_DIETA.ALTERACAO_UE &&

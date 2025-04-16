@@ -57,7 +57,7 @@ export default ({ onSubmit, loading, setLoading }) => {
         ]);
       setDadosIniciais(responseDadosIniciais);
       setClassificacoes(
-        responseClassificacoes.results.map((d) => {
+        responseClassificacoes.data.map((d) => {
           return {
             value: d.id,
             label: d.nome,

@@ -2,6 +2,7 @@ import { getMensagemDeErro } from "../helpers/statusErrors";
 import { toastError } from "components/Shareable/Toast/dialogs";
 
 import axios from "./_base";
+import { ErrorHandlerFunction } from "./service-helpers";
 
 export const cadastraLayoutEmbalagem = async (payload) =>
   await axios.post("/layouts-de-embalagem/", payload);
@@ -22,8 +23,14 @@ export const detalharLayoutEmabalagem = async (uuid) => {
   }
 };
 
-export const getDashboardLayoutEmbalagem = async (params = null) =>
-  await axios.get(`/layouts-de-embalagem/dashboard/`, { params });
+export const getDashboardLayoutEmbalagem = async (params = null) => {
+  const url = `/layouts-de-embalagem/dashboard/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const corrigirLayoutEmbalagem = async (uuid, payload) =>
   await axios.patch(

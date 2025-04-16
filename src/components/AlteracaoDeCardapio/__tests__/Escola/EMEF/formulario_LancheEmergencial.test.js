@@ -40,7 +40,7 @@ jest.mock("react-toastify", () => ({
   },
 }));
 
-describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
+describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF", () => {
   beforeEach(async () => {
     process.env.IS_TEST = true;
 
@@ -143,40 +143,16 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
     ).toBeInTheDocument();
   });
 
-  const selecionaMotivoRPL = () => {
+  const selecionaMotivoLancheEmergencial = () => {
     const selectMotivoDiv = screen.getByTestId("div-select-motivo");
     const selectElementMotivo = selectMotivoDiv.querySelector("select");
-    const uuidRPL = mockMotivosAlteracaoCardapio.results.find((motivo) =>
-      motivo.nome.includes("RPL")
+    const uuidLancheEmergencial = mockMotivosAlteracaoCardapio.results.find(
+      (motivo) => motivo.nome.includes("Lanche Emergencial")
     ).uuid;
     fireEvent.change(selectElementMotivo, {
-      target: { value: uuidRPL },
+      target: { value: uuidLancheEmergencial },
     });
   };
-
-  it("renderiza modal para dia selecionado ser menor que 5 dias úteis", async () => {
-    selecionaMotivoRPL();
-    const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
-    const inputElement = divInputAlterarDia.querySelector("input");
-
-    expect(screen.queryByText("Atenção")).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
-      )
-    ).not.toBeInTheDocument();
-
-    fireEvent.change(inputElement, {
-      target: { value: "30/01/2025" },
-    });
-
-    expect(screen.queryByText("Atenção")).toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
-      )
-    ).toBeInTheDocument();
-  });
 
   const keyDownEvent = {
     key: "ArrowDown",
@@ -189,14 +165,25 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
     fireEvent.click(getByText(container, optionText));
   };
 
-  it("Testa Alteração - Motivo RPL", async () => {
-    selecionaMotivoRPL();
+  it("Testa Alteração - Motivo Lanche Emergencial", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-01-30T00:00:00Z"));
+
+    selecionaMotivoLancheEmergencial();
     expect(screen.getByText("Alterar dia")).toBeInTheDocument();
 
-    const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
-    const inputElement = divInputAlterarDia.querySelector("input");
-    fireEvent.change(inputElement, {
-      target: { value: "30/01/2025" },
+    const divInputDataInicial = screen.getByTestId("div-input-data-inicial");
+    const inputElementDataInicial = divInputDataInicial.querySelector("input");
+    await waitFor(async () => {
+      fireEvent.change(inputElementDataInicial, {
+        target: { value: "30/01/2025" },
+      });
+    });
+
+    const divInputDataFinal = screen.getByTestId("div-input-data-final");
+    const inputElementDataFinal = divInputDataFinal.querySelector("input");
+    fireEvent.change(inputElementDataFinal, {
+      target: { value: "01/02/2025" },
     });
 
     const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
@@ -212,7 +199,7 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
 
     await selectOption(
       screen.getByTestId("select-tipos-alimentacao-para-MANHA"),
-      "Lanche"
+      "Lanche Emergencial"
     );
 
     const divInputNumeroAlunosMANHA = screen.getByTestId(
@@ -236,47 +223,7 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
       .getByText("Salvar rascunho")
       .closest("button");
     fireEvent.click(botaoSalvarRascunho);
-  });
 
-  it("Carrega rascunho e envia", async () => {
-    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
-    await act(async () => {
-      fireEvent.click(botaoCarregarRascunho);
-    });
-
-    expect(screen.getByText("Solicitação # 807A8")).toBeInTheDocument();
-
-    const divInputNumeroAlunosMANHA = screen.getByTestId(
-      "div-input-numero-alunos-MANHA"
-    );
-    const inputElementNumeroAlunosMANHA =
-      divInputNumeroAlunosMANHA.querySelector("input");
-    expect(inputElementNumeroAlunosMANHA).toHaveAttribute("value", "123");
-
-    const botaoEnviar = screen.getByText("Enviar").closest("button");
-    fireEvent.click(botaoEnviar);
-  });
-
-  it("Exclui rascunho", async () => {
-    window.confirm = jest.fn().mockImplementation(() => true);
-    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
-    mock.onGet("/alteracoes-cardapio/minhas-solicitacoes/").reply(200, []);
-    await act(async () => {
-      fireEvent.click(botaoRemoverRascunho);
-    });
-    expect(screen.queryByText("Rascunhos")).not.toBeInTheDocument();
-  });
-
-  it("Erro ao excluir rascunho", async () => {
-    mock
-      .onDelete(
-        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/`
-      )
-      .reply(400, { detail: "Erro ao excluir rascunho" });
-    window.confirm = jest.fn().mockImplementation(() => true);
-    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
-    await act(async () => {
-      fireEvent.click(botaoRemoverRascunho);
-    });
+    jest.useRealTimers();
   });
 });

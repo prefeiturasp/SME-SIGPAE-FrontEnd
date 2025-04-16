@@ -8,22 +8,41 @@ import {
   PRE_RECEBIMENTO,
   DETALHAR_FICHA_TECNICA,
 } from "configs/constants";
-import { ordenarPorLogMaisRecente, truncarString } from "helpers/utilities";
+import {
+  ordenarPorLogMaisRecente,
+  truncarString,
+  usuarioEhDilogAbastecimento,
+  usuarioEhCronograma,
+} from "helpers/utilities";
 
 export const formatarCards = (items: FichaTecnicaDashboard[]): CardItem[] => {
   return items.sort(ordenarPorLogMaisRecente).map((item) => ({
     text: gerarTextoTruncado(item, 20),
     date: item.log_mais_recente.slice(0, 10),
-    link: gerarLinkItem(item),
+    link: gerarLinkItemFichaTecnica(item),
     status: item.status,
     fullText: gerarTextoCompleto(item),
   }));
 };
 
-const gerarLinkItem = (item: FichaTecnicaDashboard): string => {
-  return ["Aprovada", "Enviada para Correção"].includes(item.status)
-    ? `/${PRE_RECEBIMENTO}/${DETALHAR_FICHA_TECNICA}?uuid=${item.uuid}`
-    : `/${PRE_RECEBIMENTO}/${ANALISAR_FICHA_TECNICA}?uuid=${item.uuid}`;
+export const gerarLinkItemFichaTecnica = (
+  item: FichaTecnicaDashboard
+): string => {
+  const urlDetalhar = `/${PRE_RECEBIMENTO}/${DETALHAR_FICHA_TECNICA}?uuid=${item.uuid}`;
+  const urlAnalisar = `/${PRE_RECEBIMENTO}/${ANALISAR_FICHA_TECNICA}?uuid=${item.uuid}`;
+
+  if (usuarioEhDilogAbastecimento() || usuarioEhCronograma()) {
+    return urlDetalhar;
+  }
+
+  switch (item.status) {
+    case "Aprovada":
+    case "Enviada para Correção":
+      return urlDetalhar;
+    case "Enviada para Análise":
+    default:
+      return urlAnalisar;
+  }
 };
 
 export const formataItensVerMais = (
