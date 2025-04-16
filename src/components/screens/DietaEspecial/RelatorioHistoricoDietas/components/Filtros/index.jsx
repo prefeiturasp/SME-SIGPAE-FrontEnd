@@ -5,7 +5,6 @@ import { MultiselectRaw } from "components/Shareable/MultiselectRaw";
 import Select from "components/Shareable/Select";
 import { toastError } from "components/Shareable/Toast/dialogs";
 import { required, requiredMultiselect } from "helpers/fieldValidators";
-import { deepCopy } from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
@@ -20,6 +19,7 @@ import {
   getTiposGestao,
 } from "services/escola.service";
 import { getLotesSimples } from "services/lote.service";
+import { normalizarValues } from "../../helper";
 
 export const Filtros = ({ ...props }) => {
   const {
@@ -133,46 +133,12 @@ export const Filtros = ({ ...props }) => {
     carregaFiltros();
   }, []);
 
-  const PAGE_SIZE = 10;
-  const PARAMS = {
-    page_size: PAGE_SIZE,
-    page: 1,
-  };
-
   const maxDate = new Date();
   maxDate.setDate(maxDate.getDate() - 1);
 
   const onSubmit = async (values) => {
-    const values_ = deepCopy(values);
     setValuesForm(values);
-    if (values_.unidades_educacionais_selecionadas.includes("todas")) {
-      delete values_.unidades_educacionais_selecionadas;
-    }
-    if (
-      values_.tipos_unidades_selecionadas &&
-      values_.tipos_unidades_selecionadas.includes("todos")
-    ) {
-      delete values_.tipos_unidades_selecionadas;
-    }
-    if (
-      values_.periodos_escolares_selecionadas &&
-      values_.periodos_escolares_selecionadas.includes("todos")
-    ) {
-      delete values_.periodos_escolares_selecionadas;
-    }
-    if (
-      values_.classificacoes_selecionadas &&
-      values_.classificacoes_selecionadas.includes("todas")
-    ) {
-      delete values_.classificacoes_selecionadas;
-    }
-    if (values_.tipo_gestao === "Selecione um tipo de gestão") {
-      delete values_.tipo_gestao;
-    }
-    let params = {
-      ...PARAMS,
-      ...values_,
-    };
+    const params = normalizarValues(values, 1);
     setLoadingDietas(true);
     const response = await getSolicitacoesRelatorioHistoricoDietas(params);
     if (response.status === HTTP_STATUS.OK) {

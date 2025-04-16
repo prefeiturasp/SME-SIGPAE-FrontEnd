@@ -1,15 +1,14 @@
-import React, { useState } from "react";
-import HTTP_STATUS from "http-status-codes";
 import { Paginacao } from "components/Shareable/Paginacao";
-import { CollapseContentEMEI } from "../CollapseContentEMEI";
-import { CollapseContentCEI } from "../CollapseContentCEI";
-import { CollapseContentEMEBS } from "../CollapseContentEMEBS";
-import { CollapseContentCEMEI } from "../CollapseContentCEMEI";
-
-import { getSolicitacoesRelatorioHistoricoDietas } from "services/dietaEspecial.service";
-
-import "./styles.scss";
 import { toastError } from "components/Shareable/Toast/dialogs";
+import HTTP_STATUS from "http-status-codes";
+import React, { useState } from "react";
+import { getSolicitacoesRelatorioHistoricoDietas } from "services/dietaEspecial.service";
+import { normalizarValues, PAGE_SIZE } from "../../helper";
+import { CollapseContentCEI } from "../CollapseContentCEI";
+import { CollapseContentCEMEI } from "../CollapseContentCEMEI";
+import { CollapseContentEMEBS } from "../CollapseContentEMEBS";
+import { CollapseContentEMEI } from "../CollapseContentEMEI";
+import "./styles.scss";
 
 type RowUnidadeEducacionalTipo = {
   lote: string;
@@ -50,16 +49,10 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
     values,
   } = props;
 
-  const PAGE_SIZE = 10;
-
   const onChangePage = async (page: number, values) => {
     setPaginaAtual(page);
     setLoadingDietas(true);
-    let params = {
-      page_size: PAGE_SIZE,
-      page: page,
-      ...values,
-    };
+    const params = normalizarValues(values, page);
     const response = await getSolicitacoesRelatorioHistoricoDietas(params);
     if (response.status === HTTP_STATUS.OK) {
       setDietasEspeciais(response.data);
