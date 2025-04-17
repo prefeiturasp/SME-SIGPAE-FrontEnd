@@ -134,7 +134,9 @@ export default ({ analiseSolicitacao }) => {
       ),
     };
     solicitacao.etapas_novas.forEach((etapa, index) => {
-      values[`total_embalagens_${index}`] = etapa.total_embalagens;
+      values[`total_embalagens_${index}`] = numberToStringDecimal(
+        etapa.total_embalagens
+      );
       values[`etapa_${index}`] = etapa.etapa;
       values[`parte_${index}`] = etapa.parte;
       values[`quantidade_${index}`] = formataMilhar(etapa.quantidade);
