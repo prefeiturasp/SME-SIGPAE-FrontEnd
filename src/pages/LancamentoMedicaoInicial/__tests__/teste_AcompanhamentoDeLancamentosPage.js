@@ -12,7 +12,6 @@ import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 import { AcompanhamentoDeLancamentosPage } from "pages/LancamentoMedicaoInicial/AcompanhamentoDeLancamentosPage";
 
-import { APIMockVersion } from "mocks/apiVersionMock";
 import { mockGetMesesAnosMedicaoInicial } from "mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
 import { mockGetDiretoriaRegionalSimplissima } from "mocks/services/diretoriaRegional.service/mockGetDiretoriaRegionalSimplissima";
 import { mockGetTiposUnidadeEscolar } from "mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
@@ -24,23 +23,12 @@ import { mockGetGrupoUnidadeEscolar } from "mocks/services/escola.service/mockGe
 
 describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => {
   beforeEach(async () => {
-    mock.onGet("/api-version/").reply(200, APIMockVersion);
-    mock.onGet("/notificacoes/").reply(200, {
-      next: null,
-      previous: null,
-      count: 0,
-      page_size: 4,
-      results: [],
-    });
     mock
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/meses-anos/")
       .reply(200, mockGetMesesAnosMedicaoInicial);
     mock
       .onGet("/diretorias-regionais-simplissima/")
       .reply(200, mockGetDiretoriaRegionalSimplissima);
-    mock
-      .onGet("/downloads/quantidade-nao-vistos/")
-      .reply(200, { quantidade_nao_vistos: 136 });
     mock
       .onGet("/tipos-unidade-escolar/")
       .reply(200, mockGetTiposUnidadeEscolar);
@@ -100,7 +88,7 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
   }
 
   it("Testa a renderização inicial da tela", async () => {
-    selecionaDRE();
+    await selecionaDRE();
 
     await waitFor(() =>
       expect(
@@ -110,7 +98,7 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
   });
 
   it("Testa a seleção de mês de referência e se o grupo 3 está habilitado no modal de Relatório Consolidado", async () => {
-    selecionaDRE();
+    await selecionaDRE();
 
     await waitFor(() => screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"));
     const cardAprovadoCODAE = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
@@ -148,5 +136,10 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
       .getByText("Grupo 3 (CEU EMEI, EMEI)")
       .closest("label");
     expect(grupo3Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
+
+    fireEvent.click(grupo3Wrapper);
+
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    fireEvent.click(botaoCancelar);
   });
 });
