@@ -129,9 +129,14 @@ export default ({ analiseSolicitacao }) => {
         solicitacao.logs,
         "dilog"
       ),
+      quantidade_total: formataMilhar(
+        solicitacao.cronograma.qtd_total_programada
+      ),
     };
     solicitacao.etapas_novas.forEach((etapa, index) => {
-      values[`total_embalagens_${index}`] = etapa.total_embalagens;
+      values[`total_embalagens_${index}`] = numberToStringDecimal(
+        etapa.total_embalagens
+      );
       values[`etapa_${index}`] = etapa.etapa;
       values[`parte_${index}`] = etapa.parte;
       values[`quantidade_${index}`] = formataMilhar(etapa.quantidade);
@@ -564,7 +569,6 @@ export default ({ analiseSolicitacao }) => {
                         setAprovacaoDilog={setAprovacaoDilog}
                       />
                     )}
-
                     <div className="mt-4 mb-4">
                       <AcoesAlterar
                         cronograma={cronograma}

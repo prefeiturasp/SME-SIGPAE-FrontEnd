@@ -17,6 +17,35 @@ const {
   ANALISE_SENSORIAL_RESPONDIDA,
 } = RECLAMACAO_PRODUTO_STATUS_EXPLICACAO;
 
+const anexosDoLog = (log) => {
+  return (
+    log.anexos &&
+    log.anexos.length > 0 && (
+      <div className="mb-3">
+        <div key={1}>
+          <p className="botao-reclamacao-title">Anexos da resposta</p>
+        </div>
+        <div key={2}>
+          {log.anexos.map((anexo, key) => {
+            return (
+              <div key={key}>
+                <a
+                  href={corrigeLinkAnexo(anexo.arquivo)}
+                  className="value-important link"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {`Anexo ${key + 1}`}
+                </a>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    )
+  );
+};
+
 const Reclamacao = ({ reclamacao }) => {
   const blocoQuestionamentoCodae = (log) => {
     return (
@@ -113,29 +142,7 @@ const Reclamacao = ({ reclamacao }) => {
             />
           </div>
         </div>
-        {log.anexos && log.anexos.length > 0 && (
-          <div className="mb-3">
-            <div key={1}>
-              <p className="botao-reclamacao-title">Anexos da resposta</p>
-            </div>
-            <div key={2}>
-              {log.anexos.map((anexo, key) => {
-                return (
-                  <div key={key}>
-                    <a
-                      href={corrigeLinkAnexo(anexo.arquivo)}
-                      className="value-important link"
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      {`Anexo ${key + 1}`}
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        {anexosDoLog(log)}
       </>
     );
   };
@@ -155,6 +162,7 @@ const Reclamacao = ({ reclamacao }) => {
               __html: log.justificativa,
             }}
           />
+          {anexosDoLog(log)}
         </div>
       </div>
     );
@@ -175,6 +183,7 @@ const Reclamacao = ({ reclamacao }) => {
               __html: log.justificativa,
             }}
           />
+          {anexosDoLog(log)}
         </div>
       </div>
     );
@@ -195,6 +204,7 @@ const Reclamacao = ({ reclamacao }) => {
               __html: log.justificativa,
             }}
           />
+          {anexosDoLog(log)}
         </div>
       </div>
     );
@@ -216,6 +226,7 @@ const Reclamacao = ({ reclamacao }) => {
               __html: log.justificativa,
             }}
           />
+          {anexosDoLog(log)}
         </div>
       </div>
     );
@@ -260,6 +271,7 @@ const Reclamacao = ({ reclamacao }) => {
               __html: log.justificativa,
             }}
           />
+          {anexosDoLog(log)}
         </div>
       </div>
     );
