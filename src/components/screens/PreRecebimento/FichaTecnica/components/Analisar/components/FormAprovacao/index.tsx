@@ -34,6 +34,7 @@ const FormAprovacao: React.FC<Props> = ({
             className="float-end ms-3"
             onClick={() => {
               setConferido(true);
+              values[`${name}_correcoes`] = "";
               aprovaCollapse(name);
             }}
           />
