@@ -11,7 +11,7 @@ import { mockCategoriasMedicao } from "mocks/medicaoInicial/PeriodoLancamentoMed
 import { mockDiasCalendarioEMEFOutubro2024 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Outubro2024/diasCalendario";
 import { mockFeriadosNoMesJaneiro } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/feriadosNoMes/janeiro";
 import { mockLogQuantidadeDietasAutorizadas } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/logQuantidadeDietasAutorizadasEMEF";
-import { mockMatriculadosNoMesEMEFJaneiro2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/Janeiro2025/matriculadosNoMes";
+import { mockMatriculadosNoMesEMEFJaneiro2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Janeiro2025/matriculadosNoMes";
 import { mockLocationStateEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/mockStateEMEF";
 import { mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/permissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF";
 import { mockSuspensoesAutorizadasEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/suspensoesAutorizadasEMEF";
