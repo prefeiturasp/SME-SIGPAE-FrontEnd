@@ -7,11 +7,11 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
-import { mockCategoriasMedicaoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicaoEMEF";
-import { mockDiasCalendarioEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/diasCalendarioEMEF";
-import { mockFeriadosNoMesEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/feriadosNoMesEMEF";
+import { mockCategoriasMedicao } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
+import { mockDiasCalendarioEMEFOutubro2024 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Outubro2024/diasCalendario";
+import { mockFeriadosNoMesJaneiro } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/feriadosNoMes/janeiro";
 import { mockLogQuantidadeDietasAutorizadas } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/logQuantidadeDietasAutorizadasEMEF";
-import { mockMatriculadosNoMesEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/matriculadosNoMesEMEF";
+import { mockMatriculadosNoMesEMEFJaneiro2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/Janeiro2025/matriculadosNoMes";
 import { mockLocationStateEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/mockStateEMEF";
 import { mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/permissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF";
 import { mockSuspensoesAutorizadasEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/suspensoesAutorizadasEMEF";
@@ -84,7 +84,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
       status: 200,
     });
     getCategoriasDeMedicao.mockResolvedValue({
-      data: mockCategoriasMedicaoEMEF,
+      data: mockCategoriasMedicao,
       status: 200,
     });
     getLogDietasAutorizadasPeriodo.mockResolvedValue({
@@ -100,7 +100,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
       status: 200,
     });
     getMatriculadosPeriodo.mockResolvedValue({
-      data: mockMatriculadosNoMesEMEF,
+      data: mockMatriculadosNoMesEMEFJaneiro2025,
       status: 200,
     });
     getSolicitacoesSuspensoesAutorizadasEscola.mockResolvedValue({
@@ -116,11 +116,11 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
       status: 200,
     });
     getDiasCalendario.mockResolvedValue({
-      data: mockDiasCalendarioEMEF,
+      data: mockDiasCalendarioEMEFOutubro2024,
       status: 200,
     });
     getFeriadosNoMes.mockResolvedValue({
-      data: mockFeriadosNoMesEMEF,
+      data: mockFeriadosNoMesJaneiro,
       status: 200,
     });
     updateValoresPeriodosLancamentos.mockResolvedValue({

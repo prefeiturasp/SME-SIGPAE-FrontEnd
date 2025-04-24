@@ -1,4 +1,4 @@
-export const mockDiasCalendarioEMEF = [
+export const mockDiasCalendarioEMEFOutubro2024 = [
   {
     escola: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
     dia: "01",
