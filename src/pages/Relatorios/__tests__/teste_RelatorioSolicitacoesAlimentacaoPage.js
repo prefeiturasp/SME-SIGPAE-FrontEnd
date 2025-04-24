@@ -15,20 +15,6 @@ import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service
 import { getEscolasTercTotal } from "services/escola.service";
 import { getLotesSimples } from "services/lote.service";
 import { getNomesTerceirizadas } from "services/produto.service";
-// Numa próxima rodada de testes, esses services serão mockados e testados:
-// getSolicitacoesDetalhadas,
-// filtrarSolicitacoesAlimentacaoCODAE,
-// filtrarSolicitacoesAlimentacaoDRE,
-// filtrarSolicitacoesAlimentacaoTerceirizadas,
-// gerarExcelRelatorioSolicitacoesAlimentacaoCODAE,
-// gerarExcelRelatorioSolicitacoesAlimentacaoDRE,
-// gerarExcelRelatorioSolicitacoesAlimentacaoTerceirizadas,
-// gerarPDFRelatorioSolicitacoesAlimentacaoDRE,
-// gerarPDFRelatorioSolicitacoesAlimentacaoCODAE,
-// gerarPDFRelatorioSolicitacoesAlimentacaoTerceirizadas,
-// filtrarSolicitacoesAlimentacaoEscola,
-// gerarExcelRelatorioSolicitacoesAlimentacaoEscola,
-// gerarPDFRelatorioSolicitacoesAlimentacaoEscola,
 import { getTotalizadoresRelatorioSolicitacoes } from "services/relatorios.service";
 
 import { getNotificacoes, getQtdNaoLidas } from "services/notificacoes.service";
