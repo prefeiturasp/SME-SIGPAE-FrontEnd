@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { mockCategoriasMedicao } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
 import { mockDiasCalendarioEMEFAbril2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/diasCalendario";
@@ -103,5 +109,109 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
 
   it("renderiza label `Mês do Lançamento`", async () => {
     expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
+  });
+
+  it("renderiza valor `Abril / 2025` no input `Mês do Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-mes-lancamento");
+    expect(inputElement).toHaveAttribute("value", "Abril / 2025");
+  });
+
+  it("renderiza label `Período de Lançamento`", () => {
+    expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
+  });
+
+  it("renderiza valor `MANHA` no input `Período de Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-periodo-lancamento");
+    expect(inputElement).toHaveAttribute("value", "MANHA");
+  });
+
+  it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
+    expect(
+      screen.getByText("Semanas do Período para Lançamento da Medição Inicial")
+    ).toBeInTheDocument();
+  });
+
+  it("renderiza label `Semana 1`", async () => {
+    expect(screen.getByText("Semana 1")).toBeInTheDocument();
+  });
+
+  it("renderiza label `Semana 5`", async () => {
+    expect(screen.getByText("Semana 5")).toBeInTheDocument();
+  });
+
+  it("renderiza label `ALIMENTAÇÃO`", async () => {
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+  });
+
+  it("exibe, no dia 1, o número de matriculados 308", async () => {
+    const inputElementMatriculadosDia01 = screen.getByTestId(
+      "matriculados__dia_01__categoria_1"
+    );
+    expect(inputElementMatriculadosDia01).toHaveAttribute("value", "308");
+  });
+
+  it("exibe, no dia 1, o número de frequentes 300", async () => {
+    const inputElementFrequenciaDia01 = screen.getByTestId(
+      "frequencia__dia_01__categoria_1"
+    );
+    expect(inputElementFrequenciaDia01).toHaveAttribute("value", "300");
+  });
+
+  it("exibe, no dia 1, o número de lanches 299", async () => {
+    const inputElementLancheDia01 = screen.getByTestId(
+      "lanche__dia_01__categoria_1"
+    );
+    expect(inputElementLancheDia01).toHaveAttribute("value", "299");
+  });
+
+  it("exibe borda vermelha (erro) nos lanches das dietas", async () => {
+    // 299 + 1 + 1 + 1 > 300
+
+    const inputElementLancheDia01DietasTipoA = screen.getByTestId(
+      "lanche__dia_01__categoria_2"
+    );
+    expect(inputElementLancheDia01DietasTipoA).toHaveClass("invalid-field");
+
+    const inputElementLancheDia01DietasTipoAEnteral = screen.getByTestId(
+      "lanche__dia_01__categoria_3"
+    );
+    expect(inputElementLancheDia01DietasTipoAEnteral).toHaveClass(
+      "invalid-field"
+    );
+
+    const inputElementLancheDia01DietasTipoB = screen.getByTestId(
+      "lanche__dia_01__categoria_4"
+    );
+    expect(inputElementLancheDia01DietasTipoB).toHaveClass("invalid-field");
+  });
+
+  it("deixa de exibir o erro se a soma dos lanches não ultrapassa a frequência", async () => {
+    const inputElementLancheDia01 = screen.getByTestId(
+      "lanche__dia_01__categoria_1"
+    );
+    await waitFor(() => {
+      fireEvent.change(inputElementLancheDia01, {
+        target: { value: "297" },
+      });
+    });
+
+    // 297 + 1 + 1 + 1 <= 300
+
+    const inputElementLancheDia01DietasTipoA = screen.getByTestId(
+      "lanche__dia_01__categoria_2"
+    );
+    expect(inputElementLancheDia01DietasTipoA).not.toHaveClass("invalid-field");
+
+    const inputElementLancheDia01DietasTipoAEnteral = screen.getByTestId(
+      "lanche__dia_01__categoria_3"
+    );
+    expect(inputElementLancheDia01DietasTipoAEnteral).not.toHaveClass(
+      "invalid-field"
+    );
+
+    const inputElementLancheDia01DietasTipoB = screen.getByTestId(
+      "lanche__dia_01__categoria_4"
+    );
+    expect(inputElementLancheDia01DietasTipoB).not.toHaveClass("invalid-field");
   });
 });

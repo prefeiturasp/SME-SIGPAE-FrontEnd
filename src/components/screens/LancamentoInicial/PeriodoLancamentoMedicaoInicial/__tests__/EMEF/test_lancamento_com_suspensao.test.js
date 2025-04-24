@@ -183,11 +183,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
     expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
   });
 
-  it("renderiza label `ALIMENTAÇÃO`", async () => {
-    await awaitServices();
-    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
-  });
-
   it("renderiza label `Matriculados` dentro da seção `ALIMENTAÇÃO`", async () => {
     await awaitServices();
     const categoriaAlimentacaoUuid = "6a183159-32bb-4a3b-a69b-f0601ee677c1";
