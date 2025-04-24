@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
 import { MeusDadosContext } from "context/MeusDadosContext";
-import { mockCategoriasMedicaoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicaoEMEF";
+import { mockCategoriasMedicao } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
 import { mockDiasCalendarioFevereiro2025CEUGESTAO } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/diasCalendario_Fevereiro2025";
 import { mockInclusoesETECAutorizadasCEUGESTAO } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/inclusoesETECAutorizadas";
 import { mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/logQuantidadeDietasAutorizadasCEUGESTAO";
@@ -28,7 +28,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - ETEC - Usuário CEU GESTAO",
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO);
     mock
       .onGet("/medicao-inicial/categorias-medicao/")
-      .reply(200, mockCategoriasMedicaoEMEF);
+      .reply(200, mockCategoriasMedicao);
     mock
       .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
       .reply(200, []);

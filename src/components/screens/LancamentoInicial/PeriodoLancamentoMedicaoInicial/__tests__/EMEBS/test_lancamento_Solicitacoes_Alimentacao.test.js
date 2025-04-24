@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
 import { MeusDadosContext } from "context/MeusDadosContext";
-import { mockCategoriasMedicaoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicaoEMEF";
+import { mockCategoriasMedicao } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
 import { mockDiasCalendarioMarco2025EMEBS } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/diasCalendarioMarco2025";
 import { mockStateSolicitacoesDeAlimentacaoMarco2025EMEBS } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/stateSolicitacoesDeAlimentacaoMarco2025";
 import { mockValoresMedicaoSolicitacoesAlimentacaoMarco2025EMEBS } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/valoresMedicaoSolicitacoesAlimentacaoMarco2025";
@@ -30,7 +30,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
       .reply(200, { results: [] });
     mock
       .onGet("/medicao-inicial/categorias-medicao/")
-      .reply(200, mockCategoriasMedicaoEMEF);
+      .reply(200, mockCategoriasMedicao);
     mock
       .onGet("/medicao-inicial/valores-medicao/")
       .reply(200, mockValoresMedicaoSolicitacoesAlimentacaoMarco2025EMEBS);

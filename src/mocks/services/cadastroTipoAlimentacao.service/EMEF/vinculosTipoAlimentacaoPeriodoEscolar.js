@@ -1,4 +1,4 @@
-export const mockGetVinculosMotivoInclusaoEspecificoEMEF = {
+export const mockVinculosTipoAlimentacaoPeriodoEscolarEMEF = {
   count: 2,
   next: null,
   previous: null,
