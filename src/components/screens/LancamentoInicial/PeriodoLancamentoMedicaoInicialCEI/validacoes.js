@@ -483,7 +483,6 @@ export const validacoesTabelasDietasEmeidaCemei = (
       );
       return total + (isNaN(valor) ? 0 : valor);
     }, 0);
-  console.log(somaDosValoresPorCampo("lanche"));
   const maxFrequenciaAlimentacao = Number(
     allValues[`frequencia__dia_${dia}__categoria_${idCategoriaAlimentacao}`]
   );
