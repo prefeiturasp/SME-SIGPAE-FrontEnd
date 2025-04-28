@@ -18,6 +18,11 @@ import { FiltrosDashboardFichasTecnicas } from "interfaces/pre_recebimento.inter
 import { getMensagemDeErro } from "../helpers/statusErrors";
 import { toastError } from "components/Shareable/Toast/dialogs";
 import { saveAs } from "file-saver";
+import { AxiosRequestConfig } from "axios";
+
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  skipAuthRefresh?: boolean;
+}
 
 export const cadastraRascunhoFichaTecnica = async (
   payload: FichaTecnicaPayload
@@ -48,13 +53,17 @@ export const listarFichastecnicas = async (
 export const cadastrarFichaTecnica = async (
   payload: FichaTecnicaPayload
 ): Promise<ResponseFichaTecnicaDetalhada> =>
-  await axios.post("/ficha-tecnica/", payload);
+  await axios.post("/ficha-tecnica/", payload, {
+    skipAuthRefresh: true,
+  } as CustomAxiosRequestConfig);
 
 export const cadastrarFichaTecnicaDoRascunho = async (
   payload: FichaTecnicaPayload,
   uuid: string
 ): Promise<ResponseFichaTecnicaDetalhada> =>
-  await axios.put(`/ficha-tecnica/${uuid}/`, payload);
+  await axios.put(`/ficha-tecnica/${uuid}/`, payload, {
+    skipAuthRefresh: true,
+  } as CustomAxiosRequestConfig);
 
 // Service retorna vários status diferente dentro dos resultados, filtros são apenas strings
 export const getDashboardFichasTecnicas = async (
@@ -155,13 +164,17 @@ export const corrigirFichaTecnica = async (
   payload: FichaTecnicaPayload,
   uuid: string
 ): Promise<ResponseSemDadosInterface> =>
-  await axios.patch(`/ficha-tecnica/${uuid}/correcao-fornecedor/`, payload);
+  await axios.patch(`/ficha-tecnica/${uuid}/correcao-fornecedor/`, payload, {
+    skipAuthRefresh: true,
+  } as CustomAxiosRequestConfig);
 
 export const atualizarFichaTecnica = async (
   payload: FichaTecnicaPayload,
   uuid: string
 ): Promise<ResponseSemDadosInterface> =>
-  await axios.patch(`/ficha-tecnica/${uuid}/atualizacao-fornecedor/`, payload);
+  await axios.patch(`/ficha-tecnica/${uuid}/atualizacao-fornecedor/`, payload, {
+    skipAuthRefresh: true,
+  } as CustomAxiosRequestConfig);
 
 export const imprimirFichaTecnica = async (uuid: string, numero: string) => {
   const url = `/ficha-tecnica/${uuid}/gerar-pdf-ficha/`;
