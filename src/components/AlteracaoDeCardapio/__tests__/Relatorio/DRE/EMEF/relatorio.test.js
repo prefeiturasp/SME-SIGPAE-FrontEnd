@@ -11,12 +11,12 @@ import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
 import { mockAlteracaoCardapioAValidar } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioAValidar";
 import { mockAlteracaoCardapioNaoValidada } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioNaoValidada";
+import { mockAlteracaoCardapioValidada } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioValidada";
 import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosAlteracaoDoTipoDeAlimentacao from "pages/AlteracaoDeCardapio/RelatorioPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
-import { mockAlteracaoCardapioValidada } from "../../../../../../mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioValidada";
 
 describe("Relatório Alteração do Tipo de Alimentação - Visão DRE - EMEF", () => {
   beforeEach(async () => {
