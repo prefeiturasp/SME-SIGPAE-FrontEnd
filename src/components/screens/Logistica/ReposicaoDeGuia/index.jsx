@@ -7,7 +7,6 @@ import {
 } from "../../../../services/logistica.service.js";
 import { Form, Field } from "react-final-form";
 import { InputComData } from "components/Shareable/DatePicker";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
 import { InputText } from "components/Shareable/Input/InputText";
 import { TextArea } from "components/Shareable/TextArea/TextArea";
 import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
@@ -37,7 +36,6 @@ import "./styles.scss";
 import { gerarParametrosConsulta } from "helpers/utilities";
 import { TIPOS_OCORRENCIAS_OPTIONS } from "constants/shared.js";
 
-const FORM_NAME = "reposicaoGuiaRemessa";
 const TOOLTIP_RECEBIDO = `Quantidade de embalagens do alimento que a UE efetivamente recebeu,
                           na reposição dos alimentos. Se ainda restarem alimentos a receber,
                           será aberta ocorrência a ser detalhada pelo usuário.`;
@@ -180,14 +178,16 @@ export default () => {
     setCarregando(false);
   };
 
-  const setFiles = (files) => {
+  const setFiles = (index) => (files) => {
     let arquivos = arquivoAtual;
-    arquivos = files;
+    arquivos[index] = files;
     setArquivoAtual(arquivos);
   };
 
-  const removeFile = () => {
-    setArquivoAtual([]);
+  const removeFile = (index) => () => {
+    let arquivos = arquivoAtual;
+    arquivos[index] = null;
+    setArquivoAtual(arquivos);
   };
 
   const escolherHora = (hora) => {
@@ -460,8 +460,9 @@ export default () => {
     else return "green";
   };
 
-  const toggleBtnAlimentos = (uuid) => {
-    if (arquivoAtual) inputFile.current.setState({ files: arquivoAtual });
+  const toggleBtnAlimentos = (uuid, index) => {
+    if (arquivoAtual[index])
+      inputFile.current[index].setFiles(arquivoAtual[index]);
     setCollapseAlimentos({
       [uuid]: !collapseAlimentos[uuid],
     });
@@ -498,7 +499,6 @@ export default () => {
             validate={() => {}}
             render={({ handleSubmit, values, errors }) => (
               <form onSubmit={handleSubmit}>
-                <FinalFormToRedux form={FORM_NAME} />
                 <span className="subtitulo">
                   Conferência individual dos itens da guia
                 </span>
@@ -531,6 +531,7 @@ export default () => {
                       component={InputComData}
                       label="Selecionar Data de Recebimento na UE"
                       name="data_entrega_real"
+                      dataTestId="data_entrega_real"
                       className="data-inicial"
                       validate={composeValidators(required, validaDataEntrega)}
                       minDate={
@@ -551,6 +552,7 @@ export default () => {
                       component={InputHorario}
                       label="Selecionar Hora da Entrega"
                       name="hora_recebimento"
+                      dataTestId="hora_recebimento"
                       placeholder="Selecione a Hora"
                       horaAtual={HoraRecebimento}
                       onChangeFunction={(data) => {
@@ -568,6 +570,7 @@ export default () => {
                       component={InputText}
                       label="Nome do Motorista"
                       name="nome_motorista"
+                      dataTestId="nome_motorista"
                       className="input-busca-produto"
                       contador={100}
                       validate={composeValidators(
@@ -583,6 +586,7 @@ export default () => {
                       component={InputText}
                       label="Placa do Veículo"
                       name="placa_veiculo"
+                      dataTestId="placa_veiculo"
                       className="input-busca-produto"
                       contador={7}
                       validate={composeValidators(
@@ -623,7 +627,7 @@ export default () => {
                             <div className="col-1 align-self-center">
                               <button
                                 onClick={() =>
-                                  toggleBtnAlimentos(alimento.uuid)
+                                  toggleBtnAlimentos(alimento.uuid, index)
                                 }
                                 className="btn btn-link btn-block text-start px-0"
                                 type="button"
@@ -727,6 +731,7 @@ export default () => {
                                                       component={InputText}
                                                       apenasNumeros
                                                       name={`recebidos_fechada_${index}`}
+                                                      dataTestId={`recebidos_fechada_${index}`}
                                                       className="input-busca-produto"
                                                       placeholder={
                                                         fechada.descricao_embalagem
@@ -809,6 +814,7 @@ export default () => {
                                                       component={InputText}
                                                       apenasNumeros
                                                       name={`recebidos_fracionada_${index}`}
+                                                      dataTestId={`recebidos_fracionada_${index}`}
                                                       className="input-busca-produto"
                                                       placeholder={
                                                         fracionada.descricao_embalagem
@@ -877,18 +883,19 @@ export default () => {
                                     </span>
                                   </label>
                                   <InputFile
-                                    ref={inputFile}
+                                    ref={(ref) =>
+                                      (inputFile.current[index] = ref)
+                                    }
                                     className="inputfile"
                                     texto="Inserir Imagem"
-                                    name="files"
+                                    name={`files_${index}`}
                                     accept={FORMATOS_IMAGEM}
-                                    setFiles={setFiles}
-                                    removeFile={removeFile}
+                                    setFiles={setFiles(index)}
+                                    removeFile={removeFile(index)}
                                     toastSuccess={
                                       "Imagem incluída com sucesso!"
                                     }
                                     alignLeft
-                                    disabled={arquivoAtual.length > 0}
                                   />
                                   <label className="mb-3">
                                     {"IMPORTANTE: Envie um arquivo nos formatos: " +
@@ -905,6 +912,7 @@ export default () => {
                                   component={TextArea}
                                   label="Observações"
                                   name={`observacoes_${index}`}
+                                  dataTestId={`observacoes_${index}`}
                                   placeholder="Digite seus comentários aqui..."
                                   required
                                   contador={500}
