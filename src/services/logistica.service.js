@@ -110,6 +110,7 @@ export const getGuiaDetalhe = async (uuid) => {
   return await axios.get(url);
 };
 
+// TODO: Remover métodos não utilizados de edição daqui e do back
 export const getConferenciaParaEdicao = async (params) => {
   const url = `/conferencia-da-guia-com-ocorrencia/get-ultima-conferencia/`;
   return await axios.get(url, { params });

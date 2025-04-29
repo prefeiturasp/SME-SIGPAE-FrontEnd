@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import PropTypes from "prop-types";
 import { InputErroMensagem } from "../InputErroMensagem";
 import { HelpText } from "../../../Shareable/HelpText";
@@ -10,7 +16,7 @@ import { toastSuccess, toastError } from "../../Toast/dialogs";
 import { truncarString } from "../../../../helpers/utilities";
 import { DEZ_MB, VINTE_CINCO_MB } from "../../../../constants/shared";
 
-const InputFile = (props) => {
+const InputFile = forwardRef((props, ref) => {
   const [files, setFiles] = useState(props.arquivosPreCarregados || []);
 
   useEffect(() => {
@@ -18,6 +24,13 @@ const InputFile = (props) => {
       setFiles(props.arquivosPreCarregados);
     }
   }, [props.arquivosPreCarregados]);
+
+  useImperativeHandle(ref, () => ({
+    setFiles: (newFiles) => {
+      setFiles(newFiles);
+    },
+    ...(ref?.current || {}),
+  }));
 
   const inputRef = useRef(null);
 
@@ -289,7 +302,7 @@ const InputFile = (props) => {
       </div>
     </>
   );
-};
+});
 
 InputFile.propTypes = {
   accept: PropTypes.string,

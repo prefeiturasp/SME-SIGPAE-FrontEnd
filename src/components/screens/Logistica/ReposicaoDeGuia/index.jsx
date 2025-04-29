@@ -1,13 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Spin } from "antd";
-import {
-  getGuiaParaConferencia,
-  getReposicaoParaEdicao,
-  getConferenciaParaEdicao,
-} from "../../../../services/logistica.service.js";
+import { getGuiaParaConferencia } from "../../../../services/logistica.service.js";
 import { Form, Field } from "react-final-form";
 import { InputComData } from "components/Shareable/DatePicker";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
 import { InputText } from "components/Shareable/Input/InputText";
 import { TextArea } from "components/Shareable/TextArea/TextArea";
 import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
@@ -37,7 +32,6 @@ import "./styles.scss";
 import { gerarParametrosConsulta } from "helpers/utilities";
 import { TIPOS_OCORRENCIAS_OPTIONS } from "constants/shared.js";
 
-const FORM_NAME = "reposicaoGuiaRemessa";
 const TOOLTIP_RECEBIDO = `Quantidade de embalagens do alimento que a UE efetivamente recebeu,
                           na reposição dos alimentos. Se ainda restarem alimentos a receber,
                           será aberta ocorrência a ser detalhada pelo usuário.`;
@@ -56,10 +50,8 @@ export default () => {
   const [HoraRecebimentoAlterada, setHoraRecebimentoAlterada] = useState(false);
   const [initialValues, setInitialValues] = useState({});
   const [arquivoAtual, setArquivoAtual] = useState([]);
-  const [edicao, setEdicao] = useState(false);
   const inputFile = useRef([]);
   const autoFillButton = useRef(null);
-  const editarButton = useRef(null);
   const navigate = useNavigate();
 
   const [flagAtraso, setFlagAtraso] = useState(false);
@@ -72,9 +64,8 @@ export default () => {
       const params = gerarParametrosConsulta({ uuid: uuid });
       response = await getGuiaParaConferencia(params);
       const guiaResponse = response.data;
-      let conferencias = guiaResponse.conferencias[0];
 
-      filtrarAlimentos(conferencias.conferencia_dos_alimentos, guiaResponse);
+      filtrarAlimentos(guiaResponse);
       setGuia(guiaResponse);
       setInitialValues({
         numero_guia: response.data.numero_guia,
@@ -88,21 +79,7 @@ export default () => {
     }
   };
 
-  const filtrarAlimentos = (conf_alimentos, guiaResponse, edicao) => {
-    if (edicao) {
-      guiaResponse.alimentos.forEach((alimento) => {
-        alimento.embalagens.forEach((embalagem) => {
-          let conf = conf_alimentos.find(
-            (element) =>
-              element.tipo_embalagem === embalagem.tipo_embalagem &&
-              element.nome_alimento === alimento.nome_alimento
-          );
-          if (conf)
-            embalagem.qtd_a_receber = embalagem.qtd_volume - conf.qtd_recebido;
-        });
-      });
-    }
-
+  const filtrarAlimentos = (guiaResponse) => {
     guiaResponse.alimentos = guiaResponse.alimentos.filter((alimento) => {
       alimento.embalagens = alimento.embalagens.filter(
         (embalagem) => embalagem.qtd_a_receber !== 0
@@ -111,83 +88,16 @@ export default () => {
     });
   };
 
-  const carregarReposicaoEdicao = async (uuid) => {
-    let response;
-    try {
-      setCarregando(true);
-      const params = gerarParametrosConsulta({ uuid: uuid });
-      response = await getReposicaoParaEdicao(params);
-      let response2 = await getConferenciaParaEdicao(params);
-      let conferencia = response.data.results;
-
-      filtrarAlimentos(
-        response2.data.results.conferencia_dos_alimentos,
-        conferencia.guia,
-        true
-      );
-
-      setGuia(conferencia.guia);
-      setEdicao(true);
-      setCarregando(false);
-      return conferencia;
-    } catch (e) {
-      toastError(e.response.data.detail);
-      setCarregando(false);
-    }
-  };
-
-  const carregarEdicao = (values, conferencia) => {
-    setCarregando(true);
-
-    let valoresConf = conferencia.conferencia_dos_alimentos;
-    let guiaConf = conferencia.guia;
-
-    valoresConf.forEach((item, index) => {
-      if (item.tipo_embalagem === "Fechada")
-        values[`recebidos_fechada_${index}`] = item.qtd_recebido;
-      if (item.tipo_embalagem === "Fracionada")
-        values[`recebidos_fracionada_${index}`] = item.qtd_recebido;
-      values[`status_${index}`] = item.status_alimento;
-      values[`ocorrencias_${index}`] = item.ocorrencia;
-      values[`observacoes_${index}`] = item.observacao;
-      if (item.arquivo) {
-        item.arquivo = [
-          {
-            nome: "imagem.png",
-            arquivo: item.arquivo,
-          },
-        ];
-        let arquivos = arquivoAtual;
-        arquivos[index] = item.arquivo;
-        setArquivoAtual(arquivos);
-      }
-    });
-
-    values.numero_guia = guiaConf.numero_guia;
-    values.data_entrega = guiaConf.data_entrega;
-    values.nome_motorista = conferencia.nome_motorista;
-    values.hora_recebimento = conferencia.hora_recebimento;
-    values.placa_veiculo = conferencia.placa_veiculo;
-    values.data_entrega_real = conferencia.data_recebimento;
-
-    values.uuid_conferencia = conferencia.uuid;
-
-    setHoraRecebimento(conferencia.hora_recebimento);
-    setHoraRecebimentoAlterada(true);
-
-    setGuia(guiaConf);
-
-    setCarregando(false);
-  };
-
-  const setFiles = (files) => {
+  const setFiles = (index) => (files) => {
     let arquivos = arquivoAtual;
-    arquivos = files;
+    arquivos[index] = files;
     setArquivoAtual(arquivos);
   };
 
-  const removeFile = () => {
-    setArquivoAtual([]);
+  const removeFile = (index) => () => {
+    let arquivos = arquivoAtual;
+    arquivos[index] = null;
+    setArquivoAtual(arquivos);
   };
 
   const escolherHora = (hora) => {
@@ -199,15 +109,6 @@ export default () => {
       setHoraRecebimento("00:00:00");
       setHoraRecebimentoAlterada(false);
     }
-  };
-
-  const processarEdicao = async (event, values) => {
-    event.preventDefault();
-    const urlParams = new URLSearchParams(window.location.search);
-    const param = urlParams.get("uuid");
-    setUuid(param);
-    let conf = await carregarReposicaoEdicao(param);
-    carregarEdicao(values, conf);
   };
 
   const onSubmit = async (values) => {
@@ -222,7 +123,6 @@ export default () => {
 
     for (let i = 0; i < guia.alimentos.length; i++) {
       let x = {};
-      if (edicao) x.uuid_conferencia = values.uuid_conferencia;
       x.data_entrega = values.data_entrega;
       x.arquivo = values.arquivo[i];
       x.data_recebimento = values.data_recebimento;
@@ -241,7 +141,7 @@ export default () => {
 
     localStorage.setItem("valoresReposicao", JSON.stringify(valoresForm));
     localStorage.setItem("guiaReposicao", JSON.stringify(guia));
-    navigate(`/${LOGISTICA}/${REPOSICAO_RESUMO_FINAL}?editar=${edicao}`);
+    navigate(`/${LOGISTICA}/${REPOSICAO_RESUMO_FINAL}`);
   };
 
   const comparaDataEntrega = (value) => {
@@ -460,8 +360,9 @@ export default () => {
     else return "green";
   };
 
-  const toggleBtnAlimentos = (uuid) => {
-    if (arquivoAtual) inputFile.current.setState({ files: arquivoAtual });
+  const toggleBtnAlimentos = (uuid, index) => {
+    if (arquivoAtual[index])
+      inputFile.current[index].setFiles(arquivoAtual[index]);
     setCollapseAlimentos({
       [uuid]: !collapseAlimentos[uuid],
     });
@@ -474,12 +375,9 @@ export default () => {
       const urlParams = new URLSearchParams(window.location.search);
 
       let autofill = urlParams.get("autofill");
-      let edicao = urlParams.get("editar");
 
       if (autofill) {
         autoFillButton.current.click();
-      } else if (edicao === "true") {
-        editarButton.current.click();
       } else {
         const param = urlParams.get("uuid");
         setUuid(param);
@@ -498,7 +396,6 @@ export default () => {
             validate={() => {}}
             render={({ handleSubmit, values, errors }) => (
               <form onSubmit={handleSubmit}>
-                <FinalFormToRedux form={FORM_NAME} />
                 <span className="subtitulo">
                   Conferência individual dos itens da guia
                 </span>
@@ -531,6 +428,7 @@ export default () => {
                       component={InputComData}
                       label="Selecionar Data de Recebimento na UE"
                       name="data_entrega_real"
+                      dataTestId="data_entrega_real"
                       className="data-inicial"
                       validate={composeValidators(required, validaDataEntrega)}
                       minDate={
@@ -551,6 +449,7 @@ export default () => {
                       component={InputHorario}
                       label="Selecionar Hora da Entrega"
                       name="hora_recebimento"
+                      dataTestId="hora_recebimento"
                       placeholder="Selecione a Hora"
                       horaAtual={HoraRecebimento}
                       onChangeFunction={(data) => {
@@ -568,6 +467,7 @@ export default () => {
                       component={InputText}
                       label="Nome do Motorista"
                       name="nome_motorista"
+                      dataTestId="nome_motorista"
                       className="input-busca-produto"
                       contador={100}
                       validate={composeValidators(
@@ -583,6 +483,7 @@ export default () => {
                       component={InputText}
                       label="Placa do Veículo"
                       name="placa_veiculo"
+                      dataTestId="placa_veiculo"
                       className="input-busca-produto"
                       contador={7}
                       validate={composeValidators(
@@ -623,7 +524,7 @@ export default () => {
                             <div className="col-1 align-self-center">
                               <button
                                 onClick={() =>
-                                  toggleBtnAlimentos(alimento.uuid)
+                                  toggleBtnAlimentos(alimento.uuid, index)
                                 }
                                 className="btn btn-link btn-block text-start px-0"
                                 type="button"
@@ -727,6 +628,7 @@ export default () => {
                                                       component={InputText}
                                                       apenasNumeros
                                                       name={`recebidos_fechada_${index}`}
+                                                      dataTestId={`recebidos_fechada_${index}`}
                                                       className="input-busca-produto"
                                                       placeholder={
                                                         fechada.descricao_embalagem
@@ -809,6 +711,7 @@ export default () => {
                                                       component={InputText}
                                                       apenasNumeros
                                                       name={`recebidos_fracionada_${index}`}
+                                                      dataTestId={`recebidos_fracionada_${index}`}
                                                       className="input-busca-produto"
                                                       placeholder={
                                                         fracionada.descricao_embalagem
@@ -877,18 +780,19 @@ export default () => {
                                     </span>
                                   </label>
                                   <InputFile
-                                    ref={inputFile}
+                                    ref={(ref) =>
+                                      (inputFile.current[index] = ref)
+                                    }
                                     className="inputfile"
                                     texto="Inserir Imagem"
-                                    name="files"
+                                    name={`files_${index}`}
                                     accept={FORMATOS_IMAGEM}
-                                    setFiles={setFiles}
-                                    removeFile={removeFile}
+                                    setFiles={setFiles(index)}
+                                    removeFile={removeFile(index)}
                                     toastSuccess={
                                       "Imagem incluída com sucesso!"
                                     }
                                     alignLeft
-                                    disabled={arquivoAtual.length > 0}
                                   />
                                   <label className="mb-3">
                                     {"IMPORTANTE: Envie um arquivo nos formatos: " +
@@ -905,6 +809,7 @@ export default () => {
                                   component={TextArea}
                                   label="Observações"
                                   name={`observacoes_${index}`}
+                                  dataTestId={`observacoes_${index}`}
                                   placeholder="Digite seus comentários aqui..."
                                   required
                                   contador={500}
@@ -935,14 +840,6 @@ export default () => {
                     }}
                     style={{ display: "none" }}
                     ref={autoFillButton}
-                  />
-
-                  <button
-                    onClick={async (event) => {
-                      processarEdicao(event, values);
-                    }}
-                    style={{ display: "none" }}
-                    ref={editarButton}
                   />
 
                   <span className="float-end tooltip-botao">
