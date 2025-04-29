@@ -107,9 +107,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
             getRascunhosAsync();
           }
         } else {
-          toastError(
-            `Houve um erro ao enviar ao salvar alteração do tipo de alimentação. Tente novamente mais tarde.`
-          );
+          toastError(getError(response.data));
         }
       }
     } else {
