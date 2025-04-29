@@ -6,8 +6,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { PERFIL, TIPO_PERFIL } from "constants/shared";
-import { APIMockVersion } from "mocks/apiVersionMock";
+import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "constants/shared";
 import { mockInclusaoAlimentacaoRegular } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoRegular";
 import { mockInclusaoAlimentacaoRegularCancelada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoRegularCancelada";
 import { localStorageMock } from "mocks/localStorageMock";
@@ -20,37 +19,31 @@ import mock from "services/_mock";
 
 describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
   beforeEach(async () => {
-    mock.onGet("/api-version/").reply(200, APIMockVersion);
-    mock.onGet("/notificacoes/").reply(200, {
-      next: null,
-      previous: null,
-      count: 0,
-      page_size: 4,
-      results: [],
-    });
-    mock
-      .onGet("/notificacoes/quantidade-nao-lidos/")
-      .reply(200, { quantidade_nao_lidos: 0 });
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+        `/grupos-inclusao-alimentacao-normal/${mockInclusaoAlimentacaoRegular.uuid}/`
       )
       .replyOnce(200, mockInclusaoAlimentacaoRegular);
     mock
       .onPatch(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/escola-cancela-pedido-48h-antes/"
+        `/grupos-inclusao-alimentacao-normal/${mockInclusaoAlimentacaoRegular.uuid}/escola-cancela-pedido-48h-antes/`
       )
       .reply(200, mockInclusaoAlimentacaoRegularCancelada);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem(
+      "nome_instituicao",
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
+    );
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
 
-    const search = `?uuid=d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal`;
+    const search = `?uuid=${mockInclusaoAlimentacaoRegular.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,

@@ -46,13 +46,11 @@ export const codaeListarSolicitacoesDeInclusaoDeAlimentacao = async (
 
 export const codaeAutorizarSolicitacaoDeInclusaoDeAlimentacao = async (
   uuid,
-  justificativa = "",
+  payload,
   tipoSolicitacao
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${FLUXO.CODAE_AUTORIZA}/`;
-  const response = await axios
-    .patch(url, { justificativa })
-    .catch(ErrorHandlerFunction);
+  const response = await axios.patch(url, payload).catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;
