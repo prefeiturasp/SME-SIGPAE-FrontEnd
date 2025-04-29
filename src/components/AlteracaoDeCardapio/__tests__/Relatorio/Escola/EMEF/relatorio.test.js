@@ -7,39 +7,41 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "constants/shared";
-import { mockInclusaoContinuaCancelada } from "mocks/InclusaoAlimentacao/mockInclusaoContinuaCancelada";
-import { mockInclusaoContinuaPrazoLimite } from "mocks/InclusaoAlimentacao/mockInclusaoContinuaPrazoLimite";
 import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
+import { mockAlteracaoCardapioAValidar } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioAValidar";
+import { mockAlteracaoCardapioCancelada } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioCancelada";
 import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
-import * as RelatoriosInclusaoDeAlimentacao from "pages/InclusaoDeAlimentacao/RelatorioPage";
+import * as RelatoriosAlteracaoDoTipoDeAlimentacao from "pages/AlteracaoDeCardapio/RelatorioPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 
-describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão Escola", () => {
+describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF", () => {
   beforeEach(async () => {
+    mock
+      .onGet(`/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/`)
+      .reply(200, mockAlteracaoCardapioAValidar);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
-      .onGet(
-        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/"
-      )
-      .replyOnce(200, mockInclusaoContinuaPrazoLimite);
-    mock
       .onPatch(
-        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/escola-cancela-pedido-48h-antes/"
+        `/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/escola-cancela-pedido-48h-antes/`
       )
-      .reply(200, mockInclusaoContinuaCancelada);
+      .reply(200, mockAlteracaoCardapioCancelada);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem(
+      "nome_instituicao",
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
+    );
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
 
-    const search = `?uuid=a64f5054-873c-46bc-aefa-43966029a1a4&ehInclusaoContinua=true&tipoSolicitacao=solicitacao-continua`;
+    const search = `?uuid=${mockAlteracaoCardapioAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,
@@ -54,49 +56,44 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
             v7_relativeSplatPath: true,
           }}
         >
-          <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+          <RelatoriosAlteracaoDoTipoDeAlimentacao.RelatorioEscola />
         </MemoryRouter>
       );
     });
   });
 
-  it("renderiza título da página `Inclusão de Alimentação - Solicitação # A64F5`", async () => {
+  it("renderiza título da página `Alteração do tipo de alimentação - Solicitação # EF99C`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # A64F5")
+      screen.getByText("Alteração do tipo de alimentação - Solicitação # EF99C")
     ).toBeInTheDocument();
   });
 
-  it("renderiza label `Solicitação no prazo limite`", async () => {
-    expect(screen.getByText("Solicitação no prazo limite")).toBeInTheDocument();
-  });
-
-  it("renderiza motivo e data", async () => {
-    expect(screen.getByText("Motivo")).toBeInTheDocument();
+  it("renderiza label `Solicitação no prazo regular`", async () => {
     expect(
-      screen.getByText("Programas/Projetos Contínuos")
+      screen.getByText("Solicitação no prazo regular")
     ).toBeInTheDocument();
-
-    expect(screen.getByText("De")).toBeInTheDocument();
-    expect(screen.getByText("05/03/2025")).toBeInTheDocument();
-
-    expect(screen.getByText("Até")).toBeInTheDocument();
-    expect(screen.getByText("12/03/2025")).toBeInTheDocument();
   });
 
-  it("renderiza tabela com período, tipos de alimentação e nº de alunos", async () => {
-    expect(screen.getByText("Repetir")).toBeInTheDocument();
+  it("renderiza tipo de alteração e data", async () => {
+    expect(screen.getByText("Tipo de Alteração")).toBeInTheDocument();
+    expect(screen.getByText("LPR - Lanche por Refeição")).toBeInTheDocument();
 
+    expect(screen.getByText("Alterar dia")).toBeInTheDocument();
+    expect(screen.getByText("22/05/2025")).toBeInTheDocument();
+  });
+
+  it("renderiza tabela com período, tipos de alimentação de e para, e nº de alunos", async () => {
     expect(screen.getByText("Período")).toBeInTheDocument();
     expect(screen.getByText("MANHA")).toBeInTheDocument();
 
-    expect(screen.getByText("Tipos de Alimentação")).toBeInTheDocument();
+    expect(screen.getByText("Alteração alimentação de:")).toBeInTheDocument();
     expect(screen.getByText("Lanche")).toBeInTheDocument();
 
-    expect(screen.getByText("Nº de Alunos")).toBeInTheDocument();
-    expect(screen.getByText("100")).toBeInTheDocument();
+    expect(screen.getByText("Alteração alimentação para:")).toBeInTheDocument();
+    expect(screen.getByText("Sobremesa")).toBeInTheDocument();
 
-    expect(screen.getByText("Observações:")).toBeInTheDocument();
-    expect(screen.getByText("observação da inclusão")).toBeInTheDocument();
+    expect(screen.getByText("Número de alunos")).toBeInTheDocument();
+    expect(screen.getByText("12")).toBeInTheDocument();
   });
 
   it("exibe modal cancela solicitação", async () => {
@@ -110,6 +107,11 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
       expect(
         screen.getByText(
           "Esta solicitação está aguardando validação pela DRE. Deseja seguir em frente com o cancelamento?"
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Selecione a(s) data(s) para solicitar o cancelamento:"
         )
       ).toBeInTheDocument();
     });
@@ -145,8 +147,8 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
       ).toBeInTheDocument();
     });
 
-    const input = screen.getByTestId("data-cancelamento-continuo-0");
-    fireEvent.click(input);
+    const inputDia22_05_2025 = screen.getByTestId("data_22/05/2025");
+    fireEvent.click(inputDia22_05_2025);
 
     const textarea = screen.getByTestId("textarea-justificativa");
     fireEvent.change(textarea, {
@@ -157,10 +159,8 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
     fireEvent.click(botaoSim);
 
     mock
-      .onGet(
-        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/"
-      )
-      .replyOnce(200, mockInclusaoContinuaCancelada);
+      .onGet(`/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/`)
+      .reply(200, mockAlteracaoCardapioCancelada);
 
     await waitFor(() => {
       expect(
@@ -173,7 +173,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
     expect(screen.getByText("Escola cancelou")).toBeInTheDocument();
     expect(screen.getByText("Histórico de cancelamento")).toBeInTheDocument();
     expect(
-      screen.getByText("MANHA - Lanche - 100 - justificativa: xablau")
+      screen.getByText("22/05/2025 - justificativa: teste")
     ).toBeInTheDocument();
   });
 });

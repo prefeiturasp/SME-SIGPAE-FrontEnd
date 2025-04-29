@@ -7,34 +7,27 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "constants/shared";
-import { mockInclusaoalimentacaoNaoValidada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoNaoValidada";
-import { mockInclusaoAlimentacaoRegular } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoRegular";
-import { mockInclusaoAlimentacaoValidada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoValidada";
 import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
+import { mockAlteracaoCardapioAValidar } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioAValidar";
+import { mockAlteracaoCardapioNaoValidada } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioNaoValidada";
+import { mockAlteracaoCardapioValidada } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioValidada";
 import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
-import * as RelatoriosInclusaoDeAlimentacao from "pages/InclusaoDeAlimentacao/RelatorioPage";
+import * as RelatoriosAlteracaoDoTipoDeAlimentacao from "pages/AlteracaoDeCardapio/RelatorioPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 
-describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
+describe("Relatório Alteração do Tipo de Alimentação - Visão DRE - EMEF", () => {
   beforeEach(async () => {
+    mock
+      .onGet(`/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/`)
+      .reply(200, mockAlteracaoCardapioAValidar);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
-      .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
-      )
-      .replyOnce(200, mockInclusaoAlimentacaoRegular);
-    mock
       .onPatch(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/diretoria-regional-nao-valida-pedido/"
-      )
-      .reply(200, {});
-    mock
-      .onPatch(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/diretoria-regional-valida-pedido/"
+        `/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/diretoria-regional-nao-valida-pedido/`
       )
       .reply(200, {});
 
@@ -42,7 +35,7 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
     localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
 
-    const search = `?uuid=d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal`;
+    const search = `?uuid=${mockAlteracaoCardapioAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,
@@ -57,15 +50,15 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
             v7_relativeSplatPath: true,
           }}
         >
-          <RelatoriosInclusaoDeAlimentacao.RelatorioDRE />
+          <RelatoriosAlteracaoDoTipoDeAlimentacao.RelatorioDRE />
         </MemoryRouter>
       );
     });
   });
 
-  it("renderiza título da página `Inclusão de Alimentação - Solicitação # D0F4F`", async () => {
+  it("renderiza título da página `Alteração do tipo de alimentação - Solicitação # EF99C`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # D0F4F")
+      screen.getByText("Alteração do tipo de alimentação - Solicitação # EF99C")
     ).toBeInTheDocument();
   });
 
@@ -75,23 +68,26 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
     ).toBeInTheDocument();
   });
 
-  it("renderiza motivo e data", async () => {
-    expect(screen.getByText("Motivo")).toBeInTheDocument();
-    expect(screen.getByText("Reposição de aula")).toBeInTheDocument();
+  it("renderiza tipo de alteração e data", async () => {
+    expect(screen.getByText("Tipo de Alteração")).toBeInTheDocument();
+    expect(screen.getByText("LPR - Lanche por Refeição")).toBeInTheDocument();
 
-    expect(screen.getByText("Dia(s) de inclusão")).toBeInTheDocument();
-    expect(screen.getByText("02/04/2025")).toBeInTheDocument();
+    expect(screen.getByText("Alterar dia")).toBeInTheDocument();
+    expect(screen.getByText("22/05/2025")).toBeInTheDocument();
   });
 
-  it("renderiza tabela com período, tipos de alimentação e nº de alunos", async () => {
+  it("renderiza tabela com período, tipos de alimentação de e para, e nº de alunos", async () => {
     expect(screen.getByText("Período")).toBeInTheDocument();
     expect(screen.getByText("MANHA")).toBeInTheDocument();
 
-    expect(screen.getByText("Tipos de Alimentação")).toBeInTheDocument();
+    expect(screen.getByText("Alteração alimentação de:")).toBeInTheDocument();
     expect(screen.getByText("Lanche")).toBeInTheDocument();
 
-    expect(screen.getByText("Nº de Alunos")).toBeInTheDocument();
-    expect(screen.getByText("123")).toBeInTheDocument();
+    expect(screen.getByText("Alteração alimentação para:")).toBeInTheDocument();
+    expect(screen.getByText("Sobremesa")).toBeInTheDocument();
+
+    expect(screen.getByText("Número de alunos")).toBeInTheDocument();
+    expect(screen.getByText("12")).toBeInTheDocument();
   });
 
   it("exibe modal não validar", async () => {
@@ -155,10 +151,8 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
     fireEvent.click(botaoSim);
 
     mock
-      .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
-      )
-      .replyOnce(200, mockInclusaoalimentacaoNaoValidada);
+      .onGet(`/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/`)
+      .reply(200, mockAlteracaoCardapioNaoValidada);
 
     await waitFor(() => {
       expect(
@@ -177,10 +171,8 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
     fireEvent.click(botaoValidar);
 
     mock
-      .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
-      )
-      .replyOnce(200, mockInclusaoAlimentacaoValidada);
+      .onGet(`/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/`)
+      .replyOnce(200, mockAlteracaoCardapioValidada);
 
     await waitFor(() => {
       expect(screen.queryByText("DRE validou")).not.toBeInTheDocument();
