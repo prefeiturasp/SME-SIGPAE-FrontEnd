@@ -5,6 +5,7 @@ import {
   maxValue,
   naoPodeSerZero,
   required,
+  requiredMultiselect,
 } from "helpers/fieldValidators";
 import {
   usuarioEhEscolaCeuGestao,
@@ -97,6 +98,20 @@ export const PeriodosFields = ({ ...props }) => {
                             `${name}.check`,
                             !values.substituicoes[index]["check"]
                           );
+                          if (values.substituicoes[index]["check"]) {
+                            form.change(
+                              `substituicoes[${index}].tipos_alimentacao_de_selecionados`,
+                              undefined
+                            );
+                            form.change(
+                              `substituicoes[${index}].tipos_alimentacao_para_selecionados`,
+                              undefined
+                            );
+                            form.change(
+                              `substituicoes[${index}].qtd_alunos`,
+                              undefined
+                            );
+                          }
                         }}
                         className="checkbox-custom"
                         data-cy={`checkbox-${getPeriodo(index).nome}`}
@@ -112,7 +127,7 @@ export const PeriodosFields = ({ ...props }) => {
                   dataTestId={`select-tipos-alimentacao-de-${
                     getPeriodo(index).nome
                   }`}
-                  name={`${name}.tipos_alimentacao_de`}
+                  name={`${name}.tipos_alimentacao_de_selecionados`}
                   selected={
                     form.getState().values.substituicoes[index]
                       .tipos_alimentacao_de_selecionados || []
@@ -126,8 +141,8 @@ export const PeriodosFields = ({ ...props }) => {
                     ),
                     values
                   )}
-                  onSelectedChanged={(values_) => {
-                    form.change(
+                  onSelectedChanged={async (values_) => {
+                    await form.change(
                       `substituicoes[${index}].tipos_alimentacao_de_selecionados`,
                       values_.map((value_) => value_.value)
                     );
@@ -135,6 +150,9 @@ export const PeriodosFields = ({ ...props }) => {
                   placeholder="Selecione tipos de alimentação"
                   disabled={!values.substituicoes[index]["check"]}
                   required={values.substituicoes[index]["check"]}
+                  validate={
+                    values.substituicoes[index]["check"] && requiredMultiselect
+                  }
                 />
               </div>
               <div className="col-3 pe-3">
@@ -143,7 +161,7 @@ export const PeriodosFields = ({ ...props }) => {
                   dataTestId={`select-tipos-alimentacao-para-${
                     getPeriodo(index).nome
                   }`}
-                  name={`${name}.tipos_alimentacao_para`}
+                  name={`${name}.tipos_alimentacao_para_selecionados`}
                   selected={
                     values.substituicoes[index]
                       .tipos_alimentacao_para_selecionados || []
@@ -158,14 +176,17 @@ export const PeriodosFields = ({ ...props }) => {
                     ),
                     values
                   )}
-                  onSelectedChanged={(values_) => {
-                    form.change(
+                  onSelectedChanged={async (values_) => {
+                    await form.change(
                       `substituicoes[${index}].tipos_alimentacao_para_selecionados`,
                       values_.map((value_) => value_.value)
                     );
                   }}
                   placeholder="Selecione tipos de alimentação"
                   disabled={!values.substituicoes[index]["check"]}
+                  validate={
+                    values.substituicoes[index]["check"] && requiredMultiselect
+                  }
                 />
               </div>
               <div className="col-3">
