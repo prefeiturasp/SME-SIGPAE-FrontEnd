@@ -259,7 +259,9 @@ export default ({ atualizar }) => {
         <div className="row">
           <div className="col">
             <div className="subtitulo-laranja mb-3">
-              <span className="asterisco">* </span>
+              {tipoDeEmbalagem.tipo_embalagem !== "TERCIARIA" && (
+                <span className="asterisco">* </span>
+              )}
               {TITULOS_SECOES_TIPOS_EMBALAGENS[tipoDeEmbalagem.tipo_embalagem]}
             </div>
           </div>
@@ -296,7 +298,12 @@ export default ({ atualizar }) => {
             concatenarNovosArquivos
           />
           <label className="col-12 label-imagem">
-            <span className="red">Campo Obrigatório:&nbsp;</span>
+            <span className="red">
+              {tipoDeEmbalagem.tipo_embalagem === "TERCIARIA"
+                ? "IMPORTANTE:"
+                : "Campo Obrigatório:"}
+              &nbsp;
+            </span>
             {"Envie um arquivo nos formatos: " +
               FORMATOS_IMAGEM +
               ", com até 10MB"}
@@ -400,8 +407,6 @@ export default ({ atualizar }) => {
 
     if (
       layoutEmbalagensTerciarias &&
-      arquivosLayoutsTerciarios &&
-      arquivosLayoutsTerciarios.length > 0 &&
       (layoutEmbalagensTerciarias.status === "REPROVADO" || atualizar)
     ) {
       payload.tipos_de_embalagens.push({
@@ -436,16 +441,9 @@ export default ({ atualizar }) => {
       arquivosLayoutsSecundarios &&
       arquivosLayoutsSecundarios.length === 0;
 
-    const LAYOUT_TERCIARIO_REPROVADO_E_SEM_ARQUIVO =
-      layoutEmbalagensTerciarias &&
-      layoutEmbalagensTerciarias.status === "REPROVADO" &&
-      arquivosLayoutsTerciarios &&
-      arquivosLayoutsTerciarios.length === 0;
-
     return (
       LAYOUT_PRIMARIO_REPROVADO_E_SEM_ARQUIVO ||
-      LAYOUT_SECUNDARIO_REPROVADO_E_SEM_ARQUIVO ||
-      LAYOUT_TERCIARIO_REPROVADO_E_SEM_ARQUIVO
+      LAYOUT_SECUNDARIO_REPROVADO_E_SEM_ARQUIVO
     );
   };
 
