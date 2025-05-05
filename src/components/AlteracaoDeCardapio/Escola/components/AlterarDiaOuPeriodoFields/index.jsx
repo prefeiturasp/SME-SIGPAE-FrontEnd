@@ -1,6 +1,7 @@
 import { InputComData } from "components/Shareable/DatePicker";
-import HTTP_STATUS from "http-status-codes";
+import { required } from "helpers/fieldValidators";
 import { fimDoCalendario } from "helpers/utilities";
+import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import React, { useState } from "react";
 import { Field } from "react-final-form";
@@ -16,6 +17,7 @@ export const AlterarDiaOuPeriodo = ({ ...props }) => {
     ehMotivoPorNome,
     setErro,
     proximosDoisDiasUteis,
+    form,
   } = props;
 
   const obtemDataInicial = async (value) => {
@@ -61,7 +63,11 @@ export const AlterarDiaOuPeriodo = ({ ...props }) => {
               ? moment().toDate()
               : proximosDoisDiasUteis
           }
-          maxDate={fimDoCalendario()}
+          maxDate={
+            values.data_final
+              ? moment(values.data_final, "DD/MM/YYYY")["_d"]
+              : fimDoCalendario()
+          }
           disabled={
             values.alterar_dia ||
             !values.motivo ||
@@ -70,6 +76,7 @@ export const AlterarDiaOuPeriodo = ({ ...props }) => {
           inputOnChange={async (value) => {
             await obtemDataInicial(value);
             onAlterarDiaChanged(value, values);
+            if (!value) form.change("data_final", undefined);
           }}
         />
         <Field
@@ -80,6 +87,8 @@ export const AlterarDiaOuPeriodo = ({ ...props }) => {
           disabled={!values.data_inicial || values.alterar_dia}
           minDate={limiteDataInicial}
           maxDate={limiteDataFinal}
+          required={values.data_inicial}
+          validate={values.data_inicial && required}
         />
       </>
     </section>

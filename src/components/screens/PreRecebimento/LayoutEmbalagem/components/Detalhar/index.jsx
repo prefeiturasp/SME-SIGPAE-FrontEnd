@@ -383,8 +383,8 @@ export default () => {
 
                   {renderizarTipoEmbalagem(
                     2,
-                    "Embalagem Secundária",
-                    embalagemSecundaria,
+                    "Embalagem Terciária",
+                    embalagemTerciaria,
                     values
                   )}
 

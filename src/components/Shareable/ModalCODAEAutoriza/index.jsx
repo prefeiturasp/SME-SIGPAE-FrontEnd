@@ -51,7 +51,7 @@ export class ModalCODAEAutoriza extends Component {
     } else {
       const resp = await this.props.endpoint(
         uuid,
-        values.justificativa_autorizacao,
+        { justificativa: values.justificativa_autorizacao },
         this.props.tipoSolicitacao
       );
       if (resp.status === HTTP_STATUS.OK) {

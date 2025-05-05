@@ -1,3 +1,15 @@
+import { Relatorio } from "components/AlteracaoDeCardapio/Relatorio";
+import Breadcrumb from "components/Shareable/Breadcrumb";
+import { ModalCancelarAlteracaoCardapio } from "components/Shareable/ModalCancelaAlteracaoCardapio";
+import { ModalCODAEAutoriza } from "components/Shareable/ModalCODAEAutoriza";
+import { ModalCODAEQuestiona } from "components/Shareable/ModalCODAEQuestiona";
+import { ModalNaoValidarSolicitacao } from "components/Shareable/ModalNaoValidarSolicitacaoReduxForm";
+import ModalNegarSolicitacao from "components/Shareable/ModalNegarSolicitacao";
+import { ModalTerceirizadaRespondeQuestionamento } from "components/Shareable/ModalTerceirizadaRespondeQuestionamento";
+import Page from "components/Shareable/Page/Page";
+import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "configs/constants";
+
+import { HOME } from "constants/config";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import {
@@ -14,16 +26,6 @@ import {
   TerceirizadaTomaCienciaAlteracaoCardapio,
 } from "services/alteracaoDeCardapio";
 import { getMotivosDREnaoValida } from "services/relatorios";
-import Relatorio from "../../components/AlteracaoDeCardapio/Relatorio";
-import Breadcrumb from "../../components/Shareable/Breadcrumb";
-import { ModalCODAEQuestiona } from "../../components/Shareable/ModalCODAEQuestiona";
-import { ModalNaoValidarSolicitacao } from "../../components/Shareable/ModalNaoValidarSolicitacaoReduxForm";
-import ModalNegarSolicitacao from "../../components/Shareable/ModalNegarSolicitacao";
-import { ModalTerceirizadaRespondeQuestionamento } from "../../components/Shareable/ModalTerceirizadaRespondeQuestionamento";
-import Page from "../../components/Shareable/Page/Page";
-import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "../../configs/constants";
-import { HOME } from "../../constants/config";
-import { ModalCancelarAlteracaoCardapio } from "components/Shareable/ModalCancelaAlteracaoCardapio";
 
 export const RelatorioBase = ({ ...props }) => {
   const [motivosDREnaoValida, setMotivosDREnaoValida] = useState();
@@ -91,6 +93,7 @@ export const RelatorioCODAE = () => (
     visao={CODAE}
     ModalNaoAprova={ModalNegarSolicitacao}
     ModalQuestionamento={ModalCODAEQuestiona}
+    ModalCODAEAutoriza={ModalCODAEAutoriza}
     toastAprovaMensagem={
       "Alteração do Tipo de Alimentação autorizada com sucesso!"
     }

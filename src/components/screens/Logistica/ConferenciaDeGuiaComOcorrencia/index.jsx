@@ -403,7 +403,7 @@ export default () => {
 
   const toggleBtnAlimentos = (uuid, index) => {
     if (arquivoAtual[index])
-      inputFile.current[index].setState({ files: arquivoAtual[index] });
+      inputFile.current[index].setFiles(arquivoAtual[index]);
     setCollapseAlimentos({
       [uuid]: !collapseAlimentos[uuid],
     });
@@ -833,7 +833,6 @@ export default () => {
                                     }
                                     alignLeft
                                     disabled={
-                                      arquivoAtual[index] ||
                                       !["Parcial", "Não Recebido"].includes(
                                         values[`status_${index}`]
                                       )

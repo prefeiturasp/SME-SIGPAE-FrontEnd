@@ -7,7 +7,6 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "constants/shared";
-import { APIMockVersion } from "mocks/apiVersionMock";
 import { mockInclusaoAlimentacaoAutorizada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoAutorizada";
 import { mockInclusaoAlimentacaoNegada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoNegada";
 import { mockInclusaoAlimentacaoValidada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoValidada";
@@ -26,17 +25,6 @@ jest.mock("components/Shareable/CKEditorField", () => ({
 
 describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
   beforeEach(async () => {
-    mock.onGet("/api-version/").reply(200, APIMockVersion);
-    mock.onGet("/notificacoes/").reply(200, {
-      next: null,
-      previous: null,
-      count: 0,
-      page_size: 4,
-      results: [],
-    });
-    mock
-      .onGet("/notificacoes/quantidade-nao-lidos/")
-      .reply(200, { quantidade_nao_lidos: 0 });
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock

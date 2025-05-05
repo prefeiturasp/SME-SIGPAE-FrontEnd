@@ -754,6 +754,7 @@ export const validacoesTabelasDietas = (
   const idCategoriaAlimentacao = categoriasDeMedicao.find((categoria) =>
     categoria.nome.includes("ALIMENTAÇÃO")
   ).id;
+
   const maxDietasAutorizadas = Number(
     allValues[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]
   );
@@ -782,6 +783,14 @@ export const validacoesTabelasDietas = (
   const EH_INCLUSAO_SOMENTE_SOBREMESA =
     inclusoesAutorizadas.length &&
     inclusoesAutorizadas.every((i) => i.alimentacoes === "sobremesa");
+
+  const somaDosValoresPorCampo = (campo) =>
+    categoriasDeMedicao.reduce((total, categoria) => {
+      const valor = Number(
+        allValues[`${campo}__dia_${dia}__categoria_${categoria.id}`]
+      );
+      return total + (isNaN(valor) ? 0 : valor);
+    }, 0);
 
   if (
     rowName === "frequencia" &&
@@ -818,22 +827,14 @@ export const validacoesTabelasDietas = (
   } else if (
     value &&
     Number(value) > 0 &&
-    Number(value) +
-      Number(
-        allValues[`refeicao__dia_${dia}__categoria_${idCategoriaAlimentacao}`]
-      ) >
-      maxFrequenciaAlimentacao &&
+    somaDosValoresPorCampo("refeicao") > maxFrequenciaAlimentacao &&
     inputName.includes("refeicao")
   ) {
     return "O número máximo de alimentações foi excedido. É preciso subtrair o aluno com Dieta Especial Autorizada do apontamento de Refeição na planilha de Alimentação.";
   } else if (
     value &&
     Number(value) !== 0 &&
-    Number(value) +
-      Number(
-        allValues[`lanche__dia_${dia}__categoria_${idCategoriaAlimentacao}`]
-      ) >
-      maxFrequenciaAlimentacao &&
+    somaDosValoresPorCampo("lanche") > maxFrequenciaAlimentacao &&
     inputName.includes("lanche") &&
     !inputName.includes("_4h")
   ) {
@@ -841,11 +842,7 @@ export const validacoesTabelasDietas = (
   } else if (
     value &&
     Number(value) !== 0 &&
-    Number(value) +
-      Number(
-        allValues[`lanche_4h__dia_${dia}__categoria_${idCategoriaAlimentacao}`]
-      ) >
-      maxFrequenciaAlimentacao &&
+    somaDosValoresPorCampo("lanche_4h") > maxFrequenciaAlimentacao &&
     inputName.includes("lanche_4h")
   ) {
     return "O número máximo de alimentações foi excedido. É preciso subtrair o aluno com Dieta Especial Autorizada do apontamento de Lanche na planilha de Alimentação.";
