@@ -2,7 +2,7 @@ import { deepCopy } from "helpers/utilities";
 
 export const PAGE_SIZE = 10;
 
-export const normalizarValues = (values, page) => {
+export const normalizarValues = (values, page = 1) => {
   const values_ = deepCopy(values);
   const PARAMS = {
     page_size: PAGE_SIZE,
