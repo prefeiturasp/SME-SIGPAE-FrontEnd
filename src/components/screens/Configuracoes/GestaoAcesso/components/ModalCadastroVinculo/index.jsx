@@ -57,6 +57,7 @@ const ModalCadastroVinculo = ({
   codae,
   cogestor,
   ehUEParceira,
+  master,
 }) => {
   const [tipoUsuario, setTipoUsuario] = useState();
   const [subdivisoes, setSubdivisoes] = useState();
@@ -72,6 +73,10 @@ const ModalCadastroVinculo = ({
     setTipoUsuario("");
     toggleShow(false, null);
   };
+
+  const listaVisaoFiltrada = listaVisao.filter((elem) => {
+    return elem.nome !== "Empresa";
+  });
 
   const getPerfis = (visao) => {
     return listaPerfis
@@ -92,6 +97,7 @@ const ModalCadastroVinculo = ({
     const perfil = JSON.parse(localStorage.getItem("perfil"));
 
     const subdivisoes_restrita_por_perfil = {
+      ADMINISTRADOR_GESTAO_PRODUTO: "CODAE - Gestão de Produtos",
       COORDENADOR_DIETA_ESPECIAL: "CODAE - Gestão Dieta Especial",
       COORDENADOR_GESTAO_PRODUTO: "CODAE - Gestão de Produtos",
       COORDENADOR_SUPERVISAO_NUTRICAO:
@@ -299,9 +305,11 @@ const ModalCadastroVinculo = ({
                           <Radio className="" value={"NAO_SERVIDOR"}>
                             Não Servidor
                           </Radio>
-                          <Radio className="" value={"UNIDADE_PARCEIRA"}>
-                            Unidade Parceira
-                          </Radio>
+                          {master && (
+                            <Radio className="" value={"UNIDADE_PARCEIRA"}>
+                              Unidade Parceira
+                            </Radio>
+                          )}
                         </Radio.Group>
                       </div>
                     ))}
@@ -410,11 +418,15 @@ const ModalCadastroVinculo = ({
                             placeholder="Selecione a visão"
                             className="input-busca-produto"
                             required
-                            options={listaVisao}
+                            options={listaVisaoFiltrada}
                             validate={required}
-                            defaultValue={visaoUnica}
+                            defaultValue={
+                              visaoUnica || listaVisaoFiltrada[0].uuid
+                            }
                             disabled={
-                              diretor_escola || visaoUnica ? true : false
+                              visaoUnica
+                                ? true
+                                : false || listaVisaoFiltrada.length === 1
                             }
                           />
                         </div>

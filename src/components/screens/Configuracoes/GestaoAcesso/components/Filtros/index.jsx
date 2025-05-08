@@ -29,6 +29,15 @@ export default ({
     : {};
   const inicioResultado = useRef();
 
+  const getPerfisPorVisao = (visao) => {
+    return perfis
+      .filter((perfil) => perfil.visao === visao)
+      .map((perfil) => ({
+        uuid: perfil.nome,
+        nome: perfil.nome,
+      }));
+  };
+
   const onSubmit = async (values) => {
     const filtros = { ...values };
     setFiltros({ ...filtros });
@@ -39,7 +48,7 @@ export default ({
       <Form
         onSubmit={onSubmit}
         initialValues={initialValues}
-        render={({ form, handleSubmit, submitting }) => (
+        render={({ form, handleSubmit, values, submitting }) => (
           <form onSubmit={handleSubmit}>
             <FinalFormToRedux form={FORM_NAME} />
 
@@ -82,7 +91,7 @@ export default ({
                   component={SelectSelecione}
                   placeholder="Selecione o perfil do Usuário"
                   name="perfil"
-                  options={perfis}
+                  options={getPerfisPorVisao(values.visao)}
                 />
               </div>
             </div>

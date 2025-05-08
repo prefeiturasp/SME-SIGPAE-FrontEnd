@@ -24,6 +24,6 @@ const anteriores = [
 export default () => (
   <Page botaoVoltar voltarPara="/" titulo={atual.titulo}>
     <Breadcrumb home={HOME} atual={atual} anteriores={anteriores} />
-    <GestaoAcesso />
+    <GestaoAcesso master />
   </Page>
 );
