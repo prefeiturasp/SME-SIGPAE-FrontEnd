@@ -3142,7 +3142,9 @@ export default () => {
                           disableBotaoSalvarLancamentos ||
                           !calendarioMesConsiderado
                         }
-                        exibirTooltip={exibirTooltip}
+                        exibirTooltip={
+                          exibirTooltip && disableBotaoSalvarLancamentos
+                        }
                         tooltipTitulo="Existem campos a serem corrigidos. Realize as correções para salvar."
                         classTooltip="icone-info-invalid"
                       />
