@@ -2,12 +2,18 @@ import { Spin } from "antd";
 import Botao from "components/Shareable/Botao";
 import {
   BUTTON_ICON,
+  BUTTON_TYPE,
   BUTTON_STYLE,
 } from "components/Shareable/Botao/constants";
+import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
+import { toastError } from "components/Shareable/Toast/dialogs";
 import { ENVIRONMENT } from "constants/config";
+import HTTP_STATUS from "http-status-codes";
 import React, { useState } from "react";
+import { exportarExcelAsyncSolicitacoesRelatorioHistoricoDietas } from "services/dietaEspecial.service";
 import { Filtros } from "./components/Filtros";
 import { TabelaHistorico } from "./components/TabelaHistorico";
+import { normalizarValues } from "./helper";
 import "./styles.scss";
 
 export const RelatorioHistoricoDietas = () => {
@@ -16,7 +22,25 @@ export const RelatorioHistoricoDietas = () => {
   const [loadingDietas, setLoadingDietas] = useState(false);
   const [count, setCount] = useState(0);
 
+  const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
+    useState(false);
+  const [exportando, setExportando] = useState(false);
+
   const [erro, setErro] = useState("");
+
+  const exportarExcel = async () => {
+    setExportando(true);
+    const response =
+      await exportarExcelAsyncSolicitacoesRelatorioHistoricoDietas(
+        normalizarValues(valuesForm)
+      );
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao exportar excel. Tente novamente mais tarde.");
+    }
+    setExportando(false);
+  };
 
   return (
     <>
@@ -63,15 +87,19 @@ export const RelatorioHistoricoDietas = () => {
                         <Botao
                           texto="Exportar PDF"
                           style={BUTTON_STYLE.GREEN}
+                          type={BUTTON_TYPE.BUTTON}
                           icon={BUTTON_ICON.FILE_PDF}
                           onClick={() => {}}
+                          disabled={exportando}
                         />
                         <Botao
                           texto="Exportar XLSX"
                           style={BUTTON_STYLE.GREEN}
+                          type={BUTTON_TYPE.BUTTON}
                           icon={BUTTON_ICON.FILE_EXCEL}
                           className="ms-3"
-                          onClick={() => {}}
+                          onClick={async () => await exportarExcel()}
+                          disabled={exportando}
                         />
                       </div>
                     </div>
@@ -80,6 +108,10 @@ export const RelatorioHistoricoDietas = () => {
               )}
             </Spin>
           </div>
+          <ModalSolicitacaoDownload
+            show={exibirModalCentralDownloads}
+            setShow={setExibirModalCentralDownloads}
+          />
         </div>
       )}
     </>
