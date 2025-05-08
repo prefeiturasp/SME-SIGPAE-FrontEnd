@@ -28,6 +28,8 @@ export const RelatorioHistoricoDietas = () => {
 
   const [erro, setErro] = useState("");
 
+  console.log(ENVIRONMENT);
+
   const exportarExcel = async () => {
     setExportando(true);
     const response =
@@ -59,6 +61,7 @@ export const RelatorioHistoricoDietas = () => {
                 setLoadingDietas={setLoadingDietas}
                 setErro={setErro}
               />
+
               {dietasEspeciais && (
                 <>
                   <div className="row">
@@ -81,9 +84,9 @@ export const RelatorioHistoricoDietas = () => {
                     setCount={setCount}
                     values={valuesForm}
                   />
-                  {ENVIRONMENT !== "production" && (
-                    <div className="row">
-                      <div className="col-12 text-end">
+                  <div className="row">
+                    <div className="col-12 text-end">
+                      {ENVIRONMENT !== "production" && (
                         <Botao
                           texto="Exportar PDF"
                           style={BUTTON_STYLE.GREEN}
@@ -92,18 +95,18 @@ export const RelatorioHistoricoDietas = () => {
                           onClick={() => {}}
                           disabled={exportando}
                         />
-                        <Botao
-                          texto="Exportar XLSX"
-                          style={BUTTON_STYLE.GREEN}
-                          type={BUTTON_TYPE.BUTTON}
-                          icon={BUTTON_ICON.FILE_EXCEL}
-                          className="ms-3"
-                          onClick={async () => await exportarExcel()}
-                          disabled={exportando}
-                        />
-                      </div>
+                      )}
+                      <Botao
+                        texto="Exportar XLSX"
+                        style={BUTTON_STYLE.GREEN}
+                        type={BUTTON_TYPE.BUTTON}
+                        icon={BUTTON_ICON.FILE_EXCEL}
+                        className="ms-3"
+                        onClick={async () => await exportarExcel()}
+                        disabled={exportando}
+                      />
                     </div>
-                  )}
+                  </div>
                 </>
               )}
             </Spin>
