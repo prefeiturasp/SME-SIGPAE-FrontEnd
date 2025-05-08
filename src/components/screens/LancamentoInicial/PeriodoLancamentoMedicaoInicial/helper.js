@@ -189,9 +189,9 @@ export const valorZeroFrequencia = (
           "0"
         );
     });
-    return true;
+    return !categoria.nome.includes("DIETA");
   }
-  return;
+  return false;
 };
 
 const validaAlimentacoesEDietasCEUGESTAO = (
