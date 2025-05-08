@@ -28,8 +28,6 @@ export const RelatorioHistoricoDietas = () => {
 
   const [erro, setErro] = useState("");
 
-  console.log(ENVIRONMENT);
-
   const exportarExcel = async () => {
     setExportando(true);
     const response =
