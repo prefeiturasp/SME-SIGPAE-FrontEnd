@@ -35,6 +35,7 @@ import ModalExclusaoVinculo from "../ModalExclusaoVinculo";
 import { toastError } from "components/Shareable/Toast/dialogs";
 import { cnpjMask, cpfMask } from "constants/shared";
 import InputErroMensagem from "components/Shareable/Input/InputErroMensagem";
+import { getPerfisPorVisao } from "../../helper";
 
 const ENTER = 13;
 
@@ -77,15 +78,6 @@ const ModalCadastroVinculo = ({
   const listaVisaoFiltrada = listaVisao.filter((elem) => {
     return elem.nome !== "Empresa";
   });
-
-  const getPerfis = (visao) => {
-    return listaPerfis
-      .filter((perfil) => perfil.visao === visao)
-      .map((perfil) => ({
-        uuid: perfil.nome,
-        nome: perfil.nome,
-      }));
-  };
 
   const buscaSubdivisoes = async () => {
     const subdivisoes = await getSubdivisoesCodae();
@@ -441,7 +433,10 @@ const ModalCadastroVinculo = ({
                             options={
                               visaoUnica
                                 ? listaPerfis
-                                : getPerfis(values.visao_servidor)
+                                : getPerfisPorVisao(
+                                    values.visao_servidor,
+                                    listaPerfis
+                                  )
                             }
                             validate={required}
                             disabled={!values.visao_servidor}
@@ -552,7 +547,7 @@ const ModalCadastroVinculo = ({
                             required
                             options={
                               listaPerfis.some((perfil) => perfil.visao)
-                                ? getPerfis("EMPRESA")
+                                ? getPerfisPorVisao("EMPRESA", listaPerfis)
                                 : listaPerfis
                             }
                             validate={required}
@@ -680,7 +675,10 @@ const ModalCadastroVinculo = ({
                             options={
                               visaoUnica
                                 ? listaPerfis
-                                : getPerfis(values.visao_parceira)
+                                : getPerfisPorVisao(
+                                    values.visao_parceira,
+                                    listaPerfis
+                                  )
                             }
                             validate={required}
                             disabled={!values.visao_parceira}

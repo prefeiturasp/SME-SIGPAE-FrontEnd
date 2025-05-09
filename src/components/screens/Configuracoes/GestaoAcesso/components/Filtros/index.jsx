@@ -9,6 +9,7 @@ import {
 } from "components/Shareable/Botao/constants";
 import "./styles.scss";
 import SelectSelecione from "components/Shareable/SelectSelecione";
+import { getPerfisPorVisao } from "../../helper";
 
 const FORM_NAME = "buscaGestaoAcesso";
 
@@ -28,15 +29,6 @@ export default ({
       }
     : {};
   const inicioResultado = useRef();
-
-  const getPerfisPorVisao = (visao) => {
-    return perfis
-      .filter((perfil) => perfil.visao === visao)
-      .map((perfil) => ({
-        uuid: perfil.nome,
-        nome: perfil.nome,
-      }));
-  };
 
   const onSubmit = async (values) => {
     const filtros = { ...values };
@@ -91,7 +83,7 @@ export default ({
                   component={SelectSelecione}
                   placeholder="Selecione o perfil do Usuário"
                   name="perfil"
-                  options={getPerfisPorVisao(values.visao)}
+                  options={getPerfisPorVisao(values.visao, perfis)}
                 />
               </div>
             </div>
