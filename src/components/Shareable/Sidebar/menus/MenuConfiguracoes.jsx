@@ -15,6 +15,7 @@ import {
   ATUALIZACAO_EMAIL_EOL,
 } from "configs/constants";
 import {
+  usuarioEhAdministradorGpCODAE,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAEDietaEspecial,
   usuarioEhEmpresaTerceirizada,
@@ -49,6 +50,7 @@ const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
     usuarioEhGticCODAE();
 
   const exibirGestaoAcesso =
+    usuarioEhAdministradorGpCODAE() ||
     usuarioEhCoordenadorNutriCODAE() ||
     usuarioEhCoordenadorGpCODAE() ||
     usuarioEhCoordenadorNutriSupervisao();
