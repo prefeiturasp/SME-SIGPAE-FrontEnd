@@ -1858,7 +1858,7 @@ export default () => {
   };
 
   const onChangeSemana = async (values, key) => {
-    if (exibirTooltip) {
+    if (exibirTooltip && disableBotaoSalvarLancamentos) {
       setMsgModalErro(null);
       setShowModalErro(true);
     } else {
@@ -1875,7 +1875,7 @@ export default () => {
   };
 
   const onChangeTabAlunos = async (key) => {
-    if (exibirTooltip) {
+    if (exibirTooltip && disableBotaoSalvarLancamentos) {
       setMsgModalErro(
         "Existem campos a serem corrigidos. Realize as correções para prosseguir para a próxima turma."
       );
