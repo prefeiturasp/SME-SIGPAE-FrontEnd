@@ -70,6 +70,7 @@ export default ({
                 <Field
                   label="Visão"
                   component={SelectSelecione}
+                  dataTestId={"input-visao"}
                   placeholder="Selecione a Visão"
                   name="visao"
                   options={visoes}
@@ -81,6 +82,7 @@ export default ({
                 <Field
                   label="Perfil de Acesso"
                   component={SelectSelecione}
+                  dataTestId={"input-perfil-acesso"}
                   placeholder="Selecione o perfil do Usuário"
                   name="perfil"
                   options={getPerfisPorVisao(values.visao, perfis)}
