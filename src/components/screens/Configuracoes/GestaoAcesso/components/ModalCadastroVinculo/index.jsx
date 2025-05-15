@@ -425,6 +425,7 @@ const ModalCadastroVinculo = ({
                             name="perfil_servidor"
                             placeholder="Selecione o perfil de acesso"
                             className="input-busca-produto"
+                            dataTestId="select-perfil-acesso"
                             required
                             options={
                               visaoUnica
@@ -535,6 +536,7 @@ const ModalCadastroVinculo = ({
                             component={SelectSelecione}
                             label="Perfil de Acesso"
                             name="perfil"
+                            dataTestId="select-perfil-acesso2"
                             placeholder="Selecione o perfil de acesso"
                             className="input-busca-produto"
                             required
