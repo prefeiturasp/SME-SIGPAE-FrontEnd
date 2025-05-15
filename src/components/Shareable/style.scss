@@ -393,23 +393,6 @@ div.caption-choices {
   font-size: 14px;
 }
 
-// react-burgers
-.BurgerBox {
-  width: 18px !important;
-  line-height: 3px;
-  .BurgerInner {
-    height: 3px;
-    &:before {
-      top: -7px;
-      height: 3px;
-    }
-    &:after {
-      bottom: -7px;
-      height: 3px;
-    }
-  }
-}
-
 .table-historic {
   th {
     font-weight: normal;
