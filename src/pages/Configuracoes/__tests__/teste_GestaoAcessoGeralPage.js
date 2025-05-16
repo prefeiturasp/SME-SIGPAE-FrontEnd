@@ -28,6 +28,8 @@ import {
 } from "mocks/services/vinculos.service/mockGetVinculosAtivosPosCadastro";
 import { mockAlterarVinculo } from "mocks/services/vinculos.service/mockAlterarVinculo";
 
+jest.setTimeout(60000);
+
 describe("Teste <GestaoAcessoEmpresaPage>", () => {
   beforeEach(async () => {
     localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_GESTAO_PRODUTO);

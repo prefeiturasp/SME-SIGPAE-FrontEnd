@@ -3,9 +3,9 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { CadastroDeClausulas } from "../index";
 import mock from "services/_mock";
-import { mockClausulasDeDesconto } from "mocks/lancamentoInicial/CadastroDeClausulas/clausulasDeDescontos";
-import { mockListaNumeros } from "mocks/lancamentoInicial/CadastroDeClausulas/listaDeNumeros";
-import { mockClausulaParaDesconto } from "mocks/lancamentoInicial/CadastroDeClausulas/clausulasParaDescontos";
+import { mockListaNumeros } from "mocks/LancamentoInicial/CadastroDeClausulas/listaDeNumeros";
+import { mockClausulaParaDesconto } from "mocks/LancamentoInicial/CadastroDeClausulas/clausulasParaDescontos";
+import { mockClausulasDeDesconto } from "mocks/LancamentoInicial/CadastroDeClausulas/clausulasDeDescontos";
 
 jest.mock("antd", () => ({
   ...jest.requireActual("antd"),

@@ -1,47 +1,42 @@
-import React, { useState, useEffect } from "react";
-import { Field, Form } from "react-final-form";
-import arrayMutators from "final-form-arrays";
-import HTTP_STATUS from "http-status-codes";
-import moment from "moment";
-import CardMatriculados from "components/Shareable/CardMatriculados";
-import Select from "components/Shareable/Select";
-import { InputComData } from "components/Shareable/DatePicker";
-import CKEditorField from "components/Shareable/CKEditorField";
 import Botao from "components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "components/Shareable/Botao/constants";
-import { toastSuccess, toastError } from "components/Shareable/Toast/dialogs";
-import { TabelaFaixasCEMEI } from "./componentes/TabelaFaixasCEMEI";
-import { Rascunhos } from "./componentes/Rascunhos";
-import { ModalLancheEmergencial } from "./componentes/ModalLancheEmergencial";
+import CardMatriculados from "components/Shareable/CardMatriculados";
+import CKEditorField from "components/Shareable/CKEditorField";
+import { InputComData } from "components/Shareable/DatePicker";
+import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
+import Select from "components/Shareable/Select";
+import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import { STATUS_DRE_A_VALIDAR } from "configs/constants";
+import arrayMutators from "final-form-arrays";
+import { composeValidators, required } from "helpers/fieldValidators";
 import {
   agregarDefault,
-  deepCopy,
-  getError,
-  getDataObj,
-  fimDoCalendario,
   checaSeDataEstaEntre2e5DiasUteis,
+  deepCopy,
+  fimDoCalendario,
+  getDataObj,
+  getError,
 } from "helpers/utilities";
-import { formatarPayload, validarSubmit } from "./helpers";
-import {
-  composeValidators,
-  // eslint-disable-next-line no-unused-vars
-  ehDiaUtil,
-  required,
-} from "helpers/fieldValidators";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
+import HTTP_STATUS from "http-status-codes";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
 import {
   createAlteracaoCardapioCEMEI,
-  getAlteracaoCEMEIRascunhos,
   deleteAlteracaoAlimentacaoCEMEI,
-  updateAlteracaoCardapioCEMEI,
+  getAlteracaoCEMEIRascunhos,
   iniciaFluxoAlteracaoAlimentacaoCEMEI,
+  updateAlteracaoCardapioCEMEI,
 } from "services/alteracaoDeCardapio/escola.service";
-import "./style.scss";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
 import { formataValues } from "../AlteracaoDeCardapio/Escola/helper";
+import { ModalLancheEmergencial } from "./componentes/ModalLancheEmergencial";
+import { Rascunhos } from "./componentes/Rascunhos";
+import { TabelaFaixasCEMEI } from "./componentes/TabelaFaixasCEMEI";
+import { formatarPayload, validarSubmit } from "./helpers";
+import "./style.scss";
 
 export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
   const {
@@ -51,8 +46,6 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     vinculos,
     proximosDoisDiasUteis,
     proximosCincoDiasUteis,
-    // eslint-disable-next-line no-unused-vars
-    feriadosAno,
   } = props;
 
   useEffect(() => {
