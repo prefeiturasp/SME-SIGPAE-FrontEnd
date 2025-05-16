@@ -5,7 +5,7 @@ import * as RelatoriosAlteracaoDeCardapioCEMEI from "pages/AlteracaoDeCardapioCE
 import DashboardCODAEPage from "pages/CODAE/DashboardCODAEPage";
 import DashboardDREPage from "pages/DRE/DashboardDREPage";
 import { AlteracaoDeCardapioCEIPage } from "pages/Escola/AlteracaoDeCardapioCEIPage";
-import AlteracaoDeCardapioCEMEIPage from "pages/Escola/AlteracaoDeCardapioCEMEIPage";
+import { AlteracaoDeCardapioCEMEIPage } from "pages/Escola/AlteracaoDeCardapioCEMEIPage";
 import AlteracaoDeCardapioPage from "pages/Escola/AlteracaoDeCardapioPage";
 import DashboardEscolaPage from "pages/Escola/DashboardEscolaPage";
 import InclusaoDeAlimentacaoCEIPage from "pages/Escola/InclusaoDeAlimentacaoCEIPage";
