@@ -16,7 +16,7 @@ export const Rascunhos = ({
           <div key={key} className="draft bg-white border rounded mt-1 p-2">
             <div className="mt-2">
               <label className="bold ms-3">
-                {`Alteração de Cardápio # ${id_externo}`}
+                {`Alteração do Tipo de Alimentação # ${id_externo}`}
               </label>
               <span
                 className="ms-3 p-1 border rounded"
@@ -36,6 +36,7 @@ export const Rascunhos = ({
             </div>
             <div className="ms-3">
               <p>
+                Dia:{" "}
                 {alteracaoDeCardapio.alterar_dia
                   ? alteracaoDeCardapio.alterar_dia
                   : alteracaoDeCardapio.data_inicial}

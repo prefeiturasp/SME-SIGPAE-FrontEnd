@@ -43,7 +43,7 @@ export const TabelaFaixasCEMEI = ({
           periodo.CEI.some((obj) => obj.quantidade_alunos > 0) &&
           ["CEI", "TODOS"].includes(values.alunos_cei_e_ou_emei))) && (
         <div className="row">
-          <div className="col-12">
+          <div className="col-12" data-testid={`div-checkbox-${periodo.nome}`}>
             <label
               style={{
                 background: periodo.background,

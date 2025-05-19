@@ -489,6 +489,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                 />
               </div>
             )}
+            {console.log(values)}
             <div className="mt-2 page-title">
               {values.uuid
                 ? `Solicitação # ${values.id_externo}`
@@ -503,6 +504,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                       component={Select}
                       label="Alunos"
                       name="alunos_cei_e_ou_emei"
+                      dataTestId="div-select-alunos-cei-e-ou-emei"
                       options={[
                         { uuid: "", nome: "Selecione" },
                         { uuid: "TODOS", nome: "Todos" },
@@ -522,6 +524,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                     <Field
                       component={Select}
                       name="motivo"
+                      dataTestId="div-select-motivo"
                       label="Tipo de Alteração"
                       options={agregarDefault(motivos)}
                       naoDesabilitarPrimeiraOpcao
@@ -543,6 +546,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                     <Field
                       component={InputComData}
                       name="alterar_dia"
+                      dataTestId="div-input-alterar-dia"
                       minDate={
                         values.motivo &&
                         motivos.find((m) => m.uuid === values.motivo) &&

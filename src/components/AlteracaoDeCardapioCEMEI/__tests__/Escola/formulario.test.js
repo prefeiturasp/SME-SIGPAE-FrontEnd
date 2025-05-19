@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "constants/shared";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { mockDiasUteis } from "mocks/diasUseisMock";
@@ -84,5 +84,86 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
         "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
       )
     ).toBeInTheDocument();
+  });
+
+  it("renderiza bloco `Rascunhos`", async () => {
+    expect(screen.getByText("Rascunhos")).toBeInTheDocument();
+    expect(
+      screen.getByText("Alteração do Tipo de Alimentação # AF03F")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Dia: 29/05/2025")).toBeInTheDocument();
+    expect(
+      screen.getByText("Criado em: 16/05/2025 09:43:34")
+    ).toBeInTheDocument();
+  });
+
+  const selecionaAlunosTodos = () => {
+    const selectAlunosDiv = screen.getByTestId(
+      "div-select-alunos-cei-e-ou-emei"
+    );
+    const selectElementAlunos = selectAlunosDiv.querySelector("select");
+    fireEvent.change(selectElementAlunos, {
+      target: { value: "TODOS" },
+    });
+  };
+
+  const selecionaMotivoRPL = () => {
+    const selectMotivoDiv = screen.getByTestId("div-select-motivo");
+    const selectElementMotivo = selectMotivoDiv.querySelector("select");
+    const uuidRPL = mockMotivosAlteracaoCardapio.results.find((motivo) =>
+      motivo.nome.includes("RPL")
+    ).uuid;
+    fireEvent.change(selectElementMotivo, {
+      target: { value: uuidRPL },
+    });
+  };
+
+  it("renderiza modal para dia selecionado ser menor que 5 dias úteis", async () => {
+    selecionaMotivoRPL();
+    const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
+    const inputElement = divInputAlterarDia.querySelector("input");
+
+    expect(screen.queryByText("Atenção")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
+      )
+    ).not.toBeInTheDocument();
+
+    fireEvent.change(inputElement, {
+      target: { value: "30/01/2025" },
+    });
+
+    expect(screen.queryByText("Atenção")).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("Testa Alteração - Motivo RPL", async () => {
+    selecionaAlunosTodos();
+    selecionaMotivoRPL();
+    expect(screen.getByText("Alterar dia")).toBeInTheDocument();
+
+    const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
+    const inputElement = divInputAlterarDia.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "30/01/2025" },
+    });
+
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+
+    const divCheckboxINTEGRAL = screen.getByTestId("div-checkbox-INTEGRAL");
+    const spanElement = divCheckboxINTEGRAL.querySelector("span");
+    const inputCheckboxtElement = spanElement.querySelector("input");
+
+    // check período INTEGRAL
+    await act(async () => {
+      fireEvent.click(inputCheckboxtElement);
+    });
+
+    expect(screen.getByText("Alunos CEI")).toBeInTheDocument();
   });
 });
