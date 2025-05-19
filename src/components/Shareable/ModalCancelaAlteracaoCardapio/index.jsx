@@ -89,6 +89,7 @@ export const ModalCancelarAlteracaoCardapio = ({ ...props }) => {
                       <label key={key_} className="me-3">
                         <Field
                           name="datas"
+                          data-testid={`data_${dia.data}`}
                           component="input"
                           disabled={
                             solicitacao.datas_intervalo.find(
@@ -111,6 +112,7 @@ export const ModalCancelarAlteracaoCardapio = ({ ...props }) => {
                   <label>Justificativa</label>
                 </span>
                 <Field
+                  data-testid="textarea-justificativa"
                   className="col-12 pb-5"
                   component="textarea"
                   name="justificativa"

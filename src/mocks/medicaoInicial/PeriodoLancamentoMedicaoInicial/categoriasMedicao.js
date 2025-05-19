@@ -1,4 +1,4 @@
-export const mockCategoriasMedicaoEMEF = [
+export const mockCategoriasMedicao = [
   {
     id: 1,
     nome: "ALIMENTAÇÃO",

@@ -1,6 +1,7 @@
 import {
   usuarioEhAdmQualquerEmpresa,
   usuarioEhAdministradorCONTRATOS,
+  usuarioEhAdministradorGpCODAE,
   usuarioEhAdministradorRepresentanteCodae,
   usuarioEhCODAEGabinete,
   usuarioEhCodaeDilog,
@@ -84,7 +85,8 @@ export const rotasConfiguracoes: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCoordenadorNutriSupervisao() ||
       usuarioEhCoordenadorNutriCODAE() ||
-      usuarioEhCoordenadorGpCODAE(),
+      usuarioEhCoordenadorGpCODAE() ||
+      usuarioEhAdministradorGpCODAE(),
   },
   {
     path: `/${constants.CONFIGURACOES}/${constants.CARGAS_USUARIOS}`,

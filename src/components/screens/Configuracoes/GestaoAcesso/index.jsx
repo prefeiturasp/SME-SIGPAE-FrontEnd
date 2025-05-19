@@ -22,7 +22,14 @@ import { Paginacao } from "components/Shareable/Paginacao";
 import { TIPO_GESTAO, PERFIL } from "constants/shared";
 import useSomenteLeitura from "hooks/useSomenteLeitura";
 
-export default ({ diretor_escola, empresa, geral, cogestor, codae }) => {
+export default ({
+  diretor_escola,
+  empresa,
+  geral,
+  cogestor,
+  codae,
+  master,
+}) => {
   const [carregando, setCarregando] = useState(false);
   const [vinculos, setVinculos] = useState([]);
   const [filtros, setFiltros] = useState();
@@ -71,14 +78,37 @@ export default ({ diretor_escola, empresa, geral, cogestor, codae }) => {
       setPerfisVisao(lista_perfis, "CODAE");
     } else if (geral) {
       const perfis_subordinados = await getPerfisSubordinados();
-      const visao = localStorage.getItem("visao_perfil").replace(/['"]+/g, "");
       setPerfis(
         perfis_subordinados.data.map((perfil) => ({
           uuid: perfil,
           nome: perfil,
         }))
       );
-      setVisaoUnica(visao);
+
+      const resultado = perfis_subordinados.data
+        .map((nome) => {
+          const perfilEncontrado = lista_perfis.find(
+            (perfil) => perfil.nome === nome
+          );
+          if (perfilEncontrado) {
+            return {
+              nome: perfilEncontrado.nome,
+              uuid: perfilEncontrado.nome,
+              visao: perfilEncontrado.visao,
+            };
+          }
+        })
+        .filter((item) => item !== null);
+
+      options_visoes = options_visoes.filter((elem) => {
+        return resultado.some((elemento) => elemento.visao === elem.uuid);
+      });
+
+      if (options_visoes.length === 1) {
+        setVisaoUnica(resultado[0].visao);
+      }
+
+      setPerfis(resultado);
       setFiltros({ perfil: perfis_subordinados.data });
       setPerfisSubordinados(perfis_subordinados.data);
     } else {
@@ -257,7 +287,7 @@ export default ({ diretor_escola, empresa, geral, cogestor, codae }) => {
       <ModalCadastroVinculo
         show={showCadastro}
         toggleShow={setShowCadastro}
-        listaPerfis={visaoUnica ? perfis : listaPerfis}
+        listaPerfis={visaoUnica || !master ? perfis : listaPerfis}
         listaVisao={visoes}
         diretor_escola={diretor_escola}
         ehUEParceira={ehUEParceira}
@@ -266,6 +296,7 @@ export default ({ diretor_escola, empresa, geral, cogestor, codae }) => {
         onSubmit={salvarAcesso}
         visaoUnica={visaoUnica}
         codae={codae}
+        master={master}
       />
       <ModalCadastroVinculo
         show={showEdicao}

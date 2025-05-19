@@ -1,6 +1,10 @@
 import moment from "moment";
 
 export const validateSubmit = (values) => {
+  if (!values.substituicoes.some((subs) => subs.check)) {
+    return "Obrigatório selecionar ao menos um período.";
+  }
+
   values.substituicoes = values.substituicoes.filter((sub) => sub.check);
   for (const substituicao of values.substituicoes) {
     substituicao.periodo_escolar = substituicao.uuid;
@@ -18,7 +22,7 @@ export const validateSubmit = (values) => {
   if (
     !(values["alterar_dia"] || values["data_inicial"] || values["data_final"])
   )
-    return "Obrigatório informar uma data ou período.";
+    return "Obrigatório preencher Alterar dia ou De e Até";
 
   const dataInicial = moment(values["data_inicial"], "DD/MM/YYYY");
   const dataFinal = moment(values["data_final"], "DD/MM/YYYY");
@@ -32,25 +36,6 @@ export const validateSubmit = (values) => {
     (values["data_final"] && !values["data_inicial"])
   )
     return "Informe um período completo.";
-
-  if (
-    values.substituicoes.some((sub) =>
-      ["", null].includes(sub.tipos_alimentacao_de)
-    )
-  )
-    return 'Preencher corretamente o campo "Alterar alimentação de"';
-
-  if (
-    values.substituicoes.some((sub) =>
-      ["", null].includes(sub.tipos_alimentacao_para)
-    )
-  )
-    return 'Preencher corretamente o campo "Para alimentação"';
-
-  if (
-    values.substituicoes.some((sub) => [0, "", null].includes(sub.qtd_alunos))
-  )
-    return 'Preencher corretamente o campo "Nº de Alunos"';
 
   return false;
 };

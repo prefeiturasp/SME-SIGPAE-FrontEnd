@@ -53,6 +53,10 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    if (originalRequest && originalRequest.skipAuthRefresh) {
+      return Promise.reject(error);
+    }
+
     if (
       authService.isLoggedIn() &&
       error.response &&

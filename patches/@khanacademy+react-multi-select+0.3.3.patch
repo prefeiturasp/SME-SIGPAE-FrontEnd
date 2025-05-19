@@ -1,5 +1,5 @@
 diff --git a/node_modules/@khanacademy/react-multi-select/dist/dropdown.js b/node_modules/@khanacademy/react-multi-select/dist/dropdown.js
-index cef09e5..a66fc5a 100644
+index fbf193e..994181c 100644
 --- a/node_modules/@khanacademy/react-multi-select/dist/dropdown.js
 +++ b/node_modules/@khanacademy/react-multi-select/dist/dropdown.js
 @@ -62,7 +62,6 @@ var Dropdown = function (_Component) {

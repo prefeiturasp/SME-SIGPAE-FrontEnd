@@ -16,7 +16,7 @@ import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPeric
 import { mockRascunhoAlteracaoCardapioEMEF } from "mocks/services/alteracaoCardapio.service/EMEF/rascunhoAlteracaoCardapio";
 import { mockRascunhosAlteracaoCardapioEMEF } from "mocks/services/alteracaoCardapio.service/EMEF/rascunhosAlteracaoCardapio";
 import { mockMotivosAlteracaoCardapio } from "mocks/services/alteracaoCardapio.service/motivosAlteracaoCardapio";
-import { mockGetVinculosMotivoInclusaoEspecificoEMEF } from "mocks/services/cadastroTipoAlimentacao.service/EMEF/mockGetVinculosTipoAlimentacaoPorEscolaEMEF";
+import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
 import { mockQuantidadeAlunosPorPeriodoEMEF } from "mocks/services/escola.service/EMEF/quantidadeAlunosPorPeriodoEMEF";
 import AlteracaoDeCardapioPage from "pages/Escola/AlteracaoDeCardapioPage";
 import React from "react";
@@ -61,7 +61,7 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
       .onGet(
         `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
       )
-      .reply(200, mockGetVinculosMotivoInclusaoEspecificoEMEF);
+      .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
     mock
       .onGet(`/quantidade-alunos-por-periodo/escola/${escolaUuid}/`)
       .reply(200, mockQuantidadeAlunosPorPeriodoEMEF);

@@ -3,40 +3,33 @@ import { statusEnum, TIPO_PERFIL } from "constants/shared";
 
 const tipoPerfil = localStorage.getItem("tipo_perfil");
 
-export const exibeBotaoNaoAprovar = (
-  inclusaoDeAlimentacao,
-  textoBotaoNaoAprova
-) => {
+export const exibeBotaoNaoAprovar = (solicitacao, textoBotaoNaoAprova) => {
   return (
     tipoPerfil !== TIPO_PERFIL.TERCEIRIZADA ||
-    (inclusaoDeAlimentacao &&
-      inclusaoDeAlimentacao.prioridade !== "REGULAR" &&
-      inclusaoDeAlimentacao.status === statusEnum.CODAE_QUESTIONADO &&
+    (solicitacao &&
+      solicitacao.prioridade !== "REGULAR" &&
+      solicitacao.status === statusEnum.CODAE_QUESTIONADO &&
       textoBotaoNaoAprova)
   );
 };
 
-export const exibeBotaoAprovar = (
-  inclusaoDeAlimentacao,
-  visao,
-  textoBotaoAprova
-) => {
-  if (!textoBotaoAprova || !inclusaoDeAlimentacao) return false;
+export const exibeBotaoAprovar = (solicitacao, visao, textoBotaoAprova) => {
+  if (!textoBotaoAprova || !solicitacao) return false;
   return (
     (![
       TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
       TIPO_PERFIL.TERCEIRIZADA,
     ].includes(tipoPerfil) ||
-      inclusaoDeAlimentacao.prioridade === "REGULAR" ||
+      solicitacao.prioridade === "REGULAR" ||
       [
         statusEnum.TERCEIRIZADA_RESPONDEU_QUESTIONAMENTO,
         statusEnum.CODAE_AUTORIZADO,
-      ].includes(inclusaoDeAlimentacao.status)) &&
+      ].includes(solicitacao.status)) &&
     textoBotaoAprova !== "Ciente" &&
     (visao === DRE ||
       (visao === CODAE &&
-        (inclusaoDeAlimentacao.prioridade === "REGULAR" ||
-          inclusaoDeAlimentacao.logs.find(
+        (solicitacao.prioridade === "REGULAR" ||
+          solicitacao.logs.find(
             (log) =>
               log.status_evento_explicacao ===
                 "Terceirizada respondeu questionamento" && log.resposta_sim_nao
@@ -45,7 +38,7 @@ export const exibeBotaoAprovar = (
 };
 
 export const exibirBotaoQuestionamento = (
-  inclusaoDeAlimentacao,
+  solicitacao,
   visao,
   tipoPerfil_ = tipoPerfil
 ) => {
@@ -54,33 +47,32 @@ export const exibirBotaoQuestionamento = (
       TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
       TIPO_PERFIL.TERCEIRIZADA,
     ].includes(tipoPerfil_) &&
-    inclusaoDeAlimentacao &&
-    (inclusaoDeAlimentacao.prioridade !== "REGULAR" ||
-      (visao === CODAE && inclusaoDeAlimentacao.prioridade !== "REGULAR")) &&
+    solicitacao &&
+    (solicitacao.prioridade !== "REGULAR" ||
+      (visao === CODAE && solicitacao.prioridade !== "REGULAR")) &&
     [statusEnum.DRE_VALIDADO, statusEnum.CODAE_QUESTIONADO].includes(
-      inclusaoDeAlimentacao.status
+      solicitacao.status
     )
   );
 };
 
 export const exibirModalAutorizacaoAposQuestionamento = (
-  inclusaoDeAlimentacao,
+  solicitacao,
   visao
 ) => {
   return (
     visao === CODAE &&
-    inclusaoDeAlimentacao &&
-    inclusaoDeAlimentacao.prioridade !== "REGULAR" &&
-    !inclusaoDeAlimentacao.logs[inclusaoDeAlimentacao.logs.length - 1]
-      .resposta_sim_nao
+    solicitacao &&
+    solicitacao.prioridade !== "REGULAR" &&
+    !solicitacao.logs[solicitacao.logs.length - 1].resposta_sim_nao
   );
 };
-export const exibirBotaoMarcarConferencia = (inclusaoDeAlimentacao, visao) => {
+export const exibirBotaoMarcarConferencia = (solicitacao, visao) => {
   return (
     visao === TERCEIRIZADA &&
-    inclusaoDeAlimentacao &&
+    solicitacao &&
     [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(
-      inclusaoDeAlimentacao.status
+      solicitacao.status
     )
   );
 };

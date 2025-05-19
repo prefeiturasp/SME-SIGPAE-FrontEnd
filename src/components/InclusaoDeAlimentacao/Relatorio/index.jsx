@@ -30,7 +30,7 @@ import {
   exibirBotaoMarcarConferencia,
   exibirBotaoQuestionamento,
   exibirModalAutorizacaoAposQuestionamento,
-} from "./helper";
+} from "components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
 
 export const Relatorio = ({ ...props }) => {
   const { meusDados } = useContext(MeusDadosContext);

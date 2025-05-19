@@ -7,7 +7,6 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "constants/shared";
-import { APIMockVersion } from "mocks/apiVersionMock";
 import { mockInclusaoalimentacaoNaoValidada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoNaoValidada";
 import { mockInclusaoAlimentacaoRegular } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoRegular";
 import { mockInclusaoAlimentacaoValidada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoValidada";
@@ -21,17 +20,6 @@ import mock from "services/_mock";
 
 describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
   beforeEach(async () => {
-    mock.onGet("/api-version/").reply(200, APIMockVersion);
-    mock.onGet("/notificacoes/").reply(200, {
-      next: null,
-      previous: null,
-      count: 0,
-      page_size: 4,
-      results: [],
-    });
-    mock
-      .onGet("/notificacoes/quantidade-nao-lidos/")
-      .reply(200, { quantidade_nao_lidos: 0 });
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock

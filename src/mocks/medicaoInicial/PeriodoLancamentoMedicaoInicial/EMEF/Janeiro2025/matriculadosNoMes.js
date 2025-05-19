@@ -1,4 +1,4 @@
-export const mockMatriculadosNoMesEMEF = [
+export const mockMatriculadosNoMesEMEFJaneiro2025 = [
   {
     dia: "31",
     periodo_escolar: {

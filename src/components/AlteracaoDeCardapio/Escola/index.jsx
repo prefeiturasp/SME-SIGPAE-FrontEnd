@@ -107,9 +107,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
             getRascunhosAsync();
           }
         } else {
-          toastError(
-            `Houve um erro ao enviar ao salvar alteração do tipo de alimentação. Tente novamente mais tarde.`
-          );
+          toastError(getError(response.data));
         }
       }
     } else {
@@ -262,17 +260,18 @@ export const AlteracaoCardapio = ({ ...props }) => {
                     {values.motivo && (
                       <>
                         <AlterarDiaOuPeriodo
-                          values={values}
+                          values={form.getState().values}
                           onAlterarDiaChanged={onAlterarDiaChanged}
                           ehMotivoPorNome={ehMotivoPorNome}
                           setErro={setErro}
                           proximosDoisDiasUteis={proximosDoisDiasUteis}
+                          form={form}
                         />
                         <PeriodosFields
                           ehMotivoPorNome={ehMotivoPorNome}
                           periodos={periodos}
                           form={form}
-                          values={values}
+                          values={form.getState().values}
                         />
                         <hr />
                         <Field
