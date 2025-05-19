@@ -13,8 +13,18 @@ export const exibeBotaoNaoAprovar = (solicitacao, textoBotaoNaoAprova) => {
   );
 };
 
+const ehLancheEmergencial = (solicitacao, visao) => {
+  return (
+    visao === CODAE &&
+    solicitacao.status === statusEnum.DRE_VALIDADO &&
+    tipoPerfil === TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA &&
+    solicitacao.motivo?.nome === "Lanche Emergencial"
+  );
+};
+
 export const exibeBotaoAprovar = (solicitacao, visao, textoBotaoAprova) => {
   if (!textoBotaoAprova || !solicitacao) return false;
+  if (ehLancheEmergencial(solicitacao, visao)) return true;
   return (
     (![
       TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
@@ -42,6 +52,7 @@ export const exibirBotaoQuestionamento = (
   visao,
   tipoPerfil_ = tipoPerfil
 ) => {
+  if (ehLancheEmergencial(solicitacao, visao)) return false;
   return (
     [
       TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
@@ -60,6 +71,7 @@ export const exibirModalAutorizacaoAposQuestionamento = (
   solicitacao,
   visao
 ) => {
+  if (ehLancheEmergencial(solicitacao, visao)) return false;
   return (
     visao === CODAE &&
     solicitacao &&
