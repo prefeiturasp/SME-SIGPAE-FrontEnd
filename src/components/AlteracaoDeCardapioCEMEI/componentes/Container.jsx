@@ -1,14 +1,14 @@
+import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
+import { MeusDadosContext } from "context/MeusDadosContext";
+import { dataParaUTC } from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
-import { AlteracaoDeCardapioCEMEI } from "..";
-import { backgroundLabelPeriodo } from "../helpers";
-import { dataParaUTC } from "helpers/utilities";
+import { getMotivosAlteracaoCardapio } from "services/alteracaoDeCardapio";
 import { getQuantidadeAlunosCEMEIporCEIEMEI } from "services/aluno.service";
 import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
-import { getMotivosAlteracaoCardapio } from "services/alteracaoDeCardapio";
-import { getDiasUteis, getFeriadosAno } from "services/diasUteis.service";
-import { MeusDadosContext } from "context/MeusDadosContext";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
+import { getDiasUteis } from "services/diasUteis.service";
+import { AlteracaoDeCardapioCEMEI } from "..";
+import { backgroundLabelPeriodo } from "../helpers";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -18,7 +18,6 @@ export const Container = () => {
   const [vinculos, setVinculos] = useState();
   const [proximosDoisDiasUteis, setProximosDoisDiasUteis] = useState();
   const [proximosCincoDiasUteis, setProximosCincoDiasUteis] = useState();
-  const [feriadosAno, setFeriadosAno] = useState();
 
   const [erro, setErro] = useState("");
 
@@ -73,15 +72,6 @@ export const Container = () => {
     }
   };
 
-  const getFeriadosAnoAsync = async () => {
-    const response = await getFeriadosAno();
-    if (response.status === HTTP_STATUS.OK) {
-      setFeriadosAno(response.data.results);
-    } else {
-      setErro("Erro ao carregar feriados. Tente novamente mais tarde.");
-    }
-  };
-
   const requisicoesPreRenderComMeusDados = async () => {
     const escola = meusDados.vinculo_atual.instituicao;
     await Promise.all([
@@ -92,10 +82,7 @@ export const Container = () => {
   };
 
   const requisicoesPreRender = async () => {
-    await Promise.all([
-      getMotivosAlteracaoCardapioAsync(),
-      getFeriadosAnoAsync(),
-    ]);
+    await Promise.all([getMotivosAlteracaoCardapioAsync()]);
   };
 
   useEffect(() => {
@@ -109,13 +96,12 @@ export const Container = () => {
   }, [meusDados]);
 
   const REQUISICOES_CONCLUIDAS =
-    meusDados &&
-    motivos &&
-    vinculos &&
-    periodos &&
-    proximosDoisDiasUteis &&
-    proximosCincoDiasUteis &&
-    feriadosAno;
+    !!meusDados &&
+    !!motivos &&
+    !!vinculos &&
+    !!periodos &&
+    !!proximosDoisDiasUteis &&
+    !!proximosCincoDiasUteis;
 
   return (
     <div>
@@ -129,7 +115,6 @@ export const Container = () => {
           vinculos={vinculos}
           proximosDoisDiasUteis={proximosDoisDiasUteis}
           proximosCincoDiasUteis={proximosCincoDiasUteis}
-          feriadosAno={feriadosAno}
         />
       )}
     </div>

@@ -35,6 +35,7 @@ import ModalExclusaoVinculo from "../ModalExclusaoVinculo";
 import { toastError } from "components/Shareable/Toast/dialogs";
 import { cnpjMask, cpfMask } from "constants/shared";
 import InputErroMensagem from "components/Shareable/Input/InputErroMensagem";
+import { getPerfisPorVisao } from "../../helper";
 
 const ENTER = 13;
 
@@ -57,6 +58,7 @@ const ModalCadastroVinculo = ({
   codae,
   cogestor,
   ehUEParceira,
+  master,
 }) => {
   const [tipoUsuario, setTipoUsuario] = useState();
   const [subdivisoes, setSubdivisoes] = useState();
@@ -73,14 +75,9 @@ const ModalCadastroVinculo = ({
     toggleShow(false, null);
   };
 
-  const getPerfis = (visao) => {
-    return listaPerfis
-      .filter((perfil) => perfil.visao === visao)
-      .map((perfil) => ({
-        uuid: perfil.nome,
-        nome: perfil.nome,
-      }));
-  };
+  const listaVisaoFiltrada = listaVisao.filter((elem) => {
+    return elem.nome !== "Empresa";
+  });
 
   const buscaSubdivisoes = async () => {
     const subdivisoes = await getSubdivisoesCodae();
@@ -92,6 +89,7 @@ const ModalCadastroVinculo = ({
     const perfil = JSON.parse(localStorage.getItem("perfil"));
 
     const subdivisoes_restrita_por_perfil = {
+      ADMINISTRADOR_GESTAO_PRODUTO: "CODAE - Gestão de Produtos",
       COORDENADOR_DIETA_ESPECIAL: "CODAE - Gestão Dieta Especial",
       COORDENADOR_GESTAO_PRODUTO: "CODAE - Gestão de Produtos",
       COORDENADOR_SUPERVISAO_NUTRICAO:
@@ -299,9 +297,11 @@ const ModalCadastroVinculo = ({
                           <Radio className="" value={"NAO_SERVIDOR"}>
                             Não Servidor
                           </Radio>
-                          <Radio className="" value={"UNIDADE_PARCEIRA"}>
-                            Unidade Parceira
-                          </Radio>
+                          {master && (
+                            <Radio className="" value={"UNIDADE_PARCEIRA"}>
+                              Unidade Parceira
+                            </Radio>
+                          )}
                         </Radio.Group>
                       </div>
                     ))}
@@ -410,11 +410,15 @@ const ModalCadastroVinculo = ({
                             placeholder="Selecione a visão"
                             className="input-busca-produto"
                             required
-                            options={listaVisao}
+                            options={listaVisaoFiltrada}
                             validate={required}
-                            defaultValue={visaoUnica}
+                            defaultValue={
+                              visaoUnica || listaVisaoFiltrada[0].uuid
+                            }
                             disabled={
-                              diretor_escola || visaoUnica ? true : false
+                              visaoUnica
+                                ? true
+                                : false || listaVisaoFiltrada.length === 1
                             }
                           />
                         </div>
@@ -425,11 +429,15 @@ const ModalCadastroVinculo = ({
                             name="perfil_servidor"
                             placeholder="Selecione o perfil de acesso"
                             className="input-busca-produto"
+                            dataTestId="select-perfil-acesso"
                             required
                             options={
                               visaoUnica
                                 ? listaPerfis
-                                : getPerfis(values.visao_servidor)
+                                : getPerfisPorVisao(
+                                    values.visao_servidor,
+                                    listaPerfis
+                                  )
                             }
                             validate={required}
                             disabled={!values.visao_servidor}
@@ -535,12 +543,13 @@ const ModalCadastroVinculo = ({
                             component={SelectSelecione}
                             label="Perfil de Acesso"
                             name="perfil"
+                            dataTestId="select-perfil-acesso2"
                             placeholder="Selecione o perfil de acesso"
                             className="input-busca-produto"
                             required
                             options={
                               listaPerfis.some((perfil) => perfil.visao)
-                                ? getPerfis("EMPRESA")
+                                ? getPerfisPorVisao("EMPRESA", listaPerfis)
                                 : listaPerfis
                             }
                             validate={required}
@@ -668,7 +677,10 @@ const ModalCadastroVinculo = ({
                             options={
                               visaoUnica
                                 ? listaPerfis
-                                : getPerfis(values.visao_parceira)
+                                : getPerfisPorVisao(
+                                    values.visao_parceira,
+                                    listaPerfis
+                                  )
                             }
                             validate={required}
                             disabled={!values.visao_parceira}

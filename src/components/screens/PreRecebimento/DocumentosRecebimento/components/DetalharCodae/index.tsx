@@ -228,8 +228,8 @@ export default () => {
               />
             </div>
 
-            {objeto.datas_fabricacao_e_prazos?.map((prazo) => (
-              <>
+            {objeto.datas_fabricacao_e_prazos?.map((prazo, index) => (
+              <div className="row" key={index}>
                 <div className="col">
                   <InputText
                     label="Data de Fabricação"
@@ -271,7 +271,7 @@ export default () => {
                     />
                   </div>
                 )}
-              </>
+              </div>
             ))}
           </div>
 

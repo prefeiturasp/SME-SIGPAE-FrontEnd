@@ -173,7 +173,6 @@ export const SidebarContent = () => {
 
   const exibirConfiguracoes =
     !usuarioEhEscolaTerceirizada() &&
-    !usuarioEhAdministradorGpCODAE() &&
     !usuarioEhAdministradorNutriSupervisao() &&
     !usuarioEhEscolaAbastecimento() &&
     !usuarioEhOutrosDilog() &&

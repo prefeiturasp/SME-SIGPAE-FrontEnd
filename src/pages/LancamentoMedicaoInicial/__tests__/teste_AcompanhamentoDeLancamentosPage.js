@@ -97,7 +97,7 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
     );
   });
 
-  it("Testa a seleção de mês de referência e se o grupo 3 está habilitado no modal de Relatório Consolidado", async () => {
+  it("Testa a seleção de mês de referência e se os grupos corretos estão habilitados no modal de Relatório Consolidado", async () => {
     await selecionaDRE();
 
     await waitFor(() => screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"));
@@ -132,14 +132,91 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
       ).toBeInTheDocument();
     });
 
+    // Verifica se Grupo 1 está habilitado
+    const grupo1Wrapper = screen
+      .getByText("Grupo 1 (CCI, CEI, CEI CEU)")
+      .closest("label");
+    expect(grupo1Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
+
+    // Verifica se Grupo 2 está desabilitado
+    const grupo2Wrapper = screen
+      .getByText("Grupo 2 (CEMEI, CEU CEMEI)")
+      .closest("label");
+    expect(grupo2Wrapper).toHaveClass("ant-radio-wrapper-disabled");
+
+    // Verifica se Grupo 3 está habilitado
     const grupo3Wrapper = screen
       .getByText("Grupo 3 (CEU EMEI, EMEI)")
       .closest("label");
     expect(grupo3Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
 
-    fireEvent.click(grupo3Wrapper);
+    // Verifica se Grupo 4 está habilitado
+    const grupo4Wrapper = screen
+      .getByText("Grupo 4 (CEU EMEF, CEU GESTAO, CIEJA, EMEBS, EMEF, EMEFM)")
+      .closest("label");
+    expect(grupo4Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
 
     const botaoCancelar = screen.getByText("Cancelar").closest("button");
     fireEvent.click(botaoCancelar);
+  });
+
+  it("Verifica os grupos habilitados no modal de Relatório Unificado", async () => {
+    await selecionaDRE();
+
+    await waitFor(() => screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"));
+    const cardAprovadoCODAE = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
+    await act(async () => {
+      fireEvent.click(cardAprovadoCODAE);
+    });
+
+    const labelSelect = screen.getByText("Mês de referência");
+    const selectElement = labelSelect.nextElementSibling;
+    selectElement.value = "Junho - 2023";
+
+    fireEvent.change(selectElement, {
+      target: { value: "06_2023" },
+    });
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(screen.getByText("Resultados")).toBeInTheDocument();
+    });
+
+    const botaoRelatorioConsolidado = screen
+      .getByText("Relatório Unificado")
+      .closest("button");
+    fireEvent.click(botaoRelatorioConsolidado);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Impressão de Relatório Unificado")
+      ).toBeInTheDocument();
+    });
+
+    // Verifica se Grupo 1 está desabilitado
+    const grupo1Wrapper = screen
+      .getByText("Grupo 1 (CCI, CEI, CEI CEU)")
+      .closest("label");
+    expect(grupo1Wrapper).toHaveClass("ant-radio-wrapper-disabled");
+
+    // Verifica se Grupo 2 está desabilitado
+    const grupo2Wrapper = screen
+      .getByText("Grupo 2 (CEMEI, CEU CEMEI)")
+      .closest("label");
+    expect(grupo2Wrapper).toHaveClass("ant-radio-wrapper-disabled");
+
+    // Verifica se Grupo 3 está habilitado
+    const grupo3Wrapper = screen
+      .getByText("Grupo 3 (CEU EMEI, EMEI)")
+      .closest("label");
+    expect(grupo3Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
+
+    // Verifica se Grupo 4 está habilitado
+    const grupo4Wrapper = screen
+      .getByText("Grupo 4 (CEU EMEF, CEU GESTAO, CIEJA, EMEBS, EMEF, EMEFM)")
+      .closest("label");
+    expect(grupo4Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
   });
 });

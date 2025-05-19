@@ -9,6 +9,7 @@ import {
 } from "components/Shareable/Botao/constants";
 import "./styles.scss";
 import SelectSelecione from "components/Shareable/SelectSelecione";
+import { getPerfisPorVisao } from "../../helper";
 
 const FORM_NAME = "buscaGestaoAcesso";
 
@@ -39,7 +40,7 @@ export default ({
       <Form
         onSubmit={onSubmit}
         initialValues={initialValues}
-        render={({ form, handleSubmit, submitting }) => (
+        render={({ form, handleSubmit, values, submitting }) => (
           <form onSubmit={handleSubmit}>
             <FinalFormToRedux form={FORM_NAME} />
 
@@ -69,6 +70,7 @@ export default ({
                 <Field
                   label="Visão"
                   component={SelectSelecione}
+                  dataTestId={"input-visao"}
                   placeholder="Selecione a Visão"
                   name="visao"
                   options={visoes}
@@ -80,9 +82,10 @@ export default ({
                 <Field
                   label="Perfil de Acesso"
                   component={SelectSelecione}
+                  dataTestId={"input-perfil-acesso"}
                   placeholder="Selecione o perfil do Usuário"
                   name="perfil"
-                  options={perfis}
+                  options={getPerfisPorVisao(values.visao, perfis)}
                 />
               </div>
             </div>

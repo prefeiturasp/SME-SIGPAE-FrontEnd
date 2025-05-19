@@ -23,7 +23,11 @@ const ModalRelatorio = ({ show, onClose, onSubmit, nomeRelatorio }) => {
   }
 
   function desabilitaRadioButton(grupo) {
-    const gruposDesabilitados = ["Grupo 1", "Grupo 2", "Grupo 5"];
+    const gruposDesabilitados = ["Grupo 2", "Grupo 5"];
+
+    if (nomeRelatorio === "Relatório Unificado") {
+      gruposDesabilitados.push("Grupo 1");
+    }
 
     return gruposDesabilitados.includes(grupo);
   }
