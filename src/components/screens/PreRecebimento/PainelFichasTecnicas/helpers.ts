@@ -19,7 +19,7 @@ export const formatarCards = (items: FichaTecnicaDashboard[]): CardItem[] => {
   return items.sort(ordenarPorLogMaisRecente).map((item) => ({
     text: gerarTextoTruncado(item, 20),
     date: item.log_mais_recente.slice(0, 10),
-    link: gerarLinkItemFichaTecnica(item),
+    link: `${gerarLinkItemFichaTecnica(item)}?uuid=${item.uuid}`,
     status: item.status,
     fullText: gerarTextoCompleto(item),
   }));
@@ -28,8 +28,8 @@ export const formatarCards = (items: FichaTecnicaDashboard[]): CardItem[] => {
 export const gerarLinkItemFichaTecnica = (
   item: FichaTecnicaDashboard
 ): string => {
-  const urlDetalhar = `/${PRE_RECEBIMENTO}/${DETALHAR_FICHA_TECNICA}?uuid=${item.uuid}`;
-  const urlAnalisar = `/${PRE_RECEBIMENTO}/${ANALISAR_FICHA_TECNICA}?uuid=${item.uuid}`;
+  const urlDetalhar = `/${PRE_RECEBIMENTO}/${DETALHAR_FICHA_TECNICA}`;
+  const urlAnalisar = `/${PRE_RECEBIMENTO}/${ANALISAR_FICHA_TECNICA}`;
 
   if (usuarioEhDilogAbastecimento() || usuarioEhCronograma()) {
     return urlDetalhar;
