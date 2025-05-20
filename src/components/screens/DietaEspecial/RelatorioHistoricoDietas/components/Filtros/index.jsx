@@ -5,7 +5,11 @@ import { MultiselectRaw } from "components/Shareable/MultiselectRaw";
 import Select from "components/Shareable/Select";
 import { toastError } from "components/Shareable/Toast/dialogs";
 import { required, requiredMultiselect } from "helpers/fieldValidators";
-import { usuarioEhEscola } from "helpers/utilities";
+import {
+  usuarioEhCogestorDRE,
+  usuarioEhEmpresa,
+  usuarioEhEscola,
+} from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
@@ -106,6 +110,11 @@ export const Filtros = ({ ...props }) => {
     let params = {};
     if (usuarioEhEscola()) {
       params["uuid"] = meusDados.vinculo_atual.instituicao.lotes[0].uuid;
+    } else if (usuarioEhCogestorDRE()) {
+      params["diretoria_regional__uuid"] =
+        meusDados.vinculo_atual.instituicao.uuid;
+    } else if (usuarioEhEmpresa()) {
+      params["terceirizada__uuid"] = meusDados.vinculo_atual.instituicao.uuid;
     }
     const response = await getLotesSimples(params);
     if (response.status === HTTP_STATUS.OK) {
@@ -196,6 +205,24 @@ export const Filtros = ({ ...props }) => {
     !!periodos &&
     !!classificacoesDieta;
 
+  const getInitialValues = () => {
+    if (!LOADEDFILTROS) return null;
+    if (usuarioEhEscola()) {
+      return {
+        tipo_gestao: meusDados.vinculo_atual.instituicao.tipo_gestao_uuid,
+        lote: meusDados.vinculo_atual.instituicao.lotes[0].uuid,
+        tipos_unidades_selecionadas: [
+          meusDados.vinculo_atual.instituicao.tipo_unidade_escolar,
+        ],
+        unidades_educacionais_selecionadas: [
+          meusDados.vinculo_atual.instituicao.uuid,
+        ],
+      };
+    } else {
+      return null;
+    }
+  };
+
   return (
     <CollapseFiltros
       onSubmit={onSubmit}
@@ -203,19 +230,7 @@ export const Filtros = ({ ...props }) => {
       titulo="Filtrar Resultados"
       keepDirtyOnReinitialize={usuarioEhEscola()}
       meusDados={meusDados}
-      initialValues={
-        usuarioEhEscola() &&
-        LOADEDFILTROS && {
-          tipo_gestao: meusDados.vinculo_atual.instituicao.tipo_gestao_uuid,
-          lote: meusDados.vinculo_atual.instituicao.lotes[0].uuid,
-          tipos_unidades_selecionadas: [
-            meusDados.vinculo_atual.instituicao.tipo_unidade_escolar,
-          ],
-          unidades_educacionais_selecionadas: [
-            meusDados.vinculo_atual.instituicao.uuid,
-          ],
-        }
-      }
+      initialValues={getInitialValues()}
     >
       {(values, form) => (
         <Spin tip="Carregando filtros..." spinning={!LOADEDFILTROS}>
