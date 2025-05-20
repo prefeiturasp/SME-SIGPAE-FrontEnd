@@ -8,7 +8,7 @@ import {
 import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
 import { toastError } from "components/Shareable/Toast/dialogs";
 import HTTP_STATUS from "http-status-codes";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   exportarExcelAsyncSolicitacoesRelatorioHistoricoDietas,
   exportarPDFAsyncSolicitacoesRelatorioHistoricoDietas,
@@ -17,8 +17,11 @@ import { Filtros } from "./components/Filtros";
 import { TabelaHistorico } from "./components/TabelaHistorico";
 import { normalizarValues } from "./helper";
 import "./styles.scss";
+import { MeusDadosContext } from "context/MeusDadosContext";
 
 export const RelatorioHistoricoDietas = () => {
+  const { meusDados } = useContext(MeusDadosContext);
+
   const [valuesForm, setValuesForm] = useState(null);
   const [dietasEspeciais, setDietasEspeciais] = useState(null);
   const [loadingDietas, setLoadingDietas] = useState(false);
@@ -60,14 +63,12 @@ export const RelatorioHistoricoDietas = () => {
   return (
     <>
       {erro && <div>{erro}</div>}
-      {!erro && (
+      {!erro && meusDados && (
         <div className="card mt-3">
           <div className="card-body">
             <Spin spinning={loadingDietas} tip="Carregando histórico...">
               <Filtros
-                onClear={() => {
-                  setDietasEspeciais(null);
-                }}
+                meusDados={meusDados}
                 setDietasEspeciais={setDietasEspeciais}
                 setValuesForm={setValuesForm}
                 setCount={setCount}
