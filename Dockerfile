@@ -1,5 +1,5 @@
 # just to create `build` directory
-FROM node:20.11.1-alpine as builder
+FROM node:22.15.1-alpine as builder
 ENV IS_DOCKER_ENVIRONMENT=true
 WORKDIR /app
 COPY . ./
