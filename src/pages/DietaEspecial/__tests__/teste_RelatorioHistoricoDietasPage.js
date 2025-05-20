@@ -11,7 +11,7 @@ import {
 import { PERFIL, TIPO_PERFIL } from "constants/shared";
 import { APIMockVersion } from "mocks/apiVersionMock";
 import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
+import { mockMeusDadosCODAEGA } from "mocks/meusDados/CODAE-GA";
 import { mockGetHistoricoDietasEMEBSeCEUGESTAO } from "mocks/services/dietaEspecial.service/mockGetHistoricoDietasEMEBSeCEUGESTAO";
 import { mockGetSolicitacoesHistoricoDietasCEMEI } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasCEMEI";
 import { mockGetSolicitacoesHistoricoDietasEMEF } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasEMEF";
@@ -23,6 +23,7 @@ import { mockGetClassificacaoDieta } from "mocks/services/dietaEspecial.service/
 import { mockGetUnidadeEducacional } from "mocks/services/dietaEspecial.service/mockGetUnidadeEducacional.js";
 import { mockGetSolicitacoesRelatorioHistoricoDietas } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesRelatorioHistoricoDietas";
 import RelatorioHistoricoDietasPage from "pages/DietaEspecial/RelatorioHistoricoDietasPage";
+import { MeusDadosContext } from "context/MeusDadosContext";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
@@ -62,9 +63,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     mock.onGet("/downloads/quantidade-nao-vistos/").reply(200, {
       quantidade_nao_vistos: 136,
     });
-    mock
-      .onGet("/usuarios/meus-dados/")
-      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
 
     mock.onGet("/tipos-gestao/").reply(200, mockGetTipoGestao);
     mock
@@ -78,8 +77,14 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
       .reply(200, mockGetUnidadeEducacional);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
-    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
-    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+    );
+    localStorage.setItem(
+      "perfil",
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+    );
 
     await act(async () => {
       render(
@@ -89,7 +94,14 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
             v7_relativeSplatPath: true,
           }}
         >
-          <RelatorioHistoricoDietasPage />
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosCODAEGA,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <RelatorioHistoricoDietasPage />
+          </MeusDadosContext.Provider>
         </MemoryRouter>
       );
     });
