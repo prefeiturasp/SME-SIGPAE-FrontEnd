@@ -9,26 +9,22 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "constants/shared";
+import { MeusDadosContext } from "context/MeusDadosContext";
 import { APIMockVersion } from "mocks/apiVersionMock";
 import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosCODAEGA } from "mocks/meusDados/CODAE-GA";
-import { mockGetHistoricoDietasEMEBSeCEUGESTAO } from "mocks/services/dietaEspecial.service/mockGetHistoricoDietasEMEBSeCEUGESTAO";
-import { mockGetSolicitacoesHistoricoDietasCEMEI } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasCEMEI";
-import { mockGetSolicitacoesHistoricoDietasEMEF } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesHistoricoDietasEMEF";
-import { mockGetTipoGestao } from "mocks/services/dietaEspecial.service/mockGetTipoGestao";
-import { mockGetTiposUnidadeEscolar } from "mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
 import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
-import { mockGetPeriodoEscolar } from "mocks/services/dietaEspecial.service/mockGetPeriodoEscolar.js";
+import { mockMeusDadosCODAEGA } from "mocks/meusDados/CODAE-GA";
+import { mockGetTiposUnidadeEscolar } from "mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
 import { mockGetClassificacaoDieta } from "mocks/services/dietaEspecial.service/mockGetClassificacoesDietas.js";
-import { mockGetUnidadeEducacional } from "mocks/services/dietaEspecial.service/mockGetUnidadeEducacional.js";
+import { mockGetPeriodoEscolar } from "mocks/services/dietaEspecial.service/mockGetPeriodoEscolar.js";
 import { mockGetSolicitacoesRelatorioHistoricoDietas } from "mocks/services/dietaEspecial.service/mockGetSolicitacoesRelatorioHistoricoDietas";
+import { mockGetTipoGestao } from "mocks/services/dietaEspecial.service/mockGetTipoGestao";
+import { mockGetUnidadeEducacional } from "mocks/services/dietaEspecial.service/mockGetUnidadeEducacional.js";
 import RelatorioHistoricoDietasPage from "pages/DietaEspecial/RelatorioHistoricoDietasPage";
-import { MeusDadosContext } from "context/MeusDadosContext";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 
-describe("Teste - Relatório Histórico de Dietas Especiais", () => {
+describe("Teste - Relatório Histórico de Dietas Especiais - Exportar PDF", () => {
   const getMocksGetDietasEspeciais = (
     segundaRequisicao = mockGetSolicitacoesRelatorioHistoricoDietas
   ) => {
@@ -75,6 +71,13 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     mock
       .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
       .reply(200, mockGetUnidadeEducacional);
+    mock
+      .onGet(
+        "/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/exportar-pdf/"
+      )
+      .reply(200, {
+        detail: "Solicitação de geração de arquivo recebida com sucesso.",
+      });
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
@@ -153,7 +156,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     expect(screen.getByText("Filtrar Resultados")).toBeInTheDocument();
   });
 
-  it("renderiza título `Relatório de Histórico de Dietas`", async () => {
+  it("renderiza título `Relatório de Histórico de Dietas` e exporta pdf", async () => {
     getMocksGetDietasEspeciais();
     await setFiltrosEClicaEmFiltrar();
     await waitFor(() => {
@@ -163,116 +166,19 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
         )
       ).toBeInTheDocument();
     });
-  });
-
-  it("Verifica se o botão para abrir o collaps está funcional", async () => {
-    getMocksGetDietasEspeciais();
-    await setFiltrosEClicaEmFiltrar();
-    const angleDownIcon = document.querySelectorAll(".fa-angle-down");
-
-    const escolaCei = angleDownIcon[3];
-    fireEvent.click(escolaCei);
-    expect(
-      screen.getByText("Faixas Etárias com Dietas Autorizadas")
-    ).toBeInTheDocument();
-    expect(screen.getByText("Período INTEGRAL")).toBeInTheDocument();
-    expect(screen.getByText("07 a 11 meses")).toBeInTheDocument();
-    expect(screen.getByText("01 ano a 03 anos e 11 meses")).toBeInTheDocument();
-
-    const escolaCeuCemei = angleDownIcon[7];
-    fireEvent.click(escolaCeuCemei);
-    expect(
-      screen.getByText("Dietas Autorizadas nas Turmas do Infantil")
-    ).toBeInTheDocument();
-    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
-
-    const escolaEmef = angleDownIcon[9];
-    fireEvent.click(escolaEmef);
-    expect(screen.getByText("MANHA")).toBeInTheDocument();
-  });
-
-  it("Testa Collapse EMEBS e CEU GESTAO", async () => {
-    getMocksGetDietasEspeciais(mockGetHistoricoDietasEMEBSeCEUGESTAO);
-    await setFiltrosEClicaEmFiltrar();
-
-    const paginaDois = document.querySelector(
-      ".ant-pagination .ant-pagination-item-2"
-    );
-    fireEvent.click(paginaDois);
-
-    await waitFor(() => {
-      expect(
-        screen.getAllByText("EMEBS NEUSA BASSETTO, PROFA.").length
-      ).toBeGreaterThan(0);
-      expect(
-        screen.getAllByText(
-          "CEU GESTAO MENINOS - ARTUR ALBERTO DE MOTA GONCALVES, PROF. PR."
-        ).length
-      ).toBeGreaterThan(0);
+    expect(screen.getByText("Exportar PDF"));
+    const botaoExportarPDF = screen.getByText("Exportar PDF").closest("button");
+    await act(async () => {
+      fireEvent.click(botaoExportarPDF);
     });
 
-    const angleDownIcon = document.querySelector(".fa-angle-down");
-    fireEvent.click(angleDownIcon);
     expect(
-      screen.getByText("Alunos do Infantil (4 a 6 anos)")
+      screen.getByText("Geração solicitada com sucesso.")
     ).toBeInTheDocument();
-    expect(screen.getByText("MANHA")).toBeInTheDocument();
-
     expect(
-      screen.getByText("Alunos do Fundamental (acima de 6 anos)")
+      screen.getByText(
+        "Como este arquivo poderá ser muito grande, acompanhe o seu processamento na Central de Downloads."
+      )
     ).toBeInTheDocument();
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
-  });
-
-  it("Verifica mudança de página e Collapse CEMEI", async () => {
-    getMocksGetDietasEspeciais(mockGetSolicitacoesHistoricoDietasCEMEI);
-    await setFiltrosEClicaEmFiltrar();
-
-    const paginaDois = document.querySelector(
-      ".ant-pagination .ant-pagination-item-2"
-    );
-    fireEvent.click(paginaDois);
-
-    await waitFor(() => {
-      expect(
-        screen.getAllByText("CEMEI MARCIA KUMBREVICIUS DE MOURA").length
-      ).toBeGreaterThan(0);
-    });
-
-    const angleDownIcon = document.querySelector(".fa-angle-down");
-    fireEvent.click(angleDownIcon);
-    expect(
-      screen.getByText("Faixas Etárias com Dietas Autorizadas")
-    ).toBeInTheDocument();
-    expect(screen.getByText("Período INTEGRAL")).toBeInTheDocument();
-    expect(screen.getByText("01 a 03 meses")).toBeInTheDocument();
-
-    expect(
-      screen.getByText("Dietas Autorizadas nas Turmas do Infantil")
-    ).toBeInTheDocument();
-    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
-    expect(screen.getByText("MANHA")).toBeInTheDocument();
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
-  });
-
-  it("Verifica mudança de página e Collapse EMEI/EMEF", async () => {
-    getMocksGetDietasEspeciais(mockGetSolicitacoesHistoricoDietasEMEF);
-    await setFiltrosEClicaEmFiltrar();
-
-    const pagina_dois = document.querySelector(
-      ".ant-pagination .ant-pagination-item-2"
-    );
-    fireEvent.click(pagina_dois);
-
-    await waitFor(() => {
-      expect(
-        screen.getAllByText("EMEF PERICLES EUGENIO DA SILVA RAMOS").length
-      ).toBeGreaterThan(0);
-    });
-
-    const angleDownIcon = document.querySelector(".fa-angle-down");
-    fireEvent.click(angleDownIcon);
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
-    expect(screen.getByText("MANHA")).toBeInTheDocument();
   });
 });
