@@ -392,6 +392,17 @@ export const exportarExcelAsyncSolicitacoesRelatorioHistoricoDietas = async (
   }
 };
 
+export const exportarPDFAsyncSolicitacoesRelatorioHistoricoDietas = async (
+  params
+) => {
+  const url = `/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/exportar-pdf/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
 export const getUnidadesEducacionaisComCodEol = async (parametros) => {
   return await axios.post(
     `/escolas-simplissima-com-eol/escolas-com-cod-eol/`,

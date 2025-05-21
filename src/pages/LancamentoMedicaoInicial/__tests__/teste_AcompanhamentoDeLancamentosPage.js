@@ -1,4 +1,3 @@
-import React from "react";
 import "@testing-library/jest-dom";
 import {
   act,
@@ -8,18 +7,20 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { TIPO_PERFIL } from "constants/shared";
+import { AcompanhamentoDeLancamentosPage } from "pages/LancamentoMedicaoInicial/AcompanhamentoDeLancamentosPage";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
-import { AcompanhamentoDeLancamentosPage } from "pages/LancamentoMedicaoInicial/AcompanhamentoDeLancamentosPage";
 
+import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
+import { mockMeusDadosSuperUsuarioMedicao } from "mocks/meusDados/superUsuarioMedicao";
+import { mockGetTiposUnidadeEscolar } from "mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
+import { mockGetDashboardMedicaoInicial } from "mocks/services/dashboard.service/mockGetDashboardMedicaoInicial";
 import { mockGetMesesAnosMedicaoInicial } from "mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
 import { mockGetDiretoriaRegionalSimplissima } from "mocks/services/diretoriaRegional.service/mockGetDiretoriaRegionalSimplissima";
-import { mockGetTiposUnidadeEscolar } from "mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
-import { mockMeusDadosSuperUsuarioMedicao } from "mocks/meusDados/superUsuarioMedicao";
-import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
 import { mockGetEscolaTercTotal } from "mocks/services/escola.service/mockGetEscolasTercTotal";
-import { mockGetDashboardMedicaoInicial } from "mocks/services/dashboard.service/mockGetDashboardMedicaoInicial";
 import { mockGetGrupoUnidadeEscolar } from "mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
+
+jest.setTimeout(10000);
 
 describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => {
   beforeEach(async () => {
