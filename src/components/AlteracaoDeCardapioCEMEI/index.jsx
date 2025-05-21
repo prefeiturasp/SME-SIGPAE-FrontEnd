@@ -489,7 +489,6 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                 />
               </div>
             )}
-            {console.log(values)}
             <div className="mt-2 page-title">
               {values.uuid
                 ? `Solicitação # ${values.id_externo}`
