@@ -68,7 +68,9 @@ describe("Testa página Detalhar Cronograma (Perfil Cronograma)", () => {
       screen.getByText(mockCronogramaAssinadoCODAE.ficha_tecnica.produto.nome)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(mockCronogramaAssinadoCODAE.empresa.nome_fantasia)
+      screen.getByText(
+        `${mockCronogramaAssinadoCODAE.empresa.nome_fantasia} / ${mockCronogramaAssinadoCODAE.empresa.razao_social}`
+      )
     ).toBeInTheDocument();
 
     const btnVoltar = screen.getByTestId("voltar");
@@ -145,7 +147,9 @@ describe("Testa página de Detalhar Cronograma (Perfil Fornecedor)", () => {
       )
     ).toBeInTheDocument();
     expect(
-      screen.getByText(mockCronogramaEnviadoFornecedor.empresa.nome_fantasia)
+      screen.getByText(
+        `${mockCronogramaEnviadoFornecedor.empresa.nome_fantasia} / ${mockCronogramaEnviadoFornecedor.empresa.razao_social}`
+      )
     ).toBeInTheDocument();
 
     const btnAssinar = screen.getByText("Assinar Cronograma").closest("button");
@@ -236,7 +240,9 @@ describe("Testa página de Detalhar Cronograma (Perfil Abastecimento)", () => {
       )
     ).toBeInTheDocument();
     expect(
-      screen.getByText(mockCronogramaAssinadoFornecedor.empresa.nome_fantasia)
+      screen.getByText(
+        `${mockCronogramaAssinadoFornecedor.empresa.nome_fantasia} / ${mockCronogramaAssinadoFornecedor.empresa.razao_social}`
+      )
     ).toBeInTheDocument();
 
     const btnAssinar = screen.getByText("Assinar Cronograma").closest("button");
@@ -328,7 +334,7 @@ describe("Testa página de Detalhar Cronograma (Perfil Dilog Diretoria)", () => 
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        mockCronogramaAssinadoAbastecimento.empresa.nome_fantasia
+        `${mockCronogramaAssinadoAbastecimento.empresa.nome_fantasia} / ${mockCronogramaAssinadoAbastecimento.empresa.razao_social}`
       )
     ).toBeInTheDocument();
 

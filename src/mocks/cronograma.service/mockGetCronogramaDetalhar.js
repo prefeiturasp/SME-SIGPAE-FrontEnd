@@ -32,6 +32,7 @@ export const mockCronogramaAssinadoCODAE = {
     uuid: "d0630b2b-8e45-472c-b9c6-90451b60b081",
     cnpj: "98234782478478",
     nome_fantasia: "JP Alimentos",
+    razao_social: "JP Alimentos LTDA",
     contatos: [
       {
         nome: "jekwjdalk",
@@ -294,6 +295,7 @@ export const mockCronogramaEnviadoFornecedor = {
     uuid: "d0630b2b-8e45-472c-b9c6-90451b60b081",
     cnpj: "98234782478478",
     nome_fantasia: "JP Alimentos",
+    razao_social: "JP Alimentos LTDA",
     contatos: [
       {
         nome: "jekwjdalk",
@@ -489,6 +491,7 @@ export const mockCronogramaAssinadoFornecedor = {
     uuid: "d0630b2b-8e45-472c-b9c6-90451b60b081",
     cnpj: "98234782478478",
     nome_fantasia: "JP Alimentos",
+    razao_social: "JP Alimentos LTDA",
     contatos: [
       {
         nome: "jekwjdalk",
@@ -700,6 +703,7 @@ export const mockCronogramaAssinadoAbastecimento = {
     uuid: "c4d7422f-3d70-4fac-ad7e-46da528358e8",
     cnpj: "22460700000100",
     nome_fantasia: "Empresa do Luis Zimmermann",
+    razao_social: "LZ LTDA",
     contatos: [
       {
         nome: "Jaqueline Sargi",
