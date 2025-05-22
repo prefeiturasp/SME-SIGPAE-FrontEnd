@@ -54,6 +54,7 @@ export interface TerceirizadaComEnderecoInterface
   estado: string;
   responsavel_email: string;
   responsavel_telefone: string;
+  razao_social: string;
 }
 
 export interface TerceirizadaSimplesInterface {
