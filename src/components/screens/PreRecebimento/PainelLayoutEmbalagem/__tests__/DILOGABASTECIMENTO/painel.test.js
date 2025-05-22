@@ -61,23 +61,23 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
   it("Renderiza paineis", () => {
     expect(screen.getByText("Pendentes de Aprovação")).toBeInTheDocument();
     expect(
-      screen.getByText("FT015 - CAJUINA - JP Alimentos LTDA")
+      screen.getByText("FT015 / CAJUINA / JP Alimentos LTDA")
     ).toBeInTheDocument();
 
     expect(screen.getByText("Aprovados")).toBeInTheDocument();
     expect(
-      screen.getByText("FT040 - FORMIGA - JP Alimentos LTDA")
+      screen.getByText("FT040 / FORMIGA / JP Alimentos LTDA")
     ).toBeInTheDocument();
 
     expect(screen.getByText("Enviados para Correção")).toBeInTheDocument();
     expect(
-      screen.getByText("FT039 - ARROZ TIPO I - Empresa do Luis Zimm...")
+      screen.getByText("FT039 / ARROZ TIPO I / Empresa do Luis Zimm...")
     ).toBeInTheDocument();
   });
 
   it("Renderiza hrefs de detalhe, sem poder editar em todos os cards", () => {
     const linkPendenteAprovacao = screen.getByRole("link", {
-      name: /FT015 - CAJUINA - JP Alimentos LTDA/i,
+      name: /FT015\s*\/\s*CAJUINA\s*\/\s*JP Alimentos LTDA/i,
     });
     expect(linkPendenteAprovacao).toHaveAttribute(
       "href",
@@ -85,7 +85,7 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
     );
 
     const linkAprovados = screen.getByRole("link", {
-      name: /FT040 - FORMIGA - JP Alimentos LTDA/i,
+      name: /FT040\s*\/\s*FORMIGA\s*\/\s*JP Alimentos LTDA/i,
     });
     expect(linkAprovados).toHaveAttribute(
       "href",
@@ -93,7 +93,7 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
     );
 
     const linkEnviadosParaCorrecao = screen.getByRole("link", {
-      name: /FT039 - ARROZ TIPO I - Empresa do Luis Zimm.../i,
+      name: /FT039\s*\/\s*ARROZ TIPO I\s*\/\s*Empresa do Luis Zimm.../i,
     });
     expect(linkEnviadosParaCorrecao).toHaveAttribute(
       "href",
