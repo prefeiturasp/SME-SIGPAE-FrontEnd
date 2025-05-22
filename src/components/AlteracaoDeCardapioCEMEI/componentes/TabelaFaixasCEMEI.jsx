@@ -109,6 +109,7 @@ export const TabelaFaixasCEMEI = ({
                   <Field
                     label="Alterar alimentação de:"
                     component={Select}
+                    dataTestId="div-alterar-alimentacao-de"
                     name={`substituicoes[${periodoIndice}][cei][tipos_alimentacao_de]`}
                     options={agregarDefault(
                       alimentosCEI.find(
@@ -165,6 +166,7 @@ export const TabelaFaixasCEMEI = ({
                   <Field
                     label="Para alimentação:"
                     component={Select}
+                    dataTestId="div-alterar-alimentacao-para"
                     options={agregarDefault(
                       substitutosCEI
                         .find((v) => v.periodo_escolar.nome === periodo.nome)
@@ -204,6 +206,7 @@ export const TabelaFaixasCEMEI = ({
                             <td className="col-2 text-center">
                               <Field
                                 component={InputText}
+                                dataTestId={`substituicoes[${periodoIndice}][cei][faixas_etarias][${faixaIndice}][quantidade_alunos]`}
                                 type="number"
                                 name={`substituicoes[${periodoIndice}][cei][faixas_etarias][${faixaIndice}][quantidade_alunos]`}
                                 validate={composeValidators(
@@ -275,7 +278,10 @@ export const TabelaFaixasCEMEI = ({
               <div className="col-4">
                 <div className=" alunos-label">Alunos EMEI</div>
               </div>
-              <div className="col-4">
+              <div
+                className="col-4"
+                data-testid="multiselect-div-alterar-alimentacao-de-EMEI"
+              >
                 <Field
                   label="Alterar alimentação de:"
                   component={MultiSelect}

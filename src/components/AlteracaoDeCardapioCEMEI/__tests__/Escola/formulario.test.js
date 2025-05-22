@@ -10,7 +10,6 @@ import { mockQuantidadeAlunoCEMEIporCEIEMEI } from "mocks/services/aluno.service
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEMEI } from "mocks/services/cadastroTipoAlimentacao.service/CEMEI/vinculosTipoAlimentacaoPeriodoEscolar";
 import { mockAlteracoesCEMEIRascunho } from "mocks/services/escola.service/CEMEI/alteracoesCEMEIRascunho";
 import { AlteracaoDeCardapioCEMEIPage } from "pages/Escola/AlteracaoDeCardapioCEMEIPage";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 
@@ -118,6 +117,43 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     });
   };
 
+  const selecionaTipoAlimentacaoDeRefeicaoDaTarde = () => {
+    const selectAlterarAlimentacaoDeDiv = screen.getByTestId(
+      "div-alterar-alimentacao-de"
+    );
+    const selectElementAlterarAlimentacaoDe =
+      selectAlterarAlimentacaoDeDiv.querySelector("select");
+    const uuidRefeicaoDaTarde =
+      mockGetVinculosTipoAlimentacaoPorEscolaCEMEI.results
+        .find(
+          (v) =>
+            v.periodo_escolar.nome === "INTEGRAL" &&
+            v.tipo_unidade_escolar.iniciais === "CEI DIRET"
+        )
+        .tipos_alimentacao.find((ta) => ta.nome === "Refeição da tarde").uuid;
+    fireEvent.change(selectElementAlterarAlimentacaoDe, {
+      target: { value: uuidRefeicaoDaTarde },
+    });
+  };
+
+  const selecionaTipoAlimentacaoParaLanche = () => {
+    const selectAlterarAlimentacaoParaDiv = screen.getByTestId(
+      "div-alterar-alimentacao-para"
+    );
+    const selectElementAlterarAlimentacaoPara =
+      selectAlterarAlimentacaoParaDiv.querySelector("select");
+    const uuidLanche = mockGetVinculosTipoAlimentacaoPorEscolaCEMEI.results
+      .find(
+        (v) =>
+          v.periodo_escolar.nome === "INTEGRAL" &&
+          v.tipo_unidade_escolar.iniciais === "CEI DIRET"
+      )
+      .tipos_alimentacao.find((ta) => ta.nome === "Lanche").uuid;
+    fireEvent.change(selectElementAlterarAlimentacaoPara, {
+      target: { value: uuidLanche },
+    });
+  };
+
   it("renderiza modal para dia selecionado ser menor que 5 dias úteis", async () => {
     selecionaMotivoRPL();
     const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
@@ -160,10 +196,54 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     const inputCheckboxtElement = spanElement.querySelector("input");
 
     // check período INTEGRAL
-    await act(async () => {
-      fireEvent.click(inputCheckboxtElement);
-    });
+
+    fireEvent.click(inputCheckboxtElement);
 
     expect(screen.getByText("Alunos CEI")).toBeInTheDocument();
+
+    selecionaTipoAlimentacaoDeRefeicaoDaTarde();
+    selecionaTipoAlimentacaoParaLanche();
+
+    const inputElementNumeroAlunosFaixa1 = screen.getByTestId(
+      `substituicoes[0][cei][faixas_etarias][2][quantidade_alunos]`
+    );
+    fireEvent.change(inputElementNumeroAlunosFaixa1, {
+      target: { value: "69" },
+    });
+
+    const inputElementNumeroAlunosFaixa2 = screen.getByTestId(
+      `substituicoes[0][cei][faixas_etarias][3][quantidade_alunos]`
+    );
+    fireEvent.change(inputElementNumeroAlunosFaixa2, {
+      target: { value: "1" },
+    });
+
+    expect(screen.getByText("Alunos EMEI")).toBeInTheDocument();
+
+    /*
+    const divMultiselectMANHA = screen.getByTestId(
+      "multiselect-div-alterar-alimentacao-de-EMEI"
+    );
+    console.log(divMultiselectMANHA);
+    const dropdown = within(divMultiselectMANHA).getByRole("combobox");
+
+    const spanSelecione = within(dropdown.parentElement).getByText("Selecione");
+    const divDropdownHeading = spanSelecione.parentElement.parentElement;
+
+    // expande seletor Tipo de Alimentação
+    await waitFor(async () => {
+      fireEvent.click(divDropdownHeading);
+    });
+
+    expect(screen.getByText("Sobremesa")).toBeInTheDocument();
+
+    const divDropdownContent = container.querySelector(".dropdown-content");
+    const checkboxRefeicao =
+      within(divDropdownContent).getAllByRole("checkbox")[1];
+
+    // seleciona tipo de alimentação Refeição
+    fireEvent.click(checkboxRefeicao);
+
+    */
   });
 });
