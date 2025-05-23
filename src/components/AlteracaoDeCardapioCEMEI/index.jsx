@@ -271,9 +271,6 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
             };
           });
           break;
-
-        default:
-          break;
       }
     }
     setAlimentosCEI(_alimentosCEI);
@@ -570,6 +567,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                     <Field
                       component={InputComData}
                       name="data_inicial"
+                      dataTestId="div-input-data-inicial"
                       label="De"
                       disabled={values.alterar_dia || desabilitarDeAte}
                       minDate={
@@ -589,6 +587,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                     <Field
                       component={InputComData}
                       name="data_final"
+                      dataTestId="div-input-data-final"
                       label="Até"
                       disabled={
                         values.data_inicial === undefined ||
