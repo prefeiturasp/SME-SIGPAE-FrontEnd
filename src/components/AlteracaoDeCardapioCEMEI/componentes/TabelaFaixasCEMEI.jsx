@@ -1,13 +1,15 @@
-import React, { useState } from "react";
-import { Field } from "react-final-form";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
 import InputText from "components/Shareable/Input/InputText";
 import { MultiselectRaw } from "components/Shareable/MultiselectRaw";
-import { maxValue, naoPodeSerZero, required } from "helpers/fieldValidators";
-import { agregarDefault, composeValidators } from "helpers/utilities";
-import { formatarParaMultiselect } from "helpers/utilities";
-import { totalMatriculados, totalSolicitacao } from "../helpers";
 import Select from "components/Shareable/Select";
+import { maxValue, naoPodeSerZero, required } from "helpers/fieldValidators";
+import {
+  agregarDefault,
+  composeValidators,
+  formatarParaMultiselect,
+} from "helpers/utilities";
+import { useState } from "react";
+import { Field } from "react-final-form";
+import { totalMatriculados, totalSolicitacao } from "../helpers";
 
 export const TabelaFaixasCEMEI = ({
   values,
@@ -124,33 +126,43 @@ export const TabelaFaixasCEMEI = ({
                 )}
                 {!ehMotivoRPL(values) && (
                   <Field
+                    component={MultiselectRaw}
                     label="Alterar alimentação de:"
-                    component={MultiSelect}
-                    disableSearch
                     name={`substituicoes[${periodoIndice}][cei][tipos_alimentacao_de]`}
-                    multiple
+                    dataTestId="select-alterar-alimentacao-de-CEI"
+                    selected={
+                      form.getState().values.substituicoes[periodoIndice]?.cei
+                        ?.tipos_alimentacao_de || []
+                    }
                     options={formatarParaMultiselect(
                       alimentosCEI.find(
                         (v) => v.periodo_escolar.nome === periodo.nome
                       ).tipos_alimentacao
                     )}
-                    nomeDoItemNoPlural="Alimentos"
+                    onSelectedChanged={async (values_) => {
+                      await form.change(
+                        `substituicoes[${periodoIndice}][cei][tipos_alimentacao_de]`,
+                        values_.map((value_) => value_.value)
+                      );
+                      setAlimentoSelecionadoCEI(values_);
+                    }}
+                    placeholder="Selecione tipos de alimentação de"
                     validate={totalFrequenciaCEI > 0 && required}
                     required
-                    onChangeEffect={async (value) => {
-                      setAlimentoSelecionadoCEI(value);
-                    }}
                   />
                 )}
               </div>
               <div className="col-4">
                 {!ehMotivoRPL(values) && (
                   <Field
+                    component={MultiselectRaw}
                     label="Para alimentação:"
-                    component={MultiSelect}
-                    disableSearch
                     name={`substituicoes[${periodoIndice}][cei][tipos_alimentacao_para]`}
-                    multiple
+                    dataTestId="select-alterar-alimentacao-para-CEI"
+                    selected={
+                      form.getState().values.substituicoes[periodoIndice]?.cei
+                        ?.tipos_alimentacao_para || []
+                    }
                     options={formatarParaMultiselect(
                       substitutosCEI
                         .find((v) => v.periodo_escolar.nome === periodo.nome)
@@ -158,7 +170,14 @@ export const TabelaFaixasCEMEI = ({
                           (ta) => !alimentoSelecionadoCEI.includes(ta.uuid)
                         )
                     )}
-                    nomeDoItemNoPlural="Substitutos"
+                    onSelectedChanged={(values_) => {
+                      form.change(
+                        `substituicoes[${periodoIndice}][cei][tipos_alimentacao_para]`,
+                        values_.map((value_) => value_.value)
+                      );
+                      setAlimentoSelecionadoCEI(values_);
+                    }}
+                    placeholder="Selecione tipos de alimentação para"
                     validate={totalFrequenciaCEI > 0 && required}
                     required
                   />

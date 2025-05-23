@@ -28,13 +28,13 @@ export const Rascunhos = ({
             <div className="icon-draft-card float-end">
               Criado em: {alteracaoDeCardapio.criado_em}
               <span
-                data-testid="botao-remover-rascunho"
+                data-testid={`botao-remover-rascunho-${alteracaoDeCardapio.id_externo}`}
                 onClick={() => removerRascunho(id_externo, uuid, form)}
               >
                 <i className="fas fa-trash" />
               </span>
               <span
-                data-testid="botao-carregar-rascunho"
+                data-testid={`botao-carregar-rascunho-${alteracaoDeCardapio.id_externo}`}
                 onClick={async () =>
                   await carregarRascunho(form, alteracaoDeCardapio)
                 }

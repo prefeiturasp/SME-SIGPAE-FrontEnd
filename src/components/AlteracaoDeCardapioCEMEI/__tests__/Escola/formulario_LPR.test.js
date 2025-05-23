@@ -21,7 +21,7 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import mock from "services/_mock";
 
-describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
+describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
 
   beforeEach(async () => {
@@ -43,20 +43,20 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
       .reply(200, mockAlteracoesCEMEIRascunho);
     mock
       .onPost("/alteracoes-cardapio-cemei/")
-      .reply(201, { uuid: "475907b7-0b66-436d-a624-e18bffe65eb3" });
+      .reply(201, { uuid: mockAlteracoesCEMEIRascunho.results[1].uuid });
     mock
       .onPut(
-        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[0].uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/`
       )
       .reply(200, {});
     mock
       .onPatch(
-        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[0].uuid}/inicio-pedido/`
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/inicio-pedido/`
       )
       .reply(200, {});
     mock
       .onDelete(
-        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[0].uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/`
       )
       .reply(204, {});
 
@@ -115,11 +115,11 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Alteração do Tipo de Alimentação # BEFB9")
+      screen.getByText("Alteração do Tipo de Alimentação # 47096")
     ).toBeInTheDocument();
-    expect(screen.getByText("Dia: 20/08/2025")).toBeInTheDocument();
+    expect(screen.getByText("Dia: 11/06/2025")).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 23/05/2025 14:56:51")
+      screen.getByText("Criado em: 23/05/2025 17:26:07")
     ).toBeInTheDocument();
   });
 
@@ -133,81 +133,46 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     });
   };
 
-  const selecionaMotivoRPL = () => {
+  const selecionaMotivoLPR = () => {
     const selectMotivoDiv = screen.getByTestId("div-select-motivo");
     const selectElementMotivo = selectMotivoDiv.querySelector("select");
-    const uuidRPL = mockMotivosAlteracaoCardapio.results.find((motivo) =>
-      motivo.nome.includes("RPL")
+    const uuidLPR = mockMotivosAlteracaoCardapio.results.find((motivo) =>
+      motivo.nome.includes("LPR")
     ).uuid;
     fireEvent.change(selectElementMotivo, {
-      target: { value: uuidRPL },
+      target: { value: uuidLPR },
     });
   };
 
-  const selecionaTipoAlimentacaoDeRefeicaoDaTarde = () => {
-    const selectAlterarAlimentacaoDeDiv = screen.getByTestId(
-      "div-alterar-alimentacao-de"
+  const selecionaTipoAlimentacaoDeLanche = () => {
+    const selectAlterarAlimentacaoDeCEI = screen.getByTestId(
+      "select-alterar-alimentacao-de-CEI"
     );
-    const selectElementAlterarAlimentacaoDe =
-      selectAlterarAlimentacaoDeDiv.querySelector("select");
-    const uuidRefeicaoDaTarde =
-      mockGetVinculosTipoAlimentacaoPorEscolaCEMEI.results
-        .find(
-          (v) =>
-            v.periodo_escolar.nome === "INTEGRAL" &&
-            v.tipo_unidade_escolar.iniciais === "CEI DIRET"
-        )
-        .tipos_alimentacao.find((ta) => ta.nome === "Refeição da tarde").uuid;
-    fireEvent.change(selectElementAlterarAlimentacaoDe, {
-      target: { value: uuidRefeicaoDaTarde },
-    });
-  };
-
-  const selecionaTipoAlimentacaoParaLanche = () => {
-    const selectAlterarAlimentacaoParaDiv = screen.getByTestId(
-      "div-alterar-alimentacao-para"
+    const selectControlDe = within(selectAlterarAlimentacaoDeCEI).getByRole(
+      "combobox"
     );
-    const selectElementAlterarAlimentacaoPara =
-      selectAlterarAlimentacaoParaDiv.querySelector("select");
-    const uuidLanche = mockGetVinculosTipoAlimentacaoPorEscolaCEMEI.results
-      .find(
-        (v) =>
-          v.periodo_escolar.nome === "INTEGRAL" &&
-          v.tipo_unidade_escolar.iniciais === "CEI DIRET"
-      )
-      .tipos_alimentacao.find((ta) => ta.nome === "Lanche").uuid;
-    fireEvent.change(selectElementAlterarAlimentacaoPara, {
-      target: { value: uuidLanche },
-    });
+    fireEvent.mouseDown(selectControlDe);
+
+    const optionDe = screen.getByText("Lanche");
+    fireEvent.click(optionDe);
   };
 
-  it("renderiza modal para dia selecionado ser menor que 5 dias úteis", async () => {
-    selecionaMotivoRPL();
-    const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
-    const inputElement = divInputAlterarDia.querySelector("input");
+  const selecionaTipoAlimentacaoParaRefeicaoDaTarde = () => {
+    const selectAlterarAlimentacaoParaCEI = screen.getByTestId(
+      "select-alterar-alimentacao-para-CEI"
+    );
+    const selectControlPara = within(selectAlterarAlimentacaoParaCEI).getByRole(
+      "combobox"
+    );
+    fireEvent.mouseDown(selectControlPara);
 
-    expect(screen.queryByText("Atenção")).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
-      )
-    ).not.toBeInTheDocument();
+    const optionPara = screen.getByText("Refeição da tarde");
+    fireEvent.click(optionPara);
+  };
 
-    fireEvent.change(inputElement, {
-      target: { value: "30/01/2025" },
-    });
-
-    expect(screen.queryByText("Atenção")).toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
-      )
-    ).toBeInTheDocument();
-  });
-
-  it("Testa Alteração - Motivo RPL", async () => {
+  it("Testa Alteração - Motivo LPR", async () => {
     selecionaAlunosTodos();
-    selecionaMotivoRPL();
+    selecionaMotivoLPR();
     expect(screen.getByText("Alterar dia")).toBeInTheDocument();
 
     const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
@@ -228,8 +193,8 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
 
     expect(screen.getByText("Alunos CEI")).toBeInTheDocument();
 
-    selecionaTipoAlimentacaoDeRefeicaoDaTarde();
-    selecionaTipoAlimentacaoParaLanche();
+    selecionaTipoAlimentacaoDeLanche();
+    selecionaTipoAlimentacaoParaRefeicaoDaTarde();
 
     const inputElementNumeroAlunosFaixa1 = screen.getByTestId(
       `substituicoes[0][cei][faixas_etarias][2][quantidade_alunos]`
@@ -255,7 +220,7 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     );
     fireEvent.mouseDown(selectControlDe);
 
-    const optionDe = screen.getByText("Sobremesa");
+    const optionDe = screen.getAllByText("Lanche")[1];
     fireEvent.click(optionDe);
 
     const selectAlterarAlimentacaoParaEMEI = screen.getByTestId(
@@ -266,7 +231,7 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     ).getByRole("combobox");
     fireEvent.mouseDown(selectControlPara);
 
-    const optionPara = screen.getAllByText("Lanche")[1];
+    const optionPara = screen.getByText("Sobremesa");
     fireEvent.click(optionPara);
 
     const inputElementNumeroAlunosEMEI = screen.getByTestId(
@@ -280,17 +245,23 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
       .getByText("Salvar rascunho")
       .closest("button");
     fireEvent.click(botaoSalvarRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitação Rascunho criada com sucesso!")
+      ).toBeInTheDocument();
+    });
   });
 
   it("Carrega rascunho e envia", async () => {
     const botaoCarregarRascunho = screen.getByTestId(
-      "botao-carregar-rascunho-BEFB9"
+      `botao-carregar-rascunho-47096`
     );
     await act(async () => {
       fireEvent.click(botaoCarregarRascunho);
     });
 
-    expect(screen.getByText("Solicitação # BEFB9")).toBeInTheDocument();
+    expect(screen.getByText("Solicitação # 47096")).toBeInTheDocument();
 
     const inputElementNumeroAlunosEMEI = screen.getByTestId(
       `substituicoes[0][emei][quantidade_alunos]`
@@ -304,7 +275,7 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
   it("Exclui rascunho", async () => {
     window.confirm = jest.fn().mockImplementation(() => true);
     const botaoRemoverRascunho = screen.getByTestId(
-      "botao-remover-rascunho-BEFB9"
+      "botao-remover-rascunho-47096"
     );
     mock.onGet("/alteracoes-cardapio-cemei/").reply(200, []);
     await act(async () => {
@@ -316,40 +287,15 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
   it("Erro ao excluir rascunho", async () => {
     mock
       .onDelete(
-        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[0].uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/`
       )
       .reply(400, { detail: "Erro ao excluir rascunho" });
     window.confirm = jest.fn().mockImplementation(() => true);
     const botaoRemoverRascunho = screen.getByTestId(
-      "botao-remover-rascunho-BEFB9"
+      "botao-remover-rascunho-47096"
     );
     await act(async () => {
       fireEvent.click(botaoRemoverRascunho);
-    });
-  });
-
-  it("Testa Alteração - Motivo RPL - Necessário preencher ao menos um período", async () => {
-    selecionaAlunosTodos();
-    selecionaMotivoRPL();
-    expect(screen.getByText("Alterar dia")).toBeInTheDocument();
-
-    const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
-    const inputElement = divInputAlterarDia.querySelector("input");
-    fireEvent.change(inputElement, {
-      target: { value: "30/01/2025" },
-    });
-
-    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
-
-    const botaoSalvarRascunho = screen
-      .getByText("Salvar rascunho")
-      .closest("button");
-    fireEvent.click(botaoSalvarRascunho);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Necessário preencher ao menos um período")
-      ).toBeInTheDocument();
     });
   });
 });
