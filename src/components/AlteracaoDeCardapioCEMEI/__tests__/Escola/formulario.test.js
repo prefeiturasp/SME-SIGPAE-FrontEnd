@@ -36,6 +36,21 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     mock
       .onPost("/alteracoes-cardapio-cemei/")
       .reply(201, { uuid: "475907b7-0b66-436d-a624-e18bffe65eb3" });
+    mock
+      .onPut(
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[0].uuid}/`
+      )
+      .reply(200, {});
+    mock
+      .onPatch(
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[0].uuid}/inicio-pedido/`
+      )
+      .reply(200, {});
+    mock
+      .onDelete(
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[0].uuid}/`
+      )
+      .reply(204, {});
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);
@@ -91,11 +106,11 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Alteração do Tipo de Alimentação # AF03F")
+      screen.getByText("Alteração do Tipo de Alimentação # BEFB9")
     ).toBeInTheDocument();
-    expect(screen.getByText("Dia: 29/05/2025")).toBeInTheDocument();
+    expect(screen.getByText("Dia: 20/08/2025")).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 16/05/2025 09:43:34")
+      screen.getByText("Criado em: 23/05/2025 14:56:51")
     ).toBeInTheDocument();
   });
 
@@ -256,5 +271,45 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
       .getByText("Salvar rascunho")
       .closest("button");
     fireEvent.click(botaoSalvarRascunho);
+  });
+
+  it("Carrega rascunho e envia", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    expect(screen.getByText("Solicitação # BEFB9")).toBeInTheDocument();
+
+    const inputElementNumeroAlunosEMEI = screen.getByTestId(
+      `substituicoes[0][emei][quantidade_alunos]`
+    );
+    expect(inputElementNumeroAlunosEMEI).toHaveAttribute("value", "1");
+
+    const botaoEnviar = screen.getByText("Enviar").closest("button");
+    fireEvent.click(botaoEnviar);
+  });
+
+  it("Exclui rascunho", async () => {
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    mock.onGet("/alteracoes-cardapio-cemei/").reply(200, []);
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
+    expect(screen.queryByText("Rascunhos")).not.toBeInTheDocument();
+  });
+
+  it("Erro ao excluir rascunho", async () => {
+    mock
+      .onDelete(
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[0].uuid}/`
+      )
+      .reply(400, { detail: "Erro ao excluir rascunho" });
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
   });
 });

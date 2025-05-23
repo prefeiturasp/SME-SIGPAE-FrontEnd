@@ -366,37 +366,37 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
 
   const carregarRascunhoNormal = async (form, alteracao_) => {
     const periodos_ = deepCopy(periodos);
-    await form.change("uuid", alteracao_.uuid);
-    await form.change("escola", alteracao_.escola.uuid);
-    await form.change("motivo", alteracao_.motivo.uuid);
-    await form.change("criado_por", alteracao_.criado_por);
-    await form.change("alterar_dia", alteracao_.alterar_dia);
-    await form.change("data_inicial", alteracao_.data_inicial);
-    await form.change("data_final", alteracao_.data_final);
-    await form.change("alunos_cei_e_ou_emei", alteracao_.alunos_cei_e_ou_emei);
+    form.change("uuid", alteracao_.uuid);
+    form.change("escola", alteracao_.escola.uuid);
+    form.change("motivo", alteracao_.motivo.uuid);
+    form.change("criado_por", alteracao_.criado_por);
+    form.change("alterar_dia", alteracao_.alterar_dia);
+    form.change("data_inicial", alteracao_.data_inicial);
+    form.change("data_final", alteracao_.data_final);
+    form.change("alunos_cei_e_ou_emei", alteracao_.alunos_cei_e_ou_emei);
     let substituicoes = await buildSubstituicoes(periodos_, alteracao_);
-    await form.change("substituicoes", substituicoes);
-    await form.change("observacao", alteracao_.observacao);
+    form.change("substituicoes", substituicoes);
+    form.change("observacao", alteracao_.observacao);
   };
 
   const carregarRascunho = async (form, alteracao) => {
     const alteracao_ = deepCopy(alteracao);
     await carregarRascunhoNormal(form, alteracao_);
-    await form.change("id_externo", alteracao.id_externo);
+    form.change("id_externo", alteracao.id_externo);
     setUuid(alteracao.uuid);
   };
 
   const resetForm = async (form) => {
-    await form.change("uuid", undefined);
-    await form.change("criado_por", meusDados.uuid);
-    await form.change("escola", meusDados.vinculo_atual.instituicao.uuid);
-    await form.change("alunos_cei_e_ou_emei", undefined);
-    await form.change("motivo", undefined);
-    await form.change("alterar_dia", undefined);
-    await form.change("data_inicial", undefined);
-    await form.change("data_final", undefined);
-    await form.change("substituicoes", []);
-    await form.change("observacao", undefined);
+    form.change("uuid", undefined);
+    form.change("criado_por", meusDados.uuid);
+    form.change("escola", meusDados.vinculo_atual.instituicao.uuid);
+    form.change("alunos_cei_e_ou_emei", undefined);
+    form.change("motivo", undefined);
+    form.change("alterar_dia", undefined);
+    form.change("data_inicial", undefined);
+    form.change("data_final", undefined);
+    form.change("substituicoes", []);
+    form.change("observacao", undefined);
     setUuid(null);
   };
 
@@ -478,6 +478,9 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
       >
         {({ handleSubmit, submitting, form, values }) => (
           <form onSubmit={handleSubmit}>
+            <Field component="input" type="hidden" name="uuid" />
+            <Field component="input" type="hidden" name="id_externo" />
+            <Field component="input" type="hidden" name="escola" />
             {rascunhos && rascunhos.length > 0 && (
               <div className="mt-3">
                 <span className="page-title">Rascunhos</span>
@@ -490,7 +493,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
               </div>
             )}
             <div className="mt-2 page-title">
-              {values.uuid
+              {form.getState().values.uuid
                 ? `Solicitação # ${values.id_externo}`
                 : "Nova Solicitação"}
             </div>
