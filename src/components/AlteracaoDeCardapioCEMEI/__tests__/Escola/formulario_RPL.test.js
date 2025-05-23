@@ -1,5 +1,12 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "constants/shared";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { mockDiasUteis } from "mocks/diasUseisMock";
@@ -11,6 +18,7 @@ import { mockGetVinculosTipoAlimentacaoPorEscolaCEMEI } from "mocks/services/cad
 import { mockAlteracoesCEMEIRascunho } from "mocks/services/escola.service/CEMEI/alteracoesCEMEIRascunho";
 import { AlteracaoDeCardapioCEMEIPage } from "pages/Escola/AlteracaoDeCardapioCEMEIPage";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import mock from "services/_mock";
 
 describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
@@ -74,6 +82,7 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
             }}
           >
             <AlteracaoDeCardapioCEMEIPage />
+            <ToastContainer />
           </MeusDadosContext.Provider>
         </MemoryRouter>
       );
@@ -310,6 +319,31 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
     await act(async () => {
       fireEvent.click(botaoRemoverRascunho);
+    });
+  });
+
+  it("Testa Alteração - Motivo RPL - Necessário preencher ao menos um período", async () => {
+    selecionaAlunosTodos();
+    selecionaMotivoRPL();
+    expect(screen.getByText("Alterar dia")).toBeInTheDocument();
+
+    const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
+    const inputElement = divInputAlterarDia.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "30/01/2025" },
+    });
+
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Necessário preencher ao menos um período")
+      ).toBeInTheDocument();
     });
   });
 });

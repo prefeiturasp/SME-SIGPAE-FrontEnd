@@ -11,7 +11,7 @@ import Select from "components/Shareable/Select";
 import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
 import { STATUS_DRE_A_VALIDAR } from "configs/constants";
 import arrayMutators from "final-form-arrays";
-import { composeValidators, required } from "helpers/fieldValidators";
+import { required } from "helpers/fieldValidators";
 import {
   agregarDefault,
   checaSeDataEstaEntre2e5DiasUteis,
@@ -22,7 +22,7 @@ import {
 } from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {
   createAlteracaoCardapioCEMEI,
@@ -407,21 +407,15 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     if (motivo) {
       switch (motivo.nome) {
         case "RPL - Refeição por Lanche":
-          setDesabilitarDeAte(true);
-          setDesabilitarAlterarDia(false);
-          break;
-
         case "LPR - Lanche por Refeição":
           setDesabilitarDeAte(true);
           setDesabilitarAlterarDia(false);
           break;
-
         case "Lanche Emergencial":
           setDesabilitarDeAte(false);
           setDesabilitarAlterarDia(false);
           setMaximo5DiasUteis(true);
           break;
-
         default:
           setDesabilitarDeAte(false);
           setDesabilitarAlterarDia(false);
@@ -551,8 +545,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                       dataTestId="div-input-alterar-dia"
                       minDate={
                         values.motivo &&
-                        motivos.find((m) => m.uuid === values.motivo) &&
-                        motivos.find((m) => m.uuid === values.motivo).nome ===
+                        motivos.find((m) => m.uuid === values.motivo)?.nome ===
                           "Lanche Emergencial"
                           ? moment().toDate()
                           : proximosDoisDiasUteis
@@ -560,9 +553,8 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                       maxDate={fimDoCalendario()}
                       label="Alterar dia"
                       disabled={values.data_inicial || desabilitarAlterarDia}
-                      validate={
-                        values.data_inicial ? null : composeValidators(required)
-                      }
+                      required={!values.data_inicial}
+                      validate={!values.data_inicial && required}
                       usarDirty={true}
                       inputOnChange={(value) => {
                         if (value) {
@@ -613,6 +605,8 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                           onDataChanged(value);
                         }
                       }}
+                      validate={values.data_inicial && required}
+                      required={values.data_inicial}
                     />
                   </div>
                 </div>

@@ -152,78 +152,9 @@ export const validarSubmit = (values) => {
   let substituicoes = values.substituicoes.filter(
     (substituicao) => substituicao && substituicao.checked === true
   );
-  if (!values.alterar_dia && (!values.data_final || !values.data_final)) {
-    erro = "Necessário preencher datas da alteração";
-    return erro;
-  }
 
   if (substituicoes.length === 0) {
     erro = "Necessário preencher ao menos um período";
     return erro;
-  }
-
-  if (values.alunos_cei_e_ou_emei === "TODOS") {
-    substituicoes.forEach((substituicao) => {
-      if (
-        substituicao.cei &&
-        (!substituicao.cei.tipos_alimentacao_de ||
-          !substituicao.cei.tipos_alimentacao_para)
-      ) {
-        erro =
-          "Necessário preencher as substituições de alimentação para os períodos e alunos selecionado";
-        return erro;
-      }
-      if (
-        substituicao.emei &&
-        (!substituicao.emei.tipos_alimentacao_de ||
-          !substituicao.emei.tipos_alimentacao_para)
-      ) {
-        erro =
-          "Necessário preencher as substituições de alimentação para os períodos e alunos selecionado";
-        return erro;
-      }
-      if (!substituicao.cei && !substituicao.emei) {
-        erro = "Necessário preencher as quantidades para o período selecionado";
-        return erro;
-      }
-    });
-  }
-
-  if (values.alunos_cei_e_ou_emei === "CEI") {
-    substituicoes.forEach((substituicao) => {
-      if (
-        substituicao.cei &&
-        (!substituicao.cei.tipos_alimentacao_de ||
-          !substituicao.cei.tipos_alimentacao_para)
-      ) {
-        erro =
-          "Necessário preencher as substituições de alimentação para os períodos e alunos selecionado";
-        return erro;
-      }
-      if (!substituicao.cei) {
-        erro =
-          "Necessário preencher as quantidades para os período selecionado";
-        return erro;
-      }
-    });
-  }
-
-  if (values.alunos_cei_e_ou_emei === "EMEI") {
-    substituicoes.forEach((substituicao) => {
-      if (
-        substituicao.emei &&
-        (!substituicao.emei.tipos_alimentacao_de ||
-          !substituicao.emei.tipos_alimentacao_para)
-      ) {
-        erro =
-          "Necessário preencher as substituições de alimentação para os períodos e alunos selecionado";
-        return erro;
-      }
-      if (!substituicao.emei) {
-        erro =
-          "Necessário preencher as quantidades da CEI para os período selecionado";
-        return erro;
-      }
-    });
   }
 };
