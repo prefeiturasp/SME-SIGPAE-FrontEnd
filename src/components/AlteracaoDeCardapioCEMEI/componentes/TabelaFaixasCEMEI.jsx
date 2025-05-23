@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Field } from "react-final-form";
 import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
 import InputText from "components/Shareable/Input/InputText";
+import { MultiselectRaw } from "components/Shareable/MultiselectRaw";
 import { maxValue, naoPodeSerZero, required } from "helpers/fieldValidators";
 import { agregarDefault, composeValidators } from "helpers/utilities";
 import { formatarParaMultiselect } from "helpers/utilities";
@@ -278,36 +279,43 @@ export const TabelaFaixasCEMEI = ({
               <div className="col-4">
                 <div className=" alunos-label">Alunos EMEI</div>
               </div>
-              <div
-                className="col-4"
-                data-testid="multiselect-div-alterar-alimentacao-de-EMEI"
-              >
+              <div className="col-4">
                 <Field
+                  component={MultiselectRaw}
                   label="Alterar alimentação de:"
-                  component={MultiSelect}
-                  disableSearch
                   name={`substituicoes[${periodoIndice}][emei][tipos_alimentacao_de]`}
-                  multiple
+                  dataTestId="select-alterar-alimentacao-de-EMEI"
+                  selected={
+                    form.getState().values.substituicoes[periodoIndice]?.emei
+                      ?.tipos_alimentacao_de || []
+                  }
                   options={formatarParaMultiselect(
                     alimentosEMEI.find(
                       (v) => v.periodo_escolar.nome === periodo.nome
                     ).tipos_alimentacao
                   )}
-                  nomeDoItemNoPlural="Alimentos"
+                  onSelectedChanged={async (values_) => {
+                    await form.change(
+                      `substituicoes[${periodoIndice}][emei][tipos_alimentacao_de]`,
+                      values_.map((value_) => value_.value)
+                    );
+                    setAlimentoSelecionadoEMEI(values_);
+                  }}
+                  placeholder="Selecione tipos de alimentação de"
                   validate={totalFrequenciaEMEI > 0 && required}
                   required
-                  onChangeEffect={async (value) => {
-                    setAlimentoSelecionadoEMEI(value);
-                  }}
                 />
               </div>
               <div className="col-4">
                 <Field
+                  component={MultiselectRaw}
                   label="Para alimentação:"
-                  component={MultiSelect}
-                  disableSearch
                   name={`substituicoes[${periodoIndice}][emei][tipos_alimentacao_para]`}
-                  multiple
+                  dataTestId="select-alterar-alimentacao-para-EMEI"
+                  selected={
+                    form.getState().values.substituicoes[periodoIndice]?.emei
+                      ?.tipos_alimentacao_para || []
+                  }
                   options={formatarParaMultiselect(
                     substitutosEMEI
                       .find((v) => v.periodo_escolar.nome === periodo.nome)
@@ -315,7 +323,13 @@ export const TabelaFaixasCEMEI = ({
                         (ta) => !alimentoSelecionadoEMEI.includes(ta.uuid)
                       )
                   )}
-                  nomeDoItemNoPlural="Substitutos"
+                  onSelectedChanged={(values_) => {
+                    form.change(
+                      `substituicoes[${periodoIndice}][emei][tipos_alimentacao_para]`,
+                      values_.map((value_) => value_.value)
+                    );
+                  }}
+                  placeholder="Selecione tipos de alimentação para"
                   validate={totalFrequenciaEMEI > 0 && required}
                   required
                 />
@@ -340,6 +354,7 @@ export const TabelaFaixasCEMEI = ({
                               component={InputText}
                               type="number"
                               name={`substituicoes[${periodoIndice}][emei][quantidade_alunos]`}
+                              dataTestId={`substituicoes[${periodoIndice}][emei][quantidade_alunos]`}
                               validate={composeValidators(
                                 required,
                                 naoPodeSerZero,

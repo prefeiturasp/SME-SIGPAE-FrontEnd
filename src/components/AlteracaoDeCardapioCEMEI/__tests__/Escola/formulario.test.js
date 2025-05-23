@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "constants/shared";
 import { MeusDadosContext } from "context/MeusDadosContext";
 import { mockDiasUteis } from "mocks/diasUseisMock";
@@ -33,6 +33,9 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     mock
       .onGet("/alteracoes-cardapio-cemei/")
       .reply(200, mockAlteracoesCEMEIRascunho);
+    mock
+      .onPost("/alteracoes-cardapio-cemei/")
+      .reply(201, { uuid: "475907b7-0b66-436d-a624-e18bffe65eb3" });
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);
@@ -220,30 +223,38 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
 
     expect(screen.getByText("Alunos EMEI")).toBeInTheDocument();
 
-    /*
-    const divMultiselectMANHA = screen.getByTestId(
-      "multiselect-div-alterar-alimentacao-de-EMEI"
+    const selectAlterarAlimentacaoDeEMEI = screen.getByTestId(
+      "select-alterar-alimentacao-de-EMEI"
     );
-    console.log(divMultiselectMANHA);
-    const dropdown = within(divMultiselectMANHA).getByRole("combobox");
+    const selectControlDe = within(selectAlterarAlimentacaoDeEMEI).getByRole(
+      "combobox"
+    );
+    fireEvent.mouseDown(selectControlDe);
 
-    const spanSelecione = within(dropdown.parentElement).getByText("Selecione");
-    const divDropdownHeading = spanSelecione.parentElement.parentElement;
+    const optionDe = screen.getByText("Sobremesa");
+    fireEvent.click(optionDe);
 
-    // expande seletor Tipo de Alimentação
-    await waitFor(async () => {
-      fireEvent.click(divDropdownHeading);
+    const selectAlterarAlimentacaoParaEMEI = screen.getByTestId(
+      "select-alterar-alimentacao-para-EMEI"
+    );
+    const selectControlPara = within(
+      selectAlterarAlimentacaoParaEMEI
+    ).getByRole("combobox");
+    fireEvent.mouseDown(selectControlPara);
+
+    const optionPara = screen.getAllByText("Lanche")[1];
+    fireEvent.click(optionPara);
+
+    const inputElementNumeroAlunosEMEI = screen.getByTestId(
+      `substituicoes[0][emei][quantidade_alunos]`
+    );
+    fireEvent.change(inputElementNumeroAlunosEMEI, {
+      target: { value: "1" },
     });
 
-    expect(screen.getByText("Sobremesa")).toBeInTheDocument();
-
-    const divDropdownContent = container.querySelector(".dropdown-content");
-    const checkboxRefeicao =
-      within(divDropdownContent).getAllByRole("checkbox")[1];
-
-    // seleciona tipo de alimentação Refeição
-    fireEvent.click(checkboxRefeicao);
-
-    */
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
   });
 });
