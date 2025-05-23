@@ -6,43 +6,55 @@ import "./styles.scss";
 import { numberToStringDecimal } from "helpers/parsers";
 import { formataMilharDecimal } from "../../../../../../helpers/utilities";
 
-export default ({ solicitacao, somenteLeitura }) => {
-  const pintaTabela = (campo, index) => {
-    const classe = "fundo-laranja";
-    if (
-      index >= solicitacao.etapas_antigas.length ||
-      solicitacao.etapas_novas[index][campo] !==
-        solicitacao.etapas_antigas[index][campo]
-    ) {
-      return classe;
-    } else return "";
-  };
+const pintaTabela = (campo, etapaAtual, etapasAntigas) => {
+  const etapaAntiga = etapasAntigas.find(
+    (e) => e.etapa === etapaAtual.etapa && e.parte === etapaAtual.parte
+  );
+  if (!etapaAntiga) return { paintCell: false, paintRow: true };
+  if (etapaAtual[campo] !== etapaAntiga[campo]) {
+    return { paintCell: true, paintRow: false };
+  }
+  return { paintCell: false, paintRow: false };
+};
 
+export default ({ solicitacao, somenteLeitura }) => {
   return (
     <>
       <table className="table tabela-form-alteracao mt-2 mb-4">
         <thead className="head-crono">
-          <th className="borda-crono">Confirmar N° do Empenho</th>
-          <th className="borda-crono">Qtde Total do Empenho</th>
-          <th className="borda-crono">Etapa</th>
-          <th className="borda-crono">Parte</th>
-          <th className="borda-crono">Data Programada</th>
-          <th className="borda-crono">Quantidade</th>
-          <th className="borda-crono">Total de Embalagens</th>
+          <tr>
+            <th className="borda-crono">Confirmar N° do Empenho</th>
+            <th className="borda-crono">Qtde Total do Empenho</th>
+            <th className="borda-crono">Etapa</th>
+            <th className="borda-crono">Parte</th>
+            <th className="borda-crono">Data Programada</th>
+            <th className="borda-crono">Quantidade</th>
+            <th className="borda-crono">Total de Embalagens</th>
+          </tr>
         </thead>
         <tbody>
           {solicitacao.etapas_novas.length > 0 &&
             solicitacao.etapas_novas.map((etapa, index) => {
+              const etapaAntiga = solicitacao.etapas_antigas.find(
+                (e) => e.etapa === etapa.etapa && e.parte === etapa.parte
+              );
+              const linhaDiferente = !etapaAntiga;
+              const getClass = (campo) => {
+                const { paintCell, paintRow } = pintaTabela(
+                  campo,
+                  etapa,
+                  solicitacao.etapas_antigas
+                );
+                return paintRow || paintCell ? "fundo-laranja" : "";
+              };
               return (
-                <tr key={index}>
+                <tr
+                  key={index}
+                  className={linhaDiferente ? "fundo-laranja" : ""}
+                >
                   {somenteLeitura ? (
-                    <td
-                      className={`borda-crono ${pintaTabela(
-                        "numero_empenho",
-                        index
-                      )}`}
-                    >
-                      {etapa.numero_empenho ? etapa.numero_empenho : "----"}
+                    <td className={`borda-crono ${getClass("numero_empenho")}`}>
+                      {etapa.numero_empenho || "----"}
                     </td>
                   ) : (
                     <td className="borda-crono">
@@ -56,10 +68,7 @@ export default ({ solicitacao, somenteLeitura }) => {
                   )}
                   {somenteLeitura ? (
                     <td
-                      className={`borda-crono ${pintaTabela(
-                        "qtd_total_empenho",
-                        index
-                      )}`}
+                      className={`borda-crono ${getClass("qtd_total_empenho")}`}
                     >
                       {etapa.qtd_total_empenho
                         ? numberToStringDecimal(etapa.qtd_total_empenho)
@@ -75,34 +84,19 @@ export default ({ solicitacao, somenteLeitura }) => {
                       />
                     </td>
                   )}
-                  <td className={`borda-crono ${pintaTabela("etapa", index)}`}>
+                  <td className={`borda-crono ${getClass("etapa")}`}>
                     {etapa.etapa}
                   </td>
-                  <td className={`borda-crono ${pintaTabela("parte", index)}`}>
+                  <td className={`borda-crono ${getClass("parte")}`}>
                     {etapa.parte}
                   </td>
-                  <td
-                    className={`borda-crono ${pintaTabela(
-                      "data_programada",
-                      index
-                    )}`}
-                  >
+                  <td className={`borda-crono ${getClass("data_programada")}`}>
                     {etapa.data_programada}
                   </td>
-                  <td
-                    className={`borda-crono ${pintaTabela(
-                      "quantidade",
-                      index
-                    )}`}
-                  >
+                  <td className={`borda-crono ${getClass("quantidade")}`}>
                     {formataMilharDecimal(etapa.quantidade)}
                   </td>
-                  <td
-                    className={`borda-crono ${pintaTabela(
-                      "total_embalagens",
-                      index
-                    )}`}
-                  >
+                  <td className={`borda-crono ${getClass("total_embalagens")}`}>
                     {formataMilharDecimal(etapa.total_embalagens)}
                   </td>
                 </tr>
