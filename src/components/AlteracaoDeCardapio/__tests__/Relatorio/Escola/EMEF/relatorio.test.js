@@ -13,7 +13,6 @@ import { mockAlteracaoCardapioAValidar } from "mocks/services/alteracaoCardapio.
 import { mockAlteracaoCardapioCancelada } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioCancelada";
 import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosAlteracaoDoTipoDeAlimentacao from "pages/AlteracaoDeCardapio/RelatorioPage";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 

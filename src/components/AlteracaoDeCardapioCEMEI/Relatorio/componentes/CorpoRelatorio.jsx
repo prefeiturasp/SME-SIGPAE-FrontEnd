@@ -78,7 +78,7 @@ export const CorpoRelatorio = ({ ...props }) => {
           </p>
         </div>
         <div className="offset-3 col-3">
-          <p>EOL:</p>
+          <p>Código EOL:</p>
           <p>
             <b>{solicitacao.escola.codigo_eol}</b>
           </p>
@@ -98,7 +98,7 @@ export const CorpoRelatorio = ({ ...props }) => {
           </p>
         </div>
         <div className="col-3">
-          <p>Tipo de Gestão</p>
+          <p>Tipo de Gestão:</p>
           <p>
             <b>{solicitacao.escola.tipo_gestao.nome}</b>
           </p>
