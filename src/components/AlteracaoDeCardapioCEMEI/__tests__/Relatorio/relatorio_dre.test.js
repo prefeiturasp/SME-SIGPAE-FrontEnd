@@ -139,30 +139,89 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão Escola", () =
       target: { value: "não valido." },
     });
 
-    const botaoSim = screen.getByText("Sim").closest("button");
-    fireEvent.click(botaoSim);
-
     mock
       .onGet(
         `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`
       )
       .reply(200, mockAlteracaoCardapioCEMEINaoValidada);
 
+    const botaoSim = screen.getByText("Sim").closest("button");
+    fireEvent.click(botaoSim);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Alteração do Tipo de Alimentação não validada com sucesso!"
+        )
+      ).toBeInTheDocument();
+    });
+
     await waitFor(() => {
       expect(
         screen.queryByText("Deseja não validar solicitação?")
       ).not.toBeInTheDocument();
+      expect(screen.queryByText("Não validar")).not.toBeInTheDocument();
+      expect(screen.queryByText("Validar")).not.toBeInTheDocument();
+
+      expect(screen.getByText("DRE não validou")).toBeInTheDocument();
+    });
+  });
+
+  it("erro ao não validar solicitação", async () => {
+    mock
+      .onPatch(
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/diretoria-regional-nao-valida-pedido/`
+      )
+      .reply(400, { detail: "erro ao não validar solicitação" });
+
+    const botaoNaoValidar = screen.getByText("Não Validar").closest("button");
+    fireEvent.click(botaoNaoValidar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Deseja não validar solicitação?")
+      ).toBeInTheDocument();
     });
 
-    expect(screen.queryByText("Não validar")).not.toBeInTheDocument();
-    expect(screen.queryByText("Validar")).not.toBeInTheDocument();
+    const uuidMotivoEmDesacordoComContrato =
+      mockMotivosDRENaoValida.results.find(
+        (motivo) => motivo.nome === "Em desacordo com o contrato"
+      ).uuid;
 
-    expect(screen.getByText("DRE não validou")).toBeInTheDocument();
+    const selectMotivo = screen.getByTestId("select-motivo-cancelamento");
+    const selectMotivoCancelamento = selectMotivo.querySelector("select");
+    fireEvent.change(selectMotivoCancelamento, {
+      target: { value: uuidMotivoEmDesacordoComContrato },
+    });
+
+    const textarea = screen.getByTestId("textarea-justificativa");
+    fireEvent.change(textarea, {
+      target: { value: "não valido." },
+    });
+
+    const botaoSim = screen.getByText("Sim").closest("button");
+    fireEvent.click(botaoSim);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Houve um erro ao não validar a Alteração do Tipo de Alimentação. Tente novamente mais tarde."
+        )
+      ).toBeInTheDocument();
+    });
   });
 
   it("valida solicitação", async () => {
     const botaoValidar = screen.getByText("Validar").closest("button");
     fireEvent.click(botaoValidar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Alteração do Tipo de Alimentação validada com sucesso!"
+        )
+      ).toBeInTheDocument();
+    });
 
     mock
       .onGet(
@@ -175,5 +234,24 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão Escola", () =
     });
 
     expect(screen.queryByText("Não validar")).not.toBeInTheDocument();
+  });
+
+  it("erro ao validar solicitação", async () => {
+    mock
+      .onPatch(
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/diretoria-regional-valida-pedido/`
+      )
+      .reply(400, { detail: "erro ao validar solicitação" });
+
+    const botaoValidar = screen.getByText("Validar").closest("button");
+    fireEvent.click(botaoValidar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Houve um erro ao validar a Alteração do Tipo de Alimentação. Tente novamente mais tarde."
+        )
+      ).toBeInTheDocument();
+    });
   });
 });

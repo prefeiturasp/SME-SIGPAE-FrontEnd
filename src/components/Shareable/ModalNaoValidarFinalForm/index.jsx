@@ -23,6 +23,8 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
     loadSolicitacao,
     motivosDREnaoValida,
     tipoSolicitacao,
+    toastNaoAprovaMensagem,
+    toastNaoAprovaMensagemErro,
   } = props;
   const [desabilitaBotaoSim, setDesabilitaBotaoSim] = useState(true);
 
@@ -44,8 +46,10 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
       tipoSolicitacao
     );
     if (resp.status === HTTP_STATUS.OK) {
+      toastSuccess(
+        toastNaoAprovaMensagem || "Solicitação não validada com sucesso!"
+      );
       closeModal();
-      toastSuccess("Solicitação não validada com sucesso!");
       if (loadSolicitacao) {
         const response = await loadSolicitacao(solicitacao.uuid);
         if (response && response.status === HTTP_STATUS.OK) {
@@ -56,7 +60,8 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
       }
     } else {
       toastError(
-        `Houve um erro ao não validar a solicitação: ${getError(resp.data)}`
+        toastNaoAprovaMensagemErro ||
+          `Houve um erro ao não validar a solicitação: ${getError(resp.data)}`
       );
       closeModal();
     }
