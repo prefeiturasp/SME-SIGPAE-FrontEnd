@@ -1,4 +1,4 @@
-export const mockAlteracaoCardapioCEMEIValidada = {
+export const mockAlteracaoCardapioCEMEINegada = {
   escola: {
     uuid: "68b35061-9942-4aa2-9cbf-88363127688e",
     nome: "CEMEI SUZANA CAMPOS TAUIL",
@@ -723,6 +723,25 @@ export const mockAlteracaoCardapioCEMEIValidada = {
       justificativa: "",
       resposta_sim_nao: false,
     },
+    {
+      status_evento_explicacao: "CODAE negou",
+      usuario: {
+        uuid: "a43f5cf3-065f-4bb8-927d-c06314d18b32",
+        cpf: null,
+        nome: "CODAE Gestão de Terceirizadas",
+        email: "codae@admin.com",
+        date_joined: "10/07/2020 13:15:14",
+        registro_funcional: "0000011",
+        tipo_usuario: "gestao_alimentacao_terceirizada",
+        cargo: "COORDENADOR",
+        crn_numero: null,
+        nome_fantasia: null,
+      },
+      criado_em: "26/05/2025 18:15:33",
+      descricao: "Alteração de cardápio CEMEI de 2025-05-29",
+      justificativa: "<p>negado.</p>",
+      resposta_sim_nao: false,
+    },
   ],
   prioridade: "LIMITE",
   substituicoes_cemei_cei_periodo_escolar: [
@@ -907,7 +926,7 @@ export const mockAlteracaoCardapioCEMEIValidada = {
   uuid: "8aa0a668-3ad7-4a27-84b9-21de35371020",
   observacao: "<p>teste</p>",
   terceirizada_conferiu_gestao: false,
-  status: "DRE_VALIDADO",
+  status: "CODAE_NEGOU_PEDIDO",
   alunos_cei_e_ou_emei: "TODOS",
   alterar_dia: "29/05/2025",
   data_inicial: null,

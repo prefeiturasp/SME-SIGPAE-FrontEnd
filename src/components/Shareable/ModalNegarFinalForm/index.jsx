@@ -1,20 +1,20 @@
-import React, { useContext, useState } from "react";
-import { Field, Form } from "react-final-form";
-import { Modal } from "react-bootstrap";
-import HTTP_STATUS from "http-status-codes";
-import { composeValidators, getError } from "helpers/utilities";
-import {
-  peloMenosUmCaractere,
-  textAreaRequired,
-} from "helpers/fieldValidators";
 import Botao from "components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "components/Shareable/Botao/constants";
+import CKEditorField from "components/Shareable/CKEditorField";
 import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
 import { SolicitacaoAlimentacaoContext } from "context/SolicitacaoAlimentacao";
-import CKEditorField from "components/Shareable/CKEditorField";
+import {
+  peloMenosUmCaractere,
+  textAreaRequired,
+} from "helpers/fieldValidators";
+import { composeValidators, getError } from "helpers/utilities";
+import HTTP_STATUS from "http-status-codes";
+import { useContext, useState } from "react";
+import { Modal } from "react-bootstrap";
+import { Field, Form } from "react-final-form";
 
 export const ModalNegarFinalForm = ({ ...props }) => {
   const {
@@ -37,8 +37,8 @@ export const ModalNegarFinalForm = ({ ...props }) => {
 
     const resp = await endpoint(solicitacao.uuid, values, tipoSolicitacao);
     if (resp.status === HTTP_STATUS.OK) {
-      closeModal();
       toastSuccess("Solicitação negada com sucesso!");
+      closeModal();
       if (loadSolicitacao) {
         const response = await loadSolicitacao(solicitacao.uuid);
         if (response && response.status === HTTP_STATUS.OK) {

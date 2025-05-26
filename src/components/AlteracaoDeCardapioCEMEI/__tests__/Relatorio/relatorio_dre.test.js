@@ -20,7 +20,7 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import mock from "services/_mock";
 
-describe("Teste Relatório Alteração de Cardápio CEMEI - Visão Escola", () => {
+describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
