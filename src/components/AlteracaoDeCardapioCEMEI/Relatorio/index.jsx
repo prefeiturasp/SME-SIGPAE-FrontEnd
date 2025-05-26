@@ -236,7 +236,7 @@ export const Relatorio = ({ ...props }) => {
                             uuid={solicitacao.uuid}
                             endpoint={"alteracoes-cardapio-cemei"}
                           />
-                          {ModalNaoAprova && (
+                          {ModalNaoAprova && showNaoAprovaModal && (
                             <ModalNaoAprova
                               showModal={showNaoAprovaModal}
                               closeModal={() => setShowNaoAprovaModal(false)}
@@ -249,7 +249,7 @@ export const Relatorio = ({ ...props }) => {
                               tipoSolicitacao={tipoSolicitacao}
                             />
                           )}
-                          {ModalQuestionamento && (
+                          {ModalQuestionamento && showQuestionamentoModal && (
                             <ModalQuestionamento
                               closeModal={() =>
                                 setShowQuestionamentoModal(false)

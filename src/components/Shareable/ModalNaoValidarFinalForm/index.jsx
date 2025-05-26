@@ -83,6 +83,7 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
                 <div className="form-group col-12">
                   <Field
                     component={Select}
+                    dataTestId="select-motivo-cancelamento"
                     name="motivo_nao_valida"
                     label="Motivo"
                     //TODO: criar campos a mais no backend?
@@ -96,6 +97,7 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
                 <div className="form-group col-12">
                   <Field
                     component={TextArea}
+                    dataTestId="textarea-justificativa"
                     placeholder="Obrigatório"
                     label="Justificativa"
                     name="justificativa"
