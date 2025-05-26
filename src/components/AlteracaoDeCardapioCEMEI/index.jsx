@@ -413,10 +413,6 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           setDesabilitarAlterarDia(false);
           setMaximo5DiasUteis(true);
           break;
-        default:
-          setDesabilitarDeAte(false);
-          setDesabilitarAlterarDia(false);
-          break;
       }
     }
     form.change("substituicoes", []);
