@@ -1,5 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { Relatorio } from "components/AlteracaoDeCardapioCEMEI/Relatorio";
+import Breadcrumb from "components/Shareable/Breadcrumb";
+import { ModalCancelarAlteracaoCardapio } from "components/Shareable/ModalCancelaAlteracaoCardapio";
+import { ModalCODAEAutoriza } from "components/Shareable/ModalCODAEAutoriza";
+import { ModalCODAEQuestionaFinalForm } from "components/Shareable/ModalCODAEQuestionaFinalForm";
+import { ModalNaoValidarFinalForm } from "components/Shareable/ModalNaoValidarFinalForm";
+import { ModalNegarFinalForm } from "components/Shareable/ModalNegarFinalForm";
+import { ModalTercRespondeQuestFinalForm } from "components/Shareable/ModalTercRespondeQuestFinalForm";
+import Page from "components/Shareable/Page/Page";
+import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "configs/constants";
+import { HOME } from "constants/config";
+import { TIPO_SOLICITACAO } from "constants/shared";
 import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
 import {
   codaeAutorizarSolicitacaoDeAlteracaoDeCardapio,
   codaeNegarSolicitacaoDeAlteracaoDeCardapio,
@@ -11,17 +23,6 @@ import {
   TerceirizadaTomaCienciaAlteracaoCardapio,
 } from "services/alteracaoDeCardapio";
 import { getMotivosDREnaoValida } from "services/relatorios";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import { Relatorio } from "components/AlteracaoDeCardapioCEMEI/Relatorio";
-import Page from "components/Shareable/Page/Page";
-import { ESCOLA, CODAE, TERCEIRIZADA, DRE } from "configs/constants";
-import { HOME } from "constants/config";
-import { ModalNaoValidarFinalForm } from "components/Shareable/ModalNaoValidarFinalForm";
-import { TIPO_SOLICITACAO } from "constants/shared";
-import { ModalCancelarAlteracaoCardapio } from "components/Shareable/ModalCancelaAlteracaoCardapio";
-import { ModalNegarFinalForm } from "components/Shareable/ModalNegarFinalForm";
-import { ModalCODAEQuestionaFinalForm } from "components/Shareable/ModalCODAEQuestionaFinalForm";
-import { ModalTercRespondeQuestFinalForm } from "components/Shareable/ModalTercRespondeQuestFinalForm";
 
 export const RelatorioBase = ({ ...props }) => {
   const [motivosDREnaoValida, setMotivosDREnaoValida] = useState();
@@ -107,6 +108,7 @@ export const RelatorioCODAE = () => (
     visao={CODAE}
     ModalNaoAprova={ModalNegarFinalForm}
     ModalQuestionamento={ModalCODAEQuestionaFinalForm}
+    ModalCODAEAutoriza={ModalCODAEAutoriza}
     toastAprovaMensagem={
       "Alteração do Tipo de Alimentação autorizada com sucesso!"
     }
