@@ -28,9 +28,9 @@ export const ModalCODAEQuestionaFinalForm = ({ ...props }) => {
 
     const resp = await endpoint(solicitacao.uuid, values, tipoSolicitacao);
     if (resp.status === HTTP_STATUS.OK) {
-      closeModal();
       toastSuccess("Questionamento enviado com sucesso!");
       if (loadSolicitacao) loadSolicitacao();
+      closeModal();
     } else {
       closeModal();
       toastError(

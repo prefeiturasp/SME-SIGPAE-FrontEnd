@@ -12,6 +12,7 @@ import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosCODAEGA } from "mocks/meusDados/CODAE-GA";
 import { mockAlteracaoCardapioCEMEIAValidar } from "mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIAValidar";
 import { mockAlteracaoCardapioCEMEINegada } from "mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEINegada";
+import { mockAlteracaoCardapioCEMEIQuestionado } from "mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIQuestionado";
 import { mockAlteracaoCardapioCEMEIValidada } from "mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIValidada";
 import { mockQuantidadeAlunoCEMEIporCEIEMEI } from "mocks/services/aluno.service/CEMEI/quantidadeAlunoCEMEIporCEIEMEI";
 import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
@@ -52,6 +53,11 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
         `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/codae-cancela-pedido/`
       )
       .reply(200, mockAlteracaoCardapioCEMEINegada);
+    mock
+      .onPatch(
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/codae-questiona-pedido/`
+      )
+      .reply(200, mockAlteracaoCardapioCEMEIQuestionado);
 
     const search = `?uuid=${mockAlteracaoCardapioCEMEIAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
     Object.defineProperty(window, "location", {
@@ -140,7 +146,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
     });
 
     const editor = screen.getByTestId("mock-ckeditor");
-    fireEvent.change(editor, { target: { value: "test justification" } });
+    fireEvent.change(editor, { target: { value: "negado." } });
 
     const botaoSim = screen.getByText("Sim").closest("button");
     fireEvent.click(botaoSim);
@@ -160,6 +166,40 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
       expect(screen.queryByText("Questionar")).not.toBeInTheDocument();
 
       expect(screen.getByText("CODAE negou")).toBeInTheDocument();
+    });
+  });
+
+  it("questiona a solicitação", async () => {
+    const botaoQuestionar = screen.getByText("Questionar").closest("button");
+    fireEvent.click(botaoQuestionar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "É possível atender a solicitação com todos os itens previstos no contrato?"
+        )
+      ).toBeInTheDocument();
+    });
+
+    const botaoEnviar = screen.getByText("Enviar").closest("button");
+    fireEvent.click(botaoEnviar);
+
+    mock
+      .onGet(
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/`
+      )
+      .replyOnce(200, mockAlteracaoCardapioCEMEIQuestionado);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Questionamento enviado com sucesso!")
+      ).toBeInTheDocument();
+
+      expect(screen.queryByText("Negar")).not.toBeInTheDocument();
+
+      expect(screen.queryByText("Questionar")).not.toBeInTheDocument();
+
+      expect(screen.getByText("Questionamento pela CODAE")).toBeInTheDocument();
     });
   });
 });
