@@ -52,6 +52,7 @@ export const CorpoRelatorio = ({ ...props }) => {
       >
         {prazoDoPedidoMensagem(solicitacao.prioridade)}
         <Botao
+          dataTestId="botao-imprimir"
           type={BUTTON_TYPE.BUTTON}
           style={imprimindo ? BUTTON_STYLE.GREEN_OUTLINE : BUTTON_STYLE.GREEN}
           icon={imprimindo ? BUTTON_ICON.LOADING : BUTTON_ICON.PRINT}
@@ -239,9 +240,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                                       {f.faixa_etaria.__str__}
                                     </td>
                                     <td className="col-3 text-center">
-                                      {f.matriculados_quando_criado
-                                        ? f.matriculados_quando_criado
-                                        : "teste"}
+                                      {f.matriculados_quando_criado}
                                     </td>
                                     <td className="col-2 text-center">
                                       {f.quantidade}

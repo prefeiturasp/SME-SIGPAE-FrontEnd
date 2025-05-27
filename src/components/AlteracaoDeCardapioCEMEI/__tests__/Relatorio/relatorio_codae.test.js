@@ -36,6 +36,10 @@ jest.mock("components/Shareable/CKEditorField", () => ({
   ),
 }));
 
+jest.mock("file-saver", () => ({
+  saveAs: jest.fn(),
+}));
+
 describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () => {
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
@@ -200,6 +204,40 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
       expect(screen.queryByText("Questionar")).not.toBeInTheDocument();
 
       expect(screen.getByText("Questionamento pela CODAE")).toBeInTheDocument();
+    });
+  });
+
+  it("download pdf", async () => {
+    mock
+      .onGet(
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/relatorio/`
+      )
+      .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
+
+    const botaoImprimir = screen.getByTestId("botao-imprimir");
+    fireEvent.click(botaoImprimir);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Houve um erro ao imprimir o relatório")
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("erro download pdf", async () => {
+    mock
+      .onGet(
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/relatorio/`
+      )
+      .reply(400, { detail: "Erro ao baixar PDF" });
+
+    const botaoImprimir = screen.getByTestId("botao-imprimir");
+    fireEvent.click(botaoImprimir);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Houve um erro ao imprimir o relatório")
+      ).toBeInTheDocument();
     });
   });
 });
