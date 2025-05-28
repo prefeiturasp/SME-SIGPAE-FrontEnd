@@ -255,7 +255,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
         refresh(values);
       } else {
         toastError(
-          `Houve um erro ao excluir o rascunho: ${getError(response.data)}`
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
         );
       }
     }
@@ -853,9 +853,6 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                         disabled={submitting}
                         type={BUTTON_TYPE.SUBMIT}
                         style={BUTTON_STYLE.GREEN_OUTLINE}
-                        onClick={() => {
-                          handleSubmit((values) => onSubmit(values));
-                        }}
                       />
                       <Botao
                         texto="Enviar"

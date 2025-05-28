@@ -224,4 +224,77 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("exibe erro `Necessário selecionar ao menos período e preencher uma faixa etária`", async () => {
+    selecionaMotivoReposicaoDeAula();
+
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    const inputElement = divDia.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "30/05/2025" },
+    });
+
+    const spanINTEGRALdeFora = screen.getByTestId("span-INTEGRAL");
+    fireEvent.click(spanINTEGRALdeFora);
+
+    await waitFor(() => {
+      expect(screen.queryAllByText("INTEGRAL")).toHaveLength(2);
+    });
+
+    const spanINTEGRALdeDentro = screen.getByTestId("span-dentro-INTEGRAL");
+    fireEvent.click(spanINTEGRALdeDentro);
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Necessário selecionar ao menos período e preencher uma faixa etária"
+        )
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Exclui rascunho", async () => {
+    mock
+      .onDelete(
+        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`
+      )
+      .replyOnce(204, {});
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    mock
+      .onGet("/inclusoes-alimentacao-da-cei/minhas-solicitacoes/")
+      .reply(200, []);
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
+    await waitFor(() => {
+      expect(screen.getByText(`Rascunho # A38E6 excluído com sucesso`));
+    });
+    expect(screen.queryByText("Rascunhos")).not.toBeInTheDocument();
+  });
+
+  it("Erro ao excluir rascunho", async () => {
+    mock
+      .onDelete(
+        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`
+      )
+      .replyOnce(400, { detail: "Erro ao excluir rascunho" });
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
+        )
+      ).toBeInTheDocument();
+    });
+  });
 });
