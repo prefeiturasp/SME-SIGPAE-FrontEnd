@@ -44,6 +44,19 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
       .onGet("/inclusoes-alimentacao-da-cei/minhas-solicitacoes/")
       .reply(200, mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde);
     mock.onPost("/inclusoes-alimentacao-da-cei/").reply(201, {});
+    mock
+      .onPut(
+        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`
+      )
+      .reply(200, {
+        uuid: mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0]
+          .uuid,
+      });
+    mock
+      .onPatch(
+        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/inicio-pedido/`
+      )
+      .reply(200, {});
 
     const mocksQuantidadeALunosFaixaEtaria = [
       mockQuantidadeAlunosFaixaEtariaEscolaCEIINTEGRAL,
@@ -110,10 +123,10 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Inclusão de Alimentação # 66C27")
+      screen.getByText("Inclusão de Alimentação # A38E6")
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 27/05/2025 11:36:22")
+      screen.getByText("Criado em: 27/05/2025 15:58:05")
     ).toBeInTheDocument();
   });
 
@@ -188,6 +201,26 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
     await waitFor(() => {
       expect(
         screen.getByText("Solicitação Rascunho criada com sucesso!")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("carrega rascunho e envia", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    fireEvent.click(botaoCarregarRascunho);
+
+    await waitFor(() => {
+      expect(screen.getByText("Solicitação # A38E6")).toBeInTheDocument();
+      expect(screen.queryAllByText("INTEGRAL")).toHaveLength(2);
+      expect(screen.getByText("Atualizar rascunho")).toBeInTheDocument();
+    });
+
+    const botaoEnviar = screen.getByText("Enviar").closest("button");
+    fireEvent.click(botaoEnviar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Inclusão de Alimentação enviada com sucesso!")
       ).toBeInTheDocument();
     });
   });

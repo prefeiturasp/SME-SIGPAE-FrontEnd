@@ -235,6 +235,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
 
     form.change("periodos_e_faixas", _periodos_e_faixas);
     form.change("uuid", inclusao.uuid);
+    form.change("id_externo", inclusao.id_externo);
     form.change("escola", inclusao.escola.uuid);
     form.change(
       "dias_motivos_da_inclusao_cei",
