@@ -37,11 +37,6 @@ export const CardPendenteAcao = ({ ...props }) => {
   };
 
   const filtrarPedidos = (filtro) => {
-    if (!filtro) {
-      setPedidosFiltrados(pedidos);
-      return;
-    }
-
     const termo = filtro.toLowerCase();
 
     const pedidosFiltrados = pedidos.filter(({ id_externo, escola }) => {
@@ -75,6 +70,7 @@ export const CardPendenteAcao = ({ ...props }) => {
               {`#${solicitacao.id_externo}`}
             </Link>
             <ToggleExpandir
+              dataTestId={`${dataTestId}-toggle-expandir-${idxPedido}-${index}`}
               onClick={() => collapseSolicitacaoSimilar(idxPedido, index)}
               ativo={solicitacao.collapsed}
               className="icon-padding"
@@ -124,6 +120,7 @@ export const CardPendenteAcao = ({ ...props }) => {
         <div className="col-1">
           {pedidos.length > 0 && (
             <ToggleExpandir
+              dataTestId={`toggle-expandir-${dataTestId}`}
               onClick={() => setCollapsed(!collapsed)}
               ativo={!collapsed}
             />
@@ -135,6 +132,7 @@ export const CardPendenteAcao = ({ ...props }) => {
           <div className="input-search-full-width col-12">
             <input
               type="text"
+              data-testid={`input-pesquisar-${dataTestId}`}
               className="form-control"
               placeholder="Pesquisar"
               onChange={(event) => filtrarPedidos(event.target.value)}

@@ -13,7 +13,6 @@ import { mockPedidosCODAEInclusaoContinua } from "mocks/InclusaoAlimentacao/mock
 import { mockPedidosCODAEInclusaoNormal } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoNormal";
 import { localStorageMock } from "mocks/localStorageMock";
 import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
 import { codaeListarSolicitacoesDeInclusaoDeAlimentacao } from "services/inclusaoDeAlimentacao";
@@ -80,20 +79,6 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
       "tipo_perfil",
       TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
     );
-
-    Object.defineProperty(window, "matchMedia", {
-      writable: true,
-      value: jest.fn().mockImplementation((query) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addListener: jest.fn(), // Deprecated
-        removeListener: jest.fn(), // Deprecated
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    });
 
     await act(async () => {
       render(
