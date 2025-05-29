@@ -27,7 +27,7 @@ export default ({ setFiles, removeFile, arquivosIniciais, tipoEmbalagem }) => {
       <div className="row">
         <div className="col">
           <div className="subtitulo">
-            {tipoEmbalagem !== "TERCIARIA" && (
+            {tipoEmbalagem === "PRIMARIA" && (
               <span className="asterisco">* </span>
             )}
             {"Layout " + TITULOS_SECOES_TIPOS_EMBALAGENS[tipoEmbalagem]}
@@ -56,7 +56,7 @@ export default ({ setFiles, removeFile, arquivosIniciais, tipoEmbalagem }) => {
         />
         <label className="col-12 label-imagem">
           <span className="red">
-            {tipoEmbalagem === "TERCIARIA"
+            {tipoEmbalagem !== "PRIMARIA"
               ? "IMPORTANTE:"
               : "Campo Obrigatório:"}
             &nbsp;
