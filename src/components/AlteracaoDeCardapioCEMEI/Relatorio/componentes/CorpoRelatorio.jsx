@@ -52,6 +52,7 @@ export const CorpoRelatorio = ({ ...props }) => {
       >
         {prazoDoPedidoMensagem(solicitacao.prioridade)}
         <Botao
+          dataTestId="botao-imprimir"
           type={BUTTON_TYPE.BUTTON}
           style={imprimindo ? BUTTON_STYLE.GREEN_OUTLINE : BUTTON_STYLE.GREEN}
           icon={imprimindo ? BUTTON_ICON.LOADING : BUTTON_ICON.PRINT}
@@ -78,7 +79,7 @@ export const CorpoRelatorio = ({ ...props }) => {
           </p>
         </div>
         <div className="offset-3 col-3">
-          <p>EOL:</p>
+          <p>Código EOL:</p>
           <p>
             <b>{solicitacao.escola.codigo_eol}</b>
           </p>
@@ -98,7 +99,7 @@ export const CorpoRelatorio = ({ ...props }) => {
           </p>
         </div>
         <div className="col-3">
-          <p>Tipo de Gestão</p>
+          <p>Tipo de Gestão:</p>
           <p>
             <b>{solicitacao.escola.tipo_gestao.nome}</b>
           </p>
@@ -239,9 +240,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                                       {f.faixa_etaria.__str__}
                                     </td>
                                     <td className="col-3 text-center">
-                                      {f.matriculados_quando_criado
-                                        ? f.matriculados_quando_criado
-                                        : "teste"}
+                                      {f.matriculados_quando_criado}
                                     </td>
                                     <td className="col-2 text-center">
                                       {f.quantidade}

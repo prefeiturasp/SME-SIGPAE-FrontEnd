@@ -7,40 +7,49 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "constants/shared";
+import { mockInclusaoAlimentacaoCEIAValidar } from "mocks/InclusaoAlimentacao/CEI/inclusaoAlimentacaoAValidar";
+import { mockInclusaoAlimentacaoCEICancelada } from "mocks/InclusaoAlimentacao/CEI/inclusaoAlimentacaoCancelada";
 import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
-import { mockAlteracaoCardapioAValidar } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioAValidar";
-import { mockAlteracaoCardapioCancelada } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioCancelada";
+import { mockMeusDadosEscolaCEIcomMANHAeTARDE } from "mocks/meusDados/escola/CEIcomMANHAeTARDE";
+import { mockVinculosTipoAlimentacaoPeriodoEscolarCEIComManhaTarde } from "mocks/services/cadastroTipoAlimentacao.service/CEI/vinculosTipoAlimentacaoPeriodoEscolarComManhaTarde";
 import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
-import * as RelatoriosAlteracaoDoTipoDeAlimentacao from "pages/AlteracaoDeCardapio/RelatorioPage";
+import * as RelatoriosInclusaoDeAlimentacao from "pages/InclusaoDeAlimentacao/RelatorioPage";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 
-describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF", () => {
+describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
+  const escolaUuid =
+    mockMeusDadosEscolaCEIcomMANHAeTARDE.vinculo_atual.instituicao.uuid;
+
   beforeEach(async () => {
     mock
-      .onGet(`/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/`)
-      .reply(200, mockAlteracaoCardapioAValidar);
-    mock
       .onGet("/usuarios/meus-dados/")
-      .reply(200, mockMeusDadosEscolaEMEFPericles);
+      .reply(200, mockMeusDadosEscolaCEIcomMANHAeTARDE);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
-      .onPatch(
-        `/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/escola-cancela-pedido-48h-antes/`
+      .onGet(
+        `/inclusoes-alimentacao-da-cei/${mockInclusaoAlimentacaoCEIAValidar.uuid}/`
       )
-      .reply(200, mockAlteracaoCardapioCancelada);
+      .replyOnce(200, mockInclusaoAlimentacaoCEIAValidar);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+      )
+      .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarCEIComManhaTarde);
+    mock
+      .onPatch(
+        `/inclusoes-alimentacao-da-cei/${mockInclusaoAlimentacaoCEIAValidar.uuid}/escola-cancela-pedido-48h-antes/`
+      )
+      .reply(200, mockInclusaoAlimentacaoCEICancelada);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
-    localStorage.setItem(
-      "nome_instituicao",
-      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
-    );
+    localStorage.setItem("nome_instituicao", `"CEI DIRET NEIDE KETELHUT"`);
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("eh_cei", "true");
 
-    const search = `?uuid=${mockAlteracaoCardapioAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
+    const search = `?uuid=${mockInclusaoAlimentacaoCEIAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cei&card=undefined`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,
@@ -55,44 +64,50 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF
             v7_relativeSplatPath: true,
           }}
         >
-          <RelatoriosAlteracaoDoTipoDeAlimentacao.RelatorioEscola />
+          <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
         </MemoryRouter>
       );
     });
   });
 
-  it("renderiza título da página `Alteração do tipo de alimentação - Solicitação # EF99C`", async () => {
+  it("renderiza título da página `Inclusão de Alimentação - Solicitação # A38E6`", async () => {
     expect(
-      screen.getByText("Alteração do tipo de alimentação - Solicitação # EF99C")
+      screen.getByText("Inclusão de Alimentação - Solicitação # A38E6")
     ).toBeInTheDocument();
   });
 
-  it("renderiza label `Solicitação no prazo regular`", async () => {
+  it("renderiza label `Solicitação próxima ao prazo de vencimento`", async () => {
     expect(
-      screen.getByText("Solicitação no prazo regular")
+      screen.getByText("Solicitação próxima ao prazo de vencimento")
     ).toBeInTheDocument();
   });
 
-  it("renderiza tipo de alteração e data", async () => {
-    expect(screen.getByText("Tipo de Alteração")).toBeInTheDocument();
-    expect(screen.getByText("LPR - Lanche por Refeição")).toBeInTheDocument();
+  it("renderiza motivo e data", async () => {
+    expect(screen.getByText("Motivo")).toBeInTheDocument();
+    expect(screen.getByText("Reposição de aula")).toBeInTheDocument();
 
-    expect(screen.getByText("Alterar dia")).toBeInTheDocument();
-    expect(screen.getByText("22/05/2025")).toBeInTheDocument();
+    expect(screen.getByText("Dia(s) de inclusão")).toBeInTheDocument();
+    expect(screen.getByText("30/05/2025")).toBeInTheDocument();
   });
 
-  it("renderiza tabela com período, tipos de alimentação de e para, e nº de alunos", async () => {
-    expect(screen.getByText("Período")).toBeInTheDocument();
-    expect(screen.getByText("MANHA")).toBeInTheDocument();
+  it("renderiza tabelas com período, tipos de alimentação, faixas etárias e nº de alunos", async () => {
+    expect(screen.getAllByText("INTEGRAL")).toHaveLength(2);
 
-    expect(screen.getByText("Alteração alimentação de:")).toBeInTheDocument();
-    expect(screen.getByText("Lanche")).toBeInTheDocument();
+    expect(
+      screen.getByText("Tipos de alimentação no período integral:")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Lanche, Desjejum, Almoço, Colação, Refeição da tarde")
+    ).toBeInTheDocument();
 
-    expect(screen.getByText("Alteração alimentação para:")).toBeInTheDocument();
-    expect(screen.getByText("Sobremesa")).toBeInTheDocument();
+    expect(screen.getByText("07 a 11 meses")).toBeInTheDocument();
 
-    expect(screen.getByText("Número de alunos")).toBeInTheDocument();
-    expect(screen.getByText("12")).toBeInTheDocument();
+    expect(
+      screen.getByText("Tipos de alimentação no período manha:")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Desjejum, Almoço, Colação")).toBeInTheDocument();
+
+    expect(screen.getByText("04 anos a 06 anos")).toBeInTheDocument();
   });
 
   it("exibe modal cancela solicitação", async () => {
@@ -146,8 +161,10 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF
       ).toBeInTheDocument();
     });
 
-    const inputDia22_05_2025 = screen.getByTestId("data_22/05/2025");
-    fireEvent.click(inputDia22_05_2025);
+    const inputDia30_05_2025 = screen.getByTestId(
+      "data_Reposição de aula_30/05/2025"
+    );
+    fireEvent.click(inputDia30_05_2025);
 
     const textarea = screen.getByTestId("textarea-justificativa");
     fireEvent.change(textarea, {
@@ -158,8 +175,10 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF
     fireEvent.click(botaoSim);
 
     mock
-      .onGet(`/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/`)
-      .reply(200, mockAlteracaoCardapioCancelada);
+      .onGet(
+        `/inclusoes-alimentacao-da-cei/${mockInclusaoAlimentacaoCEIAValidar.uuid}/`
+      )
+      .replyOnce(200, mockInclusaoAlimentacaoCEICancelada);
 
     await waitFor(() => {
       expect(
@@ -172,7 +191,7 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF
     expect(screen.getByText("Escola cancelou")).toBeInTheDocument();
     expect(screen.getByText("Histórico de cancelamento")).toBeInTheDocument();
     expect(
-      screen.getByText("22/05/2025 - justificativa: teste")
+      screen.getByText("30/05/2025 - justificativa: teste")
     ).toBeInTheDocument();
   });
 });

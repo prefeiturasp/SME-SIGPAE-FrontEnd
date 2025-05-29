@@ -23,6 +23,8 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
     loadSolicitacao,
     motivosDREnaoValida,
     tipoSolicitacao,
+    toastNaoAprovaMensagem,
+    toastNaoAprovaMensagemErro,
   } = props;
   const [desabilitaBotaoSim, setDesabilitaBotaoSim] = useState(true);
 
@@ -44,8 +46,10 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
       tipoSolicitacao
     );
     if (resp.status === HTTP_STATUS.OK) {
+      toastSuccess(
+        toastNaoAprovaMensagem || "Solicitação não validada com sucesso!"
+      );
       closeModal();
-      toastSuccess("Solicitação não validada com sucesso!");
       if (loadSolicitacao) {
         const response = await loadSolicitacao(solicitacao.uuid);
         if (response && response.status === HTTP_STATUS.OK) {
@@ -56,7 +60,8 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
       }
     } else {
       toastError(
-        `Houve um erro ao não validar a solicitação: ${getError(resp.data)}`
+        toastNaoAprovaMensagemErro ||
+          `Houve um erro ao não validar a solicitação: ${getError(resp.data)}`
       );
       closeModal();
     }
@@ -83,6 +88,7 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
                 <div className="form-group col-12">
                   <Field
                     component={Select}
+                    dataTestId="select-motivo-cancelamento"
                     name="motivo_nao_valida"
                     label="Motivo"
                     //TODO: criar campos a mais no backend?
@@ -96,6 +102,7 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
                 <div className="form-group col-12">
                   <Field
                     component={TextArea}
+                    dataTestId="textarea-justificativa"
                     placeholder="Obrigatório"
                     label="Justificativa"
                     name="justificativa"

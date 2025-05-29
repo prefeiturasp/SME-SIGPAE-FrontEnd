@@ -92,7 +92,10 @@ export const RelatorioDRE = () => (
       "Alteração do Tipo de Alimentação validada com sucesso!"
     }
     toastAprovaMensagemErro={
-      "Houve um erro ao validar a Alteração do Tipo de Alimentação"
+      "Houve um erro ao validar a Alteração do Tipo de Alimentação. Tente novamente mais tarde."
+    }
+    toastNaoAprovaMensagemErro={
+      "Houve um erro ao não validar a Alteração do Tipo de Alimentação. Tente novamente mais tarde."
     }
     endpointAprovaSolicitacao={dreValidarSolicitacaoDeAlteracaoDeCardapio}
     endpointNaoAprovaSolicitacao={dreReprovarSolicitacaoDeAlteracaoDeCardapio}

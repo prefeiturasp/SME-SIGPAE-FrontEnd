@@ -14,7 +14,6 @@ import { localStorageMock } from "mocks/localStorageMock";
 import { mockMeusDadosCODAEGA } from "mocks/meusDados/CODAE-GA";
 import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosInclusaoDeAlimentacao from "pages/InclusaoDeAlimentacao/RelatorioPage";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 

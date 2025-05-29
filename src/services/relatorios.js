@@ -22,6 +22,7 @@ import { API_URL } from "../constants/config";
 import axios from "./_base";
 import authService from "./auth";
 import { TIPO_MOTIVO } from "./constants";
+import HTTP_STATUS from "http-status-codes";
 import { ErrorHandlerFunction } from "./service-helpers";
 
 const authToken = {
@@ -109,11 +110,16 @@ export const getRelatorioAlteracaoTipoAlimentacao = async (
   escola
 ) => {
   const url = `${getAlteracaoPath(tipoSolicitacao)}/${uuid}/relatorio/`;
-  const { data } = await axios.get(url, {
+  const response = await axios.get(url, {
     responseType: "blob",
   });
-  const nomePdf = getAlteracaoNome(tipoSolicitacao, escola);
-  saveAs(data, `${nomePdf}.pdf`);
+  if (response.status !== HTTP_STATUS.OK) {
+    throw new Error("Erro ao baixar PDF.");
+  } else {
+    const { data } = response;
+    const nomePdf = getAlteracaoNome(tipoSolicitacao, escola);
+    saveAs(data, `${nomePdf}.pdf`);
+  }
 };
 
 export const getDetalheKitLancheAvulso = (uuid, tipoSolicitacao, escola) => {

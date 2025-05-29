@@ -19,7 +19,6 @@ import { mockMotivosAlteracaoCardapio } from "mocks/services/alteracaoCardapio.s
 import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
 import { mockQuantidadeAlunosPorPeriodoEMEF } from "mocks/services/escola.service/EMEF/quantidadeAlunosPorPeriodoEMEF";
 import AlteracaoDeCardapioPage from "pages/Escola/AlteracaoDeCardapioPage";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 

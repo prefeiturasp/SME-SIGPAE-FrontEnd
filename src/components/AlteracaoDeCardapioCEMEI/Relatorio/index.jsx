@@ -39,6 +39,8 @@ export const Relatorio = ({ ...props }) => {
     tipoSolicitacao,
     toastAprovaMensagem,
     toastAprovaMensagemErro,
+    toastNaoAprovaMensagem,
+    toastNaoAprovaMensagemErro,
     ModalCODAEAutoriza,
     visao,
   } = props;
@@ -81,19 +83,17 @@ export const Relatorio = ({ ...props }) => {
   const tipoPerfil = localStorage.getItem("tipo_perfil");
 
   const onSubmit = async (values) => {
-    endpointAprovaSolicitacao(uuid, values, tipoSolicitacao).then(
-      (response) => {
-        if (response.status === HTTP_STATUS.OK) {
-          toastSuccess(toastAprovaMensagem);
-          getSolicitacao();
-        } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(toastAprovaMensagemErro);
-        }
-      },
-      function () {
-        toastError(toastAprovaMensagemErro);
-      }
+    const response = await endpointAprovaSolicitacao(
+      uuid,
+      values,
+      tipoSolicitacao
     );
+    if (response.status === HTTP_STATUS.OK) {
+      toastSuccess(toastAprovaMensagem);
+      getSolicitacao();
+    } else {
+      toastError(toastAprovaMensagemErro);
+    }
   };
 
   useEffect(() => {
@@ -236,7 +236,7 @@ export const Relatorio = ({ ...props }) => {
                             uuid={solicitacao.uuid}
                             endpoint={"alteracoes-cardapio-cemei"}
                           />
-                          {ModalNaoAprova && (
+                          {ModalNaoAprova && showNaoAprovaModal && (
                             <ModalNaoAprova
                               showModal={showNaoAprovaModal}
                               closeModal={() => setShowNaoAprovaModal(false)}
@@ -247,9 +247,13 @@ export const Relatorio = ({ ...props }) => {
                               resposta_sim_nao={respostaSimNao}
                               loadSolicitacao={getSolicitacao}
                               tipoSolicitacao={tipoSolicitacao}
+                              toastNaoAprovaMensagem={toastNaoAprovaMensagem}
+                              toastNaoAprovaMensagemErro={
+                                toastNaoAprovaMensagemErro
+                              }
                             />
                           )}
-                          {ModalQuestionamento && (
+                          {ModalQuestionamento && showQuestionamentoModal && (
                             <ModalQuestionamento
                               closeModal={() =>
                                 setShowQuestionamentoModal(false)

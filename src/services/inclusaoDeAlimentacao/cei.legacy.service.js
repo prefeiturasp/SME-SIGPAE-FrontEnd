@@ -1,7 +1,7 @@
-import axios from "../_base";
-import { ENDPOINT } from "../../constants/shared";
-import { PEDIDOS } from "../constants";
 import { ErrorHandlerFunction } from "services/service-helpers";
+import { ENDPOINT } from "../../constants/shared";
+import axios from "../_base";
+import { PEDIDOS } from "../constants";
 
 /*
     TODO: A funcionalidade provida por esse arquivo 
@@ -36,9 +36,13 @@ export const getDREPedidosDeInclusaoAlimentacaoDaCei = async (
 
 export const meusRascunhosDeInclusaoDeAlimentacao = async () => {
   // escola
-  return await axios.get(
-    `/${INCLUSOES_ALIMENTACAO_DA_CEI}/minhas-solicitacoes/`
-  );
+  const response = await axios
+    .get(`/${INCLUSOES_ALIMENTACAO_DA_CEI}/minhas-solicitacoes/`)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getQuantidadeAlunosFaixaEtaria = async (
@@ -59,9 +63,13 @@ export const getQuantidadeAlunosFaixaEtaria = async (
 
 export const getQuantidadeAlunosPeriodoEscolar = async (uuidEscola) => {
   // escola
-  return await axios.get(
-    `/${QUANTIDADE_ALUNOS_POR_PERIODO}/escola/${uuidEscola}/`
-  );
+  const response = await axios
+    .get(`/${QUANTIDADE_ALUNOS_POR_PERIODO}/escola/${uuidEscola}/`)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const criarInclusoesDaCEI = async (payload) => {
@@ -77,21 +85,43 @@ export const criarInclusoesDaCEI = async (payload) => {
 
 export const excluirInclusoesDaCei = async (uuid) => {
   // escola
-  return await axios.delete(`/${INCLUSOES_ALIMENTACAO_DA_CEI}/${uuid}/`);
+  const response = await axios
+    .delete(`/${INCLUSOES_ALIMENTACAO_DA_CEI}/${uuid}/`)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const atualizarInclusoesDaCEI = async (payload, uuid) => {
   // escola
-  return await axios.put(`/${INCLUSOES_ALIMENTACAO_DA_CEI}/${uuid}/`, payload);
+  const response = await axios
+    .put(`/${INCLUSOES_ALIMENTACAO_DA_CEI}/${uuid}/`, payload)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const iniciarInclusoesDaCEI = async (uuid) => {
   // escola
-  return await axios.patch(
-    `/${INCLUSOES_ALIMENTACAO_DA_CEI}/${uuid}/inicio-pedido/`
-  );
+  const response = await axios
+    .patch(`/${INCLUSOES_ALIMENTACAO_DA_CEI}/${uuid}/inicio-pedido/`)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const minhasFaixasEtarias = async () => {
-  return await axios.get(`/faixas-etarias/`);
+  const response = await axios
+    .get(`/faixas-etarias/`)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
