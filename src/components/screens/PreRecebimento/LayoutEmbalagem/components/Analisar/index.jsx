@@ -50,6 +50,8 @@ export default () => {
   ]);
   const [embalagemTerciariaSolicitada, setEmbalagemTerciariaSolicitada] =
     useState(false);
+  const [embalagemSecundariaSolicitada, setEmbalagemSecundariaSolicitada] =
+    useState(false);
 
   useEffect(() => {
     (async () => {
@@ -85,8 +87,8 @@ export default () => {
 
   const ordenaTiposDeEmbalagem = (tiposDeEmbalagem) => {
     return tiposDeEmbalagem.sort((a, b) => {
-      const embalagemA = a.tipo_embalagem.toUpperCase();
-      const embalagemB = b.tipo_embalagem.toUpperCase();
+      const embalagemA = a?.tipo_embalagem.toUpperCase();
+      const embalagemB = b?.tipo_embalagem.toUpperCase();
       if (embalagemA < embalagemB) return -1;
       if (embalagemA > embalagemB) return 1;
       return 0;
@@ -96,7 +98,7 @@ export default () => {
   const definirAprovacoes = (layoutDeEmbalagem) => {
     const aprovacoes = layoutDeEmbalagem.tipos_de_embalagens.map(
       (tipoEmbalagem) =>
-        tipoEmbalagem.status === "APROVADO" ? true : undefined
+        tipoEmbalagem?.status === "APROVADO" ? true : undefined
     );
 
     return aprovacoes;
@@ -108,12 +110,12 @@ export default () => {
         ? {
             justificativa_0:
               objeto.tipos_de_embalagens[0]?.complemento_do_status,
-            justificativa_1:
-              objeto.tipos_de_embalagens[1]?.complemento_do_status,
-            justificativa_2:
-              objeto.tipos_de_embalagens.length === 3
-                ? objeto.tipos_de_embalagens[2].complemento_do_status
-                : "",
+            justificativa_1: objeto.tipos_de_embalagens[1]
+              ? objeto.tipos_de_embalagens[1].complemento_do_status
+              : "",
+            justificativa_2: objeto.tipos_de_embalagens[2]
+              ? objeto.tipos_de_embalagens[2].complemento_do_status
+              : "",
           }
         : {
             justificativa_0: "",
@@ -134,6 +136,79 @@ export default () => {
     let newAprovacoes = [...aprovacoes];
     newAprovacoes[index] = value;
     setAprovacoes(newAprovacoes);
+  };
+
+  const retornaEmbalagemOpcional = (
+    tipoEmbalagem,
+    index,
+    form,
+    values,
+    solicitada,
+    setSolicitada
+  ) => {
+    return (
+      <>
+        {(layoutDeEmbalagem.tipos_de_embalagens[index] || !somenteLeitura) && (
+          <>
+            <hr />
+
+            <div
+              className={`${
+                layoutDeEmbalagem.tipos_de_embalagens[index]?.status !==
+                  "APROVADO" && !layoutDeEmbalagem.primeira_analise
+                  ? "subtitulo-laranja"
+                  : "subtitulo"
+              }  mb-3`}
+            >
+              Embalagem {tipoEmbalagem}
+            </div>
+          </>
+        )}
+
+        {layoutDeEmbalagem.tipos_de_embalagens[index] ? (
+          <div className="row">
+            <div className="col-5">
+              {layoutDeEmbalagem.tipos_de_embalagens[index].imagens.map((e) => (
+                <div className="w-75" key={e.arquivo}>
+                  <BotaoAnexo urlAnexo={e.arquivo} />
+                </div>
+              ))}
+              {!somenteLeitura && retornaBotoesAprovacao(index, form)}
+            </div>
+            {retornaTextoAprovacaoOuCampoCorrecao(index, values, form)}
+          </div>
+        ) : (
+          !somenteLeitura && (
+            <>
+              <div className="row">
+                <div className="col aviso-embalagem-terciaria px-3 py-3">
+                  <strong>Lembrete!</strong>
+                  <br />
+                  Foi identificado que não consta Embalagem {tipoEmbalagem}.
+                  Caso necessário, solicite a correção clicando no botão abaixo:
+                </div>
+              </div>
+              <div className="row mt-4">
+                <div className="col px-0">
+                  <Botao
+                    texto="Solicitar Embalagem"
+                    type={BUTTON_TYPE.BUTTON}
+                    style={BUTTON_STYLE.GREEN}
+                    onClick={() => {
+                      form.change(`justificativa_${index}`, "");
+                      setSolicitada(true);
+                    }}
+                    disabled={solicitada}
+                  />
+                </div>
+                {solicitada &&
+                  renderizarCampoCorrecao(index, form, setSolicitada)}
+              </div>
+            </>
+          )
+        )}
+      </>
+    );
   };
 
   const retornaBotoesAprovacao = (index, form) => {
@@ -201,7 +276,7 @@ export default () => {
     );
   };
 
-  const renderizarCampoCorrecao = (index, form) => (
+  const renderizarCampoCorrecao = (index, form, setSolicitada) => (
     <div className="col-7">
       <Field
         component={TextArea}
@@ -241,8 +316,7 @@ export default () => {
               ?.complemento_do_status || ""
           );
 
-          !layoutDeEmbalagem.tipos_de_embalagens[index] &&
-            setEmbalagemTerciariaSolicitada(false);
+          !layoutDeEmbalagem.tipos_de_embalagens[index] && setSolicitada(false);
         }}
       />
     </div>
@@ -300,21 +374,29 @@ export default () => {
       complemento_do_status: values[`justificativa_${0}`],
     });
 
-    payload.tipos_de_embalagens.push({
-      uuid: layoutDeEmbalagem.tipos_de_embalagens[1].uuid,
-      tipo_embalagem: "SECUNDARIA",
-      status: getAprovacao(1),
-      complemento_do_status: values[`justificativa_${1}`],
-    });
+    if (
+      layoutDeEmbalagem.tipos_de_embalagens[1] ||
+      embalagemSecundariaSolicitada
+    ) {
+      payload.tipos_de_embalagens.push({
+        uuid: layoutDeEmbalagem.tipos_de_embalagens[1]?.uuid,
+        tipo_embalagem: "SECUNDARIA",
+        status: getAprovacao(1),
+        complemento_do_status: values[`justificativa_${1}`],
+      });
+    }
 
-    (layoutDeEmbalagem.tipos_de_embalagens[2] ||
-      embalagemTerciariaSolicitada) &&
+    if (
+      layoutDeEmbalagem.tipos_de_embalagens[2] ||
+      embalagemTerciariaSolicitada
+    ) {
       payload.tipos_de_embalagens.push({
         uuid: layoutDeEmbalagem.tipos_de_embalagens[2]?.uuid,
         tipo_embalagem: "TERCIARIA",
         status: getAprovacao(2),
         complemento_do_status: values[`justificativa_${2}`],
       });
+    }
 
     return payload;
   };
@@ -327,7 +409,8 @@ export default () => {
 
   const validaAprovacoes =
     aprovacoes[0] !== undefined &&
-    aprovacoes[1] !== undefined &&
+    (!layoutDeEmbalagem.tipos_de_embalagens[1] ||
+      aprovacoes[1] !== undefined) &&
     (!layoutDeEmbalagem.tipos_de_embalagens[2] || aprovacoes[2] !== undefined);
 
   return (
@@ -440,94 +523,22 @@ export default () => {
                     {retornaTextoAprovacaoOuCampoCorrecao(0, values, form)}
                   </div>
 
-                  <hr />
-
-                  <div
-                    className={`${
-                      layoutDeEmbalagem.tipos_de_embalagens[1]?.status !==
-                        "APROVADO" && !layoutDeEmbalagem.primeira_analise
-                        ? "subtitulo-laranja"
-                        : "subtitulo"
-                    }  mb-3`}
-                  >
-                    Embalagem Secundária
-                  </div>
-                  <div className="row">
-                    <div className="col-5">
-                      {layoutDeEmbalagem.tipos_de_embalagens[1]?.imagens.map(
-                        (e) => (
-                          <div className="w-75" key={e.arquivo}>
-                            <BotaoAnexo urlAnexo={e.arquivo} />
-                          </div>
-                        )
-                      )}
-                      {!somenteLeitura && retornaBotoesAprovacao(1, form)}
-                    </div>
-                    {retornaTextoAprovacaoOuCampoCorrecao(1, values, form)}
-                  </div>
-
-                  {(layoutDeEmbalagem.tipos_de_embalagens[2] ||
-                    !somenteLeitura) && (
-                    <>
-                      <hr />
-
-                      <div
-                        className={`${
-                          layoutDeEmbalagem.tipos_de_embalagens[2]?.status !==
-                            "APROVADO" && !layoutDeEmbalagem.primeira_analise
-                            ? "subtitulo-laranja"
-                            : "subtitulo"
-                        }  mb-3`}
-                      >
-                        Embalagem Terciária
-                      </div>
-                    </>
+                  {retornaEmbalagemOpcional(
+                    "Secundária",
+                    1,
+                    form,
+                    values,
+                    embalagemSecundariaSolicitada,
+                    setEmbalagemSecundariaSolicitada
                   )}
 
-                  {layoutDeEmbalagem.tipos_de_embalagens[2] ? (
-                    <div className="row">
-                      <div className="col-5">
-                        {layoutDeEmbalagem.tipos_de_embalagens[2].imagens.map(
-                          (e) => (
-                            <div className="w-75" key={e.arquivo}>
-                              <BotaoAnexo urlAnexo={e.arquivo} />
-                            </div>
-                          )
-                        )}
-                        {!somenteLeitura && retornaBotoesAprovacao(2, form)}
-                      </div>
-                      {retornaTextoAprovacaoOuCampoCorrecao(2, values, form)}
-                    </div>
-                  ) : (
-                    !somenteLeitura && (
-                      <>
-                        <div className="row">
-                          <div className="col aviso-embalagem-terciaria px-3 py-3">
-                            <strong>Lembrete!</strong>
-                            <br />
-                            Foi identificado que não consta Embalagem Terciária.
-                            Caso necessário, solicite a correção clicando no
-                            botão abaixo:
-                          </div>
-                        </div>
-                        <div className="row mt-4">
-                          <div className="col px-0">
-                            <Botao
-                              texto="Solicitar Embalagem"
-                              type={BUTTON_TYPE.BUTTON}
-                              style={BUTTON_STYLE.GREEN}
-                              onClick={() => {
-                                form.change(`justificativa_${2}`, "");
-                                setEmbalagemTerciariaSolicitada(true);
-                              }}
-                              disabled={embalagemTerciariaSolicitada}
-                            />
-                          </div>
-                          {embalagemTerciariaSolicitada &&
-                            renderizarCampoCorrecao(2, form)}
-                        </div>
-                      </>
-                    )
+                  {retornaEmbalagemOpcional(
+                    "Terciária",
+                    2,
+                    form,
+                    values,
+                    embalagemTerciariaSolicitada,
+                    setEmbalagemTerciariaSolicitada
                   )}
 
                   <hr />

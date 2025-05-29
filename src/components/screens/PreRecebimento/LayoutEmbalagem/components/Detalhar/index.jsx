@@ -77,8 +77,8 @@ export default () => {
 
   const ordenarTiposDeEmbalagens = (tiposDeEmbalagem) =>
     tiposDeEmbalagem.sort((a, b) => {
-      const embalagemA = a.tipo_embalagem.toUpperCase();
-      const embalagemB = b.tipo_embalagem.toUpperCase();
+      const embalagemA = a?.tipo_embalagem.toUpperCase();
+      const embalagemB = b?.tipo_embalagem.toUpperCase();
 
       if (embalagemA < embalagemB) {
         return -1;
@@ -92,15 +92,15 @@ export default () => {
 
   const obterImagensEmbalagem = (response, tipo_embalagem) => {
     return response.data.tipos_de_embalagens
-      .filter((e) => e.tipo_embalagem === tipo_embalagem)
-      .map((e) => e.imagens)
+      .filter((e) => e?.tipo_embalagem === tipo_embalagem)
+      .map((e) => e?.imagens)
       .flat();
   };
 
   const definirAprovacoes = (objeto) => {
     if (["Aprovado", "Solicitado Correção"].includes(objeto.status)) {
-      const aprovacoesAtualizadas = objeto.tipos_de_embalagens.map(
-        ({ status }) => (status === "APROVADO" ? true : false)
+      const aprovacoesAtualizadas = objeto.tipos_de_embalagens.map((layout) =>
+        layout?.status === "APROVADO" ? true : false
       );
 
       setAprovacoes(aprovacoesAtualizadas);
@@ -114,7 +114,8 @@ export default () => {
     return aprovacoes.length > 0
       ? {
           justificativa_0: objeto.tipos_de_embalagens[0]?.complemento_do_status,
-          justificativa_1: objeto.tipos_de_embalagens[1]?.complemento_do_status,
+          justificativa_1:
+            objeto.tipos_de_embalagens[1]?.complemento_do_status || "",
           justificativa_2:
             objeto.tipos_de_embalagens[2]?.complemento_do_status || "",
         }
@@ -242,11 +243,13 @@ export default () => {
       status: getAprovacao(0),
       complemento_do_status: values[`justificativa_${0}`],
     });
-    payload.tipos_de_embalagens.push({
-      tipo_embalagem: "SECUNDARIA",
-      status: getAprovacao(1),
-      complemento_do_status: values[`justificativa_${1}`],
-    });
+    if (embalagemSecundaria.length > 0) {
+      payload.tipos_de_embalagens.push({
+        tipo_embalagem: "SECUNDARIA",
+        status: getAprovacao(1),
+        complemento_do_status: values[`justificativa_${1}`],
+      });
+    }
     if (embalagemTerciaria.length > 0) {
       payload.tipos_de_embalagens.push({
         tipo_embalagem: "TERCIARIA",
