@@ -1,4 +1,4 @@
-![node-version](https://img.shields.io/badge/node-20.11.1-blue)
+![node-version](https://img.shields.io/badge/node-22.15.1-blue)
 ![react-version](https://img.shields.io/badge/react-18.2.0-blue)
 
 Projeto SIGPAE Frontend para a interface gráfica onde os usuários do sistema poderão interagir com a <a  href="https://github.com/prefeiturasp/SME-SIGPAE-API"  target="_blank">API TERCEIRIZADAS</a>
@@ -6,7 +6,7 @@ Projeto SIGPAE Frontend para a interface gráfica onde os usuários do sistema p
 **Pré-requisitos**
 
 - npm
-- nvm (utilizar versão do node 20.11.1)
+- nvm (utilizar versão do node 22.15.1)
 
 **Passos**
 

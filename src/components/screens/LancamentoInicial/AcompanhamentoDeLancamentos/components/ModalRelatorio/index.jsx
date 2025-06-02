@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
 import { Radio } from "antd";
-
-import { getGrupoUnidadeEscolar } from "services/escola.service";
-import HTTP_STATUS from "http-status-codes";
-
+import Botao from "components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "../../../../../Shareable/Botao/constants";
-import Botao from "../../../../../Shareable/Botao";
+} from "components/Shareable/Botao/constants";
+import { toastError } from "components/Shareable/Toast/dialogs";
+import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import { getGrupoUnidadeEscolar } from "services/escola.service";
 import "./styles.scss";
-import { toastError } from "../../../../../Shareable/Toast/dialogs";
 
 const ModalRelatorio = ({ show, onClose, onSubmit, nomeRelatorio }) => {
   const [gruposUnidadeEscolar, setGruposUnidadeEscolar] = useState([]);
@@ -23,7 +21,7 @@ const ModalRelatorio = ({ show, onClose, onSubmit, nomeRelatorio }) => {
   }
 
   function desabilitaRadioButton(grupo) {
-    const gruposDesabilitados = ["Grupo 2", "Grupo 5"];
+    const gruposDesabilitados = ["Grupo 5"];
 
     if (nomeRelatorio === "Relatório Unificado") {
       gruposDesabilitados.push("Grupo 1");

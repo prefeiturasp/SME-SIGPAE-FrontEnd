@@ -22,6 +22,7 @@ export interface InstituicaoInterface {
   quantidade_alunos?: number;
   tipo_servico?: string;
   tipo_gestao: string;
+  tipo_gestao_uuid?: string;
   tipo_unidade_escolar: string;
   tipo_unidade_escolar_iniciais: string;
   tipos_contagem: Array<TipoContagemInterface>;

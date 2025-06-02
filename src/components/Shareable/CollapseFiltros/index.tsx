@@ -1,12 +1,12 @@
-import React, { ReactNode, useState } from "react";
-import "./styles.scss";
-import { Form } from "react-final-form";
-import { FormApi } from "final-form";
 import Botao from "components/Shareable/Botao";
 import {
-  BUTTON_TYPE,
   BUTTON_STYLE,
+  BUTTON_TYPE,
 } from "components/Shareable/Botao/constants";
+import { FormApi } from "final-form";
+import React, { ReactNode, useState } from "react";
+import { Form } from "react-final-form";
+import "./styles.scss";
 
 import {
   usuarioEhDRE,
@@ -21,9 +21,11 @@ type Props = {
   manterFiltros?: Array<string>;
   desabilitarBotoes?: boolean;
   initialValues?: Object;
+  keepDirtyOnReinitialize?: boolean;
+  destroyOnUnregister?: boolean;
 };
 
-const CollapseFiltros: React.FC<Props> = ({
+export const CollapseFiltros: React.FC<Props> = ({
   titulo = "Filtrar Cadastros",
   children,
   onSubmit,
@@ -31,6 +33,8 @@ const CollapseFiltros: React.FC<Props> = ({
   desabilitarBotoes,
   manterFiltros,
   initialValues = {},
+  keepDirtyOnReinitialize = false,
+  destroyOnUnregister = false,
 }) => {
   const id = "collapseFiltros";
   const [collapse, setCollapse] = useState(true);
@@ -102,6 +106,8 @@ const CollapseFiltros: React.FC<Props> = ({
             <Form
               onSubmit={onSubmit}
               initialValues={initialValues}
+              destroyOnUnregister={destroyOnUnregister}
+              keepDirtyOnReinitialize={keepDirtyOnReinitialize}
               render={({ form, handleSubmit, values }) => (
                 <form onSubmit={handleSubmit}>
                   <div>{children(values, form)}</div>

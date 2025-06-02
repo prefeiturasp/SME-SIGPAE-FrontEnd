@@ -115,7 +115,7 @@ export default ({
           <div className="row my-3">
             <p>Empresa:</p>
             <p>
-              <b>{cronograma.empresa?.nome_fantasia}</b>
+              <b>{`${cronograma.empresa?.nome_fantasia} / ${cronograma.empresa?.razao_social}`}</b>
             </p>
           </div>
 

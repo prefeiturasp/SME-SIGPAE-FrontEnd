@@ -68,6 +68,8 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
     usuarioEhDinutreDiretoria();
   const exibeAtivasInativas = usuarioEhCODAEDietaEspecial();
   const exibeRelatorioDietasEspeciais =
+    usuarioEhEscolaTerceirizada() ||
+    usuarioEhEscolaTerceirizadaDiretor() ||
     usuarioEhEmpresaTerceirizada() ||
     usuarioEhNutricionistaSupervisao() ||
     usuarioEhDRE() ||
@@ -132,12 +134,22 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
           activeMenu={activeMenu}
           dataTestId="relatorios-de"
         >
-          <LeafItem to={`/${DIETA_ESPECIAL}/${RELATORIO_DIETAS_AUTORIZADAS}`}>
-            Relatório de Dietas Autorizadas
-          </LeafItem>
-          <LeafItem to={`/${DIETA_ESPECIAL}/${RELATORIO_DIETAS_CANCELADAS}`}>
-            Relatório de Dietas Canceladas
-          </LeafItem>
+          {!usuarioEhEscolaTerceirizada() &&
+            !usuarioEhEscolaTerceirizadaDiretor() && (
+              <LeafItem
+                to={`/${DIETA_ESPECIAL}/${RELATORIO_DIETAS_AUTORIZADAS}`}
+              >
+                Relatório de Dietas Autorizadas
+              </LeafItem>
+            )}
+          {!usuarioEhEscolaTerceirizada() &&
+            !usuarioEhEscolaTerceirizadaDiretor() && (
+              <LeafItem
+                to={`/${DIETA_ESPECIAL}/${RELATORIO_DIETAS_CANCELADAS}`}
+              >
+                Relatório de Dietas Canceladas
+              </LeafItem>
+            )}
           <LeafItem to={`/${DIETA_ESPECIAL}/${RELATORIO_HISTORICO_DIETAS}`}>
             Relatório de Histórico de Dietas
           </LeafItem>

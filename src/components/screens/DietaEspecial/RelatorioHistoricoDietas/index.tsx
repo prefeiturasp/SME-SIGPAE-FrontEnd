@@ -2,21 +2,26 @@ import { Spin } from "antd";
 import Botao from "components/Shareable/Botao";
 import {
   BUTTON_ICON,
-  BUTTON_TYPE,
   BUTTON_STYLE,
+  BUTTON_TYPE,
 } from "components/Shareable/Botao/constants";
 import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
 import { toastError } from "components/Shareable/Toast/dialogs";
-import { ENVIRONMENT } from "constants/config";
 import HTTP_STATUS from "http-status-codes";
-import React, { useState } from "react";
-import { exportarExcelAsyncSolicitacoesRelatorioHistoricoDietas } from "services/dietaEspecial.service";
+import React, { useContext, useState } from "react";
+import {
+  exportarExcelAsyncSolicitacoesRelatorioHistoricoDietas,
+  exportarPDFAsyncSolicitacoesRelatorioHistoricoDietas,
+} from "services/dietaEspecial.service";
 import { Filtros } from "./components/Filtros";
 import { TabelaHistorico } from "./components/TabelaHistorico";
 import { normalizarValues } from "./helper";
 import "./styles.scss";
+import { MeusDadosContext } from "context/MeusDadosContext";
 
 export const RelatorioHistoricoDietas = () => {
+  const { meusDados } = useContext(MeusDadosContext);
+
   const [valuesForm, setValuesForm] = useState(null);
   const [dietasEspeciais, setDietasEspeciais] = useState(null);
   const [loadingDietas, setLoadingDietas] = useState(false);
@@ -42,17 +47,28 @@ export const RelatorioHistoricoDietas = () => {
     setExportando(false);
   };
 
+  const exportarPDF = async () => {
+    setExportando(true);
+    const response = await exportarPDFAsyncSolicitacoesRelatorioHistoricoDietas(
+      normalizarValues(valuesForm)
+    );
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao exportar PDF. Tente novamente mais tarde.");
+    }
+    setExportando(false);
+  };
+
   return (
     <>
       {erro && <div>{erro}</div>}
-      {!erro && (
+      {!erro && meusDados && (
         <div className="card mt-3">
           <div className="card-body">
             <Spin spinning={loadingDietas} tip="Carregando histórico...">
               <Filtros
-                onClear={() => {
-                  setDietasEspeciais(null);
-                }}
+                meusDados={meusDados}
                 setDietasEspeciais={setDietasEspeciais}
                 setValuesForm={setValuesForm}
                 setCount={setCount}
@@ -84,16 +100,14 @@ export const RelatorioHistoricoDietas = () => {
                   />
                   <div className="row">
                     <div className="col-12 text-end">
-                      {ENVIRONMENT !== "production" && (
-                        <Botao
-                          texto="Exportar PDF"
-                          style={BUTTON_STYLE.GREEN}
-                          type={BUTTON_TYPE.BUTTON}
-                          icon={BUTTON_ICON.FILE_PDF}
-                          onClick={() => {}}
-                          disabled={exportando}
-                        />
-                      )}
+                      <Botao
+                        texto="Exportar PDF"
+                        style={BUTTON_STYLE.GREEN}
+                        type={BUTTON_TYPE.BUTTON}
+                        icon={BUTTON_ICON.FILE_PDF}
+                        onClick={async () => await exportarPDF()}
+                        disabled={exportando}
+                      />
                       <Botao
                         texto="Exportar XLSX"
                         style={BUTTON_STYLE.GREEN}

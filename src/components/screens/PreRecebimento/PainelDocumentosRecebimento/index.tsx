@@ -46,10 +46,10 @@ export default () => {
   const gerarTextoCardDocumento = (item: DocumentosRecebimentoDashboard) => {
     const TAMANHO_MAXIMO = 20;
 
-    return `${item.numero_cronograma} - ${truncarString(
+    return `${item.numero_cronograma} / ${truncarString(
       item.nome_produto,
       TAMANHO_MAXIMO
-    )} - ${truncarString(item.nome_empresa, TAMANHO_MAXIMO)}`;
+    )} / ${truncarString(item.nome_empresa, TAMANHO_MAXIMO)}`;
   };
 
   const formatarCardsDocumento = (

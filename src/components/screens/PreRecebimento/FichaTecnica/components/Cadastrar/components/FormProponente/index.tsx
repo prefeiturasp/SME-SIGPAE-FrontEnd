@@ -22,7 +22,7 @@ const FormProponente: React.FC<Props> = ({ proponente }) => {
         <div className="col-8">
           <InputText
             label="Nome da Empresa/Organização"
-            valorInicial={proponente.nome_fantasia}
+            valorInicial={`${proponente.nome_fantasia} / ${proponente.razao_social}`}
             disabled={true}
           />
         </div>

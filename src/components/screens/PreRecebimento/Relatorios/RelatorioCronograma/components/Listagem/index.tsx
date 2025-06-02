@@ -41,6 +41,7 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                 <div>
                   <i
                     className={`fas fa-${icone} expand`}
+                    data-testid="icone-expandir"
                     onClick={() => {
                       ativos && ativos.includes(cronograma.uuid)
                         ? setAtivos(

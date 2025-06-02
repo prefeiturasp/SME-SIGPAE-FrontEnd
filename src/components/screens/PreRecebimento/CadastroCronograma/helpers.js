@@ -4,7 +4,7 @@ import { stringDecimalToNumber } from "helpers/parsers";
 import { formatarNumeroEProdutoFichaTecnica } from "helpers/preRecebimento";
 
 export const getOpcoesContrato = (empresaSelecionada) => {
-  if (!empresaSelecionada) return [];
+  if (!empresaSelecionada || !empresaSelecionada.contratos) return [];
   return empresaSelecionada.contratos.map((contrato) => ({
     nome: contrato.numero,
     uuid: contrato.uuid,

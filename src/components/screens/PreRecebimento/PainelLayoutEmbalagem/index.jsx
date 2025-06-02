@@ -39,10 +39,10 @@ export default () => {
   const gerarTextoCardLayout = (item) => {
     const TAMANHO_MAXIMO = 20;
 
-    return `${item.numero_ficha_tecnica} - ${truncarString(
+    return `${item.numero_ficha_tecnica} / ${truncarString(
       item.nome_produto,
       TAMANHO_MAXIMO
-    )} - ${truncarString(item.nome_empresa, TAMANHO_MAXIMO)}`;
+    )} / ${truncarString(item.nome_empresa, TAMANHO_MAXIMO)}`;
   };
 
   const gerarLinkLayout = (item) => {
