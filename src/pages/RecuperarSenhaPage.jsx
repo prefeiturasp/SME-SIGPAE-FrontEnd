@@ -50,7 +50,7 @@ class RecuperarSenhaPage extends Component {
           window.location.href = "/";
         }, 1000);
       } else {
-        toastError(response.data.detail);
+        toastError(response.detail);
       }
     });
   }
