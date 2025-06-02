@@ -1,15 +1,18 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import Relatorio from "components/SuspensaoAlimentacaoDeCEI/Relatorio";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import Relatorio from "src/components/SuspensaoAlimentacaoDeCEI/Relatorio";
 import {
   TERCEIRIZADA,
   SUSPENSAO_ALIMENTACAO,
   ESCOLA,
   DRE,
   CODAE,
-} from "configs/constants";
-import { usuarioEhDRE, usuarioEhEmpresaTerceirizada } from "helpers/utilities";
+} from "src/configs/constants";
+import {
+  usuarioEhDRE,
+  usuarioEhEmpresaTerceirizada,
+} from "src/helpers/utilities";
 
 let voltarPara = "/painel-gestao-alimentacao";
 

@@ -1,13 +1,13 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import { ConsultaEditaisContratos } from "components/screens/Cadastros/EditaisContratosRefatorado/ConsultaEditaisContratos";
-import Page from "components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import { ConsultaEditaisContratos } from "src/components/screens/Cadastros/EditaisContratosRefatorado/ConsultaEditaisContratos";
+import Page from "src/components/Shareable/Page/Page";
 import {
   CONFIGURACOES,
   CADASTROS,
   EDITAIS_CONTRATOS,
   EDITAIS_CADASTRADOS,
-} from "configs/constants";
+} from "src/configs/constants";
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${EDITAIS_CADASTRADOS}`,

@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { DetalhesCEIouCEMEI } from "../DetalhesCEIouCEMEI";
-import { deepCopy, usuarioEhDRE } from "helpers/utilities";
+import { deepCopy, usuarioEhDRE } from "src/helpers/utilities";
 import { formataNome } from "../../helpers";
 import { Tooltip } from "antd";
 

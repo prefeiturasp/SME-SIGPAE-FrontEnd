@@ -4,20 +4,23 @@ import { Modal } from "react-bootstrap";
 import { Field } from "react-final-form";
 import { Spin } from "antd";
 import { format, getYear } from "date-fns";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import InputText from "components/Shareable/Input/InputText";
-import CKEditorField from "components/Shareable/CKEditorField";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import InputText from "src/components/Shareable/Input/InputText";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   maxLengthSemTags,
   peloMenosUmCaractere,
-} from "helpers/fieldValidators";
-import { deleteObservacaoValoresPeriodosLancamentos } from "services/medicaoInicial/periodoLancamentoMedicao.service";
+} from "src/helpers/fieldValidators";
+import { deleteObservacaoValoresPeriodosLancamentos } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import "./styles.scss";
 import strip_tags from "locutus/php/strings/strip_tags";
 

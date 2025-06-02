@@ -1,16 +1,19 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import CKEditorField from "components/Shareable/CKEditorField";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { SolicitacaoAlimentacaoContext } from "context/SolicitacaoAlimentacao";
+} from "src/components/Shareable/Botao/constants";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { SolicitacaoAlimentacaoContext } from "src/context/SolicitacaoAlimentacao";
 import {
   peloMenosUmCaractere,
   textAreaRequired,
-} from "helpers/fieldValidators";
-import { composeValidators, getError } from "helpers/utilities";
+} from "src/helpers/fieldValidators";
+import { composeValidators, getError } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { useContext, useState } from "react";
 import { Modal } from "react-bootstrap";

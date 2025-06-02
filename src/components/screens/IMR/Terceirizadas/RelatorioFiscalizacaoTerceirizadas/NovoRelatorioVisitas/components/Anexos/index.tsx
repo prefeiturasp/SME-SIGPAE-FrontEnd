@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import InputFileField from "components/Shareable/InputFileField";
-import { downloadAndConvertToBase64 } from "components/Shareable/Input/InputFile/helper";
+import InputFileField from "src/components/Shareable/InputFileField";
+import { downloadAndConvertToBase64 } from "src/components/Shareable/Input/InputFile/helper";
 import {
   ArquivoInterface,
   ArquivoFormInterface,
 } from "interfaces/imr.interface";
-import BotaoAnexo from "components/PreRecebimento/BotaoAnexo";
+import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
 
 const FORMATOS_ARQUIVOS = "PDF, XLS, XLSX, XLSXM, PNG, JPG ou JPEG";
 

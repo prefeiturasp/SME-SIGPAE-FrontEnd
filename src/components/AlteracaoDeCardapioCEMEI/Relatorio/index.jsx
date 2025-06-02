@@ -5,23 +5,26 @@ import {
   exibirBotaoMarcarConferencia,
   exibirBotaoQuestionamento,
   exibirModalAutorizacaoAposQuestionamento,
-} from "components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
-import { Botao } from "components/Shareable/Botao";
+} from "src/components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import ModalAutorizarAposQuestionamento from "components/Shareable/ModalAutorizarAposQuestionamento";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { DRE } from "configs/constants";
-import { TIPO_PERFIL } from "constants/shared";
-import { visualizaBotoesDoFluxo } from "helpers/utilities";
+} from "src/components/Shareable/Botao/constants";
+import ModalAutorizarAposQuestionamento from "src/components/Shareable/ModalAutorizarAposQuestionamento";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { DRE } from "src/configs/constants";
+import { TIPO_PERFIL } from "src/constants/shared";
+import { visualizaBotoesDoFluxo } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useState } from "react";
 import { Form } from "react-final-form";
-import { getAlteracaoCEMEI } from "services/alteracaoDeCardapio";
-import { getQuantidadeAlunosCEMEIporCEIEMEI } from "services/aluno.service";
+import { getAlteracaoCEMEI } from "src/services/alteracaoDeCardapio";
+import { getQuantidadeAlunosCEMEIporCEIEMEI } from "src/services/aluno.service";
 import { formataDadosTabelaCEMEI } from "../helpers";
 import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
 import "./style.scss";

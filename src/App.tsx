@@ -1,9 +1,9 @@
-import { GlobalContext } from "context";
+import { GlobalContext } from "src/context";
 import React from "react";
 import { ToastContainer } from "react-toastify";
 import "./App.css";
-import Routes from "./routes";
-import { cesInterceptFetch } from "./services/ces.service.js";
+import Routes from "./routes.jsx";
+import { cesInterceptFetch } from "./services/ces.service";
 
 cesInterceptFetch();
 

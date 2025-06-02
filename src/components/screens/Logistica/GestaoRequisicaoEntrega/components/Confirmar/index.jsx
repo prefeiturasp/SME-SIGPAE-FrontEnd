@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import { Button } from "react-bootstrap";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { distribuidorConfirma } from "services/logistica.service";
+} from "src/components/Shareable/Botao/constants";
+import { distribuidorConfirma } from "src/services/logistica.service";
 import { Spin } from "antd";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 
 export default ({ solicitacao, updatePage }) => {
   const [show, setShow] = useState(false);

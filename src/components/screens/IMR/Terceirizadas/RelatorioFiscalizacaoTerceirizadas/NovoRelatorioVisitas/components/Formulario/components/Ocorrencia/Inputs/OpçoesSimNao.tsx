@@ -1,6 +1,6 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { required } from "helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 
 type OpçoesSimNaoType = {
   titulo: string;

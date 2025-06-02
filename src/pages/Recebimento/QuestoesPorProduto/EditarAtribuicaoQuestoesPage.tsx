@@ -1,14 +1,14 @@
 import React from "react";
 
-import { HOME } from "constants/config";
+import { HOME } from "src/constants/config";
 import {
   RECEBIMENTO,
   QUESTOES_POR_PRODUTO,
   EDITAR_ATRIBUICAO_QUESTOES_CONFERENCIA,
-} from "configs/constants";
-import Page from "components/Shareable/Page/Page";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import AtribuirQuestoes from "components/screens/Recebimento/QuestoesPorProduto/AtribuirQuestoes";
+} from "src/configs/constants";
+import Page from "src/components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import AtribuirQuestoes from "src/components/screens/Recebimento/QuestoesPorProduto/AtribuirQuestoes";
 
 const atual = {
   href: `/${RECEBIMENTO}/${EDITAR_ATRIBUICAO_QUESTOES_CONFERENCIA}`,

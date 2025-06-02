@@ -6,35 +6,42 @@ import {
   justificativaAoAprovarSolicitacao,
   justificativaAoNegarSolicitacao,
   visualizaBotoesDoFluxo,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import {
   totalAlunosCEI,
   tempoPasseio,
   checaPrazo,
   getNumeroTotalKits,
-} from "components/SolicitacaoKitLancheCEMEI/helpers";
-import Botao from "components/Shareable/Botao";
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
-import { ToggleExpandir } from "components/Shareable/ToggleExpandir";
-import { fluxoPartindoEscola } from "components/Shareable/FluxoDeStatus/helper";
+} from "src/components/SolicitacaoKitLancheCEMEI/helpers";
+import Botao from "src/components/Shareable/Botao";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
+import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import RelatorioHistoricoJustificativaEscola from "components/Shareable/RelatorioHistoricoJustificativaEscola";
-import { CODAE, TERCEIRIZADA } from "configs/constants";
-import { statusEnum, TIPO_PERFIL, TIPO_SOLICITACAO } from "constants/shared";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
-import RelatorioHistoricoQuestionamento from "components/Shareable/RelatorioHistoricoQuestionamento";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { getSolicitacaoKitLancheCEMEI } from "services/kitLanche";
-import { SolicitacaoAlimentacaoContext } from "context/SolicitacaoAlimentacao";
+} from "src/components/Shareable/Botao/constants";
+import RelatorioHistoricoJustificativaEscola from "src/components/Shareable/RelatorioHistoricoJustificativaEscola";
+import { CODAE, TERCEIRIZADA } from "src/configs/constants";
+import {
+  statusEnum,
+  TIPO_PERFIL,
+  TIPO_SOLICITACAO,
+} from "src/constants/shared";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import RelatorioHistoricoQuestionamento from "src/components/Shareable/RelatorioHistoricoQuestionamento";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { getSolicitacaoKitLancheCEMEI } from "src/services/kitLanche";
+import { SolicitacaoAlimentacaoContext } from "src/context/SolicitacaoAlimentacao";
 import "../../style.scss";
-import { getRelatorioKitLancheCEMEI } from "services/relatorios";
-import { SolicitacoesSimilaresKitLanche } from "components/Shareable/SolicitacoesSimilaresKitLanche";
+import { getRelatorioKitLancheCEMEI } from "src/services/relatorios";
+import { SolicitacoesSimilaresKitLanche } from "src/components/Shareable/SolicitacoesSimilaresKitLanche";
 import { ModalAprovarSolicitacaoKitLanche } from "../ModalAprovarSolicitacaoKitLanche";
-import { existeLogDeQuestionamentoDaCODAE } from "components/Shareable/RelatorioHistoricoQuestionamento/helper";
+import { existeLogDeQuestionamentoDaCODAE } from "src/components/Shareable/RelatorioHistoricoQuestionamento/helper";
 
 export const CorpoRelatorio = ({ ...props }) => {
   const {

@@ -1,13 +1,13 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { Container } from "components/SolicitacaoDeKitLanche/Container";
-import { Container as ContainerCEMEI } from "components/SolicitacaoKitLancheCEMEI/componentes/Container";
-import PainelPedidosKitLancheDRE from "components/SolicitacaoDeKitLanche/DRE/PainelPedidos/Container";
-import PainelPedidosKitLancheCODAE from "components/SolicitacaoDeKitLanche/CODAE/PainelPedidos/Container";
-import PainelPedidosKitLancheTerceirizada from "components/SolicitacaoDeKitLanche/Terceirizada/PainelPedidos/Container";
-import { meusDados } from "services/perfil.service";
-import { HOME } from "constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { Container } from "src/components/SolicitacaoDeKitLanche/Container";
+import { Container as ContainerCEMEI } from "src/components/SolicitacaoKitLancheCEMEI/componentes/Container";
+import PainelPedidosKitLancheDRE from "src/components/SolicitacaoDeKitLanche/DRE/PainelPedidos/Container";
+import PainelPedidosKitLancheCODAE from "src/components/SolicitacaoDeKitLanche/CODAE/PainelPedidos/Container";
+import PainelPedidosKitLancheTerceirizada from "src/components/SolicitacaoDeKitLanche/Terceirizada/PainelPedidos/Container";
+import { meusDados } from "src/services/perfil.service";
+import { HOME } from "src/constants/config";
 import {
   SOLICITACAO_KIT_LANCHE,
   ESCOLA,
@@ -15,7 +15,7 @@ import {
   CODAE,
   TERCEIRIZADA,
 } from "../../configs/constants";
-import { escolaEhCEMEI } from "helpers/utilities";
+import { escolaEhCEMEI } from "src/helpers/utilities";
 import { useLocation } from "react-router-dom";
 
 export class PainelPedidosBase extends React.Component {

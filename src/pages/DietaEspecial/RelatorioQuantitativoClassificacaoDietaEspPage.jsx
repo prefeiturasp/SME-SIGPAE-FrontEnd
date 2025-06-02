@@ -1,15 +1,15 @@
 import React from "react";
 
-import { HOME } from "constants/config";
+import { HOME } from "src/constants/config";
 
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 
-import RelatorioQuantitativoClassificacaoDietaEsp from "components/screens/DietaEspecial/RelatorioQuantitativoClassificacaoDietaEsp";
+import RelatorioQuantitativoClassificacaoDietaEsp from "src/components/screens/DietaEspecial/RelatorioQuantitativoClassificacaoDietaEsp";
 import {
   DIETA_ESPECIAL,
   RELATORIO_QUANTITATIVO_CLASSIFICACAO_DIETA_ESP,
-} from "configs/constants";
+} from "src/configs/constants";
 
 const atual = {
   href: `/${DIETA_ESPECIAL}/${RELATORIO_QUANTITATIVO_CLASSIFICACAO_DIETA_ESP}`,

@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Radio, Spin, Tooltip } from "antd";
 import "./style.scss";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Field, Form } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
-import MaskedInputText from "components/Shareable/Input/MaskedInputText";
+import InputText from "src/components/Shareable/Input/InputText";
+import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
 import { Modal } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import {
@@ -19,14 +19,17 @@ import {
   noSpaceStartOrEnd,
   required,
   tamanhoCnpjMascara,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 import {
   cadastraLaboratorio,
   editaLaboratorio,
   getLaboratorio,
   getListaLaboratorios,
-} from "services/laboratorio.service";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/services/laboratorio.service";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   composeValidators,
   exibeError,
@@ -34,10 +37,10 @@ import {
   formatarCPFouCNPJ,
   formatarTelefone,
   removeCaracteresEspeciais,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import createDecorator from "final-form-calculate";
-import { getEnderecoPorCEP } from "services/cep.service";
-import { cepMask, cnpjMask, telefoneMask } from "constants/shared";
+import { getEnderecoPorCEP } from "src/services/cep.service";
+import { cepMask, cnpjMask, telefoneMask } from "src/constants/shared";
 
 export default ({ naoEditavel = false }) => {
   const [carregando, setCarregando] = useState(true);

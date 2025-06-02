@@ -1,10 +1,10 @@
 import React, { Fragment } from "react";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "../../style.scss";
 import { FormCadastroEditaisContratosInterface } from "../../../interfaces";
 import { LoteRascunhosInterface } from "interfaces/rascunhos.interface";

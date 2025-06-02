@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useNavigationType } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 
 import {
   reset,
@@ -12,9 +12,9 @@ import {
   setAtivos,
   setFiltros,
   setPage,
-} from "reducers/buscaAvancadaProduto";
+} from "src/reducers/buscaAvancadaProduto";
 
-import { getProdutosListagem } from "services/produto.service";
+import { getProdutosListagem } from "src/services/produto.service";
 
 import FormBuscaProduto from "./components/FormBuscaProduto";
 import ListagemProdutos from "./components/ListagemProdutos";
@@ -22,7 +22,7 @@ import ListagemProdutos from "./components/ListagemProdutos";
 import { ordenaProdutos, processaStatus } from "./helpers";
 
 import "./style.scss";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 const BuscaAvancada = ({
   produtos,

@@ -3,16 +3,16 @@ import { useNavigate } from "react-router-dom";
 import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
 import { CorpoRelatorio } from "./components/CorpoRelatorio";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { getSolicitacaoKitLancheCEMEI } from "services/kitLanche";
+} from "src/components/Shareable/Botao/constants";
+import { getSolicitacaoKitLancheCEMEI } from "src/services/kitLanche";
 import "./style.scss";
-import { SolicitacaoAlimentacaoContext } from "context/SolicitacaoAlimentacao";
-import { deepCopy } from "helpers/utilities";
+import { SolicitacaoAlimentacaoContext } from "src/context/SolicitacaoAlimentacao";
+import { deepCopy } from "src/helpers/utilities";
 
 export const Relatorio = ({ ...props }) => {
   const navigate = useNavigate();

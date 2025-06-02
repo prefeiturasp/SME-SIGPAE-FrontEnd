@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "configs/constants";
-import Page from "components/Shareable/Page/Page";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import { Relatorio } from "components/SolicitacaoKitLancheCEMEI/Relatorio";
-// import { ModalTerceirizadaRespondeQuestionamento } from "components/Shareable/ModalTerceirizadaRespondeQuestionamento";
-import { ModalCancelarKitLancheCEMEI } from "components/SolicitacaoKitLancheCEMEI/Relatorio/components/ModalCancelarKitLancheCEMEI";
-import { ModalNaoValidarFinalForm } from "components/Shareable/ModalNaoValidarFinalForm";
+import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
+import Page from "src/components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import { Relatorio } from "src/components/SolicitacaoKitLancheCEMEI/Relatorio";
+// import { ModalTerceirizadaRespondeQuestionamento } from "src/components/Shareable/ModalTerceirizadaRespondeQuestionamento";
+import { ModalCancelarKitLancheCEMEI } from "src/components/SolicitacaoKitLancheCEMEI/Relatorio/components/ModalCancelarKitLancheCEMEI";
+import { ModalNaoValidarFinalForm } from "src/components/Shareable/ModalNaoValidarFinalForm";
 import {
   cancelaFluxoSolicitacaoKitLancheCEMEI,
   CODAEAutorizaKitLancheCEMEI,
@@ -16,11 +16,11 @@ import {
   DREValidaKitLancheCEMEI,
   terceirizadaRespondeQuestionamentoKitLanche,
   terceirizadaTomaCienciaKitLanche,
-} from "services/kitLanche";
-import { getMotivosDREnaoValida } from "services/relatorios";
-import { ModalNegarFinalForm } from "components/Shareable/ModalNegarFinalForm";
-import { ModalCODAEQuestionaFinalForm } from "components/Shareable/ModalCODAEQuestionaFinalForm";
-import { ModalTercRespondeQuestFinalForm } from "components/Shareable/ModalTercRespondeQuestFinalForm";
+} from "src/services/kitLanche";
+import { getMotivosDREnaoValida } from "src/services/relatorios";
+import { ModalNegarFinalForm } from "src/components/Shareable/ModalNegarFinalForm";
+import { ModalCODAEQuestionaFinalForm } from "src/components/Shareable/ModalCODAEQuestionaFinalForm";
+import { ModalTercRespondeQuestFinalForm } from "src/components/Shareable/ModalTercRespondeQuestFinalForm";
 
 export const RelatorioBase = ({ ...props }) => {
   const [motivosDREnaoValida, setMotivosDREnaoValida] = useState();

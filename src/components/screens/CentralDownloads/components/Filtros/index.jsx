@@ -1,20 +1,20 @@
 import moment from "moment";
 import React, { useRef } from "react";
 import { Form, Field } from "react-final-form";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import { InputComData } from "components/Shareable/DatePicker";
-import { InputText } from "components/Shareable/Input/InputText";
-import Botao from "components/Shareable/Botao";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./styles.scss";
 import {
   OPTIONS_STATUS_DOWNLOAD,
   OPTIONS_VISTO_DOWNLOAD,
-} from "constants/shared";
-import Select from "components/Shareable/Select";
+} from "src/constants/shared";
+import Select from "src/components/Shareable/Select";
 
 const FORM_NAME = "buscaDownloads";
 

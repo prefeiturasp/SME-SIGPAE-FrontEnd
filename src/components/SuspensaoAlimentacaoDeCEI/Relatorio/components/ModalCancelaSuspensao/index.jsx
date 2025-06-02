@@ -2,15 +2,18 @@ import React from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { required } from "helpers/fieldValidators";
-import { getError } from "helpers/utilities";
-import { escolaCancelaSuspensaoCEI } from "services/suspensaoAlimentacaoCei.service";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { required } from "src/helpers/fieldValidators";
+import { getError } from "src/helpers/utilities";
+import { escolaCancelaSuspensaoCEI } from "src/services/suspensaoAlimentacaoCei.service";
 
 export default ({ showModal, closeModal, setSolicitacaoSuspensao, uuid }) => {
   const onSubmit = async (values) => {

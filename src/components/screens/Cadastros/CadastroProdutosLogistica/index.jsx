@@ -2,25 +2,28 @@ import React, { useState } from "react";
 import {
   cadastrarProdutoEdital,
   atualizarProdutoEdital,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import { Field, Form } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
-import { Select } from "components/Shareable/Select";
+import InputText from "src/components/Shareable/Input/InputText";
+import { Select } from "src/components/Shareable/Select";
 import { Spin } from "antd";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   required,
   alphaNumericAndSingleSpaceBetweenCharacters,
   noSpaceStartOrEnd,
-} from "helpers/fieldValidators";
-import Botao from "components/Shareable/Botao";
+} from "src/helpers/fieldValidators";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { composeValidators, statusProdutos } from "helpers/utilities";
+} from "src/components/Shareable/Botao/constants";
+import { composeValidators, statusProdutos } from "src/helpers/utilities";
 import "./style.scss";
-import { CADASTROS, CONFIGURACOES, PRODUTOS } from "configs/constants";
+import { CADASTROS, CONFIGURACOES, PRODUTOS } from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";

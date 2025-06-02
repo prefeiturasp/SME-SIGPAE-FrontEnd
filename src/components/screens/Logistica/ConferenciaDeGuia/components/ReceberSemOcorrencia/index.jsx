@@ -1,20 +1,23 @@
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import { CONFERIR_ENTREGA, LOGISTICA } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import { CONFERIR_ENTREGA, LOGISTICA } from "src/configs/constants";
 import {
   recebeGuiaSemOcorrencia,
   editaGuiaComOcorrencia,
-} from "services/logistica.service";
+} from "src/services/logistica.service";
 import { Spin } from "antd";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 
 export default ({ values, disabled, uuidEdicao }) => {
   const [show, setShow] = useState(false);

@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockListaUnidadesMedidaLogistica } from "mocks/cronograma.service/mockGetUnidadesDeMedidaLogistica";
 import { mockListaProdutosLogistica } from "mocks/produto.service/mockGetListaCompletaProdutosLogistica";
 import { mockListaMarcas } from "mocks/produto.service/mockGetNomesMarcas";
@@ -22,21 +22,21 @@ import {
   getInformacoesNutricionaisOrdenadas,
   cadastrarProdutoEdital,
   cadastrarItem,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import {
   cadastrarFichaTecnica,
   cadastraRascunhoFichaTecnica,
   getFichaTecnica,
-} from "services/fichaTecnica.service";
-import { getUnidadesDeMedidaLogistica } from "services/cronograma.service";
-import { getTerceirizadaUUID } from "services/terceirizada.service";
+} from "src/services/fichaTecnica.service";
+import { getUnidadesDeMedidaLogistica } from "src/services/cronograma.service";
+import { getTerceirizadaUUID } from "src/services/terceirizada.service";
 import { CATEGORIA_OPTIONS } from "../constants";
 import { debug } from "jest-preview";
 import { FichaTecnicaDetalhada } from "interfaces/pre_recebimento.interface";
 import { mockFichaTecnica } from "mocks/services/fichaTecnica.service/mockGetFichaTecnica";
 import { mockMeusDadosFornecedor } from "mocks/services/perfil.service/mockMeusDados";
-import CadastroFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
-import mock from "services/_mock";
+import CadastroFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
+import mock from "src/services/_mock";
 
 jest.mock("services/terceirizada.service.js");
 jest.mock("services/cronograma.service.js");

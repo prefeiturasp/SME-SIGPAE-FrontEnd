@@ -1,17 +1,20 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import CardMatriculados from "components/Shareable/CardMatriculados";
-import CKEditorField from "components/Shareable/CKEditorField";
-import { InputComData } from "components/Shareable/DatePicker";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import Select from "components/Shareable/Select";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import Select from "src/components/Shareable/Select";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
 import arrayMutators from "final-form-arrays";
-import { required } from "helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 import {
   agregarDefault,
   checaSeDataEstaEntre2e5DiasUteis,
@@ -19,7 +22,7 @@ import {
   fimDoCalendario,
   getDataObj,
   getError,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -30,7 +33,7 @@ import {
   getAlteracaoCEMEIRascunhos,
   iniciaFluxoAlteracaoAlimentacaoCEMEI,
   updateAlteracaoCardapioCEMEI,
-} from "services/alteracaoDeCardapio/escola.service";
+} from "src/services/alteracaoDeCardapio/escola.service";
 import { formataValues } from "../AlteracaoDeCardapio/Escola/helper";
 import { ModalLancheEmergencial } from "./componentes/ModalLancheEmergencial";
 import { Rascunhos } from "./componentes/Rascunhos";

@@ -7,12 +7,12 @@ import {
   fireEvent,
 } from "@testing-library/react";
 import React from "react";
-import mock from "services/_mock";
+import mock from "src/services/_mock";
 import { MemoryRouter } from "react-router-dom";
 import RelatorioCronograma from "../index";
-import { mockCronogramasResponse } from "mocks/cronograma.service/mockGetListagemRelatorio.js";
-import { mockCronogramasResponsePag2 } from "mocks/cronograma.service/mockGetListagemRelatorio.js";
-import { mockCronogramasResponseVazio } from "mocks/cronograma.service/mockGetListagemRelatorio.js";
+import { mockCronogramasResponse } from "mocks/cronograma.service/mockGetListagemRelatorio";
+import { mockCronogramasResponsePag2 } from "mocks/cronograma.service/mockGetListagemRelatorio";
+import { mockCronogramasResponseVazio } from "mocks/cronograma.service/mockGetListagemRelatorio";
 import { mockMeusDadosCEI } from "mocks/meusDados/escola/CEI";
 
 import { mockTerceirizadasEmpresasCronomagramas } from "mocks/cronograma.service/mockGetListaTerceirizadasEmpresasCronomagramas";

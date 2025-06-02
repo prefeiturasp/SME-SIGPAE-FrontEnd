@@ -6,10 +6,10 @@ import {
   required,
   composeValidators,
   inteiroOuDecimalComVirgula,
-} from "helpers/fieldValidators";
-import InputText from "components/Shareable/Input/InputText";
+} from "src/helpers/fieldValidators";
+import InputText from "src/components/Shareable/Input/InputText";
 import { OptionsGenerico } from "interfaces/pre_recebimento.interface";
-import SelectSelecione from "components/Shareable/SelectSelecione";
+import SelectSelecione from "src/components/Shareable/SelectSelecione";
 
 const TAXA_CONVERSAO_KCAL_KJ = 4.2;
 

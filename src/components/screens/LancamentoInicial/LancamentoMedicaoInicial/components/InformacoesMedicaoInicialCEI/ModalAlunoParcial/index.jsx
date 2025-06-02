@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Field, Form } from "react-final-form";
 import { Modal } from "react-bootstrap";
 import { lastDayOfMonth } from "date-fns";
-import { InputComData } from "components/Shareable/DatePicker";
-import Botao from "components/Shareable/Botao";
-import { toastSuccess } from "components/Shareable/Toast/dialogs";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import Botao from "src/components/Shareable/Botao";
+import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { required } from "helpers/fieldValidators";
+} from "src/components/Shareable/Botao/constants";
+import { required } from "src/helpers/fieldValidators";
 
 export const ModalAlunoParcial = ({ ...props }) => {
   const {

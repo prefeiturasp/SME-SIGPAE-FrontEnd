@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
-import { getGuiaParaInsucesso } from "../../../../services/logistica.service.js";
+import { getGuiaParaInsucesso } from "../../../../services/logistica.service";
 import { Form, Field } from "react-final-form";
-import Select from "components/Shareable/Select";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import { InputText } from "components/Shareable/Input/InputText";
-import { InputHorario } from "components/Shareable/Input/InputHorario";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import InputFile from "components/Shareable/Input/InputFile";
+import Select from "src/components/Shareable/Select";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { InputHorario } from "src/components/Shareable/Input/InputHorario";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import InputFile from "src/components/Shareable/Input/InputFile";
 import { useNavigate } from "react-router-dom";
-import { INSUCESSO_ENTREGA, LOGISTICA } from "configs/constants";
+import { INSUCESSO_ENTREGA, LOGISTICA } from "src/configs/constants";
 import {
   required,
   maxLength,
@@ -18,17 +18,17 @@ import {
   peloMenosUmNumeroEUmaLetra,
 } from "../../../../helpers/fieldValidators";
 import { composeValidators } from "../../../../helpers/utilities";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import Botao from "components/Shareable/Botao";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import ModalInsucesso from "./components/ModalInsucesso";
 import moment from "moment";
 import "./styles.scss";
 
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 
 const FORM_NAME = "registrarInsucessoEntrega";
 const FORMATOS_IMAGEM = "PNG, JPG ou JPEG";

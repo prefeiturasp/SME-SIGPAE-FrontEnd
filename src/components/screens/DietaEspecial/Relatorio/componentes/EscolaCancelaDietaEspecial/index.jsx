@@ -8,7 +8,7 @@ import ModalCancelaDietaEspecial from "../ModalCancelaDietaEspecial";
 import {
   usuarioEhNutricionistaSupervisao,
   usuarioEhDRE,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 const EscolaCancelaDietaEspecial = ({ uuid, onCancelar }) => {
   const [showModal, setShowModal] = useState(false);

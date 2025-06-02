@@ -1,24 +1,24 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
-import { fluxoPartindoEscola } from "components/Shareable/FluxoDeStatus/helper";
-import RelatorioHistoricoJustificativaEscola from "components/Shareable/RelatorioHistoricoJustificativaEscola";
-import RelatorioHistoricoQuestionamento from "components/Shareable/RelatorioHistoricoQuestionamento";
-import { existeLogDeQuestionamentoDaCODAE } from "components/Shareable/RelatorioHistoricoQuestionamento/helper";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { TIPO_SOLICITACAO } from "constants/shared";
+} from "src/components/Shareable/Botao/constants";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
+import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
+import RelatorioHistoricoJustificativaEscola from "src/components/Shareable/RelatorioHistoricoJustificativaEscola";
+import RelatorioHistoricoQuestionamento from "src/components/Shareable/RelatorioHistoricoQuestionamento";
+import { existeLogDeQuestionamentoDaCODAE } from "src/components/Shareable/RelatorioHistoricoQuestionamento/helper";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
 import {
   corDaMensagem,
   justificativaAoAprovarSolicitacao,
   justificativaAoNegarSolicitacao,
   prazoDoPedidoMensagem,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { useState } from "react";
-import { getRelatorioAlteracaoTipoAlimentacao } from "services/relatorios";
+import { getRelatorioAlteracaoTipoAlimentacao } from "src/services/relatorios";
 
 export const CorpoRelatorio = ({ ...props }) => {
   let totalMatriculados = 0;

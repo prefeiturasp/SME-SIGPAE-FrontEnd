@@ -1,14 +1,14 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { Select } from "components/Shareable/Select";
-import InputText from "components/Shareable/Input/InputText";
+import { Select } from "src/components/Shareable/Select";
+import InputText from "src/components/Shareable/Input/InputText";
 import {
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
   usuarioEhEmpresaTerceirizada,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { Spin } from "antd";
-import { TIPOS_SOLICITACOES_OPTIONS } from "constants/shared";
+import { TIPOS_SOLICITACOES_OPTIONS } from "src/constants/shared";
 import { InputComData } from "./DatePicker";
 
 // Para usar este componente é necessário remover o redux-form do dashboard

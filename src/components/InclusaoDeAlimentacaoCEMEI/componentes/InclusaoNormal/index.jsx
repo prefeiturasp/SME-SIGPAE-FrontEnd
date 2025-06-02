@@ -9,10 +9,13 @@ import {
   tiposAlimentacaoPorPeriodoETipoUnidade,
   totalAlunosInputPorPeriodoCEI,
   totalAlunosPorPeriodoCEI,
-} from "components/InclusaoDeAlimentacaoCEMEI/helpers";
-import InputText from "components/Shareable/Input/InputText";
-import { maxValue, naoPodeSerZero } from "helpers/fieldValidators";
-import { composeValidators, formatarParaMultiselect } from "helpers/utilities";
+} from "src/components/InclusaoDeAlimentacaoCEMEI/helpers";
+import InputText from "src/components/Shareable/Input/InputText";
+import { maxValue, naoPodeSerZero } from "src/helpers/fieldValidators";
+import {
+  composeValidators,
+  formatarParaMultiselect,
+} from "src/helpers/utilities";
 import "./style.scss";
 
 export const PeriodosCEIeouEMEI = ({

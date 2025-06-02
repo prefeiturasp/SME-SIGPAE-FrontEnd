@@ -1,9 +1,9 @@
 import { Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import CardCronograma from "components/Shareable/CardCronograma/CardCronograma";
+import CardCronograma from "src/components/Shareable/CardCronograma/CardCronograma";
 import { cardsPainel } from "./constants";
 import { Field, Form } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import { debounce } from "lodash";
 import { useCallback } from "react";
 import {
@@ -12,7 +12,7 @@ import {
   FiltrosDashboardFichasTecnicas,
 } from "interfaces/pre_recebimento.interface";
 import { ResponseFichasTecnicasDashboard } from "interfaces/responses.interface";
-import { getDashboardFichasTecnicas } from "services/fichaTecnica.service";
+import { getDashboardFichasTecnicas } from "src/services/fichaTecnica.service";
 import { formatarCards } from "./helpers";
 
 export default () => {

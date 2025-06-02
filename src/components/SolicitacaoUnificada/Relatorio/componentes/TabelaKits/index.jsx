@@ -1,7 +1,7 @@
 import React from "react";
 import { stringSeparadaPorVirgulas } from "../../../../../helpers/utilities";
-import { CODAE, DRE } from "configs/constants";
-import { statusEnum } from "constants/shared";
+import { CODAE, DRE } from "src/configs/constants";
+import { statusEnum } from "src/constants/shared";
 import "./style.scss";
 
 export const TabelaKits = (props) => {

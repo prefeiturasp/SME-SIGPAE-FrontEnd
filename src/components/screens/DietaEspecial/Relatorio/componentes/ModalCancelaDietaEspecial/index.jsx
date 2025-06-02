@@ -2,13 +2,13 @@ import HTTP_STATUS from "http-status-codes";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { Form, Field } from "react-final-form";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
 import {
   peloMenosUmCaractere,
   required,
   textAreaRequired,
 } from "../../../../../../helpers/fieldValidators";
-import CKEditorField from "components/Shareable/CKEditorField";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import { escolaCancelaSolicitacao } from "../../../../../../services/dietaEspecial.service";
 import Botao from "../../../../../Shareable/Botao";
 import {

@@ -1,24 +1,24 @@
 import { Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import CardCronograma from "components/Shareable/CardCronograma/CardCronograma";
+import CardCronograma from "src/components/Shareable/CardCronograma/CardCronograma";
 import { cardsPainel } from "./constants";
 import {
   ANALISAR_DOCUMENTO_RECEBIMENTO,
   DETALHAR_FORNECEDOR_DOCUMENTO_RECEBIMENTO,
   DETALHAR_CODAE_DOCUMENTO_RECEBIMENTO,
   PRE_RECEBIMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   parseDataHoraBrToMoment,
   comparaObjetosMoment,
   truncarString,
   usuarioEhDilogQualidade,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { Field, Form } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import { debounce } from "lodash";
 import { useCallback } from "react";
-import { getDashboardDocumentosRecebimento } from "services/documentosRecebimento.service";
+import { getDashboardDocumentosRecebimento } from "src/services/documentosRecebimento.service";
 import {
   CardConfig,
   CardItem,

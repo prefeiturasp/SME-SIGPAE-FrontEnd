@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Spin } from "antd";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 export default ({ closeModal, showModal, periodoGrupo, onSubmit }) => {
   const [loadingModal, setLoadingModal] = useState(false);

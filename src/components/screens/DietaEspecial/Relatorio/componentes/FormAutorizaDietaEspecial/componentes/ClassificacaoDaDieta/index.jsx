@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Field } from "react-final-form";
-import { ASelect } from "components/Shareable/MakeField";
+import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
-import { selectValidate } from "helpers/fieldValidators";
+import { selectValidate } from "src/helpers/fieldValidators";
 
 const ClassificacaoDaDieta = ({ classificacoesDieta }) => {
   const [open, setOpen] = useState(false);

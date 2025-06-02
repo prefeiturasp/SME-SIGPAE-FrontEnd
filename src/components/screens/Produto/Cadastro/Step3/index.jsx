@@ -9,8 +9,8 @@ import {
 } from "../../../../../services/produto.service";
 import "./style.scss";
 import { TextArea } from "../../../../Shareable/TextArea/TextArea";
-import ManagedInputFileField from "components/Shareable/Input/InputFile/ManagedField";
-import TooltipIcone from "components/Shareable/TooltipIcone";
+import ManagedInputFileField from "src/components/Shareable/Input/InputFile/ManagedField";
+import TooltipIcone from "src/components/Shareable/TooltipIcone";
 
 class Step3 extends Component {
   constructor(props) {

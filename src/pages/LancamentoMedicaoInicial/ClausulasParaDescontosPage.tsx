@@ -5,7 +5,7 @@ import {
   CLAUSULAS_PARA_DESCONTOS,
   MEDICAO_INICIAL,
 } from "../../configs/constants";
-import { ClausulasParaDescontos } from "components/screens/LancamentoInicial/ClausulasParaDescontos";
+import { ClausulasParaDescontos } from "src/components/screens/LancamentoInicial/ClausulasParaDescontos";
 
 const atual = {
   href: `/${MEDICAO_INICIAL}/${CLAUSULAS_PARA_DESCONTOS}/`,

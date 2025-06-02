@@ -1,7 +1,10 @@
 import React, { ReactElement, useState } from "react";
 import { Tooltip } from "antd";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   FiltrosRelatoriosVisitasInterface,
   RelatorioVisitaItemListagem,
@@ -12,13 +15,13 @@ import {
   RELATORIO_FISCALIZACAO_TERCEIRIZADAS,
   SUPERVISAO,
   TERCEIRIZADAS,
-} from "configs/constants";
-import { truncarString } from "helpers/utilities";
+} from "src/configs/constants";
+import { truncarString } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import {
   deleteFormularioSupervisao,
   exportarPDFRelatorioFiscalizacao,
-} from "services/imr/relatorioFiscalizacaoTerceirizadas";
+} from "src/services/imr/relatorioFiscalizacaoTerceirizadas";
 import { NavLink } from "react-router-dom";
 import "./styles.scss";
 

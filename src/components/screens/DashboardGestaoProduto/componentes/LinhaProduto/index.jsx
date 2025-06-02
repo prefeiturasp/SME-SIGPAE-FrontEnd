@@ -1,5 +1,5 @@
 import { Tooltip } from "antd";
-import { GESTAO_PRODUTO_CARDS } from "configs/constants";
+import { GESTAO_PRODUTO_CARDS } from "src/configs/constants";
 import React from "react";
 import { NavLink } from "react-router-dom";
 

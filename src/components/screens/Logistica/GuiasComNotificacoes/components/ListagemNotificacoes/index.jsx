@@ -3,14 +3,14 @@ import {
   DETALHAR_NOTIFICACAO,
   LOGISTICA,
   NOTIFICAR_EMPRESA,
-} from "configs/constants";
+} from "src/configs/constants";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 
 import "./styles.scss";
-import { EDITAR_NOTIFICACAO } from "configs/constants";
-import { usuarioComAcessoTelaDetalharNotificacaoOcorrencia } from "helpers/utilities";
+import { EDITAR_NOTIFICACAO } from "src/configs/constants";
+import { usuarioComAcessoTelaDetalharNotificacaoOcorrencia } from "src/helpers/utilities";
 
 const ListagemNotificacoes = ({ notificacoes, fiscal, somenteLeitura }) => {
   const navigate = useNavigate();

@@ -1,9 +1,9 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { CENTRAL_DOWNLOADS } from "configs/constants";
-import CentralDownloads from "components/screens/CentralDownloads";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { CENTRAL_DOWNLOADS } from "src/configs/constants";
+import CentralDownloads from "src/components/screens/CentralDownloads";
 
 const atual = {
   href: `/${CENTRAL_DOWNLOADS}`,

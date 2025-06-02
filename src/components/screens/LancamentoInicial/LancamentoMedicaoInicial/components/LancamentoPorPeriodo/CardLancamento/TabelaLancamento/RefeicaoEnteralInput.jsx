@@ -1,7 +1,7 @@
 import React from "react";
 import { Field } from "react-final-form";
 
-import { numericInteger } from "helpers/fieldValidators";
+import { numericInteger } from "src/helpers/fieldValidators";
 
 import BorderlessInput from "../../../BorderlessInput";
 

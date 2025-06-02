@@ -1,24 +1,27 @@
 import React from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import { Field, Form } from "react-final-form";
-import { getError } from "helpers/utilities";
+import { getError } from "src/helpers/utilities";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import CKEditorField from "components/Shareable/CKEditorField";
-import ManagedInputFileField from "components/Shareable/Input/InputFile/ManagedField";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { escolaInativaDietaEspecial } from "services/dietaEspecial.service";
+} from "src/components/Shareable/Botao/constants";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import ManagedInputFileField from "src/components/Shareable/Input/InputFile/ManagedField";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { escolaInativaDietaEspecial } from "src/services/dietaEspecial.service";
 import {
   peloMenosUmCaractere,
   required,
   textAreaRequired,
-} from "helpers/fieldValidators";
-import { composeValidators } from "helpers/utilities";
+} from "src/helpers/fieldValidators";
+import { composeValidators } from "src/helpers/utilities";
 import "./styles.scss";
 
 export default ({ dieta, showModal, setShowModal, filtros, setFiltros }) => {

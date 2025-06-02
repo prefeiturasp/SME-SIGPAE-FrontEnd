@@ -1,13 +1,13 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import React from "react";
-import { ToggleExpandir } from "components/Shareable/ToggleExpandir";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { Tooltip } from "antd";
-import { deepCopy } from "helpers/utilities";
+import { deepCopy } from "src/helpers/utilities";
 import { EditalContratoInterface } from "../../interfaces";
 import { VIGENCIA_STATUS } from "../constants";
 import { useNavigate } from "react-router-dom";

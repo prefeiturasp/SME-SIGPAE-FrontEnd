@@ -1,22 +1,22 @@
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import React, { useContext, useState } from "react";
-import { getSolicitacoesDetalhadas } from "services/relatorios.service";
+import { getSolicitacoesDetalhadas } from "src/services/relatorios.service";
 import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
-import { deepCopy } from "helpers/utilities";
+import { deepCopy } from "src/helpers/utilities";
 import { Filtros } from "./componentes/Filtros";
 import { TabelaResultado } from "./componentes/TabelaResultado";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import "./style.scss";
 import { STATUS_SOLICITACOES } from "./constants";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
-import { toastError } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { Graficos } from "./componentes/Graficos";
 
 export const RelatorioSolicitacoesAlimentacao = ({ ...props }) => {

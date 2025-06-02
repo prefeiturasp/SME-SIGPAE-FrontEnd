@@ -2,7 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import "./style.scss";
-import { CADASTROS, CONFIGURACOES, EDICAO_PRODUTOS } from "configs/constants";
+import {
+  CADASTROS,
+  CONFIGURACOES,
+  EDICAO_PRODUTOS,
+} from "src/configs/constants";
 
 const Tabela = ({ produtos }) => {
   const navigate = useNavigate();

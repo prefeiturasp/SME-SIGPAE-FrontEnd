@@ -7,7 +7,7 @@ import { FiltrosFichaTecnica } from "./interfaces";
 import { ResponseFichasTecnicas } from "interfaces/responses.interface";
 import { FichaTecnica } from "interfaces/pre_recebimento.interface";
 import { gerarParametrosConsulta } from "../../../../helpers/utilities";
-import { listarFichastecnicas } from "services/fichaTecnica.service";
+import { listarFichastecnicas } from "src/services/fichaTecnica.service";
 import "./styles.scss";
 
 export default () => {

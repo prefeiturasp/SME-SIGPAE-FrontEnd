@@ -1,10 +1,10 @@
-import CheckboxField from "components/Shareable/Checkbox/Field";
-import { getStatusSolicitacoesVigentes } from "helpers/dietaEspecial";
+import CheckboxField from "src/components/Shareable/Checkbox/Field";
+import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import withNavigationType from "components/Shareable/withNavigationType";
+import withNavigationType from "src/components/Shareable/withNavigationType";
 import { bindActionCreators } from "redux";
 import { Field, FormSection, formValueSelector, reduxForm } from "redux-form";
 import {
@@ -52,7 +52,7 @@ import Prescritor from "./componentes/Prescritor";
 import SolicitacaoVigente from "./componentes/SolicitacaoVigente";
 import { formatarSolicitacoesVigentes, podeAtualizarFoto } from "./helper";
 
-import { loadSolicitacoesVigentes } from "reducers/incluirDietaEspecialReducer";
+import { loadSolicitacoesVigentes } from "src/reducers/incluirDietaEspecialReducer";
 
 import "./style.scss";
 

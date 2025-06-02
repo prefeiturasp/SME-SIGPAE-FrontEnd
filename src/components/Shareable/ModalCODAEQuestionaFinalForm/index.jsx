@@ -2,14 +2,17 @@ import React, { useState } from "react";
 import { Field, Form } from "react-final-form";
 import { Modal } from "react-bootstrap";
 import HTTP_STATUS from "http-status-codes";
-import { getError } from "helpers/utilities";
-import Botao from "components/Shareable/Botao";
+import { getError } from "src/helpers/utilities";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import CKEditorField from "components/Shareable/CKEditorField";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 
 export const ModalCODAEQuestionaFinalForm = ({ ...props }) => {
   const {

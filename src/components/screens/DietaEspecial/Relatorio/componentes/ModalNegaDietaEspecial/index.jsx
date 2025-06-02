@@ -2,7 +2,7 @@ import HTTP_STATUS from "http-status-codes";
 import React, { Component } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
-import CKEditorField from "components/Shareable/CKEditorField";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import {
   toastError,
   toastSuccess,
@@ -17,8 +17,8 @@ import {
   peloMenosUmCaractere,
   required,
   textAreaRequired,
-} from "helpers/fieldValidators";
-import { composeValidators } from "helpers/utilities";
+} from "src/helpers/fieldValidators";
+import { composeValidators } from "src/helpers/utilities";
 import { agregarDefault } from "../../../../../../helpers/utilities";
 import { formataMotivos } from "./helper";
 

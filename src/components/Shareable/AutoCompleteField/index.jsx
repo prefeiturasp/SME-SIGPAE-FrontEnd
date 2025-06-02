@@ -1,7 +1,7 @@
 import { Input, AutoComplete } from "antd";
 import React, { Component } from "react";
-import { InputErroMensagem } from "components/Shareable/Input/InputErroMensagem";
-import { HelpText } from "components/Shareable/HelpText";
+import { InputErroMensagem } from "src/components/Shareable/Input/InputErroMensagem";
+import { HelpText } from "src/components/Shareable/HelpText";
 import "./style.scss";
 
 export default class AutoCompleteField extends Component {

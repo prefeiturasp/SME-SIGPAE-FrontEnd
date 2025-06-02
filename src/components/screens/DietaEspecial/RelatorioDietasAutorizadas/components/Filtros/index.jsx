@@ -3,15 +3,15 @@ import { Field } from "react-final-form";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import Select from "components/Shareable/Select";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { usuarioEhDRE } from "helpers/utilities";
+import Select from "src/components/Shareable/Select";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { usuarioEhDRE } from "src/helpers/utilities";
 import {
   getUnidadesEducacionaisComCodEol,
   getSolicitacoesRelatorioDietasEspeciais,
-} from "services/dietaEspecial.service";
-import { getTotalizadoresRelatorioSolicitacoes } from "services/relatorios.service";
+} from "src/services/dietaEspecial.service";
+import { getTotalizadoresRelatorioSolicitacoes } from "src/services/relatorios.service";
 import "./styles.scss";
 
 export const Filtros = ({ ...props }) => {

@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { formataMesNome } from "helpers/utilities";
+import { formataMesNome } from "src/helpers/utilities";
 import "./style.scss";
 
 export const HistoricoAprovacao = ({ ...props }) => {

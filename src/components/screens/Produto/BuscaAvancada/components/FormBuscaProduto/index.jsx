@@ -4,17 +4,17 @@ import { Form, Field } from "react-final-form";
 import { connect } from "react-redux";
 import { useNavigationType } from "react-router-dom";
 
-import AutoCompleteFieldUnaccent from "components/Shareable/AutoCompleteField/unaccent";
-import CheckboxField from "components/Shareable/Checkbox/Field";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import { InputText } from "components/Shareable/Input/InputText";
-import { SelectWithHideOptions } from "components/Shareable/SelectWithHideOptions";
-import Botao from "components/Shareable/Botao";
+import AutoCompleteFieldUnaccent from "src/components/Shareable/AutoCompleteField/unaccent";
+import CheckboxField from "src/components/Shareable/Checkbox/Field";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { SelectWithHideOptions } from "src/components/Shareable/SelectWithHideOptions";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { InputComData } from "components/Shareable/DatePicker";
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
 
 import {
   getNomesUnicosProdutos,
@@ -22,12 +22,12 @@ import {
   getNomesUnicosFabricantes,
   getNomesTerceirizadas,
   getNomesUnicosEditais,
-} from "services/produto.service";
+} from "src/services/produto.service";
 
 import { getOpecoesStatus, retornaStatusBackend } from "./helpers";
 import "./style.scss";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import { required } from "helpers/fieldValidators";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import { required } from "src/helpers/fieldValidators";
 
 const initialState = {
   dados: {},

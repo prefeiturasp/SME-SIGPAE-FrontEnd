@@ -8,21 +8,21 @@ import CardListarSolicitacoes from "../../Shareable/CardListarSolicitacoes";
 import { Paginacao } from "../../Shareable/Paginacao";
 import { InputSearchPendencias } from "../../Shareable/InputSearchPendencias";
 import { ordenaPorDate, extrairStatusDaSolicitacaoURL } from "./helper";
-import { getMeusLotes } from "services/lote.service";
+import { getMeusLotes } from "src/services/lote.service";
 import {
   usuarioEhCogestorDRE,
   usuarioEhEmpresaTerceirizada,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import {
   ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS,
   TIPO_PERFIL,
-} from "constants/shared";
-import { GESTAO_PRODUTO_CARDS } from "configs/constants";
+} from "src/constants/shared";
+import { GESTAO_PRODUTO_CARDS } from "src/configs/constants";
 import {
   getHomologacoesDeProdutoPorStatusTitulo,
   getNomesUnicosEditais,
-} from "services/produto.service";
-import { resetCamposProduto } from "reducers/filtersProdutoReducer";
+} from "src/services/produto.service";
+import { resetCamposProduto } from "src/reducers/filtersProdutoReducer";
 
 export class StatusSolicitacoes extends Component {
   constructor(props, context) {

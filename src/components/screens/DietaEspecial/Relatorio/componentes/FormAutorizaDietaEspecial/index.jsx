@@ -3,15 +3,18 @@ import HTTP_STATUS from "http-status-codes";
 import { Form } from "react-final-form";
 import moment from "moment";
 import arrayMutators from "final-form-arrays";
-import { TIPO_SOLICITACAO_DIETA } from "constants/shared";
-import { toastSuccess, toastError } from "components/Shareable/Toast/dialogs";
+import { TIPO_SOLICITACAO_DIETA } from "src/constants/shared";
+import {
+  toastSuccess,
+  toastError,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import { ESCOLA, CODAE } from "configs/constants";
-import { statusEnum } from "constants/shared";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import { ESCOLA, CODAE } from "src/configs/constants";
+import { statusEnum } from "src/constants/shared";
 import EscolaCancelaDietaEspecial from "../../componentes/EscolaCancelaDietaEspecial";
 import {
   getAlergiasIntolerancias,
@@ -23,10 +26,10 @@ import {
   getSolicitacoesDietaEspecial,
   CODAEAutorizaDietaEspecial,
   CODAEAtualizaProtocoloDietaEspecial,
-} from "services/dietaEspecial.service";
-import { getSubstitutos } from "services/produto.service";
-import { getMotivosNegacaoDietaEspecial } from "services/painelNutricionista.service";
-import { CODAENegaDietaEspecial } from "services/dietaEspecial.service";
+} from "src/services/dietaEspecial.service";
+import { getSubstitutos } from "src/services/produto.service";
+import { getMotivosNegacaoDietaEspecial } from "src/services/painelNutricionista.service";
+import { CODAENegaDietaEspecial } from "src/services/dietaEspecial.service";
 
 import Diagnosticos from "./componentes/Diagnosticos";
 import ClassificacaoDaDieta from "./componentes/ClassificacaoDaDieta";
@@ -48,8 +51,8 @@ import {
 import {
   obtemIdentificacaoNutricionista,
   gerarParametrosConsulta,
-} from "helpers/utilities";
-import { getStatusSolicitacoesVigentes } from "helpers/dietaEspecial";
+} from "src/helpers/utilities";
+import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import { formatarSolicitacoesVigentes } from "../../../Escola/helper";
 import "./style.scss";
 

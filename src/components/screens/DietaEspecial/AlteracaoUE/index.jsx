@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import FormCadastro from "./components/FormCadastro";
 import CardMatriculados from "../../../Shareable/CardMatriculados";
-import { meusDados } from "services/perfil.service";
+import { meusDados } from "src/services/perfil.service";
 
 export default () => {
   const [quantidadeAlunos, setQuantidadeAlunos] = useState(0);

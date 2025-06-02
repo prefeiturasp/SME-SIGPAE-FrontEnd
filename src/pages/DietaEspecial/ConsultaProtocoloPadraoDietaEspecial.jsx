@@ -1,15 +1,15 @@
 import React from "react";
 
-import { HOME } from "constants/config";
+import { HOME } from "src/constants/config";
 
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 
-import ConsultaCadastroProtocoloPadraoDieta from "components/screens/DietaEspecial/ConsultaProtocoloPadraoDieta";
+import ConsultaCadastroProtocoloPadraoDieta from "src/components/screens/DietaEspecial/ConsultaProtocoloPadraoDieta";
 import {
   DIETA_ESPECIAL,
   CONSULTA_PROTOCOLO_PADRAO_DIETA,
-} from "configs/constants";
+} from "src/configs/constants";
 
 const atual = {
   href: `/${DIETA_ESPECIAL}/${CONSULTA_PROTOCOLO_PADRAO_DIETA}`,

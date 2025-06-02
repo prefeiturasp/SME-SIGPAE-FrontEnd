@@ -1,4 +1,4 @@
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import {
@@ -8,14 +8,14 @@ import {
   SOLICITACOES_COM_QUESTIONAMENTO,
   SOLICITACOES_NEGADAS,
   SOLICITACOES_PENDENTES,
-} from "configs/constants";
-import { dataAtual } from "helpers/utilities";
-import CardBody from "components/Shareable/CardBody";
-import CardMatriculados from "components/Shareable/CardMatriculados";
+} from "src/configs/constants";
+import { dataAtual } from "src/helpers/utilities";
+import CardBody from "src/components/Shareable/CardBody";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
 import CardStatusDeSolicitacao, {
   CARD_TYPE_ENUM,
   ICON_CARD_TYPE_ENUM,
-} from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+} from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
 import "./style.scss";
 import {
   getSolicitacoesAutorizadasNutrisupervisao,
@@ -23,8 +23,8 @@ import {
   getSolicitacoesComQuestionamentoNutrisupervisao,
   getSolicitacoesNegadasNutrisupervisao,
   getSolicitacoesPendentesAutorizacaoNutrisupervisaoSemFiltro,
-} from "services/painelNutricionista.service";
-import { PAGINACAO_DASHBOARD_DEFAULT } from "constants/shared";
+} from "src/services/painelNutricionista.service";
+import { PAGINACAO_DASHBOARD_DEFAULT } from "src/constants/shared";
 import { Spin } from "antd";
 import { ajustarFormatoLog } from "../helper";
 import {
@@ -32,7 +32,7 @@ import {
   JS_DATE_FEVEREIRO,
   JS_DATE_JANEIRO,
   JS_DATE_JULHO,
-} from "constants/shared";
+} from "src/constants/shared";
 
 export const DashboardNutrisupervisao = () => {
   const [canceladas, setCanceladas] = useState(null);

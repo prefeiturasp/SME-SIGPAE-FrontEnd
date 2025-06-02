@@ -14,7 +14,7 @@ import {
 
 import { getDetalheInversaoCardapio } from "../../../../services/relatorios";
 import { fluxoPartindoEscola } from "../../../Shareable/FluxoDeStatus/helper";
-import { statusEnum } from "constants/shared";
+import { statusEnum } from "src/constants/shared";
 
 export const CorpoRelatorio = (props) => {
   const [imprimindo, setimprimindo] = useState(false);

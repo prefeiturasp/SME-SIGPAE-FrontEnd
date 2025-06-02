@@ -3,9 +3,9 @@ import { Skeleton } from "antd";
 import { Field } from "react-final-form";
 import { FormApi } from "final-form";
 
-import { required } from "helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 
-import { Select } from "components/Shareable/Select";
+import { Select } from "src/components/Shareable/Select";
 
 import useView from "./view";
 

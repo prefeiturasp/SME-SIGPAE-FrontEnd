@@ -1,4 +1,4 @@
-@import "../../../styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 /* The switch - the box around the slider */
 .toggle-switch {

@@ -2,30 +2,33 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import "./style.scss";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
-import ModalJustificativa from "components/Shareable/ModalJustificativa";
-import { ModalPadrao } from "components/Shareable/ModalPadrao";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import Reclamacao from "components/screens/Produto/Reclamacao/components/Reclamacao";
+import ModalJustificativa from "src/components/Shareable/ModalJustificativa";
+import { ModalPadrao } from "src/components/Shareable/ModalPadrao";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import Reclamacao from "src/components/screens/Produto/Reclamacao/components/Reclamacao";
 import { getNumeroProtocoloAnaliseSensorial } from "../../../../../../services/produto.service";
 
 import { CODAEPedeAnaliseSensorialProdutoReclamacao } from "../../../../../../services/reclamacaoProduto.service";
 
-import { RECLAMACAO_PRODUTO_STATUS } from "constants/shared";
+import { RECLAMACAO_PRODUTO_STATUS } from "src/constants/shared";
 import {
   CODAEAceitaReclamacao,
   CODAEQuestionaNutrisupervisor,
   CODAEQuestionaTerceirizada,
   CODAEQuestionaUE,
   CODAERecusaReclamacao,
-} from "services/reclamacaoProduto.service";
+} from "src/services/reclamacaoProduto.service";
 import { ordenaPorCriadoEm } from "./helpers";
-import { corrigeLinkAnexo } from "helpers/utilities";
+import { corrigeLinkAnexo } from "src/helpers/utilities";
 
 const {
   AGUARDANDO_AVALIACAO,

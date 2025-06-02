@@ -1,6 +1,6 @@
 import React from "react";
-import "components/Shareable/style.scss";
-import { TIPO_SOLICITACAO } from "constants/shared";
+import "src/components/Shareable/style.scss";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
 
 export const Rascunhos = ({
   rascunhosInclusaoDeAlimentacao,

@@ -3,7 +3,7 @@ import { Modal } from "react-bootstrap";
 
 import { BUTTON_STYLE, BUTTON_TYPE } from "../Botao/constants";
 import Botao from "../Botao";
-import { CENTRAL_DOWNLOADS } from "configs/constants";
+import { CENTRAL_DOWNLOADS } from "src/configs/constants";
 import "./styles.scss";
 
 const ModalSolicitacaoDownload = ({ show, setShow, callbackClose }) => {

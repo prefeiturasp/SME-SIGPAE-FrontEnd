@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { getListagemSolicitacaoAlteracaoCronograma } from "../../../../services/cronograma.service.js";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { getListagemSolicitacaoAlteracaoCronograma } from "../../../../services/cronograma.service";
 import Filtros from "./components/Filtros/index.jsx";
 import ListagemAlteracoesCronogramas from "./components/ListagemAlteracoesCronogramas/index.jsx";
-import { remove_filtros_nulos } from "./helper.js";
-import { Paginacao } from "components/Shareable/Paginacao/index.jsx";
+import { remove_filtros_nulos } from "./helper";
+import { Paginacao } from "src/components/Shareable/Paginacao/index.jsx";
 
 export default ({ fornecedor }) => {
   const [carregando, setCarregando] = useState(false);

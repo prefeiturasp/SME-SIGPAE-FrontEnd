@@ -6,8 +6,11 @@ import CardPendencia from "../../Shareable/CardPendencia/CardPendencia";
 import CardStatusDeSolicitacao, {
   ICON_CARD_TYPE_ENUM,
   CARD_TYPE_ENUM,
-} from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { FILTRO_VISAO, PAGINACAO_DASHBOARD_DEFAULT } from "constants/shared";
+} from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import {
+  FILTRO_VISAO,
+  PAGINACAO_DASHBOARD_DEFAULT,
+} from "src/constants/shared";
 import { FILTRO } from "../const";
 import {
   CODAE,
@@ -16,7 +19,7 @@ import {
   SOLICITACOES_NEGADAS,
   SOLICITACOES_CANCELADAS,
   SOLICITACOES_COM_QUESTIONAMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 import { ajustarFormatoLog } from "../helper";
 import {
   getSolicitacoesCanceladasCodae,
@@ -25,27 +28,27 @@ import {
   getSolicitacoesPendentesAutorizacaoCODAESecaoPendencias,
   getSolicitacoesComQuestionamentoCodae,
   getSolicitacoesPendentesAutorizacaoCodaeSemFiltro,
-} from "services/painelCODAE.service";
-import corrigeResumo from "helpers/corrigeDadosDoDashboard";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { dataAtual } from "helpers/utilities";
-import { ASelect } from "components/Shareable/MakeField";
+} from "src/services/painelCODAE.service";
+import corrigeResumo from "src/helpers/corrigeDadosDoDashboard";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { dataAtual } from "src/helpers/utilities";
+import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
 import "./style.scss";
 import {
   updateDREAlimentacao,
   updateLoteAlimentacao,
   updateTituloAlimentacao,
-} from "reducers/filtersAlimentacaoReducer";
+} from "src/reducers/filtersAlimentacaoReducer";
 import { connect } from "react-redux";
 import { Spin } from "antd";
-import CardBody from "components/Shareable/CardBody";
+import CardBody from "src/components/Shareable/CardBody";
 import {
   JS_DATE_DEZEMBRO,
   JS_DATE_FEVEREIRO,
   JS_DATE_JANEIRO,
   JS_DATE_JULHO,
-} from "constants/shared";
+} from "src/constants/shared";
 
 export const DashboardCODAE = (props) => {
   const { cards, lotes, diretoriasRegionais, handleSubmit, meusDados } = props;

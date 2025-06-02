@@ -5,15 +5,15 @@ import { FiltrosInterface } from "interfaces/relatorio_financeiro.interface";
 
 import { Spin } from "antd";
 import { Filtros } from "./components/Filtros/Index";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
-import { MESES } from "constants/shared";
+import { MESES } from "src/constants/shared";
 import { STATUS_RELATORIO_FINANCEIRO } from "../constants";
 import {
   MEDICAO_INICIAL,
   RELATORIO_FINANCEIRO,
   RELATORIO_CONSOLIDADO,
-} from "configs/constants";
+} from "src/configs/constants";
 import "./styles.scss";
 import useView from "./view";
 

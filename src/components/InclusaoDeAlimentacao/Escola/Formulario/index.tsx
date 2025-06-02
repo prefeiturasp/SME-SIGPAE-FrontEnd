@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import CardMatriculados from "components/Shareable/CardMatriculados";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
 import HTTP_STATUS from "http-status-codes";
-import { TIPO_SOLICITACAO } from "constants/shared";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
 import { Field, Form } from "react-final-form";
 import {
   updateInclusaoAlimentacao,
@@ -9,10 +9,10 @@ import {
   escolaExcluirSolicitacaoDeInclusaoDeAlimentacao,
   obterMinhasSolicitacoesDeInclusaoDeAlimentacao,
   iniciaFluxoInclusaoAlimentacao,
-} from "services/inclusaoDeAlimentacao";
+} from "src/services/inclusaoDeAlimentacao";
 import { Rascunhos } from "./componentes/Rascunhos";
-import Select from "components/Shareable/Select";
-import { required } from "helpers/fieldValidators";
+import Select from "src/components/Shareable/Select";
+import { required } from "src/helpers/fieldValidators";
 import {
   agregarDefault,
   usuarioEhEscolaCIEJA,
@@ -20,7 +20,7 @@ import {
   checaSeDataEstaEntre2e5DiasUteis,
   deepCopy,
   getError,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { FieldArray } from "react-final-form-arrays";
 import arrayMutators from "final-form-arrays";
 import {
@@ -30,22 +30,25 @@ import {
   OutroMotivo,
   PeriodosInclusaoNormal,
 } from "./componentes/InclusaoNormal";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import Botao from "components/Shareable/Botao";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   validarSubmissaoNormal,
   validarSubmissaoContinua,
-} from "components/InclusaoDeAlimentacao/Escola/Formulario/validacao";
+} from "src/components/InclusaoDeAlimentacao/Escola/Formulario/validacao";
 import {
   formatarSubmissaoSolicitacaoContinua,
   formatarSubmissaoSolicitacaoNormal,
-} from "components/InclusaoDeAlimentacao/helper";
+} from "src/components/InclusaoDeAlimentacao/helper";
 import {
   DatasInclusaoContinua,
   Recorrencia,

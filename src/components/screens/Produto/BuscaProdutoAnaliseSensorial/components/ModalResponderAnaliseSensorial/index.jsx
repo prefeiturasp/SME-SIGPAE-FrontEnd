@@ -6,25 +6,28 @@ import {
   length,
   numericInteger,
   composeValidators,
-} from "helpers/fieldValidators";
-import InputText from "components/Shareable/Input/InputText";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import InputFile from "components/Shareable/Input/InputFile";
-import Botao from "components/Shareable/Botao";
+} from "src/helpers/fieldValidators";
+import InputText from "src/components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import InputFile from "src/components/Shareable/Input/InputFile";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { useNavigate } from "react-router-dom";
-import { InputComData } from "components/Shareable/DatePicker";
+import { InputComData } from "src/components/Shareable/DatePicker";
 
 import "./styles.scss";
 import { formataData, DATA_MINIMA, DATA_MAXIMA } from "./helper";
-import { toastSuccess, toastError } from "components/Shareable/Toast/dialogs";
-import { deepCopy, getError } from "helpers/utilities";
-import { respostaAnaliseSensorial } from "services/produto.service";
+import {
+  toastSuccess,
+  toastError,
+} from "src/components/Shareable/Toast/dialogs";
+import { deepCopy, getError } from "src/helpers/utilities";
+import { respostaAnaliseSensorial } from "src/services/produto.service";
 import { Field, Form } from "react-final-form";
-import { ATimePicker } from "components/Shareable/MakeField";
+import { ATimePicker } from "src/components/Shareable/MakeField";
 
 export const ModalResponderAnaliseSensorial = ({ ...props }) => {
   const [arquivos, SetArquivos] = useState([]);

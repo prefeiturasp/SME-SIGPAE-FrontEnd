@@ -1,17 +1,17 @@
 import React, { Fragment, useState } from "react";
 import { Modal, Spin } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./styles.scss";
-import { getRelatorioEmAnaliseSensorial } from "services/relatorios";
-import { getProdutosRelatorioAnaliseSensorial } from "services/produto.service";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { getRelatorioEmAnaliseSensorial } from "src/services/relatorios";
+import { getProdutosRelatorioAnaliseSensorial } from "src/services/produto.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import { getTituloRelatorio } from "./helpers";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 const ModalRelatorioAnaliseSensorial = ({
   showModal,

@@ -15,11 +15,11 @@ import {
   BUTTON_STYLE,
 } from "../../../../Shareable/Botao/constants";
 
-import ModalCadastrarItem from "components/Shareable/ModalCadastrarItem";
+import ModalCadastrarItem from "src/components/Shareable/ModalCadastrarItem";
 
 import { Step1EstaValido, retornaObjetoRequest } from "../helpers";
-import { required, maxLengthProduto } from "helpers/fieldValidators";
-import { ASelect } from "components/Shareable/MakeField";
+import { required, maxLengthProduto } from "src/helpers/fieldValidators";
+import { ASelect } from "src/components/Shareable/MakeField";
 
 const { Option } = Select;
 const maxLength5000 = maxLengthProduto(5000);

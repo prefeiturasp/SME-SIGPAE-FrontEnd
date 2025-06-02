@@ -1,7 +1,7 @@
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import React, { Component } from "react";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Field, reduxForm, change } from "redux-form";
@@ -33,16 +33,16 @@ import { Rascunhos } from "./Rascunhos";
 import "./style.scss";
 import { STATUS_DRE_A_VALIDAR } from "../../configs/constants";
 import { InputComData } from "../Shareable/DatePicker";
-import CKEditorField from "components/Shareable/CKEditorField";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import Botao from "../Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
   BUTTON_ICON,
 } from "../Shareable/Botao/constants";
-import { JS_DATE_NOVEMBRO } from "constants/shared";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
-import { getDiasUteis } from "services/diasUteis.service";
+import { JS_DATE_NOVEMBRO } from "src/constants/shared";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
+import { getDiasUteis } from "src/services/diasUteis.service";
 
 export class InversaoDeDiaDeCardapio extends Component {
   constructor(props) {

@@ -1,19 +1,19 @@
 import React, { Dispatch } from "react";
 import { Field } from "react-final-form";
 
-import Collapse, { CollapseControl } from "components/Shareable/Collapse";
-import InputText from "components/Shareable/Input/InputText";
-import Label from "components/Shareable/Label";
-import InputFile from "components/Shareable/Input/InputFile";
-import Select from "components/Shareable/Select";
-import CheckboxComBorda from "components/Shareable/CheckboxComBorda";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
+import InputText from "src/components/Shareable/Input/InputText";
+import Label from "src/components/Shareable/Label";
+import InputFile from "src/components/Shareable/Input/InputFile";
+import Select from "src/components/Shareable/Select";
+import CheckboxComBorda from "src/components/Shareable/CheckboxComBorda";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   required,
   composeValidators,
   inteiroOuDecimalComVirgula,
-} from "helpers/fieldValidators";
-import { CollapseConfig } from "components/Shareable/Collapse/interfaces";
+} from "src/helpers/fieldValidators";
+import { CollapseConfig } from "src/components/Shareable/Collapse/interfaces";
 import {
   ArquivoForm,
   OptionsGenerico,
@@ -21,7 +21,7 @@ import {
 import {
   inserirArquivoFichaAssinadaRT,
   removerArquivoFichaAssinadaRT,
-} from "components/screens/PreRecebimento/FichaTecnica/helpers";
+} from "src/components/screens/PreRecebimento/FichaTecnica/helpers";
 
 const COLLAPSE_CONFIG_INFO_ACONDICIONAMENTO: CollapseConfig[] = [
   {

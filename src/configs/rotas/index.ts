@@ -1,11 +1,11 @@
-import * as constants from "configs/constants.js";
+import * as constants from "src/configs/constants";
 
-import { Login } from "components/Login";
-import CentralDownloadsPage from "pages/CentralDownloads/CentralDownloadsPage";
-import FaqPage from "pages/Faq/FaqPage";
-import NotificacoesPage from "pages/Notificacoes/NotificacoesPage";
-import PainelInicialPage from "pages/PainelInicial/PainelInicialPage";
-import PerfilPage from "pages/Perfil/PerfilPage";
+import { Login } from "src/components/Login";
+import CentralDownloadsPage from "src/pages/CentralDownloads/CentralDownloadsPage";
+import FaqPage from "src/pages/Faq/FaqPage";
+import NotificacoesPage from "src/pages/Notificacoes/NotificacoesPage";
+import PainelInicialPage from "src/pages/PainelInicial/PainelInicialPage";
+import PerfilPage from "src/pages/Perfil/PerfilPage";
 
 import { rotasAbastecimento } from "../rotas/abastecimento";
 import { rotasCadastros } from "../rotas/cadastros";

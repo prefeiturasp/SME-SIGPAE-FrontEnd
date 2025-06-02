@@ -1,12 +1,12 @@
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { ListaOcorrencias } from "components/screens/IMR/ListaOcorrencias";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { ListaOcorrencias } from "src/components/screens/IMR/ListaOcorrencias";
 import {
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
   REGISTRAR_OCORRENCIAS,
-} from "configs/constants";
-import { HOME } from "constants/config";
+} from "src/configs/constants";
+import { HOME } from "src/constants/config";
 import React from "react";
 
 const atual = {

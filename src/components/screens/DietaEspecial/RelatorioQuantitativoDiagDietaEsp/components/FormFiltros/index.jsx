@@ -3,26 +3,26 @@ import moment from "moment";
 import React, { useState, useEffect } from "react";
 import { Field, Form } from "react-final-form";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { InputComData } from "components/Shareable/DatePicker";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import Select from "components/Shareable/Select";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { meusDados } from "services/perfil.service";
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import Select from "src/components/Shareable/Select";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { meusDados } from "src/services/perfil.service";
 
-import { TIPO_PERFIL } from "constants/shared";
+import { TIPO_PERFIL } from "src/constants/shared";
 
 import {
   formFiltrosObtemDreEEscolasNovo,
   getDadosIniciais,
   validateFormDreEscola,
-} from "helpers/dietaEspecial";
+} from "src/helpers/dietaEspecial";
 
-import { getAlergiasIntoleranciasAxios } from "services/dietaEspecial.service";
+import { getAlergiasIntoleranciasAxios } from "src/services/dietaEspecial.service";
 
 import "./styles.scss";
 

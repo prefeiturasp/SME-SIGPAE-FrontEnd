@@ -7,13 +7,13 @@ import {
   QuestaoConferencia,
   QuestoesPorProduto,
 } from "interfaces/recebimento.interface";
-import { getListaFichasTecnicasSimples } from "services/fichaTecnica.service";
+import { getListaFichasTecnicasSimples } from "src/services/fichaTecnica.service";
 import {
   listarQuestoesConferenciaSimples,
   listarQuestoesPorProduto,
-} from "services/recebimento/questoesConferencia.service";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { Paginacao } from "components/Shareable/Paginacao";
+} from "src/services/recebimento/questoesConferencia.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 import Filtros from "./components/Filtros";
 import Listagem from "./components/Listagem";

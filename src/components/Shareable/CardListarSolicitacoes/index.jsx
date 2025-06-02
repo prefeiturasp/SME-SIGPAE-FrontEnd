@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import "./style.scss";
 import { GESTAO_PRODUTO_CARDS, RELATORIO } from "../../../configs/constants";
 import { caminhoURL } from "../CardStatusDeSolicitacao/helper";
-import { conferidaClass } from "helpers/terceirizadas";
+import { conferidaClass } from "src/helpers/terceirizadas";
 import TooltipProdutos from "./tooltipProdutos";
 
 export class CardListarSolicitacoes extends Component {

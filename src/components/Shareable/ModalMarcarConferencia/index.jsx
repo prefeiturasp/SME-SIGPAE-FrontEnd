@@ -2,13 +2,16 @@ import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { toastSuccess, toastError } from "components/Shareable/Toast/dialogs";
-import { terceirizadaMarcaConferencia } from "services/dietaEspecial.service";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastSuccess,
+  toastError,
+} from "src/components/Shareable/Toast/dialogs";
+import { terceirizadaMarcaConferencia } from "src/services/dietaEspecial.service";
 import "./style.scss";
 
 export const ModalMarcarConferencia = ({

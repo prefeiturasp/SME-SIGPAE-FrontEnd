@@ -1,23 +1,23 @@
 import { Modal } from "antd";
 import React, { Component, Fragment } from "react";
 
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
-import { fluxoPartindoTerceirizada } from "components/Shareable/FluxoDeStatus/helper";
-import Botao from "components/Shareable/Botao";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
+import { fluxoPartindoTerceirizada } from "src/components/Shareable/FluxoDeStatus/helper";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import { STATUS_CODAE_AUTORIZOU_RECLAMACAO } from "configs/constants";
-import MotivoDaCorrecaoDeHomologacao from "components/Shareable/MotivoDaCorrecaoDeHomologacao";
-import MotivoDaRecusaDeHomologacao from "components/Shareable/MotivoDaRecusaDeHomologacao";
-import MotivoSuspensao from "components/Shareable/MotivoSuspensao";
-import InformativoReclamacao from "components/Shareable/InformativoReclamacao";
+} from "src/components/Shareable/Botao/constants";
+import { STATUS_CODAE_AUTORIZOU_RECLAMACAO } from "src/configs/constants";
+import MotivoDaCorrecaoDeHomologacao from "src/components/Shareable/MotivoDaCorrecaoDeHomologacao";
+import MotivoDaRecusaDeHomologacao from "src/components/Shareable/MotivoDaRecusaDeHomologacao";
+import MotivoSuspensao from "src/components/Shareable/MotivoSuspensao";
+import InformativoReclamacao from "src/components/Shareable/InformativoReclamacao";
 
-import { truncarString } from "helpers/utilities";
+import { truncarString } from "src/helpers/utilities";
 
-import { getRelatorioProduto } from "services/relatorios";
+import { getRelatorioProduto } from "src/services/relatorios";
 
 import "../styles.scss";
 

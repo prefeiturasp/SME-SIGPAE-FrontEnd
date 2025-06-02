@@ -1,26 +1,29 @@
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Spin } from "antd";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { InputComData } from "components/Shareable/DatePicker";
-import Select from "components/Shareable/Select";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { required } from "helpers/fieldValidators";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import Select from "src/components/Shareable/Select";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { required } from "src/helpers/fieldValidators";
 import {
   agregarDefault,
   deepCopy,
   usuarioEhDRE,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
-import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
-import { getEscolaSimples, getEscolasTercTotal } from "services/escola.service";
-import { getLotesSimples } from "services/lote.service";
-import { getNomesTerceirizadas } from "services/produto.service";
-import { getTotalizadoresRelatorioSolicitacoes } from "services/relatorios.service";
+import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
+import {
+  getEscolaSimples,
+  getEscolasTercTotal,
+} from "src/services/escola.service";
+import { getLotesSimples } from "src/services/lote.service";
+import { getNomesTerceirizadas } from "src/services/produto.service";
+import { getTotalizadoresRelatorioSolicitacoes } from "src/services/relatorios.service";
 import { STATUS_SOLICITACOES, TIPOS_SOLICITACAO } from "../../constants";
 import { lotesToOptions } from "../../helpers";
 import "../../style.scss";

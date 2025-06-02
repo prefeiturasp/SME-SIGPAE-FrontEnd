@@ -1,12 +1,16 @@
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import HTTP_STATUS from "http-status-codes";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
-import CKEditorField from "components/Shareable/CKEditorField";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { maxValue, naoPodeSerZero, required } from "helpers/fieldValidators";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import {
+  maxValue,
+  naoPodeSerZero,
+  required,
+} from "src/helpers/fieldValidators";
 import {
   deepCopy,
   escolaEhCEMEI,
@@ -15,17 +19,17 @@ import {
   getError,
   usuarioEhEscolaCeuGestao,
   usuarioEhEscolaCMCT,
-} from "helpers/utilities";
-import { loadFoodSuspension } from "reducers/suspensaoDeAlimentacaoReducer";
+} from "src/helpers/utilities";
+import { loadFoodSuspension } from "src/reducers/suspensaoDeAlimentacaoReducer";
 import { Field, FormSection, formValueSelector, reduxForm } from "redux-form";
-import { getQuantidadeAlunosCEMEIporPeriodoCEIEMEI } from "services/aluno.service";
+import { getQuantidadeAlunosCEMEIporPeriodoCEIEMEI } from "src/services/aluno.service";
 import {
   createSuspensaoDeAlimentacao,
   deleteSuspensaoDeAlimentacao,
   enviarSuspensaoDeAlimentacao,
   getSuspensoesDeAlimentacaoSalvas,
   updateSuspensaoDeAlimentacao,
-} from "services/suspensaoDeAlimentacao.service";
+} from "src/services/suspensaoDeAlimentacao.service";
 import { STATUS_DRE_A_VALIDAR } from "../../configs/constants";
 import { getVinculosTipoAlimentacaoPorEscola } from "../../services/cadastroTipoAlimentacao.service";
 import { getQuantidaDeAlunosPorPeriodoEEscola } from "../../services/escola.service";

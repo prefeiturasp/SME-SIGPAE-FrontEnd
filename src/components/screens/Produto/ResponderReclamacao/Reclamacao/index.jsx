@@ -1,15 +1,15 @@
 import React, { useState, Fragment } from "react";
 import "./style.scss";
-import { STATUS_RECLAMACAO } from "configs/constants";
-import Botao from "components/Shareable/Botao";
+import { STATUS_RECLAMACAO } from "src/configs/constants";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import ModalResponderReclamacao from "../ModalResponderReclamacao";
-import { RECLAMACAO_PRODUTO_STATUS_EXPLICACAO } from "constants/shared";
-import { getReclamacoesTerceirizadaPorFiltro } from "services/produto.service";
-import { corrigeLinkAnexo } from "helpers/utilities";
+import { RECLAMACAO_PRODUTO_STATUS_EXPLICACAO } from "src/constants/shared";
+import { getReclamacoesTerceirizadaPorFiltro } from "src/services/produto.service";
+import { corrigeLinkAnexo } from "src/helpers/utilities";
 
 const obterTituloLog = (status_evento) => {
   switch (status_evento) {

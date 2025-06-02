@@ -6,9 +6,9 @@ import HTTP_STATUS from "http-status-codes";
 import {
   filtrosVincularProdutoEdital,
   filtrarPorEditalNomeTipo,
-} from "services/produto.service";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { Paginacao } from "components/Shareable/Paginacao";
+} from "src/services/produto.service";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [carregando, setCarregando] = useState(true);

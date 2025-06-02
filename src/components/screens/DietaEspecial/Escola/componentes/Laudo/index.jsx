@@ -1,8 +1,8 @@
 import React from "react";
 import { Field } from "redux-form";
 import ManagedInputFileField from "../../../../../Shareable/Input/InputFile/ManagedField";
-import CKEditorField from "components/Shareable/CKEditorField";
-import { required } from "helpers/fieldValidators";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import { required } from "src/helpers/fieldValidators";
 
 export default ({ pertence_a_escola }) => {
   return (

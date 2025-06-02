@@ -3,27 +3,34 @@ import {
   AdicionarDia,
   DataInclusaoNormal,
   OutroMotivo,
-} from "components/InclusaoDeAlimentacao/Escola/Formulario/componentes/InclusaoNormal";
-import Botao from "components/Shareable/Botao";
+} from "src/components/InclusaoDeAlimentacao/Escola/Formulario/componentes/InclusaoNormal";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import CardMatriculados from "components/Shareable/CardMatriculados";
-import InputText from "components/Shareable/Input/InputText";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import { Select } from "components/Shareable/Select";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import InputText from "src/components/Shareable/Input/InputText";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import { Select } from "src/components/Shareable/Select";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
 import arrayMutators from "final-form-arrays";
-import { maxValue, naoPodeSerZero, required } from "helpers/fieldValidators";
+import {
+  maxValue,
+  naoPodeSerZero,
+  required,
+} from "src/helpers/fieldValidators";
 import {
   agregarDefault,
   checaSeDataEstaEntre2e5DiasUteis,
   composeValidators,
   deepCopy,
   getError,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
@@ -35,7 +42,7 @@ import {
   getQuantidadeAlunosFaixaEtaria,
   iniciarInclusoesDaCEI,
   meusRascunhosDeInclusaoDeAlimentacao,
-} from "services/inclusaoDeAlimentacao/cei.legacy.service";
+} from "src/services/inclusaoDeAlimentacao/cei.legacy.service";
 import { Rascunhos } from "./Rascunhos";
 import { formataPayload, validarForm } from "./helper";
 import "./style.scss";

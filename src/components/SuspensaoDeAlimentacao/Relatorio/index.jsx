@@ -2,27 +2,30 @@ import React, { Component } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Navigate } from "react-router-dom";
 import { reduxForm } from "redux-form";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
-import RelatorioHistoricoJustificativaEscola from "components/Shareable/RelatorioHistoricoJustificativaEscola";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import RelatorioHistoricoJustificativaEscola from "src/components/Shareable/RelatorioHistoricoJustificativaEscola";
 import { ModalCancelaSuspensao } from "../components/ModalCancelaSuspensao";
-import { Botao } from "components/Shareable/Botao";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { SUSPENSAO_ALIMENTACAO, TERCEIRIZADA } from "configs/constants";
-import { statusEnum, TIPO_PERFIL } from "constants/shared";
+} from "src/components/Shareable/Botao/constants";
+import { SUSPENSAO_ALIMENTACAO, TERCEIRIZADA } from "src/configs/constants";
+import { statusEnum, TIPO_PERFIL } from "src/constants/shared";
 import {
   getError,
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import {
   getSuspensaoDeAlimentacaoUUID,
   terceirizadaTomaCienciaSuspensaoDeAlimentacao,
-} from "services/suspensaoDeAlimentacao.service";
+} from "src/services/suspensaoDeAlimentacao.service";
 import "./style.scss";
 
 class RelatorioSuspensaoAlimentacao extends Component {

@@ -8,8 +8,8 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import mock from "services/_mock";
-import CronogramaEntregaPage from "pages/PreRecebimento/CronogramaEntregaPage";
+import mock from "src/services/_mock";
+import CronogramaEntregaPage from "src/pages/PreRecebimento/CronogramaEntregaPage";
 import { mockListaCronogramas } from "../../../../../mocks/cronograma.service/mockGetCronogramas";
 import { mockListaNomesDistribuidores } from "../../../../../mocks/logistica.service/mockGetNomesDistribuidores";
 import { PERFIL, TIPO_SERVICO } from "../../../../../constants/shared";

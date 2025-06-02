@@ -9,8 +9,8 @@ import {
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { mockListaProdutosLogistica } from "mocks/produto.service/mockGetListaCompletaProdutosLogistica";
-import mock from "services/_mock";
-import FichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/FichaTecnicaPage";
+import mock from "src/services/_mock";
+import FichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/FichaTecnicaPage";
 import { mockListaFichaTecnica } from "mocks/services/fichaTecnica.service/mockListarFichasTecnicas";
 
 beforeEach(() => {

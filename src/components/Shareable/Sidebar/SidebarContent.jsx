@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 
-import { ENVIRONMENT } from "constants/config";
+import { ENVIRONMENT } from "src/constants/config";
 import {
   ehUsuarioRelatorios,
   exibirGA,
@@ -41,7 +41,7 @@ import {
   usuarioEhRecebimento,
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 import {
   MenuCadastros,

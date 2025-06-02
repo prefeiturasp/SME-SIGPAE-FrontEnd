@@ -5,22 +5,25 @@ import HTTP_STATUS from "http-status-codes";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Spin } from "antd";
-import InputText from "components/Shareable/Input/InputText";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import Botao from "components/Shareable/Botao";
+import InputText from "src/components/Shareable/Input/InputText";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { ModalOcorrencia } from "./components/ModalOcorrencia";
-import { BUTTON_ICON } from "components/Shareable/Botao/constants";
+import { BUTTON_ICON } from "src/components/Shareable/Botao/constants";
 import { TabelaLancamentosPeriodo } from "./components/TabelaLancamentosPeriodo";
 import {
   medicaoInicialExportarOcorrenciasPDF,
   medicaoInicialExportarOcorrenciasXLSX,
   relatorioMedicaoInicialPDF,
-} from "services/relatorios";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
+} from "src/services/relatorios";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import {
   getPeriodosGruposMedicao,
   retrieveSolicitacaoMedicaoInicial,
@@ -31,30 +34,30 @@ import {
   codaeSolicitaCorrecaoUE,
   codaeAprovaPeriodo,
   updateSolicitacaoMedicaoInicial,
-} from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import {
   getFeriadosNoMesComNome,
   getDiasCalendario,
   getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola,
-} from "services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   MEDICAO_STATUS_DE_PROGRESSO,
   OCORRENCIA_STATUS_DE_PROGRESSO,
 } from "./constants";
 import "./style.scss";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import { ModalEnviarParaCodaeECodaeAprovar } from "./components/ModalEnviarParaCodaeECodaeAprovar";
 import { ModalSolicitarCorrecaoUE } from "./components/ModalSolicitarCorrecaoUE";
 import { ModalHistoricoCorrecoesPeriodo } from "./components/ModalHistoricoCorrecoesPeriodo";
-import ModalHistorico from "components/Shareable/ModalHistorico";
+import ModalHistorico from "src/components/Shareable/ModalHistorico";
 import {
   ehEscolaTipoCEI,
   usuarioEhDRE,
   usuarioEhMedicao,
   getError,
   getISOLocalDatetimeString,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 export const ConferenciaDosLancamentos = () => {
   const location = useLocation();

@@ -5,11 +5,14 @@ import Botao from "../Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { required } from "helpers/fieldValidators";
-import { getError } from "helpers/utilities";
+} from "src/components/Shareable/Botao/constants";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { required } from "src/helpers/fieldValidators";
+import { getError } from "src/helpers/utilities";
 import "./style.scss";
 import { Field, Form } from "react-final-form";
 

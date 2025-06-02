@@ -11,14 +11,14 @@ import {
   STATUS_CODAE_QUESTIONADO,
   STATUS_CODAE_AUTORIZOU_RECLAMACAO,
   STATUS_TERCEIRIZADA_CANCELOU_SOLICITACAO,
-} from "configs/constants";
+} from "src/configs/constants";
 import WizardFormPrimeiraPagina from "./components/WizardFormPrimeiraPagina";
 import WizardFormSegundaPagina from "./components/WizardFormSegundaPagina";
 import WizardFormTerceiraPagina from "./components/WizardFormTerceiraPagina";
-import Wizard from "components/Shareable/Wizard";
-import MotivoDaRecusaDeHomologacao from "components/Shareable/MotivoDaRecusaDeHomologacao";
-import MotivoDaCorrecaoDeHomologacao from "components/Shareable/MotivoDaCorrecaoDeHomologacao";
-import MotivoCacelamentoSolicitacao from "components/Shareable/MotivoCancelamentoSolicitacao";
+import Wizard from "src/components/Shareable/Wizard";
+import MotivoDaRecusaDeHomologacao from "src/components/Shareable/MotivoDaRecusaDeHomologacao";
+import MotivoDaCorrecaoDeHomologacao from "src/components/Shareable/MotivoDaCorrecaoDeHomologacao";
+import MotivoCacelamentoSolicitacao from "src/components/Shareable/MotivoCancelamentoSolicitacao";
 import {
   getHomologacao,
   getMarcasProdutos,
@@ -28,10 +28,10 @@ import {
 } from "../../../../services/produto.service";
 import { connect } from "react-redux";
 import { getFormValues } from "redux-form";
-import MotivoHomologacao from "components/Shareable/MotivoHomologacao";
-import MotivoSuspensao from "components/Shareable/MotivoSuspensao";
-import InformativoReclamacao from "components/Shareable/InformativoReclamacao";
-import { ModalPadrao } from "components/Shareable/ModalPadrao";
+import MotivoHomologacao from "src/components/Shareable/MotivoHomologacao";
+import MotivoSuspensao from "src/components/Shareable/MotivoSuspensao";
+import InformativoReclamacao from "src/components/Shareable/InformativoReclamacao";
+import { ModalPadrao } from "src/components/Shareable/ModalPadrao";
 
 const { Option } = Select;
 

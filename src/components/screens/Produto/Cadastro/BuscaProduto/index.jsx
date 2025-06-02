@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import AutoCompleteFieldUnaccent from "components/Shareable/AutoCompleteField/unaccent";
+import AutoCompleteFieldUnaccent from "src/components/Shareable/AutoCompleteField/unaccent";
 import "./style.scss";
 import { Form, Field } from "react-final-form";
 
@@ -11,7 +11,7 @@ import {
   getNomesUnicosMarcas,
   getNomesUnicosFabricantes,
 } from "../../../../../services/produto.service";
-import { getProdutosListagem } from "services/produto.service";
+import { getProdutosListagem } from "src/services/produto.service";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,

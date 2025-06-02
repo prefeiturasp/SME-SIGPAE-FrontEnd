@@ -3,10 +3,10 @@ import { Field } from "react-final-form";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { useState } from "react";
 import { useEffect } from "react";
-import { getLotesSimples } from "services/lote.service";
+import { getLotesSimples } from "src/services/lote.service";
 import { transformaObjetos } from "../../helper";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import ModalTransferirLote from "components/Shareable/ModalTransferirLote";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import ModalTransferirLote from "src/components/Shareable/ModalTransferirLote";
 
 const renderizarLabelLote = (selected, options) => {
   if (selected.length === 0) {
