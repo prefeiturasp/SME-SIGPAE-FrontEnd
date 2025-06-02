@@ -14,7 +14,7 @@ export const mockMeusDadosEscolaEMEFPericles = {
       uuid: "3c32be8e-f191-468d-a4e2-3dd8751e5e7a",
       codigo_eol: "017981",
       quantidade_alunos: 524,
-      lotes: [],
+      lotes: [{ uuid: "25593d3c-bbfd-47c4-ab2d-f9f1555b89e4" }],
       periodos_escolares: [
         {
           tipos_alimentacao: [

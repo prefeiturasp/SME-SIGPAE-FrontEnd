@@ -36,7 +36,8 @@
     "no-import-assign": 0,
     "no-setter-return": 0,
     "no-console": "error",
-    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "react/react-in-jsx-scope": "off"
   },
   "settings": {
     "react": {

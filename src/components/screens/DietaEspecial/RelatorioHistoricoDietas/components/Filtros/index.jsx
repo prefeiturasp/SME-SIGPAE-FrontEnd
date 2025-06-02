@@ -5,6 +5,11 @@ import { MultiselectRaw } from "components/Shareable/MultiselectRaw";
 import Select from "components/Shareable/Select";
 import { toastError } from "components/Shareable/Toast/dialogs";
 import { required, requiredMultiselect } from "helpers/fieldValidators";
+import {
+  usuarioEhCogestorDRE,
+  usuarioEhEmpresa,
+  usuarioEhEscola,
+} from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
@@ -23,18 +28,29 @@ import { normalizarValues } from "../../helper";
 
 export const Filtros = ({ ...props }) => {
   const {
+    meusDados,
     setDietasEspeciais,
-    onClear,
     setLoadingDietas,
     setValuesForm,
     setCount,
     setErro,
   } = props;
 
+  const [formInstance, setFormInstance] = useState(null);
+
   const [tiposGestao, setTiposGestao] = useState(null);
   const [tiposUnidades, setTiposUnidades] = useState(null);
   const [lotes, setLotes] = useState(null);
-  const [unidadesEducacionais, setUnidadesEducacionais] = useState(null);
+  const [unidadesEducacionais, setUnidadesEducacionais] = useState(
+    usuarioEhEscola()
+      ? [
+          {
+            label: meusDados.vinculo_atual.instituicao.nome,
+            value: meusDados.vinculo_atual.instituicao.uuid,
+          },
+        ]
+      : null
+  );
   const [periodos, setPeriodos] = useState(null);
   const [classificacoesDieta, setClassificacoesDieta] = useState(null);
 
@@ -91,7 +107,16 @@ export const Filtros = ({ ...props }) => {
   };
 
   const getLotesAsync = async () => {
-    const response = await getLotesSimples();
+    let params = {};
+    if (usuarioEhEscola()) {
+      params["uuid"] = meusDados.vinculo_atual.instituicao.lotes[0].uuid;
+    } else if (usuarioEhCogestorDRE()) {
+      params["diretoria_regional__uuid"] =
+        meusDados.vinculo_atual.instituicao.uuid;
+    } else if (usuarioEhEmpresa()) {
+      params["terceirizada__uuid"] = meusDados.vinculo_atual.instituicao.uuid;
+    }
+    const response = await getLotesSimples(params);
     if (response.status === HTTP_STATUS.OK) {
       setLotes(response.data.results);
     } else {
@@ -152,6 +177,27 @@ export const Filtros = ({ ...props }) => {
     setLoadingDietas(false);
   };
 
+  const onClear = (form) => {
+    setDietasEspeciais(null);
+    if (usuarioEhEscola()) {
+      form.change("data", undefined);
+      form.change("periodos_escolares_selecionadas", undefined);
+      form.change("classificacoes_selecionadas", undefined);
+      form.change(
+        "tipo_gestao",
+        meusDados.vinculo_atual.instituicao.tipo_gestao_uuid
+      );
+      form.change("lote", meusDados.vinculo_atual.instituicao.lotes[0].uuid);
+      form.change("tipos_unidades_selecionadas", [
+        meusDados.vinculo_atual.instituicao.tipo_unidade_escolar,
+      ]);
+
+      form.change("unidades_educacionais_selecionadas", [
+        meusDados.vinculo_atual.instituicao.uuid,
+      ]);
+    }
+  };
+
   const LOADEDFILTROS =
     !!tiposGestao &&
     !!tiposUnidades &&
@@ -159,16 +205,38 @@ export const Filtros = ({ ...props }) => {
     !!periodos &&
     !!classificacoesDieta;
 
+  const getInitialValues = () => {
+    if (!LOADEDFILTROS) return null;
+    if (usuarioEhEscola()) {
+      return {
+        tipo_gestao: meusDados.vinculo_atual.instituicao.tipo_gestao_uuid,
+        lote: meusDados.vinculo_atual.instituicao.lotes[0].uuid,
+        tipos_unidades_selecionadas: [
+          meusDados.vinculo_atual.instituicao.tipo_unidade_escolar,
+        ],
+        unidades_educacionais_selecionadas: [
+          meusDados.vinculo_atual.instituicao.uuid,
+        ],
+      };
+    } else {
+      return null;
+    }
+  };
+
   return (
     <CollapseFiltros
       onSubmit={onSubmit}
-      onClear={onClear}
+      onClear={() => onClear(formInstance)}
       titulo="Filtrar Resultados"
+      keepDirtyOnReinitialize={usuarioEhEscola()}
+      meusDados={meusDados}
+      initialValues={getInitialValues()}
     >
       {(values, form) => (
         <Spin tip="Carregando filtros..." spinning={!LOADEDFILTROS}>
           {LOADEDFILTROS && (
             <>
+              {!formInstance && setFormInstance(form)}
               <div className="row">
                 <div className="col-4">
                   <Field
@@ -185,6 +253,7 @@ export const Filtros = ({ ...props }) => {
                       }))
                     )}
                     naoDesabilitarPrimeiraOpcao
+                    disabled={usuarioEhEscola()}
                   />
                 </div>
                 <div className="col-4">
@@ -209,6 +278,7 @@ export const Filtros = ({ ...props }) => {
                         values_.map((value_) => value_.value)
                       );
                     }}
+                    disabled={usuarioEhEscola()}
                   />
                 </div>
                 <div className="col-4">
@@ -240,6 +310,7 @@ export const Filtros = ({ ...props }) => {
                         getUnidadesEducacionaisAsync(form.getState().values);
                       }
                     }}
+                    disabled={usuarioEhEscola()}
                   />
                 </div>
               </div>
@@ -248,7 +319,9 @@ export const Filtros = ({ ...props }) => {
                   <Spin
                     tip="Carregando unidades educacionais..."
                     spinning={
-                      values.lote !== undefined && unidadesEducacionais === null
+                      values.lote !== undefined &&
+                      unidadesEducacionais === null &&
+                      !usuarioEhEscola()
                     }
                   >
                     <Field
@@ -267,7 +340,7 @@ export const Filtros = ({ ...props }) => {
                           values_.map((value_) => value_.value)
                         );
                       }}
-                      disabled={!values.lote}
+                      disabled={!values.lote || usuarioEhEscola()}
                     />
                   </Spin>
                 </div>

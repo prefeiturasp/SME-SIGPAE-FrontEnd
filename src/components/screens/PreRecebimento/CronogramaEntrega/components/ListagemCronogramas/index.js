@@ -83,6 +83,7 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
           <div>N° do Cronograma</div>
           <div>Produto</div>
           <div>Quantidade</div>
+          <div>Empresa</div>
           <div>Armazém</div>
           <div>Status</div>
           <div>Ações</div>
@@ -114,6 +115,11 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                   <div className={`${bordas}`}>
                     {cronograma.qtd_total_programada &&
                       formataMilhar(cronograma.qtd_total_programada)}
+                  </div>
+                  <div className={`${bordas}`}>
+                    {cronograma.empresa
+                      ? cronograma.empresa.nome_fantasia
+                      : undefined}
                   </div>
                   <div className={`${bordas}`}>
                     {cronograma.armazem

@@ -79,10 +79,12 @@ export default () => {
       imagens_do_tipo_de_embalagem: gerarImagens(primaria),
     });
 
-    payload.tipos_de_embalagens.push({
-      tipo_embalagem: "SECUNDARIA",
-      imagens_do_tipo_de_embalagem: gerarImagens(secundaria),
-    });
+    if (secundaria.length > 0) {
+      payload.tipos_de_embalagens.push({
+        tipo_embalagem: "SECUNDARIA",
+        imagens_do_tipo_de_embalagem: gerarImagens(secundaria),
+      });
+    }
 
     if (terciaria.length > 0) {
       payload.tipos_de_embalagens.push({
@@ -279,9 +281,7 @@ export default () => {
                     style={BUTTON_STYLE.GREEN}
                     className="float-end ms-3"
                     disabled={
-                      Object.keys(errors).length > 0 ||
-                      primaria.length === 0 ||
-                      secundaria.length === 0
+                      Object.keys(errors).length > 0 || primaria.length === 0
                     }
                   />
                   <Botao

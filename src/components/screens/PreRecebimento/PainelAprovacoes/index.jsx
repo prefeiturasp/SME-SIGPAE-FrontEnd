@@ -73,43 +73,26 @@ export default () => {
     return comparaObjetosMoment(data_b, data_a);
   };
 
-  const gerarTextoCardCronograma = (item) => {
-    const TAMANHO_MAXIMO = 48;
+  const gerarTextoCard = (item) => {
+    const TAMANHO_MAXIMO = 24;
 
-    return `${item.numero} - ${truncarString(item.produto, TAMANHO_MAXIMO)}`;
-  };
-
-  const gerarLinkCronograma = (item) => {
-    return `/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA}?uuid=${item.uuid}`;
-  };
-
-  const gerarTextoCardAlteracao = (item) => {
-    const TAMANHO_MAXIMO = 48;
-
-    return `${item.cronograma} - ${truncarString(
-      item.empresa,
+    return `${item.numero || item.cronograma} / ${truncarString(
+      item.produto,
       TAMANHO_MAXIMO
-    )}`;
+    )} / ${truncarString(item.empresa, TAMANHO_MAXIMO)}`;
   };
 
-  const gerarLinkSolicitacaoAlteracao = (item) => {
-    return `/${PRE_RECEBIMENTO}/${DETALHAR_ALTERACAO_CRONOGRAMA}?uuid=${item.uuid}`;
+  const gerarLinkCronograma = (item, alteracao) => {
+    return `/${PRE_RECEBIMENTO}/${
+      alteracao ? DETALHAR_ALTERACAO_CRONOGRAMA : DETALHE_CRONOGRAMA
+    }?uuid=${item.uuid}`;
   };
 
-  const formatarCardsCronograma = (items) => {
+  const formatarCards = (items, alteracao = false) => {
     return items.sort(ordenarPorLogMaisRecente).map((item) => ({
-      text: gerarTextoCardCronograma(item),
+      text: gerarTextoCard(item),
       date: item.log_mais_recente,
-      link: gerarLinkCronograma(item),
-      status: item.status,
-    }));
-  };
-
-  const formatarCardsAlteracao = (items) => {
-    return items.sort(ordenarPorLogMaisRecente).map((item) => ({
-      text: gerarTextoCardAlteracao(item),
-      date: item.log_mais_recente,
-      link: gerarLinkSolicitacaoAlteracao(item),
+      link: gerarLinkCronograma(item, alteracao),
       status: item.status,
     }));
   };
@@ -260,8 +243,9 @@ export default () => {
                 <CardCronograma
                   cardTitle={card.titulo}
                   cardType={card.style}
-                  solicitations={formatarCardsCronograma(
-                    card.items ? card.items : []
+                  solicitations={formatarCards(
+                    card.items ? card.items : [],
+                    false
                   )}
                   icon={card.icon}
                   href={card.href}
@@ -325,8 +309,9 @@ export default () => {
                 <CardCronograma
                   cardTitle={card.titulo}
                   cardType={card.style}
-                  solicitations={formatarCardsAlteracao(
-                    card.items ? card.items : []
+                  solicitations={formatarCards(
+                    card.items ? card.items : [],
+                    true
                   )}
                   icon={card.icon}
                   href={card.href}

@@ -24,7 +24,7 @@ import {
   visualizaBotoesDoFluxo,
 } from "helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import { getAlteracaoCardapio } from "services/alteracaoDeCardapio";
 import { CorpoRelatorio } from "./componentes/CorpoRelatorio";

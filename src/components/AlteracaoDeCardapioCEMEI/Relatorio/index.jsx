@@ -1,23 +1,30 @@
 import { Spin } from "antd";
-import HTTP_STATUS from "http-status-codes";
-import React, { useEffect, useState } from "react";
-import { getAlteracaoCEMEI } from "services/alteracaoDeCardapio";
-import { getQuantidadeAlunosCEMEIporCEIEMEI } from "services/aluno.service";
-import { formataDadosTabelaCEMEI } from "../helpers";
-import { CODAE, TERCEIRIZADA } from "configs/constants";
+import {
+  exibeBotaoAprovar,
+  exibeBotaoNaoAprovar,
+  exibirBotaoMarcarConferencia,
+  exibirBotaoQuestionamento,
+  exibirModalAutorizacaoAposQuestionamento,
+} from "components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
 import { Botao } from "components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "components/Shareable/Botao/constants";
-import "./style.scss";
-import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
-import { visualizaBotoesDoFluxo } from "helpers/utilities";
-import { statusEnum, TIPO_PERFIL } from "constants/shared";
-import { Form } from "react-final-form";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import ModalAutorizarAposQuestionamento from "components/Shareable/ModalAutorizarAposQuestionamento";
 import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
-import { ModalAprovarSolicitacaoAlteracao } from "./componentes/ModalAprovarSolicitacaoAlteracao";
+import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import { DRE } from "configs/constants";
+import { TIPO_PERFIL } from "constants/shared";
+import { visualizaBotoesDoFluxo } from "helpers/utilities";
+import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
+import { Form } from "react-final-form";
+import { getAlteracaoCEMEI } from "services/alteracaoDeCardapio";
+import { getQuantidadeAlunosCEMEIporCEIEMEI } from "services/aluno.service";
+import { formataDadosTabelaCEMEI } from "../helpers";
+import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
+import "./style.scss";
 
 export const Relatorio = ({ ...props }) => {
   const {
@@ -32,6 +39,7 @@ export const Relatorio = ({ ...props }) => {
     tipoSolicitacao,
     toastAprovaMensagem,
     toastAprovaMensagemErro,
+    ModalCODAEAutoriza,
     visao,
   } = props;
 
@@ -44,6 +52,8 @@ export const Relatorio = ({ ...props }) => {
   const [showModalMarcarConferencia, setShowModalMarcarConferencia] =
     useState(false);
   const [uuid, setUuid] = useState(null);
+  const [showAutorizarModal, setShowAutorizarModal] = useState(false);
+  const [showModalCodaeAutorizar, setShowModalCodaeAutorizar] = useState(false);
 
   const [justificativaCancelamentoEscola, setJustificativaCancelamentoEscola] =
     useState(undefined);
@@ -54,9 +64,6 @@ export const Relatorio = ({ ...props }) => {
       setMatriculados(response.data);
     }
   };
-
-  const [showModalObservacaoCodae, setShowModalObservacaoCodae] =
-    useState(false);
 
   const getSolicitacao = async (uuid_ = uuid) => {
     const response = await getAlteracaoCEMEI(uuid_);
@@ -72,45 +79,6 @@ export const Relatorio = ({ ...props }) => {
   };
 
   const tipoPerfil = localStorage.getItem("tipo_perfil");
-  const EXIBIR_BOTAO_NAO_APROVAR =
-    visao !== TERCEIRIZADA ||
-    (solicitacao &&
-      solicitacao.prioridade !== "REGULAR" &&
-      solicitacao.status === statusEnum.CODAE_QUESTIONADO &&
-      textoBotaoNaoAprova);
-
-  const EXIBIR_BOTAO_APROVAR =
-    (![
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
-      TIPO_PERFIL.TERCEIRIZADA,
-    ].includes(tipoPerfil) &&
-      textoBotaoAprova) ||
-    (solicitacao &&
-      (solicitacao.prioridade === "REGULAR" ||
-        [
-          statusEnum.TERCEIRIZADA_RESPONDEU_QUESTIONAMENTO,
-          statusEnum.CODAE_AUTORIZADO,
-        ].includes(solicitacao.status)) &&
-      textoBotaoAprova);
-
-  const EXIBIR_BOTAO_QUESTIONAMENTO =
-    [
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
-      TIPO_PERFIL.TERCEIRIZADA,
-    ].includes(tipoPerfil) &&
-    solicitacao &&
-    (solicitacao.prioridade !== "REGULAR" ||
-      (visao === CODAE && solicitacao.prioridade !== "REGULAR")) &&
-    [statusEnum.DRE_VALIDADO, statusEnum.CODAE_QUESTIONADO].includes(
-      solicitacao.status
-    );
-
-  const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
-    visao === TERCEIRIZADA &&
-    solicitacao &&
-    [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(
-      solicitacao.status
-    );
 
   const onSubmit = async (values) => {
     endpointAprovaSolicitacao(uuid, values, tipoSolicitacao).then(
@@ -142,8 +110,29 @@ export const Relatorio = ({ ...props }) => {
       {solicitacao && dadosTabela && matriculados && (
         <>
           <Form onSubmit={onSubmit}>
-            {({ handleSubmit, form }) => (
+            {({ handleSubmit, submitting, values }) => (
               <form onSubmit={handleSubmit}>
+                {endpointAprovaSolicitacao && (
+                  <ModalAutorizarAposQuestionamento
+                    showModal={showAutorizarModal}
+                    loadSolicitacao={getSolicitacao}
+                    closeModal={() => setShowAutorizarModal(false)}
+                    endpoint={endpointAprovaSolicitacao}
+                    uuid={uuid}
+                    tipoSolicitacao={tipoSolicitacao}
+                  />
+                )}
+                {ModalCODAEAutoriza && (
+                  <ModalCODAEAutoriza
+                    showModal={showModalCodaeAutorizar}
+                    loadSolicitacao={getSolicitacao}
+                    closeModal={() => setShowModalCodaeAutorizar(false)}
+                    endpoint={endpointAprovaSolicitacao}
+                    uuid={uuid}
+                    ehInclusao={true}
+                    tipoSolicitacao={tipoSolicitacao}
+                  />
+                )}
                 <span className="page-title">{`Alteração do Tipo de Alimentação - Solicitação # ${solicitacao.id_externo}`}</span>
                 <div className="card style-padrao-inclusao-cei mt-3">
                   <div className="card-body">
@@ -158,7 +147,10 @@ export const Relatorio = ({ ...props }) => {
                     {visualizaBotoesDoFluxo(solicitacao) && (
                       <div className="row">
                         <div className="col-12 text-end">
-                          {EXIBIR_BOTAO_NAO_APROVAR && (
+                          {exibeBotaoNaoAprovar(
+                            solicitacao,
+                            textoBotaoNaoAprova
+                          ) && (
                             <Botao
                               texto={textoBotaoNaoAprova}
                               type={BUTTON_TYPE.BUTTON}
@@ -169,7 +161,11 @@ export const Relatorio = ({ ...props }) => {
                               }}
                             />
                           )}
-                          {EXIBIR_BOTAO_QUESTIONAMENTO && (
+                          {exibirBotaoQuestionamento(
+                            solicitacao,
+                            visao,
+                            tipoPerfil
+                          ) && (
                             <Botao
                               texto={
                                 tipoPerfil ===
@@ -186,29 +182,30 @@ export const Relatorio = ({ ...props }) => {
                               className="ms-3"
                             />
                           )}
-                          {EXIBIR_BOTAO_APROVAR &&
-                            textoBotaoAprova !== "Ciente" &&
-                            (visao === CODAE &&
-                            solicitacao.logs.filter(
-                              (log) =>
-                                log.status_evento_explicacao ===
-                                  "Terceirizada respondeu questionamento" &&
-                                !log.resposta_sim_nao
-                            ).length > 0 ? null : (
-                              <Botao
-                                texto={textoBotaoAprova}
-                                type={BUTTON_TYPE.BUTTON}
-                                style={BUTTON_STYLE.GREEN}
-                                onClick={() => {
-                                  tipoPerfil ===
-                                  TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
-                                    ? setShowModalObservacaoCodae(true)
-                                    : form.submit();
-                                }}
-                                className="ms-3"
-                              />
-                            ))}
-                          {EXIBIR_BOTAO_MARCAR_CONFERENCIA && (
+                          {exibeBotaoAprovar(
+                            solicitacao,
+                            visao,
+                            textoBotaoAprova
+                          ) && (
+                            <Botao
+                              texto={textoBotaoAprova}
+                              type={BUTTON_TYPE.BUTTON}
+                              onClick={() =>
+                                visao === DRE
+                                  ? onSubmit(values)
+                                  : exibirModalAutorizacaoAposQuestionamento(
+                                      solicitacao,
+                                      visao
+                                    )
+                                  ? setShowAutorizarModal(true)
+                                  : setShowModalCodaeAutorizar(true)
+                              }
+                              disabled={submitting}
+                              style={BUTTON_STYLE.GREEN}
+                              className="ms-3"
+                            />
+                          )}
+                          {exibirBotaoMarcarConferencia(solicitacao, visao) && (
                             <div className="form-group float-end mt-4">
                               {solicitacao.terceirizada_conferiu_gestao ? (
                                 <label className="ms-3 conferido">
@@ -265,16 +262,6 @@ export const Relatorio = ({ ...props }) => {
                               solicitacao={solicitacao}
                             />
                           )}
-                          <ModalAprovarSolicitacaoAlteracao
-                            closeModal={() =>
-                              setShowModalObservacaoCodae(false)
-                            }
-                            showModal={showModalObservacaoCodae}
-                            loadSolicitacao={getSolicitacao}
-                            endpoint={endpointAprovaSolicitacao}
-                            tipoSolicitacao={tipoSolicitacao}
-                            solicitacao={solicitacao}
-                          />
                         </div>
                       </div>
                     )}

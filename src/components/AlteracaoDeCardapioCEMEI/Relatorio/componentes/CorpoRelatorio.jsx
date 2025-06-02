@@ -17,7 +17,7 @@ import {
   justificativaAoNegarSolicitacao,
   prazoDoPedidoMensagem,
 } from "helpers/utilities";
-import React, { useState } from "react";
+import { useState } from "react";
 import { getRelatorioAlteracaoTipoAlimentacao } from "services/relatorios";
 
 export const CorpoRelatorio = ({ ...props }) => {
@@ -46,7 +46,7 @@ export const CorpoRelatorio = ({ ...props }) => {
   return (
     <>
       <p
-        className={`col-12 title-message ${corDaMensagem(
+        className={`col-12 title-message fw-bold ${corDaMensagem(
           prazoDoPedidoMensagem(solicitacao.prioridade)
         )}`}
       >
