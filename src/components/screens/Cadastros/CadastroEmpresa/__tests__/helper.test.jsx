@@ -13,7 +13,7 @@ import {
 } from "../helper";
 import { getEnderecoPorCEP } from "src/services/cep.service";
 
-jest.mock("services/cep.service.js");
+jest.mock("src/services/cep.service.jsx");
 
 describe("Função transformaObjetos", () => {
   it("deve retornar uma lista de objetos", () => {

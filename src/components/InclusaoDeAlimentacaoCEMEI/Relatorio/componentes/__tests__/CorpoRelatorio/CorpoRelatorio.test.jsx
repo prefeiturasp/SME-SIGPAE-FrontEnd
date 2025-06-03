@@ -7,22 +7,24 @@ jest.mock("src/components/Shareable/FluxoDeStatus", () => ({
   FluxoDeStatus: () => <div data-testid="fluxo-status">FluxoDeStatus</div>,
 }));
 
-jest.mock("components/Shareable/RelatorioHistoricoQuestionamento", () => () => (
-  <div data-testid="historico-questionamento">HistoricoQuestionamento</div>
-));
+jest.mock(
+  "src/components/Shareable/RelatorioHistoricoQuestionamento",
+  () => () =>
+    <div data-testid="historico-questionamento">HistoricoQuestionamento</div>
+);
 
 jest.mock(
-  "components/Shareable/RelatorioHistoricoJustificativaEscola",
+  "src/components/Shareable/RelatorioHistoricoJustificativaEscola",
   () => () => <div data-testid="justificativa-escola">JustificativaEscola</div>
 );
 
-jest.mock("components/Shareable/SolicitacoesSimilaresInclusao", () => ({
+jest.mock("src/components/Shareable/SolicitacoesSimilaresInclusao", () => ({
   SolicitacoesSimilaresInclusao: () => (
     <div data-testid="similares">Similares</div>
   ),
 }));
 
-jest.mock("services/relatorios", () => ({
+jest.mock("src/services/relatorios", () => ({
   getRelatorioInclusaoAlimentacaoCEMEI: jest.fn(() => Promise.resolve()),
 }));
 
@@ -39,7 +41,7 @@ jest.mock("src/helpers/utilities", () => ({
   usuarioEhDRE: () => false,
 }));
 
-jest.mock("components/InclusaoDeAlimentacaoCEMEI/helpers", () => ({
+jest.mock("src/components/InclusaoDeAlimentacaoCEMEI/helpers", () => ({
   tiposAlimentacaoPorPeriodoETipoUnidade: () => "Tipo A, Tipo B",
   inclusaoPossuiCEInestePeriodo: () => true,
   inclusaoPossuiEMEInestePeriodo: () => false,
@@ -47,13 +49,13 @@ jest.mock("components/InclusaoDeAlimentacaoCEMEI/helpers", () => ({
 }));
 
 jest.mock(
-  "components/InclusaoDeAlimentacao/Relatorio/componentes/helper",
+  "src/components/InclusaoDeAlimentacao/Relatorio/componentes/helper",
   () => ({
     formataMotivosDiasComOutros: () => ({ MotivoX: ["2023-12-01"] }),
   })
 );
 
-jest.mock("components/Shareable/ToggleExpandir", () => ({
+jest.mock("src/components/Shareable/ToggleExpandir", () => ({
   ToggleExpandir: () => <button data-testid="toggle">Toggle</button>,
 }));
 

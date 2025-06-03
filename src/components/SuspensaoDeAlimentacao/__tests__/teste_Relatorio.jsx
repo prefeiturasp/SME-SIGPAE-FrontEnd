@@ -3,15 +3,15 @@ import { act, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import RelatorioForm from "../Relatorio";
-import { renderWithProvider } from "utils/test-utils";
+import { renderWithProvider } from "src/utils/test-utils";
 
 import { getSuspensaoDeAlimentacaoUUID } from "src/services/suspensaoDeAlimentacao.service";
 
-import { mockCancelaParcialSuspensao } from "mocks/SuspensaoDeAlimentacao/mockCancelaParcialSuspensao";
+import { mockCancelaParcialSuspensao } from "src/mocks/SuspensaoDeAlimentacao/mockCancelaParcialSuspensao";
 import { TIPO_PERFIL } from "../../../constants/shared";
 import mock from "src/services/_mock";
 
-jest.mock("services/suspensaoDeAlimentacao.service");
+jest.mock("src/services/suspensaoDeAlimentacao.service");
 
 describe("Teste Relatorio de Suspensão de Alimentação", () => {
   beforeEach(async () => {

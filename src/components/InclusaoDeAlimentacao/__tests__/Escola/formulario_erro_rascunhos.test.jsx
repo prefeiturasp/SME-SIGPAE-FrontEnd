@@ -3,17 +3,17 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import { Container } from "src/components/InclusaoDeAlimentacao/Escola/Formulario/componentes/Container";
 import { TIPO_SOLICITACAO } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockCreateGrupoInclusaoNormal } from "mocks/InclusaoAlimentacao/mockCreateGrupoInclusaoNormal";
-import { mockInicioPedidoGrupoInclusaoAlimentacao } from "mocks/InclusaoAlimentacao/mockInicioPedidoGrupoInclusaoAlimentacao";
-import { mockMotivoInclusaoEspecifico } from "mocks/InclusaoAlimentacao/mockMotivoInclusaoEspecifico";
-import { mockMotivosInclusaoContinua } from "mocks/InclusaoAlimentacao/mockMotivosInclusaoContinua";
-import { mockMotivosInclusaoNormal } from "mocks/InclusaoAlimentacao/mockMotivosInclusaoNormal";
-import { mockPeriodosEscolaresNoite } from "mocks/InclusaoAlimentacao/mockPeriodosEscolaresNoite";
-import { mockQuantidadeAlunosPorPeriodo } from "mocks/InclusaoAlimentacao/mockQuantidadeAlunosPorPeriodo";
-import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
-import { mockDiasUteis } from "mocks/diasUseisMock";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
+import { mockCreateGrupoInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockCreateGrupoInclusaoNormal";
+import { mockInicioPedidoGrupoInclusaoAlimentacao } from "src/mocks/InclusaoAlimentacao/mockInicioPedidoGrupoInclusaoAlimentacao";
+import { mockMotivoInclusaoEspecifico } from "src/mocks/InclusaoAlimentacao/mockMotivoInclusaoEspecifico";
+import { mockMotivosInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockMotivosInclusaoContinua";
+import { mockMotivosInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockMotivosInclusaoNormal";
+import { mockPeriodosEscolaresNoite } from "src/mocks/InclusaoAlimentacao/mockPeriodosEscolaresNoite";
+import { mockQuantidadeAlunosPorPeriodo } from "src/mocks/InclusaoAlimentacao/mockQuantidadeAlunosPorPeriodo";
+import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "src/mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
+import { mockDiasUteis } from "src/mocks/diasUseisMock";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import React from "react";
 import {
   getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
@@ -33,10 +33,10 @@ import {
   updateInclusaoAlimentacao,
 } from "src/services/inclusaoDeAlimentacao";
 
-jest.mock("services/cadastroTipoAlimentacao.service");
+jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/escola.service");
-jest.mock("services/diasUteis.service");
-jest.mock("services/inclusaoDeAlimentacao");
+jest.mock("src/services/diasUteis.service");
+jest.mock("src/services/inclusaoDeAlimentacao");
 
 const awaitServices = async () => {
   await waitFor(() => {

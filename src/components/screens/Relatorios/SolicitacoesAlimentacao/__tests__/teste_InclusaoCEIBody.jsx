@@ -6,16 +6,16 @@ import { InclusaoCEIBody } from "../componentes/InclusaoCEIBody";
 
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 
-import { mockItemInclusaoCEI } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemInclusaoCEI";
-import { mockFiltrosInclusao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
-import { mockSolicitacaoInclusaoCEI } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoInclusaoCEI";
-import { mockGetVinculosTipoAlimentacaoPorEscola } from "mocks/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoPorEscola";
+import { mockItemInclusaoCEI } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemInclusaoCEI";
+import { mockFiltrosInclusao } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
+import { mockSolicitacaoInclusaoCEI } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoInclusaoCEI";
+import { mockGetVinculosTipoAlimentacaoPorEscola } from "src/mocks/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoPorEscola";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("services/cadastroTipoAlimentacao.service");
+jest.mock("src/services/cadastroTipoAlimentacao.service");
 
 describe("Teste <InclusaoCEIBody>", () => {
   const index = 1;

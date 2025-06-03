@@ -7,7 +7,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { BrowserRouter as Router } from "react-router-dom";
 
-jest.mock("services/auth", () => ({
+jest.mock("src/services/auth", () => ({
   login: jest.fn(),
   getToken: jest.fn(() => "fake-token"),
 }));
@@ -41,7 +41,7 @@ jest.mock("src/components/Shareable/Botao", () => ({
   ),
 }));
 
-jest.mock("components/Shareable/Input/InputText", () => ({
+jest.mock("src/components/Shareable/Input/InputText", () => ({
   InputText: (props) => (
     <input
       data-testid={`input-${props.name}`}
@@ -52,7 +52,7 @@ jest.mock("components/Shareable/Input/InputText", () => ({
   ),
 }));
 
-jest.mock("components/Shareable/Input/InputPassword", () => ({
+jest.mock("src/components/Shareable/Input/InputPassword", () => ({
   InputPassword: (props) => (
     <input
       data-testid={`input-password-${props.name}`}

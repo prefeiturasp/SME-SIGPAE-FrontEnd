@@ -8,20 +8,20 @@ import {
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosCODAEGA } from "mocks/meusDados/CODAE-GA";
-import { mockAlteracaoCardapioCEMEIAValidar } from "mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIAValidar";
-import { mockAlteracaoCardapioCEMEINegada } from "mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEINegada";
-import { mockAlteracaoCardapioCEMEIQuestionado } from "mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIQuestionado";
-import { mockAlteracaoCardapioCEMEIValidada } from "mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIValidada";
-import { mockQuantidadeAlunoCEMEIporCEIEMEI } from "mocks/services/aluno.service/CEMEI/quantidadeAlunoCEMEIporCEIEMEI";
-import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
+import { mockAlteracaoCardapioCEMEIAValidar } from "src/mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIAValidar";
+import { mockAlteracaoCardapioCEMEINegada } from "src/mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEINegada";
+import { mockAlteracaoCardapioCEMEIQuestionado } from "src/mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIQuestionado";
+import { mockAlteracaoCardapioCEMEIValidada } from "src/mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIValidada";
+import { mockQuantidadeAlunoCEMEIporCEIEMEI } from "src/mocks/services/aluno.service/CEMEI/quantidadeAlunoCEMEIporCEIEMEI";
+import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosAlteracaoDoTipoDeAlimentacaoCEMEI from "src/pages/AlteracaoDeCardapioCEMEIRelatorios";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import mock from "src/services/_mock";
 
-jest.mock("components/Shareable/CKEditorField", () => ({
+jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
   default: ({ data, onChange }) => (
     <textarea

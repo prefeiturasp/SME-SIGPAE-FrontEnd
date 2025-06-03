@@ -2,9 +2,9 @@ import "@testing-library/jest-dom";
 import { act, screen, waitFor } from "@testing-library/react";
 import { ESCOLA } from "src/configs/constants";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockDietasPendentesAutorizacao } from "mocks/DietaEspecial/PainelInicial/mockDietasPendentesAutorizacao";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
+import { mockDietasPendentesAutorizacao } from "src/mocks/DietaEspecial/PainelInicial/mockDietasPendentesAutorizacao";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import {
@@ -18,11 +18,11 @@ import {
   getDietaEspecialPendenteAutorizacaoEscola,
 } from "src/services/dashBoardDietaEspecial.service";
 import { getNomesUnicosEditais } from "src/services/produto.service";
-import { renderWithProvider } from "utils/test-utils";
+import { renderWithProvider } from "src/utils/test-utils";
 import DashboardDietaEspecial from "..";
 
-jest.mock("services/dashBoardDietaEspecial.service");
-jest.mock("services/produto.service");
+jest.mock("src/services/dashBoardDietaEspecial.service");
+jest.mock("src/services/produto.service");
 
 const awaitServices = async () => {
   await waitFor(() => {

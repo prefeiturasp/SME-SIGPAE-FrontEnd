@@ -3,7 +3,7 @@ import { act, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
-import { renderWithProvider } from "utils/test-utils";
+import { renderWithProvider } from "src/utils/test-utils";
 import { ConsultaResponderReclamacaoPage } from "../../../../../pages/Produto";
 import { mockGetReclamacaoUnica } from "../../../../../mocks/produto.service/mockGetReclamacoesTerceirizadaPorFiltro";
 import {

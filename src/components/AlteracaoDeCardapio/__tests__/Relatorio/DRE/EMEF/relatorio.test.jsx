@@ -7,12 +7,12 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
-import { mockAlteracaoCardapioAValidar } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioAValidar";
-import { mockAlteracaoCardapioNaoValidada } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioNaoValidada";
-import { mockAlteracaoCardapioValidada } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioValidada";
-import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
+import { mockAlteracaoCardapioAValidar } from "src/mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioAValidar";
+import { mockAlteracaoCardapioNaoValidada } from "src/mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioNaoValidada";
+import { mockAlteracaoCardapioValidada } from "src/mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioValidada";
+import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosAlteracaoDoTipoDeAlimentacao from "src/pages/AlteracaoDeCardapio/RelatorioPage";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";

@@ -7,11 +7,11 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
-import { mockAlteracaoCardapioAValidar } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioAValidar";
-import { mockAlteracaoCardapioCancelada } from "mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioCancelada";
-import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
+import { mockAlteracaoCardapioAValidar } from "src/mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioAValidar";
+import { mockAlteracaoCardapioCancelada } from "src/mocks/services/alteracaoCardapio.service/EMEF/alteracaoCardapioCancelada";
+import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosAlteracaoDoTipoDeAlimentacao from "src/pages/AlteracaoDeCardapio/RelatorioPage";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";

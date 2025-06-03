@@ -10,14 +10,14 @@ import React from "react";
 import mock from "src/services/_mock";
 import { MemoryRouter } from "react-router-dom";
 import RelatorioCronograma from "../index";
-import { mockCronogramasResponse } from "mocks/cronograma.service/mockGetListagemRelatorio";
-import { mockCronogramasResponsePag2 } from "mocks/cronograma.service/mockGetListagemRelatorio";
-import { mockCronogramasResponseVazio } from "mocks/cronograma.service/mockGetListagemRelatorio";
-import { mockMeusDadosCEI } from "mocks/meusDados/escola/CEI";
+import { mockCronogramasResponse } from "src/mocks/cronograma.service/mockGetListagemRelatorio";
+import { mockCronogramasResponsePag2 } from "src/mocks/cronograma.service/mockGetListagemRelatorio";
+import { mockCronogramasResponseVazio } from "src/mocks/cronograma.service/mockGetListagemRelatorio";
+import { mockMeusDadosCEI } from "src/mocks/meusDados/escola/CEI";
 
-import { mockTerceirizadasEmpresasCronomagramas } from "mocks/cronograma.service/mockGetListaTerceirizadasEmpresasCronomagramas";
-import { mockCadProdEditalCompletaLog } from "mocks/cronograma.service/mockGetListaCadProdEditalCompletaLog";
-import { mockListaCronomagramasCadastro } from "mocks/cronograma.service/mockGetListaCronomagramasCadastro";
+import { mockTerceirizadasEmpresasCronomagramas } from "src/mocks/cronograma.service/mockGetListaTerceirizadasEmpresasCronomagramas";
+import { mockCadProdEditalCompletaLog } from "src/mocks/cronograma.service/mockGetListaCadProdEditalCompletaLog";
+import { mockListaCronomagramasCadastro } from "src/mocks/cronograma.service/mockGetListaCronomagramasCadastro";
 
 describe("Relatório Cronograma - Integração", () => {
   beforeEach(() => {

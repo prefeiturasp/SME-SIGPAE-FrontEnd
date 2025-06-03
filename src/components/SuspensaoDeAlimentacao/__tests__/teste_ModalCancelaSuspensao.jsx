@@ -11,16 +11,16 @@ import { MemoryRouter } from "react-router-dom";
 import { ModalCancelaSuspensao } from "../components/ModalCancelaSuspensao";
 import { escolaCancelaSuspensao } from "src/services/suspensaoDeAlimentacao.service";
 
-import { mockSuspensaoAlimentacao } from "mocks/SuspensaoDeAlimentacao/mockSuspensaoAlimentacao";
-import { mockCancelaParcialSuspensao } from "mocks/SuspensaoDeAlimentacao/mockCancelaParcialSuspensao";
-import { mockCancelaTotalSuspensao } from "mocks/SuspensaoDeAlimentacao/mockCancelaTotalSuspensao";
+import { mockSuspensaoAlimentacao } from "src/mocks/SuspensaoDeAlimentacao/mockSuspensaoAlimentacao";
+import { mockCancelaParcialSuspensao } from "src/mocks/SuspensaoDeAlimentacao/mockCancelaParcialSuspensao";
+import { mockCancelaTotalSuspensao } from "src/mocks/SuspensaoDeAlimentacao/mockCancelaTotalSuspensao";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: jest.fn(),
 }));
 
-jest.mock("services/suspensaoDeAlimentacao.service");
+jest.mock("src/services/suspensaoDeAlimentacao.service");
 
 describe("Teste <ModalCancelaSuspensao> - Cancelamento Parcial", () => {
   let showModalEscolaCancela = true;

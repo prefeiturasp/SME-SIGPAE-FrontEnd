@@ -10,9 +10,9 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 import CadastroFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/CadastroFichaRecebimentoPage";
-import { mockListaCronogramasRecebimento } from "mocks/cronograma.service/mockGetCronogramasRecebimento";
-import { mockCronogramaCadastroRecebimento } from "mocks/cronograma.service/mockGetCronogramaCadastroRecebimento";
-import { mockQuestoesPorCronograma } from "mocks/services/questoesConferencia.service/mockDetalharQuestoesPorCronograma";
+import { mockListaCronogramasRecebimento } from "src/mocks/cronograma.service/mockGetCronogramasRecebimento";
+import { mockCronogramaCadastroRecebimento } from "src/mocks/cronograma.service/mockGetCronogramaCadastroRecebimento";
+import { mockQuestoesPorCronograma } from "src/mocks/services/questoesConferencia.service/mockDetalharQuestoesPorCronograma";
 import moment from "moment";
 
 beforeEach(() => {

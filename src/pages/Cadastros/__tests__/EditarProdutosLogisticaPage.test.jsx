@@ -3,19 +3,24 @@ import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import EditarProdutosLogisticaPage from "../EditarProdutosLogisticaPage";
 
-jest.mock("components/Shareable/Breadcrumb", () => () => (
+jest.mock("src/components/Shareable/Breadcrumb", () => () => (
   <div data-testid="breadcrumb">Mock Breadcrumb</div>
 ));
 
-jest.mock("components/Shareable/Page/Page", () => ({ children, titulo }) => (
-  <div data-testid="page">
-    <h1>{titulo}</h1>
-    {children}
-  </div>
-));
+jest.mock(
+  "src/components/Shareable/Page/Page",
+  () =>
+    ({ children, titulo }) =>
+      (
+        <div data-testid="page">
+          <h1>{titulo}</h1>
+          {children}
+        </div>
+      )
+);
 
 jest.mock(
-  "components/screens/Cadastros/CadastroProdutosLogistica",
+  "src/components/screens/Cadastros/CadastroProdutosLogistica",
   () => () =>
     (
       <div data-testid="cadastro-produtos-logistica">

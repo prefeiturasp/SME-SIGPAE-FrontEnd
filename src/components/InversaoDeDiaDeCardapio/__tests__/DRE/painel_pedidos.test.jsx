@@ -10,11 +10,11 @@ import mock from "src/services/_mock";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockPedidosDREInversaoCardapio } from "mocks/services/inversaoDeDiaDeCardapio.service/DRE/pedidoDREInversaoDeCardapio";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockPedidosDREInversaoCardapio } from "src/mocks/services/inversaoDeDiaDeCardapio.service/DRE/pedidoDREInversaoDeCardapio";
 import PainelPedidosInversaoCardapioDREPage from "src/pages/DRE/InversaoDiaCardapio/PainelPedidosPage.jsx";
-import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
-import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
+import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
+import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
 
 describe("Teste Página do Painel Pedidos - DRE - Inversão de dia de Cardápio", () => {
   beforeEach(async () => {

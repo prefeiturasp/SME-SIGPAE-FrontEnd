@@ -10,12 +10,12 @@ import mock from "src/services/_mock";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockPedidosCODAEInversaoCardapio } from "mocks/services/inversaoDeDiaDeCardapio.service/CODAE/pedidoCODAEInversaoDeCardapio";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockPedidosCODAEInversaoCardapio } from "src/mocks/services/inversaoDeDiaDeCardapio.service/CODAE/pedidoCODAEInversaoDeCardapio";
 import PainelPedidosInversaoCardapioCODAEPage from "src/pages/CODAE/InversaoDiaCardapio/PainelPedidosPage.jsx";
-import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
-import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
-import { mockDiretoriaRegionalSimplissima } from "mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
+import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
+import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
+import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
 
 describe("Teste Página do Painel Pedidos - CODAE - Inversão de dia de Cardápio", () => {
   beforeEach(async () => {

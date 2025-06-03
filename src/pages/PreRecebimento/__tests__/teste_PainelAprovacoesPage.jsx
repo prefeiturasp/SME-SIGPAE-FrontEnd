@@ -11,13 +11,13 @@ import {
   getQtdNaoLidas,
 } from "src/services/notificacoes.service";
 
-import { mockGetNotificacoes } from "mocks/services/notificacoes.service/mockGetNotificacoes";
-import { mockGetQtdNaoLidas } from "mocks/services/notificacoes.service/mockGetQtdNaoLidas";
-import { mockGetDashboardSolicitacoesAlteracao } from "mocks/services/cronograma.service/mockGetDashboardSolicitacoesAlteracao";
-import { mockGetDashboardSolicitacoesAlteracaoComFiltros } from "mocks/services/cronograma.service/mockGetDashboardSolicitacoesAlteracaoComFiltros";
-import { mockGetDashboardCronograma } from "mocks/services/cronograma.service/mockGetDashboardCronograma";
-import { mockGetDashboardCronogramaComFiltros } from "mocks/services/cronograma.service/mockGetDashboardCronogramaComFiltros";
-import { mockMeusDadosDilogAbastecimento } from "mocks/meusDados/dilog-abastecimento";
+import { mockGetNotificacoes } from "src/mocks/services/notificacoes.service/mockGetNotificacoes";
+import { mockGetQtdNaoLidas } from "src/mocks/services/notificacoes.service/mockGetQtdNaoLidas";
+import { mockGetDashboardSolicitacoesAlteracao } from "src/mocks/services/cronograma.service/mockGetDashboardSolicitacoesAlteracao";
+import { mockGetDashboardSolicitacoesAlteracaoComFiltros } from "src/mocks/services/cronograma.service/mockGetDashboardSolicitacoesAlteracaoComFiltros";
+import { mockGetDashboardCronograma } from "src/mocks/services/cronograma.service/mockGetDashboardCronograma";
+import { mockGetDashboardCronogramaComFiltros } from "src/mocks/services/cronograma.service/mockGetDashboardCronogramaComFiltros";
+import { mockMeusDadosDilogAbastecimento } from "src/mocks/meusDados/dilog-abastecimento";
 
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 

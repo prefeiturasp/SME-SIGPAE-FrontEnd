@@ -12,14 +12,14 @@ import { ModalNegarFinalForm } from "../index";
 
 import { codaeNegarSolicitacaoDeInclusaoDeAlimentacao } from "src/services/inclusaoDeAlimentacao";
 
-import { mockCODAENegarSolicitacao } from "mocks/services/inclusaoDeAlimentacao/codae.service/mockCODAENegarSolicitacao";
-import { mockInclusaoCEMEI } from "mocks/InclusaoAlimentacao/mockInclusaoCEMEI";
+import { mockCODAENegarSolicitacao } from "src/mocks/services/inclusaoDeAlimentacao/codae.service/mockCODAENegarSolicitacao";
+import { mockInclusaoCEMEI } from "src/mocks/InclusaoAlimentacao/mockInclusaoCEMEI";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("components/Shareable/CKEditorField", () => ({
+jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
   default: ({ onChange }) => (
     <textarea
@@ -35,7 +35,7 @@ jest.mock("components/Shareable/CKEditorField", () => ({
   ),
 }));
 
-jest.mock("services/inclusaoDeAlimentacao");
+jest.mock("src/services/inclusaoDeAlimentacao");
 
 describe("Teste <ModalNegarFinalForm>", () => {
   beforeEach(async () => {

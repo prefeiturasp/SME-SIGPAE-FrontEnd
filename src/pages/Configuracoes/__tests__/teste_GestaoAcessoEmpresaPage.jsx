@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import GestaoAcessoEmpresaPage from "src/pages/Configuracoes/GestaoAcessoEmpresaPage";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import mock from "src/services/_mock";
-import { renderWithProvider } from "utils/test-utils";
+import { renderWithProvider } from "src/utils/test-utils";
 import { PERFIL } from "src/constants/shared";
 
 import {
@@ -13,14 +13,14 @@ import {
   getQtdNaoLidas,
 } from "src/services/notificacoes.service";
 
-import { mockGetNotificacoes } from "mocks/services/notificacoes.service/mockGetNotificacoes";
-import { mockGetQtdNaoLidas } from "mocks/services/notificacoes.service/mockGetQtdNaoLidas";
+import { mockGetNotificacoes } from "src/mocks/services/notificacoes.service/mockGetNotificacoes";
+import { mockGetQtdNaoLidas } from "src/mocks/services/notificacoes.service/mockGetQtdNaoLidas";
 
-import { mockGetVisoesListagem } from "mocks/services/perfil.service/mockGetVisoesListagem";
-import { mockGetPerfilListagem } from "mocks/services/perfil.service/mockGetPerfilListagem";
-import { mockGetSubdivisoesCODAE } from "mocks/services/vinculos.service/mockGetSubdivisoesCODAE";
-import { mockGetVinculosAtivos } from "mocks/services/vinculos.service/mockGetVinculosAtivos";
-import { mockMeusDadosAdmCONTRATOS } from "mocks/meusDados/adm-contratos";
+import { mockGetVisoesListagem } from "src/mocks/services/perfil.service/mockGetVisoesListagem";
+import { mockGetPerfilListagem } from "src/mocks/services/perfil.service/mockGetPerfilListagem";
+import { mockGetSubdivisoesCODAE } from "src/mocks/services/vinculos.service/mockGetSubdivisoesCODAE";
+import { mockGetVinculosAtivos } from "src/mocks/services/vinculos.service/mockGetVinculosAtivos";
+import { mockMeusDadosAdmCONTRATOS } from "src/mocks/meusDados/adm-contratos";
 
 jest.mock("src/services/notificacoes.service");
 

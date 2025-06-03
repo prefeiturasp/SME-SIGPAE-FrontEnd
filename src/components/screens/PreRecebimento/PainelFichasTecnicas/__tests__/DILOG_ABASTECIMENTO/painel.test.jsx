@@ -8,10 +8,10 @@ import {
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosDILOGABASTECIMENTO } from "mocks/meusDados/CODAE/DILOGABASTECIMENTO";
-import { mockDashboardDILOGABASTECIMENTO } from "mocks/services/fichaTecnica.service/DILOGABASTECIMENTO/dashboard.ts";
-import { mockDashboardFiltradoDILOGABASTECIMENTO } from "mocks/services/fichaTecnica.service/DILOGABASTECIMENTO/dashboardFiltradoPorNumeroFicha.ts";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosDILOGABASTECIMENTO } from "src/mocks/meusDados/CODAE/DILOGABASTECIMENTO";
+import { mockDashboardDILOGABASTECIMENTO } from "src/mocks/services/fichaTecnica.service/DILOGABASTECIMENTO/dashboard.ts";
+import { mockDashboardFiltradoDILOGABASTECIMENTO } from "src/mocks/services/fichaTecnica.service/DILOGABASTECIMENTO/dashboardFiltradoPorNumeroFicha.ts";
 import { PainelFichasTecnicasPage } from "src/pages/PreRecebimento/PainelFichasTecnicasPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";

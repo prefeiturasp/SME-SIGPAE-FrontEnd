@@ -1,15 +1,15 @@
 import "@testing-library/jest-dom";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { TIPO_PERFIL } from "src/constants/shared";
-import { mockAguardandoAnaliseReclamacao } from "mocks/dashboardGestaoProduto/mockAguardandoAmostraAnaliseSensorial";
-import { mockAguardandoAnaliseSensorial } from "mocks/dashboardGestaoProduto/mockAguardandoAnaliseSensorial";
-import { mockCorrecaoDeProduto } from "mocks/dashboardGestaoProduto/mockCorrecaoDeProduto";
-import { mockHomologados } from "mocks/dashboardGestaoProduto/mockHomologados";
-import { mockNaoHomologados } from "mocks/dashboardGestaoProduto/mockNaoHomologados";
-import { mockPendenteHomologacao } from "mocks/dashboardGestaoProduto/mockPendenteHomologacao";
-import { mockQuestionamentoDaCODAE } from "mocks/dashboardGestaoProduto/mockQuestionamentoDaCODAE";
-import { mockSuspensos } from "mocks/dashboardGestaoProduto/mockSuspensos";
-import { localStorageMock } from "mocks/localStorageMock";
+import { mockAguardandoAnaliseReclamacao } from "src/mocks/dashboardGestaoProduto/mockAguardandoAmostraAnaliseSensorial";
+import { mockAguardandoAnaliseSensorial } from "src/mocks/dashboardGestaoProduto/mockAguardandoAnaliseSensorial";
+import { mockCorrecaoDeProduto } from "src/mocks/dashboardGestaoProduto/mockCorrecaoDeProduto";
+import { mockHomologados } from "src/mocks/dashboardGestaoProduto/mockHomologados";
+import { mockNaoHomologados } from "src/mocks/dashboardGestaoProduto/mockNaoHomologados";
+import { mockPendenteHomologacao } from "src/mocks/dashboardGestaoProduto/mockPendenteHomologacao";
+import { mockQuestionamentoDaCODAE } from "src/mocks/dashboardGestaoProduto/mockQuestionamentoDaCODAE";
+import { mockSuspensos } from "src/mocks/dashboardGestaoProduto/mockSuspensos";
+import { localStorageMock } from "src/mocks/localStorageMock";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import {
@@ -25,8 +25,8 @@ import {
 import { getNomesUnicosEditais } from "src/services/produto.service";
 import { DashboardGestaoProduto } from "..";
 
-jest.mock("services/dashboardGestaoProduto");
-jest.mock("services/produto.service");
+jest.mock("src/services/dashboardGestaoProduto");
+jest.mock("src/services/produto.service");
 
 const awaitServices = async () => {
   await waitFor(() => {

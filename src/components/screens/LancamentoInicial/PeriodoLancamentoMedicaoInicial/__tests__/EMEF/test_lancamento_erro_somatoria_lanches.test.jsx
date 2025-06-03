@@ -7,15 +7,15 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockCategoriasMedicao } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
-import { mockDiasCalendarioEMEFAbril2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/diasCalendario";
-import { mockLogQuantidadeDietasAutorizadasEMEFAbril2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/logQuantidadeDietasAutorizadas";
-import { mockMatriculadosNoMesEMEFAbril2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/matriculadosNoMes";
-import { mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/permissaoLancamentosEspeciais";
-import { mockStateMANHAEMEFAbril2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/stateMANHA";
-import { mockValoresMedicaoMANHAEMEFAbril2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/valoresMedicaoMANHA";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
-import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
+import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
+import { mockDiasCalendarioEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/diasCalendario";
+import { mockLogQuantidadeDietasAutorizadasEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/logQuantidadeDietasAutorizadas";
+import { mockMatriculadosNoMesEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/matriculadosNoMes";
+import { mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/permissaoLancamentosEspeciais";
+import { mockStateMANHAEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/stateMANHA";
+import { mockValoresMedicaoMANHAEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/valoresMedicaoMANHA";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
+import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import { React } from "react";
 import { MemoryRouter } from "react-router-dom";

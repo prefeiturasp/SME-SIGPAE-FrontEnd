@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 
-jest.mock("components/Shareable/Breadcrumb", () => ({
+jest.mock("src/components/Shareable/Breadcrumb", () => ({
   __esModule: true,
   default: ({ home, anteriores, atual }) => (
     <div data-testid="breadcrumb">
@@ -13,7 +13,7 @@ jest.mock("components/Shareable/Breadcrumb", () => ({
   ),
 }));
 
-jest.mock("components/Shareable/Page/Page", () => ({
+jest.mock("src/components/Shareable/Page/Page", () => ({
   __esModule: true,
   default: ({ titulo, children, botaoVoltar, voltarPara }) => (
     <div data-testid="page">
@@ -26,7 +26,7 @@ jest.mock("components/Shareable/Page/Page", () => ({
 }));
 
 jest.mock(
-  "components/screens/Cadastros/CadastroEmpresa/CadastroEmpresa",
+  "src/components/screens/Cadastros/CadastroEmpresa/CadastroEmpresa",
   () => ({
     __esModule: true,
     CadastroEmpresa: () => (

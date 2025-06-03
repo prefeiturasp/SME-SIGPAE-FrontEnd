@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 
-jest.mock("components/Shareable/Breadcrumb", () => ({
+jest.mock("src/components/Shareable/Breadcrumb", () => ({
   __esModule: true,
   default: ({ home, atual }) => (
     <div data-testid="breadcrumb">
@@ -12,7 +12,7 @@ jest.mock("components/Shareable/Breadcrumb", () => ({
   ),
 }));
 
-jest.mock("components/screens/Cadastros/CadastroGeral", () => ({
+jest.mock("src/components/screens/Cadastros/CadastroGeral", () => ({
   __esModule: true,
   default: ({ tipoFixo }) => (
     <div data-testid="cadastro-geral">
@@ -21,7 +21,7 @@ jest.mock("components/screens/Cadastros/CadastroGeral", () => ({
   ),
 }));
 
-jest.mock("components/Shareable/Page/Page", () => ({
+jest.mock("src/components/Shareable/Page/Page", () => ({
   __esModule: true,
   default: ({ titulo, botaoVoltar, voltarPara, children }) => (
     <div data-testid="page">

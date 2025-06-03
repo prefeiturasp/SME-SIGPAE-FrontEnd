@@ -13,9 +13,9 @@ import EmpresasCadastradas from "../EmpresasCadastradas";
 import { PERFIL } from "src/constants/shared";
 
 import { getTerceirizada } from "src/services/terceirizada.service";
-import { mockGetTerceirizada } from "mocks/services/terceirizada.service/mockGetTerceirizada";
+import { mockGetTerceirizada } from "src/mocks/services/terceirizada.service/mockGetTerceirizada";
 
-jest.mock("services/terceirizada.service");
+jest.mock("src/services/terceirizada.service");
 
 beforeEach(() => {
   getTerceirizada.mockResolvedValue({

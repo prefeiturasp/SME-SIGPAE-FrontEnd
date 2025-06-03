@@ -3,7 +3,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ProdutosLogisticaPage from "../ProdutosLogisticaPage";
 
-jest.mock("components/Shareable/Page/Page", () => {
+jest.mock("src/components/Shareable/Page/Page", () => {
   return ({ children, titulo, botaoVoltar, voltarPara }) => (
     <div data-testid="mock-page">
       <div>{titulo}</div>
@@ -14,7 +14,7 @@ jest.mock("components/Shareable/Page/Page", () => {
   );
 });
 
-jest.mock("components/Shareable/Breadcrumb", () => {
+jest.mock("src/components/Shareable/Breadcrumb", () => {
   return ({ home, anteriores, atual }) => (
     <nav data-testid="mock-breadcrumb">
       <div>{`Home: ${home}`}</div>
@@ -26,7 +26,7 @@ jest.mock("components/Shareable/Breadcrumb", () => {
   );
 });
 
-jest.mock("components/screens/Cadastros/ProdutosLogistica", () => {
+jest.mock("src/components/screens/Cadastros/ProdutosLogistica", () => {
   return () => (
     <div data-testid="mock-produtos">Componente Produtos Logística</div>
   );

@@ -7,12 +7,12 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
-import { mockPedidosCODAEInclusaoCEI } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoCEI";
-import { mockPedidosCODAEInclusaoContinua } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoContinua";
-import { mockPedidosCODAEInclusaoNormal } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoNormal";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
-import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
+import { mockPedidosCODAEInclusaoCEI } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoCEI";
+import { mockPedidosCODAEInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoContinua";
+import { mockPedidosCODAEInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoNormal";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
+import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
 import PainelPedidosInclusaoDeAlimentacaoDREPage from "src/pages/DRE/InclusaoDeAlimentacao/PainelPedidosPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";

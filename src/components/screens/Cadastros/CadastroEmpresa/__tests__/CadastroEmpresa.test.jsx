@@ -31,9 +31,9 @@ import {
   mockEmpresaSemNutri,
 } from "../../../../../mocks/terceirizada.service/mockGetTerceirizadaUUID";
 
-jest.mock("services/terceirizada.service.js");
-jest.mock("services/lote.service.js");
-jest.mock("services/cep.service.js");
+jest.mock("src/services/terceirizada.service.jsx");
+jest.mock("src/services/lote.service.jsx");
+jest.mock("src/services/cep.service.jsx");
 
 beforeEach(() => {
   getTerceirizadaUUID.mockResolvedValue({

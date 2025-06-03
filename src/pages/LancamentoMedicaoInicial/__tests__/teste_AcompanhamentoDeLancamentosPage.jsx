@@ -11,14 +11,14 @@ import { AcompanhamentoDeLancamentosPage } from "src/pages/LancamentoMedicaoInic
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
-import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
-import { mockMeusDadosSuperUsuarioMedicao } from "mocks/meusDados/superUsuarioMedicao";
-import { mockGetTiposUnidadeEscolar } from "mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
-import { mockGetDashboardMedicaoInicial } from "mocks/services/dashboard.service/mockGetDashboardMedicaoInicial";
-import { mockGetMesesAnosMedicaoInicial } from "mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
-import { mockGetDiretoriaRegionalSimplissima } from "mocks/services/diretoriaRegional.service/mockGetDiretoriaRegionalSimplissima";
-import { mockGetEscolaTercTotal } from "mocks/services/escola.service/mockGetEscolasTercTotal";
-import { mockGetGrupoUnidadeEscolar } from "mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
+import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
+import { mockMeusDadosSuperUsuarioMedicao } from "src/mocks/meusDados/superUsuarioMedicao";
+import { mockGetTiposUnidadeEscolar } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
+import { mockGetDashboardMedicaoInicial } from "src/mocks/services/dashboard.service/mockGetDashboardMedicaoInicial";
+import { mockGetMesesAnosMedicaoInicial } from "src/mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
+import { mockGetDiretoriaRegionalSimplissima } from "src/mocks/services/diretoriaRegional.service/mockGetDiretoriaRegionalSimplissima";
+import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
+import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 
 jest.setTimeout(10000);
 

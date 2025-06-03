@@ -7,11 +7,11 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { TIPO_PERFIL, TIPO_SOLICITACAO } from "src/constants/shared";
-import { mockDiretoriaRegionalSimplissima } from "mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
-import { mockPedidosCODAEAlteracaoCardapio } from "mocks/services/alteracaoCardapio.service/CODAE/pedidosCODAEAlteracaoCardapio";
-import { mockPedidosCODAEAlteracaoCardapioCEMEI } from "mocks/services/alteracaoCardapio.service/CODAE/pedidosCODAEAlteracaoCardapioCEMEI";
+import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
+import { mockPedidosCODAEAlteracaoCardapio } from "src/mocks/services/alteracaoCardapio.service/CODAE/pedidosCODAEAlteracaoCardapio";
+import { mockPedidosCODAEAlteracaoCardapioCEMEI } from "src/mocks/services/alteracaoCardapio.service/CODAE/pedidosCODAEAlteracaoCardapioCEMEI";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { codaeListarSolicitacoesDeAlteracaoDeCardapio } from "src/services/alteracaoDeCardapio";
@@ -19,8 +19,8 @@ import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.
 import { getLotesSimples } from "src/services/lote.service";
 import Container from "../../CODAE/PainelPedidos/Container";
 
-jest.mock("services/alteracaoDeCardapio");
-jest.mock("services/lote.service");
+jest.mock("src/services/alteracaoDeCardapio");
+jest.mock("src/services/lote.service");
 jest.mock("src/services/diretoriaRegional.service");
 
 const awaitServices = async () => {

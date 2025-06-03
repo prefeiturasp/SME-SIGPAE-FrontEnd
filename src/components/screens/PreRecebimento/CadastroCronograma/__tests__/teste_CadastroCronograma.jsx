@@ -14,13 +14,13 @@ import {
 } from "src/services/cronograma.service";
 import { getListaTiposEmbalagens } from "src/services/qualidade.service";
 
-import { mockListaDistribuidores } from "mocks/PreRecebimento/CadastroCronograma/mockListaDistribuidores";
-import { mockListaEmpresas } from "mocks/PreRecebimento/CadastroCronograma/mockListaEmpresas";
-import { mockListaFichasTecnicasSimplesAprovadas } from "mocks/PreRecebimento/CadastroCronograma/mockListaFichasTecnicasSimplesAprovadas";
+import { mockListaDistribuidores } from "src/mocks/PreRecebimento/CadastroCronograma/mockListaDistribuidores";
+import { mockListaEmpresas } from "src/mocks/PreRecebimento/CadastroCronograma/mockListaEmpresas";
+import { mockListaFichasTecnicasSimplesAprovadas } from "src/mocks/PreRecebimento/CadastroCronograma/mockListaFichasTecnicasSimplesAprovadas";
 import { mockListaUnidadesMedidaLogistica } from "../../../../../mocks/cronograma.service/mockGetUnidadesDeMedidaLogistica";
-import { mockListaRascunhos } from "mocks/PreRecebimento/CadastroCronograma/mockListaRascunhos";
-import { mockListaTiposEmbalagens } from "mocks/PreRecebimento/CadastroCronograma/mockListaTiposEmbalagens";
-import { mockGetCronograma } from "mocks/PreRecebimento/CadastroCronograma/mockGetCronograma";
+import { mockListaRascunhos } from "src/mocks/PreRecebimento/CadastroCronograma/mockListaRascunhos";
+import { mockListaTiposEmbalagens } from "src/mocks/PreRecebimento/CadastroCronograma/mockListaTiposEmbalagens";
+import { mockGetCronograma } from "src/mocks/PreRecebimento/CadastroCronograma/mockGetCronograma";
 
 import { useNavigate } from "react-router-dom";
 
@@ -32,11 +32,11 @@ jest.mock("react-router-dom", () => ({
 const mockNavigate = jest.fn();
 useNavigate.mockReturnValue(mockNavigate);
 
-jest.mock("services/logistica.service");
-jest.mock("services/terceirizada.service");
-jest.mock("services/fichaTecnica.service");
-jest.mock("services/cronograma.service");
-jest.mock("services/qualidade.service");
+jest.mock("src/services/logistica.service");
+jest.mock("src/services/terceirizada.service");
+jest.mock("src/services/fichaTecnica.service");
+jest.mock("src/services/cronograma.service");
+jest.mock("src/services/qualidade.service");
 
 describe("Test <CadastroCronograma>", () => {
   beforeEach(async () => {

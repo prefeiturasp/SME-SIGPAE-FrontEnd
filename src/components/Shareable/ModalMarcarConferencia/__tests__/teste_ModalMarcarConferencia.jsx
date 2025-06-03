@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import { ModalMarcarConferencia } from "../index";
 import mock from "src/services/_mock";
 
-import { mockTerceirizadaMarcaConferencia } from "mocks/services/dietaEspecial.service/mockTerceirizadaMarcaConferencia";
+import { mockTerceirizadaMarcaConferencia } from "src/mocks/services/dietaEspecial.service/mockTerceirizadaMarcaConferencia";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),

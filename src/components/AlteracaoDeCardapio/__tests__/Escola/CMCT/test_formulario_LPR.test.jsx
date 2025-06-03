@@ -23,7 +23,7 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
-jest.mock("components/Shareable/CKEditorField", () => ({
+jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
   default: () => (
     <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />

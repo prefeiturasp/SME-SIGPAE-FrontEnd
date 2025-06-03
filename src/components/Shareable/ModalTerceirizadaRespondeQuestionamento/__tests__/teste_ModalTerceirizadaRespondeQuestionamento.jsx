@@ -12,13 +12,13 @@ import { ModalTerceirizadaRespondeQuestionamento } from "../index";
 
 import { terceirizadaResponderQuestionamentoDeInclusaoDeAlimentacao } from "src/services/inclusaoDeAlimentacao";
 
-import { mockTerceirizadaRespondeQuestionamento } from "mocks/services/inclusaoDeAlimentacao/terceirizada.service/mockTerceirizadaRespondeQuestionamento";
+import { mockTerceirizadaRespondeQuestionamento } from "src/mocks/services/inclusaoDeAlimentacao/terceirizada.service/mockTerceirizadaRespondeQuestionamento";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("services/inclusaoDeAlimentacao");
+jest.mock("src/services/inclusaoDeAlimentacao");
 
 describe("Teste <ModalTerceirizadaRespondeQuestionamento>", () => {
   beforeEach(async () => {

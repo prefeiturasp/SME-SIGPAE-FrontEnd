@@ -6,14 +6,14 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { APIMockVersion } from "mocks/apiVersionMock";
-import { localStorageMock } from "mocks/localStorageMock";
+import { APIMockVersion } from "src/mocks/apiVersionMock";
+import { localStorageMock } from "src/mocks/localStorageMock";
 import React, { useState } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { getAPIVersion } from "src/services/api.service";
 import { Sidebar } from "..";
 
-jest.mock("services/api.service");
+jest.mock("src/services/api.service");
 
 const awaitServices = async () => {
   await waitFor(() => {

@@ -10,19 +10,19 @@ import {
 } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockDiasUteis } from "mocks/diasUseisMock";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
-import { mockRascunhoAlteracaoCardapioEMEF } from "mocks/services/alteracaoCardapio.service/EMEF/rascunhoAlteracaoCardapio";
-import { mockRascunhosAlteracaoCardapioEMEF } from "mocks/services/alteracaoCardapio.service/EMEF/rascunhosAlteracaoCardapio";
-import { mockMotivosAlteracaoCardapio } from "mocks/services/alteracaoCardapio.service/motivosAlteracaoCardapio";
-import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
-import { mockQuantidadeAlunosPorPeriodoEMEF } from "mocks/services/escola.service/EMEF/quantidadeAlunosPorPeriodoEMEF";
+import { mockDiasUteis } from "src/mocks/diasUseisMock";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
+import { mockRascunhoAlteracaoCardapioEMEF } from "src/mocks/services/alteracaoCardapio.service/EMEF/rascunhoAlteracaoCardapio";
+import { mockRascunhosAlteracaoCardapioEMEF } from "src/mocks/services/alteracaoCardapio.service/EMEF/rascunhosAlteracaoCardapio";
+import { mockMotivosAlteracaoCardapio } from "src/mocks/services/alteracaoCardapio.service/motivosAlteracaoCardapio";
+import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
+import { mockQuantidadeAlunosPorPeriodoEMEF } from "src/mocks/services/escola.service/EMEF/quantidadeAlunosPorPeriodoEMEF";
 import AlteracaoDeCardapioPage from "src/pages/Escola/AlteracaoDeCardapioPage";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
-jest.mock("components/Shareable/CKEditorField", () => ({
+jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
   default: () => (
     <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />

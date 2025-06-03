@@ -4,17 +4,22 @@ import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import CadastroNotificacaoPage from "../CadastroNotificacao.page";
 
-jest.mock("components/Shareable/Breadcrumb", () => () => (
+jest.mock("src/components/Shareable/Breadcrumb", () => () => (
   <div data-testid="breadcrumb">Breadcrumb</div>
 ));
 
-jest.mock("components/Shareable/Page/Page", () => ({ children, ...props }) => (
-  <div data-testid="page" data-titulo={props.titulo}>
-    {children}
-  </div>
-));
+jest.mock(
+  "src/components/Shareable/Page/Page",
+  () =>
+    ({ children, ...props }) =>
+      (
+        <div data-testid="page" data-titulo={props.titulo}>
+          {children}
+        </div>
+      )
+);
 
-jest.mock("components/screens/Logistica/CadastroNotificacao", () => () => (
+jest.mock("src/components/screens/Logistica/CadastroNotificacao", () => () => (
   <div data-testid="cadastro-notificacao">Formulário de Cadastro</div>
 ));
 

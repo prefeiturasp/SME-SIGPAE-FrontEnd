@@ -1,15 +1,15 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { mockCategoriasMedicaoCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
-import { mockDiasCalendarioCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockDiasCalendarioCEI";
-import { mockFeriadosNoMesCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockFeriadosNoMesCEI";
-import { mockInclusoesAutorizadasEscolaCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockInclusoesAutorizadasEscolaCEI.";
-import { mockLogsDietasAutorizadasCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockLogsDietasAutorizadasCEI";
-import { mockLogsMatriculadosCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockLogsMatriculadosCEI";
-import { mockLogsMatriculadosCEIInclusao } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockLogsMatriculadosCEIInclusao";
-import { mockMeusDadosEscolaCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
-import { mockUpdateValoresPeriodosLancamentosCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockUpdateValoresPeriodoLancamentoCEI";
-import { mockValoresMedicaoCEI } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockValoresMedicaoCEI";
+import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
+import { mockDiasCalendarioCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockDiasCalendarioCEI";
+import { mockFeriadosNoMesCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockFeriadosNoMesCEI";
+import { mockInclusoesAutorizadasEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockInclusoesAutorizadasEscolaCEI.";
+import { mockLogsDietasAutorizadasCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockLogsDietasAutorizadasCEI";
+import { mockLogsMatriculadosCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockLogsMatriculadosCEI";
+import { mockLogsMatriculadosCEIInclusao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockLogsMatriculadosCEIInclusao";
+import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
+import { mockUpdateValoresPeriodosLancamentosCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockUpdateValoresPeriodoLancamentoCEI";
+import { mockValoresMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockValoresMedicaoCEI";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
@@ -19,10 +19,10 @@ import { getSolicitacoesInclusoesAutorizadasEscola } from "src/services/medicaoI
 import { getMeusDados } from "src/services/perfil.service";
 import { PeriodoLancamentoMedicaoInicialCEI } from "..";
 
-jest.mock("services/perfil.service.js");
-jest.mock("services/medicaoInicial/diaSobremesaDoce.service.js");
-jest.mock("services/medicaoInicial/periodoLancamentoMedicao.service");
-jest.mock("services/faixaEtaria.service.js");
+jest.mock("src/services/perfil.service.jsx");
+jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
+jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
+jest.mock("src/services/faixaEtaria.service.jsx");
 
 const awaitServices = async () => {
   await waitFor(() => expect(getListaDiasSobremesaDoce).toHaveBeenCalled());

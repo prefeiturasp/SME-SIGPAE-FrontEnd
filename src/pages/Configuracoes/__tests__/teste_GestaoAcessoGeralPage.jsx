@@ -12,21 +12,21 @@ import { MemoryRouter } from "react-router-dom";
 import GestaoAcessoGeralPage from "src/pages/Configuracoes/GestaoAcessoGeralPage";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import mock from "src/services/_mock";
-import { renderWithProvider } from "utils/test-utils";
+import { renderWithProvider } from "src/utils/test-utils";
 import { PERFIL } from "src/constants/shared";
 
-import { mockGetVisoesListagem } from "mocks/services/perfil.service/mockGetVisoesListagem";
-import { mockGetPerfilListagem } from "mocks/services/perfil.service/mockGetPerfilListagem";
-import { mockGetSubdivisoesCODAE } from "mocks/services/vinculos.service/mockGetSubdivisoesCODAE";
-import { mockGetVinculosAtivos } from "mocks/services/vinculos.service/mockGetVinculosAtivos";
-import { mockMeusDadosAdmGestaoProduto } from "mocks/meusDados/admGestaoProduto";
-import { mockGetDadosUsuarioEOL } from "mocks/services/permissoes.service/mockGetDadosUsuarioEOL";
+import { mockGetVisoesListagem } from "src/mocks/services/perfil.service/mockGetVisoesListagem";
+import { mockGetPerfilListagem } from "src/mocks/services/perfil.service/mockGetPerfilListagem";
+import { mockGetSubdivisoesCODAE } from "src/mocks/services/vinculos.service/mockGetSubdivisoesCODAE";
+import { mockGetVinculosAtivos } from "src/mocks/services/vinculos.service/mockGetVinculosAtivos";
+import { mockMeusDadosAdmGestaoProduto } from "src/mocks/meusDados/admGestaoProduto";
+import { mockGetDadosUsuarioEOL } from "src/mocks/services/permissoes.service/mockGetDadosUsuarioEOL";
 import {
   mockGetVinculosAtivosPosCadastro,
   mockGetVinculosAtivosPosCadastro2,
   mockGetVinculosAtivosPosCadastro3,
-} from "mocks/services/vinculos.service/mockGetVinculosAtivosPosCadastro";
-import { mockAlterarVinculo } from "mocks/services/vinculos.service/mockAlterarVinculo";
+} from "src/mocks/services/vinculos.service/mockGetVinculosAtivosPosCadastro";
+import { mockAlterarVinculo } from "src/mocks/services/vinculos.service/mockAlterarVinculo";
 
 jest.setTimeout(60000);
 

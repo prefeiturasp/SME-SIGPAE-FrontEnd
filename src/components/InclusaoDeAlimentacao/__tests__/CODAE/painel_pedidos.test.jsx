@@ -7,20 +7,20 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { TIPO_PERFIL, TIPO_SOLICITACAO } from "src/constants/shared";
-import { mockDiretoriaRegionalSimplissima } from "mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
-import { mockPedidosCODAEInclusaoCEI } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoCEI";
-import { mockPedidosCODAEInclusaoContinua } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoContinua";
-import { mockPedidosCODAEInclusaoNormal } from "mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoNormal";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
+import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
+import { mockPedidosCODAEInclusaoCEI } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoCEI";
+import { mockPedidosCODAEInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoContinua";
+import { mockPedidosCODAEInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoNormal";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { MemoryRouter } from "react-router-dom";
 import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
 import { codaeListarSolicitacoesDeInclusaoDeAlimentacao } from "src/services/inclusaoDeAlimentacao";
 import { getLotesSimples } from "src/services/lote.service";
 import Container from "../../CODAE/PainelPedidos/Container";
 
-jest.mock("services/inclusaoDeAlimentacao");
-jest.mock("services/lote.service");
+jest.mock("src/services/inclusaoDeAlimentacao");
+jest.mock("src/services/lote.service");
 jest.mock("src/services/diretoriaRegional.service");
 
 const awaitServices = async () => {

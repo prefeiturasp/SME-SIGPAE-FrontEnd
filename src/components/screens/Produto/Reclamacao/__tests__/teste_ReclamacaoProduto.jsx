@@ -5,24 +5,24 @@ import { MemoryRouter } from "react-router-dom";
 import { TIPO_PERFIL } from "src/constants/shared";
 import ReclamacaoProduto from "../index";
 import mock from "src/services/_mock";
-import { renderWithProvider } from "utils/test-utils";
+import { renderWithProvider } from "src/utils/test-utils";
 
 import {
   getNotificacoes,
   getQtdNaoLidas,
 } from "src/services/notificacoes.service";
 
-import { mockGetNotificacoes } from "mocks/services/notificacoes.service/mockGetNotificacoes";
-import { mockGetQtdNaoLidas } from "mocks/services/notificacoes.service/mockGetQtdNaoLidas";
+import { mockGetNotificacoes } from "src/mocks/services/notificacoes.service/mockGetNotificacoes";
+import { mockGetQtdNaoLidas } from "src/mocks/services/notificacoes.service/mockGetQtdNaoLidas";
 
-import { mockGetProdutosPorParametros } from "mocks/services/produto.service/mockGetProdutosPorParametros";
-import { mockGetNomesUnicosEditais } from "mocks/services/produto.service/mockGetNomesUnicosEditais";
-import { mockGetNovaReclamacaoNomesProdutos } from "mocks/services/produto.service/mockGetNovaReclamacaoNomesProdutos";
-import { mockGetNovaReclamacaoNomesMarcas } from "mocks/services/produto.service/mockGetNovaReclamacaoNomesMarcas";
-import { mockGetNovaReclamacaoNomesFabricantes } from "mocks/services/produto.service/mockGetNovaReclamacaoNomesFabricantes";
-import { mockGetEscolaTercTotal } from "mocks/services/escola.service/mockGetEscolasTercTotal";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
-import { mockMeusDadosNutriSupervisao } from "mocks/meusDados/nutri-supervisao";
+import { mockGetProdutosPorParametros } from "src/mocks/services/produto.service/mockGetProdutosPorParametros";
+import { mockGetNomesUnicosEditais } from "src/mocks/services/produto.service/mockGetNomesUnicosEditais";
+import { mockGetNovaReclamacaoNomesProdutos } from "src/mocks/services/produto.service/mockGetNovaReclamacaoNomesProdutos";
+import { mockGetNovaReclamacaoNomesMarcas } from "src/mocks/services/produto.service/mockGetNovaReclamacaoNomesMarcas";
+import { mockGetNovaReclamacaoNomesFabricantes } from "src/mocks/services/produto.service/mockGetNovaReclamacaoNomesFabricantes";
+import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
+import { mockMeusDadosNutriSupervisao } from "src/mocks/meusDados/nutri-supervisao";
 
 jest.mock("src/services/notificacoes.service");
 

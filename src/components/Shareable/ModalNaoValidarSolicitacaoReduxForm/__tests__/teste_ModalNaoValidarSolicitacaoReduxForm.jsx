@@ -12,14 +12,14 @@ import { ModalNaoValidarSolicitacao } from "../index";
 
 import { dreReprovarSolicitacaoDeInclusaoDeAlimentacao } from "src/services/inclusaoDeAlimentacao";
 
-import { mockDRENaoValida } from "mocks/services/inclusaoDeAlimentacao/dre.service/mockDRENaoValida";
-import { mockMotivosDRENaoValida } from "mocks/InclusaoAlimentacao/mockMotivosDRENaoValida";
+import { mockDRENaoValida } from "src/mocks/services/inclusaoDeAlimentacao/dre.service/mockDRENaoValida";
+import { mockMotivosDRENaoValida } from "src/mocks/InclusaoAlimentacao/mockMotivosDRENaoValida";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("services/inclusaoDeAlimentacao");
+jest.mock("src/services/inclusaoDeAlimentacao");
 
 describe("Teste <ModalNaoValidarSolicitacao>", () => {
   beforeEach(async () => {

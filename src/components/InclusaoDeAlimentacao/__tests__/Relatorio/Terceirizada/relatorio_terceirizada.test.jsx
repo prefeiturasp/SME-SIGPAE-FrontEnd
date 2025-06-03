@@ -7,11 +7,11 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
-import { mockInclusaoAlimentacaoAutorizada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoAutorizada";
-import { mockInclusaoAlimentacaoConferida } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoConferida";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosTerceirizada } from "mocks/meusDados/terceirizada";
-import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
+import { mockInclusaoAlimentacaoAutorizada } from "src/mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoAutorizada";
+import { mockInclusaoAlimentacaoConferida } from "src/mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoConferida";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosTerceirizada } from "src/mocks/meusDados/terceirizada";
+import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosInclusaoDeAlimentacao from "src/pages/InclusaoDeAlimentacao/RelatorioPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";

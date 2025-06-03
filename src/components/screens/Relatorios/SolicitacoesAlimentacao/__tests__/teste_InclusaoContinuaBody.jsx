@@ -4,9 +4,9 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { InclusaoContinuaBody } from "../componentes/InclusaoContinuaBody";
 
-import { mockItemInclusaoContinua } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemInclusaoContinua";
-import { mockFiltrosInclusao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
-import { mockSolicitacaoInclusaoContinua } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoInclusaoContinua";
+import { mockItemInclusaoContinua } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemInclusaoContinua";
+import { mockFiltrosInclusao } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
+import { mockSolicitacaoInclusaoContinua } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoInclusaoContinua";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),

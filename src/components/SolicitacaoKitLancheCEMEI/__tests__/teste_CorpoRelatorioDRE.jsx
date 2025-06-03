@@ -20,16 +20,16 @@ import {
   DRENaoValidaKitLancheCEMEI,
 } from "src/services/kitLanche";
 
-import { mockDREValidaKitLanche } from "mocks/SolicitacaoKitLancheCEMEI/mockDREValidaKitLanche";
-import { mockGetSolicitacaoPosValidacaoDRE } from "mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoPosValidacaoDRE";
-import { mockGetSolicitacaoKitLancheRegular } from "mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoKitLancheRegular";
-import { mockMotivosDRENaoValida } from "mocks/SolicitacaoKitLancheCEMEI/mockMotivosDRENaoValida";
+import { mockDREValidaKitLanche } from "src/mocks/SolicitacaoKitLancheCEMEI/mockDREValidaKitLanche";
+import { mockGetSolicitacaoPosValidacaoDRE } from "src/mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoPosValidacaoDRE";
+import { mockGetSolicitacaoKitLancheRegular } from "src/mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoKitLancheRegular";
+import { mockMotivosDRENaoValida } from "src/mocks/SolicitacaoKitLancheCEMEI/mockMotivosDRENaoValida";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("services/kitLanche");
+jest.mock("src/services/kitLanche");
 
 const propsDRE = {
   visao: DRE,

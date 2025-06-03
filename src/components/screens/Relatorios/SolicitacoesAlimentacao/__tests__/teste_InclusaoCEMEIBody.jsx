@@ -15,17 +15,17 @@ import {
   getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
 } from "src/services/cadastroTipoAlimentacao.service";
 
-import { mockItemInclusaoCEMEI } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemInclusaoCEMEI";
-import { mockFiltrosInclusao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
-import { mockSolicitacaoInclusaoCEMEI } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoInclusaoCEMEI";
-import { mockGetVinculosTipoAlimentacaoPorEscola } from "mocks/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoPorEscola";
-import { mockGetVinculosTipoAlimentacaoMotivoInclusaoEspecifico } from "mocks/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoMotivoInclusaoEspecifico";
+import { mockItemInclusaoCEMEI } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemInclusaoCEMEI";
+import { mockFiltrosInclusao } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
+import { mockSolicitacaoInclusaoCEMEI } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoInclusaoCEMEI";
+import { mockGetVinculosTipoAlimentacaoPorEscola } from "src/mocks/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoPorEscola";
+import { mockGetVinculosTipoAlimentacaoMotivoInclusaoEspecifico } from "src/mocks/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoMotivoInclusaoEspecifico";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("services/cadastroTipoAlimentacao.service");
+jest.mock("src/services/cadastroTipoAlimentacao.service");
 
 describe("Teste <InclusaoContinuaBody>", () => {
   const index = 1;

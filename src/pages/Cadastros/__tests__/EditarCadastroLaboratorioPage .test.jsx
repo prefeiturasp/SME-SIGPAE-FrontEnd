@@ -21,7 +21,7 @@ jest.mock(
 );
 
 jest.mock(
-  "components/screens/Cadastros/Laboratorios/components/CadastroLaboratorio",
+  "src/components/screens/Cadastros/Laboratorios/components/CadastroLaboratorio",
   () => () =>
     <div data-testid="cadastro-laboratorio">Mock CadastroLaboratorio</div>
 );

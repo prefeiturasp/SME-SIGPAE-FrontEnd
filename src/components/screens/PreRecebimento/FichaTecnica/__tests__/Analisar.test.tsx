@@ -3,14 +3,14 @@ import { render, screen, act, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockListaInformacoesNutricionais } from "mocks/produto.service/mockGetInformacoesNutricionaisOrdenadas";
-import { mockEmpresa } from "mocks/terceirizada.service/mockGetTerceirizadaUUID";
+import { mockListaInformacoesNutricionais } from "src/mocks/produto.service/mockGetInformacoesNutricionaisOrdenadas";
+import { mockEmpresa } from "src/mocks/terceirizada.service/mockGetTerceirizadaUUID";
 import { debug } from "jest-preview";
-import { mockMeusDadosFornecedor } from "mocks/services/perfil.service/mockMeusDados";
+import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
 import {
   mockFichaTecnicaComDetalhe,
   mockFichaTecnicaComDetalheSemAnalise,
-} from "mocks/services/fichaTecnica.service/mockGetFichaTecnicaComAnalise";
+} from "src/mocks/services/fichaTecnica.service/mockGetFichaTecnicaComAnalise";
 import DetalharFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/DetalharFichaTecnicaPage";
 import AnalisarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/AnalisarFichaTecnicaPage";
 import mock from "src/services/_mock";

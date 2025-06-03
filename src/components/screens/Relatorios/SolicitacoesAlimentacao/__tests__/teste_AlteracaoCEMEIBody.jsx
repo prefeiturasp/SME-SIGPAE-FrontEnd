@@ -4,9 +4,9 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { AlteracaoCEMEIBody } from "../componentes/AlteracaoCEMEIBody";
 
-import { mockItemAlteracaoCEMEI } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemAlteracaoCEMEI";
-import { mockFiltrosSuspensao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
-import { mockSolicitacaoAlteracaoCEMEI } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoAlteracaoCEMEI";
+import { mockItemAlteracaoCEMEI } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemAlteracaoCEMEI";
+import { mockFiltrosSuspensao } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
+import { mockSolicitacaoAlteracaoCEMEI } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoAlteracaoCEMEI";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),

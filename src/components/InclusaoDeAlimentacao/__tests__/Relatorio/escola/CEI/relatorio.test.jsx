@@ -7,12 +7,12 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
-import { mockInclusaoAlimentacaoCEIAValidar } from "mocks/InclusaoAlimentacao/CEI/inclusaoAlimentacaoAValidar";
-import { mockInclusaoAlimentacaoCEICancelada } from "mocks/InclusaoAlimentacao/CEI/inclusaoAlimentacaoCancelada";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosEscolaCEIcomMANHAeTARDE } from "mocks/meusDados/escola/CEIcomMANHAeTARDE";
-import { mockVinculosTipoAlimentacaoPeriodoEscolarCEIComManhaTarde } from "mocks/services/cadastroTipoAlimentacao.service/CEI/vinculosTipoAlimentacaoPeriodoEscolarComManhaTarde";
-import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
+import { mockInclusaoAlimentacaoCEIAValidar } from "src/mocks/InclusaoAlimentacao/CEI/inclusaoAlimentacaoAValidar";
+import { mockInclusaoAlimentacaoCEICancelada } from "src/mocks/InclusaoAlimentacao/CEI/inclusaoAlimentacaoCancelada";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosEscolaCEIcomMANHAeTARDE } from "src/mocks/meusDados/escola/CEIcomMANHAeTARDE";
+import { mockVinculosTipoAlimentacaoPeriodoEscolarCEIComManhaTarde } from "src/mocks/services/cadastroTipoAlimentacao.service/CEI/vinculosTipoAlimentacaoPeriodoEscolarComManhaTarde";
+import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosInclusaoDeAlimentacao from "src/pages/InclusaoDeAlimentacao/RelatorioPage";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";

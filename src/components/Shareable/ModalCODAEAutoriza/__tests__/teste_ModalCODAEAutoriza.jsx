@@ -12,13 +12,13 @@ import { ModalCODAEAutoriza } from "../index";
 
 import { codaeAutorizarSolicitacaoDeInclusaoDeAlimentacao } from "src/services/inclusaoDeAlimentacao";
 
-import { mockCODAEAutoriza } from "mocks/services/inclusaoDeAlimentacao/codae.service/mockCODAEAutoriza";
+import { mockCODAEAutoriza } from "src/mocks/services/inclusaoDeAlimentacao/codae.service/mockCODAEAutoriza";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("services/inclusaoDeAlimentacao");
+jest.mock("src/services/inclusaoDeAlimentacao");
 
 describe("Teste <ModalCODAEAutoriza>", () => {
   beforeEach(async () => {

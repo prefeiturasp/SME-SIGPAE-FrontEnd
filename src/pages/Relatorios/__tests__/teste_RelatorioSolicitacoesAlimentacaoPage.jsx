@@ -22,24 +22,24 @@ import {
   getQtdNaoLidas,
 } from "src/services/notificacoes.service";
 
-import { mockGetTiposUnidadeEscolar } from "mocks/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
-import { mockGetEscolaTercTotal } from "mocks/services/escola.service/mockGetEscolasTercTotal";
-import { mockGetLotesSimples } from "mocks/services/lote.service/mockGetLotesSimples";
-import { mockGetNomesTerceirizadas } from "mocks/services/produto.service/mockGetNomesTerceirizadas";
-import { mockGetTotalizadoresRelatorioSolicitacoes } from "mocks/services/relatorios.service/mockGetTotalizadoresRelatorioSolicitacoes";
-import { mockGetNotificacoes } from "mocks/services/notificacoes.service/mockGetNotificacoes";
-import { mockGetQtdNaoLidas } from "mocks/services/notificacoes.service/mockGetQtdNaoLidas";
-import { mockMeusDadosCODAEGA } from "mocks/meusDados/CODAE-GA";
+import { mockGetTiposUnidadeEscolar } from "src/mocks/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
+import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
+import { mockGetLotesSimples } from "src/mocks/services/lote.service/mockGetLotesSimples";
+import { mockGetNomesTerceirizadas } from "src/mocks/services/produto.service/mockGetNomesTerceirizadas";
+import { mockGetTotalizadoresRelatorioSolicitacoes } from "src/mocks/services/relatorios.service/mockGetTotalizadoresRelatorioSolicitacoes";
+import { mockGetNotificacoes } from "src/mocks/services/notificacoes.service/mockGetNotificacoes";
+import { mockGetQtdNaoLidas } from "src/mocks/services/notificacoes.service/mockGetQtdNaoLidas";
+import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("services/relatorios.service");
-jest.mock("services/produto.service");
-jest.mock("services/lote.service");
+jest.mock("src/services/relatorios.service");
+jest.mock("src/services/produto.service");
+jest.mock("src/services/lote.service");
 jest.mock("src/services/escola.service");
-jest.mock("services/cadastroTipoAlimentacao.service");
+jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/notificacoes.service");
 
 const awaitServices = async () => {

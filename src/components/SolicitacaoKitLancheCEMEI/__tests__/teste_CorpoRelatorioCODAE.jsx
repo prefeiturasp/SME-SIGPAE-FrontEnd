@@ -22,16 +22,16 @@ import {
   CODAEquestionaKitLancheCEMEI,
 } from "src/services/kitLanche";
 
-import { mockCODAEQuestionaSolicitacao } from "mocks/SolicitacaoKitLancheCEMEI/mockCODAEQuestionaSolicitacao";
-import { mockSolicitacaoKitLancheCODAE } from "mocks/SolicitacaoKitLancheCEMEI/mockSolicitacaoKitLancheCODAE";
-import { mockGetSolicitacaoPosQuestionamento } from "mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoPosQuestionamento";
-import { mockGetSolicitacaoKitLancheRegular2 } from "mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoKitLancheRegular2";
+import { mockCODAEQuestionaSolicitacao } from "src/mocks/SolicitacaoKitLancheCEMEI/mockCODAEQuestionaSolicitacao";
+import { mockSolicitacaoKitLancheCODAE } from "src/mocks/SolicitacaoKitLancheCEMEI/mockSolicitacaoKitLancheCODAE";
+import { mockGetSolicitacaoPosQuestionamento } from "src/mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoPosQuestionamento";
+import { mockGetSolicitacaoKitLancheRegular2 } from "src/mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoKitLancheRegular2";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("services/kitLanche");
+jest.mock("src/services/kitLanche");
 
 const propsCODAE = {
   visao: { CODAE },

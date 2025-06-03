@@ -4,25 +4,34 @@ import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import EntregasDilogPage from "../EntregasDilogPage";
 
-jest.mock("components/Shareable/Breadcrumb", () => () => (
+jest.mock("src/components/Shareable/Breadcrumb", () => () => (
   <div data-testid="breadcrumb">Breadcrumb</div>
 ));
 
-jest.mock("components/Shareable/Page/Page", () => ({ children, ...props }) => (
-  <div
-    data-testid="page"
-    data-voltar-para={props.voltarPara}
-    data-titulo={props.titulo}
-  >
-    {children}
-  </div>
-));
+jest.mock(
+  "src/components/Shareable/Page/Page",
+  () =>
+    ({ children, ...props }) =>
+      (
+        <div
+          data-testid="page"
+          data-voltar-para={props.voltarPara}
+          data-titulo={props.titulo}
+        >
+          {children}
+        </div>
+      )
+);
 
-jest.mock("components/screens/Logistica/ConsultaEntregas", () => (props) => (
-  <div data-testid="consulta-entregas">
-    {props.dilog ? "Dilog Ativado" : "Dilog Desativado"}
-  </div>
-));
+jest.mock(
+  "src/components/screens/Logistica/ConsultaEntregas",
+  () => (props) =>
+    (
+      <div data-testid="consulta-entregas">
+        {props.dilog ? "Dilog Ativado" : "Dilog Desativado"}
+      </div>
+    )
+);
 
 describe("EntregasDilogPage", () => {
   afterEach(() => {

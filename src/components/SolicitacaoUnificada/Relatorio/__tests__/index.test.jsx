@@ -11,8 +11,8 @@ import { CODAE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
 import { TIPO_PERFIL } from "../../../../constants/shared";
 import { terceirizadaMarcaConferencia } from "src/services/dietaEspecial.service";
 
-jest.mock("services/solicitacaoUnificada.service");
-jest.mock("services/dietaEspecial.service");
+jest.mock("src/services/solicitacaoUnificada.service");
+jest.mock("src/services/dietaEspecial.service");
 
 beforeEach(() => {
   getSolicitacaoUnificada.mockResolvedValue({

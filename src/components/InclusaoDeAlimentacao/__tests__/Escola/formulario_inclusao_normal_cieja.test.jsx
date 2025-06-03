@@ -2,17 +2,17 @@ import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { Container } from "src/components/InclusaoDeAlimentacao/Escola/Formulario/componentes/Container";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockDiasUteis } from "mocks/diasUseisMock";
-import { mockMotivosInclusaoContinua } from "mocks/InclusaoAlimentacao/mockMotivosInclusaoContinua";
-import { mockMotivosInclusaoNormal } from "mocks/InclusaoAlimentacao/mockMotivosInclusaoNormal";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosEscolaCIEJA } from "mocks/meusDados/escolaCIEJA";
-import { mockGetVinculosMotivoEspecificoCIEJA } from "mocks/services/cadastroTipoAlimentacao.service/CIEJA/mockGetVinculosMotivoEspecificoCIEJA";
-import { mockGetVinculosTipoAlimentacaoPorEscolaCIEJA } from "mocks/services/cadastroTipoAlimentacao.service/CIEJA/mockGetVinculosTipoAlimentacaoPorEscolaCIEJA";
-import { mockQuantidadeAlunosPorPeriodoCIEJA } from "mocks/services/escola.service/CIEJA/mockQuantidadeAlunosPorPeriodoCIEJA";
-import { mockCreateInclusaoAlimentacaoCMCT } from "mocks/services/escola.service/CMCT/mockCreateInclusaoAlimentacaoCMCT";
-import { mockIniciaFluxoInclusaoAlimentacaoCMCT } from "mocks/services/escola.service/CMCT/mockIniciaFluxoInclusaoAlimentacaoCMCT";
-import { mockObterMinhasSolicitacoesNormalCIEJA } from "mocks/services/shared.service/mockObterMinhasSolicitacoesNormalCIEJA";
+import { mockDiasUteis } from "src/mocks/diasUseisMock";
+import { mockMotivosInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockMotivosInclusaoContinua";
+import { mockMotivosInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockMotivosInclusaoNormal";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosEscolaCIEJA } from "src/mocks/meusDados/escolaCIEJA";
+import { mockGetVinculosMotivoEspecificoCIEJA } from "src/mocks/services/cadastroTipoAlimentacao.service/CIEJA/mockGetVinculosMotivoEspecificoCIEJA";
+import { mockGetVinculosTipoAlimentacaoPorEscolaCIEJA } from "src/mocks/services/cadastroTipoAlimentacao.service/CIEJA/mockGetVinculosTipoAlimentacaoPorEscolaCIEJA";
+import { mockQuantidadeAlunosPorPeriodoCIEJA } from "src/mocks/services/escola.service/CIEJA/mockQuantidadeAlunosPorPeriodoCIEJA";
+import { mockCreateInclusaoAlimentacaoCMCT } from "src/mocks/services/escola.service/CMCT/mockCreateInclusaoAlimentacaoCMCT";
+import { mockIniciaFluxoInclusaoAlimentacaoCMCT } from "src/mocks/services/escola.service/CMCT/mockIniciaFluxoInclusaoAlimentacaoCMCT";
+import { mockObterMinhasSolicitacoesNormalCIEJA } from "src/mocks/services/shared.service/mockObterMinhasSolicitacoesNormalCIEJA";
 import mock from "src/services/_mock";
 
 describe("Teste Formulário Inclusão de Alimentação", () => {

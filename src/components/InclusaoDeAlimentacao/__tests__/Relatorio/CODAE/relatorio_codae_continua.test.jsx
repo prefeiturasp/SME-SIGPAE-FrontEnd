@@ -7,17 +7,17 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
-import { mockInclusaoContinuaQuestionada } from "mocks/InclusaoAlimentacao/mockInclusaoContinuaQuestionada";
-import { mockInclusaoContinuaValidada } from "mocks/InclusaoAlimentacao/mockInclusaoContinuaValidada";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosCODAEGA } from "mocks/meusDados/CODAE-GA";
-import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
+import { mockInclusaoContinuaQuestionada } from "src/mocks/InclusaoAlimentacao/mockInclusaoContinuaQuestionada";
+import { mockInclusaoContinuaValidada } from "src/mocks/InclusaoAlimentacao/mockInclusaoContinuaValidada";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
+import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosInclusaoDeAlimentacao from "src/pages/InclusaoDeAlimentacao/RelatorioPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
-jest.mock("components/Shareable/CKEditorField", () => ({
+jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
   default: () => <textarea data-testid="ckeditor-mock" name="justificativa" />,
 }));

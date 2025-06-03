@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 
-jest.mock("components/Shareable/Breadcrumb", () => ({
+jest.mock("src/components/Shareable/Breadcrumb", () => ({
   __esModule: true,
   default: ({ home, anteriores, atual }) => (
     <nav data-testid="breadcrumb">
@@ -15,7 +15,7 @@ jest.mock("components/Shareable/Breadcrumb", () => ({
   ),
 }));
 
-jest.mock("components/Shareable/Page/Page", () => ({
+jest.mock("src/components/Shareable/Page/Page", () => ({
   __esModule: true,
   default: ({ titulo, botaoVoltar, children }) => (
     <section data-testid="page">
@@ -26,7 +26,7 @@ jest.mock("components/Shareable/Page/Page", () => ({
   ),
 }));
 
-jest.mock("components/Shareable/Calendario", () => ({
+jest.mock("src/components/Shareable/Calendario", () => ({
   __esModule: true,
   Calendario: ({ nomeObjeto, nomeObjetoMinusculo }) => (
     <div data-testid="calendario">
@@ -36,7 +36,7 @@ jest.mock("components/Shareable/Calendario", () => ({
   ),
 }));
 
-jest.mock("services/medicaoInicial/diaSobremesaDoce.service", () => ({
+jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service", () => ({
   getDiasSobremesaDoce: jest.fn(),
   setDiaSobremesaDoce: jest.fn(),
   deleteDiaSobremesaDoce: jest.fn(),

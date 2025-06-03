@@ -3,9 +3,9 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { CadastroDeClausulas } from "../index";
 import mock from "src/services/_mock";
-import { mockListaNumeros } from "mocks/LancamentoInicial/CadastroDeClausulas/listaDeNumeros";
-import { mockClausulaParaDesconto } from "mocks/LancamentoInicial/CadastroDeClausulas/clausulasParaDescontos";
-import { mockClausulasDeDesconto } from "mocks/LancamentoInicial/CadastroDeClausulas/clausulasDeDescontos";
+import { mockListaNumeros } from "src/mocks/LancamentoInicial/CadastroDeClausulas/listaDeNumeros";
+import { mockClausulaParaDesconto } from "src/mocks/LancamentoInicial/CadastroDeClausulas/clausulasParaDescontos";
+import { mockClausulasDeDesconto } from "src/mocks/LancamentoInicial/CadastroDeClausulas/clausulasDeDescontos";
 
 jest.mock("antd", () => ({
   ...jest.requireActual("antd"),
@@ -22,7 +22,7 @@ jest.mock("react-router-dom", () => ({
   useSearchParams: jest.fn(),
 }));
 
-jest.mock("services/medicaoInicial/clausulasParaDescontos.service", () => ({
+jest.mock("src/services/medicaoInicial/clausulasParaDescontos.service", () => ({
   getNumerosEditais: jest.fn(),
   cadastraClausulaParaDesconto: jest.fn(),
   getClausulaParaDesconto: jest.fn(),

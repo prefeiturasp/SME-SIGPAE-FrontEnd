@@ -3,21 +3,26 @@ import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import GuiasNotificacoesPage from "../GuiasNotificacoesPage";
 
-jest.mock("components/Shareable/Breadcrumb", () => () => (
+jest.mock("src/components/Shareable/Breadcrumb", () => () => (
   <div data-testid="breadcrumb">Breadcrumb</div>
 ));
 
-jest.mock("components/Shareable/Page/Page", () => ({ children, ...props }) => (
-  <div
-    data-testid="page"
-    data-voltar-para={props.voltarPara}
-    data-titulo={props.titulo}
-  >
-    {children}
-  </div>
-));
+jest.mock(
+  "src/components/Shareable/Page/Page",
+  () =>
+    ({ children, ...props }) =>
+      (
+        <div
+          data-testid="page"
+          data-voltar-para={props.voltarPara}
+          data-titulo={props.titulo}
+        >
+          {children}
+        </div>
+      )
+);
 
-jest.mock("components/screens/Logistica/GuiasComNotificacoes", () => () => (
+jest.mock("src/components/screens/Logistica/GuiasComNotificacoes", () => () => (
   <div data-testid="guias-notificacoes">Guias Notificações</div>
 ));
 

@@ -7,12 +7,12 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
-import { mockInclusaoalimentacaoNaoValidada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoNaoValidada";
-import { mockInclusaoAlimentacaoRegular } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoRegular";
-import { mockInclusaoAlimentacaoValidada } from "mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoValidada";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
-import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
+import { mockInclusaoalimentacaoNaoValidada } from "src/mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoNaoValidada";
+import { mockInclusaoAlimentacaoRegular } from "src/mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoRegular";
+import { mockInclusaoAlimentacaoValidada } from "src/mocks/InclusaoAlimentacao/mockInclusaoAlimentacaoValidada";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
+import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosInclusaoDeAlimentacao from "src/pages/InclusaoDeAlimentacao/RelatorioPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";

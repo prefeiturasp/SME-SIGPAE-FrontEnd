@@ -3,7 +3,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import VincularProdutosEditaisPage from "../VincularProdutosEditaisPage";
 
-jest.mock("components/Shareable/Page/Page", () => {
+jest.mock("src/components/Shareable/Page/Page", () => {
   return ({ children, titulo, botaoVoltar, voltarPara }) => (
     <div data-testid="mock-page">
       <h1>{titulo}</h1>
@@ -14,7 +14,7 @@ jest.mock("components/Shareable/Page/Page", () => {
   );
 });
 
-jest.mock("components/Shareable/Breadcrumb", () => {
+jest.mock("src/components/Shareable/Breadcrumb", () => {
   return ({ home, atual }) => (
     <nav data-testid="mock-breadcrumb">
       <div>{`Home: ${home}`}</div>
@@ -23,7 +23,7 @@ jest.mock("components/Shareable/Breadcrumb", () => {
   );
 });
 
-jest.mock("components/screens/Cadastros/VincularProdutosEditais", () => {
+jest.mock("src/components/screens/Cadastros/VincularProdutosEditais", () => {
   return () => (
     <div data-testid="mock-vincular-produtos">
       Componente VincularProdutosEditais

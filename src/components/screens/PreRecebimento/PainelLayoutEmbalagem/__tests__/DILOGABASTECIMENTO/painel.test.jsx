@@ -6,16 +6,20 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosDILOGABASTECIMENTO } from "mocks/meusDados/CODAE/DILOGABASTECIMENTO";
-import { mockDashboardLayoutDeEmbalagemDILOGABASTECIMENTO } from "mocks/services/layoutDeEmbalagem.service/DILOGABASTECIMENTO/dashboard";
-import { mockDashboardLayoutDeEmbalagemFiltradoDILOGABASTECIMENTO } from "mocks/services/layoutDeEmbalagem.service/DILOGABASTECIMENTO/dashboardFiltrado";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosDILOGABASTECIMENTO } from "src/mocks/meusDados/CODAE/DILOGABASTECIMENTO";
+import { mockDashboardLayoutDeEmbalagemDILOGABASTECIMENTO } from "src/mocks/services/layoutDeEmbalagem.service/DILOGABASTECIMENTO/dashboard";
+import { mockDashboardLayoutDeEmbalagemFiltradoDILOGABASTECIMENTO } from "src/mocks/services/layoutDeEmbalagem.service/DILOGABASTECIMENTO/dashboardFiltrado";
 import { PainelLayoutEmbalagemPage } from "src/pages/PreRecebimento/PainelLayoutEmbalagemPage";
-import React from "react";
-import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
+
+jest.mock("src/constants/config", () => ({
+  HOME: "/",
+  REFRESH_TOKEN_TIMEOUT: 300000,
+}));
 
 describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () => {
   beforeEach(async () => {

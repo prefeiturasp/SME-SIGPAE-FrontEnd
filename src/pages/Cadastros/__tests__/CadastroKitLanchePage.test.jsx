@@ -7,7 +7,7 @@ jest.mock("react-router-dom", () => ({
   useLocation: jest.fn(),
 }));
 
-jest.mock("components/Shareable/Breadcrumb", () => ({
+jest.mock("src/components/Shareable/Breadcrumb", () => ({
   __esModule: true,
   default: ({ home, atual }) => (
     <nav data-testid="breadcrumb">
@@ -17,7 +17,7 @@ jest.mock("components/Shareable/Breadcrumb", () => ({
   ),
 }));
 
-jest.mock("components/Shareable/Page/Page", () => ({
+jest.mock("src/components/Shareable/Page/Page", () => ({
   __esModule: true,
   default: ({ titulo, botaoVoltar, voltarPara, children }) => (
     <section data-testid="page">
@@ -29,7 +29,7 @@ jest.mock("components/Shareable/Page/Page", () => ({
   ),
 }));
 
-jest.mock("components/screens/Cadastros/CadastroKitLanche", () => ({
+jest.mock("src/components/screens/Cadastros/CadastroKitLanche", () => ({
   __esModule: true,
   default: ({ uuid }) => (
     <div data-testid="cadastro-kit-lanche">

@@ -6,17 +6,17 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
-import { mockCategoriasMedicao } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
-import { mockDiasCalendarioEMEFOutubro2024 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Outubro2024/diasCalendario";
-import { mockFeriadosNoMesJaneiro } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/feriadosNoMes/janeiro";
-import { mockLogQuantidadeDietasAutorizadas } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/logQuantidadeDietasAutorizadasEMEF";
-import { mockMatriculadosNoMesEMEFJaneiro2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Janeiro2025/matriculadosNoMes";
-import { mockLocationStateEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/mockStateEMEF";
-import { mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/permissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF";
-import { mockSuspensoesAutorizadasEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/suspensoesAutorizadasEMEF";
-import { mockValoresMedicaoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/valoresMedicaoEMEF";
-import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
+import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "src/mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
+import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
+import { mockDiasCalendarioEMEFOutubro2024 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Outubro2024/diasCalendario";
+import { mockFeriadosNoMesJaneiro } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/feriadosNoMes/janeiro";
+import { mockLogQuantidadeDietasAutorizadas } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/logQuantidadeDietasAutorizadasEMEF";
+import { mockMatriculadosNoMesEMEFJaneiro2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Janeiro2025/matriculadosNoMes";
+import { mockLocationStateEMEF } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/mockStateEMEF";
+import { mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/permissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF";
+import { mockSuspensoesAutorizadasEMEF } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/suspensoesAutorizadasEMEF";
+import { mockValoresMedicaoEMEF } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/valoresMedicaoEMEF";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
@@ -38,11 +38,11 @@ import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/
 import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
 
-jest.mock("services/perfil.service.js");
-jest.mock("services/medicaoInicial/diaSobremesaDoce.service.js");
-jest.mock("services/cadastroTipoAlimentacao.service");
-jest.mock("services/medicaoInicial/periodoLancamentoMedicao.service");
-jest.mock("services/medicaoInicial/permissaoLancamentosEspeciais.service");
+jest.mock("src/services/perfil.service.jsx");
+jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
+jest.mock("src/services/cadastroTipoAlimentacao.service");
+jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
+jest.mock("src/services/medicaoInicial/permissaoLancamentosEspeciais.service");
 
 jest.setTimeout(30000);
 

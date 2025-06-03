@@ -1,10 +1,10 @@
 import "@testing-library/jest-dom";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { ESCOLA } from "src/configs/constants";
-import { mockDietaEspecialVictorAutorizada } from "mocks/DietaEspecial/Relatorio/mockDietaEspecialVictorAutorizada";
-import { mockMotivosNegarCancelamento } from "mocks/DietaEspecial/Relatorio/mockMotivosNegarCancelamento";
-import { mockSolicitacoesAbertas } from "mocks/DietaEspecial/Relatorio/mockSolicitacoesAbertas";
-import { localStorageMock } from "mocks/localStorageMock";
+import { mockDietaEspecialVictorAutorizada } from "src/mocks/DietaEspecial/Relatorio/mockDietaEspecialVictorAutorizada";
+import { mockMotivosNegarCancelamento } from "src/mocks/DietaEspecial/Relatorio/mockMotivosNegarCancelamento";
+import { mockSolicitacoesAbertas } from "src/mocks/DietaEspecial/Relatorio/mockSolicitacoesAbertas";
+import { localStorageMock } from "src/mocks/localStorageMock";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import {
@@ -13,9 +13,9 @@ import {
 } from "src/services/dietaEspecial.service";
 import Relatorio from "..";
 
-jest.mock("services/dietaEspecial.service");
+jest.mock("src/services/dietaEspecial.service");
 
-jest.mock("services/websocket", () => {
+jest.mock("src/services/websocket", () => {
   return {
     Websocket: jest
       .fn()

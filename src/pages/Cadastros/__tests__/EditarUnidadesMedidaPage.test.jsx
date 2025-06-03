@@ -20,7 +20,7 @@ jest.mock(
 );
 
 jest.mock(
-  "components/screens/Cadastros/UnidadesMedida/components/CadastroUnidadeMedida",
+  "src/components/screens/Cadastros/UnidadesMedida/components/CadastroUnidadeMedida",
   () => () =>
     <div data-testid="cadastro-unidade-medida">Mock CadastroUnidadeMedida</div>
 );

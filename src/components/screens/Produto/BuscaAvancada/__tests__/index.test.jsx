@@ -14,7 +14,7 @@ import {
 import { mockResultados } from "../../../../../mocks/Produto/BuscaAvancada/results";
 import * as produtoService from "../../../../../services/produto.service";
 
-jest.mock("services/produto.service.js");
+jest.mock("src/services/produto.service.jsx");
 
 const valorBuscaEdital = "101010B";
 

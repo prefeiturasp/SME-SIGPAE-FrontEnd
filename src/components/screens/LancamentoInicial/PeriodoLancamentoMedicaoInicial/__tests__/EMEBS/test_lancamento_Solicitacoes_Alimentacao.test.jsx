@@ -1,21 +1,33 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
-import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockCategoriasMedicao } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
-import { mockDiasCalendarioMarco2025EMEBS } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/diasCalendarioMarco2025";
-import { mockStateSolicitacoesDeAlimentacaoMarco2025EMEBS } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/stateSolicitacoesDeAlimentacaoMarco2025";
-import { mockValoresMedicaoSolicitacoesAlimentacaoMarco2025EMEBS } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/valoresMedicaoSolicitacoesAlimentacaoMarco2025";
-import { mockMeusDadosEscolaEMEBS } from "mocks/meusDados/escola/EMEBS";
-import { mockGetVinculosTipoAlimentacaoPorEscolaEMEBS } from "mocks/services/cadastroTipoAlimentacao.service/EMEBS/vinculosTipoAlimentacaoPeriodoEscolar";
+import { APIMockVersion } from "src/mocks/apiVersionMock";
 import React from "react";
+import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import mock from "src/services/_mock";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
+import { mockDiasCalendarioMarco2025EMEBS } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/diasCalendarioMarco2025";
+import { mockStateSolicitacoesDeAlimentacaoMarco2025EMEBS } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/stateSolicitacoesDeAlimentacaoMarco2025";
+import { mockValoresMedicaoSolicitacoesAlimentacaoMarco2025EMEBS } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/valoresMedicaoSolicitacoesAlimentacaoMarco2025";
+import { mockMeusDadosEscolaEMEBS } from "src/mocks/meusDados/escola/EMEBS";
+import { mockGetVinculosTipoAlimentacaoPorEscolaEMEBS } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEBS/vinculosTipoAlimentacaoPeriodoEscolar";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
+import mock from "src/services/_mock";
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentação - Usuário EMEBS", () => {
   const escolaUuid = mockMeusDadosEscolaEMEBS.vinculo_atual.instituicao.uuid;
 
   beforeEach(async () => {
+    mock.onGet("/api-version/").reply(200, APIMockVersion);
+    mock.onGet("/notificacoes/").reply(200, {
+      next: null,
+      previous: null,
+      count: 0,
+      page_size: 4,
+      results: [],
+    });
+    mock
+      .onGet("/notificacoes/quantidade-nao-lidos/")
+      .reply(200, { quantidade_nao_lidos: 0 });
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaEMEBS);
     mock
       .onGet(

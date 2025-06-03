@@ -8,12 +8,12 @@ import {
 } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockMeusDadosEscolaCEMEI } from "mocks/meusDados/escola/CEMEI";
-import { mockAlteracaoCardapioCEMEIAValidar } from "mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIAValidar";
-import { mockAlteracaoCardapioCEMEICancelada } from "mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEICancelada";
-import { mockQuantidadeAlunoCEMEIporCEIEMEI } from "mocks/services/aluno.service/CEMEI/quantidadeAlunoCEMEIporCEIEMEI";
-import { mockMotivosDRENaoValida } from "mocks/services/relatorios.service/mockMotivosDRENaoValida";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosEscolaCEMEI } from "src/mocks/meusDados/escola/CEMEI";
+import { mockAlteracaoCardapioCEMEIAValidar } from "src/mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEIAValidar";
+import { mockAlteracaoCardapioCEMEICancelada } from "src/mocks/services/alteracaoCardapio.service/CEMEI/alteracaoCardapioCEMEICancelada";
+import { mockQuantidadeAlunoCEMEIporCEIEMEI } from "src/mocks/services/aluno.service/CEMEI/quantidadeAlunoCEMEIporCEIEMEI";
+import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosAlteracaoDoTipoDeAlimentacaoCEMEI from "src/pages/AlteracaoDeCardapioCEMEIRelatorios";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";

@@ -16,14 +16,14 @@ import { ModalCancelarKitLancheCEMEI } from "src/components/SolicitacaoKitLanche
 import { cancelaFluxoSolicitacaoKitLancheCEMEI } from "src/services/kitLanche";
 import { getRelatorioKitLancheCEMEI } from "src/services/relatorios";
 
-import { mockGetSolicitacaoKitLancheCEMEI } from "mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoKitLancheCEMEI";
+import { mockGetSolicitacaoKitLancheCEMEI } from "src/mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoKitLancheCEMEI";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
 
-jest.mock("services/kitLanche");
-jest.mock("services/relatorios");
+jest.mock("src/services/kitLanche");
+jest.mock("src/services/relatorios");
 
 const propsESCOLA = {
   visao: { ESCOLA },

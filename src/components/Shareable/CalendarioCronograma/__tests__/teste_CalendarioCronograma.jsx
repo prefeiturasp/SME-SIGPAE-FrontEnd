@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { CalendarioCronograma } from "../index.tsx";
-import { mockEtapasCalendario } from "mocks/Shareable/CalendarioCronograma/mockEtapasCalendario";
+import { mockEtapasCalendario } from "src/mocks/Shareable/CalendarioCronograma/mockEtapasCalendario";
 
 jest.mock("react-big-calendar", () => ({
   ...jest.requireActual("react-big-calendar"),

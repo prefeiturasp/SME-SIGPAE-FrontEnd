@@ -21,12 +21,13 @@
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
-      "!src/index.js",
-      "!src/reportWebVitals.js",
+      "!src/index.jxs",
+      "!src/reportWebVitals.jsx",
       "!src/setupTests.js",
       "!src/mocks"
     ],
     "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/src/$1",
       "\\.(css|less|scss|sass)$": "identity-obj-proxy"
     },
     "watchPathIgnorePatterns": [
@@ -46,6 +47,27 @@
     ],
     "transformIgnorePatterns": [
       "node_modules/(?!axios)"
+    ],
+    "transform": {
+      "\\.js$": [
+        "babel-jest",
+        {
+          "configFile": "./babel.config.cjs"
+        }
+      ],
+      "^.+\\.(ts|tsx|js|jsx)$": "babel-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.js"
     ]
   },
   "overrides": {
@@ -81,7 +103,6 @@
     "final-form-calculate": "^1.3.2",
     "html-to-react": "^1.5.1",
     "http-status-codes": "^2.2.0",
-    "jest": "^29.7.0",
     "jquery.easing": "^1.4.1",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
@@ -118,12 +139,12 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "test": "vite test",
+    "test": "jest",
     "eject": "vite eject",
     "eslint": "eslint ./src/**/**/**/**/*.{jsx,js,tsx,ts}",
     "prettier": "prettier  --check src/**/**/**/*.{jsx,js,scss,tsx,ts}",
     "prettier-fix": "prettier  --write src/**/**/**/*.{jsx,js,scss,tsx,ts}",
-    "coverage": "vite test --coverage --watchAll=false",
+    "coverage": "jest --coverage",
     "postinstall": "patch-package",
     "prepare": "husky install",
     "jest-preview": "jest-preview",
@@ -155,10 +176,12 @@
   ],
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/preset-env": "^7.26.0",
-    "@babel/preset-react": "^7.26.3",
-    "@testing-library/jest-dom": "^6.4.2",
-    "@testing-library/react": "^14.2.1",
+    "@babel/plugin-transform-runtime": "^7.27.4",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.6.1",
     "@types/react-router-dom": "^5.3.3",
     "@types/uuid": "^9.0.8",
@@ -166,11 +189,14 @@
     "@typescript-eslint/parser": "^8.33.1",
     "@vitejs/plugin-react": "^4.5.0",
     "babel-jest": "^29.7.0",
+    "babel-plugin-transform-import-meta": "^2.3.2",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-react": "^7.37.5",
     "fetch-mock": "^11.1.5",
     "husky": "^8.0.0",
     "identity-obj-proxy": "^3.0.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "jest-preview": "^0.3.1",
     "lint-staged": "^12.5.0",
     "msw": "^0.35.0",
@@ -178,6 +204,7 @@
     "prettier": "^2.8.8",
     "redux-mock-store": "^1.5.5",
     "sass": "^1.83.0",
+    "ts-jest": "^29.3.4",
     "vite": "^6.3.5",
     "vite-plugin-environment": "^1.1.3"
   },

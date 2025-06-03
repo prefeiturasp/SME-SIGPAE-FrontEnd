@@ -4,9 +4,9 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { InversaoCardapioBody } from "../componentes/InversaoCardapioBody";
 
-import { mockItemInversaoCardapio } from "mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemInversaoCardapio";
-import { mockFiltrosSuspensao } from "mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
-import { mockSolicitacaoInversaoCardapio } from "mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoInversaoCardapio";
+import { mockItemInversaoCardapio } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockItens/mockItemInversaoCardapio";
+import { mockFiltrosSuspensao } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockFiltrosSuspensao";
+import { mockSolicitacaoInversaoCardapio } from "src/mocks/Relatorios/SolicitacoesAlimentacao/mockSolicitacoes/mockSolicitacaoInversaoCardapio";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),

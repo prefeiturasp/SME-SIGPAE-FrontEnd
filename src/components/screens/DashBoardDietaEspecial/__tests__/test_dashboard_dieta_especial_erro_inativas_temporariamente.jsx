@@ -2,8 +2,8 @@ import "@testing-library/jest-dom";
 import { act, screen, waitFor } from "@testing-library/react";
 import { CODAE } from "src/configs/constants";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockDietasPendentesAutorizacao } from "mocks/DietaEspecial/PainelInicial/mockDietasPendentesAutorizacao";
-import { mockMeusDadosCODAEGA } from "mocks/meusDados/CODAE-GA";
+import { mockDietasPendentesAutorizacao } from "src/mocks/DietaEspecial/PainelInicial/mockDietasPendentesAutorizacao";
+import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import {
@@ -15,11 +15,11 @@ import {
   getDietaEspecialNegadasCODAE,
   getDietaEspecialPendenteAutorizacaoCODAE,
 } from "src/services/dashBoardDietaEspecial.service";
-import { renderWithProvider } from "utils/test-utils";
+import { renderWithProvider } from "src/utils/test-utils";
 import DashboardDietaEspecial from "..";
 
-jest.mock("services/dashBoardDietaEspecial.service");
-jest.mock("services/produto.service");
+jest.mock("src/services/dashBoardDietaEspecial.service");
+jest.mock("src/services/produto.service");
 
 const awaitServices = async () => {
   await waitFor(() => {

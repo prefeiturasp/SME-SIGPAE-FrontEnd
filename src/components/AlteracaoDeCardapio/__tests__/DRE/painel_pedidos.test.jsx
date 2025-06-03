@@ -10,13 +10,13 @@ import mock from "src/services/_mock";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import { localStorageMock } from "mocks/localStorageMock";
-import { mockPedidosDREAlteracaoCardapio } from "mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapio";
-import { mockPedidosDREAlteracaoCardapioCEI } from "mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapioCEI";
-import { mockPedidosDREAlteracaoCardapioCEMEI } from "mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapioCEMEI";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockPedidosDREAlteracaoCardapio } from "src/mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapio";
+import { mockPedidosDREAlteracaoCardapioCEI } from "src/mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapioCEI";
+import { mockPedidosDREAlteracaoCardapioCEMEI } from "src/mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapioCEMEI";
 import PainelPedidosAlteracaoCardapioDREPage from "src/pages/DRE/AlteracaoDeCardapio/PainelPedidosPage.jsx";
-import { mockLotesSimples } from "mocks/lote.service/mockLotesSimples";
-import { mockMeusDadosCogestor } from "mocks/meusDados/cogestor";
+import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
+import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
 
 describe("Teste Página do Painel Pedidos - DRE - Alteração do Tipo de Alimentação", () => {
   beforeEach(async () => {
