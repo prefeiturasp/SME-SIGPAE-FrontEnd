@@ -178,25 +178,11 @@ export default ({
     setCarregandoAluno(false);
   };
 
-  const formValidation = (values) => {
-    let errors = {};
-    if (values.data_inicio && values.data_termino) {
-      const data_inicial = moment(values.data_inicio, "DD/MM/YYYY");
-      const data_final = moment(values.data_termino, "DD/MM/YYYY");
-      const days = data_final.diff(data_inicial, "days");
-      if (days > 45)
-        errors.data_inicio =
-          "Não é permitido informar um período superior a 45 dias.";
-    }
-    return errors;
-  };
-
   return (
     <Form
       onSubmit={onSubmit}
       subscription={{ submitting: true, values: true }}
       initialValues={dadosIniciais}
-      validate={formValidation}
       render={({ handleSubmit, form, pristine, submitting, values }) => {
         return (
           <form
