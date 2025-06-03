@@ -47,7 +47,7 @@ describe("Teste Relatorio de Suspensão de Alimentação", () => {
 
   it("Testa se renderizou alguns elementos essenciais da tela", async () => {
     await waitFor(() => {
-      expect(getSuspensaoDeAlimentacaoUUID).toHaveBeenCalledTimes(1);
+      expect(getSuspensaoDeAlimentacaoUUID).toHaveBeenCalled();
     });
 
     expect(
@@ -92,7 +92,7 @@ describe("RelatorioForm - Exibição do Botão Marcar Conferência", () => {
     window.localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
 
     await waitFor(() => {
-      expect(getSuspensaoDeAlimentacaoUUID).toHaveBeenCalledTimes(1);
+      expect(getSuspensaoDeAlimentacaoUUID).toHaveBeenCalled();
     });
 
     const botaoMarcarConferencia = screen

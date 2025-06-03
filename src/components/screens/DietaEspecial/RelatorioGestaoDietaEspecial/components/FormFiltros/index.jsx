@@ -5,7 +5,7 @@ import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import SSelect from "src/components/Shareable/Select";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
-  getAlergiasIntoleranciasAxios,
+  getAlergiasIntolerancias,
   getClassificacoesDietaEspecial,
 } from "src/services/dietaEspecial.service";
 import { dadosDoAluno, getAlunosListagem } from "src/services/perfil.service";
@@ -49,7 +49,7 @@ export default ({ onSubmit, setCarregando }) => {
     async function effect() {
       setCarregando(true);
       const dadosUsuario = await meusDados();
-      const promiseDiagnosticos = getAlergiasIntoleranciasAxios();
+      const promiseDiagnosticos = getAlergiasIntolerancias();
       const promiseClassificoesDieta = getClassificacoesDietaEspecial();
       const promiseDreEscolas = formFiltrosObtemDreEEscolasNovo(
         setEscolas,

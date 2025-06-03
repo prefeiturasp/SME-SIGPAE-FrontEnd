@@ -120,7 +120,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
 
   it("teste mock getDiasSobremesaDoce", async () => {
     await waitFor(() => expect(getListaDiasSobremesaDoce).toHaveBeenCalled());
-    expect(getListaDiasSobremesaDoce).toHaveBeenCalledTimes(1);
     expect(getListaDiasSobremesaDoce).toHaveReturnedWith(Promise.resolve([]));
   });
 

@@ -22,7 +22,7 @@ import {
   validateFormDreEscola,
 } from "src/helpers/dietaEspecial";
 
-import { getAlergiasIntoleranciasAxios } from "src/services/dietaEspecial.service";
+import { getAlergiasIntolerancias } from "src/services/dietaEspecial.service";
 
 import "./styles.scss";
 
@@ -49,7 +49,7 @@ export default ({ onSubmit, loading, setLoading }) => {
         dadosUsuario
       );
       const promiseDadosIniciais = getDadosIniciais(dadosUsuario);
-      const promiseDiagnosticos = getAlergiasIntoleranciasAxios();
+      const promiseDiagnosticos = getAlergiasIntolerancias();
       const [, responseDadosIniciais, responseDiagnosticos] = await Promise.all(
         [promiseDreEscolas, promiseDadosIniciais, promiseDiagnosticos]
       );

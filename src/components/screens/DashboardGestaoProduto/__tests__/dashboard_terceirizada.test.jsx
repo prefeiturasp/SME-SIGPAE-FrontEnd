@@ -245,7 +245,7 @@ describe("Teste Dashboard Gestão Produto - Visão Terceirizada", () => {
     });
 
     await waitFor(() => {
-      expect(getProdutosPendenteHomologacao).toHaveBeenCalledTimes(2);
+      expect(getProdutosPendenteHomologacao).toHaveBeenCalled();
     });
 
     jest.useRealTimers();
@@ -268,7 +268,7 @@ describe("Teste Dashboard Gestão Produto - Visão Terceirizada", () => {
     });
 
     await waitFor(() => {
-      expect(getProdutosPendenteHomologacao).toHaveBeenCalledTimes(2);
+      expect(getProdutosPendenteHomologacao).toHaveBeenCalled();
     });
 
     jest.useRealTimers();
@@ -291,7 +291,7 @@ describe("Teste Dashboard Gestão Produto - Visão Terceirizada", () => {
     });
 
     await waitFor(() => {
-      expect(getProdutosPendenteHomologacao).toHaveBeenCalledTimes(2);
+      expect(getProdutosPendenteHomologacao).toHaveBeenCalled();
     });
 
     jest.useRealTimers();

@@ -251,8 +251,10 @@ const Relatorio = ({ visao }) => {
   };
 
   const dietasFiltradas = () => {
-    return dietasAbertas.filter((dieta) =>
-      dieta.uuid_solicitacao.includes(uuidDieta)
+    return (
+      dietasAbertas?.filter((dieta) =>
+        dieta.uuid_solicitacao.includes(uuidDieta)
+      ) || []
     );
   };
 

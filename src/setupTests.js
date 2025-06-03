@@ -1,4 +1,5 @@
 import "@testing-library/jest-dom";
+import "whatwg-fetch";
 import { jestPreviewConfigure } from "jest-preview";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import mock from "src/services/_mock";

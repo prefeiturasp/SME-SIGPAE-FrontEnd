@@ -1,18 +1,16 @@
-import fetchMock from "fetch-mock";
-
-import { API_URL } from "../../constants/config";
-import { obtemDadosAlunoPeloEOL } from "../perfil.service";
-
-fetchMock.get(`${API_URL}/dados-alunos-eol/123456/`, {
-  detail: { detalhes: "do aluno" },
-});
+import mock from "src/services/_mock";
+import { obtemDadosAlunoPeloEOL } from "src/services/perfil.service";
 
 describe("test perfil.service", () => {
+  const eol = 123456;
+
+  mock.onGet(`/dados-alunos-eol/${eol}/`).reply(200, { detalhes: "do aluno" });
+
   it("obtemDadosAlunoPeloEOL", async () => {
-    const response = await obtemDadosAlunoPeloEOL(123456);
+    const response = await obtemDadosAlunoPeloEOL(eol);
     expect(response).toEqual({
-      detail: { detalhes: "do aluno" },
       status: 200,
+      data: { detalhes: "do aluno" },
     });
   });
 });

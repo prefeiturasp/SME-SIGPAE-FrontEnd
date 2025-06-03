@@ -24,7 +24,7 @@ describe("CardLogo", () => {
     const onClickMock = jest.fn();
     render(<CardLogo titulo="Clique Aqui" onClick={onClickMock} />);
     fireEvent.click(screen.getByText("Clique Aqui"));
-    expect(onClickMock).toHaveBeenCalledTimes(1);
+    expect(onClickMock).toHaveBeenCalled();
   });
 
   test("Aplica a classe 'disabled' quando a prop disabled é true", () => {

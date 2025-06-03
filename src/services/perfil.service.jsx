@@ -75,18 +75,12 @@ export const atualizarSenha = (uuid, confirmationKey, payLoad) => {
     });
 };
 
-export const meusDados = () => {
+export const meusDados = async () => {
   const url = `${API_URL}/usuarios/meus-dados/`;
-  return fetch(url, {
-    method: "GET",
-    headers: authToken,
-  })
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error;
-    });
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    return response.data;
+  }
 };
 
 export const getMeusDados = async () => {
@@ -163,17 +157,10 @@ export const confirmarEmail = (uuid, confirmationKey) => {
 
 export const obtemDadosAlunoPeloEOL = async (codEOL) => {
   const url = `${API_URL}/dados-alunos-eol/${codEOL}/`;
-  const OBJ_REQUEST = {
-    headers: AUTH_TOKEN,
-    method: "GET",
-  };
-  try {
-    const result = await fetch(url, OBJ_REQUEST);
-    const status = result.status;
-    const json = await result.json();
-    return { detail: json.detail, status };
-  } catch (error) {
-    console.log(error);
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
   }
 };
 

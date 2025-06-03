@@ -68,7 +68,7 @@ describe("Test <Relatorio> - Relatório de Dieta Especial - Pendente Autorizaç�
       status: 200,
     });
     getMotivosNegarSolicitacaoCancelamento.mockResolvedValue({
-      results: mockMotivosNegarCancelamento,
+      data: { results: mockMotivosNegarCancelamento },
       status: 200,
     });
 

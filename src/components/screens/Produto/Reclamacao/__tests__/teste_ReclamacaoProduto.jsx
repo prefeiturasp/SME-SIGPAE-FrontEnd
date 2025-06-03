@@ -59,7 +59,7 @@ describe("Teste <ReclamacaoProduto>", () => {
       .onGet(`/usuarios/meus-dados/`)
       .reply(200, mockMeusDadosEscolaEMEFPericles);
     mock
-      .onGet(`/api/escolas-simplissima-com-dre-unpaginated/terc-total/`)
+      .onGet(`/escolas-simplissima-com-dre-unpaginated/terc-total/`)
       .reply(200, mockGetEscolaTercTotal);
 
     await act(async () => {

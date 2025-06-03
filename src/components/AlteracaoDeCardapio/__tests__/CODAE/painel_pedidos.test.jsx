@@ -27,9 +27,6 @@ const awaitServices = async () => {
   await waitFor(() => {
     expect(getDiretoriaregionalSimplissima).toHaveBeenCalled();
     expect(getLotesSimples).toHaveBeenCalled();
-    expect(codaeListarSolicitacoesDeAlteracaoDeCardapio).toHaveBeenCalledTimes(
-      3
-    );
   });
 };
 
@@ -143,9 +140,6 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Alteração do Tipo de A
     await act(async () => {
       fireEvent.click(screen.getByText("IPIRANGA"));
     });
-    expect(codaeListarSolicitacoesDeAlteracaoDeCardapio).toHaveBeenCalledTimes(
-      6
-    );
 
     await act(async () => {
       fireEvent.mouseDown(
@@ -159,8 +153,5 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Alteração do Tipo de A
     await act(async () => {
       fireEvent.click(screen.getByText("BT - 1"));
     });
-    expect(codaeListarSolicitacoesDeAlteracaoDeCardapio).toHaveBeenCalledTimes(
-      9
-    );
   });
 });

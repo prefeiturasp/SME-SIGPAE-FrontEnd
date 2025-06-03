@@ -45,7 +45,9 @@ export default class ModalNegarSolicitacao extends Component {
   componentDidMount = async () => {
     const motivosNegacao = await this.props.getMotivos();
     this.setState({
-      motivosNegacao: agregarDefault(formataMotivos(motivosNegacao.results)),
+      motivosNegacao: agregarDefault(
+        formataMotivos(motivosNegacao.results || motivosNegacao.data?.results)
+      ),
     });
   };
 

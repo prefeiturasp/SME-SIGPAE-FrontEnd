@@ -30,29 +30,13 @@ export const getSolicitacaoDietaEspecial = async (uuid) => {
   return retornoBase(url);
 };
 
-export const getSolicitacoesPendentesNutricionista = async () => {
-  const url = `${SOLICITACOES_DIETA}/${SOLICITACOES.PENDENTES}/`;
-  return retornoBase(url);
-};
-
-export const getSolicitacoesAutorizadasNutricionista = async () => {
-  const url = `${SOLICITACOES_DIETA}/${SOLICITACOES.AUTORIZADOS}/`;
-  return retornoBase(url);
-};
-
-export const getSolicitacoesNegadasNutricionista = async () => {
-  const url = `${SOLICITACOES_DIETA}/${SOLICITACOES.NEGADOS}/`;
-  return retornoBase(url);
-};
-
-export const getTiposDietaEspecial = async () => {
-  const url = `${API_URL}/tipos-dieta-especial/`;
-  return retornoBase(url);
-};
-
 export const getMotivosNegacaoDietaEspecial = async () => {
-  const url = `${API_URL}/motivos-negacao/?processo=INCLUSAO`;
-  return retornoBase(url);
+  const url = `${API_URL}/motivos-negacao/?processo=INCLUSAO/`;
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getSolicitacoesAutorizadasNutrisupervisao = async (params) => {

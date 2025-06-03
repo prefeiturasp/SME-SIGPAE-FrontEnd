@@ -8,7 +8,7 @@ import {
 } from "./helpers";
 
 // Mock para stringDecimalToNumber retornando 100
-jest.mock("helpers/parsers", () => ({
+jest.mock("src/helpers/parsers", () => ({
   stringDecimalToNumber: jest.fn().mockReturnValue(100),
 }));
 

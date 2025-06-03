@@ -83,7 +83,14 @@ const FormAutorizaDietaEspecial = ({
   const fetchData = async (dietaEspecial) => {
     const respAlergiasIntolerancias = await getAlergiasIntolerancias();
     if (respAlergiasIntolerancias.status === HTTP_STATUS.OK) {
-      setDiagnosticos(respAlergiasIntolerancias.results);
+      setDiagnosticos(
+        respAlergiasIntolerancias.data.results.map((r) => {
+          return {
+            uuid: r.id.toString(),
+            nome: r.descricao,
+          };
+        })
+      );
     } else {
       toastError("Houve um erro ao carregar Alergias e Intolerâncias");
     }

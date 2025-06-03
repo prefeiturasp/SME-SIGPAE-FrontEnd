@@ -122,20 +122,12 @@ export const terceirizadaTomaCienciaDietaEspecial = async (uuid) => {
 
 export const getAlergiasIntolerancias = async () => {
   const url = `${API_URL}/alergias-intolerancias/`;
-  const response = await retornoBase(url);
-  return {
-    status: response.status,
-    results: response.results.map((r) => {
-      return {
-        uuid: r.id.toString(),
-        nome: r.descricao,
-      };
-    }),
-  };
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
-
-export const getAlergiasIntoleranciasAxios = async () =>
-  axios.get("/alergias-intolerancias/");
 
 export const getClassificacoesDietaEspecial = async () => {
   const url = `${API_URL}/classificacoes-dieta/`;

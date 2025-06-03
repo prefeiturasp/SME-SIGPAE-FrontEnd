@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { CardListarSolicitacoes } from "../../CardListarSolicitacoes";
 
-jest.mock("helpers/terceirizadas", () => ({
+jest.mock("src/helpers/terceirizadas", () => ({
   conferidaClass: () => "conferida-mock",
 }));
 

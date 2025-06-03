@@ -16,11 +16,6 @@ import { mockDashboardLayoutDeEmbalagemFiltradoDILOGABASTECIMENTO } from "src/mo
 import { PainelLayoutEmbalagemPage } from "src/pages/PreRecebimento/PainelLayoutEmbalagemPage";
 import mock from "src/services/_mock";
 
-jest.mock("src/constants/config", () => ({
-  HOME: "/",
-  REFRESH_TOKEN_TIMEOUT: 300000,
-}));
-
 describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () => {
   beforeEach(async () => {
     mock

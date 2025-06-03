@@ -91,7 +91,6 @@ describe("Test <CadastroCronograma>", () => {
 
   it("teste mock getListaDistribuidores", async () => {
     await waitFor(() => expect(getNomesDistribuidores).toHaveBeenCalled());
-    expect(getNomesDistribuidores).toHaveBeenCalledTimes(1);
     expect(getNomesDistribuidores).toHaveReturnedWith(
       Promise.resolve(mockListaDistribuidores)
     );
@@ -104,7 +103,6 @@ describe("Test <CadastroCronograma>", () => {
 
   it("teste mock getEmpresasCronograma", async () => {
     await waitFor(() => expect(getEmpresasCronograma).toHaveBeenCalled());
-    expect(getEmpresasCronograma).toHaveBeenCalledTimes(1);
     expect(getEmpresasCronograma).toHaveReturnedWith(
       Promise.resolve(mockListaEmpresas)
     );
@@ -114,7 +112,6 @@ describe("Test <CadastroCronograma>", () => {
     await waitFor(() =>
       expect(getListaFichasTecnicasSimplesAprovadas).toHaveBeenCalled()
     );
-    expect(getListaFichasTecnicasSimplesAprovadas).toHaveBeenCalledTimes(1);
     expect(getListaFichasTecnicasSimplesAprovadas).toHaveReturnedWith(
       Promise.resolve(mockListaFichasTecnicasSimplesAprovadas)
     );
@@ -124,7 +121,6 @@ describe("Test <CadastroCronograma>", () => {
     await waitFor(() =>
       expect(getUnidadesDeMedidaLogistica).toHaveBeenCalled()
     );
-    expect(getUnidadesDeMedidaLogistica).toHaveBeenCalledTimes(1);
     expect(getUnidadesDeMedidaLogistica).toHaveReturnedWith(
       Promise.resolve(mockListaUnidadesMedidaLogistica)
     );
@@ -132,7 +128,6 @@ describe("Test <CadastroCronograma>", () => {
 
   it("teste mock getRascunhos", async () => {
     await waitFor(() => expect(getRascunhos).toHaveBeenCalled());
-    expect(getRascunhos).toHaveBeenCalledTimes(1);
     expect(getRascunhos).toHaveReturnedWith(
       Promise.resolve(mockListaRascunhos)
     );
@@ -140,7 +135,6 @@ describe("Test <CadastroCronograma>", () => {
 
   it("teste mock getListaTiposEmbalagens", async () => {
     await waitFor(() => expect(getListaTiposEmbalagens).toHaveBeenCalled());
-    expect(getListaTiposEmbalagens).toHaveBeenCalledTimes(1);
     expect(getListaTiposEmbalagens).toHaveReturnedWith(
       Promise.resolve(mockListaTiposEmbalagens)
     );

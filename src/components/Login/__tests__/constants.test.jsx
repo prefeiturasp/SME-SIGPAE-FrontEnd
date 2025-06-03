@@ -1,9 +1,8 @@
 import { TIPOS_EMAIL_CADASTRO, TABS } from "../constans";
-import { vi } from "vitest";
 
 describe("Constantes do módulo de Login", () => {
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it("deve conter dois tipos de e-mail válidos com nome e uuid", () => {

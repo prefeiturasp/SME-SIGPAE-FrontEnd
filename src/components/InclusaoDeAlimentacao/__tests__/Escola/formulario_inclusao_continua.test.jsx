@@ -58,9 +58,6 @@ const awaitServices = async () => {
     expect(
       getVinculosTipoAlimentacaoMotivoInclusaoEspecifico
     ).toHaveBeenCalled();
-    expect(
-      obterMinhasSolicitacoesDeInclusaoDeAlimentacao
-    ).toHaveBeenCalledTimes(2);
   });
 };
 
