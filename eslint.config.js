@@ -4,7 +4,6 @@ import parserTypeScript from "@typescript-eslint/parser";
 import pluginImport from "eslint-plugin-import";
 import globals from "globals";
 
-// Clean globals to remove any with whitespace issues
 const cleanBrowserGlobals = Object.fromEntries(
   Object.entries(globals.browser).filter(([key]) => !key.includes(" "))
 );
