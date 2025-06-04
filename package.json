@@ -21,7 +21,7 @@
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
-      "!src/index.jxs",
+      "!src/index.jsx",
       "!src/reportWebVitals.jsx",
       "!src/setupTests.js",
       "!src/mocks"
