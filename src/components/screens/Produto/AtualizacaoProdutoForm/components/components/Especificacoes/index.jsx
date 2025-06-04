@@ -16,6 +16,7 @@ const Especificaoes = ({
   unidades_de_medida,
   embalagens,
   especificacoesIniciais,
+  desabilitarCampos = false,
 }) => {
   const [mounted, setMounted] = useState(false);
   const opcoesUnidadesDeMedida =
@@ -85,6 +86,7 @@ const Especificaoes = ({
                 tooltipText="Campo específico para inserir a quantidade em volumes Ex: 01"
                 required
                 validate={required}
+                disabled={desabilitarCampos}
               />
             </div>
             <div className="col-4">
@@ -97,6 +99,7 @@ const Especificaoes = ({
                 tooltipText="Campo específico referente a unidade de medida do produto Ex: LT, ML..."
                 required
                 validate={required}
+                disabled={desabilitarCampos}
               />
             </div>
             <div className="col-4">
@@ -108,6 +111,7 @@ const Especificaoes = ({
                 naoDesabilitarPrimeiraOpcao
                 required
                 validate={required}
+                disabled={desabilitarCampos}
               />
             </div>
             <div className="col-1 excluir-especificacoes">
@@ -127,15 +131,17 @@ const Especificaoes = ({
           </div>
         );
       })}
-      <div className="row  pt-3">
-        <div className="col-12">
-          <Botao
-            texto="Adicionar"
-            onClick={() => fields.push({})}
-            style={BUTTON_STYLE.GREEN}
-          />
+      {!desabilitarCampos && (
+        <div className="row  pt-3">
+          <div className="col-12">
+            <Botao
+              texto="Adicionar"
+              onClick={() => fields.push({})}
+              style={BUTTON_STYLE.GREEN}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };

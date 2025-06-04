@@ -3,7 +3,7 @@ import { TIPO_PERFIL } from "constants/shared";
 import { ROTAS_SOLICITACOES_HOMOLOGACAO_PRODUTO as ROTA } from "configs/constants";
 import { ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS } from "constants/shared";
 import { GESTAO_PRODUTO_CARDS as CARD_ID } from "configs/constants";
-import { usuarioEhCODAEGestaoProduto } from "./utilities";
+import { ehUsuarioEmpresa, usuarioEhCODAEGestaoProduto } from "./utilities";
 const {
   CODAE_SUSPENDEU,
   CODAE_QUESTIONADO,
@@ -148,6 +148,14 @@ export const listarCardsPermitidos = () => {
       CARD_HOMOLOGADOS,
       CARD_NAO_HOMOLOGADOS,
       cardAguardandoAnaliseReclamacao,
+    ];
+  } else if (ehUsuarioEmpresa()) {
+    return [
+      CARD_PRODUTOS_SUSPENSOS,
+      CARD_AGUARDANDO_ANALISE_RECLAMACAO,
+      CARD_PENDENTE_HOMOLOGACAO,
+      CARD_HOMOLOGADOS,
+      CARD_NAO_HOMOLOGADOS,
     ];
   } else if ([TIPO_PERFIL.TERCEIRIZADA].includes(perfil)) {
     const cardAguardandoAnaliseReclamacao = Object.assign(

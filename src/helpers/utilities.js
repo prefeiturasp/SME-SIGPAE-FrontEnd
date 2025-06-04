@@ -792,6 +792,17 @@ export const usuarioEhEmpresaTerceirizada = () => {
   );
 };
 
+export const usuarioEhAdministradorEmpresaTerceirizada = () => {
+  return (
+    [PERFIL.ADMINISTRADOR_EMPRESA].includes(localStorage.getItem("perfil")) &&
+    [TIPO_SERVICO.TERCEIRIZADA].includes(localStorage.getItem("tipo_servico"))
+  );
+};
+
+export const ehUsuarioEmpresa = () => {
+  return localStorage.getItem("perfil") === PERFIL.USUARIO_EMPRESA;
+};
+
 export const usuarioEhMedicao = () => {
   return localStorage.getItem("tipo_perfil") === TIPO_PERFIL.MEDICAO;
 };

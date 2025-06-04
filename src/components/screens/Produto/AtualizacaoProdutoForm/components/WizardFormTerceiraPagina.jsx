@@ -12,7 +12,7 @@ import {
   excluirImagemDoProduto,
   alteracaoProdutoHomologado,
 } from "services/produto.service";
-import { getError } from "helpers/utilities";
+import { getError, ehUsuarioEmpresa } from "helpers/utilities";
 import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
 import "./styles.scss";
 import Botao from "components/Shareable/Botao";
@@ -40,6 +40,7 @@ class WizardFormTerceiraPagina extends Component {
       formValues: undefined,
       especificacoesIniciais: this.props.produto.especificacoes,
       status_codae_questionado: false,
+      ehUsuarioEmpresa: ehUsuarioEmpresa(),
     };
     this.setFiles = this.setFiles.bind(this);
     this.removeFile = this.removeFile.bind(this);
@@ -213,7 +214,7 @@ class WizardFormTerceiraPagina extends Component {
   render() {
     const { handleSubmit, pristine, previousPage, submitting, valuesForm } =
       this.props;
-    const { mostraModalConfimacao } = this.state;
+    const { mostraModalConfimacao, ehUsuarioEmpresa } = this.state;
     return (
       <form onSubmit={handleSubmit} className="cadastro-produto-step3">
         <ModalConfirmacaoSimNao
@@ -239,6 +240,7 @@ class WizardFormTerceiraPagina extends Component {
               name="numero_registro"
               type="text"
               placeholder="Registro no Ministério da Agricultura SP 000499-5.000060"
+              disabled={ehUsuarioEmpresa}
             />
           </div>
           <div className="col-6 pt-3">
@@ -251,6 +253,7 @@ class WizardFormTerceiraPagina extends Component {
               placeholder="Digite o prazo da validade"
               required
               validate={required}
+              disabled={ehUsuarioEmpresa}
             />
           </div>
         </div>
@@ -262,6 +265,7 @@ class WizardFormTerceiraPagina extends Component {
               tooltipText="Campos específico para produtos que contém classificação de grãos"
               name="tipo"
               type="text"
+              disabled={ehUsuarioEmpresa}
             />
           </div>
         </div>
@@ -274,6 +278,7 @@ class WizardFormTerceiraPagina extends Component {
           updateOpcoesItensCadastrados={() =>
             this.updateOpcoesItensCadastrados()
           }
+          desabilitarCampos={ehUsuarioEmpresa}
           required
         />
         <div className="row">
@@ -286,6 +291,7 @@ class WizardFormTerceiraPagina extends Component {
               placeholder="Digite as informações necessárias"
               required
               validate={required}
+              disabled={ehUsuarioEmpresa}
             />
           </div>
         </div>
@@ -296,6 +302,7 @@ class WizardFormTerceiraPagina extends Component {
               placeholder="Digite as informações"
               label={"Outras informações que a empresa julgar necessário"}
               name="outras_informacoes"
+              disabled={ehUsuarioEmpresa}
             />
           </div>
         </div>
@@ -344,14 +351,16 @@ class WizardFormTerceiraPagina extends Component {
               }}
             />
           )}
-          <Botao
-            texto={"Enviar"}
-            className="ms-3"
-            type={BUTTON_TYPE.SUBMIT}
-            style={BUTTON_STYLE.GREEN_OUTLINE}
-            disabled={pristine || submitting}
-            onClick={handleSubmit(() => this.onSubmit(valuesForm))}
-          />
+          {!ehUsuarioEmpresa && (
+            <Botao
+              texto={"Enviar"}
+              className="ms-3"
+              type={BUTTON_TYPE.SUBMIT}
+              style={BUTTON_STYLE.GREEN_OUTLINE}
+              disabled={pristine || submitting}
+              onClick={handleSubmit(() => this.onSubmit(valuesForm))}
+            />
+          )}
         </div>
       </form>
     );

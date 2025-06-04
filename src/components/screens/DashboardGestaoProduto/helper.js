@@ -21,6 +21,7 @@ import {
   usuarioEhDinutreDiretoria,
   usuarioEhEmpresa,
   usuarioEhEmpresaTerceirizada,
+  ehUsuarioEmpresa,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhOrgaoFiscalizador,
@@ -188,7 +189,9 @@ export const exibeCardQuestionamentoDaCODAE = () => {
 };
 
 export const exibeCardCorrecaoDeProduto = () => {
-  return usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto();
+  return (
+    (usuarioEhEmpresa() || usuarioEhCODAEGestaoProduto()) && !ehUsuarioEmpresa()
+  );
 };
 
 export const apontaParaFormularioDeAlteracao = (titulo) => {
