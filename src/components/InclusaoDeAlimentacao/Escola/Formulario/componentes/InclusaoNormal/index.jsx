@@ -93,7 +93,7 @@ export const DataInclusaoNormal = ({ ...props }) => {
   );
 };
 
-export const AdicionarDia = ({ push, nameFieldArray }) => {
+export const AdicionarDia = ({ push, nameFieldArray = undefined }) => {
   return (
     <Botao
       className="col-3 mb-3"
@@ -138,7 +138,7 @@ export const PeriodosInclusaoNormal = ({
   form,
   values,
   periodos,
-  ehETEC,
+  ehETEC = false,
   motivoEspecifico,
   uuid,
   idExterno,

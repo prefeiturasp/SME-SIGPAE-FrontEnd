@@ -1,14 +1,21 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"]
+    },
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "node",
-    "strict": true,
+    "strict": false,
     "jsx": "react-jsx",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "noEmit": true,
+    "checkJs": false
   },
   "include": ["src"]
 }
