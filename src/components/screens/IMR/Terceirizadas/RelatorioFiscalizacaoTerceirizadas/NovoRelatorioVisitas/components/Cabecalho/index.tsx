@@ -1,24 +1,24 @@
 import { Spin } from "antd";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import { Botao } from "components/Shareable/Botao";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { InputComData } from "components/Shareable/DatePicker";
-import { InputText } from "components/Shareable/Input/InputText";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
-import Select from "components/Shareable/Select";
-import { toastError } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import Select from "src/components/Shareable/Select";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { FormApi } from "final-form";
 import {
   maxValueMaiorFrequenciaNoPeriodoIMR,
   required,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 import {
   composeValidators,
   converterDDMMYYYYparaYYYYMMDD,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import {
   DiretoriaRegionalInterface,
@@ -39,15 +39,15 @@ import {
 import moment from "moment";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Field } from "react-final-form";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
 import {
   getEscolasTercTotal,
   getQuantidadeAlunosMatriculadosPorData,
-} from "services/escola.service";
+} from "src/services/escola.service";
 import {
   exportarPDFRelatorioFiscalizacao,
   getPeriodosVisita,
-} from "services/imr/relatorioFiscalizacaoTerceirizadas";
+} from "src/services/imr/relatorioFiscalizacaoTerceirizadas";
 
 type CabecahoType = {
   form: FormApi<any, Partial<any>>;

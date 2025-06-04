@@ -2,18 +2,18 @@ import React, { Fragment, useState } from "react";
 import {
   getProdutosRelatorioSuspenso,
   relatorioProdutosSuspensosPDF,
-} from "services/produto.service";
-import { gerarParametrosConsulta } from "helpers/utilities";
+} from "src/services/produto.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import { Spin } from "antd";
-import { Paginacao } from "components/Shareable/Paginacao";
-import Botao from "components/Shareable/Botao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
+} from "src/components/Shareable/Botao/constants";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import HTTP_STATUS from "http-status-codes";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 const TabelaResultado = ({
   produtosCount,

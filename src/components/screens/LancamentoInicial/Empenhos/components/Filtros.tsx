@@ -2,8 +2,8 @@ import React from "react";
 import { Select as SelectAntd } from "antd";
 import { Field } from "react-final-form";
 
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { AInput, ASelect } from "components/Shareable/MakeField";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { AInput, ASelect } from "src/components/Shareable/MakeField";
 
 type FiltrosProps = {
   onSubmit: (_values: any) => void;

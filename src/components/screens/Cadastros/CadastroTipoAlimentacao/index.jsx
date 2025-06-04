@@ -5,19 +5,22 @@ import HTTP_STATUS from "http-status-codes";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Select as SelectAntd } from "antd";
 import { Spin } from "antd";
-import { ASelect } from "components/Shareable/MakeField";
-import Botao from "components/Shareable/Botao";
+import { ASelect } from "src/components/Shareable/MakeField";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import "./style.scss";
 import {
   getVinculosTipoAlimentacaoPorTipoUnidadeEscolar,
   updateListaVinculosTipoAlimentacaoPorTipoUnidadeEscolar,
   getTiposDeAlimentacao,
-} from "services/cadastroTipoAlimentacao.service";
+} from "src/services/cadastroTipoAlimentacao.service";
 
 export default ({ tiposUnidadesEscolar }) => {
   const { Option } = SelectAntd;

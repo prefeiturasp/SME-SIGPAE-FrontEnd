@@ -1,7 +1,7 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import { DashboardGestaoProduto } from "components/screens/DashboardGestaoProduto";
-import Page from "components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import { DashboardGestaoProduto } from "src/components/screens/DashboardGestaoProduto";
+import Page from "src/components/Shareable/Page/Page";
 
 const DashboardGestaoProdutoPage = (props) => {
   return (

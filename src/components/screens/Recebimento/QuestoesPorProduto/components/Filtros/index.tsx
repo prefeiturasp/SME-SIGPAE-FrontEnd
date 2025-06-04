@@ -2,16 +2,19 @@ import React, { Dispatch, SetStateAction } from "react";
 import { Field } from "react-final-form";
 import { NavLink } from "react-router-dom";
 
-import { RECEBIMENTO, ATRIBUIR_QUESTOES_CONFERENCIA } from "configs/constants";
+import {
+  RECEBIMENTO,
+  ATRIBUIR_QUESTOES_CONFERENCIA,
+} from "src/configs/constants";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import { formatarNumeroEProdutoFichaTecnica } from "helpers/preRecebimento";
-import { getListaFiltradaAutoCompleteSelect } from "helpers/autoCompleteSelect";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import { formatarNumeroEProdutoFichaTecnica } from "src/helpers/preRecebimento";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
 import { FichaTecnicaSimples } from "interfaces/pre_recebimento.interface";
 import {
   FiltrosQuestoesPorProduto,

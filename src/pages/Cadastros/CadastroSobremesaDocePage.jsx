@@ -1,14 +1,18 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { CADASTROS, CONFIGURACOES, SOBREMESA_DOCE } from "configs/constants";
-import { Calendario } from "components/Shareable/Calendario";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import {
+  CADASTROS,
+  CONFIGURACOES,
+  SOBREMESA_DOCE,
+} from "src/configs/constants";
+import { Calendario } from "src/components/Shareable/Calendario";
 import {
   getDiasSobremesaDoce,
   setDiaSobremesaDoce,
   deleteDiaSobremesaDoce,
-} from "services/medicaoInicial/diaSobremesaDoce.service";
-import { usuarioEhCODAEGestaoAlimentacao } from "helpers/utilities";
+} from "src/services/medicaoInicial/diaSobremesaDoce.service";
+import { usuarioEhCODAEGestaoAlimentacao } from "src/helpers/utilities";
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`,

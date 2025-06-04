@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
   getNomesItems,
   getTiposItems,
   consultaItems,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import Filtros from "./componentes/Filtros";
 import Tabela from "./componentes/Tabela";
 import "./style.scss";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default ({ tipoFixo = false }) => {
   const initialValues = tipoFixo ? { tipo: tipoFixo } : {};

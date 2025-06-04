@@ -1,26 +1,33 @@
 import { Spin } from "antd";
-import { Botao } from "components/Shareable/Botao";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import ModalAutorizarAposQuestionamento from "components/Shareable/ModalAutorizarAposQuestionamento";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
-import RelatorioHistoricoJustificativaEscola from "components/Shareable/RelatorioHistoricoJustificativaEscola";
-import RelatorioHistoricoQuestionamento from "components/Shareable/RelatorioHistoricoQuestionamento";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { DRE } from "configs/constants";
-import { statusEnum, TIPO_PERFIL, TIPO_SOLICITACAO } from "constants/shared";
-import { MeusDadosContext } from "context/MeusDadosContext";
+} from "src/components/Shareable/Botao/constants";
+import ModalAutorizarAposQuestionamento from "src/components/Shareable/ModalAutorizarAposQuestionamento";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import RelatorioHistoricoJustificativaEscola from "src/components/Shareable/RelatorioHistoricoJustificativaEscola";
+import RelatorioHistoricoQuestionamento from "src/components/Shareable/RelatorioHistoricoQuestionamento";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { DRE } from "src/configs/constants";
+import {
+  statusEnum,
+  TIPO_PERFIL,
+  TIPO_SOLICITACAO,
+} from "src/constants/shared";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
   prazoDoPedidoMensagem,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
   visualizaBotoesDoFluxo,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
 import { Form } from "react-final-form";
-import { getInclusaoDeAlimentacao } from "services/inclusaoDeAlimentacao";
+import { getInclusaoDeAlimentacao } from "src/services/inclusaoDeAlimentacao";
 import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
 import { HistoricoCancelamento } from "./componentes/HistoricoCancelamento";
 import { ModalCancelarInclusaoContinua } from "./componentes/ModalCancelarInclusaoContinua";
@@ -30,7 +37,7 @@ import {
   exibirBotaoMarcarConferencia,
   exibirBotaoQuestionamento,
   exibirModalAutorizacaoAposQuestionamento,
-} from "components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
+} from "src/components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
 
 export const Relatorio = ({ ...props }) => {
   const { meusDados } = useContext(MeusDadosContext);

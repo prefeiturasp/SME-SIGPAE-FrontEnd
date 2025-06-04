@@ -4,29 +4,32 @@ import { Field, FieldArray, reduxForm } from "redux-form";
 import InputText from "../../../../Shareable/Input/InputText";
 import { required } from "../../../../../helpers/fieldValidators";
 import { TextArea } from "../../../../Shareable/TextArea/TextArea";
-import TooltipIcone from "components/Shareable/TooltipIcone";
+import TooltipIcone from "src/components/Shareable/TooltipIcone";
 import Especificacoes from "./components/Especificacoes";
-import { STATUS_CODAE_QUESTIONADO } from "configs/constants";
+import { STATUS_CODAE_QUESTIONADO } from "src/configs/constants";
 import {
   updateProduto,
   excluirImagemDoProduto,
   alteracaoProdutoHomologado,
-} from "services/produto.service";
-import { getError, ehUsuarioEmpresa } from "helpers/utilities";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/services/produto.service";
+import { getError, ehUsuarioEmpresa } from "src/helpers/utilities";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import "./styles.scss";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import withNavigate from "components/Shareable/withNavigate";
-import ManagedInputFileField from "components/Shareable/Input/InputFile/ManagedField";
-import ModalConfirmacaoSimNao from "components/Shareable/ModalConfirmacaoSimNao";
+} from "src/components/Shareable/Botao/constants";
+import withNavigate from "src/components/Shareable/withNavigate";
+import ManagedInputFileField from "src/components/Shareable/Input/InputFile/ManagedField";
+import ModalConfirmacaoSimNao from "src/components/Shareable/ModalConfirmacaoSimNao";
 import {
   getUnidadesDeMedidaProduto,
   getEmbalagensProduto,
-} from "services/produto.service";
+} from "src/services/produto.service";
 
 class WizardFormTerceiraPagina extends Component {
   constructor(props) {

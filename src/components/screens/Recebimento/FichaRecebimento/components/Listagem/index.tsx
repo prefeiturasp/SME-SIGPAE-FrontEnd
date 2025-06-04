@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip } from "antd";
 
-import { truncarString } from "helpers/utilities";
+import { truncarString } from "src/helpers/utilities";
 
 import { FichaDeRecebimentoItemListagem } from "../../interfaces";
 

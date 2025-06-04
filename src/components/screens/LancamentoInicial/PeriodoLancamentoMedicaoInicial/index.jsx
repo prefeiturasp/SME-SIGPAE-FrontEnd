@@ -17,30 +17,33 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Field, Form, FormSpy } from "react-final-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import CKEditorField from "components/Shareable/CKEditorField";
-import InputText from "components/Shareable/Input/InputText";
-import InputValueMedicao from "components/Shareable/Input/InputValueMedicao";
+} from "src/components/Shareable/Botao/constants";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import InputText from "src/components/Shareable/Input/InputText";
+import InputValueMedicao from "src/components/Shareable/Input/InputValueMedicao";
 import {
   toastError,
   toastSuccess,
   toastWarn,
-} from "components/Shareable/Toast/dialogs";
-import { DETALHAMENTO_DO_LANCAMENTO, MEDICAO_INICIAL } from "configs/constants";
+} from "src/components/Shareable/Toast/dialogs";
+import {
+  DETALHAMENTO_DO_LANCAMENTO,
+  MEDICAO_INICIAL,
+} from "src/configs/constants";
 import {
   deepCopy,
   deepEqual,
   ehEscolaTipoCEUGESTAO,
   escolaEhEMEBS,
   tiposAlimentacaoETEC,
-} from "helpers/utilities";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
-import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
+} from "src/helpers/utilities";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
+import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
   getDiasCalendario,
@@ -51,9 +54,9 @@ import {
   getValoresPeriodosLancamentos,
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
-} from "services/medicaoInicial/periodoLancamentoMedicao.service";
-import { escolaCorrigeMedicao } from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import { getMeusDados } from "services/perfil.service";
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
+import { getMeusDados } from "src/services/perfil.service";
 import { ALUNOS_EMEBS, FUNDAMENTAL_EMEBS } from "../constants";
 import ModalErro from "./components/ModalErro";
 import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";

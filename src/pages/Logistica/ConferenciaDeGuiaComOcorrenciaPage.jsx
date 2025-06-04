@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   CONFERIR_ENTREGA,
   CONFERENCIA_GUIA,
   CONFERENCIA_GUIA_COM_OCORRENCIA,
   LOGISTICA,
-} from "configs/constants";
-import ConferenciaDeGuiaComOcorrencia from "components/screens/Logistica/ConferenciaDeGuiaComOcorrencia";
+} from "src/configs/constants";
+import ConferenciaDeGuiaComOcorrencia from "src/components/screens/Logistica/ConferenciaDeGuiaComOcorrencia";
 
 export default () => {
   const [uuid, setUuid] = useState();

@@ -2,7 +2,7 @@ import {
   CADASTROS,
   CONFIGURACOES,
   EDICAO_UNIDADE_MEDIDA,
-} from "configs/constants";
+} from "src/configs/constants";
 import React from "react";
 import { NavLink } from "react-router-dom";
 

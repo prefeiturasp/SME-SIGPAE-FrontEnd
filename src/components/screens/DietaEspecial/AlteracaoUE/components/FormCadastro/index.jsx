@@ -1,39 +1,39 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { Field, Form } from "react-final-form";
-import CKEditorField from "components/Shareable/CKEditorField";
-import SSelect from "components/Shareable/Select";
-import { InputComData } from "components/Shareable/DatePicker";
-import Botao from "components/Shareable/Botao";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import SSelect from "src/components/Shareable/Select";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import {
   dateDelta,
   getError,
   composeValidators,
   gerarParametrosConsulta,
-} from "helpers/utilities";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import InputText from "components/Shareable/Input/InputText";
-import { length, required } from "helpers/fieldValidators";
+} from "src/helpers/utilities";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import InputText from "src/components/Shareable/Input/InputText";
+import { length, required } from "src/helpers/fieldValidators";
 import {
   getSolicitacoesDietaEspecial,
   getMotivosAlteracaoUE,
-} from "services/dietaEspecial.service";
-import { getEscolasSimplissima } from "services/escola.service";
-import { getStatusSolicitacoesVigentes } from "helpers/dietaEspecial";
-import { obtemDadosAlunoPeloEOL } from "services/perfil.service";
+} from "src/services/dietaEspecial.service";
+import { getEscolasSimplissima } from "src/services/escola.service";
+import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
+import { obtemDadosAlunoPeloEOL } from "src/services/perfil.service";
 import HTTP_STATUS from "http-status-codes";
 
-import SolicitacaoVigente from "components/screens/DietaEspecial/Escola/componentes/SolicitacaoVigente";
-import { formatarSolicitacoesVigentes } from "components/screens/DietaEspecial/Escola/helper";
+import SolicitacaoVigente from "src/components/screens/DietaEspecial/Escola/componentes/SolicitacaoVigente";
+import { formatarSolicitacoesVigentes } from "src/components/screens/DietaEspecial/Escola/helper";
 
 import "./styles.scss";
 
-import { createSolicitacaoAlteracaoUE } from "services/dietaEspecial.service";
-import { toastSuccess } from "components/Shareable/Toast/dialogs";
+import { createSolicitacaoAlteracaoUE } from "src/services/dietaEspecial.service";
+import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
 
 export default ({
   solicitacoesVigentes,
@@ -178,25 +178,11 @@ export default ({
     setCarregandoAluno(false);
   };
 
-  const formValidation = (values) => {
-    let errors = {};
-    if (values.data_inicio && values.data_termino) {
-      const data_inicial = moment(values.data_inicio, "DD/MM/YYYY");
-      const data_final = moment(values.data_termino, "DD/MM/YYYY");
-      const days = data_final.diff(data_inicial, "days");
-      if (days > 45)
-        errors.data_inicio =
-          "Não é permitido informar um período superior a 45 dias.";
-    }
-    return errors;
-  };
-
   return (
     <Form
       onSubmit={onSubmit}
       subscription={{ submitting: true, values: true }}
       initialValues={dadosIniciais}
-      validate={formValidation}
       render={({ handleSubmit, form, pristine, submitting, values }) => {
         return (
           <form

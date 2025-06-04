@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
   getNomesTerceirizadas,
   getHomologacaoProduto,
   getNumeroProtocoloAnaliseSensorial,
-} from "services/produto.service";
-import { getNumerosEditais } from "services/edital.service";
+} from "src/services/produto.service";
+import { getNumerosEditais } from "src/services/edital.service";
 import { Homologacao } from "../index";
 import { formataValoresBooleanos } from "../helper";
-import { EDITAIS_INVALIDOS } from "helpers/gestaoDeProdutos";
+import { EDITAIS_INVALIDOS } from "src/helpers/gestaoDeProdutos";
 
 export const Container = () => {
   const [erro, setErro] = useState(false);

@@ -1,23 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { Filtros } from "./components/Filtros";
 import { ListagemDietas } from "./components/ListagemDietas";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
-import { MeusDadosContext } from "context/MeusDadosContext";
+} from "src/components/Shareable/Botao/constants";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
   gerarExcelRelatorioDietaEspecial,
   getFiltrosRelatorioDietasEspeciais,
   gerarPdfRelatorioDietaEspecial,
-} from "services/dietaEspecial.service";
+} from "src/services/dietaEspecial.service";
 import "./styles.scss";
-import { usuarioEhEmpresaTerceirizada } from "helpers/utilities";
+import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 
 export const RelatorioDietasCanceladas = () => {
   const { meusDados } = useContext(MeusDadosContext);

@@ -1,5 +1,5 @@
 import React from "react";
-import { comoTipo } from "helpers/utilities";
+import { comoTipo } from "src/helpers/utilities";
 import "../../../../Shareable/style.scss";
 
 export const Rascunhos = ({

@@ -1,15 +1,15 @@
 import moment from "moment";
 import React from "react";
 import { Form, Field } from "react-final-form";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import { InputComData } from "components/Shareable/DatePicker";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import { InputText } from "components/Shareable/Input/InputText";
-import Botao from "components/Shareable/Botao";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./style.scss";
 import { montarMenuOptionStatus } from "../../helper";
 

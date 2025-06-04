@@ -3,7 +3,7 @@ import HTTP_STATUS from "http-status-codes";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import { Rascunhos } from "./Rascunhos";
-import CKEditorField from "components/Shareable/CKEditorField";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import { Select } from "../Shareable/Select";
 import { InputComData } from "../Shareable/DatePicker";
 import InputText from "../Shareable/Input/InputText";
@@ -21,8 +21,8 @@ import {
 } from "../../services/suspensaoAlimentacaoCei.service";
 import "../Shareable/Checkbox/style.scss";
 import "./styles.scss";
-import CardMatriculados from "components/Shareable/CardMatriculados";
-import { fimDoCalendario } from "helpers/utilities";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import { fimDoCalendario } from "src/helpers/utilities";
 
 const ENTER = 13;
 

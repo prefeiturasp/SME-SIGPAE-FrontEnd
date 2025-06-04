@@ -1,5 +1,5 @@
-@import "styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 .texto-verde {
-    color: #198459;
+  color: #198459;
 }

@@ -1,8 +1,8 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import { RELATORIO_ALUNOS_MATRICULADOS } from "../../configs/constants";
-import { AlunosMatriculados } from "components/screens/Relatorios/AlunosMatriculados";
+import { AlunosMatriculados } from "src/components/screens/Relatorios/AlunosMatriculados";
 
 const atual = {
   href: `/${RELATORIO_ALUNOS_MATRICULADOS}`,

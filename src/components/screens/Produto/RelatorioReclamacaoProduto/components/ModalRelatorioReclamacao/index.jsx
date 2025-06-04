@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import { Spin } from "antd";
 import { Modal } from "antd";
-import Botao from "components/Shareable/Botao";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { getProdutosReclamacoes } from "services/produto.service";
+import Botao from "src/components/Shareable/Botao";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { getProdutosReclamacoes } from "src/services/produto.service";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./styles.scss";
-import { getRelatorioReclamacao } from "services/relatorios.service";
+import { getRelatorioReclamacao } from "src/services/relatorios.service";
 import { getConfigCabecario } from "./helpers";
 import Reclamacao from "./Reclamacao";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 const ModalRelatorioReclamacao = ({
   showModal,

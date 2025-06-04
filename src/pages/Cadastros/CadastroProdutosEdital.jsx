@@ -1,7 +1,7 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import CadastroProdutosEdital from "components/screens/Cadastros/CadastroProdutosEdital";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import CadastroProdutosEdital from "src/components/screens/Cadastros/CadastroProdutosEdital";
 
 const atual = {
   href: `/gestao-produto/cadastro-produtos-provinientes-edital`,

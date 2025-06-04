@@ -4,19 +4,19 @@ import "./styles.scss";
 import {
   PAINEL_DOCUMENTOS_RECEBIMENTO,
   PRE_RECEBIMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
-import BotaoVoltar from "components/Shareable/Page/BotaoVoltar";
-import { FluxoDeStatusPreRecebimento } from "components/Shareable/FluxoDeStatusPreRecebimento";
+import BotaoVoltar from "src/components/Shareable/Page/BotaoVoltar";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 import {
   detalharDocumentoParaAnalise,
   downloadArquivoLaudoAssinado,
-} from "services/documentosRecebimento.service";
-import InputText from "components/Shareable/Input/InputText";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+} from "src/services/documentosRecebimento.service";
+import InputText from "src/components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { DocumentosRecebimentoParaAnalise } from "interfaces/pre_recebimento.interface";
 import OutrosDocumentos from "../OutrosDocumentos";
-import BotaoAnexo from "components/PreRecebimento/BotaoAnexo";
+import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
 
 export default () => {
   const navigate = useNavigate();

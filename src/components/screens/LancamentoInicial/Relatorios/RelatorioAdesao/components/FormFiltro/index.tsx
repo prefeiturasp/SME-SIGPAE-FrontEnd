@@ -4,14 +4,14 @@ import { Field } from "react-final-form";
 import { FormApi } from "final-form";
 import { Skeleton } from "antd";
 
-import Select from "components/Shareable/Select";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
+import Select from "src/components/Shareable/Select";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 
 import {
   usuarioEhDRE,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 import useView from "./view";
 

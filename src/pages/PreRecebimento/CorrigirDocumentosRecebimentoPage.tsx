@@ -1,13 +1,13 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   DOCUMENTOS_RECEBIMENTO,
   PRE_RECEBIMENTO,
   CORRIGIR_DOCUMENTOS_RECEBIMENTO,
-} from "configs/constants";
-import Corrigir from "components/screens/PreRecebimento/DocumentosRecebimento/components/Corrigir";
+} from "src/configs/constants";
+import Corrigir from "src/components/screens/PreRecebimento/DocumentosRecebimento/components/Corrigir";
 
 const atual = {
   href: `/${PRE_RECEBIMENTO}/${DOCUMENTOS_RECEBIMENTO}/${CORRIGIR_DOCUMENTOS_RECEBIMENTO}`,

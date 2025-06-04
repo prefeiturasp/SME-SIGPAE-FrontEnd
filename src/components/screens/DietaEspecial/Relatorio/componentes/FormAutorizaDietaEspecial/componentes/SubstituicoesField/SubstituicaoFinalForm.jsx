@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Field } from "react-final-form";
-import { required } from "helpers/fieldValidators";
-import Select from "components/Shareable/Select";
+import { required } from "src/helpers/fieldValidators";
+import Select from "src/components/Shareable/Select";
 import { Select as SelectAntd } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
-import Botao from "components/Shareable/Botao";
-import { ASelect } from "components/Shareable/MakeField";
+import Botao from "src/components/Shareable/Botao";
+import { ASelect } from "src/components/Shareable/MakeField";
 import {
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 import "./style.scss";
 

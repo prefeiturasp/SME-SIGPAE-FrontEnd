@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
-import Select from "components/Shareable/Select";
+import Select from "src/components/Shareable/Select";
 import HTTP_STATUS from "http-status-codes";
-import { required } from "helpers/fieldValidators";
-import { getReparosEAdaptacoes } from "services/imr/relatorioFiscalizacaoTerceirizadas";
+import { required } from "src/helpers/fieldValidators";
+import { getReparosEAdaptacoes } from "src/services/imr/relatorioFiscalizacaoTerceirizadas";
 import { SelectOption } from "interfaces/option.interface";
 import { EscolaLabelInterface } from "interfaces/imr.interface";
 

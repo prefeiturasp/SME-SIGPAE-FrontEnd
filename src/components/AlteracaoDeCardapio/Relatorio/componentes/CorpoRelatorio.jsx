@@ -1,21 +1,21 @@
 import React, { Fragment, useState } from "react";
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
 import {
   corDaMensagem,
   ehInclusaoCei,
   justificativaAoNegarSolicitacao,
   justificativaAoAprovarSolicitacao,
-} from "helpers/utilities";
-import Botao from "components/Shareable/Botao";
+} from "src/helpers/utilities";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import { getRelatorioAlteracaoCardapio } from "services/relatorios";
-import { fluxoPartindoEscola } from "components/Shareable/FluxoDeStatus/helper";
-import TabelaFaixaEtaria from "components/Shareable/TabelaFaixaEtaria";
-import { existeLogDeQuestionamentoDaCODAE } from "components/Shareable/RelatorioHistoricoQuestionamento/helper";
+} from "src/components/Shareable/Botao/constants";
+import { getRelatorioAlteracaoCardapio } from "src/services/relatorios";
+import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
+import TabelaFaixaEtaria from "src/components/Shareable/TabelaFaixaEtaria";
+import { existeLogDeQuestionamentoDaCODAE } from "src/components/Shareable/RelatorioHistoricoQuestionamento/helper";
 import "./style.scss";
 
 export const CorpoRelatorio = (props) => {

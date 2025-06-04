@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
-import { normalizaLabelValueEmpresaSocial } from "components/screens/Cadastros/EditaisContratos/helper";
-import { CardLogo } from "components/Shareable/CardLogo/CardLogo";
-import IconeDietaEspecial from "components/Shareable/Icones/IconeDietaEspecial";
-import { IconeGestaoDeAlimentacao } from "components/Shareable/Icones/IconeGestaoDeAlimentacao";
-import IconeGestaoDeProduto from "components/Shareable/Icones/IconeGestaoDeProduto";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { normalizaLabelValueEmpresaSocial } from "src/components/screens/Cadastros/EditaisContratos/helper";
+import { CardLogo } from "src/components/Shareable/CardLogo/CardLogo";
+import IconeDietaEspecial from "src/components/Shareable/Icones/IconeDietaEspecial";
+import { IconeGestaoDeAlimentacao } from "src/components/Shareable/Icones/IconeGestaoDeAlimentacao";
+import IconeGestaoDeProduto from "src/components/Shareable/Icones/IconeGestaoDeProduto";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import FiltrosEmails from "./FiltrosEmails";
 import ListagemEmails from "./ListagemSolicitacoes";
 import {
   getEmailsTerceirizadasPorModulo,
   listaSimplesTerceirizadas,
-} from "services/terceirizada.service";
+} from "src/services/terceirizada.service";
 import "./style.scss";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);

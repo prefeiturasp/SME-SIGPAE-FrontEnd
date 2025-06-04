@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import {
   CODAECancelaAnaliseSensorialProduto,
   imprimeFichaIdentificacaoProduto,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import { useNavigate } from "react-router-dom";
-import { usuarioEhCODAEGestaoProduto } from "helpers/utilities";
-import { ModalPadrao } from "components/Shareable/ModalPadrao";
-import { PAINEL_GESTAO_PRODUTO } from "configs/constants";
+import { usuarioEhCODAEGestaoProduto } from "src/helpers/utilities";
+import { ModalPadrao } from "src/components/Shareable/ModalPadrao";
+import { PAINEL_GESTAO_PRODUTO } from "src/configs/constants";
 
 export const BotoesRodape = ({ homologacao }) => {
   const navigate = useNavigate();

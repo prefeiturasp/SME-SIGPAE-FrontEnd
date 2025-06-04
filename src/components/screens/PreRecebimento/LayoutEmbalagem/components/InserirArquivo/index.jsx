@@ -1,6 +1,6 @@
 import React from "react";
 import { Field } from "react-final-form";
-import InputFile from "components/Shareable/Input/InputFile";
+import InputFile from "src/components/Shareable/Input/InputFile";
 import { DEZ_MB } from "../../../../../../constants/shared";
 import TooltipIcone from "../../../../../Shareable/TooltipIcone";
 

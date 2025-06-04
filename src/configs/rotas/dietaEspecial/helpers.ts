@@ -1,7 +1,7 @@
-import { TIPO_PERFIL } from "constants/shared";
-import * as DashBoardDietaEspecial from "pages/DietaEspecial/DashboardDietaEspecialPage";
-import * as RelatoriosDietaEspecial from "pages/DietaEspecial/RelatorioPage";
-import * as StatusSolicitacoesDietaEspecialPage from "pages/DietaEspecial/StatusSolicitacoesPage";
+import { TIPO_PERFIL } from "src/constants/shared";
+import * as DashBoardDietaEspecial from "src/pages/DietaEspecial/DashboardDietaEspecialPage";
+import * as RelatoriosDietaEspecial from "src/pages/DietaEspecial/RelatorioPage";
+import * as StatusSolicitacoesDietaEspecialPage from "src/pages/DietaEspecial/StatusSolicitacoesPage";
 
 export const dashBoardDietaEspecial = () => {
   switch (localStorage.getItem("tipo_perfil")) {

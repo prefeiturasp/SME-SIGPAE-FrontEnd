@@ -5,11 +5,11 @@ import {
   getNotificacoesGerais,
   getPendenciasNaoResolvidas,
   setNotificacaoMarcarDesmarcarLida,
-} from "services/notificacoes.service";
+} from "src/services/notificacoes.service";
 import CardNotificacao from "./components/CardNotificacao";
 import Filtros from "./components/Filtros";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [carregando] = useState(false);

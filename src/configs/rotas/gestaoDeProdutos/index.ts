@@ -17,12 +17,12 @@ import {
   usuarioEhQualquerCODAE,
   usuarioEscolaEhGestaoDireta,
   validaPerfilEscolaMistaParceira,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
-import CadastroGeralPage from "pages/Cadastros/CadastroGeralPage";
-import CadastroProdutosEdital from "pages/Cadastros/CadastroProdutosEdital";
-import VincularProdutosEditaisPage from "pages/Cadastros/VincularProdutosEditaisPage";
-import DashboardGestaoProdutoPage from "pages/DashboardGestaoProduto/DashboardGestaoProdutoPage";
+import CadastroGeralPage from "src/pages/Cadastros/CadastroGeralPage";
+import CadastroProdutosEdital from "src/pages/Cadastros/CadastroProdutosEdital";
+import VincularProdutosEditaisPage from "src/pages/Cadastros/VincularProdutosEditaisPage";
+import DashboardGestaoProdutoPage from "src/pages/DashboardGestaoProduto/DashboardGestaoProdutoPage";
 import {
   AtivacaoDeProdutoPage,
   ConsultaAtivacaoDeProdutoPage,
@@ -32,22 +32,22 @@ import {
   ResponderQuestionamentoNutrisupervisorPage,
   ResponderQuestionamentoUEPage,
   ResponderReclamacaoPage,
-} from "pages/Produto";
-import AcompanharSolicitacaoCadastroProdutoPage from "pages/Produto/AcompanharSolicitacaoCadastroProdutoPage";
-import AtualizacaoProdutoFormPage from "pages/Produto/AtualizacaoProdutoFormPage";
-import AvaliarReclamacaoProdutoPage from "pages/Produto/AvaliarReclamacaoProdutoPage";
-import AvaliarSolicitacaoCadastroProdutoPage from "pages/Produto/AvaliarSolicitacaoCadastroProdutoPage";
-import BuscaAvancadaProdutoAnaliseSensorial from "pages/Produto/BuscaAvancadaProdutoAnaliseSensorial";
-import BuscaAvancadaProdutoPage from "pages/Produto/BuscaAvancadaProdutoPage";
-import BuscaProdutoAnaliseSensorial from "pages/Produto/BuscaProdutoAnaliseSensorial";
-import BuscaProdutosSuspensos from "pages/Produto/BuscaProdutosSuspensos";
-import CadastroProdutoPage from "pages/Produto/CadastroProdutoPage";
-import HomologacaoProdutoPage from "pages/Produto/HomologacaoProdutoPage";
-import RelatorioAnaliseSensorial from "pages/Produto/RelatorioAnaliseSensorial";
-import RelatorioProduto from "pages/Produto/RelatorioProduto";
-import RelatorioReclamacaoProduto from "pages/Produto/RelatorioReclamacaoProduto";
-import * as StatusSolicitacoesGestaoProduto from "pages/Produto/StatusSolicitacoesGestaoProduto";
-import RelatorioProdutosHomologadosPage from "pages/RelatorioProdutosHomologados/RelatorioProdutosHomologadosPage";
+} from "src/pages/Produto";
+import AcompanharSolicitacaoCadastroProdutoPage from "src/pages/Produto/AcompanharSolicitacaoCadastroProdutoPage";
+import AtualizacaoProdutoFormPage from "src/pages/Produto/AtualizacaoProdutoFormPage";
+import AvaliarReclamacaoProdutoPage from "src/pages/Produto/AvaliarReclamacaoProdutoPage";
+import AvaliarSolicitacaoCadastroProdutoPage from "src/pages/Produto/AvaliarSolicitacaoCadastroProdutoPage";
+import BuscaAvancadaProdutoAnaliseSensorial from "src/pages/Produto/BuscaAvancadaProdutoAnaliseSensorial";
+import BuscaAvancadaProdutoPage from "src/pages/Produto/BuscaAvancadaProdutoPage";
+import BuscaProdutoAnaliseSensorial from "src/pages/Produto/BuscaProdutoAnaliseSensorial";
+import BuscaProdutosSuspensos from "src/pages/Produto/BuscaProdutosSuspensos";
+import CadastroProdutoPage from "src/pages/Produto/CadastroProdutoPage";
+import HomologacaoProdutoPage from "src/pages/Produto/HomologacaoProdutoPage";
+import RelatorioAnaliseSensorial from "src/pages/Produto/RelatorioAnaliseSensorial";
+import RelatorioProduto from "src/pages/Produto/RelatorioProduto";
+import RelatorioReclamacaoProduto from "src/pages/Produto/RelatorioReclamacaoProduto";
+import * as StatusSolicitacoesGestaoProduto from "src/pages/Produto/StatusSolicitacoesGestaoProduto";
+import RelatorioProdutosHomologadosPage from "src/pages/RelatorioProdutosHomologados/RelatorioProdutosHomologadosPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";

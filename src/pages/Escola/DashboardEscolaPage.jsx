@@ -1,4 +1,4 @@
-import { DashboardEscola } from "components/screens/DashboardEscola";
+import { DashboardEscola } from "src/components/screens/DashboardEscola";
 import React from "react";
 import Breadcrumb from "../../components/Shareable/Breadcrumb";
 import Page from "../../components/Shareable/Page/Page";

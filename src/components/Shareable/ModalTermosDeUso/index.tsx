@@ -1,10 +1,10 @@
 import React, { ChangeEventHandler, useState } from "react";
 import { Modal } from "react-bootstrap";
 
-import { BUTTON_STYLE } from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
+import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
 
-import { aceitarTermos } from "services/perfil.service";
+import { aceitarTermos } from "src/services/perfil.service";
 
 import "./style.scss";
 

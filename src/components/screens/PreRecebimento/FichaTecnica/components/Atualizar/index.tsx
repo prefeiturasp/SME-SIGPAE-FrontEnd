@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Field, Form } from "react-final-form";
-import Label from "components/Shareable/Label";
+import Label from "src/components/Shareable/Label";
 import { Spin } from "antd";
-import InputText from "components/Shareable/Input/InputText";
-import Collapse, { CollapseControl } from "components/Shareable/Collapse";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import InputText from "src/components/Shareable/Input/InputText";
+import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   ArquivoForm,
   FichaTecnicaDetalhadaComAnalise,
@@ -14,32 +14,32 @@ import {
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import Select from "components/Shareable/Select";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import Select from "src/components/Shareable/Select";
 import {
   required,
   composeValidators,
   inteiroOuDecimalComVirgula,
   inteiroOuDecimalPositivoOuNegativo,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 import FormPereciveisENaoPereciveis from "../Cadastrar/components/FormPereciveisENaoPereciveis";
 import { InformacaoNutricional } from "interfaces/produto.interface";
 import { TerceirizadaComEnderecoInterface } from "interfaces/terceirizada.interface";
 import FormProponente from "../Cadastrar/components/FormProponente";
-import TabelaNutricional from "components/Shareable/TabelaNutricional";
-import CheckboxComBorda from "components/Shareable/CheckboxComBorda";
-import InputFile from "components/Shareable/Input/InputFile";
-import { ModalAssinaturaUsuario } from "components/Shareable/ModalAssinaturaUsuario";
-import ModalVoltar from "components/Shareable/Page/ModalVoltar";
-import { PRE_RECEBIMENTO, FICHA_TECNICA } from "configs/constants";
+import TabelaNutricional from "src/components/Shareable/TabelaNutricional";
+import CheckboxComBorda from "src/components/Shareable/CheckboxComBorda";
+import InputFile from "src/components/Shareable/Input/InputFile";
+import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
+import ModalVoltar from "src/components/Shareable/Page/ModalVoltar";
+import { PRE_RECEBIMENTO, FICHA_TECNICA } from "src/configs/constants";
 import {
   carregarDadosAtualizar,
   formataPayloadAtualizacaoFichaTecnica,
   inserirArquivoFichaAssinadaRT,
   removerArquivoFichaAssinadaRT,
   atualizarAssinarFichaTecnica,
-} from "components/screens/PreRecebimento/FichaTecnica/helpers";
+} from "src/components/screens/PreRecebimento/FichaTecnica/helpers";
 import {
   carregaListaCompletaInformacoesNutricionais,
   carregarUnidadesMedida,

@@ -2,8 +2,8 @@ import { Tooltip } from "antd";
 import {
   RECLAMACAO_PRODUTO_STATUS_EXPLICACAO,
   TIPO_PERFIL,
-} from "constants/shared";
-import { truncarString } from "helpers/utilities";
+} from "src/constants/shared";
+import { truncarString } from "src/helpers/utilities";
 import React, { Fragment } from "react";
 import "./style.scss";
 

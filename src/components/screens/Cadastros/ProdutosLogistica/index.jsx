@@ -3,12 +3,12 @@ import { Spin } from "antd";
 import {
   getListaProdutosLogistica,
   getNomesProdutosLogistica,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import Filtros from "./componentes/Filtros";
 import Tabela from "./componentes/Tabela";
 import "./style.scss";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);

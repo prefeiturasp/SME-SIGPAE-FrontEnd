@@ -3,9 +3,9 @@ import { Spin } from "antd";
 import "./styles.scss";
 import Filtros from "./components/Filtros";
 import ListagemSolicitacoes from "./components/ListagemSolicitacoes";
-import { getListagemSolicitacaoAlteracao } from "../../../../services/logistica.service.js";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { getListagemSolicitacaoAlteracao } from "../../../../services/logistica.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);

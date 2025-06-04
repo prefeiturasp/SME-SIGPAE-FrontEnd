@@ -5,13 +5,16 @@ import {
   getDownloads,
   setDownloadMarcarDesmarcarLida,
   deletarDownload,
-} from "services/downloads.service";
-import { gerarParametrosConsulta } from "helpers/utilities";
+} from "src/services/downloads.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import ListagemDownloads from "./components/ListagemDownloads";
-import { CentralDeDownloadContext } from "context/CentralDeDownloads";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import { CentralDeDownloadContext } from "src/context/CentralDeDownloads";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import Filtros from "./components/Filtros";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const centralDownloadContext = useContext(CentralDeDownloadContext);

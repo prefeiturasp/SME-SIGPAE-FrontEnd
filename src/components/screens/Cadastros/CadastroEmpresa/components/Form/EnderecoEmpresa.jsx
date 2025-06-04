@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Field, useForm } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import { buscaCep } from "../../helper";
-import { required } from "helpers/fieldValidators";
-import MaskedInputText from "components/Shareable/Input/MaskedInputText";
-import { cepMask, telefoneMask } from "constants/shared";
-import Botao from "components/Shareable/Botao";
+import { required } from "src/helpers/fieldValidators";
+import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
+import { cepMask, telefoneMask } from "src/constants/shared";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 export const EnderecoEmpresa = ({
   ehDistribuidor,

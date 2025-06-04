@@ -1,18 +1,18 @@
 import React, { useEffect } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
-import Select from "components/Shareable/Select";
+import Select from "src/components/Shareable/Select";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import Botao from "components/Shareable/Botao";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { InputComData } from "components/Shareable/DatePicker";
-import InputText from "components/Shareable/Input/InputText";
-import CKEditorField from "components/Shareable/CKEditorField";
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import InputText from "src/components/Shareable/Input/InputText";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import {
   dataDuplicada,
   maxLength,
@@ -20,7 +20,7 @@ import {
   naoPodeSerZero,
   numericInteger,
   required,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 import {
   agregarDefault,
   composeValidators,
@@ -28,7 +28,7 @@ import {
   formatarParaMultiselect,
   usuarioEhEscolaCeuGestao,
   usuarioEhEscolaCMCT,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { renderizaSelectSimples } from "../../../../helper";
 import "../../style.scss";
 

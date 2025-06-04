@@ -1,16 +1,16 @@
 import React, { useContext, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { agregarDefault, dataParaUTC } from "helpers/utilities";
+import { agregarDefault, dataParaUTC } from "src/helpers/utilities";
 import {
   getMotivosAlteracaoCardapio,
   getPeriodosComMatriculadosPorUE,
-} from "services/alteracaoDeCardapio";
-import { getDiasUteis, getFeriadosAno } from "services/diasUteis.service";
-import { MeusDadosContext } from "context/MeusDadosContext";
+} from "src/services/alteracaoDeCardapio";
+import { getDiasUteis, getFeriadosAno } from "src/services/diasUteis.service";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { useEffect } from "react";
 import { AlteracaoDoTipoDeAlimentacaoCEI } from ".";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);

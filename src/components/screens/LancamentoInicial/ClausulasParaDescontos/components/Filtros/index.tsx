@@ -1,9 +1,16 @@
 import React from "react";
 import { Select as SelectAntd } from "antd";
 import { Field } from "react-final-form";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { ASelect, AInput, AInputNumber } from "components/Shareable/MakeField";
-import { formataValorDecimal, parserValorDecimal } from "../../../../helper.js";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import {
+  ASelect,
+  AInput,
+  AInputNumber,
+} from "src/components/Shareable/MakeField";
+import {
+  formataValorDecimal,
+  parserValorDecimal,
+} from "../../../../helper.jsx";
 
 type FiltrosProps = {
   onSubmit: (_values: any) => void;

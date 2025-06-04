@@ -19,30 +19,30 @@ import {
   usuarioEscolaEhGestaoParceira,
   usuarioEhCoordenadorCODAE,
   usuarioEhEscola,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import {
   StatusSolicitacoesDietaEspecial,
   dashBoardDietaEspecial,
   relatoriosDietaEspecial,
 } from "./helpers";
 
-import { CancelamentoDietaPage } from "pages/DietaEspecial/CancelamentoDietaPage";
-import ConsultaProtocoloPadraoDietaEspecial from "pages/DietaEspecial/ConsultaProtocoloPadraoDietaEspecial.jsx";
-import CriarCopiaProtocoloPadraoDieta from "pages/DietaEspecial/CriarCopiaProtocoloPadraoDieta";
-import { DietaEspecialAluno } from "pages/DietaEspecial/DashboardDietaEspecialPage";
-import EditaProtocoloPadraoDieta from "pages/DietaEspecial/EditaProtocoloPadraoDieta";
-import ProtocoloPadraoDietaEspecialPage from "pages/DietaEspecial/ProtocoloPadraoDietaEspecialPage.jsx";
-import RelatorioAlunosDietasAtivasInativasPage from "pages/DietaEspecial/RelatorioAlunosDietasAtivasInativasPage.jsx";
-import RelatorioDietasAutorizadas from "pages/DietaEspecial/RelatorioDietasAutorizadas";
-import RelatorioDietasCanceladas from "pages/DietaEspecial/RelatorioDietasCanceladas";
-import RelatorioHistoricoDietasPage from "pages/DietaEspecial/RelatorioHistoricoDietasPage";
-import RelatorioGerencialDietas from "pages/DietaEspecial/RelatorioGerencialDietas.jsx";
-import RelatorioGestaoDietaEspecial from "pages/DietaEspecial/RelatorioGestaoDietaEspecial";
-import RelatorioQuantitativoClassificacaoDietaEspPage from "pages/DietaEspecial/RelatorioQuantitativoClassificacaoDietaEspPage";
-import RelatorioQuantitativoDiagDietaEspPage from "pages/DietaEspecial/RelatorioQuantitativoDiagDietaEspPage";
-import RelatorioQuantitativoSolicDietaEspPage from "pages/DietaEspecial/RelatorioQuantitativoSolicDietaEspPage";
-import { AlteracaoUEPage } from "pages/Escola/DietaEspecial/AlteracaoUEPage";
-import { DietaEspecialEscolaPage } from "pages/Escola/DietaEspecial/DietaEspecialEscolaPage";
+import { CancelamentoDietaPage } from "src/pages/DietaEspecial/CancelamentoDietaPage";
+import ConsultaProtocoloPadraoDietaEspecial from "src/pages/DietaEspecial/ConsultaProtocoloPadraoDietaEspecial.jsx";
+import CriarCopiaProtocoloPadraoDieta from "src/pages/DietaEspecial/CriarCopiaProtocoloPadraoDieta";
+import { DietaEspecialAluno } from "src/pages/DietaEspecial/DashboardDietaEspecialPage";
+import EditaProtocoloPadraoDieta from "src/pages/DietaEspecial/EditaProtocoloPadraoDieta";
+import ProtocoloPadraoDietaEspecialPage from "src/pages/DietaEspecial/ProtocoloPadraoDietaEspecialPage.jsx";
+import RelatorioAlunosDietasAtivasInativasPage from "src/pages/DietaEspecial/RelatorioAlunosDietasAtivasInativasPage.jsx";
+import RelatorioDietasAutorizadas from "src/pages/DietaEspecial/RelatorioDietasAutorizadas";
+import RelatorioDietasCanceladas from "src/pages/DietaEspecial/RelatorioDietasCanceladas";
+import RelatorioHistoricoDietasPage from "src/pages/DietaEspecial/RelatorioHistoricoDietasPage";
+import RelatorioGerencialDietas from "src/pages/DietaEspecial/RelatorioGerencialDietas.jsx";
+import RelatorioGestaoDietaEspecial from "src/pages/DietaEspecial/RelatorioGestaoDietaEspecial";
+import RelatorioQuantitativoClassificacaoDietaEspPage from "src/pages/DietaEspecial/RelatorioQuantitativoClassificacaoDietaEspPage";
+import RelatorioQuantitativoDiagDietaEspPage from "src/pages/DietaEspecial/RelatorioQuantitativoDiagDietaEspPage";
+import RelatorioQuantitativoSolicDietaEspPage from "src/pages/DietaEspecial/RelatorioQuantitativoSolicDietaEspPage";
+import { AlteracaoUEPage } from "src/pages/Escola/DietaEspecial/AlteracaoUEPage";
+import { DietaEspecialEscolaPage } from "src/pages/Escola/DietaEspecial/DietaEspecialEscolaPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";

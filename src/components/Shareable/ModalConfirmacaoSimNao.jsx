@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { Modal } from "react-bootstrap";
-import { Botao } from "components/Shareable/Botao";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants.js";
+} from "src/components/Shareable/Botao/constants";
 
 const ModalConfirmacaoSimNao = ({
   showModal,

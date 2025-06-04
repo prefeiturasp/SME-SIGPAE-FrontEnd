@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Form } from "react-final-form";
-import { Botao } from "components/Shareable/Botao";
-import { PERIODO_STATUS_DE_PROGRESSO } from "components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
+import { Botao } from "src/components/Shareable/Botao";
+import { PERIODO_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
 import {
   desabilitarBotaoEditar,
   justificativaPeriodo,
@@ -10,12 +10,12 @@ import {
   styleBotaoCardLancamento,
   textoBotaoCardLancamento,
 } from "../../LancamentoPorPeriodo/helpers";
-import { deepCopy, ehEscolaTipoCEMEI } from "helpers/utilities";
+import { deepCopy, ehEscolaTipoCEMEI } from "src/helpers/utilities";
 import {
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
   PERIODO_LANCAMENTO_CEI,
-} from "configs/constants";
+} from "src/configs/constants";
 import "./styles.scss";
 import {
   ehEmeiDaCemei,

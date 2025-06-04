@@ -1,23 +1,23 @@
 import { Spin } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
-import { toastError } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useState } from "react";
 import {
   exportarExcelAsyncSolicitacoesRelatorioHistoricoDietas,
   exportarPDFAsyncSolicitacoesRelatorioHistoricoDietas,
-} from "services/dietaEspecial.service";
+} from "src/services/dietaEspecial.service";
 import { Filtros } from "./components/Filtros";
 import { TabelaHistorico } from "./components/TabelaHistorico";
 import { normalizarValues } from "./helper";
 import "./styles.scss";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 export const RelatorioHistoricoDietas = () => {
   const { meusDados } = useContext(MeusDadosContext);

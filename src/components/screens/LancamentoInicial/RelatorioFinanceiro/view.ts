@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { getLotesSimples } from "services/lote.service";
-import { getGrupoUnidadeEscolar } from "services/escola.service";
-import { getMesesAnosSolicitacoesMedicaoinicial } from "services/medicaoInicial/dashboard.service";
+import { getLotesSimples } from "src/services/lote.service";
+import { getGrupoUnidadeEscolar } from "src/services/escola.service";
+import { getMesesAnosSolicitacoesMedicaoinicial } from "src/services/medicaoInicial/dashboard.service";
 import {
   getRelatorioFinanceiroConsolidado,
   getRelatoriosFinanceiros,
-} from "services/medicaoInicial/relatorioFinanceiro.service";
+} from "src/services/medicaoInicial/relatorioFinanceiro.service";
 import {
   FiltrosInterface,
   RelatorioFinanceiroConsolidado,
@@ -15,11 +15,11 @@ import {
   RelatorioFinanceiroResponse,
 } from "interfaces/relatorio_financeiro.interface";
 
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 import { MultiSelectOption, SelectOption } from "./types";
-import { MESES } from "constants/shared";
-import { getError } from "helpers/utilities";
+import { MESES } from "src/constants/shared";
+import { getError } from "src/helpers/utilities";
 
 type Props = {
   filtros?: FiltrosInterface;

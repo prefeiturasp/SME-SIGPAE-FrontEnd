@@ -1,4 +1,4 @@
-import { EtapaFicha } from "components/screens/Recebimento/FichaRecebimento/interfaces";
+import { EtapaFicha } from "src/components/screens/Recebimento/FichaRecebimento/interfaces";
 
 export interface FiltrosRelatorioCronograma {
   empresa?: string[];

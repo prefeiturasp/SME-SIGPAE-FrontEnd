@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import FormFiltros from "./components/FormFiltros";
-import { getSolicitacaoDietaEspecialListagem } from "services/dietaEspecial.service";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { getSolicitacaoDietaEspecialListagem } from "src/services/dietaEspecial.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import ListagemDietas from "./components/ListagemDietas";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [carregando, setCarregando] = useState(true);

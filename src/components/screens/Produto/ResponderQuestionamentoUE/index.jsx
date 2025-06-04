@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Spin } from "antd";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 import Filtros from "./components/Filtros";
 import TabelaProdutos from "./components/TabelaProdutos";
 
-import { filtrarReclamacoesEscola } from "services/reclamacaoProduto.service";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { filtrarReclamacoesEscola } from "src/services/reclamacaoProduto.service";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 const ResponderQuestionamentoUE = () => {
   const [exibirModal, setExibirModal] = useState();

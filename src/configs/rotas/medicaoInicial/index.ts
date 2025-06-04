@@ -6,28 +6,28 @@ import {
   usuarioEhDRE,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
   usuarioEhMedicao,
-} from "helpers/utilities";
-import { ListaOcorrenciasPage } from "pages/IMR/ListaOcorrenciasPage";
-import { RegistrarNovaOcorrenciaPage } from "pages/IMR/RegistrarNovaOcorrenciaPage";
-import { AcompanhamentoDeLancamentosPage } from "pages/LancamentoMedicaoInicial/AcompanhamentoDeLancamentosPage";
-import { CadastroDeClausulasPage } from "pages/LancamentoMedicaoInicial/CadastroDeClausulasPage";
-import { CadastroDeEmpenhoPage } from "pages/LancamentoMedicaoInicial/CadastroDeEmpenhoPage";
-import { ClausulasParaDescontosPage } from "pages/LancamentoMedicaoInicial/ClausulasParaDescontosPage";
-import { ConferenciaDosLancamentosPage } from "pages/LancamentoMedicaoInicial/ConferenciaDosLancamentosPage";
-import { ControleDeFrequenciaPage } from "pages/LancamentoMedicaoInicial/ControleDeFrequenciaPage";
-import { DetalhamentoDoLancamentoPage } from "pages/LancamentoMedicaoInicial/DetalhamentoDoLancamentoPage";
-import { EditarClausulaPage } from "pages/LancamentoMedicaoInicial/EditarClausulaPage";
-import { EditarEmpenhoPage } from "pages/LancamentoMedicaoInicial/EditarEmpenhoPage";
-import { EmpenhosPage } from "pages/LancamentoMedicaoInicial/EmpenhosPage";
-import { LancamentoMedicaoInicialPage } from "pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
-import { AdicionarParametrizacaoFinanceiraPage } from "pages/LancamentoMedicaoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceiraPage";
-import { EditarParametrizacaoFinanceiraPage } from "pages/LancamentoMedicaoInicial/ParametrizacaoFinanceira/EditarParametrizacaoFinanceiraPage";
-import { ParametrizacaoFinanceiraPage } from "pages/LancamentoMedicaoInicial/ParametrizacaoFinanceira/ParametrizacaoFinanceiraPage";
-import { PeriodoLancamentoMedicaoInicialCEIPage } from "pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialCEIPage";
-import { PeriodoLancamentoMedicaoInicialPage } from "pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
-import { RelatorioConsolidadoPage } from "pages/LancamentoMedicaoInicial/RelatorioConsolidado/RelatorioConsolidadoPage";
-import { RelatorioFinanceiroPage } from "pages/LancamentoMedicaoInicial/RelatorioFinanceiro/RelatorioFinanceiroPage";
-import { RelatorioAdesaoPage } from "pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
+} from "src/helpers/utilities";
+import { ListaOcorrenciasPage } from "src/pages/IMR/ListaOcorrenciasPage";
+import { RegistrarNovaOcorrenciaPage } from "src/pages/IMR/RegistrarNovaOcorrenciaPage";
+import { AcompanhamentoDeLancamentosPage } from "src/pages/LancamentoMedicaoInicial/AcompanhamentoDeLancamentosPage";
+import { CadastroDeClausulasPage } from "src/pages/LancamentoMedicaoInicial/CadastroDeClausulasPage";
+import { CadastroDeEmpenhoPage } from "src/pages/LancamentoMedicaoInicial/CadastroDeEmpenhoPage";
+import { ClausulasParaDescontosPage } from "src/pages/LancamentoMedicaoInicial/ClausulasParaDescontosPage";
+import { ConferenciaDosLancamentosPage } from "src/pages/LancamentoMedicaoInicial/ConferenciaDosLancamentosPage";
+import { ControleDeFrequenciaPage } from "src/pages/LancamentoMedicaoInicial/ControleDeFrequenciaPage";
+import { DetalhamentoDoLancamentoPage } from "src/pages/LancamentoMedicaoInicial/DetalhamentoDoLancamentoPage";
+import { EditarClausulaPage } from "src/pages/LancamentoMedicaoInicial/EditarClausulaPage";
+import { EditarEmpenhoPage } from "src/pages/LancamentoMedicaoInicial/EditarEmpenhoPage";
+import { EmpenhosPage } from "src/pages/LancamentoMedicaoInicial/EmpenhosPage";
+import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
+import { AdicionarParametrizacaoFinanceiraPage } from "src/pages/LancamentoMedicaoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceiraPage";
+import { EditarParametrizacaoFinanceiraPage } from "src/pages/LancamentoMedicaoInicial/ParametrizacaoFinanceira/EditarParametrizacaoFinanceiraPage";
+import { ParametrizacaoFinanceiraPage } from "src/pages/LancamentoMedicaoInicial/ParametrizacaoFinanceira/ParametrizacaoFinanceiraPage";
+import { PeriodoLancamentoMedicaoInicialCEIPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialCEIPage";
+import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
+import { RelatorioConsolidadoPage } from "src/pages/LancamentoMedicaoInicial/RelatorioConsolidado/RelatorioConsolidadoPage";
+import { RelatorioFinanceiroPage } from "src/pages/LancamentoMedicaoInicial/RelatorioFinanceiro/RelatorioFinanceiroPage";
+import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
 

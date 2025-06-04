@@ -13,12 +13,12 @@ import {
   subDays,
 } from "date-fns";
 import HTTP_STATUS from "http-status-codes";
-import Botao from "components/Shareable/Botao";
-import InputValueMedicao from "components/Shareable/Input/InputValueMedicao";
+import Botao from "src/components/Shareable/Botao";
+import InputValueMedicao from "src/components/Shareable/Input/InputValueMedicao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import {
   defaultValue,
   desabilitarBotaoObservacoesConferenciaLancamentos,
@@ -33,19 +33,19 @@ import {
   getSolicitacoesSuspensoesAutorizadasAsync,
   validacaoSemana,
   tabAlunosEmebs,
-} from "components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
+} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import {
   formatarLinhasTabelaAlimentacaoCEI,
   formatarLinhasTabelasDietasCEI,
-} from "components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/helper";
-import { removeObjetosDuplicados } from "components/screens/LancamentoInicial/LancamentoMedicaoInicial/components/LancamentoPorPeriodo/helpers";
-import InputText from "components/Shareable/Input/InputText";
-import CKEditorField from "components/Shareable/CKEditorField";
+} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/helper";
+import { removeObjetosDuplicados } from "src/components/screens/LancamentoInicial/LancamentoMedicaoInicial/components/LancamentoPorPeriodo/helpers";
+import InputText from "src/components/Shareable/Input/InputText";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import {
   toastError,
   toastSuccess,
   toastWarn,
-} from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Toast/dialogs";
 import {
   diasSemana,
   initialStateWeekColumns,
@@ -58,7 +58,7 @@ import {
   usuarioEhDRE,
   usuarioEhMedicao,
   ehFimDeSemana,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { ModalAprovarPeriodo } from "../ModalAprovarPeriodo";
 import { ModalCancelarCorrecao } from "../ModalCancelarCorrecao";
 import { ModalSalvarCorrecao } from "../ModalSalvarCorrecao";
@@ -67,11 +67,11 @@ import {
   getCategoriasDeMedicao,
   getPeriodosInclusaoContinua,
   getValoresPeriodosLancamentos,
-} from "services/medicaoInicial/periodoLancamentoMedicao.service";
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
   drePedeCorrecaMedicao,
   codaePedeCorrecaPeriodo,
-} from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { LegendaDiasNaoLetivos } from "../LegendaDiasNaoLetivos";
 import {
   exibirTooltipAlteracaoAlimentacaoAutorizadaDreCodae,

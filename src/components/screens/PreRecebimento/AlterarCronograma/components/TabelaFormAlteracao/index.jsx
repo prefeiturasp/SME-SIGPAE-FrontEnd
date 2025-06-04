@@ -1,9 +1,9 @@
-import InputText from "components/Shareable/Input/InputText";
-import { required } from "helpers/fieldValidators";
+import InputText from "src/components/Shareable/Input/InputText";
+import { required } from "src/helpers/fieldValidators";
 import React from "react";
 import { Field } from "react-final-form";
 import "./styles.scss";
-import { numberToStringDecimal } from "helpers/parsers";
+import { numberToStringDecimal } from "src/helpers/parsers";
 import { formataMilharDecimal } from "../../../../../../helpers/utilities";
 
 const pintaTabela = (campo, etapaAtual, etapasAntigas) => {

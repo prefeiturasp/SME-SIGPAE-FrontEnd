@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
-import Botao from "components/Shareable/Botao";
-import { BUTTON_STYLE } from "components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
 
 import Substituicao from "./SubstituicaoFinalForm";
 
 import "./style.scss";
-import { required } from "helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 
 export default class SubstituicoesField extends Component {
   render() {

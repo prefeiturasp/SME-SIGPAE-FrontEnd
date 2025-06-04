@@ -1,7 +1,7 @@
 import {
   AnaliseFichaTecnicaPayload,
   FichaTecnicaPayload,
-} from "components/screens/PreRecebimento/FichaTecnica/interfaces";
+} from "src/components/screens/PreRecebimento/FichaTecnica/interfaces";
 import { ErrorHandlerFunction } from "./service-helpers";
 import axios from "./_base";
 import {
@@ -16,7 +16,7 @@ import {
 } from "interfaces/responses.interface";
 import { FiltrosDashboardFichasTecnicas } from "interfaces/pre_recebimento.interface";
 import { getMensagemDeErro } from "../helpers/statusErrors";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { saveAs } from "file-saver";
 import { AxiosRequestConfig } from "axios";
 

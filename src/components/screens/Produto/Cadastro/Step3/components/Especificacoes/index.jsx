@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Field } from "redux-form";
-import InputText from "components/Shareable/Input/InputText";
-import Botao from "components/Shareable/Botao";
+import InputText from "src/components/Shareable/Input/InputText";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import Select from "components/Shareable/Select";
+} from "src/components/Shareable/Botao/constants";
+import Select from "src/components/Shareable/Select";
 import "./style.scss";
 
 const Especificaoes = ({

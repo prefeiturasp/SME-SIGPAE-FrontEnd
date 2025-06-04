@@ -8,13 +8,13 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { MeusDadosContext } from "context/MeusDadosContext";
-import { mockListaUnidadesMedidaLogistica } from "mocks/cronograma.service/mockGetUnidadesDeMedidaLogistica";
-import { mockListaProdutosLogistica } from "mocks/produto.service/mockGetListaCompletaProdutosLogistica";
-import { mockListaMarcas } from "mocks/produto.service/mockGetNomesMarcas";
-import { mockListaFabricantes } from "mocks/produto.service/mockGetNomesFabricantes";
-import { mockListaInformacoesNutricionais } from "mocks/produto.service/mockGetInformacoesNutricionaisOrdenadas";
-import { mockEmpresa } from "mocks/terceirizada.service/mockGetTerceirizadaUUID";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { mockListaUnidadesMedidaLogistica } from "src/mocks/cronograma.service/mockGetUnidadesDeMedidaLogistica";
+import { mockListaProdutosLogistica } from "src/mocks/produto.service/mockGetListaCompletaProdutosLogistica";
+import { mockListaMarcas } from "src/mocks/produto.service/mockGetNomesMarcas";
+import { mockListaFabricantes } from "src/mocks/produto.service/mockGetNomesFabricantes";
+import { mockListaInformacoesNutricionais } from "src/mocks/produto.service/mockGetInformacoesNutricionaisOrdenadas";
+import { mockEmpresa } from "src/mocks/terceirizada.service/mockGetTerceirizadaUUID";
 import {
   getListaCompletaProdutosLogistica,
   getNomesMarcas,
@@ -22,26 +22,26 @@ import {
   getInformacoesNutricionaisOrdenadas,
   cadastrarProdutoEdital,
   cadastrarItem,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import {
   cadastrarFichaTecnica,
   cadastraRascunhoFichaTecnica,
   getFichaTecnica,
-} from "services/fichaTecnica.service";
-import { getUnidadesDeMedidaLogistica } from "services/cronograma.service";
-import { getTerceirizadaUUID } from "services/terceirizada.service";
+} from "src/services/fichaTecnica.service";
+import { getUnidadesDeMedidaLogistica } from "src/services/cronograma.service";
+import { getTerceirizadaUUID } from "src/services/terceirizada.service";
 import { CATEGORIA_OPTIONS } from "../constants";
 import { debug } from "jest-preview";
 import { FichaTecnicaDetalhada } from "interfaces/pre_recebimento.interface";
-import { mockFichaTecnica } from "mocks/services/fichaTecnica.service/mockGetFichaTecnica";
-import { mockMeusDadosFornecedor } from "mocks/services/perfil.service/mockMeusDados";
-import CadastroFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
-import mock from "services/_mock";
+import { mockFichaTecnica } from "src/mocks/services/fichaTecnica.service/mockGetFichaTecnica";
+import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
+import CadastroFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
+import mock from "src/services/_mock";
 
-jest.mock("services/terceirizada.service.js");
-jest.mock("services/cronograma.service.js");
-jest.mock("services/produto.service.js");
-jest.mock("services/fichaTecnica.service.ts");
+jest.mock("src/services/terceirizada.service.jsx");
+jest.mock("src/services/cronograma.service.jsx");
+jest.mock("src/services/produto.service.jsx");
+jest.mock("src/services/fichaTecnica.service.ts");
 jest.setTimeout(60000);
 
 beforeEach(() => {

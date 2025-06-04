@@ -1,6 +1,6 @@
 import React from "react";
 import Breadcrumb from "../../components/Shareable/Breadcrumb";
-import UnidadesMedida from "components/screens/Cadastros/UnidadesMedida";
+import UnidadesMedida from "src/components/screens/Cadastros/UnidadesMedida";
 import Page from "../../components/Shareable/Page/Page";
 import {
   CADASTROS,

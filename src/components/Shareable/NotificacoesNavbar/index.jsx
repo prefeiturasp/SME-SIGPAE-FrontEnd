@@ -3,10 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Dropdown } from "antd";
 import Botao from "../Botao";
 import { BUTTON_STYLE } from "../Botao/constants";
-import { getNotificacoes, getQtdNaoLidas } from "services/notificacoes.service";
-import { NOTIFICACOES } from "configs/constants";
+import {
+  getNotificacoes,
+  getQtdNaoLidas,
+} from "src/services/notificacoes.service";
+import { NOTIFICACOES } from "src/configs/constants";
 import "./style.scss";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 
 export default () => {
   const [notificacoes, setNotificacoes] = useState([]);

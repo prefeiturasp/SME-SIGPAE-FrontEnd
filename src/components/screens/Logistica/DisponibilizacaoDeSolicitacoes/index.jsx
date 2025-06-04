@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getSolicitacoesDisponibilizadas } from "services/disponibilizacaoDeSolicitacoes.service";
+import { getSolicitacoesDisponibilizadas } from "src/services/disponibilizacaoDeSolicitacoes.service";
 import "./style.scss";
 import { Button } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import { Spin } from "antd";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Modal } from "react-bootstrap";
 import {
   enviaSolicitacaoRemessa,
@@ -18,7 +18,7 @@ import {
   toastError,
   toastInfo,
   toastSuccess,
-} from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Toast/dialogs";
 
 export const DisponibilizacaoDeSolicitacoes = (props) => {
   const [solicitacoes, setSolicitacoes] = useState(null);

@@ -2,22 +2,22 @@ import React, { useState, useEffect } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
-import CKEditorField from "components/Shareable/CKEditorField";
-import InputText from "components/Shareable/Input/InputText";
-import ManagedInputFileField from "components/Shareable/Input/InputFile/ManagedField";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import Botao from "components/Shareable/Botao";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import InputText from "src/components/Shareable/Input/InputText";
+import ManagedInputFileField from "src/components/Shareable/Input/InputFile/ManagedField";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import { peloMenosUmCaractere, required } from "helpers/fieldValidators";
-import { EDITAIS_INVALIDOS } from "helpers/gestaoDeProdutos";
-import { vinculosAtivosProdutoEditais } from "services/produto.service";
-import { meusDados } from "services/perfil.service";
-import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "helpers/utilities";
+} from "src/components/Shareable/Botao/constants";
+import { peloMenosUmCaractere, required } from "src/helpers/fieldValidators";
+import { EDITAIS_INVALIDOS } from "src/helpers/gestaoDeProdutos";
+import { vinculosAtivosProdutoEditais } from "src/services/produto.service";
+import { meusDados } from "src/services/perfil.service";
+import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities";
 import "./style.scss";
 
 const ModalSuspensaoProdutoEdital = ({

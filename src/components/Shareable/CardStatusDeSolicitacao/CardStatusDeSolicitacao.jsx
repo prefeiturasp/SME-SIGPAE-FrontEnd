@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import "./style.scss";
-import { conferidaClass } from "helpers/terceirizadas";
-import { GESTAO_PRODUTO_CARDS, TERCEIRIZADA } from "configs/constants";
+import { conferidaClass } from "src/helpers/terceirizadas";
+import { GESTAO_PRODUTO_CARDS, TERCEIRIZADA } from "src/configs/constants";
 import {
   ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS,
   TIPO_PERFIL,
-} from "constants/shared";
-import { Websocket } from "services/websocket";
+} from "src/constants/shared";
+import { Websocket } from "src/services/websocket";
 import { Tooltip } from "antd";
 
 export const CARD_TYPE_ENUM = {

@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { toastError } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
   usuarioEhCronograma,
   usuarioEhDilogDiretoria,
   usuarioEhEmpresaFornecedor,
   usuarioEhCodaeDilog,
   usuarioEhDilogAbastecimento,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import ModalEnviarSolicitacao from "../Modals/ModalEnviarSolicitacao";
 import ModalAnalise from "../Modals/ModalAnalise";
 import ModalAnaliseAbastecimento from "../Modals/ModalAnaliseAbastecimento";

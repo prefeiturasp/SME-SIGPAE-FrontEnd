@@ -1,6 +1,6 @@
 import React from "react";
 import JustificativaAnalise from "./JustificativaAnalise";
-import InformativoReclamacao from "components/Shareable/InformativoReclamacao";
+import InformativoReclamacao from "src/components/Shareable/InformativoReclamacao";
 import { MotivoCorrecaoHomologacao } from "./MotivoCorrecaoHomologacao";
 import { MotivoHomologacaoRecusada } from "./MotivoHomologacaoRecusada";
 import { MotivoCancelamento } from "./MotivoCancelamento";

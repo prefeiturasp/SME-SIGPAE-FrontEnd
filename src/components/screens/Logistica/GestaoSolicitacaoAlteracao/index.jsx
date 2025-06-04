@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Spin } from "antd";
-import { getListagemSolicitacaoAlteracao } from "../../../../services/logistica.service.js";
+import { getListagemSolicitacaoAlteracao } from "../../../../services/logistica.service";
 import "./styles.scss";
 import Filtros from "./components/Filtros";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import ListagemSolicitacoes from "./components/ListagemSolicitacoes";
-import { Paginacao } from "components/Shareable/Paginacao/index.jsx";
+import { Paginacao } from "src/components/Shareable/Paginacao/index.jsx";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);

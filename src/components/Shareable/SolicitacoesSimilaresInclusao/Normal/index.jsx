@@ -3,7 +3,7 @@ import { Collapse } from "react-collapse";
 
 import "./style.scss";
 
-import { WEEK } from "configs/constants";
+import { WEEK } from "src/configs/constants";
 
 export const SolicitacoesSimilaresInclusaoNormal = ({ ...props }) => {
   const { solicitacao, index } = props;

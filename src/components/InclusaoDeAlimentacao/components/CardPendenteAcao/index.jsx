@@ -1,11 +1,11 @@
-import { SolicitacoesSimilaresInclusao } from "components/Shareable/SolicitacoesSimilaresInclusao";
-import { ToggleExpandir } from "components/Shareable/ToggleExpandir";
+import { SolicitacoesSimilaresInclusao } from "src/components/Shareable/SolicitacoesSimilaresInclusao";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import {
   gerarLinkRelatorio,
   talvezPluralizar,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhDRE,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { Fragment, useState } from "react";
 import { Collapse } from "react-collapse";
 import { Link } from "react-router-dom";

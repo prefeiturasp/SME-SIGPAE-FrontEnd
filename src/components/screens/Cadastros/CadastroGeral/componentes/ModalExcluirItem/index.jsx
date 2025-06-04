@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
-import { deletarItem } from "services/produto.service";
+import { deletarItem } from "src/services/produto.service";
 import { Form } from "react-final-form";
 import { Spin } from "antd";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import Botao from "components/Shareable/Botao";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 export default ({ closeModal, showModal, item, changePage }) => {
   const [carregando, setCarregando] = useState(false);

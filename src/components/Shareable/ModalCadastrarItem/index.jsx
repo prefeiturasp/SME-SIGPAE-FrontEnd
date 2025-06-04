@@ -4,27 +4,30 @@ import {
   getTiposItems,
   cadastrarItem,
   atualizarItem,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import { Field, Form } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
-import { Select } from "components/Shareable/Select";
+import InputText from "src/components/Shareable/Input/InputText";
+import { Select } from "src/components/Shareable/Select";
 import { Spin } from "antd";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   required,
   selectValidate,
   alphaNumericAndSingleSpaceBetweenCharacters,
   noSpaceStartOrEnd,
-} from "helpers/fieldValidators";
-import Botao from "components/Shareable/Botao";
+} from "src/helpers/fieldValidators";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import {
   composeValidators,
   usuarioEhEmpresaTerceirizada,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import "./style.scss";
 
 export default ({

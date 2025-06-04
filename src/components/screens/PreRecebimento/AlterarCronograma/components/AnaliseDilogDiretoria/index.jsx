@@ -1,6 +1,6 @@
 import React from "react";
 import { Radio } from "antd";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { Field } from "react-final-form";
 
 export default ({ solicitacao, aprovacaoDilog, setAprovacaoDilog }) => {

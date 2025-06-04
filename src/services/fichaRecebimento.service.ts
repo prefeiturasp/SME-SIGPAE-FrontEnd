@@ -1,11 +1,11 @@
 import {
   FichaRecebimentoPayload,
   ResponseFichasDeRecebimento,
-} from "components/screens/Recebimento/FichaRecebimento/interfaces";
+} from "src/components/screens/Recebimento/FichaRecebimento/interfaces";
 import axios from "./_base";
 import { ResponseFichaRecebimento } from "interfaces/responses.interface";
-import { getMensagemDeErro } from "helpers/statusErrors";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { getMensagemDeErro } from "src/helpers/statusErrors";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 export const cadastraRascunhoFichaRecebimento = async (
   payload: FichaRecebimentoPayload

@@ -3,7 +3,7 @@ import {
   RelatorioControleFrequenciaResponse,
   ResponseTotalAlunosMatriculados,
 } from "interfaces/controle_de_frequencia";
-import axios from "services/_base";
+import axios from "src/services/_base";
 
 export const getMesesAnos = async () => {
   return await axios.get("/relatorio-controle-frequencia/meses-anos/");

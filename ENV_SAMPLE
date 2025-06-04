@@ -1,20 +1,8 @@
-# Note: You must create custom environment variables beginning with REACT_APP_.
+# Note: You must create custom environment variables beginning with VITE_.
 # Any other variables except NODE_ENV will be ignored to avoid accidentally
 # exposing a private key on the machine that could have the same name.
 # Changing any environment variables will require you to restart the development server
 # if it is running.
-# MORE INFO: https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables
-# npm start: .env.development.local, .env.development, .env.local, .env
-# npm run build: .env.production.local, .env.production, .env.local, .env
-# npm test: .env.test.local, .env.test, .env (note .env.local is missing)
-REACT_APP_API_URL=http://localhost:777
-REACT_APP_MY_COOL_ENV=FLAT_EARTH
-DOMAIN=www.example.com
-REACT_APP_FOO=$DOMAIN/foo
-REACT_APP_BAR=$DOMAIN/bar
-
 
 current environment keys:
->>REACT_APP_API_URL=http://localhost:7777
->>REACT_APP_API_MOCK=http://localhost:3004
->>REACT_APP_REFRESH_TOKEN_TIMEOUT=3000
+>>VITE_API_URL=http://localhost:7777

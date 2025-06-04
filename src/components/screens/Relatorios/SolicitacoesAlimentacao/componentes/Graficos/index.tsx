@@ -1,8 +1,8 @@
 import { Spin } from "antd";
-import { ChartData } from "components/Shareable/Graficos/interfaces";
+import { ChartData } from "src/components/Shareable/Graficos/interfaces";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
-import { getDatasetsGraficos } from "services/relatorios.service";
+import { getDatasetsGraficos } from "src/services/relatorios.service";
 import { GraficoSolicitacoesAutorizadasDRELote } from "./components/GraficoSolicitacoesAutorizadasDRELote";
 import { ResponseDatasetsGraficos } from "./interfaces";
 import "./style.scss";

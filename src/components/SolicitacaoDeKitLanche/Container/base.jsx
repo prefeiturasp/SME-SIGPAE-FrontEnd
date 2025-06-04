@@ -1,19 +1,19 @@
 import { Spin, Tooltip } from "antd";
-import CKEditorField from "components/Shareable/CKEditorField";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import HTTP_STATUS from "http-status-codes";
 import { isEqual } from "lodash";
 import React, { Component, Fragment } from "react";
 import { Modal } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import { getSomatorioFaixas } from "services/alteracaoDeCardapio";
+import { getSomatorioFaixas } from "src/services/alteracaoDeCardapio";
 import {
   getSolicitacoesKitLanche,
   inicioPedido,
   registroAtualizaKitLanche,
   removeKitLanche,
   solicitarKitLanche,
-} from "services/kitLanche";
+} from "src/services/kitLanche";
 import { STATUS_DRE_A_VALIDAR } from "../../../configs/constants";
 import { TIPO_SOLICITACAO } from "../../../constants/shared";
 import {

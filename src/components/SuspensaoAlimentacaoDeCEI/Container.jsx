@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getMotivosSuspensaoCardapio } from "services/suspensaoDeAlimentacao.service";
-import { getDiasUteis } from "services/diasUteis.service";
-import { agregarDefault, dataParaUTC } from "helpers/utilities";
+import { getMotivosSuspensaoCardapio } from "src/services/suspensaoDeAlimentacao.service";
+import { getDiasUteis } from "src/services/diasUteis.service";
+import { agregarDefault, dataParaUTC } from "src/helpers/utilities";
 import SuspensaoAlimentacaoDeCEI from "./Index";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);

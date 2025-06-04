@@ -7,23 +7,23 @@ import { bindActionCreators } from "redux";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import { Paginacao } from "components/Shareable/Paginacao";
-import withNavigationType from "components/Shareable/withNavigationType";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
+import withNavigationType from "src/components/Shareable/withNavigationType";
 
 import {
   reset,
   setHomologacoes,
   setPage,
   setUuidHomologacaoAtiva,
-} from "reducers/responderAnaliseSensorial";
+} from "src/reducers/responderAnaliseSensorial";
 
 import {
   getHomologacoesDeProdutoAnaliseSensorial,
   flegarHomologacaoPDF,
-} from "services/produto.service";
-import { getRelatorioProdutoAnaliseSensorialRecebimento } from "services/relatorios";
+} from "src/services/produto.service";
+import { getRelatorioProdutoAnaliseSensorialRecebimento } from "src/services/relatorios";
 
 import DetalheProduto from "./components/DetalheProduto";
 import { ModalResponderAnaliseSensorial } from "./components/ModalResponderAnaliseSensorial";

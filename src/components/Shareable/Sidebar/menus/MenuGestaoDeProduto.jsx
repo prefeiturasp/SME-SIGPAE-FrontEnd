@@ -7,15 +7,15 @@ import {
   RECLAMACAO_DE_PRODUTO,
   AVALIAR_RECLAMACAO_PRODUTO,
   ATIVACAO_DE_PRODUTO,
-} from "configs/constants";
-import { listarCardsPermitidos, CADASTROS } from "helpers/gestaoDeProdutos";
+} from "src/configs/constants";
+import { listarCardsPermitidos, CADASTROS } from "src/helpers/gestaoDeProdutos";
 import {
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
   usuarioEhCODAEGestaoProduto,
   usuarioEhNutricionistaSupervisao,
   usuarioEhAdministradorEmpresaTerceirizada,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 const MenuGestaoDeProduto = ({ activeMenu, onSubmenuClick }) => {
   const menuItems = listarCardsPermitidos();

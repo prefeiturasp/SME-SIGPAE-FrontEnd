@@ -4,7 +4,7 @@ import {
   peloMenosUmCaractere,
   required,
 } from "../../../../helpers/fieldValidators";
-import CKEditorField from "components/Shareable/CKEditorField";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import { toastWarn } from "../../../Shareable/Toast/dialogs";
 import Botao from "../../../Shareable/Botao";
 import { BUTTON_TYPE, BUTTON_STYLE } from "../../../Shareable/Botao/constants";

@@ -1,16 +1,16 @@
 import React from "react";
 
-import { HOME } from "constants/config";
+import { HOME } from "src/constants/config";
 
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 
-import { ConferenciaDosLancamentos } from "components/screens/LancamentoInicial/ConferenciaDosLancamentos";
+import { ConferenciaDosLancamentos } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos";
 import {
   ACOMPANHAMENTO_DE_LANCAMENTOS,
   CONFERENCIA_DOS_LANCAMENTOS,
   MEDICAO_INICIAL,
-} from "configs/constants";
+} from "src/configs/constants";
 
 const atual = {
   href: `/${MEDICAO_INICIAL}/${CONFERENCIA_DOS_LANCAMENTOS}`,

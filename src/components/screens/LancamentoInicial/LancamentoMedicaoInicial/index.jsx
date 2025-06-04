@@ -6,7 +6,10 @@ import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { FluxoDeStatusMedicaoInicial } from "./components/FluxoDeStatusMedicaoInicial";
 import InformacoesEscola from "./components/InformacoesEscola";
 import InformacoesMedicaoInicial from "./components/InformacoesMedicaoInicial";
@@ -18,21 +21,21 @@ import Ocorrencias from "./components/Ocorrencias";
 import {
   DETALHAMENTO_DO_LANCAMENTO,
   LANCAMENTO_MEDICAO_INICIAL,
-} from "configs/constants";
-import { EscolaSimplesContext } from "context/EscolaSimplesContext";
-import { MeusDadosContext } from "context/MeusDadosContext";
-import { ehEscolaTipoCEI, ehEscolaTipoCEMEI } from "helpers/utilities";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
-import { getPanoramaEscola } from "services/dietaEspecial.service";
-import { getEscolaSimples } from "services/escola.service";
-import { getDiasCalendario } from "services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getPeriodosPermissoesLancamentosEspeciaisMesAno } from "services/medicaoInicial/permissaoLancamentosEspeciais.service";
+} from "src/configs/constants";
+import { EscolaSimplesContext } from "src/context/EscolaSimplesContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { ehEscolaTipoCEI, ehEscolaTipoCEMEI } from "src/helpers/utilities";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
+import { getPanoramaEscola } from "src/services/dietaEspecial.service";
+import { getEscolaSimples } from "src/services/escola.service";
+import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import { getPeriodosPermissoesLancamentosEspeciaisMesAno } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
 import {
   getPeriodosEscolaCemeiComAlunosEmei,
   getSolicitacaoMedicaoInicial,
   getSolicitacoesLancadas,
   updateSolicitacaoMedicaoInicial,
-} from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import "./styles.scss";
 
 export default () => {

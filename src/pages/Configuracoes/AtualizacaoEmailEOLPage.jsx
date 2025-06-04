@@ -1,9 +1,9 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { ATUALIZACAO_EMAIL_EOL, CONFIGURACOES } from "configs/constants";
-import AtualizacaoEmailEOL from "components/screens/Configuracoes/AtualizacaoEmailEOL";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { ATUALIZACAO_EMAIL_EOL, CONFIGURACOES } from "src/configs/constants";
+import AtualizacaoEmailEOL from "src/components/screens/Configuracoes/AtualizacaoEmailEOL";
 
 const atual = {
   href: `/${CONFIGURACOES}/${ATUALIZACAO_EMAIL_EOL}`,

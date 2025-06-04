@@ -1,10 +1,10 @@
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
-import { fluxoPartindoTerceirizada } from "components/Shareable/FluxoDeStatus/helper";
-import { EDITAIS_INVALIDOS } from "helpers/gestaoDeProdutos";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
+import { fluxoPartindoTerceirizada } from "src/components/Shareable/FluxoDeStatus/helper";
+import { EDITAIS_INVALIDOS } from "src/helpers/gestaoDeProdutos";
 import {
   usuarioEhCODAEGestaoProduto,
   usuarioEhEmpresaTerceirizada,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React, { useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import { AnaliseSensorial } from "./components/AnaliseSensorial";

@@ -1,5 +1,5 @@
-import { TIPO_SOLICITACAO } from "constants/shared";
-import { required } from "helpers/fieldValidators";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
+import { required } from "src/helpers/fieldValidators";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import React from "react";

@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Field, Form } from "react-final-form";
-import Label from "components/Shareable/Label";
+import Label from "src/components/Shareable/Label";
 import { Spin } from "antd";
-import InputText from "components/Shareable/Input/InputText";
-import Collapse, { CollapseControl } from "components/Shareable/Collapse";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import BotaoVoltar from "components/Shareable/Page/BotaoVoltar";
+import InputText from "src/components/Shareable/Input/InputText";
+import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import BotaoVoltar from "src/components/Shareable/Page/BotaoVoltar";
 import { FichaTecnicaDetalhadaComAnalise } from "interfaces/pre_recebimento.interface";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
 import {
   carregaListaCompletaInformacoesNutricionais,
   carregarDadosAnalisarDetalhar,
@@ -21,12 +21,15 @@ import FormPereciveisENaoPereciveis from "../Cadastrar/components/FormPereciveis
 import { InformacaoNutricional } from "interfaces/produto.interface";
 import { TerceirizadaComEnderecoInterface } from "interfaces/terceirizada.interface";
 import FormProponente from "../Cadastrar/components/FormProponente";
-import TabelaNutricional from "components/Shareable/TabelaNutricional";
-import CheckboxComBorda from "components/Shareable/CheckboxComBorda";
-import BotaoAnexo from "components/PreRecebimento/BotaoAnexo";
+import TabelaNutricional from "src/components/Shareable/TabelaNutricional";
+import CheckboxComBorda from "src/components/Shareable/CheckboxComBorda";
+import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
 import FormAprovacao from "./components/FormAprovacao";
 import BotaoCiente from "./components/BotaoCiente";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   AnaliseFichaTecnicaPayload,
   StateConferidosAnalise,
@@ -35,17 +38,17 @@ import {
   cadastraAnaliseFichaTecnica,
   cadastraRascunhoAnaliseFichaTecnica,
   editaRascunhoAnaliseFichaTecnica,
-} from "services/fichaTecnica.service";
-import ModalGenerico from "components/Shareable/ModalGenerico";
+} from "src/services/fichaTecnica.service";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
 import {
   PRE_RECEBIMENTO,
   PAINEL_FICHAS_TECNICAS,
   FICHA_TECNICA,
   ATUALIZAR_FICHA_TECNICA,
-} from "configs/constants";
+} from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
-import { getMensagemDeErro } from "helpers/statusErrors";
-import { usuarioEhEmpresaFornecedor } from "helpers/utilities";
+import { getMensagemDeErro } from "src/helpers/statusErrors";
+import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
 import "./styles.scss";
 
 const idCollapse = "collapseAnalisarFichaTecnica";

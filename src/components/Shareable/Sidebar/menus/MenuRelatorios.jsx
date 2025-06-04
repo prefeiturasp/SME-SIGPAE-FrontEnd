@@ -1,4 +1,4 @@
-import * as constants from "configs/constants";
+import * as constants from "src/configs/constants";
 import {
   ehUsuarioRelatorios,
   usuarioEhCODAEDietaEspecial,
@@ -14,7 +14,7 @@ import {
   usuarioEhGticCODAE,
   usuarioEhNutricionistaSupervisao,
   usuarioEhOrgaoFiscalizador,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React from "react";
 import { LeafItem, Menu } from "./shared";
 

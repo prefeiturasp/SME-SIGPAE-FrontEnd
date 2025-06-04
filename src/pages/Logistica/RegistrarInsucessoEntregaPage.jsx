@@ -1,13 +1,13 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   INSUCESSO_ENTREGA,
   REGISTRAR_INSUCESSO,
   LOGISTICA,
-} from "configs/constants";
-import RegistrarInsucessoEntrega from "components/screens/Logistica/RegistrarInsucessoEntrega";
+} from "src/configs/constants";
+import RegistrarInsucessoEntrega from "src/components/screens/Logistica/RegistrarInsucessoEntrega";
 
 const atual = {
   href: `/${LOGISTICA}/${REGISTRAR_INSUCESSO}`,

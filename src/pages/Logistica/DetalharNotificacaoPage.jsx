@@ -1,13 +1,13 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   DETALHAR_NOTIFICACAO,
   LOGISTICA,
   GUIAS_NOTIFICACAO,
-} from "configs/constants";
-import NotificarEmpresa from "components/screens/Logistica/NotificarEmpresa";
+} from "src/configs/constants";
+import NotificarEmpresa from "src/components/screens/Logistica/NotificarEmpresa";
 
 const atual = {
   href: `/${LOGISTICA}/${DETALHAR_NOTIFICACAO}`,

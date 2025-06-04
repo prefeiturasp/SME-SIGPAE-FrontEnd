@@ -1,12 +1,12 @@
 import { Spin } from "antd";
 import React, { useState, useEffect } from "react";
-import { TIPO_PERFIL } from "constants/shared";
+import { TIPO_PERFIL } from "src/constants/shared";
 
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { getSolicitacaoDietaEspecialListagem } from "services/dietaEspecial.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { getSolicitacaoDietaEspecialListagem } from "src/services/dietaEspecial.service";
 import FormFiltros from "./components/FormFiltros";
 import ModalRelatorioDietaEspecial from "./components/ModalRelatorioDietaEspecial";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 
 const RelatorioGestaoDietaEspecial = () => {
   const [carregando, setCarregando] = useState(false);

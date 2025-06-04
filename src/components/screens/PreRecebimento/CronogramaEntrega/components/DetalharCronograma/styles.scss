@@ -1,4 +1,4 @@
-@import "styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 .card-detalhar-cronograma {
   min-height: 65vh;

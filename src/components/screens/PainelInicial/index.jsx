@@ -2,11 +2,11 @@ import { Col, Row } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { CardLogo } from "components/Shareable/CardLogo/CardLogo";
-import { IconeDietaEspecial } from "components/Shareable/Icones/IconeDietaEspecial";
-import { IconeGestaoDeAlimentacao } from "components/Shareable/Icones/IconeGestaoDeAlimentacao";
-import { IconeGestaoDeProduto } from "components/Shareable/Icones/IconeGestaoDeProduto";
-import { IconeMedicaoInicial } from "components/Shareable/Icones/IconeMedicaoInicial";
+import { CardLogo } from "src/components/Shareable/CardLogo/CardLogo";
+import { IconeDietaEspecial } from "src/components/Shareable/Icones/IconeDietaEspecial";
+import { IconeGestaoDeAlimentacao } from "src/components/Shareable/Icones/IconeGestaoDeAlimentacao";
+import { IconeGestaoDeProduto } from "src/components/Shareable/Icones/IconeGestaoDeProduto";
+import { IconeMedicaoInicial } from "src/components/Shareable/Icones/IconeMedicaoInicial";
 import { IconeAbastecimento } from "./components/IconeAbastecimento";
 import { IconeSupervisaoTerceirizadas } from "./components/IconeSupervisaoTerceirizadas";
 
@@ -15,8 +15,8 @@ import {
   PAINEL_RELATORIOS_FISCALIZACAO,
   SUPERVISAO,
   TERCEIRIZADAS,
-} from "configs/constants";
-import { ENVIRONMENT } from "constants/config";
+} from "src/configs/constants";
+import { ENVIRONMENT } from "src/constants/config";
 import {
   exibirGA,
   exibirModuloMedicaoInicial,
@@ -37,7 +37,7 @@ import {
   usuarioEhQualquerCODAE,
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 const PainelInicial = () => {
   const navigate = useNavigate();

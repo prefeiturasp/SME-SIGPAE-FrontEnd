@@ -1,14 +1,14 @@
 import { useState } from "react";
 
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 import {
   usuarioEhDRE,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
-import RelatorioService from "services/medicaoInicial/relatorio.service";
-import { RelatorioAdesaoResponse } from "services/medicaoInicial/relatorio.interface";
+import RelatorioService from "src/services/medicaoInicial/relatorio.service";
+import { RelatorioAdesaoResponse } from "src/services/medicaoInicial/relatorio.interface";
 
 import { Filtros } from "./types";
 

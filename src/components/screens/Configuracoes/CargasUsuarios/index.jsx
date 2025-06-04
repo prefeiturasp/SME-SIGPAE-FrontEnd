@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import "./styles.scss";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import ListagemPlanilhas from "./components/ListagemPlanilhas";
 import Filtros from "./components/Filtros";
 import {
@@ -17,11 +17,14 @@ import {
   removerPlanilhaExterno,
   removerPlanilhaServidor,
   removerPlanilhaUEParceira,
-} from "services/cargaUsuario.service";
+} from "src/services/cargaUsuario.service";
 import ModalCadastroPlanilha from "./components/ModalCadastroPlanilha";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import ModalRemocaoPlanilha from "./components/ModalRemocaoPlanilha";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default ({ servidores }) => {
   const [carregando, setCarregando] = useState(false);

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { listarFichasRecebimentos } from "services/fichaRecebimento.service";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { listarFichasRecebimentos } from "src/services/fichaRecebimento.service";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 import Filtros from "./components/Filtros";
 import {

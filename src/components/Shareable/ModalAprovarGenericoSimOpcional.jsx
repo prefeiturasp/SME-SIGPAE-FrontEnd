@@ -2,12 +2,15 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form, FormSpy } from "react-final-form";
 import HTTP_STATUS from "http-status-codes";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastSuccess, toastError } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastSuccess,
+  toastError,
+} from "src/components/Shareable/Toast/dialogs";
 import CKEditorField from "./CKEditorField";
 
 export const ModalAprovarGenericoSimOpcional = ({

@@ -1,25 +1,25 @@
 import React, { Fragment } from "react";
 import { Field } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
-import { required } from "helpers/fieldValidators";
-import { InputComData } from "components/Shareable/DatePicker";
+import InputText from "src/components/Shareable/Input/InputText";
+import { required } from "src/helpers/fieldValidators";
+import { InputComData } from "src/components/Shareable/DatePicker";
 import { Tooltip } from "antd";
-import Select from "components/Shareable/Select";
-import Botao from "components/Shareable/Botao";
+import Select from "src/components/Shareable/Select";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { useState } from "react";
-import { encerraContratoTerceirizada } from "services/terceirizada.service";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { encerraContratoTerceirizada } from "src/services/terceirizada.service";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { ModalRemoveContrato } from "../ModalRemoveContrato";
-import MaskedInputText from "components/Shareable/Input/MaskedInputText";
-import { numeroProcessoContratoSEIMask } from "constants/shared";
-import { dateDelta, getDataObj } from "helpers/utilities";
+import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
+import { numeroProcessoContratoSEIMask } from "src/constants/shared";
+import { dateDelta, getDataObj } from "src/helpers/utilities";
 import { composeValidators } from "../../../../../../helpers/fieldValidators";
 import { deletaValues } from "../../../../../../helpers/formHelper";
-import { numeroChamadaPublicamMask } from "constants/shared";
+import { numeroChamadaPublicamMask } from "src/constants/shared";
 
 const contratosEstadoInicial = {
   numero_processo: null,

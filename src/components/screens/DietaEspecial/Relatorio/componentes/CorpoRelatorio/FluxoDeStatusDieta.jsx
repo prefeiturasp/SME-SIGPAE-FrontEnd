@@ -1,9 +1,9 @@
 import React from "react";
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
 import {
   fluxoDietaEspecialPartindoEscola,
   formatarFluxoDietaEspecial,
-} from "components/Shareable/FluxoDeStatus/helper";
+} from "src/components/Shareable/FluxoDeStatus/helper";
 
 const FluxoDeStatusDieta = ({ logs, eh_importado = false }) => {
   return (

@@ -1,20 +1,23 @@
 import { Spin, Switch } from "antd";
-import { Botao } from "components/Shareable/Botao";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { InputText } from "components/Shareable/Input/InputText";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   CADASTROS,
   CONFIGURACOES,
   EDITAIS_CADASTRADOS,
-} from "configs/constants";
+} from "src/configs/constants";
 import { FormApi } from "final-form";
 import arrayMutators from "final-form-arrays";
-import { required } from "helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 import HTTP_STATUS from "http-status-codes";
 import { DiretoriaRegionalInterface } from "interfaces/escola.interface";
 import { LoteRascunhosInterface } from "interfaces/rascunhos.interface";
@@ -28,14 +31,14 @@ import { TerceirizadaInterface } from "interfaces/terceirizada.interface";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
 import {
   criarEditalEContrato,
   getEditalContrato,
   updateEditalContrato,
-} from "services/edital.service";
-import { getLotesSimples } from "services/lote.service";
-import { getNomesTerceirizadas } from "services/produto.service.js";
+} from "src/services/edital.service";
+import { getLotesSimples } from "src/services/lote.service";
+import { getNomesTerceirizadas } from "src/services/produto.service";
 import {
   EditalContratoListadoInterface,
   FormCadastroEditaisContratosInterface,

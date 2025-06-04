@@ -1,25 +1,25 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 import {
   formatarOpcoesLote,
   usuarioEhDRE,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
-import { getLotesSimples } from "services/lote.service";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
+import { getLotesSimples } from "src/services/lote.service";
 import {
   getEscolasParaFiltros,
   getEscolaPeriodosEscolares,
   getEscolaTiposAlimentacao,
   buscaPeriodosEscolares,
-} from "services/escola.service";
-import { getTiposDeAlimentacao } from "services/cadastroTipoAlimentacao.service";
-import { getMesesAnosSolicitacoesMedicaoinicial } from "services/medicaoInicial/dashboard.service";
+} from "src/services/escola.service";
+import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
+import { getMesesAnosSolicitacoesMedicaoinicial } from "src/services/medicaoInicial/dashboard.service";
 
-import { MESES } from "constants/shared";
+import { MESES } from "src/constants/shared";
 
 import { Args, SelectOption, MultiSelectOption, Option } from "./types";
 

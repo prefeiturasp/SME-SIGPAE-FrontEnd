@@ -1,30 +1,30 @@
 import React from "react";
 import { Field, reduxForm } from "redux-form";
 import { Select } from "antd";
-import { ASelect } from "components/Shareable/MakeField";
-import { required, maxLengthProduto } from "helpers/fieldValidators";
-import Botao from "components/Shareable/Botao";
+import { ASelect } from "src/components/Shareable/MakeField";
+import { required, maxLengthProduto } from "src/helpers/fieldValidators";
+import Botao from "src/components/Shareable/Botao";
 import {
   getNomeDeProdutosEdital,
   getMarcasProdutos,
   getFabricantesProdutos,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 import "./styles.scss";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import ModalCadastrarItem from "components/Shareable/ModalCadastrarItem";
-import { TIPO_PERFIL } from "constants/shared";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import ModalCadastrarItem from "src/components/Shareable/ModalCadastrarItem";
+import { TIPO_PERFIL } from "src/constants/shared";
 import {
   STATUS_CODAE_QUESTIONADO,
   STATUS_CODAE_HOMOLOGADO,
   STATUS_ESCOLA_OU_NUTRICIONISTA_RECLAMOU,
   STATUS_TERCEIRIZADA_RESPONDEU_RECLAMACAO,
-} from "configs/constants";
-import { ehUsuarioEmpresa } from "helpers/utilities";
+} from "src/configs/constants";
+import { ehUsuarioEmpresa } from "src/helpers/utilities";
 
 const maxLength5000 = maxLengthProduto(5000);
 const { Option } = Select;

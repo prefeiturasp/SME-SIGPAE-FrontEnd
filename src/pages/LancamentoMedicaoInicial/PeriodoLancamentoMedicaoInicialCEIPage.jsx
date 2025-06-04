@@ -1,16 +1,16 @@
 import React from "react";
 
-import { HOME } from "constants/config";
+import { HOME } from "src/constants/config";
 
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { PeriodoLancamentoMedicaoInicialCEI } from "components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { PeriodoLancamentoMedicaoInicialCEI } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI";
 
 import {
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
   PERIODO_LANCAMENTO_CEI,
-} from "configs/constants";
+} from "src/configs/constants";
 
 const anteriores = [
   {

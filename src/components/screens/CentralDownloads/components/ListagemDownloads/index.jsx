@@ -2,8 +2,8 @@ import React from "react";
 
 import "./styles.scss";
 import { Checkbox, Tooltip } from "antd";
-import { STATUS_DOWNLOAD } from "constants/shared";
-import { baixarArquivoCentral } from "services/downloads.service";
+import { STATUS_DOWNLOAD } from "src/constants/shared";
+import { baixarArquivoCentral } from "src/services/downloads.service";
 import moment from "moment";
 
 const ListagemDownloads = ({

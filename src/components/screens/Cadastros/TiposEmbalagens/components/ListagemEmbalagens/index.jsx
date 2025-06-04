@@ -3,7 +3,7 @@ import {
   CONFIGURACOES,
   EDITAR,
   CADASTRO_TIPO_EMBALAGEM,
-} from "configs/constants";
+} from "src/configs/constants";
 import React from "react";
 import { NavLink } from "react-router-dom";
 

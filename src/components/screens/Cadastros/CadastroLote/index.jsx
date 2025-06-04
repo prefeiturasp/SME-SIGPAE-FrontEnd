@@ -63,10 +63,10 @@ class CadastroLote extends Component {
       getEscolasPorDre,
     } = this.props;
     if (
-      lotes !== [] &&
-      diretoriasRegionais !== [] &&
-      tiposGestao !== [] &&
-      subprefeituras !== [] &&
+      !!lotes &&
+      !!diretoriasRegionais &&
+      !!tiposGestao &&
+      !!subprefeituras &&
       meusDados !== null &&
       loading
     ) {

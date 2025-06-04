@@ -1,13 +1,13 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   LAYOUT_EMBALAGEM,
   PAINEL_LAYOUT_EMBALAGEM,
   PRE_RECEBIMENTO,
   DETALHAR_LAYOUT_EMBALAGEM,
-} from "configs/constants";
+} from "src/configs/constants";
 import Detalhar from "../../components/screens/PreRecebimento/LayoutEmbalagem/components/Detalhar";
 import { usuarioComAcessoAoPainelEmbalagens } from "../../helpers/utilities";
 

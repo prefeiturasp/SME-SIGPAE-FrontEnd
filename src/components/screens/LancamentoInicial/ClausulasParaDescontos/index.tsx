@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Spin } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Filtros } from "./components/Filtros/";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import {
   MEDICAO_INICIAL,
   CLAUSULAS_PARA_DESCONTOS,
   CADASTRO_DE_CLAUSULA,
   EDITAR_CLAUSULA,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   ClausulaInterface,
   FiltrosInterface,
@@ -23,11 +23,14 @@ import {
 import {
   deletaClausulaParaDesconto,
   getClausulasParaDescontos,
-} from "services/medicaoInicial/clausulasParaDescontos.service";
-import { getNumerosEditais } from "services/edital.service";
+} from "src/services/medicaoInicial/clausulasParaDescontos.service";
+import { getNumerosEditais } from "src/services/edital.service";
 import "./styles.scss";
 import { ModalExcluirClausula } from "./components/ModalExcluirClausula";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 
 type Edital = {
   uuid: string;

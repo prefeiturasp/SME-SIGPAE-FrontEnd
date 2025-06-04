@@ -1,12 +1,12 @@
 import React from "react";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
+} from "src/components/Shareable/Botao/constants";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 
 import useView from "./view";
 import { Filtros } from "../../../../types";

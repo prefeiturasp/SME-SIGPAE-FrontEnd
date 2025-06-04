@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Spin } from "antd";
-import { getGuiaParaConferencia } from "../../../../services/logistica.service.js";
+import { getGuiaParaConferencia } from "../../../../services/logistica.service";
 import { Form, Field } from "react-final-form";
-import { InputComData } from "components/Shareable/DatePicker";
-import { InputText } from "components/Shareable/Input/InputText";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import { InputHorario } from "components/Shareable/Input/InputHorario";
-import { REPOSICAO_RESUMO_FINAL, LOGISTICA } from "configs/constants";
-import TooltipIcone from "components/Shareable/TooltipIcone";
-import InputFile from "components/Shareable/Input/InputFile";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { InputHorario } from "src/components/Shareable/Input/InputHorario";
+import { REPOSICAO_RESUMO_FINAL, LOGISTICA } from "src/configs/constants";
+import TooltipIcone from "src/components/Shareable/TooltipIcone";
+import InputFile from "src/components/Shareable/Input/InputFile";
 import {
   required,
   maxLength,
@@ -18,19 +18,19 @@ import {
   peloMenosUmNumeroEUmaLetra,
   numericInteger,
 } from "../../../../helpers/fieldValidators";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { composeValidators } from "../../../../helpers/utilities";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import "./styles.scss";
 
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { TIPOS_OCORRENCIAS_OPTIONS } from "constants/shared.js";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { TIPOS_OCORRENCIAS_OPTIONS } from "src/constants/shared";
 
 const TOOLTIP_RECEBIDO = `Quantidade de embalagens do alimento que a UE efetivamente recebeu,
                           na reposição dos alimentos. Se ainda restarem alimentos a receber,
