@@ -3,7 +3,7 @@ import { fluxoPartindoTerceirizada } from "src/components/Shareable/FluxoDeStatu
 import { EDITAIS_INVALIDOS } from "src/helpers/gestaoDeProdutos";
 import {
   usuarioEhCODAEGestaoProduto,
-  usuarioEhEmpresaTerceirizada,
+  usuarioEhAdministradorEmpresaTerceirizada,
 } from "src/helpers/utilities";
 import React, { useEffect, useState } from "react";
 import { Form } from "react-final-form";
@@ -135,7 +135,7 @@ export const Homologacao = ({
                     />
                   </>
                 )}
-              {usuarioEhEmpresaTerceirizada() &&
+              {usuarioEhAdministradorEmpresaTerceirizada() &&
                 homologacao.status === "CODAE_PENDENTE_HOMOLOGACAO" && (
                   <BotoesTerceirizada
                     homologacao={homologacao}
