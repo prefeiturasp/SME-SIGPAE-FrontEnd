@@ -2,7 +2,7 @@ import HTTP_STATUS from "http-status-codes";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { Form, Field } from "react-final-form";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 
 import Botao from "../Botao";
 import { BUTTON_STYLE, BUTTON_TYPE } from "../Botao/constants";
@@ -11,7 +11,7 @@ import { toastError, toastSuccess } from "../Toast/dialogs";
 import { textAreaRequiredAndAtLeastOneCharacter } from "../../../helpers/fieldValidators";
 import "./style.scss";
 import InputText from "../Input/InputText";
-import { PAINEL_GESTAO_PRODUTO } from "configs/constants";
+import { PAINEL_GESTAO_PRODUTO } from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
 
 export const ModalPadrao = ({ ...props }) => {

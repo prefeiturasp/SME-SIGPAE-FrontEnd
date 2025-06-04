@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Collapse } from "react-collapse";
-import { formataInformacoesNutricionais } from "components/screens/Produto/Homologacao/helper";
-import { ToggleExpandir } from "components/Shareable/ToggleExpandir";
-import InformacaoDeReclamante from "components/Shareable/InformacaoDeReclamante";
+import { formataInformacoesNutricionais } from "src/components/screens/Produto/Homologacao/helper";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
+import InformacaoDeReclamante from "src/components/Shareable/InformacaoDeReclamante";
 import TabelaEspecificacoesProduto from "../TabelaEspecificacoesProduto";
 import "./styles.scss";
 

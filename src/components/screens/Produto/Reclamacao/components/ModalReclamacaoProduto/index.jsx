@@ -8,35 +8,38 @@ import {
   peloMenosUmCaractere,
   required,
   requiredOptionSearchSelect,
-} from "helpers/fieldValidators";
-import CKEditorField from "components/Shareable/CKEditorField";
-import InputText from "components/Shareable/Input/InputText";
-import { InputComData } from "components/Shareable/DatePicker";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
+} from "src/helpers/fieldValidators";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import InputText from "src/components/Shareable/Input/InputText";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import moment from "moment";
-import ManagedInputFileField from "components/Shareable/Input/InputFile/ManagedField";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import Botao from "components/Shareable/Botao";
+import ManagedInputFileField from "src/components/Shareable/Input/InputFile/ManagedField";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
-import { escolaOuNutriReclamaDoProduto } from "services/produto.service";
-import { getEscolasTercTotal } from "services/escola.service";
+import { escolaOuNutriReclamaDoProduto } from "src/services/produto.service";
+import { getEscolasTercTotal } from "src/services/escola.service";
 
 import "./style.scss";
 
-import { meusDados } from "services/perfil.service";
+import { meusDados } from "src/services/perfil.service";
 import {
   usuarioEhNutricionistaSupervisao,
   usuarioEhCODAEDietaEspecial,
   deepCopy,
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
-} from "helpers/utilities";
-import { TIPO_PERFIL } from "constants/shared";
+} from "src/helpers/utilities";
+import { TIPO_PERFIL } from "src/constants/shared";
 export default class ModalReclamacaoProduto extends Component {
   constructor(props) {
     super(props);

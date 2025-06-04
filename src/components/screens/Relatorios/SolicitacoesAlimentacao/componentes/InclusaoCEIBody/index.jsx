@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 
 export const InclusaoCEIBody = ({ ...props }) => {
   const { solicitacao, item, index, filtros, labelData } = props;

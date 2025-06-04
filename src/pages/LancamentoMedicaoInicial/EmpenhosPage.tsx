@@ -2,7 +2,7 @@ import React from "react";
 import Breadcrumb from "../../components/Shareable/Breadcrumb";
 import Page from "../../components/Shareable/Page/Page";
 import { EMPENHOS, MEDICAO_INICIAL } from "../../configs/constants";
-import { Empenhos } from "components/screens/LancamentoInicial/Empenhos";
+import { Empenhos } from "src/components/screens/LancamentoInicial/Empenhos";
 
 const atual = {
   href: `/${MEDICAO_INICIAL}/${EMPENHOS}/`,

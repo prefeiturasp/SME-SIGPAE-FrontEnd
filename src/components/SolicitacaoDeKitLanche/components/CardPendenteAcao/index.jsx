@@ -13,8 +13,8 @@ import {
   SOLICITACAO_KIT_LANCHE_CEMEI,
 } from "../../../../configs/constants";
 import { ToggleExpandir } from "../../../Shareable/ToggleExpandir";
-import { TIPO_SOLICITACAO } from "constants/shared";
-import { SolicitacoesSimilaresKitLanche } from "components/Shareable/SolicitacoesSimilaresKitLanche";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
+import { SolicitacoesSimilaresKitLanche } from "src/components/Shareable/SolicitacoesSimilaresKitLanche";
 
 const { SOLICITACAO_CEI, SOLICITACAO_NORMAL, SOLICITACAO_CEMEI } =
   TIPO_SOLICITACAO;

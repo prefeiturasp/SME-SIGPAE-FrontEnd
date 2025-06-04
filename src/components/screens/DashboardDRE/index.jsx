@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
 import { Link } from "react-router-dom";
-import CardMatriculados from "components/Shareable/CardMatriculados";
-import CardPendencia from "components/Shareable/CardPendencia/CardPendencia";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import CardPendencia from "src/components/Shareable/CardPendencia/CardPendencia";
 import CardStatusDeSolicitacao, {
   ICON_CARD_TYPE_ENUM,
   CARD_TYPE_ENUM,
-} from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { FILTRO_VISAO, PAGINACAO_DASHBOARD_DEFAULT } from "constants/shared";
+} from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import {
+  FILTRO_VISAO,
+  PAGINACAO_DASHBOARD_DEFAULT,
+} from "src/constants/shared";
 import { FILTRO } from "../const";
 import {
   DRE,
@@ -16,7 +19,7 @@ import {
   SOLICITACOES_NEGADAS,
   SOLICITACOES_CANCELADAS,
   SOLICITACOES_AGUARDADAS,
-} from "configs/constants";
+} from "src/configs/constants";
 import { ajustarFormatoLog } from "../helper";
 import {
   getSolicitacoesPendentesValidacaoDRE,
@@ -25,25 +28,25 @@ import {
   getSolicitacoesCanceladasDRE,
   getSolicitacoesAutorizadasDRE,
   getSolicitacoesAguardandoCODAE,
-} from "services/painelDRE.service";
-import corrigeResumo from "helpers/corrigeDadosDoDashboard";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { dataAtual } from "helpers/utilities";
-import { ASelect } from "components/Shareable/MakeField";
+} from "src/services/painelDRE.service";
+import corrigeResumo from "src/helpers/corrigeDadosDoDashboard";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { dataAtual } from "src/helpers/utilities";
+import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./style.scss";
 import {
   updateLoteAlimentacao,
   updateTituloAlimentacao,
-} from "reducers/filtersAlimentacaoReducer";
+} from "src/reducers/filtersAlimentacaoReducer";
 import { connect } from "react-redux";
 import { Spin } from "antd";
-import CardBody from "components/Shareable/CardBody";
+import CardBody from "src/components/Shareable/CardBody";
 
 export const DashboardDRE = (props) => {
   const { cards, lotes, handleSubmit, meusDados } = props;

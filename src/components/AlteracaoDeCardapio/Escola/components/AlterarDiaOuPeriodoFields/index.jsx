@@ -1,11 +1,11 @@
-import { InputComData } from "components/Shareable/DatePicker";
-import { required } from "helpers/fieldValidators";
-import { fimDoCalendario } from "helpers/utilities";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { required } from "src/helpers/fieldValidators";
+import { fimDoCalendario } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import React, { useState } from "react";
 import { Field } from "react-final-form";
-import { getDiasUteis } from "services/diasUteis.service";
+import { getDiasUteis } from "src/services/diasUteis.service";
 
 export const AlterarDiaOuPeriodo = ({ ...props }) => {
   const [limiteDataInicial, setLimiteDataInicial] = useState();

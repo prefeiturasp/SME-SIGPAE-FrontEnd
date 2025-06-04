@@ -1,13 +1,13 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import CadastroProdutosLogistica from "components/screens/Cadastros/CadastroProdutosLogistica";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import CadastroProdutosLogistica from "src/components/screens/Cadastros/CadastroProdutosLogistica";
 import {
   CADASTROS,
   CONFIGURACOES,
   CADASTRO_PRODUTOS,
   PRODUTOS,
-} from "configs/constants";
+} from "src/configs/constants";
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${CADASTRO_PRODUTOS}`,

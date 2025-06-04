@@ -1,4 +1,4 @@
-@import "styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 div.painel-acompanhamento-supervisao {
   font-size: 12px;

@@ -3,35 +3,35 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
 
-import { RECEBIMENTO, QUESTOES_POR_PRODUTO } from "configs/constants";
+import { RECEBIMENTO, QUESTOES_POR_PRODUTO } from "src/configs/constants";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import { toastSuccess } from "components/Shareable/Toast/dialogs";
-import { getListaFiltradaAutoCompleteSelect } from "helpers/autoCompleteSelect";
-import { required } from "helpers/fieldValidators";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
+import { required } from "src/helpers/fieldValidators";
 import { FichaTecnicaSimples } from "interfaces/pre_recebimento.interface";
 import {
   QuestaoConferencia,
   ResponseListarQuestoesConferencia,
 } from "interfaces/recebimento.interface";
-import { formatarNumeroEProdutoFichaTecnica } from "helpers/preRecebimento";
+import { formatarNumeroEProdutoFichaTecnica } from "src/helpers/preRecebimento";
 import ModalGenerico, {
   ModalGenericoProps,
-} from "components/Shareable/ModalGenerico";
-import TransferMultiSelect from "components/Shareable/TransferMultiSelect";
-import { TransferOptions } from "components/Shareable/TransferMultiSelect/interfaces";
-import { useTransferMultiSelect } from "components/Shareable/TransferMultiSelect/useTransferMultiSelect";
-import { getListaFichasTecnicasSimplesSemQuestoesConferencia } from "services/fichaTecnica.service";
+} from "src/components/Shareable/ModalGenerico";
+import TransferMultiSelect from "src/components/Shareable/TransferMultiSelect";
+import { TransferOptions } from "src/components/Shareable/TransferMultiSelect/interfaces";
+import { useTransferMultiSelect } from "src/components/Shareable/TransferMultiSelect/useTransferMultiSelect";
+import { getListaFichasTecnicasSimplesSemQuestoesConferencia } from "src/services/fichaTecnica.service";
 import {
   listarQuestoesConferencia,
   atribuirQuestoesPorProduto,
   detalharQuestoesPorProduto,
   editarAtribuicaoQuestoesPorProduto,
-} from "services/recebimento/questoesConferencia.service";
+} from "src/services/recebimento/questoesConferencia.service";
 
 import "./styles.scss";
 

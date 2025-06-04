@@ -10,9 +10,9 @@ import {
   ResponseListarQuestoesConferenciaSimples,
   ResponseListarQuestoesPorProduto,
 } from "interfaces/recebimento.interface";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { getMensagemDeErro } from "helpers/statusErrors";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { URLSearchParams } from "url";
 
 export const listarQuestoesConferencia =

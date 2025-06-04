@@ -5,13 +5,13 @@ import {
   PRE_RECEBIMENTO,
   DETALHAR_LAYOUT_EMBALAGEM,
   ANALISAR_LAYOUT_EMBALAGEM,
-} from "configs/constants";
-import { usuarioPodeAnalisarLayoutEmbalagem } from "helpers/utilities";
-import { getDashboardLayoutEmbalagem } from "services/layoutEmbalagem.service";
-import Page from "components/Shareable/Page/Page";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import { SolicitacoesLayoutStatusGenerico } from "components/screens/SolicitacoesLayoutStatusGenerico";
-import { CARD_APROVADOS } from "components/screens/PreRecebimento/PainelLayoutEmbalagem/constants";
+} from "src/configs/constants";
+import { usuarioPodeAnalisarLayoutEmbalagem } from "src/helpers/utilities";
+import { getDashboardLayoutEmbalagem } from "src/services/layoutEmbalagem.service";
+import Page from "src/components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import { SolicitacoesLayoutStatusGenerico } from "src/components/screens/SolicitacoesLayoutStatusGenerico";
+import { CARD_APROVADOS } from "src/components/screens/PreRecebimento/PainelLayoutEmbalagem/constants";
 
 const atual = {
   href: CARD_APROVADOS.href,

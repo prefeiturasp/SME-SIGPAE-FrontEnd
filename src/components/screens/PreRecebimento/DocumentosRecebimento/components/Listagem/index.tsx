@@ -7,7 +7,7 @@ import {
   DETALHAR_FORNECEDOR_DOCUMENTO_RECEBIMENTO,
   CORRIGIR_DOCUMENTOS_RECEBIMENTO,
 } from "../../../../../../configs/constants";
-import { downloadArquivoLaudoAssinado } from "services/documentosRecebimento.service";
+import { downloadArquivoLaudoAssinado } from "src/services/documentosRecebimento.service";
 import { Tooltip } from "antd";
 import { truncarString } from "../../../../../../helpers/utilities";
 

@@ -4,14 +4,14 @@ import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
-import { InputComData } from "components/Shareable/DatePicker";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { usuarioEhEmpresaTerceirizada } from "helpers/utilities";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 import {
   getUnidadesEducacionaisTercTotal,
   getSolicitacoesRelatorioDietasEspeciais,
-} from "services/dietaEspecial.service";
+} from "src/services/dietaEspecial.service";
 import "./styles.scss";
 
 export const Filtros = ({ ...props }) => {

@@ -9,8 +9,8 @@ import {
   DREValidaKitLancheAvulso,
   terceirizadaRespondeQuestionamentoKitLanche,
   terceirizadaTomaCienciaKitLanche,
-} from "services/kitLanche";
-import { getMotivosDREnaoValida } from "services/relatorios";
+} from "src/services/kitLanche";
+import { getMotivosDREnaoValida } from "src/services/relatorios";
 import Breadcrumb from "../../components/Shareable/Breadcrumb";
 import ModalCancelarSolicitacao from "../../components/Shareable/ModalCancelarSolicitacao_";
 import { ModalCODAEQuestiona } from "../../components/Shareable/ModalCODAEQuestiona";

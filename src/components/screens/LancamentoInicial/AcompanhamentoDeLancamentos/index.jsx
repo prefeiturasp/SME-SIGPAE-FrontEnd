@@ -1,13 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import HTTP_STATUS from "http-status-codes";
 import {
   getDashboardMedicaoInicial,
   getMesesAnosSolicitacoesMedicaoinicial,
-} from "services/medicaoInicial/dashboard.service";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/services/medicaoInicial/dashboard.service";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { CardMedicaoPorStatus } from "./components/CardMedicaoPorStatus";
 import "./style.scss";
 import {
@@ -15,21 +18,21 @@ import {
   STATUS_RELACAO_DRE_UE,
 } from "./constants";
 import { Spin } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { Paginacao } from "components/Shareable/Paginacao";
+} from "src/components/Shareable/Botao/constants";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import { Field, Form } from "react-final-form";
-import Select from "components/Shareable/Select";
-import { MESES, TIPO_PERFIL } from "constants/shared";
-import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
-import { MeusDadosContext } from "context/MeusDadosContext";
-import { getLotesSimples } from "services/lote.service";
-import { getEscolasTercTotal } from "services/escola.service";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
+import Select from "src/components/Shareable/Select";
+import { MESES, TIPO_PERFIL } from "src/constants/shared";
+import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { getLotesSimples } from "src/services/lote.service";
+import { getEscolasTercTotal } from "src/services/escola.service";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
 import {
   formatarOpcoesDRE,
   getError,
@@ -43,23 +46,23 @@ import {
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhDinutreDiretoria,
-} from "helpers/utilities";
-import { ASelect } from "components/Shareable/MakeField";
+} from "src/helpers/utilities";
+import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
 import {
   CONFERENCIA_DOS_LANCAMENTOS,
   DETALHAMENTO_DO_LANCAMENTO,
   MEDICAO_INICIAL,
-} from "configs/constants";
-import { required } from "helpers/fieldValidators";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
+} from "src/configs/constants";
+import { required } from "src/helpers/fieldValidators";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import {
   relatorioMedicaoInicialPDF,
   relatorioConsolidadoMedicaoInicialXLSX,
   relatorioUnificadoMedicaoInicialPDF,
-} from "services/relatorios";
-import { MEDICAO_STATUS_DE_PROGRESSO } from "components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
-import { updateSolicitacaoMedicaoInicial } from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
+} from "src/services/relatorios";
+import { MEDICAO_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
+import { updateSolicitacaoMedicaoInicial } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import ModalRelatorio from "./components/ModalRelatorio";
 
 export const AcompanhamentoDeLancamentos = () => {

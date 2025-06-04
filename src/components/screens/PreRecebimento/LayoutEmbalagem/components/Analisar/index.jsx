@@ -1,20 +1,20 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Spin } from "antd";
 import "./styles.scss";
-import { PRE_RECEBIMENTO } from "configs/constants";
+import { PRE_RECEBIMENTO } from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
-import { detalharLayoutEmabalagem } from "services/layoutEmbalagem.service";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import BotaoAnexo from "components/PreRecebimento/BotaoAnexo";
-import Botao from "components/Shareable/Botao";
+import { detalharLayoutEmabalagem } from "src/services/layoutEmbalagem.service";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Field, Form } from "react-final-form";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import moment from "moment";
-import { textAreaRequired } from "helpers/fieldValidators";
+import { textAreaRequired } from "src/helpers/fieldValidators";
 import ModalCancelarCorrecao from "./components/ModalCancelarCorrecao";
 import { PAINEL_LAYOUT_EMBALAGEM } from "../../../../../../configs/constants";
 import ModalCancelarAnalise from "./components/ModalCancelarAnalise";
@@ -24,9 +24,9 @@ import {
   toastError,
   toastSuccess,
 } from "../../../../../Shareable/Toast/dialogs";
-import { FluxoDeStatusPreRecebimento } from "components/Shareable/FluxoDeStatusPreRecebimento";
-import { PERFIL } from "constants/shared";
-import useSomenteLeitura from "hooks/useSomenteLeitura";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
+import { PERFIL } from "src/constants/shared";
+import useSomenteLeitura from "src/hooks/useSomenteLeitura";
 
 export default () => {
   const navigate = useNavigate();

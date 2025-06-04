@@ -26,8 +26,8 @@ import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
 
 const CorpoRelatorio = ({
   dietaEspecial,

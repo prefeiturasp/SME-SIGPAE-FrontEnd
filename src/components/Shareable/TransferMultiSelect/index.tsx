@@ -8,8 +8,8 @@
 import React from "react";
 import { Transfer } from "antd";
 
-import Label from "components/Shareable/Label";
-import TooltipIcone from "components/Shareable/TooltipIcone";
+import Label from "src/components/Shareable/Label";
+import TooltipIcone from "src/components/Shareable/TooltipIcone";
 
 import { TransferMultiSelectProps } from "./interfaces";
 

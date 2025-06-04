@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Modal, Button } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Spin } from "antd";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import {
   gerarExcelEntregas,
   imprimirGuiasDaSolicitacao,
-} from "services/logistica.service.js";
+} from "src/services/logistica.service";
 import { Switch, Checkbox } from "antd";
 
 import "./styles.scss";
-import { STATUS_GUIA } from "../../../../const.js";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { CentralDeDownloadContext } from "context/CentralDeDownloads";
+import { STATUS_GUIA } from "../../../../const";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { CentralDeDownloadContext } from "src/context/CentralDeDownloads";
 
 export default ({ solicitacao, excel, pdf, showModal }) => {
   const [show, setShow] = useState(false);

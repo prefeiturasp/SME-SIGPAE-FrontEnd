@@ -1,16 +1,16 @@
 import React, { Fragment } from "react";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Field, Form } from "react-final-form";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import HTTP_STATUS from "http-status-codes";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { formataOpcoes } from "../../helpers";
-import { filtrarAlunosMatriculados } from "services/alunosMatriculados.service";
-import { deepCopy, usuarioEhDRE } from "helpers/utilities";
+import { filtrarAlunosMatriculados } from "src/services/alunosMatriculados.service";
+import { deepCopy, usuarioEhDRE } from "src/helpers/utilities";
 import { formataOpcoesDropdown } from "../../helpers";
 
 export const Filtros = ({ ...props }) => {

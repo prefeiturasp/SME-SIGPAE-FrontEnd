@@ -10,15 +10,15 @@ import React, {
 } from "react";
 import { Field } from "react-final-form";
 
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { InputComData } from "components/Shareable/DatePicker";
-import Label from "components/Shareable/Label";
-import Select from "components/Shareable/Select";
-import { getListaFiltradaAutoCompleteSelect } from "helpers/autoCompleteSelect";
-import { dateDelta } from "helpers/utilities.js";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
-import { getEscolasTercTotal } from "services/escola.service";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import Label from "src/components/Shareable/Label";
+import Select from "src/components/Shareable/Select";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
+import { dateDelta } from "src/helpers/utilities.jsx";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
+import { getEscolasTercTotal } from "src/services/escola.service";
 
 import { FormApi } from "final-form";
 import { DiretoriaRegionalInterface } from "interfaces/escola.interface";
@@ -30,7 +30,7 @@ import {
 } from "interfaces/imr.interface";
 import { ResponseDiretoriasRegionaisSimplissimaInterface } from "interfaces/responses.interface";
 import "./styles.scss";
-import { getListNomesNutricionistas } from "services/imr/painelGerencial";
+import { getListNomesNutricionistas } from "src/services/imr/painelGerencial";
 
 interface Props {
   filtros: FiltrosRelatoriosVisitasInterface;

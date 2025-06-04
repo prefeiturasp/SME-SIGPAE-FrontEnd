@@ -1,12 +1,12 @@
-import CardLegendas from "components/Shareable/CardLegendas";
+import CardLegendas from "src/components/Shareable/CardLegendas";
 import {
   CARD_TYPE_ENUM,
   ICON_CARD_TYPE_ENUM,
-} from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import SolicitacoesPorStatusGenerico from "components/screens/SolicitacoesPorStatusGenerico";
-import { PAGINACAO_DEFAULT } from "constants/shared";
+} from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import SolicitacoesPorStatusGenerico from "src/components/screens/SolicitacoesPorStatusGenerico";
+import { PAGINACAO_DEFAULT } from "src/constants/shared";
 import React from "react";
-import { getSolicitacoesPendentesEscola } from "services/painelEscola.service";
+import { getSolicitacoesPendentesEscola } from "src/services/painelEscola.service";
 import Breadcrumb from "../../../components/Shareable/Breadcrumb";
 import Page from "../../../components/Shareable/Page/Page";
 import { ESCOLA, SOLICITACOES_PENDENTES } from "../../../configs/constants";

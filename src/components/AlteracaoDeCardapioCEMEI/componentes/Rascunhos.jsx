@@ -1,5 +1,5 @@
 import React from "react";
-import "components/Shareable/style.scss";
+import "src/components/Shareable/style.scss";
 
 export const Rascunhos = ({
   rascunhosAlteracaoCardapio,

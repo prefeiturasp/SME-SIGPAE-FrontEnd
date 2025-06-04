@@ -1,5 +1,5 @@
 import { FormApi } from "final-form";
-import { required } from "helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 import {
   EscolaLabelInterface,
   NovoRelatorioVisitasFormInterface,

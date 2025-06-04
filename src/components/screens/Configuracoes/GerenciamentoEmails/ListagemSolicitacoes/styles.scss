@@ -1,4 +1,4 @@
-@import "styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 .resultado-busca-emails-terceirizadas {
   margin-top: 10px;

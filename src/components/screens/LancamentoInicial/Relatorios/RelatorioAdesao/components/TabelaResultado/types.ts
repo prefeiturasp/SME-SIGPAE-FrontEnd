@@ -1,4 +1,4 @@
-import { RelatorioAdesaoResponse } from "services/medicaoInicial/relatorio.interface";
+import { RelatorioAdesaoResponse } from "src/services/medicaoInicial/relatorio.interface";
 
 import { Filtros } from "../../types";
 

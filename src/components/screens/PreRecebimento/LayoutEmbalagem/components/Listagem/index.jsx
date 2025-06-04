@@ -6,7 +6,7 @@ import {
   CORRIGR_LAYOUT_EMBALAGEM,
   PRE_RECEBIMENTO,
   ATUALIZAR_LAYOUT_EMBALAGEM,
-} from "configs/constants";
+} from "src/configs/constants";
 
 import "./styles.scss";
 import { Tooltip } from "antd";

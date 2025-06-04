@@ -1,14 +1,14 @@
 import React from "react";
 
-import { HOME } from "constants/config";
+import { HOME } from "src/constants/config";
 import {
   RECEBIMENTO,
   FICHA_RECEBIMENTO,
   CADASTRO_FICHA_RECEBIMENTO,
-} from "configs/constants";
-import Page from "components/Shareable/Page/Page";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Cadastrar from "components/screens/Recebimento/FichaRecebimento/components/Cadastrar";
+} from "src/configs/constants";
+import Page from "src/components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Cadastrar from "src/components/screens/Recebimento/FichaRecebimento/components/Cadastrar";
 
 const atual = {
   href: `/${RECEBIMENTO}/${CADASTRO_FICHA_RECEBIMENTO}`,

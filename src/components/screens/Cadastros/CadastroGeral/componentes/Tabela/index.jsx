@@ -1,9 +1,9 @@
 import React, { Fragment, useState } from "react";
 import "./style.scss";
 import { DeleteOutlined, FormOutlined } from "@ant-design/icons";
-import ModalCadastrarItem from "components/Shareable/ModalCadastrarItem";
+import ModalCadastrarItem from "src/components/Shareable/ModalCadastrarItem";
 import ModalExcluirItem from "../ModalExcluirItem";
-import { usuarioEhEmpresaTerceirizada } from "helpers/utilities";
+import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 
 export default ({ resultado, changePage }) => {
   const [selecionado, setSelecionado] = useState(undefined);

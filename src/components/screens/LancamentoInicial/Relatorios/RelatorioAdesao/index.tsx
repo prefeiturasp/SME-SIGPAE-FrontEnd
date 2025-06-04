@@ -1,7 +1,7 @@
 import React from "react";
 
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 
 import FormFiltro from "./components/FormFiltro";
 import TabelaResultado from "./components/TabelaResultado";

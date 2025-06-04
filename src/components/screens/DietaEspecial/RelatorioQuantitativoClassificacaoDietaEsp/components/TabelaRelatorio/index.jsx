@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 
-import { TIPO_PERFIL } from "constants/shared";
+import { TIPO_PERFIL } from "src/constants/shared";
 
 import "./styles.scss";
 

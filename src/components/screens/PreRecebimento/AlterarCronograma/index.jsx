@@ -7,27 +7,30 @@ import {
   dilogCienteSolicitacaoAlteracaoCronograma,
   getCronograma,
   getSolicitacaoAlteracaoCronograma,
-} from "services/cronograma.service";
+} from "src/services/cronograma.service";
 import HTTP_STATUS from "http-status-codes";
 import { Form, Field, FormSpy } from "react-final-form";
 import DadosCronograma from "../CronogramaEntrega/components/DadosCronograma";
 import AnaliseDilogDiretoria from "./components/AnaliseDilogDiretoria";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { InputText } from "components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import { InputText } from "src/components/Shareable/Input/InputText";
 import "./styles.scss";
 import AcoesAlterar from "./components/AcoesAlterar";
 import {
   prepararPayloadAnaliseCronograma,
   prepararPayloadCronograma,
 } from "./helpers";
-import { formataMilhar } from "helpers/utilities";
-import { required } from "helpers/fieldValidators";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import { formataMilhar } from "src/helpers/utilities";
+import { required } from "src/helpers/fieldValidators";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   CRONOGRAMA_ENTREGA,
   PRE_RECEBIMENTO,
   SOLICITACAO_ALTERACAO_CRONOGRAMA,
-} from "configs/constants";
+} from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
 import {
   usuarioEhDilogDiretoria,
@@ -36,16 +39,16 @@ import {
   usuarioEhDilogAbastecimento,
 } from "../../../../helpers/utilities";
 import { Radio, Spin } from "antd";
-import { FluxoDeStatusPreRecebimento } from "components/Shareable/FluxoDeStatusPreRecebimento";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 import FormEtapa from "../../../PreRecebimento/FormEtapa";
-import { textAreaRequired } from "helpers/fieldValidators";
-import { onChangeEtapas } from "components/PreRecebimento/FormEtapa/helper";
+import { textAreaRequired } from "src/helpers/fieldValidators";
+import { onChangeEtapas } from "src/components/PreRecebimento/FormEtapa/helper";
 import TabelaFormAlteracao from "./components/TabelaFormAlteracao";
-import FormRecebimento from "components/PreRecebimento/FormRecebimento";
+import FormRecebimento from "src/components/PreRecebimento/FormRecebimento";
 import { fornecedorCienteAlteracaoCodae } from "../../../../services/cronograma.service";
 import { SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR } from "../../../../configs/constants";
 import { setFieldTouched } from "../../../../configs/mutators";
-import { numberToStringDecimal } from "helpers/parsers";
+import { numberToStringDecimal } from "src/helpers/parsers";
 
 export default ({ analiseSolicitacao }) => {
   const urlParams = new URLSearchParams(window.location.search);

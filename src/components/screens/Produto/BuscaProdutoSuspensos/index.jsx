@@ -2,18 +2,18 @@ import HTTP_STATUS from "http-status-codes";
 import "./styles.scss";
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { getNomesUnicosEditais } from "services/produto.service";
-import { getProdutosRelatorioSuspenso } from "services/produto.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { getNomesUnicosEditais } from "src/services/produto.service";
+import { getProdutosRelatorioSuspenso } from "src/services/produto.service";
 import FormBuscaProduto from "./components/FormBuscaProduto";
 import ContadorResultado from "./components/ContadorResultado";
 import TabelaResultado from "./components/TabelaResultado";
 import {
   STATUS_CODAE_SUSPENDEU,
   STATUS_CODAE_AUTORIZOU_RECLAMACAO,
-} from "configs/constants";
+} from "src/configs/constants";
 import "./styles.scss";
-import { getMeusDados } from "services/perfil.service";
+import { getMeusDados } from "src/services/perfil.service";
 
 const BuscaProdutoSuspensos = () => {
   const [produtos, setProdutos] = useState(null);

@@ -20,7 +20,7 @@ import {
   SUSPENSAO_ALIMENTACAO,
   TERCEIRIZADA,
   USUARIO_RELATORIOS,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   ehUsuarioRelatorios,
   usuarioEhCODAEGabinete,
@@ -35,7 +35,7 @@ import {
   usuarioEhMedicao,
   usuarioEhNutricionistaSupervisao,
   usuarioEscolaEhGestaoDireta,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
 

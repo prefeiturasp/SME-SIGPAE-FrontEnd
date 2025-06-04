@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, act, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import mock from "services/_mock";
+import mock from "src/services/_mock";
 import ReposicaoDeGuia from "..";
 import { mockGuiaParaConferencia } from "../../../../../mocks/logistica.service/mockGetGuiaParaConferencia";
 

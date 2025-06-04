@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { Tooltip } from "antd";
-import { conferidaClass } from "helpers/terceirizadas";
+import { conferidaClass } from "src/helpers/terceirizadas";
 
 const TooltipProdutos = ({ solicitacao, cardTitulo }) => {
   const renderSolicitation = (solicitation) => {

@@ -4,12 +4,12 @@ import Filtros from "./components/Filtros";
 import {
   gerarParametrosConsulta,
   usuarioEhEmpresaFornecedor,
-} from "helpers/utilities";
-import { getListagemCronogramas } from "../../../../services/cronograma.service.js";
+} from "src/helpers/utilities";
+import { getListagemCronogramas } from "../../../../services/cronograma.service";
 import ListagemCronogramas from "./components/ListagemCronogramas";
 
-import { getNomesDistribuidores } from "services/logistica.service";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { getNomesDistribuidores } from "src/services/logistica.service";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);

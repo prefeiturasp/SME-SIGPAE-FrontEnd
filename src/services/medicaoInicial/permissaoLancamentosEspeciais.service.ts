@@ -3,7 +3,7 @@ import {
   ResponsePermissoesLancamentosEspeciaisInterface,
 } from "interfaces/responses.interface";
 import axios from "../_base";
-import { ErrorHandlerFunction } from "services/service-helpers";
+import { ErrorHandlerFunction } from "src/services/service-helpers";
 
 export const getPermissoesLancamentosEspeciais = async (
   params: { page?: number; escola__uuid?: string } = null

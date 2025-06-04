@@ -1,4 +1,4 @@
-import { TemaContext } from "context/TemaContext";
+import { TemaContext } from "src/context/TemaContext";
 import React, { useContext } from "react";
 import {
   Link,

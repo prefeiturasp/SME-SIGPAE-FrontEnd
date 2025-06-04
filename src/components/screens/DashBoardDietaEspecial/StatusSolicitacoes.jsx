@@ -22,9 +22,9 @@ import { ajustarFormatoLog } from "../helper";
 import { InputSearchPendencias } from "../../Shareable/InputSearchPendencias";
 import CardListarSolicitacoes from "../../Shareable/CardListarSolicitacoes";
 import { Paginacao } from "../../Shareable/Paginacao";
-import { getNomeCardAguardandoAutorizacao } from "helpers/dietaEspecial";
-import { getMeusLotes } from "services/lote.service";
-import { usuarioEhEmpresaTerceirizada } from "helpers/utilities";
+import { getNomeCardAguardandoAutorizacao } from "src/helpers/dietaEspecial";
+import { getMeusLotes } from "src/services/lote.service";
+import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 import { Spin } from "antd";
 import { resetCamposDieta } from "../../../reducers/filtersDietaReducer";
 

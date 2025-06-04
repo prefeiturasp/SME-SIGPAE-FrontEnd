@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 
 import FormFiltro from "./components/FormFiltro";
 import CardResultado from "./components/CardResultado";
 
-import { buscaTotaisRelatorioGerencialDietas } from "services/painelNutricionista.service";
+import { buscaTotaisRelatorioGerencialDietas } from "src/services/painelNutricionista.service";
 
 type Totais = {
   total_solicitacoes: number;

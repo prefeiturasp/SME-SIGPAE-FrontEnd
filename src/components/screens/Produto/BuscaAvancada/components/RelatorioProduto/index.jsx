@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { getProduto, getInformacoesGrupo } from "services/produto.service";
+import { getProduto, getInformacoesGrupo } from "src/services/produto.service";
 import ResultadoMock from "./components/resultadoMock";
 import CorpoRelatorio from "./components/corpoRelatorio";
 

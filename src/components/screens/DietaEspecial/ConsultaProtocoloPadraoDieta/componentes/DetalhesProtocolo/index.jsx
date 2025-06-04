@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Botao from "components/Shareable/Botao";
-import ModalHistoricoProtocoloPadrao from "components/Shareable/ModalHistoricoProtocoloPadrao";
+import Botao from "src/components/Shareable/Botao";
+import ModalHistoricoProtocoloPadrao from "src/components/Shareable/ModalHistoricoProtocoloPadrao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 export default ({ protocoloPadrao, idx, selecionado }) => {
   const navigate = useNavigate();

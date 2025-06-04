@@ -3,7 +3,7 @@ import HTTP_STATUS from "http-status-codes";
 import {
   getVinculosTipoAlimentacaoPorEscola,
   getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
-} from "services/cadastroTipoAlimentacao.service";
+} from "src/services/cadastroTipoAlimentacao.service";
 
 export const InclusoesCEMEI = ({ inclusaoDeAlimentacao }) => {
   const [vinculosAlimentacao, setVinculosAlimentacao] = useState(null);

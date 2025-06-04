@@ -8,7 +8,7 @@ import {
 } from "../../../../helpers/utilities";
 import Botao from "../../../Shareable/Botao";
 import { ToggleExpandir } from "../../../Shareable/ToggleExpandir";
-import { SolicitacoesSimilaresKitLanche } from "components/Shareable/SolicitacoesSimilaresKitLanche";
+import { SolicitacoesSimilaresKitLanche } from "src/components/Shareable/SolicitacoesSimilaresKitLanche";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
@@ -22,7 +22,7 @@ import { getDetalheKitLancheAvulso } from "../../../../services/relatorios";
 import { fluxoPartindoEscola } from "../../../Shareable/FluxoDeStatus/helper";
 import TabelaFaixaEtaria from "../../../Shareable/TabelaFaixaEtaria";
 import "./style.scss";
-import { existeLogDeQuestionamentoDaCODAE } from "components/Shareable/RelatorioHistoricoQuestionamento/helper";
+import { existeLogDeQuestionamentoDaCODAE } from "src/components/Shareable/RelatorioHistoricoQuestionamento/helper";
 
 export const CorpoRelatorio = (props) => {
   const { tipoSolicitacao, solicitacaoKitLanche, prazoDoPedidoMensagem } =

@@ -7,7 +7,7 @@ import {
   required,
   numericInteger,
   maxLength,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 
 const minLength6 = minLength(6);
 export default ({ pertence_a_escola }) => {

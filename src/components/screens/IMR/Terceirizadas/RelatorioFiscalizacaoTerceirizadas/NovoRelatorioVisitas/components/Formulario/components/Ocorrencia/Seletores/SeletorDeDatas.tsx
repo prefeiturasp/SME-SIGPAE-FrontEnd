@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
-import { InputComData } from "components/Shareable/DatePicker";
-import { InputText } from "components/Shareable/Input/InputText";
-import { required } from "helpers/fieldValidators";
-import Botao from "components/Shareable/Botao";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { required } from "src/helpers/fieldValidators";
+import Botao from "src/components/Shareable/Botao";
 import { FormApi } from "final-form";
 
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 type SeletorDeDatasType = {
   titulo: string;

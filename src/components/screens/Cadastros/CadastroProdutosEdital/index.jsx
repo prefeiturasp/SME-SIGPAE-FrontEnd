@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
   getNomesProdutosEdital,
   getCadastroProdutosEdital,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import Filtros from "./componentes/Filtros";
 import Tabela from "./componentes/Tabela";
 import "./style.scss";
-import { tipoStatus } from "helpers/utilities";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { tipoStatus } from "src/helpers/utilities";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [carregando, setCarregando] = useState(true);

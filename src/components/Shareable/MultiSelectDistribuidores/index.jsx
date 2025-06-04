@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Field } from "react-final-form";
-import { getNomesDistribuidores } from "services/logistica.service.js";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
+import { getNomesDistribuidores } from "src/services/logistica.service";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 
 const MultiSelectDistribuidores = ({ name, label, className }) => {
   const [distribuidoresSelecionados, setDistribuidoresSelecionados] = useState(

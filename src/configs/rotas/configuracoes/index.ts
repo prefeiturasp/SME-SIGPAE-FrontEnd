@@ -14,20 +14,20 @@ import {
   usuarioEhDiretorUE,
   usuarioEhGticCODAE,
   usuarioEhQualquerCODAE,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
-import AtualizacaoEmailEOLPage from "pages/Configuracoes/AtualizacaoEmailEOLPage";
-import CargasUsuariosPage from "pages/Configuracoes/CargasUsuariosPage";
-import CargasUsuariosServidoresPage from "pages/Configuracoes/CargasUsuariosServidoresPage";
-import ConfigEmailPage from "pages/Configuracoes/ConfigEmailPage";
-import GerenciamentoEmailsPage from "pages/Configuracoes/GerenciamentoEmailsPage";
-import GestaoAcessoCodaeDilogPage from "pages/Configuracoes/GestaoAcessoCodaeDilogPage";
-import GestaoAcessoCogestorPage from "pages/Configuracoes/GestaoAcessoCogestorPage";
-import GestaoAcessoDiretorEscolaPage from "pages/Configuracoes/GestaoAcessoDiretorEscolaPage";
-import GestaoAcessoEmpresaPage from "pages/Configuracoes/GestaoAcessoEmpresaPage";
-import GestaoAcessoGeralPage from "pages/Configuracoes/GestaoAcessoGeralPage";
-import GestaoAcessoMasterPage from "pages/Configuracoes/GestaoAcessoMasterPage";
-import MensagemPage from "pages/Configuracoes/MensagemPage";
+import AtualizacaoEmailEOLPage from "src/pages/Configuracoes/AtualizacaoEmailEOLPage";
+import CargasUsuariosPage from "src/pages/Configuracoes/CargasUsuariosPage";
+import CargasUsuariosServidoresPage from "src/pages/Configuracoes/CargasUsuariosServidoresPage";
+import ConfigEmailPage from "src/pages/Configuracoes/ConfigEmailPage";
+import GerenciamentoEmailsPage from "src/pages/Configuracoes/GerenciamentoEmailsPage";
+import GestaoAcessoCodaeDilogPage from "src/pages/Configuracoes/GestaoAcessoCodaeDilogPage";
+import GestaoAcessoCogestorPage from "src/pages/Configuracoes/GestaoAcessoCogestorPage";
+import GestaoAcessoDiretorEscolaPage from "src/pages/Configuracoes/GestaoAcessoDiretorEscolaPage";
+import GestaoAcessoEmpresaPage from "src/pages/Configuracoes/GestaoAcessoEmpresaPage";
+import GestaoAcessoGeralPage from "src/pages/Configuracoes/GestaoAcessoGeralPage";
+import GestaoAcessoMasterPage from "src/pages/Configuracoes/GestaoAcessoMasterPage";
+import MensagemPage from "src/pages/Configuracoes/MensagemPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";

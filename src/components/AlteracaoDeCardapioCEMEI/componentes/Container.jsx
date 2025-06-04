@@ -1,12 +1,12 @@
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
-import { MeusDadosContext } from "context/MeusDadosContext";
-import { dataParaUTC } from "helpers/utilities";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { dataParaUTC } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
-import { getMotivosAlteracaoCardapio } from "services/alteracaoDeCardapio";
-import { getQuantidadeAlunosCEMEIporCEIEMEI } from "services/aluno.service";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
-import { getDiasUteis } from "services/diasUteis.service";
+import { getMotivosAlteracaoCardapio } from "src/services/alteracaoDeCardapio";
+import { getQuantidadeAlunosCEMEIporCEIEMEI } from "src/services/aluno.service";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
+import { getDiasUteis } from "src/services/diasUteis.service";
 import { AlteracaoDeCardapioCEMEI } from "..";
 import { backgroundLabelPeriodo } from "../helpers";
 

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { Paginacao } from "components/Shareable/Paginacao";
-import { formataAlergias } from "components/screens/DietaEspecial/Relatorio/componentes/FormAutorizaDietaEspecial/helper";
-import { usuarioEhEmpresaTerceirizada } from "helpers/utilities";
-import { getSolicitacoesRelatorioDietasEspeciais } from "services/dietaEspecial.service";
+import { Paginacao } from "src/components/Shareable/Paginacao";
+import { formataAlergias } from "src/components/screens/DietaEspecial/Relatorio/componentes/FormAutorizaDietaEspecial/helper";
+import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
+import { getSolicitacoesRelatorioDietasEspeciais } from "src/services/dietaEspecial.service";
 
 import "./styles.scss";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 export const ListagemDietas = ({ ...props }) => {
   const [paginaAtual, setPaginaAtual] = useState(1);

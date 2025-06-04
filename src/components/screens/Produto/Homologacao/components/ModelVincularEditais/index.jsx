@@ -4,16 +4,19 @@ import HTTP_STATUS from "http-status-codes";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Form, Field } from "react-final-form";
 import { Modal } from "react-bootstrap";
-import InputText from "components/Shareable/Input/InputText";
-import Botao from "components/Shareable/Botao";
+import InputText from "src/components/Shareable/Input/InputText";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { CODAEHomologaProduto } from "services/produto.service";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { required } from "helpers/fieldValidators";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { CODAEHomologaProduto } from "src/services/produto.service";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import { required } from "src/helpers/fieldValidators";
 
 export const ModalVincularEditais = ({ ...props }) => {
   const {

@@ -1,18 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { codaeAssinaCronograma } from "services/cronograma.service";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { codaeAssinaCronograma } from "src/services/cronograma.service";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   CRONOGRAMA_ENTREGA,
   PRE_RECEBIMENTO,
 } from "../../../../../../configs/constants";
-import { ModalAssinaturaUsuario } from "components/Shareable/ModalAssinaturaUsuario";
-import { MSG_SENHA_INVALIDA } from "components/screens/helper";
+import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
+import { MSG_SENHA_INVALIDA } from "src/components/screens/helper";
 
 export default ({ cronograma }) => {
   const [show, setShow] = useState(false);

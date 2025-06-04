@@ -1,9 +1,9 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { GESTAO_ACESSO_GERAL, CONFIGURACOES } from "configs/constants";
-import GestaoAcesso from "components/screens/Configuracoes/GestaoAcesso";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { GESTAO_ACESSO_GERAL, CONFIGURACOES } from "src/configs/constants";
+import GestaoAcesso from "src/components/screens/Configuracoes/GestaoAcesso";
 
 const atual = {
   href: `/${CONFIGURACOES}/${GESTAO_ACESSO_GERAL}`,

@@ -13,7 +13,7 @@ import {
   GESTAO_ACESSO_MASTER,
   CARGAS_USUARIOS_SERVIDORES,
   ATUALIZACAO_EMAIL_EOL,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   usuarioEhAdministradorGpCODAE,
   usuarioEhCODAEGestaoAlimentacao,
@@ -32,7 +32,7 @@ import {
   usuarioEhDilogDiretoria,
   usuarioEhGticCODAE,
   usuarioEhAdministradorCONTRATOS,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
   const exibirConfigEmail =

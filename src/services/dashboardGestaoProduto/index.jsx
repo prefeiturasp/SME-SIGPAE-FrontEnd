@@ -1,5 +1,5 @@
 import { ErrorHandlerFunction } from "../service-helpers";
-import axios from "services/_base";
+import axios from "src/services/_base";
 
 export const getProdutosPendenteHomologacao = async (params) => {
   const url = `/dashboard-produtos/pendente-homologacao/`;

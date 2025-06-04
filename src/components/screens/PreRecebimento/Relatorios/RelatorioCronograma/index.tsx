@@ -2,25 +2,25 @@ import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import Filtros from "./components/Filtros";
 import { CronogramaRelatorio, FiltrosRelatorioCronograma } from "./interfaces";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import {
   getListagemRelatorioCronogramas,
   baixarRelatorioCronogramasExcel,
   baixarRelatorioCronogramasPdf,
-} from "../../../../../services/cronograma.service.js";
-import { Paginacao } from "components/Shareable/Paginacao";
+} from "../../../../../services/cronograma.service";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import Listagem from "./components/Listagem";
 import "./styles.scss";
 import moment from "moment";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
+} from "src/components/Shareable/Botao/constants";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 
 export default () => {
   const [carregando, setCarregando] = useState<boolean>(false);

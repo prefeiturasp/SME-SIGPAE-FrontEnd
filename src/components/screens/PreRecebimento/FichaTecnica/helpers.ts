@@ -1,14 +1,14 @@
 import { Dispatch, MutableRefObject, SetStateAction } from "react";
 import createDecorator from "final-form-calculate";
-import { getEnderecoPorCEP } from "services/cep.service";
+import { getEnderecoPorCEP } from "src/services/cep.service";
 import {
   getListaCompletaProdutosLogistica,
   getNomesMarcas,
   getNomesFabricantes,
   getInformacoesNutricionaisOrdenadas,
-} from "services/produto.service";
-import { getUnidadesDeMedidaLogistica } from "services/cronograma.service";
-import { getTerceirizadaUUID } from "services/terceirizada.service";
+} from "src/services/produto.service";
+import { getUnidadesDeMedidaLogistica } from "src/services/cronograma.service";
+import { getTerceirizadaUUID } from "src/services/terceirizada.service";
 import {
   cadastraRascunhoFichaTecnica,
   cadastrarFichaTecnicaDoRascunho,
@@ -19,12 +19,15 @@ import {
   corrigirFichaTecnica,
   atualizarFichaTecnica,
   imprimirFichaTecnica,
-} from "services/fichaTecnica.service";
+} from "src/services/fichaTecnica.service";
 
-import { removeCaracteresEspeciais, exibeError } from "helpers/utilities";
-import { downloadAndConvertToBase64 } from "components/Shareable/Input/InputFile/helper";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { FICHA_TECNICA, PRE_RECEBIMENTO } from "configs/constants";
+import { removeCaracteresEspeciais, exibeError } from "src/helpers/utilities";
+import { downloadAndConvertToBase64 } from "src/components/Shareable/Input/InputFile/helper";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { FICHA_TECNICA, PRE_RECEBIMENTO } from "src/configs/constants";
 
 import {
   ArquivoForm,
@@ -42,13 +45,13 @@ import {
 } from "./interfaces";
 import { ResponseInformacoesNutricionais } from "interfaces/responses.interface";
 import { InformacaoNutricional } from "interfaces/produto.interface";
-import { MeusDadosInterface } from "context/MeusDadosContext/interfaces";
+import { MeusDadosInterface } from "src/context/MeusDadosContext/interfaces";
 import {
   booleanToString,
   numberToStringDecimal,
   stringDecimalToNumber,
   stringToBoolean,
-} from "helpers/parsers";
+} from "src/helpers/parsers";
 import { NavigateFunction } from "react-router-dom";
 import { CATEGORIA_OPTIONS } from "./constants";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Menu, LeafItem } from "./shared";
-import { PESQUISA_DESENVOLVIMENTO } from "configs/constants";
+import { PESQUISA_DESENVOLVIMENTO } from "src/configs/constants";
 
 const MenuPesquisaDesenvolvimento = () => {
   return (

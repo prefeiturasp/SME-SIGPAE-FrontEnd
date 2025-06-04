@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import Botao from "components/Shareable/Botao";
-import { BUTTON_STYLE } from "components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
 
 import "./styles.scss";
 import { Form, Field } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 
 const CabecalhoPainel = ({ totalDietasAtivas, totalDietasInativas }) => (
   <div className="row cabecalho-painel">

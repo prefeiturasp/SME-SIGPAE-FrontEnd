@@ -5,46 +5,46 @@ import "./styles.scss";
 import {
   PAINEL_DOCUMENTOS_RECEBIMENTO,
   PRE_RECEBIMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
 } from "../../../../../Shareable/Botao/constants";
 import Botao from "../../../../../Shareable/Botao";
-import SelectSelecione from "components/Shareable/SelectSelecione";
-import { FluxoDeStatusPreRecebimento } from "components/Shareable/FluxoDeStatusPreRecebimento";
+import SelectSelecione from "src/components/Shareable/SelectSelecione";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 import {
   analisaDocumentoRecebimento,
   analisaDocumentoRecebimentoRascunho,
   detalharDocumentoParaAnalise,
-} from "services/documentosRecebimento.service";
-import { getNomesEAbreviacoesUnidadesMedida } from "services/qualidade.service";
-import { getListaLaboratoriosCredenciados } from "services/laboratorio.service";
-import InputText from "components/Shareable/Input/InputText";
+} from "src/services/documentosRecebimento.service";
+import { getNomesEAbreviacoesUnidadesMedida } from "src/services/qualidade.service";
+import { getListaLaboratoriosCredenciados } from "src/services/laboratorio.service";
+import InputText from "src/components/Shareable/Input/InputText";
 import {
   DocumentosRecebimentoParaAnalise,
   OptionsGenerico,
   TiposDocumentos,
   UnidadeMedidaSimples,
 } from "interfaces/pre_recebimento.interface";
-import { required } from "helpers/fieldValidators";
-import { deletaValues } from "helpers/formHelper";
+import { required } from "src/helpers/fieldValidators";
+import { deletaValues } from "src/helpers/formHelper";
 import { PRAZO_RECEBIMENTO_OPTIONS } from "../../constants";
 import { Field, Form } from "react-final-form";
-import { InputComData } from "components/Shareable/DatePicker";
+import { InputComData } from "src/components/Shareable/DatePicker";
 import ModalGenerico from "../../../../../Shareable/ModalGenerico";
 import ModalCorrecao from "./components/ModalCorrecao";
 import { AnaliseDocumentoPayload } from "../../interfaces";
 import createDecorator from "final-form-calculate";
-import { exibeError } from "helpers/utilities";
+import { exibeError } from "src/helpers/utilities";
 import {
   toastError,
   toastSuccess,
 } from "../../../../../Shareable/Toast/dialogs";
 import ArquivosTipoRecebimento from "../ArquivosTipoDocumento";
 import OutrosDocumentos from "../OutrosDocumentos";
-import { STATUS_DOCUMENTOS_DE_RECEBIMENTO } from "constants/shared";
+import { STATUS_DOCUMENTOS_DE_RECEBIMENTO } from "src/constants/shared";
 
 export default () => {
   const navigate = useNavigate();

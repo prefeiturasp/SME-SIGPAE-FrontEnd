@@ -1,10 +1,10 @@
 import React from "react";
 
-import { HOME } from "constants/config";
-import { RECEBIMENTO, QUESTOES_POR_PRODUTO } from "configs/constants";
-import Page from "components/Shareable/Page/Page";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import QuestoesPorProduto from "components/screens/Recebimento/QuestoesPorProduto";
+import { HOME } from "src/constants/config";
+import { RECEBIMENTO, QUESTOES_POR_PRODUTO } from "src/configs/constants";
+import Page from "src/components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import QuestoesPorProduto from "src/components/screens/Recebimento/QuestoesPorProduto";
 
 const atual = {
   href: `/${RECEBIMENTO}/${QUESTOES_POR_PRODUTO}`,

@@ -1,17 +1,17 @@
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
-import { getMotivosDREnaoValida } from "services/relatorios";
-import { Container } from "components/InversaoDeDiaDeCardapio/Container";
-import Relatorio from "components/InversaoDeDiaDeCardapio/Relatorio";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import ModalCancelarSolicitacao from "components/Shareable/ModalCancelarSolicitacao_";
-import { ModalCODAEQuestiona } from "components/Shareable/ModalCODAEQuestiona";
-import { ModalNaoValidarSolicitacao } from "components/Shareable/ModalNaoValidarSolicitacaoReduxForm";
-import ModalNegarSolicitacao from "components/Shareable/ModalNegarSolicitacao";
-import { ModalTerceirizadaRespondeQuestionamento } from "components/Shareable/ModalTerceirizadaRespondeQuestionamento";
-import Page from "components/Shareable/Page/Page";
-import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "configs/constants";
-import { HOME } from "constants/config";
+import { getMotivosDREnaoValida } from "src/services/relatorios";
+import { Container } from "src/components/InversaoDeDiaDeCardapio/Container";
+import Relatorio from "src/components/InversaoDeDiaDeCardapio/Relatorio";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import ModalCancelarSolicitacao from "src/components/Shareable/ModalCancelarSolicitacao_";
+import { ModalCODAEQuestiona } from "src/components/Shareable/ModalCODAEQuestiona";
+import { ModalNaoValidarSolicitacao } from "src/components/Shareable/ModalNaoValidarSolicitacaoReduxForm";
+import ModalNegarSolicitacao from "src/components/Shareable/ModalNegarSolicitacao";
+import { ModalTerceirizadaRespondeQuestionamento } from "src/components/Shareable/ModalTerceirizadaRespondeQuestionamento";
+import Page from "src/components/Shareable/Page/Page";
+import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
+import { HOME } from "src/constants/config";
 import {
   CODAEAutorizaPedidoDRE,
   CODAENegaInversaoDeDiaDeCardapio,
@@ -21,8 +21,8 @@ import {
   escolaCancelaInversaoDiaCardapio,
   TerceirizadaRespondeQuestionamentoInversaoDeDiaDeCardapio,
   terceirizadaTomaCiencia,
-} from "services/inversaoDeDiaDeCardapio.service";
-import { ModalAprovarGenericoSimOpcional } from "components/Shareable/ModalAprovarGenericoSimOpcional";
+} from "src/services/inversaoDeDiaDeCardapio.service";
+import { ModalAprovarGenericoSimOpcional } from "src/components/Shareable/ModalAprovarGenericoSimOpcional";
 
 export const RelatorioBase = ({ ...props }) => {
   const [motivosDREnaoValida, setMotivosDREnaoValida] = useState();

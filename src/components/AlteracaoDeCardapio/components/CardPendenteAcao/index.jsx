@@ -1,4 +1,4 @@
-import { gerarLinkRelatorio, talvezPluralizar } from "helpers/utilities";
+import { gerarLinkRelatorio, talvezPluralizar } from "src/helpers/utilities";
 import React, { Component } from "react";
 import { Collapse } from "react-collapse";
 import { Link } from "react-router-dom";

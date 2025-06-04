@@ -1,10 +1,10 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { Select } from "components/Shareable/Select";
-import { formataMesNome } from "helpers/utilities";
+} from "src/components/Shareable/Botao/constants";
+import { Select } from "src/components/Shareable/Select";
+import { formataMesNome } from "src/helpers/utilities";
 import React from "react";
 import { Field, Form } from "react-final-form";
 import {
@@ -12,7 +12,7 @@ import {
   LANCAMENTO_MEDICAO_INICIAL,
   REGISTRAR_NOVA_OCORRENCIA,
   REGISTRAR_OCORRENCIAS,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   NavigateFunction,
   useNavigate,

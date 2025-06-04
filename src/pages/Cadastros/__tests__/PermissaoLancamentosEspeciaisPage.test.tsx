@@ -25,13 +25,16 @@ jest.mock("../../../components/Shareable/Breadcrumb", () => {
   );
 });
 
-jest.mock("components/screens/Cadastros/PermissaoLancamentosEspeciais", () => {
-  return {
-    PermissaoLancamentosEspeciais: () => (
-      <div data-testid="mock-permissao">Componente de Permissão</div>
-    ),
-  };
-});
+jest.mock(
+  "src/components/screens/Cadastros/PermissaoLancamentosEspeciais",
+  () => {
+    return {
+      PermissaoLancamentosEspeciais: () => (
+        <div data-testid="mock-permissao">Componente de Permissão</div>
+      ),
+    };
+  }
+);
 
 afterEach(cleanup);
 

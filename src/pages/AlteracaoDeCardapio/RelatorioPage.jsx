@@ -1,15 +1,15 @@
-import { Relatorio } from "components/AlteracaoDeCardapio/Relatorio";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import { ModalCancelarAlteracaoCardapio } from "components/Shareable/ModalCancelaAlteracaoCardapio";
-import { ModalCODAEAutoriza } from "components/Shareable/ModalCODAEAutoriza";
-import { ModalCODAEQuestiona } from "components/Shareable/ModalCODAEQuestiona";
-import { ModalNaoValidarSolicitacao } from "components/Shareable/ModalNaoValidarSolicitacaoReduxForm";
-import ModalNegarSolicitacao from "components/Shareable/ModalNegarSolicitacao";
-import { ModalTerceirizadaRespondeQuestionamento } from "components/Shareable/ModalTerceirizadaRespondeQuestionamento";
-import Page from "components/Shareable/Page/Page";
-import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "configs/constants";
+import { Relatorio } from "src/components/AlteracaoDeCardapio/Relatorio";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import { ModalCancelarAlteracaoCardapio } from "src/components/Shareable/ModalCancelaAlteracaoCardapio";
+import { ModalCODAEAutoriza } from "src/components/Shareable/ModalCODAEAutoriza";
+import { ModalCODAEQuestiona } from "src/components/Shareable/ModalCODAEQuestiona";
+import { ModalNaoValidarSolicitacao } from "src/components/Shareable/ModalNaoValidarSolicitacaoReduxForm";
+import ModalNegarSolicitacao from "src/components/Shareable/ModalNegarSolicitacao";
+import { ModalTerceirizadaRespondeQuestionamento } from "src/components/Shareable/ModalTerceirizadaRespondeQuestionamento";
+import Page from "src/components/Shareable/Page/Page";
+import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
 
-import { HOME } from "constants/config";
+import { HOME } from "src/constants/config";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import {
@@ -24,8 +24,8 @@ import {
   escolaCancelarSolicitacaoDeAlteracaoDeCardapio,
   terceirizadaRespondeQuestionamentoAlteracaoCardapio,
   TerceirizadaTomaCienciaAlteracaoCardapio,
-} from "services/alteracaoDeCardapio";
-import { getMotivosDREnaoValida } from "services/relatorios";
+} from "src/services/alteracaoDeCardapio";
+import { getMotivosDREnaoValida } from "src/services/relatorios";
 
 export const RelatorioBase = ({ ...props }) => {
   const [motivosDREnaoValida, setMotivosDREnaoValida] = useState();

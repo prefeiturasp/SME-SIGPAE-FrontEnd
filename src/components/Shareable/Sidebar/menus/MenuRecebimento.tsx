@@ -4,7 +4,7 @@ import {
   RECEBIMENTO,
   QUESTOES_POR_PRODUTO,
   FICHA_RECEBIMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 
 const MenuRecebimento = () => {
   return (

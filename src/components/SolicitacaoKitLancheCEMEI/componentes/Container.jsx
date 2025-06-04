@@ -1,12 +1,12 @@
 import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
-import { dataParaUTC } from "helpers/utilities";
-import { getDiasUteis } from "services/diasUteis.service";
+import { dataParaUTC } from "src/helpers/utilities";
+import { getDiasUteis } from "src/services/diasUteis.service";
 import { SolicitacaoKitLancheCEMEI } from "..";
-import { getKitsLanche } from "services/kitLanche";
-import { getDietasAtivasInativasPorAluno } from "services/dietaEspecial.service";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { getKitsLanche } from "src/services/kitLanche";
+import { getDietasAtivasInativasPorAluno } from "src/services/dietaEspecial.service";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);

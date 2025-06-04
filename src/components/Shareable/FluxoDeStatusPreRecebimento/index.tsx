@@ -1,7 +1,7 @@
 import {
   DETALHAR_ALTERACAO_CRONOGRAMA,
   PRE_RECEBIMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { tipoDeStatusClasse } from "./helper";

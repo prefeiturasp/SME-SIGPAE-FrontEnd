@@ -1,29 +1,29 @@
 import { Spin } from "antd";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { InputComData } from "components/Shareable/DatePicker";
-import { MultiselectRaw } from "components/Shareable/MultiselectRaw";
-import Select from "components/Shareable/Select";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { required, requiredMultiselect } from "helpers/fieldValidators";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import Select from "src/components/Shareable/Select";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { required, requiredMultiselect } from "src/helpers/fieldValidators";
 import {
   usuarioEhCogestorDRE,
   usuarioEhEmpresa,
   usuarioEhEscola,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
-import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
+import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import {
   getClassificacoesDietaEspecial,
   getSolicitacoesRelatorioHistoricoDietas,
   getUnidadesEducacionaisComCodEol,
-} from "services/dietaEspecial.service";
+} from "src/services/dietaEspecial.service";
 import {
   buscaPeriodosEscolares,
   getTiposGestao,
-} from "services/escola.service";
-import { getLotesSimples } from "services/lote.service";
+} from "src/services/escola.service";
+import { getLotesSimples } from "src/services/lote.service";
 import { normalizarValues } from "../../helper";
 
 export const Filtros = ({ ...props }) => {

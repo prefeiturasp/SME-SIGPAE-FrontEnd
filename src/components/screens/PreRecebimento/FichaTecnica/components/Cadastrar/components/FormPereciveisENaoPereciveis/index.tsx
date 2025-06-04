@@ -1,7 +1,7 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { required } from "helpers/fieldValidators";
-import InputText from "components/Shareable/Input/InputText";
+import { required } from "src/helpers/fieldValidators";
+import InputText from "src/components/Shareable/Input/InputText";
 
 interface Props {
   values: Record<string, any>;

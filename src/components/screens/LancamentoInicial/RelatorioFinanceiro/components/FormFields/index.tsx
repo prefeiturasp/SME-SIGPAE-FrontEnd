@@ -2,8 +2,8 @@ import React from "react";
 import { Field } from "react-final-form";
 import { useSearchParams } from "react-router-dom";
 
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import { Select } from "components/Shareable/Select";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { Select } from "src/components/Shareable/Select";
 
 type FieldsProps = {
   lotes: {

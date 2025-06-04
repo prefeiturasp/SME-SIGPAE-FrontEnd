@@ -1,29 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Field } from "react-final-form";
-import { InputText } from "components/Shareable/Input/InputText";
+import { InputText } from "src/components/Shareable/Input/InputText";
 import {
   deleteFotoAluno,
   getFotoAluno,
   updateFotoAluno,
-} from "services/aluno.service";
+} from "src/services/aluno.service";
 import HTTP_STATUS from "http-status-codes";
 import "./styles.scss";
-import Botao from "components/Shareable/Botao";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   getError,
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import {
   solicitacaoEhDoCardAutorizadas,
   ehAlunoNaoMatriculado,
 } from "../../helpers";
-import { podeAtualizarFoto } from "components/screens/DietaEspecial/Escola/helper";
+import { podeAtualizarFoto } from "src/components/screens/DietaEspecial/Escola/helper";
 
 const InformacoesAluno = ({ aluno, statusSolicitacao, tipoSolicitacao }) => {
   const [fotoAlunoSrc, setFotoAlunoSrc] = useState(null);

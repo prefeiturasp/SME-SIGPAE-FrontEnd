@@ -1,39 +1,39 @@
 import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import { tiposAlimentacaoPorPeriodoETipoUnidade } from "components/InclusaoDeAlimentacaoCEMEI/helpers";
-import Botao from "components/Shareable/Botao";
+import { tiposAlimentacaoPorPeriodoETipoUnidade } from "src/components/InclusaoDeAlimentacaoCEMEI/helpers";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
-import { fluxoPartindoEscola } from "components/Shareable/FluxoDeStatus/helper";
-import RelatorioHistoricoQuestionamento from "components/Shareable/RelatorioHistoricoQuestionamento";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import RelatorioHistoricoJustificativaEscola from "components/Shareable/RelatorioHistoricoJustificativaEscola";
-import { existeLogDeQuestionamentoDaCODAE } from "components/Shareable/RelatorioHistoricoQuestionamento/helper";
-import { TIPO_SOLICITACAO } from "constants/shared";
-import { getRelatorioInclusaoAlimentacaoCEMEI } from "services/relatorios";
+} from "src/components/Shareable/Botao/constants";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
+import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
+import RelatorioHistoricoQuestionamento from "src/components/Shareable/RelatorioHistoricoQuestionamento";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import RelatorioHistoricoJustificativaEscola from "src/components/Shareable/RelatorioHistoricoJustificativaEscola";
+import { existeLogDeQuestionamentoDaCODAE } from "src/components/Shareable/RelatorioHistoricoQuestionamento/helper";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
+import { getRelatorioInclusaoAlimentacaoCEMEI } from "src/services/relatorios";
 import {
   corDaMensagem,
   justificativaAoNegarSolicitacao,
   prazoDoPedidoMensagem,
   gerarLinkRelatorio,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import {
   inclusaoPossuiCEInestePeriodo,
   inclusaoPossuiEMEInestePeriodo,
   periodosDaInclusao,
 } from "../../helpers";
 import "./style.scss";
-import { formataMotivosDiasComOutros } from "components/InclusaoDeAlimentacao/Relatorio/componentes/helper";
-import { ToggleExpandir } from "components/Shareable/ToggleExpandir";
-import { SolicitacoesSimilaresInclusao } from "components/Shareable/SolicitacoesSimilaresInclusao";
+import { formataMotivosDiasComOutros } from "src/components/InclusaoDeAlimentacao/Relatorio/componentes/helper";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
+import { SolicitacoesSimilaresInclusao } from "src/components/Shareable/SolicitacoesSimilaresInclusao";
 import {
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhDRE,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 export const CorpoRelatorio = ({
   solicitacao,

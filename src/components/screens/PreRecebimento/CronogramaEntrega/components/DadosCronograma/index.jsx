@@ -1,8 +1,8 @@
-import { deParaStatusAltCronograma } from "components/screens/helper";
+import { deParaStatusAltCronograma } from "src/components/screens/helper";
 import {
   usuarioEhEmpresaFornecedor,
   formataMilharDecimal,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React from "react";
 import "./styles.scss";
 

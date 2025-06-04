@@ -3,15 +3,21 @@ import { Select } from "antd";
 import { Field, Form, FormSpy } from "react-final-form";
 import { Modal } from "react-bootstrap";
 import HTTP_STATUS from "http-status-codes";
-import { composeValidators, getError } from "helpers/utilities";
-import { email as emailValidation, required } from "helpers/fieldValidators";
-import Botao from "components/Shareable/Botao";
+import { composeValidators, getError } from "src/helpers/utilities";
+import {
+  email as emailValidation,
+  required,
+} from "src/helpers/fieldValidators";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { InputText } from "components/Shareable/Input/InputText";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { InputText } from "src/components/Shareable/Input/InputText";
 
 export const ModalEditarEmail = ({ ...props }) => {
   const {

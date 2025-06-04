@@ -1,21 +1,19 @@
-# just to create `build` directory
-FROM node:22.15.1-alpine as builder
+FROM node:22.15.1-alpine AS builder
 ENV IS_DOCKER_ENVIRONMENT=true
 WORKDIR /app
 COPY . ./
 RUN apk add --no-cache python3 make g++
-RUN npm install --legacy-peer-deps
+RUN npm install
 RUN npm rebuild node-sass
-RUN npm run-script build --expose-gc --max-old-space-size=8192
-
-# replace strings, this way we can pass parameters to static files.
-# For more details:
-# https://stackoverflow.com/questions/48595829/how-to-pass-environment-variables-to-a-frontend-web-application
+RUN npm run build --expose-gc --max-old-space-size=8192
 
 FROM nginx:alpine
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
-COPY --from=builder /app/build /usr/share/nginx/html
-COPY ./conf/default.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+COPY ./conf/default.conf /etc/nginx/conf.d/default.conf.template
+
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

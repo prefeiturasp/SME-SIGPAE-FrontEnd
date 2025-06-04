@@ -3,7 +3,7 @@ import {
   DocumentosRecebimentoDetalhado,
   TiposDocumentoChoices,
 } from "interfaces/pre_recebimento.interface";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import ArquivosTipoRecebimento from "../ArquivosTipoDocumento";
 import { OUTROS_DOCUMENTOS_OPTIONS } from "../../constants";
 import "./styles.scss";

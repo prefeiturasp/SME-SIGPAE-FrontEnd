@@ -4,7 +4,7 @@ import {
   RELATORIO_FISCALIZACAO_TERCEIRIZADAS,
   SUPERVISAO,
   TERCEIRIZADAS,
-} from "configs/constants";
+} from "src/configs/constants";
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
 import {

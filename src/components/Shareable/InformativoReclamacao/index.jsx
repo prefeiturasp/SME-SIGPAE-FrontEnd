@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getReclamacaoDeProduto } from "services/produto.service";
+import { getReclamacaoDeProduto } from "src/services/produto.service";
 import "./styles.scss";
 
 const InformativoReclamacao = ({ homologacao }) => {

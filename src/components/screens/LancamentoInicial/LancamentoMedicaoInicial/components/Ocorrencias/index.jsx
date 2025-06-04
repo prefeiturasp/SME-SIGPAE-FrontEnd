@@ -3,11 +3,11 @@ import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { OCORRENCIA_STATUS_DE_PROGRESSO } from "components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
-import { medicaoInicialExportarOcorrenciasPDF } from "services/relatorios";
-import Botao from "components/Shareable/Botao";
-import ModalHistorico from "components/Shareable/ModalHistorico";
+} from "src/components/Shareable/Botao/constants";
+import { OCORRENCIA_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
+import { medicaoInicialExportarOcorrenciasPDF } from "src/services/relatorios";
+import Botao from "src/components/Shareable/Botao";
+import ModalHistorico from "src/components/Shareable/ModalHistorico";
 import { ModalAtualizarOcorrencia } from "../ModalAtualizarOcorrencia";
 
 export default ({

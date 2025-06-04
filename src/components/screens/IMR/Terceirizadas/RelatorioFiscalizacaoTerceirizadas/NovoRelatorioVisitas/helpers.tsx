@@ -4,7 +4,7 @@ import {
   EscolaLabelInterface,
   NovoRelatorioVisitasFormInterface,
 } from "interfaces/imr.interface";
-import { deepCopy } from "helpers/utilities";
+import { deepCopy } from "src/helpers/utilities";
 
 export const formataPayloadUpdate = (
   values: NovoRelatorioVisitasFormInterface,

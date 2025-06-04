@@ -1,33 +1,36 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { useNavigate } from "react-router-dom";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { getNumerosEditais } from "services/edital.service";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { getNumerosEditais } from "src/services/edital.service";
 import {
   getKitLanches,
   createKitLanche,
   checaNomeKitLanche,
   updateKitLanche,
-} from "services/codae.service";
+} from "src/services/codae.service";
 import { Field, Form } from "react-final-form";
-import { Select } from "components/Shareable/Select";
-import InputText from "components/Shareable/Input/InputText";
-import CKEditorField from "components/Shareable/CKEditorField";
+import { Select } from "src/components/Shareable/Select";
+import InputText from "src/components/Shareable/Input/InputText";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import {
   required,
   selectValidate,
   textAreaRequired,
   requiredMultiselect,
-} from "helpers/fieldValidators";
-import Botao from "components/Shareable/Botao";
+} from "src/helpers/fieldValidators";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Spin } from "antd";
 import "./style.scss";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 
 export default ({ uuid }) => {
   const navigate = useNavigate();

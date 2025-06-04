@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
-import RelatorioService from "services/medicaoInicial/relatorio.service";
+import RelatorioService from "src/services/medicaoInicial/relatorio.service";
 import { Filtros } from "../../../../types";
 
 type Args = {

@@ -3,8 +3,8 @@ import { Field } from "react-final-form";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import InputText from "components/Shareable/Input/InputText";
+} from "src/components/Shareable/Botao/constants";
+import InputText from "src/components/Shareable/Input/InputText";
 
 export const Header = ({
   getEditaisContratosAsync,

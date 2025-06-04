@@ -3,15 +3,22 @@ import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { required } from "helpers/fieldValidators";
-import { deepCopy, getError, mensagemCancelamento } from "helpers/utilities";
-import { escolaCancelaSuspensao } from "services/suspensaoDeAlimentacao.service";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { required } from "src/helpers/fieldValidators";
+import {
+  deepCopy,
+  getError,
+  mensagemCancelamento,
+} from "src/helpers/utilities";
+import { escolaCancelaSuspensao } from "src/services/suspensaoDeAlimentacao.service";
 import { formataMotivosDiasComOutros } from "../../../InclusaoDeAlimentacao/Relatorio/componentes/helper";
 
 export const ModalCancelaSuspensao = ({ ...props }) => {

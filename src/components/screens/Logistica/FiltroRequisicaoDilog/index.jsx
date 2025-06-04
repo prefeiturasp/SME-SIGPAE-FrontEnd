@@ -3,20 +3,20 @@ import React, { useEffect, useReducer, useState, Fragment } from "react";
 import { Form, Field } from "react-final-form";
 import { connect } from "react-redux";
 import { useNavigationType } from "react-router-dom";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import { InputComData } from "components/Shareable/DatePicker";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import Botao from "components/Shareable/Botao";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./style.scss";
 import {
   getNomesDistribuidores,
   getNumerosRequisicoes,
   getRequisicoesDoFiltro,
-} from "../../../../services/logistica.service.js";
+} from "../../../../services/logistica.service";
 
 import { DisponibilizacaoDeSolicitacoes } from "../DisponibilizacaoDeSolicitacoes";
 

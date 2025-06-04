@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Spin } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { Paginacao } from "components/Shareable/Paginacao";
+} from "src/components/Shareable/Botao/constants";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import {
   ContratoInterface,
   EmpenhoInterface,
@@ -16,16 +16,16 @@ import {
 import {
   getContratosVigentes,
   getEmpenhos,
-} from "services/medicaoInicial/empenhos.service";
+} from "src/services/medicaoInicial/empenhos.service";
 import {
   MEDICAO_INICIAL,
   EMPENHOS,
   CADASTRO_DE_EMPENHO,
   EDITAR_EMPENHO,
-} from "configs/constants";
+} from "src/configs/constants";
 import "./styles.scss";
 import { Filtros } from "./components/Filtros";
-import { formataValorDecimal } from "../../helper.js";
+import { formataValorDecimal } from "../../helper.jsx";
 
 type Edital = {
   uuid: string;

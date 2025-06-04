@@ -2,24 +2,24 @@ import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
 import moment from "moment";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import InputText from "components/Shareable/Input/InputText";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import { InputComData } from "components/Shareable/DatePicker";
-import Select from "components/Shareable/Select";
-import { getEtapas } from "services/cronograma.service";
-import { getFeriadosAnoAtualEProximo } from "services/diasUteis.service";
-import { deletaValues } from "helpers/formHelper";
+} from "src/components/Shareable/Botao/constants";
+import InputText from "src/components/Shareable/Input/InputText";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import Select from "src/components/Shareable/Select";
+import { getEtapas } from "src/services/cronograma.service";
+import { getFeriadosAnoAtualEProximo } from "src/services/diasUteis.service";
+import { deletaValues } from "src/helpers/formHelper";
 import {
   formataMilharDecimal,
   getAmanha,
   usuarioEhCronograma,
-} from "helpers/utilities";
-import { required } from "helpers/fieldValidators";
+} from "src/helpers/utilities";
+import { required } from "src/helpers/fieldValidators";
 
 import "./styles.scss";
 import { usuarioEhEmpresaFornecedor } from "../../../helpers/utilities";

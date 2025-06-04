@@ -6,17 +6,17 @@ import ModalCancelaSuspensao from "./components/ModalCancelaSuspensao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
-import RelatorioHistoricoJustificativaEscola from "components/Shareable/RelatorioHistoricoJustificativaEscola";
-import { statusEnum } from "constants/shared";
-import { TERCEIRIZADA } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import RelatorioHistoricoJustificativaEscola from "src/components/Shareable/RelatorioHistoricoJustificativaEscola";
+import { statusEnum } from "src/constants/shared";
+import { TERCEIRIZADA } from "src/configs/constants";
 import {
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
-} from "helpers/utilities";
-import { getSuspensaoAlimentacaoCEI } from "services/suspensaoAlimentacaoCei.service";
+} from "src/helpers/utilities";
+import { getSuspensaoAlimentacaoCEI } from "src/services/suspensaoAlimentacaoCei.service";
 import "./style.scss";
 
 export default ({ ...props }) => {

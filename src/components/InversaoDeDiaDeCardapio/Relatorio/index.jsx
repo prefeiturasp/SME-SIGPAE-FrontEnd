@@ -23,7 +23,7 @@ import RelatorioHistoricoQuestionamento from "../../Shareable/RelatorioHistorico
 import RelatorioHistoricoJustificativaEscola from "../../Shareable/RelatorioHistoricoJustificativaEscola";
 import ModalAutorizarAposQuestionamento from "../../Shareable/ModalAutorizarAposQuestionamento";
 import CorpoRelatorio from "./componentes/CorpoRelatorio";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
 
 class Relatorio extends Component {
   constructor(props) {

@@ -3,22 +3,22 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
   getVinculosTipoAlimentacaoPorEscola,
-} from "services/cadastroTipoAlimentacao.service";
+} from "src/services/cadastroTipoAlimentacao.service";
 import {
   buscaPeriodosEscolares,
   getQuantidaDeAlunosPorPeriodoEEscola,
-} from "services/escola.service";
+} from "src/services/escola.service";
 import InclusaoDeAlimentacao from "..";
 import {
   dataParaUTC,
   escolaEhCei,
   tiposAlimentacaoETEC,
-} from "helpers/utilities";
-import { getDiasUteis } from "services/diasUteis.service";
+} from "src/helpers/utilities";
+import { getDiasUteis } from "src/services/diasUteis.service";
 import {
   getMotivosInclusaoContinua,
   getMotivosInclusaoNormal,
-} from "services/inclusaoDeAlimentacao";
+} from "src/services/inclusaoDeAlimentacao";
 import {
   abstraiPeriodosComAlunosMatriculados,
   exibeMotivoETEC,
@@ -35,8 +35,8 @@ import {
   ResponseQuantidadeAlunosEscolaInterface,
   ResponseVinculosTipoAlimentacaoPorEscolaInterface,
 } from "interfaces/responses.interface";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);

@@ -1,12 +1,16 @@
-import InputText from "components/Shareable/Input/InputText";
-import { MultiselectRaw } from "components/Shareable/MultiselectRaw";
-import Select from "components/Shareable/Select";
-import { maxValue, naoPodeSerZero, required } from "helpers/fieldValidators";
+import InputText from "src/components/Shareable/Input/InputText";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import Select from "src/components/Shareable/Select";
+import {
+  maxValue,
+  naoPodeSerZero,
+  required,
+} from "src/helpers/fieldValidators";
 import {
   agregarDefault,
   composeValidators,
   formatarParaMultiselect,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { useState } from "react";
 import { Field } from "react-final-form";
 import { totalMatriculados, totalSolicitacao } from "../helpers";

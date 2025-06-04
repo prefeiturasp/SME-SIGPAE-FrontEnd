@@ -1,7 +1,7 @@
 import React from "react";
 import Breadcrumb from "../../components/Shareable/Breadcrumb";
 import Page from "../../components/Shareable/Page/Page";
-import { PermissaoLancamentosEspeciais } from "components/screens/Cadastros/PermissaoLancamentosEspeciais";
+import { PermissaoLancamentosEspeciais } from "src/components/screens/Cadastros/PermissaoLancamentosEspeciais";
 import {
   CADASTROS,
   CONFIGURACOES,

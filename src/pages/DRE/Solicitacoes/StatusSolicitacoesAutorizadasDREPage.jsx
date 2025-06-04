@@ -3,16 +3,16 @@ import Breadcrumb from "../../../components/Shareable/Breadcrumb";
 import Page from "../../../components/Shareable/Page/Page";
 import { HOME } from "../constants";
 import { DRE, SOLICITACOES_AUTORIZADAS } from "../../../configs/constants";
-import SolicitacoesPorStatusGenerico from "components/screens/SolicitacoesPorStatusGenerico";
+import SolicitacoesPorStatusGenerico from "src/components/screens/SolicitacoesPorStatusGenerico";
 import {
   CARD_TYPE_ENUM,
   ICON_CARD_TYPE_ENUM,
-} from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { getSolicitacoesAutorizadasDRE } from "services/painelDRE.service";
-import CardLegendas from "components/Shareable/CardLegendas";
-import { PAGINACAO_DEFAULT } from "constants/shared";
-import { formatarLotesParaVisao } from "helpers/utilities";
-import { MeusDadosContext } from "context/MeusDadosContext";
+} from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import { getSolicitacoesAutorizadasDRE } from "src/services/painelDRE.service";
+import CardLegendas from "src/components/Shareable/CardLegendas";
+import { PAGINACAO_DEFAULT } from "src/constants/shared";
+import { formatarLotesParaVisao } from "src/helpers/utilities";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 const atual = {
   href: `/${DRE}/${SOLICITACOES_AUTORIZADAS}`,

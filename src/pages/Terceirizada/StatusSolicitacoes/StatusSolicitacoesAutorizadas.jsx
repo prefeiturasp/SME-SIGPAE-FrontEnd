@@ -1,19 +1,19 @@
 import React, { useContext } from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   SOLICITACOES_AUTORIZADAS,
   TERCEIRIZADA,
 } from "../../../configs/constants";
 import { HOME } from "../constants";
-import { ICON_CARD_TYPE_ENUM } from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { getSolicitacoesAutorizadasTerceirizada } from "services/painelTerceirizada.service";
-import { CARD_TYPE_ENUM } from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { MeusDadosContext } from "context/MeusDadosContext";
-import SolicitacoesPorStatusGenerico from "components/screens/SolicitacoesPorStatusGenerico";
-import CardLegendas from "components/Shareable/CardLegendas";
-import { formatarLotesParaVisao } from "helpers/utilities";
-import { PAGINACAO_DEFAULT } from "constants/shared";
+import { ICON_CARD_TYPE_ENUM } from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import { getSolicitacoesAutorizadasTerceirizada } from "src/services/painelTerceirizada.service";
+import { CARD_TYPE_ENUM } from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import SolicitacoesPorStatusGenerico from "src/components/screens/SolicitacoesPorStatusGenerico";
+import CardLegendas from "src/components/Shareable/CardLegendas";
+import { formatarLotesParaVisao } from "src/helpers/utilities";
+import { PAGINACAO_DEFAULT } from "src/constants/shared";
 
 const atual = {
   href: `/${TERCEIRIZADA}/${SOLICITACOES_AUTORIZADAS}`,

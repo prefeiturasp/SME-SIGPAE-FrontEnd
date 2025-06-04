@@ -1,4 +1,4 @@
-import { WEEK } from "configs/constants";
+import { WEEK } from "src/configs/constants";
 import React from "react";
 import "./style.scss";
 

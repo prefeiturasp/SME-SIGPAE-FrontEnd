@@ -3,19 +3,19 @@ import { Spin, Select } from "antd";
 import { Modal } from "react-bootstrap";
 import { Form, Field } from "react-final-form";
 import { BAD_REQUEST, CREATED } from "http-status-codes";
-import { email } from "helpers/fieldValidators";
-import Botao from "components/Shareable/Botao";
+import { email } from "src/helpers/fieldValidators";
+import Botao from "src/components/Shareable/Botao";
 import {
   toastSuccess,
   toastError,
-} from "components/Shareable/Toast/dialogs.js";
+} from "src/components/Shareable/Toast/dialogs";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import { InputText } from "components/Shareable/Input/InputText";
-import { createEmailsTerceirizadasPorModulo } from "services/terceirizada.service.js";
+} from "src/components/Shareable/Botao/constants";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { createEmailsTerceirizadasPorModulo } from "src/services/terceirizada.service";
 
 export default (props) => {
   const [showModal, setShowModal] = useState(false);

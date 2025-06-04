@@ -1,30 +1,30 @@
-import CardAtalho from "components/Shareable/CardAtalho";
+import CardAtalho from "src/components/Shareable/CardAtalho";
 import HTTP_STATUS from "http-status-codes";
-import CardBody from "components/Shareable/CardBody";
-import CardMatriculados from "components/Shareable/CardMatriculados";
+import CardBody from "src/components/Shareable/CardBody";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
 import CardStatusDeSolicitacao, {
   CARD_TYPE_ENUM,
   ICON_CARD_TYPE_ENUM,
-} from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+} from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
 import {
   ESCOLA,
   SOLICITACOES_AUTORIZADAS,
   SOLICITACOES_CANCELADAS,
   SOLICITACOES_NEGADAS,
   SOLICITACOES_PENDENTES,
-} from "configs/constants";
-import { PAGINACAO_DEFAULT } from "constants/shared";
-import { dataAtual } from "helpers/utilities";
+} from "src/configs/constants";
+import { PAGINACAO_DEFAULT } from "src/constants/shared";
+import { dataAtual } from "src/helpers/utilities";
 import React, { useContext, useEffect, useState } from "react";
 import {
   getSolicitacoesAutorizadasEscola,
   getSolicitacoesCanceladasEscola,
   getSolicitacoesNegadasEscola,
   getSolicitacoesPendentesEscola,
-} from "services/painelEscola.service";
+} from "src/services/painelEscola.service";
 import { Spin } from "antd";
 import { ajustarFormatoLog } from "../helper";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 export const DashboardEscola = () => {
   const [aguardandoAutorizacao, setAguardandoAutorizacao] = useState(null);

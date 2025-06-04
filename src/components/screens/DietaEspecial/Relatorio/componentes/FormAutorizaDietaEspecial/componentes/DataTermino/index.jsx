@@ -1,8 +1,8 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { TIPO_SOLICITACAO_DIETA } from "constants/shared";
+import { TIPO_SOLICITACAO_DIETA } from "src/constants/shared";
 import moment from "moment";
-import { InputComData } from "components/Shareable/DatePicker";
+import { InputComData } from "src/components/Shareable/DatePicker";
 import DataOpcional from "./componentes/DataOpcional";
 import "./style.scss";
 

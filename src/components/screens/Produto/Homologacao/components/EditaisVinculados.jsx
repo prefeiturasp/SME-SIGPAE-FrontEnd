@@ -1,6 +1,6 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 
 export const EditaisVinculados = () => {
   return (

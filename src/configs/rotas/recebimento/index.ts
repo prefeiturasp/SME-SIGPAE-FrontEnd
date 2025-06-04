@@ -1,11 +1,11 @@
-import { usuarioEhRecebimento } from "helpers/utilities";
+import { usuarioEhRecebimento } from "src/helpers/utilities";
 
-import CadastroFichaRecebimentoPage from "pages/Recebimento/FichaRecebimento/CadastroFichaRecebimentoPage";
-import FichaRecebimentoPage from "pages/Recebimento/FichaRecebimento/FichaRecebimentoPage";
-import AtribuirQuestoesPage from "pages/Recebimento/QuestoesPorProduto/AtribuirQuestoesPage";
-import CopiarAtribuicaoQuestoesPage from "pages/Recebimento/QuestoesPorProduto/CopiarAtribuicaoQuestoesPage";
-import EditarAtribuicaoQuestoesPage from "pages/Recebimento/QuestoesPorProduto/EditarAtribuicaoQuestoesPage";
-import QuestoesPorProdutoPage from "pages/Recebimento/QuestoesPorProduto/QuestoesPorProdutoPage";
+import CadastroFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/CadastroFichaRecebimentoPage";
+import FichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/FichaRecebimentoPage";
+import AtribuirQuestoesPage from "src/pages/Recebimento/QuestoesPorProduto/AtribuirQuestoesPage";
+import CopiarAtribuicaoQuestoesPage from "src/pages/Recebimento/QuestoesPorProduto/CopiarAtribuicaoQuestoesPage";
+import EditarAtribuicaoQuestoesPage from "src/pages/Recebimento/QuestoesPorProduto/EditarAtribuicaoQuestoesPage";
+import QuestoesPorProdutoPage from "src/pages/Recebimento/QuestoesPorProduto/QuestoesPorProdutoPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Field } from "react-final-form";
-import { required } from "helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 import Select from "../../../../../Shareable/Select";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Select as SelectAntd } from "antd";
 import Botao from "../../../../../Shareable/Botao";
-import { ASelect } from "components/Shareable/MakeField";
+import { ASelect } from "src/components/Shareable/MakeField";
 import {
   BUTTON_STYLE,
   BUTTON_ICON,

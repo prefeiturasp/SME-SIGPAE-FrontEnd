@@ -6,19 +6,22 @@ import { useNavigate } from "react-router-dom";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import InputText from "components/Shareable/Input/InputText";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import { getListaFichasTecnicasSimplesSemLayoutEmbalagem } from "services/fichaTecnica.service";
-import { cadastraLayoutEmbalagem } from "services/layoutEmbalagem.service";
-import { getListaFiltradaAutoCompleteSelect } from "helpers/autoCompleteSelect";
-import { required } from "helpers/fieldValidators";
-import { exibeError } from "helpers/utilities";
-import { formatarNumeroEProdutoFichaTecnica } from "helpers/preRecebimento";
-import { LAYOUT_EMBALAGEM, PRE_RECEBIMENTO } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import InputText from "src/components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import { getListaFichasTecnicasSimplesSemLayoutEmbalagem } from "src/services/fichaTecnica.service";
+import { cadastraLayoutEmbalagem } from "src/services/layoutEmbalagem.service";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
+import { required } from "src/helpers/fieldValidators";
+import { exibeError } from "src/helpers/utilities";
+import { formatarNumeroEProdutoFichaTecnica } from "src/helpers/preRecebimento";
+import { LAYOUT_EMBALAGEM, PRE_RECEBIMENTO } from "src/configs/constants";
 
 import ModalConfirmar from "./components/ModalConfirmar";
 import ModalCancelar from "./components/ModalCancelar";

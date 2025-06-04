@@ -1,15 +1,15 @@
 import React from "react";
 import { Field, reduxForm, FormSection } from "redux-form";
-import InputText from "components/Shareable/Input/InputText";
-import { required, inteiroOuDecimal } from "helpers/fieldValidators";
+import InputText from "src/components/Shareable/Input/InputText";
+import { required, inteiroOuDecimal } from "src/helpers/fieldValidators";
 import "./styles.scss";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { ToggleExpandir } from "components/Shareable/ToggleExpandir";
-import { STATUS_CODAE_QUESTIONADO } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
+import { STATUS_CODAE_QUESTIONADO } from "src/configs/constants";
 
 class WizardFormSegundaPagina extends React.Component {
   constructor(props) {

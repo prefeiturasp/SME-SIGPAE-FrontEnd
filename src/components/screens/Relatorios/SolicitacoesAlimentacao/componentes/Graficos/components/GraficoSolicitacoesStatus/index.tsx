@@ -9,8 +9,8 @@ import {
   Tooltip,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import { GraficoDoughnut } from "components/Shareable/Graficos/GraficoDoughnut";
-import { ChartData } from "components/Shareable/Graficos/interfaces";
+import { GraficoDoughnut } from "src/components/Shareable/Graficos/GraficoDoughnut";
+import { ChartData } from "src/components/Shareable/Graficos/interfaces";
 import React from "react";
 
 ChartJS.register(
