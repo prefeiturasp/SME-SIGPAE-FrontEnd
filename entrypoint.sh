@@ -24,7 +24,7 @@ set -xe
 set -xe
   : "${CES_TOKEN?Precisa de uma variavel de ambiente CES_TOKEN}"
 
-envsubst '${WEBSOCKET_SERVER}' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf
+envsubst '${WEBSOCKET_SERVER} ${SERVER_NAME}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 
 for file in /usr/share/nginx/html/assets/*.js; do
   sed -i "s|API_URL_REPLACE_ME|$API_URL|g" "$file"
