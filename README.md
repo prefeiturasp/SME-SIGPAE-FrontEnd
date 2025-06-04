@@ -1,5 +1,5 @@
 ![node-version](https://img.shields.io/badge/node-22.15.1-blue)
-![react-version](https://img.shields.io/badge/react-18.2.0-blue)
+![react-version](https://img.shields.io/badge/react-18.3.1-blue)
 
 Projeto SIGPAE Frontend baseado em <a  href="https://vite.dev/" target="_blank">Vite</a> para a interface gráfica onde os usuários do sistema poderão interagir com a <a  href="https://github.com/prefeiturasp/SME-SIGPAE-API" target="_blank">API SIGPAE</a>
 
