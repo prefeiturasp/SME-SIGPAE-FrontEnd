@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import { Form, Field, FormSpy } from "react-final-form";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
-import { formatarParaMultiselect } from "helpers/utilities";
-import { ASelect } from "components/Shareable/MakeField";
+import { formatarParaMultiselect } from "src/helpers/utilities";
+import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { TreeSelect, Spin } from "antd";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import {
   getListaProdutos,
   criarVinculoProdutosEditais,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import HTTP_STATUS from "http-status-codes";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { formatarOpcoes, validatePayload } from "./helper";
-import { EDITAIS_INVALIDOS } from "helpers/gestaoDeProdutos";
+import { EDITAIS_INVALIDOS } from "src/helpers/gestaoDeProdutos";
 
 import "./style.scss";
 

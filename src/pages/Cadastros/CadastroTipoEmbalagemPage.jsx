@@ -1,6 +1,6 @@
 import React from "react";
 import Breadcrumb from "../../components/Shareable/Breadcrumb";
-import CadastroTipoEmbalagem from "components/screens/Cadastros/TiposEmbalagens/components/CadastroTipoEmbalagem";
+import CadastroTipoEmbalagem from "src/components/screens/Cadastros/TiposEmbalagens/components/CadastroTipoEmbalagem";
 import Page from "../../components/Shareable/Page/Page";
 import {
   CADASTROS,

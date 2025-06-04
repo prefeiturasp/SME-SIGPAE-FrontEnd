@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import "./styles.scss";
 import { Field, Form } from "react-final-form";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import { getListaFiltradaAutoCompleteSelect } from "helpers/autoCompleteSelect";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import { required } from "../../../../../../helpers/fieldValidators";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import { getListaCronogramasPraCadastro } from "../../../../../../services/cronograma.service";
 import {
   DocumentosRecebimentoPayload,
@@ -20,9 +20,9 @@ import {
 } from "../../../../../Shareable/Botao/constants";
 import Botao from "../../../../../Shareable/Botao";
 import { useNavigate } from "react-router-dom";
-import { DOCUMENTOS_RECEBIMENTO, PRE_RECEBIMENTO } from "configs/constants";
+import { DOCUMENTOS_RECEBIMENTO, PRE_RECEBIMENTO } from "src/configs/constants";
 import ModalConfirmarEnvio from "../ModalConfirmarEnvio";
-import { exibeError } from "helpers/utilities";
+import { exibeError } from "src/helpers/utilities";
 import {
   toastError,
   toastSuccess,

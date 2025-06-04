@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Field } from "redux-form";
 import "./style.scss";
 import InputErroMensagem from "../../Input/InputErroMensagem";
-import { escolaEhCei } from "helpers/utilities";
+import { escolaEhCei } from "src/helpers/utilities";
 
 export class TempoPasseio extends Component {
   render() {

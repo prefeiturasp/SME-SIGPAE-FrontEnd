@@ -10,7 +10,7 @@ import multi from "redux-multi";
 import promise from "redux-promise";
 import thunk from "redux-thunk";
 import { App } from "./App";
-import { ENVIRONMENT } from "constants/config";
+import { ENVIRONMENT } from "src/constants/config";
 import reducers from "./reducers";
 import * as serviceWorker from "./serviceWorker";
 import "./styles/custom.css";

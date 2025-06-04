@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from "react";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   recebeGuiaComOcorrencia,
   editaGuiaComOcorrencia,
-} from "services/logistica.service";
+} from "src/services/logistica.service";
 import { mapeiaStatusAlimento } from "../../helper";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import {
   CONFERENCIA_GUIA_COM_OCORRENCIA,
   LOGISTICA,
   CONFERIR_ENTREGA,
   REPOSICAO_GUIA,
-} from "configs/constants";
+} from "src/configs/constants";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import ConfirmacaoEdicao from "./components/confirmacaoEdicao";
 import "./styles.scss";
 

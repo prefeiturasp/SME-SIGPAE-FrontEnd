@@ -8,31 +8,34 @@ import {
   required,
   rfOuCpfOuCodOperador,
   semCaracteresEspeciais,
-} from "helpers/fieldValidators";
-import authService from "services/auth";
+} from "src/helpers/fieldValidators";
+import authService from "src/services/auth";
 import {
   atualizarSenhaLogado,
   recuperaSenha,
   setUsuario,
-} from "services/perfil.service";
-import { Botao } from "components/Shareable/Botao";
+} from "src/services/perfil.service";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { InputText } from "components/Shareable/Input/InputText";
-import { InputPassword } from "components/Shareable/Input/InputPassword";
-import Select from "components/Shareable/Select";
-import RequisitosSenha from "components/Shareable/RequisitosSenha";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { InputPassword } from "src/components/Shareable/Input/InputPassword";
+import Select from "src/components/Shareable/Select";
+import RequisitosSenha from "src/components/Shareable/RequisitosSenha";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { TIPOS_EMAIL_CADASTRO, TABS } from "./constans";
 import "./style.scss";
 import { validarForm } from "./validar";
 import {
   fieldCnpj,
   fieldCpf,
-} from "components/screens/Cadastros/CadastroEmpresa/helper";
-import { composeValidators, deepCopy } from "helpers/utilities";
+} from "src/components/screens/Cadastros/CadastroEmpresa/helper";
+import { composeValidators, deepCopy } from "src/helpers/utilities";
 import { Form, Field as FieldFF } from "react-final-form";
 import { getError } from "../../helpers/utilities";
 

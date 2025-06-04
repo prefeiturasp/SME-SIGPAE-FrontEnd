@@ -1,24 +1,40 @@
-import React, { useEffect, useState } from "react";
-import { Field, Form } from "react-final-form";
-import arrayMutators from "final-form-arrays";
-import CardMatriculados from "components/Shareable/CardMatriculados";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import { FieldArray } from "react-final-form-arrays";
-import { Select } from "components/Shareable/Select";
-import {
-  agregarDefault,
-  checaSeDataEstaEntre2e5DiasUteis,
-  deepCopy,
-  getError,
-} from "helpers/utilities";
-import { required } from "helpers/fieldValidators";
+import { Spin } from "antd";
 import {
   AdicionarDia,
   DataInclusaoNormal,
   OutroMotivo,
-} from "components/InclusaoDeAlimentacao/Escola/Formulario/componentes/InclusaoNormal";
+} from "src/components/InclusaoDeAlimentacao/Escola/Formulario/componentes/InclusaoNormal";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import InputText from "src/components/Shareable/Input/InputText";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import { Select } from "src/components/Shareable/Select";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
+import arrayMutators from "final-form-arrays";
+import {
+  maxValue,
+  naoPodeSerZero,
+  required,
+} from "src/helpers/fieldValidators";
+import {
+  agregarDefault,
+  checaSeDataEstaEntre2e5DiasUteis,
+  composeValidators,
+  deepCopy,
+  getError,
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
-import moment from "moment";
+import { useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
+import { FieldArray } from "react-final-form-arrays";
 import {
   atualizarInclusoesDaCEI,
   criarInclusoesDaCEI,
@@ -26,20 +42,9 @@ import {
   getQuantidadeAlunosFaixaEtaria,
   iniciarInclusoesDaCEI,
   meusRascunhosDeInclusaoDeAlimentacao,
-} from "services/inclusaoDeAlimentacao/cei.legacy.service";
-import Botao from "components/Shareable/Botao";
-import {
-  BUTTON_STYLE,
-  BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
-import InputText from "components/Shareable/Input/InputText";
-import { maxValue, naoPodeSerZero } from "helpers/fieldValidators";
-import { composeValidators } from "helpers/utilities";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/services/inclusaoDeAlimentacao/cei.legacy.service";
 import { Rascunhos } from "./Rascunhos";
 import { formataPayload, validarForm } from "./helper";
-import { Spin } from "antd";
 import "./style.scss";
 
 export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
@@ -79,6 +84,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
       }
     } else {
       const response = await criarInclusoesDaCEI(payload);
+
       if (response.status === HTTP_STATUS.CREATED) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
           iniciarPedido(response.data.uuid, values);
@@ -236,6 +242,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
 
     form.change("periodos_e_faixas", _periodos_e_faixas);
     form.change("uuid", inclusao.uuid);
+    form.change("id_externo", inclusao.id_externo);
     form.change("escola", inclusao.escola.uuid);
     form.change(
       "dias_motivos_da_inclusao_cei",
@@ -255,7 +262,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
         refresh(values);
       } else {
         toastError(
-          `Houve um erro ao excluir o rascunho: ${getError(response.data)}`
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
         );
       }
     }
@@ -269,7 +276,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
   useEffect(() => {
     async function fetch() {
       let periodos_e_faixas = [];
-      const dataInclusao = moment().format("YYYY-MM-DD");
+      const dataInclusao = new Date().toISOString().split("T")[0];
       for (let index = 0; index < periodos.length; index++) {
         const periodo = periodos[index];
         const response = await getQuantidadeAlunosFaixaEtaria(
@@ -357,7 +364,9 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                 </div>
               )}
               <div className="mt-2 page-title">
-                {values.uuid ? `Solicitação # ${"1234AB"}` : "Nova Solicitação"}
+                {values.uuid
+                  ? `Solicitação # ${values.id_externo}`
+                  : "Nova Solicitação"}
               </div>
               <div className="card solicitation mt-2">
                 <div className="card-body">
@@ -373,6 +382,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                               <Field
                                 component={Select}
                                 name={`${name}.motivo`}
+                                dataTestId="div-select-motivo"
                                 label="Motivo"
                                 options={agregarDefault(motivos)}
                                 required
@@ -430,6 +440,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                               }}
                             >
                               <span
+                                data-testid={`span-${periodo_faixa.nome}`}
                                 onClick={async (e) => {
                                   const value = e.target.checked;
                                   let _periodos_e_faixas = deepCopy(
@@ -504,6 +515,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                               >
                                 <Field
                                   component={"input"}
+                                  data-testid={`periodos_e_faixas[${periodo_faixa_idx}]`}
                                   type="checkbox"
                                   name={`periodos_e_faixas[${periodo_faixa_idx}].checked`}
                                 />
@@ -557,6 +569,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                           <td className="text-center">
                                             <Field
                                               component={InputText}
+                                              dataTestId={`periodos_e_faixas[${periodo_faixa_idx}].faixas_etarias[${k}].quantidade_alunos`}
                                               type="number"
                                               step="1"
                                               min="0"
@@ -640,6 +653,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                         }}
                                       >
                                         <span
+                                          data-testid={`span-dentro-${periodo.nome}`}
                                           onClick={async (e) => {
                                             const value = e.target.checked;
                                             let _periodos_e_faixas = deepCopy(
@@ -749,6 +763,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                                   <td className="text-center">
                                                     <Field
                                                       component={InputText}
+                                                      dataTestId={`periodos_e_faixas[${periodo_faixa_idx}].periodos[${periodo_idx}].faixas_etarias[${k}].quantidade_alunos`}
                                                       type="number"
                                                       step="1"
                                                       min="0"
@@ -845,9 +860,6 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                         disabled={submitting}
                         type={BUTTON_TYPE.SUBMIT}
                         style={BUTTON_STYLE.GREEN_OUTLINE}
-                        onClick={() => {
-                          handleSubmit((values) => onSubmit(values));
-                        }}
                       />
                       <Botao
                         texto="Enviar"

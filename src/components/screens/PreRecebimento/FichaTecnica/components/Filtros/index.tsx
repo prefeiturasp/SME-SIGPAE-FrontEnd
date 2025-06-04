@@ -1,21 +1,21 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
 import moment from "moment";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./styles.scss";
 import { NavLink } from "react-router-dom";
 import {
   CADASTRAR_FICHA_TECNICA,
   PRE_RECEBIMENTO,
 } from "../../../../../../configs/constants";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import { InputComData } from "components/Shareable/DatePicker";
-import { InputText } from "components/Shareable/Input/InputText";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { InputText } from "src/components/Shareable/Input/InputText";
 import { getListaCompletaProdutosLogistica } from "../../../../../../services/produto.service";
 import { getListaFiltradaAutoCompleteSelect } from "../../../../../../helpers/autoCompleteSelect";
 import { FiltrosFichaTecnica } from "../../interfaces";

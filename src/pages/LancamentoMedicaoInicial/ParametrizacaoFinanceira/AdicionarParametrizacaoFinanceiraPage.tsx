@@ -4,12 +4,12 @@ import {
   ADICIONAR_PARAMETRIZACAO_FINANCEIRA,
   MEDICAO_INICIAL,
   PARAMETRIZACAO_FINANCEIRA,
-} from "configs/constants";
+} from "src/configs/constants";
 
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 
-import AdicionarParametrizacaoFinanceira from "components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira";
+import AdicionarParametrizacaoFinanceira from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira";
 
 const atual = {
   href: `/${MEDICAO_INICIAL}/${PARAMETRIZACAO_FINANCEIRA}/${ADICIONAR_PARAMETRIZACAO_FINANCEIRA}`,

@@ -3,18 +3,21 @@ import moment from "moment";
 import React from "react";
 import { Field, Form } from "react-final-form";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { InputComData } from "components/Shareable/DatePicker";
-import CKEditorField from "components/Shareable/CKEditorField";
-import { required } from "helpers/fieldValidators";
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import { required } from "src/helpers/fieldValidators";
 
-import { updateSolicitacaoCadastroProdutoDieta } from "services/produto.service";
-import { toastSuccess, toastError } from "components/Shareable/Toast/dialogs";
-import { converterDDMMYYYYparaYYYYMMDD } from "helpers/utilities";
+import { updateSolicitacaoCadastroProdutoDieta } from "src/services/produto.service";
+import {
+  toastSuccess,
+  toastError,
+} from "src/components/Shareable/Toast/dialogs";
+import { converterDDMMYYYYparaYYYYMMDD } from "src/helpers/utilities";
 import "./styles.scss";
 
 export default ({ onUpdate, uuidSolicitacao }) => {

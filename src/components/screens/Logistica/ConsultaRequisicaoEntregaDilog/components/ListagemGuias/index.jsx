@@ -3,11 +3,11 @@ import { Spin } from "antd";
 
 import "./styles.scss";
 import { Checkbox } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Modal } from "react-bootstrap";
 
 export default ({

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { escolaEhCEMEI, pontuarValor } from "helpers/utilities";
+import { escolaEhCEMEI, pontuarValor } from "src/helpers/utilities";
 import "./style.scss";
 
 export default class CardMatriculados extends Component {

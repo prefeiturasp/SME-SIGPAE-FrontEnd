@@ -1,27 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Form, Field } from "react-final-form";
-import { ASelect, AInput, AInputNumber } from "components/Shareable/MakeField";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  ASelect,
+  AInput,
+  AInputNumber,
+} from "src/components/Shareable/MakeField";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { Select as SelectAntd, Spin } from "antd";
-import { required } from "helpers/fieldValidators";
-import { getNumerosEditais } from "services/edital.service";
+import { required } from "src/helpers/fieldValidators";
+import { getNumerosEditais } from "src/services/edital.service";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import { MEDICAO_INICIAL, CLAUSULAS_PARA_DESCONTOS } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import {
+  MEDICAO_INICIAL,
+  CLAUSULAS_PARA_DESCONTOS,
+} from "src/configs/constants";
 import "./styles.scss";
 import { ClausulaPayload } from "interfaces/clausulas_para_descontos.interface";
 import {
   cadastraClausulaParaDesconto,
   getClausulaParaDesconto,
   editaClausulaParaDesconto,
-} from "services/medicaoInicial/clausulasParaDescontos.service";
-import { formataValorDecimal, parserValorDecimal } from "../../helper.js";
-import { getError } from "helpers/utilities";
+} from "src/services/medicaoInicial/clausulasParaDescontos.service";
+import { formataValorDecimal, parserValorDecimal } from "../../helper.jsx";
+import { getError } from "src/helpers/utilities";
 
 const VALORES_INICIAIS: ClausulaPayload = {
   edital: null,

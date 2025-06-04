@@ -1,15 +1,15 @@
-import { Relatorio } from "components/AlteracaoDeCardapioCEMEI/Relatorio";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import { ModalCancelarAlteracaoCardapio } from "components/Shareable/ModalCancelaAlteracaoCardapio";
-import { ModalCODAEAutoriza } from "components/Shareable/ModalCODAEAutoriza";
-import { ModalCODAEQuestionaFinalForm } from "components/Shareable/ModalCODAEQuestionaFinalForm";
-import { ModalNaoValidarFinalForm } from "components/Shareable/ModalNaoValidarFinalForm";
-import { ModalNegarFinalForm } from "components/Shareable/ModalNegarFinalForm";
-import { ModalTercRespondeQuestFinalForm } from "components/Shareable/ModalTercRespondeQuestFinalForm";
-import Page from "components/Shareable/Page/Page";
-import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "configs/constants";
-import { HOME } from "constants/config";
-import { TIPO_SOLICITACAO } from "constants/shared";
+import { Relatorio } from "src/components/AlteracaoDeCardapioCEMEI/Relatorio";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import { ModalCancelarAlteracaoCardapio } from "src/components/Shareable/ModalCancelaAlteracaoCardapio";
+import { ModalCODAEAutoriza } from "src/components/Shareable/ModalCODAEAutoriza";
+import { ModalCODAEQuestionaFinalForm } from "src/components/Shareable/ModalCODAEQuestionaFinalForm";
+import { ModalNaoValidarFinalForm } from "src/components/Shareable/ModalNaoValidarFinalForm";
+import { ModalNegarFinalForm } from "src/components/Shareable/ModalNegarFinalForm";
+import { ModalTercRespondeQuestFinalForm } from "src/components/Shareable/ModalTercRespondeQuestFinalForm";
+import Page from "src/components/Shareable/Page/Page";
+import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
+import { HOME } from "src/constants/config";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useState } from "react";
 import {
@@ -21,8 +21,8 @@ import {
   escolaCancelarSolicitacaoDeAlteracaoDeCardapioCEMEI,
   terceirizadaRespondeQuestionamentoAlteracaoCardapio,
   TerceirizadaTomaCienciaAlteracaoCardapio,
-} from "services/alteracaoDeCardapio";
-import { getMotivosDREnaoValida } from "services/relatorios";
+} from "src/services/alteracaoDeCardapio";
+import { getMotivosDREnaoValida } from "src/services/relatorios";
 
 export const RelatorioBase = ({ ...props }) => {
   const [motivosDREnaoValida, setMotivosDREnaoValida] = useState();
@@ -92,7 +92,10 @@ export const RelatorioDRE = () => (
       "Alteração do Tipo de Alimentação validada com sucesso!"
     }
     toastAprovaMensagemErro={
-      "Houve um erro ao validar a Alteração do Tipo de Alimentação"
+      "Houve um erro ao validar a Alteração do Tipo de Alimentação. Tente novamente mais tarde."
+    }
+    toastNaoAprovaMensagemErro={
+      "Houve um erro ao não validar a Alteração do Tipo de Alimentação. Tente novamente mais tarde."
     }
     endpointAprovaSolicitacao={dreValidarSolicitacaoDeAlteracaoDeCardapio}
     endpointNaoAprovaSolicitacao={dreReprovarSolicitacaoDeAlteracaoDeCardapio}

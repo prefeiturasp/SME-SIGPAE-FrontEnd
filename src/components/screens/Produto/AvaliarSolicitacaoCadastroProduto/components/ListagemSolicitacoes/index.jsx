@@ -6,7 +6,7 @@ import FormPrevisaoCadastro from "../FormPrevisaoCadastro";
 import {
   usuarioEhCODAEDietaEspecial,
   usuarioEhEmpresaTerceirizada,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 const ListagemProdutos = ({
   solicitacoes,

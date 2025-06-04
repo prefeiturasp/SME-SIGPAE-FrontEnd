@@ -2,56 +2,59 @@ import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
 import "./styles.scss";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Field, Form, FormSpy } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import { getNomesDistribuidores } from "services/logistica.service";
-import Select from "components/Shareable/Select";
-import Label from "components/Shareable/Label";
+import InputText from "src/components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import { getNomesDistribuidores } from "src/services/logistica.service";
+import Select from "src/components/Shareable/Select";
+import Label from "src/components/Shareable/Label";
 import {
   cadastraCronograma,
   editaCronograma,
   getCronograma,
   getRascunhos,
   getUnidadesDeMedidaLogistica,
-} from "services/cronograma.service";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/services/cronograma.service";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { useNavigate } from "react-router-dom";
 import {
   CRONOGRAMA_ENTREGA,
   PRE_RECEBIMENTO,
   CADASTRO_CRONOGRAMA,
   EDITAR,
-} from "configs/constants";
+} from "src/configs/constants";
 import Rascunhos from "../RascunhosCronograma";
 import "../CronogramaEntrega/styles.scss";
 import {
   required,
   composeValidators,
   decimalMonetario,
-} from "helpers/fieldValidators";
-import { exibeError, formataMilharDecimal } from "helpers/utilities";
-import { getEmpresasCronograma } from "services/terceirizada.service";
-import { ModalAssinaturaUsuario } from "components/Shareable/ModalAssinaturaUsuario";
-import { MSG_SENHA_INVALIDA } from "components/screens/helper";
+} from "src/helpers/fieldValidators";
+import { exibeError, formataMilharDecimal } from "src/helpers/utilities";
+import { getEmpresasCronograma } from "src/services/terceirizada.service";
+import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
+import { MSG_SENHA_INVALIDA } from "src/components/screens/helper";
 import FormEtapa from "../../../PreRecebimento/FormEtapa";
-import { onChangeEtapas } from "components/PreRecebimento/FormEtapa/helper";
-import FormRecebimento from "components/PreRecebimento/FormRecebimento";
+import { onChangeEtapas } from "src/components/PreRecebimento/FormEtapa/helper";
+import FormRecebimento from "src/components/PreRecebimento/FormRecebimento";
 import {
   getListaFichasTecnicasSimplesAprovadas,
   getDadosCronogramaFichaTecnica,
-} from "services/fichaTecnica.service";
+} from "src/services/fichaTecnica.service";
 import {
   stringNaoVaziaOuUndefined,
   numberToStringDecimal,
   numberToStringDecimalMonetario,
-} from "helpers/parsers";
+} from "src/helpers/parsers";
 import {
   formataPayload,
   geraOptionsFichasTecnicas,

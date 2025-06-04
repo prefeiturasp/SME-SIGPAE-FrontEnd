@@ -4,12 +4,12 @@ import { Spin, Radio, Checkbox } from "antd";
 import {
   getGuiaParaConferencia,
   getConferenciaParaEdicao,
-} from "../../../../services/logistica.service.js";
+} from "../../../../services/logistica.service";
 import { Form, Field } from "react-final-form";
-import { InputComData } from "components/Shareable/DatePicker";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import { InputText } from "components/Shareable/Input/InputText";
-import { InputHorario } from "components/Shareable/Input/InputHorario";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { InputHorario } from "src/components/Shareable/Input/InputHorario";
 import {
   required,
   maxLength,
@@ -18,20 +18,23 @@ import {
   peloMenosUmNumeroEUmaLetra,
 } from "../../../../helpers/fieldValidators";
 import { composeValidators } from "../../../../helpers/utilities";
-import TabelaAlimentoConsolidado from "components/Logistica/TabelaAlimentoConsolidado";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import Botao from "components/Shareable/Botao";
+import TabelaAlimentoConsolidado from "src/components/Logistica/TabelaAlimentoConsolidado";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import ReceberSemOcorrencia from "./components/ReceberSemOcorrencia";
 import moment from "moment";
-import { CONFERENCIA_GUIA_COM_OCORRENCIA, LOGISTICA } from "configs/constants";
+import {
+  CONFERENCIA_GUIA_COM_OCORRENCIA,
+  LOGISTICA,
+} from "src/configs/constants";
 import "./styles.scss";
 
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 
 const FORM_NAME = "conferenciaGuiaRemessa";
 

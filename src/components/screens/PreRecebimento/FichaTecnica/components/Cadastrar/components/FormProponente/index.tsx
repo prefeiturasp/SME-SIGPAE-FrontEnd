@@ -1,5 +1,5 @@
 import React from "react";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import { TerceirizadaComEnderecoInterface } from "interfaces/terceirizada.interface";
 
 interface Props {

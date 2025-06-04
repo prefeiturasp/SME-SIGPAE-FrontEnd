@@ -1,6 +1,6 @@
 import React from "react";
 
-import { formataValorDecimal } from "../../../../../screens/helper.js";
+import { formataValorDecimal } from "../../../../helper.jsx";
 
 type Props = {
   tabelas: Tabela[];

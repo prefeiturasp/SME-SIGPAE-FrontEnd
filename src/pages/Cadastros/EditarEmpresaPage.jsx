@@ -7,7 +7,7 @@ import {
   EDITAR_EMPRESA,
   EMPRESAS_CADASTRADAS,
 } from "../../configs/constants";
-import { CadastroEmpresa } from "components/screens/Cadastros/CadastroEmpresa/CadastroEmpresa";
+import { CadastroEmpresa } from "src/components/screens/Cadastros/CadastroEmpresa/CadastroEmpresa";
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${EDITAR_EMPRESA}`,

@@ -1,14 +1,14 @@
 import React from "react";
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import { fluxoInformativoPartindoEscola } from "components/Shareable/FluxoDeStatus/helper";
-import { stringSeparadaPorVirgulas } from "helpers/utilities";
-import { imprimeRelatorioSuspensaoAlimentacao } from "services/relatorios";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import { fluxoInformativoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
+import { stringSeparadaPorVirgulas } from "src/helpers/utilities";
+import { imprimeRelatorioSuspensaoAlimentacao } from "src/services/relatorios";
 
 export const CorpoRelatorio = (props) => {
   const { suspensaoAlimentacao, dadosEscola } = props;

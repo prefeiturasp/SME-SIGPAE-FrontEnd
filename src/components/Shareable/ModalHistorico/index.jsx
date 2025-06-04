@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Modal } from "antd";
-import { truncarString, usuarioEhCogestorDRE } from "helpers/utilities";
+import { truncarString, usuarioEhCogestorDRE } from "src/helpers/utilities";
 
 import "./styles.scss";
 import {
   documentoAnaliseSensorial,
   medicaoInicialExportarOcorrenciasPDF,
-} from "services/relatorios";
+} from "src/services/relatorios";
 import { BUTTON_STYLE } from "../Botao/constants";
 import Botao from "../Botao";
 

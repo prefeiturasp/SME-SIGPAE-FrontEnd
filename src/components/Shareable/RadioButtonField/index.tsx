@@ -1,7 +1,7 @@
 import React from "react";
 import "./styles.scss";
 import { Field } from "react-final-form";
-import { required } from "helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 
 export interface Props {
   name: string;

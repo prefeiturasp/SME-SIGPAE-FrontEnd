@@ -12,7 +12,7 @@ import InputText from "../../Shareable/Input/InputText";
 import "./style.scss";
 import ModalAlterarSenha from "./components/ModalAlterarSenha";
 import { toastSuccess, toastError } from "../../Shareable/Toast/dialogs";
-import retornaAvatar from "helpers/retornaAvatar";
+import retornaAvatar from "src/helpers/retornaAvatar";
 
 class Perfil extends Component {
   constructor(props) {

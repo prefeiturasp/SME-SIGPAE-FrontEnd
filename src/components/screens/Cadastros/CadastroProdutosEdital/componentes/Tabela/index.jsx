@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from "react";
 import "./style.scss";
 import { FormOutlined } from "@ant-design/icons";
-import ModalCadastrarProdutosEdital from "components/Shareable/ModalCadastrarProdutosEdital";
+import ModalCadastrarProdutosEdital from "src/components/Shareable/ModalCadastrarProdutosEdital";
 
 export default ({ resultado, changePage }) => {
   const [selecionado, setSelecionado] = useState(undefined);

@@ -1,5 +1,5 @@
 import React from "react";
-import "components/Shareable/style.scss";
+import "src/components/Shareable/style.scss";
 
 export const Rascunhos = ({
   rascunhos,
@@ -28,10 +28,16 @@ export const Rascunhos = ({
             </div>
             <div className="icon-draft-card float-end">
               Criado em: {inclusao.criado_em}
-              <span onClick={() => removerRascunho(id_externo, uuid, values)}>
+              <span
+                data-testid="botao-remover-rascunho"
+                onClick={() => removerRascunho(id_externo, uuid, values)}
+              >
                 <i className="fas fa-trash" />
               </span>
-              <span onClick={() => carregarRascunho(form, inclusao, values)}>
+              <span
+                data-testid="botao-carregar-rascunho"
+                onClick={() => carregarRascunho(form, inclusao, values)}
+              >
                 <i className="fas fa-edit" />
               </span>
             </div>

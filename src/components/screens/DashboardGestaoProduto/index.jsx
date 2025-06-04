@@ -1,13 +1,13 @@
 import { Spin } from "antd";
-import CardAtalho from "components/Shareable/CardAtalho";
-import { InputText } from "components/Shareable/Input/InputText";
-import { ASelect } from "components/Shareable/MakeField";
-import { GESTAO_PRODUTO } from "configs/constants";
-import { listarCardsPermitidos } from "helpers/gestaoDeProdutos";
+import CardAtalho from "src/components/Shareable/CardAtalho";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { ASelect } from "src/components/Shareable/MakeField";
+import { GESTAO_PRODUTO } from "src/configs/constants";
+import { listarCardsPermitidos } from "src/helpers/gestaoDeProdutos";
 import {
   dataAtual,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
@@ -20,8 +20,8 @@ import {
   getProdutosPendenteHomologacao,
   getProdutosQuestionamentoDaCODAE,
   getProdutosSuspensos,
-} from "services/dashboardGestaoProduto";
-import { getNomesUnicosEditais } from "services/produto.service";
+} from "src/services/dashboardGestaoProduto";
+import { getNomesUnicosEditais } from "src/services/produto.service";
 import { CardPainel } from "./componentes/CardPainel";
 import {
   apontaParaFormularioDeAlteracao,

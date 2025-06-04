@@ -3,17 +3,17 @@ import { Form, Field } from "react-final-form";
 import { connect } from "react-redux";
 import { Spin } from "antd";
 
-import AutoCompleteFieldUnaccent from "components/Shareable/AutoCompleteField/unaccent";
-import Botao from "components/Shareable/Botao";
+import AutoCompleteFieldUnaccent from "src/components/Shareable/AutoCompleteField/unaccent";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import { required } from "helpers/fieldValidators";
-import { TIPO_PERFIL } from "constants/shared";
-import { toastError } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import { required } from "src/helpers/fieldValidators";
+import { TIPO_PERFIL } from "src/constants/shared";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 import {
   getAvaliarReclamacaoNomesProdutos,
@@ -23,7 +23,7 @@ import {
   getNovaReclamacaoNomesMarcas,
   getNovaReclamacaoNomesFabricantes,
   getNomesUnicosEditais,
-} from "services/produto.service";
+} from "src/services/produto.service";
 
 const initialState = {
   dados: {},

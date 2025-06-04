@@ -24,7 +24,7 @@ import {
 import { InformacaoNutricional } from "./produto.interface";
 import { LoteRascunhosInterface } from "./rascunhos.interface";
 import { TerceirizadaInterface } from "./terceirizada.interface";
-import { EditalContratoInterface } from "components/screens/Cadastros/EditaisContratosRefatorado/interfaces";
+import { EditalContratoInterface } from "src/components/screens/Cadastros/EditaisContratosRefatorado/interfaces";
 import { FichaRecebimento } from "./recebimento.interface";
 import {
   EquipamentoInterface,

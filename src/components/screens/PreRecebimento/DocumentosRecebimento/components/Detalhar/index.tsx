@@ -6,25 +6,25 @@ import {
   PRE_RECEBIMENTO,
   PAINEL_DOCUMENTOS_RECEBIMENTO,
   ATUALIZAR_FORNECEDOR_DOCUMENTO_RECEBIMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
-import BotaoVoltar from "components/Shareable/Page/BotaoVoltar";
-import { FluxoDeStatusPreRecebimento } from "components/Shareable/FluxoDeStatusPreRecebimento";
-import { detalharDocumentoRecebimento } from "services/documentosRecebimento.service";
-import InputText from "components/Shareable/Input/InputText";
+import BotaoVoltar from "src/components/Shareable/Page/BotaoVoltar";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
+import { detalharDocumentoRecebimento } from "src/services/documentosRecebimento.service";
+import InputText from "src/components/Shareable/Input/InputText";
 import {
   DocumentosRecebimentoDetalhado,
   TiposDocumentos,
 } from "interfaces/pre_recebimento.interface";
 import ArquivosTipoRecebimento from "../ArquivosTipoDocumento";
 import OutrosDocumentos from "../OutrosDocumentos";
-import { usuarioEhEmpresaFornecedor } from "helpers/utilities";
-import Botao from "components/Shareable/Botao";
+import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { STATUS_DOCUMENTOS_DE_RECEBIMENTO } from "constants/shared";
+} from "src/components/Shareable/Botao/constants";
+import { STATUS_DOCUMENTOS_DE_RECEBIMENTO } from "src/constants/shared";
 
 export default () => {
   const navigate = useNavigate();

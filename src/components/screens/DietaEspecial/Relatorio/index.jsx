@@ -1,16 +1,19 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { CODAE, ESCOLA, TERCEIRIZADA } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { CODAE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
 import {
   statusEnum,
   TIPO_PERFIL,
   TIPO_SOLICITACAO_DIETA,
-} from "constants/shared";
+} from "src/constants/shared";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import {
@@ -21,23 +24,23 @@ import {
   getDietasEspeciaisVigentesDeUmAluno,
   getMotivosNegarSolicitacaoCancelamento,
   updateSolicitacaoAberta,
-} from "services/dietaEspecial.service";
+} from "src/services/dietaEspecial.service";
 import {
   getProtocoloDietaEspecial,
   getRelatorioDietaEspecial,
-} from "services/relatorios";
+} from "src/services/relatorios";
 import EscolaCancelaDietaEspecial from "./componentes/EscolaCancelaDietaEspecial";
 
 import { Spin } from "antd";
-import ModalHistorico from "components/Shareable/ModalHistorico";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
+import ModalHistorico from "src/components/Shareable/ModalHistorico";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
 import {
   usuarioEhCogestorDRE,
   usuarioEhCoordenadorNutriCODAE,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscola,
   usuarioEhNutricionistaSupervisao,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import CorpoRelatorio from "./componentes/CorpoRelatorio";
 import FormAutorizaDietaEspecial from "./componentes/FormAutorizaDietaEspecial";
 import ModalAvisoDietaImportada from "./componentes/ModalAvisoDietaImportada";
@@ -248,8 +251,10 @@ const Relatorio = ({ visao }) => {
   };
 
   const dietasFiltradas = () => {
-    return dietasAbertas.filter((dieta) =>
-      dieta.uuid_solicitacao.includes(uuidDieta)
+    return (
+      dietasAbertas?.filter((dieta) =>
+        dieta.uuid_solicitacao.includes(uuidDieta)
+      ) || []
     );
   };
 

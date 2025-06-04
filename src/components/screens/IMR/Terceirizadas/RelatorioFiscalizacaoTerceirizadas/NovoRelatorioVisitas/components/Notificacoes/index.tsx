@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import Botao from "components/Shareable/Botao";
-import { downloadAndConvertToBase64 } from "components/Shareable/Input/InputFile/helper";
+import Botao from "src/components/Shareable/Botao";
+import { downloadAndConvertToBase64 } from "src/components/Shareable/Input/InputFile/helper";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import {
   ArquivoFormInterface,
   ArquivoInterface,
 } from "interfaces/imr.interface";
-import InputFileField from "components/Shareable/InputFileField";
+import InputFileField from "src/components/Shareable/InputFileField";
 
 type NotificacoesType = {
   onClickBaixarNotificacoes: React.Dispatch<React.SetStateAction<boolean>>;

@@ -1,15 +1,15 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   ANALISAR_FICHA_TECNICA,
   PAINEL_FICHAS_TECNICAS,
   PRE_RECEBIMENTO,
   FICHA_TECNICA,
-} from "configs/constants";
-import Analisar from "components/screens/PreRecebimento/FichaTecnica/components/Analisar";
-import { usuarioEhEmpresaFornecedor } from "helpers/utilities";
+} from "src/configs/constants";
+import Analisar from "src/components/screens/PreRecebimento/FichaTecnica/components/Analisar";
+import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
 
 const atual = {
   href: `/${PRE_RECEBIMENTO}/${ANALISAR_FICHA_TECNICA}`,

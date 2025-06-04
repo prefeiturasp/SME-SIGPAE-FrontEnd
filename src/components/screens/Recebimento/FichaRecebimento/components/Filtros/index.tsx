@@ -6,20 +6,20 @@ import { NavLink } from "react-router-dom";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import { RECEBIMENTO, CADASTRO_FICHA_RECEBIMENTO } from "configs/constants";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import { InputText } from "components/Shareable/Input/InputText";
-import { InputComData } from "components/Shareable/DatePicker";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import Label from "components/Shareable/Label";
-import { getListaCompletaProdutosLogistica } from "services/produto.service";
-import { listaSimplesTerceirizadas } from "services/terceirizada.service";
-import { getListaFiltradaAutoCompleteSelect } from "helpers/autoCompleteSelect";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import { RECEBIMENTO, CADASTRO_FICHA_RECEBIMENTO } from "src/configs/constants";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import Label from "src/components/Shareable/Label";
+import { getListaCompletaProdutosLogistica } from "src/services/produto.service";
+import { listaSimplesTerceirizadas } from "src/services/terceirizada.service";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
 import { ProdutoLogistica } from "interfaces/produto.interface";
 import { TerceirizadaSimplesInterface } from "interfaces/terceirizada.interface";
-import { dateDelta } from "helpers/utilities.js";
+import { dateDelta } from "src/helpers/utilities.jsx";
 
 import {
   FichaDeRecebimentoItemListagem,

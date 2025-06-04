@@ -4,7 +4,7 @@ import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
 import { useState } from "react";
 import { Field, Form } from "react-final-form";
-import Select from "components/Shareable/Select";
+import Select from "src/components/Shareable/Select";
 import { Link, useNavigate } from "react-router-dom";
 import { Botao } from "../../../Shareable/Botao";
 import { BUTTON_TYPE, BUTTON_STYLE } from "../../../Shareable/Botao/constants";
@@ -13,7 +13,7 @@ import { EnderecoEmpresa } from "./components/Form/EnderecoEmpresa";
 import { UsuarioResponsavel } from "./components/Form/UsuarioResponsavel";
 import { ContratosFormSet } from "./components/Form/ContratosFormSet";
 import { ContatoFormSet } from "./components/Form/ContatoFormSet";
-import { PERFIL } from "constants/shared";
+import { PERFIL } from "src/constants/shared";
 import { formataJsonParaEnvio } from "./helper";
 import {
   createTerceirizada,
@@ -22,9 +22,12 @@ import {
   updateNaoTerceirizada,
   updateTerceirizada,
   obterNumeroContratosCadastrados,
-} from "services/terceirizada.service";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { formatarCPFouCNPJ, getError } from "helpers/utilities";
+} from "src/services/terceirizada.service";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { formatarCPFouCNPJ, getError } from "src/helpers/utilities";
 import { AdministradorSistemaFormSet } from "./components/Form/AdministradorSistemaFormSet";
 import { NutricionistaFormSet } from "./components/Form/NutricionistaFormSet";
 import { LotesFormSet } from "./components/Form/LotesFormSet";

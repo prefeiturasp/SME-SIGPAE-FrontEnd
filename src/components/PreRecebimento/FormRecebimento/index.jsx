@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import "./styles.scss";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Field } from "react-final-form";
-import SelectSelecione from "components/Shareable/SelectSelecione";
-import { agregarDefault } from "helpers/utilities";
+import SelectSelecione from "src/components/Shareable/SelectSelecione";
+import { agregarDefault } from "src/helpers/utilities";
 
 export default ({ values, form, etapas, recebimentos, setRecebimentos }) => {
   const [collapse, setCollapse] = useState(false);

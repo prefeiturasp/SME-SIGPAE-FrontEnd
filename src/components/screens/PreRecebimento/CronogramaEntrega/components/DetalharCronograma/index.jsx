@@ -5,7 +5,7 @@ import { Spin } from "antd";
 import {
   getCronogramaDetalhar,
   imprimirCronograma,
-} from "services/cronograma.service";
+} from "src/services/cronograma.service";
 import AcoesDetalhar from "../AcoesDetalhar";
 import AcoesDetalharAbastecimento from "../AcoesDetalharAbastecimento";
 import AcoesDetalharDilogDiretoria from "../AcoesDetalharDilogDiretoria";
@@ -13,17 +13,17 @@ import {
   usuarioEhEmpresaFornecedor,
   usuarioEhDilogDiretoria,
   usuarioEhDilogAbastecimento,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import "./styles.scss";
 import DadosCronograma from "../DadosCronograma";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import Botao from "components/Shareable/Botao";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { FluxoDeStatusPreRecebimento } from "components/Shareable/FluxoDeStatusPreRecebimento";
+} from "src/components/Shareable/Botao/constants";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 
 const TIPO_CARGA_MAP = {
   PALETIZADA: "Paletizada",

@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { INSUCESSO_ENTREGA, LOGISTICA } from "configs/constants";
-import { registraInsucessoDeEntrega } from "services/logistica.service";
+} from "src/components/Shareable/Botao/constants";
+import { INSUCESSO_ENTREGA, LOGISTICA } from "src/configs/constants";
+import { registraInsucessoDeEntrega } from "src/services/logistica.service";
 import { Spin } from "antd";
 import { useNavigate } from "react-router-dom";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 
 export default ({ values, disabled }) => {
   const [show, setShow] = useState(false);

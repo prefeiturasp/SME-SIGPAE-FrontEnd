@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import { Form, Field } from "react-final-form";
-import CKEditorField from "components/Shareable/CKEditorField";
-import Select from "components/Shareable/Select";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import Select from "src/components/Shareable/Select";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   getNomesProtocolosValidosPorEdital,
   vincularProtocolosEditais,
-} from "services/dietaEspecial.service";
+} from "src/services/dietaEspecial.service";
 import HTTP_STATUS from "http-status-codes";
-import { required, requiredMultiselectKhan } from "helpers/fieldValidators";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
+import { required, requiredMultiselectKhan } from "src/helpers/fieldValidators";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 
 export const ModalVincularProtocolos = ({
   closeModal,

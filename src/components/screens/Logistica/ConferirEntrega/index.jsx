@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Spin } from "antd";
-import { getGuiasEscola } from "../../../../services/logistica.service.js";
+import { getGuiasEscola } from "../../../../services/logistica.service";
 import ListagemGuias from "./components/ListagemGuias";
 import Filtros from "./components/Filtros";
 import "./styles.scss";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { Paginacao } from "components/Shareable/Paginacao/index.jsx";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { Paginacao } from "src/components/Shareable/Paginacao/index.jsx";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);

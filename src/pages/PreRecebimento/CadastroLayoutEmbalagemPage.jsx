@@ -1,13 +1,13 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   CADASTRO_LAYOUT_EMBALAGEM,
   LAYOUT_EMBALAGEM,
   PRE_RECEBIMENTO,
-} from "configs/constants";
-import CadastroLayoutEmbalagem from "components/screens/PreRecebimento/CadastroLayoutEmbalagem";
+} from "src/configs/constants";
+import CadastroLayoutEmbalagem from "src/components/screens/PreRecebimento/CadastroLayoutEmbalagem";
 
 const atual = {
   href: `/${PRE_RECEBIMENTO}/${CADASTRO_LAYOUT_EMBALAGEM}`,

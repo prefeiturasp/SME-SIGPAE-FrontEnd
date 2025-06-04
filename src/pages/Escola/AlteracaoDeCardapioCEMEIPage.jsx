@@ -1,7 +1,7 @@
-import Container from "components/AlteracaoDeCardapioCEMEI/componentes/Container";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { ALTERACAO_TIPO_ALIMENTACAO, ESCOLA } from "configs/constants";
+import Container from "src/components/AlteracaoDeCardapioCEMEI/componentes/Container";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { ALTERACAO_TIPO_ALIMENTACAO, ESCOLA } from "src/configs/constants";
 import React from "react";
 import { HOME } from "./constants";
 

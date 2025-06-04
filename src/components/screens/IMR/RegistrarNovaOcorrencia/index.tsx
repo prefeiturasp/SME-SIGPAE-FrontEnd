@@ -1,12 +1,15 @@
 import { Spin } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { MeusDadosContext } from "context/MeusDadosContext";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
 import {
@@ -26,7 +29,7 @@ import {
 import {
   createFormularioDiretor,
   getTiposOcorrenciaPorEditalDiretor,
-} from "services/imr/relatorioFiscalizacaoTerceirizadas";
+} from "src/services/imr/relatorioFiscalizacaoTerceirizadas";
 import { AdicionarResposta } from "../Terceirizadas/RelatorioFiscalizacaoTerceirizadas/NovoRelatorioVisitas/components/Formulario/components/BotaoAdicionar";
 import RenderComponentByParametrizacao from "../Terceirizadas/RelatorioFiscalizacaoTerceirizadas/NovoRelatorioVisitas/components/Formulario/components/Ocorrencia/RenderComponentByParametrizacao";
 import { SeletorDeDatas } from "../Terceirizadas/RelatorioFiscalizacaoTerceirizadas/NovoRelatorioVisitas/components/Formulario/components/Ocorrencia/Seletores/SeletorDeDatas";

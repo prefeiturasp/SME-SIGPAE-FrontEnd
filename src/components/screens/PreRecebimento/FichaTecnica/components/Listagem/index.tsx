@@ -6,7 +6,7 @@ import {
   CADASTRAR_FICHA_TECNICA,
   DETALHAR_FICHA_TECNICA,
   ALTERAR_FICHA_TECNICA,
-} from "configs/constants";
+} from "src/configs/constants";
 import { FichaTecnica } from "interfaces/pre_recebimento.interface";
 import "./styles.scss";
 

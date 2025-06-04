@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import Filtros from "./components/Filtros";
 import ListagemTiposEmbalagens from "./components/ListagemEmbalagens";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import {
   getTiposEmbalagens,
   getListaNomesTiposEmbalagens,
   getListaAbreviacoesTiposEmbalagens,
-} from "services/qualidade.service";
-import { Paginacao } from "components/Shareable/Paginacao";
+} from "src/services/qualidade.service";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import "./styles.scss";
 
 export default () => {

@@ -4,7 +4,7 @@ import { Botao } from "../../../../Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "../../../../Shareable/Botao/constants.js";
+} from "../../../../Shareable/Botao/constants";
 
 export class ModalCadastroEmpresa extends Component {
   onSubmit(values) {

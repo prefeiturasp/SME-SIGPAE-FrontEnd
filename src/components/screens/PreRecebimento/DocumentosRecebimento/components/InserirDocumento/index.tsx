@@ -1,9 +1,9 @@
 import React from "react";
 import { Field } from "react-final-form";
-import InputFile from "components/Shareable/Input/InputFile";
+import InputFile from "src/components/Shareable/Input/InputFile";
 import { DEZ_MB } from "../../../../../../constants/shared";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { textAreaRequired } from "helpers/fieldValidators";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import { textAreaRequired } from "src/helpers/fieldValidators";
 import { OUTROS_DOCUMENTOS_OPTIONS } from "../../constants";
 import { ArquivoForm } from "interfaces/pre_recebimento.interface";
 

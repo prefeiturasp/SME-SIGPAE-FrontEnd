@@ -1,4 +1,4 @@
-@import "../../../styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 .box-senha {
   background-color: #f3f3f3;

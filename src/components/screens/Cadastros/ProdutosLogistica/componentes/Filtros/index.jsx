@@ -1,17 +1,21 @@
 import React from "react";
 import { Field } from "react-final-form";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import Botao from "components/Shareable/Botao";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import SelectSelecione from "components/Shareable/SelectSelecione";
-import { statusProdutos } from "helpers/utilities";
-import { InputComData } from "components/Shareable/DatePicker";
+} from "src/components/Shareable/Botao/constants";
+import SelectSelecione from "src/components/Shareable/SelectSelecione";
+import { statusProdutos } from "src/helpers/utilities";
+import { InputComData } from "src/components/Shareable/DatePicker";
 import { useNavigate } from "react-router-dom";
-import { CADASTROS, CADASTRO_PRODUTOS, CONFIGURACOES } from "configs/constants";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
+import {
+  CADASTROS,
+  CADASTRO_PRODUTOS,
+  CONFIGURACOES,
+} from "src/configs/constants";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 
 export default ({ setResultado, nomes, setFiltros }) => {
   const navigate = useNavigate();

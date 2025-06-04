@@ -3,27 +3,27 @@ import HTTP_STATUS from "http-status-codes";
 import {
   getFiltros,
   filtrarAlunosMatriculados,
-} from "services/alunosMatriculados.service";
+} from "src/services/alunosMatriculados.service";
 import { formataOpcoes, formataLista } from "./helpers";
 import { Filtros } from "./componentes/Filtros";
 import { TabelaResultado } from "./componentes/TabelaResultado";
 import { Spin } from "antd";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { deepCopy } from "helpers/utilities";
-import { Paginacao } from "components/Shareable/Paginacao";
-import { getFaixasEtarias } from "services/faixaEtaria.service";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { deepCopy } from "src/helpers/utilities";
+import { Paginacao } from "src/components/Shareable/Paginacao";
+import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import { formataOpcoesDropdown } from "./helpers";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
+} from "src/components/Shareable/Botao/constants";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import {
   gerarPDFRelatorioAlunosMatriculados,
   gerarXLSRelatorioAlunosMatriculados,
-} from "services/relatorios.service";
+} from "src/services/relatorios.service";
 import "./style.scss";
 
 export const AlunosMatriculados = () => {

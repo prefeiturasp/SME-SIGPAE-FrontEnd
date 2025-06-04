@@ -6,17 +6,20 @@ import {
   peloMenosUmCaractere,
   required,
   maxLengthProduto,
-} from "helpers/fieldValidators";
-import CKEditorField from "components/Shareable/CKEditorField";
-import InputText from "components/Shareable/Input/InputText";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import Botao from "components/Shareable/Botao";
+} from "src/helpers/fieldValidators";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import InputText from "src/components/Shareable/Input/InputText";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
-import { cancelaHomologacao } from "services/produto.service";
+import { cancelaHomologacao } from "src/services/produto.service";
 
 import "../style.scss";
 

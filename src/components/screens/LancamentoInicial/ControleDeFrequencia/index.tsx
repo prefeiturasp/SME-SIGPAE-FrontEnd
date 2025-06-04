@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import { Filtros } from "./components/Filtros/Index";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
+} from "src/components/Shareable/Botao/constants";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import {
   getFiltros,
   getMesesAnos,
   getTotalAlunosMatriculados,
   imprimirRelatorioControleFrequencia,
-} from "services/medicaoInicial/controleDeFrequencia.service";
-import { formataData, dataAtualDDMMYYYY } from "helpers/utilities";
-import { MESES } from "constants/shared";
+} from "src/services/medicaoInicial/controleDeFrequencia.service";
+import { formataData, dataAtualDDMMYYYY } from "src/helpers/utilities";
+import { MESES } from "src/constants/shared";
 import "./styles.scss";
 
 type MesAno = {

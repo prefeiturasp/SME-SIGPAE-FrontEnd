@@ -1,15 +1,15 @@
 import React from "react";
 import { Form, Field } from "react-final-form";
-import { Select } from "components/Shareable/Select";
-import InputText from "components/Shareable/Input/InputText";
-import { usuarioEhEmpresaTerceirizada } from "helpers/utilities";
+import { Select } from "src/components/Shareable/Select";
+import InputText from "src/components/Shareable/Input/InputText";
+import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 import {
   SOLICITACOES_AUTORIZADAS,
   SOLICITACOES_CANCELADAS,
-} from "configs/constants";
+} from "src/configs/constants";
 import "./style.scss";
 import { ASelect } from "../MakeField";
-import { SOLICITACOES_NEGADAS } from "configs/constants";
+import { SOLICITACOES_NEGADAS } from "src/configs/constants";
 
 export const InputSearchPendencias = (props) => {
   const ehTerceirizada = usuarioEhEmpresaTerceirizada();

@@ -1,19 +1,19 @@
 import React, { useState } from "react";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import ModalHistorico from "components/Shareable/ModalHistorico";
-import { TIPO_PERFIL } from "constants/shared";
-import { ModalPadrao } from "components/Shareable/ModalPadrao";
+} from "src/components/Shareable/Botao/constants";
+import ModalHistorico from "src/components/Shareable/ModalHistorico";
+import { TIPO_PERFIL } from "src/constants/shared";
+import { ModalPadrao } from "src/components/Shareable/ModalPadrao";
 import {
   CODAEPedeAnaliseSensorialProduto,
   imprimeFichaIdentificacaoProduto,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import ModalAtivacaoSuspensaoProduto from "../../AtivacaoSuspensao/ModalAtivacaoSuspensaoProduto";
-import { usuarioEhEmpresaTerceirizada } from "helpers/utilities";
+import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 
 export const BotoesCabecalho = ({
   homologacao,

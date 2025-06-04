@@ -5,7 +5,7 @@ import { CardPendenteAcao } from "../../components/CardPendenteAcao";
 import {
   getTerceirizadasSuspensoesDeAlimentacao,
   getSuspensaoDeAlimentacaoTomadaCiencia,
-} from "../../../../services/suspensaoDeAlimentacao.service.js";
+} from "../../../../services/suspensaoDeAlimentacao.service";
 import CardHistorico from "../../components/CardHistorico";
 import {
   filtraNoLimite,

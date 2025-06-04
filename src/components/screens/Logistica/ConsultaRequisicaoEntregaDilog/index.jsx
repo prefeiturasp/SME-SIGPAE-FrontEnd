@@ -6,29 +6,29 @@ import {
   gerarExcelSolicitacoes,
   arquivaGuias,
   desarquivaGuias,
-} from "../../../../services/logistica.service.js";
+} from "../../../../services/logistica.service";
 import ListagemSolicitacoes from "./components/ListagemSolicitacoes";
 import "./styles.scss";
 import Filtros from "./components/Filtros";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import Botao from "components/Shareable/Botao";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { enviaSolicitacoesDaGrade } from "../../../../services/disponibilizacaoDeSolicitacoes.service";
 import {
   toastError,
   toastInfo,
   toastSuccess,
-} from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Toast/dialogs";
 import { Modal } from "react-bootstrap";
-import { CentralDeDownloadContext } from "context/CentralDeDownloads/index.js";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload/index.jsx";
-import { Paginacao } from "components/Shareable/Paginacao/index.jsx";
-import useSomenteLeitura from "hooks/useSomenteLeitura.js";
-import { PERFIL } from "../../../../constants/shared.js";
+import { CentralDeDownloadContext } from "src/context/CentralDeDownloads/index";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload/index.jsx";
+import { Paginacao } from "src/components/Shareable/Paginacao/index.jsx";
+import useSomenteLeitura from "src/hooks/useSomenteLeitura";
+import { PERFIL } from "../../../../constants/shared";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);

@@ -1,35 +1,35 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
 import { Field, Form } from "react-final-form";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import SSelect from "components/Shareable/Select";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import SSelect from "src/components/Shareable/Select";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
-  getAlergiasIntoleranciasAxios,
+  getAlergiasIntolerancias,
   getClassificacoesDietaEspecial,
-} from "services/dietaEspecial.service";
-import { dadosDoAluno, getAlunosListagem } from "services/perfil.service";
-import InputText from "components/Shareable/Input/InputText";
-import { meusDados } from "services/perfil.service";
-import { length, required } from "helpers/fieldValidators";
+} from "src/services/dietaEspecial.service";
+import { dadosDoAluno, getAlunosListagem } from "src/services/perfil.service";
+import InputText from "src/components/Shareable/Input/InputText";
+import { meusDados } from "src/services/perfil.service";
+import { length, required } from "src/helpers/fieldValidators";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { InputComData } from "components/Shareable/DatePicker";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 
-import { TIPO_PERFIL } from "constants/shared";
+import { TIPO_PERFIL } from "src/constants/shared";
 
 import {
   formFiltrosObtemDreEEscolasNovo,
   getDadosIniciais,
-} from "helpers/dietaEspecial";
+} from "src/helpers/dietaEspecial";
 
 import "./styles.scss";
-import { getStatus } from "./helpers.js";
+import { getStatus } from "./helpers";
 
 export default ({ onSubmit, setCarregando }) => {
   const [diretoriasRegionais, setDiretoriasRegionais] = useState([]);
@@ -49,7 +49,7 @@ export default ({ onSubmit, setCarregando }) => {
     async function effect() {
       setCarregando(true);
       const dadosUsuario = await meusDados();
-      const promiseDiagnosticos = getAlergiasIntoleranciasAxios();
+      const promiseDiagnosticos = getAlergiasIntolerancias();
       const promiseClassificoesDieta = getClassificacoesDietaEspecial();
       const promiseDreEscolas = formFiltrosObtemDreEEscolasNovo(
         setEscolas,

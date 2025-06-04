@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { formataInformacoesNutricionais } from "components/screens/Produto/Homologacao/helper";
+import { formataInformacoesNutricionais } from "src/components/screens/Produto/Homologacao/helper";
 import { Collapse } from "react-collapse";
 import "./style.scss";
-import { ToggleExpandir } from "components/Shareable/ToggleExpandir";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 
 export class DadosProduto extends Component {
   constructor(props) {

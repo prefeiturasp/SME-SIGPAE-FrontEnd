@@ -1,6 +1,6 @@
 import { Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import CardCronograma from "components/Shareable/CardCronograma/CardCronograma";
+import CardCronograma from "src/components/Shareable/CardCronograma/CardCronograma";
 import {
   cards_abastecimento,
   cards_dilog,
@@ -14,19 +14,19 @@ import {
   getDashboardCronogramaComFiltros,
   getDashboardSolicitacoesAlteracao,
   getDashboardSolicitacoesAlteracaoComFiltros,
-} from "services/cronograma.service";
+} from "src/services/cronograma.service";
 import {
   parseDataHoraBrToMoment,
   comparaObjetosMoment,
   truncarString,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import {
   DETALHAR_ALTERACAO_CRONOGRAMA,
   DETALHE_CRONOGRAMA,
   PRE_RECEBIMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 import { Field, Form } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import { debounce } from "lodash";
 import { useCallback } from "react";
 

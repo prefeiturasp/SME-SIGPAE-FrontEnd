@@ -4,10 +4,10 @@ import {
   EDITAR,
   CADASTRO_LABORATORIO,
   DETALHAR,
-} from "configs/constants";
+} from "src/configs/constants";
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { formatarCPFouCNPJ } from "helpers/utilities";
+import { formatarCPFouCNPJ } from "src/helpers/utilities";
 
 import "./styles.scss";
 

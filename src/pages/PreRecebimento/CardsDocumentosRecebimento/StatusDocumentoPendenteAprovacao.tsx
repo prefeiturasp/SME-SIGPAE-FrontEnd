@@ -1,15 +1,15 @@
 import React from "react";
-import Page from "components/Shareable/Page/Page";
-import Breadcrumb from "components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import {
   PAINEL_DOCUMENTOS_RECEBIMENTO,
   PRE_RECEBIMENTO,
   ANALISAR_DOCUMENTO_RECEBIMENTO,
   DETALHAR_FORNECEDOR_DOCUMENTO_RECEBIMENTO,
-} from "configs/constants";
-import { usuarioEhDilogQualidade } from "helpers/utilities";
-import { getDashboardDocumentosRecebimentoPorStatus } from "services/documentosRecebimento.service";
-import { SolicitacoesDocumentoStatusGenerico } from "components/screens/SolicitacoesDocumentoStatusGenerico";
+} from "src/configs/constants";
+import { usuarioEhDilogQualidade } from "src/helpers/utilities";
+import { getDashboardDocumentosRecebimentoPorStatus } from "src/services/documentosRecebimento.service";
+import { SolicitacoesDocumentoStatusGenerico } from "src/components/screens/SolicitacoesDocumentoStatusGenerico";
 import { CARD_PENDENTES_APROVACAO } from "../../../components/screens/PreRecebimento/PainelDocumentosRecebimento/constants";
 
 const atual = {

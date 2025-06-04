@@ -2,9 +2,9 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Field } from "react-final-form";
 import moment from "moment";
 import "./styles.scss";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import { InputComData } from "components/Shareable/DatePicker";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import { InputComData } from "src/components/Shareable/DatePicker";
 import { getListaCompletaProdutosLogistica } from "../../../../../../../services/produto.service";
 import { getListaFiltradaAutoCompleteSelect } from "../../../../../../../helpers/autoCompleteSelect";
 import { getListaCronogramasPraCadastro } from "../../../../../../../services/cronograma.service";
@@ -13,8 +13,8 @@ import {
   EmpresaFiltros,
   FiltrosRelatorioCronograma,
 } from "../../interfaces";
-import { getEmpresasCronograma } from "services/terceirizada.service";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
+import { getEmpresasCronograma } from "src/services/terceirizada.service";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import { ProdutoLogistica } from "interfaces/produto.interface";
 import { montarOptionsStatus } from "../../../../CronogramaEntrega/components/Filtros/utils";
 import { CronogramaSimples } from "interfaces/pre_recebimento.interface";

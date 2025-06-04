@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import ModalCadastrarProdutosEdital from "components/Shareable/ModalCadastrarProdutosEdital";
+import ModalCadastrarProdutosEdital from "src/components/Shareable/ModalCadastrarProdutosEdital";
 import { Form, Field } from "react-final-form";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import { ASelect } from "components/Shareable/MakeField";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import { ASelect } from "src/components/Shareable/MakeField";
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Select as SelectAntd } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { getCadastroProdutosEdital } from "services/produto.service";
+} from "src/components/Shareable/Botao/constants";
+import { getCadastroProdutosEdital } from "src/services/produto.service";
 import HTTP_STATUS from "http-status-codes";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 export default ({
   setResultado,

@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getDiasUteis } from "services/diasUteis.service";
-import { dataParaUTC } from "helpers/utilities";
+import { getDiasUteis } from "src/services/diasUteis.service";
+import { dataParaUTC } from "src/helpers/utilities";
 import InversaoDeDiaDeCardapio from ".";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);

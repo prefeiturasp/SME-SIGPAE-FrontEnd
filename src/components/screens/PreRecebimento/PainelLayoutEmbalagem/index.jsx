@@ -1,24 +1,24 @@
 import { Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import CardCronograma from "components/Shareable/CardCronograma/CardCronograma";
+import CardCronograma from "src/components/Shareable/CardCronograma/CardCronograma";
 import { cardsAprovacao, cardsAlteracao } from "./constants";
 import {
   parseDataHoraBrToMoment,
   comparaObjetosMoment,
   truncarString,
   usuarioPodeAnalisarLayoutEmbalagem,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import {
   ANALISAR_LAYOUT_EMBALAGEM,
   DETALHAR_LAYOUT_EMBALAGEM,
   DETALHAR_LAYOUT_EMBALAGEM_SOLICITACAO_ALTERACAO,
   PRE_RECEBIMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 import { Field, Form } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import { debounce } from "lodash";
 import { useCallback } from "react";
-import { getDashboardLayoutEmbalagem } from "services/layoutEmbalagem.service";
+import { getDashboardLayoutEmbalagem } from "src/services/layoutEmbalagem.service";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);

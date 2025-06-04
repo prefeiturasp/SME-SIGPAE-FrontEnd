@@ -1,14 +1,14 @@
 import React from "react";
 
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   ALTERAR_FICHA_TECNICA,
   FICHA_TECNICA,
   PRE_RECEBIMENTO,
-} from "configs/constants";
-import Alterar from "components/screens/PreRecebimento/FichaTecnica/components/Alterar";
+} from "src/configs/constants";
+import Alterar from "src/components/screens/PreRecebimento/FichaTecnica/components/Alterar";
 
 const atual = {
   href: `/${PRE_RECEBIMENTO}/${ALTERAR_FICHA_TECNICA}`,

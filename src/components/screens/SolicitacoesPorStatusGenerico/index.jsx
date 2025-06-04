@@ -7,20 +7,23 @@ import {
   usuarioEhDRE,
   usuarioEhEmpresaTerceirizada,
   usuarioEhQualquerCODAE,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { Spin } from "antd";
-import CardListarSolicitacoes from "components/Shareable/CardListarSolicitacoes";
+import CardListarSolicitacoes from "src/components/Shareable/CardListarSolicitacoes";
 import { ajustarFormatoLog } from "../helper";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import { Field, Form } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
-import Select from "components/Shareable/Select";
+import InputText from "src/components/Shareable/Input/InputText";
+import Select from "src/components/Shareable/Select";
 import { connect } from "react-redux";
-import { PERIODOS_OPTIONS, TIPOS_SOLICITACOES_OPTIONS } from "constants/shared";
-import { InputComData } from "components/Shareable/DatePicker";
-import { resetCamposAlimentacao } from "reducers/filtersAlimentacaoReducer";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
-import { getLotesSimples } from "services/lote.service";
+import {
+  PERIODOS_OPTIONS,
+  TIPOS_SOLICITACOES_OPTIONS,
+} from "src/constants/shared";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { resetCamposAlimentacao } from "src/reducers/filtersAlimentacaoReducer";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
+import { getLotesSimples } from "src/services/lote.service";
 import "./style.scss";
 
 function SolicitacoesPorStatusGenerico(props) {

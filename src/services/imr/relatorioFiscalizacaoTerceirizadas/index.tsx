@@ -1,5 +1,5 @@
 import axios from "../../_base";
-import { API_URL } from "constants/config";
+import { API_URL } from "src/constants/config";
 import { ErrorHandlerFunction } from "../../service-helpers";
 import { NovoRelatorioVisitasFormInterface } from "interfaces/imr.interface";
 import {

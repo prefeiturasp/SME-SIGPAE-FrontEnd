@@ -1,4 +1,4 @@
-import CardMatriculados from "components/Shareable/CardMatriculados";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
@@ -13,43 +13,46 @@ import {
   iniciaFluxoInclusaoAlimentacao,
   obterMinhasSolicitacoesDeInclusaoDeAlimentacao,
   escolaExcluirSolicitacaoDeInclusaoDeAlimentacao,
-} from "services/inclusaoDeAlimentacao";
+} from "src/services/inclusaoDeAlimentacao";
 import { Rascunhos } from "./componentes/Rascunhos";
-import Select from "components/Shareable/Select";
-import { maxLength, required } from "helpers/fieldValidators";
+import Select from "src/components/Shareable/Select";
+import { maxLength, required } from "src/helpers/fieldValidators";
 import {
   agregarDefault,
   checaSeDataEstaEntre2e5DiasUteis,
   deepCopy,
   getError,
   composeValidators,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { FieldArray } from "react-final-form-arrays";
 import arrayMutators from "final-form-arrays";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import Botao from "components/Shareable/Botao";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   AdicionarDia,
   DataInclusaoNormal,
   OutroMotivo,
-} from "components/InclusaoDeAlimentacao/Escola/Formulario/componentes/InclusaoNormal";
+} from "src/components/InclusaoDeAlimentacao/Escola/Formulario/componentes/InclusaoNormal";
 import { PeriodosCEIeouEMEI } from "./componentes/InclusaoNormal";
 import { formataInclusaoCEMEI, validarSubmit } from "./helpers";
 import {
   DatasInclusaoContinua,
   Recorrencia,
   RecorrenciaTabela,
-} from "components/InclusaoDeAlimentacao/Escola/Formulario/componentes/InclusaoContinua";
-import { TIPO_SOLICITACAO } from "constants/shared";
-import { validarSubmissaoContinua } from "components/InclusaoDeAlimentacao/Escola/Formulario/validacao";
-import { formatarSubmissaoSolicitacaoContinua } from "components/InclusaoDeAlimentacao/helper";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+} from "src/components/InclusaoDeAlimentacao/Escola/Formulario/componentes/InclusaoContinua";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
+import { validarSubmissaoContinua } from "src/components/InclusaoDeAlimentacao/Escola/Formulario/validacao";
+import { formatarSubmissaoSolicitacaoContinua } from "src/components/InclusaoDeAlimentacao/helper";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 
 export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   const [rascunhos, setRascunhos] = useState(null);

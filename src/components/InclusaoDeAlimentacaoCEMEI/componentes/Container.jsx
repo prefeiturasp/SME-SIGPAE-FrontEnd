@@ -1,24 +1,24 @@
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { InclusaoDeAlimentacaoCEMEI } from "..";
-import { dataParaUTC, escolaEhCEMEI } from "helpers/utilities";
-import { getDiasUteis } from "services/diasUteis.service";
+import { dataParaUTC, escolaEhCEMEI } from "src/helpers/utilities";
+import { getDiasUteis } from "src/services/diasUteis.service";
 import {
   getMotivosInclusaoContinua,
   getMotivosInclusaoNormal,
-} from "services/inclusaoDeAlimentacao";
-import { getMeusDados } from "services/perfil.service";
-import { getQuantidadeAlunosCEMEIporCEIEMEI } from "services/aluno.service";
+} from "src/services/inclusaoDeAlimentacao";
+import { getMeusDados } from "src/services/perfil.service";
+import { getQuantidadeAlunosCEMEIporCEIEMEI } from "src/services/aluno.service";
 import {
   getVinculosTipoAlimentacaoPorEscola,
   getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
-} from "services/cadastroTipoAlimentacao.service";
+} from "src/services/cadastroTipoAlimentacao.service";
 import {
   abstraiPeriodosComAlunosMatriculados,
   formatarPeriodos,
-} from "components/InclusaoDeAlimentacao/helper";
-import { getQuantidaDeAlunosPorPeriodoEEscola } from "services/escola.service";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
+} from "src/components/InclusaoDeAlimentacao/helper";
+import { getQuantidaDeAlunosPorPeriodoEEscola } from "src/services/escola.service";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 
 export const Container = () => {
   const [dados, setDados] = useState(null);

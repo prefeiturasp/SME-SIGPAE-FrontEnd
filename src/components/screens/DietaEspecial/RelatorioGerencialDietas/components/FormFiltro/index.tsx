@@ -5,8 +5,8 @@ import { FormApi } from "final-form";
 
 import { Skeleton } from "antd";
 
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import { InputComData } from "components/Shareable/DatePicker";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { InputComData } from "src/components/Shareable/DatePicker";
 
 import useView from "./view";
 

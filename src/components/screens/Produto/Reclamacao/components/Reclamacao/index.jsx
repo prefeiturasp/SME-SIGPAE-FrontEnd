@@ -1,7 +1,7 @@
 import React from "react";
-import { RECLAMACAO_PRODUTO_STATUS_EXPLICACAO } from "constants/shared";
+import { RECLAMACAO_PRODUTO_STATUS_EXPLICACAO } from "src/constants/shared";
 import "./style.scss";
-import { corrigeLinkAnexo } from "helpers/utilities";
+import { corrigeLinkAnexo } from "src/helpers/utilities";
 
 const {
   CODAE_AUTORIZOU_RECLAMACAO,

@@ -1,9 +1,9 @@
 import React from "react";
 import { Field } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
-import { required } from "helpers/fieldValidators";
-import MaskedInputText from "components/Shareable/Input/MaskedInputText";
-import { cpfMask, telefoneMask } from "constants/shared";
+import InputText from "src/components/Shareable/Input/InputText";
+import { required } from "src/helpers/fieldValidators";
+import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
+import { cpfMask, telefoneMask } from "src/constants/shared";
 
 export const UsuarioResponsavel = ({ ehDistribuidor }) => {
   return (

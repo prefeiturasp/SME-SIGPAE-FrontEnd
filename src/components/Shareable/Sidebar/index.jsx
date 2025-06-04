@@ -3,8 +3,8 @@ import HTTP_STATUS from "http-status-codes";
 import { Link } from "react-router-dom";
 import { SidebarContent } from "./SidebarContent";
 import "./style.scss";
-import { getAPIVersion } from "services/api.service";
-import retornaAvatar from "helpers/retornaAvatar";
+import { getAPIVersion } from "src/services/api.service";
+import retornaAvatar from "src/helpers/retornaAvatar";
 import { labelSidebar } from "./helpers";
 
 export const Sidebar = ({ ...props }) => {

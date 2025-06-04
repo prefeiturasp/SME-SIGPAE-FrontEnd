@@ -1,8 +1,8 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { FormApi } from "final-form";
 import React, { ReactNode, useState } from "react";
 import { Form } from "react-final-form";
@@ -11,7 +11,7 @@ import "./styles.scss";
 import {
   usuarioEhDRE,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 type Props = {
   titulo?: string;

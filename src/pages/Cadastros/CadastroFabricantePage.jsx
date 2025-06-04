@@ -1,8 +1,8 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import CadastroGeral from "components/screens/Cadastros/CadastroGeral";
-import Page from "components/Shareable/Page/Page";
-import { CADASTROS, CONFIGURACOES, FABRICANTES } from "configs/constants";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import CadastroGeral from "src/components/screens/Cadastros/CadastroGeral";
+import Page from "src/components/Shareable/Page/Page";
+import { CADASTROS, CONFIGURACOES, FABRICANTES } from "src/configs/constants";
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${FABRICANTES}`,

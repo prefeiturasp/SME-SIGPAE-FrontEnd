@@ -1,8 +1,8 @@
 import { Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 
-import { getProdutosReclamacoes } from "services/produto.service";
+import { getProdutosReclamacoes } from "src/services/produto.service";
 
 import FormBuscaProduto from "./components/FormBuscaProduto";
 import ModalRelatorioReclamacao from "./components/ModalRelatorioReclamacao";

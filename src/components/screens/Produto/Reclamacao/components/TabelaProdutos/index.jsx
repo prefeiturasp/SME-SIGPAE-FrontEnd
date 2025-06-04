@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import "./style.scss";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 import ModalReclamacaoProduto from "../ModalReclamacaoProduto";
 import Reclamacao from "../Reclamacao";

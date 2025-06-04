@@ -1,9 +1,9 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { CONFERENCIA_INCONSISTENCIAS, LOGISTICA } from "configs/constants";
-import ConferenciaInconsistencias from "components/screens/Logistica/ConferenciaInconsistencias";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { CONFERENCIA_INCONSISTENCIAS, LOGISTICA } from "src/configs/constants";
+import ConferenciaInconsistencias from "src/components/screens/Logistica/ConferenciaInconsistencias";
 
 const atual = {
   href: `/${LOGISTICA}/${CONFERENCIA_INCONSISTENCIAS}`,

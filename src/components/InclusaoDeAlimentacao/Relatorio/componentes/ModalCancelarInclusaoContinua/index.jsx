@@ -1,21 +1,24 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { WEEK } from "configs/constants";
-import { required } from "helpers/fieldValidators";
+} from "src/components/Shareable/Botao/constants";
+import { WEEK } from "src/configs/constants";
+import { required } from "src/helpers/fieldValidators";
 import {
   mensagemCancelamento,
   stringSeparadaPorVirgulas,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import moment from "moment";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import HTTP_STATUS from "http-status-codes";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 
 export const ModalCancelarInclusaoContinua = ({ ...props }) => {
   const {

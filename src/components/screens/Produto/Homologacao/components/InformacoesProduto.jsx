@@ -1,7 +1,7 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { InputText } from "components/Shareable/Input/InputText";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 
 export const InformacoesProduto = ({ homologacao }) => {
   return (

@@ -5,28 +5,35 @@ import {
   exibirBotaoMarcarConferencia,
   exibirBotaoQuestionamento,
   exibirModalAutorizacaoAposQuestionamento,
-} from "components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
-import { Botao } from "components/Shareable/Botao";
+} from "src/components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import ModalAutorizarAposQuestionamento from "components/Shareable/ModalAutorizarAposQuestionamento";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
-import RelatorioHistoricoJustificativaEscola from "components/Shareable/RelatorioHistoricoJustificativaEscola";
-import RelatorioHistoricoQuestionamento from "components/Shareable/RelatorioHistoricoQuestionamento";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { DRE } from "configs/constants";
-import { statusEnum, TIPO_PERFIL, TIPO_SOLICITACAO } from "constants/shared";
-import { MeusDadosContext } from "context/MeusDadosContext";
+} from "src/components/Shareable/Botao/constants";
+import ModalAutorizarAposQuestionamento from "src/components/Shareable/ModalAutorizarAposQuestionamento";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import RelatorioHistoricoJustificativaEscola from "src/components/Shareable/RelatorioHistoricoJustificativaEscola";
+import RelatorioHistoricoQuestionamento from "src/components/Shareable/RelatorioHistoricoQuestionamento";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { DRE } from "src/configs/constants";
+import {
+  statusEnum,
+  TIPO_PERFIL,
+  TIPO_SOLICITACAO,
+} from "src/constants/shared";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
   prazoDoPedidoMensagem,
   visualizaBotoesDoFluxo,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
 import { Form } from "react-final-form";
-import { getAlteracaoCardapio } from "services/alteracaoDeCardapio";
+import { getAlteracaoCardapio } from "src/services/alteracaoDeCardapio";
 import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
 
 export const Relatorio = ({ ...props }) => {

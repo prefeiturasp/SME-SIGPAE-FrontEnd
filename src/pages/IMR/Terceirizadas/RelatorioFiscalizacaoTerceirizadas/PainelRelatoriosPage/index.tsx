@@ -1,13 +1,13 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   SUPERVISAO,
   TERCEIRIZADAS,
   PAINEL_RELATORIOS_FISCALIZACAO,
-} from "configs/constants";
-import { PainelRelatorios } from "components/screens/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/PainelRelatorios";
+} from "src/configs/constants";
+import { PainelRelatorios } from "src/components/screens/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/PainelRelatorios";
 
 const atual = {
   href: `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`,

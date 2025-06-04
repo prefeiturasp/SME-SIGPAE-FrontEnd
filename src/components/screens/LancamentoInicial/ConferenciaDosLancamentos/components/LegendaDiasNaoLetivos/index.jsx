@@ -1,5 +1,5 @@
 import React from "react";
-import { ehFimDeSemana } from "helpers/utilities";
+import { ehFimDeSemana } from "src/helpers/utilities";
 import { validacaoSemana } from "../../../PeriodoLancamentoMedicaoInicial/helper";
 
 import "./style.scss";

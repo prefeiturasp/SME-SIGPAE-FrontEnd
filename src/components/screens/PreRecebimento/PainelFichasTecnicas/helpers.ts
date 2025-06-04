@@ -7,13 +7,13 @@ import {
   ANALISAR_FICHA_TECNICA,
   PRE_RECEBIMENTO,
   DETALHAR_FICHA_TECNICA,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   ordenarPorLogMaisRecente,
   truncarString,
   usuarioEhDilogAbastecimento,
   usuarioEhCronograma,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 export const formatarCards = (items: FichaTecnicaDashboard[]): CardItem[] => {
   return items.sort(ordenarPorLogMaisRecente).map((item) => ({

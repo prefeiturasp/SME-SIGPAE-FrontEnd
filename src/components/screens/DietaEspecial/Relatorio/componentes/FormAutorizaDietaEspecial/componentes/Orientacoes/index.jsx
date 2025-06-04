@@ -1,10 +1,10 @@
 import React from "react";
 import { Field } from "react-final-form";
-import CKEditorField from "components/Shareable/CKEditorField";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import {
   peloMenosUmCaractere,
   textAreaRequired,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 
 const Orientacoes = () => {
   return (

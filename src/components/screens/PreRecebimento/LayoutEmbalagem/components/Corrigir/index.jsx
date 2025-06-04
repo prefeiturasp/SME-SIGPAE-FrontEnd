@@ -4,11 +4,11 @@ import "./styles.scss";
 import {
   detalharLayoutEmabalagem,
   corrigirLayoutEmbalagem,
-} from "services/layoutEmbalagem.service";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+} from "src/services/layoutEmbalagem.service";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { Field, Form } from "react-final-form";
-import BotaoAnexo from "components/PreRecebimento/BotaoAnexo";
-import InputFile from "components/Shareable/Input/InputFile";
+import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
+import InputFile from "src/components/Shareable/Input/InputFile";
 import { DEZ_MB } from "../../../../../../constants/shared";
 import Botao from "../../../../../Shareable/Botao";
 import {
@@ -29,7 +29,7 @@ import { downloadAndConvertToBase64 } from "../../../../../Shareable/Input/Input
 import { atualizacaoLayoutEmbalagem } from "../../../../../../services/layoutEmbalagem.service";
 import ModalAtualizar from "./components/ModalAtualizar";
 import InserirArquivo from "../InserirArquivo";
-import { FluxoDeStatusPreRecebimento } from "components/Shareable/FluxoDeStatusPreRecebimento";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 import { getMensagemDeErro } from "../../../../../../helpers/statusErrors";
 
 const TITULOS_SECOES_TIPOS_EMBALAGENS = {

@@ -1,14 +1,14 @@
 import { Radio } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
-import { getGrupoUnidadeEscolar } from "services/escola.service";
+import { getGrupoUnidadeEscolar } from "src/services/escola.service";
 import "./styles.scss";
 
 const ModalRelatorio = ({ show, onClose, onSubmit, nomeRelatorio }) => {

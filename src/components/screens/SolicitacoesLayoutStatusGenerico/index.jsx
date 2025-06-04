@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useEffect } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
-import CardListarSolicitacoesCronograma from "components/Shareable/CardListarSolicitacoesCronograma";
-import { Paginacao } from "components/Shareable/Paginacao";
+import CardListarSolicitacoesCronograma from "src/components/Shareable/CardListarSolicitacoesCronograma";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import { Field, Form } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import { debounce } from "lodash";
 import { gerarParametrosConsulta } from "../../../helpers/utilities";
 

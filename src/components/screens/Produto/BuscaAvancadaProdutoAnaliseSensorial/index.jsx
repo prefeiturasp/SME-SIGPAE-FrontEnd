@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
-import { getProdutosRelatorioAnaliseSensorial } from "services/produto.service";
+import { getProdutosRelatorioAnaliseSensorial } from "src/services/produto.service";
 import FormBuscaProduto from "./components/FormBuscaProduto";
 import ModalRelatorioAnaliseSensorial from "./components/ModalRelatorioAnaliseSensorial";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import "./styles.scss";
 
 const BuscaAvancadaProdutoAnaliseSensorial = () => {

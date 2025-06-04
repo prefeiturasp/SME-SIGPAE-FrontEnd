@@ -2,17 +2,20 @@ import React, { useContext, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { Modal } from "react-bootstrap";
 import HTTP_STATUS from "http-status-codes";
-import { agregarDefault, getError } from "helpers/utilities";
-import { required } from "helpers/fieldValidators";
-import Botao from "components/Shareable/Botao";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import { agregarDefault, getError } from "src/helpers/utilities";
+import { required } from "src/helpers/fieldValidators";
+import Botao from "src/components/Shareable/Botao";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { SolicitacaoAlimentacaoContext } from "context/SolicitacaoAlimentacao";
-import Select from "components/Shareable/Select";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { SolicitacaoAlimentacaoContext } from "src/context/SolicitacaoAlimentacao";
+import Select from "src/components/Shareable/Select";
 
 export const ModalNaoValidarFinalForm = ({ ...props }) => {
   const {
@@ -23,6 +26,8 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
     loadSolicitacao,
     motivosDREnaoValida,
     tipoSolicitacao,
+    toastNaoAprovaMensagem,
+    toastNaoAprovaMensagemErro,
   } = props;
   const [desabilitaBotaoSim, setDesabilitaBotaoSim] = useState(true);
 
@@ -44,8 +49,10 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
       tipoSolicitacao
     );
     if (resp.status === HTTP_STATUS.OK) {
+      toastSuccess(
+        toastNaoAprovaMensagem || "Solicitação não validada com sucesso!"
+      );
       closeModal();
-      toastSuccess("Solicitação não validada com sucesso!");
       if (loadSolicitacao) {
         const response = await loadSolicitacao(solicitacao.uuid);
         if (response && response.status === HTTP_STATUS.OK) {
@@ -56,7 +63,8 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
       }
     } else {
       toastError(
-        `Houve um erro ao não validar a solicitação: ${getError(resp.data)}`
+        toastNaoAprovaMensagemErro ||
+          `Houve um erro ao não validar a solicitação: ${getError(resp.data)}`
       );
       closeModal();
     }
@@ -83,6 +91,7 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
                 <div className="form-group col-12">
                   <Field
                     component={Select}
+                    dataTestId="select-motivo-cancelamento"
                     name="motivo_nao_valida"
                     label="Motivo"
                     //TODO: criar campos a mais no backend?
@@ -96,6 +105,7 @@ export const ModalNaoValidarFinalForm = ({ ...props }) => {
                 <div className="form-group col-12">
                   <Field
                     component={TextArea}
+                    dataTestId="textarea-justificativa"
                     placeholder="Obrigatório"
                     label="Justificativa"
                     name="justificativa"

@@ -1,15 +1,18 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { getDDMMYYYfromDate } from "helpers/utilities";
+} from "src/components/Shareable/Botao/constants";
+import { getDDMMYYYfromDate } from "src/helpers/utilities";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { Form } from "react-final-form";
 import HTTP_STATUS from "http-status-codes";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { getError } from "helpers/utilities";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { getError } from "src/helpers/utilities";
 
 export const ModalConfirmarExclusao = ({ ...props }) => {
   const {

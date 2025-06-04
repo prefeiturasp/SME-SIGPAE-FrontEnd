@@ -7,30 +7,36 @@ import { FormApi } from "final-form";
 import { format, parseISO } from "date-fns";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import { InputComData } from "components/Shareable/DatePicker";
-import Botao from "components/Shareable/Botao";
-import Select from "components/Shareable/Select";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import Botao from "src/components/Shareable/Botao";
+import Select from "src/components/Shareable/Select";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { required } from "helpers/fieldValidators";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { required } from "src/helpers/fieldValidators";
 import {
   deepCopy,
   getAmanha,
   getError,
   maxEntreDatas,
-} from "helpers/utilities";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
-import { getEscolaSimples, getEscolasTercTotal } from "services/escola.service";
+} from "src/helpers/utilities";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
+import {
+  getEscolaSimples,
+  getEscolasTercTotal,
+} from "src/services/escola.service";
 import {
   getAlimentacoesLancamentosEspeciais,
   criarPermissaoLancamentoEspecial,
   atualizarPermissaoLancamentoEspecial,
-} from "services/medicaoInicial/periodoLancamentoMedicao.service";
-import { MeusDadosContext } from "context/MeusDadosContext";
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { PermissaoLancamentosEspeciaisInterface } from "interfaces/medicao_inicial.interface";
 
 import "./style.scss";

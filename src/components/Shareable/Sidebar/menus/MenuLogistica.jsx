@@ -14,7 +14,7 @@ import {
   ENTREGAS_DISTRIBUIDOR,
   GUIAS_NOTIFICACAO,
   GUIAS_NOTIFICACAO_FISCAL,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   usuarioEhEmpresaDistribuidora,
   usuarioEhLogistica,
@@ -30,7 +30,7 @@ import {
   usuarioEhDilog,
   usuarioEhCODAEGabinete,
   usuarioEhDilogDiretoria,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 const MenuLogistica = ({ activeMenu, onSubmenuClick }) => {
   return (

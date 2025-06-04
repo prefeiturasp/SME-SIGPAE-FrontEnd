@@ -1,15 +1,18 @@
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Checkbox, Collapse, Modal, Spin } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { DETALHAMENTO_DO_LANCAMENTO } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { DETALHAMENTO_DO_LANCAMENTO } from "src/configs/constants";
 import { format, getYear } from "date-fns";
-import { ehEscolaTipoCEMEI } from "helpers/utilities";
+import { ehEscolaTipoCEMEI } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
@@ -17,8 +20,8 @@ import {
   getTiposDeContagemAlimentacao,
   setSolicitacaoMedicaoInicial,
   updateSolicitacaoMedicaoInicial,
-} from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import { getAlunosListagem } from "services/perfil.service";
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
+import { getAlunosListagem } from "src/services/perfil.service";
 import ResponsaveisInputs from "../ResponsaveisInput";
 import TabelaAlunosParciais from "./TabelaAlunosParciais";
 

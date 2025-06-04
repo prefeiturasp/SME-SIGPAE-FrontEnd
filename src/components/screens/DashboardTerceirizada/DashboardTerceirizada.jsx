@@ -1,25 +1,25 @@
 import { Spin } from "antd";
-import CardBody from "components/Shareable/CardBody";
-import CardMatriculados from "components/Shareable/CardMatriculados";
+import CardBody from "src/components/Shareable/CardBody";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
 import CardStatusDeSolicitacao, {
   CARD_TYPE_ENUM,
   ICON_CARD_TYPE_ENUM,
-} from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+} from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
 import {
   SOLICITACOES_AUTORIZADAS,
   SOLICITACOES_CANCELADAS,
   SOLICITACOES_COM_QUESTIONAMENTO,
   SOLICITACOES_NEGADAS,
   TERCEIRIZADA,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   JS_DATE_DEZEMBRO,
   JS_DATE_FEVEREIRO,
   JS_DATE_JANEIRO,
   JS_DATE_JULHO,
   PAGINACAO_DASHBOARD_DEFAULT,
-} from "constants/shared";
-import { dataAtual, deepCopy } from "helpers/utilities";
+} from "src/constants/shared";
+import { dataAtual, deepCopy } from "src/helpers/utilities";
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import {
@@ -27,7 +27,7 @@ import {
   getSolicitacoesCanceladasTerceirizada,
   getSolicitacoesComQuestionamento,
   getSolicitacoesNegadasTerceirizada,
-} from "services/painelTerceirizada.service";
+} from "src/services/painelTerceirizada.service";
 import { ajustarFormatoLog, LOG_PARA } from "../helper";
 import { MENU_DASHBOARD_TERCEIRIZADAS } from "./constants";
 

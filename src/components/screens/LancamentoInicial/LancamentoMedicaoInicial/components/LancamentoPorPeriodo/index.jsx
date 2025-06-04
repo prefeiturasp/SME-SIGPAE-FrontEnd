@@ -1,18 +1,21 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { ModalPadraoSimNao } from "components/Shareable/ModalPadraoSimNao";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { ModalPadraoSimNao } from "src/components/Shareable/ModalPadraoSimNao";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   deepCopy,
   ehEscolaTipoCEUGESTAO,
   getError,
   tiposAlimentacaoETEC,
   usuarioEhEscolaTerceirizadaDiretor,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import {
@@ -22,15 +25,15 @@ import {
   getSolicitacoesInclusoesEtecAutorizadasEscola,
   getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola,
   getSolicitacoesKitLanchesAutorizadasEscola,
-} from "services/medicaoInicial/periodoLancamentoMedicao.service";
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
   escolaEnviaCorrecaoMedicaoInicialCODAE,
   escolaEnviaCorrecaoMedicaoInicialDRE,
   getCEUGESTAOFrequenciasDietas,
   getQuantidadeAlimentacoesLancadasPeriodoGrupo,
   getSolicitacaoMedicaoInicial,
-} from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import { relatorioMedicaoInicialPDF } from "services/relatorios";
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
+import { relatorioMedicaoInicialPDF } from "src/services/relatorios";
 import { BlocoOcorrencias } from "../BlocoOcorrencias";
 import { ModalFinalizarMedicao } from "../ModalFinalizarMedicao";
 import { ModalSemOcorrenciasIMR } from "../ModalSemOcorrenciasIMR";

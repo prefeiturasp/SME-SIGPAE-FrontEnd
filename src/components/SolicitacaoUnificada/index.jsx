@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import HTTP_STATUS from "http-status-codes";
-import CardMatriculados from "components/Shareable/CardMatriculados";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
 import { Rascunhos } from "./Rascunhos";
 import { InputComData } from "../Shareable/DatePicker";
 import { maxValue, required } from "../../helpers/fieldValidators";
@@ -14,14 +14,14 @@ import {
 import { InputText } from "../Shareable/Input/InputText";
 import { toastSuccess, toastError } from "../Shareable/Toast/dialogs";
 import { Form, Field } from "react-final-form";
-import CKEditorField from "components/Shareable/CKEditorField";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
-import { Botao } from "components/Shareable/Botao";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import {
   checaSeDataEstaEntre2e5DiasUteis,
   composeValidators,

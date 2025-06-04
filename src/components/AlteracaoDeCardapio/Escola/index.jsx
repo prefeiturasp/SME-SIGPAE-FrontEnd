@@ -1,28 +1,31 @@
 import { Spin } from "antd";
-import { Botao } from "components/Shareable/Botao";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import CardMatriculados from "components/Shareable/CardMatriculados";
-import CKEditorField from "components/Shareable/CKEditorField";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import { Select } from "components/Shareable/Select";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
-import { TIPO_SOLICITACAO } from "constants/shared";
+} from "src/components/Shareable/Botao/constants";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import { Select } from "src/components/Shareable/Select";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
 import arrayMutators from "final-form-arrays";
 import {
   composeValidators,
   peloMenosUmCaractere,
   required,
   textAreaRequired,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 import {
   checaSeDataEstaEntre2e5DiasUteis,
   deepCopy,
   getError,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
@@ -32,7 +35,7 @@ import {
   escolaExcluirSolicitacaoDeAlteracaoCardapio,
   escolaIniciarSolicitacaoDeAlteracaoDeCardapio,
   getRascunhosAlteracaoTipoAlimentacao,
-} from "services/alteracaoDeCardapio";
+} from "src/services/alteracaoDeCardapio";
 import { formataValues } from "./helper";
 import { AlterarDiaOuPeriodo } from "./components/AlterarDiaOuPeriodoFields";
 import { PeriodosFields } from "./components/PeriodosFields";

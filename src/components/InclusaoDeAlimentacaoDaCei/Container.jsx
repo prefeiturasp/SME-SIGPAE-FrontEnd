@@ -2,12 +2,12 @@ import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import InclusaoDeAlimentacaoDaCei from ".";
 import { backgroundLabelPeriodo } from "./helper";
-import { dataParaUTC } from "helpers/utilities";
-import { getMotivosInclusaoNormal } from "services/inclusaoDeAlimentacao";
-import { getDiasUteis } from "services/diasUteis.service";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { dataParaUTC } from "src/helpers/utilities";
+import { getMotivosInclusaoNormal } from "src/services/inclusaoDeAlimentacao";
+import { getDiasUteis } from "src/services/diasUteis.service";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);

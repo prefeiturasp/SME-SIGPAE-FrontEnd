@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { ModalPadrao } from "components/Shareable/ModalPadrao";
+} from "src/components/Shareable/Botao/constants";
+import { ModalPadrao } from "src/components/Shareable/ModalPadrao";
 import { ModalVincularEditais } from "./ModelVincularEditais";
 import {
   CODAECancelaSoliticaoCorrecao,
   CODAENaoHomologaProduto,
   CODAEPedeAnaliseSensorialProduto,
   CODAEPedeCorrecao,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import ModalAtivacaoSuspensaoProduto from "../../AtivacaoSuspensao/ModalAtivacaoSuspensaoProduto";
 
 export const BotoesGPCODAE = ({

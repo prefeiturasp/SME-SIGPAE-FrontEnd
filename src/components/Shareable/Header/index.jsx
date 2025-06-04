@@ -2,15 +2,15 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import authService from "../../../services/auth";
 import "./style.scss";
-import { ENVIRONMENT } from "constants/config";
+import { ENVIRONMENT } from "src/constants/config";
 import NotificacoesNavbar from "../NotificacoesNavbar";
 import DownloadsNavbar from "../DownloadsNavbar";
-import { CENTRAL_DOWNLOADS } from "configs/constants";
+import { CENTRAL_DOWNLOADS } from "src/configs/constants";
 import {
   usuarioEhEscolaAbastecimento,
   usuarioEhEscolaAbastecimentoDiretor,
-} from "helpers/utilities";
-import { temas, TemaContext } from "context/TemaContext";
+} from "src/helpers/utilities";
+import { temas, TemaContext } from "src/context/TemaContext";
 
 export const Header = ({ toggled }) => {
   const temaContext = useContext(TemaContext);
