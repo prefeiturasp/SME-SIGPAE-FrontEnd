@@ -25,6 +25,7 @@ const ModalRelatorio = ({ show, onClose, onSubmit, nomeRelatorio }) => {
 
     if (nomeRelatorio === "Relatório Unificado") {
       gruposDesabilitados.push("Grupo 1");
+      gruposDesabilitados.push("Grupo 2");
     }
 
     return gruposDesabilitados.includes(grupo);

@@ -202,11 +202,11 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
       .closest("label");
     expect(grupo1Wrapper).toHaveClass("ant-radio-wrapper-disabled");
 
-    // Verifica se Grupo 2 está hábilitado
+    // Verifica se Grupo 2 está desabilitado
     const grupo2Wrapper = screen
       .getByText("Grupo 2 (CEMEI, CEU CEMEI)")
       .closest("label");
-    expect(grupo2Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
+    expect(grupo2Wrapper).toHaveClass("ant-radio-wrapper-disabled");
 
     // Verifica se Grupo 3 está habilitado
     const grupo3Wrapper = screen
