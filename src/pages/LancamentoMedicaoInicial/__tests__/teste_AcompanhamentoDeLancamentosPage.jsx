@@ -153,9 +153,13 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
 
     // Verifica se Grupo 4 está habilitado
     const grupo4Wrapper = screen
-      .getByText("Grupo 4 (CEU EMEF, CEU GESTAO, CIEJA, EMEBS, EMEF, EMEFM)")
+      .getByText("Grupo 4 (CEU EMEF, CEU GESTAO, CIEJA, EMEF, EMEFM)")
       .closest("label");
     expect(grupo4Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
+
+    // Verifica se Grupo 5 está habilitado
+    const grupo5Wrapper = screen.getByText("Grupo 5 (EMEBS)").closest("label");
+    expect(grupo5Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
 
     const botaoCancelar = screen.getByText("Cancelar").closest("button");
     fireEvent.click(botaoCancelar);
@@ -216,8 +220,12 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
 
     // Verifica se Grupo 4 está habilitado
     const grupo4Wrapper = screen
-      .getByText("Grupo 4 (CEU EMEF, CEU GESTAO, CIEJA, EMEBS, EMEF, EMEFM)")
+      .getByText("Grupo 4 (CEU EMEF, CEU GESTAO, CIEJA, EMEF, EMEFM)")
       .closest("label");
     expect(grupo4Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
+
+    // Verifica se Grupo 5 está desabilitado
+    const grupo5Wrapper = screen.getByText("Grupo 5 (EMEBS)").closest("label");
+    expect(grupo5Wrapper).toHaveClass("ant-radio-wrapper-disabled");
   });
 });
