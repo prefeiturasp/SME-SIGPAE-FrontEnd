@@ -65,7 +65,7 @@ export const formataPayload = (
     numero_empenho: values[`empenho_${index}`],
     qtd_total_empenho:
       stringDecimalToNumber(values[`qtd_total_empenho_${index}`]) || undefined,
-    etapa: values[`etapa_${index}`],
+    etapa: parseInt(values[`etapa_${index}`]?.replace("Etapa ", "") || 0, 10),
     parte: values[`parte_${index}`],
     data_programada: values[`data_programada_${index}`]
       ? moment(values[`data_programada_${index}`], "DD/MM/YYYY").format(
