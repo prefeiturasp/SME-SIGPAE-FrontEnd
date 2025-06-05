@@ -2001,6 +2001,7 @@ export default () => {
     column,
     row
   ) => {
+    let algumErro = false;
     const ehZeroFrequencia =
       !ehGrupoETECUrlParam &&
       valorZeroFrequencia(
@@ -2016,6 +2017,7 @@ export default () => {
     if (deepEqual(values, dadosIniciais)) {
       setDisableBotaoSalvarLancamentos(true);
       desabilitaTooltip(values);
+      algumErro = true;
     } else if (
       (value || previous) &&
       value !== previous &&
@@ -2031,15 +2033,13 @@ export default () => {
       }
       if (value.match(/\d+/g) !== null && valuesInputArray.length > 0) {
         setDisableBotaoSalvarLancamentos(false);
-      } else {
-        desabilitaTooltip(values);
-        setDisableBotaoSalvarLancamentos(true);
       }
     }
 
     if (Object.keys(errors).length > 0) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
+      algumErro = true;
     }
 
     const valuesFrequencia = Object.fromEntries(
@@ -2146,6 +2146,12 @@ export default () => {
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
+      algumErro = true;
+    }
+
+    if (!algumErro) {
+      setDisableBotaoSalvarLancamentos(false);
+      setExibirTooltip(false);
     }
 
     if (deveExistirObservacao(categoria.id, values, calendarioMesConsiderado)) {
