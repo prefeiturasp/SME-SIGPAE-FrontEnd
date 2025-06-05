@@ -2005,7 +2005,6 @@ export default () => {
     row
   ) => {
     let algumErro = false;
-    console.log("teste");
     const ehZeroFrequencia =
       !ehGrupoETECUrlParam &&
       valorZeroFrequencia(
