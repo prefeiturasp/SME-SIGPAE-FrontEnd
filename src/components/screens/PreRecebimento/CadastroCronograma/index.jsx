@@ -359,7 +359,7 @@ export default () => {
     const numeroFicha = values.ficha_tecnica?.split("-")[0].trim();
     if (
       !fichaTecnicaSelecionada ||
-      fichaTecnicaSelecionada.uuid !== numeroFicha
+      fichaTecnicaSelecionada.numero !== numeroFicha
     ) {
       let uuidFicha = fichasTecnicas.find(
         (f) => f.numero === numeroFicha
