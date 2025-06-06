@@ -202,6 +202,7 @@ const Relatorio = (props) => {
       .resposta_sim_nao;
 
   const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
+    !ehUsuarioEmpresa() &&
     visao === TERCEIRIZADA &&
     solicitacaoKitLanche &&
     [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(

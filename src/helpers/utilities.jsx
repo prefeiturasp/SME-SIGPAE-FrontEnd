@@ -267,6 +267,9 @@ export const deepCopy = (obj) => {
 };
 
 export const visualizaBotoesDoFluxo = (solicitacao) => {
+  if (ehUsuarioEmpresa()) {
+    return false;
+  }
   const tipoPerfil = localStorage.getItem("tipo_perfil");
   switch (solicitacao.status) {
     case statusEnum.DRE_A_VALIDAR:
@@ -299,6 +302,9 @@ export const visualizaBotoesDoFluxo = (solicitacao) => {
 };
 
 export const visualizaBotoesDoFluxoSolicitacaoUnificada = (solicitacao) => {
+  if (ehUsuarioEmpresa()) {
+    return false;
+  }
   const tipoPerfil = localStorage.getItem("tipo_perfil");
   switch (solicitacao?.status) {
     case statusEnum.CODAE_A_AUTORIZAR:
@@ -338,7 +344,7 @@ export const vizualizaBotoesDietaEspecial = (solicitacao) => {
       return usuarioEhCODAEDietaEspecial();
     case statusEnum.CODAE_AUTORIZADO:
     case statusEnum.CODAE_AUTORIZOU_INATIVACAO:
-      return usuarioEhEmpresaTerceirizada();
+      return usuarioEhAdministradorEmpresaTerceirizada();
     default:
       return false;
   }

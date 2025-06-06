@@ -40,6 +40,7 @@ import {
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscola,
   usuarioEhNutricionistaSupervisao,
+  ehUsuarioEmpresa,
 } from "src/helpers/utilities";
 import CorpoRelatorio from "./componentes/CorpoRelatorio";
 import FormAutorizaDietaEspecial from "./componentes/FormAutorizaDietaEspecial";
@@ -450,6 +451,7 @@ const Relatorio = ({ visao }) => {
               </div>,
             ]}
           {dietaEspecial &&
+            !ehUsuarioEmpresa() &&
             visao === TERCEIRIZADA &&
             (status === statusEnum.CODAE_AUTORIZADO ||
               dietaCancelada ||

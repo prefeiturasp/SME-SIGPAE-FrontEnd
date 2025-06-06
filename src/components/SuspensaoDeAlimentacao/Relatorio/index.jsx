@@ -21,6 +21,7 @@ import {
   getError,
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
+  ehUsuarioEmpresa,
 } from "src/helpers/utilities";
 import {
   getSuspensaoDeAlimentacaoUUID,
@@ -152,6 +153,7 @@ class RelatorioSuspensaoAlimentacao extends Component {
     const visao = localStorage.getItem("tipo_perfil");
 
     const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
+      !ehUsuarioEmpresa() &&
       visao === TIPO_PERFIL.TERCEIRIZADA &&
       suspensaoAlimentacao &&
       [statusEnum.INFORMADO, statusEnum.ESCOLA_CANCELOU].includes(

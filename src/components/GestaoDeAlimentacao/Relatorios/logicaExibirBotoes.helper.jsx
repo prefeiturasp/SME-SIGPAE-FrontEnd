@@ -1,5 +1,6 @@
 import { CODAE, DRE, TERCEIRIZADA } from "src/configs/constants";
 import { statusEnum, TIPO_PERFIL } from "src/constants/shared";
+import { ehUsuarioEmpresa } from "src/helpers/utilities";
 
 const tipoPerfil = localStorage.getItem("tipo_perfil");
 
@@ -80,6 +81,7 @@ export const exibirModalAutorizacaoAposQuestionamento = (
   );
 };
 export const exibirBotaoMarcarConferencia = (solicitacao, visao) => {
+  if (ehUsuarioEmpresa()) return false;
   return (
     visao === TERCEIRIZADA &&
     solicitacao &&
