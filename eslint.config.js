@@ -53,6 +53,7 @@ export default [
       "no-dupe-else-if": "off",
       "no-import-assign": "off",
       "no-setter-return": "off",
+      "no-console": "error",
       "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
       "react/react-in-jsx-scope": "off",
     },

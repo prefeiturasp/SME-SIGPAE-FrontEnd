@@ -1075,14 +1075,20 @@ export const exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas = (
   row,
   column,
   categoria,
-  kitLanchesAutorizadas
+  kitLanchesAutorizadas,
+  value_ = undefined,
+  ehChangeInput = false
 ) => {
-  const value =
-    formValuesAtualizados[
-      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-    ];
+  if (ehChangeInput && !value_) {
+    return false;
+  }
+  const value = ehChangeInput
+    ? value_
+    : formValuesAtualizados[
+        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+      ];
 
-  return (
+  const campoBloqueado =
     (value &&
       categoria.nome.includes("SOLICITAÇÕES") &&
       !formValuesAtualizados[
@@ -1102,8 +1108,8 @@ export const exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas = (
         .filter((kit) => kit.dia === column.dia)
         .reduce(function (total, kitLanche) {
           return total + parseInt(kitLanche.numero_alunos);
-        }, 0) > 0)
-  );
+        }, 0) > 0);
+  return campoBloqueado;
 };
 
 export const exibirTooltipKitLancheSolAlimentacoes = (
@@ -1111,21 +1117,25 @@ export const exibirTooltipKitLancheSolAlimentacoes = (
   row,
   column,
   categoria,
-  kitLanchesAutorizadas
+  kitLanchesAutorizadas,
+  value_ = undefined,
+  ehChangeInput = false
 ) => {
-  const value =
-    formValuesAtualizados[
-      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-    ];
+  if (!value_ && ehChangeInput) return false;
+  const value = ehChangeInput
+    ? value_
+    : formValuesAtualizados[
+        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+      ];
 
-  return (
+  const campoBloqueado =
     value &&
     categoria.nome.includes("SOLICITAÇÕES") &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
     kitLanchesAutorizadas.filter((kit) => kit.dia === column.dia).length ===
       0 &&
-    row.name.includes("kit_lanche")
-  );
+    row.name.includes("kit_lanche");
+  return campoBloqueado;
 };
 
 export const exibirTooltipQtdLancheEmergencialDiferenteSolAlimentacoesAutorizadas =
@@ -1170,12 +1180,16 @@ export const exibirTooltipLancheEmergencialNaoAutorizado = (
   row,
   column,
   categoria,
-  alteracoesAlimentacaoAutorizadas
+  alteracoesAlimentacaoAutorizadas,
+  value_ = undefined,
+  ehChangeInput = false
 ) => {
-  const value =
-    formValuesAtualizados[
-      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-    ];
+  if (!value_ && ehChangeInput) return false;
+  const value = ehChangeInput
+    ? value_
+    : formValuesAtualizados[
+        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+      ];
 
   return (
     value &&

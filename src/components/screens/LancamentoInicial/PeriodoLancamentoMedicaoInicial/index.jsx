@@ -37,7 +37,6 @@ import {
 } from "src/configs/constants";
 import {
   deepCopy,
-  deepEqual,
   ehEscolaTipoCEUGESTAO,
   escolaEhEMEBS,
   tiposAlimentacaoETEC,
@@ -1884,7 +1883,6 @@ export default () => {
       );
       setShowModalErro(true);
     } else {
-      setSemanaSelecionada(1);
       setAlunosTabSelecionada(key);
       onSubmit(
         formValuesAtualizados,
@@ -2004,6 +2002,7 @@ export default () => {
     column,
     row
   ) => {
+    let algumErro = false;
     const ehZeroFrequencia =
       !ehGrupoETECUrlParam &&
       valorZeroFrequencia(
@@ -2016,10 +2015,7 @@ export default () => {
         tabelaDietaRows,
         tabelaDietaEnteralRows
       );
-    if (deepEqual(values, dadosIniciais)) {
-      setDisableBotaoSalvarLancamentos(true);
-      desabilitaTooltip(values);
-    } else if (
+    if (
       (value || previous) &&
       value !== previous &&
       !["Mês anterior", "Mês posterior"].includes(value) &&
@@ -2034,15 +2030,13 @@ export default () => {
       }
       if (value.match(/\d+/g) !== null && valuesInputArray.length > 0) {
         setDisableBotaoSalvarLancamentos(false);
-      } else {
-        desabilitaTooltip(values);
-        setDisableBotaoSalvarLancamentos(true);
       }
     }
 
     if (Object.keys(errors).length > 0) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
+      algumErro = true;
     }
 
     const valuesFrequencia = Object.fromEntries(
@@ -2057,6 +2051,8 @@ export default () => {
       }
     }
     desabilitaTooltip(values);
+
+    const ehChangeInput = true;
 
     if (
       (ehZeroFrequencia &&
@@ -2109,14 +2105,18 @@ export default () => {
           row,
           column,
           categoria,
-          kitLanchesAutorizadas
+          kitLanchesAutorizadas,
+          value,
+          ehChangeInput
         ) ||
           exibirTooltipKitLancheSolAlimentacoes(
             formValuesAtualizados,
             row,
             column,
             categoria,
-            kitLanchesAutorizadas
+            kitLanchesAutorizadas,
+            value,
+            ehChangeInput
           ) ||
           exibirTooltipLancheEmergencialZeroAutorizado(
             formValuesAtualizados,
@@ -2131,7 +2131,9 @@ export default () => {
             row,
             column,
             categoria,
-            alteracoesAlimentacaoAutorizadas
+            alteracoesAlimentacaoAutorizadas,
+            value,
+            ehChangeInput
           )) &&
         !formValuesAtualizados[
           `observacoes__dia_${dia}__categoria_${categoria.id}`
@@ -2149,6 +2151,12 @@ export default () => {
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
+      algumErro = true;
+    }
+
+    if (!algumErro) {
+      setDisableBotaoSalvarLancamentos(false);
+      setExibirTooltip(false);
     }
 
     if (deveExistirObservacao(categoria.id, values, calendarioMesConsiderado)) {
