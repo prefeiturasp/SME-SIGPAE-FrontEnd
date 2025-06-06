@@ -24,6 +24,7 @@ import {
   STATUS_ESCOLA_OU_NUTRICIONISTA_RECLAMOU,
   STATUS_TERCEIRIZADA_RESPONDEU_RECLAMACAO,
 } from "src/configs/constants";
+import { ehUsuarioEmpresa } from "src/helpers/utilities";
 
 const maxLength5000 = maxLengthProduto(5000);
 const { Option } = Select;
@@ -48,6 +49,7 @@ class WizardFormPrimeiraPagina extends React.Component {
       desabilitarNomeDoProdutoField: true,
       desabilitarEhParaAlunosComDietaField: true,
       status_codae_questionado: false,
+      ehUsuarioEmpresa: ehUsuarioEmpresa(),
     };
   }
 
@@ -309,6 +311,7 @@ class WizardFormPrimeiraPagina extends React.Component {
       desabilitarNomeDoProdutoField,
       desabilitarEhParaAlunosComDietaField,
       status_codae_questionado,
+      ehUsuarioEmpresa,
     } = this.state;
 
     return (
@@ -450,6 +453,7 @@ class WizardFormPrimeiraPagina extends React.Component {
               type="text"
               validate={[maxLength5000]}
               maxLength={5001}
+              disabled={ehUsuarioEmpresa}
               required
             />
           </div>
@@ -471,6 +475,7 @@ class WizardFormPrimeiraPagina extends React.Component {
                     onClick={() => {
                       this.alergenicosCheck("1");
                     }}
+                    disabled={ehUsuarioEmpresa}
                     required
                   />
                   <span className="checkmark" />
@@ -506,6 +511,7 @@ class WizardFormPrimeiraPagina extends React.Component {
                   component={TextArea}
                   className="field-aditivos"
                   name="aditivos"
+                  disabled={ehUsuarioEmpresa}
                   required
                 />
               </article>
@@ -528,6 +534,7 @@ class WizardFormPrimeiraPagina extends React.Component {
                     onClick={() => {
                       this.temGlutemCheck("1");
                     }}
+                    disabled={ehUsuarioEmpresa}
                     required
                   />
                   <span className="checkmark" />
@@ -542,6 +549,7 @@ class WizardFormPrimeiraPagina extends React.Component {
                     onClick={() => {
                       this.temGlutemCheck("0");
                     }}
+                    disabled={ehUsuarioEmpresa}
                     required
                   />
                   <span className="checkmark" />

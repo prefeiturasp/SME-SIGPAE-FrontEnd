@@ -15,6 +15,7 @@ import { TERCEIRIZADA } from "src/configs/constants";
 import {
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
+  ehUsuarioEmpresa,
 } from "src/helpers/utilities";
 import { getSuspensaoAlimentacaoCEI } from "src/services/suspensaoAlimentacaoCei.service";
 import "./style.scss";
@@ -51,6 +52,7 @@ export default ({ ...props }) => {
   };
 
   const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
+    !ehUsuarioEmpresa() &&
     visao === TERCEIRIZADA &&
     solicitacaoSuspensao &&
     [statusEnum.INFORMADO, statusEnum.ESCOLA_CANCELOU].includes(
