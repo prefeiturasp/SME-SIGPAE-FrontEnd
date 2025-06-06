@@ -36,9 +36,19 @@ export const Filtros = ({ ...props }) => {
     let data = values;
     const response = await getUnidadesEducacionaisComCodEol(data);
     if (response.status === HTTP_STATUS.OK) {
+      if (response.data.mensagem) {
+        setUnidadesEducacionais([
+          {
+            label: response.data.mensagem,
+            value: "__no_result__",
+            disabled: true,
+          },
+        ]);
+        return;
+      }
       setUnidadesEducacionais(
         response.data.map((unidade) => ({
-          label: unidade.codigo_eol_escola,
+          label: `${unidade.codigo_eol_escola}`,
           value: unidade.uuid,
         }))
       );
@@ -149,9 +159,17 @@ export const Filtros = ({ ...props }) => {
                       value: tipo_unidade.uuid,
                     }))}
                     selected={values.tipos_unidades_selecionadas || []}
-                    onSelectedChanged={(value) =>
-                      form.change("tipos_unidades_selecionadas", value)
-                    }
+                    onSelectedChanged={async (value) => {
+                      form.change("tipos_unidades_selecionadas", value);
+
+                      const { lote } = form.getState().values; // lote atual
+                      if (lote) {
+                        await getUnidadesEducacionaisAsync({
+                          lote,
+                          tipos_unidades_selecionadas: value,
+                        });
+                      }
+                    }}
                     overrideStrings={{
                       search: "Busca",
                       selectSomeItems: "Selecione o tipo de unidade",
