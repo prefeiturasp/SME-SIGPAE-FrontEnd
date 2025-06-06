@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import { getSolicitacaoUnificada } from "src/services/solicitacaoUnificada.service";
 import { visualizaBotoesDoFluxoSolicitacaoUnificada } from "src/helpers/utilities";
 import CorpoRelatorio from "./componentes/CorpoRelatorio";
-import { prazoDoPedidoMensagem } from "src/helpers/utilities";
+import { prazoDoPedidoMensagem, ehUsuarioEmpresa } from "src/helpers/utilities";
 import {
   toastSuccess,
   toastError,
@@ -180,6 +180,7 @@ const Relatorio = (props) => {
     !solicitacaoUnificada.logs[solicitacaoUnificada.logs.length - 1]
       .resposta_sim_nao;
   const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
+    !ehUsuarioEmpresa() &&
     visao === TERCEIRIZADA &&
     solicitacaoUnificada &&
     [

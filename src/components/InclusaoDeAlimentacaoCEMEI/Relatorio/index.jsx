@@ -21,6 +21,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import { ehUsuarioEmpresa } from "src/helpers/utilities";
 
 export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   const [uuid, setUuid] = useState(null);
@@ -181,6 +182,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
       solicitacao.status
     );
   const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
+    !ehUsuarioEmpresa() &&
     visao === TERCEIRIZADA &&
     solicitacao &&
     [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(

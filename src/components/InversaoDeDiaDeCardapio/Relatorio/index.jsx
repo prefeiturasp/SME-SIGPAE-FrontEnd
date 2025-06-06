@@ -14,7 +14,8 @@ import {
   visualizaBotoesDoFluxo,
   prazoDoPedidoMensagem,
   getError,
-} from "../../../helpers/utilities";
+  ehUsuarioEmpresa,
+} from "src/helpers/utilities";
 import { getInversaoDeDiaDeCardapio } from "../../../services/inversaoDeDiaDeCardapio.service";
 import Botao from "../../Shareable/Botao";
 import { BUTTON_STYLE, BUTTON_TYPE } from "../../Shareable/Botao/constants";
@@ -225,6 +226,7 @@ class Relatorio extends Component {
       !inversaoDiaCardapio.logs[inversaoDiaCardapio.logs.length - 1]
         .resposta_sim_nao;
     const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
+      !ehUsuarioEmpresa() &&
       visao === TERCEIRIZADA &&
       inversaoDiaCardapio &&
       [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(

@@ -6,6 +6,7 @@ import {
   justificativaAoAprovarSolicitacao,
   justificativaAoNegarSolicitacao,
   visualizaBotoesDoFluxo,
+  ehUsuarioEmpresa,
 } from "src/helpers/utilities";
 import {
   totalAlunosCEI,
@@ -82,6 +83,7 @@ export const CorpoRelatorio = ({ ...props }) => {
       solicitacaoKitLancheCEMEI.status === statusEnum.CODAE_QUESTIONADO &&
       textoBotaoNaoAprova);
   const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
+    !ehUsuarioEmpresa() &&
     visao === TERCEIRIZADA &&
     solicitacaoKitLancheCEMEI &&
     [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(
