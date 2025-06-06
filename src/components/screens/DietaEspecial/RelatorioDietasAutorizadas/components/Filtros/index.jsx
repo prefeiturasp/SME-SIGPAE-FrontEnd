@@ -159,9 +159,17 @@ export const Filtros = ({ ...props }) => {
                       value: tipo_unidade.uuid,
                     }))}
                     selected={values.tipos_unidades_selecionadas || []}
-                    onSelectedChanged={(value) =>
-                      form.change("tipos_unidades_selecionadas", value)
-                    }
+                    onSelectedChanged={async (value) => {
+                      form.change("tipos_unidades_selecionadas", value);
+
+                      const { lote } = form.getState().values; // lote atual
+                      if (lote) {
+                        await getUnidadesEducacionaisAsync({
+                          lote,
+                          tipos_unidades_selecionadas: value,
+                        });
+                      }
+                    }}
                     overrideStrings={{
                       search: "Busca",
                       selectSomeItems: "Selecione o tipo de unidade",
