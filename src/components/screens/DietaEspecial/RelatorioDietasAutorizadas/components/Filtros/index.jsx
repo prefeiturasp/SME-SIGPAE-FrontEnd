@@ -35,7 +35,6 @@ export const Filtros = ({ ...props }) => {
     setUnidadesEducacionais([]);
     let data = values;
     const response = await getUnidadesEducacionaisComCodEol(data);
-    console.log(response);
     if (response.status === HTTP_STATUS.OK) {
       if (response.data.mensagem) {
         setUnidadesEducacionais([
