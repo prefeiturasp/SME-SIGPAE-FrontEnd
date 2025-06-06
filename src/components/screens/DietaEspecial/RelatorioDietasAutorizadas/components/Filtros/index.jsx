@@ -35,10 +35,21 @@ export const Filtros = ({ ...props }) => {
     setUnidadesEducacionais([]);
     let data = values;
     const response = await getUnidadesEducacionaisComCodEol(data);
+    console.log(response);
     if (response.status === HTTP_STATUS.OK) {
+      if (response.data.mensagem) {
+        setUnidadesEducacionais([
+          {
+            label: response.data.mensagem,
+            value: "__no_result__",
+            disabled: true,
+          },
+        ]);
+        return;
+      }
       setUnidadesEducacionais(
         response.data.map((unidade) => ({
-          label: unidade.codigo_eol_escola,
+          label: `${unidade.codigo_eol_escola}`,
           value: unidade.uuid,
         }))
       );
