@@ -17,6 +17,7 @@ import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferen
 import { meusDados } from "src/services/perfil.service";
 import ModalAutorizarAposQuestionamento from "src/components/Shareable/ModalAutorizarAposQuestionamento";
 import { ModalAprovarGenericoSimOpcional } from "src/components/Shareable/ModalAprovarGenericoSimOpcional";
+import { ehUsuarioEmpresa } from "src/helpers/utilities";
 
 const Relatorio = (props) => {
   const [estado, setEstado] = useState({
