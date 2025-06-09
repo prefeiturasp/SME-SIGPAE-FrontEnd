@@ -139,7 +139,7 @@ export default ({ form, onChange }: Args) => {
         const tipos = formataTiposAlimentacoesOpcoes(
           usuarioEhEscolaTerceirizadaQualquerPerfil() && uuidInstituicao
             ? responseAlimentacoes
-            : responseAlimentacoes.results
+            : responseAlimentacoes.data.results
         );
         setTiposAlimentacao(tipos);
         setTiposAlimentacaoOpcoes(tipos);

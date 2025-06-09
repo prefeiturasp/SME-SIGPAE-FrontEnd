@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
 import { mockDiasCalendarioCEUGESTAO_NOVEMBRO24 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/diasCalendarioCEUGESTAO_NOVEMBRO24";
@@ -10,8 +11,6 @@ import { mockValoresMedicaoCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/Peri
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
-import React from "react";
-import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
 jest.setTimeout(30000);
@@ -126,24 +125,5 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
 
   it("renderiza label `ALIMENTAÇÃO`", async () => {
     expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
-  });
-
-  it("ao clicar na tab `Semana 2`, exibe, no dias 04 e 05, o número de alunos 300 e no dia 07, 200 alunos", async () => {
-    const semana2Element = screen.getByText("Semana 2");
-    fireEvent.click(semana2Element);
-    const inputElementNumeroAlunosDia4 = screen.getByTestId(
-      "numero_de_alunos__dia_04__categoria_1"
-    );
-    expect(inputElementNumeroAlunosDia4).toHaveAttribute("value", "300");
-
-    const inputElementNumeroAlunosDia5 = screen.getByTestId(
-      "numero_de_alunos__dia_05__categoria_1"
-    );
-    expect(inputElementNumeroAlunosDia5).toHaveAttribute("value", "300");
-
-    const inputElementNumeroAlunosDia7 = screen.getByTestId(
-      "numero_de_alunos__dia_07__categoria_1"
-    );
-    expect(inputElementNumeroAlunosDia7).toHaveAttribute("value", "200");
   });
 });

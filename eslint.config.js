@@ -25,6 +25,7 @@ export default [
         ...cleanBrowserGlobals,
         Atomics: "readonly",
         SharedArrayBuffer: "readonly",
+        global: "readonly",
       },
     },
     plugins: {

@@ -449,7 +449,7 @@ export const desabilitarField = (
     }
   }
   if (
-    ehEscolaTipoCEUGESTAO(location.state.solicitacaoMedicaoInicial.escola) ||
+    grupoLocation === "Programas e Projetos" ||
     location.state.periodoEspecifico
   ) {
     return (

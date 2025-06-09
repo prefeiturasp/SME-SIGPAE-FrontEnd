@@ -1,6 +1,3 @@
-import React, { useEffect, useState, Fragment } from "react";
-import { Field } from "react-final-form";
-import { Modal } from "react-bootstrap";
 import { Spin, Tabs } from "antd";
 import {
   addDays,
@@ -13,78 +10,82 @@ import {
   subDays,
 } from "date-fns";
 import HTTP_STATUS from "http-status-codes";
+import { Fragment, useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import { Field } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
-import InputValueMedicao from "src/components/Shareable/Input/InputValueMedicao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import {
-  defaultValue,
-  desabilitarBotaoObservacoesConferenciaLancamentos,
-  formatarLinhasTabelaAlimentacao,
-  formatarLinhasTabelaDietaEnteral,
-  formatarLinhasTabelasDietas,
-  formatarLinhasTabelaSolicitacoesAlimentacao,
-  formatarLinhasTabelaEtecAlimentacao,
-  getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync,
-  getSolicitacoesInclusaoAutorizadasAsync,
-  getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync,
-  getSolicitacoesSuspensoesAutorizadasAsync,
-  validacaoSemana,
-  tabAlunosEmebs,
-} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
-import {
-  formatarLinhasTabelaAlimentacaoCEI,
-  formatarLinhasTabelasDietasCEI,
-} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/helper";
-import { removeObjetosDuplicados } from "src/components/screens/LancamentoInicial/LancamentoMedicaoInicial/components/LancamentoPorPeriodo/helpers";
-import InputText from "src/components/Shareable/Input/InputText";
 import CKEditorField from "src/components/Shareable/CKEditorField";
+import InputText from "src/components/Shareable/Input/InputText";
+import InputValueMedicao from "src/components/Shareable/Input/InputValueMedicao";
 import {
   toastError,
   toastSuccess,
   toastWarn,
 } from "src/components/Shareable/Toast/dialogs";
+import { removeObjetosDuplicados } from "src/components/screens/LancamentoInicial/LancamentoMedicaoInicial/components/LancamentoPorPeriodo/helpers";
 import {
-  diasSemana,
-  initialStateWeekColumns,
-  PERIODO_STATUS_DE_PROGRESSO,
-} from "../../constants";
+  defaultValue,
+  desabilitarBotaoObservacoesConferenciaLancamentos,
+  formatarLinhasTabelaAlimentacao,
+  formatarLinhasTabelaDietaEnteral,
+  formatarLinhasTabelaEtecAlimentacao,
+  formatarLinhasTabelasDietas,
+  formatarLinhasTabelaSolicitacoesAlimentacao,
+  getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync,
+  getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync,
+  getSolicitacoesInclusaoAutorizadasAsync,
+  getSolicitacoesSuspensoesAutorizadasAsync,
+  tabAlunosEmebs,
+  validacaoSemana,
+} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import {
+  formatarLinhasTabelaAlimentacaoCEI,
+  formatarLinhasTabelasDietasCEI,
+} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/helper";
+import {
+  deepCopy,
   ehEscolaTipoCEI,
   ehEscolaTipoCEMEI,
-  deepCopy,
+  ehFimDeSemana,
   usuarioEhDRE,
   usuarioEhMedicao,
-  ehFimDeSemana,
 } from "src/helpers/utilities";
-import { ModalAprovarPeriodo } from "../ModalAprovarPeriodo";
-import { ModalCancelarCorrecao } from "../ModalCancelarCorrecao";
-import { ModalSalvarCorrecao } from "../ModalSalvarCorrecao";
-import { formatarNomePeriodo } from "../../helper";
+import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import {
   getCategoriasDeMedicao,
   getPeriodosInclusaoContinua,
   getValoresPeriodosLancamentos,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
-  drePedeCorrecaMedicao,
   codaePedeCorrecaPeriodo,
+  drePedeCorrecaMedicao,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import { LegendaDiasNaoLetivos } from "../LegendaDiasNaoLetivos";
 import {
   exibirTooltipAlteracaoAlimentacaoAutorizadaDreCodae,
   exibirTooltipInclusaoAlimentacaoAutorizadaDreCodae,
-  exibirTooltipSuspensaoAutorizadaFrequenciaDreCodae,
-  exibirTooltipSuspensaoAutorizadaAlimentacaoDreCodae,
   exibirTooltipRepeticaoDiasSobremesaDoceDreCodae,
+  exibirTooltipSuspensaoAutorizadaAlimentacaoDreCodae,
+  exibirTooltipSuspensaoAutorizadaFrequenciaDreCodae,
 } from "../../../PeriodoLancamentoMedicaoInicial/validacoes";
 import {
   ALUNOS_EMEBS,
   FUNDAMENTAL_EMEBS,
   INFANTIL_EMEBS,
 } from "../../../constants";
+import {
+  diasSemana,
+  initialStateWeekColumns,
+  PERIODO_STATUS_DE_PROGRESSO,
+} from "../../constants";
+import { formatarNomePeriodo } from "../../helper";
+import { LegendaDiasNaoLetivos } from "../LegendaDiasNaoLetivos";
+import { ModalAprovarPeriodo } from "../ModalAprovarPeriodo";
+import { ModalCancelarCorrecao } from "../ModalCancelarCorrecao";
+import { ModalSalvarCorrecao } from "../ModalSalvarCorrecao";
 
 export const TabelaLancamentosPeriodo = ({ ...props }) => {
   const {
@@ -477,6 +478,19 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
               !periodoGrupo.nome_periodo_grupo.includes("Solicitações")
             ) {
               if (periodoGrupo.nome_periodo_grupo === "Programas e Projetos") {
+                const response_get_tipos_alimentacao =
+                  await getTiposDeAlimentacao();
+                if (response_get_tipos_alimentacao.status !== HTTP_STATUS.OK) {
+                  toastError(
+                    "Erro ao carregar tipos de alimentação. Tente novamente mais tarde."
+                  );
+                }
+
+                const lanche4h =
+                  response_get_tipos_alimentacao.data.results.filter(
+                    (tipo_alimentacao) => tipo_alimentacao.nome === "Lanche 4h"
+                  );
+
                 let periodos;
                 let tiposAlimentacao = [];
                 const getPeriodosInclusaoContinuaAsync = async () => {
@@ -506,7 +520,11 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                         (p) => p.periodo_escolar.nome === periodo
                       ).tipos_alimentacao;
                     }
-                    tiposAlimentacao = [...tiposAlimentacao, ...tipos];
+                    tiposAlimentacao = [
+                      ...tiposAlimentacao,
+                      ...tipos,
+                      ...lanche4h,
+                    ];
                   });
                   const tipos_alimentacao = removeObjetosDuplicados(
                     tiposAlimentacao,
