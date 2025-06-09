@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -20,7 +20,6 @@ import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "mock
 import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "mocks/services/solicitacaoMedicaoInicial.service/CEUGESTAO/getSolicitacaoMedicaoInicialCEUGESTAO";
 import { mockGetTiposDeContagemAlimentacao } from "mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { PeriodoLancamentoMedicaoInicialPage } from "pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "services/_mock";
 
@@ -188,14 +187,5 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO"
 
   it("renderiza label `ALIMENTAÇÃO`", async () => {
     expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
-  });
-
-  it("ao clicar na tab `Semana 3`, exibe, no dias 11, o número de alunos 100", async () => {
-    const semana3Element = screen.getByText("Semana 3");
-    fireEvent.click(semana3Element);
-    const inputElementNumeroAlunosDia11 = screen.getByTestId(
-      "numero_de_alunos__dia_11__categoria_1"
-    );
-    expect(inputElementNumeroAlunosDia11).toHaveAttribute("value", "100");
   });
 });

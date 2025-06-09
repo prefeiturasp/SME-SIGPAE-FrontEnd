@@ -6,20 +6,23 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import { mockTiposAlimentacao } from "mocks/InclusaoAlimentacao/mockTiposAlimentacao";
 import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
 import { mockCategoriasMedicao } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
+import { mockMatriculadosNoMesEMEFJaneiro2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Janeiro2025/matriculadosNoMes";
 import { mockDiasCalendarioEMEFOutubro2024 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Outubro2024/diasCalendario";
 import { mockFeriadosNoMesJaneiro } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/feriadosNoMes/janeiro";
 import { mockLogQuantidadeDietasAutorizadas } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/logQuantidadeDietasAutorizadasEMEF";
-import { mockMatriculadosNoMesEMEFJaneiro2025 } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Janeiro2025/matriculadosNoMes";
 import { mockLocationStateEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/mockStateEMEF";
 import { mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/permissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF";
 import { mockSuspensoesAutorizadasEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/suspensoesAutorizadasEMEF";
 import { mockValoresMedicaoEMEF } from "mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/valoresMedicaoEMEF";
 import { mockMeusDadosEscolaEMEFPericles } from "mocks/meusDados/escolaEMEFPericles";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
+import {
+  getTiposDeAlimentacao,
+  getVinculosTipoAlimentacaoPorEscola,
+} from "services/cadastroTipoAlimentacao.service";
 import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
@@ -85,6 +88,10 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
     });
     getCategoriasDeMedicao.mockResolvedValue({
       data: mockCategoriasMedicao,
+      status: 200,
+    });
+    getTiposDeAlimentacao.mockResolvedValue({
+      data: mockTiposAlimentacao,
       status: 200,
     });
     getLogDietasAutorizadasPeriodo.mockResolvedValue({
