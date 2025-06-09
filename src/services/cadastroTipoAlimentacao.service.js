@@ -94,16 +94,12 @@ export const alteraVinculosTipoAlimentacao = async (uuid, values) => {
 };
 
 export const getTiposDeAlimentacao = async () => {
-  const OBJ_REQUEST = {
-    headers: authHeader,
-    method: "GET",
-  };
-
-  const url = `${CONFIG.API_URL}/tipos-alimentacao/`;
-  OBJ_REQUEST["method"] = "GET";
-  return await fetch(url, OBJ_REQUEST).then((response) => {
-    return response.json();
-  });
+  const url = "/tipos-alimentacao/";
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const createVinculoTipoAlimentacaoPeriodoEscolar = (payload) => {
