@@ -803,7 +803,17 @@ export const validacoesTabelasDietas = (
     if (
       !EH_INCLUSAO_SOMENTE_SOBREMESA &&
       validacaoDiaLetivo(dia) &&
-      ((maxDietasAutorizadas !== 0 && !value) || (value && Number(value) !== 0))
+      ((maxDietasAutorizadas !== 0 && !value) ||
+        (value && Number(value) !== 0)) &&
+      alimentacoesDoDia
+        .map((ali_dia) => ali_dia.split("__dia")[0])
+        .some((item) =>
+          item.includes(
+            inclusoesAutorizadas
+              .find((inc) => inc.dia === dia)
+              .alimentacoes.split(", ")
+          )
+        )
     ) {
       return `Foi autorizada inclusão de alimentação ${
         location.state && location.state.grupo ? "contínua" : ""

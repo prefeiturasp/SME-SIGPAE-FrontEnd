@@ -13,7 +13,7 @@ import {
 import { ptBR } from "date-fns/locale";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Field, Form, FormSpy } from "react-final-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -34,11 +34,13 @@ import {
 import { DETALHAMENTO_DO_LANCAMENTO, MEDICAO_INICIAL } from "configs/constants";
 import {
   deepCopy,
-  ehEscolaTipoCEUGESTAO,
   escolaEhEMEBS,
   tiposAlimentacaoETEC,
 } from "helpers/utilities";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
+import {
+  getTiposDeAlimentacao,
+  getVinculosTipoAlimentacaoPorEscola,
+} from "services/cadastroTipoAlimentacao.service";
 import { getListaDiasSobremesaDoce } from "services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
@@ -228,12 +230,7 @@ export default () => {
     }
   };
 
-  const getTiposAlimentacaoCEUGESTAO = (inclusoesAutorizadas) => {
-    if (
-      !ehEscolaTipoCEUGESTAO(location.state.solicitacaoMedicaoInicial.escola) &&
-      !(urlParams.get("ehPeriodoEspecifico") === "true")
-    )
-      return [];
+  const getTiposAlimentacaoInclusoesContinuas = (inclusoesAutorizadas) => {
     const tiposAlimentacao = [];
     inclusoesAutorizadas.forEach((inclusao) => {
       inclusao.alimentacoes.split(", ").forEach((alimentacao) => {
@@ -247,14 +244,9 @@ export default () => {
 
   const trataTabelaAlimentacaoCEUGESTAO = (
     tiposAlimentacaoProgramasProjetosOuCEUGESTAO,
-    tiposAlimentacaoCEUGESTAO
+    tiposAlimentacaoInclusaoContinua
   ) => {
-    if (
-      !ehEscolaTipoCEUGESTAO(location.state.solicitacaoMedicaoInicial.escola) &&
-      !(urlParams.get("ehPeriodoEspecifico") === "true")
-    )
-      return tiposAlimentacaoProgramasProjetosOuCEUGESTAO;
-    if (!tiposAlimentacaoCEUGESTAO.includes("refeicao")) {
+    if (!tiposAlimentacaoInclusaoContinua.includes("refeicao")) {
       const indexRefeicao1Oferta =
         tiposAlimentacaoProgramasProjetosOuCEUGESTAO.findIndex(
           (ali) => ali.nome === "Refeição 1ª Oferta"
@@ -273,7 +265,7 @@ export default () => {
       );
     }
 
-    if (!tiposAlimentacaoCEUGESTAO.includes("sobremesa")) {
+    if (!tiposAlimentacaoInclusaoContinua.includes("sobremesa")) {
       const indexRefeicao1Oferta =
         tiposAlimentacaoProgramasProjetosOuCEUGESTAO.findIndex(
           (ali) => ali.nome === "Sobremesa 1º Oferta"
@@ -292,7 +284,7 @@ export default () => {
       );
     }
 
-    if (!tiposAlimentacaoCEUGESTAO.includes("lanche")) {
+    if (!tiposAlimentacaoInclusaoContinua.includes("lanche")) {
       const indexLanche =
         tiposAlimentacaoProgramasProjetosOuCEUGESTAO.findIndex(
           (ali) => ali.nome === "Lanche"
@@ -300,7 +292,7 @@ export default () => {
       tiposAlimentacaoProgramasProjetosOuCEUGESTAO.splice(indexLanche, 1);
     }
 
-    if (!tiposAlimentacaoCEUGESTAO.includes("lanche_4h")) {
+    if (!tiposAlimentacaoInclusaoContinua.includes("lanche_4h")) {
       const indexLanche4h =
         tiposAlimentacaoProgramasProjetosOuCEUGESTAO.findIndex(
           (ali) => ali.nome === "Lanche 4h"
@@ -323,21 +315,21 @@ export default () => {
 
   const trataCategoriasMedicaoCEUGESTAO = (
     response_categorias_medicao,
-    tiposAlimentacaoCEUGESTAO
+    tiposAlimentacaoInclusaoContinua
   ) => {
     if (
-      !ehEscolaTipoCEUGESTAO(location.state.solicitacaoMedicaoInicial.escola) &&
+      grupoLocation !== "Programas e Projetos" &&
       !(urlParams.get("ehPeriodoEspecifico") === "true")
     )
       return response_categorias_medicao;
-    if (!tiposAlimentacaoCEUGESTAO.includes("refeicao")) {
+    if (!tiposAlimentacaoInclusaoContinua.includes("refeicao")) {
       response_categorias_medicao = response_categorias_medicao.filter(
         (categoria) => !categoria.nome.includes("ENTERAL")
       );
     }
     if (
-      !tiposAlimentacaoCEUGESTAO.includes("lanche") &&
-      !tiposAlimentacaoCEUGESTAO.includes("lanche_4h")
+      !tiposAlimentacaoInclusaoContinua.includes("lanche") &&
+      !tiposAlimentacaoInclusaoContinua.includes("lanche_4h")
     ) {
       response_categorias_medicao = response_categorias_medicao.filter(
         (categoria) =>
@@ -382,6 +374,13 @@ export default () => {
 
       getListaDiasSobremesaDoceAsync(escola.uuid);
 
+      const response_get_tipos_alimentacao = await getTiposDeAlimentacao();
+      if (response_get_tipos_alimentacao.status !== HTTP_STATUS.OK) {
+        toastError(
+          "Erro ao carregar tipos de alimentação. Tente novamente mais tarde."
+        );
+      }
+
       const periodos_escolares = response_vinculos.data.results;
       const ehPeriodoSimples = periodos_escolares
         .map((periodo) => periodo.periodo_escolar.nome)
@@ -421,9 +420,8 @@ export default () => {
       setInclusoesAutorizadas(response_inclusoes_autorizadas);
 
       const tipos_alimentacao = periodo.tipos_alimentacao;
-      const tiposAlimentacaoCEUGESTAO = getTiposAlimentacaoCEUGESTAO(
-        response_inclusoes_autorizadas
-      );
+      const tiposAlimentacaoInclusaoContinua =
+        getTiposAlimentacaoInclusoesContinuas(response_inclusoes_autorizadas);
       const cloneTiposAlimentacao = deepCopy(tipos_alimentacao);
       const tiposAlimentacaoFormatadas = cloneTiposAlimentacao
         .filter((alimentacao) => alimentacao.nome !== "Lanche Emergencial")
@@ -460,9 +458,23 @@ export default () => {
           uuid: null,
         });
       }
+
       const tiposAlimentacaoProgramasProjetosOuCEUGESTAO = deepCopy(
         tiposAlimentacaoFormatadas
       );
+
+      if (
+        tiposAlimentacaoInclusaoContinua.includes("lanche_4h") &&
+        !tiposAlimentacaoFormatadas.find((taf) => taf.nome === "Lanche 4h")
+      ) {
+        tiposAlimentacaoProgramasProjetosOuCEUGESTAO.push({
+          nome: "Lanche 4h",
+          name: "lanche_4h",
+          uuid: response_get_tipos_alimentacao.data.results.find((tp) =>
+            tp.nome.includes("4h")
+          ).uuid,
+        });
+      }
 
       tiposAlimentacaoFormatadas.unshift(
         {
@@ -507,7 +519,7 @@ export default () => {
       setTabelaAlimentacaoProgramasProjetosOuCEUGESTAORows(
         trataTabelaAlimentacaoCEUGESTAO(
           tiposAlimentacaoProgramasProjetosOuCEUGESTAO,
-          tiposAlimentacaoCEUGESTAO
+          tiposAlimentacaoInclusaoContinua
         )
       );
 
@@ -527,12 +539,10 @@ export default () => {
       );
 
       if (
-        ehEscolaTipoCEUGESTAO(
-          location.state.solicitacaoMedicaoInicial.escola
-        ) ||
+        grupoLocation === "Programas e Projetos" ||
         urlParams.get("ehPeriodoEspecifico") === "true"
       ) {
-        if (tiposAlimentacaoCEUGESTAO.includes("lanche_4h")) {
+        if (tiposAlimentacaoInclusaoContinua.includes("lanche_4h")) {
           rowsDietas.push({
             nome: "Lanche 4h",
             name: "lanche_4h",
@@ -562,37 +572,26 @@ export default () => {
         (ali) => ali.nome === "Lanche"
       );
       if (
-        (indexLanche !== -1 &&
-          !ehEscolaTipoCEUGESTAO(
-            location.state.solicitacaoMedicaoInicial.escola
-          )) ||
+        (indexLanche !== -1 && !grupoLocation === "Programas e Projetos") ||
         (indexLanche !== -1 &&
           !(urlParams.get("ehPeriodoEspecifico") === "true"))
       ) {
-        if (
-          !ehEscolaTipoCEUGESTAO(
-            location.state.solicitacaoMedicaoInicial.escola
-          )
-        ) {
-          rowsDietas.push({
-            nome: "Lanche",
-            name: "Lanche"
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
-            uuid: cloneTiposAlimentacao[indexLanche].uuid,
-          });
-        }
+        rowsDietas.push({
+          nome: "Lanche",
+          name: "Lanche"
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replaceAll(/ /g, "_"),
+          uuid: cloneTiposAlimentacao[indexLanche].uuid,
+        });
       }
 
       if (
-        ehEscolaTipoCEUGESTAO(
-          location.state.solicitacaoMedicaoInicial.escola
-        ) ||
+        grupoLocation === "Programas e Projetos" ||
         urlParams.get("ehPeriodoEspecifico") === "true"
       ) {
-        if (tiposAlimentacaoCEUGESTAO.includes("lanche")) {
+        if (tiposAlimentacaoInclusaoContinua.includes("lanche")) {
           rowsDietas.push({
             nome: "Lanche",
             name: "Lanche"
@@ -621,13 +620,11 @@ export default () => {
       );
       if (
         (indexRefeicaoDieta !== -1 &&
-          (!ehEscolaTipoCEUGESTAO(
-            location.state.solicitacaoMedicaoInicial.escola
-          ) ||
-            tiposAlimentacaoCEUGESTAO.includes("refeicao"))) ||
+          (!grupoLocation === "Programas e Projetos" ||
+            tiposAlimentacaoInclusaoContinua.includes("refeicao"))) ||
         (indexRefeicaoDieta !== -1 &&
           (!(urlParams.get("ehPeriodoEspecifico") === "true") ||
-            tiposAlimentacaoCEUGESTAO.includes("refeicao")))
+            tiposAlimentacaoInclusaoContinua.includes("refeicao")))
       ) {
         cloneRowsDietas.splice(cloneRowsDietas.length - 1, 0, {
           nome: "Refeição",
@@ -741,9 +738,7 @@ export default () => {
       };
       if (
         location.state.grupo !== "Programas e Projetos" &&
-        !ehEscolaTipoCEUGESTAO(
-          location.state.solicitacaoMedicaoInicial.escola
-        ) &&
+        !grupoLocation === "Programas e Projetos" &&
         !(urlParams.get("ehPeriodoEspecifico") === "true")
       ) {
         params_dietas_autorizadas["periodo_escolar"] =
@@ -845,7 +840,7 @@ export default () => {
         setCategoriasDeMedicao(
           trataCategoriasMedicaoCEUGESTAO(
             response_categorias_medicao,
-            tiposAlimentacaoCEUGESTAO
+            tiposAlimentacaoInclusaoContinua
           )
         );
       }
@@ -1281,9 +1276,6 @@ export default () => {
 
         if (
           (grupoLocation === "Programas e Projetos" ||
-            ehEscolaTipoCEUGESTAO(
-              location.state.solicitacaoMedicaoInicial.escola
-            ) ||
             urlParams.get("ehPeriodoEspecifico") === "true") &&
           solInclusoesAutorizadas
         ) {
@@ -2261,7 +2253,6 @@ export default () => {
       return tabelaEtecsAlimentacaoRows;
     } else if (
       grupoLocation === "Programas e Projetos" ||
-      ehEscolaTipoCEUGESTAO(location.state.solicitacaoMedicaoInicial.escola) ||
       urlParams.get("ehPeriodoEspecifico") === "true"
     ) {
       return tabelaAlimentacaoProgramasProjetosOuCEUGESTAORows;
