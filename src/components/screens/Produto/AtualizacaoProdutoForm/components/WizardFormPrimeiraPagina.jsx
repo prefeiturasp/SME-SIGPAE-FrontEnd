@@ -422,7 +422,9 @@ class WizardFormPrimeiraPagina extends React.Component {
                     onClick={() => {
                       this.dietaEspecialCheck("1");
                     }}
-                    disabled={desabilitarEhParaAlunosComDietaField}
+                    disabled={
+                      desabilitarEhParaAlunosComDietaField || ehUsuarioEmpresa
+                    }
                     required
                   />
                   <span className="checkmark" />
@@ -437,7 +439,9 @@ class WizardFormPrimeiraPagina extends React.Component {
                     onClick={() => {
                       this.dietaEspecialCheck("0");
                     }}
-                    disabled={desabilitarEhParaAlunosComDietaField}
+                    disabled={
+                      desabilitarEhParaAlunosComDietaField || ehUsuarioEmpresa
+                    }
                   />
                   <span className="checkmark" />
                 </label>
@@ -490,6 +494,7 @@ class WizardFormPrimeiraPagina extends React.Component {
                     onClick={() => {
                       this.alergenicosCheck("0");
                     }}
+                    disabled={ehUsuarioEmpresa}
                     required
                   />
                   <span className="checkmark" />

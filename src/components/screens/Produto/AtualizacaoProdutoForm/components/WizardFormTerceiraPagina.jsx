@@ -330,6 +330,7 @@ class WizardFormTerceiraPagina extends Component {
               toastSuccessMessage="Imagem do produto inclusa com sucesso"
               toastErrorMessage="Arquivo superior a 10 MB não é possível fazer o upload"
               validate={required}
+              disabled={ehUsuarioEmpresa}
             />
           </div>
         </section>

@@ -120,6 +120,7 @@ const Especificaoes = ({
                   icon={BUTTON_ICON.TRASH}
                   onClick={() => fields.remove(index)}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
+                  disabled={desabilitarCampos}
                 />
               )}
             </div>
