@@ -40,7 +40,7 @@ export default ({ tiposUnidadesEscolar }) => {
   async function fetchData() {
     setCarregando(true);
     await getTiposDeAlimentacao().then((response) => {
-      setTiposDeAlimentacao(response.results);
+      setTiposDeAlimentacao(response.data.results);
     });
     setCarregando(false);
   }

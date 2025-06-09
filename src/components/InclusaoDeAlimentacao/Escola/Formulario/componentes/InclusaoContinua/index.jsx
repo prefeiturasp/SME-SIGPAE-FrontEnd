@@ -99,7 +99,7 @@ export const Recorrencia = ({
 
   const getTiposDeAlimentacaoAsync = async () => {
     await getTiposDeAlimentacao().then((response) => {
-      setTiposDeAlimentacao(response.results);
+      setTiposDeAlimentacao(response.data.results);
     });
   };
 
@@ -347,7 +347,7 @@ export const RecorrenciaTabela = ({ form, values, periodos }) => {
 
   const getTiposDeAlimentacaoAsync = async () => {
     await getTiposDeAlimentacao().then((response) => {
-      setTiposDeAlimentacao(response.results);
+      setTiposDeAlimentacao(response.data.results);
     });
   };
 
