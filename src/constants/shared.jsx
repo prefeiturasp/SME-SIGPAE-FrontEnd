@@ -49,6 +49,7 @@ export const PERFIL = {
   USUARIO_GTIC_CODAE: `"USUARIO_GTIC_CODAE"`,
   ADMINISTRADOR_CONTRATOS: `"ADMINISTRADOR_CONTRATOS"`,
   DILOG_ABASTECIMENTO: `"DILOG_ABASTECIMENTO"`,
+  DILOG_VISUALIZACAO: `"DILOG_VISUALIZACAO"`,
 };
 
 export const VISAO = {
@@ -70,6 +71,7 @@ export const TIPO_PERFIL = {
   LOGISTICA: `"logistica_abastecimento"`,
   NUTRICAO_MANIFESTACAO: `"nutricao_manifestacao"`,
   PRE_RECEBIMENTO: `"pre_recebimento"`,
+  PRE_RECEBIMENTO_VISUALIZACAO: `"pre_recebimento_visualizacao"`,
   MEDICAO: `"medicao"`,
   ORGAO_FISCALIZADOR: `"orgao_fiscalizador"`,
   CODAE_GABINETE: `"codae_gabinete"`,

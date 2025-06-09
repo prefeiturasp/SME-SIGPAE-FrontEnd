@@ -134,6 +134,11 @@ export const mockGetPerfilListagem = {
       uuid: "d7dfc695-866a-4d2b-8e9d-72a7983a35ee",
     },
     {
+      nome: "DILOG_VISUALIZACAO",
+      visao: "CODAE",
+      uuid: "d7dfc699-836a-4d6b-8e1d-72a6485a35ee",
+    },
+    {
       nome: "ADMINISTRADOR_CONTRATOS",
       visao: "CODAE",
       uuid: "c5015a57-668c-44ff-89e0-d28096d5e528",
