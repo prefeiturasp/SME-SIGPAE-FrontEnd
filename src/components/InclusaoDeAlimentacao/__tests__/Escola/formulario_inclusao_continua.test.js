@@ -115,7 +115,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       }
     );
     getTiposDeAlimentacao.mockResolvedValue({
-      ...mockTiposAlimentacao,
+      data: mockTiposAlimentacao,
       status: 200,
     });
     createInclusaoAlimentacao.mockResolvedValue({
