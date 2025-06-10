@@ -539,7 +539,9 @@ export const LancamentoPorPeriodo = ({
                 style={BUTTON_STYLE.GREEN}
                 className="float-end"
                 disabled={
-                  !usuarioEhEscolaTerceirizadaDiretor() || naoPodeFinalizar
+                  (!usuarioEhEscolaTerceirizadaDiretor() &&
+                    !ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola)) ||
+                  naoPodeFinalizar
                 }
                 onClick={() => onClickFinalizarMedicao()}
               />
