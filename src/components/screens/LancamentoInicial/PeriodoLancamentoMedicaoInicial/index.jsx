@@ -572,7 +572,7 @@ export default () => {
         (ali) => ali.nome === "Lanche"
       );
       if (
-        (indexLanche !== -1 && !grupoLocation === "Programas e Projetos") ||
+        (indexLanche !== -1 && grupoLocation !== "Programas e Projetos") ||
         (indexLanche !== -1 &&
           !(urlParams.get("ehPeriodoEspecifico") === "true"))
       ) {
@@ -620,7 +620,7 @@ export default () => {
       );
       if (
         (indexRefeicaoDieta !== -1 &&
-          (!grupoLocation === "Programas e Projetos" ||
+          (grupoLocation !== "Programas e Projetos" ||
             tiposAlimentacaoInclusaoContinua.includes("refeicao"))) ||
         (indexRefeicaoDieta !== -1 &&
           (!(urlParams.get("ehPeriodoEspecifico") === "true") ||
@@ -737,8 +737,7 @@ export default () => {
         ano: ano,
       };
       if (
-        location.state.grupo !== "Programas e Projetos" &&
-        !grupoLocation === "Programas e Projetos" &&
+        grupoLocation !== "Programas e Projetos" &&
         !(urlParams.get("ehPeriodoEspecifico") === "true")
       ) {
         params_dietas_autorizadas["periodo_escolar"] =
