@@ -333,7 +333,8 @@ class WizardFormPrimeiraPagina extends React.Component {
               name="nome"
               onSelect={this.addNome}
               validate={required}
-              disabled={desabilitarNomeDoProdutoField}
+              disabled={desabilitarNomeDoProdutoField || ehUsuarioEmpresa}
+              dataTestId="select-nome-produto"
             >
               {nomeDeProdutosEditalArray}
             </Field>
@@ -349,7 +350,7 @@ class WizardFormPrimeiraPagina extends React.Component {
                 onBlur={(e) => {
                   e.preventDefault();
                 }}
-                disabled={produto}
+                disabled={produto || ehUsuarioEmpresa}
                 className={"select-form-produto"}
                 showSearch
                 name="marca"
@@ -361,6 +362,7 @@ class WizardFormPrimeiraPagina extends React.Component {
                 }}
                 onSelect={this.addMarca}
                 validate={required}
+                dataTestId="select-marca-produto"
               >
                 {marcasArray}
               </Field>
@@ -385,7 +387,8 @@ class WizardFormPrimeiraPagina extends React.Component {
                 }}
                 onSelect={this.addFabricante}
                 validate={required}
-                disabled={produto}
+                disabled={produto || ehUsuarioEmpresa}
+                dataTestId="select-fabricante-produto"
               >
                 {fabricantesArray}
               </Field>
