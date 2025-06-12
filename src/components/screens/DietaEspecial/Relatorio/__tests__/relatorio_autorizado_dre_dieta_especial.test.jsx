@@ -1,19 +1,17 @@
 import "@testing-library/jest-dom";
 import { act, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { ESCOLA } from "src/configs/constants";
 import { mockDietaEspecialVictorAutorizada } from "src/mocks/DietaEspecial/Relatorio/mockDietaEspecialVictorAutorizada";
 import { mockMotivosNegarCancelamento } from "src/mocks/DietaEspecial/Relatorio/mockMotivosNegarCancelamento";
 import { mockSolicitacoesAbertas } from "src/mocks/DietaEspecial/Relatorio/mockSolicitacoesAbertas";
 import { localStorageMock } from "src/mocks/localStorageMock";
-import React from "react";
-import { MemoryRouter } from "react-router-dom";
-import {
-  getDietaEspecial,
-  getMotivosNegarSolicitacaoCancelamento,
-} from "src/services/dietaEspecial.service";
+import { getDietaEspecial } from "src/services/dietaEspecial.service";
+import { getMotivosNegacaoDietaEspecial } from "src/services/painelNutricionista.service";
 import Relatorio from "..";
 
 jest.mock("src/services/dietaEspecial.service");
+jest.mock("src/services/painelNutricionista.service");
 
 jest.mock("src/services/websocket", () => {
   return {
@@ -57,7 +55,7 @@ jest.mock("src/services/websocket", () => {
 const awaitServices = async () => {
   await waitFor(() => {
     expect(getDietaEspecial).toHaveBeenCalled();
-    expect(getMotivosNegarSolicitacaoCancelamento).toHaveBeenCalled();
+    expect(getMotivosNegacaoDietaEspecial).toHaveBeenCalled();
   });
 };
 
@@ -67,8 +65,8 @@ describe("Test <Relatorio> - Relatório de Dieta Especial - Pendente Autorizaç�
       data: mockDietaEspecialVictorAutorizada,
       status: 200,
     });
-    getMotivosNegarSolicitacaoCancelamento.mockResolvedValue({
-      data: { results: mockMotivosNegarCancelamento },
+    getMotivosNegacaoDietaEspecial.mockResolvedValue({
+      data: mockMotivosNegarCancelamento,
       status: 200,
     });
 

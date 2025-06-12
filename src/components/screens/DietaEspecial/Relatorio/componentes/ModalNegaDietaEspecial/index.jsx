@@ -2,23 +2,23 @@ import HTTP_STATUS from "http-status-codes";
 import { Component } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
 import CKEditorField from "src/components/Shareable/CKEditorField";
+import Select from "src/components/Shareable/Select";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   peloMenosUmCaractere,
   required,
   textAreaRequired,
 } from "src/helpers/fieldValidators";
 import { composeValidators } from "src/helpers/utilities";
-import Botao from "../../../../../Shareable/Botao";
-import {
-  BUTTON_STYLE,
-  BUTTON_TYPE,
-} from "../../../../../Shareable/Botao/constants";
-import Select from "../../../../../Shareable/Select";
-import {
-  toastError,
-  toastSuccess,
-} from "../../../../../Shareable/Toast/dialogs";
 
 export default class ModalNegarSolicitacao extends Component {
   onSubmit = async (values) => {
