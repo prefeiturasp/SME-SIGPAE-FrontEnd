@@ -17,7 +17,6 @@ const DataTermino = ({ tipoSolicitacao, temData }) => {
             component={InputComData}
             label="Data de Término"
             name="data_termino"
-            dateFormat={"YYYY-MM-DD"}
             required
             className="form-control data-label"
             minDate={moment().add(1, "days")._d}
