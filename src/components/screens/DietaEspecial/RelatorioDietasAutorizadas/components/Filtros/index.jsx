@@ -249,7 +249,11 @@ export const Filtros = ({ ...props }) => {
                           "Todos as unidades estão selecionadas",
                         selectAll: "Todas",
                       }}
-                      disabled={filtros.lotes.length > 1 && !values.lote}
+                      disabled={
+                        (unidadesEducacionais.length === 1 &&
+                          unidadesEducacionais[0].value === "__no_result__") ||
+                        (filtros.lotes.length > 1 && !values.lote)
+                      }
                     />
                   </Spin>
                 </div>
