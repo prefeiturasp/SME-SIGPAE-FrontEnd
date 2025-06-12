@@ -530,6 +530,7 @@ export const usuarioComAcessoAoRelatorioCronogramas = () => {
     PERFIL.ADMINISTRADOR_CODAE_GABINETE,
     PERFIL.USUARIO_RELATORIOS,
     PERFIL.USUARIO_GTIC_CODAE,
+    PERFIL.DILOG_VISUALIZACAO,
   ].includes(localStorage.getItem("perfil"));
 };
 
@@ -541,6 +542,7 @@ export const usuarioComAcessoAoCalendarioCronograma = () => {
     PERFIL.DILOG_ABASTECIMENTO,
     PERFIL.DILOG_DIRETORIA,
     PERFIL.ADMINISTRADOR_CODAE_GABINETE,
+    PERFIL.DILOG_VISUALIZACAO,
   ].includes(localStorage.getItem("perfil"));
 };
 
@@ -551,6 +553,7 @@ export const usuarioComAcessoAoPainelAprovacoes = () => {
     PERFIL.DILOG_CRONOGRAMA,
     PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
     PERFIL.ADMINISTRADOR_CODAE_GABINETE,
+    PERFIL.DILOG_VISUALIZACAO,
   ].includes(localStorage.getItem("perfil"));
 };
 
@@ -622,8 +625,10 @@ export const usuarioEhCronogramaOuCodae = () => {
 
 export const usuarioEhPreRecebimento = () => {
   return (
-    localStorage.getItem("tipo_perfil") === TIPO_PERFIL.PRE_RECEBIMENTO ||
-    usuarioEhCodaeDilog()
+    [
+      TIPO_PERFIL.PRE_RECEBIMENTO_VISUALIZACAO,
+      TIPO_PERFIL.PRE_RECEBIMENTO,
+    ].includes(localStorage.getItem("tipo_perfil")) || usuarioEhCodaeDilog()
   );
 };
 
@@ -643,6 +648,9 @@ export const usuarioEhDinutreDiretoria = () =>
 
 export const usuarioEhDilogDiretoria = () =>
   localStorage.getItem("perfil") === PERFIL.DILOG_DIRETORIA;
+
+export const usuarioEhDilogVisualizacao = () =>
+  localStorage.getItem("perfil") === PERFIL.DILOG_VISUALIZACAO;
 
 export const usuarioEhCronograma = () => {
   return [PERFIL.DILOG_CRONOGRAMA].includes(localStorage.getItem("perfil"));

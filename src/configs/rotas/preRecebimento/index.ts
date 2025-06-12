@@ -13,6 +13,7 @@ import {
   usuarioEhDilogQualidade,
   usuarioEhEmpresaFornecedor,
   usuarioEhPreRecebimento,
+  usuarioEhDilogVisualizacao,
 } from "src/helpers/utilities";
 
 import StatusAguardandoAssinaturasCronograma from "src/pages/Dinutre/Cronogramas/StatusAguardandoAssinaturasCronograma";
@@ -92,7 +93,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhCronograma() ||
       usuarioEhDilogAbastecimento() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhDilogDiretoria(),
+      usuarioEhDilogDiretoria() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR}`,
@@ -124,7 +126,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogDiretoria() ||
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.CADASTRO_CRONOGRAMA}`,
