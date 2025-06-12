@@ -57,6 +57,7 @@ import {
 } from "./menus";
 import { MenuSupervisao } from "./menus/MenuSupervisao";
 import { ListItem } from "./menus/shared";
+import { usuarioEhDilogVisualizacao } from "../../../helpers/utilities";
 
 export const SidebarContent = () => {
   const [activeMenu, setActiveMenu] = useState("");
@@ -182,6 +183,7 @@ export const SidebarContent = () => {
     !usuarioEhOrgaoFiscalizador() &&
     !usuarioEhDinutreDiretoria() &&
     !ehUsuarioRelatorios();
+  !usuarioEhDilogVisualizacao();
 
   const exibirMenuLogistica =
     usuarioEhLogistica() ||
