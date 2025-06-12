@@ -19,24 +19,6 @@ const authToken = {
 
 const URL_DIETA_ESPECIAL = `${API_URL}/solicitacoes-dieta-especial`;
 
-const retornoBase = async (url) => {
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  try {
-    const result = await fetch(url, OBJ_REQUEST);
-    const status = result.status;
-    const json = await result.json();
-    if (json.results) {
-      return { results: json.results, status };
-    }
-    return { results: json, status };
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 export const criaDietaEspecial = async (payload) => {
   const url = `${URL_DIETA_ESPECIAL}/`;
   const OBJ_REQUEST = {
@@ -70,7 +52,7 @@ export const getDietaEspecial = async (uuid) => {
     const json = await response.json();
     return { data: json, status: status };
   } catch (error) {
-    console.log(error);
+    return error;
   }
 };
 
@@ -86,7 +68,7 @@ export const getDietasEspeciaisVigentesDeUmAluno = async (codigo_eol_aluno) => {
     const json = await response.json();
     return { data: json, status: status };
   } catch (error) {
-    console.log(error);
+    return error;
   }
 };
 
@@ -108,11 +90,6 @@ export const CODAENegaDietaEspecial = async (uuid, payload) => {
 export const CODAENegaSolicitacaoCancelamento = async (uuid, payload) => {
   const url = `${API_URL}/solicitacoes-dieta-especial/${uuid}/negar-cancelamento-dieta-especial/`;
   return axios.post(url, payload);
-};
-
-export const getMotivosNegarSolicitacaoCancelamento = async () => {
-  const url = `${API_URL}/motivos-negacao/?processo=CANCELAMENTO`;
-  return retornoBase(url);
 };
 
 export const terceirizadaTomaCienciaDietaEspecial = async (uuid) => {

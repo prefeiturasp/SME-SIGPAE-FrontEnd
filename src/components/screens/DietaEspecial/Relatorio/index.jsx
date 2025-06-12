@@ -1,3 +1,5 @@
+import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
@@ -14,15 +16,12 @@ import {
   TIPO_PERFIL,
   TIPO_SOLICITACAO_DIETA,
 } from "src/constants/shared";
-import HTTP_STATUS from "http-status-codes";
-import React, { useEffect, useState } from "react";
 import {
   CODAENegaSolicitacaoCancelamento,
   deleteSolicitacaoAberta,
   escolaCancelaSolicitacao,
   getDietaEspecial,
   getDietasEspeciaisVigentesDeUmAluno,
-  getMotivosNegarSolicitacaoCancelamento,
   updateSolicitacaoAberta,
 } from "src/services/dietaEspecial.service";
 import {
@@ -35,24 +34,27 @@ import { Spin } from "antd";
 import ModalHistorico from "src/components/Shareable/ModalHistorico";
 import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
 import {
+  agregarDefault,
+  ehUsuarioEmpresa,
+  usuarioEhCODAENutriManifestacao,
   usuarioEhCogestorDRE,
   usuarioEhCoordenadorNutriCODAE,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscola,
   usuarioEhNutricionistaSupervisao,
-  ehUsuarioEmpresa,
 } from "src/helpers/utilities";
+import { getMotivosNegacaoDietaEspecial } from "src/services/painelNutricionista.service";
 import CorpoRelatorio from "./componentes/CorpoRelatorio";
 import FormAutorizaDietaEspecial from "./componentes/FormAutorizaDietaEspecial";
 import ModalAvisoDietaImportada from "./componentes/ModalAvisoDietaImportada";
 import ModalNegaDietaEspecial from "./componentes/ModalNegaDietaEspecial";
+import { formataMotivos } from "./componentes/ModalNegaDietaEspecial/helper";
 import {
   cabecalhoDieta,
   ehSolicitacaoDeCancelamento,
   initSocket,
 } from "./helpers";
 import "./style.scss";
-import { usuarioEhCODAENutriManifestacao } from "../../../../helpers/utilities";
 
 const Relatorio = ({ visao }) => {
   const [dietaEspecial, setDietaEspecial] = useState(null);
@@ -70,6 +72,7 @@ const Relatorio = ({ visao }) => {
   const [dietasAbertas, setDietasAbertas] = useState([]);
   const [dadosDietaAberta, setDadosDietaAberta] = useState(null);
   const [editar, setEditar] = useState(false);
+  const [motivosNegacao, setMotivosNegacao] = useState();
 
   const dietaCancelada = status ? ehSolicitacaoDeCancelamento(status) : false;
   const tipoPerfil = localStorage.getItem("tipo_perfil");
@@ -269,6 +272,10 @@ const Relatorio = ({ visao }) => {
     };
   }, [dadosDietaAberta]);
 
+  useEffect(() => {
+    getMotivosNegacaoDietaEspecialAsync();
+  }, []);
+
   const exibirUsuariosSimultaneos = () => {
     return (
       tipoPerfil === TIPO_PERFIL.DIETA_ESPECIAL && card === "pendentes-aut"
@@ -305,6 +312,17 @@ const Relatorio = ({ visao }) => {
       exibir = true;
     }
     return exibir;
+  };
+
+  const getMotivosNegacaoDietaEspecialAsync = async () => {
+    const response = await getMotivosNegacaoDietaEspecial({
+      processo: "CANCELAMENTO",
+    });
+    if (response.status === HTTP_STATUS.OK) {
+      setMotivosNegacao(agregarDefault(formataMotivos(response.data)));
+    } else {
+      toastError("Erro ao carregar motivos de negação.");
+    }
   };
 
   return (
@@ -497,7 +515,7 @@ const Relatorio = ({ visao }) => {
             )}
         </div>
       </div>
-      {dietaEspecial && (
+      {dietaEspecial && motivosNegacao && (
         <ModalNegaDietaEspecial
           showModal={showNaoAprovaModal}
           closeModal={() => setShowNaoAprovaModal(false)}
@@ -505,7 +523,7 @@ const Relatorio = ({ visao }) => {
             loadSolicitacao(dietaEspecial.uuid);
           }}
           uuid={dietaEspecial.uuid}
-          getMotivos={() => getMotivosNegarSolicitacaoCancelamento()}
+          motivosNegacao={motivosNegacao}
           submitModal={(uuid, values) =>
             CODAENegaSolicitacaoCancelamento(uuid, values)
           }
