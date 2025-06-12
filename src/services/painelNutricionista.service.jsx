@@ -21,7 +21,7 @@ const retornoBase = async (url) => {
     }
     return { results: json, status };
   } catch (error) {
-    console.log(error);
+    return error;
   }
 };
 
@@ -30,9 +30,9 @@ export const getSolicitacaoDietaEspecial = async (uuid) => {
   return retornoBase(url);
 };
 
-export const getMotivosNegacaoDietaEspecial = async () => {
-  const url = `${API_URL}/motivos-negacao/?processo=INCLUSAO/`;
-  const response = await axios.get(url).catch(ErrorHandlerFunction);
+export const getMotivosNegacaoDietaEspecial = async (params) => {
+  const url = `/motivos-negacao/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;
@@ -80,7 +80,7 @@ export const getSolicitacoesPendentesAutorizacaoNutrisupervisao = async (
     const json = await result.json();
     return json.results;
   } catch (error) {
-    console.log(error);
+    return error;
   }
 };
 
@@ -96,7 +96,7 @@ export const getSolicitacoesPendentesAutorizacaoNutrisupervisaoSecaoPendencias =
       const json = await result.json();
       return json.results;
     } catch (error) {
-      console.log(error);
+      return error;
     }
   };
 

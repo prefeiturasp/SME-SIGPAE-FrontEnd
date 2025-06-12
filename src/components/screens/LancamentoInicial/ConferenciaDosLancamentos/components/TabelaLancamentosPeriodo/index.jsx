@@ -801,7 +801,6 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
   };
 
   const onChangeTabAlunos = (keyTabAlunos) => {
-    setSemanaSelecionada(1);
     setAlunosTabSelecionada(keyTabAlunos);
     Object.keys(values).forEach((key) => {
       if (

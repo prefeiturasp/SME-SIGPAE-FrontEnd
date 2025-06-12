@@ -1,59 +1,60 @@
-import React, { useState, useEffect } from "react";
-import HTTP_STATUS from "http-status-codes";
-import { Form } from "react-final-form";
-import moment from "moment";
 import arrayMutators from "final-form-arrays";
-import { TIPO_SOLICITACAO_DIETA } from "src/constants/shared";
-import {
-  toastSuccess,
-  toastError,
-} from "src/components/Shareable/Toast/dialogs";
-import {
-  BUTTON_TYPE,
-  BUTTON_STYLE,
-} from "src/components/Shareable/Botao/constants";
+import HTTP_STATUS from "http-status-codes";
+import moment from "moment";
+import { useEffect, useState } from "react";
+import { Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
-import { ESCOLA, CODAE } from "src/configs/constants";
-import { statusEnum } from "src/constants/shared";
-import EscolaCancelaDietaEspecial from "../../componentes/EscolaCancelaDietaEspecial";
 import {
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { CODAE, ESCOLA } from "src/configs/constants";
+import { statusEnum, TIPO_SOLICITACAO_DIETA } from "src/constants/shared";
+import {
+  atualizaDietaEspecial,
+  CODAEAtualizaProtocoloDietaEspecial,
+  CODAEAutorizaDietaEspecial,
+  CODAENegaDietaEspecial,
   getAlergiasIntolerancias,
+  getAlimentos,
   getClassificacoesDietaEspecial,
   getNomesProtocolosValidos,
   getProtocoloPadrao,
-  getAlimentos,
-  atualizaDietaEspecial,
   getSolicitacoesDietaEspecial,
-  CODAEAutorizaDietaEspecial,
-  CODAEAtualizaProtocoloDietaEspecial,
 } from "src/services/dietaEspecial.service";
-import { getSubstitutos } from "src/services/produto.service";
 import { getMotivosNegacaoDietaEspecial } from "src/services/painelNutricionista.service";
-import { CODAENegaDietaEspecial } from "src/services/dietaEspecial.service";
+import { getSubstitutos } from "src/services/produto.service";
+import EscolaCancelaDietaEspecial from "../../componentes/EscolaCancelaDietaEspecial";
 
-import Diagnosticos from "./componentes/Diagnosticos";
-import ClassificacaoDaDieta from "./componentes/ClassificacaoDaDieta";
-import Protocolos from "./componentes/Protocolos";
-import Orientacoes from "./componentes/Orientacoes";
-import SubstituicoesField from "./componentes/SubstituicoesField";
-import DataTermino from "./componentes/DataTermino";
-import InformacoesAdicionais from "./componentes/InformacoesAdicionais";
-import IdentificacaoNutricionista from "./componentes/IdentificacaoNutricionista";
 import ModalNegaDietaEspecial from "../ModalNegaDietaEspecial";
-import ModalAutorizaDietaEspecial from "./componentes/ModalAutorizaDietaEspecial";
+import ClassificacaoDaDieta from "./componentes/ClassificacaoDaDieta";
+import DataTermino from "./componentes/DataTermino";
+import Diagnosticos from "./componentes/Diagnosticos";
+import IdentificacaoNutricionista from "./componentes/IdentificacaoNutricionista";
+import InformacoesAdicionais from "./componentes/InformacoesAdicionais";
 import ModalAutorizaAlteracaoUE from "./componentes/ModalAutorizaAlteracaoUE";
+import ModalAutorizaDietaEspecial from "./componentes/ModalAutorizaDietaEspecial";
+import Orientacoes from "./componentes/Orientacoes";
+import Protocolos from "./componentes/Protocolos";
+import SubstituicoesField from "./componentes/SubstituicoesField";
 
+import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import {
+  agregarDefault,
+  gerarParametrosConsulta,
+  obtemIdentificacaoNutricionista,
+} from "src/helpers/utilities";
+import { formatarSolicitacoesVigentes } from "../../../Escola/helper";
+import { formataMotivos } from "../ModalNegaDietaEspecial/helper";
+import {
+  formataAlergias,
   formataOpcoesClassificacaoDieta,
   formataSubstituicoes,
-  formataAlergias,
 } from "./helper";
-import {
-  obtemIdentificacaoNutricionista,
-  gerarParametrosConsulta,
-} from "src/helpers/utilities";
-import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
-import { formatarSolicitacoesVigentes } from "../../../Escola/helper";
 import "./style.scss";
 
 const FormAutorizaDietaEspecial = ({
@@ -78,13 +79,14 @@ const FormAutorizaDietaEspecial = ({
   const [showAutorizarModal, setShowAutorizarModal] = useState(false);
   const [solicitacoesVigentes, setSolicitacoesVigentes] = useState(undefined);
   const [diagnosticosSelecionados, setDiagnosticosSelecionados] = useState([]);
+  const [motivosNegacao, setMotivosNegacao] = useState();
   const tipoUsuario = localStorage.getItem("tipo_perfil");
 
   const fetchData = async (dietaEspecial) => {
     const respAlergiasIntolerancias = await getAlergiasIntolerancias();
     if (respAlergiasIntolerancias.status === HTTP_STATUS.OK) {
       setDiagnosticos(
-        respAlergiasIntolerancias.data.results.map((r) => {
+        respAlergiasIntolerancias.data.map((r) => {
           return {
             uuid: r.id.toString(),
             nome: r.descricao,
@@ -322,8 +324,20 @@ const FormAutorizaDietaEspecial = ({
     form.submit();
   };
 
+  const getMotivosNegacaoDietaEspecialAsync = async () => {
+    const response = await getMotivosNegacaoDietaEspecial({
+      processo: "INCLUSAO",
+    });
+    if (response.status === HTTP_STATUS.OK) {
+      setMotivosNegacao(agregarDefault(formataMotivos(response.data)));
+    } else {
+      toastError("Erro ao carregar motivos de negação.");
+    }
+  };
+
   useEffect(() => {
     fetchData(dietaEspecial);
+    getMotivosNegacaoDietaEspecialAsync();
   }, []);
 
   return (
@@ -477,16 +491,18 @@ const FormAutorizaDietaEspecial = ({
           </form>
         )}
       />
-      <ModalNegaDietaEspecial
-        showModal={showModalNegaDieta}
-        closeModal={() => setShowModalNegaDieta(false)}
-        onNegar={onAutorizarOuNegar}
-        uuid={dietaEspecial?.uuid}
-        getMotivos={() => getMotivosNegacaoDietaEspecial()}
-        submitModal={(uuid, values) => CODAENegaDietaEspecial(uuid, values)}
-        fieldJustificativa={"justificativa_negacao"}
-        tituloModal={"Deseja negar a solicitação?"}
-      />
+      {motivosNegacao && (
+        <ModalNegaDietaEspecial
+          showModal={showModalNegaDieta}
+          closeModal={() => setShowModalNegaDieta(false)}
+          onNegar={onAutorizarOuNegar}
+          uuid={dietaEspecial?.uuid}
+          motivosNegacao={motivosNegacao}
+          submitModal={(uuid, values) => CODAENegaDietaEspecial(uuid, values)}
+          fieldJustificativa={"justificativa_negacao"}
+          tituloModal={"Deseja negar a solicitação?"}
+        />
+      )}
     </>
   );
 };

@@ -24,15 +24,11 @@ describe("test painelNutricionista.service", () => {
   });
 
   it("getMotivosNegacaoDietaEspecial", async () => {
-    mock.onGet("/motivos-negacao/?processo=INCLUSAO/").reply(200, {
-      results: ["motivos", "negacao"],
-    });
+    mock.onGet("/motivos-negacao/").reply(200, ["motivos", "negacao"]);
 
     const response = await getMotivosNegacaoDietaEspecial();
     expect(response).toEqual({
-      data: {
-        results: ["motivos", "negacao"],
-      },
+      data: ["motivos", "negacao"],
       status: 200,
     });
   });
