@@ -3,6 +3,8 @@ import HTTP_STATUS from "http-status-codes";
 import { CustomToolbar } from "src/components/Shareable/Calendario/componentes/CustomToolbar";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
+import "moment/dist/locale/pt-br";
+moment.locale("pt-br");
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { formataComoEventos } from "src/components/Shareable/Calendario/helpers";
 import { Spin } from "antd";
