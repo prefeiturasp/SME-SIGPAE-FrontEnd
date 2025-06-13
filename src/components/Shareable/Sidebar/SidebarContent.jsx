@@ -182,8 +182,8 @@ export const SidebarContent = () => {
     !usuarioEhDilog() &&
     !usuarioEhOrgaoFiscalizador() &&
     !usuarioEhDinutreDiretoria() &&
-    !ehUsuarioRelatorios();
-  !usuarioEhDilogVisualizacao();
+    !ehUsuarioRelatorios() &&
+    !usuarioEhDilogVisualizacao();
 
   const exibirMenuLogistica =
     usuarioEhLogistica() ||
