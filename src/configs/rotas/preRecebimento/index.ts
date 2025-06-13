@@ -365,7 +365,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogDiretoria() ||
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.DILOG}/${constants.ALTERACOES_REPROVADAS}`,
@@ -374,7 +375,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogDiretoria() ||
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.CRONOGRAMA}/${constants.AGUARDANDO_ASSINATURAS}`,
@@ -382,7 +384,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.ASSINADO_CODAE}`,
@@ -392,7 +395,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogDiretoria() ||
       usuarioEhCodaeDilog() ||
       usuarioEhCronograma() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.CRONOGRAMA}/${constants.SOLICITACOES_ALTERACOES}`,
@@ -400,7 +404,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.CRONOGRAMA}/${constants.ALTERACOES_CODAE}`,
@@ -410,6 +415,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogDiretoria() ||
       usuarioEhCodaeDilog() ||
       usuarioEhDilogAbastecimento() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
 ];
