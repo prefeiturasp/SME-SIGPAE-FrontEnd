@@ -537,17 +537,35 @@ export const LancamentoPorPeriodo = ({
             )}
           <div className="mt-4">
             {renderBotaoFinalizar() ? (
-              <Botao
-                texto="Finalizar"
-                style={BUTTON_STYLE.GREEN}
-                className="float-end"
-                disabled={
-                  (!usuarioEhEscolaTerceirizadaDiretor() &&
-                    !ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola)) ||
-                  naoPodeFinalizar
-                }
-                onClick={() => onClickFinalizarMedicao()}
-              />
+              <div className="row">
+                <div className="col-12 text-end">
+                  <Botao
+                    texto="Finalizar sem lançamentos"
+                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                    disabled={
+                      (!usuarioEhEscolaTerceirizadaDiretor() &&
+                        !ehEscolaTipoCEUGESTAO(
+                          solicitacaoMedicaoInicial.escola
+                        )) ||
+                      naoPodeFinalizar
+                    }
+                    onClick={() => onClickFinalizarMedicao()}
+                  />
+                  <Botao
+                    texto="Finalizar"
+                    style={BUTTON_STYLE.GREEN}
+                    className="ms-3"
+                    disabled={
+                      (!usuarioEhEscolaTerceirizadaDiretor() &&
+                        !ehEscolaTipoCEUGESTAO(
+                          solicitacaoMedicaoInicial.escola
+                        )) ||
+                      naoPodeFinalizar
+                    }
+                    onClick={() => onClickFinalizarMedicao()}
+                  />
+                </div>
+              </div>
             ) : (
               <div className="row">
                 <div className="col-12 text-end">
