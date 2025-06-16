@@ -206,6 +206,7 @@ export default () => {
                       )}
                       label="Ficha Técnica e Produto"
                       name={`ficha_tecnica`}
+                      dataTestId={"ficha_tecnica"}
                       className="input-busca-produto"
                       placeholder="Digite o Nº da Ficha Técnica ou nome do Produto"
                       required
@@ -232,6 +233,7 @@ export default () => {
                       component={InputText}
                       label="Nº do Pregão/Chamada Pública"
                       name={`pregao_chamada_publica`}
+                      dataTestId={"pregao-chamada-publica"}
                       placeholder="Nº do Pregão/Chamada Pública"
                       required
                       disabled={true}
@@ -245,6 +247,7 @@ export default () => {
                   setFiles={setFiles1}
                   removeFile={removeFile1}
                   tipoEmbalagem={"PRIMARIA"}
+                  dataTestId={"inserir-arquivo-primaria"}
                 />
 
                 <hr />
@@ -253,6 +256,7 @@ export default () => {
                   setFiles={setFiles2}
                   removeFile={removeFile2}
                   tipoEmbalagem={"SECUNDARIA"}
+                  dataTestId={"inserir-arquivo-secundaria"}
                 />
 
                 <hr />
@@ -261,6 +265,7 @@ export default () => {
                   setFiles={setFiles3}
                   removeFile={removeFile3}
                   tipoEmbalagem={"TERCIARIA"}
+                  dataTestId={"inserir-arquivo-terciaria"}
                 />
 
                 <hr />
@@ -271,6 +276,7 @@ export default () => {
                       component={TextArea}
                       label="Observações"
                       name="observacoes"
+                      dataTestId={"observacoes"}
                     />
                   </div>
                 </div>
