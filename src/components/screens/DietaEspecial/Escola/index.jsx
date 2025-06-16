@@ -186,10 +186,12 @@ class solicitacaoDietaEspecial extends Component {
             criadoRf: null,
           });
           if (response.data.pertence_a_escola) {
-            change("aluno_json.nome", resposta.data.nm_aluno);
+            change("aluno_json.nome", resposta.data.detail.nm_aluno);
             change(
               "aluno_json.data_nascimento",
-              moment(resposta.data.dt_nascimento_aluno).format("DD/MM/YYYY")
+              moment(resposta.data.detail.dt_nascimento_aluno).format(
+                "DD/MM/YYYY"
+              )
             );
             getFotoAluno(event.target.value).then((responseFoto) => {
               if (responseFoto.status === HTTP_STATUS.OK) {
