@@ -1,6 +1,6 @@
-import { Container } from "components/AlteracaoDeCardapio/Escola/components/Container";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { Container } from "src/components/AlteracaoDeCardapio/Escola/components/Container";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import React from "react";
 import { HOME } from "./constants";
 

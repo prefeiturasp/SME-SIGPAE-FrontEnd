@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Radio } from "antd";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import InputFile from "components/Shareable/Input/InputFile";
+} from "src/components/Shareable/Botao/constants";
+import InputFile from "src/components/Shareable/Input/InputFile";
 import { Field, Form } from "react-final-form";
 import { OPCOES_AVALIACAO_A_CONTENTO } from "../LancamentoPorPeriodo/helpers";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 export const ModalFinalizarMedicao = ({ ...props }) => {
   const {

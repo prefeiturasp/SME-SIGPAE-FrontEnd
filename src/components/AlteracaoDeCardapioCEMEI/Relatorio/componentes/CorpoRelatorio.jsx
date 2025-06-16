@@ -1,24 +1,24 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
-import { fluxoPartindoEscola } from "components/Shareable/FluxoDeStatus/helper";
-import RelatorioHistoricoJustificativaEscola from "components/Shareable/RelatorioHistoricoJustificativaEscola";
-import RelatorioHistoricoQuestionamento from "components/Shareable/RelatorioHistoricoQuestionamento";
-import { existeLogDeQuestionamentoDaCODAE } from "components/Shareable/RelatorioHistoricoQuestionamento/helper";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { TIPO_SOLICITACAO } from "constants/shared";
+} from "src/components/Shareable/Botao/constants";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
+import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
+import RelatorioHistoricoJustificativaEscola from "src/components/Shareable/RelatorioHistoricoJustificativaEscola";
+import RelatorioHistoricoQuestionamento from "src/components/Shareable/RelatorioHistoricoQuestionamento";
+import { existeLogDeQuestionamentoDaCODAE } from "src/components/Shareable/RelatorioHistoricoQuestionamento/helper";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
 import {
   corDaMensagem,
   justificativaAoAprovarSolicitacao,
   justificativaAoNegarSolicitacao,
   prazoDoPedidoMensagem,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { useState } from "react";
-import { getRelatorioAlteracaoTipoAlimentacao } from "services/relatorios";
+import { getRelatorioAlteracaoTipoAlimentacao } from "src/services/relatorios";
 
 export const CorpoRelatorio = ({ ...props }) => {
   let totalMatriculados = 0;
@@ -52,6 +52,7 @@ export const CorpoRelatorio = ({ ...props }) => {
       >
         {prazoDoPedidoMensagem(solicitacao.prioridade)}
         <Botao
+          dataTestId="botao-imprimir"
           type={BUTTON_TYPE.BUTTON}
           style={imprimindo ? BUTTON_STYLE.GREEN_OUTLINE : BUTTON_STYLE.GREEN}
           icon={imprimindo ? BUTTON_ICON.LOADING : BUTTON_ICON.PRINT}
@@ -78,7 +79,7 @@ export const CorpoRelatorio = ({ ...props }) => {
           </p>
         </div>
         <div className="offset-3 col-3">
-          <p>EOL:</p>
+          <p>Código EOL:</p>
           <p>
             <b>{solicitacao.escola.codigo_eol}</b>
           </p>
@@ -98,7 +99,7 @@ export const CorpoRelatorio = ({ ...props }) => {
           </p>
         </div>
         <div className="col-3">
-          <p>Tipo de Gestão</p>
+          <p>Tipo de Gestão:</p>
           <p>
             <b>{solicitacao.escola.tipo_gestao.nome}</b>
           </p>
@@ -239,9 +240,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                                       {f.faixa_etaria.__str__}
                                     </td>
                                     <td className="col-3 text-center">
-                                      {f.matriculados_quando_criado
-                                        ? f.matriculados_quando_criado
-                                        : "teste"}
+                                      {f.matriculados_quando_criado}
                                     </td>
                                     <td className="col-2 text-center">
                                       {f.quantidade}

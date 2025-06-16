@@ -1,15 +1,15 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   DETALHAR_FORNECEDOR_DOCUMENTO_RECEBIMENTO,
   PAINEL_DOCUMENTOS_RECEBIMENTO,
   DOCUMENTOS_RECEBIMENTO,
   PRE_RECEBIMENTO,
-} from "configs/constants";
-import Detalhar from "components/screens/PreRecebimento/DocumentosRecebimento/components/Detalhar";
-import { usuarioEhEmpresaFornecedor } from "helpers/utilities";
+} from "src/configs/constants";
+import Detalhar from "src/components/screens/PreRecebimento/DocumentosRecebimento/components/Detalhar";
+import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
 
 const atual = {
   href: `/${PRE_RECEBIMENTO}/${DETALHAR_FORNECEDOR_DOCUMENTO_RECEBIMENTO}`,

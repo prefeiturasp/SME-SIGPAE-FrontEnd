@@ -6,21 +6,24 @@ import {
   cadastrarVinculo,
   finalizarVinculo,
   getVinculosAtivos,
-} from "services/vinculos.service";
-import { gerarParametrosConsulta } from "helpers/utilities";
+} from "src/services/vinculos.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import ListagemVinculos from "./components/ListagemVinculos";
 import Filtros from "./components/Filtros";
 import {
   getPerfilListagem,
   getPerfisSubordinados,
   getVisoesListagem,
-} from "services/perfil.service";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/services/perfil.service";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import ModalCadastroVinculo from "./components/ModalCadastroVinculo";
 import ModalExclusaoVinculo from "./components/ModalExclusaoVinculo";
-import { Paginacao } from "components/Shareable/Paginacao";
-import { TIPO_GESTAO, PERFIL } from "constants/shared";
-import useSomenteLeitura from "hooks/useSomenteLeitura";
+import { Paginacao } from "src/components/Shareable/Paginacao";
+import { TIPO_GESTAO, PERFIL } from "src/constants/shared";
+import useSomenteLeitura from "src/hooks/useSomenteLeitura";
 
 export default ({
   diretor_escola,

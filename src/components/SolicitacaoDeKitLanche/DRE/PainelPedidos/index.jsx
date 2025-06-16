@@ -7,13 +7,13 @@ import {
   TIPO_SOLICITACAO,
 } from "../../../../constants/shared";
 import { dataAtualDDMMYYYY, safeConcatOn } from "../../../../helpers/utilities";
-import { getDREPedidosDeKitLanche } from "services/kitLanche";
-import { getLotesSimples } from "services/lote.service";
+import { getDREPedidosDeKitLanche } from "src/services/kitLanche";
+import { getLotesSimples } from "src/services/lote.service";
 import HTTP_STATUS from "http-status-codes";
-import { ASelect } from "components/Shareable/MakeField";
+import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
-import { formatarOpcoesLote } from "helpers/utilities";
-import { meusDados } from "services/perfil.service";
+import { formatarOpcoesLote } from "src/helpers/utilities";
+import { meusDados } from "src/services/perfil.service";
 import { CardPendenteAcao } from "../../components/CardPendenteAcao";
 import {
   filtraNoLimite,

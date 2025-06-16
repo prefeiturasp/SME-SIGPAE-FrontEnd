@@ -8,10 +8,10 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { mockListaProdutosLogistica } from "mocks/produto.service/mockGetListaCompletaProdutosLogistica";
-import mock from "services/_mock";
-import FichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/FichaTecnicaPage";
-import { mockListaFichaTecnica } from "mocks/services/fichaTecnica.service/mockListarFichasTecnicas";
+import { mockListaProdutosLogistica } from "src/mocks/produto.service/mockGetListaCompletaProdutosLogistica";
+import mock from "src/services/_mock";
+import FichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/FichaTecnicaPage";
+import { mockListaFichaTecnica } from "src/mocks/services/fichaTecnica.service/mockListarFichasTecnicas";
 
 beforeEach(() => {
   mock

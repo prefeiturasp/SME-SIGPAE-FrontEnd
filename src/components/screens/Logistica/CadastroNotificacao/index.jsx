@@ -4,25 +4,28 @@ import { Spin } from "antd";
 import Filtros from "./components/Filtros";
 import ListagemGuias from "./components/ListagemGuias";
 import { useEffect } from "react";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import {
   criarNotificacao,
   editarNotificacao,
   getGuiaDetalhe,
   getGuiasNaoNotificadas,
-} from "services/logistica.service";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/services/logistica.service";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import ModalDesvincular from "./components/ModalDesvincular";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { GUIAS_NOTIFICACAO, LOGISTICA } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import { GUIAS_NOTIFICACAO, LOGISTICA } from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
 import "./styles.scss";
 import ModalDetalharGuia from "./components/ModalDetalharGuia";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const navigate = useNavigate();

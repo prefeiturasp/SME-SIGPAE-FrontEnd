@@ -1,14 +1,14 @@
 import React from "react";
 import { Field } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
-import { required } from "helpers/fieldValidators";
-import Botao from "components/Shareable/Botao";
+import InputText from "src/components/Shareable/Input/InputText";
+import { required } from "src/helpers/fieldValidators";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import MaskedInputText from "components/Shareable/Input/MaskedInputText";
-import { telefoneMask } from "constants/shared";
+} from "src/components/Shareable/Botao/constants";
+import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
+import { telefoneMask } from "src/constants/shared";
 
 export const NutricionistaFormSet = ({
   ehDistribuidor,

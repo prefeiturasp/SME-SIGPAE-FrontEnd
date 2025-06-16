@@ -12,34 +12,34 @@ import {
   usuarioEhEscolaAbastecimento,
   usuarioEhEscolaAbastecimentoDiretor,
   usuarioEhLogistica,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
-import AnalisarAssinarPage from "pages/Logistica/AnalisarAssinarPage";
-import CadastroNotificacaoPage from "pages/Logistica/CadastroNotificacao.page";
-import ConferenciaDeGuiaComOcorrenciaPage from "pages/Logistica/ConferenciaDeGuiaComOcorrenciaPage";
-import ConferenciaDeGuiaPage from "pages/Logistica/ConferenciaDeGuiaPage";
-import ConferenciaDeGuiaResumoFinalPage from "pages/Logistica/ConferenciaDeGuiaResumoFinalPage";
-import ConferenciaInconsistenciasPage from "pages/Logistica/ConferenciaInconsistenciasPage";
-import ConferirEntregaPage from "pages/Logistica/ConferirEntregaPage";
-import ConsultaRequisicaoEntregaDilog from "pages/Logistica/ConsultaRequisicaoEntregaDilog";
-import ConsultaSolicitacaoAlteracaoPage from "pages/Logistica/ConsultaSolicitacaoAlteracaoPage";
-import DetalhamentoGuiaPage from "pages/Logistica/DetalhamentoGuiaPage";
-import DetalharNotificacaoPage from "pages/Logistica/DetalharNotificacaoPage";
-import DisponibilizacaoDeSolicitacoesPage from "pages/Logistica/DisponibilizacaoDeSolicitacoesPage";
-import EditarNotificacaoPage from "pages/Logistica/EditarNotificacaoPage";
-import EntregasDilogPage from "pages/Logistica/EntregasDilogPage";
-import EntregasDistribuidorPage from "pages/Logistica/EntregasDistribuidorPage";
-import EntregasDrePage from "pages/Logistica/EntregasDrePage";
-import FiltroRequisicaoDilog from "pages/Logistica/FiltroRequisicaoDilog";
-import GestaoRequisicaoEntregaPage from "pages/Logistica/GestaoRequisicaoEntregaPage";
-import GestaoSolicitacaoAlteracaoPage from "pages/Logistica/GestaoSolicitacaoAlteracaoPage";
-import GuiasNotificacoesFiscalPage from "pages/Logistica/GuiasNotificacoesFiscalPage";
-import GuiasNotificacoesPage from "pages/Logistica/GuiasNotificacoesPage";
-import InsucessoEntregaPage from "pages/Logistica/InsucessoEntregaPage";
-import NotificarEmpresaPage from "pages/Logistica/NotificarEmpresaPage";
-import RegistrarInsucessoEntregaPage from "pages/Logistica/RegistrarInsucessoEntregaPage";
-import ReposicaoDeGuiaPage from "pages/Logistica/ReposicaoDeGuiaPage";
-import ReposicaoResumoFinalPage from "pages/Logistica/ReposicaoResumoFinalPage";
+import AnalisarAssinarPage from "src/pages/Logistica/AnalisarAssinarPage";
+import CadastroNotificacaoPage from "src/pages/Logistica/CadastroNotificacao.page";
+import ConferenciaDeGuiaComOcorrenciaPage from "src/pages/Logistica/ConferenciaDeGuiaComOcorrenciaPage";
+import ConferenciaDeGuiaPage from "src/pages/Logistica/ConferenciaDeGuiaPage";
+import ConferenciaDeGuiaResumoFinalPage from "src/pages/Logistica/ConferenciaDeGuiaResumoFinalPage";
+import ConferenciaInconsistenciasPage from "src/pages/Logistica/ConferenciaInconsistenciasPage";
+import ConferirEntregaPage from "src/pages/Logistica/ConferirEntregaPage";
+import ConsultaRequisicaoEntregaDilog from "src/pages/Logistica/ConsultaRequisicaoEntregaDilog";
+import ConsultaSolicitacaoAlteracaoPage from "src/pages/Logistica/ConsultaSolicitacaoAlteracaoPage";
+import DetalhamentoGuiaPage from "src/pages/Logistica/DetalhamentoGuiaPage";
+import DetalharNotificacaoPage from "src/pages/Logistica/DetalharNotificacaoPage";
+import DisponibilizacaoDeSolicitacoesPage from "src/pages/Logistica/DisponibilizacaoDeSolicitacoesPage";
+import EditarNotificacaoPage from "src/pages/Logistica/EditarNotificacaoPage";
+import EntregasDilogPage from "src/pages/Logistica/EntregasDilogPage";
+import EntregasDistribuidorPage from "src/pages/Logistica/EntregasDistribuidorPage";
+import EntregasDrePage from "src/pages/Logistica/EntregasDrePage";
+import FiltroRequisicaoDilog from "src/pages/Logistica/FiltroRequisicaoDilog";
+import GestaoRequisicaoEntregaPage from "src/pages/Logistica/GestaoRequisicaoEntregaPage";
+import GestaoSolicitacaoAlteracaoPage from "src/pages/Logistica/GestaoSolicitacaoAlteracaoPage";
+import GuiasNotificacoesFiscalPage from "src/pages/Logistica/GuiasNotificacoesFiscalPage";
+import GuiasNotificacoesPage from "src/pages/Logistica/GuiasNotificacoesPage";
+import InsucessoEntregaPage from "src/pages/Logistica/InsucessoEntregaPage";
+import NotificarEmpresaPage from "src/pages/Logistica/NotificarEmpresaPage";
+import RegistrarInsucessoEntregaPage from "src/pages/Logistica/RegistrarInsucessoEntregaPage";
+import ReposicaoDeGuiaPage from "src/pages/Logistica/ReposicaoDeGuiaPage";
+import ReposicaoResumoFinalPage from "src/pages/Logistica/ReposicaoResumoFinalPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";

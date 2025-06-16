@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getMotivosDREnaoValida } from "services/relatorios";
-import Page from "components/Shareable/Page/Page";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import { HOME } from "constants/config";
-import { RelatorioInclusaoDeAlimentacaoCEMEI } from "components/InclusaoDeAlimentacaoCEMEI/Relatorio";
-import { ModalCancelarInclusaoAlimentacao } from "components/Shareable/ModalCancelarInclusaoAlimentacao";
-import { ModalNaoValidarFinalForm } from "components/Shareable/ModalNaoValidarFinalForm";
-import { ModalNegarFinalForm } from "components/Shareable/ModalNegarFinalForm";
-import { ModalCODAEQuestionaFinalForm } from "components/Shareable/ModalCODAEQuestionaFinalForm";
-import { ModalTercRespondeQuestFinalForm } from "components/Shareable/ModalTercRespondeQuestFinalForm";
-import { ModalCODAEAutoriza } from "components/Shareable/ModalCODAEAutoriza";
-import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "configs/constants";
+import { getMotivosDREnaoValida } from "src/services/relatorios";
+import Page from "src/components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import { HOME } from "src/constants/config";
+import { RelatorioInclusaoDeAlimentacaoCEMEI } from "src/components/InclusaoDeAlimentacaoCEMEI/Relatorio";
+import { ModalCancelarInclusaoAlimentacao } from "src/components/Shareable/ModalCancelarInclusaoAlimentacao";
+import { ModalNaoValidarFinalForm } from "src/components/Shareable/ModalNaoValidarFinalForm";
+import { ModalNegarFinalForm } from "src/components/Shareable/ModalNegarFinalForm";
+import { ModalCODAEQuestionaFinalForm } from "src/components/Shareable/ModalCODAEQuestionaFinalForm";
+import { ModalTercRespondeQuestFinalForm } from "src/components/Shareable/ModalTercRespondeQuestFinalForm";
+import { ModalCODAEAutoriza } from "src/components/Shareable/ModalCODAEAutoriza";
+import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
 import {
   codaeAutorizarSolicitacaoDeInclusaoDeAlimentacao,
   codaeNegarSolicitacaoDeInclusaoDeAlimentacao,
@@ -21,8 +21,8 @@ import {
   escolaCancelarSolicitacaoDeInclusaoDeAlimentacao,
   terceirizadaDarCienciaDeInclusaoDeAlimentacao,
   terceirizadaResponderQuestionamentoDeInclusaoDeAlimentacao,
-} from "services/inclusaoDeAlimentacao";
-import { TIPO_SOLICITACAO } from "constants/shared";
+} from "src/services/inclusaoDeAlimentacao";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
 
 export const RelatorioBase = ({ ...props }) => {
   const [motivosDREnaoValida, setMotivosDREnaoValida] = useState();

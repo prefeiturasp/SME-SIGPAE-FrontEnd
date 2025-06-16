@@ -1,8 +1,8 @@
-import { Paginacao } from "components/Shareable/Paginacao";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { Paginacao } from "src/components/Shareable/Paginacao";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import HTTP_STATUS from "http-status-codes";
 import React, { useState } from "react";
-import { getSolicitacoesRelatorioHistoricoDietas } from "services/dietaEspecial.service";
+import { getSolicitacoesRelatorioHistoricoDietas } from "src/services/dietaEspecial.service";
 import { normalizarValues, PAGE_SIZE } from "../../helper";
 import { CollapseContentCEI } from "../CollapseContentCEI";
 import { CollapseContentCEMEI } from "../CollapseContentCEMEI";

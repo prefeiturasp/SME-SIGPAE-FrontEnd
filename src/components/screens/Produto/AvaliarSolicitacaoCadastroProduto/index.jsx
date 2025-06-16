@@ -3,9 +3,9 @@ import HTTP_STATUS from "http-status-codes";
 import React, { useState, useEffect } from "react";
 import FormBuscaSolicitacao from "./components/FormBuscaSolicitacoes";
 import ListagemProdutos from "./components/ListagemSolicitacoes";
-import { getSolicitacoesCadastroProdutoDieta } from "services/produto.service";
+import { getSolicitacoesCadastroProdutoDieta } from "src/services/produto.service";
 import "./styles.scss";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [ativos, setAtivos] = useState(undefined);

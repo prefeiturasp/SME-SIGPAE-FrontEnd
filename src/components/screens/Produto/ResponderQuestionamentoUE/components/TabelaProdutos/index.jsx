@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
 import { Link } from "react-router-dom";
-import Reclamacao from "components/screens/Produto/Reclamacao/components/Reclamacao";
-import ModalJustificativa from "components/Shareable/ModalJustificativa";
+import Reclamacao from "src/components/screens/Produto/Reclamacao/components/Reclamacao";
+import ModalJustificativa from "src/components/Shareable/ModalJustificativa";
 
 import {
   responderQuestionamentoUE,
   filtrarReclamacoesEscola,
-} from "services/reclamacaoProduto.service";
+} from "src/services/reclamacaoProduto.service";
 
 import { ordenaPorCriadoEm } from "./helpers";
 import "./styles.scss";

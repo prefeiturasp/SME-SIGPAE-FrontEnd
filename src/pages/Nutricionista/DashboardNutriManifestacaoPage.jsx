@@ -2,7 +2,7 @@ import React from "react";
 import Breadcrumb from "../../components/Shareable/Breadcrumb";
 import Page from "../../components/Shareable/Page/Page";
 import { HOME } from "./constants";
-import { DashboardNutrimanifestacao } from "components/screens/DashboardNutricionista/DashboardNutriManifestacao";
+import { DashboardNutrimanifestacao } from "src/components/screens/DashboardNutricionista/DashboardNutriManifestacao";
 
 export default () => (
   <div>

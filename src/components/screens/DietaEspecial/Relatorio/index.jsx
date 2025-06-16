@@ -1,54 +1,60 @@
-import Botao from "components/Shareable/Botao";
+import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { CODAE, ESCOLA, TERCEIRIZADA } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { CODAE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
 import {
   statusEnum,
   TIPO_PERFIL,
   TIPO_SOLICITACAO_DIETA,
-} from "constants/shared";
-import HTTP_STATUS from "http-status-codes";
-import React, { useEffect, useState } from "react";
+} from "src/constants/shared";
 import {
   CODAENegaSolicitacaoCancelamento,
   deleteSolicitacaoAberta,
   escolaCancelaSolicitacao,
   getDietaEspecial,
   getDietasEspeciaisVigentesDeUmAluno,
-  getMotivosNegarSolicitacaoCancelamento,
   updateSolicitacaoAberta,
-} from "services/dietaEspecial.service";
+} from "src/services/dietaEspecial.service";
 import {
   getProtocoloDietaEspecial,
   getRelatorioDietaEspecial,
-} from "services/relatorios";
+} from "src/services/relatorios";
 import EscolaCancelaDietaEspecial from "./componentes/EscolaCancelaDietaEspecial";
 
 import { Spin } from "antd";
-import ModalHistorico from "components/Shareable/ModalHistorico";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
+import ModalHistorico from "src/components/Shareable/ModalHistorico";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
 import {
+  agregarDefault,
+  ehUsuarioEmpresa,
+  usuarioEhCODAENutriManifestacao,
   usuarioEhCogestorDRE,
   usuarioEhCoordenadorNutriCODAE,
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscola,
   usuarioEhNutricionistaSupervisao,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
+import { getMotivosNegacaoDietaEspecial } from "src/services/painelNutricionista.service";
 import CorpoRelatorio from "./componentes/CorpoRelatorio";
 import FormAutorizaDietaEspecial from "./componentes/FormAutorizaDietaEspecial";
 import ModalAvisoDietaImportada from "./componentes/ModalAvisoDietaImportada";
 import ModalNegaDietaEspecial from "./componentes/ModalNegaDietaEspecial";
+import { formataMotivos } from "./componentes/ModalNegaDietaEspecial/helper";
 import {
   cabecalhoDieta,
   ehSolicitacaoDeCancelamento,
   initSocket,
 } from "./helpers";
 import "./style.scss";
-import { usuarioEhCODAENutriManifestacao } from "../../../../helpers/utilities";
 
 const Relatorio = ({ visao }) => {
   const [dietaEspecial, setDietaEspecial] = useState(null);
@@ -66,6 +72,7 @@ const Relatorio = ({ visao }) => {
   const [dietasAbertas, setDietasAbertas] = useState([]);
   const [dadosDietaAberta, setDadosDietaAberta] = useState(null);
   const [editar, setEditar] = useState(false);
+  const [motivosNegacao, setMotivosNegacao] = useState();
 
   const dietaCancelada = status ? ehSolicitacaoDeCancelamento(status) : false;
   const tipoPerfil = localStorage.getItem("tipo_perfil");
@@ -248,8 +255,10 @@ const Relatorio = ({ visao }) => {
   };
 
   const dietasFiltradas = () => {
-    return dietasAbertas.filter((dieta) =>
-      dieta.uuid_solicitacao.includes(uuidDieta)
+    return (
+      dietasAbertas?.filter((dieta) =>
+        dieta.uuid_solicitacao.includes(uuidDieta)
+      ) || []
     );
   };
 
@@ -262,6 +271,10 @@ const Relatorio = ({ visao }) => {
       dadosDietaAberta && deleteSolicitacaoAberta(dadosDietaAberta.id);
     };
   }, [dadosDietaAberta]);
+
+  useEffect(() => {
+    getMotivosNegacaoDietaEspecialAsync();
+  }, []);
 
   const exibirUsuariosSimultaneos = () => {
     return (
@@ -299,6 +312,17 @@ const Relatorio = ({ visao }) => {
       exibir = true;
     }
     return exibir;
+  };
+
+  const getMotivosNegacaoDietaEspecialAsync = async () => {
+    const response = await getMotivosNegacaoDietaEspecial({
+      processo: "CANCELAMENTO",
+    });
+    if (response.status === HTTP_STATUS.OK) {
+      setMotivosNegacao(agregarDefault(formataMotivos(response.data)));
+    } else {
+      toastError("Erro ao carregar motivos de negação.");
+    }
   };
 
   return (
@@ -445,6 +469,7 @@ const Relatorio = ({ visao }) => {
               </div>,
             ]}
           {dietaEspecial &&
+            !ehUsuarioEmpresa() &&
             visao === TERCEIRIZADA &&
             (status === statusEnum.CODAE_AUTORIZADO ||
               dietaCancelada ||
@@ -490,7 +515,7 @@ const Relatorio = ({ visao }) => {
             )}
         </div>
       </div>
-      {dietaEspecial && (
+      {dietaEspecial && motivosNegacao && (
         <ModalNegaDietaEspecial
           showModal={showNaoAprovaModal}
           closeModal={() => setShowNaoAprovaModal(false)}
@@ -498,7 +523,7 @@ const Relatorio = ({ visao }) => {
             loadSolicitacao(dietaEspecial.uuid);
           }}
           uuid={dietaEspecial.uuid}
-          getMotivos={() => getMotivosNegarSolicitacaoCancelamento()}
+          motivosNegacao={motivosNegacao}
           submitModal={(uuid, values) =>
             CODAENegaSolicitacaoCancelamento(uuid, values)
           }

@@ -1,18 +1,32 @@
 import { Spin, Tabs } from "antd";
-import Botao from "components/Shareable/Botao";
+import {
+  addDays,
+  format,
+  getDay,
+  getWeeksInMonth,
+  isSunday,
+  lastDayOfMonth,
+  startOfMonth,
+  subDays,
+} from "date-fns";
+import HTTP_STATUS from "http-status-codes";
+import { Fragment, useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import { Field } from "react-final-form";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import CKEditorField from "components/Shareable/CKEditorField";
-import InputText from "components/Shareable/Input/InputText";
-import InputValueMedicao from "components/Shareable/Input/InputValueMedicao";
+} from "src/components/Shareable/Botao/constants";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import InputText from "src/components/Shareable/Input/InputText";
+import InputValueMedicao from "src/components/Shareable/Input/InputValueMedicao";
 import {
   toastError,
   toastSuccess,
   toastWarn,
-} from "components/Shareable/Toast/dialogs";
-import { removeObjetosDuplicados } from "components/screens/LancamentoInicial/LancamentoMedicaoInicial/components/LancamentoPorPeriodo/helpers";
+} from "src/components/Shareable/Toast/dialogs";
+import { removeObjetosDuplicados } from "src/components/screens/LancamentoInicial/LancamentoMedicaoInicial/components/LancamentoPorPeriodo/helpers";
 import {
   defaultValue,
   desabilitarBotaoObservacoesConferenciaLancamentos,
@@ -27,21 +41,11 @@ import {
   getSolicitacoesSuspensoesAutorizadasAsync,
   tabAlunosEmebs,
   validacaoSemana,
-} from "components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
+} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import {
   formatarLinhasTabelaAlimentacaoCEI,
   formatarLinhasTabelasDietasCEI,
-} from "components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/helper";
-import {
-  addDays,
-  format,
-  getDay,
-  getWeeksInMonth,
-  isSunday,
-  lastDayOfMonth,
-  startOfMonth,
-  subDays,
-} from "date-fns";
+} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/helper";
 import {
   deepCopy,
   ehEscolaTipoCEI,
@@ -49,21 +53,17 @@ import {
   ehFimDeSemana,
   usuarioEhDRE,
   usuarioEhMedicao,
-} from "helpers/utilities";
-import HTTP_STATUS from "http-status-codes";
-import { Fragment, useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
-import { Field } from "react-final-form";
-import { getTiposDeAlimentacao } from "services/cadastroTipoAlimentacao.service";
+} from "src/helpers/utilities";
+import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import {
   getCategoriasDeMedicao,
   getPeriodosInclusaoContinua,
   getValoresPeriodosLancamentos,
-} from "services/medicaoInicial/periodoLancamentoMedicao.service";
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
   codaePedeCorrecaPeriodo,
   drePedeCorrecaMedicao,
-} from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import {
   exibirTooltipAlteracaoAlimentacaoAutorizadaDreCodae,
   exibirTooltipInclusaoAlimentacaoAutorizadaDreCodae,
@@ -801,7 +801,6 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
   };
 
   const onChangeTabAlunos = (keyTabAlunos) => {
-    setSemanaSelecionada(1);
     setAlunosTabSelecionada(keyTabAlunos);
     Object.keys(values).forEach((key) => {
       if (

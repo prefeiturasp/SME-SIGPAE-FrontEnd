@@ -1,22 +1,22 @@
 import { Spin } from "antd";
 import React, { useState } from "react";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { Paginacao } from "components/Shareable/Paginacao";
+} from "src/components/Shareable/Botao/constants";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
-import { getRelatorioQuantitativoDiagDietaEsp } from "services/dietaEspecial.service";
-import { imprimeRelatorioQuantitativoDiagDietaEsp } from "services/relatorios";
+import { getRelatorioQuantitativoDiagDietaEsp } from "src/services/dietaEspecial.service";
+import { imprimeRelatorioQuantitativoDiagDietaEsp } from "src/services/relatorios";
 
 import FormFiltros from "./components/FormFiltros";
 import TabelaRelatorio from "./components/TabelaRelatorio";
 
 import "./styles.scss";
-import { getCabecalhoPorFiltros } from "helpers/dietaEspecial";
+import { getCabecalhoPorFiltros } from "src/helpers/dietaEspecial";
 
 export default () => {
   const [loading, setLoading] = useState(true);

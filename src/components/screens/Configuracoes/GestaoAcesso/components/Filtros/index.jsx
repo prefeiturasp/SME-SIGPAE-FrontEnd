@@ -1,14 +1,14 @@
 import React, { useRef } from "react";
 import { Form, Field } from "react-final-form";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import { InputText } from "components/Shareable/Input/InputText";
-import Botao from "components/Shareable/Botao";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./styles.scss";
-import SelectSelecione from "components/Shareable/SelectSelecione";
+import SelectSelecione from "src/components/Shareable/SelectSelecione";
 import { getPerfisPorVisao } from "../../helper";
 
 const FORM_NAME = "buscaGestaoAcesso";

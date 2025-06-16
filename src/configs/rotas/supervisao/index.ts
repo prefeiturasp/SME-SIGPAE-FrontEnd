@@ -2,14 +2,14 @@ import {
   usuarioEhNutricionistaSupervisao,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
-} from "helpers/utilities";
-import { ListaRelatoriosFiscalizacaoTerceirizadasPage } from "pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/ListaRelatoriosPage";
-import { NovoRelatorioFiscalizacaoPage } from "pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/NovoRelatorioFiscalizacaoPage";
-import { PainelRelatoriosPage } from "pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/PainelRelatoriosPage";
+} from "src/helpers/utilities";
+import { ListaRelatoriosFiscalizacaoTerceirizadasPage } from "src/pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/ListaRelatoriosPage";
+import { NovoRelatorioFiscalizacaoPage } from "src/pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/NovoRelatorioFiscalizacaoPage";
+import { PainelRelatoriosPage } from "src/pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/PainelRelatoriosPage";
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
-import { DetalharRelatorioFiscalizacaoPage } from "pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/DetalharRelatorioFiscalizacaoPage";
-import { EditarRelatorioFiscalizacaoPage } from "pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/EditarRelatorioFiscalizacaoPage";
+import { DetalharRelatorioFiscalizacaoPage } from "src/pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/DetalharRelatorioFiscalizacaoPage";
+import { EditarRelatorioFiscalizacaoPage } from "src/pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/EditarRelatorioFiscalizacaoPage";
 
 export const rotasSupervisao: Array<RotaInterface> = [
   {

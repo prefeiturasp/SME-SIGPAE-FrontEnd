@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 import ModalCancelamento from "../ModalCancelamento";
 import { TIPO_SOLICITACAO_DIETA } from "../../../../../../constants/shared";
 import SolicitacaoVigente from "../../../Escola/componentes/SolicitacaoVigente";
-import { getSolicitacoesDietaEspecial } from "services/dietaEspecial.service";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { getStatusSolicitacoesInativas } from "helpers/dietaEspecial";
+import { getSolicitacoesDietaEspecial } from "src/services/dietaEspecial.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { getStatusSolicitacoesInativas } from "src/helpers/dietaEspecial";
 
 export default ({
   dieta,

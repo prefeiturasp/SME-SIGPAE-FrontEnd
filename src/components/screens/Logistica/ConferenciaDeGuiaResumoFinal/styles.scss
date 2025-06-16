@@ -1,4 +1,4 @@
-@import "../../../../styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 .card-conferencia-guia-resumo-final {
   .conferencia-guia-resumo-final {

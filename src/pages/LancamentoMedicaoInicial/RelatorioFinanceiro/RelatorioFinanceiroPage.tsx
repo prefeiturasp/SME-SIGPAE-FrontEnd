@@ -1,8 +1,8 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { MEDICAO_INICIAL, RELATORIO_FINANCEIRO } from "configs/constants";
-import { RelatorioFinanceiro } from "components/screens/LancamentoInicial/RelatorioFinanceiro";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { MEDICAO_INICIAL, RELATORIO_FINANCEIRO } from "src/configs/constants";
+import { RelatorioFinanceiro } from "src/components/screens/LancamentoInicial/RelatorioFinanceiro";
 
 const atual = {
   href: `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}`,

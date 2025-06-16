@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Field } from "react-final-form";
-import { required } from "helpers/fieldValidators";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import { required } from "src/helpers/fieldValidators";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,

@@ -1,23 +1,23 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import CKEditorField from "components/Shareable/CKEditorField";
-import { InputComData } from "components/Shareable/DatePicker";
-import InputText from "components/Shareable/Input/InputText";
-import Select from "components/Shareable/Select";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import Weekly from "components/Shareable/Weekly/Weekly";
-import { WEEK } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import InputText from "src/components/Shareable/Input/InputText";
+import Select from "src/components/Shareable/Select";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import Weekly from "src/components/Shareable/Weekly/Weekly";
+import { WEEK } from "src/configs/constants";
 import {
   maxLength,
   maxValue,
   naoPodeSerZero,
   numericInteger,
   required,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 import {
   agregarDefault,
   composeValidators,
@@ -27,11 +27,11 @@ import {
   getDataObj,
   usuarioEhEscolaCeuGestao,
   usuarioEhEscolaCMCT,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
-import { getTiposDeAlimentacao } from "services/cadastroTipoAlimentacao.service";
+import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import "./style.scss";
 
 const REFEICAO_E_SOBREMESA = "Refeição e Sobremesa";

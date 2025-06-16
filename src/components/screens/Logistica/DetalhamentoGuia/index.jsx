@@ -4,23 +4,23 @@ import { Spin } from "antd";
 import {
   getGuiaDetalhe,
   imprimirGuiaRemessa,
-} from "../../../../services/logistica.service.js";
+} from "../../../../services/logistica.service";
 import { Form, Field } from "react-final-form";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import { InputText } from "components/Shareable/Input/InputText";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import Botao from "components/Shareable/Botao";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 import {
   CONFERENCIA_GUIA,
   LOGISTICA,
   REPOSICAO_GUIA,
-} from "configs/constants.js";
-import DetalheGuiaRemessa from "components/Logistica/DetalheGuiaRemessa/index.jsx";
+} from "src/configs/constants";
+import DetalheGuiaRemessa from "src/components/Logistica/DetalheGuiaRemessa/index.jsx";
 
 const FORM_NAME = "detalhamentoGuiaRemessa";
 

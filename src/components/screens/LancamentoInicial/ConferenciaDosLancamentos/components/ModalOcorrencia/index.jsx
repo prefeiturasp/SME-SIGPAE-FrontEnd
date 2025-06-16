@@ -1,22 +1,25 @@
 import React from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { peloMenosUmCaractere, required } from "helpers/fieldValidators";
+} from "src/components/Shareable/Botao/constants";
+import { peloMenosUmCaractere, required } from "src/helpers/fieldValidators";
 import { Field, Form } from "react-final-form";
-import CKEditorField from "components/Shareable/CKEditorField";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   drePedeCorrecaoOcorrencia,
   drePedeAprovacaoOcorrencia,
   codaePedeCorrecaoOcorrencia,
   codaePedeAprovacaoOcorrencia,
-} from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import { usuarioEhDRE } from "helpers/utilities";
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
+import { usuarioEhDRE } from "src/helpers/utilities";
 
 export const ModalOcorrencia = ({ ...props }) => {
   const {

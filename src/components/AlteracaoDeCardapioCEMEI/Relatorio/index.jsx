@@ -5,23 +5,26 @@ import {
   exibirBotaoMarcarConferencia,
   exibirBotaoQuestionamento,
   exibirModalAutorizacaoAposQuestionamento,
-} from "components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
-import { Botao } from "components/Shareable/Botao";
+} from "src/components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import ModalAutorizarAposQuestionamento from "components/Shareable/ModalAutorizarAposQuestionamento";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { DRE } from "configs/constants";
-import { TIPO_PERFIL } from "constants/shared";
-import { visualizaBotoesDoFluxo } from "helpers/utilities";
+} from "src/components/Shareable/Botao/constants";
+import ModalAutorizarAposQuestionamento from "src/components/Shareable/ModalAutorizarAposQuestionamento";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { DRE } from "src/configs/constants";
+import { TIPO_PERFIL } from "src/constants/shared";
+import { visualizaBotoesDoFluxo } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useState } from "react";
 import { Form } from "react-final-form";
-import { getAlteracaoCEMEI } from "services/alteracaoDeCardapio";
-import { getQuantidadeAlunosCEMEIporCEIEMEI } from "services/aluno.service";
+import { getAlteracaoCEMEI } from "src/services/alteracaoDeCardapio";
+import { getQuantidadeAlunosCEMEIporCEIEMEI } from "src/services/aluno.service";
 import { formataDadosTabelaCEMEI } from "../helpers";
 import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
 import "./style.scss";
@@ -39,6 +42,8 @@ export const Relatorio = ({ ...props }) => {
     tipoSolicitacao,
     toastAprovaMensagem,
     toastAprovaMensagemErro,
+    toastNaoAprovaMensagem,
+    toastNaoAprovaMensagemErro,
     ModalCODAEAutoriza,
     visao,
   } = props;
@@ -81,19 +86,17 @@ export const Relatorio = ({ ...props }) => {
   const tipoPerfil = localStorage.getItem("tipo_perfil");
 
   const onSubmit = async (values) => {
-    endpointAprovaSolicitacao(uuid, values, tipoSolicitacao).then(
-      (response) => {
-        if (response.status === HTTP_STATUS.OK) {
-          toastSuccess(toastAprovaMensagem);
-          getSolicitacao();
-        } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(toastAprovaMensagemErro);
-        }
-      },
-      function () {
-        toastError(toastAprovaMensagemErro);
-      }
+    const response = await endpointAprovaSolicitacao(
+      uuid,
+      values,
+      tipoSolicitacao
     );
+    if (response.status === HTTP_STATUS.OK) {
+      toastSuccess(toastAprovaMensagem);
+      getSolicitacao();
+    } else {
+      toastError(toastAprovaMensagemErro);
+    }
   };
 
   useEffect(() => {
@@ -236,7 +239,7 @@ export const Relatorio = ({ ...props }) => {
                             uuid={solicitacao.uuid}
                             endpoint={"alteracoes-cardapio-cemei"}
                           />
-                          {ModalNaoAprova && (
+                          {ModalNaoAprova && showNaoAprovaModal && (
                             <ModalNaoAprova
                               showModal={showNaoAprovaModal}
                               closeModal={() => setShowNaoAprovaModal(false)}
@@ -247,9 +250,13 @@ export const Relatorio = ({ ...props }) => {
                               resposta_sim_nao={respostaSimNao}
                               loadSolicitacao={getSolicitacao}
                               tipoSolicitacao={tipoSolicitacao}
+                              toastNaoAprovaMensagem={toastNaoAprovaMensagem}
+                              toastNaoAprovaMensagemErro={
+                                toastNaoAprovaMensagemErro
+                              }
                             />
                           )}
-                          {ModalQuestionamento && (
+                          {ModalQuestionamento && showQuestionamentoModal && (
                             <ModalQuestionamento
                               closeModal={() =>
                                 setShowQuestionamentoModal(false)

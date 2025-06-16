@@ -1,10 +1,10 @@
 import MultiSelect from "@khanacademy/react-multi-select";
 import React from "react";
 
-import { InputErroMensagem } from "components/Shareable/Input/InputErroMensagem";
-import { HelpText } from "components/Shareable/HelpText";
+import { InputErroMensagem } from "src/components/Shareable/Input/InputErroMensagem";
+import { HelpText } from "src/components/Shareable/HelpText";
 
-import TooltipIcone from "components/Shareable/TooltipIcone";
+import TooltipIcone from "src/components/Shareable/TooltipIcone";
 
 import "./styles.scss";
 

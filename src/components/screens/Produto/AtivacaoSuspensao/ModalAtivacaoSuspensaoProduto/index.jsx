@@ -3,23 +3,26 @@ import HTTP_STATUS from "http-status-codes";
 import * as R from "ramda";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
-import CKEditorField from "components/Shareable/CKEditorField";
-import InputText from "components/Shareable/Input/InputText";
-import ManagedInputFileField from "components/Shareable/Input/InputFile/ManagedField";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import Botao from "components/Shareable/Botao";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import InputText from "src/components/Shareable/Input/InputText";
+import ManagedInputFileField from "src/components/Shareable/Input/InputFile/ManagedField";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import { peloMenosUmCaractere, required } from "helpers/fieldValidators";
-import { EDITAIS_INVALIDOS } from "helpers/gestaoDeProdutos";
-import { ativarProduto, suspenderProduto } from "services/produto.service";
-import { meusDados } from "services/perfil.service";
+} from "src/components/Shareable/Botao/constants";
+import { peloMenosUmCaractere, required } from "src/helpers/fieldValidators";
+import { EDITAIS_INVALIDOS } from "src/helpers/gestaoDeProdutos";
+import { ativarProduto, suspenderProduto } from "src/services/produto.service";
+import { meusDados } from "src/services/perfil.service";
 import "./style.scss";
-import { getNumerosEditais } from "services/edital.service";
+import { getNumerosEditais } from "src/services/edital.service";
 
 const capitalizar = R.replace(/^./, R.toUpper);
 

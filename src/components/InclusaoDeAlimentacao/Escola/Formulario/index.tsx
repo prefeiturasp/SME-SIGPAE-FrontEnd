@@ -1,28 +1,53 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
-import CardMatriculados from "components/Shareable/CardMatriculados";
+import { FormApi } from "final-form";
+import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
-import { TIPO_SOLICITACAO } from "constants/shared";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
+import { FieldArray } from "react-final-form-arrays";
 import {
-  updateInclusaoAlimentacao,
-  createInclusaoAlimentacao,
-  escolaExcluirSolicitacaoDeInclusaoDeAlimentacao,
-  obterMinhasSolicitacoesDeInclusaoDeAlimentacao,
-  iniciaFluxoInclusaoAlimentacao,
-} from "services/inclusaoDeAlimentacao";
-import { Rascunhos } from "./componentes/Rascunhos";
-import Select from "components/Shareable/Select";
-import { required } from "helpers/fieldValidators";
+  validarSubmissaoContinua,
+  validarSubmissaoNormal,
+} from "src/components/InclusaoDeAlimentacao/Escola/Formulario/validacao";
+import {
+  formatarSubmissaoSolicitacaoContinua,
+  formatarSubmissaoSolicitacaoNormal,
+} from "src/components/InclusaoDeAlimentacao/helper";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import Select from "src/components/Shareable/Select";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
+import { ITipoSolicitacao } from "src/constants/interfaces";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
+import { required } from "src/helpers/fieldValidators";
 import {
   agregarDefault,
-  usuarioEhEscolaCIEJA,
-  usuarioEhEscolaCMCT,
   checaSeDataEstaEntre2e5DiasUteis,
   deepCopy,
   getError,
-} from "helpers/utilities";
-import { FieldArray } from "react-final-form-arrays";
-import arrayMutators from "final-form-arrays";
+  usuarioEhEscolaCIEJA,
+  usuarioEhEscolaCMCT,
+} from "src/helpers/utilities";
+import {
+  createInclusaoAlimentacao,
+  escolaExcluirSolicitacaoDeInclusaoDeAlimentacao,
+  iniciaFluxoInclusaoAlimentacao,
+  obterMinhasSolicitacoesDeInclusaoDeAlimentacao,
+  updateInclusaoAlimentacao,
+} from "src/services/inclusaoDeAlimentacao";
+import {
+  DatasInclusaoContinua,
+  Recorrencia,
+  RecorrenciaTabela,
+} from "./componentes/InclusaoContinua";
 import {
   AdicionarDia,
   DataInclusaoNormal,
@@ -30,27 +55,7 @@ import {
   OutroMotivo,
   PeriodosInclusaoNormal,
 } from "./componentes/InclusaoNormal";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import Botao from "components/Shareable/Botao";
-import {
-  BUTTON_STYLE,
-  BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import {
-  validarSubmissaoNormal,
-  validarSubmissaoContinua,
-} from "components/InclusaoDeAlimentacao/Escola/Formulario/validacao";
-import {
-  formatarSubmissaoSolicitacaoContinua,
-  formatarSubmissaoSolicitacaoNormal,
-} from "components/InclusaoDeAlimentacao/helper";
-import {
-  DatasInclusaoContinua,
-  Recorrencia,
-  RecorrenciaTabela,
-} from "./componentes/InclusaoContinua";
+import { Rascunhos } from "./componentes/Rascunhos";
 import {
   MotivoContinuoInterface,
   MotivoInterface,
@@ -60,7 +65,6 @@ import {
   RascunhosInclusaoDeAlimentacaoNormalInterface,
   ValuesFormInclusaoDeAlimentacaoInterface,
 } from "./interfaces";
-import { FormApi } from "final-form";
 
 export const InclusaoDeAlimentacao = ({ ...props }) => {
   const [rascunhos, setRascunhos] = useState<
@@ -197,8 +201,8 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
         TIPO_SOLICITACAO.SOLICITACAO_CONTINUA
       );
     if (
-      responseRascunhosNormais.status === HTTP_STATUS.OK &&
-      responseRascunhosContinuas.status === HTTP_STATUS.OK
+      responseRascunhosNormais?.status === HTTP_STATUS.OK &&
+      responseRascunhosContinuas?.status === HTTP_STATUS.OK
     ) {
       setRascunhos(
         responseRascunhosNormais.data.results.concat(
@@ -213,9 +217,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
   const removerRascunho = async (
     id_externo: string,
     uuid: string,
-    tipoSolicitacao:
-      | TIPO_SOLICITACAO.SOLICITACAO_NORMAL
-      | TIPO_SOLICITACAO.SOLICITACAO_CONTINUA,
+    tipoSolicitacao: ITipoSolicitacao,
     form: FormApi<any, Partial<any>>
   ): Promise<void> => {
     if (window.confirm("Deseja remover este rascunho?")) {
@@ -385,9 +387,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
 
   const iniciarPedido = async (
     uuid: string,
-    tipoInclusao:
-      | TIPO_SOLICITACAO.SOLICITACAO_NORMAL
-      | TIPO_SOLICITACAO.SOLICITACAO_CONTINUA,
+    tipoInclusao: ITipoSolicitacao,
     form: FormApi<any, Partial<any>>
   ): Promise<void> => {
     const response = await iniciaFluxoInclusaoAlimentacao(uuid, tipoInclusao);
@@ -737,6 +737,9 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                       form={form}
                       values={values}
                       periodos={periodoNoite}
+                      motivoEspecifico={motivoEspecifico}
+                      uuid={uuid}
+                      idExterno={idExterno}
                       ehETEC
                     />
                   )}
@@ -770,7 +773,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                                 : periodos
                             }
                             form={form}
-                            meusDados={meusDados}
                           />
                         </div>
                       )}

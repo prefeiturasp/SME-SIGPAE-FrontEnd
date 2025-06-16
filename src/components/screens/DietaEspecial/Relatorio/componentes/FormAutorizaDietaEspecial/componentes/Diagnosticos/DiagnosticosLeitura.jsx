@@ -1,6 +1,6 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { InputText } from "components/Shareable/Input/InputText";
+import { InputText } from "src/components/Shareable/Input/InputText";
 
 const DiagnosticosLeitura = () => {
   return (

@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import DetalheGuiaRemessa from "components/Logistica/DetalheGuiaRemessa";
+} from "src/components/Shareable/Botao/constants";
+import DetalheGuiaRemessa from "src/components/Logistica/DetalheGuiaRemessa";
 import "./style.scss";
 import { Spin } from "antd";
-import { imprimirGuiaRemessa } from "services/logistica.service";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { imprimirGuiaRemessa } from "src/services/logistica.service";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 export default ({ guia, handleClose, botaoAcao }) => {
   const [carregando, setCarregando] = useState(false);

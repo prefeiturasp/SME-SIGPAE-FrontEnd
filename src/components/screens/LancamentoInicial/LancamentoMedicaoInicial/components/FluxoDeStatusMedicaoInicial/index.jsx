@@ -1,6 +1,6 @@
 import React from "react";
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
-import { fluxoMedicaoInicial } from "components/Shareable/FluxoDeStatus/helper";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
+import { fluxoMedicaoInicial } from "src/components/Shareable/FluxoDeStatus/helper";
 
 export const FluxoDeStatusMedicaoInicial = ({ solicitacaoMedicaoInicial }) => {
   const logs = () => {

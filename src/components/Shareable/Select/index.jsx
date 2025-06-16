@@ -3,7 +3,7 @@ import React from "react";
 import "./style.scss";
 import { InputErroMensagem } from "../Input/InputErroMensagem";
 import { HelpText } from "../../Shareable/HelpText";
-import TooltipIcone from "components/Shareable/TooltipIcone";
+import TooltipIcone from "src/components/Shareable/TooltipIcone";
 
 export const Select = (props) => {
   const {

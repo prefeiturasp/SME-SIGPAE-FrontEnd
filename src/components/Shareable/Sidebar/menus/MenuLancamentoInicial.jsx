@@ -10,7 +10,7 @@ import {
   RELATORIO_ADESAO,
   RELATORIO_FINANCEIRO,
   RELATORIOS,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   escolaEhCei,
   escolaEhCEMEI,
@@ -23,7 +23,7 @@ import {
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
   usuarioEhMedicao,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
 

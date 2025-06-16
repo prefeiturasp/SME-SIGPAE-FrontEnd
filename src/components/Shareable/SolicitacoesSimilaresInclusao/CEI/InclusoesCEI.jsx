@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from "react";
 import HTTP_STATUS from "http-status-codes";
-import TabelaFaixaEtaria from "components/Shareable/TabelaFaixaEtaria";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
+import TabelaFaixaEtaria from "src/components/Shareable/TabelaFaixaEtaria";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { formataPeriodos } from "./helper";
 
 export const InclusoesCEI = ({ inclusaoDeAlimentacao }) => {

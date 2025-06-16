@@ -1,9 +1,9 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { FICHA_TECNICA, PRE_RECEBIMENTO } from "configs/constants";
-import FichaTecnica from "components/screens/PreRecebimento/FichaTecnica";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { FICHA_TECNICA, PRE_RECEBIMENTO } from "src/configs/constants";
+import FichaTecnica from "src/components/screens/PreRecebimento/FichaTecnica";
 
 const atual = {
   href: `/${PRE_RECEBIMENTO}/${FICHA_TECNICA}`,

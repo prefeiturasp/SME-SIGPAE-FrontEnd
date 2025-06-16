@@ -1,11 +1,11 @@
-import React from "react";
 import "./style.scss";
 
 export const ToggleExpandir = (props) => {
-  const { onClick, ativo, className } = props;
+  const { onClick, ativo, className, dataTestId } = props;
   return (
     <span
       onClick={onClick}
+      data-testid={dataTestId}
       className={`toggle-expandir ${className}`}
       data-cy="botao-expandir"
     >

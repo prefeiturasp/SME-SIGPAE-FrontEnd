@@ -3,15 +3,15 @@ import { Field } from "react-final-form";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import Select from "components/Shareable/Select";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { usuarioEhDRE } from "helpers/utilities";
+import Select from "src/components/Shareable/Select";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { usuarioEhDRE } from "src/helpers/utilities";
 import {
   getUnidadesEducacionaisComCodEol,
   getSolicitacoesRelatorioDietasEspeciais,
-} from "services/dietaEspecial.service";
-import { getTotalizadoresRelatorioSolicitacoes } from "services/relatorios.service";
+} from "src/services/dietaEspecial.service";
+import { getTotalizadoresRelatorioSolicitacoes } from "src/services/relatorios.service";
 import "./styles.scss";
 
 export const Filtros = ({ ...props }) => {
@@ -36,9 +36,19 @@ export const Filtros = ({ ...props }) => {
     let data = values;
     const response = await getUnidadesEducacionaisComCodEol(data);
     if (response.status === HTTP_STATUS.OK) {
+      if (response.data.mensagem) {
+        setUnidadesEducacionais([
+          {
+            label: response.data.mensagem,
+            value: "__no_result__",
+            disabled: true,
+          },
+        ]);
+        return;
+      }
       setUnidadesEducacionais(
         response.data.map((unidade) => ({
-          label: unidade.codigo_eol_escola,
+          label: `${unidade.codigo_eol_escola}`,
           value: unidade.uuid,
         }))
       );
@@ -149,9 +159,17 @@ export const Filtros = ({ ...props }) => {
                       value: tipo_unidade.uuid,
                     }))}
                     selected={values.tipos_unidades_selecionadas || []}
-                    onSelectedChanged={(value) =>
-                      form.change("tipos_unidades_selecionadas", value)
-                    }
+                    onSelectedChanged={async (value) => {
+                      form.change("tipos_unidades_selecionadas", value);
+
+                      const { lote } = form.getState().values; // lote atual
+                      if (lote) {
+                        await getUnidadesEducacionaisAsync({
+                          lote,
+                          tipos_unidades_selecionadas: value,
+                        });
+                      }
+                    }}
                     overrideStrings={{
                       search: "Busca",
                       selectSomeItems: "Selecione o tipo de unidade",
@@ -231,7 +249,11 @@ export const Filtros = ({ ...props }) => {
                           "Todos as unidades estão selecionadas",
                         selectAll: "Todas",
                       }}
-                      disabled={filtros.lotes.length > 1 && !values.lote}
+                      disabled={
+                        (unidadesEducacionais.length === 1 &&
+                          unidadesEducacionais[0].value === "__no_result__") ||
+                        (filtros.lotes.length > 1 && !values.lote)
+                      }
                     />
                   </Spin>
                 </div>

@@ -1,12 +1,12 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   SOLICITACAO_ALTERACAO_CRONOGRAMA,
   PRE_RECEBIMENTO,
-} from "configs/constants";
-import SolicitacaoAlteracaoCronograma from "components/screens/PreRecebimento/SolicitacaoAlteracaoCronograma";
+} from "src/configs/constants";
+import SolicitacaoAlteracaoCronograma from "src/components/screens/PreRecebimento/SolicitacaoAlteracaoCronograma";
 
 const atual = {
   href: `/${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`,

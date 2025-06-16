@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
-import { TIPOS_SOLICITACAO_LISTA } from "constants/shared";
-import { formatarOpcoesLote, formatarOpcoesDRE } from "helpers/utilities";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
+import { TIPOS_SOLICITACAO_LISTA } from "src/constants/shared";
+import { formatarOpcoesLote, formatarOpcoesDRE } from "src/helpers/utilities";
 import DashboardCODAE from ".";
-import { getLotesSimples } from "services/lote.service";
+import { getLotesSimples } from "src/services/lote.service";
 import { Spin } from "antd";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 export const Container = () => {
   const [visaoPor] = useState([

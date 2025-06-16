@@ -2,26 +2,26 @@ import moment from "moment";
 import React, { useState, useEffect } from "react";
 import { Field, Form } from "react-final-form";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { InputComData } from "components/Shareable/DatePicker";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import Select from "components/Shareable/Select";
-import { meusDados } from "services/perfil.service";
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import Select from "src/components/Shareable/Select";
+import { meusDados } from "src/services/perfil.service";
 
-import { TIPO_PERFIL } from "constants/shared";
+import { TIPO_PERFIL } from "src/constants/shared";
 
 import {
   formFiltrosObtemDreEEscolasNovo,
   getDadosIniciais,
   validateFormDreEscola,
-} from "helpers/dietaEspecial";
-import { required } from "helpers/fieldValidators";
+} from "src/helpers/dietaEspecial";
+import { required } from "src/helpers/fieldValidators";
 
-import { getClassificacoesDietaEspecial } from "services/dietaEspecial.service";
+import { getClassificacoesDietaEspecial } from "src/services/dietaEspecial.service";
 
 import "./styles.scss";
 

@@ -1,20 +1,20 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Field } from "react-final-form";
 import moment from "moment";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./styles.scss";
 import { NavLink } from "react-router-dom";
 import {
   CADASTRO_DOCUMENTOS_RECEBIMENTO,
   PRE_RECEBIMENTO,
 } from "../../../../../../configs/constants";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import { InputComData } from "components/Shareable/DatePicker";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { InputComData } from "src/components/Shareable/DatePicker";
 import { getListaCronogramasPraCadastro } from "../../../../../../services/cronograma.service";
 import { getListaCompletaProdutosLogistica } from "../../../../../../services/produto.service";
 import { getListaFiltradaAutoCompleteSelect } from "../../../../../../helpers/autoCompleteSelect";
@@ -24,7 +24,7 @@ import {
   CronogramaSimples,
   DocumentosRecebimento,
 } from "interfaces/pre_recebimento.interface";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 
 interface Props {
   setFiltros: Dispatch<SetStateAction<FiltrosDocumentosRecebimento>>;

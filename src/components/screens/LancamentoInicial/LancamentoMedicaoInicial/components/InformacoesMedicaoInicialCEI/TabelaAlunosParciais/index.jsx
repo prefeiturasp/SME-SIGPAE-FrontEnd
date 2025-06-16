@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { Input, Skeleton, AutoComplete, Table, Tooltip } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./styles.scss";
 import { ModalAlunoParcial } from "../ModalAlunoParcial";
 

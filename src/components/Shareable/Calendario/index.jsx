@@ -1,19 +1,21 @@
 import React from "react";
 import HTTP_STATUS from "http-status-codes";
-import { CustomToolbar } from "components/Shareable/Calendario/componentes/CustomToolbar";
+import { CustomToolbar } from "src/components/Shareable/Calendario/componentes/CustomToolbar";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
+import "moment/dist/locale/pt-br";
+moment.locale("pt-br");
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import { formataComoEventos } from "components/Shareable/Calendario/helpers";
+import { formataComoEventos } from "src/components/Shareable/Calendario/helpers";
 import { Spin } from "antd";
-import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
-import { ModalCadastrarNoCalendario } from "components/Shareable/Calendario/componentes/ModalCadastrarNoCalendario";
-import { ModalEditar } from "components/Shareable/Calendario/componentes/ModalEditar";
-import { ModalConfirmarExclusao } from "components/Shareable/Calendario/componentes//ModalConfirmarExclusao";
-import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "helpers/utilities";
-import { toastSuccess } from "components/Shareable/Toast/dialogs";
-import "components/Shareable/Calendario/style.scss";
-import { getNumerosEditais } from "services/edital.service";
+import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
+import { ModalCadastrarNoCalendario } from "src/components/Shareable/Calendario/componentes/ModalCadastrarNoCalendario";
+import { ModalEditar } from "src/components/Shareable/Calendario/componentes/ModalEditar";
+import { ModalConfirmarExclusao } from "src/components/Shareable/Calendario/componentes//ModalConfirmarExclusao";
+import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "src/helpers/utilities";
+import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
+import "src/components/Shareable/Calendario/style.scss";
+import { getNumerosEditais } from "src/services/edital.service";
 
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 

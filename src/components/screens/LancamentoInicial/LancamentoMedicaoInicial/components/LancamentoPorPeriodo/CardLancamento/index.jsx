@@ -1,11 +1,11 @@
-import { Botao } from "components/Shareable/Botao";
-import { PERIODO_STATUS_DE_PROGRESSO } from "components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
+import { Botao } from "src/components/Shareable/Botao";
+import { PERIODO_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
 import {
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
   PERIODO_LANCAMENTO,
-} from "configs/constants";
-import { deepCopy } from "helpers/utilities";
+} from "src/configs/constants";
+import { deepCopy } from "src/helpers/utilities";
 import React from "react";
 import { Form } from "react-final-form";
 import { useLocation, useNavigate } from "react-router-dom";

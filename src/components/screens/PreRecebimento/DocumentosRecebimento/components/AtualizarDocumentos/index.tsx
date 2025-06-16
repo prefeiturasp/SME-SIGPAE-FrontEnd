@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { Spin } from "antd";
 import "./styles.scss";
 import { Field, Form } from "react-final-form";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import { FluxoDeStatusPreRecebimento } from "components/Shareable/FluxoDeStatusPreRecebimento";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 import { required } from "../../../../../../helpers/fieldValidators";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import { downloadAndConvertToBase64 } from "../../../../../Shareable/Input/InputFile/helper";
 import {
   CorrecaoDocumentoPayload,
@@ -18,9 +18,9 @@ import {
 } from "../../../../../Shareable/Botao/constants";
 import Botao from "../../../../../Shareable/Botao";
 import { useNavigate } from "react-router-dom";
-import { DOCUMENTOS_RECEBIMENTO, PRE_RECEBIMENTO } from "configs/constants";
+import { DOCUMENTOS_RECEBIMENTO, PRE_RECEBIMENTO } from "src/configs/constants";
 import ModalConfirmarEnvio from "../ModalConfirmarEnvio";
-import { exibeError } from "helpers/utilities";
+import { exibeError } from "src/helpers/utilities";
 import {
   toastError,
   toastSuccess,

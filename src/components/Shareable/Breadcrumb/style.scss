@@ -1,6 +1,6 @@
 //Agradecimentos a: http://dsgov.estaleiro.serpro.gov.br/ds/componentes/breadcrumb
 
-@import "../../../styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 .breadcrumb-row {
   margin-top: -1.5rem;

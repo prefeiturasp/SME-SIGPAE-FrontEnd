@@ -6,15 +6,18 @@ import { Botao } from "../components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { HeaderLogo } from "components/Shareable/HeaderLogo";
-import { InfoSenhaServidorMunicipal } from "components/Shareable/InfoSenhaServidorMunicipal";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { required } from "helpers/fieldValidators";
-import { atualizarSenha } from "services/perfil.service";
+} from "src/components/Shareable/Botao/constants";
+import { HeaderLogo } from "src/components/Shareable/HeaderLogo";
+import { InfoSenhaServidorMunicipal } from "src/components/Shareable/InfoSenhaServidorMunicipal";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { required } from "src/helpers/fieldValidators";
+import { atualizarSenha } from "src/services/perfil.service";
 import "./style.scss";
-import RequisitosSenha from "components/Shareable/RequisitosSenha";
-import InputPassword from "components/Shareable/Input/InputPassword";
+import RequisitosSenha from "src/components/Shareable/RequisitosSenha";
+import InputPassword from "src/components/Shareable/Input/InputPassword";
 
 class RecuperarSenhaPage extends Component {
   constructor(props) {
@@ -50,7 +53,7 @@ class RecuperarSenhaPage extends Component {
           window.location.href = "/";
         }, 1000);
       } else {
-        toastError(response.data.detail);
+        toastError(response.detail);
       }
     });
   }

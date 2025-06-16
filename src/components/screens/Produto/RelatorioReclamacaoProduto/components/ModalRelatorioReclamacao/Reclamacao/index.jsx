@@ -1,5 +1,5 @@
 import React from "react";
-import { RECLAMACAO_PRODUTO_STATUS_EXPLICACAO } from "constants/shared";
+import { RECLAMACAO_PRODUTO_STATUS_EXPLICACAO } from "src/constants/shared";
 import "./style.scss";
 
 const {

@@ -1,19 +1,22 @@
 import { Spin } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import CKEditorField from "components/Shareable/CKEditorField";
-import CardMatriculados from "components/Shareable/CardMatriculados";
-import { InputComData } from "components/Shareable/DatePicker";
-import InputText from "components/Shareable/Input/InputText";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import { MultiselectRaw } from "components/Shareable/MultiselectRaw";
-import Select from "components/Shareable/Select";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
-import { TIPO_SOLICITACAO } from "constants/shared";
+} from "src/components/Shareable/Botao/constants";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import InputText from "src/components/Shareable/Input/InputText";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import Select from "src/components/Shareable/Select";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
 import arrayMutators from "final-form-arrays";
 import {
   // eslint-disable-next-line no-unused-vars
@@ -23,7 +26,7 @@ import {
   peloMenosUmCaractere,
   required,
   textAreaRequired,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 import {
   agregarDefault,
   checaSeDataEstaEntre2e5DiasUteis,
@@ -31,7 +34,7 @@ import {
   deepCopy,
   fimDoCalendario,
   getError,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
@@ -43,7 +46,7 @@ import {
   escolaIniciarSolicitacaoDeAlteracaoDeCardapio,
   getAlunosPorFaixaEtariaNumaData,
   getRascunhosAlteracaoTipoAlimentacao,
-} from "services/alteracaoDeCardapio";
+} from "src/services/alteracaoDeCardapio";
 import { Rascunhos } from "../Escola/components/Rascunhos";
 import {
   formataPayload,

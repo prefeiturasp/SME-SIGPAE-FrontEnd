@@ -7,25 +7,25 @@ import {
   MEDICAO_INICIAL,
   PARAMETRIZACAO_FINANCEIRA,
   EDITAR_PARAMETRIZACAO_FINANCEIRA,
-} from "configs/constants";
+} from "src/configs/constants";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Spin } from "antd";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import Filtros from "./AdicionarParametrizacaoFinanceira/components/Filtros";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 import {
   ParametrizacaoFinanceiraInterface,
   ParametrizacaoFinanceiraParams,
   ParametrizacaoFinanceiraResponse,
   TipoUnidade,
-} from "services/medicaoInicial/parametrizacao_financeira.interface";
-import ParametrizacaoFinanceiraService from "services/medicaoInicial/parametrizacao_financeira.service";
+} from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
 
 import "./styles.scss";
 

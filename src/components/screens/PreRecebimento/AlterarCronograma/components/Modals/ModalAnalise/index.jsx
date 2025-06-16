@@ -1,13 +1,13 @@
 import React from "react";
 import { Spin } from "antd";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import Botao from "src/components/Shareable/Botao";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { Field, Form } from "react-final-form";
 import { useState } from "react";
 export default ({ show, setShow, handleClose, loading, handleSim }) => {

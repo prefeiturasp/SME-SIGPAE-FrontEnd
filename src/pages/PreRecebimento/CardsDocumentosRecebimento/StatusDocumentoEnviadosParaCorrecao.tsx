@@ -1,13 +1,13 @@
 import React from "react";
-import Page from "components/Shareable/Page/Page";
-import Breadcrumb from "components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import {
   PAINEL_DOCUMENTOS_RECEBIMENTO,
   PRE_RECEBIMENTO,
   DETALHAR_CODAE_DOCUMENTO_RECEBIMENTO,
-} from "configs/constants";
-import { getDashboardDocumentosRecebimentoPorStatus } from "services/documentosRecebimento.service";
-import { SolicitacoesDocumentoStatusGenerico } from "components/screens/SolicitacoesDocumentoStatusGenerico";
+} from "src/configs/constants";
+import { getDashboardDocumentosRecebimentoPorStatus } from "src/services/documentosRecebimento.service";
+import { SolicitacoesDocumentoStatusGenerico } from "src/components/screens/SolicitacoesDocumentoStatusGenerico";
 import { CARD_ENVIADOS_PARA_CORRECAO } from "../../../components/screens/PreRecebimento/PainelDocumentosRecebimento/constants";
 
 const atual = {

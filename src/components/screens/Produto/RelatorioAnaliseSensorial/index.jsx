@@ -8,16 +8,16 @@ import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
 import "./styles.scss";
 import { Fragment } from "react";
 import { ModalResponderAnaliseSensorial } from "../BuscaProdutoAnaliseSensorial/components/ModalResponderAnaliseSensorial";
 import {
   getRelatorioProdutoAnaliseSensorial,
   getRelatorioProdutoAnaliseSensorialRecebimento,
-} from "services/relatorios";
-import TabelaEspecificacoesProduto from "components/Shareable/TabelaEspecificacoesProduto";
+} from "src/services/relatorios";
+import TabelaEspecificacoesProduto from "src/components/Shareable/TabelaEspecificacoesProduto";
 
 class RelatorioAnaliseSensorial extends Component {
   constructor(props) {

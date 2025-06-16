@@ -3,14 +3,17 @@ import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Field } from "react-final-form";
 import arrayMutators from "final-form-arrays";
-import { InputText } from "components/Shareable/Input/InputText";
+import { InputText } from "src/components/Shareable/Input/InputText";
 import HTTP_STATUS from "http-status-codes";
-import { getError } from "helpers/utilities";
-import { toastSuccess, toastError } from "components/Shareable/Toast/dialogs";
-import ModalHistoricoProtocoloPadrao from "components/Shareable/ModalHistoricoProtocoloPadrao";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import Botao from "components/Shareable/Botao";
-import CKEditorField from "components/Shareable/CKEditorField";
+import { getError } from "src/helpers/utilities";
+import {
+  toastSuccess,
+  toastError,
+} from "src/components/Shareable/Toast/dialogs";
+import ModalHistoricoProtocoloPadrao from "src/components/Shareable/ModalHistoricoProtocoloPadrao";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import Botao from "src/components/Shareable/Botao";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import SelectSelecione from "../../../Shareable/SelectSelecione";
 import { required } from "../../../../helpers/fieldValidators";
 import { Spin } from "antd";
@@ -19,15 +22,15 @@ import {
   cadastraProtocoloPadraoDietaEspecial,
   editaProtocoloPadraoDietaEspecial,
   getProtocoloPadrao,
-} from "services/dietaEspecial.service";
+} from "src/services/dietaEspecial.service";
 import SubstituicoesField from "./componentes/SubstituicoesField";
 import ModalCancelaCopia from "./componentes/ModalCancelaCopia";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./style.scss";
-import { getNumerosEditais } from "services/edital.service";
+import { getNumerosEditais } from "src/services/edital.service";
 
 const FORM_NAME = "cadastrarProtocoloPadrao";
 

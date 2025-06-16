@@ -1,6 +1,6 @@
 import React from "react";
 import { EditalContratoListadoInterface } from "../interfaces";
-import { deepCopy } from "helpers/utilities";
+import { deepCopy } from "src/helpers/utilities";
 
 export const formataEditalContratoParaForm = (
   editalContrato: EditalContratoListadoInterface,

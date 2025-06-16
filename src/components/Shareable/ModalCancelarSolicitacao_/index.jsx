@@ -9,8 +9,8 @@ import { TextArea } from "../TextArea/TextArea";
 import { toastError, toastSuccess } from "../Toast/dialogs";
 import { textAreaRequired } from "../../../helpers/fieldValidators";
 import { mensagemCancelamento } from "../../../helpers/utilities";
-import { TIPOS_SOLICITACAO_LABEL } from "constants/shared";
-import { DRE } from "configs/constants";
+import { TIPOS_SOLICITACAO_LABEL } from "src/constants/shared";
+import { DRE } from "src/configs/constants";
 
 const ModalCancelarSolicitacao = ({
   showModal,

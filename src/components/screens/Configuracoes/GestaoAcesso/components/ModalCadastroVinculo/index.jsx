@@ -2,39 +2,39 @@ import React, { useContext, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Form, Field } from "react-final-form";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./styles.scss";
 import { Radio } from "antd";
-import InputText from "components/Shareable/Input/InputText";
-import MaskedInputText from "components/Shareable/Input/MaskedInputText";
+import InputText from "src/components/Shareable/Input/InputText";
+import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
 import {
   email,
   required,
   tamanhoCnpj,
   validaCPF,
   SMEPrefeituraEmail,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 import {
   composeValidators,
   formataCPFCensurado,
   formatarCPFouCNPJ,
-} from "helpers/utilities";
-import SelectSelecione from "components/Shareable/SelectSelecione";
-import { getDadosUsuarioEOLCompleto } from "services/permissoes.service";
+} from "src/helpers/utilities";
+import SelectSelecione from "src/components/Shareable/SelectSelecione";
+import { getDadosUsuarioEOLCompleto } from "src/services/permissoes.service";
 import { useEffect } from "react";
 import {
   getSubdivisoesCodae,
   getVinculoEmpresa,
-} from "services/vinculos.service";
-import { MeusDadosContext } from "context/MeusDadosContext";
+} from "src/services/vinculos.service";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import ModalExclusaoVinculo from "../ModalExclusaoVinculo";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { cnpjMask, cpfMask } from "constants/shared";
-import InputErroMensagem from "components/Shareable/Input/InputErroMensagem";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { cnpjMask, cpfMask } from "src/constants/shared";
+import InputErroMensagem from "src/components/Shareable/Input/InputErroMensagem";
 import { getPerfisPorVisao } from "../../helper";
 
 const ENTER = 13;

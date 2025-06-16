@@ -1,22 +1,22 @@
 import React from "react";
 import { Form, Field } from "react-final-form";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import Botao from "components/Shareable/Botao";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./style.scss";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import SelectSelecione from "components/Shareable/SelectSelecione";
-import { ehLaboratorioCredenciado } from "helpers/utilities";
-import { getListaFiltradaAutoComplete } from "helpers/autoComplete";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import SelectSelecione from "src/components/Shareable/SelectSelecione";
+import { ehLaboratorioCredenciado } from "src/helpers/utilities";
+import { getListaFiltradaAutoComplete } from "src/helpers/autoComplete";
 import { NavLink } from "react-router-dom";
 import {
   CADASTROS,
   CONFIGURACOES,
   CADASTRO_LABORATORIO,
-} from "configs/constants";
+} from "src/configs/constants";
 
 const FORM_NAME = "laboratorios";
 

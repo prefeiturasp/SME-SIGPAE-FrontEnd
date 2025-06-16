@@ -1,12 +1,12 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { InputText } from "components/Shareable/Input/InputText";
-import Botao from "components/Shareable/Botao";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 const DadosDietaEspecial = ({ values, dietaEspecial, card }) => {
   const downloadAnexo = (url) => {

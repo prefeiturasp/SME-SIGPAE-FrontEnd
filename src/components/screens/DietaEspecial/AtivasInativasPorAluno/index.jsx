@@ -17,10 +17,10 @@ import {
   setPage,
   setMeusDados,
   reset,
-} from "reducers/dietasAtivasInativasPorAlunoReducer";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { TIPO_PERFIL } from "constants/shared";
-import { Paginacao } from "components/Shareable/Paginacao";
+} from "src/reducers/dietasAtivasInativasPorAlunoReducer";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { TIPO_PERFIL } from "src/constants/shared";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import { useNavigationType } from "react-router-dom";
 
 const AtivasInativasPorAluno = ({

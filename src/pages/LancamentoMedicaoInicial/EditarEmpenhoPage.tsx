@@ -1,8 +1,12 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { EMPENHOS, EDITAR_EMPENHO, MEDICAO_INICIAL } from "configs/constants";
-import { CadastroDeEmpenho } from "components/screens/LancamentoInicial/CadastroDeEmpenho";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import {
+  EMPENHOS,
+  EDITAR_EMPENHO,
+  MEDICAO_INICIAL,
+} from "src/configs/constants";
+import { CadastroDeEmpenho } from "src/components/screens/LancamentoInicial/CadastroDeEmpenho";
 
 const atual = {
   href: `/${MEDICAO_INICIAL}/${EMPENHOS}/${EDITAR_EMPENHO}/`,

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 
 import { FormApi } from "final-form";
 
-import { MESES } from "constants/shared";
+import { MESES } from "src/constants/shared";
 
-import { buscaAnosComDietas } from "services/painelNutricionista.service";
+import { buscaAnosComDietas } from "src/services/painelNutricionista.service";
 
 type Args = {
   values: Record<string, any>;

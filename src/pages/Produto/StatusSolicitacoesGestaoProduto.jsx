@@ -1,14 +1,14 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { HOME } from "constants/config";
-import StatusSolicitacoes from "components/screens/DashboardTerceirizada/StatusSolicitacoes";
-import { CARD_TYPE_ENUM } from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { ICON_CARD_TYPE_ENUM } from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { getHomologacoesDeProdutoPorStatus } from "services/produto.service";
-import { formataCards } from "components/screens/DashboardGestaoProduto/helper";
-import { GESTAO_PRODUTO_CARDS } from "configs/constants";
-import { ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS } from "constants/shared";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import StatusSolicitacoes from "src/components/screens/DashboardTerceirizada/StatusSolicitacoes";
+import { CARD_TYPE_ENUM } from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import { ICON_CARD_TYPE_ENUM } from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import { getHomologacoesDeProdutoPorStatus } from "src/services/produto.service";
+import { formataCards } from "src/components/screens/DashboardGestaoProduto/helper";
+import { GESTAO_PRODUTO_CARDS } from "src/configs/constants";
+import { ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS } from "src/constants/shared";
 
 import {
   escolheStatusPendenteHomologacao,
@@ -19,7 +19,7 @@ import {
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
   usuarioEhCogestorDRE,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 class StatusSolicitacoesBase extends React.Component {
   render() {

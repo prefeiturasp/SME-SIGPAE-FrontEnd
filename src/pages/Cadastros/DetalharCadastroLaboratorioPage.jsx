@@ -1,6 +1,6 @@
 import React from "react";
 import Breadcrumb from "../../components/Shareable/Breadcrumb";
-import CadastroLaboratorio from "components/screens/Cadastros/Laboratorios/components/CadastroLaboratorio";
+import CadastroLaboratorio from "src/components/screens/Cadastros/Laboratorios/components/CadastroLaboratorio";
 import Page from "../../components/Shareable/Page/Page";
 import {
   CADASTROS,

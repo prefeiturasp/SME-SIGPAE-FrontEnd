@@ -1,7 +1,7 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { required } from "helpers/fieldValidators";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import { required } from "src/helpers/fieldValidators";
 
 type CampoTextoLongoType = {
   titulo: string;

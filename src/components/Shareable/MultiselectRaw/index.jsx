@@ -1,4 +1,4 @@
-import TooltipIcone from "components/Shareable/TooltipIcone";
+import TooltipIcone from "src/components/Shareable/TooltipIcone";
 import React, { useEffect, useState } from "react";
 import ReactSelect from "react-select";
 import { HelpText } from "../HelpText";

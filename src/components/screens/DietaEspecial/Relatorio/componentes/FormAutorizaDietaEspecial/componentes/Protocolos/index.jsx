@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Field } from "react-final-form";
-import { ASelect } from "components/Shareable/MakeField";
+import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
 import { CaretDownOutlined } from "@ant-design/icons";
-import { getProtocoloPadrao } from "services/dietaEspecial.service";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { selectValidate } from "helpers/fieldValidators";
+import { getProtocoloPadrao } from "src/services/dietaEspecial.service";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { selectValidate } from "src/helpers/fieldValidators";
 
 const Protocolos = ({ protocolos, setProtocoloPadrao, form }) => {
   const [open, setOpen] = useState(false);

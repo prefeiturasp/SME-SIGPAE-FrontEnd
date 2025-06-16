@@ -1,13 +1,13 @@
 import React from "react";
 import { Field } from "react-final-form";
-import Select from "components/Shareable/Select";
-import InputText from "components/Shareable/Input/InputText";
-import { required, tamanhoCnpj } from "helpers/fieldValidators";
-import MaskedInputText from "components/Shareable/Input/MaskedInputText";
-import { cnpjMask } from "constants/shared";
+import Select from "src/components/Shareable/Select";
+import InputText from "src/components/Shareable/Input/InputText";
+import { required, tamanhoCnpj } from "src/helpers/fieldValidators";
+import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
+import { cnpjMask } from "src/constants/shared";
 import { Link } from "react-router-dom";
-import Botao from "components/Shareable/Botao";
-import { BUTTON_STYLE } from "components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
 
 const optionsTiposServico = [
   {

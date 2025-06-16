@@ -6,14 +6,14 @@ import {
   CODAE,
   SOLICITACOES_COM_QUESTIONAMENTO,
 } from "../../../configs/constants";
-import SolicitacoesPorStatusGenerico from "components/screens/SolicitacoesPorStatusGenerico";
+import SolicitacoesPorStatusGenerico from "src/components/screens/SolicitacoesPorStatusGenerico";
 import {
   CARD_TYPE_ENUM,
   ICON_CARD_TYPE_ENUM,
-} from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { getSolicitacoesComQuestionamentoCodae } from "services/painelCODAE.service";
-import CardLegendas from "components/Shareable/CardLegendas";
-import { PAGINACAO_DEFAULT } from "constants/shared";
+} from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import { getSolicitacoesComQuestionamentoCodae } from "src/services/painelCODAE.service";
+import CardLegendas from "src/components/Shareable/CardLegendas";
+import { PAGINACAO_DEFAULT } from "src/constants/shared";
 
 const atual = {
   href: `/${CODAE}/${SOLICITACOES_COM_QUESTIONAMENTO}`,

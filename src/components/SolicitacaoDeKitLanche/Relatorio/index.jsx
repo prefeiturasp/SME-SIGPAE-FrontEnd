@@ -13,10 +13,11 @@ import { statusEnum } from "../../../constants/shared";
 import RelatorioHistoricoQuestionamento from "../../Shareable/RelatorioHistoricoQuestionamento";
 import RelatorioHistoricoJustificativaEscola from "../../Shareable/RelatorioHistoricoJustificativaEscola";
 import { CODAE, TERCEIRIZADA } from "../../../configs/constants";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
-import { meusDados } from "services/perfil.service";
-import ModalAutorizarAposQuestionamento from "components/Shareable/ModalAutorizarAposQuestionamento";
-import { ModalAprovarGenericoSimOpcional } from "components/Shareable/ModalAprovarGenericoSimOpcional";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import { meusDados } from "src/services/perfil.service";
+import ModalAutorizarAposQuestionamento from "src/components/Shareable/ModalAutorizarAposQuestionamento";
+import { ModalAprovarGenericoSimOpcional } from "src/components/Shareable/ModalAprovarGenericoSimOpcional";
+import { ehUsuarioEmpresa } from "src/helpers/utilities";
 
 const Relatorio = (props) => {
   const [estado, setEstado] = useState({
@@ -202,6 +203,7 @@ const Relatorio = (props) => {
       .resposta_sim_nao;
 
   const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
+    !ehUsuarioEmpresa() &&
     visao === TERCEIRIZADA &&
     solicitacaoKitLanche &&
     [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(

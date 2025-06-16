@@ -2,9 +2,9 @@ import React, { useContext } from "react";
 
 import "./styles.scss";
 import { NavLink } from "react-router-dom";
-import * as constants from "configs/constants";
-import { deParaStatusAltCronograma } from "components/screens/helper";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import * as constants from "src/configs/constants";
+import { deParaStatusAltCronograma } from "src/components/screens/helper";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 const ListagemAlteracoesCronogramas = ({
   alteracoesCronogramas,
@@ -19,6 +19,7 @@ const ListagemAlteracoesCronogramas = ({
     DILOG_CRONOGRAMA: ["Em análise"],
     DILOG_DIRETORIA: ["Aprovado Abastecimento", "Reprovado Abastecimento"],
     DILOG_ABASTECIMENTO: ["Cronograma ciente"],
+    DILOG_VISUALIZACAO: [],
   };
 
   const ehStatusPrioritario = (status) =>

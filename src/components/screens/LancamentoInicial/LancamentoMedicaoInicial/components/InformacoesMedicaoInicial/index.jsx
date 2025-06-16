@@ -3,18 +3,21 @@ import { useLocation } from "react-router-dom";
 import HTTP_STATUS from "http-status-codes";
 import { getYear, format } from "date-fns";
 import { Collapse, Input } from "antd";
-import Botao from "components/Shareable/Botao";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { DETALHAMENTO_DO_LANCAMENTO } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import { DETALHAMENTO_DO_LANCAMENTO } from "src/configs/constants";
 import {
   getTiposDeContagemAlimentacao,
   setSolicitacaoMedicaoInicial,
   updateSolicitacaoMedicaoInicial,
-} from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 
 export default ({

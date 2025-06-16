@@ -1,4 +1,4 @@
-@import "../../styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 .btn-remover {
   margin-top: 30px !important;

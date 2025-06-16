@@ -1,21 +1,21 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { InputComData } from "components/Shareable/DatePicker";
-import Botao from "components/Shareable/Botao";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./style.scss";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import { NavLink } from "react-router-dom";
 import {
   CADASTROS,
   CONFIGURACOES,
   CADASTRO_TIPO_EMBALAGEM,
-} from "configs/constants";
-import { getListaFiltradaAutoComplete } from "helpers/autoComplete";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
+} from "src/configs/constants";
+import { getListaFiltradaAutoComplete } from "src/helpers/autoComplete";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 
 export default ({
   setFiltros,

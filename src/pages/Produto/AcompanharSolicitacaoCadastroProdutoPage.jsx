@@ -5,7 +5,7 @@ import {
   ACOMPANHAR_SOLICITACAO_CADASTRO_PRODUTO,
   GESTAO_PRODUTO,
 } from "../../configs/constants";
-import AvaliarSolicitacaoCadastroProduto from "components/screens/Produto/AvaliarSolicitacaoCadastroProduto";
+import AvaliarSolicitacaoCadastroProduto from "src/components/screens/Produto/AvaliarSolicitacaoCadastroProduto";
 
 const atual = {
   href: `/${GESTAO_PRODUTO}/${ACOMPANHAR_SOLICITACAO_CADASTRO_PRODUTO}`,

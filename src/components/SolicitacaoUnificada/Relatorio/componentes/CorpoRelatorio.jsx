@@ -14,7 +14,7 @@ import {
 } from "../../../../helpers/utilities";
 import { getRelatorioKitLancheUnificado } from "../../../../services/relatorios";
 import { fluxoPartindoDRE } from "../../../Shareable/FluxoDeStatus/helper";
-import { ESCOLA } from "configs/constants";
+import { ESCOLA } from "src/configs/constants";
 
 export const CorpoRelatorio = (props) => {
   const { solicitacaoUnificada, prazoDoPedidoMensagem, visao } = props;

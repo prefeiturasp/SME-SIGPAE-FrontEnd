@@ -4,10 +4,10 @@ import { connect } from "react-redux";
 import { useNavigationType } from "react-router-dom";
 import { bindActionCreators } from "redux";
 
-import FormBuscaProduto from "components/screens/Produto/Reclamacao/components/FormBuscaProduto";
+import FormBuscaProduto from "src/components/screens/Produto/Reclamacao/components/FormBuscaProduto";
 import TabelaProdutos from "./components/TabelaProdutos";
 
-import { deepCopy, gerarParametrosConsulta } from "helpers/utilities";
+import { deepCopy, gerarParametrosConsulta } from "src/helpers/utilities";
 import { formatarValues } from "./helpers";
 
 import {
@@ -16,15 +16,15 @@ import {
   setIndiceProdutoAtivo,
   setProdutosCount,
   setPage,
-} from "reducers/avaliarReclamacaoProduto";
+} from "src/reducers/avaliarReclamacaoProduto";
 
 import {
   getProdutosAvaliacaoReclamacao,
   getHomologacao,
   getNomesTerceirizadas,
-} from "services/produto.service";
+} from "src/services/produto.service";
 import "./style.scss";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export const AvaliarReclamacaoProduto = ({
   setPropsPageProduto,

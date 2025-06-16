@@ -1,11 +1,11 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   PAINEL_DOCUMENTOS_RECEBIMENTO,
   PRE_RECEBIMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 import PainelDocumentosRecebimento from "../../components/screens/PreRecebimento/PainelDocumentosRecebimento";
 
 const atual = {

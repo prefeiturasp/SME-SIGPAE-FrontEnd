@@ -1,9 +1,9 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Relatorio from "components/SolicitacaoUnificada/Relatorio";
-import Page from "components/Shareable/Page/Page";
-import { HOME } from "constants/config";
-import { DRE, CODAE, TERCEIRIZADA, ESCOLA } from "configs/constants";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Relatorio from "src/components/SolicitacaoUnificada/Relatorio";
+import Page from "src/components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import { DRE, CODAE, TERCEIRIZADA, ESCOLA } from "src/configs/constants";
 import {
   cancelaKitLancheUnificadoDre,
   TerceirizadaTomaCienciaSolicitacoUnificada,
@@ -16,7 +16,7 @@ import {
 import ModalCancelarSolicitacao from "../../components/Shareable/ModalCancelarSolicitacao_";
 import ModalNegarSolicitacao from "../../components/Shareable/ModalNegarSolicitacao";
 import { ModalTerceirizadaRespondeQuestionamento } from "../../components/Shareable/ModalTerceirizadaRespondeQuestionamento";
-import { ModalCODAEQuestionaFinalForm } from "components/Shareable/ModalCODAEQuestionaFinalForm";
+import { ModalCODAEQuestionaFinalForm } from "src/components/Shareable/ModalCODAEQuestionaFinalForm";
 
 class RelatorioBase extends React.Component {
   render() {

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import { FiltroEnum, TIPODECARD } from "../../../../constants/shared";
 import { dataAtualDDMMYYYY } from "../../../../helpers/utilities";
-import { getTerceirizadasPedidosDeKitLanche } from "services/kitLanche";
+import { getTerceirizadasPedidosDeKitLanche } from "src/services/kitLanche";
 import Select from "../../../Shareable/Select";
 import { CardPendenteAcao } from "../../components/CardPendenteAcao";
 import {

@@ -1,11 +1,11 @@
-import { MeusDadosContext } from "context/MeusDadosContext";
-import { agregarDefault, dataParaUTC, deepCopy } from "helpers/utilities";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { agregarDefault, dataParaUTC, deepCopy } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
-import { getMotivosAlteracaoCardapio } from "services/alteracaoDeCardapio";
-import { getVinculosTipoAlimentacaoPorEscola } from "services/cadastroTipoAlimentacao.service";
-import { getDiasUteis } from "services/diasUteis.service";
-import { getQuantidaDeAlunosPorPeriodoEEscola } from "services/escola.service";
+import { getMotivosAlteracaoCardapio } from "src/services/alteracaoDeCardapio";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
+import { getDiasUteis } from "src/services/diasUteis.service";
+import { getQuantidaDeAlunosPorPeriodoEEscola } from "src/services/escola.service";
 import { AlteracaoCardapio } from "../..";
 
 export const Container = () => {
@@ -106,8 +106,8 @@ export const Container = () => {
   useEffect(() => {
     if (
       periodos &&
-      !periodos[0].maximo_alunos &&
-      meusDados.vinculo_atual.instituicao.possui_alunos_regulares
+      meusDados.vinculo_atual.instituicao.possui_alunos_regulares &&
+      !periodos.some((periodo) => periodo.maximo_alunos)
     ) {
       setQuantidadeAlunosPorPeriodoAsync();
     }

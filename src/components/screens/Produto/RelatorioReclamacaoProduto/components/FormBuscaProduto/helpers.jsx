@@ -1,4 +1,4 @@
-import { TIPO_PERFIL } from "constants/shared";
+import { TIPO_PERFIL } from "src/constants/shared";
 
 export const getOpcoesStatusReclamacao = () => {
   return [

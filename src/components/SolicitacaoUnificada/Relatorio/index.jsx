@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { Botao } from "components/Shareable/Botao";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { reduxForm, formValueSelector } from "redux-form";
 import { connect } from "react-redux";
-import { getSolicitacaoUnificada } from "services/solicitacaoUnificada.service";
-import { visualizaBotoesDoFluxoSolicitacaoUnificada } from "helpers/utilities";
+import { getSolicitacaoUnificada } from "src/services/solicitacaoUnificada.service";
+import { visualizaBotoesDoFluxoSolicitacaoUnificada } from "src/helpers/utilities";
 import CorpoRelatorio from "./componentes/CorpoRelatorio";
-import { prazoDoPedidoMensagem } from "helpers/utilities";
-import { toastSuccess, toastError } from "components/Shareable/Toast/dialogs";
-import { TIPO_PERFIL } from "constants/shared";
-import { statusEnum } from "constants/shared";
-import RelatorioHistoricoQuestionamento from "components/Shareable/RelatorioHistoricoQuestionamento";
-import RelatorioHistoricoJustificativaEscola from "components/Shareable/RelatorioHistoricoJustificativaEscola";
-import { CODAE, ESCOLA, TERCEIRIZADA } from "configs/constants";
-import ModalAutorizarAposQuestionamento from "components/Shareable/ModalAutorizarAposQuestionamento";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
+import { prazoDoPedidoMensagem, ehUsuarioEmpresa } from "src/helpers/utilities";
+import {
+  toastSuccess,
+  toastError,
+} from "src/components/Shareable/Toast/dialogs";
+import { TIPO_PERFIL } from "src/constants/shared";
+import { statusEnum } from "src/constants/shared";
+import RelatorioHistoricoQuestionamento from "src/components/Shareable/RelatorioHistoricoQuestionamento";
+import RelatorioHistoricoJustificativaEscola from "src/components/Shareable/RelatorioHistoricoJustificativaEscola";
+import { CODAE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
+import ModalAutorizarAposQuestionamento from "src/components/Shareable/ModalAutorizarAposQuestionamento";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
 import { Spin } from "antd";
 
 const Relatorio = (props) => {
@@ -177,6 +180,7 @@ const Relatorio = (props) => {
     !solicitacaoUnificada.logs[solicitacaoUnificada.logs.length - 1]
       .resposta_sim_nao;
   const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
+    !ehUsuarioEmpresa() &&
     visao === TERCEIRIZADA &&
     solicitacaoUnificada &&
     [

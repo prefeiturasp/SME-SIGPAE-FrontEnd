@@ -1,4 +1,4 @@
-@import "../../../../styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 form.special-diet {
   h4 {
@@ -7,7 +7,7 @@ form.special-diet {
     font-weight: bold;
     color: $blue;
   }
-  hr > {
+  hr {
     width: 100%;
     background: #f0f0f0;
     transform: matrix(1, 0, 0, -1, 0, 0);

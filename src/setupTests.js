@@ -1,12 +1,23 @@
+import "@testing-library/jest-dom";
+import "whatwg-fetch";
 import { jestPreviewConfigure } from "jest-preview";
-import { APIMockVersion } from "mocks/apiVersionMock";
-import mock from "services/_mock";
-import { mockMeusDadosFornecedor } from "mocks/services/perfil.service/mockMeusDados";
+import { APIMockVersion } from "src/mocks/apiVersionMock";
+import mock from "src/services/_mock";
+import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
 
 jestPreviewConfigure({
   // Opt-in to automatic mode to preview failed test case automatically.
   autoPreview: true,
 });
+
+jest.mock("src/constants/viteEnv", () => ({
+  viteEnv: {
+    MODE: "test",
+    VITE_API_URL: "http://localhost:8000",
+    VITE_REFRESH_TOKEN_TIMEOUT: 3000,
+    HOME: "/",
+  },
+}));
 
 const { querySelector, matches } = window.Element.prototype;
 

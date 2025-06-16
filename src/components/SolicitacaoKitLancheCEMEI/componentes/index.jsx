@@ -1,7 +1,11 @@
-import InputText from "components/Shareable/Input/InputText";
-import { ToggleExpandir } from "components/Shareable/ToggleExpandir";
-import { maxValue, naoPodeSerZero, required } from "helpers/fieldValidators";
-import { composeValidators } from "helpers/utilities";
+import InputText from "src/components/Shareable/Input/InputText";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
+import {
+  maxValue,
+  naoPodeSerZero,
+  required,
+} from "src/helpers/fieldValidators";
+import { composeValidators } from "src/helpers/utilities";
 import React, { useState } from "react";
 import { Field } from "react-final-form";
 import { Collapse } from "react-collapse";

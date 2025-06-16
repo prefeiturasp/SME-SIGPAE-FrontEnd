@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { getListRelatoriosVisitaSupervisao } from "services/imr/painelGerencial";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { getListRelatoriosVisitaSupervisao } from "src/services/imr/painelGerencial";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import { Filtros } from "./components/Filtros";
 import {
   FiltrosRelatoriosVisitasInterface,
   RelatorioVisitaItemListagem,
 } from "interfaces/imr.interface";
 import { Listagem } from "./components/Listagem";
-import { getDashboardPainelGerencialSupervisao } from "services/imr/painelGerencial";
+import { getDashboardPainelGerencialSupervisao } from "src/services/imr/painelGerencial";
 import { CardPorStatus } from "./components/CardPorStatus";
 import "./style.scss";
 import { DashboardSupervisaoInterface } from "./interfaces";

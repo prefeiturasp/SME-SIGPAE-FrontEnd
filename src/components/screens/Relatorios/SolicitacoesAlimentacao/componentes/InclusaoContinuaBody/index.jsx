@@ -1,4 +1,4 @@
-import { WEEK } from "configs/constants";
+import { WEEK } from "src/configs/constants";
 import React, { useState } from "react";
 
 export const InclusaoContinuaBody = ({ ...props }) => {

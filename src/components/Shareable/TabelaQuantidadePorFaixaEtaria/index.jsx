@@ -1,5 +1,5 @@
-import { maxValue, naoPodeSerZero } from "helpers/fieldValidators";
-import { composeValidators } from "helpers/utilities";
+import { maxValue, naoPodeSerZero } from "src/helpers/fieldValidators";
+import { composeValidators } from "src/helpers/utilities";
 import React, { Component } from "react";
 
 import { Field } from "redux-form";

@@ -2,7 +2,7 @@ import { Modal } from "antd";
 import React, { Component } from "react";
 
 import moment from "moment";
-import { formatarCPFouCNPJ } from "helpers/utilities";
+import { formatarCPFouCNPJ } from "src/helpers/utilities";
 import "./styles.scss";
 
 export default class ModalHistoricoProtocoloPadrao extends Component {

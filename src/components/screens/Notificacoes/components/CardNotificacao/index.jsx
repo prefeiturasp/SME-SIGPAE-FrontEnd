@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import "./style.scss";
 import { slugifyMin } from "../../../helper";
 import { Checkbox } from "antd";
-import Botao from "components/Shareable/Botao";
-import { BUTTON_STYLE } from "components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
 
 export default ({
   notificacao,

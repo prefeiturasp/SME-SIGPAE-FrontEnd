@@ -2,13 +2,16 @@ import React from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Field, Form } from "react-final-form";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import Botao from "src/components/Shareable/Botao";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 
 export const ModalAprovarSolicitacaoKitLanche = ({ ...props }) => {
   const { showModal, closeModal, solicitacao, endpoint, loadSolicitacao } =

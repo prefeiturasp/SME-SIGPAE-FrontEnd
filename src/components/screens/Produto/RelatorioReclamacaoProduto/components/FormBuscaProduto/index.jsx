@@ -2,21 +2,21 @@ import { Select } from "antd";
 import moment from "moment";
 import React, { useEffect, useReducer } from "react";
 import { Form, Field } from "react-final-form";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import { ASelect } from "components/Shareable/MakeField";
-import Botao from "components/Shareable/Botao";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { ASelect } from "src/components/Shareable/MakeField";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { InputComData } from "components/Shareable/DatePicker";
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
 
 import {
   getNomesProdutos,
   getNomesMarcas,
   getNomesFabricantes,
-} from "services/produto.service";
+} from "src/services/produto.service";
 
 import { getOpcoesStatusReclamacao, getTodosStatusReclamacao } from "./helpers";
 import "./styles.scss";

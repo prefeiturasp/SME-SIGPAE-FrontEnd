@@ -2,7 +2,7 @@ import {
   AnaliseDocumentoPayload,
   DocumentosRecebimentoPayload,
   CorrecaoDocumentoPayload,
-} from "components/screens/PreRecebimento/DocumentosRecebimento/interfaces";
+} from "src/components/screens/PreRecebimento/DocumentosRecebimento/interfaces";
 import axios from "./_base";
 import { saveAs } from "file-saver";
 import {

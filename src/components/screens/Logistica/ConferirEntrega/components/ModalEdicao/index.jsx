@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { CONFERENCIA_GUIA, LOGISTICA } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import { CONFERENCIA_GUIA, LOGISTICA } from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
 
 export default ({ uuid }) => {

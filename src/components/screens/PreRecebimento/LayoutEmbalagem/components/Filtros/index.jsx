@@ -2,17 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
 import { NavLink } from "react-router-dom";
 
-import { CADASTRO_LAYOUT_EMBALAGEM, PRE_RECEBIMENTO } from "configs/constants";
+import {
+  CADASTRO_LAYOUT_EMBALAGEM,
+  PRE_RECEBIMENTO,
+} from "src/configs/constants";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import { getListaFiltradaAutoCompleteSelect } from "helpers/autoCompleteSelect";
-import { getListaFichasTecnicasSimples } from "services/fichaTecnica.service";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
+import { getListaFichasTecnicasSimples } from "src/services/fichaTecnica.service";
 
 import "./style.scss";
 

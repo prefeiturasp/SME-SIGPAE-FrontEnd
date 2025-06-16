@@ -12,14 +12,14 @@ import {
   setPage,
   setProdutos,
   setProdutosCount,
-} from "reducers/reclamacaoProduto";
+} from "src/reducers/reclamacaoProduto";
 
-import { getProdutosPorParametros } from "services/produto.service";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { getProdutosPorParametros } from "src/services/produto.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 
 import "./style.scss";
-import { Paginacao } from "components/Shareable/Paginacao";
-import withNavigationType from "components/Shareable/withNavigationType";
+import { Paginacao } from "src/components/Shareable/Paginacao";
+import withNavigationType from "src/components/Shareable/withNavigationType";
 
 class ReclamacaoProduto extends Component {
   constructor(props) {

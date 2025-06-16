@@ -1,16 +1,19 @@
 import { Spin } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import {
   PAINEL_RELATORIOS_FISCALIZACAO,
   SUPERVISAO,
   TERCEIRIZADAS,
-} from "configs/constants";
+} from "src/configs/constants";
 import { FormApi } from "final-form";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
@@ -34,7 +37,7 @@ import {
   getRespostasFormularioSupervisao,
   getRespostasNaoSeAplicaFormularioSupervisao,
   exportarPDFRelatorioNotificacao,
-} from "services/imr/relatorioFiscalizacaoTerceirizadas";
+} from "src/services/imr/relatorioFiscalizacaoTerceirizadas";
 import { Anexos } from "./components/Anexos";
 import { Cabecalho } from "./components/Cabecalho";
 import { Formulario } from "./components/Formulario";
