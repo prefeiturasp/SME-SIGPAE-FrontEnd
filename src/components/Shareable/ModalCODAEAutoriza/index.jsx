@@ -7,11 +7,11 @@ import { BUTTON_STYLE, BUTTON_TYPE } from "../Botao/constants";
 import {
   maxLengthProduto,
   textAreaRequiredAndAtLeastOneCharacter,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 import CKEditorField from "../CKEditorField";
 import { toastError, toastSuccess, toastWarn } from "../Toast/dialogs";
 import { MENSAGEM_VAZIA } from "../TextArea/constants";
-import { composeValidators } from "helpers/utilities";
+import { composeValidators } from "src/helpers/utilities";
 
 const maxLength1500 = maxLengthProduto(1500);
 

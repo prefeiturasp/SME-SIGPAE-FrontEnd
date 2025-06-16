@@ -1,12 +1,12 @@
 import { Spin } from "antd";
 
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import HTTP_STATUS from "http-status-codes";
 import { ResponseEditalCotratoInterface } from "interfaces/responses.interface";
 import React, { useEffect, useState } from "react";
 import { Collapse } from "react-collapse";
 import { Form } from "react-final-form";
-import { getEditaisContratos } from "services/edital.service.js";
+import { getEditaisContratos } from "src/services/edital.service";
 import { EditalContratoListadoInterface } from "../interfaces";
 import { CamposEditalContrato } from "./components/CamposEditalContrato";
 import { Header } from "./components/Header";

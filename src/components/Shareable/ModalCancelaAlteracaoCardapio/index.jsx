@@ -1,17 +1,20 @@
-import { required } from "helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
-import { deepCopy, mensagemCancelamento } from "helpers/utilities";
-import Botao from "components/Shareable/Botao";
+import { deepCopy, mensagemCancelamento } from "src/helpers/utilities";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { TIPO_SOLICITACAO } from "constants/shared";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
 
 export const ModalCancelarAlteracaoCardapio = ({ ...props }) => {
   const {

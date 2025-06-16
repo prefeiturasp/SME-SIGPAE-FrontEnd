@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import { QuestoesPorProduto } from "interfaces/recebimento.interface";
-import Label from "components/Shareable/Label";
+import Label from "src/components/Shareable/Label";
 import {
   RECEBIMENTO,
   EDITAR_ATRIBUICAO_QUESTOES_CONFERENCIA,
   COPIAR_ATRIBUICAO_QUESTOES_CONFERENCIA,
-} from "configs/constants";
+} from "src/configs/constants";
 
 import "./styles.scss";
 

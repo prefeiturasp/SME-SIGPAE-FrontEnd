@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
-import { getNomesProtocolos } from "services/dietaEspecial.service";
+import { getNomesProtocolos } from "src/services/dietaEspecial.service";
 import Filtros from "./componentes/Filtros";
 import Tabela from "./componentes/Tabela";
-import { consultaProtocoloPadrao } from "services/dietaEspecial.service";
+import { consultaProtocoloPadrao } from "src/services/dietaEspecial.service";
 import HTTP_STATUS from "http-status-codes";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import "./style.scss";
-import { getNumerosEditais } from "services/edital.service";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { getNumerosEditais } from "src/services/edital.service";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [carregando, setCarregando] = useState(true);

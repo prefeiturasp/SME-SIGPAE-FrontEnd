@@ -1,12 +1,12 @@
 import { useEffect, useState, Dispatch, SetStateAction } from "react";
 
-import { getNumerosEditais } from "services/edital.service";
-import { getLotesSimples } from "services/lote.service";
-import { getTiposUnidadeEscolar } from "services/cadastroTipoAlimentacao.service";
-import { getFaixasEtarias } from "services/faixaEtaria.service";
-import ParametrizacaoFinanceiraService from "services/medicaoInicial/parametrizacao_financeira.service";
+import { getNumerosEditais } from "src/services/edital.service";
+import { getLotesSimples } from "src/services/lote.service";
+import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
+import { getFaixasEtarias } from "src/services/faixaEtaria.service";
+import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
 
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 import { TIPOS_UNIDADES_GRUPOS } from "../../const";
 

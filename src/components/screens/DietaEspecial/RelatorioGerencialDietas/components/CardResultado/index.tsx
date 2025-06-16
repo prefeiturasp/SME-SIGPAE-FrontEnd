@@ -1,6 +1,6 @@
 import React from "react";
 
-import { formatarPara4Digitos } from "components/screens/helper";
+import { formatarPara4Digitos } from "src/components/screens/helper";
 
 import "./style.scss";
 

@@ -1,15 +1,15 @@
 import moment from "moment";
-import React, { useState } from "react";
-import { Form, Field } from "react-final-form";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import { InputComData } from "components/Shareable/DatePicker";
-import { InputText } from "components/Shareable/Input/InputText";
-import Botao from "components/Shareable/Botao";
-import { trocaAcentuadasPorSemAcento } from "helpers/utilities.js";
+import { useState } from "react";
+import { Field, Form } from "react-final-form";
+import Botao from "src/components/Shareable/Botao";
 import {
-  BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { trocaAcentuadasPorSemAcento } from "src/helpers/utilities";
 import "./style.scss";
 
 const FORM_NAME = "buscaRequisicoesDilog";

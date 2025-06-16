@@ -6,14 +6,14 @@ import { NavLink } from "react-router-dom";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import { InputComData } from "components/Shareable/DatePicker";
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import { InputText } from "components/Shareable/Input/InputText";
-import { usuarioEhEmpresaFornecedor } from "helpers/utilities";
-import { CADASTRO_CRONOGRAMA, PRE_RECEBIMENTO } from "configs/constants.js";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
+import { CADASTRO_CRONOGRAMA, PRE_RECEBIMENTO } from "src/configs/constants";
 
 import { montarOptionsStatus } from "./utils";
 import "./style.scss";

@@ -7,33 +7,35 @@ import {
   RECLAMACAO_DE_PRODUTO,
   AVALIAR_RECLAMACAO_PRODUTO,
   ATIVACAO_DE_PRODUTO,
-} from "configs/constants";
-import { listarCardsPermitidos, CADASTROS } from "helpers/gestaoDeProdutos";
+} from "src/configs/constants";
+import { listarCardsPermitidos, CADASTROS } from "src/helpers/gestaoDeProdutos";
 import {
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
-  usuarioEhEmpresaTerceirizada,
   usuarioEhCODAEGestaoProduto,
   usuarioEhNutricionistaSupervisao,
-} from "helpers/utilities";
+  usuarioEhAdministradorEmpresaTerceirizada,
+} from "src/helpers/utilities";
 
 const MenuGestaoDeProduto = ({ activeMenu, onSubmenuClick }) => {
   const menuItems = listarCardsPermitidos();
   const cadastroItems = CADASTROS;
   const exibirBusca = true;
-  const exibirCadastro = usuarioEhEmpresaTerceirizada();
+  const exibirCadastro = usuarioEhAdministradorEmpresaTerceirizada();
   const exibirAvaliarReclamacao = usuarioEhCODAEGestaoProduto();
   const exibirReclamacao =
     usuarioEhNutricionistaSupervisao() ||
     usuarioEhEscolaTerceirizada() ||
     usuarioEhEscolaTerceirizadaDiretor();
   const exibirReclamacaoUE =
-    usuarioEhEscolaTerceirizada() || usuarioEhEscolaTerceirizadaDiretor();
+    usuarioEhAdministradorEmpresaTerceirizada() ||
+    usuarioEhEscolaTerceirizadaDiretor();
   const exibirReclamacaoNutrisupervisao = usuarioEhNutricionistaSupervisao();
   const exibirAtivacao = usuarioEhCODAEGestaoProduto();
-  const exibirResponderReclamacao = usuarioEhEmpresaTerceirizada();
+  const exibirResponderReclamacao = usuarioEhAdministradorEmpresaTerceirizada();
   const usuarioEhTerceirizadaOuGP =
-    usuarioEhCODAEGestaoProduto() || usuarioEhEmpresaTerceirizada();
+    usuarioEhCODAEGestaoProduto() ||
+    usuarioEhAdministradorEmpresaTerceirizada();
 
   return (
     <Menu

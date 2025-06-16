@@ -13,64 +13,65 @@ import {
   usuarioEhDilogQualidade,
   usuarioEhEmpresaFornecedor,
   usuarioEhPreRecebimento,
-} from "helpers/utilities";
+  usuarioEhDilogVisualizacao,
+} from "src/helpers/utilities";
 
-import StatusAguardandoAssinaturasCronograma from "pages/Dinutre/Cronogramas/StatusAguardandoAssinaturasCronograma";
-import StatusCronogramasAguardandoDilog from "pages/Dinutre/Cronogramas/StatusCronogramasAguardandoDilog";
-import StatusCronogramasAssinadoCODAE from "pages/Dinutre/Cronogramas/StatusCronogramasAssinadoCODAE";
-import StatusCronogramasPendentesDilog from "pages/Dinutre/Cronogramas/StatusCronogramasPendentesDilog";
-import StatusCronogramasPendentesAbastecimento from "pages/Dinutre/Cronogramas/StatusCronogramasPendentesAbastecimento";
-import StatusSolicitacoesAlteracoesAprovadasDilog from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesAprovadasDilog";
-import StatusSolicitacoesAlteracoesAprovadasAbastecimento from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesAprovadasAbastecimento";
-import StatusSolicitacoesAlteracoesCodae from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesCodae";
-import StatusSolicitacoesAlteracoesCronograma from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesCronograma";
-import StatusSolicitacoesAlteracoesDilog from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesDilog";
-import StatusSolicitacoesAlteracoesAbastecimento from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesAbastecimento";
-import StatusSolicitacoesAlteracoesReprovadasDilog from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesReprovadasDilog";
-import StatusSolicitacoesAlteracoesReprovadasAbastecimento from "pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesReprovadasAbastecimento";
-import AlterarCronogramaPage from "pages/PreRecebimento/AlterarCronogramaPage";
-import AnalisarDocumentosRecebimentoPage from "pages/PreRecebimento/AnalisarDocumentosRecebimentoPage";
-import AnalisarLayoutEmbalagemPage from "pages/PreRecebimento/AnalisarLayoutEmbalagemPage";
-import AtualizarLayoutEmbalagemPage from "pages/PreRecebimento/AtualizarLayoutEmbalagemPage";
-import CadastroCronogramaPage from "pages/PreRecebimento/CadastroCronogramaPage";
-import CadastroDocumentosRecebimentoPage from "pages/PreRecebimento/CadastroDocumentosRecebimentoPage";
-import CadastroLayoutEmbalagemPage from "pages/PreRecebimento/CadastroLayoutEmbalagemPage";
-import CalendarioCronogramaPage from "pages/PreRecebimento/CalendarioCronogramaPage";
-import StatusDocumentoAprovados from "pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoAprovados";
-import StatusDocumentoEnviadosParaCorrecao from "pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoEnviadosParaCorrecao";
-import StatusDocumentoPendenteAprovacao from "pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoPendenteAprovacao";
-import StatusFichasTecnicasAprovadas from "pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasAprovadas";
-import StatusFichasTecnicasEnviadosParaCorrecao from "pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasEnviadosParaCorrecao";
-import StatusFichasTecnicasPendenteAprovacao from "pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasPendenteAprovacao";
-import StatusLayoutAprovados from "pages/PreRecebimento/CardsLayoutEmbalagem/StatusLayoutAprovados";
-import StatusLayoutEnviadosParaCorrecao from "pages/PreRecebimento/CardsLayoutEmbalagem/StatusLayoutEnviadosParaCorrecao";
-import StatusLayoutPendenteAprovacao from "pages/PreRecebimento/CardsLayoutEmbalagem/StatusLayoutPendenteAprovacao";
-import CorrigirDocumentosRecebimentoPage from "pages/PreRecebimento/CorrigirDocumentosRecebimentoPage";
-import CorrigirLayoutEmbalagemPage from "pages/PreRecebimento/CorrigirLayoutEmbalagemPage";
-import CronogramaEntregaPage from "pages/PreRecebimento/CronogramaEntregaPage";
-import DetalharCodaeDocumentosRecebimentoPage from "pages/PreRecebimento/DetalharCodaeDocumentosRecebimentoPage";
-import DetalharCronogramaPage from "pages/PreRecebimento/DetalharCronogramaPage";
-import DetalharFornecedorDocumentosRecebimentoPage from "pages/PreRecebimento/DetalharFornecedorDocumentosRecebimentoPage";
-import AtualizarFornecedorDocumentosRecebimentoPage from "pages/PreRecebimento/AtualizarFornecedorDocumentosRecebimentoPage";
-import DetalharLayoutEmbalagemPage from "pages/PreRecebimento/DetalharLayoutEmbalagemPage";
-import DetalharSolicitacaoAlteracaoLayoutEmbalagemPage from "pages/PreRecebimento/DetalharSolicitacaoAlteracaoLayoutEmbalagemPage";
-import AnaliseDilogCronogramaPage from "pages/PreRecebimento/DetalharSolicitacaoCronograma";
-import DocumentosRecebimentoPage from "pages/PreRecebimento/DocumentosRecebimentoPage";
-import EditarCronogramaPage from "pages/PreRecebimento/EditarCronogramaPage";
-import AlterarFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/AlterarFichaTecnicaPage";
-import AnalisarFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/AnalisarFichaTecnicaPage";
-import AtualizarFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/AtualizarFichaTecnicaPage";
-import CadastroFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
-import DetalharFichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/DetalharFichaTecnicaPage";
-import FichaTecnicaPage from "pages/PreRecebimento/FichaTecnica/FichaTecnicaPage";
-import LayoutEmbalagemPage from "pages/PreRecebimento/LayoutEmbalagemPage";
-import PainelAprovacoesPage from "pages/PreRecebimento/PainelAprovacoesPage";
-import PainelDocumentosRecebimentoPage from "pages/PreRecebimento/PainelDocumentosRecebimentoPage";
-import { PainelFichasTecnicasPage } from "pages/PreRecebimento/PainelFichasTecnicasPage";
-import { PainelLayoutEmbalagemPage } from "pages/PreRecebimento/PainelLayoutEmbalagemPage";
-import RelatorioCronogramaPage from "pages/PreRecebimento/Relatorios/RelatorioCronogramaPage";
-import SolicitacaoAlteracaoCronogramaFornecedorPage from "pages/PreRecebimento/SolicitacaoAlteracaoCronogramaFornecedorPage";
-import SolicitacaoAlteracaoCronogramaPage from "pages/PreRecebimento/SolicitacaoAlteracaoCronogramaPage";
+import StatusAguardandoAssinaturasCronograma from "src/pages/Dinutre/Cronogramas/StatusAguardandoAssinaturasCronograma";
+import StatusCronogramasAguardandoDilog from "src/pages/Dinutre/Cronogramas/StatusCronogramasAguardandoDilog";
+import StatusCronogramasAssinadoCODAE from "src/pages/Dinutre/Cronogramas/StatusCronogramasAssinadoCODAE";
+import StatusCronogramasPendentesDilog from "src/pages/Dinutre/Cronogramas/StatusCronogramasPendentesDilog";
+import StatusCronogramasPendentesAbastecimento from "src/pages/Dinutre/Cronogramas/StatusCronogramasPendentesAbastecimento";
+import StatusSolicitacoesAlteracoesAprovadasDilog from "src/pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesAprovadasDilog";
+import StatusSolicitacoesAlteracoesAprovadasAbastecimento from "src/pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesAprovadasAbastecimento";
+import StatusSolicitacoesAlteracoesCodae from "src/pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesCodae";
+import StatusSolicitacoesAlteracoesCronograma from "src/pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesCronograma";
+import StatusSolicitacoesAlteracoesDilog from "src/pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesDilog";
+import StatusSolicitacoesAlteracoesAbastecimento from "src/pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesAbastecimento";
+import StatusSolicitacoesAlteracoesReprovadasDilog from "src/pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesReprovadasDilog";
+import StatusSolicitacoesAlteracoesReprovadasAbastecimento from "src/pages/Dinutre/Solicitacoes/StatusSolicitacoesAlteracoesReprovadasAbastecimento";
+import AlterarCronogramaPage from "src/pages/PreRecebimento/AlterarCronogramaPage";
+import AnalisarDocumentosRecebimentoPage from "src/pages/PreRecebimento/AnalisarDocumentosRecebimentoPage";
+import AnalisarLayoutEmbalagemPage from "src/pages/PreRecebimento/AnalisarLayoutEmbalagemPage";
+import AtualizarLayoutEmbalagemPage from "src/pages/PreRecebimento/AtualizarLayoutEmbalagemPage";
+import CadastroCronogramaPage from "src/pages/PreRecebimento/CadastroCronogramaPage";
+import CadastroDocumentosRecebimentoPage from "src/pages/PreRecebimento/CadastroDocumentosRecebimentoPage";
+import CadastroLayoutEmbalagemPage from "src/pages/PreRecebimento/CadastroLayoutEmbalagemPage";
+import CalendarioCronogramaPage from "src/pages/PreRecebimento/CalendarioCronogramaPage";
+import StatusDocumentoAprovados from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoAprovados";
+import StatusDocumentoEnviadosParaCorrecao from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoEnviadosParaCorrecao";
+import StatusDocumentoPendenteAprovacao from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoPendenteAprovacao";
+import StatusFichasTecnicasAprovadas from "src/pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasAprovadas";
+import StatusFichasTecnicasEnviadosParaCorrecao from "src/pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasEnviadosParaCorrecao";
+import StatusFichasTecnicasPendenteAprovacao from "src/pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasPendenteAprovacao";
+import StatusLayoutAprovados from "src/pages/PreRecebimento/CardsLayoutEmbalagem/StatusLayoutAprovados";
+import StatusLayoutEnviadosParaCorrecao from "src/pages/PreRecebimento/CardsLayoutEmbalagem/StatusLayoutEnviadosParaCorrecao";
+import StatusLayoutPendenteAprovacao from "src/pages/PreRecebimento/CardsLayoutEmbalagem/StatusLayoutPendenteAprovacao";
+import CorrigirDocumentosRecebimentoPage from "src/pages/PreRecebimento/CorrigirDocumentosRecebimentoPage";
+import CorrigirLayoutEmbalagemPage from "src/pages/PreRecebimento/CorrigirLayoutEmbalagemPage";
+import CronogramaEntregaPage from "src/pages/PreRecebimento/CronogramaEntregaPage";
+import DetalharCodaeDocumentosRecebimentoPage from "src/pages/PreRecebimento/DetalharCodaeDocumentosRecebimentoPage";
+import DetalharCronogramaPage from "src/pages/PreRecebimento/DetalharCronogramaPage";
+import DetalharFornecedorDocumentosRecebimentoPage from "src/pages/PreRecebimento/DetalharFornecedorDocumentosRecebimentoPage";
+import AtualizarFornecedorDocumentosRecebimentoPage from "src/pages/PreRecebimento/AtualizarFornecedorDocumentosRecebimentoPage";
+import DetalharLayoutEmbalagemPage from "src/pages/PreRecebimento/DetalharLayoutEmbalagemPage";
+import DetalharSolicitacaoAlteracaoLayoutEmbalagemPage from "src/pages/PreRecebimento/DetalharSolicitacaoAlteracaoLayoutEmbalagemPage";
+import AnaliseDilogCronogramaPage from "src/pages/PreRecebimento/DetalharSolicitacaoCronograma";
+import DocumentosRecebimentoPage from "src/pages/PreRecebimento/DocumentosRecebimentoPage";
+import EditarCronogramaPage from "src/pages/PreRecebimento/EditarCronogramaPage";
+import AlterarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/AlterarFichaTecnicaPage";
+import AnalisarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/AnalisarFichaTecnicaPage";
+import AtualizarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/AtualizarFichaTecnicaPage";
+import CadastroFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
+import DetalharFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/DetalharFichaTecnicaPage";
+import FichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/FichaTecnicaPage";
+import LayoutEmbalagemPage from "src/pages/PreRecebimento/LayoutEmbalagemPage";
+import PainelAprovacoesPage from "src/pages/PreRecebimento/PainelAprovacoesPage";
+import PainelDocumentosRecebimentoPage from "src/pages/PreRecebimento/PainelDocumentosRecebimentoPage";
+import { PainelFichasTecnicasPage } from "src/pages/PreRecebimento/PainelFichasTecnicasPage";
+import { PainelLayoutEmbalagemPage } from "src/pages/PreRecebimento/PainelLayoutEmbalagemPage";
+import RelatorioCronogramaPage from "src/pages/PreRecebimento/Relatorios/RelatorioCronogramaPage";
+import SolicitacaoAlteracaoCronogramaFornecedorPage from "src/pages/PreRecebimento/SolicitacaoAlteracaoCronogramaFornecedorPage";
+import SolicitacaoAlteracaoCronogramaPage from "src/pages/PreRecebimento/SolicitacaoAlteracaoCronogramaPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
@@ -92,7 +93,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhCronograma() ||
       usuarioEhDilogAbastecimento() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhDilogDiretoria(),
+      usuarioEhDilogDiretoria() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR}`,
@@ -124,7 +126,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogDiretoria() ||
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.CADASTRO_CRONOGRAMA}`,
@@ -362,7 +365,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogDiretoria() ||
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.DILOG}/${constants.ALTERACOES_REPROVADAS}`,
@@ -371,7 +375,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogDiretoria() ||
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.CRONOGRAMA}/${constants.AGUARDANDO_ASSINATURAS}`,
@@ -379,7 +384,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.ASSINADO_CODAE}`,
@@ -389,7 +395,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogDiretoria() ||
       usuarioEhCodaeDilog() ||
       usuarioEhCronograma() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.CRONOGRAMA}/${constants.SOLICITACOES_ALTERACOES}`,
@@ -397,7 +404,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.CRONOGRAMA}/${constants.ALTERACOES_CODAE}`,
@@ -407,6 +415,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogDiretoria() ||
       usuarioEhCodaeDilog() ||
       usuarioEhDilogAbastecimento() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDilogVisualizacao(),
   },
 ];

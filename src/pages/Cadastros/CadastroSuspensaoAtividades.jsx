@@ -1,21 +1,21 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   CADASTROS,
   CONFIGURACOES,
   SUSPENSAO_ATIVIDADES,
-} from "configs/constants";
-import { Calendario } from "components/Shareable/Calendario";
+} from "src/configs/constants";
+import { Calendario } from "src/components/Shareable/Calendario";
 import {
   getDiasSuspensaoAtividades,
   setDiaSuspensaoAtividades,
   deleteDiaSuspensaoAtividades,
-} from "services/cadastroDiasSuspensaoAtividades.service";
+} from "src/services/cadastroDiasSuspensaoAtividades.service";
 import {
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhMedicao,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${SUSPENSAO_ATIVIDADES}`,

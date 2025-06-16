@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Form, Field } from "react-final-form";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import Botao from "components/Shareable/Botao";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import Botao from "src/components/Shareable/Botao";
 import { useNavigate } from "react-router-dom";
-import { DIETA_ESPECIAL, PROTOCOLO_PADRAO_DIETA } from "configs/constants";
+import { DIETA_ESPECIAL, PROTOCOLO_PADRAO_DIETA } from "src/configs/constants";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { consultaProtocoloPadrao } from "services/dietaEspecial.service";
+} from "src/components/Shareable/Botao/constants";
+import { consultaProtocoloPadrao } from "src/services/dietaEspecial.service";
 import HTTP_STATUS from "http-status-codes";
-import { toastError } from "components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { ModalVincularProtocolos } from "../ModalVincularProtolocos";
 
 export default ({

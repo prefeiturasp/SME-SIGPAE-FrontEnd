@@ -1,17 +1,20 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import CardMatriculados from "components/Shareable/CardMatriculados";
-import CKEditorField from "components/Shareable/CKEditorField";
-import { InputComData } from "components/Shareable/DatePicker";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import Select from "components/Shareable/Select";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import Select from "src/components/Shareable/Select";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
 import arrayMutators from "final-form-arrays";
-import { composeValidators, required } from "helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 import {
   agregarDefault,
   checaSeDataEstaEntre2e5DiasUteis,
@@ -19,10 +22,10 @@ import {
   fimDoCalendario,
   getDataObj,
   getError,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {
   createAlteracaoCardapioCEMEI,
@@ -30,7 +33,7 @@ import {
   getAlteracaoCEMEIRascunhos,
   iniciaFluxoAlteracaoAlimentacaoCEMEI,
   updateAlteracaoCardapioCEMEI,
-} from "services/alteracaoDeCardapio/escola.service";
+} from "src/services/alteracaoDeCardapio/escola.service";
 import { formataValues } from "../AlteracaoDeCardapio/Escola/helper";
 import { ModalLancheEmergencial } from "./componentes/ModalLancheEmergencial";
 import { Rascunhos } from "./componentes/Rascunhos";
@@ -271,9 +274,6 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
             };
           });
           break;
-
-        default:
-          break;
       }
     }
     setAlimentosCEI(_alimentosCEI);
@@ -366,37 +366,37 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
 
   const carregarRascunhoNormal = async (form, alteracao_) => {
     const periodos_ = deepCopy(periodos);
-    await form.change("uuid", alteracao_.uuid);
-    await form.change("escola", alteracao_.escola.uuid);
-    await form.change("motivo", alteracao_.motivo.uuid);
-    await form.change("criado_por", alteracao_.criado_por);
-    await form.change("alterar_dia", alteracao_.alterar_dia);
-    await form.change("data_inicial", alteracao_.data_inicial);
-    await form.change("data_final", alteracao_.data_final);
-    await form.change("alunos_cei_e_ou_emei", alteracao_.alunos_cei_e_ou_emei);
+    form.change("uuid", alteracao_.uuid);
+    form.change("escola", alteracao_.escola.uuid);
+    form.change("motivo", alteracao_.motivo.uuid);
+    form.change("criado_por", alteracao_.criado_por);
+    form.change("alterar_dia", alteracao_.alterar_dia);
+    form.change("data_inicial", alteracao_.data_inicial);
+    form.change("data_final", alteracao_.data_final);
+    form.change("alunos_cei_e_ou_emei", alteracao_.alunos_cei_e_ou_emei);
     let substituicoes = await buildSubstituicoes(periodos_, alteracao_);
-    await form.change("substituicoes", substituicoes);
-    await form.change("observacao", alteracao_.observacao);
+    form.change("substituicoes", substituicoes);
+    form.change("observacao", alteracao_.observacao);
   };
 
   const carregarRascunho = async (form, alteracao) => {
     const alteracao_ = deepCopy(alteracao);
     await carregarRascunhoNormal(form, alteracao_);
-    await form.change("id_externo", alteracao.id_externo);
+    form.change("id_externo", alteracao.id_externo);
     setUuid(alteracao.uuid);
   };
 
   const resetForm = async (form) => {
-    await form.change("uuid", undefined);
-    await form.change("criado_por", meusDados.uuid);
-    await form.change("escola", meusDados.vinculo_atual.instituicao.uuid);
-    await form.change("alunos_cei_e_ou_emei", undefined);
-    await form.change("motivo", undefined);
-    await form.change("alterar_dia", undefined);
-    await form.change("data_inicial", undefined);
-    await form.change("data_final", undefined);
-    await form.change("substituicoes", []);
-    await form.change("observacao", undefined);
+    form.change("uuid", undefined);
+    form.change("criado_por", meusDados.uuid);
+    form.change("escola", meusDados.vinculo_atual.instituicao.uuid);
+    form.change("alunos_cei_e_ou_emei", undefined);
+    form.change("motivo", undefined);
+    form.change("alterar_dia", undefined);
+    form.change("data_inicial", undefined);
+    form.change("data_final", undefined);
+    form.change("substituicoes", []);
+    form.change("observacao", undefined);
     setUuid(null);
   };
 
@@ -407,24 +407,14 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     if (motivo) {
       switch (motivo.nome) {
         case "RPL - Refeição por Lanche":
-          setDesabilitarDeAte(true);
-          setDesabilitarAlterarDia(false);
-          break;
-
         case "LPR - Lanche por Refeição":
           setDesabilitarDeAte(true);
           setDesabilitarAlterarDia(false);
           break;
-
         case "Lanche Emergencial":
           setDesabilitarDeAte(false);
           setDesabilitarAlterarDia(false);
           setMaximo5DiasUteis(true);
-          break;
-
-        default:
-          setDesabilitarDeAte(false);
-          setDesabilitarAlterarDia(false);
           break;
       }
     }
@@ -478,6 +468,9 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
       >
         {({ handleSubmit, submitting, form, values }) => (
           <form onSubmit={handleSubmit}>
+            <Field component="input" type="hidden" name="uuid" />
+            <Field component="input" type="hidden" name="id_externo" />
+            <Field component="input" type="hidden" name="escola" />
             {rascunhos && rascunhos.length > 0 && (
               <div className="mt-3">
                 <span className="page-title">Rascunhos</span>
@@ -490,7 +483,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
               </div>
             )}
             <div className="mt-2 page-title">
-              {values.uuid
+              {form.getState().values.uuid
                 ? `Solicitação # ${values.id_externo}`
                 : "Nova Solicitação"}
             </div>
@@ -503,6 +496,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                       component={Select}
                       label="Alunos"
                       name="alunos_cei_e_ou_emei"
+                      dataTestId="div-select-alunos-cei-e-ou-emei"
                       options={[
                         { uuid: "", nome: "Selecione" },
                         { uuid: "TODOS", nome: "Todos" },
@@ -522,6 +516,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                     <Field
                       component={Select}
                       name="motivo"
+                      dataTestId="div-select-motivo"
                       label="Tipo de Alteração"
                       options={agregarDefault(motivos)}
                       naoDesabilitarPrimeiraOpcao
@@ -543,10 +538,10 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                     <Field
                       component={InputComData}
                       name="alterar_dia"
+                      dataTestId="div-input-alterar-dia"
                       minDate={
                         values.motivo &&
-                        motivos.find((m) => m.uuid === values.motivo) &&
-                        motivos.find((m) => m.uuid === values.motivo).nome ===
+                        motivos.find((m) => m.uuid === values.motivo)?.nome ===
                           "Lanche Emergencial"
                           ? moment().toDate()
                           : proximosDoisDiasUteis
@@ -554,9 +549,8 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                       maxDate={fimDoCalendario()}
                       label="Alterar dia"
                       disabled={values.data_inicial || desabilitarAlterarDia}
-                      validate={
-                        values.data_inicial ? null : composeValidators(required)
-                      }
+                      required={!values.data_inicial}
+                      validate={!values.data_inicial && required}
                       usarDirty={true}
                       inputOnChange={(value) => {
                         if (value) {
@@ -572,6 +566,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                     <Field
                       component={InputComData}
                       name="data_inicial"
+                      dataTestId="div-input-data-inicial"
                       label="De"
                       disabled={values.alterar_dia || desabilitarDeAte}
                       minDate={
@@ -591,6 +586,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                     <Field
                       component={InputComData}
                       name="data_final"
+                      dataTestId="div-input-data-final"
                       label="Até"
                       disabled={
                         values.data_inicial === undefined ||
@@ -607,6 +603,8 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                           onDataChanged(value);
                         }
                       }}
+                      validate={values.data_inicial && required}
+                      required={values.data_inicial}
                     />
                   </div>
                 </div>

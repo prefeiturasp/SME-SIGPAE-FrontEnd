@@ -1,4 +1,4 @@
-@import "styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 .clausulas-desconto {
   .ant-form-item {

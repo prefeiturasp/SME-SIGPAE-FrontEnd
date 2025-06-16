@@ -7,10 +7,10 @@ import {
   TERCEIRIZADA,
 } from "../../../configs/constants";
 import { HOME } from "../constants";
-import { getSolicitacoesPendentesTerceirizada } from "services/painelTerceirizada.service";
-import { CARD_TYPE_ENUM } from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { ICON_CARD_TYPE_ENUM } from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { ajustarFormatoLog } from "components/screens/helper";
+import { getSolicitacoesPendentesTerceirizada } from "src/services/painelTerceirizada.service";
+import { CARD_TYPE_ENUM } from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import { ICON_CARD_TYPE_ENUM } from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import { ajustarFormatoLog } from "src/components/screens/helper";
 
 const atual = {
   href: `/${TERCEIRIZADA}/${SOLICITACOES_PENDENTES}`,

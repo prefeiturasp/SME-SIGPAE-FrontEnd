@@ -1,7 +1,7 @@
-import { RelatorioSolicitacoesAlimentacao } from "components/screens/Relatorios/SolicitacoesAlimentacao";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { RELATORIO_SOLICITACOES_ALIMENTACAO } from "configs/constants";
+import { RelatorioSolicitacoesAlimentacao } from "src/components/screens/Relatorios/SolicitacoesAlimentacao";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { RELATORIO_SOLICITACOES_ALIMENTACAO } from "src/configs/constants";
 import {
   ehUsuarioRelatorios,
   usuarioEhCODAEGabinete,
@@ -14,7 +14,7 @@ import {
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhGticCODAE,
   usuarioEhMedicao,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React from "react";
 import {
   filtrarSolicitacoesAlimentacaoCODAE,
@@ -29,7 +29,7 @@ import {
   gerarPDFRelatorioSolicitacoesAlimentacaoDRE,
   gerarPDFRelatorioSolicitacoesAlimentacaoEscola,
   gerarPDFRelatorioSolicitacoesAlimentacaoTerceirizadas,
-} from "services/relatorios.service";
+} from "src/services/relatorios.service";
 
 const atual = {
   href: `/${RELATORIO_SOLICITACOES_ALIMENTACAO}`,

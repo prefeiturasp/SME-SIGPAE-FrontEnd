@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Modal, Spin } from "antd";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./styles.scss";
-import { imprimeRelatorioDietaEspecial } from "services/relatorios";
-import { getSolicitacaoDietaEspecialListagem } from "services/dietaEspecial.service";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { getCabecalhoPorFiltros } from "helpers/dietaEspecial";
+import { imprimeRelatorioDietaEspecial } from "src/services/relatorios";
+import { getSolicitacaoDietaEspecialListagem } from "src/services/dietaEspecial.service";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { getCabecalhoPorFiltros } from "src/helpers/dietaEspecial";
 import { getStatusSolicitacaoFrontend } from "./helpers";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 const ModalRelatorioDietaEspecial = ({
   showModal,

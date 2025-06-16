@@ -1,4 +1,4 @@
-import { stringSeparadaPorVirgulas } from "helpers/utilities";
+import { stringSeparadaPorVirgulas } from "src/helpers/utilities";
 import React, { useState } from "react";
 
 export const InversaoCardapioBody = ({ ...props }) => {

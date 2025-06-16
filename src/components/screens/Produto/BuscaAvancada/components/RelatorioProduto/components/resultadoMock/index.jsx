@@ -1,15 +1,15 @@
 import React from "react";
 import { produto, informacoesNutricionais, logs } from "../helpers";
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
-import { fluxoPartindoTerceirizada } from "components/Shareable/FluxoDeStatus/helper";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
+import { fluxoPartindoTerceirizada } from "src/components/Shareable/FluxoDeStatus/helper";
 import { Component } from "react";
 import "../styles.scss";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 import { Modal } from "antd";
 

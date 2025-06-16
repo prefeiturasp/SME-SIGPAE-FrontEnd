@@ -1,14 +1,14 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import { Field, Form } from "react-final-form";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./style.scss";
-import { textAreaRequired } from "helpers/fieldValidators";
+import { textAreaRequired } from "src/helpers/fieldValidators";
 
 export default ({ index, handleClose, aprovacoes, setAprovacoes }) => {
   const solicitaAlteracao = async (values) => {

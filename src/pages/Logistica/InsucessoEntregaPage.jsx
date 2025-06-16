@@ -1,9 +1,9 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { INSUCESSO_ENTREGA, LOGISTICA } from "configs/constants";
-import InsucessoEntrega from "components/screens/Logistica/InsucessoEntrega";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { INSUCESSO_ENTREGA, LOGISTICA } from "src/configs/constants";
+import InsucessoEntrega from "src/components/screens/Logistica/InsucessoEntrega";
 
 const atual = {
   href: `/${LOGISTICA}/${INSUCESSO_ENTREGA}`,

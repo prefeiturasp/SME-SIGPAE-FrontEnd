@@ -5,10 +5,10 @@ import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import { ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS } from "constants/shared";
-import Botao from "components/Shareable/Botao";
-import DetalheDoProduto from "components/Shareable/DetalheDoProduto";
+} from "src/components/Shareable/Botao/constants";
+import { ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS } from "src/constants/shared";
+import Botao from "src/components/Shareable/Botao";
+import DetalheDoProduto from "src/components/Shareable/DetalheDoProduto";
 import { getHomologacaoProduto } from "../../../../services/produto.service";
 import ModalAtivacaoSuspensaoProduto from "./ModalAtivacaoSuspensaoProduto";
 

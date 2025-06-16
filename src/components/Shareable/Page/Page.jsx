@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { ENVIRONMENT } from "constants/config";
+import { ENVIRONMENT } from "src/constants/config";
 import { Header } from "../Header";
 import { Sidebar } from "../Sidebar";
 import BotaoVoltar from "./BotaoVoltar";
@@ -9,10 +9,10 @@ import {
   usuarioEhLogistica,
   usuarioEhEmpresaDistribuidora,
   usuarioEhEscola,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import ModalVoltar from "./ModalVoltar";
 import ModalCestasBasicas from "../ModalCestasBasicas";
 import ModalTermosDeUso from "../ModalTermosDeUso";

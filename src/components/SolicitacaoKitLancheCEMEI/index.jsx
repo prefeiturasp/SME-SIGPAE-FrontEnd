@@ -1,34 +1,37 @@
-import CardMatriculados from "components/Shareable/CardMatriculados";
-import { InputComData } from "components/Shareable/DatePicker";
-import InputText from "components/Shareable/Input/InputText";
-import ModalDataPrioritaria from "components/Shareable/ModalDataPrioritaria";
-import Select from "components/Shareable/Select";
-import { maxLength, required } from "helpers/fieldValidators";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import InputText from "src/components/Shareable/Input/InputText";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import Select from "src/components/Shareable/Select";
+import { maxLength, required } from "src/helpers/fieldValidators";
 import {
   checaSeDataEstaEntre2e5DiasUteis,
   composeValidators,
   deepCopy,
   fimDoCalendario,
   getError,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
-import CKEditorField from "components/Shareable/CKEditorField";
-import Botao from "components/Shareable/Botao";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import Botao from "src/components/Shareable/Botao";
 import HTTP_STATUS from "http-status-codes";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { STATUS_DRE_A_VALIDAR } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
 import {
   createSolicitacaoKitLancheCEMEI,
   deleteSolicitacaoKitLancheCEMEI,
   getSolicitacaoKitLancheCEMEIRascunhos,
   iniciaFluxoSolicitacaoKitLancheCEMEI,
   updateSolicitacaoKitLancheCEMEI,
-} from "services/kitLanche";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/services/kitLanche";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { Rascunhos } from "./componentes/Rascunhos";
 import {
   AlunosDietaEspecial,
@@ -37,7 +40,7 @@ import {
   TabelaFaixasEtariasCEI,
   TempoPasseio,
 } from "./componentes";
-import { getAlunosPorFaixaEtariaNumaData } from "services/alteracaoDeCardapio";
+import { getAlunosPorFaixaEtariaNumaData } from "src/services/alteracaoDeCardapio";
 import { formataSubmit, getNumeroTotalKits } from "./helpers";
 
 export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {

@@ -1,4 +1,4 @@
-import { ordenarPedidosDataMaisRecente } from "helpers/painelPedidos";
+import { ordenarPedidosDataMaisRecente } from "src/helpers/painelPedidos";
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
@@ -10,13 +10,13 @@ import {
   formatarOpcoesLote,
   formatarOpcoesDRE,
   usuarioEhCODAEGestaoAlimentacao,
-} from "helpers/utilities";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
-import { getLotesSimples } from "services/lote.service";
+} from "src/helpers/utilities";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
+import { getLotesSimples } from "src/services/lote.service";
 import HTTP_STATUS from "http-status-codes";
 import { CardPendenteAcao } from "../../components/CardPendenteAcao";
 import { filtraNoLimite, filtraPrioritarios, filtraRegular } from "./helper";
-import { ASelect } from "components/Shareable/MakeField";
+import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
 
 class PainelPedidos extends Component {

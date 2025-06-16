@@ -4,17 +4,20 @@ import { FieldArray } from "react-final-form-arrays";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { MultiSelect } from "../../../MultiSelect";
-import { getError } from "helpers/utilities";
-import { requiredMultiselect } from "helpers/fieldValidators";
-import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "helpers/utilities";
+import { getError } from "src/helpers/utilities";
+import { requiredMultiselect } from "src/helpers/fieldValidators";
+import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "src/helpers/utilities";
 import "./style.scss";
 
 export const ModalCadastrarNoCalendario = ({ ...props }) => {

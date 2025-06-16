@@ -7,23 +7,26 @@ import {
   LAYOUT_EMBALAGEM,
   PRE_RECEBIMENTO,
   PAINEL_LAYOUT_EMBALAGEM,
-} from "configs/constants";
-import { usuarioComAcessoAoPainelEmbalagens } from "helpers/utilities";
-import { textAreaRequired } from "helpers/fieldValidators";
-import BotaoVoltar from "components/Shareable/Page/BotaoVoltar";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import BotaoAnexo from "components/PreRecebimento/BotaoAnexo";
-import Botao from "components/Shareable/Botao";
+} from "src/configs/constants";
+import { usuarioComAcessoAoPainelEmbalagens } from "src/helpers/utilities";
+import { textAreaRequired } from "src/helpers/fieldValidators";
+import BotaoVoltar from "src/components/Shareable/Page/BotaoVoltar";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { FluxoDeStatusPreRecebimento } from "components/Shareable/FluxoDeStatusPreRecebimento";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   analiseCodaeLayoutEmbalagem,
   detalharLayoutEmabalagem,
-} from "services/layoutEmbalagem.service";
+} from "src/services/layoutEmbalagem.service";
 
 import ModalCancelarAnalise from "./components/ModalCancelarAnalise";
 import ModalEnviarAnalise from "./components/ModalEnviarAnalise";

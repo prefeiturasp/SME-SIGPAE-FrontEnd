@@ -1,10 +1,6 @@
-@import "../../../../../styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 div.card.meal-kit {
-  @media screen and (min-width: 991px) and (max-width: 1200px) {
-    height: 245px;
-    width: 155px;
-  }
   min-height: 190px;
   max-width: 218px;
   &.minor-height {
@@ -47,6 +43,11 @@ div.card.meal-kit {
         font-size: 13px;
       }
     }
+  }
+
+  @media screen and (min-width: 991px) and (max-width: 1200px) {
+    height: 245px;
+    width: 155px;
   }
 }
 

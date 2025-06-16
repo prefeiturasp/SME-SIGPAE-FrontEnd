@@ -1,6 +1,6 @@
 import React from "react";
 import { Field } from "react-final-form";
-import InputFile from "components/Shareable/Input/InputFile";
+import InputFile from "src/components/Shareable/Input/InputFile";
 import { DEZ_MB } from "../../../../../../constants/shared";
 import TooltipIcone from "../../../../../Shareable/TooltipIcone";
 
@@ -21,7 +21,13 @@ const TOOLTIPS_TIPOS_EMBALAGENS = {
 
 const FORMATOS_IMAGEM = "PDF, PNG, JPG ou JPEG";
 
-export default ({ setFiles, removeFile, arquivosIniciais, tipoEmbalagem }) => {
+export default ({
+  setFiles,
+  removeFile,
+  arquivosIniciais,
+  tipoEmbalagem,
+  dataTestId,
+}) => {
   return (
     <>
       <div className="row">
@@ -53,6 +59,7 @@ export default ({ setFiles, removeFile, arquivosIniciais, tipoEmbalagem }) => {
           multiple={true}
           limiteTamanho={DEZ_MB}
           concatenarNovosArquivos
+          dataTestId={dataTestId}
         />
         <label className="col-12 label-imagem">
           <span className="red">

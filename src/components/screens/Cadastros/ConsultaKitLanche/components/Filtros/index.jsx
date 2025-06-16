@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Form, Field } from "react-final-form";
 import { useNavigate } from "react-router-dom";
-import FinalFormToRedux from "components/Shareable/FinalFormToRedux";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import Botao from "components/Shareable/Botao";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { getNumerosEditais } from "../../../../../../services/edital.service";
 import "./style.scss";
 

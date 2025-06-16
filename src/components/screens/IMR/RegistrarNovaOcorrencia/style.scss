@@ -1,4 +1,4 @@
-@import "styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 div.registrar-nova-ocorrencia {
   min-height: 73vh;

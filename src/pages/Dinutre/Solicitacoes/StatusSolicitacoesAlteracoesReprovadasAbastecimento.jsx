@@ -1,13 +1,13 @@
 import React from "react";
-import Page from "components/Shareable/Page/Page";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import { PAINEL_APROVACOES, PRE_RECEBIMENTO } from "configs/constants";
+import Page from "src/components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import { PAINEL_APROVACOES, PRE_RECEBIMENTO } from "src/configs/constants";
 import {
   getDashboardSolicitacoesAlteracao,
   getDashboardSolicitacoesAlteracaoComFiltros,
-} from "services/cronograma.service";
-import { SolicitacoesCronogramaStatusGenerico } from "components/screens/SolicitacoesCronogramaStatusGenerico";
-import { CARD_SOLICITACOES_REPROVADAS_ABASTECIMENTO } from "components/screens/PreRecebimento/PainelAprovacoes/constants";
+} from "src/services/cronograma.service";
+import { SolicitacoesCronogramaStatusGenerico } from "src/components/screens/SolicitacoesCronogramaStatusGenerico";
+import { CARD_SOLICITACOES_REPROVADAS_ABASTECIMENTO } from "src/components/screens/PreRecebimento/PainelAprovacoes/constants";
 
 const atual = {
   href: CARD_SOLICITACOES_REPROVADAS_ABASTECIMENTO.href,

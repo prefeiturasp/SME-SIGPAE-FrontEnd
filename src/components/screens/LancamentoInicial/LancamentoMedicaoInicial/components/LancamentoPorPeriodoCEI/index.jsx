@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
-import { ModalPadraoSimNao } from "components/Shareable/ModalPadraoSimNao";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { ModalPadraoSimNao } from "src/components/Shareable/ModalPadraoSimNao";
 import { CardLancamentoCEI } from "./CardLancamentoCEI";
 import { ModalFinalizarMedicao } from "../ModalFinalizarMedicao";
 import {
@@ -20,20 +23,20 @@ import {
   ehEscolaTipoCEMEI,
   getError,
   usuarioEhEscolaTerceirizadaDiretor,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import { ehEmeiDaCemei } from "./helpers";
-import { relatorioMedicaoInicialPDF } from "services/relatorios";
+import { relatorioMedicaoInicialPDF } from "src/services/relatorios";
 import {
   escolaEnviaCorrecaoMedicaoInicialCODAE,
   escolaEnviaCorrecaoMedicaoInicialDRE,
   getQuantidadeAlimentacoesLancadasPeriodoGrupo,
   getSolicitacaoMedicaoInicial,
-} from "services/medicaoInicial/solicitacaoMedicaoInicial.service";
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import {
   getPeriodosInclusaoContinua,
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
   getSolicitacoesKitLanchesAutorizadasEscola,
-} from "services/medicaoInicial/periodoLancamentoMedicao.service";
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { BlocoOcorrencias } from "../BlocoOcorrencias";
 import { deepCopy } from "../../../../../../helpers/utilities";
 import { ModalSemOcorrenciasIMR } from "../ModalSemOcorrenciasIMR";

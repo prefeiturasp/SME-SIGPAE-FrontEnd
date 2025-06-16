@@ -1,6 +1,6 @@
 import React from "react";
-import { formatarPara4Digitos } from "components/screens/helper";
-import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "helpers/utilities";
+import { formatarPara4Digitos } from "src/components/screens/helper";
+import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities";
 
 export const CardMedicaoPorStatus = ({ ...props }) => {
   const {

@@ -1,11 +1,11 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
-import { Botao } from "components/Shareable/Botao";
+import { Botao } from "src/components/Shareable/Botao";
 import { Link } from "react-router-dom";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants.js";
+} from "src/components/Shareable/Botao/constants";
 
 export default ({ showModal, closeModal }) => {
   return (

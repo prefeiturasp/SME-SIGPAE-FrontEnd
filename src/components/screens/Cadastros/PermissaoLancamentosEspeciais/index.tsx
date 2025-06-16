@@ -5,18 +5,18 @@ import HTTP_STATUS from "http-status-codes";
 import { FormApi } from "final-form";
 import { Spin } from "antd";
 
-import Botao from "components/Shareable/Botao";
-import Select from "components/Shareable/Select";
-import { Paginacao } from "components/Shareable/Paginacao";
+import Botao from "src/components/Shareable/Botao";
+import Select from "src/components/Shareable/Select";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import {
   getEscolasComPermissoesLancamentosEspeciais,
   getPermissoesLancamentosEspeciais,
-} from "services/medicaoInicial/permissaoLancamentosEspeciais.service";
+} from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
 
 import {
   EscolasComPermissoesLancamentosEspeciaisInterface,

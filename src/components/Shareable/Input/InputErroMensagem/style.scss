@@ -1,4 +1,4 @@
-@import "../../../../styles/variables.scss";
+@use "src/styles/variables.scss" as *;
 
 div.error-or-warning-message {
   padding-top: 5px;

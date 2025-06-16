@@ -1,12 +1,12 @@
-import { agregarDefault, formatarParaMultiselect } from "helpers/utilities";
+import { agregarDefault, formatarParaMultiselect } from "src/helpers/utilities";
 import React, { Component } from "react";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
 import {
   getEscolasSimplissima,
   getSubprefeituras,
   getTiposGestao,
-} from "services/escola.service";
-import { meusDados } from "services/perfil.service";
+} from "src/services/escola.service";
+import { meusDados } from "src/services/perfil.service";
 import CadastroLote from ".";
 import { formatarEscolasParaMultiselect } from "./helper";
 

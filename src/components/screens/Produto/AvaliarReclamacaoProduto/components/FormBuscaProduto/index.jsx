@@ -1,13 +1,13 @@
 import React, { useEffect, useReducer } from "react";
 import { Form, Field } from "react-final-form";
 import { Row, Col } from "antd";
-import AutoCompleteField from "components/Shareable/AutoCompleteField";
-import Botao from "components/Shareable/Botao";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./style.scss";
 import { useNavigate } from "react-router-dom";
 
@@ -15,9 +15,9 @@ import {
   getAvaliarReclamacaoNomesProdutos,
   getAvaliarReclamacaoNomesMarcas,
   getAvaliarReclamacaoNomesFabricantes,
-} from "services/produto.service";
-import { SelectWithHideOptions } from "components/Shareable/SelectWithHideOptions";
-import { STATUS_RECLAMACAO_PRODUTO } from "constants/shared";
+} from "src/services/produto.service";
+import { SelectWithHideOptions } from "src/components/Shareable/SelectWithHideOptions";
+import { STATUS_RECLAMACAO_PRODUTO } from "src/constants/shared";
 
 const initialState = {
   dados: {},

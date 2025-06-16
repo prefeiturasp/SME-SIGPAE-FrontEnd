@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import "./styles.scss";
 import FiltrosExcel from "../FiltrosRelatorios";
 
-import ModalSolicitacaoDownload from "components/Shareable/ModalSolicitacaoDownload";
-import TooltipIcone from "components/Shareable/TooltipIcone";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import TooltipIcone from "src/components/Shareable/TooltipIcone";
 
 const ListagemSolicitacoes = ({
   solicitacoes,

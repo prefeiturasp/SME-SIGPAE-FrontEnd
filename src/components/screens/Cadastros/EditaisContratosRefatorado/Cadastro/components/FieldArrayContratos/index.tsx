@@ -1,16 +1,19 @@
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
-import { Botao } from "components/Shareable/Botao";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { InputComData } from "components/Shareable/DatePicker";
-import { InputText } from "components/Shareable/Input/InputText";
-import { Select } from "components/Shareable/Select";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import { Select } from "src/components/Shareable/Select";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { FormApi } from "final-form";
-import { required } from "helpers/fieldValidators";
-import { getError } from "helpers/utilities";
+import { required } from "src/helpers/fieldValidators";
+import { getError } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { DiretoriaRegionalInterface } from "interfaces/escola.interface";
 import { LoteRascunhosInterface } from "interfaces/rascunhos.interface";
@@ -19,7 +22,7 @@ import moment from "moment";
 import React, { useState } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
-import { encerraContratoTerceirizada } from "services/terceirizada.service";
+import { encerraContratoTerceirizada } from "src/services/terceirizada.service";
 import { VIGENCIA_STATUS } from "../../../ConsultaEditaisContratos/constants";
 import {
   FormCadastroEditaisContratosContratoInterface,

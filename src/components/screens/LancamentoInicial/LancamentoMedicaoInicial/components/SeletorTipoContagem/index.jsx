@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Form, Field } from "react-final-form";
 
-import { getTiposDeContagem } from "services/dietaEspecial.service";
+import { getTiposDeContagem } from "src/services/dietaEspecial.service";
 
 import "./styles.scss";
 import { OK } from "http-status-codes";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { updateEscolaSimples } from "services/escola.service";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { updateEscolaSimples } from "src/services/escola.service";
 
 import "./styles.scss";
 

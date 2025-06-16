@@ -1,20 +1,23 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Spin } from "antd";
 import "./styles.scss";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import {
   getGuiasInconsistencias,
   vinculaGuiasComEscolas,
-} from "services/logistica.service";
+} from "src/services/logistica.service";
 import ListagemInconsistencias from "./ListagemInconsistencias";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import Botao from "components/Shareable/Botao";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import Filtros from "./Filtros";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);

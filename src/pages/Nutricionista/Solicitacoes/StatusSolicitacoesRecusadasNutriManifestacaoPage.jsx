@@ -1,16 +1,16 @@
 import React from "react";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import { HOME } from "../constants";
-import { NUTRIMANIFESTACAO, SOLICITACOES_NEGADAS } from "configs/constants";
-import SolicitacoesPorStatusGenerico from "components/screens/SolicitacoesPorStatusGenerico";
+import { NUTRIMANIFESTACAO, SOLICITACOES_NEGADAS } from "src/configs/constants";
+import SolicitacoesPorStatusGenerico from "src/components/screens/SolicitacoesPorStatusGenerico";
 import {
   CARD_TYPE_ENUM,
   ICON_CARD_TYPE_ENUM,
-} from "components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { getSolicitacoesNegadasNutrimanifestacao } from "services/painelNutricionista.service";
-import CardLegendas from "components/Shareable/CardLegendas";
-import { PAGINACAO_DEFAULT } from "constants/shared";
+} from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import { getSolicitacoesNegadasNutrimanifestacao } from "src/services/painelNutricionista.service";
+import CardLegendas from "src/components/Shareable/CardLegendas";
+import { PAGINACAO_DEFAULT } from "src/constants/shared";
 
 const atual = {
   href: `/${NUTRIMANIFESTACAO}/${SOLICITACOES_NEGADAS}`,

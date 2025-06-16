@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Field } from "redux-form";
-import InputText from "components/Shareable/Input/InputText";
-import Botao from "components/Shareable/Botao";
+import InputText from "src/components/Shareable/Input/InputText";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
-import Select from "components/Shareable/Select";
-import { required } from "helpers/fieldValidators";
+} from "src/components/Shareable/Botao/constants";
+import Select from "src/components/Shareable/Select";
+import { required } from "src/helpers/fieldValidators";
 import "./style.scss";
 
 const Especificaoes = ({
@@ -16,6 +16,7 @@ const Especificaoes = ({
   unidades_de_medida,
   embalagens,
   especificacoesIniciais,
+  desabilitarCampos = false,
 }) => {
   const [mounted, setMounted] = useState(false);
   const opcoesUnidadesDeMedida =
@@ -85,6 +86,7 @@ const Especificaoes = ({
                 tooltipText="Campo específico para inserir a quantidade em volumes Ex: 01"
                 required
                 validate={required}
+                disabled={desabilitarCampos}
               />
             </div>
             <div className="col-4">
@@ -97,6 +99,7 @@ const Especificaoes = ({
                 tooltipText="Campo específico referente a unidade de medida do produto Ex: LT, ML..."
                 required
                 validate={required}
+                disabled={desabilitarCampos}
               />
             </div>
             <div className="col-4">
@@ -108,6 +111,7 @@ const Especificaoes = ({
                 naoDesabilitarPrimeiraOpcao
                 required
                 validate={required}
+                disabled={desabilitarCampos}
               />
             </div>
             <div className="col-1 excluir-especificacoes">
@@ -116,6 +120,7 @@ const Especificaoes = ({
                   icon={BUTTON_ICON.TRASH}
                   onClick={() => fields.remove(index)}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
+                  disabled={desabilitarCampos}
                 />
               )}
             </div>
@@ -127,15 +132,17 @@ const Especificaoes = ({
           </div>
         );
       })}
-      <div className="row  pt-3">
-        <div className="col-12">
-          <Botao
-            texto="Adicionar"
-            onClick={() => fields.push({})}
-            style={BUTTON_STYLE.GREEN}
-          />
+      {!desabilitarCampos && (
+        <div className="row  pt-3">
+          <div className="col-12">
+            <Botao
+              texto="Adicionar"
+              onClick={() => fields.push({})}
+              style={BUTTON_STYLE.GREEN}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };

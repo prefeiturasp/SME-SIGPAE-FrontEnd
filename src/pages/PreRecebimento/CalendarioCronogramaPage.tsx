@@ -1,10 +1,10 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { CALENDARIO_CRONOGRAMA, PRE_RECEBIMENTO } from "configs/constants";
-import { CalendarioCronograma } from "components/Shareable/CalendarioCronograma";
-import { getCalendarioCronogramas } from "services/cronograma.service";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import { CALENDARIO_CRONOGRAMA, PRE_RECEBIMENTO } from "src/configs/constants";
+import { CalendarioCronograma } from "src/components/Shareable/CalendarioCronograma";
+import { getCalendarioCronogramas } from "src/services/cronograma.service";
 
 const atual = {
   href: `/${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA}`,

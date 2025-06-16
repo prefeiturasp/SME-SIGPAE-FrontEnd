@@ -8,8 +8,8 @@ import {
   Tooltip,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import { GraficoBarra } from "components/Shareable/Graficos/GraficoBarra";
-import { ChartData } from "components/Shareable/Graficos/interfaces";
+import { GraficoBarra } from "src/components/Shareable/Graficos/GraficoBarra";
+import { ChartData } from "src/components/Shareable/Graficos/interfaces";
 import React from "react";
 
 ChartJS.register(

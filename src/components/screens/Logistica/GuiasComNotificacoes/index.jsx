@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import Filtros from "./components/Filtros";
 import ListagemNotificacoes from "./components/ListagemNotificacoes";
-import { gerarParametrosConsulta } from "helpers/utilities";
-import { getNotificacoesOcorrencia } from "services/logistica.service";
-import { Paginacao } from "components/Shareable/Paginacao";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { getNotificacoesOcorrencia } from "src/services/logistica.service";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import { PERFIL } from "../../../../constants/shared";
 import useSomenteLeitura from "../../../../hooks/useSomenteLeitura";
 

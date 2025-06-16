@@ -6,7 +6,7 @@ import React, {
 } from "react";
 import "./styles.scss";
 import { CollapseConfig } from "./interfaces";
-import { StateConferidosAnalise } from "components/screens/PreRecebimento/FichaTecnica/interfaces";
+import { StateConferidosAnalise } from "src/components/screens/PreRecebimento/FichaTecnica/interfaces";
 
 export interface CollapseControl {
   [index: number]: boolean;

@@ -5,12 +5,12 @@ import Column from "antd/es/table/Column";
 
 import { Field } from "react-final-form";
 
-import { AInputNumber } from "components/Shareable/MakeField";
+import { AInputNumber } from "src/components/Shareable/MakeField";
 
 import {
   formataValorDecimal,
   parserValorDecimal,
-} from "components/screens/helper";
+} from "src/components/screens/helper";
 import { FormApi } from "final-form";
 
 const ALIMENTACOES_TIPOA = ["Lanche", "Lanche 4h"];

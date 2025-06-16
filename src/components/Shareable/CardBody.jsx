@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Form, Field } from "react-final-form";
-import { Select } from "components/Shareable/Select";
-import InputText from "components/Shareable/Input/InputText";
-import { usuarioEhEmpresaTerceirizada } from "helpers/utilities";
+import { Select } from "src/components/Shareable/Select";
+import InputText from "src/components/Shareable/Input/InputText";
+import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 import { Spin } from "antd";
-import { TIPOS_SOLICITACOES_OPTIONS } from "constants/shared";
+import { TIPOS_SOLICITACOES_OPTIONS } from "src/constants/shared";
 import { InputComData } from "./DatePicker";
 import { ASelect } from "./MakeField";
-import { getNomesUnicosEditais } from "services/produto.service";
+import { getNomesUnicosEditais } from "src/services/produto.service";
 import {
   updateStatusDieta,
   updateTituloDieta,
   updateLoteDieta,
-} from "reducers/filtersDietaReducer";
+} from "src/reducers/filtersDietaReducer";
 import {
   updateMarcaProduto,
   updateNomeProduto,
   updateEditalProduto,
-} from "reducers/filtersProdutoReducer";
+} from "src/reducers/filtersProdutoReducer";
 import {
   updateDataEventoAlimentacao,
   updateLoteAlimentacao,
   updateStatusAlimentacao,
   updateTipoSolicitacaoAlimentacao,
   updateTituloAlimentacao,
-} from "reducers/filtersAlimentacaoReducer";
+} from "src/reducers/filtersAlimentacaoReducer";
 
 const CardBody = (props) => {
   const [editais, setEditais] = useState([]);

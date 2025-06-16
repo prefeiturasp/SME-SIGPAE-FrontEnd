@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Form, Field } from "react-final-form";
 
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import "./styles.scss";
 import { Radio } from "antd";
-import InputFile from "components/Shareable/Input/InputFile";
+import InputFile from "src/components/Shareable/Input/InputFile";
 
 const EXTENSOES_PERMITIDAS = "XLSX, XLS";
 

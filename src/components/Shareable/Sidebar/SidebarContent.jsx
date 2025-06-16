@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 
-import { ENVIRONMENT } from "constants/config";
+import { ENVIRONMENT } from "src/constants/config";
 import {
   ehUsuarioRelatorios,
   exibirGA,
@@ -41,7 +41,7 @@ import {
   usuarioEhRecebimento,
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 import {
   MenuCadastros,
@@ -57,6 +57,7 @@ import {
 } from "./menus";
 import { MenuSupervisao } from "./menus/MenuSupervisao";
 import { ListItem } from "./menus/shared";
+import { usuarioEhDilogVisualizacao } from "../../../helpers/utilities";
 
 export const SidebarContent = () => {
   const [activeMenu, setActiveMenu] = useState("");
@@ -181,7 +182,8 @@ export const SidebarContent = () => {
     !usuarioEhDilog() &&
     !usuarioEhOrgaoFiscalizador() &&
     !usuarioEhDinutreDiretoria() &&
-    !ehUsuarioRelatorios();
+    !ehUsuarioRelatorios() &&
+    !usuarioEhDilogVisualizacao();
 
   const exibirMenuLogistica =
     usuarioEhLogistica() ||

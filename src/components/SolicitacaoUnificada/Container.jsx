@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getDiasUteis } from "services/diasUteis.service";
-import { getKitLanches } from "services/kitLanche";
-import { getEscolasTercTotal } from "services/escola.service";
-import { dataParaUTC } from "helpers/utilities";
+import { getDiasUteis } from "src/services/diasUteis.service";
+import { getKitLanches } from "src/services/kitLanche";
+import { getEscolasTercTotal } from "src/services/escola.service";
+import { dataParaUTC } from "src/helpers/utilities";
 import SolicitacaoUnificada from ".";
-import { MeusDadosContext } from "context/MeusDadosContext";
-import { SigpaeLogoLoader } from "components/Shareable/SigpaeLogoLoader";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);

@@ -13,7 +13,7 @@ import { getOptions } from "./helper";
 import "./style.scss";
 import Select from "../../Shareable/Select";
 import InputText from "../../Shareable/Input/InputText";
-import CKEditorField from "components/Shareable/CKEditorField";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import Botao from "../../Shareable/Botao";
 import { BUTTON_STYLE, BUTTON_TYPE } from "../../Shareable/Botao/constants";
 

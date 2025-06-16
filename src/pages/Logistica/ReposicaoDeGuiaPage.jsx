@@ -1,9 +1,13 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { CONFERIR_ENTREGA, REPOSICAO_GUIA, LOGISTICA } from "configs/constants";
-import ReposicaoDeGuia from "components/screens/Logistica/ReposicaoDeGuia";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import {
+  CONFERIR_ENTREGA,
+  REPOSICAO_GUIA,
+  LOGISTICA,
+} from "src/configs/constants";
+import ReposicaoDeGuia from "src/components/screens/Logistica/ReposicaoDeGuia";
 
 const atual = {
   href: `/${LOGISTICA}/${REPOSICAO_GUIA}`,

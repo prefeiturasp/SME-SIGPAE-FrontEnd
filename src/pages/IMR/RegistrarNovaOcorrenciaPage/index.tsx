@@ -1,14 +1,14 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
 import {
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
   REGISTRAR_NOVA_OCORRENCIA,
   REGISTRAR_OCORRENCIAS,
-} from "configs/constants";
-import { RegistrarNovaOcorrencia } from "components/screens/IMR/RegistrarNovaOcorrencia";
+} from "src/configs/constants";
+import { RegistrarNovaOcorrencia } from "src/components/screens/IMR/RegistrarNovaOcorrencia";
 
 const atual = {
   href: `/${LANCAMENTO_INICIAL}/${LANCAMENTO_MEDICAO_INICIAL}/${REGISTRAR_OCORRENCIAS}/${REGISTRAR_NOVA_OCORRENCIA}`,

@@ -1,4 +1,4 @@
-import { MeusDadosInterface } from "context/MeusDadosContext/interfaces";
+import { MeusDadosInterface } from "src/context/MeusDadosContext/interfaces";
 
 export const mockMeusDadosFornecedor: MeusDadosInterface = {
   uuid: "9f34bc68-ae58-41b1-a605-189824c9f7ef",

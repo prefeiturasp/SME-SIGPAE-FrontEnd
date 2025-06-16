@@ -12,7 +12,7 @@ import {
   RELATORIO_CRONOGRAMA,
   SOLICITACAO_ALTERACAO_CRONOGRAMA,
   SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   usuarioComAcessoAoCalendarioCronograma,
   usuarioComAcessoAoPainelAprovacoes,
@@ -27,7 +27,7 @@ import {
   usuarioEhDilogDiretoria,
   usuarioEhEmpresaFornecedor,
   usuarioEhPreRecebimento,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
 
@@ -54,7 +54,8 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
       {(usuarioEhCronograma() ||
         usuarioEhDilogAbastecimento() ||
         usuarioEhCodaeDilog() ||
-        usuarioEhDilogDiretoria()) && (
+        usuarioEhDilogDiretoria() ||
+        usuarioEhPreRecebimento()) && (
         <LeafItem
           to={`/${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`}
         >

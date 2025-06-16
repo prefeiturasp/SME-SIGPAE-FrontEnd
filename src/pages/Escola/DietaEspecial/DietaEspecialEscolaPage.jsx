@@ -1,7 +1,7 @@
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import DietaEspecialEscola from "components/screens/DietaEspecial/Escola";
-import { DIETA_ESPECIAL, ESCOLA } from "configs/constants";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import DietaEspecialEscola from "src/components/screens/DietaEspecial/Escola";
+import { DIETA_ESPECIAL, ESCOLA } from "src/configs/constants";
 import React from "react";
 import { HOME } from "../constants";
 

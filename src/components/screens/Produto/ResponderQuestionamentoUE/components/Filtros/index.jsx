@@ -2,21 +2,21 @@ import React, { useState, useEffect } from "react";
 import HTTP_STATUS from "http-status-codes";
 
 import { Form, Field } from "react-final-form";
-import AutoCompleteFieldUnaccent from "components/Shareable/AutoCompleteField/unaccent";
+import AutoCompleteFieldUnaccent from "src/components/Shareable/AutoCompleteField/unaccent";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
 
 import {
   getNomesProdutos,
   getMarcas,
   getFabricantes,
   filtrarReclamacoesEscola,
-} from "services/reclamacaoProduto.service";
+} from "src/services/reclamacaoProduto.service";
 
-import { formataOpcoes, formataPayload } from "./helpers.js";
+import { formataOpcoes, formataPayload } from "./helpers";
 import "./styles.scss";
 
 const Filtros = ({

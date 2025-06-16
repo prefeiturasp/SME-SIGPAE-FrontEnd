@@ -1,26 +1,26 @@
 import { Select as SelectAntd, Spin } from "antd";
-import { ASelect } from "components/Shareable/MakeField";
-import { toastError } from "components/Shareable/Toast/dialogs";
-import { FiltroEnum, TIPODECARD } from "constants/shared";
+import { ASelect } from "src/components/Shareable/MakeField";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { FiltroEnum, TIPODECARD } from "src/constants/shared";
 import {
   filtraNoLimite,
   filtraPrioritarios,
   filtraRegular,
   ordenarPedidosDataMaisRecente,
-} from "helpers/painelPedidos";
+} from "src/helpers/painelPedidos";
 import {
   dataAtualDDMMYYYY,
   formatarOpcoesDRE,
   formatarOpcoesLote,
   getError,
   safeConcatOn,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
-import { getDiretoriaregionalSimplissima } from "services/diretoriaRegional.service";
-import { getCODAEPedidosDeInversoes } from "services/inversaoDeDiaDeCardapio.service";
-import { getLotesSimples } from "services/lote.service";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
+import { getCODAEPedidosDeInversoes } from "src/services/inversaoDeDiaDeCardapio.service";
+import { getLotesSimples } from "src/services/lote.service";
 import { CardInversaoPendenciaAprovacao } from "../../components/CardPendenteAcao";
 
 export const PainelPedidos = ({ ...props }) => {

@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import { FluxoDeStatus } from "components/Shareable/FluxoDeStatus";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
 import {
   corDaMensagem,
   stringSeparadaPorVirgulas,
@@ -8,26 +8,26 @@ import {
   ehInclusaoCei,
   justificativaAoNegarSolicitacao,
   gerarLinkRelatorio,
-} from "helpers/utilities";
-import Botao from "components/Shareable/Botao";
+} from "src/helpers/utilities";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import { formataMotivosDias } from "./helper";
-import { fluxoPartindoEscola } from "components/Shareable/FluxoDeStatus/helper";
-import TabelaFaixaEtaria from "components/Shareable/TabelaFaixaEtaria";
-import { existeLogDeQuestionamentoDaCODAE } from "components/Shareable/RelatorioHistoricoQuestionamento/helper";
-import { getRelatorioInclusaoAlimentacao } from "services/relatorios";
-import { WEEK } from "configs/constants";
+import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
+import TabelaFaixaEtaria from "src/components/Shareable/TabelaFaixaEtaria";
+import { existeLogDeQuestionamentoDaCODAE } from "src/components/Shareable/RelatorioHistoricoQuestionamento/helper";
+import { getRelatorioInclusaoAlimentacao } from "src/services/relatorios";
+import { WEEK } from "src/configs/constants";
 import InclusoesCEI from "./InclusoesCEI";
 import { ToggleExpandir } from "../../../Shareable/ToggleExpandir";
-import { SolicitacoesSimilaresInclusao } from "components/Shareable/SolicitacoesSimilaresInclusao";
+import { SolicitacoesSimilaresInclusao } from "src/components/Shareable/SolicitacoesSimilaresInclusao";
 import {
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhDRE,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 
 const renderParteAvulsa = (
   inclusaoDeAlimentacao,

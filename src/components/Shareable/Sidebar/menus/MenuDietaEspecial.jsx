@@ -6,8 +6,8 @@ import {
   RELATORIO_DIETAS_CANCELADAS,
   RELATORIO_HISTORICO_DIETAS,
   RELATORIO_GERENCIAL_DIETAS,
-} from "configs/constants";
-import { getNomeCardAguardandoAutorizacao } from "helpers/dietaEspecial";
+} from "src/configs/constants";
+import { getNomeCardAguardandoAutorizacao } from "src/helpers/dietaEspecial";
 import {
   ehUsuarioRelatorios,
   usuarioEhAdministradorNutriCODAE,
@@ -27,7 +27,7 @@ import {
   usuarioEhNutricionistaSupervisao,
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
-} from "helpers/utilities";
+} from "src/helpers/utilities";
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
 

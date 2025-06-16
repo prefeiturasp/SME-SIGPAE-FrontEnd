@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { TIPOS_SOLICITACAO_LISTA_DRE } from "constants/shared";
-import { formatarOpcoesLote } from "helpers/utilities";
+import { TIPOS_SOLICITACAO_LISTA_DRE } from "src/constants/shared";
+import { formatarOpcoesLote } from "src/helpers/utilities";
 import DashboardDRE from ".";
-import { getLotesSimples } from "services/lote.service";
+import { getLotesSimples } from "src/services/lote.service";
 import { Spin } from "antd";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 export const Container = () => {
   const [visaoPor] = useState([

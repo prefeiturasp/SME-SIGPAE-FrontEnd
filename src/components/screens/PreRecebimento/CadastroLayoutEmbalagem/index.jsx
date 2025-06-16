@@ -6,19 +6,22 @@ import { useNavigate } from "react-router-dom";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import InputText from "components/Shareable/Input/InputText";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import { getListaFichasTecnicasSimplesSemLayoutEmbalagem } from "services/fichaTecnica.service";
-import { cadastraLayoutEmbalagem } from "services/layoutEmbalagem.service";
-import { getListaFiltradaAutoCompleteSelect } from "helpers/autoCompleteSelect";
-import { required } from "helpers/fieldValidators";
-import { exibeError } from "helpers/utilities";
-import { formatarNumeroEProdutoFichaTecnica } from "helpers/preRecebimento";
-import { LAYOUT_EMBALAGEM, PRE_RECEBIMENTO } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import InputText from "src/components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import { getListaFichasTecnicasSimplesSemLayoutEmbalagem } from "src/services/fichaTecnica.service";
+import { cadastraLayoutEmbalagem } from "src/services/layoutEmbalagem.service";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
+import { required } from "src/helpers/fieldValidators";
+import { exibeError } from "src/helpers/utilities";
+import { formatarNumeroEProdutoFichaTecnica } from "src/helpers/preRecebimento";
+import { LAYOUT_EMBALAGEM, PRE_RECEBIMENTO } from "src/configs/constants";
 
 import ModalConfirmar from "./components/ModalConfirmar";
 import ModalCancelar from "./components/ModalCancelar";
@@ -203,6 +206,7 @@ export default () => {
                       )}
                       label="Ficha Técnica e Produto"
                       name={`ficha_tecnica`}
+                      dataTestId={"ficha_tecnica"}
                       className="input-busca-produto"
                       placeholder="Digite o Nº da Ficha Técnica ou nome do Produto"
                       required
@@ -229,6 +233,7 @@ export default () => {
                       component={InputText}
                       label="Nº do Pregão/Chamada Pública"
                       name={`pregao_chamada_publica`}
+                      dataTestId={"pregao-chamada-publica"}
                       placeholder="Nº do Pregão/Chamada Pública"
                       required
                       disabled={true}
@@ -242,6 +247,7 @@ export default () => {
                   setFiles={setFiles1}
                   removeFile={removeFile1}
                   tipoEmbalagem={"PRIMARIA"}
+                  dataTestId={"inserir-arquivo-primaria"}
                 />
 
                 <hr />
@@ -250,6 +256,7 @@ export default () => {
                   setFiles={setFiles2}
                   removeFile={removeFile2}
                   tipoEmbalagem={"SECUNDARIA"}
+                  dataTestId={"inserir-arquivo-secundaria"}
                 />
 
                 <hr />
@@ -258,6 +265,7 @@ export default () => {
                   setFiles={setFiles3}
                   removeFile={removeFile3}
                   tipoEmbalagem={"TERCIARIA"}
+                  dataTestId={"inserir-arquivo-terciaria"}
                 />
 
                 <hr />
@@ -268,6 +276,7 @@ export default () => {
                       component={TextArea}
                       label="Observações"
                       name="observacoes"
+                      dataTestId={"observacoes"}
                     />
                   </div>
                 </div>

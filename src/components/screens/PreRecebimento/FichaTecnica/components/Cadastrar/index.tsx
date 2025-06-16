@@ -1,29 +1,29 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Field, Form } from "react-final-form";
-import Label from "components/Shareable/Label";
+import Label from "src/components/Shareable/Label";
 
-import { required, email } from "helpers/fieldValidators";
+import { required, email } from "src/helpers/fieldValidators";
 import { Spin, Tooltip } from "antd";
 import { CATEGORIA_OPTIONS } from "../../constants";
-import InputText from "components/Shareable/Input/InputText";
-import MaskedInputText from "components/Shareable/Input/MaskedInputText";
+import InputText from "src/components/Shareable/Input/InputText";
+import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
 
-import Collapse, { CollapseControl } from "components/Shareable/Collapse";
-import { MeusDadosContext } from "context/MeusDadosContext";
+import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
 } from "../../../../../Shareable/Botao/constants";
 import Botao from "../../../../../Shareable/Botao";
-import { cepMask, cnpjMask, telefoneMask } from "constants/shared";
-import { getListaFiltradaAutoCompleteSelect } from "helpers/autoCompleteSelect";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
+import { cepMask, cnpjMask, telefoneMask } from "src/constants/shared";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import FormPereciveisENaoPereciveis from "./components/FormPereciveisENaoPereciveis";
-import TabelaNutricional from "components/Shareable/TabelaNutricional";
-import Select from "components/Shareable/Select";
-import ModalCadastrarItemIndividual from "components/Shareable/ModalCadastrarItemIndividual";
-import { ModalAssinaturaUsuario } from "components/Shareable/ModalAssinaturaUsuario";
+import TabelaNutricional from "src/components/Shareable/TabelaNutricional";
+import Select from "src/components/Shareable/Select";
+import ModalCadastrarItemIndividual from "src/components/Shareable/ModalCadastrarItemIndividual";
+import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 
 import {
   ArquivoForm,
@@ -56,7 +56,7 @@ import {
 
 import "./styles.scss";
 import FormProponente from "./components/FormProponente";
-import StepsSigpae from "components/Shareable/StepsSigpae";
+import StepsSigpae from "src/components/Shareable/StepsSigpae";
 
 const ITENS_STEPS = [
   {

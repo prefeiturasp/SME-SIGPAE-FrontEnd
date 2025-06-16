@@ -9,35 +9,38 @@ import {
   FICHA_RECEBIMENTO,
   RECEBIMENTO,
   QUESTOES_POR_PRODUTO,
-} from "configs/constants";
+} from "src/configs/constants";
 import {
   getListaCronogramasPraFichaRecebimento,
   getCronogramaPraCadastroRecebimento,
-} from "services/cronograma.service";
-import { cadastraRascunhoFichaRecebimento } from "services/fichaRecebimento.service";
-import AutoCompleteSelectField from "components/Shareable/AutoCompleteSelectField";
-import Select from "components/Shareable/Select";
-import MultiSelect from "components/Shareable/FinalForm/MultiSelect";
-import InputText from "components/Shareable/Input/InputText";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { InputComData } from "components/Shareable/DatePicker";
+} from "src/services/cronograma.service";
+import { cadastraRascunhoFichaRecebimento } from "src/services/fichaRecebimento.service";
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import Select from "src/components/Shareable/Select";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import InputText from "src/components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import { InputComData } from "src/components/Shareable/DatePicker";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import Botao from "components/Shareable/Botao";
-import StepsSigpae from "components/Shareable/StepsSigpae";
-import Collapse, { CollapseControl } from "components/Shareable/Collapse";
-import ModalGenerico from "components/Shareable/ModalGenerico";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import RadioButtonField from "components/Shareable/RadioButtonField";
-import Label from "components/Shareable/Label";
-import InputFileField from "components/Shareable/InputFileField";
-import { getListaFiltradaAutoCompleteSelect } from "helpers/autoCompleteSelect";
-import { required } from "helpers/fieldValidators";
-import { exibeError } from "helpers/utilities";
-import { deletaValues } from "helpers/formHelper";
-import { stringToBoolean } from "helpers/parsers";
+} from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import StepsSigpae from "src/components/Shareable/StepsSigpae";
+import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import RadioButtonField from "src/components/Shareable/RadioButtonField";
+import Label from "src/components/Shareable/Label";
+import InputFileField from "src/components/Shareable/InputFileField";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
+import { required } from "src/helpers/fieldValidators";
+import { exibeError } from "src/helpers/utilities";
+import { deletaValues } from "src/helpers/formHelper";
+import { stringToBoolean } from "src/helpers/parsers";
 import {
   Arquivo,
   ArquivoForm,
@@ -53,7 +56,7 @@ import {
 } from "../../interfaces";
 
 import "./styles.scss";
-import { detalharQuestoesPorCronograma } from "services/recebimento/questoesConferencia.service";
+import { detalharQuestoesPorCronograma } from "src/services/recebimento/questoesConferencia.service";
 import { QuestaoConferenciaSimples } from "interfaces/recebimento.interface";
 
 const ITENS_STEPS = [

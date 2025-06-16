@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from "react";
 import moment from "moment";
 import { ToggleExpandir } from "../../../Shareable/ToggleExpandir";
-import { getTerceirizada } from "../../../../services/terceirizada.service.js";
+import { getTerceirizada } from "../../../../services/terceirizada.service";
 import { Link, NavLink } from "react-router-dom";
-import { retornArrayTerceirizadas } from "./helper.js";
+import { retornArrayTerceirizadas } from "./helper";
 import { PERFIL } from "../../../../constants/shared";
 import "../style.scss";
 import { Tooltip } from "antd";

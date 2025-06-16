@@ -1,23 +1,27 @@
 import { Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getInclusaoCEMEI } from "services/inclusaoDeAlimentacao";
+import { getInclusaoCEMEI } from "src/services/inclusaoDeAlimentacao";
 import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
 import {
   getVinculosTipoAlimentacaoPorEscola,
   getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
-} from "services/cadastroTipoAlimentacao.service";
-import { visualizaBotoesDoFluxo } from "helpers/utilities";
-import Botao from "components/Shareable/Botao";
+} from "src/services/cadastroTipoAlimentacao.service";
+import { visualizaBotoesDoFluxo } from "src/helpers/utilities";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { statusEnum, TIPO_PERFIL } from "constants/shared";
-import { CODAE, DRE, TERCEIRIZADA } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import { statusEnum, TIPO_PERFIL } from "src/constants/shared";
+import { CODAE, DRE, TERCEIRIZADA } from "src/configs/constants";
 import { Form } from "react-final-form";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
-import ModalMarcarConferencia from "components/Shareable/ModalMarcarConferencia";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import { ehUsuarioEmpresa } from "src/helpers/utilities";
 
 export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   const [uuid, setUuid] = useState(null);
@@ -178,6 +182,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
       solicitacao.status
     );
   const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
+    !ehUsuarioEmpresa() &&
     visao === TERCEIRIZADA &&
     solicitacao &&
     [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(

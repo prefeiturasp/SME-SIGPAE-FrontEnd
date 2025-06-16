@@ -1,9 +1,12 @@
 import React from "react";
-import { HOME } from "constants/config";
-import Breadcrumb from "components/Shareable/Breadcrumb";
-import Page from "components/Shareable/Page/Page";
-import { DISPONIBILIZACAO_DE_SOLICITACOES, LOGISTICA } from "configs/constants";
-import { DisponibilizacaoDeSolicitacoes } from "components/screens/Logistica/DisponibilizacaoDeSolicitacoes";
+import { HOME } from "src/constants/config";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import Page from "src/components/Shareable/Page/Page";
+import {
+  DISPONIBILIZACAO_DE_SOLICITACOES,
+  LOGISTICA,
+} from "src/configs/constants";
+import { DisponibilizacaoDeSolicitacoes } from "src/components/screens/Logistica/DisponibilizacaoDeSolicitacoes";
 
 const atual = {
   href: `/${LOGISTICA}/${DISPONIBILIZACAO_DE_SOLICITACOES}`,

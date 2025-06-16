@@ -1,16 +1,16 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
-import { peloMenosUmCaractere, required } from "helpers/fieldValidators";
-import CKEditorField from "components/Shareable/CKEditorField";
-import { InputText } from "components/Shareable/Input/InputText";
-import ManagedInputFileField from "components/Shareable/Input/InputFile/ManagedField";
-import Botao from "components/Shareable/Botao";
+import { peloMenosUmCaractere, required } from "src/helpers/fieldValidators";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import ManagedInputFileField from "src/components/Shareable/Input/InputFile/ManagedField";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 import "./style.scss";
 import ModalSuspensaoProdutoEdital from "../ModalSuspensaoProdutoEdital";

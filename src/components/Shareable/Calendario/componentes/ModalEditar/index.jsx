@@ -1,9 +1,9 @@
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { getDDMMYYYfromDate } from "helpers/utilities";
+} from "src/components/Shareable/Botao/constants";
+import { getDDMMYYYfromDate } from "src/helpers/utilities";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import "./style.scss";

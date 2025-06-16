@@ -6,7 +6,7 @@ import {
   CADASTRO_CRONOGRAMA,
   EDITAR,
   PRE_RECEBIMENTO,
-} from "configs/constants";
+} from "src/configs/constants";
 
 export default ({ listaRascunhos }) => {
   const so_data = (data) => {

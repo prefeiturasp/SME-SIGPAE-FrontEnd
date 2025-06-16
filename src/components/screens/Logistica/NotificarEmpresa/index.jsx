@@ -1,38 +1,41 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   assinarEnviarNotificacao,
   criarEditarNotificacao,
   enviarNotificacao,
   getNotificacao,
   solicitarAlteracaoNotificacao,
-} from "services/logistica.service";
+} from "src/services/logistica.service";
 import { Field, Form } from "react-final-form";
-import InputText from "components/Shareable/Input/InputText";
+import InputText from "src/components/Shareable/Input/InputText";
 import ModalDetalharGuia from "../CadastroNotificacao/components/ModalDetalharGuia";
 import "./styles.scss";
-import { TextArea } from "components/Shareable/TextArea/TextArea";
-import { TIPOS_OCORRENCIAS_OPTIONS } from "constants/shared";
-import Botao from "components/Shareable/Botao";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import { TIPOS_OCORRENCIAS_OPTIONS } from "src/constants/shared";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 import ModalConfirmarEnvio from "./components/ModalConfirmarEnvio";
 import {
   GUIAS_NOTIFICACAO,
   GUIAS_NOTIFICACAO_FISCAL,
   LOGISTICA,
-} from "configs/constants";
+} from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
 import ModalCancelarEnvio from "./components/ModalCancelarEnvio";
-import BotaoVoltar from "components/Shareable/Page/BotaoVoltar";
+import BotaoVoltar from "src/components/Shareable/Page/BotaoVoltar";
 import ModalSolicitaAlteracao from "./components/ModalSolicitaAlteracao";
-import { ModalAssinaturaUsuario } from "components/Shareable/ModalAssinaturaUsuario";
+import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 import moment from "moment";
-import { MSG_SENHA_INVALIDA } from "components/screens/helper";
+import { MSG_SENHA_INVALIDA } from "src/components/screens/helper";
 
 export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { AnaliseFichaTecnicaPayload } from "components/screens/PreRecebimento/FichaTecnica/interfaces";
+import { AnaliseFichaTecnicaPayload } from "src/components/screens/PreRecebimento/FichaTecnica/interfaces";
 import { LogSolicitacoesUsuarioSimples } from "./dados_comuns.interface";
 import { InformacaoNutricional } from "./produto.interface";
 import { TerceirizadaSimplesInterface } from "./terceirizada.interface";

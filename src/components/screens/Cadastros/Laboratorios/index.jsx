@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import Filtros from "./components/Filtros";
 import ListagemLaboratorios from "./components/ListagemLaboratorios";
-import { gerarParametrosConsulta } from "helpers/utilities";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
 import {
   getLaboratorios,
   getListaLaboratorios,
-} from "services/laboratorio.service";
-import { Paginacao } from "components/Shareable/Paginacao";
+} from "src/services/laboratorio.service";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import "./styles.scss";
 
 export default () => {

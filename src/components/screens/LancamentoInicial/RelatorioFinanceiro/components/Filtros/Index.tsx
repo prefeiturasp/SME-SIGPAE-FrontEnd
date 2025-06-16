@@ -1,6 +1,6 @@
 import React from "react";
 
-import CollapseFiltros from "components/Shareable/CollapseFiltros";
+import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import { FormFields } from "../FormFields";
 
 type FiltrosProps = {

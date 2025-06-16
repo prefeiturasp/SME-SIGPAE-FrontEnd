@@ -5,7 +5,7 @@ import {
 } from "../../../constants/shared";
 import "./style.scss";
 import { existeLogDeCancelamentoDaEscola } from "./helper";
-import { CODAE, DRE, ESCOLA } from "configs/constants";
+import { CODAE, DRE, ESCOLA } from "src/configs/constants";
 
 export const RelatorioHistoricoJustificativaEscola = (props) => {
   const { solicitacao, visao, nomeEscola } = props;

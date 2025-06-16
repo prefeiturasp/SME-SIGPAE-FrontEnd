@@ -9,14 +9,14 @@ import {
   BUTTON_TYPE,
   BUTTON_ICON,
 } from "../../../../../Shareable/Botao/constants";
-import withNavigate from "components/Shareable/withNavigate";
+import withNavigate from "src/components/Shareable/withNavigate";
 import {
   toastSuccess,
   toastError,
 } from "../../../../../Shareable/Toast/dialogs";
 import { getError } from "../../../../../../helpers/utilities";
 import { escolaInativaDietaEspecial } from "../../../../../../services/dietaEspecial.service";
-import { statusEnum } from "constants/shared";
+import { statusEnum } from "src/constants/shared";
 
 export class SolicitacaoVigente extends Component {
   constructor(props) {

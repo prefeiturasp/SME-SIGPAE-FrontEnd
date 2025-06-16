@@ -1,11 +1,11 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
-import { usuarioEhMedicao } from "helpers/utilities";
+} from "src/components/Shareable/Botao/constants";
+import { usuarioEhMedicao } from "src/helpers/utilities";
 
 export const ModalEnviarParaCodaeECodaeAprovar = ({ ...props }) => {
   const { showModal, setShowModal, aprovarSolicitacaoMedicao } = props;

@@ -1,15 +1,16 @@
 import React from "react";
 import { Field, reduxForm, FormSection } from "redux-form";
-import InputText from "components/Shareable/Input/InputText";
-import { required, inteiroOuDecimal } from "helpers/fieldValidators";
+import InputText from "src/components/Shareable/Input/InputText";
+import { required, inteiroOuDecimal } from "src/helpers/fieldValidators";
 import "./styles.scss";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { ToggleExpandir } from "components/Shareable/ToggleExpandir";
-import { STATUS_CODAE_QUESTIONADO } from "configs/constants";
+} from "src/components/Shareable/Botao/constants";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
+import { STATUS_CODAE_QUESTIONADO } from "src/configs/constants";
+import { ehUsuarioEmpresa } from "src/helpers/utilities";
 
 class WizardFormSegundaPagina extends React.Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class WizardFormSegundaPagina extends React.Component {
       verificado: false,
       temCamposPreenchidos: false,
       status_codae_questionado: false,
+      ehUsuarioEmpresa: ehUsuarioEmpresa(),
     };
   }
 
@@ -253,8 +255,12 @@ class WizardFormSegundaPagina extends React.Component {
 
   render() {
     const { handleSubmit, previousPage, valuesForm } = this.props;
-    const { informacoes, temCamposPreenchidos, status_codae_questionado } =
-      this.state;
+    const {
+      informacoes,
+      temCamposPreenchidos,
+      status_codae_questionado,
+      ehUsuarioEmpresa,
+    } = this.state;
     return (
       <form onSubmit={handleSubmit} className="segundo-formulario">
         <header>Informações Nutricionais</header>
@@ -268,6 +274,7 @@ class WizardFormSegundaPagina extends React.Component {
             placeholder="Ex: porção de 200ml (01 unidade)"
             required
             validate={required}
+            disabled={ehUsuarioEmpresa}
           />
           <Field
             component={InputText}
@@ -278,6 +285,7 @@ class WizardFormSegundaPagina extends React.Component {
             placeholder="Ex: 01 copo"
             required
             validate={required}
+            disabled={ehUsuarioEmpresa}
           />
         </section>
         <header className="mt-3">
@@ -320,6 +328,7 @@ class WizardFormSegundaPagina extends React.Component {
                                     onBlur={() => {
                                       this.onBlurField(item);
                                     }}
+                                    disabled={ehUsuarioEmpresa}
                                   />
                                 </div>
                                 <div className="medida">{item.medida}</div>
@@ -332,6 +341,7 @@ class WizardFormSegundaPagina extends React.Component {
                                     onBlur={() => {
                                       this.onBlurField(item);
                                     }}
+                                    disabled={ehUsuarioEmpresa}
                                   />
                                 </div>
                                 <div className="medida">%</div>

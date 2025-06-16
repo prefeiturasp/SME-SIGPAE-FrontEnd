@@ -4,7 +4,7 @@ import { Field } from "react-final-form";
 import {
   nonRequiredNumericInteger,
   numericInteger,
-} from "helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 
 import BorderlessInput from "../../../BorderlessInput";
 

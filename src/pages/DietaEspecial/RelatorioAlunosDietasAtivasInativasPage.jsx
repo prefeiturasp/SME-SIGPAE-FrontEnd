@@ -7,7 +7,7 @@ import Page from "../../components/Shareable/Page/Page";
 
 import AtivasInativas from "../../components/screens/DietaEspecial/AtivasInativasPorAluno";
 
-import { DIETA_ESPECIAL, ATIVAS_ANATIVAS } from "configs/constants";
+import { DIETA_ESPECIAL, ATIVAS_ANATIVAS } from "src/configs/constants";
 
 const atual = {
   href: `/${DIETA_ESPECIAL}/${ATIVAS_ANATIVAS}`,

@@ -5,7 +5,7 @@ import {
   AVALIAR_RECLAMACAO_PRODUTO,
   GESTAO_PRODUTO,
 } from "../../configs/constants";
-import AvaliarReclamacaoProduto from "components/screens/Produto/AvaliarReclamacaoProduto";
+import AvaliarReclamacaoProduto from "src/components/screens/Produto/AvaliarReclamacaoProduto";
 
 const atual = {
   href: `/${GESTAO_PRODUTO}/${AVALIAR_RECLAMACAO_PRODUTO}`,

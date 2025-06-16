@@ -1,12 +1,15 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
 import HTTP_STATUS from "http-status-codes";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
-} from "components/Shareable/Botao/constants";
-import { toastError, toastSuccess } from "components/Shareable/Toast/dialogs";
+} from "src/components/Shareable/Botao/constants";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 
 export const ModalExcluirEmail = ({ ...props }) => {
   const {

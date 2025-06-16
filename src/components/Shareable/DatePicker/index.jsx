@@ -9,12 +9,12 @@ import "./style.scss";
 import { HelpText } from "../HelpText";
 import TooltipIcone from "../TooltipIcone";
 import InputErroMensagem from "../Input/InputErroMensagem";
-import Botao from "components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-} from "components/Shareable/Botao/constants";
+} from "src/components/Shareable/Botao/constants";
 
 export class InputComData extends Component {
   // Thanks community :D

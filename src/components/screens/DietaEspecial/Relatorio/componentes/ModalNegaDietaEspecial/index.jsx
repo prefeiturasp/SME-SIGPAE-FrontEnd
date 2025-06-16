@@ -1,33 +1,26 @@
 import HTTP_STATUS from "http-status-codes";
-import React, { Component } from "react";
+import { Component } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
-import CKEditorField from "components/Shareable/CKEditorField";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import Select from "src/components/Shareable/Select";
 import {
   toastError,
   toastSuccess,
-} from "../../../../../Shareable/Toast/dialogs";
-import Botao from "../../../../../Shareable/Botao";
-import {
-  BUTTON_TYPE,
-  BUTTON_STYLE,
-} from "../../../../../Shareable/Botao/constants";
-import Select from "../../../../../Shareable/Select";
+} from "src/components/Shareable/Toast/dialogs";
 import {
   peloMenosUmCaractere,
   required,
   textAreaRequired,
-} from "helpers/fieldValidators";
-import { composeValidators } from "helpers/utilities";
-import { agregarDefault } from "../../../../../../helpers/utilities";
-import { formataMotivos } from "./helper";
+} from "src/helpers/fieldValidators";
+import { composeValidators } from "src/helpers/utilities";
 
 export default class ModalNegarSolicitacao extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { motivosNegacao: [] };
-  }
-
   onSubmit = async (values) => {
     const { uuid, submitModal } = this.props;
     const resp = await submitModal(uuid, values);
@@ -42,15 +35,8 @@ export default class ModalNegarSolicitacao extends Component {
     }
   };
 
-  componentDidMount = async () => {
-    const motivosNegacao = await this.props.getMotivos();
-    this.setState({
-      motivosNegacao: agregarDefault(formataMotivos(motivosNegacao.results)),
-    });
-  };
-
   render() {
-    const { motivosNegacao } = this.state;
+    const { motivosNegacao } = this.props;
     return (
       <Modal
         dialogClassName="modal-90w"
@@ -67,14 +53,18 @@ export default class ModalNegarSolicitacao extends Component {
               <Modal.Body>
                 <div className="row">
                   <div className="col-12">
-                    <Field
-                      component={Select}
-                      label="Motivo"
-                      name="motivo_negacao"
-                      options={motivosNegacao}
-                      required
-                      validate={required}
-                    />
+                    {motivosNegacao ? (
+                      <Field
+                        component={Select}
+                        label="Motivo"
+                        name="motivo_negacao"
+                        options={motivosNegacao}
+                        required
+                        validate={required}
+                      />
+                    ) : (
+                      <div>Carregando motivos...</div>
+                    )}
                   </div>
                 </div>
                 <div className="form-row mb-3">
