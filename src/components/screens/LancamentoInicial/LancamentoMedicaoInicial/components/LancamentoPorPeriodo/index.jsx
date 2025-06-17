@@ -44,6 +44,7 @@ import {
   renderBotaoEnviarCorrecao,
   verificaSeEnviarCorrecaoDisabled,
 } from "./helpers";
+import { ModalFinalizarMedicaoSemLancamentos } from "../ModalFinalizarSemLancamentos";
 
 export const LancamentoPorPeriodo = ({
   escolaInstituicao,
@@ -73,6 +74,10 @@ export const LancamentoPorPeriodo = ({
 }) => {
   const [showModalFinalizarMedicao, setShowModalFinalizarMedicao] =
     useState(false);
+  const [
+    showModalFinalizarMedicaoSemLancamentos,
+    setShowModalFinalizarMedicaoSemLancamentos,
+  ] = useState(false);
   const [showModalEnviarCorrecao, setShowModalEnviarCorrecao] = useState(false);
   const [showModalSemOcorrenciasIMR, setShowModalSemOcorrenciasIMR] =
     useState(false);
@@ -376,6 +381,10 @@ export const LancamentoPorPeriodo = ({
     return removeObjetosDuplicados(tiposAlimentacao, "nome");
   };
 
+  const onClickFinalizarMedicaoSemLancamentos = () => {
+    setShowModalFinalizarMedicaoSemLancamentos(true);
+  };
+
   const onClickFinalizarMedicao = () => {
     if (!ehIMR) {
       setShowModalFinalizarMedicao(true);
@@ -549,7 +558,7 @@ export const LancamentoPorPeriodo = ({
                         )) ||
                       naoPodeFinalizar
                     }
-                    onClick={() => onClickFinalizarMedicao()}
+                    onClick={() => onClickFinalizarMedicaoSemLancamentos()}
                   />
                   <Botao
                     texto="Finalizar"
@@ -616,6 +625,11 @@ export const LancamentoPorPeriodo = ({
             arquivo={arquivo}
             setArquivo={setArquivo}
             handleFinalizarMedicao={handleFinalizarMedicao}
+          />
+          <ModalFinalizarMedicaoSemLancamentos
+            showModal={showModalFinalizarMedicaoSemLancamentos}
+            closeModal={() => setShowModalFinalizarMedicaoSemLancamentos(false)}
+            setErrosAoSalvar={(value) => setErrosAoSalvar(value)}
           />
           <ModalSolicitacaoDownload
             show={exibirModalCentralDownloads}
