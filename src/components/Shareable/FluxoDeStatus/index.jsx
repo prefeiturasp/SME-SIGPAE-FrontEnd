@@ -7,7 +7,6 @@ import {
 import "./style.scss";
 import { deepCopy } from "../../../helpers/utilities";
 import { TIPO_PERFIL } from "../../../constants/shared";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 
 export const FluxoDeStatus = (props) => {
@@ -131,9 +130,10 @@ export const FluxoDeStatus = (props) => {
   return (
     <div className="fluxo-status-wrapper">
       {isOverflowing && (
-        <button className="scroll-btn left" onClick={() => scroll(-300)}>
-          <ChevronLeft />
-        </button>
+        <i
+          className="fas fa-chevron-left seta-esquerda"
+          onClick={() => scroll(-300)}
+        />
       )}
 
       <div className="fluxo-scroll-container" ref={scrollRef}>
@@ -194,9 +194,10 @@ export const FluxoDeStatus = (props) => {
       </div>
 
       {isOverflowing && (
-        <button className="scroll-btn right" onClick={() => scroll(300)}>
-          <ChevronRight />
-        </button>
+        <i
+          className="fas fa-chevron-right seta-direita"
+          onClick={() => scroll(300)}
+        />
       )}
     </div>
   );
