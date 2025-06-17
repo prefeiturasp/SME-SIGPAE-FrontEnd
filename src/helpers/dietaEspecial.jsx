@@ -140,10 +140,10 @@ export const formFiltrosObtemDreEEscolasDietas = async (
 
 export const getDadosIniciais = async (dadosUsuario) => {
   if (dadosUsuario.tipo_usuario === "escola") {
-    let { nome, codigo_eol } = dadosUsuario.vinculo_atual.instituicao;
+    let { uuid } = dadosUsuario.vinculo_atual.instituicao;
     const dre = dadosUsuario.vinculo_atual.instituicao.diretoria_regional;
     return {
-      escola: [`${codigo_eol} - ${nome}`],
+      escola: [uuid],
       dre: [dre.uuid],
     };
   } else if (dadosUsuario.tipo_usuario === "diretoriaregional") {
