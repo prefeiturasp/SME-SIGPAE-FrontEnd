@@ -627,6 +627,8 @@ export const LancamentoPorPeriodo = ({
             handleFinalizarMedicao={handleFinalizarMedicao}
           />
           <ModalFinalizarMedicaoSemLancamentos
+            mes={mes}
+            ano={ano}
             showModal={showModalFinalizarMedicaoSemLancamentos}
             closeModal={() => setShowModalFinalizarMedicaoSemLancamentos(false)}
             setErrosAoSalvar={(value) => setErrosAoSalvar(value)}

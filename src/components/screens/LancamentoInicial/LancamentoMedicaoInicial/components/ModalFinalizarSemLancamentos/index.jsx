@@ -1,15 +1,23 @@
 import { Modal } from "react-bootstrap";
-import { Field } from "react-final-form";
+import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
 import { InputText } from "src/components/Shareable/Input/InputText";
-import { required } from "src/helpers/fieldValidators";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import { MESES } from "src/constants/shared";
+import {
+  composeValidators,
+  maxLength,
+  required,
+} from "src/helpers/fieldValidators";
 
 export const ModalFinalizarMedicaoSemLancamentos = ({ ...props }) => {
-  const { showModal, closeModal } = props;
+  const { showModal, closeModal, mes, ano } = props;
+
+  const onSubmit = () => {};
 
   return (
     <Modal
@@ -18,56 +26,61 @@ export const ModalFinalizarMedicaoSemLancamentos = ({ ...props }) => {
       backdrop="static"
       onHide={() => closeModal()}
     >
-      <Modal.Header closeButton>
-        <Modal.Title>Finalizar Medição Inicial sem Lançamentos</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div className="row">
-          <div className="col-3 mes-lancamento">
-            <b className="pb-2 mb-2">Mês do Lançamento</b>
-            <Field
-              component={InputText}
-              dataTestId="input-mes-lancamento"
-              name="mes_lancamento"
-              disabled={true}
-            />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-12">
-            <label>* Justificativa do envio da medição sem lançamentos</label>
-            <Field
-              className="col-12 pb-5"
-              component="textarea"
-              name="justificativa"
-              validate={required}
-              required
-            />
-          </div>
-        </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <div className="row">
-          <div className="col-12">
-            <Botao
-              texto="Cancelar"
-              type={BUTTON_TYPE.BUTTON}
-              onClick={() => closeModal()}
-              style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
-              className="ms-3"
-            />
-            <Botao
-              texto="Finalizar Medição"
-              type={BUTTON_TYPE.BUTTON}
-              onClick={() => {
-                closeModal();
-              }}
-              style={BUTTON_STYLE.GREEN}
-              className="ms-3"
-            />
-          </div>
-        </div>
-      </Modal.Footer>
+      <Form onSubmit={onSubmit}>
+        {({ handleSubmit }) => (
+          <form onSubmit={handleSubmit}>
+            <Modal.Header closeButton>
+              <Modal.Title>
+                Finalizar Medição Inicial sem Lançamentos
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="row">
+                <div className="col-3 mes-lancamento">
+                  <b className="pb-2 mb-2">Mês do Lançamento</b>
+                  <Field
+                    component={InputText}
+                    dataTestId="input-mes-lancamento"
+                    name="mes_lancamento"
+                    defaultValue={`${MESES[mes - 1]} / ${ano}`}
+                    disabled
+                  />
+                </div>
+              </div>
+              <Field
+                component={TextArea}
+                className="col-12 pb-5"
+                label="Justificativa do envio da medição sem lançamentos"
+                name="justificativa"
+                required
+                validate={composeValidators(required, maxLength(1000))}
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <div className="row">
+                <div className="col-12">
+                  <Botao
+                    texto="Cancelar"
+                    type={BUTTON_TYPE.BUTTON}
+                    onClick={() => closeModal()}
+                    style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
+                    className="ms-3"
+                  />
+                  <Botao
+                    texto="Finalizar"
+                    type={BUTTON_TYPE.BUTTON}
+                    onClick={() => {
+                      closeModal();
+                    }}
+                    style={BUTTON_STYLE.GREEN}
+                    className="ms-3"
+                  />
+                </div>
+              </div>
+            </Modal.Footer>
+          </form>
+        )}
+      </Form>
     </Modal>
   );
 };
