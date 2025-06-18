@@ -15,9 +15,19 @@ import {
 } from "src/helpers/fieldValidators";
 
 export const ModalFinalizarMedicaoSemLancamentos = ({ ...props }) => {
-  const { showModal, closeModal, mes, ano } = props;
+  const {
+    showModal,
+    closeModal,
+    handleFinalizarMedicao,
+    mes,
+    ano,
+    setJustificativaSemLancamentos,
+  } = props;
 
-  const onSubmit = () => {};
+  const onSubmit = async () => {
+    await handleFinalizarMedicao();
+    closeModal();
+  };
 
   return (
     <Modal
@@ -52,6 +62,9 @@ export const ModalFinalizarMedicaoSemLancamentos = ({ ...props }) => {
                 className="col-12 pb-5"
                 label="Justificativa do envio da medição sem lançamentos"
                 name="justificativa"
+                inputOnChange={(e) =>
+                  setJustificativaSemLancamentos(e.target.value)
+                }
                 required
                 validate={composeValidators(required, maxLength(1000))}
               />
@@ -68,10 +81,7 @@ export const ModalFinalizarMedicaoSemLancamentos = ({ ...props }) => {
                   />
                   <Botao
                     texto="Finalizar"
-                    type={BUTTON_TYPE.BUTTON}
-                    onClick={() => {
-                      closeModal();
-                    }}
+                    type={BUTTON_TYPE.SUBMIT}
                     style={BUTTON_STYLE.GREEN}
                     className="ms-3"
                   />

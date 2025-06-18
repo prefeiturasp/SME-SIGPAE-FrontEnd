@@ -71,6 +71,7 @@ export const LancamentoPorPeriodo = ({
   comOcorrencias,
   setComOcorrencias,
   escolaSimples,
+  setJustificativaSemLancamentos,
 }) => {
   const [showModalFinalizarMedicao, setShowModalFinalizarMedicao] =
     useState(false);
@@ -631,7 +632,8 @@ export const LancamentoPorPeriodo = ({
             ano={ano}
             showModal={showModalFinalizarMedicaoSemLancamentos}
             closeModal={() => setShowModalFinalizarMedicaoSemLancamentos(false)}
-            setErrosAoSalvar={(value) => setErrosAoSalvar(value)}
+            setJustificativaSemLancamentos={setJustificativaSemLancamentos}
+            handleFinalizarMedicao={handleFinalizarMedicao}
           />
           <ModalSolicitacaoDownload
             show={exibirModalCentralDownloads}
