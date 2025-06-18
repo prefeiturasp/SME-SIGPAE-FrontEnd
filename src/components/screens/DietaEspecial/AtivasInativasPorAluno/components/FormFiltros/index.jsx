@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { Form, Field } from "react-final-form";
+import { Spin } from "antd";
+import { useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
 import { connect } from "react-redux";
 import { useNavigationType } from "react-router-dom";
-import { Spin } from "antd";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
 import InputText from "src/components/Shareable/Input/InputText";
 import Select from "src/components/Shareable/Select";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
-import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
-import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
 import {
   length,
   requiredSearchSelectUnidEducDietas,
@@ -20,13 +20,13 @@ import {
 
 import { TIPO_PERFIL } from "src/constants/shared";
 
-import {
-  formFiltrosObtemDreEEscolasDietas,
-  getDadosIniciais,
-} from "src/helpers/dietaEspecial";
+import { formFiltrosObtemDreEEscolasDietas } from "src/helpers/dietaEspecial";
 
-import { meusDados } from "src/services/perfil.service";
-import { dadosDoAluno, getAlunosListagem } from "src/services/perfil.service";
+import {
+  dadosDoAluno,
+  getAlunosListagem,
+  meusDados,
+} from "src/services/perfil.service";
 
 import "./styles.scss";
 
@@ -47,6 +47,23 @@ const FormFiltros = ({
   const [escolas, setEscolas] = useState([]);
   const [nomeEscolas, setNomeEscolas] = useState([]);
   const [alunos, setAlunos] = useState([]);
+
+  const getDadosIniciais = async (dadosUsuario) => {
+    if (dadosUsuario.tipo_usuario === "escola") {
+      let { nome, codigo_eol } = dadosUsuario.vinculo_atual.instituicao;
+      const dre = dadosUsuario.vinculo_atual.instituicao.diretoria_regional;
+      return {
+        escola: [`${codigo_eol} - ${nome}`],
+        dre: [dre.uuid],
+      };
+    } else if (dadosUsuario.tipo_usuario === "diretoriaregional") {
+      const { uuid } = dadosUsuario.vinculo_atual.instituicao;
+      return {
+        dre: [uuid],
+      };
+    }
+    return {};
+  };
 
   useEffect(() => {
     async function fetch() {
