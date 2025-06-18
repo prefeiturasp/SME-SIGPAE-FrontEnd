@@ -557,8 +557,12 @@ export const LancamentoPorPeriodo = ({
                         !ehEscolaTipoCEUGESTAO(
                           solicitacaoMedicaoInicial.escola
                         )) ||
+                      comOcorrencias === "true" ||
                       naoPodeFinalizar
                     }
+                    exibirTooltip={comOcorrencias === "true"}
+                    tooltipTitulo="Você avaliou o serviço com ocorrências, não é possível finalizar a medição sem lançamentos."
+                    classTooltip="icone-info-invalid"
                     onClick={() => onClickFinalizarMedicaoSemLancamentos()}
                   />
                   <Botao

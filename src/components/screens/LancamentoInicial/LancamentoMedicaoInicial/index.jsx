@@ -379,6 +379,7 @@ export default () => {
 
     if (justificativaSemLancamentos) {
       data.append("justificativa_sem_lancamentos", justificativaSemLancamentos);
+      data.append("com_ocorrencias", String(false));
     }
 
     if (!opcaoSelecionada) {
