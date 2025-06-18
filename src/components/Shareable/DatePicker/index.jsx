@@ -188,6 +188,11 @@ export class InputComData extends Component {
             inline={inline}
             minDate={minDate}
             maxDate={maxDate}
+            filterDate={(date) => {
+              if (minDate && date < minDate) return false;
+              if (maxDate && date > maxDate) return false;
+              return true;
+            }}
             disabled={disabled}
             selected={this.dataSelecionada(input.value)}
             className={`form-control ${className} ${
