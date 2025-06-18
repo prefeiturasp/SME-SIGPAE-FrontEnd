@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic/build/ckeditor";
 
 import { HelpText } from "../HelpText";
 import InputErroMensagemCKEditor from "../Input/InputErroMensagemCKEditor";
@@ -22,6 +22,7 @@ const CKEditorField = (props) => {
   const [touched, setTouched] = useState(false);
 
   const config = {
+    licenseKey: "GPL",
     placeholder: placeholder,
     removePlugins: ["Heading", "BlockQuote", "CKFinder", "Link"],
     toolbar: [
