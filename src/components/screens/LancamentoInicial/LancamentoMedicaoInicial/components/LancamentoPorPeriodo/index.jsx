@@ -576,7 +576,10 @@ export const LancamentoPorPeriodo = ({
                         )) ||
                       naoPodeFinalizar
                     }
-                    onClick={() => onClickFinalizarMedicao()}
+                    onClick={() => {
+                      setJustificativaSemLancamentos("");
+                      onClickFinalizarMedicao();
+                    }}
                   />
                 </div>
               </div>
@@ -618,7 +621,9 @@ export const LancamentoPorPeriodo = ({
           </div>
           <ModalFinalizarMedicao
             showModal={showModalFinalizarMedicao}
-            closeModal={() => setShowModalFinalizarMedicao(false)}
+            closeModal={() => {
+              setShowModalFinalizarMedicao(false);
+            }}
             setErrosAoSalvar={(value) => setErrosAoSalvar(value)}
             setObjSolicitacaoMIFinalizada={setObjSolicitacaoMIFinalizada}
             escolaInstituicao={escolaInstituicao}
