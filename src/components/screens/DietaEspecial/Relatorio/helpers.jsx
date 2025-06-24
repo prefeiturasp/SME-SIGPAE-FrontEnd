@@ -202,3 +202,12 @@ export const initSocket = (
     () => onOpen(uuid, setDadosDietaAberta, setUuidDieta)
   );
 };
+
+export const ehSolicitacaoDeInativa = (status) => {
+  return [
+    "CODAE_AUTORIZOU_INATIVACAO",
+    "CODAE_AUTORIZADO",
+    "TERCEIRIZADA_TOMOU_CIENCIA",
+    "CANCELADO_ALUNO_NAO_PERTENCE_REDE",
+  ].includes(status);
+};
