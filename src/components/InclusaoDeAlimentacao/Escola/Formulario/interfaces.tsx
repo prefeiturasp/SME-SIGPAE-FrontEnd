@@ -2,7 +2,7 @@ import {
   EscolaRascunhosInterface,
   PeriodoEscolarRascunhosInterface,
   TipoAlimentacaoRascunhoInterface,
-} from "interfaces/rascunhos.interface";
+} from "src/interfaces/rascunhos.interface";
 
 export interface PeriodosInclusaoInterface {
   checked: boolean;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./styles.scss";
-import { InformacaoNutricional } from "interfaces/produto.interface";
+import { InformacaoNutricional } from "src/interfaces/produto.interface";
 import { Field } from "react-final-form";
 import {
   required,
@@ -8,7 +8,7 @@ import {
   inteiroOuDecimalComVirgula,
 } from "src/helpers/fieldValidators";
 import InputText from "src/components/Shareable/Input/InputText";
-import { OptionsGenerico } from "interfaces/pre_recebimento.interface";
+import { OptionsGenerico } from "src/interfaces/pre_recebimento.interface";
 import SelectSelecione from "src/components/Shareable/SelectSelecione";
 
 const TAXA_CONVERSAO_KCAL_KJ = 4.2;

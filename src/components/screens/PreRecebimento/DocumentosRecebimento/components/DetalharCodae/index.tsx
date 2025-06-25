@@ -14,7 +14,7 @@ import {
 } from "src/services/documentosRecebimento.service";
 import InputText from "src/components/Shareable/Input/InputText";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
-import { DocumentosRecebimentoParaAnalise } from "interfaces/pre_recebimento.interface";
+import { DocumentosRecebimentoParaAnalise } from "src/interfaces/pre_recebimento.interface";
 import OutrosDocumentos from "../OutrosDocumentos";
 import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
 

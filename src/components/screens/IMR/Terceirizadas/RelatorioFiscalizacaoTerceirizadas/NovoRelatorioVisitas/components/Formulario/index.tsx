@@ -6,7 +6,7 @@ import {
   RespostaOcorrenciaInterface,
   RespostaOcorrenciaNaoSeAplicaInterface,
   TipoOcorrenciaInterface,
-} from "interfaces/imr.interface";
+} from "src/interfaces/imr.interface";
 import React, { useEffect } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";

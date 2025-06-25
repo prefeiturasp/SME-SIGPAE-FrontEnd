@@ -27,7 +27,7 @@ import {
   OptionsGenerico,
   TiposDocumentos,
   UnidadeMedidaSimples,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 import { required } from "src/helpers/fieldValidators";
 import { deletaValues } from "src/helpers/formHelper";
 import { PRAZO_RECEBIMENTO_OPTIONS } from "../../constants";

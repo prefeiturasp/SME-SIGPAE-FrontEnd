@@ -15,7 +15,7 @@ import InputText from "src/components/Shareable/Input/InputText";
 import {
   DocumentosRecebimentoDetalhado,
   TiposDocumentos,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 import ArquivosTipoRecebimento from "../ArquivosTipoDocumento";
 import OutrosDocumentos from "../OutrosDocumentos";
 import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";

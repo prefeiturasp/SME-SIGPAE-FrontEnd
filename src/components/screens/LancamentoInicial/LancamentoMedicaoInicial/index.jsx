@@ -535,6 +535,7 @@ export default () => {
                 setArquivo={setArquivo}
                 comOcorrencias={comOcorrencias}
                 setComOcorrencias={setComOcorrencias}
+                setJustificativaSemLancamentos={setJustificativaSemLancamentos}
               />
             ) : (
               <LancamentoPorPeriodo

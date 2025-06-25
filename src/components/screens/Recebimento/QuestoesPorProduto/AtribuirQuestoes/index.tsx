@@ -13,11 +13,11 @@ import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelect
 import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
 import { required } from "src/helpers/fieldValidators";
-import { FichaTecnicaSimples } from "interfaces/pre_recebimento.interface";
+import { FichaTecnicaSimples } from "src/interfaces/pre_recebimento.interface";
 import {
   QuestaoConferencia,
   ResponseListarQuestoesConferencia,
-} from "interfaces/recebimento.interface";
+} from "src/interfaces/recebimento.interface";
 import { formatarNumeroEProdutoFichaTecnica } from "src/helpers/preRecebimento";
 import ModalGenerico, {
   ModalGenericoProps,

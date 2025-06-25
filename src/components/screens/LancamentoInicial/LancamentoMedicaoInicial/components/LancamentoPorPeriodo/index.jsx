@@ -45,6 +45,7 @@ import {
   verificaSeEnviarCorrecaoDisabled,
 } from "./helpers";
 import { ModalFinalizarMedicaoSemLancamentos } from "../ModalFinalizarSemLancamentos";
+import { ENVIRONMENT } from "src/constants/config";
 
 export const LancamentoPorPeriodo = ({
   escolaInstituicao,
@@ -549,22 +550,24 @@ export const LancamentoPorPeriodo = ({
             {renderBotaoFinalizar() ? (
               <div className="row">
                 <div className="col-12 text-end">
-                  <Botao
-                    texto="Finalizar sem lançamentos"
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                    disabled={
-                      (!usuarioEhEscolaTerceirizadaDiretor() &&
-                        !ehEscolaTipoCEUGESTAO(
-                          solicitacaoMedicaoInicial.escola
-                        )) ||
-                      comOcorrencias === "true" ||
-                      naoPodeFinalizar
-                    }
-                    exibirTooltip={comOcorrencias === "true"}
-                    tooltipTitulo="Você avaliou o serviço com ocorrências, não é possível finalizar a medição sem lançamentos."
-                    classTooltip="icone-info-invalid"
-                    onClick={() => onClickFinalizarMedicaoSemLancamentos()}
-                  />
+                  {ENVIRONMENT !== "production" && (
+                    <Botao
+                      texto="Finalizar sem lançamentos"
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                      disabled={
+                        (!usuarioEhEscolaTerceirizadaDiretor() &&
+                          !ehEscolaTipoCEUGESTAO(
+                            solicitacaoMedicaoInicial.escola
+                          )) ||
+                        comOcorrencias === "true" ||
+                        naoPodeFinalizar
+                      }
+                      exibirTooltip={comOcorrencias === "true"}
+                      tooltipTitulo="Você avaliou o serviço com ocorrências, não é possível finalizar a medição sem lançamentos."
+                      classTooltip="icone-info-invalid"
+                      onClick={() => onClickFinalizarMedicaoSemLancamentos()}
+                    />
+                  )}
                   <Botao
                     texto="Finalizar"
                     style={BUTTON_STYLE.GREEN}

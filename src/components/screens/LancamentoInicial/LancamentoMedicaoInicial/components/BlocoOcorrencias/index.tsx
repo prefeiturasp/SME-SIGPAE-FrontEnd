@@ -15,7 +15,7 @@ import {
   LANCAMENTO_MEDICAO_INICIAL,
   REGISTRAR_OCORRENCIAS,
 } from "src/configs/constants";
-import { EscolaSimplesInterface } from "interfaces/escola.interface";
+import { EscolaSimplesInterface } from "src/interfaces/escola.interface";
 
 type BlocoOcorrenciasType = {
   comOcorrencias: string;

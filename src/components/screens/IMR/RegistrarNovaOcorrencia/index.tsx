@@ -15,8 +15,8 @@ import HTTP_STATUS from "http-status-codes";
 import {
   EscolaLabelInterface,
   TipoOcorrenciaInterface,
-} from "interfaces/imr.interface";
-import { ResponseFormularioSupervisaoTiposOcorrenciasInterface } from "interfaces/responses.interface";
+} from "src/interfaces/imr.interface";
+import { ResponseFormularioSupervisaoTiposOcorrenciasInterface } from "src/interfaces/responses.interface";
 import React, { useContext, useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";

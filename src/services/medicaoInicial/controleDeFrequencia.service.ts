@@ -2,7 +2,7 @@ import {
   FiltrosInterface,
   RelatorioControleFrequenciaResponse,
   ResponseTotalAlunosMatriculados,
-} from "interfaces/controle_de_frequencia";
+} from "src/interfaces/controle_de_frequencia";
 import axios from "src/services/_base";
 
 export const getMesesAnos = async () => {

@@ -13,8 +13,8 @@ import {
   ResponseFichasTecnicasPorStatusDashboard,
   ResponseFichasTecnicasSimples,
   ResponseSemDadosInterface,
-} from "interfaces/responses.interface";
-import { FiltrosDashboardFichasTecnicas } from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/responses.interface";
+import { FiltrosDashboardFichasTecnicas } from "src/interfaces/pre_recebimento.interface";
 import { getMensagemDeErro } from "../helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { saveAs } from "file-saver";

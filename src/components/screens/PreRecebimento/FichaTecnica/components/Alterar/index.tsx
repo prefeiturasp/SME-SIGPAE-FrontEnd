@@ -9,7 +9,7 @@ import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   FichaTecnicaDetalhadaComAnalise,
   OptionsGenerico,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
@@ -24,8 +24,8 @@ import {
 } from "src/helpers/fieldValidators";
 
 import FormPereciveisENaoPereciveis from "../Cadastrar/components/FormPereciveisENaoPereciveis";
-import { InformacaoNutricional } from "interfaces/produto.interface";
-import { TerceirizadaComEnderecoInterface } from "interfaces/terceirizada.interface";
+import { InformacaoNutricional } from "src/interfaces/produto.interface";
+import { TerceirizadaComEnderecoInterface } from "src/interfaces/terceirizada.interface";
 import FormProponente from "../Cadastrar/components/FormProponente";
 import TabelaNutricional from "src/components/Shareable/TabelaNutricional";
 import CheckboxComBorda from "src/components/Shareable/CheckboxComBorda";

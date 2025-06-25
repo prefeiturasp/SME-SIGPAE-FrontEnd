@@ -33,7 +33,7 @@ import {
   ArquivoForm,
   CronogramaSimples,
   TiposDocumentoChoices,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 import { OUTROS_DOCUMENTOS_OPTIONS } from "../../constants";
 import { FormApi } from "final-form";
 

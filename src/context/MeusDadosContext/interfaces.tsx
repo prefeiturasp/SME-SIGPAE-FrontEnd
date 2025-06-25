@@ -1,11 +1,11 @@
-import { TipoContagemInterface } from "interfaces/dietaespecial.interface";
+import { TipoContagemInterface } from "src/interfaces/dietaespecial.interface";
 import {
   DiretoriaRegionalInterface,
   EnderecoInterface,
   LoteInterface,
   PeriodoEscolarInterface,
-} from "interfaces/escola.interface";
-import { ContratoTerceirizadaInterface } from "interfaces/terceirizada.interface";
+} from "src/interfaces/escola.interface";
+import { ContratoTerceirizadaInterface } from "src/interfaces/terceirizada.interface";
 
 export interface InstituicaoInterface {
   acesso_modulo_medicao_inicial?: boolean;

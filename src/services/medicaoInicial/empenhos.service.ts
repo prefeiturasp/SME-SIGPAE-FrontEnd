@@ -4,7 +4,7 @@ import {
   FiltrosInterface,
   ResponseEmpenhosInterface,
   EmpenhoPayload,
-} from "interfaces/empenhos.interface";
+} from "src/interfaces/empenhos.interface";
 import axios from "../_base";
 
 export const getContratosVigentes = async () => {

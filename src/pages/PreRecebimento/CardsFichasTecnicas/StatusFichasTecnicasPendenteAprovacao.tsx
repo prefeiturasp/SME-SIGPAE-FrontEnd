@@ -6,7 +6,7 @@ import { CARD_PENDENTES_APROVACAO } from "src/components/screens/PreRecebimento/
 import { getDashboardFichasTecnicasPorStatus } from "src/services/fichaTecnica.service";
 import { SolicitacoesFichaTecnicaStatusGenerico } from "src/components/screens/SolicitacoesFichaTecnicaStatusGenerico";
 import { gerarLinkItemFichaTecnica } from "src/components/screens/PreRecebimento/PainelFichasTecnicas/helpers";
-import { FichaTecnicaDashboard } from "interfaces/pre_recebimento.interface";
+import { FichaTecnicaDashboard } from "src/interfaces/pre_recebimento.interface";
 
 const atual = {
   href: CARD_PENDENTES_APROVACAO.href,

@@ -24,8 +24,8 @@ import {
   CardItem,
   DocumentosRecebimentoDashboard,
   FiltrosDashboardDocumentos,
-} from "interfaces/pre_recebimento.interface";
-import { ResponseDocumentosRecebimentoDashboard } from "interfaces/responses.interface";
+} from "src/interfaces/pre_recebimento.interface";
+import { ResponseDocumentosRecebimentoDashboard } from "src/interfaces/responses.interface";
 
 export default () => {
   const [carregando, setCarregando] = useState<boolean>(false);

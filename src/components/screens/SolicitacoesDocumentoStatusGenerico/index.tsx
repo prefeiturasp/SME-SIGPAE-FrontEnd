@@ -14,8 +14,8 @@ import {
   DocumentosRecebimentoDashboard,
   FiltrosDashboardDocumentos,
   VerMaisItem,
-} from "interfaces/pre_recebimento.interface";
-import { ResponseDocumentosPorStatusDashboard } from "interfaces/responses.interface";
+} from "src/interfaces/pre_recebimento.interface";
+import { ResponseDocumentosPorStatusDashboard } from "src/interfaces/responses.interface";
 
 interface Props {
   getSolicitacoes: (

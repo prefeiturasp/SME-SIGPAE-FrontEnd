@@ -1,4 +1,4 @@
-import { FichaTecnicaDetalhada } from "interfaces/pre_recebimento.interface";
+import { FichaTecnicaDetalhada } from "src/interfaces/pre_recebimento.interface";
 
 export const mockFichaTecnica: FichaTecnicaDetalhada = {
   uuid: "4fdae93c-489f-401e-b409-1bb18b9294a1",

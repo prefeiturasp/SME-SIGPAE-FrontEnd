@@ -1,7 +1,7 @@
 import {
   CardConfig,
   DocumentosRecebimentoDashboard,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 
 import {
   PENDENTES_APROVACAO,

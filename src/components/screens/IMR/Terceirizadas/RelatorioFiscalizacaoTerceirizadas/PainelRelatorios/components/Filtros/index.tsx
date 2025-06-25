@@ -21,14 +21,14 @@ import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.
 import { getEscolasTercTotal } from "src/services/escola.service";
 
 import { FormApi } from "final-form";
-import { DiretoriaRegionalInterface } from "interfaces/escola.interface";
+import { DiretoriaRegionalInterface } from "src/interfaces/escola.interface";
 import {
   EscolaOptionsInterface,
   FiltrosRelatoriosVisitasInterface,
   NutricionistaOptionInterface,
   RelatorioVisitaItemListagem,
-} from "interfaces/imr.interface";
-import { ResponseDiretoriasRegionaisSimplissimaInterface } from "interfaces/responses.interface";
+} from "src/interfaces/imr.interface";
+import { ResponseDiretoriasRegionaisSimplissimaInterface } from "src/interfaces/responses.interface";
 import "./styles.scss";
 import { getListNomesNutricionistas } from "src/services/imr/painelGerencial";
 
