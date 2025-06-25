@@ -1,4 +1,4 @@
-import { EscolaSimplesInterface } from "interfaces/escola.interface";
+import { EscolaSimplesInterface } from "src/interfaces/escola.interface";
 import React, {
   Dispatch,
   ReactNode,

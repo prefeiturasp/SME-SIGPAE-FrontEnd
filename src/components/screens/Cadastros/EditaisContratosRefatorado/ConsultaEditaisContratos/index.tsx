@@ -2,7 +2,7 @@ import { Spin } from "antd";
 
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import HTTP_STATUS from "http-status-codes";
-import { ResponseEditalCotratoInterface } from "interfaces/responses.interface";
+import { ResponseEditalCotratoInterface } from "src/interfaces/responses.interface";
 import React, { useEffect, useState } from "react";
 import { Collapse } from "react-collapse";
 import { Form } from "react-final-form";

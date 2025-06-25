@@ -7,8 +7,8 @@ import Filtros from "./components/Filtros";
 import Listagem from "./components/Listagem";
 import { Paginacao } from "../../../Shareable/Paginacao";
 import { FiltrosDocumentosRecebimento } from "./interfaces";
-import { ResponseDocumentosRecebimento } from "interfaces/responses.interface";
-import { DocumentosRecebimento } from "interfaces/pre_recebimento.interface";
+import { ResponseDocumentosRecebimento } from "src/interfaces/responses.interface";
+import { DocumentosRecebimento } from "src/interfaces/pre_recebimento.interface";
 
 export default () => {
   const [carregando, setCarregando] = useState<boolean>(false);

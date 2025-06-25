@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 
-import { QuestoesPorProduto } from "interfaces/recebimento.interface";
+import { QuestoesPorProduto } from "src/interfaces/recebimento.interface";
 import Label from "src/components/Shareable/Label";
 import {
   RECEBIMENTO,

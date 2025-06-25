@@ -4,7 +4,7 @@ import { downloadAndConvertToBase64 } from "src/components/Shareable/Input/Input
 import {
   ArquivoInterface,
   ArquivoFormInterface,
-} from "interfaces/imr.interface";
+} from "src/interfaces/imr.interface";
 import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
 
 const FORMATOS_ARQUIVOS = "PDF, XLS, XLSX, XLSXM, PNG, JPG ou JPEG";

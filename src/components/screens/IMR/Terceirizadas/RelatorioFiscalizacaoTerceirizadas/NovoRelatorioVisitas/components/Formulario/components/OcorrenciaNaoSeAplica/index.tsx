@@ -1,7 +1,7 @@
 import React from "react";
 import { Field } from "react-final-form";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
-import { TipoOcorrenciaInterface } from "interfaces/imr.interface";
+import { TipoOcorrenciaInterface } from "src/interfaces/imr.interface";
 
 type OcorrenciaNaoSeAplicaType = {
   tipoOcorrencia: TipoOcorrenciaInterface;

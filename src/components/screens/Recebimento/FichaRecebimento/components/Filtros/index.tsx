@@ -17,8 +17,8 @@ import Label from "src/components/Shareable/Label";
 import { getListaCompletaProdutosLogistica } from "src/services/produto.service";
 import { listaSimplesTerceirizadas } from "src/services/terceirizada.service";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
-import { ProdutoLogistica } from "interfaces/produto.interface";
-import { TerceirizadaSimplesInterface } from "interfaces/terceirizada.interface";
+import { ProdutoLogistica } from "src/interfaces/produto.interface";
+import { TerceirizadaSimplesInterface } from "src/interfaces/terceirizada.interface";
 import { dateDelta } from "src/helpers/utilities.jsx";
 
 import {

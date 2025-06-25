@@ -1,7 +1,7 @@
 import {
   DiretoriaRegionalInterface,
   LoteInterface,
-} from "interfaces/escola.interface";
+} from "src/interfaces/escola.interface";
 
 export interface LoteRascunhosInterface extends LoteInterface {
   diretoria_regional: DiretoriaRegionalInterface;

@@ -10,7 +10,7 @@ import {
   TipoOcorrenciaInterface,
   ParametrizacoesInterface,
   EscolaLabelInterface,
-} from "interfaces/imr.interface";
+} from "src/interfaces/imr.interface";
 import { SeletorUtensiliosCozinha } from "./Seletores/SeletorUtensiliosCozinha";
 import { SeletorUtensiliosMesa } from "./Seletores/SeletorUtensiliosMesa";
 import { SeletorEquipamentos } from "./Seletores/SeletorEquipamentos";

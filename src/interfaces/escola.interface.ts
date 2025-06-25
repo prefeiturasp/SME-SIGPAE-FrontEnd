@@ -1,4 +1,4 @@
-import { TipoAlimentacaoInterface } from "interfaces/cardapio.interface";
+import { TipoAlimentacaoInterface } from "src/interfaces/cardapio.interface";
 import {
   PeriodoEscolarRascunhosInterface,
   TipoGestaoRascunhosInterface,

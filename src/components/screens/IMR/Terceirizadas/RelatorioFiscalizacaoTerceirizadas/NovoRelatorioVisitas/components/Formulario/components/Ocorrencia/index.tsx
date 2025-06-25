@@ -9,7 +9,7 @@ import {
   EscolaLabelInterface,
   RespostaOcorrenciaInterface,
   TipoOcorrenciaInterface,
-} from "interfaces/imr.interface";
+} from "src/interfaces/imr.interface";
 import React from "react";
 import RenderComponentByParametrizacao from "./RenderComponentByParametrizacao";
 

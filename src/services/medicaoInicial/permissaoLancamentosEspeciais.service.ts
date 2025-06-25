@@ -1,9 +1,9 @@
 import {
   ResponseEscolasComPermissoesLancamentosEspeciaisInterface,
   ResponsePermissoesLancamentosEspeciaisInterface,
-} from "interfaces/responses.interface";
-import axios from "../_base";
+} from "src/interfaces/responses.interface";
 import { ErrorHandlerFunction } from "src/services/service-helpers";
+import axios from "../_base";
 
 export const getPermissoesLancamentosEspeciais = async (
   params: { page?: number; escola__uuid?: string } = null

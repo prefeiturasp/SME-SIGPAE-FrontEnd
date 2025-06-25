@@ -2,7 +2,7 @@ import {
   FiltrosInterface,
   RelatorioFinanceiroConsolidado,
   RelatorioFinanceiroResponse,
-} from "interfaces/relatorio_financeiro.interface";
+} from "src/interfaces/relatorio_financeiro.interface";
 import axios from "../_base";
 
 export const getRelatoriosFinanceiros = async (

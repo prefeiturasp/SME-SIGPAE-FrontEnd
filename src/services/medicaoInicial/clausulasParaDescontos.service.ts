@@ -3,7 +3,7 @@ import {
   ClausulaPayload,
   FiltrosInterface,
   ResponseClausulasInterface,
-} from "interfaces/clausulas_para_descontos.interface";
+} from "src/interfaces/clausulas_para_descontos.interface";
 import axios from "../_base";
 
 export const cadastraClausulaParaDesconto = async (

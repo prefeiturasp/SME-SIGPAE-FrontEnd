@@ -15,9 +15,9 @@ import {
 } from "../../interfaces";
 import { getEmpresasCronograma } from "src/services/terceirizada.service";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
-import { ProdutoLogistica } from "interfaces/produto.interface";
+import { ProdutoLogistica } from "src/interfaces/produto.interface";
 import { montarOptionsStatus } from "../../../../CronogramaEntrega/components/Filtros/utils";
-import { CronogramaSimples } from "interfaces/pre_recebimento.interface";
+import { CronogramaSimples } from "src/interfaces/pre_recebimento.interface";
 
 interface Props {
   setFiltros: Dispatch<SetStateAction<FiltrosRelatorioCronograma>>;

@@ -29,9 +29,9 @@ import {
   ArquivoForm,
   FichaTecnicaDetalhada,
   OptionsGenerico,
-} from "interfaces/pre_recebimento.interface";
-import { TerceirizadaComEnderecoInterface } from "interfaces/terceirizada.interface";
-import { InformacaoNutricional } from "interfaces/produto.interface";
+} from "src/interfaces/pre_recebimento.interface";
+import { TerceirizadaComEnderecoInterface } from "src/interfaces/terceirizada.interface";
+import { InformacaoNutricional } from "src/interfaces/produto.interface";
 
 import InfoAcondicionamentoPereciveis from "./components/InfoAcondicionamentoPereciveis";
 import InfoAcondicionamentoNaoPereciveis from "./components/InfoAcondicionamentoNaoPereciveis";

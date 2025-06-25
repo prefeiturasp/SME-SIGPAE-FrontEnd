@@ -24,7 +24,7 @@ import {
   CLAUSULAS_PARA_DESCONTOS,
 } from "src/configs/constants";
 import "./styles.scss";
-import { ClausulaPayload } from "interfaces/clausulas_para_descontos.interface";
+import { ClausulaPayload } from "src/interfaces/clausulas_para_descontos.interface";
 import {
   cadastraClausulaParaDesconto,
   getClausulaParaDesconto,
@@ -64,7 +64,10 @@ export function CadastroDeClausulas() {
       const response = await getNumerosEditais();
       setEditais(response.data.results);
     } catch (error) {
-      setErroAPI("Erro ao carregar editais. Tente novamente mais tarde.");
+      setErroAPI(
+        "Erro ao carregar editais. Tente novamente mais tarde." +
+          error.toString()
+      );
     } finally {
       setCarregando(false);
     }
@@ -115,7 +118,8 @@ export function CadastroDeClausulas() {
       setValoresInicias(dadosClausula);
     } catch (error) {
       setErroAPI(
-        "Erro ao carregar dados da cláusula. Tente novamente mais tarde."
+        "Erro ao carregar dados da cláusula. Tente novamente mais tarde." +
+          error.toString()
       );
     } finally {
       setCarregando(false);

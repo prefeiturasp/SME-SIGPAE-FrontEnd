@@ -1,6 +1,6 @@
 import React from "react";
 import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
-import { TiposDocumentos } from "interfaces/pre_recebimento.interface";
+import { TiposDocumentos } from "src/interfaces/pre_recebimento.interface";
 
 export interface Props {
   lista: TiposDocumentos;

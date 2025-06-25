@@ -1,8 +1,8 @@
-import { Arquivo } from "interfaces/pre_recebimento.interface";
+import { Arquivo } from "src/interfaces/pre_recebimento.interface";
 import {
   ListagemPaginada,
   ResponseInterface,
-} from "interfaces/responses.interface";
+} from "src/interfaces/responses.interface";
 
 export interface FichaRecebimentoPayload {
   etapa: string;
