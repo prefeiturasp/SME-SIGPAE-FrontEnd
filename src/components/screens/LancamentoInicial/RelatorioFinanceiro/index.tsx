@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { FiltrosInterface } from "interfaces/relatorio_financeiro.interface";
+import { FiltrosInterface } from "src/interfaces/relatorio_financeiro.interface";
 
 import { Spin } from "antd";
 import { Filtros } from "./components/Filtros/Index";

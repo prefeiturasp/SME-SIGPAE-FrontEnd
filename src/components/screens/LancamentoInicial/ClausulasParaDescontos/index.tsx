@@ -19,7 +19,7 @@ import {
   ClausulaInterface,
   FiltrosInterface,
   ResponseClausulasInterface,
-} from "interfaces/clausulas_para_descontos.interface";
+} from "src/interfaces/clausulas_para_descontos.interface";
 import {
   deletaClausulaParaDesconto,
   getClausulasParaDescontos,
@@ -60,7 +60,8 @@ export function ClausulasParaDescontos() {
       setResponseClausulas(data);
     } catch (error) {
       setErroAPI(
-        "Erro ao carregar cláusulas para descontos. Tente novamente mais tarde."
+        "Erro ao carregar cláusulas para descontos. Tente novamente mais tarde. " +
+          error.toString()
       );
     }
   };
@@ -71,7 +72,10 @@ export function ClausulasParaDescontos() {
       const { data } = await getNumerosEditais();
       setEditais(data.results);
     } catch (error) {
-      setErroAPI("Erro ao carregar editais. Tente novamente mais tarde.");
+      setErroAPI(
+        "Erro ao carregar editais. Tente novamente mais tarde." +
+          error.toString()
+      );
     }
   };
 
@@ -84,7 +88,10 @@ export function ClausulasParaDescontos() {
       );
       toastSuccess("Cláusula excluída com sucesso!");
     } catch (error) {
-      toastError("Erro ao excluir cláusula. Tente novamente mais tarde.");
+      toastError(
+        "Erro ao excluir cláusula. Tente novamente mais tarde." +
+          error.toString()
+      );
     } finally {
       setCarregandoExclusao(false);
       setExibirModal(false);

@@ -15,12 +15,12 @@ import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import { formatarNumeroEProdutoFichaTecnica } from "src/helpers/preRecebimento";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
-import { FichaTecnicaSimples } from "interfaces/pre_recebimento.interface";
+import { FichaTecnicaSimples } from "src/interfaces/pre_recebimento.interface";
 import {
   FiltrosQuestoesPorProduto,
   QuestaoConferencia,
   QuestoesPorProduto,
-} from "interfaces/recebimento.interface";
+} from "src/interfaces/recebimento.interface";
 
 interface FiltrosProps {
   fichasTecnicas: FichaTecnicaSimples[];

@@ -3,7 +3,7 @@ import {
   TipoOcorrenciaInterface,
   EscolaLabelInterface,
   NovoRelatorioVisitasFormInterface,
-} from "interfaces/imr.interface";
+} from "src/interfaces/imr.interface";
 import { deepCopy } from "src/helpers/utilities";
 
 export const formataPayloadUpdate = (

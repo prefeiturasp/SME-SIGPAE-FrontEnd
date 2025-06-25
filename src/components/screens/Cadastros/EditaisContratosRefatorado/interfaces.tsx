@@ -1,4 +1,4 @@
-import { TerceirizadaInterface } from "interfaces/terceirizada.interface";
+import { TerceirizadaInterface } from "src/interfaces/terceirizada.interface";
 
 export interface FormCadastroEditaisContratosVigenciaInterface {
   data_inicial: string;

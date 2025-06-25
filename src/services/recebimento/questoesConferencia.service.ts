@@ -9,7 +9,7 @@ import {
   ResponseListarQuestoesConferencia,
   ResponseListarQuestoesConferenciaSimples,
   ResponseListarQuestoesPorProduto,
-} from "interfaces/recebimento.interface";
+} from "src/interfaces/recebimento.interface";
 import { gerarParametrosConsulta } from "src/helpers/utilities";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
@@ -85,7 +85,6 @@ export const detalharQuestoesPorCronograma = async (
       params,
     });
   } catch (error) {
-    console.log(error);
     toastError(getMensagemDeErro(error.response.status));
   }
 };

@@ -10,8 +10,8 @@ import {
   CardConfig,
   FichaTecnicaDashboard,
   FiltrosDashboardFichasTecnicas,
-} from "interfaces/pre_recebimento.interface";
-import { ResponseFichasTecnicasDashboard } from "interfaces/responses.interface";
+} from "src/interfaces/pre_recebimento.interface";
+import { ResponseFichasTecnicasDashboard } from "src/interfaces/responses.interface";
 import { getDashboardFichasTecnicas } from "src/services/fichaTecnica.service";
 import { formatarCards } from "./helpers";
 

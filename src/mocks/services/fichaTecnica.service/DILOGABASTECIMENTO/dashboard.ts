@@ -1,4 +1,4 @@
-import { FichaTecnicaDashboard } from "interfaces/pre_recebimento.interface";
+import { FichaTecnicaDashboard } from "src/interfaces/pre_recebimento.interface";
 
 type IFichasTecnicasPorStatusDashboard = {
   results: Array<{

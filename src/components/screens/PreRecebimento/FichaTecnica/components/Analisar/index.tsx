@@ -6,7 +6,7 @@ import InputText from "src/components/Shareable/Input/InputText";
 import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import BotaoVoltar from "src/components/Shareable/Page/BotaoVoltar";
-import { FichaTecnicaDetalhadaComAnalise } from "interfaces/pre_recebimento.interface";
+import { FichaTecnicaDetalhadaComAnalise } from "src/interfaces/pre_recebimento.interface";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
@@ -18,8 +18,8 @@ import {
   imprimirFicha,
 } from "../../helpers";
 import FormPereciveisENaoPereciveis from "../Cadastrar/components/FormPereciveisENaoPereciveis";
-import { InformacaoNutricional } from "interfaces/produto.interface";
-import { TerceirizadaComEnderecoInterface } from "interfaces/terceirizada.interface";
+import { InformacaoNutricional } from "src/interfaces/produto.interface";
+import { TerceirizadaComEnderecoInterface } from "src/interfaces/terceirizada.interface";
 import FormProponente from "../Cadastrar/components/FormProponente";
 import TabelaNutricional from "src/components/Shareable/TabelaNutricional";
 import CheckboxComBorda from "src/components/Shareable/CheckboxComBorda";

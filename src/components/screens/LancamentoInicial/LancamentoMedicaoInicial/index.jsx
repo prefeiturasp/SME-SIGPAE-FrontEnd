@@ -70,6 +70,8 @@ export default () => {
   const [open, setOpen] = useState(false);
   const [naoPodeFinalizar, setNaoPodeFinalizar] = useState(true);
   const [finalizandoMedicao, setFinalizandoMedicao] = useState(false);
+  const [justificativaSemLancamentos, setJustificativaSemLancamentos] =
+    useState("");
 
   const [errosAoSalvar, setErrosAoSalvar] = useState([]);
   const [comOcorrencias, setComOcorrencias] = useState("");
@@ -375,6 +377,11 @@ export default () => {
       ehIMR ? String(comOcorrencias) : String(!opcaoSelecionada)
     );
 
+    if (justificativaSemLancamentos) {
+      data.append("justificativa_sem_lancamentos", justificativaSemLancamentos);
+      data.append("com_ocorrencias", String(false));
+    }
+
     if (!opcaoSelecionada) {
       let payloadAnexos = [];
       arquivo.forEach((element) => {
@@ -528,6 +535,7 @@ export default () => {
                 setArquivo={setArquivo}
                 comOcorrencias={comOcorrencias}
                 setComOcorrencias={setComOcorrencias}
+                setJustificativaSemLancamentos={setJustificativaSemLancamentos}
               />
             ) : (
               <LancamentoPorPeriodo
@@ -563,6 +571,7 @@ export default () => {
                 comOcorrencias={comOcorrencias}
                 setComOcorrencias={setComOcorrencias}
                 escolaSimples={escolaSimples}
+                setJustificativaSemLancamentos={setJustificativaSemLancamentos}
               />
             ))}
         </Spin>

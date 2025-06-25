@@ -30,11 +30,11 @@ import {
   MotivoSimplesInterface,
   PeriodosInclusaoInterface,
 } from "../interfaces";
-import { PeriodoEscolarRascunhosInterface } from "interfaces/rascunhos.interface";
+import { PeriodoEscolarRascunhosInterface } from "src/interfaces/rascunhos.interface";
 import {
   ResponseQuantidadeAlunosEscolaInterface,
   ResponseVinculosTipoAlimentacaoPorEscolaInterface,
-} from "interfaces/responses.interface";
+} from "src/interfaces/responses.interface";
 import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 

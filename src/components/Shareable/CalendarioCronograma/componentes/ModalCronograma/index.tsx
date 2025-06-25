@@ -16,7 +16,7 @@ import {
   usuarioEhCodaeDilog,
 } from "../../../../../helpers/utilities";
 import { ItemCalendario } from "../../interfaces";
-import { EtapaCalendario } from "interfaces/pre_recebimento.interface";
+import { EtapaCalendario } from "src/interfaces/pre_recebimento.interface";
 
 interface Props {
   event: ItemCalendario<EtapaCalendario>;

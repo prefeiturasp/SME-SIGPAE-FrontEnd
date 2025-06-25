@@ -1,6 +1,6 @@
 import { Select } from "src/components/Shareable/Select";
 import { required } from "src/helpers/fieldValidators";
-import { TipoOcorrenciaInterface } from "interfaces/imr.interface";
+import { TipoOcorrenciaInterface } from "src/interfaces/imr.interface";
 import React, { ChangeEvent, Dispatch, SetStateAction } from "react";
 import { Field } from "react-final-form";
 import { RegistrarNovaOcorrenciaFormInterface } from "../../interfaces";

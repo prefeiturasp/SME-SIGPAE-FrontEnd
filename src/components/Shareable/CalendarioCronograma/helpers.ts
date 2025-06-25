@@ -1,4 +1,4 @@
-import { EtapaCalendario } from "interfaces/pre_recebimento.interface";
+import { EtapaCalendario } from "src/interfaces/pre_recebimento.interface";
 import { ItemCalendario } from "./interfaces";
 
 export const formataComoEventos = (

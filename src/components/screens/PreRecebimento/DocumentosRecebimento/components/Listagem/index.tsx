@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { NavLink } from "react-router-dom";
 import "./styles.scss";
-import { DocumentosRecebimento } from "interfaces/pre_recebimento.interface";
+import { DocumentosRecebimento } from "src/interfaces/pre_recebimento.interface";
 import {
   PRE_RECEBIMENTO,
   DETALHAR_FORNECEDOR_DOCUMENTO_RECEBIMENTO,

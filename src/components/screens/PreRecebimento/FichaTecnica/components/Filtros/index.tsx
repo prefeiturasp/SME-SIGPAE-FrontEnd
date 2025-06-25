@@ -19,8 +19,8 @@ import { InputText } from "src/components/Shareable/Input/InputText";
 import { getListaCompletaProdutosLogistica } from "../../../../../../services/produto.service";
 import { getListaFiltradaAutoCompleteSelect } from "../../../../../../helpers/autoCompleteSelect";
 import { FiltrosFichaTecnica } from "../../interfaces";
-import { ProdutoLogistica } from "interfaces/produto.interface";
-import { FichaTecnica } from "interfaces/pre_recebimento.interface";
+import { ProdutoLogistica } from "src/interfaces/produto.interface";
+import { FichaTecnica } from "src/interfaces/pre_recebimento.interface";
 
 interface Props {
   setFiltros: Dispatch<SetStateAction<FiltrosFichaTecnica>>;

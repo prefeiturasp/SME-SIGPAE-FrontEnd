@@ -8,7 +8,7 @@ import { Filtros } from "./components/Filtros";
 import {
   FiltrosRelatoriosVisitasInterface,
   RelatorioVisitaItemListagem,
-} from "interfaces/imr.interface";
+} from "src/interfaces/imr.interface";
 import { Listagem } from "./components/Listagem";
 import { getDashboardPainelGerencialSupervisao } from "src/services/imr/painelGerencial";
 import { CardPorStatus } from "./components/CardPorStatus";

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { tipoDeStatusClasse } from "./helper";
 import { validate } from "uuid";
 import "./style.scss";
-import { LogSolicitacoesUsuarioSimples } from "interfaces/dados_comuns.interface";
+import { LogSolicitacoesUsuarioSimples } from "src/interfaces/dados_comuns.interface";
 
 interface FluxoDeStatusPreRecebimentoProps {
   listaDeStatus: LogSolicitacoesUsuarioSimples[];

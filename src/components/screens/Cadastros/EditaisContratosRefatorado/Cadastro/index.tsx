@@ -19,15 +19,15 @@ import { FormApi } from "final-form";
 import arrayMutators from "final-form-arrays";
 import { required } from "src/helpers/fieldValidators";
 import HTTP_STATUS from "http-status-codes";
-import { DiretoriaRegionalInterface } from "interfaces/escola.interface";
-import { LoteRascunhosInterface } from "interfaces/rascunhos.interface";
+import { DiretoriaRegionalInterface } from "src/interfaces/escola.interface";
+import { LoteRascunhosInterface } from "src/interfaces/rascunhos.interface";
 import {
   ResponseDiretoriasRegionaisSimplissimaInterface,
   ResponseGetEditalCotratoInterface,
   ResponseLotesSimplesInterface,
   ResponseTerceirizadaListaNomesInterface,
-} from "interfaces/responses.interface";
-import { TerceirizadaInterface } from "interfaces/terceirizada.interface";
+} from "src/interfaces/responses.interface";
+import { TerceirizadaInterface } from "src/interfaces/terceirizada.interface";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";

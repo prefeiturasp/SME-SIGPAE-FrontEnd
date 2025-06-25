@@ -35,16 +35,16 @@ import {
   FichaTecnicaDetalhada,
   FichaTecnicaDetalhadaComAnalise,
   OptionsGenerico,
-} from "interfaces/pre_recebimento.interface";
-import { TerceirizadaComEnderecoInterface } from "interfaces/terceirizada.interface";
+} from "src/interfaces/pre_recebimento.interface";
+import { TerceirizadaComEnderecoInterface } from "src/interfaces/terceirizada.interface";
 
 import {
   FichaTecnicaPayload,
   InformacoesNutricionaisFichaTecnicaPayload,
   StateConferidosAnalise,
 } from "./interfaces";
-import { ResponseInformacoesNutricionais } from "interfaces/responses.interface";
-import { InformacaoNutricional } from "interfaces/produto.interface";
+import { ResponseInformacoesNutricionais } from "src/interfaces/responses.interface";
+import { InformacaoNutricional } from "src/interfaces/produto.interface";
 import { MeusDadosInterface } from "src/context/MeusDadosContext/interfaces";
 import {
   booleanToString,
