@@ -700,6 +700,9 @@ class solicitacaoDietaEspecial extends Component {
                                 return undefined;
                               },
                             ]}
+                            inputOnChange={(value) => {
+                              this.props.change("periodo_recreio_fim", value);
+                            }}
                             required
                             showMonthDropdown
                             showYearDropdown
