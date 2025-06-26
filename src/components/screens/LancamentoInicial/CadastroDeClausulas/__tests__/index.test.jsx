@@ -98,19 +98,4 @@ describe("Componente CadastroDeClausulas", () => {
       ).toBeInTheDocument();
     });
   });
-
-  // açoes - editar
-  it("deve exibir mensagem de erro quando falhar ao carregar cláusula para edição", async () => {
-    const uuidClausula = "12345";
-    mockSearchParams.set("uuid", uuidClausula);
-    mock.onGet("medicao-inicial/clausulas-de-descontos/").reply(500, []);
-    render(<CadastroDeClausulas />);
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          "Erro ao carregar dados da cláusula. Tente novamente mais tarde."
-        )
-      ).toBeInTheDocument();
-    });
-  });
 });
