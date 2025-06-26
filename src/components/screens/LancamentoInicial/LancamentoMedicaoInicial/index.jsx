@@ -405,7 +405,11 @@ export default () => {
     } else {
       setErrosAoSalvar(response.data);
       setFinalizandoMedicao(false);
-      toastError("Não foi possível finalizar as alterações!");
+      if (justificativaSemLancamentos) {
+        toastError("Não foi possível enviar a medição sem lançamentos!");
+      } else {
+        toastError("Não foi possível finalizar as alterações!");
+      }
     }
     onClickInfoBasicas();
   };
