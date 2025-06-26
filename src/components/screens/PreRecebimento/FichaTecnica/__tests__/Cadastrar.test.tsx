@@ -42,7 +42,6 @@ jest.mock("src/services/terceirizada.service.jsx");
 jest.mock("src/services/cronograma.service.jsx");
 jest.mock("src/services/produto.service.jsx");
 jest.mock("src/services/fichaTecnica.service.ts");
-jest.setTimeout(60000);
 
 beforeEach(() => {
   getListaCompletaProdutosLogistica.mockResolvedValue({

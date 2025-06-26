@@ -14,8 +14,6 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
-jest.setTimeout(30000);
-
 describe("Teste <PeriodoLancamentoMedicaoInicial> - ETEC - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
     mock

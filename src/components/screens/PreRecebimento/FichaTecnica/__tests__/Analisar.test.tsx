@@ -15,8 +15,6 @@ import DetalharFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/Deta
 import AnalisarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/AnalisarFichaTecnicaPage";
 import mock from "src/services/_mock";
 
-jest.setTimeout(20000);
-
 beforeEach(() => {
   mock
     .onGet(`/informacoes-nutricionais/ordenadas/`)

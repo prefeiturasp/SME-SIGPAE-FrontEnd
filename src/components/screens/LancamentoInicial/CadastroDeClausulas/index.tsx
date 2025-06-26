@@ -1,37 +1,38 @@
-import React, { useState, useEffect } from "react";
+import { Select as SelectAntd, Spin } from "antd";
+import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Form, Field } from "react-final-form";
+import Botao from "src/components/Shareable/Botao";
 import {
-  ASelect,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import {
   AInput,
   AInputNumber,
+  ASelect,
 } from "src/components/Shareable/MakeField";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import { Select as SelectAntd, Spin } from "antd";
+import {
+  CLAUSULAS_PARA_DESCONTOS,
+  MEDICAO_INICIAL,
+} from "src/configs/constants";
 import { required } from "src/helpers/fieldValidators";
+import { getError } from "src/helpers/utilities";
+import { ClausulaPayload } from "src/interfaces/clausulas_para_descontos.interface";
 import { getNumerosEditais } from "src/services/edital.service";
 import {
-  BUTTON_STYLE,
-  BUTTON_TYPE,
-} from "src/components/Shareable/Botao/constants";
-import Botao from "src/components/Shareable/Botao";
-import {
-  MEDICAO_INICIAL,
-  CLAUSULAS_PARA_DESCONTOS,
-} from "src/configs/constants";
-import "./styles.scss";
-import { ClausulaPayload } from "src/interfaces/clausulas_para_descontos.interface";
-import {
   cadastraClausulaParaDesconto,
-  getClausulaParaDesconto,
   editaClausulaParaDesconto,
+  getClausulaParaDesconto,
 } from "src/services/medicaoInicial/clausulasParaDescontos.service";
 import { formataValorDecimal, parserValorDecimal } from "../../helper.jsx";
-import { getError } from "src/helpers/utilities";
+import "./styles.scss";
 
 const VALORES_INICIAIS: ClausulaPayload = {
   edital: null,
@@ -60,30 +61,25 @@ export function CadastroDeClausulas() {
 
   const getEditaisAsync = async () => {
     setCarregando(true);
-    try {
-      const response = await getNumerosEditais();
+    const response = await getNumerosEditais();
+    if (response.status === HTTP_STATUS.OK) {
       setEditais(response.data.results);
-    } catch (error) {
-      setErroAPI(
-        "Erro ao carregar editais. Tente novamente mais tarde." +
-          error.toString()
-      );
-    } finally {
-      setCarregando(false);
+    } else {
+      setErroAPI("Erro ao carregar editais. Tente novamente mais tarde.");
     }
+    setCarregando(false);
   };
 
   const cadastrarClausulaParaDesconto = async (values: ClausulaPayload) => {
     setCarregando(true);
-    try {
-      await cadastraClausulaParaDesconto(values);
+    const response = await cadastraClausulaParaDesconto(values);
+    if (response.status === HTTP_STATUS.CREATED) {
       toastSuccess("Cláusula cadastrada com sucesso!");
       voltarPagina();
-    } catch ({ response }) {
+    } else {
       toastError(getError(response.data));
-    } finally {
-      setCarregando(false);
     }
+    setCarregando(false);
   };
 
   const editarClausulaParaDesconto = async (
@@ -91,22 +87,22 @@ export function CadastroDeClausulas() {
     values: ClausulaPayload
   ) => {
     setCarregando(true);
-    try {
+    const response = await editaClausulaParaDesconto(uuid, values);
+    if (response.status === HTTP_STATUS.OK) {
       await editaClausulaParaDesconto(uuid, values);
       toastSuccess("Cláusula atualizada com sucesso!");
       voltarPagina();
-    } catch ({ response }) {
+    } else {
       toastError(getError(response.data));
-    } finally {
-      setCarregando(false);
     }
+    setCarregando(false);
   };
 
   const getClausulaParaDescontoAsync = async (uuid: string) => {
     setCarregando(true);
-    try {
-      const { data } = await getClausulaParaDesconto(uuid);
-
+    const response = await getClausulaParaDesconto(uuid);
+    if (response.status === HTTP_STATUS.OK) {
+      const data = response.data;
       const dadosClausula = {
         edital: data.edital.uuid,
         numero_clausula: data.numero_clausula,
@@ -114,16 +110,13 @@ export function CadastroDeClausulas() {
         porcentagem_desconto: data.porcentagem_desconto,
         descricao: data.descricao,
       };
-
       setValoresInicias(dadosClausula);
-    } catch (error) {
+    } else {
       setErroAPI(
-        "Erro ao carregar dados da cláusula. Tente novamente mais tarde." +
-          error.toString()
+        "Erro ao carregar dados da cláusula. Tente novamente mais tarde."
       );
-    } finally {
-      setCarregando(false);
     }
+    setCarregando(false);
   };
 
   const voltarPagina = () =>

@@ -20,8 +20,6 @@ import { mockGetDiretoriaRegionalSimplissima } from "src/mocks/services/diretori
 import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 
-jest.setTimeout(10000);
-
 describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => {
   beforeEach(async () => {
     mock
