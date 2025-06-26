@@ -335,6 +335,13 @@ const Relatorio = ({ visao }) => {
     );
   };
 
+  const exibirBotaoGerarProtocoloCanceladasOuInativas = () => {
+    return (
+      exibeBotaoGerarProtocoloSolicitacaoCancelada() ||
+      exibeBotaoGerarProtocoloSolicitacaoInativa()
+    );
+  };
+
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       {dietaEspecial && status && (
@@ -495,8 +502,7 @@ const Relatorio = ({ visao }) => {
                 )}
               </div>
             )}
-          {(exibeBotaoGerarProtocoloSolicitacaoCancelada() ||
-            exibeBotaoGerarProtocoloSolicitacaoInativa()) && (
+          {exibirBotaoGerarProtocoloCanceladasOuInativas() && (
             <div className="form-group float-end mt-4">
               <BotaoGerarProtocolo
                 uuid={dietaEspecial.uuid}
@@ -506,7 +512,8 @@ const Relatorio = ({ visao }) => {
           )}
           {dietaEspecial &&
             status === statusEnum.CODAE_AUTORIZADO &&
-            !["inativo", "inativas", "inativas-temp"].includes(card) && (
+            !["inativo", "inativas", "inativas-temp"].includes(card) &&
+            !exibirBotaoGerarProtocoloCanceladasOuInativas() && (
               <>
                 {!editar && (
                   <div className="form-group float-end mt-4">

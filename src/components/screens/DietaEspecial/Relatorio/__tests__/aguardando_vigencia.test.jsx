@@ -4,7 +4,6 @@ import { rest } from "msw";
 import { setupServer } from "msw/node";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { CODAE } from "../../../../../configs/constants";
 import Relatorio from "../";
 import {
   respostaApiCancelamentoporDataTermino,
@@ -23,6 +22,7 @@ import { VISAO, PERFIL } from "src/constants/shared";
 const payload = {
   ...respostaApiCancelamentoporDataTermino(),
   status_solicitacao: "CODAE_AUTORIZADO",
+  tipo_solicitacao: "ALTERACAO_UE",
 };
 
 const server = setupServer(
@@ -65,17 +65,17 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test("Relatorio autorizadas temporariamente", async () => {
-  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
+test("Relatorio aguardando início vigência", async () => {
+  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=aguardando-inicio-vigencia`;
   Object.defineProperty(window, "location", {
     value: {
       search: search,
     },
   });
-  render(<Relatorio visao={CODAE} />);
+  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
 
   expect(
-    await screen.findByText(/dieta especial - Autorizada Temporariamente/i)
+    await screen.findByText(/dieta especial - Autorizada/i)
   ).toBeInTheDocument();
   expect(
     await screen.findByRole("button", { name: /histórico/i })
@@ -89,21 +89,26 @@ test("Relatorio autorizadas temporariamente", async () => {
   expect(await screen.getByText(/código eol do aluno/i)).toBeInTheDocument();
   expect(await screen.getByText(/data de nascimento/i)).toBeInTheDocument();
   expect(await screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
+
+  expect(
+    await screen.getByText(/Dados da Escola de Destino/i)
+  ).toBeInTheDocument();
   expect(
     await screen.getByText(/dados da escola solicitante/i)
   ).toBeInTheDocument();
-  expect(await screen.getByText("Nome")).toBeInTheDocument();
-  expect(await screen.getByText("Telefone")).toBeInTheDocument();
-  expect(await screen.getByText("E-mail")).toBeInTheDocument();
-  expect(await screen.getByText("DRE")).toBeInTheDocument();
-  expect(await screen.getByText("Lote")).toBeInTheDocument();
-  expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
+
+  expect(await screen.findAllByText("Nome")).toHaveLength(2);
+  expect(await screen.findAllByText("Telefone")).toHaveLength(2);
+  expect(await screen.findAllByText("E-mail")).toHaveLength(2);
+  expect(await screen.findAllByText("DRE")).toHaveLength(2);
+  expect(await screen.findAllByText("Lote")).toHaveLength(2);
+  expect(await screen.findAllByText("Tipo de Gestão")).toHaveLength(2);
 
   expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
 });
 
-test("Verifica botões de Gerar Protocolo - visão Nutri Manifestacao", async () => {
-  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
+test("Verifica botão de Gerar Protocolo - visão Tercerizada", async () => {
+  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=aguardando-inicio-vigencia`;
   Object.defineProperty(window, "location", {
     value: {
       search: search,
@@ -120,9 +125,9 @@ test("Verifica botões de Gerar Protocolo - visão Nutri Manifestacao", async ()
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.CODAE} />);
+  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
 
-  localStorage.setItem("tipo_perfil", PERFIL.NUTRICAO_MANIFESTACAO);
+  localStorage.setItem("tipo_perfil", PERFIL.ADMINISTRADOR_EMPRESA);
 
   await waitFor(() =>
     expect(screen.getAllByText("Gerar Protocolo")).toHaveLength(1)
@@ -132,4 +137,36 @@ test("Verifica botões de Gerar Protocolo - visão Nutri Manifestacao", async ()
   expect(buttonGerarProtocolo).toBeInTheDocument();
 
   fireEvent.click(buttonGerarProtocolo);
+});
+
+test("Verifica botão de Marcar Conferencia - visão Tercerizada", async () => {
+  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=aguardando-inicio-vigencia:`;
+  Object.defineProperty(window, "location", {
+    value: {
+      search: search,
+    },
+  });
+
+  const mockPdfBlob = new Blob(["mocked PDF content"], {
+    type: "application/pdf",
+  });
+
+  global.URL.createObjectURL = jest.fn(() => "mock-url");
+
+  mock
+    .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
+    .reply(200, mockPdfBlob);
+
+  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
+
+  localStorage.setItem("tipo_perfil", PERFIL.ADMINISTRADOR_EMPRESA);
+
+  await waitFor(() =>
+    expect(screen.getAllByText("Marcar Conferência")).toHaveLength(1)
+  );
+  const buttons = screen.getAllByText("Marcar Conferência");
+  const buttonMarcarProtocolo = buttons[0].closest("button");
+  expect(buttonMarcarProtocolo).toBeInTheDocument();
+
+  fireEvent.click(buttonMarcarProtocolo);
 });
