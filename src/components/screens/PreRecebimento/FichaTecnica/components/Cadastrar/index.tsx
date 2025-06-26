@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Field, Form } from "react-final-form";
 import Label from "src/components/Shareable/Label";
 
-import { required, email } from "src/helpers/fieldValidators";
+import { required } from "src/helpers/fieldValidators";
 import { Spin, Tooltip } from "antd";
 import { CATEGORIA_OPTIONS } from "../../constants";
 import InputText from "src/components/Shareable/Input/InputText";
-import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
 
 import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -16,7 +15,6 @@ import {
   BUTTON_STYLE,
 } from "../../../../../Shareable/Botao/constants";
 import Botao from "../../../../../Shareable/Botao";
-import { cepMask, cnpjMask, telefoneMask } from "src/constants/shared";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import FormPereciveisENaoPereciveis from "./components/FormPereciveisENaoPereciveis";
@@ -57,6 +55,7 @@ import {
 import "./styles.scss";
 import FormProponente from "./components/FormProponente";
 import StepsSigpae from "src/components/Shareable/StepsSigpae";
+import FormFabricante from "./components/FormFabricante";
 
 const ITENS_STEPS = [
   {
@@ -78,6 +77,7 @@ export default () => {
   const [fabricantesOptions, setFabricantesOptions] = useState<
     OptionsGenerico[]
   >([]);
+  const [fabricantesCount, setFabricantesCount] = useState(1);
   const [unidadesMedidaOptions, setUnidadesMedidaOptions] = useState<
     OptionsGenerico[]
   >([]);
@@ -85,7 +85,10 @@ export default () => {
     useState<TerceirizadaComEnderecoInterface>(
       {} as TerceirizadaComEnderecoInterface
     );
-  const [desabilitaEndereco, setDesabilitaEndereco] = useState(true);
+  const [desabilitaEndereco, setDesabilitaEndereco] = useState<Array<boolean>>([
+    true,
+    true,
+  ]);
   const [collapse, setCollapse] = useState<CollapseControl>({});
   const [ficha, setFicha] = useState<FichaTecnicaDetalhada>(
     {} as FichaTecnicaDetalhada
@@ -272,7 +275,9 @@ export default () => {
                         </span>,
                         <span className="fw-bold" key={1}>
                           Empresa ou Organização{" "}
-                          <span className="verde-escuro">Fabricante</span>
+                          <span className="verde-escuro">
+                            Fabricante, Envasador e/ou Distribuidor
+                          </span>
                         </span>,
                         <span className="fw-bold" key={1}>
                           Detalhes do{" "}
@@ -286,148 +291,41 @@ export default () => {
                       </section>
 
                       <section id="formFabricante">
-                        <div className="row">
-                          <div className="col-6">
-                            <Field
-                              component={AutoCompleteSelectField}
-                              dataTestId={"fabricante"}
-                              options={getListaFiltradaAutoCompleteSelect(
-                                fabricantesOptions.map((e) => e.nome),
-                                values["fabricante"],
-                                true
-                              )}
-                              label="Fabricantes"
-                              name={`fabricante`}
-                              placeholder="Selecione um Fabricante"
-                              className="input-ficha-tecnica"
-                              required
-                              validate={required}
-                            />
+                        <FormFabricante
+                          fabricantesCount={fabricantesCount}
+                          setFabricantesCount={setFabricantesCount}
+                          fabricantesOptions={fabricantesOptions}
+                          values={values}
+                          desabilitaEndereco={desabilitaEndereco}
+                          gerenciaModalCadastroExterno={() => {
+                            gerenciaModalCadastroExterno(
+                              "FABRICANTE",
+                              setTipoCadastro,
+                              setShowModalCadastro
+                            );
+                          }}
+                        />
+                        {fabricantesCount === 1 && (
+                          <div className="row mt-3">
+                            <div className="col-12 d-flex justify-content-center">
+                              <Tooltip
+                                className="float-end"
+                                title={
+                                  "Adicione somente se os dados do Envasador/Distribuidor forem diferentes do Fabricante."
+                                }
+                              >
+                                <div>
+                                  <Botao
+                                    texto="+ Adicionar Envasador/Distribuidor"
+                                    type={BUTTON_TYPE.BUTTON}
+                                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                                    onClick={() => setFabricantesCount(2)}
+                                  />
+                                </div>
+                              </Tooltip>
+                            </div>
                           </div>
-                          <div className="col-2 cadastro-externo">
-                            <Botao
-                              texto="Cadastrar Fabricante"
-                              type={BUTTON_TYPE.BUTTON}
-                              style={BUTTON_STYLE.GREEN_OUTLINE}
-                              className="botao-cadastro-externo"
-                              onClick={() =>
-                                gerenciaModalCadastroExterno(
-                                  "FABRICANTE",
-                                  setTipoCadastro,
-                                  setShowModalCadastro
-                                )
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-6">
-                            <Field
-                              component={MaskedInputText}
-                              mask={cnpjMask}
-                              label="CNPJ"
-                              name={`cnpj_fabricante`}
-                              placeholder="Digite o CNPJ"
-                              className="input-ficha-tecnica"
-                            />
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-4">
-                            <Field
-                              component={MaskedInputText}
-                              mask={cepMask}
-                              label="CEP"
-                              name={`cep_fabricante`}
-                              placeholder="Digite o CEP"
-                              className="input-ficha-tecnica"
-                            />
-                          </div>
-                          <div className="col-8">
-                            <Field
-                              component={InputText}
-                              label="Endereço"
-                              name={`endereco_fabricante`}
-                              placeholder="Digite o Endereço"
-                              className="input-ficha-tecnica"
-                              disabled={desabilitaEndereco}
-                            />
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-4">
-                            <Field
-                              component={InputText}
-                              label="Número"
-                              name={`numero_fabricante`}
-                              placeholder="Digite o Número"
-                              className="input-ficha-tecnica"
-                            />
-                          </div>
-                          <div className="col-4">
-                            <Field
-                              component={InputText}
-                              label="Complemento"
-                              name={`complemento_fabricante`}
-                              placeholder="Digite o Complemento"
-                              className="input-ficha-tecnica"
-                            />
-                          </div>
-                          <div className="col-4">
-                            <Field
-                              component={InputText}
-                              label="Bairro"
-                              name={`bairro_fabricante`}
-                              placeholder="Digite o Bairro"
-                              className="input-ficha-tecnica"
-                              disabled={desabilitaEndereco}
-                            />
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-8">
-                            <Field
-                              component={InputText}
-                              label="Cidade"
-                              name={`cidade_fabricante`}
-                              placeholder="Digite o Cidade"
-                              className="input-ficha-tecnica"
-                              disabled={desabilitaEndereco}
-                            />
-                          </div>
-                          <div className="col-4">
-                            <Field
-                              component={InputText}
-                              label="Estado"
-                              name={`estado_fabricante`}
-                              placeholder="Digite o Estado"
-                              className="input-ficha-tecnica"
-                              disabled={desabilitaEndereco}
-                            />
-                          </div>
-                        </div>
-                        <div className="row">
-                          <div className="col-8">
-                            <Field
-                              component={InputText}
-                              label="E-mail"
-                              name={`email_fabricante`}
-                              placeholder="Digite o E-mail"
-                              className="input-ficha-tecnica"
-                              validate={email}
-                            />
-                          </div>
-                          <div className="col-4">
-                            <Field
-                              component={MaskedInputText}
-                              mask={telefoneMask}
-                              label="Telefone"
-                              name={`telefone_fabricante`}
-                              placeholder="Digite o Telefone"
-                              className="input-ficha-tecnica"
-                            />
-                          </div>
-                        </div>
+                        )}
                       </section>
 
                       <section id="formProduto">
@@ -625,7 +523,8 @@ export default () => {
                             proponente,
                             produtosOptions,
                             fabricantesOptions,
-                            arquivo
+                            arquivo,
+                            fabricantesCount
                           );
 
                           salvarRascunho(
@@ -675,6 +574,7 @@ export default () => {
                       produtosOptions,
                       fabricantesOptions,
                       arquivo,
+                      fabricantesCount,
                       password
                     );
 
