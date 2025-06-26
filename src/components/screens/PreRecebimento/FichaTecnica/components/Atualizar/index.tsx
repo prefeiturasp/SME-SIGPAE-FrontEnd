@@ -46,6 +46,7 @@ import {
 } from "../../helpers";
 
 import "./styles.scss";
+import FormFabricante from "../Cadastrar/components/FormFabricante";
 
 const idCollapse = "collapseAnalisarFichaTecnica";
 
@@ -93,7 +94,14 @@ export default () => {
 
   const obterCollapseConfigs = (ehPerecivel: Boolean) => [
     {
-      titulo: <span className="verde-escuro">Proponente e Fabricante</span>,
+      titulo: <span className="verde-escuro">Proponente</span>,
+    },
+    {
+      titulo: (
+        <span className="verde-escuro">
+          Fabricante e ou Envasador/Distribuidor
+        </span>
+      ),
     },
     {
       titulo: <span className="verde-escuro">Detalhes do Produto</span>,
@@ -204,123 +212,19 @@ export default () => {
                         <div className="subtitulo">Proponente</div>
                       </div>
                       <FormProponente proponente={proponente} />
+                    </section>
 
-                      <hr />
-
-                      <div className="row">
-                        <div className="subtitulo">Fabricante</div>
-                      </div>
-                      <div className="row">
-                        <div className="col-8">
-                          <Field
-                            component={InputText}
-                            label="Nome da Empresa/Organização"
-                            name={`fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-6">
-                          <Field
-                            component={InputText}
-                            label="CNPJ"
-                            name={`cnpj_fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-4">
-                          <Field
-                            component={InputText}
-                            label="CEP"
-                            name={`cep_fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                        <div className="col-8">
-                          <Field
-                            component={InputText}
-                            label="Endereço"
-                            name={`endereco_fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-4">
-                          <Field
-                            component={InputText}
-                            label="Número"
-                            name={`numero_fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                        <div className="col-4">
-                          <Field
-                            component={InputText}
-                            label="Complemento"
-                            name={`complemento_fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                        <div className="col-4">
-                          <Field
-                            component={InputText}
-                            label="Bairro"
-                            name={`bairro_fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-8">
-                          <Field
-                            component={InputText}
-                            label="Cidade"
-                            name={`cidade_fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                        <div className="col-4">
-                          <Field
-                            component={InputText}
-                            label="Estado"
-                            name={`estado_fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-8">
-                          <Field
-                            component={InputText}
-                            label="E-mail"
-                            name={`email_fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                        <div className="col-4">
-                          <Field
-                            component={InputText}
-                            label="Telefone"
-                            name={`telefone_fabricante`}
-                            className="input-ficha-tecnica"
-                            disabled
-                          />
-                        </div>
-                      </div>
+                    <section>
+                      <FormFabricante
+                        fabricantesCount={
+                          [
+                            values[`fabricante_0`],
+                            values[`fabricante_1`],
+                          ].filter((fabricante) => fabricante).length
+                        }
+                        values={values}
+                        somenteLeitura={true}
+                      />
                     </section>
 
                     <section id="detalhes_produto">

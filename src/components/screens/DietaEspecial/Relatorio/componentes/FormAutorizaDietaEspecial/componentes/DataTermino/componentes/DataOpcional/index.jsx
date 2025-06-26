@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ptBR from "date-fns/locale/pt-BR";
+import { ptBR } from "date-fns/locale/pt-BR";
 import DatePicker from "react-datepicker";
 import InputErroMensagem from "src/components/Shareable/Input/InputErroMensagem";
 import { HelpText } from "src/components/Shareable/HelpText";

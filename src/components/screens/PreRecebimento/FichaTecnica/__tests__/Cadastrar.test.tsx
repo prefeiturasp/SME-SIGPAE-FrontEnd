@@ -42,7 +42,6 @@ jest.mock("src/services/terceirizada.service.jsx");
 jest.mock("src/services/cronograma.service.jsx");
 jest.mock("src/services/produto.service.jsx");
 jest.mock("src/services/fichaTecnica.service.ts");
-jest.setTimeout(60000);
 
 beforeEach(() => {
   getListaCompletaProdutosLogistica.mockResolvedValue({
@@ -186,7 +185,7 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     });
 
     preencheInput("pregao_chamada_publica", "123");
-    preencheInput("fabricante", mockListaFabricantes.results[0].uuid);
+    preencheInput("fabricante_0", mockListaFabricantes.results[0].uuid);
     preencheInput("prazo_validade", "12 Meses");
     preencheInput("numero_registro", "11111");
 
