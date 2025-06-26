@@ -1,7 +1,7 @@
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Select, Skeleton, Spin } from "antd";
 import { addMonths, format, getMonth, getYear } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";

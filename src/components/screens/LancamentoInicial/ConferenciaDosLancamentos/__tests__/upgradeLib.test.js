@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 
 describe("date-fns upgrade", () => {
   it("deve formatar a data corretamente com locale ptBR", () => {
