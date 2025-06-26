@@ -2,7 +2,7 @@ import React from "react";
 
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { CODAE } from "../../../../../configs/constants";
 import Relatorio from "../";
@@ -17,6 +17,8 @@ import {
   protocoloPadraoDietaEspecial,
 } from "../dados";
 import { API_URL } from "src/constants/config";
+import mock from "src/services/_mock";
+import { VISAO, PERFIL } from "src/constants/shared";
 
 const payload = {
   ...respostaApiCancelamentoporDataTermino(),
@@ -98,4 +100,36 @@ test("Relatorio autorizadas temporariamente", async () => {
   expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
 
   expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
+});
+
+test("Verifica botões de Gerar Protocolo - visão Nutri Manifestacao", async () => {
+  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
+  Object.defineProperty(window, "location", {
+    value: {
+      search: search,
+    },
+  });
+
+  const mockPdfBlob = new Blob(["mocked PDF content"], {
+    type: "application/pdf",
+  });
+
+  global.URL.createObjectURL = jest.fn(() => "mock-url");
+
+  mock
+    .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
+    .reply(200, mockPdfBlob);
+
+  render(<Relatorio visao={VISAO.CODAE} />);
+
+  localStorage.setItem("tipo_perfil", PERFIL.NUTRICAO_MANIFESTACAO);
+
+  await waitFor(() =>
+    expect(screen.getAllByText("Gerar Protocolo")).toHaveLength(1)
+  );
+  const buttons = screen.getAllByText("Gerar Protocolo");
+  const buttonGerarProtocolo = buttons[0].closest("button");
+  expect(buttonGerarProtocolo).toBeInTheDocument();
+
+  fireEvent.click(buttonGerarProtocolo);
 });
