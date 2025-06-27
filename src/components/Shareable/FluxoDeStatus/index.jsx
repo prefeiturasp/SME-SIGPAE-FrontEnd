@@ -142,7 +142,7 @@ export const FluxoDeStatus = (props) => {
           data-testid="progressbar-titles"
         >
           {fluxoUtilizadoEFormatado.map((status, key) => (
-            <li key={key} style={{ minWidth: "160px" }}>
+            <li key={key}>
               {cloneListaDeStatus[key]
                 ? getTitulo(cloneListaDeStatus[key])
                 : status.titulo}
@@ -163,7 +163,6 @@ export const FluxoDeStatus = (props) => {
                     ? "pending"
                     : ""
                 }`}
-                style={{ minWidth: "160px" }}
               >
                 {novoStatus.criado_em}
                 <br />
