@@ -132,6 +132,7 @@ export default () => {
         setInitialValues,
         setArquivo,
         setProponente,
+        setFabricantesCount,
         setCarregando
       );
     })();

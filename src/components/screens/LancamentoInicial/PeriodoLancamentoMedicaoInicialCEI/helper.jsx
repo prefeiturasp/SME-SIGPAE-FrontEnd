@@ -1,6 +1,6 @@
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import { deepCopy, ehEscolaTipoCEMEI } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
