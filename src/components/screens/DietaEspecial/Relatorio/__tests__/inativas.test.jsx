@@ -215,7 +215,7 @@ test("Relatório Inativas - visão ESCOLA DIRETOR_UE", async () => {
     .reply(200, mockPdfBlob);
 
   render(<Relatorio visao={VISAO.ESCOLA} />);
-  localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETOR_UE);
+  localStorage.setItem("tipo_perfil", PERFIL.DIRETOR_UE);
 
   await waitFor(() => {
     expect(screen.getByText(/Dieta especial - Inativa/i)).toBeInTheDocument();
