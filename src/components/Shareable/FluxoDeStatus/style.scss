@@ -9,15 +9,21 @@
 
 .progressbar-titles {
   color: $grayPlaceholder;
-  display: inline-flex;
+  display: flex;
   font-size: 9px;
   font-weight: bold;
-  list-style-type: none;
-  margin-bottom: 0;
+  list-style: none;
+  margin-bottom: 6px; // um pequeno espaço entre título e bolinha
   text-align: center;
-  width: 100%;
+  padding: 0;
+  width: max-content;
+  justify-content: flex-start;
+
   li {
-    width: 33.3%;
+    min-width: 160px;
+    max-width: 160px;
+    width: 160px;
+    text-align: center;
   }
 }
 
@@ -29,6 +35,9 @@
 .progressbar {
   li {
     list-style-type: none;
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
     font-weight: bold;
     font-size: 9px;
     float: left;
