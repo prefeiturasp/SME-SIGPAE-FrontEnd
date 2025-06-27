@@ -22,6 +22,7 @@ import { mockEscolaSimplesEMEF } from "src/mocks/services/escola.service/EMEF/es
 import { quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Maio2025/quantidadesAlimentacaoesLancadasPeriodoGrupo";
 import { mockPanoramaEscolaEMEF } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/panoramaEscola";
 import { mockSolicitacaoMedicaoInicialEMEFMaio2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/solicitacaoMedicaoInicialMaio2025";
+import { mockSolicitacaoMedicaoInicialEMEFMaio2025Enviada } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/solicitacaoMedicaoInicialMaio2025Enviada";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
@@ -179,6 +180,39 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
         screen.getByText(
           "Existem solicitações de alimentações no período, adicione ao menos uma justificativa para finalizar"
         )
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Finaliza sem lançamentos com sucesso - programas e projetos possui justificativa", async () => {
+    const botaoFinalizarSemLancamentos = screen
+      .getByText("Finalizar sem lançamentos")
+      .closest("button");
+    expect(botaoFinalizarSemLancamentos).not.toBeDisabled();
+    fireEvent.click(botaoFinalizarSemLancamentos);
+
+    await waitFor(() => {
+      expect(screen.getByText("Finalizar Medição Inicial sem Lançamentos"));
+    });
+
+    const textarea = screen.getByTestId("textarea-justificativa");
+    fireEvent.change(textarea, {
+      target: { value: "Não teve aula." },
+    });
+
+    const botaoFinalizarModal = screen.getByTestId("botao-finalizar-modal");
+
+    mock
+      .onPatch(
+        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/`
+      )
+      .reply(200, mockSolicitacaoMedicaoInicialEMEFMaio2025Enviada);
+
+    fireEvent.click(botaoFinalizarModal);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Medição Inicial finalizada com sucesso!")
       ).toBeInTheDocument();
     });
   });

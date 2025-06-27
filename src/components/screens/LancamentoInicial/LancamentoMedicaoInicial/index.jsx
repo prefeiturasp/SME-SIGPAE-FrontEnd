@@ -206,7 +206,7 @@ export default () => {
         { ano }
       );
       setPeriodosEscolaSimples(response_vinculos.data.results);
-      if (location.search) {
+      if (location.search || (mes && ano)) {
         if (mes <= 0 || mes > 12) {
           mes = format(new Date(), "MM");
         }
