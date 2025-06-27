@@ -1,6 +1,13 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -112,6 +119,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
             }}
           >
             <LancamentoMedicaoInicialPage />
+            <ToastContainer />
           </MeusDadosContext.Provider>
         </MemoryRouter>
       );
@@ -130,5 +138,48 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
     expect(screen.getByText("MANHA")).toBeInTheDocument();
     expect(screen.getByText("TARDE")).toBeInTheDocument();
     expect(screen.getByText("Programas e Projetos")).toBeInTheDocument();
+  });
+
+  it("Finaliza sem lançamentos - erro programas e projetos", async () => {
+    const botaoFinalizarSemLancamentos = screen
+      .getByText("Finalizar sem lançamentos")
+      .closest("button");
+    expect(botaoFinalizarSemLancamentos).not.toBeDisabled();
+    fireEvent.click(botaoFinalizarSemLancamentos);
+
+    await waitFor(() => {
+      expect(screen.getByText("Finalizar Medição Inicial sem Lançamentos"));
+    });
+
+    const textarea = screen.getByTestId("textarea-justificativa");
+    fireEvent.change(textarea, {
+      target: { value: "Não teve aula." },
+    });
+
+    const botaoFinalizarModal = screen.getByTestId("botao-finalizar-modal");
+
+    mock
+      .onPatch(
+        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/`
+      )
+      .reply(400, [
+        {
+          periodo_escolar: "Programas e Projetos",
+          erro: "Existem solicitações de alimentações no período, adicione ao menos uma justificativa para finalizar",
+        },
+      ]);
+
+    fireEvent.click(botaoFinalizarModal);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Não foi possível enviar a medição sem lançamentos!")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Existem solicitações de alimentações no período, adicione ao menos uma justificativa para finalizar"
+        )
+      ).toBeInTheDocument();
+    });
   });
 });

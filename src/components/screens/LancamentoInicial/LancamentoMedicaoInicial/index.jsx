@@ -171,6 +171,7 @@ export default () => {
                 " / " +
                 getYear(dataBRT).toString(),
             });
+
             if (!location.search && periodos.length === 1) {
               navigate(
                 {
@@ -246,9 +247,14 @@ export default () => {
         ano
       );
 
-      const periodoInicialSelecionado = !location.search
-        ? periodos[0].dataBRT.toString()
-        : new Date(ano, mes - 1, 1);
+      const urlParams = new URLSearchParams(window.location.search);
+      const mesParam = urlParams.get("mes");
+      const anoParam = urlParams.get("ano");
+
+      const periodoInicialSelecionado =
+        !mesParam || !anoParam
+          ? periodos[0].dataBRT.toString()
+          : new Date(anoParam, mesParam - 1, 1);
       setObjectoPeriodos(periodos);
       setPeriodoSelecionado(periodoInicialSelecionado);
       await getSolicitacaoMedInicial(periodoInicialSelecionado, escola.uuid);
