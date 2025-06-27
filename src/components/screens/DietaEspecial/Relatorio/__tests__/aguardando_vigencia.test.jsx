@@ -65,49 +65,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test("Relatorio aguardando início vigência", async () => {
-  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=aguardando-inicio-vigencia`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
-  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
-
-  expect(
-    await screen.findByText(/dieta especial - Autorizada/i)
-  ).toBeInTheDocument();
-  expect(
-    await screen.findByRole("button", { name: /histórico/i })
-  ).toBeInTheDocument();
-  expect(await screen.queryByText("Motivo")).not.toBeInTheDocument();
-  expect(
-    await screen.queryByText("Justificativa da Negação")
-  ).not.toBeInTheDocument();
-
-  expect(await screen.getByText(/dados do aluno/i)).toBeInTheDocument();
-  expect(await screen.getByText(/código eol do aluno/i)).toBeInTheDocument();
-  expect(await screen.getByText(/data de nascimento/i)).toBeInTheDocument();
-  expect(await screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
-
-  expect(
-    await screen.getByText(/Dados da Escola de Destino/i)
-  ).toBeInTheDocument();
-  expect(
-    await screen.getByText(/dados da escola solicitante/i)
-  ).toBeInTheDocument();
-
-  expect(await screen.findAllByText("Nome")).toHaveLength(2);
-  expect(await screen.findAllByText("Telefone")).toHaveLength(2);
-  expect(await screen.findAllByText("E-mail")).toHaveLength(2);
-  expect(await screen.findAllByText("DRE")).toHaveLength(2);
-  expect(await screen.findAllByText("Lote")).toHaveLength(2);
-  expect(await screen.findAllByText("Tipo de Gestão")).toHaveLength(2);
-
-  expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
-});
-
-test("Verifica botão de Gerar Protocolo - visão Tercerizada", async () => {
+test("Relatório Aguardando Vigência -  visão Terceirizada", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=aguardando-inicio-vigencia`;
   Object.defineProperty(window, "location", {
     value: {
@@ -118,55 +76,53 @@ test("Verifica botão de Gerar Protocolo - visão Tercerizada", async () => {
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
   });
-
   global.URL.createObjectURL = jest.fn(() => "mock-url");
-
   mock
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
   render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
-
   localStorage.setItem("tipo_perfil", PERFIL.ADMINISTRADOR_EMPRESA);
+  await waitFor(() => {
+    expect(
+      screen.getByText(/dieta especial - Autorizada/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /histórico/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Justificativa da Negação")
+    ).not.toBeInTheDocument();
 
-  await waitFor(() =>
-    expect(screen.getAllByText("Gerar Protocolo")).toHaveLength(1)
-  );
-  const buttons = screen.getAllByText("Gerar Protocolo");
-  const buttonGerarProtocolo = buttons[0].closest("button");
-  expect(buttonGerarProtocolo).toBeInTheDocument();
+    expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/código eol do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
+    expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/Dados da Escola de Destino/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/dados da escola solicitante/i)
+    ).toBeInTheDocument();
 
-  fireEvent.click(buttonGerarProtocolo);
-});
+    expect(screen.getAllByText("Nome")).toHaveLength(2);
+    expect(screen.getAllByText("Telefone")).toHaveLength(2);
+    expect(screen.getAllByText("E-mail")).toHaveLength(2);
+    expect(screen.getAllByText("DRE")).toHaveLength(2);
+    expect(screen.getAllByText("Lote")).toHaveLength(2);
+    expect(screen.getAllByText("Tipo de Gestão")).toHaveLength(2);
 
-test("Verifica botão de Marcar Conferencia - visão Tercerizada", async () => {
-  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=aguardando-inicio-vigencia:`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
+    expect(screen.getByText(/Observações/i)).toBeInTheDocument();
+
+    const textoProtocolo = screen.getAllByText("Gerar Protocolo");
+    const buttonGerarProtocolo = textoProtocolo[0].closest("button");
+    expect(textoProtocolo).toHaveLength(1);
+    expect(buttonGerarProtocolo).toBeInTheDocument();
+    fireEvent.click(buttonGerarProtocolo);
+
+    const textoConferencia = screen.getAllByText("Marcar Conferência");
+    const buttonMarcarConferencia = textoConferencia[0].closest("button");
+    expect(textoConferencia).toHaveLength(1);
+    expect(buttonMarcarConferencia).toBeInTheDocument();
+    fireEvent.click(buttonMarcarConferencia);
   });
-
-  const mockPdfBlob = new Blob(["mocked PDF content"], {
-    type: "application/pdf",
-  });
-
-  global.URL.createObjectURL = jest.fn(() => "mock-url");
-
-  mock
-    .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
-    .reply(200, mockPdfBlob);
-
-  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
-
-  localStorage.setItem("tipo_perfil", PERFIL.ADMINISTRADOR_EMPRESA);
-
-  await waitFor(() =>
-    expect(screen.getAllByText("Marcar Conferência")).toHaveLength(1)
-  );
-  const buttons = screen.getAllByText("Marcar Conferência");
-  const buttonMarcarProtocolo = buttons[0].closest("button");
-  expect(buttonMarcarProtocolo).toBeInTheDocument();
-
-  fireEvent.click(buttonMarcarProtocolo);
 });
