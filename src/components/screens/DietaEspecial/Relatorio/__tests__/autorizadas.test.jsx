@@ -4,7 +4,6 @@ import { rest } from "msw";
 import { setupServer } from "msw/node";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { CODAE } from "../../../../../configs/constants";
 import Relatorio from "../";
 import {
   respostaApiCancelamentoporDataTermino,
@@ -65,44 +64,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test("Relatorio autorizadas temporariamente", async () => {
-  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
-  render(<Relatorio visao={CODAE} />);
-
-  expect(
-    await screen.findByText(/dieta especial - Autorizada Temporariamente/i)
-  ).toBeInTheDocument();
-  expect(
-    await screen.findByRole("button", { name: /histórico/i })
-  ).toBeInTheDocument();
-  expect(await screen.queryByText("Motivo")).not.toBeInTheDocument();
-  expect(
-    await screen.queryByText("Justificativa da Negação")
-  ).not.toBeInTheDocument();
-
-  expect(await screen.getByText(/dados do aluno/i)).toBeInTheDocument();
-  expect(await screen.getByText(/código eol do aluno/i)).toBeInTheDocument();
-  expect(await screen.getByText(/data de nascimento/i)).toBeInTheDocument();
-  expect(await screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/dados da escola solicitante/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText("Nome")).toBeInTheDocument();
-  expect(await screen.getByText("Telefone")).toBeInTheDocument();
-  expect(await screen.getByText("E-mail")).toBeInTheDocument();
-  expect(await screen.getByText("DRE")).toBeInTheDocument();
-  expect(await screen.getByText("Lote")).toBeInTheDocument();
-  expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
-
-  expect(await screen.getByText(/Observações/i)).toBeInTheDocument();
-});
-
-test("Verifica botões de Gerar Protocolo - visão Nutri Manifestacao", async () => {
+test("Relatório Autorizada Temporariamente - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
   Object.defineProperty(window, "location", {
     value: {
@@ -113,23 +75,52 @@ test("Verifica botões de Gerar Protocolo - visão Nutri Manifestacao", async ()
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
   });
-
   global.URL.createObjectURL = jest.fn(() => "mock-url");
-
   mock
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
   render(<Relatorio visao={VISAO.CODAE} />);
-
   localStorage.setItem("tipo_perfil", PERFIL.NUTRICAO_MANIFESTACAO);
+  await waitFor(() => {
+    expect(
+      screen.getByText(/dieta especial - Autorizada/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /histórico/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Justificativa da Negação")
+    ).not.toBeInTheDocument();
 
-  await waitFor(() =>
-    expect(screen.getAllByText("Gerar Protocolo")).toHaveLength(1)
-  );
-  const buttons = screen.getAllByText("Gerar Protocolo");
-  const buttonGerarProtocolo = buttons[0].closest("button");
-  expect(buttonGerarProtocolo).toBeInTheDocument();
+    expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/código eol do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
+    expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Dados da Escola de Destino/i)
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/dados da escola solicitante/i)
+    ).toBeInTheDocument();
 
-  fireEvent.click(buttonGerarProtocolo);
+    expect(screen.getAllByText("Nome")).toHaveLength(1);
+    expect(screen.getAllByText("Telefone")).toHaveLength(1);
+    expect(screen.getAllByText("E-mail")).toHaveLength(1);
+    expect(screen.getAllByText("DRE")).toHaveLength(1);
+    expect(screen.getAllByText("Lote")).toHaveLength(1);
+    expect(screen.getAllByText("Tipo de Gestão")).toHaveLength(1);
+
+    expect(screen.getByText(/Observações/i)).toBeInTheDocument();
+
+    const textoProtocolo = screen.getAllByText("Gerar Protocolo");
+    const buttonGerarProtocolo = textoProtocolo[0].closest("button");
+    expect(textoProtocolo).toHaveLength(1);
+    expect(buttonGerarProtocolo).toBeInTheDocument();
+    fireEvent.click(buttonGerarProtocolo);
+
+    const textoConferencia = screen.queryAllByText("Marcar Conferência");
+    expect(textoConferencia).toHaveLength(0);
+  });
 });
