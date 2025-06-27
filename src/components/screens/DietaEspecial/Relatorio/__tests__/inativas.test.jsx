@@ -134,8 +134,8 @@ test("Relatório Inativas - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
   });
 });
 
-test("Verifica botões de Gerar Protocolo - visão Tercerizada", async () => {
-  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=inativas:`;
+test("Relatório Inativas - visão TERCEIRIZADA ADMINISTRADOR EMPRESA", async () => {
+  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=inativas`;
   Object.defineProperty(window, "location", {
     value: {
       search: search,
@@ -153,15 +153,101 @@ test("Verifica botões de Gerar Protocolo - visão Tercerizada", async () => {
     .reply(200, mockPdfBlob);
 
   render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
-
   localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
 
-  await waitFor(() =>
-    expect(screen.getAllByText("Gerar Protocolo")).toHaveLength(1)
-  );
-  const buttons = screen.getAllByText("Gerar Protocolo");
-  const buttonGerarProtocolo = buttons[0].closest("button");
-  expect(buttonGerarProtocolo).toBeInTheDocument();
+  await waitFor(() => {
+    expect(screen.getByText(/Dieta especial - Inativa/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /histórico/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Justificativa da Negação")
+    ).not.toBeInTheDocument();
 
-  fireEvent.click(buttonGerarProtocolo);
+    expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/código eol do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
+    expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/dados da escola solicitante/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText("Nome")).toBeInTheDocument();
+    expect(screen.getByText("Telefone")).toBeInTheDocument();
+    expect(screen.getByText("E-mail")).toBeInTheDocument();
+    expect(screen.getByText("DRE")).toBeInTheDocument();
+    expect(screen.getByText("Lote")).toBeInTheDocument();
+    expect(screen.getByText("Tipo de Gestão")).toBeInTheDocument();
+
+    const textoProtocolo = screen.getAllByText("Gerar Protocolo");
+    const buttonGerarProtocolo = textoProtocolo[0].closest("button");
+    expect(textoProtocolo).toHaveLength(1);
+    expect(buttonGerarProtocolo).toBeInTheDocument();
+    fireEvent.click(buttonGerarProtocolo);
+
+    const textoConferencia = screen.getAllByText("Marcar Conferência");
+    const buttonMarcarConferencia = textoConferencia[0].closest("button");
+    expect(textoConferencia).toHaveLength(1);
+    expect(buttonMarcarConferencia).toBeInTheDocument();
+    fireEvent.click(buttonMarcarConferencia);
+
+    const textoEditar = screen.queryAllByText("Editar");
+    expect(textoEditar).toHaveLength(0);
+  });
+});
+
+test("Relatório Inativas - visão ESCOLA DIRETOR_UE", async () => {
+  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=inativas`;
+  Object.defineProperty(window, "location", {
+    value: {
+      search: search,
+    },
+  });
+
+  const mockPdfBlob = new Blob(["mocked PDF content"], {
+    type: "application/pdf",
+  });
+
+  global.URL.createObjectURL = jest.fn(() => "mock-url");
+
+  mock
+    .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
+    .reply(200, mockPdfBlob);
+
+  render(<Relatorio visao={VISAO.ESCOLA} />);
+  localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETOR_UE);
+
+  await waitFor(() => {
+    expect(screen.getByText(/Dieta especial - Inativa/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /histórico/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Justificativa da Negação")
+    ).not.toBeInTheDocument();
+
+    expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/código eol do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
+    expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/dados da escola solicitante/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText("Nome")).toBeInTheDocument();
+    expect(screen.getByText("Telefone")).toBeInTheDocument();
+    expect(screen.getByText("E-mail")).toBeInTheDocument();
+    expect(screen.getByText("DRE")).toBeInTheDocument();
+    expect(screen.getByText("Lote")).toBeInTheDocument();
+    expect(screen.getByText("Tipo de Gestão")).toBeInTheDocument();
+
+    const textoProtocolo = screen.queryAllByText("Gerar Protocolo");
+    expect(textoProtocolo).toHaveLength(0);
+
+    const textoConferencia = screen.queryAllByText("Marcar Conferência");
+    expect(textoConferencia).toHaveLength(0);
+
+    const textoEditar = screen.queryAllByText("Editar");
+    expect(textoEditar).toHaveLength(0);
+  });
 });
