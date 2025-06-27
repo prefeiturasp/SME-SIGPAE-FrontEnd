@@ -167,6 +167,7 @@ export const carregarDadosCadastrar = async (
   setInitialValues: Dispatch<SetStateAction<Record<string, any>>>,
   setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>,
   setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>,
+  setFabricantesCount: Dispatch<SetStateAction<number>>,
   setCarregando: Dispatch<SetStateAction<boolean>>
 ) => {
   try {
@@ -186,6 +187,7 @@ export const carregarDadosCadastrar = async (
 
       setFicha(fichaTecnica);
       setInitialValues(geraInitialValuesCadastrar(fichaTecnica));
+      setFabricantesCount(fichaTecnica.envasador_distribuidor ? 2 : 1);
 
       const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
       setProponente(response.data);
