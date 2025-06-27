@@ -1,7 +1,7 @@
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Select, Skeleton, Spin } from "antd";
 import { addMonths, format, getMonth, getYear } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -171,6 +171,7 @@ export default () => {
                 " / " +
                 getYear(dataBRT).toString(),
             });
+
             if (!location.search && periodos.length === 1) {
               navigate(
                 {
@@ -205,7 +206,7 @@ export default () => {
         { ano }
       );
       setPeriodosEscolaSimples(response_vinculos.data.results);
-      if (location.search) {
+      if (location.search || (mes && ano)) {
         if (mes <= 0 || mes > 12) {
           mes = format(new Date(), "MM");
         }
@@ -246,9 +247,14 @@ export default () => {
         ano
       );
 
-      const periodoInicialSelecionado = !location.search
-        ? periodos[0].dataBRT.toString()
-        : new Date(ano, mes - 1, 1);
+      const urlParams = new URLSearchParams(window.location.search);
+      const mesParam = urlParams.get("mes");
+      const anoParam = urlParams.get("ano");
+
+      const periodoInicialSelecionado =
+        !mesParam || !anoParam
+          ? periodos[0].dataBRT.toString()
+          : new Date(anoParam, mesParam - 1, 1);
       setObjectoPeriodos(periodos);
       setPeriodoSelecionado(periodoInicialSelecionado);
       await getSolicitacaoMedInicial(periodoInicialSelecionado, escola.uuid);
