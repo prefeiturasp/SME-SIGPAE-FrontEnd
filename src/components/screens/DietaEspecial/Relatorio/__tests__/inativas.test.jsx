@@ -4,7 +4,6 @@ import { rest } from "msw";
 import { setupServer } from "msw/node";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { CODAE } from "../../../../../configs/constants";
 import Relatorio from "../";
 import {
   respostaApiCancelamentoporDataTermino,
@@ -19,7 +18,7 @@ import {
 } from "../dados";
 import { API_URL } from "src/constants/config";
 import mock from "src/services/_mock";
-import { VISAO, PERFIL } from "src/constants/shared";
+import { VISAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 
 const payload = {
   ...respostaApiCancelamentoporDataTermino(),
@@ -76,43 +75,8 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-test("Teste dietas inativas", async () => {
+test("Relatório Inativas - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=inativas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
-  render(<Relatorio visao={CODAE} />);
-
-  expect(
-    await screen.findByText(/Dieta especial - Inativa/i)
-  ).toBeInTheDocument();
-  expect(
-    await screen.findByRole("button", { name: /histórico/i })
-  ).toBeInTheDocument();
-  expect(await screen.queryByText("Motivo")).not.toBeInTheDocument();
-  expect(
-    await screen.queryByText("Justificativa da Negação")
-  ).not.toBeInTheDocument();
-
-  expect(await screen.getByText(/dados do aluno/i)).toBeInTheDocument();
-  expect(await screen.getByText(/código eol do aluno/i)).toBeInTheDocument();
-  expect(await screen.getByText(/data de nascimento/i)).toBeInTheDocument();
-  expect(await screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
-  expect(
-    await screen.getByText(/dados da escola solicitante/i)
-  ).toBeInTheDocument();
-  expect(await screen.getByText("Nome")).toBeInTheDocument();
-  expect(await screen.getByText("Telefone")).toBeInTheDocument();
-  expect(await screen.getByText("E-mail")).toBeInTheDocument();
-  expect(await screen.getByText("DRE")).toBeInTheDocument();
-  expect(await screen.getByText("Lote")).toBeInTheDocument();
-  expect(await screen.getByText("Tipo de Gestão")).toBeInTheDocument();
-});
-
-test("Verifica botões de Gerar Protocolo - visão Nutri Manifestacao", async () => {
-  const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=inativas:`;
   Object.defineProperty(window, "location", {
     value: {
       search: search,
@@ -130,17 +94,44 @@ test("Verifica botões de Gerar Protocolo - visão Nutri Manifestacao", async ()
     .reply(200, mockPdfBlob);
 
   render(<Relatorio visao={VISAO.CODAE} />);
+  localStorage.setItem("tipo_perfil", TIPO_PERFIL.NUTRICAO_MANIFESTACAO);
 
-  localStorage.setItem("tipo_perfil", PERFIL.NUTRICAO_MANIFESTACAO);
+  await waitFor(() => {
+    expect(screen.getByText(/Dieta especial - Inativa/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /histórico/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Justificativa da Negação")
+    ).not.toBeInTheDocument();
 
-  await waitFor(() =>
-    expect(screen.getAllByText("Gerar Protocolo")).toHaveLength(1)
-  );
-  const buttons = screen.getAllByText("Gerar Protocolo");
-  const buttonGerarProtocolo = buttons[0].closest("button");
-  expect(buttonGerarProtocolo).toBeInTheDocument();
+    expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/código eol do aluno/i)).toBeInTheDocument();
+    expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
+    expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/dados da escola solicitante/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText("Nome")).toBeInTheDocument();
+    expect(screen.getByText("Telefone")).toBeInTheDocument();
+    expect(screen.getByText("E-mail")).toBeInTheDocument();
+    expect(screen.getByText("DRE")).toBeInTheDocument();
+    expect(screen.getByText("Lote")).toBeInTheDocument();
+    expect(screen.getByText("Tipo de Gestão")).toBeInTheDocument();
 
-  fireEvent.click(buttonGerarProtocolo);
+    const textoProtocolo = screen.getAllByText("Gerar Protocolo");
+    const buttonGerarProtocolo = textoProtocolo[0].closest("button");
+    expect(textoProtocolo).toHaveLength(1);
+    expect(buttonGerarProtocolo).toBeInTheDocument();
+    fireEvent.click(buttonGerarProtocolo);
+
+    const textoConferencia = screen.queryAllByText("Marcar Conferência");
+    expect(textoConferencia).toHaveLength(0);
+
+    const textoEditar = screen.queryAllByText("Editar");
+    expect(textoEditar).toHaveLength(0);
+  });
 });
 
 test("Verifica botões de Gerar Protocolo - visão Tercerizada", async () => {
