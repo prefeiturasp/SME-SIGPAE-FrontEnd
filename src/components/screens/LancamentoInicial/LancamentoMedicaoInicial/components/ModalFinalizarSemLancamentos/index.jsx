@@ -59,6 +59,7 @@ export const ModalFinalizarMedicaoSemLancamentos = ({ ...props }) => {
               </div>
               <Field
                 component={TextArea}
+                dataTestId="textarea-justificativa"
                 className="col-12 pb-5"
                 label="Justificativa do envio da medição sem lançamentos"
                 name="justificativa"
@@ -81,6 +82,7 @@ export const ModalFinalizarMedicaoSemLancamentos = ({ ...props }) => {
                   />
                   <Botao
                     texto="Finalizar"
+                    dataTestId="botao-finalizar-modal"
                     type={BUTTON_TYPE.SUBMIT}
                     style={BUTTON_STYLE.GREEN}
                     className="ms-3"
