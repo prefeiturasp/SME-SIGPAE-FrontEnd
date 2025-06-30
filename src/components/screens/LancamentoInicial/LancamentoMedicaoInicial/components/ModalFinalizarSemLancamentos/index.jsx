@@ -61,6 +61,7 @@ export const ModalFinalizarMedicaoSemLancamentos = ({ ...props }) => {
                 component={TextArea}
                 dataTestId="textarea-justificativa"
                 className="col-12 pb-5"
+                placeholder="Informe o motivo do envio da medição sem lançamentos"
                 label="Justificativa do envio da medição sem lançamentos"
                 name="justificativa"
                 inputOnChange={(e) =>
