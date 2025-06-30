@@ -51,6 +51,7 @@ const FormFabricante: React.FC<Props> = ({
               <div className="d-flex align-items-center">
                 <Botao
                   icon="fas fa-trash"
+                  dataTestId="excluir-envasador"
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN}
                   className="ms-1"

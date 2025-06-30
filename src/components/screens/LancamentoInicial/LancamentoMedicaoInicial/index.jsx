@@ -317,6 +317,7 @@ export default () => {
     setMes(null);
     setAno(null);
     setNaoPodeFinalizar(true);
+    setErrosAoSalvar([]);
     setLoadingSolicitacaoMedicaoInicial(true);
     setPeriodoSelecionado(value);
     await getSolicitacaoMedInicial(value, escolaInstituicao.uuid);

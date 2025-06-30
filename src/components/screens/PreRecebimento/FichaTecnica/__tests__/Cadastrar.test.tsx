@@ -15,89 +15,45 @@ import { mockListaMarcas } from "src/mocks/produto.service/mockGetNomesMarcas";
 import { mockListaFabricantes } from "src/mocks/produto.service/mockGetNomesFabricantes";
 import { mockListaInformacoesNutricionais } from "src/mocks/produto.service/mockGetInformacoesNutricionaisOrdenadas";
 import { mockEmpresa } from "src/mocks/terceirizada.service/mockGetTerceirizadaUUID";
-import {
-  getListaCompletaProdutosLogistica,
-  getNomesMarcas,
-  getNomesFabricantes,
-  getInformacoesNutricionaisOrdenadas,
-  cadastrarProdutoEdital,
-  cadastrarItem,
-} from "src/services/produto.service";
-import {
-  cadastrarFichaTecnica,
-  cadastraRascunhoFichaTecnica,
-  getFichaTecnica,
-} from "src/services/fichaTecnica.service";
-import { getUnidadesDeMedidaLogistica } from "src/services/cronograma.service";
-import { getTerceirizadaUUID } from "src/services/terceirizada.service";
 import { CATEGORIA_OPTIONS } from "../constants";
 import { debug } from "jest-preview";
-import { FichaTecnicaDetalhada } from "interfaces/pre_recebimento.interface";
 import { mockFichaTecnica } from "src/mocks/services/fichaTecnica.service/mockGetFichaTecnica";
 import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
 import CadastroFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
 import mock from "src/services/_mock";
 
-jest.mock("src/services/terceirizada.service.jsx");
-jest.mock("src/services/cronograma.service.jsx");
-jest.mock("src/services/produto.service.jsx");
-jest.mock("src/services/fichaTecnica.service.ts");
-
 beforeEach(() => {
-  getListaCompletaProdutosLogistica.mockResolvedValue({
-    data: mockListaProdutosLogistica,
-    status: 200,
-  });
+  mock
+    .onGet(`/cadastro-produtos-edital/lista-completa-logistica/`)
+    .reply(200, mockListaProdutosLogistica);
 
-  getNomesMarcas.mockResolvedValue({
-    data: mockListaMarcas,
-    status: 200,
-  });
+  mock.onGet(`/marcas/lista-nomes/`).reply(200, mockListaMarcas);
 
-  getNomesFabricantes.mockResolvedValue({
-    data: mockListaFabricantes,
-    status: 200,
-  });
+  mock.onGet(`/fabricantes/lista-nomes/`).reply(200, mockListaFabricantes);
 
-  getInformacoesNutricionaisOrdenadas.mockResolvedValue({
-    data: mockListaInformacoesNutricionais,
-    status: 200,
-  });
+  mock
+    .onGet(`/informacoes-nutricionais/ordenadas/`)
+    .reply(200, mockListaInformacoesNutricionais);
 
-  getUnidadesDeMedidaLogistica.mockResolvedValue({
-    data: mockListaUnidadesMedidaLogistica,
-    status: 200,
-  });
+  mock
+    .onGet(`/unidades-medida-logistica/lista-nomes-abreviacoes/`)
+    .reply(200, mockListaUnidadesMedidaLogistica);
 
-  getTerceirizadaUUID.mockResolvedValue({
-    data: mockEmpresa,
-    status: 200,
-  });
+  mock
+    .onGet(`/terceirizadas/${mockFichaTecnica.empresa.uuid}/`)
+    .reply(200, mockEmpresa);
 
-  cadastrarProdutoEdital.mockResolvedValue({
-    data: {},
-    status: 201,
-  });
+  mock.onPost(`/cadastro-produtos-edital/`).reply(201);
 
-  cadastrarItem.mockResolvedValue({
-    data: {},
-    status: 201,
-  });
+  mock.onPost(`/itens-cadastros/`).reply(201);
 
-  jest.mocked(cadastrarFichaTecnica).mockResolvedValue({
-    data: {} as FichaTecnicaDetalhada,
-    status: 201,
-  });
+  mock.onPost(`/ficha-tecnica/`).reply(201);
 
-  jest.mocked(cadastraRascunhoFichaTecnica).mockResolvedValue({
-    data: {} as FichaTecnicaDetalhada,
-    status: 201,
-  });
+  mock.onPost(`/rascunho-ficha-tecnica/`).reply(201);
 
-  jest.mocked(getFichaTecnica).mockResolvedValue({
-    data: mockFichaTecnica,
-    status: 200,
-  });
+  mock
+    .onGet(`/ficha-tecnica/${mockFichaTecnica.uuid}/`)
+    .reply(200, mockFichaTecnica);
 });
 
 const setup = async () => {
@@ -136,11 +92,24 @@ const clickRadio = (testId: string) => {
   expect(radioBtn).toBeChecked();
 };
 
+const adicionaEnvasador = () => {
+  let btnEnvasador = screen
+    .getByText("+ Adicionar Envasador/Distribuidor")
+    .closest("button");
+  fireEvent.click(btnEnvasador);
+};
+
 describe("Carrega página de Cadastro de Ficha técnica", () => {
   it("cadastra um rascunho de ficha técnica", async () => {
     await setup();
     expect(screen.getByText(/Informações Nutricionais/i)).toBeInTheDocument();
-    expect(getListaCompletaProdutosLogistica).toHaveBeenCalled();
+
+    expect(mock.history.get.length).toBeGreaterThanOrEqual(1);
+    expect(
+      mock.history.get.some((call) =>
+        call.url.includes("/cadastro-produtos-edital/lista-completa-logistica/")
+      )
+    ).toBe(true);
 
     preencheInput("produto", mockListaProdutosLogistica.results[0].uuid);
 
@@ -168,7 +137,12 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
   it("Assina e Envia uma ficha técnica", async () => {
     await setup();
     expect(screen.getByText(/Informações Nutricionais/i)).toBeInTheDocument();
-    expect(getListaCompletaProdutosLogistica).toHaveBeenCalled();
+
+    expect(
+      mock.history.get.some((call) =>
+        call.url.includes("/cadastro-produtos-edital/lista-completa-logistica/")
+      )
+    ).toBe(true);
 
     preencheInput("produto", mockListaProdutosLogistica.results[0].uuid);
 
@@ -186,6 +160,21 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     preencheInput("pregao_chamada_publica", "123");
     preencheInput("fabricante_0", mockListaFabricantes.results[0].uuid);
+
+    adicionaEnvasador();
+
+    const btnDeletar = screen
+      .getByTestId("excluir-envasador")
+      .closest("button");
+    fireEvent.click(btnDeletar);
+
+    adicionaEnvasador();
+
+    waitFor(() => {
+      expect(screen.getByTestId("fabricante_1")).toBeInTheDocument();
+    });
+
+    preencheInput("fabricante_1", mockListaFabricantes.results[1].uuid);
     preencheInput("prazo_validade", "12 Meses");
     preencheInput("numero_registro", "11111");
 
@@ -273,6 +262,12 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     const btnConfirmar = screen.getByText("Confirmar").closest("button");
     fireEvent.click(btnConfirmar);
+
+    await waitFor(() => {
+      expect(
+        mock.history.post.some((call) => call.url.includes("/ficha-tecnica/"))
+      ).toBe(true);
+    });
   });
 
   it("cadastra um produto pelo Modal", async () => {
@@ -290,7 +285,12 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     fireEvent.click(btnSalvar);
 
     await waitFor(() => expect(btnSalvar).not.toBeInTheDocument());
-    expect(cadastrarProdutoEdital).toHaveBeenCalled();
+
+    expect(
+      mock.history.post.some((call) =>
+        call.url.includes("/cadastro-produtos-edital/")
+      )
+    ).toBe(true);
   });
 
   it("cadastra uma marca pelo Modal", async () => {
@@ -339,6 +339,11 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     await setup();
     expect(screen.getByText(/Informações Nutricionais/i)).toBeInTheDocument();
-    expect(getFichaTecnica).toHaveBeenCalled();
+
+    expect(
+      mock.history.get.some((call) =>
+        call.url.includes(`/ficha-tecnica/${mockFichaTecnica.uuid}/`)
+      )
+    ).toBe(true);
   });
 });
