@@ -147,7 +147,9 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     await setup(true);
     expect(
-      screen.getByText(`Solicitada correção em 23/01/2025 - 11:02`)
+      screen.getByText(
+        `Solicitada correção em ${mockFichaTecnicaComDetalhe.log_mais_recente}`
+      )
     ).toBeInTheDocument();
     expect(
       screen.getAllByText(`Indicações de Correções CODAE`)[0]
