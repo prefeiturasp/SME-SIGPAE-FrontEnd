@@ -296,6 +296,7 @@ export default () => {
         const dataUltimoDia = new Date(
           `${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`
         );
+        dataUltimoDia.setHours(23, 59, 59, 999);
         const dataHoje = new Date();
         if (dataHoje.getTime() > dataUltimoDia.getTime()) {
           setNaoPodeFinalizar(false);
