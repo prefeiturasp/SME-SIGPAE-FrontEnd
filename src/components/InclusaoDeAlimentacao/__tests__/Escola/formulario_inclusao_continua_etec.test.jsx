@@ -46,8 +46,6 @@ jest.mock("src/services/escola.service");
 jest.mock("src/services/diasUteis.service");
 jest.mock("src/services/inclusaoDeAlimentacao");
 
-jest.setTimeout(10000);
-
 const awaitServices = async () => {
   await waitFor(() => {
     expect(getDiasUteis).toHaveBeenCalled();

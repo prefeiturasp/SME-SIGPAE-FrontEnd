@@ -37,7 +37,7 @@ import {
   atualizarPermissaoLancamentoEspecial,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { PermissaoLancamentosEspeciaisInterface } from "interfaces/medicao_inicial.interface";
+import { PermissaoLancamentosEspeciaisInterface } from "src/interfaces/medicao_inicial.interface";
 
 import "./style.scss";
 import { NovaPermissaoInterface } from "./interfaces";

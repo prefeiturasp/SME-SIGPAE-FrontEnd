@@ -40,6 +40,8 @@ import {
 import { BlocoOcorrencias } from "../BlocoOcorrencias";
 import { deepCopy } from "../../../../../../helpers/utilities";
 import { ModalSemOcorrenciasIMR } from "../ModalSemOcorrenciasIMR";
+import { ENVIRONMENT } from "src/constants/config";
+import { ModalFinalizarMedicaoSemLancamentos } from "../ModalFinalizarSemLancamentos";
 
 export const LancamentoPorPeriodoCEI = ({
   mes,
@@ -65,12 +67,17 @@ export const LancamentoPorPeriodoCEI = ({
   setArquivo,
   comOcorrencias,
   setComOcorrencias,
+  setJustificativaSemLancamentos,
 }) => {
   const [periodosComAlunos, setPeriodosComAlunos] = useState([]);
   const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
     useState(false);
   const [showModalFinalizarMedicao, setShowModalFinalizarMedicao] =
     useState(false);
+  const [
+    showModalFinalizarMedicaoSemLancamentos,
+    setShowModalFinalizarMedicaoSemLancamentos,
+  ] = useState(false);
   const [showModalSemOcorrenciasIMR, setShowModalSemOcorrenciasIMR] =
     useState(false);
   const [quantidadeAlimentacoesLancadas, setQuantidadeAlimentacoesLancadas] =
@@ -102,9 +109,11 @@ export const LancamentoPorPeriodoCEI = ({
   };
 
   useEffect(() => {
-    let periodos = escolaInstituicao.periodos_escolares
-      .filter((periodo) => periodo.possui_alunos_regulares)
-      .map((periodo) => periodo.nome);
+    let periodos = [
+      ...new Set(
+        periodosEscolaSimples.map((periodo) => periodo.periodo_escolar.nome)
+      ),
+    ];
 
     if (
       solicitacaoMedicaoInicial?.ue_possui_alunos_periodo_parcial ||
@@ -308,6 +317,10 @@ export const LancamentoPorPeriodoCEI = ({
     );
   };
 
+  const onClickFinalizarMedicaoSemLancamentos = () => {
+    setShowModalFinalizarMedicaoSemLancamentos(true);
+  };
+
   const onClickFinalizarMedicao = () => {
     if (!ehIMR) {
       setShowModalFinalizarMedicao(true);
@@ -425,15 +438,35 @@ export const LancamentoPorPeriodoCEI = ({
             )}
             <div className="mt-4">
               {renderBotaoFinalizar() ? (
-                <Botao
-                  texto="Finalizar"
-                  style={BUTTON_STYLE.GREEN}
-                  className="float-end"
-                  disabled={
-                    !usuarioEhEscolaTerceirizadaDiretor() || naoPodeFinalizar
-                  }
-                  onClick={() => onClickFinalizarMedicao()}
-                />
+                <div className="row">
+                  <div className="col-12 text-end">
+                    {ENVIRONMENT !== "production" && (
+                      <Botao
+                        texto="Finalizar sem lançamentos"
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                        disabled={
+                          !usuarioEhEscolaTerceirizadaDiretor() ||
+                          comOcorrencias === "true" ||
+                          naoPodeFinalizar
+                        }
+                        exibirTooltip={comOcorrencias === "true"}
+                        tooltipTitulo="Você avaliou o serviço com ocorrências, não é possível finalizar a medição sem lançamentos."
+                        classTooltip="icone-info-invalid"
+                        onClick={() => onClickFinalizarMedicaoSemLancamentos()}
+                      />
+                    )}
+                    <Botao
+                      texto="Finalizar"
+                      style={BUTTON_STYLE.GREEN}
+                      className="ms-3"
+                      disabled={
+                        !usuarioEhEscolaTerceirizadaDiretor() ||
+                        naoPodeFinalizar
+                      }
+                      onClick={() => onClickFinalizarMedicao()}
+                    />
+                  </div>
+                </div>
               ) : (
                 <div className="row">
                   <div className="col-12 text-end">
@@ -472,6 +505,16 @@ export const LancamentoPorPeriodoCEI = ({
               setOpcaoSelecionada={setOpcaoSelecionada}
               arquivo={arquivo}
               setArquivo={setArquivo}
+              handleFinalizarMedicao={handleFinalizarMedicao}
+            />
+            <ModalFinalizarMedicaoSemLancamentos
+              mes={mes}
+              ano={ano}
+              showModal={showModalFinalizarMedicaoSemLancamentos}
+              closeModal={() =>
+                setShowModalFinalizarMedicaoSemLancamentos(false)
+              }
+              setJustificativaSemLancamentos={setJustificativaSemLancamentos}
               handleFinalizarMedicao={handleFinalizarMedicao}
             />
             <ModalSolicitacaoDownload

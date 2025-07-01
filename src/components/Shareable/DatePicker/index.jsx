@@ -1,20 +1,22 @@
-import ptBR from "date-fns/locale/pt-BR";
-import PropTypes from "prop-types";
-import React, { Component } from "react";
+import { ptBR } from "date-fns/locale/pt-BR";
 import moment from "moment";
-import DatePicker from "react-datepicker";
+import PropTypes from "prop-types";
+import { Component } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { dateDelta } from "../../../helpers/utilities";
-import "./style.scss";
-import { HelpText } from "../HelpText";
-import TooltipIcone from "../TooltipIcone";
-import InputErroMensagem from "../Input/InputErroMensagem";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import { dateDelta } from "../../../helpers/utilities";
+import { HelpText } from "../HelpText";
+import InputErroMensagem from "../Input/InputErroMensagem";
+import TooltipIcone from "../TooltipIcone";
+import "./style.scss";
+
+registerLocale("pt-BR", ptBR);
 
 export class InputComData extends Component {
   // Thanks community :D
@@ -198,7 +200,7 @@ export class InputComData extends Component {
             }`}
             ref={(c) => (this._calendar = c)}
             onChange={this.handleChange}
-            locale={ptBR}
+            locale="pt-BR"
             name={name}
             popperPlacement={popperPlacement || undefined}
             excludeDates={excludeDates}

@@ -180,17 +180,8 @@ export interface FichaTecnicaDetalhada {
   status: string;
   criado_em: string;
   empresa: TerceirizadaSimplesInterface;
-  fabricante: FabricanteSimples;
-  cnpj_fabricante: string;
-  cep_fabricante: string;
-  endereco_fabricante: string;
-  numero_fabricante: string;
-  complemento_fabricante: string;
-  bairro_fabricante: string;
-  cidade_fabricante: string;
-  estado_fabricante: string;
-  email_fabricante: string;
-  telefone_fabricante: string;
+  fabricante: FabricanteFichaTecnica;
+  envasador_distribuidor: FabricanteFichaTecnica;
   prazo_validade: string;
   numero_registro: string;
   agroecologico: boolean;
@@ -238,6 +229,19 @@ export interface FichaTecnicaDetalhada {
   informacoes_adicionais: string;
 }
 
+export interface FabricanteFichaTecnica {
+  fabricante: FabricanteSimples;
+  cnpj: string;
+  cep: string;
+  endereco: string;
+  numero: string;
+  complemento: string;
+  bairro: string;
+  cidade: string;
+  estado: string;
+  email: string;
+  telefone: string;
+}
 export interface AnaliseFichaTecnica extends AnaliseFichaTecnicaPayload {
   criado_por: string;
   alterado_em: string;

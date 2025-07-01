@@ -3,7 +3,7 @@ import {
   Arquivo,
   PrazoRecebimentoChoices,
   DatasFabricacaoPrazos,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 
 export interface OptionsTipoDocumento {
   value: TiposDocumentoChoices;

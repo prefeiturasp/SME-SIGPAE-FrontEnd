@@ -4,7 +4,7 @@ import { formatarPara4Digitos } from "src/components/screens/helper";
 import {
   FiltrosRelatoriosVisitasInterface,
   RelatorioVisitaItemListagem,
-} from "interfaces/imr.interface";
+} from "src/interfaces/imr.interface";
 import { DashboardSupervisaoInterface } from "../../interfaces";
 import { CLASSE_COR_CARD } from "./constants";
 import { FormApi } from "final-form";

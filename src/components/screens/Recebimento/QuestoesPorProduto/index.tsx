@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Spin } from "antd";
 
-import { FichaTecnicaSimples } from "interfaces/pre_recebimento.interface";
+import { FichaTecnicaSimples } from "src/interfaces/pre_recebimento.interface";
 import {
   FiltrosQuestoesPorProduto,
   QuestaoConferencia,
   QuestoesPorProduto,
-} from "interfaces/recebimento.interface";
+} from "src/interfaces/recebimento.interface";
 import { getListaFichasTecnicasSimples } from "src/services/fichaTecnica.service";
 import {
   listarQuestoesConferenciaSimples,

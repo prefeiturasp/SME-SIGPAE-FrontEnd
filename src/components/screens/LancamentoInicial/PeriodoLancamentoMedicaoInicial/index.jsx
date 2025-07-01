@@ -10,7 +10,7 @@ import {
   startOfMonth,
   subDays,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
 import { Fragment, useEffect, useState } from "react";

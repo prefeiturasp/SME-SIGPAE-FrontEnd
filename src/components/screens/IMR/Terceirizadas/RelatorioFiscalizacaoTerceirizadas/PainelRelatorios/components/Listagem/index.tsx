@@ -8,7 +8,7 @@ import {
 import {
   FiltrosRelatoriosVisitasInterface,
   RelatorioVisitaItemListagem,
-} from "interfaces/imr.interface";
+} from "src/interfaces/imr.interface";
 import {
   DETALHAR_RELATORIO_FISCALIZACAO,
   EDITAR_RELATORIO_FISCALIZACAO,

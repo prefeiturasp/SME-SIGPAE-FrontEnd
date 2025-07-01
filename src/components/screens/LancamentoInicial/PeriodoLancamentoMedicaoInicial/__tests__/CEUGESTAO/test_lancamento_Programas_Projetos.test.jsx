@@ -13,8 +13,6 @@ import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/serv
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
-jest.setTimeout(30000);
-
 describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
     mock

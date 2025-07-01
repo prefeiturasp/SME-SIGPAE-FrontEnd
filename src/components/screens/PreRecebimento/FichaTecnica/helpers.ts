@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction } from "react";
+import React, { Dispatch, MutableRefObject, SetStateAction } from "react";
 import createDecorator from "final-form-calculate";
 import { getEnderecoPorCEP } from "src/services/cep.service";
 import {
@@ -35,16 +35,17 @@ import {
   FichaTecnicaDetalhada,
   FichaTecnicaDetalhadaComAnalise,
   OptionsGenerico,
-} from "interfaces/pre_recebimento.interface";
-import { TerceirizadaComEnderecoInterface } from "interfaces/terceirizada.interface";
+} from "src/interfaces/pre_recebimento.interface";
+import { TerceirizadaComEnderecoInterface } from "src/interfaces/terceirizada.interface";
 
 import {
+  FabricanteFichaPayload,
   FichaTecnicaPayload,
   InformacoesNutricionaisFichaTecnicaPayload,
   StateConferidosAnalise,
 } from "./interfaces";
-import { ResponseInformacoesNutricionais } from "interfaces/responses.interface";
-import { InformacaoNutricional } from "interfaces/produto.interface";
+import { ResponseInformacoesNutricionais } from "src/interfaces/responses.interface";
+import { InformacaoNutricional } from "src/interfaces/produto.interface";
 import { MeusDadosInterface } from "src/context/MeusDadosContext/interfaces";
 import {
   booleanToString,
@@ -56,33 +57,60 @@ import { NavigateFunction } from "react-router-dom";
 import { CATEGORIA_OPTIONS } from "./constants";
 
 export const cepCalculator = (
-  setDesabilitaEndereco: Dispatch<SetStateAction<boolean>>
-) =>
-  createDecorator({
-    field: "cep_fabricante",
+  setDesabilitaEndereco: React.Dispatch<React.SetStateAction<Array<boolean>>>
+) => {
+  const lastCepValues: Record<string, string> = {};
+
+  return createDecorator({
+    field: /^cep_fabricante_(\d+)$/,
     updates: {
-      dummy: (minimumValue, allValues: FichaTecnicaPayload) =>
-        buscaCEP(minimumValue, allValues, setDesabilitaEndereco),
+      dummy: (_, allValues: FichaTecnicaPayload) => {
+        Object.keys(allValues)
+          .filter((key) => key.startsWith("cep_fabricante_"))
+          .forEach((field) => {
+            const cep = allValues[field];
+            if (cep?.length === 9 && cep !== lastCepValues[field]) {
+              lastCepValues[field] = cep;
+              const index = field.split("_").pop()!;
+              buscaCEP(cep, allValues, setDesabilitaEndereco, index);
+            }
+          });
+
+        return undefined;
+      },
     },
   });
+};
 
 export const buscaCEP = async (
   cep: string,
   values: FichaTecnicaPayload,
-  setDesabilitaEndereco: Dispatch<SetStateAction<boolean>>
+  setDesabilitaEndereco: React.Dispatch<React.SetStateAction<Array<boolean>>>,
+  index: string
 ) => {
-  if (cep?.length === 9) {
+  try {
     const response = await getEnderecoPorCEP(cep);
     if (response.status === 200 && !response.data.erro) {
       const { data } = response;
-      values.bairro_fabricante = data.bairro;
-      values.cidade_fabricante = data.localidade;
-      values.endereco_fabricante = data.logradouro;
-      values.estado_fabricante = data.uf;
-      setDesabilitaEndereco(true);
+      values[`bairro_fabricante_${index}`] = data.bairro;
+      values[`cidade_fabricante_${index}`] = data.localidade;
+      values[`endereco_fabricante_${index}`] = data.logradouro;
+      values[`estado_fabricante_${index}`] = data.uf;
+      setDesabilitaEndereco((prev) => {
+        prev[index] = true;
+        return prev;
+      });
     } else {
-      setDesabilitaEndereco(false);
+      setDesabilitaEndereco((prev) => {
+        prev[index] = false;
+        return prev;
+      });
     }
+  } catch {
+    setDesabilitaEndereco((prev) => {
+      prev[index] = false;
+      return prev;
+    });
   }
 };
 
@@ -139,6 +167,7 @@ export const carregarDadosCadastrar = async (
   setInitialValues: Dispatch<SetStateAction<Record<string, any>>>,
   setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>,
   setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>,
+  setFabricantesCount: Dispatch<SetStateAction<number>>,
   setCarregando: Dispatch<SetStateAction<boolean>>
 ) => {
   try {
@@ -158,6 +187,7 @@ export const carregarDadosCadastrar = async (
 
       setFicha(fichaTecnica);
       setInitialValues(geraInitialValuesCadastrar(fichaTecnica));
+      setFabricantesCount(fichaTecnica.envasador_distribuidor ? 2 : 1);
 
       const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
       setProponente(response.data);
@@ -345,7 +375,6 @@ export const validaProximoIdentificacaoProduto = (
     !values.marca ||
     !values.categoria ||
     !values.pregao_chamada_publica ||
-    !values.fabricante ||
     !values.prazo_validade ||
     !values.componentes_produto ||
     !values.gluten ||
@@ -403,12 +432,31 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
         informacao.informacao_nutricional.uuid;
     });
 
+  const valuesFabricante = {};
+
+  let fabricantes = [ficha.fabricante, ficha.envasador_distribuidor];
+
+  fabricantes.forEach((fabricante, index) => {
+    valuesFabricante[`fabricante_${index}`] = fabricante?.fabricante?.nome;
+    valuesFabricante[`cnpj_fabricante_${index}`] = fabricante?.cnpj;
+    valuesFabricante[`cep_fabricante_${index}`] = fabricante?.cep;
+    valuesFabricante[`endereco_fabricante_${index}`] = fabricante?.endereco;
+    valuesFabricante[`numero_fabricante_${index}`] = fabricante?.numero;
+    valuesFabricante[`complemento_fabricante_${index}`] =
+      fabricante?.complemento;
+    valuesFabricante[`bairro_fabricante_${index}`] = fabricante?.bairro;
+    valuesFabricante[`cidade_fabricante_${index}`] = fabricante?.cidade;
+    valuesFabricante[`estado_fabricante_${index}`] = fabricante?.estado;
+    valuesFabricante[`email_fabricante_${index}`] = fabricante?.email;
+    valuesFabricante[`telefone_fabricante_${index}`] = fabricante?.telefone;
+  });
+
   const initialValues = {
     produto: ficha.produto?.nome,
     categoria: ficha.categoria as CategoriaFichaTecnicaChoices,
     marca: ficha.marca?.uuid,
     pregao_chamada_publica: ficha.pregao_chamada_publica,
-    fabricante: ficha.fabricante?.nome,
+    ...valuesFabricante,
     unidade_medida_porcao: ficha.unidade_medida_porcao?.uuid,
     unidade_medida_volume_primaria: ficha.unidade_medida_volume_primaria?.uuid,
     unidade_medida_primaria: ficha.unidade_medida_primaria?.uuid,
@@ -416,16 +464,6 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
     unidade_medida_primaria_vazia: ficha.unidade_medida_primaria_vazia?.uuid,
     unidade_medida_secundaria_vazia:
       ficha.unidade_medida_secundaria_vazia?.uuid,
-    cnpj_fabricante: ficha.cnpj_fabricante,
-    cep_fabricante: ficha.cep_fabricante,
-    endereco_fabricante: ficha.endereco_fabricante,
-    numero_fabricante: ficha.numero_fabricante,
-    complemento_fabricante: ficha.complemento_fabricante,
-    bairro_fabricante: ficha.bairro_fabricante,
-    cidade_fabricante: ficha.cidade_fabricante,
-    estado_fabricante: ficha.estado_fabricante,
-    email_fabricante: ficha.email_fabricante,
-    telefone_fabricante: ficha.telefone_fabricante,
     prazo_validade: ficha.prazo_validade,
     numero_registro: ficha.numero_registro,
     agroecologico: booleanToString(ficha.agroecologico),
@@ -503,7 +541,6 @@ export const geraInitialValuesDetalharEAnalisar = (
   const initialValues = {
     ...geraInitialValuesCadastrar(ficha),
     marca: ficha.marca?.nome,
-    fabricante: ficha.fabricante?.nome,
     categoria: CATEGORIA_OPTIONS.find(({ uuid }) => uuid === ficha.categoria)
       ?.nome,
     unidade_medida_porcao: ficha.unidade_medida_porcao?.nome,
@@ -561,13 +598,19 @@ export const formataPayloadCadastroFichaTecnica = (
   produtosOptions: OptionsGenerico[],
   fabricantesOptions: OptionsGenerico[],
   arquivo: ArquivoForm[],
+  fabricantesCount: number,
   password?: string
 ) => {
   const ehPereciveis = values.categoria === "PERECIVEIS";
 
   let payload: FichaTecnicaPayload = {
     ...gerarCamposObrigatoriosRascunho(values, produtosOptions),
-    ...gerarCamposProponenteFabricante(values, proponente, fabricantesOptions),
+    ...gerarCamposProponenteFabricante(
+      values,
+      proponente,
+      fabricantesOptions,
+      fabricantesCount
+    ),
     ...gerarCamposDetalhesProduto(values),
     ...gerarCamposInformacoesNutricionais(values),
     ...gerarCamposConservacao(values, ehPereciveis),
@@ -669,23 +712,33 @@ const gerarCamposObrigatoriosRascunho = (
 const gerarCamposProponenteFabricante = (
   values: Record<string, any>,
   proponente: TerceirizadaComEnderecoInterface,
-  fabricantesOptions: OptionsGenerico[]
+  fabricantesOptions: OptionsGenerico[],
+  fabricantesCount: number
 ) => {
+  const fabricantes: FabricanteFichaPayload[] = Array.from({
+    length: fabricantesCount,
+  }).map((_, idx) => {
+    return {
+      fabricante: fabricantesOptions.find(
+        (p) => p.nome === values[`fabricante_${idx}`]
+      )?.uuid,
+      cnpj: removeCaracteresEspeciais(values[`cnpj_fabricante_${idx}`]) || "",
+      cep: removeCaracteresEspeciais(values[`cep_fabricante_${idx}`]) || "",
+      endereco: values[`endereco_fabricante_${idx}`] || "",
+      numero: values[`numero_fabricante_${idx}`] || "",
+      complemento: values[`complemento_fabricante_${idx}`] || "",
+      bairro: values[`bairro_fabricante_${idx}`] || "",
+      cidade: values[`cidade_fabricante_${idx}`] || "",
+      estado: values[`estado_fabricante_${idx}`] || "",
+      email: values[`email_fabricante_${idx}`] || "",
+      telefone:
+        removeCaracteresEspeciais(values[`telefone_fabricante_${idx}`]) || "",
+    };
+  });
   return {
     empresa: proponente.uuid,
-    fabricante: fabricantesOptions.find((p) => p.nome === values.fabricante)
-      ?.uuid,
-    cnpj_fabricante: removeCaracteresEspeciais(values.cnpj_fabricante) || "",
-    cep_fabricante: removeCaracteresEspeciais(values.cep_fabricante) || "",
-    endereco_fabricante: values.endereco_fabricante || "",
-    numero_fabricante: values.numero_fabricante || "",
-    complemento_fabricante: values.complemento_fabricante || "",
-    bairro_fabricante: values.bairro_fabricante || "",
-    cidade_fabricante: values.cidade_fabricante || "",
-    estado_fabricante: values.estado_fabricante || "",
-    email_fabricante: values.email_fabricante || "",
-    telefone_fabricante:
-      removeCaracteresEspeciais(values.telefone_fabricante) || "",
+    fabricante: fabricantes[0]?.fabricante && fabricantes[0],
+    envasador_distribuidor: fabricantes[1]?.fabricante && fabricantes[1],
   };
 };
 

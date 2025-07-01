@@ -1,7 +1,7 @@
 import axios from "../../_base";
 import { API_URL } from "src/constants/config";
 import { ErrorHandlerFunction } from "../../service-helpers";
-import { NovoRelatorioVisitasFormInterface } from "interfaces/imr.interface";
+import { NovoRelatorioVisitasFormInterface } from "src/interfaces/imr.interface";
 import {
   ResponseEquipamentoInterface,
   ResponseExportarPDFAssincronoInterface,
@@ -12,7 +12,7 @@ import {
   ResponseReparoEAdaptacaoInterface,
   ResponseUtensilioCozinhaInterface,
   ResponseUtensilioMesaInterface,
-} from "interfaces/responses.interface";
+} from "src/interfaces/responses.interface";
 
 export const getPeriodosVisita = async () => {
   const url = `${API_URL}/imr/periodos-de-visita/`;

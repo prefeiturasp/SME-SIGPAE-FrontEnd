@@ -193,7 +193,7 @@ export const ModalFinalizarMedicao = ({ ...props }) => {
             <Botao
               texto="Finalizar Medição"
               type={BUTTON_TYPE.BUTTON}
-              onClick={() => {
+              onClick={async () => {
                 handleFinalizarMedicao();
                 handleHideModal();
               }}

@@ -1,4 +1,4 @@
-import { LogSolicitacoesUsuarioSimples } from "interfaces/dados_comuns.interface";
+import { LogSolicitacoesUsuarioSimples } from "src/interfaces/dados_comuns.interface";
 
 export const tipoDeStatusClasse = (status: LogSolicitacoesUsuarioSimples) => {
   /* caso especial para adicionar item ao final da linha do tempo de

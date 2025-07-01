@@ -3,11 +3,11 @@ import { API_URL } from "src/constants/config";
 import { ErrorHandlerFunction } from "../../service-helpers";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
-import { FiltrosRelatoriosVisitasInterface } from "interfaces/imr.interface";
+import { FiltrosRelatoriosVisitasInterface } from "src/interfaces/imr.interface";
 import {
   ResponseNomesNutricionistas,
   ResponseRelatoriosVisitas,
-} from "interfaces/responses.interface";
+} from "src/interfaces/responses.interface";
 
 export const getDashboardPainelGerencialSupervisao = async (
   params: FiltrosRelatoriosVisitasInterface

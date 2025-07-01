@@ -7,9 +7,9 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import "../../style.scss";
 import { FormCadastroEditaisContratosInterface } from "../../../interfaces";
-import { LoteRascunhosInterface } from "interfaces/rascunhos.interface";
-import { DiretoriaRegionalInterface } from "interfaces/escola.interface";
-import { TerceirizadaInterface } from "interfaces/terceirizada.interface";
+import { LoteRascunhosInterface } from "src/interfaces/rascunhos.interface";
+import { DiretoriaRegionalInterface } from "src/interfaces/escola.interface";
+import { TerceirizadaInterface } from "src/interfaces/terceirizada.interface";
 
 interface ModalCadastroEditalInterface {
   showModal: boolean;

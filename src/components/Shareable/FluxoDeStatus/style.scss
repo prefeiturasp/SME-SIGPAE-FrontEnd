@@ -9,15 +9,21 @@
 
 .progressbar-titles {
   color: $grayPlaceholder;
-  display: inline-flex;
+  display: flex;
   font-size: 9px;
   font-weight: bold;
-  list-style-type: none;
-  margin-bottom: 0;
+  list-style: none;
+  margin-bottom: 6px; // um pequeno espaço entre título e bolinha
   text-align: center;
-  width: 100%;
+  padding: 0;
+  width: max-content;
+  justify-content: flex-start;
+
   li {
-    width: 33.3%;
+    min-width: 160px;
+    max-width: 160px;
+    width: 160px;
+    text-align: center;
   }
 }
 
@@ -29,6 +35,9 @@
 .progressbar {
   li {
     list-style-type: none;
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
     font-weight: bold;
     font-size: 9px;
     float: left;
@@ -157,4 +166,71 @@
       }
     }
   }
+}
+
+.fluxo-status-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.scroll-btn {
+  background: white;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem;
+  font-size: 1.2rem;
+  z-index: 10;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &.left {
+    margin-left: 0.5rem;
+  }
+
+  &.right {
+    margin-right: 0.5rem;
+  }
+}
+
+.fluxo-scroll-container {
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
+  position: relative;
+}
+
+.fluxo-scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.progressbar-titles,
+.progressbar {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  width: max-content;
+}
+
+.progressbar-titles li,
+.progressbar li {
+  min-width: 160px;
+  text-align: center;
+}
+
+.seta-esquerda {
+  cursor: pointer;
+  margin-right: 2px;
+}
+
+.seta-direita {
+  cursor: pointer;
+  margin-left: 2px;
 }

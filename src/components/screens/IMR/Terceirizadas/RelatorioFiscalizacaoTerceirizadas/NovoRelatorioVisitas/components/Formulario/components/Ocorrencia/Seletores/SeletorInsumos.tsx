@@ -4,8 +4,8 @@ import Select from "src/components/Shareable/Select";
 import HTTP_STATUS from "http-status-codes";
 import { required } from "src/helpers/fieldValidators";
 import { getInsumos } from "src/services/imr/relatorioFiscalizacaoTerceirizadas";
-import { SelectOption } from "interfaces/option.interface";
-import { EscolaLabelInterface } from "interfaces/imr.interface";
+import { SelectOption } from "src/interfaces/option.interface";
+import { EscolaLabelInterface } from "src/interfaces/imr.interface";
 
 type SeletorInsumosType = {
   titulo: string;

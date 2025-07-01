@@ -2,7 +2,7 @@ import {
   EscolaComLoteEDREInterface,
   DiretoriaRegionalInterface,
   PeriodoEscolarInterface,
-} from "interfaces/escola.interface";
+} from "src/interfaces/escola.interface";
 
 interface AlimentacoesLancamentoEspecialInterface {
   nome: string;

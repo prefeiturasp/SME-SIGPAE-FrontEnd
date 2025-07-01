@@ -1,7 +1,7 @@
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Select, Skeleton, Spin } from "antd";
 import { addMonths, format, getMonth, getYear } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -70,6 +70,8 @@ export default () => {
   const [open, setOpen] = useState(false);
   const [naoPodeFinalizar, setNaoPodeFinalizar] = useState(true);
   const [finalizandoMedicao, setFinalizandoMedicao] = useState(false);
+  const [justificativaSemLancamentos, setJustificativaSemLancamentos] =
+    useState("");
 
   const [errosAoSalvar, setErrosAoSalvar] = useState([]);
   const [comOcorrencias, setComOcorrencias] = useState("");
@@ -169,6 +171,7 @@ export default () => {
                 " / " +
                 getYear(dataBRT).toString(),
             });
+
             if (!location.search && periodos.length === 1) {
               navigate(
                 {
@@ -203,7 +206,7 @@ export default () => {
         { ano }
       );
       setPeriodosEscolaSimples(response_vinculos.data.results);
-      if (location.search) {
+      if (location.search || (mes && ano)) {
         if (mes <= 0 || mes > 12) {
           mes = format(new Date(), "MM");
         }
@@ -244,9 +247,14 @@ export default () => {
         ano
       );
 
-      const periodoInicialSelecionado = !location.search
-        ? periodos[0].dataBRT.toString()
-        : new Date(ano, mes - 1, 1);
+      const urlParams = new URLSearchParams(window.location.search);
+      const mesParam = urlParams.get("mes");
+      const anoParam = urlParams.get("ano");
+
+      const periodoInicialSelecionado =
+        !mesParam || !anoParam
+          ? periodos[0].dataBRT.toString()
+          : new Date(anoParam, mesParam - 1, 1);
       setObjectoPeriodos(periodos);
       setPeriodoSelecionado(periodoInicialSelecionado);
       await getSolicitacaoMedInicial(periodoInicialSelecionado, escola.uuid);
@@ -288,6 +296,7 @@ export default () => {
         const dataUltimoDia = new Date(
           `${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`
         );
+        dataUltimoDia.setHours(23, 59, 59, 999);
         const dataHoje = new Date();
         if (dataHoje.getTime() > dataUltimoDia.getTime()) {
           setNaoPodeFinalizar(false);
@@ -308,6 +317,7 @@ export default () => {
     setMes(null);
     setAno(null);
     setNaoPodeFinalizar(true);
+    setErrosAoSalvar([]);
     setLoadingSolicitacaoMedicaoInicial(true);
     setPeriodoSelecionado(value);
     await getSolicitacaoMedInicial(value, escolaInstituicao.uuid);
@@ -375,6 +385,11 @@ export default () => {
       ehIMR ? String(comOcorrencias) : String(!opcaoSelecionada)
     );
 
+    if (justificativaSemLancamentos) {
+      data.append("justificativa_sem_lancamentos", justificativaSemLancamentos);
+      data.append("com_ocorrencias", String(false));
+    }
+
     if (!opcaoSelecionada) {
       let payloadAnexos = [];
       arquivo.forEach((element) => {
@@ -398,7 +413,11 @@ export default () => {
     } else {
       setErrosAoSalvar(response.data);
       setFinalizandoMedicao(false);
-      toastError("Não foi possível finalizar as alterações!");
+      if (justificativaSemLancamentos) {
+        toastError("Não foi possível enviar a medição sem lançamentos!");
+      } else {
+        toastError("Não foi possível finalizar as alterações!");
+      }
     }
     onClickInfoBasicas();
   };
@@ -528,6 +547,7 @@ export default () => {
                 setArquivo={setArquivo}
                 comOcorrencias={comOcorrencias}
                 setComOcorrencias={setComOcorrencias}
+                setJustificativaSemLancamentos={setJustificativaSemLancamentos}
               />
             ) : (
               <LancamentoPorPeriodo
@@ -563,6 +583,7 @@ export default () => {
                 comOcorrencias={comOcorrencias}
                 setComOcorrencias={setComOcorrencias}
                 escolaSimples={escolaSimples}
+                setJustificativaSemLancamentos={setJustificativaSemLancamentos}
               />
             ))}
         </Spin>

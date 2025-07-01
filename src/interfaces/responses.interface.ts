@@ -3,11 +3,11 @@ import {
   EscolaSimplissimaInterface,
   QuantidadeAlunosEscolaInterface,
   VinculoTipoAlimentacaoPorEscolaInterface,
-} from "interfaces/escola.interface";
+} from "src/interfaces/escola.interface";
 import {
   EscolasComPermissoesLancamentosEspeciaisInterface,
   PermissaoLancamentosEspeciaisInterface,
-} from "interfaces/medicao_inicial.interface";
+} from "src/interfaces/medicao_inicial.interface";
 import {
   DocumentosRecebimento,
   DocumentosRecebimentoDashboard,

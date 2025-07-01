@@ -35,7 +35,7 @@ import {
   ArquivoForm,
   DocumentosRecebimentoDetalhado,
   TiposDocumentoChoices,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 import { OUTROS_DOCUMENTOS_OPTIONS } from "../../constants";
 
 interface ArquivosDocumentoForm {

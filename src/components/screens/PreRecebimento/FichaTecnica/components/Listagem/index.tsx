@@ -7,7 +7,7 @@ import {
   DETALHAR_FICHA_TECNICA,
   ALTERAR_FICHA_TECNICA,
 } from "src/configs/constants";
-import { FichaTecnica } from "interfaces/pre_recebimento.interface";
+import { FichaTecnica } from "src/interfaces/pre_recebimento.interface";
 import "./styles.scss";
 
 import { Tooltip } from "antd";

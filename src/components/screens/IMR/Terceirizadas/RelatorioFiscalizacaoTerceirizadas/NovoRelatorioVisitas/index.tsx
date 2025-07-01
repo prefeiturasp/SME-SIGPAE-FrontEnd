@@ -22,8 +22,8 @@ import {
   EscolaLabelInterface,
   NovoRelatorioVisitasFormInterface,
   TipoOcorrenciaInterface,
-} from "interfaces/imr.interface";
-import { ResponseFormularioSupervisaoTiposOcorrenciasInterface } from "interfaces/responses.interface";
+} from "src/interfaces/imr.interface";
+import { ResponseFormularioSupervisaoTiposOcorrenciasInterface } from "src/interfaces/responses.interface";
 import React, { useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import { NavigateFunction, useNavigate } from "react-router-dom";
@@ -99,29 +99,25 @@ export const NovoRelatorioVisitas = ({
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
     if (uuid) {
-      try {
-        const formularioResponse = await getFormularioSupervisao(uuid);
-        setAnexosIniciais(formularioResponse.data.anexos);
-        setNotificacoesIniciais(formularioResponse.data.notificacoes_assinadas);
-        setInitialValues({
-          ...formularioResponse.data,
-          acompanhou_visita: formularioResponse.data.acompanhou_visita
-            ? "sim"
-            : "nao",
-          anexos: null,
-          notificacoes_assinadas: null,
-        });
+      const formularioResponse = await getFormularioSupervisao(uuid);
+      setAnexosIniciais(formularioResponse.data.anexos);
+      setNotificacoesIniciais(formularioResponse.data.notificacoes_assinadas);
+      setInitialValues({
+        ...formularioResponse.data,
+        acompanhou_visita: formularioResponse.data.acompanhou_visita
+          ? "sim"
+          : "nao",
+        anexos: null,
+        notificacoes_assinadas: null,
+      });
 
-        const [respostasResponse, respostasNaoSeAplica] = await Promise.all([
-          getRespostasFormularioSupervisao(uuid),
-          getRespostasNaoSeAplicaFormularioSupervisao(uuid),
-        ]);
+      const [respostasResponse, respostasNaoSeAplica] = await Promise.all([
+        getRespostasFormularioSupervisao(uuid),
+        getRespostasNaoSeAplicaFormularioSupervisao(uuid),
+      ]);
 
-        setRespostasOcorrencias(respostasResponse.data);
-        setRespostasOcorrenciaNaoSeAplica(respostasNaoSeAplica.data);
-      } catch (error) {
-        // Handle errors
-      }
+      setRespostasOcorrencias(respostasResponse.data);
+      setRespostasOcorrenciaNaoSeAplica(respostasNaoSeAplica.data);
     }
   };
 

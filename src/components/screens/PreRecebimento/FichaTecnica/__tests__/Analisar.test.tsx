@@ -15,8 +15,6 @@ import DetalharFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/Deta
 import AnalisarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/AnalisarFichaTecnicaPage";
 import mock from "src/services/_mock";
 
-jest.setTimeout(20000);
-
 beforeEach(() => {
   mock
     .onGet(`/informacoes-nutricionais/ordenadas/`)
@@ -149,7 +147,9 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     await setup(true);
     expect(
-      screen.getByText(`Solicitada correção em 23/01/2025 - 11:02`)
+      screen.getByText(
+        `Solicitada correção em ${mockFichaTecnicaComDetalhe.log_mais_recente}`
+      )
     ).toBeInTheDocument();
     expect(
       screen.getAllByText(`Indicações de Correções CODAE`)[0]

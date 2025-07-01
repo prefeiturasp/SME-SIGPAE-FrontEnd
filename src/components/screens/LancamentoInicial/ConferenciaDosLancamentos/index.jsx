@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Field, Form } from "react-final-form";
 import HTTP_STATUS from "http-status-codes";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale/pt-BR";
 import { Spin } from "antd";
 import InputText from "src/components/Shareable/Input/InputText";
 import {

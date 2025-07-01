@@ -52,6 +52,7 @@ import { formataMotivos } from "./componentes/ModalNegaDietaEspecial/helper";
 import {
   cabecalhoDieta,
   ehSolicitacaoDeCancelamento,
+  ehSolicitacaoDeInativa,
   initSocket,
 } from "./helpers";
 import "./style.scss";
@@ -325,6 +326,22 @@ const Relatorio = ({ visao }) => {
     }
   };
 
+  const exibeBotaoGerarProtocoloSolicitacaoInativa = () => {
+    return (
+      dietaEspecial?.ativo === false &&
+      !editar &&
+      ehSolicitacaoDeInativa(status) &&
+      (usuarioEhCODAENutriManifestacao() || usuarioEhEmpresaTerceirizada())
+    );
+  };
+
+  const exibirBotaoGerarProtocoloCanceladasOuInativas = () => {
+    return (
+      exibeBotaoGerarProtocoloSolicitacaoCancelada() ||
+      exibeBotaoGerarProtocoloSolicitacaoInativa()
+    );
+  };
+
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       {dietaEspecial && status && (
@@ -485,7 +502,7 @@ const Relatorio = ({ visao }) => {
                 )}
               </div>
             )}
-          {exibeBotaoGerarProtocoloSolicitacaoCancelada() && (
+          {exibirBotaoGerarProtocoloCanceladasOuInativas() && (
             <div className="form-group float-end mt-4">
               <BotaoGerarProtocolo
                 uuid={dietaEspecial.uuid}
@@ -495,7 +512,8 @@ const Relatorio = ({ visao }) => {
           )}
           {dietaEspecial &&
             status === statusEnum.CODAE_AUTORIZADO &&
-            !["inativas", "inativas-temp"].includes(card) && (
+            !["inativo", "inativas", "inativas-temp"].includes(card) &&
+            !exibirBotaoGerarProtocoloCanceladasOuInativas() && (
               <>
                 {!editar && (
                   <div className="form-group float-end mt-4">

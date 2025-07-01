@@ -1,5 +1,5 @@
-import { FichaTecnica } from "interfaces/pre_recebimento.interface";
-import { ListagemPaginada } from "interfaces/responses.interface";
+import { FichaTecnica } from "src/interfaces/pre_recebimento.interface";
+import { ListagemPaginada } from "src/interfaces/responses.interface";
 
 export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
   count: 43,

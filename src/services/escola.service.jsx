@@ -194,11 +194,11 @@ export const getQuantidaDeAlunosPorPeriodoEEscola = async (uuidEscola) => {
   }
 };
 
-export const getEscolaSimples = async (uuidEscola) => {
+export const getEscolaSimples = async (uuidEscola, params = null) => {
   const url = uuidEscola
     ? `/escolas-simples/${uuidEscola}/`
     : "/escolas-simples/";
-  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;

@@ -1,7 +1,7 @@
 import {
   CategoriaFichaTecnicaChoices,
   MecanismoControleChoices,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 
 export interface OptionsCategoria {
   uuid: CategoriaFichaTecnicaChoices;
@@ -23,17 +23,8 @@ export interface FichaTecnicaPayload {
   categoria?: CategoriaFichaTecnicaChoices;
   empresa?: string;
   pregao_chamada_publica?: string;
-  fabricante?: string;
-  cnpj_fabricante?: string;
-  cep_fabricante?: string;
-  endereco_fabricante?: string;
-  numero_fabricante?: string;
-  complemento_fabricante?: string;
-  bairro_fabricante?: string;
-  cidade_fabricante?: string;
-  estado_fabricante?: string;
-  email_fabricante?: string;
-  telefone_fabricante?: string;
+  fabricante?: FabricanteFichaPayload;
+  envasador_distribuidor?: FabricanteFichaPayload;
   prazo_validade?: string;
   numero_registro?: string;
   agroecologico?: boolean | string;
@@ -80,6 +71,20 @@ export interface FichaTecnicaPayload {
   modo_de_preparo?: string;
   informacoes_adicionais?: string;
   password?: string;
+}
+
+export interface FabricanteFichaPayload {
+  fabricante?: string;
+  cnpj?: string;
+  cep?: string;
+  endereco?: string;
+  numero?: string;
+  complemento?: string;
+  bairro?: string;
+  cidade?: string;
+  estado?: string;
+  email?: string;
+  telefone?: string;
 }
 
 export interface FiltrosFichaTecnica {

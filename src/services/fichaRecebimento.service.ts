@@ -3,7 +3,7 @@ import {
   ResponseFichasDeRecebimento,
 } from "src/components/screens/Recebimento/FichaRecebimento/interfaces";
 import axios from "./_base";
-import { ResponseFichaRecebimento } from "interfaces/responses.interface";
+import { ResponseFichaRecebimento } from "src/interfaces/responses.interface";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 
