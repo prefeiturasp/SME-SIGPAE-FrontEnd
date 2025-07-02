@@ -905,77 +905,81 @@ export const ConferenciaDosLancamentos = () => {
                         })}
                       </div>
                     </div>
-                    <div className="float-end">
-                      <Botao
-                        texto="Exportar PDF"
-                        style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
-                        onClick={() => handleClickDownload()}
-                        disabled={desabilitaBotaoExportarPDF()}
-                        tooltipExterno={
-                          desabilitaBotaoExportarPDF() &&
-                          "Só será possível exportar o PDF com as assinaturas, após a Ciência das Correções pela DRE."
-                        }
-                      />
-                      {((![
-                        "MEDICAO_APROVADA_PELA_DRE",
-                        "MEDICAO_CORRECAO_SOLICITADA",
-                        "MEDICAO_APROVADA_PELA_CODAE",
-                        "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-                      ].includes(solicitacao.status) &&
-                        usuarioEhDRE()) ||
-                        ([
-                          "MEDICAO_APROVADA_PELA_DRE",
-                          "MEDICAO_CORRIGIDA_PARA_CODAE",
-                        ].includes(solicitacao.status) &&
-                          usuarioEhMedicao())) && (
-                        <>
-                          <Botao
-                            className="ms-3"
-                            texto="Solicitar Correção"
-                            style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
-                            onClick={() =>
-                              setShowModalSolicitarCorrecaoUE(true)
-                            }
-                            disabled={desabilitarSolicitarCorrecao}
-                          />
-                          <Botao
-                            className="ms-3"
-                            texto={
-                              usuarioEhMedicao()
-                                ? "Aprovar Medição"
-                                : "Enviar para CODAE"
-                            }
-                            style={BUTTON_STYLE.GREEN}
-                            onClick={() =>
-                              setShowModalEnviarParaCodaeECodaeAprovar(true)
-                            }
-                            disabled={
-                              desabilitarEnviarParaCodaeECodaeAprovar ||
-                              ((usuarioEhMedicao() || usuarioEhDRE()) &&
-                                desabilitaBotaoExportarPDF())
-                            }
-                            tooltipExterno={
-                              usuarioEhMedicao() &&
-                              desabilitaBotaoExportarPDF() &&
-                              "Só será possível Aprovar Medição com as assinaturas, após a Ciência das Correções pela DRE."
-                            }
-                          />
-                        </>
-                      )}
-                      {usuarioEhDRE() && (
+                    {!solicitacao.sem_lancamentos && (
+                      <div className="float-end">
                         <Botao
-                          className="ms-3"
-                          texto="Ciente das Correções"
-                          style={BUTTON_STYLE.GREEN}
-                          onClick={async () => {
-                            setLoading(true);
-                            await atualizaSolicitacaoMedicaoInicial();
-                            setLoading(false);
-                          }}
-                          disabled={loading || !habilitaBotaoCienteCorrecoes()}
+                          texto="Exportar PDF"
+                          style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
+                          onClick={() => handleClickDownload()}
+                          disabled={desabilitaBotaoExportarPDF()}
+                          tooltipExterno={
+                            desabilitaBotaoExportarPDF() &&
+                            "Só será possível exportar o PDF com as assinaturas, após a Ciência das Correções pela DRE."
+                          }
                         />
-                      )}
-                    </div>
+                        {((![
+                          "MEDICAO_APROVADA_PELA_DRE",
+                          "MEDICAO_CORRECAO_SOLICITADA",
+                          "MEDICAO_APROVADA_PELA_CODAE",
+                          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+                        ].includes(solicitacao.status) &&
+                          usuarioEhDRE()) ||
+                          ([
+                            "MEDICAO_APROVADA_PELA_DRE",
+                            "MEDICAO_CORRIGIDA_PARA_CODAE",
+                          ].includes(solicitacao.status) &&
+                            usuarioEhMedicao())) && (
+                          <>
+                            <Botao
+                              className="ms-3"
+                              texto="Solicitar Correção"
+                              style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
+                              onClick={() =>
+                                setShowModalSolicitarCorrecaoUE(true)
+                              }
+                              disabled={desabilitarSolicitarCorrecao}
+                            />
+                            <Botao
+                              className="ms-3"
+                              texto={
+                                usuarioEhMedicao()
+                                  ? "Aprovar Medição"
+                                  : "Enviar para CODAE"
+                              }
+                              style={BUTTON_STYLE.GREEN}
+                              onClick={() =>
+                                setShowModalEnviarParaCodaeECodaeAprovar(true)
+                              }
+                              disabled={
+                                desabilitarEnviarParaCodaeECodaeAprovar ||
+                                ((usuarioEhMedicao() || usuarioEhDRE()) &&
+                                  desabilitaBotaoExportarPDF())
+                              }
+                              tooltipExterno={
+                                usuarioEhMedicao() &&
+                                desabilitaBotaoExportarPDF() &&
+                                "Só será possível Aprovar Medição com as assinaturas, após a Ciência das Correções pela DRE."
+                              }
+                            />
+                          </>
+                        )}
+                        {usuarioEhDRE() && (
+                          <Botao
+                            className="ms-3"
+                            texto="Ciente das Correções"
+                            style={BUTTON_STYLE.GREEN}
+                            onClick={async () => {
+                              setLoading(true);
+                              await atualizaSolicitacaoMedicaoInicial();
+                              setLoading(false);
+                            }}
+                            disabled={
+                              loading || !habilitaBotaoCienteCorrecoes()
+                            }
+                          />
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </form>
