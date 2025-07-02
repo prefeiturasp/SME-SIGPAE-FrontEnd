@@ -1,63 +1,64 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Field, Form } from "react-final-form";
-import HTTP_STATUS from "http-status-codes";
+import { Spin } from "antd";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { Spin } from "antd";
+import HTTP_STATUS from "http-status-codes";
+import { Fragment, useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
+import { useLocation } from "react-router-dom";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
 import InputText from "src/components/Shareable/Input/InputText";
+import ModalHistorico from "src/components/Shareable/ModalHistorico";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import Botao from "src/components/Shareable/Botao";
 import {
-  BUTTON_STYLE,
-  BUTTON_TYPE,
-} from "src/components/Shareable/Botao/constants";
-import { ModalOcorrencia } from "./components/ModalOcorrencia";
-import { BUTTON_ICON } from "src/components/Shareable/Botao/constants";
-import { TabelaLancamentosPeriodo } from "./components/TabelaLancamentosPeriodo";
+  ehEscolaTipoCEI,
+  getError,
+  getISOLocalDatetimeString,
+  usuarioEhDRE,
+  usuarioEhMedicao,
+} from "src/helpers/utilities";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
+import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
+import {
+  getDiasCalendario,
+  getFeriadosNoMesComNome,
+  getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola,
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import {
+  codaeAprovaPeriodo,
+  codaeAprovaSolicitacaoMedicao,
+  codaeSolicitaCorrecaoUE,
+  dreAprovaMedicao,
+  dreAprovaSolicitacaoMedicao,
+  dreSolicitaCorrecaoUE,
+  getPeriodosGruposMedicao,
+  retrieveSolicitacaoMedicaoInicial,
+  updateSolicitacaoMedicaoInicial,
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import {
   medicaoInicialExportarOcorrenciasPDF,
   medicaoInicialExportarOcorrenciasXLSX,
   relatorioMedicaoInicialPDF,
 } from "src/services/relatorios";
-import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
-import {
-  getPeriodosGruposMedicao,
-  retrieveSolicitacaoMedicaoInicial,
-  dreAprovaMedicao,
-  dreAprovaSolicitacaoMedicao,
-  dreSolicitaCorrecaoUE,
-  codaeAprovaSolicitacaoMedicao,
-  codaeSolicitaCorrecaoUE,
-  codaeAprovaPeriodo,
-  updateSolicitacaoMedicaoInicial,
-} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import {
-  getFeriadosNoMesComNome,
-  getDiasCalendario,
-  getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola,
-} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
+import { ModalEnviarParaCodaeECodaeAprovar } from "./components/ModalEnviarParaCodaeECodaeAprovar";
+import { ModalHistoricoCorrecoesPeriodo } from "./components/ModalHistoricoCorrecoesPeriodo";
+import { ModalOcorrencia } from "./components/ModalOcorrencia";
+import { ModalSolicitarCorrecaoUE } from "./components/ModalSolicitarCorrecaoUE";
+import { TabelaLancamentosPeriodo } from "./components/TabelaLancamentosPeriodo";
 import {
   MEDICAO_STATUS_DE_PROGRESSO,
   OCORRENCIA_STATUS_DE_PROGRESSO,
 } from "./constants";
 import "./style.scss";
-import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
-import { ModalEnviarParaCodaeECodaeAprovar } from "./components/ModalEnviarParaCodaeECodaeAprovar";
-import { ModalSolicitarCorrecaoUE } from "./components/ModalSolicitarCorrecaoUE";
-import { ModalHistoricoCorrecoesPeriodo } from "./components/ModalHistoricoCorrecoesPeriodo";
-import ModalHistorico from "src/components/Shareable/ModalHistorico";
-import {
-  ehEscolaTipoCEI,
-  usuarioEhDRE,
-  usuarioEhMedicao,
-  getError,
-  getISOLocalDatetimeString,
-} from "src/helpers/utilities";
 
 export const ConferenciaDosLancamentos = () => {
   const location = useLocation();
@@ -666,6 +667,31 @@ export const ConferenciaDosLancamentos = () => {
                       </div>
                     </div>
                     <hr />
+                    {solicitacao.sem_lancamentos && (
+                      <>
+                        <div className="row">
+                          <div className="col-12">
+                            <div className="sem-lancamentos">
+                              <p className="titulo">
+                                Unidade sem lançamentos no mês
+                              </p>
+                              <p>
+                                Justificativa do envio da medição sem
+                                lançamentos:
+                              </p>
+                              <TextArea
+                                valorInicial={
+                                  solicitacao.justificativa_sem_lancamentos
+                                }
+                                disabled={true}
+                                height="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <hr />
+                      </>
+                    )}
                     <div className="row">
                       <div className="col-12">
                         <p className="section-title-conf-lancamentos">
