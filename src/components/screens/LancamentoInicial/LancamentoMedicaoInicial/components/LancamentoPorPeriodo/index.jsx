@@ -330,6 +330,9 @@ export const LancamentoPorPeriodo = ({
   };
 
   const renderBotaoExportarPDF = () => {
+    if (solicitacaoMedicaoInicial?.sem_lancamentos) {
+      return false;
+    }
     if (solicitacaoMedicaoInicial) {
       return true;
     }

@@ -1124,12 +1124,14 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
               {PERIODO_STATUS_DE_PROGRESSO[periodoGrupo.status] &&
                 PERIODO_STATUS_DE_PROGRESSO[periodoGrupo.status].nome}
             </div>
-            <p
-              className="visualizar-lancamento mb-0"
-              onClick={() => onClickVisualizarFechar(periodoGrupo)}
-            >
-              <b>{showTabelaLancamentosPeriodo ? "FECHAR" : "VISUALIZAR"}</b>
-            </p>
+            {periodoGrupo.status !== "MEDICAO_SEM_LANCAMENTOS" && (
+              <p
+                className="visualizar-lancamento mb-0"
+                onClick={() => onClickVisualizarFechar(periodoGrupo)}
+              >
+                <b>{showTabelaLancamentosPeriodo ? "FECHAR" : "VISUALIZAR"}</b>
+              </p>
+            )}
           </div>
         </div>
       </Spin>
