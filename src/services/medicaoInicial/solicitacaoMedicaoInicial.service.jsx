@@ -241,3 +241,15 @@ export const getPeriodosEscolaCemeiComAlunosEmei = async (params) => {
     return data;
   }
 };
+
+export const codaePedeCorrecaoSolicitacaoMedicaoSemLancamentos = async (
+  uuid,
+  payload
+) => {
+  const url = `medicao-inicial/solicitacao-medicao-inicial/${uuid}/codae-solicita-correcao-sem-lancamentos/`;
+  const response = await axios.patch(url, payload).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
