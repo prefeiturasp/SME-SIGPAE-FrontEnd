@@ -128,6 +128,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
 
   const montarPayloadAnalise = (values: Record<string, any>) => {
     const payload: AnaliseFichaTecnicaPayload = {
+      fabricante_envasador_conferido: conferidos.fabricante_envasador,
       detalhes_produto_conferido: conferidos.detalhes_produto,
       informacoes_nutricionais_conferido: conferidos.informacoes_nutricionais,
       conservacao_conferido: conferidos.conservacao,
@@ -137,6 +138,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
       responsavel_tecnico_conferido: conferidos.responsavel_tecnico,
       modo_preparo_conferido: conferidos.modo_preparo,
       outras_informacoes_conferido: conferidos.outras_informacoes,
+      fabricante_envasador_correcoes: values.fabricante_envasador_correcoes,
       detalhes_produto_correcoes: values.detalhes_produto_correcoes,
       informacoes_nutricionais_correcoes:
         values.informacoes_nutricionais_correcoes,
@@ -145,6 +147,8 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
         values.temperatura_e_transporte_correcoes,
       armazenamento_correcoes: values.armazenamento_correcoes,
       embalagem_e_rotulagem_correcoes: values.embalagem_e_rotulagem_correcoes,
+      responsavel_tecnico_correcoes: values.responsavel_tecnico_correcoes,
+      modo_preparo_correcoes: values.modo_preparo_correcoes,
     };
 
     return payload;
@@ -308,6 +312,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                             Fabricante e ou Envasador/Distribuidor
                           </span>
                         ),
+                        tag: true,
                       },
                       {
                         titulo: (
@@ -383,14 +388,27 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                     id={idCollapse}
                     state={conferidos}
                   >
-                    <section id="proponenteFabricante">
+                    <section id="proponente">
                       <div className="row">
                         <div className="subtitulo">Proponente</div>
                       </div>
                       <FormProponente proponente={proponente} />
                     </section>
 
-                    <section>
+                    <section id="fabricante_envasador">
+                      {!conferidos.fabricante_envasador && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.fabricante_envasador_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <FormFabricante
                         fabricantesCount={
                           [
@@ -401,6 +419,14 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                         values={values}
                         somenteLeitura={true}
                       />
+                      {!somenteLeitura && (
+                        <FormAprovacao
+                          name={"fabricante_envasador"}
+                          aprovaCollapse={aprovaCollapse}
+                          values={values}
+                          reprovaCollapse={reprovaCollapse}
+                        />
+                      )}
                     </section>
 
                     <section id="detalhes_produto">
@@ -916,7 +942,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                         <div className="col">
                           <Field
                             component={TextArea}
-                            label="Descrever o Sistema de Vedação da Embalagem Secundária:"
+                            label="Descrever o Material e o Sistema de Vedação da Embalagem Secundária:"
                             name={`sistema_vedacao_embalagem_secundaria`}
                             className="textarea-ficha-tecnica"
                             disabled
@@ -953,6 +979,19 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                     </section>
 
                     <section id="responsavel_tecnico">
+                      {!conferidos.responsavel_tecnico && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.responsavel_tecnico_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="row">
                         <div className="col">
                           <Field
@@ -990,15 +1029,29 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                         </div>
                       </div>
                       {!somenteLeitura && (
-                        <BotaoCiente
+                        <FormAprovacao
                           name={"responsavel_tecnico"}
                           aprovaCollapse={aprovaCollapse}
-                          desabilitar={conferidos.responsavel_tecnico}
+                          values={values}
+                          reprovaCollapse={reprovaCollapse}
                         />
                       )}
                     </section>
 
                     <section id="modo_preparo">
+                      {!conferidos.modo_preparo && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.modo_preparo_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="row">
                         <div className="col">
                           <Field
@@ -1011,10 +1064,11 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                         </div>
                       </div>
                       {!somenteLeitura && (
-                        <BotaoCiente
+                        <FormAprovacao
                           name={"modo_preparo"}
                           aprovaCollapse={aprovaCollapse}
-                          desabilitar={conferidos.modo_preparo}
+                          values={values}
+                          reprovaCollapse={reprovaCollapse}
                         />
                       )}
                     </section>
