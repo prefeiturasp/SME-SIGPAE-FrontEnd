@@ -89,6 +89,14 @@ div.conferencia-dos-lancamentos {
     color: #42474a;
     font-weight: 700;
   }
+
+  div.sem-lancamentos {
+    p.titulo {
+      color: $red;
+      font-weight: bold;
+      font-size: 16px;
+    }
+  }
 }
 
 .content-section-ocorrencias {

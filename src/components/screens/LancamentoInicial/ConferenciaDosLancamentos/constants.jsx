@@ -81,6 +81,9 @@ export const PERIODO_STATUS_DE_PROGRESSO = {
   MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE: {
     nome: "Em aberto para preenchimento pela UE",
   },
+  MEDICAO_SEM_LANCAMENTOS: {
+    nome: "Sem Lançamentos",
+  },
 };
 
 export const initialStateWeekColumns = [
