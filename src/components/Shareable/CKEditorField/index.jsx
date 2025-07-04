@@ -16,6 +16,7 @@ const CKEditorField = (props) => {
     required,
     placeholder,
     dataTestId,
+    toolbar,
     ...rest
   } = props;
 
@@ -25,18 +26,21 @@ const CKEditorField = (props) => {
     licenseKey: "GPL",
     placeholder: placeholder,
     removePlugins: ["Heading", "BlockQuote", "CKFinder", "Link"],
-    toolbar: [
-      "bold",
-      "italic",
-      "|",
-      "bulletedList",
-      "numberedList",
-      "|",
-      "insertTable",
-      "|",
-      "undo",
-      "redo",
-    ],
+    toolbar:
+      toolbar === false
+        ? toolbar
+        : [
+            "bold",
+            "italic",
+            "|",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "insertTable",
+            "|",
+            "undo",
+            "redo",
+          ],
   };
 
   return (
