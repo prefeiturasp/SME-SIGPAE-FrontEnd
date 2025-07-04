@@ -569,6 +569,7 @@ export const carregaTagsCollapses = (
   setConferidos: Dispatch<SetStateAction<StateConferidosAnalise>>
 ) => {
   const stateConferidos: StateConferidosAnalise = {
+    fabricante_envasador: ficha.analise?.fabricante_envasador_conferido,
     armazenamento: ficha.analise?.armazenamento_conferido,
     conservacao: ficha.analise?.conservacao_conferido,
     detalhes_produto: ficha.analise?.detalhes_produto_conferido,

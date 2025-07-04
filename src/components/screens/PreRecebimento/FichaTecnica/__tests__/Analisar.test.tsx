@@ -98,6 +98,9 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       screen.getAllByText(`Indicações de Correções CODAE`)[0]
     ).toBeInTheDocument();
 
+    let tagsPendentes = screen.getAllByText("Pendente de Análise");
+    expect(tagsPendentes).toHaveLength(10);
+
     let botoesCiente = screen.getAllByText("Ciente");
     let botoesConferido = screen.getAllByText("Conferido");
     const btnAnalise = screen.getByText("Enviar Análise").closest("button");
@@ -114,11 +117,16 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       .closest("button");
     fireEvent.click(btnCorrecao);
 
+    let inputFabricanteCorrecoes = screen.getByTestId(
+      "fabricante_envasador_correcoes"
+    );
+    expect(inputFabricanteCorrecoes).toBeInTheDocument();
+
     let btnCancelar = screen.getAllByText("Cancelar")[0].closest("button");
     fireEvent.click(btnCancelar);
 
     btnCorrecao = screen
-      .getAllByText("Solicitar Correção")[0]
+      .getAllByText("Solicitar Correção")[1]
       .closest("button");
     fireEvent.click(btnCorrecao);
 

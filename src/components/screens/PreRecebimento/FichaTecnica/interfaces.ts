@@ -96,6 +96,7 @@ export interface FiltrosFichaTecnica {
 }
 
 export interface StateConferidosAnalise {
+  fabricante_envasador?: boolean;
   detalhes_produto?: boolean;
   informacoes_nutricionais?: boolean;
   conservacao?: boolean;
@@ -108,6 +109,7 @@ export interface StateConferidosAnalise {
 }
 
 export interface AnaliseFichaTecnicaPayload {
+  fabricante_envasador_conferido: boolean;
   detalhes_produto_conferido: boolean;
   informacoes_nutricionais_conferido: boolean;
   conservacao_conferido: boolean;
@@ -117,10 +119,13 @@ export interface AnaliseFichaTecnicaPayload {
   responsavel_tecnico_conferido: boolean;
   modo_preparo_conferido: boolean;
   outras_informacoes_conferido: boolean;
+  fabricante_envasador_correcoes: string;
   detalhes_produto_correcoes: string;
   informacoes_nutricionais_correcoes: string;
   conservacao_correcoes: string;
   temperatura_e_transporte_correcoes: string;
   armazenamento_correcoes: string;
   embalagem_e_rotulagem_correcoes: string;
+  responsavel_tecnico_correcoes: string;
+  modo_preparo_correcoes: string;
 }
