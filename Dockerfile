@@ -1,9 +1,10 @@
 FROM node:22.15.1-alpine AS builder
 ENV IS_DOCKER_ENVIRONMENT=true
 WORKDIR /app
-COPY . ./
 RUN apk add --no-cache python3 make g++
+COPY package*.json ./
 RUN npm install
+COPY . ./
 RUN npm rebuild node-sass
 RUN npm run build --expose-gc --max-old-space-size=8192
 
