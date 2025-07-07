@@ -156,7 +156,7 @@ const PainelInicial = () => {
         usuarioEhCODAEGestaoAlimentacao() ||
         usuarioEhMedicao() ||
         usuarioEhCODAENutriManifestacao()) &&
-        ENVIRONMENT !== "production" && (
+        !ENVIRONMENT.includes("production") && (
           <Col xs={24} sm={24} md={24} lg={8} xl={8}>
             <CardLogo
               titulo={"Supervisão Terceirizadas"}
