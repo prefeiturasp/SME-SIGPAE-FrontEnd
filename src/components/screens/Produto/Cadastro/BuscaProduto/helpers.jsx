@@ -8,5 +8,8 @@ export const podeEditarProduto = (produto) => {
     "ESCOLA_OU_NUTRICIONISTA_RECLAMOU",
     "TERCEIRIZADA_RESPONDEU_RECLAMACAO",
   ].includes(get(produto, "ultima_homologacao.status"));
-  return !status;
+
+  const temCopia = get(produto, "ultima_homologacao.tem_copia", false);
+
+  return !status && !temCopia;
 };

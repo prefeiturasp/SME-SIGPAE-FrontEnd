@@ -5,7 +5,7 @@ import { DEZ_MB } from "../../../../../../constants/shared";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { textAreaRequired } from "src/helpers/fieldValidators";
 import { OUTROS_DOCUMENTOS_OPTIONS } from "../../constants";
-import { ArquivoForm } from "interfaces/pre_recebimento.interface";
+import { ArquivoForm } from "src/interfaces/pre_recebimento.interface";
 
 interface Props {
   setFiles(_files: Array<ArquivoForm>): void;

@@ -44,6 +44,8 @@ import {
   renderBotaoEnviarCorrecao,
   verificaSeEnviarCorrecaoDisabled,
 } from "./helpers";
+import { ModalFinalizarMedicaoSemLancamentos } from "../ModalFinalizarSemLancamentos";
+import { ENVIRONMENT } from "src/constants/config";
 
 export const LancamentoPorPeriodo = ({
   escolaInstituicao,
@@ -70,9 +72,14 @@ export const LancamentoPorPeriodo = ({
   comOcorrencias,
   setComOcorrencias,
   escolaSimples,
+  setJustificativaSemLancamentos,
 }) => {
   const [showModalFinalizarMedicao, setShowModalFinalizarMedicao] =
     useState(false);
+  const [
+    showModalFinalizarMedicaoSemLancamentos,
+    setShowModalFinalizarMedicaoSemLancamentos,
+  ] = useState(false);
   const [showModalEnviarCorrecao, setShowModalEnviarCorrecao] = useState(false);
   const [showModalSemOcorrenciasIMR, setShowModalSemOcorrenciasIMR] =
     useState(false);
@@ -376,6 +383,10 @@ export const LancamentoPorPeriodo = ({
     return removeObjetosDuplicados(tiposAlimentacao, "nome");
   };
 
+  const onClickFinalizarMedicaoSemLancamentos = () => {
+    setShowModalFinalizarMedicaoSemLancamentos(true);
+  };
+
   const onClickFinalizarMedicao = () => {
     if (!ehIMR) {
       setShowModalFinalizarMedicao(true);
@@ -537,17 +548,44 @@ export const LancamentoPorPeriodo = ({
             )}
           <div className="mt-4">
             {renderBotaoFinalizar() ? (
-              <Botao
-                texto="Finalizar"
-                style={BUTTON_STYLE.GREEN}
-                className="float-end"
-                disabled={
-                  (!usuarioEhEscolaTerceirizadaDiretor() &&
-                    !ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola)) ||
-                  naoPodeFinalizar
-                }
-                onClick={() => onClickFinalizarMedicao()}
-              />
+              <div className="row">
+                <div className="col-12 text-end">
+                  {ENVIRONMENT !== "production" && (
+                    <Botao
+                      texto="Finalizar sem lançamentos"
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                      disabled={
+                        (!usuarioEhEscolaTerceirizadaDiretor() &&
+                          !ehEscolaTipoCEUGESTAO(
+                            solicitacaoMedicaoInicial.escola
+                          )) ||
+                        comOcorrencias === "true" ||
+                        naoPodeFinalizar
+                      }
+                      exibirTooltip={comOcorrencias === "true"}
+                      tooltipTitulo="Você avaliou o serviço com ocorrências, não é possível finalizar a medição sem lançamentos."
+                      classTooltip="icone-info-invalid"
+                      onClick={() => onClickFinalizarMedicaoSemLancamentos()}
+                    />
+                  )}
+                  <Botao
+                    texto="Finalizar"
+                    style={BUTTON_STYLE.GREEN}
+                    className="ms-3"
+                    disabled={
+                      (!usuarioEhEscolaTerceirizadaDiretor() &&
+                        !ehEscolaTipoCEUGESTAO(
+                          solicitacaoMedicaoInicial.escola
+                        )) ||
+                      naoPodeFinalizar
+                    }
+                    onClick={() => {
+                      setJustificativaSemLancamentos("");
+                      onClickFinalizarMedicao();
+                    }}
+                  />
+                </div>
+              </div>
             ) : (
               <div className="row">
                 <div className="col-12 text-end">
@@ -586,7 +624,9 @@ export const LancamentoPorPeriodo = ({
           </div>
           <ModalFinalizarMedicao
             showModal={showModalFinalizarMedicao}
-            closeModal={() => setShowModalFinalizarMedicao(false)}
+            closeModal={() => {
+              setShowModalFinalizarMedicao(false);
+            }}
             setErrosAoSalvar={(value) => setErrosAoSalvar(value)}
             setObjSolicitacaoMIFinalizada={setObjSolicitacaoMIFinalizada}
             escolaInstituicao={escolaInstituicao}
@@ -597,6 +637,14 @@ export const LancamentoPorPeriodo = ({
             setOpcaoSelecionada={setOpcaoSelecionada}
             arquivo={arquivo}
             setArquivo={setArquivo}
+            handleFinalizarMedicao={handleFinalizarMedicao}
+          />
+          <ModalFinalizarMedicaoSemLancamentos
+            mes={mes}
+            ano={ano}
+            showModal={showModalFinalizarMedicaoSemLancamentos}
+            closeModal={() => setShowModalFinalizarMedicaoSemLancamentos(false)}
+            setJustificativaSemLancamentos={setJustificativaSemLancamentos}
             handleFinalizarMedicao={handleFinalizarMedicao}
           />
           <ModalSolicitacaoDownload

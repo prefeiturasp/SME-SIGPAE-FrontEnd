@@ -18,7 +18,7 @@ import { CollapseConfig } from "src/components/Shareable/Collapse/interfaces";
 import {
   ArquivoForm,
   OptionsGenerico,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 import {
   inserirArquivoFichaAssinadaRT,
   removerArquivoFichaAssinadaRT,

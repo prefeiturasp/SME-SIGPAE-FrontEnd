@@ -45,7 +45,7 @@ import {
   Arquivo,
   ArquivoForm,
   CronogramaSimples,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 
 import {
   CronogramaFicha,
@@ -57,7 +57,7 @@ import {
 
 import "./styles.scss";
 import { detalharQuestoesPorCronograma } from "src/services/recebimento/questoesConferencia.service";
-import { QuestaoConferenciaSimples } from "interfaces/recebimento.interface";
+import { QuestaoConferenciaSimples } from "src/interfaces/recebimento.interface";
 
 const ITENS_STEPS = [
   {

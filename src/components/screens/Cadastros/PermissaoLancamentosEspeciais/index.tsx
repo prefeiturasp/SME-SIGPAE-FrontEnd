@@ -21,8 +21,8 @@ import {
 import {
   EscolasComPermissoesLancamentosEspeciaisInterface,
   PermissaoLancamentosEspeciaisInterface,
-} from "interfaces/medicao_inicial.interface";
-import { ResponsePermissoesLancamentosEspeciaisInterface } from "interfaces/responses.interface";
+} from "src/interfaces/medicao_inicial.interface";
+import { ResponsePermissoesLancamentosEspeciaisInterface } from "src/interfaces/responses.interface";
 
 import "./style.scss";
 

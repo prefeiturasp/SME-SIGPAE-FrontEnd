@@ -9,7 +9,7 @@ import {
 import {
   ArquivoFormInterface,
   ArquivoInterface,
-} from "interfaces/imr.interface";
+} from "src/interfaces/imr.interface";
 import InputFileField from "src/components/Shareable/InputFileField";
 
 type NotificacoesType = {

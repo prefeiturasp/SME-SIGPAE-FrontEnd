@@ -12,7 +12,7 @@ import {
   EmpenhoInterface,
   FiltrosInterface,
   ResponseEmpenhosInterface,
-} from "interfaces/empenhos.interface";
+} from "src/interfaces/empenhos.interface";
 import {
   getContratosVigentes,
   getEmpenhos,
@@ -54,7 +54,8 @@ export function Empenhos() {
       setEditais(editais);
     } catch (error) {
       setErroAPI(
-        "Erro ao carregar contratos vigentes. Tente novamente mais tarde."
+        "Erro ao carregar contratos vigentes. Tente novamente mais tarde. " +
+          error.ToString()
       );
     }
   };
@@ -68,7 +69,10 @@ export function Empenhos() {
       setEmpenhos(data.results);
       setResponseEmpenhos(data);
     } catch (error) {
-      setErroAPI("Erro ao carregar empenhos. Tente novamente mais tarde.");
+      setErroAPI(
+        "Erro ao carregar empenhos. Tente novamente mais tarde." +
+          error.ToString()
+      );
     }
   };
 

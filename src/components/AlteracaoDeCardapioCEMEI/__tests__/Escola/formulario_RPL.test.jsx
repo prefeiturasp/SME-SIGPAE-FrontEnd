@@ -21,8 +21,6 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import mock from "src/services/_mock";
 
-jest.setTimeout(10000);
-
 describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
 

@@ -56,7 +56,7 @@ describe("Funções de Preparação de Payload", () => {
         etapas: [
           {
             numero_empenho: "12345",
-            etapa: "Etapa 1",
+            etapa: 1,
             parte: "Parte A",
             data_programada: "2025-12-25",
             quantidade: "500",
@@ -96,7 +96,7 @@ describe("Funções de Preparação de Payload", () => {
         etapas: [
           {
             numero_empenho: "12345",
-            etapa: "Etapa 1",
+            etapa: 1,
             parte: "Parte A",
             data_programada: "2025-12-25",
             quantidade: "500",
@@ -129,7 +129,7 @@ describe("Funções de Preparação de Payload", () => {
       expect(result).toEqual([
         {
           numero_empenho: "12345",
-          etapa: "Etapa 1",
+          etapa: 1,
           parte: "Parte A",
           data_programada: "2025-12-25",
           quantidade: "500",

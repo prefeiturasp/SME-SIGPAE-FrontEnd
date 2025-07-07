@@ -60,7 +60,11 @@ export default [
     },
   },
   {
-    files: ["**/__tests__/**/*.js?(x)", "**/?(*.)+(spec|test).js?(x)"],
+    files: [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[jt]s?(x)",
+      "**/setupTests.[jt]s",
+    ],
     languageOptions: {
       globals: {
         ...globals.jest,

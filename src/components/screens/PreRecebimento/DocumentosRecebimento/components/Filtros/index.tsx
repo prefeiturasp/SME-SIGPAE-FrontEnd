@@ -19,11 +19,11 @@ import { getListaCronogramasPraCadastro } from "../../../../../../services/crono
 import { getListaCompletaProdutosLogistica } from "../../../../../../services/produto.service";
 import { getListaFiltradaAutoCompleteSelect } from "../../../../../../helpers/autoCompleteSelect";
 import { FiltrosDocumentosRecebimento } from "../../interfaces";
-import { ProdutoLogistica } from "interfaces/produto.interface";
+import { ProdutoLogistica } from "src/interfaces/produto.interface";
 import {
   CronogramaSimples,
   DocumentosRecebimento,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 
 interface Props {

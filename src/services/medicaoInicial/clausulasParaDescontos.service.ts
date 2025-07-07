@@ -3,8 +3,9 @@ import {
   ClausulaPayload,
   FiltrosInterface,
   ResponseClausulasInterface,
-} from "interfaces/clausulas_para_descontos.interface";
+} from "src/interfaces/clausulas_para_descontos.interface";
 import axios from "../_base";
+import { ErrorHandlerFunction } from "../service-helpers";
 
 export const cadastraClausulaParaDesconto = async (
   payload: ClausulaPayload
@@ -23,9 +24,14 @@ export const getClausulasParaDescontos = async (
 };
 
 export const getClausulaParaDesconto = async (uuid: string) => {
-  return await axios.get<ClausulaInterface>(
-    `/medicao-inicial/clausulas-de-descontos/${uuid}/`
-  );
+  const url = `/medicao-inicial/clausulas-de-descontos/${uuid}/`;
+  const response = await axios
+    .get<ClausulaInterface>(url)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const editaClausulaParaDesconto = async (

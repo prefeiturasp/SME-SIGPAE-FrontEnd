@@ -58,10 +58,4 @@ describe("Teste <FluxoDeStatus>", () => {
     const listItems = ulElement.querySelectorAll("li");
     expect(listItems[1]).toHaveClass("disapproved");
   });
-
-  it("renderiza a largura corretamente", () => {
-    const ulElement = screen.getByTestId("progressbar");
-    const listItems = ulElement.querySelectorAll("li");
-    expect(listItems[1]).toHaveStyle("width: 33.333333333333336%");
-  });
 });

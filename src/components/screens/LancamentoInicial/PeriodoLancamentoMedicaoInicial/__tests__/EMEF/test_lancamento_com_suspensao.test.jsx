@@ -47,8 +47,6 @@ jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/medicaoInicial/permissaoLancamentosEspeciais.service");
 
-jest.setTimeout(30000);
-
 const awaitServices = async () => {
   await waitFor(() => {
     expect(getListaDiasSobremesaDoce).toHaveBeenCalled();

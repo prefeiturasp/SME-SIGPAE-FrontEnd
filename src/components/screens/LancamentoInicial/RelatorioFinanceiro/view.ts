@@ -13,7 +13,7 @@ import {
   RelatorioFinanceiroConsolidado,
   RelatorioFinanceiroInterface,
   RelatorioFinanceiroResponse,
-} from "interfaces/relatorio_financeiro.interface";
+} from "src/interfaces/relatorio_financeiro.interface";
 
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 
@@ -65,7 +65,9 @@ export default ({ ...props }: Props) => {
       });
       setLotes(lotes);
     } catch (error) {
-      toastError("Erro ao carregar lotes. Tente novamente mais tarde.");
+      toastError(
+        "Erro ao carregar lotes. Tente novamente mais tarde." + error.toString()
+      );
     }
   };
 
@@ -89,7 +91,8 @@ export default ({ ...props }: Props) => {
       );
     } catch (error) {
       toastError(
-        "Erro ao carregar tipos de unidade escolar. Tente novamente mais tarde."
+        "Erro ao carregar tipos de unidade escolar. Tente novamente mais tarde." +
+          error.toString()
       );
     }
   };
@@ -113,7 +116,8 @@ export default ({ ...props }: Props) => {
       );
     } catch (error) {
       toastError(
-        "Erro ao carregar meses de referência. Tente novamente mais tarde."
+        "Erro ao carregar meses de referência. Tente novamente mais tarde." +
+          error.toString()
       );
     }
   };
@@ -131,7 +135,8 @@ export default ({ ...props }: Props) => {
       setResponseEmpenhosResponse(data);
     } catch (error) {
       toastError(
-        "Erro ao carregar relatórios financeiros. Tente novamente mais tarde."
+        "Erro ao carregar relatórios financeiros. Tente novamente mais tarde." +
+          error.toString()
       );
     }
   };

@@ -23,19 +23,19 @@ import HTTP_STATUS from "http-status-codes";
 import {
   DiretoriaRegionalInterface,
   EscolaSimplissimaInterface,
-} from "interfaces/escola.interface";
+} from "src/interfaces/escola.interface";
 import {
   EscolaLabelInterface,
   NovoRelatorioVisitasFormInterface,
   PeriodoDeVisitaInterface,
   TipoOcorrenciaInterface,
-} from "interfaces/imr.interface";
+} from "src/interfaces/imr.interface";
 import {
   ResponseDiretoriasRegionaisSimplissimaInterface,
   ResponseGetEscolasTercTotalInterface,
   ResponseGetQuantidadeAlunosMatriculadosPorDataInterface,
   ResponsePeriodosDeVisitaInterface,
-} from "interfaces/responses.interface";
+} from "src/interfaces/responses.interface";
 import moment from "moment";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Field } from "react-final-form";

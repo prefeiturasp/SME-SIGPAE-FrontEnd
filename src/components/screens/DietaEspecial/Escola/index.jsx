@@ -51,7 +51,7 @@ import Laudo from "./componentes/Laudo";
 import Prescritor from "./componentes/Prescritor";
 import SolicitacaoVigente from "./componentes/SolicitacaoVigente";
 import { formatarSolicitacoesVigentes, podeAtualizarFoto } from "./helper";
-
+import { ENVIRONMENT } from "src/constants/config";
 import { loadSolicitacoesVigentes } from "src/reducers/incluirDietaEspecialReducer";
 
 import "./style.scss";
@@ -379,9 +379,29 @@ class solicitacaoDietaEspecial extends Component {
             </div>
           </div>
           <hr />
-          <span className="card-title fw-bold cinza-escuro">
-            Descrição da Solicitação
-          </span>
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <span className="card-title fw-bold cinza-escuro">
+              Descrição da Solicitação
+            </span>
+            {ENVIRONMENT !== "production" &&
+              this.state.aluno_nao_matriculado && (
+                <div className="d-flex flex-row text-gray align-items-center">
+                  <Field
+                    className="check-tipo-produto"
+                    component={CheckboxField}
+                    name="dieta_para_recreio_ferias"
+                    type="checkbox"
+                    onChange={(event, newValue) => {
+                      if (!newValue) {
+                        this.props.change("periodo_recreio_inicio", null);
+                        this.props.change("periodo_recreio_fim", null);
+                      }
+                    }}
+                  />
+                  <span className="ms-3">Dieta para Recreio nas Férias</span>
+                </div>
+              )}
+          </div>
           {!this.state.aluno_nao_matriculado && (
             <>
               <FormSection name="aluno_json">
@@ -622,6 +642,74 @@ class solicitacaoDietaEspecial extends Component {
                       />
                     </div>
                   </div>
+                  {ENVIRONMENT !== "production" &&
+                    this.props.dieta_para_recreio_ferias && (
+                      <div className="row mt-2 align-items-end">
+                        <div className="col-md-3">
+                          <Field
+                            component={InputComData}
+                            name="periodo_recreio_inicio"
+                            label="Alteração válida pelo período:"
+                            placeholder="De"
+                            className="form-control"
+                            minDate={dateDelta(-360 * 99)}
+                            maxDate={dateDelta(365)}
+                            validate={[required]}
+                            required
+                            inputOnChange={(value) => {
+                              this.props.change(
+                                "periodo_recreio_inicio",
+                                value
+                              );
+                            }}
+                            showMonthDropdown
+                            showYearDropdown
+                          />
+                        </div>
+                        <div className="col-md-3">
+                          <Field
+                            component={InputComData}
+                            name="periodo_recreio_fim"
+                            label=""
+                            placeholder="Até"
+                            className="form-control"
+                            minDate={
+                              this.props.periodo_recreio_inicio
+                                ? moment(
+                                    this.props.periodo_recreio_inicio,
+                                    "DD/MM/YYYY"
+                                  ).toDate()
+                                : dateDelta(-360 * 99)
+                            }
+                            maxDate={dateDelta(365)}
+                            validate={[
+                              required,
+                              (value, allValues) => {
+                                if (
+                                  value &&
+                                  allValues.periodo_recreio_inicio &&
+                                  moment(value, "YYYY-MM-DD").isBefore(
+                                    moment(
+                                      allValues.periodo_recreio_inicio,
+                                      "YYYY-MM-DD"
+                                    )
+                                  )
+                                ) {
+                                  return "A data final não pode ser menor que a inicial.";
+                                }
+                                return undefined;
+                              },
+                            ]}
+                            inputOnChange={(value) => {
+                              this.props.change("periodo_recreio_fim", value);
+                            }}
+                            required
+                            showMonthDropdown
+                            showYearDropdown
+                          />
+                        </div>
+                      </div>
+                    )}
                 </FormSection>
               </FormSection>
               <hr />
@@ -682,6 +770,9 @@ const mapStateToProps = (state) => {
     codigo_eol: selector(state, "codigo_eol"),
     aluno_nao_matriculado: selector(state, "aluno_nao_matriculado_data"),
     solicitacoesVigentes: state.incluirDietaEspecial.solicitacoesVigentes,
+    dieta_para_recreio_ferias: selector(state, "dieta_para_recreio_ferias"),
+    periodo_recreio_inicio: selector(state, "periodo_recreio_inicio"),
+    periodo_recreio_fim: selector(state, "periodo_recreio_fim"),
   };
 };
 const mapDispatchToProps = (dispatch) =>

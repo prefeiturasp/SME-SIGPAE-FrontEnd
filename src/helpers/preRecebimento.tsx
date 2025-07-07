@@ -1,7 +1,7 @@
 import {
   DadosCronogramaFichaTecnica,
   FichaTecnicaSimples,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 
 export const formatarNumeroEProdutoFichaTecnica = (
   ficha: FichaTecnicaSimples | DadosCronogramaFichaTecnica

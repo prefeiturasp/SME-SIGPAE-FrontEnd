@@ -4,7 +4,7 @@ import {
   ContratoInterface,
   EmpenhoInterface,
   EmpenhoPayload,
-} from "interfaces/empenhos.interface";
+} from "src/interfaces/empenhos.interface";
 import {
   getContratosVigentes,
   cadastraEmpenho,
@@ -76,7 +76,8 @@ export function CadastroDeEmpenho() {
       setContratos(data.results);
     } catch (error) {
       setErroAPI(
-        "Erro ao carregar contratos vigentes. Tente novamente mais tarde."
+        "Erro ao carregar contratos vigentes. Tente novamente mais tarde. " +
+          error.toString()
       );
     } finally {
       setCarregando(false);
@@ -91,7 +92,8 @@ export function CadastroDeEmpenho() {
       setValoresInicias(data);
     } catch (error) {
       setErroAPI(
-        "Erro ao carregar dados do empenho. Tente novamente mais tarde."
+        "Erro ao carregar dados do empenho. Tente novamente mais tarde. " +
+          error.toString()
       );
     } finally {
       setCarregando(false);
@@ -123,7 +125,8 @@ export function CadastroDeEmpenho() {
       }
     } catch (error) {
       toastError(
-        "Ocorreu um erro ao cadastrar o empenho. Tente novamente mais tarde."
+        "Ocorreu um erro ao cadastrar o empenho. Tente novamente mais tarde. " +
+          error.toString()
       );
     } finally {
       setCarregando(false);
@@ -151,7 +154,8 @@ export function CadastroDeEmpenho() {
       }
     } catch (error) {
       toastError(
-        "Ocorreu um erro ao editar o empenho. Tente novamente mais tarde."
+        "Ocorreu um erro ao editar o empenho. Tente novamente mais tarde." +
+          error.toString()
       );
     } finally {
       setCarregando(false);

@@ -13,8 +13,8 @@ import { gerarParametrosConsulta } from "src/helpers/utilities";
 import {
   FiltrosDashboardFichasTecnicas,
   VerMaisItem,
-} from "interfaces/pre_recebimento.interface";
-import { ResponseFichasTecnicasPorStatusDashboard } from "interfaces/responses.interface";
+} from "src/interfaces/pre_recebimento.interface";
+import { ResponseFichasTecnicasPorStatusDashboard } from "src/interfaces/responses.interface";
 import { formataItensVerMais } from "../PreRecebimento/PainelFichasTecnicas/helpers";
 
 interface Props {

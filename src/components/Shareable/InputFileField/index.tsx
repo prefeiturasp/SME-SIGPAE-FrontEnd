@@ -3,7 +3,7 @@ import { Field } from "react-final-form";
 
 import InputFile from "src/components/Shareable/Input/InputFile";
 import { DEZ_MB } from "src/constants/shared";
-import { ArquivoForm } from "interfaces/pre_recebimento.interface";
+import { ArquivoForm } from "src/interfaces/pre_recebimento.interface";
 
 import "./styles.scss";
 

@@ -9,8 +9,8 @@ import { ModalCronograma } from "src/components/Shareable/CalendarioCronograma/c
 import "src/components/Shareable/CalendarioCronograma/style.scss";
 import { useState } from "react";
 import { ItemCalendario, ParametrosCalendario } from "./interfaces";
-import { EtapaCalendario } from "interfaces/pre_recebimento.interface";
-import { ResponseCalendarioCronograma } from "interfaces/responses.interface";
+import { EtapaCalendario } from "src/interfaces/pre_recebimento.interface";
+import { ResponseCalendarioCronograma } from "src/interfaces/responses.interface";
 
 interface Props {
   getObjetos: (

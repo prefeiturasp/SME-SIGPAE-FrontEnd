@@ -2,7 +2,7 @@ import {
   CardItem,
   FichaTecnicaDashboard,
   VerMaisItem,
-} from "interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 import {
   ANALISAR_FICHA_TECNICA,
   PRE_RECEBIMENTO,
