@@ -383,7 +383,7 @@ class solicitacaoDietaEspecial extends Component {
             <span className="card-title fw-bold cinza-escuro">
               Descrição da Solicitação
             </span>
-            {ENVIRONMENT !== "production" &&
+            {!ENVIRONMENT.includes("production") &&
               this.state.aluno_nao_matriculado && (
                 <div className="d-flex flex-row text-gray align-items-center">
                   <Field
@@ -642,7 +642,7 @@ class solicitacaoDietaEspecial extends Component {
                       />
                     </div>
                   </div>
-                  {ENVIRONMENT !== "production" &&
+                  {!ENVIRONMENT.includes("production") &&
                     this.props.dieta_para_recreio_ferias && (
                       <div className="row mt-2 align-items-end">
                         <div className="col-md-3">
