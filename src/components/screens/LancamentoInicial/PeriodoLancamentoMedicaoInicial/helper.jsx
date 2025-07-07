@@ -519,7 +519,6 @@ export const desabilitarField = (
       }
     }
   }
-
   if (
     ehPeriodoEscolarSimples &&
     nomeCategoria === "ALIMENTAÇÃO" &&
@@ -543,9 +542,16 @@ export const desabilitarField = (
       return true;
     }
   }
-
   if (
+    !location.state.ehPeriodoEspecifico &&
     !values[`matriculados__dia_${dia}__categoria_${categoria}`] &&
+    !nomeCategoria.includes("DIETA ESPECIAL")
+  ) {
+    return true;
+  }
+  if (
+    location.state.ehPeriodoEspecifico &&
+    !values[`numero_de_alunos__dia_${dia}__categoria_${categoria}`] &&
     !nomeCategoria.includes("DIETA ESPECIAL")
   ) {
     return true;

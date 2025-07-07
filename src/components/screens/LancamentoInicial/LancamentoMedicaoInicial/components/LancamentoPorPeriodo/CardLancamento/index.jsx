@@ -137,6 +137,7 @@ export const CardLancamento = ({
           periodo: textoCabecalho,
           grupo,
           mesAnoSelecionado: periodoSelecionado,
+          ehPeriodoEspecifico,
           tipos_alimentacao: tipos_alimentacao,
           status_periodo: getStatusPeriodo(),
           status_solicitacao: solicitacaoMedicaoInicial.status,
