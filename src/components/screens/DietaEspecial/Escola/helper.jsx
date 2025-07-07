@@ -28,9 +28,9 @@ export const exibirParteInativacao = (solicitacao, uuid) => {
 
 export const podeAtualizarFoto = (criadoRF) => {
   return (
-    (ENVIRONMENT !== "production" &&
+    (!ENVIRONMENT.includes("production") &&
       criadoRF === USUARIO_PODE_ATUALIZAR_FOTO_DEV_HOM) ||
-    (ENVIRONMENT === "production" &&
+    (ENVIRONMENT.includes("production") &&
       criadoRF === USUARIO_PODE_ATUALIZAR_FOTO_PROD)
   );
 };

@@ -83,7 +83,7 @@ export const Page = ({ ...props }) => {
     let dataFinal = new Date("2024-06-29T00:00:00");
     let now = new Date();
 
-    if (ENVIRONMENT !== "production") {
+    if (!ENVIRONMENT.includes("production")) {
       return false;
     } else if (!usuarioEhEscola()) {
       return false;
