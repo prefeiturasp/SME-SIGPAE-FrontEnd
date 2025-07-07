@@ -59,6 +59,7 @@ import {
   OCORRENCIA_STATUS_DE_PROGRESSO,
 } from "./constants";
 import "./style.scss";
+import { ModalPedirCorrecaoSemLancamentos } from "./components/ModalPedirCorrecaoSemLancamentos";
 
 export const ConferenciaDosLancamentos = () => {
   const location = useLocation();
@@ -88,6 +89,8 @@ export const ConferenciaDosLancamentos = () => {
     showModalHistoricoCorrecoesPeriodo,
     setShowModalHistoricoCorrecoesPeriodo,
   ] = useState(false);
+  const [showModalCorrecaoSemLancamentos, setShowModalCorrecaoSemLancamentos] =
+    useState(false);
   const [logCorrecaoOcorrencia, setLogCorrecaoOcorrencia] = useState(null);
   const [logCorrecaoOcorrenciaCODAE, setLogCorrecaoOcorrenciaCODAE] =
     useState(null);
@@ -980,6 +983,19 @@ export const ConferenciaDosLancamentos = () => {
                         )}
                       </div>
                     )}
+                    {solicitacao.sem_lancamentos && usuarioEhMedicao() && (
+                      <div className="row">
+                        <div className="col-12 text-end">
+                          <Botao
+                            texto="Solicitar Correção"
+                            style={BUTTON_STYLE.GREEN_OUTLINE}
+                            onClick={async () => {
+                              setShowModalCorrecaoSemLancamentos(true);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </form>
@@ -1036,6 +1052,21 @@ export const ConferenciaDosLancamentos = () => {
             solicitarCorrecaoMedicao();
           }}
         />
+        {solicitacao && (
+          <ModalPedirCorrecaoSemLancamentos
+            mes={mesSolicitacao}
+            ano={anoSolicitacao}
+            showModal={showModalCorrecaoSemLancamentos}
+            closeModal={() => setShowModalCorrecaoSemLancamentos(false)}
+            atualizarDados={async () => {
+              await getSolMedInicialAsync();
+              await getPeriodosGruposMedicaoAsync();
+              setLoading(false);
+            }}
+            setLoading={setLoading}
+            uuid={solicitacao.uuid}
+          />
+        )}
         {solicitacao && solicitacao.historico && (
           <ModalHistoricoCorrecoesPeriodo
             showModal={showModalHistoricoCorrecoesPeriodo}
