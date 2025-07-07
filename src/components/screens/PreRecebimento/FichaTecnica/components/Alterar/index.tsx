@@ -39,7 +39,9 @@ import {
   assinarCorrigirFichaTecnica,
   carregaListaCompletaInformacoesNutricionais,
   carregarDadosCorrgir,
+  carregarFabricantes,
   carregarUnidadesMedida,
+  cepCalculator,
   formataPayloadCorrecaoFichaTecnica,
 } from "../../helpers";
 
@@ -57,6 +59,13 @@ export default () => {
   const [unidadesMedidaOptions, setUnidadesMedidaOptions] = useState<
     OptionsGenerico[]
   >([]);
+  const [fabricantesOptions, setFabricantesOptions] = useState<
+    OptionsGenerico[]
+  >([]);
+  const [desabilitaEndereco, setDesabilitaEndereco] = useState<Array<boolean>>([
+    true,
+    true,
+  ]);
   const [collapse, setCollapse] = useState<CollapseControl>({});
   const [ficha, setFicha] = useState<FichaTecnicaDetalhadaComAnalise>(
     {} as FichaTecnicaDetalhadaComAnalise
@@ -80,6 +89,7 @@ export default () => {
       await carregaListaCompletaInformacoesNutricionais(
         listaCompletaInformacoesNutricionais
       );
+      await carregarFabricantes(setFabricantesOptions);
       await carregarDadosCorrgir(
         listaInformacoesNutricionaisFichaTecnica,
         setFicha,
@@ -101,6 +111,7 @@ export default () => {
           Fabricante e ou Envasador/Distribuidor
         </span>
       ),
+      tag: true,
     },
     {
       titulo: <span className="verde-escuro">Detalhes do Produto</span>,
@@ -155,6 +166,7 @@ export default () => {
           <Form
             onSubmit={() => {}}
             initialValues={initialValues}
+            decorators={[cepCalculator(setDesabilitaEndereco)]}
             render={({ handleSubmit, values, errors }) => {
               const ehPerecivel = values["categoria"] === "Perecíveis";
               const ehNaoPerecivel = values["categoria"] === "Não Perecíveis";
@@ -220,14 +232,27 @@ export default () => {
                     id={idCollapse}
                     state={conferidos}
                   >
-                    <section id="proponenteFabricante">
+                    <section id="proponente">
                       <div className="row">
                         <div className="subtitulo">Proponente</div>
                       </div>
                       <FormProponente proponente={proponente} />
                     </section>
 
-                    <section>
+                    <section id="fabricante_envasador">
+                      {!conferidos.fabricante_envasador && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.fabricante_envasador_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <FormFabricante
                         fabricantesCount={
                           [
@@ -235,8 +260,10 @@ export default () => {
                             values[`fabricante_1`],
                           ].filter((fabricante) => fabricante).length
                         }
+                        fabricantesOptions={fabricantesOptions}
+                        desabilitaEndereco={desabilitaEndereco}
                         values={values}
-                        somenteLeitura={true}
+                        somenteLeitura={conferidos.fabricante_envasador}
                       />
                     </section>
 
@@ -836,7 +863,7 @@ export default () => {
                         <div className="col">
                           <Field
                             component={TextArea}
-                            label="Descrever o Sistema de Vedação da Embalagem Secundária:"
+                            label="Descrever o Material e o Sistema de Vedação da Embalagem Secundária:"
                             name={`sistema_vedacao_embalagem_secundaria`}
                             className="textarea-ficha-tecnica"
                             placeholder="Digite as informações da embalagem secundária"
@@ -868,6 +895,19 @@ export default () => {
                     </section>
 
                     <section id="responsavel_tecnico">
+                      {!conferidos.responsavel_tecnico && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.responsavel_tecnico_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="row">
                         <div className="col">
                           <Field
@@ -916,6 +956,19 @@ export default () => {
                     </section>
 
                     <section id="modo_preparo">
+                      {!conferidos.modo_preparo && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.modo_preparo_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="row">
                         <div className="col">
                           <Field
@@ -923,7 +976,7 @@ export default () => {
                             label="Descreva o modo de preparo do produto:"
                             name={`modo_de_preparo`}
                             className="textarea-ficha-tecnica"
-                            disabled
+                            disabled={conferidos.modo_preparo}
                           />
                         </div>
                       </div>
