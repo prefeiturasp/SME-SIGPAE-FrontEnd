@@ -32,9 +32,7 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
   } = props;
 
   const onSubmit = async (values) => {
-    if (
-      !values.quantidades_periodo.map((qtd_prd) => qtd_prd.cancelado).length
-    ) {
+    if (!values.quantidades_periodo.some((qtd_prd) => qtd_prd.cancelado)) {
       toastError("Selecione pelo menos uma data");
       return;
     }
