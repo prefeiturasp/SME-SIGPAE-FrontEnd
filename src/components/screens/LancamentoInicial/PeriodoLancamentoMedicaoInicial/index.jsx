@@ -327,6 +327,15 @@ export default () => {
       return response_categorias_medicao;
     if (
       !tiposAlimentacaoInclusaoContinua.includes("lanche") &&
+      !tiposAlimentacaoInclusaoContinua.includes("lanche_4h") &&
+      !tiposAlimentacaoInclusaoContinua.includes("refeicao")
+    ) {
+      response_categorias_medicao = response_categorias_medicao.filter(
+        (categoria) => !categoria.nome.includes("ENTERAL")
+      );
+    }
+    if (
+      !tiposAlimentacaoInclusaoContinua.includes("lanche") &&
       !tiposAlimentacaoInclusaoContinua.includes("lanche_4h")
     ) {
       response_categorias_medicao = response_categorias_medicao.filter(

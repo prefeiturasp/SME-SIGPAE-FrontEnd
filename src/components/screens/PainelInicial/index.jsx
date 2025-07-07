@@ -1,5 +1,4 @@
 import { Col, Row } from "antd";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { CardLogo } from "src/components/Shareable/CardLogo/CardLogo";

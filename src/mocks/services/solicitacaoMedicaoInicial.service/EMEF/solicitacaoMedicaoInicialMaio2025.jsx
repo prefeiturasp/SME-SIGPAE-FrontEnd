@@ -55,5 +55,7 @@ export const mockSolicitacaoMedicaoInicialEMEFMaio2025 = [
     rastro_terceirizada: 5,
     dre_ciencia_correcao_usuario: null,
     relatorio_financeiro: null,
+    justificativa_codae_correcao_sem_lancamentos:
+      "<p>Não pode fazer sem lançamentos!</p>",
   },
 ];

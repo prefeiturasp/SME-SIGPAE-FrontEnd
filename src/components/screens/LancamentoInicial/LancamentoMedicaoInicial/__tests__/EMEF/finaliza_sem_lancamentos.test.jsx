@@ -226,4 +226,14 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
 
     expect(screen.queryByText("Export PDF")).not.toBeInTheDocument();
   });
+
+  it("Exibe bloco de correção da CODAE", () => {
+    expect(
+      screen.getByText("Solicitação de Correção da CODAE")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Solicitação de Correção da CODAE")
+    ).toBeInTheDocument("Não pode fazer sem lançamentos!");
+  });
 });
