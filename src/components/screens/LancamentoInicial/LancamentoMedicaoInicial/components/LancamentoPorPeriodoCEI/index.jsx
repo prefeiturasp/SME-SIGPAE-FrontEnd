@@ -440,7 +440,7 @@ export const LancamentoPorPeriodoCEI = ({
               {renderBotaoFinalizar() ? (
                 <div className="row">
                   <div className="col-12 text-end">
-                    {ENVIRONMENT !== "production" && (
+                    {!ENVIRONMENT.includes("production") && (
                       <Botao
                         texto="Finalizar sem lançamentos"
                         style={BUTTON_STYLE.GREEN_OUTLINE}

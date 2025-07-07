@@ -210,7 +210,7 @@ export const SidebarContent = () => {
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhMedicao() ||
       usuarioEhCODAENutriManifestacao()) &&
-    ENVIRONMENT !== "production";
+    !ENVIRONMENT.includes("production");
 
   const _props = {
     activeMenu,

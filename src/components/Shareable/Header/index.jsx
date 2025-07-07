@@ -28,7 +28,7 @@ export const Header = ({ toggled }) => {
         <div className="container-fluid">
           <div
             className={`nav-bar ${toggled && "toggled"} ${
-              ENVIRONMENT !== "production" ? "p-0" : ""
+              !ENVIRONMENT.includes("production") ? "p-0" : ""
             }`}
           >
             <Link className="navbar-brand" to="/">
