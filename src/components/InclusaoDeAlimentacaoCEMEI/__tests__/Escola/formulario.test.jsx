@@ -1,17 +1,25 @@
 import "@testing-library/jest-dom";
+import { act, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { mockRascunhosInclusaoAlimentacaoCEMEI } from "src/mocks/InclusaoAlimentacao/CEMEI/rascunhos";
 import { mockMotivosInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockMotivosInclusaoContinua";
 import { mockMotivosInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockMotivosInclusaoNormal";
+import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosEscolaCEMEI } from "src/mocks/meusDados/escola/CEMEI";
 import { mockQuantidadeAlunoCEMEIporCEIEMEI } from "src/mocks/services/aluno.service/CEMEI/quantidadeAlunoCEMEIporCEIEMEI";
 import { mockGetVinculosMotivoEspecificoCEMEI } from "src/mocks/services/cadastroTipoAlimentacao.service/CEMEI/vinculosMotivoEspecifico";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEMEI } from "src/mocks/services/cadastroTipoAlimentacao.service/CEMEI/vinculosTipoAlimentacaoPeriodoEscolar";
 import { mockQuantidadeAlunosPorPeriodoCEMEI } from "src/mocks/services/escola.service/CEMEI/quantidadeAlunosPorPeriodo";
+import { InclusaoDeAlimentacaoCEMEIPage } from "src/pages/Escola/InclusaoDeAlimentacaoCEMEIPage";
 import mock from "src/services/_mock";
 
 describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock
       .onGet("/motivos-inclusao-normal/")
@@ -39,5 +47,71 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
         "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
+    mock
+      .onGet("/inclusao-alimentacao-cemei/")
+      .reply(200, mockRascunhosInclusaoAlimentacaoCEMEI);
+    mock
+      .onGet("/inclusoes-alimentacao-continua/minhas-solicitacoes/")
+      .reply(200, { count: 0, next: null, previous: null, results: [] });
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("eh_cemei", "true");
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaCEMEI,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <InclusaoDeAlimentacaoCEMEIPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>
+      );
+    });
+  });
+
+  it("renderiza título da página e o breadcrumb `Inclusão de Alimentação`", async () => {
+    expect(screen.queryAllByText("Inclusão de Alimentação").length).toBe(2);
+  });
+
+  it("renderiza bloco com número de matriculados", async () => {
+    expect(screen.getByText("Total de Matriculados")).toBeInTheDocument();
+    expect(screen.getByText("187")).toBeInTheDocument();
+
+    expect(screen.getByText("Matriculados CEI")).toBeInTheDocument();
+    expect(screen.getByText("79")).toBeInTheDocument();
+
+    expect(screen.getByText("Matriculados EMEI")).toBeInTheDocument();
+    expect(screen.getByText("108")).toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("renderiza bloco `Rascunhos`", async () => {
+    expect(screen.getByText("Rascunhos")).toBeInTheDocument();
+    expect(
+      screen.getByText("Inclusão de Alimentação # 00FA3")
+    ).toBeInTheDocument();
+    expect(screen.getByText("1 dia(s)")).toBeInTheDocument();
+    expect(
+      screen.getByText("Criado em: 08/07/2025 16:02:27")
+    ).toBeInTheDocument();
   });
 });

@@ -9,7 +9,7 @@ import { AlteracaoDeCardapioCEMEIPage } from "src/pages/Escola/AlteracaoDeCardap
 import AlteracaoDeCardapioPage from "src/pages/Escola/AlteracaoDeCardapioPage";
 import DashboardEscolaPage from "src/pages/Escola/DashboardEscolaPage";
 import { InclusaoDeAlimentacaoCEIPage } from "src/pages/Escola/InclusaoDeAlimentacaoCEIPage";
-import InclusaoDeAlimentacaoCEMEIPage from "src/pages/Escola/InclusaoDeAlimentacaoCEMEIPage";
+import { InclusaoDeAlimentacaoCEMEIPage } from "src/pages/Escola/InclusaoDeAlimentacaoCEMEIPage";
 import InclusaoDeAlimentacaoPage from "src/pages/Escola/InclusaoDeAlimentacaoPage";
 import SuspensaoDeAlimentacaoDeCEI from "src/pages/Escola/SuspensaoDeAlimentacaoDeCEIPage";
 import SuspensaoDeAlimentacaoPage from "src/pages/Escola/SuspensaoDeAlimentacaoPage";
