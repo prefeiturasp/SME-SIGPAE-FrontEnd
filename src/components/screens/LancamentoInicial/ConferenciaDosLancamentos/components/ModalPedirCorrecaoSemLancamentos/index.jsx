@@ -74,6 +74,7 @@ export const ModalPedirCorrecaoSemLancamentos = ({ ...props }) => {
                 component={CKEditorField}
                 label="Descrição da Correção"
                 name="justificativa"
+                placeholder="Informe quais os pontos necessários de correção da medição inicial."
                 required={!process.env.IS_TEST}
                 validate={
                   !process.env.IS_TEST &&
