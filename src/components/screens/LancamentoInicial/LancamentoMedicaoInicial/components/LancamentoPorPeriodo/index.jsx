@@ -497,6 +497,7 @@ export const LancamentoPorPeriodo = ({
                 quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
                 frequenciasDietasCEUGESTAO={frequenciasDietasCEUGESTAO}
                 errosAoSalvar={errosAoSalvar}
+                ehPeriodoEspecifico={true}
               />
             ))}
           {periodosInclusaoContinua &&
