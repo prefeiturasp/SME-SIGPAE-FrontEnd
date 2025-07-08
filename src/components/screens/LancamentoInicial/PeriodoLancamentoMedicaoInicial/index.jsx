@@ -401,6 +401,12 @@ export default () => {
         periodo = location.state
           ? location.state.periodoEspecifico
           : periodos_escolares[0];
+        if (!periodo) {
+          periodo = periodos_escolares.find(
+            (periodo_) =>
+              periodo_.periodo_escolar.nome === location.state.periodo
+          );
+        }
       } else {
         periodo =
           periodos_escolares.find(
