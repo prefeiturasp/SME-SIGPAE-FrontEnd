@@ -1,5 +1,12 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -113,5 +120,90 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     expect(
       screen.getByText("Criado em: 08/07/2025 16:02:27")
     ).toBeInTheDocument();
+  });
+
+  const setMotivoValueReposicaoDeAula = () => {
+    const selectMotivo = screen.getByTestId("select-motivo-0");
+    const selectElement = selectMotivo.querySelector("select");
+    const uuidMotivoReposicaoDeAula = mockMotivosInclusaoNormal.results.find(
+      (motivo) => motivo.nome === "Reposição de aula"
+    ).uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidMotivoReposicaoDeAula },
+    });
+  };
+
+  const setupInclusaoNormal = async () => {
+    await setMotivoValueReposicaoDeAula();
+
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    const inputElement = divDia.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "31/07/2025" },
+    });
+
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+
+    const divCheckboxINTEGRAL = screen.getByTestId("div-checkbox-INTEGRAL");
+    const spanElement = divCheckboxINTEGRAL.querySelector("span");
+
+    await act(async () => {
+      fireEvent.click(spanElement);
+    });
+
+    expect(screen.getByText("Alunos CEI")).toBeInTheDocument();
+    expect(screen.getByText("07 a 11 meses")).toBeInTheDocument();
+    expect(screen.getByText("01 ano a 03 anos e 11 meses")).toBeInTheDocument();
+
+    const divInputFaixaEtaria0 = screen.getByTestId(
+      "quantidades_periodo[0].faixas.0"
+    );
+    const inputElementQuantidade0 = divInputFaixaEtaria0.querySelector("input");
+    fireEvent.change(inputElementQuantidade0, {
+      target: { value: "1" },
+    });
+
+    const divInputFaixaEtaria1 = screen.getByTestId(
+      "quantidades_periodo[0].faixas.1"
+    );
+    const inputElementQuantidade1 = divInputFaixaEtaria1.querySelector("input");
+    fireEvent.change(inputElementQuantidade1, {
+      target: { value: "1" },
+    });
+
+    const selectTiposAlimentacaoEMEI = screen.getByTestId(
+      "select-tipos-alimentacao"
+    );
+    const selectControl = within(selectTiposAlimentacaoEMEI).getByRole(
+      "combobox"
+    );
+    fireEvent.mouseDown(selectControl);
+
+    const optionLanche = screen.getByText("Lanche");
+    fireEvent.click(optionLanche);
+
+    const divInputAlunosEMEI = screen.getByTestId(
+      "quantidades_periodo[0].alunos_emei"
+    );
+    const inputElementAlunosEMEI = divInputAlunosEMEI.querySelector("input");
+    fireEvent.change(inputElementAlunosEMEI, {
+      target: { value: "1" },
+    });
+  };
+
+  mock.onPost("/inclusao-alimentacao-cemei/").reply(201, {});
+
+  it("Salva rascunho inclusão de alimentação CEMEI com sucesso", async () => {
+    await setupInclusaoNormal(true);
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitação Rascunho criada com sucesso!")
+      ).toBeInTheDocument();
+    });
   });
 });

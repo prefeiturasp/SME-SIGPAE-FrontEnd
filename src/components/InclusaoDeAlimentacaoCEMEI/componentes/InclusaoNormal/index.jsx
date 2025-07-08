@@ -17,6 +17,7 @@ import {
   formatarParaMultiselect,
 } from "src/helpers/utilities";
 import "./style.scss";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 
 export const PeriodosCEIeouEMEI = ({
   form,
@@ -45,6 +46,7 @@ export const PeriodosCEIeouEMEI = ({
             <div className="periodos_cei_emei mt-1 mb-3" key={indice}>
               <div
                 className={`period-quantity number-${indice} ps-5 pt-2 pb-2`}
+                data-testid={`div-checkbox-${getPeriodo(indice).nome}`}
               >
                 <label htmlFor="check" className="checkbox-label">
                   <Field
@@ -120,6 +122,7 @@ export const PeriodosCEIeouEMEI = ({
             <div className="periodos_cei_emei mt-1 mb-3" key={indice}>
               <div
                 className={`period-quantity number-${indice} ps-5 pt-2 pb-2`}
+                data-testid={`div-checkbox-${getPeriodo(indice).nome}`}
               >
                 <label htmlFor="check" className="checkbox-label">
                   <Field
@@ -185,6 +188,7 @@ export const PeriodosCEIeouEMEI = ({
                                       <td className="col-2 text-center">
                                         <Field
                                           component={InputText}
+                                          dataTestIdDiv={`${name}.faixas.${key}`}
                                           type="number"
                                           name={`${name}.faixas.${faixa.faixa}`}
                                           validate={
@@ -230,8 +234,9 @@ export const PeriodosCEIeouEMEI = ({
                           {getPeriodo(indice).nome}:{" "}
                           <div className="col-4">
                             <Field
-                              component={StatefulMultiSelect}
+                              component={MultiselectRaw}
                               name="tipos_alimentacao"
+                              dataTestId={`select-tipos-alimentacao`}
                               selected={
                                 getPeriodo(indice)
                                   .tipos_alimentacao_selecionados || []
@@ -243,16 +248,14 @@ export const PeriodosCEIeouEMEI = ({
                                   "EMEI"
                                 )
                               )}
-                              onSelectedChanged={(values_) =>
-                                onTiposAlimentacaoChanged(values_, indice)
-                              }
-                              disableSearch={true}
-                              overrideStrings={{
-                                selectSomeItems: "Selecione",
-                                allItemsAreSelected:
-                                  "Todos os itens estão selecionados",
-                                selectAll: "Todos",
+                              onSelectedChanged={(values_) => {
+                                form.change(
+                                  `quantidades_periodo[
+          ${indice}].tipos_alimentacao_selecionados`,
+                                  values_.map((value_) => value_.value)
+                                );
                               }}
+                              placeholder="Selecione tipos de alimentação"
                             />
                           </div>
                         </div>
@@ -283,6 +286,7 @@ export const PeriodosCEIeouEMEI = ({
                                 <Field
                                   className="ms-3"
                                   component={InputText}
+                                  dataTestIdDiv={`${name}.alunos_emei`}
                                   type="number"
                                   name={`${name}.alunos_emei`}
                                   validate={

@@ -499,6 +499,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                           <div className="col-6">
                             <Field
                               component={Select}
+                              dataTestId={`select-motivo-${index}`}
                               name={`${name}.motivo`}
                               label="Motivo"
                               options={
