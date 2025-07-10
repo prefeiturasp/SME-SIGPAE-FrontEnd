@@ -191,15 +191,15 @@ export const Container = () => {
   }, [dados]);
 
   const REQUISICOES_CONCLUIDAS =
-    dados &&
-    motivosSimples &&
-    motivosContinuos &&
-    vinculos &&
-    periodos &&
-    periodosInclusaoContinua &&
-    proximosDoisDiasUteis &&
-    proximosCincoDiasUteis &&
-    periodosMotivoEspecifico;
+    !!dados &&
+    !!motivosSimples &&
+    !!motivosContinuos &&
+    !!vinculos &&
+    !!periodos &&
+    !!periodosInclusaoContinua &&
+    !!proximosDoisDiasUteis &&
+    !!proximosCincoDiasUteis &&
+    !!periodosMotivoEspecifico;
 
   return (
     <div>
