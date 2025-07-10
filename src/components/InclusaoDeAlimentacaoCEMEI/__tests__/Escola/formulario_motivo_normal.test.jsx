@@ -206,4 +206,81 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("Carrega rascunho e envia", async () => {
+    expect(screen.queryByText("INTEGRAL")).not.toBeInTheDocument();
+
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    expect(screen.getByText("Solicitação # 00FA3")).toBeInTheDocument();
+
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    const inputElement = divDia.querySelector("input");
+    expect(inputElement).toHaveAttribute("value", "31/07/2025");
+
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+
+    mock
+      .onPut(
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`
+      )
+      .reply(200, {});
+    mock
+      .onPatch(
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/inicio-pedido/`
+      )
+      .reply(200, {});
+
+    const botaoEnviar = screen.getByText("Enviar inclusão").closest("button");
+    fireEvent.click(botaoEnviar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Inclusão de Alimentação enviada com sucesso!")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Exclui rascunho", async () => {
+    mock
+      .onDelete(
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`
+      )
+      .reply(204, {});
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          `Rascunho # ${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].id_externo} excluído com sucesso`
+        )
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Erro ao excluir rascunho", async () => {
+    mock
+      .onDelete(
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`
+      )
+      .reply(400, { detail: "Erro ao excluir rascunho" });
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          `Houve um erro ao excluir o rascunho: Erro ao excluir rascunho`
+        )
+      ).toBeInTheDocument();
+    });
+  });
 });

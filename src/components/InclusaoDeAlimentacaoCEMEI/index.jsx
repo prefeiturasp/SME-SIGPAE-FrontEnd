@@ -201,8 +201,8 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
 
   const carregarRascunho = async (form, values, inclusao) => {
     setCarregandoRascunho(true);
-    await form.change("uuid", inclusao.uuid);
-    await form.change("id_externo", inclusao.id_externo);
+    form.change("uuid", inclusao.uuid);
+    form.change("id_externo", inclusao.id_externo);
     const inclusao_ = deepCopy(inclusao);
     if (inclusao_.dias_motivos_da_inclusao_cemei) {
       carregarRascunhoNormal(form, inclusao_);
