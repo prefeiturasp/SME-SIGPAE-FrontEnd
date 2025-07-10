@@ -216,4 +216,37 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
       ).toBeInTheDocument();
     });
   });
+
+  it("Carrega rascunho e envia", async () => {
+    expect(screen.queryByText("INTEGRAL")).not.toBeInTheDocument();
+
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Solicitação # CC1E6")).toBeInTheDocument();
+    });
+
+    mock
+      .onPut(
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/`
+      )
+      .reply(200, {});
+    mock
+      .onPatch(
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/inicio-pedido/`
+      )
+      .reply(200, {});
+
+    const botaoEnviar = screen.getByText("Enviar inclusão").closest("button");
+    fireEvent.click(botaoEnviar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Inclusão de Alimentação enviada com sucesso!")
+      ).toBeInTheDocument();
+    });
+  });
 });

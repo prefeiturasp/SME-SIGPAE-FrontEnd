@@ -79,12 +79,14 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   }, []);
 
   const resetForm = async (form) => {
-    await form.change("inclusoes", [{ motivo: undefined }]);
-    await form.change("quantidades_periodo", undefined);
-    await form.change("dias_semana", undefined);
-    await form.change("tipos_alimentacao_selecionados", []);
-    await form.change("periodo_escolar");
-    await form.change("numero_alunos", undefined);
+    form.change("uuid_", undefined);
+    form.change("id_externo_", undefined);
+    form.change("inclusoes", [{ motivo: undefined }]);
+    form.change("quantidades_periodo", undefined);
+    form.change("dias_semana", undefined);
+    form.change("tipos_alimentacao_selecionados", []);
+    form.change("periodo_escolar");
+    form.change("numero_alunos", undefined);
     setCarregandoRascunho(false);
   };
 
@@ -179,7 +181,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     }
   };
 
-  const carregarRascunhoContinuo = async (form, values, inclusao_) => {
+  const carregarRascunhoContinuo = (form, values, inclusao_) => {
     const quantidades_periodo_ = deepCopy(inclusao_.quantidades_periodo);
     quantidades_periodo_.forEach((qp) => {
       qp.dias_semana = qp.dias_semana.map(String);
@@ -201,8 +203,6 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
 
   const carregarRascunho = async (form, values, inclusao) => {
     setCarregandoRascunho(true);
-    form.change("uuid", inclusao.uuid);
-    form.change("id_externo", inclusao.id_externo);
     const inclusao_ = deepCopy(inclusao);
     if (inclusao_.dias_motivos_da_inclusao_cemei) {
       carregarRascunhoNormal(form, inclusao_);
@@ -210,6 +210,8 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
       carregarRascunhoContinuo(form, values, inclusao_);
     }
     setCarregandoRascunho(false);
+    form.change("uuid_", inclusao.uuid);
+    form.change("id_externo_", inclusao.id_externo);
   };
 
   const buildFaixas = (values, inclusao) => {
@@ -281,7 +283,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   };
 
   const fluxoInclusaoNormal = async (values, form) => {
-    if (!values.uuid) {
+    if (!values.uuid_) {
       let vinculosAlimentacao = vinculos;
       if (motivoEspecifico) {
         vinculosAlimentacao = vinculosMotivoEspecifico;
@@ -301,12 +303,12 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
       }
     } else {
       const response = await updateInclusaoAlimentacaoCEMEI(
-        values.uuid,
+        values.uuid_,
         formataInclusaoCEMEI(values, vinculos)
       );
       if (response.status === HTTP_STATUS.OK) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(values.uuid, form);
+          iniciarPedido(values.uuid_, form);
         } else {
           toastSuccess("Rascunho atualizado com sucesso");
         }
@@ -318,7 +320,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   };
 
   const fluxoInclusaoContinua = async (values, form) => {
-    if (!values.uuid) {
+    if (!values.uuid_) {
       const response = await createInclusaoAlimentacao(
         formatarSubmissaoSolicitacaoContinua(values),
         TIPO_SOLICITACAO.SOLICITACAO_CONTINUA
@@ -339,14 +341,14 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
       }
     } else {
       const response = await updateInclusaoAlimentacao(
-        values.uuid,
+        values.uuid_,
         formatarSubmissaoSolicitacaoContinua(values),
         TIPO_SOLICITACAO.SOLICITACAO_CONTINUA
       );
       if (response.status === HTTP_STATUS.OK) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
           iniciarPedidoInclusaoContinua(
-            values.uuid,
+            values.uuid_,
             TIPO_SOLICITACAO.SOLICITACAO_CONTINUA,
             form
           );
@@ -403,7 +405,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
       values.inclusoes[0].motivo &&
       motivos
         .find((motivo) => motivo.uuid === values.inclusoes[0].motivo)
-        .nome.includes("Específico")
+        ?.nome.includes("Específico")
     );
   };
 
@@ -482,8 +484,8 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
               </div>
             )}
             <div className="mt-2 page-title">
-              {values.uuid
-                ? `Solicitação # ${values.id_externo}`
+              {values.uuid_
+                ? `Solicitação # ${values.id_externo_}`
                 : "Nova Solicitação"}
             </div>
             <div className="card solicitation mt-2">
@@ -636,7 +638,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                     />
                     <Botao
                       texto={
-                        values.uuid ? "Atualizar rascunho" : "Salvar rascunho"
+                        values.uuid_ ? "Atualizar rascunho" : "Salvar rascunho"
                       }
                       className="ms-3"
                       disabled={submitting}
