@@ -249,4 +249,24 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
       ).toBeInTheDocument();
     });
   });
+
+  it("Exclui rascunho", async () => {
+    mock
+      .onDelete(
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/`
+      )
+      .reply(204, {});
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          `Rascunho # ${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].id_externo} excluído com sucesso`
+        )
+      ).toBeInTheDocument();
+    });
+  });
 });

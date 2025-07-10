@@ -1,8 +1,8 @@
-import { API_URL } from "../../constants/config";
-import { FLUXO, AUTH_TOKEN } from "src/services/constants";
-import { getPath } from "./helper";
+import { FLUXO } from "src/services/constants";
 import { ErrorHandlerFunction } from "src/services/service-helpers";
+import { API_URL } from "../../constants/config";
 import axios from "../_base";
+import { getPath } from "./helper";
 
 export const createInclusaoAlimentacao = async (payload, tipoSolicitacao) => {
   const url = `${getPath(tipoSolicitacao)}/`;
@@ -39,22 +39,12 @@ export const escolaExcluirSolicitacaoDeInclusaoDeAlimentacao = async (
   uuid,
   tipoSolicitacao
 ) => {
-  const OBJ_REQUEST = {
-    headers: AUTH_TOKEN,
-    method: "DELETE",
-  };
-  let status = 0;
-  return await fetch(`${getPath(tipoSolicitacao)}/${uuid}/`, OBJ_REQUEST)
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return { data: error, status: status };
-    });
+  const url = `${getPath(tipoSolicitacao)}/${uuid}/`;
+  const response = await axios.delete(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const escolaCancelarSolicitacaoDeInclusaoDeAlimentacao = async (
