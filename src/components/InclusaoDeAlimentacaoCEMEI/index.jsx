@@ -189,14 +189,14 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
       delete qp.inclusao_alimentacao_continua;
     });
 
-    await form.change("inclusoes", [
+    form.change("inclusoes", [
       {
         motivo: inclusao_.motivo.uuid,
         data_inicial: inclusao_.data_inicial,
         data_final: inclusao_.data_final,
       },
     ]);
-    await form.change("quantidades_periodo", quantidades_periodo_);
+    form.change("quantidades_periodo", quantidades_periodo_);
   };
 
   const carregarRascunho = async (form, values, inclusao) => {

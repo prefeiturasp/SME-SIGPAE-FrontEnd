@@ -191,9 +191,8 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     });
   };
 
-  mock.onPost("/inclusao-alimentacao-cemei/").reply(201, {});
-
   it("Salva rascunho inclusão de alimentação CEMEI com sucesso", async () => {
+    mock.onPost("/inclusao-alimentacao-cemei/").reply(201, {});
     await setupInclusaoNormal(true);
     const botaoSalvarRascunho = screen
       .getByText("Salvar rascunho")
