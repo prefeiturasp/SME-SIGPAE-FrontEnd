@@ -1,7 +1,5 @@
-import React from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import {
   alunosEMEIporPeriodo,
   arrTiposAlimentacaoPorPeriodoETipoUnidade,
@@ -11,13 +9,13 @@ import {
   totalAlunosPorPeriodoCEI,
 } from "src/components/InclusaoDeAlimentacaoCEMEI/helpers";
 import InputText from "src/components/Shareable/Input/InputText";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import { maxValue, naoPodeSerZero } from "src/helpers/fieldValidators";
 import {
   composeValidators,
   formatarParaMultiselect,
 } from "src/helpers/utilities";
 import "./style.scss";
-import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 
 export const PeriodosCEIeouEMEI = ({
   form,
@@ -28,14 +26,6 @@ export const PeriodosCEIeouEMEI = ({
 }) => {
   const getPeriodo = (indice) => {
     return values.quantidades_periodo[indice];
-  };
-
-  const onTiposAlimentacaoChanged = (values_, indice) => {
-    form.change(
-      `quantidades_periodo[
-          ${indice}].tipos_alimentacao_selecionados`,
-      values_
-    );
   };
 
   return (
@@ -74,8 +64,9 @@ export const PeriodosCEIeouEMEI = ({
                     Tipos de alimentação do período {getPeriodo(indice).nome}:{" "}
                     <div className="col-4">
                       <Field
-                        component={StatefulMultiSelect}
+                        component={MultiselectRaw}
                         name="tipos_alimentacao"
+                        dataTestId={`select-tipos-alimentacao`}
                         selected={
                           getPeriodo(indice).tipos_alimentacao_selecionados ||
                           []
@@ -83,16 +74,14 @@ export const PeriodosCEIeouEMEI = ({
                         options={formatarParaMultiselect(
                           getPeriodo(indice).tipos_alimentacao
                         )}
-                        onSelectedChanged={(values_) =>
-                          onTiposAlimentacaoChanged(values_, indice)
-                        }
-                        disableSearch={true}
-                        overrideStrings={{
-                          selectSomeItems: "Selecione",
-                          allItemsAreSelected:
-                            "Todos os itens estão selecionados",
-                          selectAll: "Todos",
+                        onSelectedChanged={(values_) => {
+                          form.change(
+                            `quantidades_periodo[
+          ${indice}].tipos_alimentacao_selecionados`,
+                            values_.map((value_) => value_.value)
+                          );
                         }}
+                        placeholder="Selecione tipos de alimentação"
                       />
                     </div>
                   </div>
@@ -105,6 +94,7 @@ export const PeriodosCEIeouEMEI = ({
                             className="ms-3"
                             component={InputText}
                             type="number"
+                            dataTestIdDiv={`${name}.alunos_emei`}
                             name={`${name}.alunos_emei`}
                             validate={
                               getPeriodo(indice).checked &&

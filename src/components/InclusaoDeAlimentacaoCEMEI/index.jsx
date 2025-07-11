@@ -569,17 +569,20 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                           </div>
                         )}
                         {motivoEspecificoSelecionado(values, index) && (
-                          <div className="mb-3">
-                            <Field
-                              component={TextArea}
-                              label="Descrição do Evento"
-                              name={`${name}.descricao_evento`}
-                              required
-                              validate={composeValidators(
-                                required,
-                                maxLength(1500)
-                              )}
-                            />
+                          <div className="row">
+                            <div className="col-12 mb-3">
+                              <Field
+                                component={TextArea}
+                                dataTestId={`textarea-descricao-do-evento-${index}`}
+                                label="Descrição do Evento"
+                                name={`${name}.descricao_evento`}
+                                required
+                                validate={composeValidators(
+                                  required,
+                                  maxLength(1500)
+                                )}
+                              />
+                            </div>
                           </div>
                         )}
                         <hr />
@@ -597,7 +600,10 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                         form={form}
                         values={values}
                         periodos={getPeriodos(values)}
-                        motivoEspecifico={motivoEspecifico}
+                        motivoEspecifico={motivoEspecificoSelecionado(
+                          values,
+                          0
+                        )}
                         vinculos={vinculos}
                         meusDados={meusDados}
                       />
