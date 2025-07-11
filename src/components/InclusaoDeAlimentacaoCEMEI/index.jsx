@@ -283,11 +283,11 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   };
 
   const fluxoInclusaoNormal = async (values, form) => {
+    let vinculosAlimentacao = vinculos;
+    if (motivoEspecifico) {
+      vinculosAlimentacao = vinculosMotivoEspecifico;
+    }
     if (!values.uuid_) {
-      let vinculosAlimentacao = vinculos;
-      if (motivoEspecifico) {
-        vinculosAlimentacao = vinculosMotivoEspecifico;
-      }
       const response = await createInclusaoAlimentacaoCEMEI(
         formataInclusaoCEMEI(values, vinculosAlimentacao)
       );
@@ -304,7 +304,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     } else {
       const response = await updateInclusaoAlimentacaoCEMEI(
         values.uuid_,
-        formataInclusaoCEMEI(values, vinculos)
+        formataInclusaoCEMEI(values, vinculosAlimentacao)
       );
       if (response.status === HTTP_STATUS.OK) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
