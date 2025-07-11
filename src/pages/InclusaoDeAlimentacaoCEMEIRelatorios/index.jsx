@@ -55,13 +55,15 @@ export const RelatorioBase = ({ ...props }) => {
   };
 
   return (
-    <Page botaoVoltar>
-      <Breadcrumb home={HOME} atual={atual} anteriores={anteriores} />
-      <RelatorioInclusaoDeAlimentacaoCEMEI
-        motivosDREnaoValida={motivosDREnaoValida}
-        {...props}
-      />
-    </Page>
+    motivosDREnaoValida && (
+      <Page botaoVoltar>
+        <Breadcrumb home={HOME} atual={atual} anteriores={anteriores} />
+        <RelatorioInclusaoDeAlimentacaoCEMEI
+          motivosDREnaoValida={motivosDREnaoValida}
+          {...props}
+        />
+      </Page>
+    )
   );
 };
 
