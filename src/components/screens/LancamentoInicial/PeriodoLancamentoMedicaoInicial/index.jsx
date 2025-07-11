@@ -2203,7 +2203,8 @@ export default () => {
         valoresPeriodosLancamentos[0]?.medicao_uuid,
         validacaoDiaLetivo,
         dadosValoresInclusoesAutorizadasState,
-        inclusoesAutorizadas
+        inclusoesAutorizadas,
+        alteracoesAlimentacaoAutorizadas
       );
     };
 
