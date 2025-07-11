@@ -97,7 +97,6 @@ export const Recorrencia = ({
   idExterno,
 }) => {
   const [tiposDeAlimentacao, setTiposDeAlimentacao] = useState(undefined);
-  1;
   const getTiposDeAlimentacaoAsync = async () => {
     const response = await getTiposDeAlimentacao();
     if (response.status === HTTP_STATUS.OK) {
