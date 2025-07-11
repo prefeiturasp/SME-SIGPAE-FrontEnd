@@ -84,29 +84,23 @@ describe("Teste <ModalCronograma>", () => {
     );
   });
 
-  it("verifica se o botão 'Fechar' chama a função closeModal corretamente", () => {
-    const botaoFechar = screen.getByRole("button", { name: /Fechar/i });
-    fireEvent.click(botaoFechar);
-    expect(setShowModalCronograma).toHaveBeenCalledWith(false);
-  });
-
-  it.skip("verifica o número do cronograma com a classe específica", async () => {
+  it("verifica o número do cronograma com a classe específica", async () => {
     const cronograma = await screen.findByText("148/2024A");
     expect(cronograma).toBeInTheDocument();
     expect(cronograma).toHaveClass("green");
   });
 
-  it.skip("verifica se o nome do produto é exibido corretamente", () => {
+  it("verifica se o nome do produto é exibido corretamente", () => {
     const produto = screen.getByText("CAQUI");
     expect(produto).toBeInTheDocument();
   });
 
-  it.skip("verifica se o nome do fornecedor é exibido corretamente", () => {
+  it("verifica se o nome do fornecedor é exibido corretamente", () => {
     const fornecedor = screen.getByText("JP Alimentos");
     expect(fornecedor).toBeInTheDocument();
   });
 
-  it.skip("verifica data de entrega e número do empenho", () => {
+  it("verifica data de entrega e número do empenho", () => {
     const dataEntrega = screen.getByText("08/04/2024");
     const numeroEmpenho = screen.getByText("4825/2024");
 
@@ -114,7 +108,7 @@ describe("Teste <ModalCronograma>", () => {
     expect(numeroEmpenho).toBeInTheDocument();
   });
 
-  it.skip("verifica etapa, parte e quantidade com unidade de medida", () => {
+  it("verifica etapa, parte e quantidade com unidade de medida", () => {
     const etapa = screen.getByText("Etapa 1");
     const parte = screen.getByText("Parte 1");
     const quantidade = screen.getByText("10000 kg");
@@ -124,10 +118,16 @@ describe("Teste <ModalCronograma>", () => {
     expect(quantidade).toBeInTheDocument();
   });
 
-  it.skip("verifica se o botão 'Fechar' é exibido com atributos corretos", () => {
+  it("verifica se o botão 'Fechar' é exibido com atributos corretos", () => {
     const botaoFechar = screen.getByRole("button", { name: /Fechar/i });
     expect(botaoFechar).toBeInTheDocument();
     expect(botaoFechar).toHaveClass("general-button", "green-button");
     expect(botaoFechar).toHaveAttribute("data-cy", "Fechar");
+  });
+
+  it("verifica se o botão 'Fechar' chama a função closeModal corretamente", () => {
+    const botaoFechar = screen.getByRole("button", { name: /Fechar/i });
+    fireEvent.click(botaoFechar);
+    expect(setShowModalCronograma).toHaveBeenCalledWith(false);
   });
 });
