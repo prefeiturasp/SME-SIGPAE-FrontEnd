@@ -749,7 +749,8 @@ export const validacoesTabelasDietas = (
   medicaoUuid,
   validacaoDiaLetivo,
   dadosValoresInclusoesAutorizadasState,
-  inclusoesAutorizadas
+  inclusoesAutorizadas,
+  alteracoesAlimentacaoAutorizadas
 ) => {
   const idCategoriaAlimentacao = categoriasDeMedicao.find((categoria) =>
     categoria.nome.includes("ALIMENTAÇÃO")
@@ -846,14 +847,24 @@ export const validacoesTabelasDietas = (
     Number(value) !== 0 &&
     somaDosValoresPorCampo("lanche") > maxFrequenciaAlimentacao &&
     inputName.includes("lanche") &&
-    !inputName.includes("_4h")
+    !inputName.includes("_4h") &&
+    (!alteracoesAlimentacaoAutorizadas ||
+      alteracoesAlimentacaoAutorizadas.length === 0 ||
+      alteracoesAlimentacaoAutorizadas.filter(
+        (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL")
+      ).length === 0)
   ) {
     return "O número máximo de alimentações foi excedido. É preciso subtrair o aluno com Dieta Especial Autorizada do apontamento de Lanche na planilha de Alimentação.";
   } else if (
     value &&
     Number(value) !== 0 &&
     somaDosValoresPorCampo("lanche_4h") > maxFrequenciaAlimentacao &&
-    inputName.includes("lanche_4h")
+    inputName.includes("lanche_4h") &&
+    (!alteracoesAlimentacaoAutorizadas ||
+      alteracoesAlimentacaoAutorizadas.length === 0 ||
+      alteracoesAlimentacaoAutorizadas.filter(
+        (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL")
+      ).length === 0)
   ) {
     return "O número máximo de alimentações foi excedido. É preciso subtrair o aluno com Dieta Especial Autorizada do apontamento de Lanche na planilha de Alimentação.";
   } else if (
