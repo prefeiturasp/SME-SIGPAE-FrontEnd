@@ -10,9 +10,9 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockInclusaoMotivoEspecificoAutorizadaCEMEI } from "src/mocks/InclusaoAlimentacao/CEMEI/MotivoEspecifico/inclusaoMotivoEspecificoAutorizada";
 import { mockInclusaoMotivoEspecificoNegadaCEMEI } from "src/mocks/InclusaoAlimentacao/CEMEI/MotivoEspecifico/inclusaoMotivoEspecificoNegada";
-import { mockInclusaoMotivoEspecificoValidadaCEMEI } from "src/mocks/InclusaoAlimentacao/CEMEI/MotivoEspecifico/inclusaoMotivoEspecificoValidada";
+import { mockInclusaoMotivoEspecificoQuestionadaCEMEI } from "src/mocks/InclusaoAlimentacao/CEMEI/MotivoEspecifico/inclusaoMotivoEspecificoQuestionada";
+import { mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI } from "src/mocks/InclusaoAlimentacao/CEMEI/MotivoEspecifico/inclusaoMotivoEspecificoValidadaPrazoLimite";
 import { mockMotivosDRENaoValida } from "src/mocks/InclusaoAlimentacao/mockMotivosDRENaoValida";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
@@ -36,10 +36,11 @@ jest.mock("src/components/Shareable/CKEditorField", () => ({
   ),
 }));
 
-describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Motivo Específico - Prazo Regular", () => {
+describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Motivo Específico - Prazo Limite", () => {
   process.env.IS_TEST = true;
 
-  const escolaUuid = mockInclusaoMotivoEspecificoValidadaCEMEI.escola.uuid;
+  const escolaUuid =
+    mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.escola.uuid;
 
   let container;
 
@@ -47,9 +48,9 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/`
       )
-      .replyOnce(200, mockInclusaoMotivoEspecificoValidadaCEMEI);
+      .replyOnce(200, mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
@@ -63,11 +64,11 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/codae-cancela-pedido/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/codae-cancela-pedido/`
       )
       .reply(200, mockInclusaoMotivoEspecificoNegadaCEMEI);
 
-    const search = `?uuid=${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
+    const search = `?uuid=${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,
@@ -105,16 +106,14 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
     });
   });
 
-  it("renderiza título da página `Inclusão de Alimentação - Solicitação # 5A120`", async () => {
+  it("renderiza título da página `Inclusão de Alimentação - Solicitação # 512C3`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # 5A120")
+      screen.getByText("Inclusão de Alimentação - Solicitação # 512C3")
     ).toBeInTheDocument();
   });
 
   it("renderiza dados da solicitação", async () => {
-    expect(
-      screen.getByText("Solicitação no prazo regular")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Solicitação no prazo limite")).toBeInTheDocument();
 
     const span = container.querySelector(".dre-name");
     expect(span).toBeInTheDocument();
@@ -128,86 +127,44 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
     expect(screen.getByText("Alunos EMEI")).toBeInTheDocument();
   });
 
-  it("autoriza a solicitação", async () => {
+  it("questiona a solicitação", async () => {
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/codae-autoriza-pedido/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/codae-questiona-pedido/`
       )
-      .reply(200, mockInclusaoMotivoEspecificoAutorizadaCEMEI);
+      .reply(200, mockInclusaoMotivoEspecificoQuestionadaCEMEI);
 
-    const botaoAutorizar = screen.getByText("Autorizar").closest("button");
-    fireEvent.click(botaoAutorizar);
+    const botaoQuestionar = screen.getByText("Questionar").closest("button");
+    fireEvent.click(botaoQuestionar);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja autorizar a solicitação?")
+        screen.getByText(
+          "É possível atender a solicitação com todos os itens previstos no contrato?"
+        )
       ).toBeInTheDocument();
     });
 
-    const textarea = screen.getByTestId("mock-ckeditor");
-    fireEvent.change(textarea, {
-      target: { value: "autorizado." },
-    });
-
-    const botaoSim = screen.getByText("Sim").closest("button");
-    fireEvent.click(botaoSim);
+    const botaoEnviar = screen.getByText("Enviar").closest("button");
+    fireEvent.click(botaoEnviar);
 
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/`
       )
-      .replyOnce(200, mockInclusaoMotivoEspecificoAutorizadaCEMEI);
+      .replyOnce(200, mockInclusaoMotivoEspecificoQuestionadaCEMEI);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja autorizar a solicitação?")
-      ).not.toBeInTheDocument();
-    });
-
-    expect(screen.queryByText("Negar")).not.toBeInTheDocument();
-    expect(screen.queryByText("Autorizar")).not.toBeInTheDocument();
-
-    expect(screen.getByText("CODAE autorizou")).toBeInTheDocument();
-    expect(
-      screen.getByText("14/07/2025 13:45:55 - Informações da CODAE")
-    ).toBeInTheDocument();
-    expect(screen.getByText("sim, eu autorizo")).toBeInTheDocument();
-  });
-
-  it("nega a solicitação", async () => {
-    const botaoNegar = screen.getByText("Negar").closest("button");
-    fireEvent.click(botaoNegar);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Deseja negar a solicitação?")
-      ).toBeInTheDocument();
-    });
-
-    const textarea = screen.getByTestId("mock-ckeditor");
-    fireEvent.change(textarea, {
-      target: { value: "negado." },
-    });
-
-    const botaoSim = screen.getByText("Sim").closest("button");
-    expect(botaoSim).not.toBeDisabled();
-    fireEvent.click(botaoSim);
-
-    mock
-      .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/`
-      )
-      .replyOnce(200, mockInclusaoMotivoEspecificoNegadaCEMEI);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Solicitação negada com sucesso!")
+        screen.getByText("Questionamento enviado com sucesso!")
       ).toBeInTheDocument();
     });
 
     expect(screen.queryByText("Negar")).not.toBeInTheDocument();
-    expect(screen.queryByText("Autorizar")).not.toBeInTheDocument();
+    expect(screen.queryByText("Questionar")).not.toBeInTheDocument();
 
-    expect(screen.getByText("CODAE negou")).toBeInTheDocument();
+    expect(screen.getByText("Questionamento pela CODAE")).toBeInTheDocument();
+    expect(screen.getByText("14/07/2025 14:52:58 - CODAE")).toBeInTheDocument();
+    expect(screen.getByText("Observação da CODAE:")).toBeInTheDocument();
   });
 });
