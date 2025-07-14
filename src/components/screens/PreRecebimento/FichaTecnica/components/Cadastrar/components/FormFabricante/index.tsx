@@ -21,6 +21,7 @@ interface Props {
   desabilitaEndereco?: Array<boolean>;
   gerenciaModalCadastroExterno?: () => void;
   somenteLeitura?: boolean;
+  ocultarBotaoCadastroFabricante?: boolean;
 }
 
 const FormFabricante: React.FC<Props> = ({
@@ -31,6 +32,7 @@ const FormFabricante: React.FC<Props> = ({
   desabilitaEndereco,
   somenteLeitura,
   gerenciaModalCadastroExterno,
+  ocultarBotaoCadastroFabricante = false,
 }) => {
   return (
     <>
@@ -90,7 +92,7 @@ const FormFabricante: React.FC<Props> = ({
               )}
             </div>
             <div className="col-3 cadastro-externo">
-              {somenteLeitura || (
+              {somenteLeitura || ocultarBotaoCadastroFabricante || (
                 <Botao
                   texto={`Cadastrar ${
                     idx === 0 ? "Fabricante" : "Envasador/Distribuidor"
