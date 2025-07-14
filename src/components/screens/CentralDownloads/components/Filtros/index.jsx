@@ -55,6 +55,7 @@ export default ({ setFiltros }) => {
                   placeholder="Selecione o Status"
                   name="status"
                   options={OPTIONS_STATUS_DOWNLOAD}
+                  dataTestId="select-status"
                 />
               </div>
               <div className="col-3">
@@ -75,6 +76,7 @@ export default ({ setFiltros }) => {
                   placeholder="Selecione"
                   name="visto"
                   options={OPTIONS_VISTO_DOWNLOAD}
+                  dataTestId="select-visto"
                 />
               </div>
             </div>

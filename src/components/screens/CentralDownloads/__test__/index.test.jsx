@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import CentralDownloads from "src/components/screens/CentralDownloads";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
@@ -8,8 +14,9 @@ import { mockMeusDadosTerceirizada } from "src/mocks/meusDados/terceirizada";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { mockDadosDownloads } from "src/mocks/services/centralDeDownloads.service/centralDownloads";
 import { renderWithProvider } from "src/utils/test-utils";
+import userEvent from "@testing-library/user-event";
 
-describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialPendenteAutorizacao", () => {
+describe("Testa a Central de Downloads", () => {
   beforeEach(async () => {
     mock
       .onGet("/downloads/quantidade-nao-vistos/")
@@ -113,5 +120,60 @@ describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialPenden
       expect(botaoConsultar).toBeInTheDocument();
       fireEvent.click(botaoConsultar);
     });
+  });
+
+  it("Testa a seleção de status", async () => {
+    const usuario = userEvent.setup();
+    const seletorStatus = screen
+      .getByTestId("select-status")
+      .querySelector("select");
+    const opcoes = within(seletorStatus).getAllByRole("option");
+    expect(opcoes).toHaveLength(4);
+
+    const textosDasOpcoes = opcoes.map((opt) => opt.textContent);
+    expect(textosDasOpcoes).toEqual([
+      "Selecione um Status",
+      "Concluído",
+      "Em processamento",
+      "Erro",
+    ]);
+
+    expect(seletorStatus).toHaveValue("");
+    expect(seletorStatus).toHaveTextContent("Selecione um Status");
+
+    await usuario.selectOptions(seletorStatus, "Em processamento");
+    expect(seletorStatus).toHaveValue("EM_PROCESSAMENTO");
+    expect(seletorStatus).toHaveTextContent("Em processamento");
+
+    await usuario.selectOptions(seletorStatus, "Erro");
+    expect(seletorStatus).toHaveValue("ERRO");
+    expect(seletorStatus).toHaveTextContent("Erro");
+
+    await usuario.selectOptions(seletorStatus, "Concluído");
+    expect(seletorStatus).toHaveValue("CONCLUIDO");
+    expect(seletorStatus).toHaveTextContent("Concluído");
+  });
+
+  it("Testa a seleção de visto", async () => {
+    const usuario = userEvent.setup();
+    const seletorVisto = screen
+      .getByTestId("select-visto")
+      .querySelector("select");
+    const opcoes = within(seletorVisto).getAllByRole("option");
+    expect(opcoes).toHaveLength(3);
+
+    const textosDasOpcoes = opcoes.map((opt) => opt.textContent);
+    expect(textosDasOpcoes).toEqual(["Selecione", "Visto", "Não Visto"]);
+
+    expect(seletorVisto).toHaveValue("");
+    expect(seletorVisto).toHaveTextContent("Selecione");
+
+    await usuario.selectOptions(seletorVisto, "Visto");
+    expect(seletorVisto).toHaveValue("true");
+    expect(seletorVisto).toHaveTextContent("Visto");
+
+    await usuario.selectOptions(seletorVisto, "Não Visto");
+    expect(seletorVisto).toHaveValue("false");
+    expect(seletorVisto).toHaveTextContent("Não Visto");
   });
 });
