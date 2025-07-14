@@ -176,4 +176,39 @@ describe("Testa a Central de Downloads", () => {
     expect(seletorVisto).toHaveValue("false");
     expect(seletorVisto).toHaveTextContent("Não Visto");
   });
+
+  it("Testa o input identificador", async () => {
+    const usuario = userEvent.setup();
+    const campoInput = screen.getByTestId("campo-identificador");
+
+    expect(campoInput).toHaveAttribute("placeholder", "Escreva uma palavra");
+    expect(campoInput).toHaveValue("");
+
+    await usuario.type(campoInput, "Texto de teste");
+    expect(campoInput).toHaveValue("Texto de teste");
+    expect(campoInput).not.toHaveDisplayValue("Escreva uma palavra");
+
+    await usuario.clear(campoInput);
+    expect(campoInput).toHaveValue("");
+  });
+
+  it("Testa a seleção de data", async () => {
+    const usuario = userEvent.setup();
+    const datepickerInput = screen
+      .getByTestId("select-com-data")
+      .querySelector("input");
+    expect(datepickerInput).toHaveAttribute("placeholder", "Selecione a Data");
+    expect(datepickerInput).toHaveValue("");
+
+    const calendarioIcone = screen
+      .getByTestId("select-com-data")
+      .querySelector(".fa-calendar-alt");
+    await usuario.click(calendarioIcone);
+    const datepickerModal = document.querySelector(".react-datepicker");
+    expect(datepickerModal).toBeInTheDocument();
+
+    const input = screen.getByTestId("select-com-data").querySelector("input");
+    await usuario.type(input, "15/07/2025");
+    expect(input).toHaveValue("15/07/2025");
+  });
 });

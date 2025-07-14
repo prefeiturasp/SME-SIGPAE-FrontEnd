@@ -45,6 +45,7 @@ export default ({ setFiltros }) => {
                   name="identificador"
                   placeholder="Escreva uma palavra"
                   className="input-busca-produto"
+                  dataTestId="campo-identificador"
                 />
               </div>
 
@@ -67,6 +68,7 @@ export default ({ setFiltros }) => {
                   minDate={null}
                   maxDate={null}
                   writable
+                  dataTestId="select-com-data"
                 />
               </div>
               <div className="col-3">
