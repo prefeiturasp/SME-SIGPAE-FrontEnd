@@ -176,4 +176,23 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Escola - Mo
     expect(screen.queryByText("Não validar")).not.toBeInTheDocument();
     expect(screen.queryByText("Validar")).not.toBeInTheDocument();
   });
+
+  it("erro ao validar solicitação", async () => {
+    mock
+      .onPatch(
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/diretoria-regional-valida-pedido/`
+      )
+      .reply(400, {});
+
+    const botaoValidar = screen.getByText("Validar").closest("button");
+    fireEvent.click(botaoValidar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Houve um erro ao validar a Inclusão de Alimentação. Tente novamente mais tarde."
+        )
+      ).toBeInTheDocument();
+    });
+  });
 });

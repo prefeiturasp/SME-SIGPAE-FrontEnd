@@ -93,7 +93,7 @@ export const RelatorioDRE = () => {
       }
       toastAprovaMensagem={"Inclusão de Alimentação validada com sucesso!"}
       toastAprovaMensagemErro={
-        "Houve um erro ao validar a Inclusão de Alimentação"
+        "Houve um erro ao validar a Inclusão de Alimentação. Tente novamente mais tarde."
       }
       endpointAprovaSolicitacao={dreValidarSolicitacaoDeInclusaoDeAlimentacao}
       endpointNaoAprovaSolicitacao={
