@@ -21,7 +21,7 @@ import { mockGetVinculosTipoAlimentacaoPorEscolaCEMEI } from "src/mocks/services
 import * as InclusaoDeAlimentacaoCEMEIRelatorios from "src/pages/InclusaoDeAlimentacaoCEMEIRelatorios";
 import mock from "src/services/_mock";
 
-describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Escola - Motivo Específico", () => {
+describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão DRE - Motivo Específico", () => {
   const escolaUuid = mockInclusaoMotivoEspecificoAValidarCEMEI.escola.uuid;
 
   let container;
