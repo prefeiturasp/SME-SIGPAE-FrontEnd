@@ -264,17 +264,13 @@ export default () => {
                         </div>
                       )}
                       <FormFabricante
-                        fabricantesCount={
-                          [
-                            values[`fabricante_0`],
-                            values[`fabricante_1`],
-                          ].filter((fabricante) => fabricante).length
-                        }
+                        fabricantesCount={fabricantesCount}
                         setFabricantesCount={setFabricantesCount}
                         fabricantesOptions={fabricantesOptions}
                         desabilitaEndereco={desabilitaEndereco}
                         values={values}
                         somenteLeitura={conferidos.fabricante_envasador}
+                        ocultarBotaoCadastroFabricante={true}
                       />
                       {fabricantesCount === 1 && (
                         <div className="row mt-3">
