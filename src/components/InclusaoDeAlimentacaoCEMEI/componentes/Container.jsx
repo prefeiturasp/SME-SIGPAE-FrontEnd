@@ -35,7 +35,7 @@ export const Container = () => {
   const [periodosMotivoEspecifico, setPeriodosMotivoEspecifico] =
     useState(null);
 
-  const [erro, setErro] = useState(false);
+  const [erro, setErro] = useState("");
 
   const getQuantidaDeAlunosPorPeriodoEEscolaAsync = async (
     periodos,
@@ -68,6 +68,10 @@ export const Container = () => {
           )
         );
       }
+    } else {
+      setErro(
+        "Erro ao carregar quantidade de alunos por período escolar. Tente novamente mais tarde."
+      );
     }
   };
 
@@ -82,12 +86,20 @@ export const Container = () => {
     if (response.status === HTTP_STATUS.OK) {
       setPeriodos(response.data);
       getVinculosMotivoEspecificoCEMEIAsync(escola, response.data);
+    } else {
+      setErro(
+        "Erro ao carregar quantidade de alunos da CEMEI por CEI/EMEI. Tente novamente mais tarde."
+      );
     }
   };
   const getVinculosTipoAlimentacaoPorEscolaAsync = async (escola) => {
     const response = await getVinculosTipoAlimentacaoPorEscola(escola.uuid);
     if (response.status === HTTP_STATUS.OK) {
       setVinculos(response.data.results);
+    } else {
+      setErro(
+        "Erro ao carregar vínculos por tipo de alimentação da escola. Tente novamente mais tarde."
+      );
     }
   };
 
@@ -124,6 +136,10 @@ export const Container = () => {
       );
       setVinculosMotivoEspecifico(response.data);
       setPeriodosMotivoEspecifico(formatarPeriodos(periodosOrdenados));
+    } else {
+      setErro(
+        "Erro ao carregar vínculos de tipo de alimentação por motivo específico. Tente novamente mais tarde."
+      );
     }
   };
 
@@ -140,7 +156,7 @@ export const Container = () => {
       getQuantidadeAlunosCEMEIporCEIEMEIAsync(escola, true);
       getVinculosTipoAlimentacaoPorEscolaAsync(escola);
     } else {
-      setErro(true);
+      setErro("Erro ao carregar dados do usuário. Tente novamente mais tarde.");
     }
   };
 
@@ -149,7 +165,9 @@ export const Container = () => {
     if (response.status === HTTP_STATUS.OK) {
       setMotivosSimples(response.data.results);
     } else {
-      setErro(true);
+      setErro(
+        "Erro ao carregar motivos de inclusão normal. Tente novamente mais tarde."
+      );
     }
   };
 
@@ -160,7 +178,9 @@ export const Container = () => {
         response.data.results.filter((motivo) => motivo.nome !== "ETEC")
       );
     } else {
-      setErro(true);
+      setErro(
+        "Erro ao carregar motivos de inclusão contínua. Tente novamente mais tarde."
+      );
     }
   };
 
@@ -176,7 +196,9 @@ export const Container = () => {
         dataParaUTC(new Date(response.data.proximos_dois_dias_uteis))
       );
     } else {
-      setErro(true);
+      setErro(
+        "Erro ao carregar próximos dias úteis. Tente novamente mais tarde."
+      );
     }
   };
 
@@ -191,22 +213,20 @@ export const Container = () => {
   }, [dados]);
 
   const REQUISICOES_CONCLUIDAS =
-    dados &&
-    motivosSimples &&
-    motivosContinuos &&
-    vinculos &&
-    periodos &&
-    periodosInclusaoContinua &&
-    proximosDoisDiasUteis &&
-    proximosCincoDiasUteis &&
-    periodosMotivoEspecifico;
+    !!dados &&
+    !!motivosSimples &&
+    !!motivosContinuos &&
+    !!vinculos &&
+    !!periodos &&
+    !!periodosInclusaoContinua &&
+    !!proximosDoisDiasUteis &&
+    !!proximosCincoDiasUteis &&
+    !!periodosMotivoEspecifico;
 
   return (
     <div>
       {!REQUISICOES_CONCLUIDAS && !erro && <SigpaeLogoLoader />}
-      {erro && (
-        <div>Erro ao carregar informações. Tente novamente mais tarde.</div>
-      )}
+      {erro && <div>{erro}</div>}
       {REQUISICOES_CONCLUIDAS && (
         <InclusaoDeAlimentacaoCEMEI
           meusDados={dados}

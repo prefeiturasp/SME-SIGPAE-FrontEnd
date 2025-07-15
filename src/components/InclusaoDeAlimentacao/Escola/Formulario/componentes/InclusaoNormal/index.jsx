@@ -125,6 +125,7 @@ export const EventoEspecifico = ({ name }) => {
     <div className="mb-3">
       <Field
         component={TextArea}
+        dataTestId={`${name}-textarea-descricao-do-evento`}
         label="Descrição do Evento"
         name={`${name}.evento`}
         required

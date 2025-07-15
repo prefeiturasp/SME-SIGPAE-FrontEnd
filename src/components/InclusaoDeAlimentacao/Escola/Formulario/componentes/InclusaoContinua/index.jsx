@@ -1,3 +1,7 @@
+import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
+import { Field } from "react-final-form";
+import { FieldArray } from "react-final-form-arrays";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
@@ -28,9 +32,6 @@ import {
   usuarioEhEscolaCeuGestao,
   usuarioEhEscolaCMCT,
 } from "src/helpers/utilities";
-import React, { useEffect, useState } from "react";
-import { Field } from "react-final-form";
-import { FieldArray } from "react-final-form-arrays";
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import "./style.scss";
 
@@ -95,12 +96,12 @@ export const Recorrencia = ({
   uuid,
   idExterno,
 }) => {
-  const [tiposDeAlimentacao, setTiposDeAlimentacao] = useState([]);
-
+  const [tiposDeAlimentacao, setTiposDeAlimentacao] = useState(undefined);
   const getTiposDeAlimentacaoAsync = async () => {
-    await getTiposDeAlimentacao().then((response) => {
+    const response = await getTiposDeAlimentacao();
+    if (response.status === HTTP_STATUS.OK) {
       setTiposDeAlimentacao(response.data.results);
-    });
+    }
   };
 
   useEffect(() => {
@@ -261,84 +262,86 @@ export const Recorrencia = ({
   };
 
   return (
-    <div className="recorrencia-e-detalhes">
-      <div className="card-title">Recorrência e detalhes</div>
-      <div className="row">
-        <div className="col-3">Repetir</div>
-        <div className="col-3">Período</div>
-        <div className="col-4">Tipo de Alimentação</div>
-        <div className="col-2">Nº de Alunos</div>
-      </div>
+    tiposDeAlimentacao && (
+      <div className="recorrencia-e-detalhes">
+        <div className="card-title">Recorrência e detalhes</div>
+        <div className="row">
+          <div className="col-3">Repetir</div>
+          <div className="col-3">Período</div>
+          <div className="col-4">Tipo de Alimentação</div>
+          <div className="col-2">Nº de Alunos</div>
+        </div>
 
-      <div className="row">
-        <div className="col-3">
-          {values && (
+        <div className="row">
+          <div className="col-3">
+            {values && (
+              <Field
+                component={Weekly}
+                name={`dias_semana`}
+                arrayDiasSemana={values.dias_semana}
+                handleWeekly={handleWeekly}
+                dataTestId="dias-semana"
+              />
+            )}
+          </div>
+          <div className="col-3">
             <Field
-              component={Weekly}
-              name={`dias_semana`}
-              arrayDiasSemana={values.dias_semana}
-              handleWeekly={handleWeekly}
-              dataTestId="dias-semana"
+              component={Select}
+              name={`periodo_escolar`}
+              options={agregarDefault(periodos)}
+              naoDesabilitarPrimeiraOpcao
+              dataTestId="div-select-periodo-escolar"
             />
-          )}
+          </div>
+          <div className="col-4">
+            <Field
+              component={Select}
+              name={`tipos_alimentacao`}
+              options={optionsTiposAlimentacao()}
+              naoDesabilitarPrimeiraOpcao
+              dataTestId="div-select-tipo-alimentacao"
+            />
+          </div>
+          <div className="col-2">
+            <Field
+              component={InputText}
+              validate={
+                !usuarioEhEscolaCeuGestao() &&
+                !usuarioEhEscolaCMCT() &&
+                values.numero_alunos &&
+                values.periodo_escolar &&
+                values.dias_semana &&
+                validacaoNumeroAlunos()
+              }
+              name={`numero_alunos`}
+              min="0"
+              className="form-control quantidade-aluno"
+              disabled={!values.periodo_escolar}
+              dataTestIdDiv="numero-alunos"
+            />
+          </div>
         </div>
-        <div className="col-3">
-          <Field
-            component={Select}
-            name={`periodo_escolar`}
-            options={agregarDefault(periodos)}
-            naoDesabilitarPrimeiraOpcao
-            dataTestId="div-select-periodo-escolar"
-          />
-        </div>
-        <div className="col-4">
-          <Field
-            component={Select}
-            name={`tipos_alimentacao`}
-            options={optionsTiposAlimentacao()}
-            naoDesabilitarPrimeiraOpcao
-            dataTestId="div-select-tipo-alimentacao"
-          />
-        </div>
-        <div className="col-2">
-          <Field
-            component={InputText}
-            validate={
-              !usuarioEhEscolaCeuGestao() &&
-              !usuarioEhEscolaCMCT() &&
-              values.numero_alunos &&
-              values.periodo_escolar &&
-              values.dias_semana &&
-              validacaoNumeroAlunos()
-            }
-            name={`numero_alunos`}
-            min="0"
-            className="form-control quantidade-aluno"
-            disabled={!values.periodo_escolar}
-            dataTestIdDiv="numero-alunos"
-          />
-        </div>
-      </div>
-      <Field
-        component={CKEditorField}
-        label="Observações"
-        validate={maxLength(1000)}
-        name={`observacao`}
-      />
-      <div className="row mt-3">
-        <div className="col-12 text-end">
-          <Botao
-            texto="Adicionar recorrência"
-            onClick={() => {
-              adicionarRecorrencia(form, values);
-            }}
-            type={BUTTON_TYPE.BUTTON}
-            style={BUTTON_STYLE.GREEN_OUTLINE}
-            dataTestId="botao-adicionar-recorrencia"
-          />
+        <Field
+          component={CKEditorField}
+          label="Observações"
+          validate={maxLength(1000)}
+          name={`observacao`}
+        />
+        <div className="row mt-3">
+          <div className="col-12 text-end">
+            <Botao
+              texto="Adicionar recorrência"
+              onClick={() => {
+                adicionarRecorrencia(form, values);
+              }}
+              type={BUTTON_TYPE.BUTTON}
+              style={BUTTON_STYLE.GREEN_OUTLINE}
+              dataTestId="botao-adicionar-recorrencia"
+            />
+          </div>
         </div>
       </div>
-    </div>
+    )
   );
 };
 
@@ -346,9 +349,10 @@ export const RecorrenciaTabela = ({ form, values, periodos }) => {
   const [tiposDeAlimentacao, setTiposDeAlimentacao] = useState([]);
 
   const getTiposDeAlimentacaoAsync = async () => {
-    await getTiposDeAlimentacao().then((response) => {
+    const response = await getTiposDeAlimentacao();
+    if (response.status === HTTP_STATUS.OK) {
       setTiposDeAlimentacao(response.data.results);
-    });
+    }
   };
 
   useEffect(() => {
