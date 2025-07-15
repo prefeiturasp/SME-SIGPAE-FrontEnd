@@ -58,7 +58,7 @@ export const CorpoRelatorio = ({
         TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
         solicitacao?.escola?.nome
       );
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao imprimir o relatório");
     }
     setImprimindo(false);
@@ -88,6 +88,7 @@ export const CorpoRelatorio = ({
           {prazoDoPedidoMensagem(solicitacao.prioridade)}
           <Botao
             type={BUTTON_TYPE.BUTTON}
+            dataTestId="botao-imprimir"
             style={imprimindo ? BUTTON_STYLE.GREEN_OUTLINE : BUTTON_STYLE.GREEN}
             icon={imprimindo ? BUTTON_ICON.LOADING : BUTTON_ICON.PRINT}
             disabled={imprimindo}
@@ -191,6 +192,7 @@ export const CorpoRelatorio = ({
                               {`#${inclusaoDeAlimentacao.id_externo}`}
                             </Link>
                             <ToggleExpandir
+                              dataTestId={`toggle-expandir-${idxSolicitacaoSimilar}`}
                               onClick={() =>
                                 collapseSolicitacaoSimilar(
                                   idxSolicitacaoSimilar

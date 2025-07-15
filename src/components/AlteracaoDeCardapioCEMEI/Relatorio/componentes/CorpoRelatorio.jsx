@@ -37,7 +37,7 @@ export const CorpoRelatorio = ({ ...props }) => {
         TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
         solicitacao?.escola?.nome
       );
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao imprimir o relatório");
     }
     setImprimindo(false);

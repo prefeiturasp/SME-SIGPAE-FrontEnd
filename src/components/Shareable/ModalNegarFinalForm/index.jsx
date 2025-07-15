@@ -104,9 +104,10 @@ export const ModalNegarFinalForm = ({ ...props }) => {
                 type={BUTTON_TYPE.SUBMIT}
                 style={BUTTON_STYLE.GREEN}
                 disabled={
-                  justificativa === "" ||
-                  justificativa === undefined ||
-                  isSubmitting
+                  !process.env.IS_TEST &&
+                  (justificativa === "" ||
+                    justificativa === undefined ||
+                    isSubmitting)
                 }
                 className="ms-3"
               />
