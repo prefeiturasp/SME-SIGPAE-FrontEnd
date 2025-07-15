@@ -1,3 +1,5 @@
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+
 ![node-version](https://img.shields.io/badge/node-22.15.1-blue)
 ![react-version](https://img.shields.io/badge/react-18.3.1-blue)
 

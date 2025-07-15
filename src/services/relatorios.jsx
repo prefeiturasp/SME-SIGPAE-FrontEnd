@@ -1,10 +1,11 @@
+import { saveAs } from "file-saver";
+import HTTP_STATUS from "http-status-codes";
 import {
   RELATORIO_QUANTITATIVO_CLASSIFICACAO_DIETA_ESP,
   RELATORIO_QUANTITATIVO_DIAG_DIETA_ESP,
   RELATORIO_QUANTITATIVO_SOLIC_DIETA_ESP,
   SOLICITACOES_DIETA_ESPECIAL,
 } from "src/configs/constants";
-import { saveAs } from "file-saver";
 import {
   getAlteracaoNome,
   getPath as getAlteracaoPath,
@@ -22,7 +23,6 @@ import { API_URL } from "../constants/config";
 import axios from "./_base";
 import authService from "./auth";
 import { TIPO_MOTIVO } from "./constants";
-import HTTP_STATUS from "http-status-codes";
 import { ErrorHandlerFunction } from "./service-helpers";
 
 const authToken = {
@@ -97,11 +97,16 @@ export const getRelatorioInclusaoAlimentacaoCEMEI = async (
   escola
 ) => {
   const url = `${getInclusaoPath(tipoSolicitacao)}/${uuid}/relatorio/`;
-  const { data } = await axios.get(url, {
+  const response = await axios.get(url, {
     responseType: "blob",
   });
-  const nomePdf = getInclusaoNome(tipoSolicitacao, escola);
-  saveAs(data, `${nomePdf}.pdf`);
+  if (response.status !== HTTP_STATUS.OK) {
+    throw new Error("Erro ao baixar PDF.");
+  } else {
+    const { data } = response;
+    const nomePdf = getAlteracaoNome(tipoSolicitacao, escola);
+    saveAs(data, `${nomePdf}.pdf`);
+  }
 };
 
 export const getRelatorioAlteracaoTipoAlimentacao = async (
