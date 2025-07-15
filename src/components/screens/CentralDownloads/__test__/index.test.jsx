@@ -18,6 +18,7 @@ import userEvent from "@testing-library/user-event";
 
 describe("Testa a Central de Downloads", () => {
   beforeEach(async () => {
+    global.URL.createObjectURL = jest.fn(() => "mock-url");
     mock
       .onGet("/downloads/quantidade-nao-vistos/")
       .reply(200, { quantidade_nao_vistos: 306 });
@@ -102,7 +103,7 @@ describe("Testa a Central de Downloads", () => {
       ).toHaveLength(3);
       expect(
         screen.getAllByText(/08\/07\/2025/, { exact: false })
-      ).toHaveLength(2);
+      ).toHaveLength(1);
     });
   });
 
@@ -207,8 +208,77 @@ describe("Testa a Central de Downloads", () => {
     const datepickerModal = document.querySelector(".react-datepicker");
     expect(datepickerModal).toBeInTheDocument();
 
-    const input = screen.getByTestId("select-com-data").querySelector("input");
-    await usuario.type(input, "15/07/2025");
-    expect(input).toHaveValue("15/07/2025");
+    const dia15 = datepickerModal?.querySelector(
+      '[role="option"][aria-label*="15 de julho de 2025"]'
+    );
+    expect(dia15).toBeInTheDocument();
+    await usuario.click(dia15);
+
+    const inputViaCalendario = screen
+      .getByTestId("select-com-data")
+      .querySelector("input");
+    expect(inputViaCalendario).toHaveValue("15/07/2025");
+    await usuario.clear(inputViaCalendario);
+
+    const inputManual = screen
+      .getByTestId("select-com-data")
+      .querySelector("input");
+    await usuario.type(inputManual, "15/07/2025");
+    expect(inputManual).toHaveValue("15/07/2025");
+  });
+
+  it("Testa checkbox Visto", async () => {
+    const checkboxNaoMarcado = screen.getByTestId(`checkbox-visto-0`);
+    expect(checkboxNaoMarcado).not.toBeChecked();
+
+    const checkboxMarcado = screen.getByTestId(`checkbox-visto-1`);
+    expect(checkboxMarcado).toBeChecked();
+  });
+
+  it("Testa marcação do checkbox Visto", async () => {
+    let index = 9;
+    mock
+      .onPut(`/downloads/marcar-visto/`)
+      .reply(200, { mensagem: "Arquivo atualizado com sucesso" });
+
+    const checkboxNaoMarcado = screen.getByTestId(`checkbox-visto-${index}`);
+    expect(checkboxNaoMarcado).not.toBeChecked();
+    fireEvent.click(checkboxNaoMarcado);
+    expect(checkboxNaoMarcado).toBeChecked();
+    fireEvent.click(checkboxNaoMarcado);
+    expect(checkboxNaoMarcado).not.toBeChecked();
+  });
+
+  it("Testa o icone de baixar arquivo com prazo expirado", async () => {
+    let index = 2;
+    const botaoDownload = screen.getByTestId(`botao-download-${index}`);
+    expect(botaoDownload).toBeDisabled();
+  });
+
+  it("Testa o icone de deletar arquivo", async () => {
+    let index = 3;
+    mock
+      .onDelete(`/downloads/${mockDadosDownloads.results[index].uuid}/`)
+      .reply(204, {});
+
+    const botaoDeleta = screen.getByTestId(`botao-deleta-${index}`);
+    expect(botaoDeleta).not.toBeDisabled();
+    fireEvent.click(botaoDeleta);
+
+    await waitFor(() => {
+      const items = screen.getAllByText(/relatorio-adesao.pdf/i);
+      expect(items).toHaveLength(4);
+    });
+  });
+
+  it("Testa o icone de baixar arquivo com status OK", async () => {
+    let index = 0;
+    mock
+      .onGet(mockDadosDownloads.results[index].arquivo)
+      .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
+
+    const botaoDownload = screen.getByTestId(`botao-download-${index}`);
+    expect(botaoDownload).not.toBeDisabled();
+    fireEvent.click(botaoDownload);
   });
 });

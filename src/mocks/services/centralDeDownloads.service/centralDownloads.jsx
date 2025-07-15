@@ -9,7 +9,7 @@ export const mockDadosDownloads = {
       arquivo:
         "http://hom-sigpae.sme.prefeitura.sp.gov.br/media/cental_downloads/relatorio-adesao_PXoOnRq.pdf",
       status: "Concluído",
-      data_criacao: "08/07/2025 ás 16:32",
+      data_criacao: getPreviousDayFormatted(),
       msg_erro: "",
       visto: false,
     },
@@ -21,7 +21,7 @@ export const mockDadosDownloads = {
       status: "Concluído",
       data_criacao: "08/07/2025 ás 16:24",
       msg_erro: "",
-      visto: false,
+      visto: true,
     },
     {
       uuid: "6fc8f7ab-6f0a-4497-9f0a-dd874882a672",
@@ -107,3 +107,17 @@ export const mockDadosDownloads = {
     },
   ],
 };
+
+function getPreviousDayFormatted() {
+  const now = new Date();
+  const previousDay = new Date(now);
+  previousDay.setDate(now.getDate() - 1);
+
+  const day = String(previousDay.getDate()).padStart(2, "0");
+  const month = String(previousDay.getMonth() + 1).padStart(2, "0");
+  const year = previousDay.getFullYear();
+  const hours = String(previousDay.getHours()).padStart(2, "0");
+  const minutes = String(previousDay.getMinutes()).padStart(2, "0");
+
+  return `${day}/${month}/${year} ás ${hours}:${minutes}`;
+}
