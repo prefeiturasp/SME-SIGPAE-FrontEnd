@@ -192,6 +192,7 @@ export const CorpoRelatorio = ({
                               {`#${inclusaoDeAlimentacao.id_externo}`}
                             </Link>
                             <ToggleExpandir
+                              dataTestId={`toggle-expandir-${idxSolicitacaoSimilar}`}
                               onClick={() =>
                                 collapseSolicitacaoSimilar(
                                   idxSolicitacaoSimilar

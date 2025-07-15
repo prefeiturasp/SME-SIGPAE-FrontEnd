@@ -168,4 +168,12 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Sol
       ).toBeInTheDocument();
     });
   });
+
+  it("expande collapse solicitações similares", async () => {
+    const spanToggleExpandirSolicitacaoSimilar =
+      screen.getByTestId("toggle-expandir-0");
+    fireEvent.click(spanToggleExpandirSolicitacaoSimilar);
+    const icon = spanToggleExpandirSolicitacaoSimilar.querySelector("i");
+    expect(icon).toHaveClass("fa-chevron-up");
+  });
 });
