@@ -258,6 +258,7 @@ export const carregarDadosAtualizar = async (
   setInitialValues: Dispatch<SetStateAction<Record<string, any>>>,
   setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>,
   setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>,
+  setFabricantesCount: Dispatch<SetStateAction<number>>,
   setCarregando: Dispatch<SetStateAction<boolean>>
 ) => {
   try {
@@ -272,6 +273,8 @@ export const carregarDadosAtualizar = async (
     setInitialValues(geraInitialValuesCorrigir(fichaTecnica));
 
     setFicha(fichaTecnica);
+
+    setFabricantesCount(fichaTecnica.envasador_distribuidor ? 2 : 1);
 
     if (fichaTecnica.arquivo) {
       const arquivo = await carregarArquivo(fichaTecnica.arquivo);
@@ -692,16 +695,28 @@ export const ehInformacaoNutricional = (key: string) => {
 export const formataPayloadAtualizacaoFichaTecnica = (
   values: Record<string, any>,
   initialValues: Record<string, any>,
-  arquivo: ArquivoForm,
+  proponente: TerceirizadaComEnderecoInterface,
+  fabricantesOptions: OptionsGenerico[],
+  fabricantesCount: number,
+  arquivo: ArquivoForm[],
   password: string
 ): FichaTecnicaPayload => {
   let payload: FichaTecnicaPayload = {
+    ...gerarCamposProponenteFabricante(
+      values,
+      proponente,
+      fabricantesOptions,
+      fabricantesCount,
+      true
+    ),
     password: password,
   };
   let infosNutricionais = {};
 
   Object.keys(values).map((key) => {
-    if (initialValues[key] !== values[key]) {
+    const ehFabricante = key.includes("fabricante");
+
+    if (initialValues[key] !== values[key] && !ehFabricante) {
       if (key === "alergenicos" || key === "gluten") {
         payload[key] = stringToBoolean(values[key] as string);
       } else if (ehInformacaoNutricional(key)) {
@@ -712,7 +727,7 @@ export const formataPayloadAtualizacaoFichaTecnica = (
     }
   });
 
-  if (arquivo?.arquivo) {
+  if (arquivo[0]?.arquivo) {
     payload["arquivo"] = arquivo[0].arquivo;
   }
 
@@ -765,7 +780,7 @@ const gerarCamposProponenteFabricante = (
   return {
     ...(ehAlterar ? {} : { empresa: proponente.uuid }),
     fabricante: fabricantes[0]?.fabricante && fabricantes[0],
-    envasador_distribuidor: fabricantes[1]?.fabricante && fabricantes[1],
+    envasador_distribuidor: fabricantes[1]?.fabricante ? fabricantes[1] : {},
   };
 };
 
