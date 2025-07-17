@@ -13,7 +13,6 @@ import {
 
 import useView from "./view";
 
-import moment from "moment";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { IFiltros } from "../../types";
 import { validateDataFinal, validateDataInicial } from "./helpers";
@@ -132,46 +131,30 @@ export default (props: Props) => {
             />
           )}
         </div>
-        {form.getState().values.mes && (
-          <>
-            <div className="col-2">
-              <Field
-                component={InputComData}
-                dataTestId="div-periodo-lancamento-de"
-                name="periodo_lancamento_de"
-                label="Período de Lançamento"
-                placeholder="De"
-                minDate={validateDataInicial(form.getState().values)}
-                maxDate={
-                  form.getState().values.periodo_lancamento_ate
-                    ? moment(
-                        form.getState().values.periodo_lancamento_ate,
-                        "DD/MM/YYYY"
-                      ).toDate()
-                    : validateDataFinal(form.getState().values)
-                }
-              />
-            </div>
-            <div className="col-2">
-              <Field
-                component={InputComData}
-                dataTestId="div-periodo-lancamento-ate"
-                name="periodo_lancamento_ate"
-                label="&nbsp;"
-                placeholder="até"
-                minDate={
-                  form.getState().values.periodo_lancamento_de
-                    ? moment(
-                        form.getState().values.periodo_lancamento_de,
-                        "DD/MM/YYYY"
-                      ).toDate()
-                    : validateDataInicial(form.getState().values)
-                }
-                maxDate={validateDataFinal(form.getState().values)}
-              />
-            </div>
-          </>
-        )}
+        <div className="col-2">
+          <Field
+            component={InputComData}
+            dataTestId="div-periodo-lancamento-de"
+            name="periodo_lancamento_de"
+            label="Período de Lançamento"
+            placeholder="De"
+            minDate={validateDataInicial(form.getState().values, "de")}
+            maxDate={validateDataFinal(form.getState().values)}
+            disabled={!form.getState().values.mes}
+          />
+        </div>
+        <div className="col-2">
+          <Field
+            component={InputComData}
+            dataTestId="div-periodo-lancamento-ate"
+            name="periodo_lancamento_ate"
+            label="&nbsp;"
+            placeholder="até"
+            minDate={validateDataInicial(form.getState().values)}
+            maxDate={validateDataFinal(form.getState().values, "ate")}
+            disabled={!form.getState().values.mes}
+          />
+        </div>
       </div>
     </>
   );
