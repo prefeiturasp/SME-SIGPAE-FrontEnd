@@ -92,6 +92,7 @@ const ListagemDownloads = ({
                       onChange={() => {
                         marcarVisto(download, index);
                       }}
+                      data-testid={`checkbox-visto-${index}`}
                     />
                   )}
                 </div>
@@ -106,6 +107,7 @@ const ListagemDownloads = ({
                           }
                           onClick={() => baixarArquivo(download)}
                           className="verde"
+                          data-testid={`botao-download-${index}`}
                         >
                           <i className="fas fa-download" />
                         </button>
@@ -114,6 +116,7 @@ const ListagemDownloads = ({
                         <button
                           onClick={() => deletaDownload(download)}
                           className="vermelho"
+                          data-testid={`botao-deleta-${index}`}
                         >
                           <i className="fas fa-trash-alt" />
                         </button>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Field, Form } from "react-final-form";
 import Label from "src/components/Shareable/Label";
-import { Spin } from "antd";
+import { Spin, Tooltip } from "antd";
 import InputText from "src/components/Shareable/Input/InputText";
 import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
@@ -35,6 +35,8 @@ import ModalVoltar from "src/components/Shareable/Page/ModalVoltar";
 import { PRE_RECEBIMENTO, FICHA_TECNICA } from "src/configs/constants";
 import {
   carregarDadosAtualizar,
+  carregarFabricantes,
+  cepCalculator,
   formataPayloadAtualizacaoFichaTecnica,
   inserirArquivoFichaAssinadaRT,
   removerArquivoFichaAssinadaRT,
@@ -69,10 +71,18 @@ export default () => {
   const listaInformacoesNutricionaisFichaTecnica = useRef<
     InformacaoNutricional[]
   >([]);
+  const [desabilitaEndereco, setDesabilitaEndereco] = useState<Array<boolean>>([
+    true,
+    true,
+  ]);
   const [proponente, setProponente] =
     useState<TerceirizadaComEnderecoInterface>(
       {} as TerceirizadaComEnderecoInterface
     );
+  const [fabricantesOptions, setFabricantesOptions] = useState<
+    OptionsGenerico[]
+  >([]);
+  const [fabricantesCount, setFabricantesCount] = useState(1);
   const [arquivo, setArquivo] = useState<ArquivoForm[]>([]);
 
   useEffect(() => {
@@ -81,12 +91,14 @@ export default () => {
       await carregaListaCompletaInformacoesNutricionais(
         listaCompletaInformacoesNutricionais
       );
+      await carregarFabricantes(setFabricantesOptions);
       await carregarDadosAtualizar(
         listaInformacoesNutricionaisFichaTecnica,
         setFicha,
         setInitialValues,
         setArquivo,
         setProponente,
+        setFabricantesCount,
         setCarregando
       );
     })();
@@ -147,6 +159,7 @@ export default () => {
           <Form
             onSubmit={() => {}}
             initialValues={initialValues}
+            decorators={[cepCalculator(setDesabilitaEndereco)]}
             render={({ handleSubmit, values, errors }) => {
               const ehPerecivel = values["categoria"] === "Perecíveis";
               const ehNaoPerecivel = values["categoria"] === "Não Perecíveis";
@@ -216,15 +229,35 @@ export default () => {
 
                     <section>
                       <FormFabricante
-                        fabricantesCount={
-                          [
-                            values[`fabricante_0`],
-                            values[`fabricante_1`],
-                          ].filter((fabricante) => fabricante).length
-                        }
+                        fabricantesCount={fabricantesCount}
+                        setFabricantesCount={setFabricantesCount}
+                        fabricantesOptions={fabricantesOptions}
+                        desabilitaEndereco={desabilitaEndereco}
                         values={values}
-                        somenteLeitura={true}
+                        somenteLeitura={false}
+                        ocultarBotaoCadastroFabricante={true}
                       />
+                      {fabricantesCount === 1 && (
+                        <div className="row mt-3">
+                          <div className="col-12 d-flex justify-content-center">
+                            <Tooltip
+                              className="float-end"
+                              title={
+                                "Adicione somente se os dados do Envasador/Distribuidor forem diferentes do Fabricante."
+                              }
+                            >
+                              <div>
+                                <Botao
+                                  texto="+ Adicionar Envasador/Distribuidor"
+                                  type={BUTTON_TYPE.BUTTON}
+                                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                                  onClick={() => setFabricantesCount(2)}
+                                />
+                              </div>
+                            </Tooltip>
+                          </div>
+                        </div>
+                      )}
                     </section>
 
                     <section id="detalhes_produto">
@@ -730,7 +763,7 @@ export default () => {
                         <div className="col">
                           <Field
                             component={TextArea}
-                            label="Descrever o Sistema de Vedação da Embalagem Secundária:"
+                            label="Descrever o Material e o Sistema de Vedação da Embalagem Secundária:"
                             name={`sistema_vedacao_embalagem_secundaria`}
                             className="textarea-ficha-tecnica"
                             placeholder="Digite as informações da embalagem secundária"
@@ -874,7 +907,10 @@ export default () => {
                       const payload = formataPayloadAtualizacaoFichaTecnica(
                         values,
                         initialValues,
-                        arquivo[0],
+                        proponente,
+                        fabricantesOptions,
+                        fabricantesCount,
+                        arquivo,
                         password
                       );
 

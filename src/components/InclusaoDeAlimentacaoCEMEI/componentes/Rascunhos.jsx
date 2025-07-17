@@ -30,6 +30,7 @@ export const Rascunhos = ({
             <div className="icon-draft-card float-end">
               Criado em: {inclusaoDeAlimentacao.criado_em}
               <span
+                data-testid="botao-remover-rascunho"
                 onClick={() =>
                   removerRascunho(
                     id_externo,
@@ -44,6 +45,7 @@ export const Rascunhos = ({
                 <i className="fas fa-trash" />
               </span>
               <span
+                data-testid="botao-carregar-rascunho"
                 onClick={() =>
                   carregarRascunho(form, values, inclusaoDeAlimentacao)
                 }

@@ -99,9 +99,7 @@ export const formataInclusaoCEMEI = (values, vinculos) => {
               vinculo.periodo_escolar.nome === quantidade_periodo.nome
           ).periodo_escolar.uuid,
           quantidade_alunos: quantidade_periodo.alunos_emei,
-          matriculados_quando_criado: quantidade_periodo.EMEI
-            ? quantidade_periodo.EMEI
-            : "1",
+          matriculados_quando_criado: quantidade_periodo.EMEI,
           tipos_alimentacao: quantidade_periodo.tipos_alimentacao_selecionados,
         });
       }

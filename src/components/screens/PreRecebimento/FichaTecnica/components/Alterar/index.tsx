@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Field, Form } from "react-final-form";
 import Label from "src/components/Shareable/Label";
-import { Spin } from "antd";
+import { Spin, Tooltip } from "antd";
 import InputText from "src/components/Shareable/Input/InputText";
+import InputFile from "src/components/Shareable/Input/InputFile";
 import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
+  ArquivoForm,
   FichaTecnicaDetalhadaComAnalise,
   OptionsGenerico,
 } from "src/interfaces/pre_recebimento.interface";
@@ -39,12 +41,18 @@ import {
   assinarCorrigirFichaTecnica,
   carregaListaCompletaInformacoesNutricionais,
   carregarDadosCorrgir,
+  carregarFabricantes,
   carregarUnidadesMedida,
+  cepCalculator,
   formataPayloadCorrecaoFichaTecnica,
 } from "../../helpers";
 
 import "./styles.scss";
 import FormFabricante from "../Cadastrar/components/FormFabricante";
+import {
+  inserirArquivoFichaAssinadaRT,
+  removerArquivoFichaAssinadaRT,
+} from "src/components/screens/PreRecebimento/FichaTecnica/helpers";
 
 const idCollapse = "collapseAnalisarFichaTecnica";
 
@@ -57,6 +65,14 @@ export default () => {
   const [unidadesMedidaOptions, setUnidadesMedidaOptions] = useState<
     OptionsGenerico[]
   >([]);
+  const [fabricantesOptions, setFabricantesOptions] = useState<
+    OptionsGenerico[]
+  >([]);
+  const [fabricantesCount, setFabricantesCount] = useState(1);
+  const [desabilitaEndereco, setDesabilitaEndereco] = useState<Array<boolean>>([
+    true,
+    true,
+  ]);
   const [collapse, setCollapse] = useState<CollapseControl>({});
   const [ficha, setFicha] = useState<FichaTecnicaDetalhadaComAnalise>(
     {} as FichaTecnicaDetalhadaComAnalise
@@ -73,6 +89,7 @@ export default () => {
     useState<TerceirizadaComEnderecoInterface>(
       {} as TerceirizadaComEnderecoInterface
     );
+  const [arquivo, setArquivo] = useState<ArquivoForm[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -80,12 +97,15 @@ export default () => {
       await carregaListaCompletaInformacoesNutricionais(
         listaCompletaInformacoesNutricionais
       );
+      await carregarFabricantes(setFabricantesOptions);
       await carregarDadosCorrgir(
         listaInformacoesNutricionaisFichaTecnica,
         setFicha,
         setInitialValues,
         setConferidos,
+        setArquivo,
         setProponente,
+        setFabricantesCount,
         setCarregando
       );
     })();
@@ -101,6 +121,7 @@ export default () => {
           Fabricante e ou Envasador/Distribuidor
         </span>
       ),
+      tag: true,
     },
     {
       titulo: <span className="verde-escuro">Detalhes do Produto</span>,
@@ -155,6 +176,7 @@ export default () => {
           <Form
             onSubmit={() => {}}
             initialValues={initialValues}
+            decorators={[cepCalculator(setDesabilitaEndereco)]}
             render={({ handleSubmit, values, errors }) => {
               const ehPerecivel = values["categoria"] === "Perecíveis";
               const ehNaoPerecivel = values["categoria"] === "Não Perecíveis";
@@ -220,24 +242,57 @@ export default () => {
                     id={idCollapse}
                     state={conferidos}
                   >
-                    <section id="proponenteFabricante">
+                    <section id="proponente">
                       <div className="row">
                         <div className="subtitulo">Proponente</div>
                       </div>
                       <FormProponente proponente={proponente} />
                     </section>
 
-                    <section>
+                    <section id="fabricante_envasador">
+                      {!conferidos.fabricante_envasador && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.fabricante_envasador_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <FormFabricante
-                        fabricantesCount={
-                          [
-                            values[`fabricante_0`],
-                            values[`fabricante_1`],
-                          ].filter((fabricante) => fabricante).length
-                        }
+                        fabricantesCount={fabricantesCount}
+                        setFabricantesCount={setFabricantesCount}
+                        fabricantesOptions={fabricantesOptions}
+                        desabilitaEndereco={desabilitaEndereco}
                         values={values}
-                        somenteLeitura={true}
+                        somenteLeitura={conferidos.fabricante_envasador}
+                        ocultarBotaoCadastroFabricante={true}
                       />
+                      {fabricantesCount === 1 && (
+                        <div className="row mt-3">
+                          <div className="col-12 d-flex justify-content-center">
+                            <Tooltip
+                              className="float-end"
+                              title={
+                                "Adicione somente se os dados do Envasador/Distribuidor forem diferentes do Fabricante."
+                              }
+                            >
+                              <div>
+                                <Botao
+                                  texto="+ Adicionar Envasador/Distribuidor"
+                                  type={BUTTON_TYPE.BUTTON}
+                                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                                  onClick={() => setFabricantesCount(2)}
+                                />
+                              </div>
+                            </Tooltip>
+                          </div>
+                        </div>
+                      )}
                     </section>
 
                     <section id="detalhes_produto">
@@ -836,7 +891,7 @@ export default () => {
                         <div className="col">
                           <Field
                             component={TextArea}
-                            label="Descrever o Sistema de Vedação da Embalagem Secundária:"
+                            label="Descrever o Material e o Sistema de Vedação da Embalagem Secundária:"
                             name={`sistema_vedacao_embalagem_secundaria`}
                             className="textarea-ficha-tecnica"
                             placeholder="Digite as informações da embalagem secundária"
@@ -868,6 +923,19 @@ export default () => {
                     </section>
 
                     <section id="responsavel_tecnico">
+                      {!conferidos.responsavel_tecnico && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.responsavel_tecnico_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="row">
                         <div className="col">
                           <Field
@@ -909,13 +977,59 @@ export default () => {
                         </div>
                       </div>
                       <div className="row mt-3">
-                        <div className="col-4">
-                          <BotaoAnexo urlAnexo={ficha.arquivo} />
-                        </div>
+                        {conferidos.responsavel_tecnico ? (
+                          <div className="col-4">
+                            <BotaoAnexo urlAnexo={ficha.arquivo} />
+                          </div>
+                        ) : (
+                          <div className="col-4">
+                            <div className="row mt-3">
+                              <Field
+                                component={InputFile}
+                                arquivosPreCarregados={arquivo}
+                                className="inputfile"
+                                dataTestId="arquivo"
+                                texto="Anexar Ficha Assinada pelo RT"
+                                name={"arquivo"}
+                                accept="PDF"
+                                setFiles={(files: ArquivoForm[]) =>
+                                  inserirArquivoFichaAssinadaRT(
+                                    files,
+                                    setArquivo
+                                  )
+                                }
+                                removeFile={() =>
+                                  removerArquivoFichaAssinadaRT(setArquivo)
+                                }
+                                toastSuccess={"Arquivo incluído com sucesso!"}
+                                alignLeft
+                              />
+                              <label className="col-12 label-input">
+                                <span className="red">
+                                  * Campo Obrigatório: &nbsp;
+                                </span>
+                                Envie um arquivo no formato: PDF, com até 10MB
+                              </label>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </section>
 
                     <section id="modo_preparo">
+                      {!conferidos.modo_preparo && (
+                        <div className="row campo-correcao mb-4">
+                          <div className="col-12">
+                            <TextArea
+                              label="Indicações de Correções CODAE"
+                              valorInicial={
+                                ficha?.analise?.modo_preparo_correcoes
+                              }
+                              disabled={true}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="row">
                         <div className="col">
                           <Field
@@ -923,7 +1037,7 @@ export default () => {
                             label="Descreva o modo de preparo do produto:"
                             name={`modo_de_preparo`}
                             className="textarea-ficha-tecnica"
-                            disabled
+                            disabled={conferidos.modo_preparo}
                           />
                         </div>
                       </div>
@@ -971,6 +1085,10 @@ export default () => {
                       const payload = formataPayloadCorrecaoFichaTecnica(
                         values,
                         conferidos,
+                        proponente,
+                        fabricantesOptions,
+                        fabricantesCount,
+                        arquivo,
                         ficha.categoria === "PERECIVEIS",
                         password
                       );
