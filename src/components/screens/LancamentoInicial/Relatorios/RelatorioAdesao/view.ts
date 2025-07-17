@@ -10,19 +10,19 @@ import {
 import RelatorioService from "src/services/medicaoInicial/relatorio.service";
 import { RelatorioAdesaoResponse } from "src/services/medicaoInicial/relatorio.interface";
 
-import { Filtros } from "./types";
+import { IFiltros } from "./types";
 
 export default () => {
   const [loading, setLoading] = useState(false);
   const [exibirTitulo, setExibirTitulo] = useState(false);
 
-  const [params, setParams] = useState<Filtros | null>(null);
-  const [filtros, setFiltros] = useState<Filtros | null>(null);
+  const [params, setParams] = useState<IFiltros | null>(null);
+  const [filtros, setFiltros] = useState<IFiltros | null>(null);
   const [filtrosSelecionados, setFiltrosSelecionados] =
-    useState<Filtros | null>(null);
+    useState<IFiltros | null>(null);
   const [resultado, setResultado] = useState<RelatorioAdesaoResponse>(null);
 
-  const filtrar = async (values: Filtros) => {
+  const filtrar = async (values: IFiltros) => {
     setLoading(true);
     setFiltros(filtrosSelecionados);
     setParams(values);
@@ -39,7 +39,7 @@ export default () => {
       });
 
       setResultado(dados);
-    } catch (e) {
+    } catch {
       toastError("Não foi possível obter os resultados");
     }
 
@@ -71,7 +71,7 @@ export default () => {
     setExibirTitulo(false);
   };
 
-  const atualizaFiltrosSelecionados = (values: Filtros) => {
+  const atualizaFiltrosSelecionados = (values: IFiltros) => {
     setFiltrosSelecionados((prev) => {
       let values_ = values;
       if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {

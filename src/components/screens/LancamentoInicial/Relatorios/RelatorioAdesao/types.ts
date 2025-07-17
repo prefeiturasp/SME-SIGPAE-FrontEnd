@@ -1,4 +1,4 @@
-export type Filtros = {
+export type IFiltros = {
   mes?: string;
   dre?: string | undefined;
   lotes?: Array<string> | undefined;
