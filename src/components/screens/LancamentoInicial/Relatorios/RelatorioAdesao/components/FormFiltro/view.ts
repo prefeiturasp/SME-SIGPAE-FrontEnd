@@ -22,6 +22,7 @@ import { getMesesAnosSolicitacoesMedicaoinicial } from "src/services/medicaoInic
 import { MESES } from "src/constants/shared";
 
 import { Args, SelectOption, MultiSelectOption, Option } from "./types";
+import { FormApi } from "final-form";
 
 export default ({ form, onChange }: Args) => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -261,7 +262,7 @@ export default ({ form, onChange }: Args) => {
     }));
   };
 
-  const onChangeMesAno = (e: ChangeEvent<HTMLInputElement>) => {
+  const onChangeMesAno = (e: ChangeEvent<HTMLInputElement>, form: FormApi) => {
     const mesAno = e.target.value;
 
     onChange({
@@ -272,6 +273,9 @@ export default ({ form, onChange }: Args) => {
             .toUpperCase()
         : undefined,
     });
+
+    form.change("periodo_lancamento_de", undefined);
+    form.change("periodo_lancamento_ate", undefined);
   };
 
   const onChangeDRE = (e: ChangeEvent<HTMLInputElement>) => {
@@ -389,6 +393,18 @@ export default ({ form, onChange }: Args) => {
     }
   };
 
+  const onChangePeriodoLancamentoDe = (periodoLancamentoDe: string) => {
+    onChange({
+      periodo_lancamento_de: periodoLancamentoDe,
+    });
+  };
+
+  const onChangePeriodoLancamentoAte = (periodoLancamentoAte: string) => {
+    onChange({
+      periodo_lancamento_ate: periodoLancamentoAte,
+    });
+  };
+
   const formataUnidadesEducacionaisOpcoes = (escolas): Array<Option> => {
     return [{ label: "Selecione uma Unidade Educacional", value: "" }].concat(
       escolas.map((escola): Option => {
@@ -446,5 +462,7 @@ export default ({ form, onChange }: Args) => {
     filtraUnidadesEducacionaisOpcoes,
     buscandoOpcoes,
     validaMesAno,
+    onChangePeriodoLancamentoDe,
+    onChangePeriodoLancamentoAte,
   };
 };
