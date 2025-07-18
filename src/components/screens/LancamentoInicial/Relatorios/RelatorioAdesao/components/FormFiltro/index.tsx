@@ -1,7 +1,6 @@
 import { Skeleton } from "antd";
 import { FormApi } from "final-form";
 import { Field } from "react-final-form";
-
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import Select from "src/components/Shareable/Select";
@@ -13,6 +12,7 @@ import {
 
 import useView from "./view";
 
+import { ChangeEvent } from "react";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { IFiltros } from "../../types";
 import { validateDataFinal, validateDataInicial } from "./helpers";
@@ -43,7 +43,9 @@ export default (props: Props) => {
               required
               naoDesabilitarPrimeiraOpcao
               validate={view.validaMesAno}
-              onChangeEffect={view.onChangeMesAno}
+              onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
+                view.onChangeMesAno(e, form)
+              }
             />
           )}
         </div>
@@ -141,6 +143,9 @@ export default (props: Props) => {
             minDate={validateDataInicial(form.getState().values, "de")}
             maxDate={validateDataFinal(form.getState().values)}
             disabled={!form.getState().values.mes}
+            inputOnChange={(value: string) => {
+              view.onChangePeriodoLancamentoDe(value);
+            }}
           />
         </div>
         <div className="col-2">
@@ -149,10 +154,13 @@ export default (props: Props) => {
             dataTestId="div-periodo-lancamento-ate"
             name="periodo_lancamento_ate"
             label="&nbsp;"
-            placeholder="até"
+            placeholder="Até"
             minDate={validateDataInicial(form.getState().values)}
             maxDate={validateDataFinal(form.getState().values, "ate")}
             disabled={!form.getState().values.mes}
+            inputOnChange={(value: string) => {
+              view.onChangePeriodoLancamentoAte(value);
+            }}
           />
         </div>
       </div>

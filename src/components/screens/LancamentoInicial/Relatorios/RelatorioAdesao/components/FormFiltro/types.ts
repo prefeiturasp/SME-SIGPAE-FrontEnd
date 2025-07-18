@@ -1,11 +1,11 @@
 import { FormApi } from "final-form";
 
-import { Filtros } from "../../types";
+import { IFiltros } from "../../types";
 
 export type Args = {
   form: FormApi;
   // eslint-disable-next-line
-  onChange: (values: Filtros) => void;
+  onChange: (values: IFiltros) => void;
 };
 
 export type SelectOption = {

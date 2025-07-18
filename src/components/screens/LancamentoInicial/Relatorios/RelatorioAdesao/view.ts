@@ -23,6 +23,10 @@ export default () => {
   const [resultado, setResultado] = useState<RelatorioAdesaoResponse>(null);
 
   const filtrar = async (values: IFiltros) => {
+    if (values.periodo_lancamento_de && !values.periodo_lancamento_ate) {
+      toastError("Se preencher o campo `De`, `Até` é obrigatório");
+      return;
+    }
     setLoading(true);
     setFiltros(filtrosSelecionados);
     setParams(values);
@@ -36,6 +40,8 @@ export default () => {
         escola: values.unidade_educacional,
         periodos_escolares: values.periodos,
         tipos_alimentacao: values.tipos_alimentacao,
+        periodo_lancamento_de: values.periodo_lancamento_de,
+        periodo_lancamento_ate: values.periodo_lancamento_ate,
       });
 
       setResultado(dados);

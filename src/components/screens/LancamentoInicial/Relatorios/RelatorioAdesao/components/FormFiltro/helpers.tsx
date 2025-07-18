@@ -21,7 +21,7 @@ const getMesAno = (values_mes?: string): { mes: number; ano: number } => {
  *
  * @param {IFiltros} values - Objeto contendo o filtro com o campo `mes` e `periodo_lancamento_de`.
  * @param {string} [campo] - Se definido, ignora o valor do período e retorna o 1º dia do mês.
- * @returns {Date | null} A data inicial ou `null` se `mes` não for informado.
+ * @returns {Date | null} A data inicial para validação ou `null` se `mes` não for informado.
  */
 export const validateDataInicial = (
   values: IFiltros,
@@ -44,7 +44,7 @@ export const validateDataInicial = (
  *
  * @param {IFiltros} values - Objeto contendo o filtro com o campo `mes` e `periodo_lancamento_ate`.
  * @param {string} [campo] - Se definido, ignora o valor do período e retorna o último dia do mês.
- * @returns {Date | null} A data final ou `null` se `mes` não for informado.
+ * @returns {Date | null} A data final para validação ou `null` se `mes` não for informado.
  */
 export const validateDataFinal = (
   values: IFiltros,
