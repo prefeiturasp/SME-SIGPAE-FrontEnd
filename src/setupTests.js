@@ -6,6 +6,10 @@ import { jestPreviewConfigure } from "jest-preview";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import mock from "src/services/_mock";
 import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
+import { TextEncoder, TextDecoder } from "util";
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 jestPreviewConfigure({
   // Opt-in to automatic mode to preview failed test case automatically.

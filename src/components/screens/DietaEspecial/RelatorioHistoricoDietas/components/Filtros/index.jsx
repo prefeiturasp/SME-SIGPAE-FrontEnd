@@ -59,22 +59,23 @@ export const Filtros = ({ ...props }) => {
     let data = values;
     const response = await getUnidadesEducacionaisComCodEol(data);
     if (response.status === HTTP_STATUS.OK) {
-      if (response.data.length === 0) {
-        toastError("Nenhuma unidade educacional encontrada");
+      if (response.data.length === 0 || response.data.mensagem) {
+        toastError("Não existem unidades para os filtros selecionados");
+      } else {
+        setUnidadesEducacionais(
+          [
+            {
+              label: "Todas as unidades",
+              value: "todas",
+            },
+          ].concat(
+            response.data.map((unidade) => ({
+              label: unidade.codigo_eol_escola,
+              value: unidade.uuid,
+            }))
+          )
+        );
       }
-      setUnidadesEducacionais(
-        [
-          {
-            label: "Todas as unidades",
-            value: "todas",
-          },
-        ].concat(
-          response.data.map((unidade) => ({
-            label: unidade.codigo_eol_escola,
-            value: unidade.uuid,
-          }))
-        )
-      );
     } else {
       setErro(
         "Erro ao carregar unidades educacionais. Tente novamente mais tarde."
