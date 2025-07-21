@@ -57,6 +57,7 @@ export default (props: Props) => {
             <Field
               component={Select}
               label="DRE"
+              dataTestId="select-dre"
               name="dre"
               placeholder="Selecione uma DRE"
               options={view.diretoriasRegionaisOpcoes}
@@ -92,6 +93,7 @@ export default (props: Props) => {
           ) : (
             <Field
               component={AutoCompleteSelectField}
+              dataTestId="select-unidade-educacional"
               label="Unidade Educacional"
               name="unidade_educacional"
               placeholder="Selecione uma Unidade Educacional"
