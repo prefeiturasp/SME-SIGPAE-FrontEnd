@@ -134,34 +134,42 @@ export default (props: Props) => {
           )}
         </div>
         <div className="col-2">
-          <Field
-            component={InputComData}
-            dataTestId="div-periodo-lancamento-de"
-            name="periodo_lancamento_de"
-            label="Período de Lançamento"
-            placeholder="De"
-            minDate={validateDataInicial(form.getState().values, "de")}
-            maxDate={validateDataFinal(form.getState().values)}
-            disabled={!form.getState().values.mes}
-            inputOnChange={(value: string) => {
-              view.onChangePeriodoLancamentoDe(value);
-            }}
-          />
+          {view.buscandoOpcoes.buscandoTiposAlimentacao ? (
+            <Skeleton paragraph={false} active />
+          ) : (
+            <Field
+              component={InputComData}
+              dataTestId="div-periodo-lancamento-de"
+              name="periodo_lancamento_de"
+              label="Período de Lançamento"
+              placeholder="De"
+              minDate={validateDataInicial(form.getState().values, "de")}
+              maxDate={validateDataFinal(form.getState().values)}
+              disabled={!form.getState().values.mes}
+              inputOnChange={(value: string) => {
+                view.onChangePeriodoLancamentoDe(value);
+              }}
+            />
+          )}
         </div>
         <div className="col-2">
-          <Field
-            component={InputComData}
-            dataTestId="div-periodo-lancamento-ate"
-            name="periodo_lancamento_ate"
-            label="&nbsp;"
-            placeholder="Até"
-            minDate={validateDataInicial(form.getState().values)}
-            maxDate={validateDataFinal(form.getState().values, "ate")}
-            disabled={!form.getState().values.mes}
-            inputOnChange={(value: string) => {
-              view.onChangePeriodoLancamentoAte(value);
-            }}
-          />
+          {view.buscandoOpcoes.buscandoTiposAlimentacao ? (
+            <Skeleton paragraph={false} active />
+          ) : (
+            <Field
+              component={InputComData}
+              dataTestId="div-periodo-lancamento-ate"
+              name="periodo_lancamento_ate"
+              label="&nbsp;"
+              placeholder="Até"
+              minDate={validateDataInicial(form.getState().values)}
+              maxDate={validateDataFinal(form.getState().values, "ate")}
+              disabled={!form.getState().values.mes}
+              inputOnChange={(value: string) => {
+                view.onChangePeriodoLancamentoAte(value);
+              }}
+            />
+          )}
         </div>
       </div>
     </>

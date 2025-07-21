@@ -110,7 +110,7 @@ export default ({ form, onChange }: Args) => {
         setLotes(lotes);
         setLotesOpcoes(formatarOpcoesLote(lotes));
 
-        let escolas = responseEscolas.filter(
+        let escolas = responseEscolas.data.filter(
           (escola) =>
             ![
               "CEI",
