@@ -1,16 +1,23 @@
-import React from "react";
-
+import ExportarResultado from "./components/ExportarResultado";
 import TabelaResultadoPeriodo from "./components/TabelaResultadoPeriodo";
 import { TotalAlimentacao } from "./components/TabelaResultadoPeriodo/types";
-import ExportarResultado from "./components/ExportarResultado";
 
 import { Props } from "./types";
 
 export default (props: Props) => {
   const { params, filtros, resultado, exibirTitulo } = props;
-
   const temFiltros = filtros && Object.keys(filtros).length > 0;
   const resultadoVazio = resultado && Object.keys(resultado).length === 0;
+
+  const renderPeriodoLancamento = (de: string, ate: string) => {
+    if (!de) return null;
+    if (de === ate) return <b className="text-dark">{de}</b>;
+    return (
+      <b className="text-dark">
+        De {de} até {ate}
+      </b>
+    );
+  };
 
   return (
     <div className="container-fluid mt-4">
@@ -26,6 +33,10 @@ export default (props: Props) => {
             )}
             {filtros.unidade_educacional && (
               <b className="text-dark">{filtros.unidade_educacional}</b>
+            )}
+            {renderPeriodoLancamento(
+              filtros.periodo_lancamento_de,
+              filtros.periodo_lancamento_ate
             )}
           </>
         )}
