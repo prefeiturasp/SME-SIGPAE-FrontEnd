@@ -36,6 +36,7 @@ export default (props: Props) => {
           ) : (
             <Field
               component={Select}
+              dataTestId="select-mes-referencia"
               label="Mês de Referência"
               name="mes"
               placeholder="Selecione o mês de referência"

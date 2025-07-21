@@ -1,4 +1,5 @@
 import axios from "../_base";
+import { ErrorHandlerFunction } from "../service-helpers";
 
 import {
   RelatorioAdesaoExportResponse,
@@ -12,10 +13,15 @@ export default class RelatorioService {
   static async getRelatorioAdesao(
     params: RelatorioAdesaoParams
   ): Promise<RelatorioAdesaoResponse> {
-    const response = await axios.get(`${BASE_URL}/relatorio-adesao/`, {
-      params,
-    });
-    return response.data;
+    const response = await axios
+      .get(`${BASE_URL}/relatorio-adesao/`, {
+        params,
+      })
+      .catch(ErrorHandlerFunction);
+    if (response) {
+      const data = { data: response.data, status: response.status };
+      return data;
+    }
   }
 
   static async exportarRelatorioAdesaoParaXLSX(

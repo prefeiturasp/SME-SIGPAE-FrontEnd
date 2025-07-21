@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -12,6 +18,7 @@ import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import { mockGetPeriodoEscolar } from "src/mocks/services/dietaEspecial.service/mockGetPeriodoEscolar";
 import { mockEscolasParaFiltros } from "src/mocks/services/escola.service/escolasParaFiltros";
 import { mockMesesAnosRelatorioAdesao } from "src/mocks/services/medicaoInicial/dashboard.service/mesesAnosRelatorioAdesao";
+import { mockRelatorioAdesao10a20Dezenbro2023 } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesao10a20";
 import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
 import mock from "src/services/_mock";
 
@@ -67,5 +74,134 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
   it("Renderiza titulo e breadcrumb `Relatório de Adesão`", () => {
     expect(screen.queryAllByText("Relatório de Adesão")).toHaveLength(2);
+  });
+
+  it("Filtra por mês de referência e período de lançamento", async () => {
+    expect(screen.getByText("Filtrar Resultados")).toBeInTheDocument();
+
+    const selectMesReferencia = screen.getByTestId("select-mes-referencia");
+    const selectElementMesReferencia =
+      selectMesReferencia.querySelector("select");
+    fireEvent.change(selectElementMesReferencia, {
+      target: { value: "12_2023" },
+    });
+    expect(selectElementMesReferencia).toHaveValue("12_2023");
+
+    const divInputPeriodoLancamentoDe = screen.getByTestId(
+      "div-periodo-lancamento-de"
+    );
+    const inputElementPeriodoLancamentoDe =
+      divInputPeriodoLancamentoDe.querySelector("input");
+    fireEvent.change(inputElementPeriodoLancamentoDe, {
+      target: { value: "10/12/2023" },
+    });
+
+    const divInputPeriodoLancamentoAte = screen.getByTestId(
+      "div-periodo-lancamento-ate"
+    );
+    const inputElementPeriodoLancamentoAte =
+      divInputPeriodoLancamentoAte.querySelector("input");
+    fireEvent.change(inputElementPeriodoLancamentoAte, {
+      target: { value: "20/12/2023" },
+    });
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas")
+      ).toBeInTheDocument();
+      expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
+    });
+
+    const botaoLimparFiltros = screen
+      .getByText("Limpar Filtros")
+      .closest("button");
+    fireEvent.click(botaoLimparFiltros);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Adesão das Alimentações Servidas")
+      ).not.toBeInTheDocument();
+      expect(selectElementMesReferencia).toHaveValue("");
+    });
+  });
+
+  it("Exibe erro quando `período lançamento de` é preenchido mas `periodo lançamento até` não", async () => {
+    const selectMesReferencia = screen.getByTestId("select-mes-referencia");
+    const selectElementMesReferencia =
+      selectMesReferencia.querySelector("select");
+    fireEvent.change(selectElementMesReferencia, {
+      target: { value: "12_2023" },
+    });
+    expect(selectElementMesReferencia).toHaveValue("12_2023");
+
+    const divInputPeriodoLancamentoDe = screen.getByTestId(
+      "div-periodo-lancamento-de"
+    );
+    const inputElementPeriodoLancamentoDe =
+      divInputPeriodoLancamentoDe.querySelector("input");
+    fireEvent.change(inputElementPeriodoLancamentoDe, {
+      target: { value: "10/12/2023" },
+    });
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Se preencher o campo `De`, `Até` é obrigatório")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Renderiza erro ao carregar resultados", async () => {
+    const selectMesReferencia = screen.getByTestId("select-mes-referencia");
+    const selectElementMesReferencia =
+      selectMesReferencia.querySelector("select");
+    fireEvent.change(selectElementMesReferencia, {
+      target: { value: "12_2023" },
+    });
+    expect(selectElementMesReferencia).toHaveValue("12_2023");
+
+    const divInputPeriodoLancamentoDe = screen.getByTestId(
+      "div-periodo-lancamento-de"
+    );
+    const inputElementPeriodoLancamentoDe =
+      divInputPeriodoLancamentoDe.querySelector("input");
+    fireEvent.change(inputElementPeriodoLancamentoDe, {
+      target: { value: "10/12/2023" },
+    });
+
+    const divInputPeriodoLancamentoAte = screen.getByTestId(
+      "div-periodo-lancamento-ate"
+    );
+    const inputElementPeriodoLancamentoAte =
+      divInputPeriodoLancamentoAte.querySelector("input");
+    fireEvent.change(inputElementPeriodoLancamentoAte, {
+      target: { value: "20/12/2023" },
+    });
+
+    mock.onGet("/medicao-inicial/relatorios/relatorio-adesao/").reply(500, {});
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Não foi possível obter os resultados. Tente novamente mais tarde."
+        )
+      ).toBeInTheDocument();
+    });
   });
 });
