@@ -2,9 +2,8 @@ import { Skeleton } from "antd";
 import { FormApi } from "final-form";
 import { Field } from "react-final-form";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
-import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import Select from "src/components/Shareable/Select";
-
 import {
   usuarioEhDRE,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
@@ -26,6 +25,8 @@ type Props = {
 export default (props: Props) => {
   const { form, onChange } = props;
   const view = useView({ form, onChange });
+
+  const values = form.getState().values;
 
   return (
     <>
@@ -76,14 +77,22 @@ export default (props: Props) => {
             <Skeleton paragraph={false} active />
           ) : (
             <Field
-              component={MultiSelect}
-              disableSearch
+              component={MultiselectRaw}
               label="Lotes"
               name="lotes"
-              placeholder="Selecione os lotes"
+              dataTestId="select-lotes"
+              selected={values.lotes || []}
               options={view.lotesOpcoes}
-              nomeDoItemNoPlural="lotes"
-              onChangeEffect={view.onChangeLotes}
+              onSelectedChanged={(
+                values_: Array<{ label: string; value: string }>
+              ) => {
+                form.change(
+                  `lotes`,
+                  values_.map((value_) => value_.value)
+                );
+                view.onChangeLotes(values_.map((value_) => value_.value));
+              }}
+              placeholder="Selecione os lotes"
             />
           )}
         </div>
@@ -111,13 +120,21 @@ export default (props: Props) => {
             <Skeleton paragraph={false} active />
           ) : (
             <Field
-              component={MultiSelect}
-              disableSearch
+              component={MultiselectRaw}
               label="Período"
               name="periodos"
-              nomeDoItemNoPlural="períodos"
-              placeholder="Selecione os períodos"
+              dataTestId="select-periodos-escolares"
+              selected={values.periodos || []}
               options={view.periodosEscolaresOpcoes}
+              onSelectedChanged={(
+                values_: Array<{ label: string; value: string }>
+              ) => {
+                form.change(
+                  `periodos`,
+                  values_.map((value_) => value_.value)
+                );
+              }}
+              placeholder="Selecione os períodos"
             />
           )}
         </div>
@@ -126,13 +143,21 @@ export default (props: Props) => {
             <Skeleton paragraph={false} active />
           ) : (
             <Field
-              component={MultiSelect}
-              disableSearch
+              component={MultiselectRaw}
               label="Tipo de Alimentação"
               name="tipos_alimentacao"
-              nomeDoItemNoPlural="alimentações"
-              placeholder="Selecione os tipos de alimentação"
+              dataTestId="select-tipos-alimentacao"
+              selected={values.tipos_alimentacao || []}
               options={view.tiposAlimentacaoOpcoes}
+              onSelectedChanged={(
+                values_: Array<{ label: string; value: string }>
+              ) => {
+                form.change(
+                  `tipos_alimentacao`,
+                  values_.map((value_) => value_.value)
+                );
+              }}
+              placeholder="Selecione os períodos"
             />
           )}
         </div>

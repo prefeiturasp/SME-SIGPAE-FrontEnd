@@ -204,4 +204,6 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("filtra por DRE, Lote e Unidade Educacional", async () => {});
 });
