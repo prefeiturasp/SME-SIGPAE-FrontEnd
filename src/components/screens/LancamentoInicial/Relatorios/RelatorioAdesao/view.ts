@@ -27,6 +27,10 @@ export default () => {
       toastError("Se preencher o campo `De`, `Até` é obrigatório");
       return;
     }
+    if (!values.periodo_lancamento_de && values.periodo_lancamento_ate) {
+      toastError("Se preencher o campo `Até`, `De` é obrigatório");
+      return;
+    }
     setLoading(true);
     setFiltros(filtrosSelecionados);
     setParams(values);
