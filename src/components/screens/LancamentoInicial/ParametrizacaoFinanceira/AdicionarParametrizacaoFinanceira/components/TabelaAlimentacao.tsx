@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Table } from "antd";
-import Column from "antd/es/table/Column";
 
 import { Field } from "react-final-form";
 
@@ -65,7 +64,7 @@ export default ({ tiposAlimentacao, grupoSelecionado, tipoTurma }: Props) => {
         )}
 
         <Table pagination={false} bordered dataSource={alimentacoes}>
-          <Column
+          <Table.Column
             title="Tipo de Alimentação"
             dataIndex="nome"
             key="nome"
@@ -91,7 +90,7 @@ export default ({ tiposAlimentacao, grupoSelecionado, tipoTurma }: Props) => {
               );
             }}
           />
-          <Column
+          <Table.Column
             title="Valor Unitário"
             dataIndex="valor_unitario"
             key="valor_unitario"
@@ -107,7 +106,7 @@ export default ({ tiposAlimentacao, grupoSelecionado, tipoTurma }: Props) => {
               />
             )}
           />
-          <Column
+          <Table.Column
             title="Valor Unitário Reajuste"
             dataIndex="valor_unitario_reajuste"
             key="valor_unitario_reajuste"

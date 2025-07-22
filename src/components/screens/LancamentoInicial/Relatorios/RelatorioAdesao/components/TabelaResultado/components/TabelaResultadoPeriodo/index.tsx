@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Table } from "antd";
-import Column from "antd/es/table/Column";
 
 import { Props, TotalAlimentacao } from "./types";
 
@@ -48,24 +47,24 @@ export default (props: Props) => {
         <b>{periodo}</b>
       </h3>
       <Table pagination={false} bordered dataSource={dados} summary={Total}>
-        <Column
+        <Table.Column
           title="Tipo de Alimentação"
           dataIndex="tipo_alimentacao"
           key="tipo_alimentacao"
         />
-        <Column
+        <Table.Column
           title="Total de Alimentações Servidas"
           dataIndex="total_servido"
           key="total_servido"
           render={(value: number) => <b>{numeroParaFormatoBR(value)}</b>}
         />
-        <Column
+        <Table.Column
           title="Número Total de Frequência"
           dataIndex="total_frequencia"
           key="total_frequencia"
           render={(value: number) => <span>{numeroParaFormatoBR(value)}</span>}
         />
-        <Column
+        <Table.Column
           title="% de Adesão"
           dataIndex="total_adesao"
           key="total_adesao"

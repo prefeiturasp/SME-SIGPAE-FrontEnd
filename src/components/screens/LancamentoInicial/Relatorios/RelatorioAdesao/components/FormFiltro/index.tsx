@@ -2,9 +2,8 @@ import { Skeleton } from "antd";
 import { FormApi } from "final-form";
 import { Field } from "react-final-form";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
-import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import Select from "src/components/Shareable/Select";
-
 import {
   usuarioEhDRE,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
@@ -27,6 +26,8 @@ export default (props: Props) => {
   const { form, onChange } = props;
   const view = useView({ form, onChange });
 
+  const values = form.getState().values;
+
   return (
     <>
       <div className="row">
@@ -36,6 +37,7 @@ export default (props: Props) => {
           ) : (
             <Field
               component={Select}
+              dataTestId="select-mes-referencia"
               label="Mês de Referência"
               name="mes"
               placeholder="Selecione o mês de referência"
@@ -56,6 +58,7 @@ export default (props: Props) => {
             <Field
               component={Select}
               label="DRE"
+              dataTestId="select-dre"
               name="dre"
               placeholder="Selecione uma DRE"
               options={view.diretoriasRegionaisOpcoes}
@@ -74,14 +77,22 @@ export default (props: Props) => {
             <Skeleton paragraph={false} active />
           ) : (
             <Field
-              component={MultiSelect}
-              disableSearch
+              component={MultiselectRaw}
               label="Lotes"
               name="lotes"
-              placeholder="Selecione os lotes"
+              dataTestId="select-lotes"
+              selected={values.lotes || []}
               options={view.lotesOpcoes}
-              nomeDoItemNoPlural="lotes"
-              onChangeEffect={view.onChangeLotes}
+              onSelectedChanged={(
+                values_: Array<{ label: string; value: string }>
+              ) => {
+                form.change(
+                  `lotes`,
+                  values_.map((value_) => value_.value)
+                );
+                view.onChangeLotes(values_.map((value_) => value_.value));
+              }}
+              placeholder="Selecione os lotes"
             />
           )}
         </div>
@@ -91,6 +102,7 @@ export default (props: Props) => {
           ) : (
             <Field
               component={AutoCompleteSelectField}
+              dataTestId="select-unidade-educacional"
               label="Unidade Educacional"
               name="unidade_educacional"
               placeholder="Selecione uma Unidade Educacional"
@@ -108,13 +120,21 @@ export default (props: Props) => {
             <Skeleton paragraph={false} active />
           ) : (
             <Field
-              component={MultiSelect}
-              disableSearch
+              component={MultiselectRaw}
               label="Período"
               name="periodos"
-              nomeDoItemNoPlural="períodos"
-              placeholder="Selecione os períodos"
+              dataTestId="select-periodos-escolares"
+              selected={values.periodos || []}
               options={view.periodosEscolaresOpcoes}
+              onSelectedChanged={(
+                values_: Array<{ label: string; value: string }>
+              ) => {
+                form.change(
+                  `periodos`,
+                  values_.map((value_) => value_.value)
+                );
+              }}
+              placeholder="Selecione os períodos"
             />
           )}
         </div>
@@ -123,45 +143,61 @@ export default (props: Props) => {
             <Skeleton paragraph={false} active />
           ) : (
             <Field
-              component={MultiSelect}
-              disableSearch
+              component={MultiselectRaw}
               label="Tipo de Alimentação"
               name="tipos_alimentacao"
-              nomeDoItemNoPlural="alimentações"
-              placeholder="Selecione os tipos de alimentação"
+              dataTestId="select-tipos-alimentacao"
+              selected={values.tipos_alimentacao || []}
               options={view.tiposAlimentacaoOpcoes}
+              onSelectedChanged={(
+                values_: Array<{ label: string; value: string }>
+              ) => {
+                form.change(
+                  `tipos_alimentacao`,
+                  values_.map((value_) => value_.value)
+                );
+              }}
+              placeholder="Selecione os períodos"
             />
           )}
         </div>
         <div className="col-2">
-          <Field
-            component={InputComData}
-            dataTestId="div-periodo-lancamento-de"
-            name="periodo_lancamento_de"
-            label="Período de Lançamento"
-            placeholder="De"
-            minDate={validateDataInicial(form.getState().values, "de")}
-            maxDate={validateDataFinal(form.getState().values)}
-            disabled={!form.getState().values.mes}
-            inputOnChange={(value: string) => {
-              view.onChangePeriodoLancamentoDe(value);
-            }}
-          />
+          {view.buscandoOpcoes.buscandoTiposAlimentacao ? (
+            <Skeleton paragraph={false} active />
+          ) : (
+            <Field
+              component={InputComData}
+              dataTestId="div-periodo-lancamento-de"
+              name="periodo_lancamento_de"
+              label="Período de Lançamento"
+              placeholder="De"
+              minDate={validateDataInicial(form.getState().values, "de")}
+              maxDate={validateDataFinal(form.getState().values)}
+              disabled={!form.getState().values.mes}
+              inputOnChange={(value: string) => {
+                view.onChangePeriodoLancamentoDe(value);
+              }}
+            />
+          )}
         </div>
         <div className="col-2">
-          <Field
-            component={InputComData}
-            dataTestId="div-periodo-lancamento-ate"
-            name="periodo_lancamento_ate"
-            label="&nbsp;"
-            placeholder="Até"
-            minDate={validateDataInicial(form.getState().values)}
-            maxDate={validateDataFinal(form.getState().values, "ate")}
-            disabled={!form.getState().values.mes}
-            inputOnChange={(value: string) => {
-              view.onChangePeriodoLancamentoAte(value);
-            }}
-          />
+          {view.buscandoOpcoes.buscandoTiposAlimentacao ? (
+            <Skeleton paragraph={false} active />
+          ) : (
+            <Field
+              component={InputComData}
+              dataTestId="div-periodo-lancamento-ate"
+              name="periodo_lancamento_ate"
+              label="&nbsp;"
+              placeholder="Até"
+              minDate={validateDataInicial(form.getState().values)}
+              maxDate={validateDataFinal(form.getState().values, "ate")}
+              disabled={!form.getState().values.mes}
+              inputOnChange={(value: string) => {
+                view.onChangePeriodoLancamentoAte(value);
+              }}
+            />
+          )}
         </div>
       </div>
     </>

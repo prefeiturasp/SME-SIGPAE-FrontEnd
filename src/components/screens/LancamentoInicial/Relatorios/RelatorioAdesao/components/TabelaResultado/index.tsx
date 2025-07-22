@@ -11,10 +11,16 @@ export default (props: Props) => {
 
   const renderPeriodoLancamento = (de: string, ate: string) => {
     if (!de) return null;
-    if (de === ate) return <b className="text-dark">{de}</b>;
+    if (de === ate)
+      return (
+        <b className="text-dark">
+          {" | "}
+          {de}
+        </b>
+      );
     return (
       <b className="text-dark">
-        De {de} até {ate}
+        {" | "}De {de} até {ate}
       </b>
     );
   };
@@ -26,13 +32,13 @@ export default (props: Props) => {
           <>
             <b>Adesão das Alimentações Servidas</b>
             <b className="mx-2">-</b>
-            {filtros.mes && <b className="text-dark">{filtros.mes} | </b>}
-            {filtros.dre && <b className="text-dark">{filtros.dre} | </b>}
+            {filtros.mes && <b className="text-dark">{filtros.mes}</b>}
+            {filtros.dre && <b className="text-dark"> | {filtros.dre}</b>}
             {filtros.lotes && (
-              <b className="text-dark">{filtros.lotes.join(", ")} | </b>
+              <b className="text-dark"> | {filtros.lotes.join(", ")}</b>
             )}
             {filtros.unidade_educacional && (
-              <b className="text-dark">{filtros.unidade_educacional}</b>
+              <b className="text-dark"> | {filtros.unidade_educacional}</b>
             )}
             {renderPeriodoLancamento(
               filtros.periodo_lancamento_de,
