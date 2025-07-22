@@ -4,8 +4,9 @@ import {
   DIETA_ESPECIAL,
   RELATORIO_DIETAS_AUTORIZADAS,
   RELATORIO_DIETAS_CANCELADAS,
-  RELATORIO_HISTORICO_DIETAS,
   RELATORIO_GERENCIAL_DIETAS,
+  RELATORIO_HISTORICO_DIETAS,
+  RELATORIO_RECREIO_NAS_FERIAS,
 } from "src/configs/constants";
 import { getNomeCardAguardandoAutorizacao } from "src/helpers/dietaEspecial";
 import {
@@ -15,11 +16,13 @@ import {
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhCogestorDRE,
   usuarioEhCoordenadorNutriCODAE,
   usuarioEhCoordenadorNutriSupervisao,
   usuarioEhDinutreDiretoria,
   usuarioEhDRE,
   usuarioEhEmpresaTerceirizada,
+  usuarioEhEscola,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhGticCODAE,
@@ -28,7 +31,6 @@ import {
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
 } from "src/helpers/utilities";
-import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
 
 const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
@@ -84,6 +86,18 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
     ehUsuarioRelatorios() ||
     usuarioEhGticCODAE() ||
     usuarioEhDinutreDiretoria();
+  const exibeRelatorioRecreioNasFerias =
+    usuarioEhEscola() ||
+    usuarioEhCogestorDRE() ||
+    usuarioEhEmpresaTerceirizada() ||
+    usuarioEhCODAEGestaoAlimentacao() ||
+    usuarioEhNutricionistaSupervisao() ||
+    usuarioEhAdministradorNutriCODAE() ||
+    usuarioEhCoordenadorNutriCODAE() ||
+    usuarioEhCODAENutriManifestacao() ||
+    usuarioEhDinutreDiretoria() ||
+    usuarioEhMedicao() ||
+    usuarioEhCODAEGabinete();
 
   return (
     <Menu
@@ -159,6 +173,11 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
             usuarioEhGticCODAE()) && (
             <LeafItem to={`/${DIETA_ESPECIAL}/${RELATORIO_GERENCIAL_DIETAS}`}>
               Relatório Gerencial de Dietas
+            </LeafItem>
+          )}
+          {exibeRelatorioRecreioNasFerias && (
+            <LeafItem to={`/${DIETA_ESPECIAL}/${RELATORIO_RECREIO_NAS_FERIAS}`}>
+              Relatório Recreio nas Férias
             </LeafItem>
           )}
         </SubMenu>
