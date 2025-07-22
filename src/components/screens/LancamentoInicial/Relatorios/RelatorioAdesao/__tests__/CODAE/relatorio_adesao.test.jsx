@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -205,5 +206,173 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     });
   });
 
-  it("filtra por DRE, Lote e Unidade Educacional", async () => {});
+  it("filtra por DRE, Lote e Unidade Educacional", async () => {
+    const selectMesReferencia = screen.getByTestId("select-mes-referencia");
+    const selectElementMesReferencia =
+      selectMesReferencia.querySelector("select");
+    fireEvent.change(selectElementMesReferencia, {
+      target: { value: "12_2023" },
+    });
+    expect(selectElementMesReferencia).toHaveValue("12_2023");
+
+    const selectDRE = screen.getByTestId("select-dre");
+    const selectElement = selectDRE.querySelector("select");
+    const uuidDREIPIRANGA = mockDiretoriaRegionalSimplissima.results.find(
+      (dre) => dre.nome.includes("IPIRANGA")
+    ).uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidDREIPIRANGA },
+    });
+
+    const selectLotes = screen.getByTestId("select-lotes");
+    const selectControlLotes = within(selectLotes).getByRole("combobox");
+    fireEvent.mouseDown(selectControlLotes);
+    const optionLote = screen.getByText("IP - 3567-3");
+    fireEvent.click(optionLote);
+
+    const divInputPeriodoLancamentoDe = screen.getByTestId(
+      "div-periodo-lancamento-de"
+    );
+    const inputElementPeriodoLancamentoDe =
+      divInputPeriodoLancamentoDe.querySelector("input");
+    fireEvent.change(inputElementPeriodoLancamentoDe, {
+      target: { value: "10/12/2023" },
+    });
+
+    const divInputPeriodoLancamentoAte = screen.getByTestId(
+      "div-periodo-lancamento-ate"
+    );
+    const inputElementPeriodoLancamentoAte =
+      divInputPeriodoLancamentoAte.querySelector("input");
+    fireEvent.change(inputElementPeriodoLancamentoAte, {
+      target: { value: "10/12/2023" },
+    });
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas")
+      ).toBeInTheDocument();
+      expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
+    });
+  });
+
+  it("Exporta XLSX e PDF", async () => {
+    const selectMesReferencia = screen.getByTestId("select-mes-referencia");
+    const selectElementMesReferencia =
+      selectMesReferencia.querySelector("select");
+    fireEvent.change(selectElementMesReferencia, {
+      target: { value: "12_2023" },
+    });
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas")
+      ).toBeInTheDocument();
+      expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
+    });
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/exportar-xlsx/")
+      .reply(200, {
+        detail: "Solicitação de geração de arquivo recebida com sucesso.",
+      });
+
+    const botaoExportarXLSX = screen
+      .getByText("Exportar em XLSX")
+      .closest("button");
+    fireEvent.click(botaoExportarXLSX);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Geração solicitada com sucesso.")
+      ).toBeInTheDocument();
+    });
+
+    const botaoFechar = screen.getByText("Fechar").closest("button");
+    fireEvent.click(botaoFechar);
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/exportar-pdf/")
+      .reply(200, {
+        detail: "Solicitação de geração de arquivo recebida com sucesso.",
+      });
+
+    const botaoExportarPDF = screen
+      .getByText("Exportar em PDF")
+      .closest("button");
+    fireEvent.click(botaoExportarPDF);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Geração solicitada com sucesso.")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Erro ao exportar XLSX e PDF", async () => {
+    const selectMesReferencia = screen.getByTestId("select-mes-referencia");
+    const selectElementMesReferencia =
+      selectMesReferencia.querySelector("select");
+    fireEvent.change(selectElementMesReferencia, {
+      target: { value: "12_2023" },
+    });
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas")
+      ).toBeInTheDocument();
+      expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
+    });
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/exportar-xlsx/")
+      .reply(400, {});
+
+    const botaoExportarXLSX = screen
+      .getByText("Exportar em XLSX")
+      .closest("button");
+    fireEvent.click(botaoExportarXLSX);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Erro ao exportar xlsx. Tente novamente mais tarde.")
+      ).toBeInTheDocument();
+    });
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/exportar-pdf/")
+      .reply(400, {});
+
+    const botaoExportarPDF = screen
+      .getByText("Exportar em PDF")
+      .closest("button");
+    fireEvent.click(botaoExportarPDF);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Erro ao exportar pdf. Tente novamente mais tarde.")
+      ).toBeInTheDocument();
+    });
+  });
 });
