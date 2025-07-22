@@ -223,7 +223,7 @@ describe("Testa a Central de Downloads", () => {
     const inputManual = screen
       .getByTestId("select-com-data")
       .querySelector("input");
-    await usuario.type(inputManual, "15/07/2025");
+    fireEvent.change(inputManual, { target: { value: "15/07/2025" } });
     expect(inputManual).toHaveValue("15/07/2025");
   });
 
