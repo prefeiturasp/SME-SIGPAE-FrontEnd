@@ -1,5 +1,5 @@
+import HTTP_STATUS from "http-status-codes";
 import { useState } from "react";
-
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 import {
@@ -7,8 +7,8 @@ import {
   usuarioEhEscolaTerceirizadaQualquerPerfil,
 } from "src/helpers/utilities";
 
-import RelatorioService from "src/services/medicaoInicial/relatorio.service";
 import { RelatorioAdesaoResponse } from "src/services/medicaoInicial/relatorio.interface";
+import RelatorioService from "src/services/medicaoInicial/relatorio.service";
 
 import { IFiltros } from "./types";
 
@@ -32,21 +32,22 @@ export default () => {
     setParams(values);
     setExibirTitulo(true);
 
-    try {
-      const dados = await RelatorioService.getRelatorioAdesao({
-        mes_ano: values.mes,
-        diretoria_regional: values.dre,
-        lotes: values.lotes,
-        escola: values.unidade_educacional,
-        periodos_escolares: values.periodos,
-        tipos_alimentacao: values.tipos_alimentacao,
-        periodo_lancamento_de: values.periodo_lancamento_de,
-        periodo_lancamento_ate: values.periodo_lancamento_ate,
-      });
-
-      setResultado(dados);
-    } catch {
-      toastError("Não foi possível obter os resultados");
+    const response = await RelatorioService.getRelatorioAdesao({
+      mes_ano: values.mes,
+      diretoria_regional: values.dre,
+      lotes: values.lotes,
+      escola: values.unidade_educacional,
+      periodos_escolares: values.periodos,
+      tipos_alimentacao: values.tipos_alimentacao,
+      periodo_lancamento_de: values.periodo_lancamento_de,
+      periodo_lancamento_ate: values.periodo_lancamento_ate,
+    });
+    if (response.status === HTTP_STATUS.OK) {
+      setResultado(response.data);
+    } else {
+      toastError(
+        "Não foi possível obter os resultados. Tente novamente mais tarde."
+      );
     }
 
     setLoading(false);

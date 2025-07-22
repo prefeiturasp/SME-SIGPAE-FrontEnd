@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Table } from "antd";
-import Column from "antd/es/table/Column";
 
 import { Field } from "react-final-form";
 
@@ -44,7 +43,7 @@ export default ({
         </h2>
 
         <Table pagination={false} bordered dataSource={faixasEtarias}>
-          <Column
+          <Table.Column
             title="Faixas Etárias"
             dataIndex="__str__"
             key="__str__"
@@ -62,7 +61,7 @@ export default ({
               );
             }}
           />
-          <Column
+          <Table.Column
             title="Valor Unitário"
             dataIndex="valor_unitario"
             key="valor_unitario"
@@ -97,7 +96,7 @@ export default ({
               />
             )}
           />
-          <Column
+          <Table.Column
             title="% de acréscimo"
             dataIndex="percentual_acrescimo"
             key="percentual_acrescimo"
@@ -131,7 +130,7 @@ export default ({
               />
             )}
           />
-          <Column
+          <Table.Column
             title="Valor Unit. Total"
             dataIndex="valor_unitario_total"
             key="valor_unitario_total"

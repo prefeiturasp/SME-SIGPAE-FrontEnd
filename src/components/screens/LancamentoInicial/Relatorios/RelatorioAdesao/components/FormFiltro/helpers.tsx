@@ -8,7 +8,9 @@ import { IFiltros } from "../../types";
  * @returns {{ mes: number, ano: number }} Objeto com mês e ano como números.
  * @throws {Error} Se o parâmetro não for informado.
  */
-const getMesAno = (values_mes?: string): { mes: number; ano: number } => {
+export const getMesAno = (
+  values_mes?: string
+): { mes: number; ano: number } => {
   if (!values_mes) {
     throw new Error("Parâmetro 'values_mes' é obrigatório.");
   }

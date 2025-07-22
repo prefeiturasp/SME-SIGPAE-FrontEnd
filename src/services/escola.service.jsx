@@ -65,56 +65,31 @@ export const getEscolasSimplissima = (params = {}) => {
     });
 };
 
-export const getEscolasParaFiltros = (params = {}) => {
-  let url = new URL(`${API_URL}/escolas-para-filtros/`);
-  Object.keys(params).forEach((key) =>
-    url.searchParams.append(key, params[key])
-  );
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
+export const getEscolasParaFiltros = async (params = {}) => {
+  let url = `${API_URL}/escolas-para-filtros/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
-export const getEscolaPeriodosEscolares = (uuid) => {
-  let url = new URL(
-    `${API_URL}/escolas-para-filtros/${uuid}/periodos-escolares/`
-  );
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
+export const getEscolaPeriodosEscolares = async (uuid) => {
+  let url = `${API_URL}/escolas-para-filtros/${uuid}/periodos-escolares/`;
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
-export const getEscolaTiposAlimentacao = (uuid) => {
-  let url = new URL(
-    `${API_URL}/escolas-para-filtros/${uuid}/tipos-alimentacao/`
-  );
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
+export const getEscolaTiposAlimentacao = async (uuid) => {
+  let url = `${API_URL}/escolas-para-filtros/${uuid}/tipos-alimentacao/`;
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getEscolasSimplissimaComDRE = () => {

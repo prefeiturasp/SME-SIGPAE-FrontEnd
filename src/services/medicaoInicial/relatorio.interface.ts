@@ -23,5 +23,6 @@ export interface RelatorioAdesaoParams {
 
 export interface RelatorioAdesaoResponse extends RelatorioAdesaoPeriodo {}
 export interface RelatorioAdesaoExportResponse {
-  detail: string;
+  data: Object;
+  status: number;
 }
