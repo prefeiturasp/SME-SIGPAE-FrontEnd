@@ -22,6 +22,8 @@ export default ({ params }: Args) => {
       escola: params.unidade_educacional,
       periodos_escolares: params.periodos,
       tipos_alimentacao: params.tipos_alimentacao,
+      periodo_lancamento_de: params.periodo_lancamento_de,
+      periodo_lancamento_ate: params.periodo_lancamento_ate,
     });
     if (response.status === HTTP_STATUS.OK) {
       setExibirModalCentralDownloads(true);
@@ -40,6 +42,8 @@ export default ({ params }: Args) => {
       escola: params.unidade_educacional,
       periodos_escolares: params.periodos,
       tipos_alimentacao: params.tipos_alimentacao,
+      periodo_lancamento_de: params.periodo_lancamento_de,
+      periodo_lancamento_ate: params.periodo_lancamento_ate,
     });
     if (response.status === HTTP_STATUS.OK) {
       setExibirModalCentralDownloads(true);
