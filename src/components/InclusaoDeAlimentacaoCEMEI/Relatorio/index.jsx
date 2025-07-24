@@ -1,27 +1,32 @@
 import { Spin } from "antd";
-import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getInclusaoCEMEI } from "src/services/inclusaoDeAlimentacao";
-import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
+import { useEffect, useState } from "react";
+import { Form } from "react-final-form";
 import {
-  getVinculosTipoAlimentacaoPorEscola,
-  getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
-} from "src/services/cadastroTipoAlimentacao.service";
-import { visualizaBotoesDoFluxo } from "src/helpers/utilities";
+  exibeBotaoAprovar,
+  exibeBotaoNaoAprovar,
+  exibirBotaoMarcarConferencia,
+  exibirBotaoQuestionamento,
+} from "src/components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { statusEnum, TIPO_PERFIL } from "src/constants/shared";
-import { CODAE, DRE, TERCEIRIZADA } from "src/configs/constants";
-import { Form } from "react-final-form";
+import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
-import { ehUsuarioEmpresa } from "src/helpers/utilities";
+import { DRE } from "src/configs/constants";
+import { TIPO_PERFIL } from "src/constants/shared";
+import { visualizaBotoesDoFluxo } from "src/helpers/utilities";
+import {
+  getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
+  getVinculosTipoAlimentacaoPorEscola,
+} from "src/services/cadastroTipoAlimentacao.service";
+import { getInclusaoCEMEI } from "src/services/inclusaoDeAlimentacao";
+import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
 
 export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   const [uuid, setUuid] = useState(null);
@@ -125,21 +130,19 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     setIsSubmitting(false);
   };
 
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     setIsSubmitting(true);
-    endpointAprovaSolicitacao(uuid, values.justificativa, tipoSolicitacao).then(
-      (response) => {
-        if (response.status === HTTP_STATUS.OK) {
-          toastSuccess(toastAprovaMensagem);
-          getInclusaoCEMEIAsync();
-        } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(toastAprovaMensagemErro);
-        }
-      },
-      function () {
-        toastError(toastAprovaMensagemErro);
-      }
+    const response = await endpointAprovaSolicitacao(
+      uuid,
+      values.justificativa,
+      tipoSolicitacao
     );
+    if (response.status === HTTP_STATUS.OK) {
+      toastSuccess(toastAprovaMensagem);
+      getInclusaoCEMEIAsync();
+    } else {
+      toastError(toastAprovaMensagemErro);
+    }
   };
 
   useEffect(() => {
@@ -148,46 +151,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     getInclusaoCEMEIAsync(urlParams.get("uuid"));
   }, []);
 
-  const EXIBIR_BOTAO_NAO_APROVAR =
-    visao !== TERCEIRIZADA ||
-    (solicitacao &&
-      solicitacao.prioridade !== "REGULAR" &&
-      solicitacao.status === statusEnum.CODAE_QUESTIONADO &&
-      textoBotaoNaoAprova);
-
   const tipoPerfil = localStorage.getItem("tipo_perfil");
-  const EXIBIR_BOTAO_APROVAR =
-    (![
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
-      TIPO_PERFIL.TERCEIRIZADA,
-    ].includes(tipoPerfil) &&
-      textoBotaoAprova) ||
-    (solicitacao &&
-      (solicitacao.prioridade === "REGULAR" ||
-        [
-          statusEnum.TERCEIRIZADA_RESPONDEU_QUESTIONAMENTO,
-          statusEnum.CODAE_AUTORIZADO,
-        ].includes(solicitacao.status)) &&
-      textoBotaoAprova);
-
-  const EXIBIR_BOTAO_QUESTIONAMENTO =
-    [
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
-      TIPO_PERFIL.TERCEIRIZADA,
-    ].includes(tipoPerfil) &&
-    solicitacao &&
-    (solicitacao.prioridade !== "REGULAR" ||
-      (visao === CODAE && solicitacao.prioridade !== "REGULAR")) &&
-    [statusEnum.DRE_VALIDADO, statusEnum.CODAE_QUESTIONADO].includes(
-      solicitacao.status
-    );
-  const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
-    !ehUsuarioEmpresa() &&
-    visao === TERCEIRIZADA &&
-    solicitacao &&
-    [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(
-      solicitacao.status
-    );
 
   return (
     <Spin tip="Carregando..." spinning={!solicitacao || !vinculos}>
@@ -210,7 +174,10 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                     {visualizaBotoesDoFluxo(solicitacao) && (
                       <div className="row">
                         <div className="col-12 text-end">
-                          {EXIBIR_BOTAO_NAO_APROVAR && (
+                          {exibeBotaoNaoAprovar(
+                            solicitacao,
+                            textoBotaoNaoAprova
+                          ) && (
                             <Botao
                               texto={textoBotaoNaoAprova}
                               type={BUTTON_TYPE.BUTTON}
@@ -221,7 +188,11 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                               }}
                             />
                           )}
-                          {EXIBIR_BOTAO_QUESTIONAMENTO && (
+                          {exibirBotaoQuestionamento(
+                            solicitacao,
+                            visao,
+                            tipoPerfil
+                          ) && (
                             <Botao
                               texto={
                                 tipoPerfil ===
@@ -238,29 +209,25 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                               className="ms-3"
                             />
                           )}
-                          {EXIBIR_BOTAO_APROVAR &&
-                            textoBotaoAprova !== "Ciente" &&
-                            (visao === CODAE &&
-                            solicitacao.logs.filter(
-                              (log) =>
-                                log.status_evento_explicacao ===
-                                  "Terceirizada respondeu questionamento" &&
-                                !log.resposta_sim_nao
-                            ).length > 0 ? null : (
-                              <Botao
-                                texto={textoBotaoAprova}
-                                type={BUTTON_TYPE.BUTTON}
-                                onClick={() =>
-                                  visao === DRE
-                                    ? handleSubmit()
-                                    : setShowModalCodaeAutorizar(true)
-                                }
-                                disabled={isSubmitting}
-                                style={BUTTON_STYLE.GREEN}
-                                className="ms-3"
-                              />
-                            ))}
-                          {EXIBIR_BOTAO_MARCAR_CONFERENCIA && (
+                          {exibeBotaoAprovar(
+                            solicitacao,
+                            visao,
+                            textoBotaoAprova
+                          ) && (
+                            <Botao
+                              texto={textoBotaoAprova}
+                              type={BUTTON_TYPE.BUTTON}
+                              onClick={() =>
+                                visao === DRE
+                                  ? handleSubmit()
+                                  : setShowModalCodaeAutorizar(true)
+                              }
+                              disabled={isSubmitting}
+                              style={BUTTON_STYLE.GREEN}
+                              className="ms-3"
+                            />
+                          )}
+                          {exibirBotaoMarcarConferencia(solicitacao, visao) && (
                             <div className="form-group float-end mt-4">
                               {solicitacao.terceirizada_conferiu_gestao ? (
                                 <label className="ms-3 conferido">

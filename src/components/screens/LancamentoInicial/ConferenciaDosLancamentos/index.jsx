@@ -1,63 +1,65 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Field, Form } from "react-final-form";
-import HTTP_STATUS from "http-status-codes";
+import { Spin } from "antd";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { Spin } from "antd";
+import HTTP_STATUS from "http-status-codes";
+import { Fragment, useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
+import { useLocation } from "react-router-dom";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
 import InputText from "src/components/Shareable/Input/InputText";
+import ModalHistorico from "src/components/Shareable/ModalHistorico";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import Botao from "src/components/Shareable/Botao";
 import {
-  BUTTON_STYLE,
-  BUTTON_TYPE,
-} from "src/components/Shareable/Botao/constants";
-import { ModalOcorrencia } from "./components/ModalOcorrencia";
-import { BUTTON_ICON } from "src/components/Shareable/Botao/constants";
-import { TabelaLancamentosPeriodo } from "./components/TabelaLancamentosPeriodo";
+  ehEscolaTipoCEI,
+  getError,
+  getISOLocalDatetimeString,
+  usuarioEhDRE,
+  usuarioEhMedicao,
+} from "src/helpers/utilities";
+import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
+import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
+import {
+  getDiasCalendario,
+  getFeriadosNoMesComNome,
+  getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola,
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import {
+  codaeAprovaPeriodo,
+  codaeAprovaSolicitacaoMedicao,
+  codaeSolicitaCorrecaoUE,
+  dreAprovaMedicao,
+  dreAprovaSolicitacaoMedicao,
+  dreSolicitaCorrecaoUE,
+  getPeriodosGruposMedicao,
+  retrieveSolicitacaoMedicaoInicial,
+  updateSolicitacaoMedicaoInicial,
+} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import {
   medicaoInicialExportarOcorrenciasPDF,
   medicaoInicialExportarOcorrenciasXLSX,
   relatorioMedicaoInicialPDF,
 } from "src/services/relatorios";
-import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
-import {
-  getPeriodosGruposMedicao,
-  retrieveSolicitacaoMedicaoInicial,
-  dreAprovaMedicao,
-  dreAprovaSolicitacaoMedicao,
-  dreSolicitaCorrecaoUE,
-  codaeAprovaSolicitacaoMedicao,
-  codaeSolicitaCorrecaoUE,
-  codaeAprovaPeriodo,
-  updateSolicitacaoMedicaoInicial,
-} from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import {
-  getFeriadosNoMesComNome,
-  getDiasCalendario,
-  getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola,
-} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
+import { ModalEnviarParaCodaeECodaeAprovar } from "./components/ModalEnviarParaCodaeECodaeAprovar";
+import { ModalHistoricoCorrecoesPeriodo } from "./components/ModalHistoricoCorrecoesPeriodo";
+import { ModalOcorrencia } from "./components/ModalOcorrencia";
+import { ModalSolicitarCorrecaoUE } from "./components/ModalSolicitarCorrecaoUE";
+import { TabelaLancamentosPeriodo } from "./components/TabelaLancamentosPeriodo";
 import {
   MEDICAO_STATUS_DE_PROGRESSO,
   OCORRENCIA_STATUS_DE_PROGRESSO,
 } from "./constants";
 import "./style.scss";
-import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
-import { ModalEnviarParaCodaeECodaeAprovar } from "./components/ModalEnviarParaCodaeECodaeAprovar";
-import { ModalSolicitarCorrecaoUE } from "./components/ModalSolicitarCorrecaoUE";
-import { ModalHistoricoCorrecoesPeriodo } from "./components/ModalHistoricoCorrecoesPeriodo";
-import ModalHistorico from "src/components/Shareable/ModalHistorico";
-import {
-  ehEscolaTipoCEI,
-  usuarioEhDRE,
-  usuarioEhMedicao,
-  getError,
-  getISOLocalDatetimeString,
-} from "src/helpers/utilities";
+import { ModalPedirCorrecaoSemLancamentos } from "./components/ModalPedirCorrecaoSemLancamentos";
 
 export const ConferenciaDosLancamentos = () => {
   const location = useLocation();
@@ -87,6 +89,8 @@ export const ConferenciaDosLancamentos = () => {
     showModalHistoricoCorrecoesPeriodo,
     setShowModalHistoricoCorrecoesPeriodo,
   ] = useState(false);
+  const [showModalCorrecaoSemLancamentos, setShowModalCorrecaoSemLancamentos] =
+    useState(false);
   const [logCorrecaoOcorrencia, setLogCorrecaoOcorrencia] = useState(null);
   const [logCorrecaoOcorrenciaCODAE, setLogCorrecaoOcorrenciaCODAE] =
     useState(null);
@@ -666,6 +670,31 @@ export const ConferenciaDosLancamentos = () => {
                       </div>
                     </div>
                     <hr />
+                    {solicitacao.sem_lancamentos && (
+                      <>
+                        <div className="row">
+                          <div className="col-12">
+                            <div className="sem-lancamentos">
+                              <p className="titulo">
+                                Unidade sem lançamentos no mês
+                              </p>
+                              <p>
+                                Justificativa do envio da medição sem
+                                lançamentos:
+                              </p>
+                              <TextArea
+                                valorInicial={
+                                  solicitacao.justificativa_sem_lancamentos
+                                }
+                                disabled={true}
+                                height="100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <hr />
+                      </>
+                    )}
                     <div className="row">
                       <div className="col-12">
                         <p className="section-title-conf-lancamentos">
@@ -879,77 +908,94 @@ export const ConferenciaDosLancamentos = () => {
                         })}
                       </div>
                     </div>
-                    <div className="float-end">
-                      <Botao
-                        texto="Exportar PDF"
-                        style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
-                        onClick={() => handleClickDownload()}
-                        disabled={desabilitaBotaoExportarPDF()}
-                        tooltipExterno={
-                          desabilitaBotaoExportarPDF() &&
-                          "Só será possível exportar o PDF com as assinaturas, após a Ciência das Correções pela DRE."
-                        }
-                      />
-                      {((![
-                        "MEDICAO_APROVADA_PELA_DRE",
-                        "MEDICAO_CORRECAO_SOLICITADA",
-                        "MEDICAO_APROVADA_PELA_CODAE",
-                        "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-                      ].includes(solicitacao.status) &&
-                        usuarioEhDRE()) ||
-                        ([
-                          "MEDICAO_APROVADA_PELA_DRE",
-                          "MEDICAO_CORRIGIDA_PARA_CODAE",
-                        ].includes(solicitacao.status) &&
-                          usuarioEhMedicao())) && (
-                        <>
-                          <Botao
-                            className="ms-3"
-                            texto="Solicitar Correção"
-                            style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
-                            onClick={() =>
-                              setShowModalSolicitarCorrecaoUE(true)
-                            }
-                            disabled={desabilitarSolicitarCorrecao}
-                          />
-                          <Botao
-                            className="ms-3"
-                            texto={
-                              usuarioEhMedicao()
-                                ? "Aprovar Medição"
-                                : "Enviar para CODAE"
-                            }
-                            style={BUTTON_STYLE.GREEN}
-                            onClick={() =>
-                              setShowModalEnviarParaCodaeECodaeAprovar(true)
-                            }
-                            disabled={
-                              desabilitarEnviarParaCodaeECodaeAprovar ||
-                              ((usuarioEhMedicao() || usuarioEhDRE()) &&
-                                desabilitaBotaoExportarPDF())
-                            }
-                            tooltipExterno={
-                              usuarioEhMedicao() &&
-                              desabilitaBotaoExportarPDF() &&
-                              "Só será possível Aprovar Medição com as assinaturas, após a Ciência das Correções pela DRE."
-                            }
-                          />
-                        </>
-                      )}
-                      {usuarioEhDRE() && (
+                    {!solicitacao.sem_lancamentos && (
+                      <div className="float-end">
                         <Botao
-                          className="ms-3"
-                          texto="Ciente das Correções"
-                          style={BUTTON_STYLE.GREEN}
-                          onClick={async () => {
-                            setLoading(true);
-                            await atualizaSolicitacaoMedicaoInicial();
-                            setLoading(false);
-                          }}
-                          disabled={loading || !habilitaBotaoCienteCorrecoes()}
+                          texto="Exportar PDF"
+                          style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
+                          onClick={() => handleClickDownload()}
+                          disabled={desabilitaBotaoExportarPDF()}
+                          tooltipExterno={
+                            desabilitaBotaoExportarPDF() &&
+                            "Só será possível exportar o PDF com as assinaturas, após a Ciência das Correções pela DRE."
+                          }
                         />
-                      )}
-                    </div>
+                        {((![
+                          "MEDICAO_APROVADA_PELA_DRE",
+                          "MEDICAO_CORRECAO_SOLICITADA",
+                          "MEDICAO_APROVADA_PELA_CODAE",
+                          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+                        ].includes(solicitacao.status) &&
+                          usuarioEhDRE()) ||
+                          ([
+                            "MEDICAO_APROVADA_PELA_DRE",
+                            "MEDICAO_CORRIGIDA_PARA_CODAE",
+                          ].includes(solicitacao.status) &&
+                            usuarioEhMedicao())) && (
+                          <>
+                            <Botao
+                              className="ms-3"
+                              texto="Solicitar Correção"
+                              style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
+                              onClick={() =>
+                                setShowModalSolicitarCorrecaoUE(true)
+                              }
+                              disabled={desabilitarSolicitarCorrecao}
+                            />
+                            <Botao
+                              className="ms-3"
+                              texto={
+                                usuarioEhMedicao()
+                                  ? "Aprovar Medição"
+                                  : "Enviar para CODAE"
+                              }
+                              style={BUTTON_STYLE.GREEN}
+                              onClick={() =>
+                                setShowModalEnviarParaCodaeECodaeAprovar(true)
+                              }
+                              disabled={
+                                desabilitarEnviarParaCodaeECodaeAprovar ||
+                                ((usuarioEhMedicao() || usuarioEhDRE()) &&
+                                  desabilitaBotaoExportarPDF())
+                              }
+                              tooltipExterno={
+                                usuarioEhMedicao() &&
+                                desabilitaBotaoExportarPDF() &&
+                                "Só será possível Aprovar Medição com as assinaturas, após a Ciência das Correções pela DRE."
+                              }
+                            />
+                          </>
+                        )}
+                        {usuarioEhDRE() && (
+                          <Botao
+                            className="ms-3"
+                            texto="Ciente das Correções"
+                            style={BUTTON_STYLE.GREEN}
+                            onClick={async () => {
+                              setLoading(true);
+                              await atualizaSolicitacaoMedicaoInicial();
+                              setLoading(false);
+                            }}
+                            disabled={
+                              loading || !habilitaBotaoCienteCorrecoes()
+                            }
+                          />
+                        )}
+                      </div>
+                    )}
+                    {solicitacao.sem_lancamentos && usuarioEhMedicao() && (
+                      <div className="row">
+                        <div className="col-12 text-end">
+                          <Botao
+                            texto="Solicitar Correção"
+                            style={BUTTON_STYLE.GREEN_OUTLINE}
+                            onClick={async () => {
+                              setShowModalCorrecaoSemLancamentos(true);
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </form>
@@ -1006,6 +1052,21 @@ export const ConferenciaDosLancamentos = () => {
             solicitarCorrecaoMedicao();
           }}
         />
+        {solicitacao && (
+          <ModalPedirCorrecaoSemLancamentos
+            mes={mesSolicitacao}
+            ano={anoSolicitacao}
+            showModal={showModalCorrecaoSemLancamentos}
+            closeModal={() => setShowModalCorrecaoSemLancamentos(false)}
+            atualizarDados={async () => {
+              await getSolMedInicialAsync();
+              await getPeriodosGruposMedicaoAsync();
+              setLoading(false);
+            }}
+            setLoading={setLoading}
+            uuid={solicitacao.uuid}
+          />
+        )}
         {solicitacao && solicitacao.historico && (
           <ModalHistoricoCorrecoesPeriodo
             showModal={showModalHistoricoCorrecoesPeriodo}

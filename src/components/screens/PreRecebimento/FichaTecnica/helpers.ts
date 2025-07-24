@@ -214,7 +214,9 @@ export const carregarDadosCorrgir = async (
   setFicha: Dispatch<SetStateAction<FichaTecnicaDetalhadaComAnalise>>,
   setInitialValues: Dispatch<SetStateAction<Record<string, any>>>,
   setConferidos: Dispatch<SetStateAction<StateConferidosAnalise>>,
+  setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>,
   setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>,
+  setFabricantesCount: Dispatch<SetStateAction<number>>,
   setCarregando: Dispatch<SetStateAction<boolean>>
 ) => {
   try {
@@ -229,11 +231,17 @@ export const carregarDadosCorrgir = async (
     setInitialValues(geraInitialValuesCorrigir(fichaTecnica));
     carregaTagsCollapses(fichaTecnica, setConferidos);
     setFicha(fichaTecnica);
+    setFabricantesCount(fichaTecnica.envasador_distribuidor ? 2 : 1);
 
     listaInformacoesNutricionaisFichaTecnica.current =
       fichaTecnica.informacoes_nutricionais.map(
         ({ informacao_nutricional }) => informacao_nutricional
       );
+
+    if (fichaTecnica.arquivo) {
+      const arquivo = await carregarArquivo(fichaTecnica.arquivo);
+      setArquivo(arquivo);
+    }
 
     const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
     setProponente(response.data);
@@ -250,6 +258,7 @@ export const carregarDadosAtualizar = async (
   setInitialValues: Dispatch<SetStateAction<Record<string, any>>>,
   setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>,
   setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>,
+  setFabricantesCount: Dispatch<SetStateAction<number>>,
   setCarregando: Dispatch<SetStateAction<boolean>>
 ) => {
   try {
@@ -264,6 +273,8 @@ export const carregarDadosAtualizar = async (
     setInitialValues(geraInitialValuesCorrigir(fichaTecnica));
 
     setFicha(fichaTecnica);
+
+    setFabricantesCount(fichaTecnica.envasador_distribuidor ? 2 : 1);
 
     if (fichaTecnica.arquivo) {
       const arquivo = await carregarArquivo(fichaTecnica.arquivo);
@@ -569,6 +580,7 @@ export const carregaTagsCollapses = (
   setConferidos: Dispatch<SetStateAction<StateConferidosAnalise>>
 ) => {
   const stateConferidos: StateConferidosAnalise = {
+    fabricante_envasador: ficha.analise?.fabricante_envasador_conferido,
     armazenamento: ficha.analise?.armazenamento_conferido,
     conservacao: ficha.analise?.conservacao_conferido,
     detalhes_produto: ficha.analise?.detalhes_produto_conferido,
@@ -631,10 +643,23 @@ export const formataPayloadCadastroFichaTecnica = (
 export const formataPayloadCorrecaoFichaTecnica = (
   values: Record<string, any>,
   conferidos: StateConferidosAnalise,
+  proponente: TerceirizadaComEnderecoInterface,
+  fabricantesOptions: OptionsGenerico[],
+  fabricantesCount: number,
+  arquivo: ArquivoForm[],
   ehPereciveis: boolean,
   password: string
 ) => {
   let payload: FichaTecnicaPayload = {
+    ...(!conferidos.fabricante_envasador
+      ? gerarCamposProponenteFabricante(
+          values,
+          proponente,
+          fabricantesOptions,
+          fabricantesCount,
+          true
+        )
+      : {}),
     ...(!conferidos.detalhes_produto ? gerarCamposDetalhesProduto(values) : {}),
     ...(!conferidos.informacoes_nutricionais
       ? gerarCamposInformacoesNutricionais(values)
@@ -649,6 +674,10 @@ export const formataPayloadCorrecaoFichaTecnica = (
     ...(!conferidos.embalagem_e_rotulagem
       ? gerarCamposEmbalagemRotulagem(values, ehPereciveis)
       : {}),
+    ...(!conferidos.responsavel_tecnico
+      ? gerarCamposResponsavelTecnico(values, arquivo)
+      : {}),
+    ...(!conferidos.modo_preparo ? gerarCamposModoPreparo(values) : {}),
     password: password,
   };
 
@@ -666,16 +695,28 @@ export const ehInformacaoNutricional = (key: string) => {
 export const formataPayloadAtualizacaoFichaTecnica = (
   values: Record<string, any>,
   initialValues: Record<string, any>,
-  arquivo: ArquivoForm,
+  proponente: TerceirizadaComEnderecoInterface,
+  fabricantesOptions: OptionsGenerico[],
+  fabricantesCount: number,
+  arquivo: ArquivoForm[],
   password: string
 ): FichaTecnicaPayload => {
   let payload: FichaTecnicaPayload = {
+    ...gerarCamposProponenteFabricante(
+      values,
+      proponente,
+      fabricantesOptions,
+      fabricantesCount,
+      true
+    ),
     password: password,
   };
   let infosNutricionais = {};
 
   Object.keys(values).map((key) => {
-    if (initialValues[key] !== values[key]) {
+    const ehFabricante = key.includes("fabricante");
+
+    if (initialValues[key] !== values[key] && !ehFabricante) {
       if (key === "alergenicos" || key === "gluten") {
         payload[key] = stringToBoolean(values[key] as string);
       } else if (ehInformacaoNutricional(key)) {
@@ -686,7 +727,7 @@ export const formataPayloadAtualizacaoFichaTecnica = (
     }
   });
 
-  if (arquivo?.arquivo) {
+  if (arquivo[0]?.arquivo) {
     payload["arquivo"] = arquivo[0].arquivo;
   }
 
@@ -713,7 +754,8 @@ const gerarCamposProponenteFabricante = (
   values: Record<string, any>,
   proponente: TerceirizadaComEnderecoInterface,
   fabricantesOptions: OptionsGenerico[],
-  fabricantesCount: number
+  fabricantesCount: number,
+  ehAlterar: boolean = false
 ) => {
   const fabricantes: FabricanteFichaPayload[] = Array.from({
     length: fabricantesCount,
@@ -736,9 +778,9 @@ const gerarCamposProponenteFabricante = (
     };
   });
   return {
-    empresa: proponente.uuid,
+    ...(ehAlterar ? {} : { empresa: proponente.uuid }),
     fabricante: fabricantes[0]?.fabricante && fabricantes[0],
-    envasador_distribuidor: fabricantes[1]?.fabricante && fabricantes[1],
+    envasador_distribuidor: fabricantes[1]?.fabricante ? fabricantes[1] : {},
   };
 };
 

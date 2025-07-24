@@ -343,9 +343,8 @@ export const AcompanhamentoDeLancamentos = () => {
   };
 
   const resetForm = (form) => {
-    let diretoria_regional = form.getFieldState(
-      "diretoria_regional" || undefined
-    );
+    let diretoria_regional =
+      form.getFieldState("diretoria_regional") || undefined;
     form.reset();
     resetURL(["mes_ano", "lotes", "tipo_unidade", "escola"]);
     setInitialValues({
@@ -474,6 +473,10 @@ export const AcompanhamentoDeLancamentos = () => {
       });
       return prev;
     });
+  };
+
+  const solicitacaoPossuiLancamentos = (dado) => {
+    return !dado.sem_lancamentos;
   };
 
   const adicionaFiltroNaURL = (nome, valor) => {
@@ -718,9 +721,7 @@ export const AcompanhamentoDeLancamentos = () => {
                     <Spin tip="Carregando..." spinning={loadingComFiltros}>
                       {resultados && (
                         <>
-                          <div className="titulo-tabela mt-3 mb-3">
-                            Resultados
-                          </div>
+                          <div className="titulo-tabela m-3">Resultados</div>
                           {resultados.dados.length === 0 && (
                             <div>Nenhum resultado encontrado.</div>
                           )}
@@ -782,7 +783,10 @@ export const AcompanhamentoDeLancamentos = () => {
                                         <td className="col-2 text-center pt-3">
                                           {dado.log_mais_recente}
                                         </td>
-                                        <td className="col-2 text-center">
+                                        <td
+                                          className="col-2"
+                                          style={{ paddingLeft: "5.25%" }}
+                                        >
                                           <Botao
                                             type={BUTTON_TYPE.BUTTON}
                                             style={`${BUTTON_STYLE.GREEN_OUTLINE} border-0`}
@@ -831,23 +835,27 @@ export const AcompanhamentoDeLancamentos = () => {
                                                 }
                                               />
                                             )}
-                                          <Botao
-                                            type={BUTTON_TYPE.BUTTON}
-                                            style={`${BUTTON_STYLE.GREEN_OUTLINE} border-0`}
-                                            icon={BUTTON_ICON.DOWNLOAD}
-                                            onClick={() =>
-                                              handleClickDownload(dado.uuid)
-                                            }
-                                            disabled={
-                                              desabilitaAcoes(dado) ||
-                                              desabilitaExportarPDF(dado)
-                                            }
-                                            tooltipExterno={
-                                              getTooltipAcoes(dado) ||
-                                              (desabilitaExportarPDF(dado) &&
-                                                "Só será possível exportar o PDF com as assinaturas, após a Ciência das Correções pela DRE.")
-                                            }
-                                          />
+                                          {solicitacaoPossuiLancamentos(
+                                            dado
+                                          ) && (
+                                            <Botao
+                                              type={BUTTON_TYPE.BUTTON}
+                                              style={`${BUTTON_STYLE.GREEN_OUTLINE} border-0`}
+                                              icon={BUTTON_ICON.DOWNLOAD}
+                                              onClick={() =>
+                                                handleClickDownload(dado.uuid)
+                                              }
+                                              disabled={
+                                                desabilitaAcoes(dado) ||
+                                                desabilitaExportarPDF(dado)
+                                              }
+                                              tooltipExterno={
+                                                getTooltipAcoes(dado) ||
+                                                (desabilitaExportarPDF(dado) &&
+                                                  "Só será possível exportar o PDF com as assinaturas, após a Ciência das Correções pela DRE.")
+                                              }
+                                            />
+                                          )}
                                         </td>
                                       </tr>
                                     );

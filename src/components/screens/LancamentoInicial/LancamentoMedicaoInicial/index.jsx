@@ -3,7 +3,7 @@ import { Select, Skeleton, Spin } from "antd";
 import { addMonths, format, getMonth, getYear } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 import {
@@ -18,6 +18,7 @@ import { LancamentoPorPeriodo } from "./components/LancamentoPorPeriodo";
 import { LancamentoPorPeriodoCEI } from "./components/LancamentoPorPeriodoCEI";
 import Ocorrencias from "./components/Ocorrencias";
 
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import {
   DETALHAMENTO_DO_LANCAMENTO,
   LANCAMENTO_MEDICAO_INICIAL,
@@ -486,6 +487,28 @@ export default () => {
         <FluxoDeStatusMedicaoInicial
           solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
         />
+        {solicitacaoMedicaoInicial?.justificativa_codae_correcao_sem_lancamentos && (
+          <>
+            <hr />
+            <div className="row">
+              <div className="col-12">
+                <label className="codae-pede-correcao-sem-lancamentos">
+                  Solicitação de Correção da CODAE
+                </label>
+                <CKEditorField
+                  input={{
+                    onChange: () => {},
+                    value:
+                      solicitacaoMedicaoInicial.justificativa_codae_correcao_sem_lancamentos,
+                    onBlur: () => {},
+                  }}
+                  toolbar={false}
+                  disabled
+                />
+              </div>
+            </div>
+          </>
+        )}
         <hr className="linha-form mt-4 mb-4" />
         {solicitacaoMedicaoInicial &&
           solicitacaoMedicaoInicial.status !==

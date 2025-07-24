@@ -26,6 +26,7 @@ export default [
         Atomics: "readonly",
         SharedArrayBuffer: "readonly",
         global: "readonly",
+        process: "readonly",
       },
     },
     plugins: {

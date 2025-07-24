@@ -56,7 +56,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
       .reply(200, { results: [] });
     mock
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-      .reply(200, mockSolicitacaoMedicaoInicialEMEFMaio2025);
+      .replyOnce(200, mockSolicitacaoMedicaoInicialEMEFMaio2025);
     mock.onGet("/dias-calendario/").reply(200, mockDiasCalendarioEMEFMaio2025);
     mock
       .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
@@ -160,6 +160,10 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
     const botaoFinalizarModal = screen.getByTestId("botao-finalizar-modal");
 
     mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .replyOnce(200, mockSolicitacaoMedicaoInicialEMEFMaio2025);
+
+    mock
       .onPatch(
         `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/`
       )
@@ -206,14 +210,30 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
       .onPatch(
         `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/`
       )
-      .reply(200, mockSolicitacaoMedicaoInicialEMEFMaio2025Enviada);
+      .reply(200, mockSolicitacaoMedicaoInicialEMEFMaio2025Enviada[0]);
 
     fireEvent.click(botaoFinalizarModal);
+
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .replyOnce(200, mockSolicitacaoMedicaoInicialEMEFMaio2025Enviada);
 
     await waitFor(() => {
       expect(
         screen.getByText("Medição Inicial finalizada com sucesso!")
       ).toBeInTheDocument();
     });
+
+    expect(screen.queryByText("Export PDF")).not.toBeInTheDocument();
+  });
+
+  it("Exibe bloco de correção da CODAE", () => {
+    expect(
+      screen.getByText("Solicitação de Correção da CODAE")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Solicitação de Correção da CODAE")
+    ).toBeInTheDocument("Não pode fazer sem lançamentos!");
   });
 });
