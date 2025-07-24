@@ -1,4 +1,12 @@
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { deepCopy } from "src/helpers/utilities";
+import { getProtocoloDietaEspecial } from "src/services/relatorios";
 import { IRelatorioDietaRecreioFerias } from "../../interfaces";
 import "./style.scss";
 
@@ -11,6 +19,14 @@ export const Tabela = ({ ...props }) => {
     setDietas(copyDietas);
   };
 
+  const gerarProtocolo = async (dieta: IRelatorioDietaRecreioFerias) => {
+    try {
+      await getProtocoloDietaEspecial(dieta.uuid, dieta);
+    } catch {
+      toastError("Erro ao baixar Protocolo. Tente novamente mais tarde.");
+    }
+  };
+
   return (
     <>
       <div className="titulo">
@@ -19,7 +35,7 @@ export const Tabela = ({ ...props }) => {
       </div>
       <table>
         <thead>
-          <tr className="row">
+          <tr>
             <th className="col-3">Cod. EOL e Nome do Aluno</th>
             <th className="col-3">UE de Origem</th>
             <th className="col-3">UE de Destino</th>
@@ -52,12 +68,22 @@ export const Tabela = ({ ...props }) => {
                 </td>
               </tr>,
               dieta.collapsed && (
-                <tr key={`${key}_collapsed`}>
-                  <td>
-                    Relação por Diagnóstico:{" "}
+                <tr className="collapsed" key={`${key}_collapsed`}>
+                  <td colSpan={6}>
+                    <b>Relação por Diagnóstico:</b>{" "}
                     {dieta.alergias_intolerancias
                       .map((item) => item.descricao)
                       .join(", ")}
+                    <Botao
+                      texto="Gerar Protocolo"
+                      type={BUTTON_TYPE.BUTTON}
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                      icon={BUTTON_ICON.PRINT}
+                      className="float-end me-3"
+                      onClick={async () => {
+                        await gerarProtocolo(dieta);
+                      }}
+                    />
                   </td>
                 </tr>
               ),
