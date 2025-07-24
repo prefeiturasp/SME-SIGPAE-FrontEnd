@@ -57,7 +57,7 @@ export const Tabela = ({ ...props }) => {
                 <td>
                   De {dieta.data_inicio} até {dieta.data_termino}
                 </td>
-                <td onClick={() => setCollapse(key)}>
+                <td className="text-center" onClick={() => setCollapse(key)}>
                   <i
                     className={
                       dieta.collapsed
