@@ -12,7 +12,7 @@ import "./style.scss";
 
 export const Tabela = ({ ...props }) => {
   const { total, dietas, setDietas } = props;
-  const [baixandoProtocolo, setBaixandoProtocolo] = useState(false);
+  const [baixandoProtocolo, setBaixandoProtocolo] = useState<number>(-1);
 
   const setCollapse = (key: number) => {
     const copyDietas = deepCopy(dietas);
@@ -82,7 +82,7 @@ export const Tabela = ({ ...props }) => {
                         type={BUTTON_TYPE.BUTTON}
                         style={BUTTON_STYLE.GREEN_OUTLINE}
                         texto={
-                          baixandoProtocolo ? (
+                          baixandoProtocolo === key ? (
                             <img
                               src="/assets/image/ajax-loader.gif"
                               alt="ajax-loader"
@@ -91,12 +91,12 @@ export const Tabela = ({ ...props }) => {
                             "Gerar Protocolo"
                           )
                         }
-                        disabled={baixandoProtocolo}
+                        disabled={baixandoProtocolo === key}
                         className="ms-auto me-3"
                         onClick={async () => {
-                          setBaixandoProtocolo(true);
+                          setBaixandoProtocolo(key);
                           await gerarProtocolo(dieta);
-                          setBaixandoProtocolo(false);
+                          setBaixandoProtocolo(-1);
                         }}
                       />
                     </div>
