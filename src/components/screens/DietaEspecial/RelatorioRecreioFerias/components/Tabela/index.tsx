@@ -31,9 +31,9 @@ export const Tabela = ({ ...props }) => {
     <>
       <div className="titulo">
         Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS PARA RECREIO NAS
-        FÉRIAS: {total}
+        FÉRIAS: <span>{total}</span>
       </div>
-      <table>
+      <table className="mt-3">
         <thead>
           <tr>
             <th className="col-3">Cod. EOL e Nome do Aluno</th>
@@ -70,20 +70,24 @@ export const Tabela = ({ ...props }) => {
               dieta.collapsed && (
                 <tr className="collapsed" key={`${key}_collapsed`}>
                   <td colSpan={6}>
-                    <b>Relação por Diagnóstico:</b>{" "}
-                    {dieta.alergias_intolerancias
-                      .map((item) => item.descricao)
-                      .join(", ")}
-                    <Botao
-                      texto="Gerar Protocolo"
-                      type={BUTTON_TYPE.BUTTON}
-                      style={BUTTON_STYLE.GREEN_OUTLINE}
-                      icon={BUTTON_ICON.PRINT}
-                      className="float-end me-3"
-                      onClick={async () => {
-                        await gerarProtocolo(dieta);
-                      }}
-                    />
+                    <div className="d-flex align-items-center justify-content-between">
+                      <b className="mb-0">Relação por Diagnóstico:</b>{" "}
+                      <span className="ms-2">
+                        {dieta.alergias_intolerancias
+                          .map((item) => item.descricao)
+                          .join(", ")}
+                      </span>
+                      <Botao
+                        texto="Gerar Protocolo"
+                        type={BUTTON_TYPE.BUTTON}
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                        icon={BUTTON_ICON.PRINT}
+                        className="ms-auto me-3"
+                        onClick={async () => {
+                          await gerarProtocolo(dieta);
+                        }}
+                      />
+                    </div>
                   </td>
                 </tr>
               ),

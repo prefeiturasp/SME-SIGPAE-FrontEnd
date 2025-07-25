@@ -1,6 +1,15 @@
 @use "src/styles/variables.scss" as *;
 
 div.relatorio-recreio-nas-ferias {
+  div.titulo {
+    color: $green;
+    font-weight: bold;
+
+    span {
+      font-weight: bolder;
+    }
+  }
+
   table {
     width: 100%;
     font-size: 14px;

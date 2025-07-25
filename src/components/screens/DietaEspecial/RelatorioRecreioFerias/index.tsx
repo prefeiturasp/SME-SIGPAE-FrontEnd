@@ -5,6 +5,12 @@ import { Tabela } from "./components/Tabela";
 import { IRelatorioDietaRecreioFerias } from "./interfaces";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import { Spin } from "antd";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
 
 export const RelatorioRecreioFerias = () => {
   const [dietas, setDietas] = useState<IRelatorioDietaRecreioFerias[]>();
@@ -52,7 +58,7 @@ export const RelatorioRecreioFerias = () => {
       <Spin tip="Carregando..." spinning={loading}>
         {erro && <div>{erro}</div>}
         {!erro && (
-          <div className="card">
+          <div className="card mt-3">
             <div className="card-body">
               <Tabela dietas={dietas} setDietas={setDietas} total={total} />
               <div className="row">
@@ -70,6 +76,27 @@ export const RelatorioRecreioFerias = () => {
               {total === 0 && (
                 <div className="text-center mt-5">
                   Nenhum resultado encontrado
+                </div>
+              )}
+              {total > 0 && (
+                <div className="row">
+                  <div className="col-12 text-end">
+                    <Botao
+                      texto="Baixar Excel"
+                      type={BUTTON_TYPE.BUTTON}
+                      style={BUTTON_STYLE.GREEN}
+                      icon={BUTTON_ICON.FILE_EXCEL}
+                      onClick={async () => {}}
+                    />
+                    <Botao
+                      texto="Baixar PDF"
+                      type={BUTTON_TYPE.BUTTON}
+                      style={BUTTON_STYLE.GREEN}
+                      icon={BUTTON_ICON.FILE_PDF}
+                      onClick={async () => {}}
+                      className="ms-3"
+                    />
+                  </div>
                 </div>
               )}
             </div>
