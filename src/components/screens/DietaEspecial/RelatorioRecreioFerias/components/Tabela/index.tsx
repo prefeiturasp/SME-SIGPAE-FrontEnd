@@ -60,6 +60,7 @@ export const Tabela = ({ ...props }) => {
                 </td>
                 <td className="text-center" onClick={() => setCollapse(key)}>
                   <i
+                    data-testid={`i-collapsed-${key}`}
                     className={
                       dieta.collapsed
                         ? "fas fa-chevron-up"
@@ -79,6 +80,7 @@ export const Tabela = ({ ...props }) => {
                           .join(", ")}
                       </span>
                       <Botao
+                        dataTestId={`botao-gerar-protocolo-${key}`}
                         type={BUTTON_TYPE.BUTTON}
                         style={BUTTON_STYLE.GREEN_OUTLINE}
                         texto={
