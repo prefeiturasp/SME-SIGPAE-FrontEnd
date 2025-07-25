@@ -3,7 +3,7 @@ import "./style.scss";
 import { FormOutlined } from "@ant-design/icons";
 import ModalCadastrarProdutosEdital from "src/components/Shareable/ModalCadastrarProdutosEdital";
 
-export default ({ resultado, changePage }) => {
+export default ({ resultado, changePage, fetchData }) => {
   const [selecionado, setSelecionado] = useState(undefined);
   const [showModal, setShowModal] = useState(false);
 
@@ -64,6 +64,7 @@ export default ({ resultado, changePage }) => {
         showModal={showModal}
         produto={selecionado}
         changePage={() => changePage()}
+        onFinish={fetchData}
       />
     </>
   );

@@ -27,7 +27,7 @@ import { composeValidators } from "src/helpers/utilities";
 import "./style.scss";
 import { tipoStatus } from "src/helpers/utilities";
 
-export default ({ closeModal, showModal, produto, changePage }) => {
+export default ({ closeModal, showModal, produto, changePage, onFinish }) => {
   const [carregando, setCarregando] = useState(true);
   const [tipos, setTipos] = useState(undefined);
 
@@ -50,6 +50,7 @@ export default ({ closeModal, showModal, produto, changePage }) => {
       await atualizarProdutoEdital(payload, produto.uuid)
         .then(() => {
           toastSuccess("Alterações salvas com sucesso.");
+          if (typeof onFinish === "function") onFinish();
         })
         .catch((error) => {
           toastError(error.response.data[0]);
@@ -60,6 +61,7 @@ export default ({ closeModal, showModal, produto, changePage }) => {
           toastSuccess(
             "Cadastro de Produto Proveniente de Edital Efetuado com sucesso."
           );
+          if (typeof onFinish === "function") onFinish();
         })
         .catch((error) => {
           toastError(error.response.data[0]);
@@ -91,6 +93,7 @@ export default ({ closeModal, showModal, produto, changePage }) => {
                       Status
                     </label>
                     <Field
+                      dataTestId="status-select"
                       name="status"
                       component={Select}
                       defaultValue={produto ? produto.status : undefined}
@@ -114,6 +117,7 @@ export default ({ closeModal, showModal, produto, changePage }) => {
                       Nome
                     </label>
                     <Field
+                      dataTestId="nome-input"
                       name="nome"
                       defaultValue={produto ? produto.nome : undefined}
                       component={InputText}

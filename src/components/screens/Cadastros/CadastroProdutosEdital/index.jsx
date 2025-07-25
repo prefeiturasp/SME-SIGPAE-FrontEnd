@@ -45,7 +45,7 @@ export default () => {
         setResultado(response.data.results);
         setTotal(response.data.count);
       }
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao tentar trocar página");
     }
     setCarregando(false);
@@ -63,10 +63,15 @@ export default () => {
           setFiltros={setFiltros}
           setPage={setPage}
           changePage={() => changePage(page)}
+          fetchData={fetchData}
         />
         {resultado && (
           <>
-            <Tabela resultado={resultado} changePage={() => changePage(page)} />
+            <Tabela
+              resultado={resultado}
+              changePage={() => changePage(page)}
+              fetchData={fetchData}
+            />
             <Paginacao
               className="mt-3 mb-3"
               current={page || 1}

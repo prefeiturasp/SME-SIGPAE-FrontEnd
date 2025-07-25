@@ -23,6 +23,7 @@ export default ({
   setFiltros,
   setPage,
   changePage,
+  fetchData,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [open, setOpen] = useState(false);
@@ -49,12 +50,13 @@ export default ({
         status: formValues.status,
       };
       const response = await getCadastroProdutosEdital(payload);
+
       if (response.status === HTTP_STATUS.OK) {
         setResultado(response.data.results);
         setTotal(response.data.count);
         setFiltros(payload);
       }
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao tentar filtrar os Itens");
     }
     setCarregando(false);
@@ -69,8 +71,12 @@ export default ({
           <form onSubmit={handleSubmit}>
             <div className="row mt-3 mb-3">
               <div className="col-8">
-                <label className="col-form-label mb-1">Nome</label>
+                <label htmlFor="nome_item" className="col-form-label mb-1">
+                  Nome
+                </label>
                 <Field
+                  id="nome_item"
+                  data-testid="nome_item_test"
                   component={AutoCompleteField}
                   dataSource={getNomesProdutosFiltrado(values.nome_item)}
                   name="nome_item"
@@ -139,6 +145,7 @@ export default ({
         closeModal={() => setShowModal(false)}
         showModal={showModal}
         changePage={() => changePage()}
+        onFinish={fetchData}
       />
     </>
   );
