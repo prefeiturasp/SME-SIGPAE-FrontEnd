@@ -1,6 +1,6 @@
+import { useState } from "react";
 import Botao from "src/components/Shareable/Botao";
 import {
-  BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
@@ -12,6 +12,7 @@ import "./style.scss";
 
 export const Tabela = ({ ...props }) => {
   const { total, dietas, setDietas } = props;
+  const [baixandoProtocolo, setBaixandoProtocolo] = useState(false);
 
   const setCollapse = (key: number) => {
     const copyDietas = deepCopy(dietas);
@@ -78,13 +79,24 @@ export const Tabela = ({ ...props }) => {
                           .join(", ")}
                       </span>
                       <Botao
-                        texto="Gerar Protocolo"
                         type={BUTTON_TYPE.BUTTON}
                         style={BUTTON_STYLE.GREEN_OUTLINE}
-                        icon={BUTTON_ICON.PRINT}
+                        texto={
+                          baixandoProtocolo ? (
+                            <img
+                              src="/assets/image/ajax-loader.gif"
+                              alt="ajax-loader"
+                            />
+                          ) : (
+                            "Gerar Protocolo"
+                          )
+                        }
+                        disabled={baixandoProtocolo}
                         className="ms-auto me-3"
                         onClick={async () => {
+                          setBaixandoProtocolo(true);
                           await gerarProtocolo(dieta);
+                          setBaixandoProtocolo(false);
                         }}
                       />
                     </div>
