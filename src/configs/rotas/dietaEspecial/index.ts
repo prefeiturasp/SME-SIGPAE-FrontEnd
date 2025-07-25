@@ -5,11 +5,14 @@ import {
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhCogestorDRE,
+  usuarioEhCoordenadorCODAE,
   usuarioEhCoordenadorNutriCODAE,
   usuarioEhCoordenadorNutriSupervisao,
   usuarioEhDRE,
   usuarioEhDinutreDiretoria,
   usuarioEhEmpresaTerceirizada,
+  usuarioEhEscola,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhGticCODAE,
@@ -17,8 +20,6 @@ import {
   usuarioEhNutricionistaSupervisao,
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
-  usuarioEhCoordenadorCODAE,
-  usuarioEhEscola,
 } from "src/helpers/utilities";
 import {
   StatusSolicitacoesDietaEspecial,
@@ -35,12 +36,13 @@ import ProtocoloPadraoDietaEspecialPage from "src/pages/DietaEspecial/ProtocoloP
 import RelatorioAlunosDietasAtivasInativasPage from "src/pages/DietaEspecial/RelatorioAlunosDietasAtivasInativasPage.jsx";
 import RelatorioDietasAutorizadas from "src/pages/DietaEspecial/RelatorioDietasAutorizadas";
 import RelatorioDietasCanceladas from "src/pages/DietaEspecial/RelatorioDietasCanceladas";
-import RelatorioHistoricoDietasPage from "src/pages/DietaEspecial/RelatorioHistoricoDietasPage";
 import RelatorioGerencialDietas from "src/pages/DietaEspecial/RelatorioGerencialDietas.jsx";
 import RelatorioGestaoDietaEspecial from "src/pages/DietaEspecial/RelatorioGestaoDietaEspecial";
+import RelatorioHistoricoDietasPage from "src/pages/DietaEspecial/RelatorioHistoricoDietasPage";
 import RelatorioQuantitativoClassificacaoDietaEspPage from "src/pages/DietaEspecial/RelatorioQuantitativoClassificacaoDietaEspPage";
 import RelatorioQuantitativoDiagDietaEspPage from "src/pages/DietaEspecial/RelatorioQuantitativoDiagDietaEspPage";
 import RelatorioQuantitativoSolicDietaEspPage from "src/pages/DietaEspecial/RelatorioQuantitativoSolicDietaEspPage";
+import { RelatorioRecreioFeriasPage } from "src/pages/DietaEspecial/RelatorioRecreioFeriasPage";
 import { AlteracaoUEPage } from "src/pages/Escola/DietaEspecial/AlteracaoUEPage";
 import { DietaEspecialEscolaPage } from "src/pages/Escola/DietaEspecial/DietaEspecialEscolaPage";
 
@@ -213,7 +215,6 @@ export const rotasDietaEspecial: Array<RotaInterface> = [
       usuarioEhDRE() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
-      usuarioEhAdministradorNutriCODAE() ||
       usuarioEhCoordenadorNutriSupervisao() ||
       usuarioEhAdministradorNutriCODAE() ||
       usuarioEhCoordenadorNutriCODAE() ||
@@ -232,7 +233,6 @@ export const rotasDietaEspecial: Array<RotaInterface> = [
       usuarioEhDRE() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
-      usuarioEhAdministradorNutriCODAE() ||
       usuarioEhCoordenadorNutriSupervisao() ||
       usuarioEhAdministradorNutriCODAE() ||
       usuarioEhCoordenadorNutriCODAE() ||
@@ -303,5 +303,21 @@ export const rotasDietaEspecial: Array<RotaInterface> = [
       usuarioEhEmpresaTerceirizada() ||
       ehUsuarioRelatorios() ||
       usuarioEhDinutreDiretoria(),
+  },
+  {
+    path: `/${constants.DIETA_ESPECIAL}/${constants.RELATORIO_RECREIO_NAS_FERIAS}`,
+    component: RelatorioRecreioFeriasPage,
+    tipoUsuario:
+      usuarioEhEscola() ||
+      usuarioEhCogestorDRE() ||
+      usuarioEhEmpresaTerceirizada() ||
+      usuarioEhCODAEGestaoAlimentacao() ||
+      usuarioEhNutricionistaSupervisao() ||
+      usuarioEhAdministradorNutriCODAE() ||
+      usuarioEhCoordenadorNutriCODAE() ||
+      usuarioEhCODAENutriManifestacao() ||
+      usuarioEhDinutreDiretoria() ||
+      usuarioEhMedicao() ||
+      usuarioEhCODAEGabinete(),
   },
 ];
