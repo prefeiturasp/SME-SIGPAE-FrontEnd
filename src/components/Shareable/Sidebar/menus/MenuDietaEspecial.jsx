@@ -8,6 +8,7 @@ import {
   RELATORIO_HISTORICO_DIETAS,
   RELATORIO_RECREIO_NAS_FERIAS,
 } from "src/configs/constants";
+import { ENVIRONMENT } from "src/constants/config";
 import { getNomeCardAguardandoAutorizacao } from "src/helpers/dietaEspecial";
 import {
   ehUsuarioRelatorios,
@@ -87,17 +88,18 @@ const MenuDietaEspecial = ({ activeMenu, onSubmenuClick }) => {
     usuarioEhGticCODAE() ||
     usuarioEhDinutreDiretoria();
   const exibeRelatorioRecreioNasFerias =
-    usuarioEhEscola() ||
-    usuarioEhCogestorDRE() ||
-    usuarioEhEmpresaTerceirizada() ||
-    usuarioEhCODAEGestaoAlimentacao() ||
-    usuarioEhNutricionistaSupervisao() ||
-    usuarioEhAdministradorNutriCODAE() ||
-    usuarioEhCoordenadorNutriCODAE() ||
-    usuarioEhCODAENutriManifestacao() ||
-    usuarioEhDinutreDiretoria() ||
-    usuarioEhMedicao() ||
-    usuarioEhCODAEGabinete();
+    !ENVIRONMENT.includes("production") &&
+    (usuarioEhEscola() ||
+      usuarioEhCogestorDRE() ||
+      usuarioEhEmpresaTerceirizada() ||
+      usuarioEhCODAEGestaoAlimentacao() ||
+      usuarioEhNutricionistaSupervisao() ||
+      usuarioEhAdministradorNutriCODAE() ||
+      usuarioEhCoordenadorNutriCODAE() ||
+      usuarioEhCODAENutriManifestacao() ||
+      usuarioEhDinutreDiretoria() ||
+      usuarioEhMedicao() ||
+      usuarioEhCODAEGabinete());
 
   return (
     <Menu
