@@ -340,6 +340,7 @@ class CadastroLote extends Component {
               <div className="row pt-3">
                 <div className="col-8">
                   <Field
+                    dataTestId="diretoria-regional-select"
                     label="DRE"
                     component={Select}
                     name="diretoria_regional"
@@ -388,6 +389,7 @@ class CadastroLote extends Component {
               <div className="row pt-3">
                 <div className="col-4">
                   <Field
+                    dataTestId="iniciais-dre-input"
                     component={InputText}
                     label="Nome do Lote (Iniciais da DRE)"
                     className="form-control"
@@ -400,6 +402,7 @@ class CadastroLote extends Component {
                 </div>
                 <div className="col-4">
                   <Field
+                    dataTestId="numero-lote-input"
                     component={InputText}
                     label="Nº do Lote"
                     className="form-control"
@@ -411,6 +414,7 @@ class CadastroLote extends Component {
                 </div>
                 <div className="col-4">
                   <Field
+                    dataTestId="tipo-gestao-select"
                     component={Select}
                     label="Tipo de Gestão"
                     name="tipo_gestao"
