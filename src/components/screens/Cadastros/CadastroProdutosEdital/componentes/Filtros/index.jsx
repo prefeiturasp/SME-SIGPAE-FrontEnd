@@ -118,7 +118,7 @@ export default ({
                   className="float-end ms-3"
                   onClick={() => {
                     form.reset({});
-                    setResultado(undefined);
+                    fetchData();
                     setPage(1);
                   }}
                 />
