@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import ModalCadastrarProdutosEdital from "src/components/Shareable/ModalCadastrarProdutosEdital";
 import { Form, Field } from "react-final-form";
 import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
-import { ASelect } from "src/components/Shareable/MakeField";
-import { CaretDownOutlined } from "@ant-design/icons";
-import { Select as SelectAntd } from "antd";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -13,6 +10,7 @@ import {
 import { getCadastroProdutosEdital } from "src/services/produto.service";
 import HTTP_STATUS from "http-status-codes";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
+import Select from "src/components/Shareable/Select";
 
 export default ({
   setResultado,
@@ -23,15 +21,9 @@ export default ({
   setFiltros,
   setPage,
   changePage,
+  fetchData,
 }) => {
   const [showModal, setShowModal] = useState(false);
-  const [open, setOpen] = useState(false);
-  const { Option } = SelectAntd;
-  const opcoes = status
-    ? status.map((tipo) => {
-        return <Option key={tipo.status}>{tipo.status}</Option>;
-      })
-    : [];
 
   const getNomesProdutosFiltrado = (nomeItem) => {
     if (nomeItem) {
@@ -49,12 +41,13 @@ export default ({
         status: formValues.status,
       };
       const response = await getCadastroProdutosEdital(payload);
+
       if (response.status === HTTP_STATUS.OK) {
         setResultado(response.data.results);
         setTotal(response.data.count);
         setFiltros(payload);
       }
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao tentar filtrar os Itens");
     }
     setCarregando(false);
@@ -69,8 +62,12 @@ export default ({
           <form onSubmit={handleSubmit}>
             <div className="row mt-3 mb-3">
               <div className="col-8">
-                <label className="col-form-label mb-1">Nome</label>
+                <label htmlFor="nome_item" className="col-form-label">
+                  Nome
+                </label>
                 <Field
+                  id="nome_item"
+                  dataTestId="nome-item-test"
                   component={AutoCompleteField}
                   dataSource={getNomesProdutosFiltrado(values.nome_item)}
                   name="nome_item"
@@ -81,25 +78,20 @@ export default ({
               <div className="col-4">
                 <label className="col-form-label">Status</label>
                 <Field
-                  component={ASelect}
-                  className="input-busca-tipo-item"
-                  suffixIcon={
-                    <CaretDownOutlined onClick={() => setOpen(!open)} />
-                  }
-                  open={open}
-                  onClick={() => setOpen(!open)}
-                  onBlur={() => setOpen(false)}
-                  showSearch
+                  dataTestId="filtro-status-select"
                   name="status"
-                  filterOption={(inputValue, option) =>
-                    option.props.children
-                      .toString()
-                      .toLowerCase()
-                      .includes(inputValue.toLowerCase())
+                  component={Select}
+                  options={
+                    status
+                      ? [{ uuid: "", nome: "Selecione uma opção" }].concat(
+                          status &&
+                            status.map((tipo) => {
+                              return { uuid: tipo.status, nome: tipo.status };
+                            })
+                        )
+                      : []
                   }
-                >
-                  {opcoes}
-                </Field>
+                />
               </div>
             </div>
             <div className="row mb-3">
@@ -126,7 +118,7 @@ export default ({
                   className="float-end ms-3"
                   onClick={() => {
                     form.reset({});
-                    setResultado(undefined);
+                    fetchData();
                     setPage(1);
                   }}
                 />
@@ -139,6 +131,7 @@ export default ({
         closeModal={() => setShowModal(false)}
         showModal={showModal}
         changePage={() => changePage()}
+        onFinish={fetchData}
       />
     </>
   );
