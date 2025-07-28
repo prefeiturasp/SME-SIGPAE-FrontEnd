@@ -1,7 +1,13 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import mock from "src/services/_mock";
-import { act, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
@@ -77,5 +83,65 @@ describe("Teste de Solicitação de Kit Lanche", () => {
         )
       ).toHaveLength(1);
     });
+  });
+
+  it("Testa card Rascunhos", async () => {
+    expect(screen.getAllByText(/Rascunhos/i)).toHaveLength(1);
+
+    const primeiroRascunho = screen.getByTestId(`card-rascunho-0`);
+    const botaoDeletarPrimeiro = screen.getByTestId("btn-delete-rascunho-0");
+    const botaoEditarPrimeiro = screen.getByTestId("btn-edit-rascunho-0");
+    expect(
+      within(primeiroRascunho).getByText(
+        /Solicitação de Kit Lanche Passeio #73D27/i
+      )
+    ).toBeInTheDocument();
+    expect(
+      within(primeiroRascunho).getByText(/Data do evento/i)
+    ).toBeInTheDocument();
+    expect(
+      within(primeiroRascunho).getByText("24/03/2025")
+    ).toBeInTheDocument();
+    expect(
+      within(primeiroRascunho).getByText(/Local do passeio/i)
+    ).toBeInTheDocument();
+    expect(within(primeiroRascunho).getByText(/dasdasd/i)).toBeInTheDocument();
+    expect(
+      within(primeiroRascunho).getByText(/Nº de Alunos participantes/i)
+    ).toBeInTheDocument();
+    expect(within(primeiroRascunho).getByText("1")).toBeInTheDocument();
+    expect(
+      within(primeiroRascunho).getByText("Salvo em: 12/03/2025 17:04:12")
+    ).toBeInTheDocument();
+    expect(within(primeiroRascunho).getByText(/RASCUNHO/i)).toBeInTheDocument();
+    fireEvent.click(botaoDeletarPrimeiro);
+    fireEvent.click(botaoEditarPrimeiro);
+
+    const segundoRascunho = screen.getByTestId(`card-rascunho-1`);
+    const botaoDeletarSegundo = screen.getByTestId("btn-delete-rascunho-1");
+    const botaoEditarSegundo = screen.getByTestId("btn-edit-rascunho-1");
+    expect(
+      within(segundoRascunho).getByText(
+        /Solicitação de Kit Lanche Passeio #F0835/i
+      )
+    ).toBeInTheDocument();
+    expect(
+      within(segundoRascunho).getByText(/Data do evento/i)
+    ).toBeInTheDocument();
+    expect(within(segundoRascunho).getByText("02/04/2025")).toBeInTheDocument();
+    expect(
+      within(segundoRascunho).getByText(/Local do passeio/i)
+    ).toBeInTheDocument();
+    expect(within(segundoRascunho).getByText(/asdasdasd/i)).toBeInTheDocument();
+    expect(
+      within(segundoRascunho).getByText(/Nº de Alunos participantes/i)
+    ).toBeInTheDocument();
+    expect(within(segundoRascunho).getByText("123")).toBeInTheDocument();
+    expect(
+      within(segundoRascunho).getByText("Salvo em: 17/03/2025 14:43:45")
+    ).toBeInTheDocument();
+    expect(within(segundoRascunho).getByText(/RASCUNHO/i)).toBeInTheDocument();
+    fireEvent.click(botaoDeletarSegundo);
+    fireEvent.click(botaoEditarSegundo);
   });
 });
