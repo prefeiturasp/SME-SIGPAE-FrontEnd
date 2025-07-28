@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import mock from "src/services/_mock";
-import { act } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
@@ -23,15 +23,13 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     mock
       .onGet("/downloads/quantidade-nao-vistos/")
       .reply(200, { quantidade_nao_vistos: 170 });
-    mock
-      .onGet("/notificacoes/")
-      .reply(200, {
-        next: null,
-        previous: null,
-        count: 0,
-        page_size: 4,
-        results: [],
-      });
+    mock.onGet("/notificacoes/").reply(200, {
+      next: null,
+      previous: null,
+      count: 0,
+      page_size: 4,
+      results: [],
+    });
     mock.onGet("/api-version/").reply(200, APIMockVersion);
     mock
       .onGet("/downloads/quantidade-nao-vistos/")
@@ -66,6 +64,18 @@ describe("Teste de Solicitação de Kit Lanche", () => {
           <SolicitacaoDeKitLanche meusDados={mockMeusDadosEscolaEMEFPericles} />
         </MemoryRouter>
       );
+    });
+  });
+
+  it("Testa card Matriculados", async () => {
+    await waitFor(() => {
+      expect(screen.getAllByText(/Nº de Matriculados/i)).toHaveLength(1);
+      expect(screen.getAllByText(/524/i)).toHaveLength(1);
+      expect(
+        screen.getAllByText(
+          /Informação automática disponibilizada pelo Cadastro da Unidade Escolar/i
+        )
+      ).toHaveLength(1);
     });
   });
 });
