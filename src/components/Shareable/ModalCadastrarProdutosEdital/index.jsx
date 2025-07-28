@@ -93,19 +93,21 @@ export default ({ closeModal, showModal, produto, changePage, onFinish }) => {
                       Status
                     </label>
                     <Field
-                      dataTestId="status-select"
+                      dataTestId="produto-status-select"
                       name="status"
                       component={Select}
                       defaultValue={produto ? produto.status : undefined}
                       //disabled={item ? true : false}
-                      options={[
-                        { uuid: "", nome: "Selecione uma opção" },
-                      ].concat(
-                        tipos &&
-                          tipos.map((tipo) => {
-                            return { uuid: tipo.uuid, nome: tipo.status };
-                          })
-                      )}
+                      options={
+                        tipos
+                          ? [{ uuid: "", nome: "Selecione uma opção" }].concat(
+                              tipos &&
+                                tipos.map((tipo) => {
+                                  return { uuid: tipo.uuid, nome: tipo.status };
+                                })
+                            )
+                          : []
+                      }
                       required
                       validate={selectValidate}
                       onChange
@@ -117,7 +119,7 @@ export default ({ closeModal, showModal, produto, changePage, onFinish }) => {
                       Nome
                     </label>
                     <Field
-                      dataTestId="nome-input"
+                      dataTestId="produto-nome-input"
                       name="nome"
                       defaultValue={produto ? produto.nome : undefined}
                       component={InputText}
