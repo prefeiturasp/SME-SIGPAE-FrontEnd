@@ -552,7 +552,7 @@ export class SolicitacaoDeKitLanche extends Component {
             </Spin>
             <br />
             <h3 className="page-title mt-0">{this.state.title}</h3>
-            <div className="card mt-3 p-4">
+            <div className="card mt-3 p-4" data-testid="card-solicitacao">
               {ehCei && (
                 <div className="form-group row">
                   <p className="dre-name">

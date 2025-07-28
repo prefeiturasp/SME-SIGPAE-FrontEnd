@@ -144,4 +144,59 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     fireEvent.click(botaoDeletarSegundo);
     fireEvent.click(botaoEditarSegundo);
   });
+
+  it("Testa card Nova Solicitação", async () => {
+    const cardSolicitacao = screen.getByTestId(`card-solicitacao`);
+    expect(
+      within(cardSolicitacao).getAllByText(/Data do passeio/i)
+    ).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText(/Local do passeio/i)
+    ).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText(/Número de alunos/i)
+    ).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText("Evento/Atividade")
+    ).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText(/Tempo previsto do passeio/i)
+    ).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText("até 4 horas (1 Kit)")
+    ).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText("de 5 a 7 horas (2 Kits)")
+    ).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText("8 horas ou mais (3 Kits)")
+    ).toHaveLength(1);
+
+    // expect(within(cardSolicitacao).getAllByText("Até 4 horas:")).toHaveLength(1);
+    // expect(within(cardSolicitacao).getAllByText((_, node) =>
+    //     node.textContent?.includes('Até 4 horas: Escolher 1 Kit entre os modelos estabelecidos contratualmente')
+    // )
+    // ).toHaveLength(1);
+
+    expect(
+      within(cardSolicitacao).getAllByText(/Selecione a opção desejada/i)
+    ).toHaveLength(1);
+    expect(within(cardSolicitacao).getAllByText("KIT")).toHaveLength(1);
+    expect(within(cardSolicitacao).getAllByText(/teste/i)).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText(/Número total de kits/i)
+    ).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText(
+        /Selecionar alunos com dieta especial/i
+      )
+    ).toHaveLength(1);
+    expect(within(cardSolicitacao).getAllByText(/Código EOL/i)).toHaveLength(1);
+    expect(within(cardSolicitacao).getAllByText(/Nome do Aluno/i)).toHaveLength(
+      1
+    );
+    expect(within(cardSolicitacao).getAllByText(/Observações/i)).toHaveLength(
+      1
+    );
+  });
 });
