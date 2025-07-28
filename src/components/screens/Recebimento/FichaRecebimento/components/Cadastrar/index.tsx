@@ -205,7 +205,6 @@ export default () => {
       }
 
       ocorrencias.push(ocorrencia);
-      idx++;
     }
 
     return ocorrencias;
