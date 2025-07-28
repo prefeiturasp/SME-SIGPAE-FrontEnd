@@ -21,10 +21,11 @@ export default class AutoCompleteField extends Component {
       maxlength,
       proibeNumeros,
       inputOnChange,
+      dataTestId,
       ...props
     } = this.props;
     return (
-      <div className="input">
+      <div className="input" data-testid={dataTestId}>
         {label && [
           required && (
             <span key={0} className="required-asterisk">

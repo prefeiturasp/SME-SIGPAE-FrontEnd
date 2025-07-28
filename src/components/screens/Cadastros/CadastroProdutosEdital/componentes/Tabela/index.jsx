@@ -19,7 +19,7 @@ export default ({ resultado, changePage, fetchData }) => {
           <div className="col-12 text-center">Nenhum resultado encontrado</div>
         </div>
       ) : (
-        <div className="row">
+        <div className="row" data-testid="tabela-produtos-edital">
           <div className="col-12">
             <p>
               <b>Produtos Cadastrados</b>
