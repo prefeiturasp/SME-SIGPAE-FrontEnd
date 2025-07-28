@@ -72,4 +72,14 @@ describe("Carrega página de Cadastro de Produtos Provenientes do Edital", () =>
       expect(within(tabela).getByText(/ALCATRA DO KELWY/i)).toBeInTheDocument();
     });
   });
+
+  it("Verifica presença de botão editar e abre modal de edição", async () => {
+    const botaoEditar = screen.getAllByText("Editar")[0].closest("button");
+    expect(botaoEditar).toBeInTheDocument();
+    fireEvent.click(botaoEditar);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Editar Produto/i)).toBeInTheDocument();
+    });
+  });
 });
