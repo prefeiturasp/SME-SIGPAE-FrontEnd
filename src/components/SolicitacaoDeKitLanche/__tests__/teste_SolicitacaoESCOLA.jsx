@@ -202,7 +202,7 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     );
   });
 
-  it("Testa a seleção de data", async () => {
+  it("Testa a seleção de data do passeio", async () => {
     const usuario = userEvent.setup();
     const datepickerInput = screen
       .getByTestId("data-passeio")
@@ -244,5 +244,63 @@ describe("Teste de Solicitação de Kit Lanche", () => {
       .querySelector("input");
     fireEvent.change(inputManual, { target: { value: "06/08/2025" } });
     expect(inputManual).toHaveValue("06/08/2025");
+  });
+
+  it("Testa o input local do Passeio", async () => {
+    const usuario = userEvent.setup();
+    const campoInput = screen.getByTestId("local-passeio");
+
+    expect(campoInput).toHaveValue("");
+    await usuario.type(campoInput, "Texto de teste");
+    expect(campoInput).toHaveValue("Texto de teste");
+
+    await usuario.clear(campoInput);
+    expect(campoInput).toHaveValue("");
+  });
+
+  it("Testa o input número de alunos", async () => {
+    const usuario = userEvent.setup();
+    const campoInput = screen.getByTestId("numero-alunos");
+    expect(campoInput).toHaveValue("");
+
+    await usuario.type(campoInput, "521");
+    expect(campoInput).toHaveValue("521");
+
+    const mensagemErro = screen.queryByTestId("erro-numero-alunos");
+    expect(mensagemErro).not.toBeInTheDocument();
+
+    await usuario.clear(campoInput);
+    expect(campoInput).toHaveValue("");
+  });
+
+  it("Testa o input número de alunos quando número de alunos for maior que o permitido", async () => {
+    const usuario = userEvent.setup();
+    const campoInput = screen.getByTestId("numero-alunos");
+    expect(campoInput).toHaveValue("");
+
+    await usuario.type(campoInput, "621");
+    expect(campoInput).toHaveValue("621");
+
+    const iconeErro = screen.getByTestId("erro-numero-alunos");
+    expect(iconeErro).toBeInTheDocument();
+
+    await usuario.hover(iconeErro);
+    const tooltip = await screen.findByRole("tooltip");
+    expect(tooltip).toHaveTextContent(
+      /O número de alunos não pode ser maior que 524/i
+    );
+    expect(screen.getByText(/Não pode ser maior que 524/i)).toBeInTheDocument();
+  });
+
+  it("Testa o input do nome do evento", async () => {
+    const usuario = userEvent.setup();
+    const campoInput = screen.getByTestId("nome-evento-atividade");
+
+    expect(campoInput).toHaveValue("");
+    await usuario.type(campoInput, "Texto de teste");
+    expect(campoInput).toHaveValue("Texto de teste");
+
+    await usuario.clear(campoInput);
+    expect(campoInput).toHaveValue("");
   });
 });

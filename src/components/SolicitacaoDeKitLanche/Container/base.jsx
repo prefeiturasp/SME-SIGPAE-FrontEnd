@@ -582,6 +582,7 @@ export class SolicitacaoDeKitLanche extends Component {
                     name="local"
                     required
                     validate={this.validatorsLocalPasseio}
+                    dataTestId="local-passeio"
                   />
                 </div>
               </div>
@@ -607,10 +608,14 @@ export class SolicitacaoDeKitLanche extends Component {
 
                         return errors.length > 0 ? errors : undefined;
                       }}
+                      dataTestId="numero-alunos"
                     />
                     {erro && (
                       <Tooltip title={erro}>
-                        <i className="fas fa-info icone-info-error" />
+                        <i
+                          className="fas fa-info icone-info-error"
+                          data-testId="erro-numero-alunos"
+                        />
                       </Tooltip>
                     )}
                   </div>
@@ -621,6 +626,7 @@ export class SolicitacaoDeKitLanche extends Component {
                       name="evento"
                       required
                       validate={this.validatorsLocalPasseio}
+                      dataTestId="nome-evento-atividade"
                     />
                   </div>
                 </div>
