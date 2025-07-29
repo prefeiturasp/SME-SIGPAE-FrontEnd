@@ -362,4 +362,15 @@ describe("Teste de Solicitação de Kit Lanche", () => {
       });
     });
   });
+
+  it("Testa o input de observação", async () => {
+    const container = screen.getByTestId("observacao-solicitacao");
+    const editable = container.querySelector(".ck-editor__editable");
+    await waitFor(() => {
+      expect(editable).toBeInTheDocument();
+    });
+
+    fireEvent.input(editable, { target: { innerHTML: "Texto de teste" } });
+    expect(editable).toHaveTextContent("Texto de teste");
+  });
 });

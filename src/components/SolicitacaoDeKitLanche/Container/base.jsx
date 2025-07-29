@@ -683,6 +683,7 @@ export class SolicitacaoDeKitLanche extends Component {
                   label="Observações"
                   name="observacao"
                   placeholder="Campo opcional"
+                  dataTestId="observacao-solicitacao"
                 />
               </div>
               <div className="row mt-5">
