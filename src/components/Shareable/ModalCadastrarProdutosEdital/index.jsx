@@ -40,6 +40,11 @@ export default ({ closeModal, showModal, produto, changePage, onFinish }) => {
     fetchData();
   }, []);
 
+  const aposSalvar = () => {
+    changePage();
+    closeModal();
+  };
+
   const onSubmit = async (formValues) => {
     setCarregando(true);
     const payload = {
@@ -51,6 +56,7 @@ export default ({ closeModal, showModal, produto, changePage, onFinish }) => {
         .then(() => {
           toastSuccess("Alterações salvas com sucesso.");
           if (typeof onFinish === "function") onFinish();
+          aposSalvar();
         })
         .catch((error) => {
           toastError(error.response.data[0]);
@@ -62,6 +68,7 @@ export default ({ closeModal, showModal, produto, changePage, onFinish }) => {
             "Cadastro de Produto Proveniente de Edital Efetuado com sucesso."
           );
           if (typeof onFinish === "function") onFinish();
+          aposSalvar();
         })
         .catch((error) => {
           toastError(error.response.data[0]);
@@ -69,8 +76,6 @@ export default ({ closeModal, showModal, produto, changePage, onFinish }) => {
     }
 
     setCarregando(false);
-    closeModal();
-    changePage();
   };
 
   return (
