@@ -303,4 +303,26 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     await usuario.clear(campoInput);
     expect(campoInput).toHaveValue("");
   });
+
+  it("deve selecionar as opções de tempo do passeio", async () => {
+    const user = userEvent.setup();
+    const radio4h = screen.getByRole("radio", { name: /até 4 horas/i }); // ou getByRole
+    const radio5a7h = screen.getByRole("radio", { name: /de 5 a 7 horas/i }); // ou getByRole
+    const radio8h = screen.getByRole("radio", { name: /8 horas ou mais/i }); // ou getByRole
+
+    await user.click(radio4h);
+    expect(radio4h).toBeChecked();
+    expect(radio5a7h).not.toBeChecked();
+    expect(radio8h).not.toBeChecked();
+
+    await user.click(radio5a7h);
+    expect(radio4h).not.toBeChecked();
+    expect(radio5a7h).toBeChecked();
+    expect(radio8h).not.toBeChecked();
+
+    await user.click(radio8h);
+    expect(radio4h).not.toBeChecked();
+    expect(radio5a7h).not.toBeChecked();
+    expect(radio8h).toBeChecked();
+  });
 });
