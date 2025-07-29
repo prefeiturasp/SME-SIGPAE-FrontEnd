@@ -23,11 +23,11 @@ export class ModalCadastroLote extends Component {
       showModal,
       closeModal,
       diretoria_regional,
-      subprefeituras,
+      subprefeituras = [],
       iniciais,
       nome,
       tipo_gestao,
-      escolasSelecionadas,
+      escolasSelecionadas = [],
     } = this.props;
     const title = atualizando
       ? "Deseja atualizar o lote?"

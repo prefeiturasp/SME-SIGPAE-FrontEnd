@@ -101,8 +101,8 @@ describe("Verifica os comportamentos do formulário de dados do cadastro de lote
     ).uuid;
     setCampoSelecao("tipo-gestao-select", opcaoTipo);
 
-    const botaoPesquisar = screen.getByText("Salvar").closest("button");
-    fireEvent.click(botaoPesquisar);
+    const botaoSalvar = screen.getByText("Salvar").closest("button");
+    fireEvent.click(botaoSalvar);
 
     await waitFor(() => {
       expect(
@@ -117,8 +117,8 @@ describe("Verifica os comportamentos do formulário de dados do cadastro de lote
       target: { value: "123" },
     });
 
-    const botaoPesquisar = screen.getByText(/limpar campos/i).closest("button");
-    fireEvent.click(botaoPesquisar);
+    const botaoLimpar = screen.getByText(/limpar campos/i).closest("button");
+    fireEvent.click(botaoLimpar);
 
     await waitFor(() => {
       expect(campoTexto).toHaveValue("");
