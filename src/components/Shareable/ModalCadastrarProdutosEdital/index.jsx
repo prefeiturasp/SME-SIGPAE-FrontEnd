@@ -15,7 +15,7 @@ import {
 import {
   required,
   selectValidate,
-  alphaNumericAndSingleSpaceBetweenCharacters,
+  apenasLetras,
   noSpaceStartOrEnd,
 } from "src/helpers/fieldValidators";
 import Botao from "src/components/Shareable/Botao";
@@ -126,7 +126,7 @@ export default ({ closeModal, showModal, produto, changePage, onFinish }) => {
                       required
                       validate={composeValidators(
                         required,
-                        alphaNumericAndSingleSpaceBetweenCharacters,
+                        apenasLetras,
                         noSpaceStartOrEnd
                       )}
                       toUppercaseActive
