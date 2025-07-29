@@ -21,7 +21,7 @@ import { extrairUUIDs, getError } from "../../../../helpers/utilities";
 import { required } from "../../../../helpers/fieldValidators";
 import "../style.scss";
 import Botao from "../../../Shareable/Botao";
-import { BUTTON_STYLE } from "../../../Shareable/Botao/constants";
+import { BUTTON_STYLE, BUTTON_TYPE } from "../../../Shareable/Botao/constants";
 import {
   CONFIGURACOES,
   CADASTROS,
@@ -484,7 +484,7 @@ class CadastroLote extends Component {
                           this.props.reset();
                         }}
                         style={BUTTON_STYLE.GREEN_OUTLINE}
-                        type={BUTTON_STYLE.BUTTON}
+                        type={BUTTON_TYPE.RESET}
                       />
                     )}
                     {uuid && (
@@ -492,14 +492,14 @@ class CadastroLote extends Component {
                         texto="Excluir"
                         onClick={this.excluirLote}
                         style={BUTTON_STYLE.GREEN_OUTLINE}
-                        type={BUTTON_STYLE.BUTTON}
+                        type={BUTTON_TYPE.BUTTON}
                       />
                     )}
                     <Botao
                       texto={"Salvar"}
                       onClick={handleSubmit(() => this.exibirModal())}
                       className="ms-3"
-                      type={BUTTON_STYLE.SUBMIT}
+                      type={BUTTON_TYPE.SUBMIT}
                       style={BUTTON_STYLE.GREEN}
                     />
                   </div>

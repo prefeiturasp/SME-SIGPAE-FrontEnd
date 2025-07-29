@@ -13,7 +13,6 @@ import Container from "../Container";
 import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import { combineReducers, createStore } from "redux";
 import { reducer as formReducer } from "redux-form";
-import loadLote from "src/reducers/lote.reducer";
 import { Provider } from "react-redux";
 import { mockSubPrefeituras } from "src/mocks/lote.service/mockSubPrefeituras";
 import { mockTiposGestao } from "src/mocks/lote.service/mockTiposGestao";
@@ -34,7 +33,6 @@ describe("Verifica os comportamentos do formulário de dados do cadastro de lote
 
     const rootReducer = combineReducers({
       loteForm: formReducer,
-      cadastroProduto: loadLote,
     });
     const store = createStore(rootReducer, {});
 
