@@ -572,6 +572,7 @@ export class SolicitacaoDeKitLanche extends Component {
                     required
                     validate={required}
                     onChange={(value) => this.validaDiasUteis(value)}
+                    dataTestId="data-passeio"
                   />
                 </div>
                 <div className="col-9">

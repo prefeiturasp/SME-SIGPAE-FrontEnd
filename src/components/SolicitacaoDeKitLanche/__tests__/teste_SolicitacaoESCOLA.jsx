@@ -17,6 +17,8 @@ import { mockDietasAtivasInativas } from "src/mocks/DietaEspecial/mockAtivasInat
 import SolicitacaoDeKitLanche from "src/components/SolicitacaoDeKitLanche/Container/base";
 import { renderWithProvider } from "src/utils/test-utils";
 import { localStorageMock } from "src/mocks/localStorageMock";
+import userEvent from "@testing-library/user-event";
+import { dataParaUTC } from "src/helpers/utilities";
 
 describe("Teste de Solicitação de Kit Lanche", () => {
   const escolaUuid =
@@ -56,6 +58,8 @@ describe("Teste de Solicitação de Kit Lanche", () => {
       });
     mock.onGet("/kit-lanches/").reply(200, mockKitLanche);
 
+    window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("eh_cemei", false);
 
@@ -67,7 +71,11 @@ describe("Teste de Solicitação de Kit Lanche", () => {
             v7_relativeSplatPath: true,
           }}
         >
-          <SolicitacaoDeKitLanche meusDados={mockMeusDadosEscolaEMEFPericles} />
+          <SolicitacaoDeKitLanche
+            meusDados={mockMeusDadosEscolaEMEFPericles}
+            proximos_dois_dias_uteis={dataParaUTC(new Date("2025-07-31"))}
+            proximos_cinco_dias_uteis={dataParaUTC(new Date("2025-08-04"))}
+          />
         </MemoryRouter>
       );
     });
@@ -172,12 +180,6 @@ describe("Teste de Solicitação de Kit Lanche", () => {
       within(cardSolicitacao).getAllByText("8 horas ou mais (3 Kits)")
     ).toHaveLength(1);
 
-    // expect(within(cardSolicitacao).getAllByText("Até 4 horas:")).toHaveLength(1);
-    // expect(within(cardSolicitacao).getAllByText((_, node) =>
-    //     node.textContent?.includes('Até 4 horas: Escolher 1 Kit entre os modelos estabelecidos contratualmente')
-    // )
-    // ).toHaveLength(1);
-
     expect(
       within(cardSolicitacao).getAllByText(/Selecione a opção desejada/i)
     ).toHaveLength(1);
@@ -198,5 +200,49 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     expect(within(cardSolicitacao).getAllByText(/Observações/i)).toHaveLength(
       1
     );
+  });
+
+  it("Testa a seleção de data", async () => {
+    const usuario = userEvent.setup();
+    const datepickerInput = screen
+      .getByTestId("data-passeio")
+      .querySelector("input");
+    expect(datepickerInput).toHaveValue("");
+
+    const calendarioIcone = screen
+      .getByTestId("data-passeio")
+      .querySelector(".fa-calendar-alt");
+    await usuario.click(calendarioIcone);
+    const datepickerModal = document.querySelector(".react-datepicker");
+    expect(datepickerModal).toBeInTheDocument();
+
+    const diaSeisDeAgosto = datepickerModal?.querySelector(
+      '[role="option"][aria-label*="6 de agosto de 2025"]'
+    );
+    expect(diaSeisDeAgosto).not.toBeInTheDocument();
+
+    const nextButton = screen.getByRole("button", { name: /Next Month/i });
+    await userEvent.click(nextButton);
+
+    await waitFor(async () => {
+      const diaSeisDeAgosto = datepickerModal?.querySelector(
+        '[role="option"][aria-label*="6 de agosto de 2025"]'
+      );
+      expect(diaSeisDeAgosto).toBeInTheDocument();
+      await userEvent.click(diaSeisDeAgosto);
+    });
+
+    const inputViaCalendario = screen
+      .getByTestId("data-passeio")
+      .querySelector("input");
+    await waitFor(() => {
+      expect(inputViaCalendario).toHaveValue("06/08/2025");
+    });
+
+    const inputManual = screen
+      .getByTestId("data-passeio")
+      .querySelector("input");
+    fireEvent.change(inputManual, { target: { value: "06/08/2025" } });
+    expect(inputManual).toHaveValue("06/08/2025");
   });
 });
