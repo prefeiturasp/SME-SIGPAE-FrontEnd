@@ -10,10 +10,6 @@ import { PERFIL } from "src/constants/shared";
 import mock from "src/services/_mock";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
-import { combineReducers, createStore } from "redux";
-import { reducer as formReducer } from "redux-form";
-import loadLote from "src/reducers/lote.reducer";
-import { Provider } from "react-redux";
 import { ModalCadastroLote } from "../../components/ModalCadastroLote";
 
 describe("Verifica modal de conferência de cadastro de lotes", () => {
@@ -26,47 +22,37 @@ describe("Verifica modal de conferência de cadastro de lotes", () => {
       PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
     );
 
-    const rootReducer = combineReducers({
-      loteForm: formReducer,
-      cadastroProduto: loadLote,
-    });
-    const store = createStore(rootReducer, {});
-
     await act(async () => {
       render(
-        <Provider store={store}>
-          <MemoryRouter
-            future={{
-              v7_startTransition: true,
-              v7_relativeSplatPath: true,
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosCODAEGA,
+              setMeusDados: jest.fn(),
             }}
           >
-            <MeusDadosContext.Provider
-              value={{
-                meusDados: mockMeusDadosCODAEGA,
-                setMeusDados: jest.fn(),
-              }}
-            >
-              <ModalCadastroLote
-                closeModal={closeModal}
-                onSubmit={onSubmit}
-                atualizando={false}
-                showModal={true}
-                diretoria_regional={
-                  "DIRETORIA REGIONAL DE EDUCACAO CAMPO LIMPO"
-                }
-                subprefeituras={["BUTANTA", "CAMPO LIMPO"]}
-                iniciais={"dfteras"}
-                nome={"12321"}
-                tipo_gestao={"TERC TOTAL"}
-                escolasSelecionadas={[
-                  "000191 - EMEF ALIPIO CORREA NETO, PROF. - ",
-                  "000477 - EMEF EDA TEREZINHA CHICA MEDEIROS, PROFA. - ",
-                ]}
-              />
-            </MeusDadosContext.Provider>
-          </MemoryRouter>
-        </Provider>
+            <ModalCadastroLote
+              closeModal={closeModal}
+              onSubmit={onSubmit}
+              atualizando={false}
+              showModal={true}
+              diretoria_regional={"DIRETORIA REGIONAL DE EDUCACAO CAMPO LIMPO"}
+              subprefeituras={["BUTANTA", "CAMPO LIMPO"]}
+              iniciais={"dfteras"}
+              nome={"12321"}
+              tipo_gestao={"TERC TOTAL"}
+              escolasSelecionadas={[
+                "000191 - EMEF ALIPIO CORREA NETO, PROF. - ",
+                "000477 - EMEF EDA TEREZINHA CHICA MEDEIROS, PROFA. - ",
+              ]}
+            />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>
       );
     });
   });
