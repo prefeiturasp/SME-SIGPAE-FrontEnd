@@ -39,6 +39,7 @@ export default class SeletorAlunosDietaEspecial extends Component {
               <ToggleExpandir
                 onClick={() => this.setState({ collapsed: !collapsed })}
                 ativo={!collapsed}
+                dataTestId="colapse-alunos"
               />
             </div>
           </div>
@@ -49,7 +50,7 @@ export default class SeletorAlunosDietaEspecial extends Component {
               {alunosComDietaEspecial &&
                 alunosComDietaEspecial.map((aluno, key) => {
                   return (
-                    <tr key={key}>
+                    <tr key={key} data-testid={`alunos-dieta-especial-${key}`}>
                       <td>
                         <Field
                           component={CheckboxField}

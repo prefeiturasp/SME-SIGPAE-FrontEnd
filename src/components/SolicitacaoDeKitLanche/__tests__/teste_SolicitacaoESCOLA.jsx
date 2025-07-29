@@ -332,4 +332,34 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     fireEvent.click(checkbox);
     expect(checkbox).toBeChecked();
   });
+
+  it("Testa a seleção de alunos com dieta especial", async () => {
+    const iconeSeta = screen.getByTestId("colapse-alunos");
+    fireEvent.click(iconeSeta);
+    await waitFor(() => {
+      expect(screen.getByTestId("alunos-dieta-especial-0")).toBeInTheDocument();
+    });
+
+    const linha = screen.getByTestId("alunos-dieta-especial-0");
+    expect(linha).toHaveTextContent("ARTHUR SANTOS MACEDO DE JESUS");
+    expect(linha).toHaveTextContent("8199500");
+
+    const checkbox = linha.querySelector('input[type="checkbox"]');
+    expect(checkbox).toBeInTheDocument();
+    fireEvent.click(checkbox);
+  });
+
+  it("Testa a lista de alunos com dieta especial", async () => {
+    const iconeSeta = screen.getByTestId("colapse-alunos");
+    fireEvent.click(iconeSeta);
+
+    mockDietasAtivasInativas.solicitacoes.map(async (solicitacao, index) => {
+      await waitFor(() => {
+        const linha = screen.getByTestId(`alunos-dieta-especial-${index}`);
+        expect(linha).toBeInTheDocument();
+        expect(linha).toHaveTextContent(solicitacao.nome);
+        expect(linha).toHaveTextContent(solicitacao.codigo_eol);
+      });
+    });
+  });
 });
