@@ -304,11 +304,11 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     expect(campoInput).toHaveValue("");
   });
 
-  it("deve selecionar as opções de tempo do passeio", async () => {
+  it("Testa a seleção de opções de tempo do passeio", async () => {
     const user = userEvent.setup();
-    const radio4h = screen.getByRole("radio", { name: /até 4 horas/i }); // ou getByRole
-    const radio5a7h = screen.getByRole("radio", { name: /de 5 a 7 horas/i }); // ou getByRole
-    const radio8h = screen.getByRole("radio", { name: /8 horas ou mais/i }); // ou getByRole
+    const radio4h = screen.getByRole("radio", { name: /até 4 horas/i });
+    const radio5a7h = screen.getByRole("radio", { name: /de 5 a 7 horas/i });
+    const radio8h = screen.getByRole("radio", { name: /8 horas ou mais/i });
 
     await user.click(radio4h);
     expect(radio4h).toBeChecked();
@@ -324,5 +324,12 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     expect(radio4h).not.toBeChecked();
     expect(radio5a7h).not.toBeChecked();
     expect(radio8h).toBeChecked();
+  });
+
+  it("Testa a seleção de opções de kit lanche", async () => {
+    const checkbox = screen.getByTestId("kit-1");
+    expect(checkbox).not.toBeChecked();
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
   });
 });

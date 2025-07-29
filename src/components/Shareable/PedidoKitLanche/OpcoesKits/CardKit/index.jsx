@@ -40,6 +40,7 @@ export class CardKit extends Component {
                 type="checkbox"
                 name={nomeKitsLanche}
                 data-cy={`kit-${numeroKit + 1}`}
+                data-testid={`kit-${numeroKit + 1}`}
               />
               <span className="checkmark" />
             </label>
