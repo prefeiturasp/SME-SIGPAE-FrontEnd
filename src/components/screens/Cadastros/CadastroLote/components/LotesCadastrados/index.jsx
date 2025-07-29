@@ -116,6 +116,7 @@ class LotesCadastrados extends Component {
                           <ToggleExpandir
                             onClick={() => this.lidarComBurger(lote)}
                             ativo={lote.ativo}
+                            dataTestId={`toggle-expandir-${lote.uuid}`}
                           />
                         </td>
                       )}
