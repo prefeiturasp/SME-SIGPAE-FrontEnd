@@ -291,6 +291,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                       name="local"
                       required
                       validate={composeValidators(required, maxLength(160))}
+                      dataTestId="local-passeio-cemei"
                     />
                   </div>
                 </div>
@@ -317,6 +318,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                       name="evento"
                       required
                       validate={required}
+                      dataTestId="nome-evento-atividade-cemei"
                     />
                   </div>
                 </div>

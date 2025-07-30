@@ -250,4 +250,27 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     fireEvent.change(inputManual, { target: { value: "06/08/2025" } });
     expect(inputManual).toHaveValue("06/08/2025");
   });
+
+  it("Testa o input local do Passeio", async () => {
+    const usuario = userEvent.setup();
+    const campoInput = screen.getByTestId("local-passeio-cemei");
+
+    expect(campoInput).toHaveValue("");
+    await usuario.type(campoInput, "Texto de teste");
+    expect(campoInput).toHaveValue("Texto de teste");
+
+    await usuario.clear(campoInput);
+    expect(campoInput).toHaveValue("");
+  });
+  it("Testa o input do nome do evento", async () => {
+    const usuario = userEvent.setup();
+    const campoInput = screen.getByTestId("nome-evento-atividade-cemei");
+
+    expect(campoInput).toHaveValue("");
+    await usuario.type(campoInput, "Texto de teste");
+    expect(campoInput).toHaveValue("Texto de teste");
+
+    await usuario.clear(campoInput);
+    expect(campoInput).toHaveValue("");
+  });
 });
