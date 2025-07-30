@@ -17,6 +17,8 @@ import { mockDietasAtivasInativas } from "src/mocks/DietaEspecial/mockAtivasInat
 import { mockConsultaRascunhos } from "src/mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoRascunho";
 import { SolicitacaoKitLancheCEMEI } from "src/components/SolicitacaoKitLancheCEMEI/index";
 import { localStorageMock } from "src/mocks/localStorageMock";
+import userEvent from "@testing-library/user-event";
+import { dataParaUTC } from "src/helpers/utilities";
 
 describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
   const escolaUuid =
@@ -74,6 +76,8 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
           <SolicitacaoKitLancheCEMEI
             meusDados={mockMeusDadosEscolaCEMEISuzanaCampos}
             kits={mockConsultakits.results}
+            proximosCincoDiasUteis={dataParaUTC(new Date("2025-08-04"))}
+            proximosDoisDiasUteis={dataParaUTC(new Date("2025-07-31"))}
           />
         </MemoryRouter>
       );
@@ -201,5 +205,49 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     expect(within(cardSolicitacao).getAllByText(/Observações/i)).toHaveLength(
       1
     );
+  });
+
+  it("Testa a seleção de data do passeio", async () => {
+    const usuario = userEvent.setup();
+    const datepickerInput = screen
+      .getByTestId("data-passeio-cemei")
+      .querySelector("input");
+    expect(datepickerInput).toHaveValue("");
+
+    const calendarioIcone = screen
+      .getByTestId("data-passeio-cemei")
+      .querySelector(".fa-calendar-alt");
+    await usuario.click(calendarioIcone);
+    const datepickerModal = document.querySelector(".react-datepicker");
+    expect(datepickerModal).toBeInTheDocument();
+
+    const diaSeisDeAgosto = datepickerModal?.querySelector(
+      '[role="option"][aria-label*="6 de agosto de 2025"]'
+    );
+    expect(diaSeisDeAgosto).not.toBeInTheDocument();
+
+    const nextButton = screen.getByRole("button", { name: /Next Month/i });
+    await userEvent.click(nextButton);
+
+    await waitFor(async () => {
+      const diaSeisDeAgosto = datepickerModal?.querySelector(
+        '[role="option"][aria-label*="6 de agosto de 2025"]'
+      );
+      expect(diaSeisDeAgosto).toBeInTheDocument();
+      await userEvent.click(diaSeisDeAgosto);
+    });
+
+    const inputViaCalendario = screen
+      .getByTestId("data-passeio-cemei")
+      .querySelector("input");
+    await waitFor(() => {
+      expect(inputViaCalendario).toHaveValue("06/08/2025");
+    });
+
+    const inputManual = screen
+      .getByTestId("data-passeio-cemei")
+      .querySelector("input");
+    fireEvent.change(inputManual, { target: { value: "06/08/2025" } });
+    expect(inputManual).toHaveValue("06/08/2025");
   });
 });

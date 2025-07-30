@@ -281,6 +281,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                           getAlunosPorFaixaEtariaNumaDataAsync(value);
                         }
                       }}
+                      dataTestId="data-passeio-cemei"
                     />
                   </div>
                   <div className="col-9">
