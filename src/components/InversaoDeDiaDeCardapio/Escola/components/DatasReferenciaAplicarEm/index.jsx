@@ -66,10 +66,7 @@ export const DatasReferenciaAplicarEm = ({ ...props }) => {
           placeholder="Cardápio dia"
           required
           validate={required}
-          onBlur={(event) => validaDiasUteis(event.target.value)}
-          onChange={(value) => {
-            validaDiasUteis(value);
-          }}
+          inputOnChange={(value) => validaDiasUteis(value)}
           excludeDates={[moment(values[name_data_para], "DD/MM/YYYY")["_d"]]}
           minDate={proximosDoisDiasUteis}
           maxDate={
@@ -97,8 +94,7 @@ export const DatasReferenciaAplicarEm = ({ ...props }) => {
           placeholder="Cardápio dia"
           required
           validate={required}
-          onBlur={(event) => validaDiasUteis(event.target.value)}
-          onChange={(value) => validaDiasUteis(value)}
+          inputOnChange={(value) => validaDiasUteis(value)}
           minDate={proximosDoisDiasUteis}
           excludeDates={[moment(values[name_data_de], "DD/MM/YYYY")["_d"]]}
           maxDate={
