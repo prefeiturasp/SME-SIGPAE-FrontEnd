@@ -262,6 +262,7 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     await usuario.clear(campoInput);
     expect(campoInput).toHaveValue("");
   });
+
   it("Testa o input do nome do evento", async () => {
     const usuario = userEvent.setup();
     const campoInput = screen.getByTestId("nome-evento-atividade-cemei");
@@ -272,5 +273,16 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
 
     await usuario.clear(campoInput);
     expect(campoInput).toHaveValue("");
+  });
+
+  it("Testa o input de observação", async () => {
+    const container = screen.getByTestId("observacao-solicitacao-cemei");
+    const editable = container.querySelector(".ck-editor__editable");
+    await waitFor(() => {
+      expect(editable).toBeInTheDocument();
+    });
+
+    fireEvent.input(editable, { target: { innerHTML: "Texto de teste" } });
+    expect(editable).toHaveTextContent("Texto de teste");
   });
 });

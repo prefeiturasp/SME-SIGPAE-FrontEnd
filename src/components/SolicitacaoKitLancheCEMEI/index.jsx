@@ -395,6 +395,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                   label="Observações"
                   name="observacao"
                   className="form-control"
+                  dataTestId="observacao-solicitacao-cemei"
                 />
                 <hr />
                 <div className="row float-end mt-4">
