@@ -13,7 +13,7 @@ import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFP
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { mockGetMinhasSolicitacoes } from "src/mocks/SolicitacaokitLanche/mockGetMinhasSolicitacoes";
 import { mockKitLanche } from "src/mocks/SolicitacaokitLanche/mockKitLanche";
-import { mockDietasAtivasInativas } from "src/mocks/DietaEspecial/mockAtivasInativas";
+import { mockDietasAtivasInativas } from "src/mocks/DietaEspecial/mockAtivasInativasEMEFPericles";
 import SolicitacaoDeKitLanche from "src/components/SolicitacaoDeKitLanche/Container/base";
 import { renderWithProvider } from "src/utils/test-utils";
 import { localStorageMock } from "src/mocks/localStorageMock";
