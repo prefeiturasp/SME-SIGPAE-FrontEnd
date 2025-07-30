@@ -58,7 +58,7 @@ const FormOcorrencia = ({
                     ...opt,
                     disabled: jaTeveRecusa && opt.uuid === "RECUSA",
                   }))}
-                  placeholder="Selecione"
+                  placeholder="Selecione o tipo de ocorrência"
                   required
                   validate={required}
                 />

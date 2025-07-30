@@ -175,8 +175,12 @@ export default () => {
       : [];
   };
 
-  const extraiOcorrenciasDoFormulario = (values: any) => {
+  const extraiOcorrenciasDoFormulario = (values: Record<string, any>) => {
     const ocorrencias: OcorrenciaFichaRecebimento[] = [];
+
+    if (values.houve_ocorrencia === "0") {
+      return ocorrencias;
+    }
 
     for (let idx = 0; idx < ocorrenciasCount; idx++) {
       const tipo = values[`tipo_${idx}`];
@@ -185,7 +189,7 @@ export default () => {
       const quantidade = values[`quantidade_${idx}`];
       const descricao = values[`descricao_${idx}`];
 
-      const ocorrencia: any = {
+      const ocorrencia: OcorrenciaFichaRecebimento = {
         tipo,
         descricao,
       };
@@ -207,7 +211,7 @@ export default () => {
       ocorrencias.push(ocorrencia);
     }
 
-    return ocorrencias;
+    return ocorrencias.filter((ocorrencia) => ocorrencia.tipo !== undefined);
   };
 
   const formataPayload = (
