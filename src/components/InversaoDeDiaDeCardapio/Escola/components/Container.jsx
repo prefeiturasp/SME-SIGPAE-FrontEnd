@@ -4,7 +4,7 @@ import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { dataParaUTC } from "src/helpers/utilities";
 import { getDiasUteis } from "src/services/diasUteis.service";
-import { InversaoDeDiaDeCardapio } from "./Escola";
+import { InversaoDeDiaDeCardapio } from "..";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);

@@ -30,9 +30,9 @@ import {
   inicioPedido,
   removerInversaoDeDiaDeCardapio,
 } from "src/services/inversaoDeDiaDeCardapio.service";
-import "../style.scss";
 import { DatasReferenciaAplicarEm } from "./components/DatasReferenciaAplicarEm";
 import { Rascunhos } from "./components/Rascunhos";
+import "./style.scss";
 
 export const InversaoDeDiaDeCardapio = ({ ...props }) => {
   const { meusDados, proximosCincoDiasUteis, proximosDoisDiasUteis } = props;
