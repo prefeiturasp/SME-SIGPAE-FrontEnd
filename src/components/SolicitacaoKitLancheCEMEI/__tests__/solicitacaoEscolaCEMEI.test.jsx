@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import mock from "src/services/_mock";
-import { act } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import { renderWithProvider } from "src/utils/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import { mockMeusDadosEscolaCEMEISuzanaCampos } from "src/mocks/meusDados/escolaCEMEISuzanaCampos";
@@ -68,6 +68,22 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
           />
         </MemoryRouter>
       );
+    });
+  });
+
+  it("Testa card Matriculados", async () => {
+    await waitFor(() => {
+      expect(screen.getAllByText(/Total de Matriculados/i)).toHaveLength(1);
+      expect(screen.getAllByText(/187/i)).toHaveLength(1);
+      expect(screen.getAllByText(/Matriculados CE/i)).toHaveLength(1);
+      expect(screen.getAllByText(/79/i)).toHaveLength(1);
+      expect(screen.getAllByText(/Matriculados EMEI/i)).toHaveLength(1);
+      expect(screen.getAllByText(/108/i)).toHaveLength(1);
+      expect(
+        screen.getAllByText(
+          /Informação automática disponibilizada pelo Cadastro da Unidade Escolar/i
+        )
+      ).toHaveLength(1);
     });
   });
 });
