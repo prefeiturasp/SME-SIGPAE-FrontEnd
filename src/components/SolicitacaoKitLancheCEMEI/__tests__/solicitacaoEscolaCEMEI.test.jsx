@@ -1,14 +1,20 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import mock from "src/services/_mock";
-import { act, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { renderWithProvider } from "src/utils/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import { mockMeusDadosEscolaCEMEISuzanaCampos } from "src/mocks/meusDados/escolaCEMEISuzanaCampos";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { mockConsultakits } from "src/mocks/SolicitacaoKitLancheCEMEI/mockGetConsultaKits";
 import { mockDietasAtivasInativas } from "src/mocks/DietaEspecial/mockAtivasInativasCEMEISuzana";
-import { mockConsultaRascunhos } from "src/mocks/SolicitacaoKitLancheCEMEI/mockGetSolictacaoRascunho";
+import { mockConsultaRascunhos } from "src/mocks/SolicitacaoKitLancheCEMEI/mockGetSolicitacaoRascunho";
 import { SolicitacaoKitLancheCEMEI } from "src/components/SolicitacaoKitLancheCEMEI/index";
 import { localStorageMock } from "src/mocks/localStorageMock";
 
@@ -46,9 +52,11 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
       proximos_cinco_dias_uteis: "2025-08-04",
       proximos_dois_dias_uteis: "2025-07-31",
     });
-    mock
-      .onGet("/solicitacao-kit-lanche-cemei/?status=RASCUNHO/")
-      .reply(200, mockConsultaRascunhos);
+    mock.onGet("/solicitacao-kit-lanche-cemei/").reply((config) => {
+      if (config.params.status === "RASCUNHO") {
+        return [200, mockConsultaRascunhos];
+      }
+    });
 
     window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
@@ -65,6 +73,7 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
         >
           <SolicitacaoKitLancheCEMEI
             meusDados={mockMeusDadosEscolaCEMEISuzanaCampos}
+            kits={mockConsultakits.results}
           />
         </MemoryRouter>
       );
@@ -85,5 +94,88 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
         )
       ).toHaveLength(1);
     });
+  });
+
+  it("Testa card Rascunhos", async () => {
+    expect(screen.getAllByText(/Rascunhos/i)).toHaveLength(1);
+    const primeiroRascunho = screen.getByTestId(`card-rascunho-cemei-0`);
+    const botaoDeletarPrimeiro = screen.getByTestId(
+      "btn-delete-rascunho-cemei-0"
+    );
+    expect(
+      within(primeiroRascunho).getByText(
+        /Solicitação de Kit Lanche Passeio #35F81/i
+      )
+    ).toBeInTheDocument();
+    expect(
+      within(primeiroRascunho).getByText(/Data do evento/i)
+    ).toBeInTheDocument();
+    expect(
+      within(primeiroRascunho).getByText("15/08/2025")
+    ).toBeInTheDocument();
+    expect(
+      within(primeiroRascunho).getByText(/Local do passeio/i)
+    ).toBeInTheDocument();
+    expect(
+      within(primeiroRascunho).getByText(/Fazenda Boa Fazendinha/i)
+    ).toBeInTheDocument();
+    expect(within(primeiroRascunho).getByText(/EMEI/i)).toBeInTheDocument();
+    expect(
+      within(primeiroRascunho).getByText("Salvo em: 30/07/2025 11:43:07")
+    ).toBeInTheDocument();
+    expect(within(primeiroRascunho).getByText(/RASCUNHO/i)).toBeInTheDocument();
+    fireEvent.click(botaoDeletarPrimeiro);
+
+    const segundoRascunho = screen.getByTestId(`card-rascunho-cemei-1`);
+    const botaoDeletarSegundo = screen.getByTestId(
+      "btn-delete-rascunho-cemei-1"
+    );
+    expect(
+      within(segundoRascunho).getByText(
+        /Solicitação de Kit Lanche Passeio #CEEDE/i
+      )
+    ).toBeInTheDocument();
+    expect(
+      within(segundoRascunho).getByText(/Data do evento/i)
+    ).toBeInTheDocument();
+    expect(within(segundoRascunho).getByText("21/08/2025")).toBeInTheDocument();
+    expect(
+      within(segundoRascunho).getByText(/Local do passeio/i)
+    ).toBeInTheDocument();
+    expect(
+      within(segundoRascunho).getByText(/Prefeitura/i)
+    ).toBeInTheDocument();
+    expect(within(segundoRascunho).getByText(/CEI/i)).toBeInTheDocument();
+    expect(
+      within(segundoRascunho).getByText("Salvo em: 30/07/2025 11:41:03")
+    ).toBeInTheDocument();
+    expect(within(segundoRascunho).getByText(/RASCUNHO/i)).toBeInTheDocument();
+    fireEvent.click(botaoDeletarSegundo);
+
+    const terceiroRascunho = screen.getByTestId(`card-rascunho-cemei-2`);
+    const botaoDeletarTerceiro = screen.getByTestId(
+      "btn-delete-rascunho-cemei-2"
+    );
+    expect(
+      within(terceiroRascunho).getByText(
+        /Solicitação de Kit Lanche Passeio #04BBA/i
+      )
+    ).toBeInTheDocument();
+    expect(
+      within(terceiroRascunho).getByText(/Data do evento/i)
+    ).toBeInTheDocument();
+    expect(
+      within(terceiroRascunho).getByText("20/08/2025")
+    ).toBeInTheDocument();
+    expect(
+      within(terceiroRascunho).getByText(/Local do passeio/i)
+    ).toBeInTheDocument();
+    expect(within(terceiroRascunho).getByText(/Museu/i)).toBeInTheDocument();
+    expect(within(terceiroRascunho).getByText(/TODOS/i)).toBeInTheDocument();
+    expect(
+      within(terceiroRascunho).getByText("Salvo em: 30/07/2025 10:33:15")
+    ).toBeInTheDocument();
+    expect(within(terceiroRascunho).getByText(/RASCUNHO/i)).toBeInTheDocument();
+    fireEvent.click(botaoDeletarTerceiro);
   });
 });
