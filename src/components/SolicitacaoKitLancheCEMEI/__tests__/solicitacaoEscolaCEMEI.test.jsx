@@ -178,4 +178,28 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     expect(within(terceiroRascunho).getByText(/RASCUNHO/i)).toBeInTheDocument();
     fireEvent.click(botaoDeletarTerceiro);
   });
+
+  it("Testa card Nova Solicitação", async () => {
+    const cardSolicitacao = screen.getByTestId(`card-solicitacao-cemei`);
+    expect(
+      within(cardSolicitacao).getAllByText(/Data do passeio/i)
+    ).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText(/Local do passeio/i)
+    ).toHaveLength(1);
+    expect(within(cardSolicitacao).getAllByText(/Alunos/i)).toHaveLength(1);
+    expect(within(cardSolicitacao).getAllByText(/Selecione/i)).toHaveLength(1);
+    expect(within(cardSolicitacao).getAllByText(/Todos/i)).toHaveLength(1);
+    expect(within(cardSolicitacao).getAllByText(/CEI/i)).toHaveLength(1);
+    expect(within(cardSolicitacao).getAllByText(/EMEI/i)).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText("Evento/Atividade")
+    ).toHaveLength(1);
+    expect(
+      within(cardSolicitacao).getAllByText(/Número total de kits/i)
+    ).toHaveLength(1);
+    expect(within(cardSolicitacao).getAllByText(/Observações/i)).toHaveLength(
+      1
+    );
+  });
 });

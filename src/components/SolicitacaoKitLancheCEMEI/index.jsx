@@ -253,7 +253,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                 : "Nova Solicitação"}
             </div>
             <div className="card solicitation periodos_cei_emei mt-2">
-              <div className="card-body">
+              <div className="card-body" data-testid="card-solicitacao-cemei">
                 <div className="form-group row">
                   <div className="col-3">
                     <Field
