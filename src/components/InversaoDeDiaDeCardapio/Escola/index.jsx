@@ -106,12 +106,20 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
     );
     form.change("data_de", solicitacao.data_de);
     form.change("data_para", solicitacao.data_para);
-    form.change("alunos_da_cemei", solicitacao.alunos_da_cemei);
+    if (solicitacao.alunos_da_cemei === "Todos") {
+      form.change("alunos_da_cemei", ["CEI", "EMEI"]);
+    } else {
+      form.change("alunos_da_cemei", [solicitacao.alunos_da_cemei]);
+    }
     if (solicitacao.data_de_inversao_2) {
       setAdicionarOutroDia(true);
       form.change("data_de_2", solicitacao.data_de_inversao_2);
       form.change("data_para_2", solicitacao.data_para_inversao_2);
-      form.change("alunos_da_cemei_2", solicitacao.alunos_da_cemei_2);
+      if (solicitacao.alunos_da_cemei_2 === "Todos") {
+        form.change("alunos_da_cemei_2", ["CEI", "EMEI"]);
+      } else {
+        form.change("alunos_da_cemei_2", [solicitacao.alunos_da_cemei_2]);
+      }
     }
     form.change("motivo", solicitacao.motivo);
     form.change("observacao", solicitacao.observacao);
