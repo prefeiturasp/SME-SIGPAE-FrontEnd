@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getDiasUteis } from "src/services/diasUteis.service";
-import { dataParaUTC } from "src/helpers/utilities";
-import InversaoDeDiaDeCardapio from ".";
+import { useContext, useEffect, useState } from "react";
 import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { dataParaUTC } from "src/helpers/utilities";
+import { getDiasUteis } from "src/services/diasUteis.service";
+import { InversaoDeDiaDeCardapio } from "./Escola";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -46,8 +46,8 @@ export const Container = () => {
       {!LOADING && !erro && (
         <InversaoDeDiaDeCardapio
           meusDados={meusDados}
-          proximos_dois_dias_uteis={proximosDoisDiasUteis}
-          proximos_cinco_dias_uteis={proximosCincoDiasUteis}
+          proximosDoisDiasUteis={proximosDoisDiasUteis}
+          proximosCincoDiasUteis={proximosCincoDiasUteis}
         />
       )}
     </>
