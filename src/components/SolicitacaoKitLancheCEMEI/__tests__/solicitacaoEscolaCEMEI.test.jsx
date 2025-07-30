@@ -19,6 +19,7 @@ import { SolicitacaoKitLancheCEMEI } from "src/components/SolicitacaoKitLancheCE
 import { localStorageMock } from "src/mocks/localStorageMock";
 import userEvent from "@testing-library/user-event";
 import { dataParaUTC } from "src/helpers/utilities";
+import preview from "jest-preview";
 
 describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
   const escolaUuid =
@@ -26,7 +27,7 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
 
   async function selecionarDataNoDatepicker(
     usuario,
-    dataDesejada = "16 de agosto de 2025"
+    dataDesejada = "15 de agosto de 2025"
   ) {
     const calendarioIcone = screen
       .getByTestId("data-passeio-cemei")
@@ -40,6 +41,21 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     );
     await usuario.click(dataSelecionada);
   }
+
+  const responseFaixasEtarias = {
+    count: 1,
+    results: [
+      {
+        faixa_etaria: {
+          __str__: "01 ano a 03 anos e 11 meses",
+          uuid: "e3030bd1-2e85-4676-87b3-96b4032370d4",
+          inicio: 12,
+          fim: 48,
+        },
+        count: 50,
+      },
+    ],
+  };
 
   beforeEach(async () => {
     mock
@@ -76,6 +92,11 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
         return [200, mockConsultaRascunhos];
       }
     });
+    mock
+      .onGet(
+        "/periodos-escolares/e17e2405-36be-4981-a09c-35c89ae0f8b7/alunos-por-faixa-etaria/2025-08-15/"
+      )
+      .reply(200, responseFaixasEtarias);
 
     window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
@@ -93,6 +114,7 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
           <SolicitacaoKitLancheCEMEI
             meusDados={mockMeusDadosEscolaCEMEISuzanaCampos}
             kits={mockConsultakits.results}
+            alunosComDietaEspecial={mockDietasAtivasInativas.solicitacoes}
             proximosCincoDiasUteis={dataParaUTC(new Date("2025-08-04"))}
             proximosDoisDiasUteis={dataParaUTC(new Date("2025-07-31"))}
           />
@@ -347,5 +369,33 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     await usuario.selectOptions(seletorStatus, "EMEI");
     expect(seletorStatus).toHaveValue("EMEI");
     expect(seletorStatus).toHaveTextContent("EMEI");
+  });
+
+  it("Testa a solicitação CEI da CEMEI", async () => {
+    const usuario = userEvent.setup();
+    await selecionarDataNoDatepicker(usuario);
+    const seletorStatus = screen
+      .getByTestId("alunos-cemei")
+      .querySelector("select");
+    await usuario.selectOptions(seletorStatus, "CEI");
+    expect(screen.getByText(/Alunos CEI/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tempo previsto do passeio/i)).toBeInTheDocument();
+    expect(screen.getByText("até 4 horas (1 Kit)")).toBeInTheDocument();
+    expect(screen.getByText("de 5 a 7 horas (2 Kits)")).toBeInTheDocument();
+    expect(screen.getByText(/Selecione a opção desejada/i)).toBeInTheDocument();
+    expect(screen.getByText("KIT")).toBeInTheDocument();
+    expect(screen.getByText(/teste/i)).toBeInTheDocument();
+    expect(screen.getByText(/Número total de kits/i)).toBeInTheDocument();
+
+    const radio4h = screen.getByRole("radio", { name: /até 4 horas/i });
+
+    await usuario.click(radio4h);
+    expect(radio4h).toBeChecked();
+
+    const checkbox = screen.getByTestId("kit-cemei-1");
+    await usuario.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    preview.debug();
   });
 });

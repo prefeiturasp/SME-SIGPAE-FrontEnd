@@ -140,6 +140,7 @@ export const Kits = ({ kits, values, name, nameTempoPasseio }) => {
                           className="float-end"
                           name={name}
                           disabled={CARD_DISABLED}
+                          data-testid={`kit-cemei-${indice + 1}`}
                         />
                         <span className="checkmark" />
                       </div>
