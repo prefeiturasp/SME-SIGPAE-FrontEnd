@@ -3,7 +3,6 @@ import { Spin } from "antd";
 import { getGuiaParaConferencia } from "../../../../services/logistica.service";
 import { Form, Field } from "react-final-form";
 import { InputComData } from "src/components/Shareable/DatePicker";
-import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
 import { InputText } from "src/components/Shareable/Input/InputText";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
@@ -37,7 +36,6 @@ import "./styles.scss";
 import { gerarParametrosConsulta } from "src/helpers/utilities";
 import { TIPOS_OCORRENCIAS_OPTIONS } from "src/constants/shared";
 
-const FORM_NAME = "conferenciaGuiaRemessaComOcorrencia";
 const TOOLTIP_RECEBIDO = `Quantidade de embalagens que a UE efetivamente recebeu.
                           Se a quantidade de recebida for menor que a prevista na Guia de Remessa,
                           será aberta ocorrência a ser detalhada pelo usuário.`;
@@ -53,11 +51,9 @@ export default () => {
   const [HoraRecebimentoAlterada, setHoraRecebimentoAlterada] = useState(false);
   const [initialValues, setInitialValues] = useState({});
   const [arquivoAtual, setArquivoAtual] = useState([]);
-  const [edicao, setEdicao] = useState(false);
   const [collapseAlimentos, setCollapseAlimentos] = useState(false);
   const inputFile = useRef([]);
   const autoFillButton = useRef(null);
-  const editarButton = useRef(null);
   const navigate = useNavigate();
 
   const [flagAtraso, setFlagAtraso] = useState(false);
@@ -126,7 +122,7 @@ export default () => {
     }
     localStorage.setItem("valoresConferencia", JSON.stringify(valoresForm));
     localStorage.setItem("guiaConferencia", JSON.stringify(guia));
-    navigate(`/${LOGISTICA}/${CONFERENCIA_GUIA_RESUMO_FINAL}?editar=${edicao}`);
+    navigate(`/${LOGISTICA}/${CONFERENCIA_GUIA_RESUMO_FINAL}`);
   };
 
   const validaDataEntrega = (value) => {
@@ -353,54 +349,6 @@ export default () => {
     setCarregando(false);
   };
 
-  const carregarLocalStorageEdicao = (values) => {
-    setCarregando(true);
-    let conferencia = JSON.parse(localStorage.getItem("conferenciaEdicao"));
-
-    let valoresConf = conferencia.conferencia_dos_alimentos;
-    let guiaConf = filtrarAlimentos(conferencia.guia);
-
-    valoresConf.forEach((item, index) => {
-      if (item.tipo_embalagem === "Fechada")
-        values[`recebidos_fechada_${index}`] = item.qtd_recebido;
-      if (item.tipo_embalagem === "Fracionada")
-        values[`recebidos_fracionada_${index}`] = item.qtd_recebido;
-      values[`status_${index}`] = item.status_alimento;
-      values[`ocorrencias_${index}`] = item.ocorrencia;
-      values[`observacoes_${index}`] = item.observacao;
-      if (item.arquivo) {
-        item.arquivo = [
-          {
-            nome: "imagem.png",
-            arquivo: item.arquivo,
-          },
-        ];
-        let arquivos = arquivoAtual;
-        arquivos[index] = item.arquivo;
-        setArquivoAtual(arquivos);
-      }
-    });
-
-    values.numero_guia = guiaConf.numero_guia;
-    values.data_entrega = guiaConf.data_entrega;
-    values.nome_motorista = conferencia.nome_motorista;
-    values.hora_recebimento = conferencia.hora_recebimento;
-    values.placa_veiculo = conferencia.placa_veiculo;
-    values.data_entrega_real = moment(
-      conferencia.data_recebimento,
-      "DD/MM/YYYY"
-    );
-
-    values.uuid_conferencia = conferencia.uuid;
-
-    setHoraRecebimento(conferencia.hora_recebimento);
-    setHoraRecebimentoAlterada(true);
-
-    setGuia(guiaConf);
-
-    setCarregando(false);
-  };
-
   const toggleBtnAlimentos = (uuid, index) => {
     if (arquivoAtual[index])
       inputFile.current[index].setFiles(arquivoAtual[index]);
@@ -433,13 +381,8 @@ export default () => {
       const urlParams = new URLSearchParams(window.location.search);
 
       let autofill = urlParams.get("autofill");
-      let edicao = urlParams.get("editar");
-      setEdicao(edicao === "true");
-
       if (autofill) {
         autoFillButton.current.click();
-      } else if (edicao === "true") {
-        editarButton.current.click();
       } else {
         const param = urlParams.get("uuid");
         setUuid(param);
@@ -458,7 +401,6 @@ export default () => {
             validate={() => {}}
             render={({ handleSubmit, values, errors }) => (
               <form onSubmit={handleSubmit}>
-                <FinalFormToRedux form={FORM_NAME} />
                 <span className="subtitulo">
                   Conferência individual dos itens
                 </span>
@@ -475,6 +417,7 @@ export default () => {
                       name="numero_guia"
                       className="input-busca-produto"
                       disabled
+                      dataTestId="numero_guia"
                     />
                   </div>
                   <div className="col-4">
@@ -484,6 +427,7 @@ export default () => {
                       name="data_entrega"
                       className="input-busca-produto"
                       disabled
+                      dataTestId="data_entrega"
                     />
                   </div>
                   <div className="col-4">
@@ -498,6 +442,7 @@ export default () => {
                       required
                       writable={false}
                       onChange={validaStatus(values)}
+                      dataTestId="data_entrega_real"
                     />
                     {comparaDataEntrega(values.data_entrega_real) && (
                       <span className="info-field">
@@ -523,6 +468,7 @@ export default () => {
                       validate={validaHoraRecebimento}
                       required
                       functionComponent
+                      dataTestId="hora_recebimento"
                     />
                   </div>
                   <div className="col-4">
@@ -538,6 +484,7 @@ export default () => {
                         apenasLetras
                       )}
                       required
+                      dataTestId="nome_motorista"
                     />
                   </div>
                   <div className="col-4">
@@ -555,6 +502,7 @@ export default () => {
                       )}
                       toUppercaseActive
                       required
+                      dataTestId="placa_veiculo"
                     />
                   </div>
                 </div>
@@ -593,6 +541,7 @@ export default () => {
                                 data-bs-target={`#collapse_${alimento.uuid}`}
                                 aria-expanded="true"
                                 aria-controls={`collapse_${alimento.uuid}`}
+                                data-testid={`toggle-alimento-${index}`}
                               >
                                 <span className="span-icone-toogle">
                                   <i
@@ -693,6 +642,7 @@ export default () => {
                                                         index,
                                                         errors
                                                       )}
+                                                      dataTestId={`recebidos_fechada_${index}`}
                                                     />
                                                   </div>
                                                 </td>
@@ -764,6 +714,7 @@ export default () => {
                                                         index,
                                                         errors
                                                       )}
+                                                      dataTestId={`recebidos_fracionada_${index}`}
                                                     />
                                                   </div>
                                                 </td>
@@ -786,6 +737,7 @@ export default () => {
                                   className="input-busca-produto"
                                   placeholder="---"
                                   disabled
+                                  dataTestId={`status_${index}`}
                                 />
                               </div>
 
@@ -837,6 +789,7 @@ export default () => {
                                         values[`status_${index}`]
                                       )
                                     }
+                                    dataTestId={`input-file-${index}`}
                                   />
                                   <label className="mb-3">
                                     {"IMPORTANTE: Envie um arquivo nos formatos: " +
@@ -864,6 +817,7 @@ export default () => {
                                     !values[`ocorrencias_${index}`] ||
                                     !values[`ocorrencias_${index}`].length
                                   }
+                                  dataTestId={`observacoes_${index}`}
                                 />
                               </div>
                             </div>
@@ -882,14 +836,7 @@ export default () => {
                     }}
                     style={{ display: "none" }}
                     ref={autoFillButton}
-                  />
-                  <button
-                    onClick={(event) => {
-                      event.preventDefault();
-                      carregarLocalStorageEdicao(values);
-                    }}
-                    style={{ display: "none" }}
-                    ref={editarButton}
+                    data-testid="autofill-button"
                   />
                   <span className="float-end tooltip-botao">
                     <Botao
@@ -898,6 +845,7 @@ export default () => {
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                       className="me-3"
                       onClick={() => cancelarConferencia(values)}
+                      dataTestId="botao-cancelar"
                     />
                     <Botao
                       texto="Finalizar Conferência"
@@ -907,6 +855,7 @@ export default () => {
                         Object.keys(errors).length > 0 || !guia.alimentos
                       }
                       onClick={() => onSubmit(values)}
+                      dataTestId="botao-finalizar"
                     />
                     <span className="tooltiptext">
                       Para finalizar, preencha todos os campos de conferência de
