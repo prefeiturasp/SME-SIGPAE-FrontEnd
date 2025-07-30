@@ -24,6 +24,23 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
   const escolaUuid =
     mockMeusDadosEscolaCEMEISuzanaCampos.vinculo_atual.instituicao.uuid;
 
+  async function selecionarDataNoDatepicker(
+    usuario,
+    dataDesejada = "16 de agosto de 2025"
+  ) {
+    const calendarioIcone = screen
+      .getByTestId("data-passeio-cemei")
+      .querySelector(".fa-calendar-alt");
+    await usuario.click(calendarioIcone);
+    const datepickerModal = document.querySelector(".react-datepicker");
+    const nextButton = screen.getByRole("button", { name: /Next Month/i });
+    await usuario.click(nextButton);
+    const dataSelecionada = datepickerModal?.querySelector(
+      `[role="option"][aria-label*="${dataDesejada}"]`
+    );
+    await usuario.click(dataSelecionada);
+  }
+
   beforeEach(async () => {
     mock
       .onGet("/usuarios/meus-dados/")
@@ -227,14 +244,14 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     expect(diaSeisDeAgosto).not.toBeInTheDocument();
 
     const nextButton = screen.getByRole("button", { name: /Next Month/i });
-    await userEvent.click(nextButton);
+    await usuario.click(nextButton);
 
     await waitFor(async () => {
       const diaSeisDeAgosto = datepickerModal?.querySelector(
         '[role="option"][aria-label*="6 de agosto de 2025"]'
       );
       expect(diaSeisDeAgosto).toBeInTheDocument();
-      await userEvent.click(diaSeisDeAgosto);
+      await usuario.click(diaSeisDeAgosto);
     });
 
     const inputViaCalendario = screen
@@ -301,5 +318,34 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
   it("Testa botão Enviar", async () => {
     const botaoEnviar = screen.getByText("Enviar").closest("button");
     fireEvent.click(botaoEnviar);
+  });
+
+  it("Testa a seleção de alunos", async () => {
+    const usuario = userEvent.setup();
+    const seletorStatus = screen
+      .getByTestId("alunos-cemei")
+      .querySelector("select");
+    const opcoes = within(seletorStatus).getAllByRole("option");
+    expect(opcoes).toHaveLength(4);
+
+    const textosDasOpcoes = opcoes.map((opt) => opt.textContent);
+    expect(textosDasOpcoes).toEqual(["Selecione", "Todos", "CEI", "EMEI"]);
+
+    expect(seletorStatus).toHaveValue("");
+    expect(seletorStatus).toHaveTextContent("Selecione");
+
+    await selecionarDataNoDatepicker(usuario);
+
+    await usuario.selectOptions(seletorStatus, "Todos");
+    expect(seletorStatus).toHaveValue("TODOS");
+    expect(seletorStatus).toHaveTextContent("Todos");
+
+    await usuario.selectOptions(seletorStatus, "CEI");
+    expect(seletorStatus).toHaveValue("CEI");
+    expect(seletorStatus).toHaveTextContent("CEI");
+
+    await usuario.selectOptions(seletorStatus, "EMEI");
+    expect(seletorStatus).toHaveValue("EMEI");
+    expect(seletorStatus).toHaveTextContent("EMEI");
   });
 });

@@ -309,6 +309,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                         { uuid: "EMEI", nome: "EMEI" },
                       ]}
                       validate={required}
+                      dataTestId="alunos-cemei"
                     />
                   </div>
                   <div className="col-9">
