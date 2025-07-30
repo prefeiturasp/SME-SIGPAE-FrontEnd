@@ -24,6 +24,7 @@ export const Rascunhos = ({ ...props }) => {
                 <i className="fas fa-trash" />
               </span>
               <span
+                data-testid="botao-carregar-rascunho"
                 onClick={() => carregarRascunho(inversaoDeDiaDeCardapio, form)}
               >
                 <i className="fas fa-edit" />

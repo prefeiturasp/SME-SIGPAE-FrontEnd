@@ -136,16 +136,12 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
   };
 
   const prepararAlunosCemei = (alunos_da_cemei) => {
-    if (alunos_da_cemei) {
-      if (alunos_da_cemei.length === 2) {
-        return "Todos";
-      } else if (alunos_da_cemei.includes("CEI")) {
-        return "CEI";
-      } else {
-        return "EMEI";
-      }
+    if (!alunos_da_cemei) return "";
+    if (alunos_da_cemei.length === 2) {
+      return "Todos";
+    } else {
+      return alunos_da_cemei[0];
     }
-    return "";
   };
 
   const onSubmit = async (values, form) => {
