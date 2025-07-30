@@ -285,4 +285,21 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     fireEvent.input(editable, { target: { innerHTML: "Texto de teste" } });
     expect(editable).toHaveTextContent("Texto de teste");
   });
+
+  it("Testa botão Cancelar", async () => {
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    fireEvent.click(botaoCancelar);
+  });
+
+  it("Testa botão Salvar Rascunho", async () => {
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+  });
+
+  it("Testa botão Enviar", async () => {
+    const botaoEnviar = screen.getByText("Enviar").closest("button");
+    fireEvent.click(botaoEnviar);
+  });
 });
