@@ -253,7 +253,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                 : "Nova Solicitação"}
             </div>
             <div className="card solicitation periodos_cei_emei mt-2">
-              <div className="card-body">
+              <div className="card-body" data-testid="card-solicitacao-cemei">
                 <div className="form-group row">
                   <div className="col-3">
                     <Field
@@ -281,6 +281,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                           getAlunosPorFaixaEtariaNumaDataAsync(value);
                         }
                       }}
+                      dataTestId="data-passeio-cemei"
                     />
                   </div>
                   <div className="col-9">
@@ -290,6 +291,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                       name="local"
                       required
                       validate={composeValidators(required, maxLength(160))}
+                      dataTestId="local-passeio-cemei"
                     />
                   </div>
                 </div>
@@ -307,6 +309,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                         { uuid: "EMEI", nome: "EMEI" },
                       ]}
                       validate={required}
+                      dataTestId="alunos-cemei"
                     />
                   </div>
                   <div className="col-9">
@@ -316,6 +319,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                       name="evento"
                       required
                       validate={required}
+                      dataTestId="nome-evento-atividade-cemei"
                     />
                   </div>
                 </div>
@@ -392,6 +396,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                   label="Observações"
                   name="observacao"
                   className="form-control"
+                  dataTestId="observacao-solicitacao-cemei"
                 />
                 <hr />
                 <div className="row float-end mt-4">

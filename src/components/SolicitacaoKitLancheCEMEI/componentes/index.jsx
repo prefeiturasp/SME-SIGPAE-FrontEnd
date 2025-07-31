@@ -140,6 +140,7 @@ export const Kits = ({ kits, values, name, nameTempoPasseio }) => {
                           className="float-end"
                           name={name}
                           disabled={CARD_DISABLED}
+                          data-testid={`kit-cemei-${indice + 1}`}
                         />
                         <span className="checkmark" />
                       </div>
@@ -205,6 +206,7 @@ export const QuantidadeAlunosEMEI = ({ meusDados }) => {
               )}
               min={0}
               step="1"
+              dataTestId="quantidade-aluno-emei"
             />
           </th>
         </tr>
@@ -231,6 +233,7 @@ export const AlunosDietaEspecial = ({
               <ToggleExpandir
                 onClick={() => setCollapseAlunos(!collapseAlunos)}
                 ativo={collapseAlunos}
+                dataTestId="colapse-alunos"
               />
             </div>
           </div>
@@ -240,7 +243,7 @@ export const AlunosDietaEspecial = ({
             <tbody>
               {alunosComDietaEspecial.map((aluno, key) => {
                 return (
-                  <tr key={key}>
+                  <tr key={key} data-testid={`alunos-dieta-especial-${key}`}>
                     <td>
                       <Field
                         component="input"
@@ -294,6 +297,7 @@ export const TabelaFaixasEtariasCEI = ({ faixasEtariasCEI, values }) => {
                     max={parseInt(faixa.count)}
                     min={0}
                     step="1"
+                    dataTestId={`quantidade-aluno-cei-${key}`}
                   />
                 </td>
               </tr>
