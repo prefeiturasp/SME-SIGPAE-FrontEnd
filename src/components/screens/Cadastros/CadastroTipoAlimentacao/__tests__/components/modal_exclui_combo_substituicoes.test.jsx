@@ -67,8 +67,8 @@ describe("Verifica os comportamento do componente de exclusão de combo de subst
   });
 
   it("Seleciona botão cancelar e verifica se closeModal foi chamado.", async () => {
-    const botaoConfirmar = screen.getByText(/cancelar/i).closest("button");
-    fireEvent.click(botaoConfirmar);
+    const botaoCancelar = screen.getByText(/cancelar/i).closest("button");
+    fireEvent.click(botaoCancelar);
     await waitFor(() => {
       expect(closeModal).toHaveBeenCalled();
     });
