@@ -65,6 +65,7 @@ const FaixaEtariaItem = ({
 export default class FaixasEtariasEditar extends Component {
   SEIS_ANOS = 6 * 12;
   SEIS_ANOS_MAIS_UM_MES = this.SEIS_ANOS + 1;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -75,6 +76,7 @@ export default class FaixasEtariasEditar extends Component {
     this.cancelarEdicao = this.cancelarEdicao.bind(this);
     this.onFinalizar = this.onFinalizar.bind(this);
   }
+
   selecionaMes(mes) {
     if (isNaN(mes)) return;
     if (this.state.mesEdicaoAtual !== undefined) {
@@ -106,6 +108,7 @@ export default class FaixasEtariasEditar extends Component {
       });
     }
   }
+
   cancelarEdicao() {
     this.setState({
       mesEdicaoAtual: undefined,
@@ -115,6 +118,7 @@ export default class FaixasEtariasEditar extends Component {
       ),
     });
   }
+
   apagarFaixa(indice) {
     const faixasEtarias = this.state.faixasEtarias.filter(
       (f, i) => i !== indice
@@ -124,9 +128,11 @@ export default class FaixasEtariasEditar extends Component {
       meses: mesesForaDasFaixas(faixasEtarias, this.SEIS_ANOS_MAIS_UM_MES),
     });
   }
+
   onFinalizar() {
     this.props.onFinalizar(this.state.faixasEtarias);
   }
+
   render() {
     return (
       <div className="card mt-3 faixas-etarias-editar">
@@ -197,6 +203,7 @@ export default class FaixasEtariasEditar extends Component {
               style={BUTTON_STYLE.GREEN_OUTLINE}
               disabled={this.state.meses.length > 0}
               onClick={this.onFinalizar}
+              dataTestId="finaliza-edicao-faixas-button"
             />
             {this.props.redefinir && (
               <Botao
@@ -205,6 +212,7 @@ export default class FaixasEtariasEditar extends Component {
                 type={BUTTON_TYPE.BUTTON}
                 style={BUTTON_STYLE.GREEN_OUTLINE}
                 onClick={this.props.onCancelar}
+                dataTestId="cancela-edicao-faixas-button"
               />
             )}
           </div>

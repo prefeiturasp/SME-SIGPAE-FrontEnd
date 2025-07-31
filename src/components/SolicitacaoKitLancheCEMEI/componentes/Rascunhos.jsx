@@ -10,11 +10,15 @@ export class Rascunhos extends Component {
       values,
     } = this.props;
     const cardsRascunhos = rascunhosSolicitacoesKitLanche.map(
-      (solicitacaoKitLanche) => {
+      (solicitacaoKitLanche, index) => {
         const { uuid, id_externo, local } = solicitacaoKitLanche;
         let backgroundColor = "#DADADA";
         return (
-          <div className="draft card border rounded mt-3 p-3" key={id_externo}>
+          <div
+            className="draft card border rounded mt-3 p-3"
+            key={id_externo}
+            data-testid={`card-rascunho-cemei-${index}`}
+          >
             <div className="mt-2">
               <label className="bold ms-3">
                 {`Solicitação de Kit Lanche Passeio #${id_externo}`}
@@ -36,14 +40,20 @@ export class Rascunhos extends Component {
                     <span
                       onClick={() => removerRascunho(id_externo, uuid, form)}
                     >
-                      <i className="fas fa-trash" />
+                      <i
+                        className="fas fa-trash"
+                        data-testid={`btn-delete-rascunho-cemei-${index}`}
+                      />
                     </span>
                     <span
                       onClick={() =>
                         carregarRascunho(form, values, solicitacaoKitLanche)
                       }
                     >
-                      <i className="fas fa-edit" />
+                      <i
+                        className="fas fa-edit"
+                        data-testid={`btn-edit-rascunho-cemei-${index}`}
+                      />
                     </span>
                   </div>
                 </div>
