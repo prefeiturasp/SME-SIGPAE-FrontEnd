@@ -9,11 +9,11 @@ import { MemoryRouter } from "react-router-dom";
 import { PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
-import ModalExcluirComboSubstituicoes from "../../components/ModalExcluirComboSubstituicoes";
+import ModalAvisoRedefinicao from "../ModalAvisoRedefinicao";
 
-describe("Verifica os comportamento do componente de exclusão de combo de substituições", () => {
+describe("Verifica os comportamento do modal de aviso de redefinição de faixas etárias", () => {
   const closeModal = jest.fn();
-  const deletaComboSubstituicao = jest.fn();
+  const onCancelar = jest.fn();
   beforeEach(async () => {
     localStorage.setItem(
       "perfil",
@@ -34,14 +34,10 @@ describe("Verifica os comportamento do componente de exclusão de combo de subst
               setMeusDados: jest.fn(),
             }}
           >
-            <ModalExcluirComboSubstituicoes
+            <ModalAvisoRedefinicao
               showModal={true}
               closeModal={closeModal}
-              deletaComboSubstituicao={deletaComboSubstituicao}
-              combo={{
-                label: "teste",
-              }}
-              indice={1}
+              onCancelar={onCancelar}
             />
           </MeusDadosContext.Provider>
         </MemoryRouter>
@@ -51,24 +47,26 @@ describe("Verifica os comportamento do componente de exclusão de combo de subst
 
   it("Verifica se o componente foi renderizado", () => {
     expect(
-      screen.getByText(/tem certeza que deseja excluir essa combinação/i)
+      screen.getByText(
+        /as faixas etárias já cadastradas serão alteradas após a finalização/i
+      )
     ).toBeInTheDocument();
-    expect(screen.getByText(/confirmar/i)).toBeInTheDocument();
-    expect(screen.getByText(/cancelar/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/redefinição de novas faixas etárias/i)
+    ).toBeInTheDocument();
   });
 
   it("Seleciona botão confirmar e verifica se funções foram chamadas.", async () => {
-    const botaoConfirmar = screen.getByText(/confirmar/i).closest("button");
-    fireEvent.click(botaoConfirmar);
+    const botao = screen.getByText(/continuar/i).closest("button");
+    fireEvent.click(botao);
     await waitFor(() => {
-      expect(deletaComboSubstituicao).toHaveBeenCalled();
       expect(closeModal).toHaveBeenCalled();
     });
   });
 
   it("Seleciona botão cancelar e verifica se closeModal foi chamado.", async () => {
-    const botaoCancelar = screen.getByText(/cancelar/i).closest("button");
-    fireEvent.click(botaoCancelar);
+    const botao = screen.getByText(/cancelar/i).closest("button");
+    fireEvent.click(botao);
     await waitFor(() => {
       expect(closeModal).toHaveBeenCalled();
     });
