@@ -1,22 +1,23 @@
 import {
-  render,
-  screen,
   act,
   fireEvent,
+  render,
+  screen,
   waitFor,
 } from "@testing-library/react";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { PERFIL } from "src/constants/shared";
-import mock from "src/services/_mock";
-import { MeusDadosContext } from "src/context/MeusDadosContext";
-import Container from "../Container";
-import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import { combineReducers, createStore } from "redux";
 import { reducer as formReducer } from "redux-form";
-import { Provider } from "react-redux";
+import { PERFIL } from "src/constants/shared";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { mockDiretoriasRegionaisSimplissima } from "src/mocks/lote.service/mockDiretoriasRegionaisSimplissima";
 import { mockSubPrefeituras } from "src/mocks/lote.service/mockSubPrefeituras";
 import { mockTiposGestao } from "src/mocks/lote.service/mockTiposGestao";
-import { mockDiretoriasRegionaisSimplissima } from "src/mocks/lote.service/mockDiretoriasRegionaisSimplissima";
+import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
+import { mockEscolasSimplissimaDREBUTANTA } from "src/mocks/services/escola.service/DRE/BUTANTA/escolasSimplissima";
+import mock from "src/services/_mock";
+import Container from "../Container";
 
 describe("Verifica os comportamentos do formulário de dados do cadastro de lote", () => {
   beforeEach(async () => {
@@ -26,6 +27,9 @@ describe("Verifica os comportamentos do formulário de dados do cadastro de lote
     mock.onGet("/tipos-gestao/").reply(200, mockTiposGestao);
     mock.onGet("/subprefeituras/").reply(200, mockSubPrefeituras);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
+    mock
+      .onGet("/escolas-simplissima/")
+      .reply(200, mockEscolasSimplissimaDREBUTANTA);
     localStorage.setItem(
       "perfil",
       PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
