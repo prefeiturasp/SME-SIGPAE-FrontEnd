@@ -206,6 +206,7 @@ export const QuantidadeAlunosEMEI = ({ meusDados }) => {
               )}
               min={0}
               step="1"
+              dataTestId="quantidade-aluno-emei"
             />
           </th>
         </tr>
@@ -296,6 +297,7 @@ export const TabelaFaixasEtariasCEI = ({ faixasEtariasCEI, values }) => {
                     max={parseInt(faixa.count)}
                     min={0}
                     step="1"
+                    dataTestId={`quantidade-aluno-cei-${key}`}
                   />
                 </td>
               </tr>

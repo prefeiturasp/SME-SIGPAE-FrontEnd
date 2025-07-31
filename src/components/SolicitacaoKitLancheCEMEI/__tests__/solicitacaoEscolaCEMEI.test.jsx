@@ -19,7 +19,6 @@ import { SolicitacaoKitLancheCEMEI } from "src/components/SolicitacaoKitLancheCE
 import { localStorageMock } from "src/mocks/localStorageMock";
 import userEvent from "@testing-library/user-event";
 import { dataParaUTC } from "src/helpers/utilities";
-import preview from "jest-preview";
 
 describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
   const escolaUuid =
@@ -400,6 +399,44 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     fireEvent.click(iconeSeta);
     expect(screen.queryByTestId("alunos-dieta-especial-0")).toBeNull();
 
-    preview.debug();
+    const quantidadeAlunos = screen.getByTestId("quantidade-aluno-cei-0");
+    await usuario.type(quantidadeAlunos, "40");
+    expect(quantidadeAlunos).toHaveValue(40);
+  });
+
+  it("Testa a solicitação EMEI da CEMEI", async () => {
+    const usuario = userEvent.setup();
+    await selecionarDataNoDatepicker(usuario);
+    const seletorStatus = screen
+      .getByTestId("alunos-cemei")
+      .querySelector("select");
+    await usuario.selectOptions(seletorStatus, "EMEI");
+    expect(screen.getByText(/Alunos EMEI/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tempo previsto do passeio/i)).toBeInTheDocument();
+    expect(screen.getByText("até 4 horas (1 Kit)")).toBeInTheDocument();
+    expect(screen.getByText("de 5 a 7 horas (2 Kits)")).toBeInTheDocument();
+    expect(screen.getByText("8 horas ou mais (3 Kits)")).toBeInTheDocument();
+    expect(screen.getByText(/Selecione a opção desejada/i)).toBeInTheDocument();
+    expect(screen.getByText("KIT")).toBeInTheDocument();
+    expect(screen.getByText(/teste/i)).toBeInTheDocument();
+    expect(screen.getByText(/Alunos matriculados:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Quantidade/i)).toBeInTheDocument();
+    expect(screen.getByText(/Número total de kits:/i)).toBeInTheDocument();
+
+    const radio4h = screen.getByRole("radio", { name: /de 5 a 7 horas/i });
+    await usuario.click(radio4h);
+    expect(radio4h).toBeChecked();
+
+    const checkbox = screen.getByTestId("kit-cemei-1");
+    await usuario.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    const iconeSeta = screen.getByTestId("colapse-alunos");
+    fireEvent.click(iconeSeta);
+    expect(screen.queryByTestId("alunos-dieta-especial-0")).toBeNull();
+
+    const quantidadeAlunos = screen.getByTestId("quantidade-aluno-emei");
+    await usuario.type(quantidadeAlunos, "100");
+    expect(quantidadeAlunos).toHaveValue(100);
   });
 });
