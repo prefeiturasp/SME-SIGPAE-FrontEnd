@@ -245,8 +245,8 @@ class solicitacaoDietaEspecial extends Component {
 
     if (!resposta) return;
 
-    if (resposta && resposta.results.length) {
-      const escola = resposta.results[0];
+    if (resposta && resposta.data.results.length) {
+      const escola = resposta.data.results[0];
       change("aluno_nao_matriculado_data.nome_escola", escola.nome);
     } else {
       change("aluno_nao_matriculado_data.nome_escola", "");

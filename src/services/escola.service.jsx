@@ -47,22 +47,13 @@ export const getEscolasSimples = () => {
     });
 };
 
-export const getEscolasSimplissima = (params = {}) => {
-  let url = new URL(`${API_URL}/escolas-simplissima/`);
-  Object.keys(params).forEach((key) =>
-    url.searchParams.append(key, params[key])
-  );
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
+export const getEscolasSimplissima = async (params = {}) => {
+  const url = `${API_URL}/escolas-simplissima/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getEscolasParaFiltros = async (params = {}) => {
@@ -145,19 +136,13 @@ export const getTiposGestao = async () => {
   }
 };
 
-export const getSubprefeituras = () => {
+export const getSubprefeituras = async () => {
   const url = `${API_URL}/subprefeituras/`;
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getQuantidaDeAlunosPorPeriodoEEscola = async (uuidEscola) => {
