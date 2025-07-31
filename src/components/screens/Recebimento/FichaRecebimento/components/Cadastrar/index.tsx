@@ -46,11 +46,13 @@ import {
   ArquivoForm,
   CronogramaSimples,
 } from "src/interfaces/pre_recebimento.interface";
+import FormOcorrencia from "../FormOcorrencia";
 
 import {
   CronogramaFicha,
   DocumentoFicha,
   FichaRecebimentoPayload,
+  OcorrenciaFichaRecebimento,
   QuestoesPayload,
   VeiculoPayload,
 } from "../../interfaces";
@@ -81,6 +83,10 @@ const collapseConfigStep3 = [
     camposObrigatorios: true,
   },
   {
+    titulo: "Ocorrências",
+    camposObrigatorios: true,
+  },
+  {
     titulo: "Observações",
     camposObrigatorios: false,
   },
@@ -107,6 +113,7 @@ export default () => {
   const [questoesSecundarias, setQuestoesSecundarias] = useState<
     QuestaoConferenciaSimples[]
   >([]);
+  const [ocorrenciasCount, setOcorrenciasCount] = useState(1);
 
   const onSubmit = (): void => {};
 
@@ -166,6 +173,45 @@ export default () => {
           })
           .filter((x) => x !== null)
       : [];
+  };
+
+  const extraiOcorrenciasDoFormulario = (values: Record<string, any>) => {
+    const ocorrencias: OcorrenciaFichaRecebimento[] = [];
+
+    if (values.houve_ocorrencia === "0") {
+      return ocorrencias;
+    }
+
+    for (let idx = 0; idx < ocorrenciasCount; idx++) {
+      const tipo = values[`tipo_${idx}`];
+      const relacao = values[`relacao_${idx}`];
+      const numero_nota = values[`numero_nota_${idx}`];
+      const quantidade = values[`quantidade_${idx}`];
+      const descricao = values[`descricao_${idx}`];
+
+      const ocorrencia: OcorrenciaFichaRecebimento = {
+        tipo,
+        descricao,
+      };
+
+      if (tipo === "FALTA") {
+        ocorrencia.relacao = relacao;
+        if (relacao === "NOTA_FISCAL") {
+          ocorrencia.numero_nota = numero_nota;
+        }
+        ocorrencia.quantidade = quantidade;
+      }
+
+      if (tipo === "RECUSA") {
+        ocorrencia.relacao = relacao;
+        ocorrencia.numero_nota = numero_nota;
+        ocorrencia.quantidade = quantidade;
+      }
+
+      ocorrencias.push(ocorrencia);
+    }
+
+    return ocorrencias.filter((ocorrencia) => ocorrencia.tipo !== undefined);
   };
 
   const formataPayload = (
@@ -235,6 +281,7 @@ export default () => {
       arquivos: arquivos,
       observacoes_conferencia: values.observacoes_conferencia,
       questoes: payloadQuestoes,
+      ocorrencias: extraiOcorrenciasDoFormulario(values),
     };
 
     return payload;
@@ -1260,6 +1307,40 @@ export default () => {
                                 type={BUTTON_TYPE.BUTTON}
                                 style={BUTTON_STYLE.GREEN_OUTLINE}
                                 onClick={() => setShowModalAtribuir(true)}
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </section>
+
+                    <section id="ocorrencias">
+                      <div className="col-6">
+                        <RadioButtonField
+                          name="ocorrencias.houve_ocorrencia"
+                          label="Houve Ocorrência(s) no Recebimento?"
+                          options={[
+                            { value: "1", label: "SIM" },
+                            { value: "0", label: "NÃO" },
+                          ]}
+                        />
+                      </div>
+                      {values?.ocorrencias?.houve_ocorrencia === "1" && (
+                        <>
+                          <FormOcorrencia
+                            ocorrenciasCount={ocorrenciasCount}
+                            setOcorrenciasCount={setOcorrenciasCount}
+                            values={values}
+                          />
+                          <div className="row mt-3">
+                            <div className="col-12 d-flex justify-content-center">
+                              <Botao
+                                texto="+ Adicionar Ocorrência"
+                                type={BUTTON_TYPE.BUTTON}
+                                style={BUTTON_STYLE.GREEN_OUTLINE}
+                                onClick={() =>
+                                  setOcorrenciasCount(ocorrenciasCount + 1)
+                                }
                               />
                             </div>
                           </div>
