@@ -4,6 +4,56 @@ export const mockGetTiposUnidadeEscolar = {
   previous: null,
   results: [
     {
+      periodos_escolares: [
+        {
+          uuid: "e17e2405-36be-4981-a09c-35c89ae0f8b7",
+          nome: "INTEGRAL",
+          tipos_alimentacao: [
+            {
+              uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+              nome: "Lanche",
+            },
+            {
+              uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+              nome: "Refeição",
+            },
+            {
+              uuid: "5aa2c32b-1df2-46b6-b2e7-514b885fa9a4",
+              nome: "Sobremesa",
+            },
+            {
+              uuid: "7990ca99-55b7-4fc7-b5cc-8a51b23d0102",
+              nome: "Almoço",
+            },
+            {
+              uuid: "8e0917e0-70d0-41a8-a5bb-f85bbdd790bb",
+              nome: "Colação",
+            },
+            {
+              uuid: "5bd9ad5c-e0ab-4812-b2b6-336fc89886b1",
+              nome: "Refeição da tarde",
+            },
+            {
+              uuid: "c4255a14-85fd-412f-b35f-30828215e4d5",
+              nome: "Lanche Emergencial",
+            },
+            {
+              uuid: "96cad31e-acb8-4dc3-8861-df0731b375ea",
+              nome: "Desjejum",
+            },
+          ],
+          posicao: 1,
+          tipo_turno: 6,
+          possui_alunos_regulares: null,
+        },
+      ],
+      iniciais: "CCI",
+      ativo: true,
+      uuid: "de8dab55-687f-46ce-8cf2-21381ccd6629",
+      tem_somente_integral_e_parcial: true,
+      pertence_relatorio_solicitacoes_alimentacao: false,
+    },
+    {
       periodos_escolares: [],
       iniciais: "CCI/CIPS",
       ativo: true,
