@@ -396,6 +396,10 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     await usuario.click(checkbox);
     expect(checkbox).toBeChecked();
 
+    const iconeSeta = screen.getByTestId("colapse-alunos");
+    fireEvent.click(iconeSeta);
+    expect(screen.queryByTestId("alunos-dieta-especial-0")).toBeNull();
+
     preview.debug();
   });
 });

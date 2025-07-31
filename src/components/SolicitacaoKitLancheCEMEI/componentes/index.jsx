@@ -232,6 +232,7 @@ export const AlunosDietaEspecial = ({
               <ToggleExpandir
                 onClick={() => setCollapseAlunos(!collapseAlunos)}
                 ativo={collapseAlunos}
+                dataTestId="colapse-alunos"
               />
             </div>
           </div>
@@ -241,7 +242,7 @@ export const AlunosDietaEspecial = ({
             <tbody>
               {alunosComDietaEspecial.map((aluno, key) => {
                 return (
-                  <tr key={key}>
+                  <tr key={key} data-testid={`alunos-dieta-especial-${key}`}>
                     <td>
                       <Field
                         component="input"
