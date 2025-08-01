@@ -1,15 +1,9 @@
-import React from "react";
-import * as R from "ramda";
-
 export const MotivoHomologacaoRecusada = ({ logs }) => {
   const getRecusa = (logs) => {
-    const arr = R.filter(
-      R.propEq("status_evento_explicacao", "CODAE não homologou"),
-      logs
+    return logs.find(
+      (log) => log.status_evento_explicacao === "CODAE não homologou"
     );
-    return arr[0];
   };
-
   const recusa = getRecusa(logs);
 
   return (

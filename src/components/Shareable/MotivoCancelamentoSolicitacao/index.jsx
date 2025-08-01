@@ -1,16 +1,12 @@
 import React from "react";
-import * as R from "ramda";
 import "./styles.scss";
 
 export const getCorrecao = (logs) => {
-  const arr = R.filter(
-    R.propEq(
-      "status_evento_explicacao",
+  return logs.find(
+    (log) =>
+      log.status_evento_explicacao ===
       "Terceirizada cancelou solicitação de homologação de produto"
-    ),
-    logs
   );
-  return arr[0];
 };
 
 export default ({ logs }) => {

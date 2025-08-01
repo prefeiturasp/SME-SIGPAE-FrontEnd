@@ -1,13 +1,10 @@
 import React from "react";
-import * as R from "ramda";
 import "./styles.scss";
 
 export const getSuspensao = (logs) => {
-  const arr = R.filter(
-    R.propEq("status_evento_explicacao", "CODAE suspendeu o produto"),
-    logs
+  return logs.find(
+    (log) => log.status_evento_explicacao === "CODAE suspendeu o produto"
   );
-  return arr[0];
 };
 
 const MotivoSuspensao = ({ logs }) => {
