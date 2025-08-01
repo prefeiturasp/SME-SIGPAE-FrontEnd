@@ -1,7 +1,6 @@
 import React from "react";
 
 import { Table } from "antd";
-import Column from "antd/es/table/Column";
 
 import { Field } from "react-final-form";
 
@@ -39,7 +38,7 @@ export function TabelaAlimentacaoCEI({
         </h2>
 
         <Table pagination={false} bordered dataSource={faixasEtarias}>
-          <Column
+          <Table.Column
             title="Faixas Etárias"
             dataIndex="__str__"
             key="__str__"
@@ -57,7 +56,7 @@ export function TabelaAlimentacaoCEI({
               );
             }}
           />
-          <Column
+          <Table.Column
             title="Valor Unitário"
             dataIndex="valor_unitario"
             key="valor_unitario"
@@ -73,7 +72,7 @@ export function TabelaAlimentacaoCEI({
               />
             )}
           />
-          <Column
+          <Table.Column
             title="Valor Unitário Reajuste"
             dataIndex="valor_unitario_reajuste"
             key="valor_unitario_reajuste"

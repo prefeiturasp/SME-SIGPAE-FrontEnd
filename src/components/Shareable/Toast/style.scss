@@ -4,41 +4,77 @@
   font-family: Roboto;
 }
 
+.Toastify__toast {
+  width: auto !important;
+  max-width: 90vw !important;
+  min-width: 40vw !important;
+  text-align: center;
+  font-size: 16px;
+  padding: 12px 24px;
+  justify-content: center !important;
+}
+
+// Container
 .Toastify__toast-container--top-center {
-  font-weight: 500;
   font-family: Roboto;
   font-weight: bold;
   font-size: 18px;
-  height: 50px;
   letter-spacing: 0.02em;
-  min-width: 90%;
+  width: 100% !important;
+  max-width: 100% !important;
   text-align: center;
-  .Toastify__toast--success {
-    background: $greenBackgroundToastSuccess;
-    color: $greenToastSuccess;
-    button.Toastify__close-button.Toastify__close-button--success {
-      color: $greenToastSuccess;
-    }
+  justify-content: center !important;
+}
+
+// Cores para tipos de toast
+.Toastify__toast--success {
+  background: $greenBackgroundToastSuccess !important;
+  color: $greenToastSuccess !important;
+
+  .Toastify__close-button {
+    color: $greenToastSuccess !important;
   }
-  .Toastify__toast--error {
-    background: $redBackgroundToastError;
-    color: $redToastError;
-    button.Toastify__close-button.Toastify__close-button--error {
-      color: $redToastError;
-    }
+
+  .Toastify__progress-bar {
+    background: $greenToastSuccess !important;
   }
-  .Toastify__toast--warning {
-    background: $yellowBackgroundToastWarning;
-    color: $yellowToastWarning;
-    button.Toastify__close-button.Toastify__close-button--warning {
-      color: $yellowToastWarning;
-    }
+}
+
+.Toastify__toast--error {
+  background: $redBackgroundToastError !important;
+  color: $redToastError !important;
+
+  .Toastify__close-button {
+    color: $redToastError !important;
   }
-  .Toastify__toast--info {
-    background: $blueBackgroundToastInfo;
-    color: $blueToastInfo;
-    button.Toastify__close-button.Toastify__close-button--info {
-      color: $blueToastInfo;
-    }
+
+  .Toastify__progress-bar {
+    background: $redToastError !important;
+  }
+}
+
+.Toastify__toast--warning {
+  background: $yellowBackgroundToastWarning !important;
+  color: $yellowToastWarning !important;
+
+  .Toastify__close-button {
+    color: $yellowToastWarning !important;
+  }
+
+  .Toastify__progress-bar {
+    background: $yellowToastWarning !important;
+  }
+}
+
+.Toastify__toast--info {
+  background: $blueBackgroundToastInfo !important;
+  color: $blueToastInfo !important;
+
+  .Toastify__close-button {
+    color: $blueToastInfo !important;
+  }
+
+  .Toastify__progress-bar {
+    background: $blueToastInfo !important;
   }
 }

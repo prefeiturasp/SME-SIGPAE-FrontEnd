@@ -95,8 +95,8 @@ export default ({
       return;
     }
 
-    if (response.results.length) {
-      const tipoGestao = response.results[0].tipo_gestao;
+    if (response.data.results.length) {
+      const tipoGestao = response.data.results[0].tipo_gestao;
       const tipoGestaoEhPermitida = [
         "TERC TOTAL",
         "DIRETA",
@@ -105,7 +105,7 @@ export default ({
       if (tipoGestaoEhPermitida) {
         setDadosIniciais({
           ...values,
-          nome_escola: response.results[0].nome,
+          nome_escola: response.data.results[0].nome,
         });
       } else {
         toastError(

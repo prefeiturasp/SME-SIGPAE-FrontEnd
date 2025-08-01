@@ -1,5 +1,5 @@
+import HTTP_STATUS from "http-status-codes";
 import { useState } from "react";
-
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 import {
@@ -7,40 +7,51 @@ import {
   usuarioEhEscolaTerceirizadaQualquerPerfil,
 } from "src/helpers/utilities";
 
-import RelatorioService from "src/services/medicaoInicial/relatorio.service";
 import { RelatorioAdesaoResponse } from "src/services/medicaoInicial/relatorio.interface";
+import RelatorioService from "src/services/medicaoInicial/relatorio.service";
 
-import { Filtros } from "./types";
+import { IFiltros } from "./types";
 
 export default () => {
   const [loading, setLoading] = useState(false);
   const [exibirTitulo, setExibirTitulo] = useState(false);
 
-  const [params, setParams] = useState<Filtros | null>(null);
-  const [filtros, setFiltros] = useState<Filtros | null>(null);
+  const [params, setParams] = useState<IFiltros | null>(null);
+  const [filtros, setFiltros] = useState<IFiltros | null>(null);
   const [filtrosSelecionados, setFiltrosSelecionados] =
-    useState<Filtros | null>(null);
+    useState<IFiltros | null>(null);
   const [resultado, setResultado] = useState<RelatorioAdesaoResponse>(null);
 
-  const filtrar = async (values: Filtros) => {
+  const filtrar = async (values: IFiltros) => {
+    if (values.periodo_lancamento_de && !values.periodo_lancamento_ate) {
+      toastError("Se preencher o campo `De`, `Até` é obrigatório");
+      return;
+    }
+    if (!values.periodo_lancamento_de && values.periodo_lancamento_ate) {
+      toastError("Se preencher o campo `Até`, `De` é obrigatório");
+      return;
+    }
     setLoading(true);
     setFiltros(filtrosSelecionados);
     setParams(values);
     setExibirTitulo(true);
 
-    try {
-      const dados = await RelatorioService.getRelatorioAdesao({
-        mes_ano: values.mes,
-        diretoria_regional: values.dre,
-        lotes: values.lotes,
-        escola: values.unidade_educacional,
-        periodos_escolares: values.periodos,
-        tipos_alimentacao: values.tipos_alimentacao,
-      });
-
-      setResultado(dados);
-    } catch (e) {
-      toastError("Não foi possível obter os resultados");
+    const response = await RelatorioService.getRelatorioAdesao({
+      mes_ano: values.mes,
+      diretoria_regional: values.dre,
+      lotes: values.lotes,
+      escola: values.unidade_educacional,
+      periodos_escolares: values.periodos,
+      tipos_alimentacao: values.tipos_alimentacao,
+      periodo_lancamento_de: values.periodo_lancamento_de,
+      periodo_lancamento_ate: values.periodo_lancamento_ate,
+    });
+    if (response.status === HTTP_STATUS.OK) {
+      setResultado(response.data);
+    } else {
+      toastError(
+        "Não foi possível obter os resultados. Tente novamente mais tarde."
+      );
     }
 
     setLoading(false);
@@ -71,7 +82,7 @@ export default () => {
     setExibirTitulo(false);
   };
 
-  const atualizaFiltrosSelecionados = (values: Filtros) => {
+  const atualizaFiltrosSelecionados = (values: IFiltros) => {
     setFiltrosSelecionados((prev) => {
       let values_ = values;
       if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {

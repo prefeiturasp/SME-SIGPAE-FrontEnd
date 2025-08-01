@@ -8,7 +8,6 @@ import { filtersDietaReducer } from "./reducers/filtersDietaReducer";
 import { filtersProdutoReducer } from "./reducers/filtersProdutoReducer";
 import finalFormReducer from "./reducers/finalForm";
 import incluirDietaEspecialReducer from "./reducers/incluirDietaEspecialReducer";
-import inversaoDeDiaDeCardapioReducer from "./reducers/inversaoDeDiaDeCardapio.reducer";
 import kitLancheReducer from "./reducers/kitLanche.reducer";
 import loadFiltroBusca from "./reducers/loadFiltroBusca";
 import loteReducer from "./reducers/lote.reducer";
@@ -23,7 +22,6 @@ import loadTipoAlimentacao from "./reducers/tipoAlimentacaoReducer";
 // Junta todos os reducers do sistema! Vai pra store
 const rootReducer = combineReducers({
   form: formReducer,
-  inversaoDeDiaDeCardapioForm: inversaoDeDiaDeCardapioReducer,
   loteForm: loteReducer,
   suspensaoDeAlimentacao: suspensaoDeAlimentacaoReducer,
   TipoDeAlimentacaoForm: loadTipoAlimentacao,

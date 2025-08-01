@@ -26,6 +26,7 @@ export interface FichaRecebimentoPayload {
   arquivos?: Arquivo[];
   observacoes_conferencia?: string;
   questoes?: QuestoesPayload[];
+  ocorrencias?: OcorrenciaFichaRecebimento[];
 }
 
 export interface QuestoesPayload {
@@ -108,4 +109,12 @@ export interface FichaDeRecebimentoItemListagem {
 
 export interface ResponseFichasDeRecebimento extends ResponseInterface {
   data: ListagemPaginada<FichaDeRecebimentoItemListagem>;
+}
+
+export interface OcorrenciaFichaRecebimento {
+  tipo: string;
+  relacao?: string;
+  numero_nota?: string;
+  quantidade?: string;
+  descricao: string;
 }

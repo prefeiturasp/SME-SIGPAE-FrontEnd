@@ -21,7 +21,7 @@ import { extrairUUIDs, getError } from "../../../../helpers/utilities";
 import { required } from "../../../../helpers/fieldValidators";
 import "../style.scss";
 import Botao from "../../../Shareable/Botao";
-import { BUTTON_STYLE } from "../../../Shareable/Botao/constants";
+import { BUTTON_STYLE, BUTTON_TYPE } from "../../../Shareable/Botao/constants";
 import {
   CONFIGURACOES,
   CADASTROS,
@@ -340,6 +340,7 @@ class CadastroLote extends Component {
               <div className="row pt-3">
                 <div className="col-8">
                   <Field
+                    dataTestId="diretoria-regional-select"
                     label="DRE"
                     component={Select}
                     name="diretoria_regional"
@@ -388,6 +389,7 @@ class CadastroLote extends Component {
               <div className="row pt-3">
                 <div className="col-4">
                   <Field
+                    dataTestId="iniciais-dre-input"
                     component={InputText}
                     label="Nome do Lote (Iniciais da DRE)"
                     className="form-control"
@@ -400,6 +402,7 @@ class CadastroLote extends Component {
                 </div>
                 <div className="col-4">
                   <Field
+                    dataTestId="numero-lote-input"
                     component={InputText}
                     label="Nº do Lote"
                     className="form-control"
@@ -411,6 +414,7 @@ class CadastroLote extends Component {
                 </div>
                 <div className="col-4">
                   <Field
+                    dataTestId="tipo-gestao-select"
                     component={Select}
                     label="Tipo de Gestão"
                     name="tipo_gestao"
@@ -480,7 +484,7 @@ class CadastroLote extends Component {
                           this.props.reset();
                         }}
                         style={BUTTON_STYLE.GREEN_OUTLINE}
-                        type={BUTTON_STYLE.BUTTON}
+                        type={BUTTON_TYPE.RESET}
                       />
                     )}
                     {uuid && (
@@ -488,14 +492,14 @@ class CadastroLote extends Component {
                         texto="Excluir"
                         onClick={this.excluirLote}
                         style={BUTTON_STYLE.GREEN_OUTLINE}
-                        type={BUTTON_STYLE.BUTTON}
+                        type={BUTTON_TYPE.BUTTON}
                       />
                     )}
                     <Botao
                       texto={"Salvar"}
                       onClick={handleSubmit(() => this.exibirModal())}
                       className="ms-3"
-                      type={BUTTON_STYLE.SUBMIT}
+                      type={BUTTON_TYPE.SUBMIT}
                       style={BUTTON_STYLE.GREEN}
                     />
                   </div>
