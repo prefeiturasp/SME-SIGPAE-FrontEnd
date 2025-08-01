@@ -114,7 +114,8 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                   </div>
                   <div className={`${bordas}`}>
                     {cronograma.qtd_total_programada &&
-                      formataMilhar(cronograma.qtd_total_programada)}
+                      formataMilhar(cronograma.qtd_total_programada)}{" "}
+                    {cronograma.unidade_medida?.abreviacao}
                   </div>
                   <div className={`${bordas}`}>
                     {cronograma.empresa

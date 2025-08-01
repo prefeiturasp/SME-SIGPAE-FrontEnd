@@ -2,8 +2,15 @@ import { toast } from "react-toastify";
 import "./style.scss";
 
 let baseConfig = {
-  position: toast.POSITION.TOP_CENTER,
+  position: "top-center",
   icon: false,
+  autoClose: 5000,
+  hideProgressBar: false,
+  closeOnClick: false,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: "colored",
 };
 
 export const toastSuccess = (message, toastId = null) => {

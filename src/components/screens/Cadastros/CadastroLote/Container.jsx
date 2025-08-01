@@ -44,7 +44,7 @@ class Container extends Component {
 
     getSubprefeituras().then((response) => {
       this.setState({
-        subprefeituras: formatarParaMultiselect(response.results),
+        subprefeituras: formatarParaMultiselect(response.data.results),
       });
     });
   }
@@ -56,7 +56,7 @@ class Container extends Component {
     getEscolasSimplissima({ diretoria_regional__uuid: dre_uuid }).then(
       (response) => {
         this.setState({
-          escolas: formatarEscolasParaMultiselect(response.results),
+          escolas: formatarEscolasParaMultiselect(response.data.results),
         });
       }
     );

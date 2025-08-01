@@ -1,8 +1,78 @@
 export const mockGetVinculosTipoAlimentacaoPorEscola = {
-  count: 6,
+  count: 9,
   next: null,
   previous: null,
   results: [
+    {
+      uuid: "1f7f5d33-8423-4a80-a1ae-ff8f9074068b",
+      tipo_unidade_escolar: {
+        iniciais: "CCI",
+        ativo: true,
+        uuid: "de8dab55-687f-46ce-8cf2-21381ccd6629",
+        tem_somente_integral_e_parcial: true,
+        pertence_relatorio_solicitacoes_alimentacao: false,
+      },
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "INTEGRAL",
+        uuid: "e17e2405-36be-4981-a09c-35c89ae0f8b7",
+        posicao: 1,
+        tipo_turno: 6,
+      },
+      tipos_alimentacao: [
+        {
+          nome: "Lanche",
+          uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+          posicao: 2,
+        },
+        {
+          nome: "Refeição da tarde",
+          uuid: "5bd9ad5c-e0ab-4812-b2b6-336fc89886b1",
+          posicao: null,
+        },
+        {
+          nome: "Almoço",
+          uuid: "7990ca99-55b7-4fc7-b5cc-8a51b23d0102",
+          posicao: null,
+        },
+      ],
+    },
+    {
+      uuid: "0b408b7a-8ca4-4ff1-a16d-9a572bb09b71",
+      tipo_unidade_escolar: {
+        iniciais: "CCI",
+        ativo: true,
+        uuid: "de8dab55-687f-46ce-8cf2-21381ccd6629",
+        tem_somente_integral_e_parcial: true,
+        pertence_relatorio_solicitacoes_alimentacao: false,
+      },
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "MANHA",
+        uuid: "5067e137-e5f3-4876-a63f-7f58cce93f33",
+        posicao: 2,
+        tipo_turno: 1,
+      },
+      tipos_alimentacao: [],
+    },
+    {
+      uuid: "fca8cb92-5f9d-4668-b8ee-9784a2d60a9d",
+      tipo_unidade_escolar: {
+        iniciais: "CCI",
+        ativo: true,
+        uuid: "de8dab55-687f-46ce-8cf2-21381ccd6629",
+        tem_somente_integral_e_parcial: true,
+        pertence_relatorio_solicitacoes_alimentacao: false,
+      },
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "TARDE",
+        uuid: "20bd9ca9-d499-456a-bd86-fb8f297947d6",
+        posicao: 3,
+        tipo_turno: 3,
+      },
+      tipos_alimentacao: [],
+    },
     {
       uuid: "cdb15dfd-31df-4f7d-ab62-e419f9c5e183",
       tipo_unidade_escolar: {

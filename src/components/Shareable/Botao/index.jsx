@@ -76,7 +76,7 @@ Botao.propTypes = {
   iconPosition: PropTypes.string,
   iconId: PropTypes.string,
   style: PropTypes.string,
-  texto: PropTypes.string,
+  texto: PropTypes.string | PropTypes.element,
   titulo: PropTypes.string,
   type: PropTypes.string,
   exibirTooltip: PropTypes.bool,

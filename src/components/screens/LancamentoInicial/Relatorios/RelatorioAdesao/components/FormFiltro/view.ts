@@ -22,6 +22,7 @@ import { getMesesAnosSolicitacoesMedicaoinicial } from "src/services/medicaoInic
 import { MESES } from "src/constants/shared";
 
 import { Args, SelectOption, MultiSelectOption, Option } from "./types";
+import { FormApi } from "final-form";
 
 export default ({ form, onChange }: Args) => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -109,7 +110,7 @@ export default ({ form, onChange }: Args) => {
         setLotes(lotes);
         setLotesOpcoes(formatarOpcoesLote(lotes));
 
-        let escolas = responseEscolas.filter(
+        let escolas = responseEscolas.data.filter(
           (escola) =>
             ![
               "CEI",
@@ -130,15 +131,16 @@ export default ({ form, onChange }: Args) => {
 
         const periodos = formataPeriodosEscolaresOpcoes(
           usuarioEhEscolaTerceirizadaQualquerPerfil() && uuidInstituicao
-            ? responsePeriodos
+            ? responsePeriodos.data
             : responsePeriodos.data.results
         );
+
         setPeriodosEscolares(periodos);
         setPeriodosEscolaresOpcoes(periodos);
 
         const tipos = formataTiposAlimentacoesOpcoes(
           usuarioEhEscolaTerceirizadaQualquerPerfil() && uuidInstituicao
-            ? responseAlimentacoes
+            ? responseAlimentacoes.data
             : responseAlimentacoes.data.results
         );
         setTiposAlimentacao(tipos);
@@ -261,7 +263,7 @@ export default ({ form, onChange }: Args) => {
     }));
   };
 
-  const onChangeMesAno = (e: ChangeEvent<HTMLInputElement>) => {
+  const onChangeMesAno = (e: ChangeEvent<HTMLInputElement>, form: FormApi) => {
     const mesAno = e.target.value;
 
     onChange({
@@ -272,6 +274,9 @@ export default ({ form, onChange }: Args) => {
             .toUpperCase()
         : undefined,
     });
+
+    form.change("periodo_lancamento_de", undefined);
+    form.change("periodo_lancamento_ate", undefined);
   };
 
   const onChangeDRE = (e: ChangeEvent<HTMLInputElement>) => {
@@ -368,17 +373,18 @@ export default ({ form, onChange }: Args) => {
         buscandoTiposAlimentacao: true,
       }));
 
-      const [periodosEscolares, tiposAlimentacao] = await Promise.all([
-        getEscolaPeriodosEscolares(escola.uuid),
-        getEscolaTiposAlimentacao(escola.uuid),
-      ]);
+      const [responsePeriodosEscolares, responseTiposAlimentacao] =
+        await Promise.all([
+          getEscolaPeriodosEscolares(escola.uuid),
+          getEscolaTiposAlimentacao(escola.uuid),
+        ]);
 
       setPeriodosEscolaresOpcoes(
-        formataPeriodosEscolaresOpcoes(periodosEscolares)
+        formataPeriodosEscolaresOpcoes(responsePeriodosEscolares.data)
       );
 
       setTiposAlimentacaoOpcoes(
-        formataTiposAlimentacoesOpcoes(tiposAlimentacao)
+        formataTiposAlimentacoesOpcoes(responseTiposAlimentacao.data)
       );
 
       setBuscandoOpcoes((prev) => ({
@@ -387,6 +393,18 @@ export default ({ form, onChange }: Args) => {
         buscandoTiposAlimentacao: false,
       }));
     }
+  };
+
+  const onChangePeriodoLancamentoDe = (periodoLancamentoDe: string) => {
+    onChange({
+      periodo_lancamento_de: periodoLancamentoDe,
+    });
+  };
+
+  const onChangePeriodoLancamentoAte = (periodoLancamentoAte: string) => {
+    onChange({
+      periodo_lancamento_ate: periodoLancamentoAte,
+    });
   };
 
   const formataUnidadesEducacionaisOpcoes = (escolas): Array<Option> => {
@@ -446,5 +464,7 @@ export default ({ form, onChange }: Args) => {
     filtraUnidadesEducacionaisOpcoes,
     buscandoOpcoes,
     validaMesAno,
+    onChangePeriodoLancamentoDe,
+    onChangePeriodoLancamentoAte,
   };
 };

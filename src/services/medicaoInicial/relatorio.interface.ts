@@ -17,9 +17,12 @@ export interface RelatorioAdesaoParams {
   escola: string;
   periodos_escolares: Array<string>;
   tipos_alimentacao: Array<string>;
+  periodo_lancamento_de?: string;
+  periodo_lancamento_ate?: string;
 }
 
 export interface RelatorioAdesaoResponse extends RelatorioAdesaoPeriodo {}
 export interface RelatorioAdesaoExportResponse {
-  detail: string;
+  data: Object;
+  status: number;
 }

@@ -552,7 +552,7 @@ export class SolicitacaoDeKitLanche extends Component {
             </Spin>
             <br />
             <h3 className="page-title mt-0">{this.state.title}</h3>
-            <div className="card mt-3 p-4">
+            <div className="card mt-3 p-4" data-testid="card-solicitacao">
               {ehCei && (
                 <div className="form-group row">
                   <p className="dre-name">
@@ -572,6 +572,7 @@ export class SolicitacaoDeKitLanche extends Component {
                     required
                     validate={required}
                     onChange={(value) => this.validaDiasUteis(value)}
+                    dataTestId="data-passeio"
                   />
                 </div>
                 <div className="col-9">
@@ -581,6 +582,7 @@ export class SolicitacaoDeKitLanche extends Component {
                     name="local"
                     required
                     validate={this.validatorsLocalPasseio}
+                    dataTestId="local-passeio"
                   />
                 </div>
               </div>
@@ -606,10 +608,14 @@ export class SolicitacaoDeKitLanche extends Component {
 
                         return errors.length > 0 ? errors : undefined;
                       }}
+                      dataTestId="numero-alunos"
                     />
                     {erro && (
                       <Tooltip title={erro}>
-                        <i className="fas fa-info icone-info-error" />
+                        <i
+                          className="fas fa-info icone-info-error"
+                          data-testId="erro-numero-alunos"
+                        />
                       </Tooltip>
                     )}
                   </div>
@@ -620,6 +626,7 @@ export class SolicitacaoDeKitLanche extends Component {
                       name="evento"
                       required
                       validate={this.validatorsLocalPasseio}
+                      dataTestId="nome-evento-atividade"
                     />
                   </div>
                 </div>
@@ -676,6 +683,7 @@ export class SolicitacaoDeKitLanche extends Component {
                   label="Observações"
                   name="observacao"
                   placeholder="Campo opcional"
+                  dataTestId="observacao-solicitacao"
                 />
               </div>
               <div className="row mt-5">

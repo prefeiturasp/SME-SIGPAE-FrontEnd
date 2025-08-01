@@ -477,3 +477,12 @@ export const getDietasEspeciaisVigentesDeUmAlunoNaoMatriculado = async (
     return data;
   }
 };
+
+export const getRelatorioRecreioFerias = async (params) => {
+  const url = `/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};

@@ -21,6 +21,7 @@ export const atualizarKitLanche = async (values) => {
       return response.json();
     })
     .catch((erro) => {
+      // eslint-disable-next-line
       console.log("Atualizar Kit Lanche: ", erro);
     });
 };
@@ -76,19 +77,8 @@ export const getSolicitacoesKitLanche = async (tipoSolicitacao) => {
     return axios.get(url);
   }
 
-  const OBJ_REQUEST = {
-    headers: AUTH_TOKEN,
-    method: "GET",
-  };
-
-  return await fetch(url, OBJ_REQUEST)
-    .then((response) => {
-      const resp = response.json();
-      return resp;
-    })
-    .catch((erro) => {
-      console.log(erro);
-    });
+  const response = await axios({ url: url });
+  return response.data;
 };
 
 export const getRefeicoes = async () => {
@@ -126,6 +116,7 @@ export const getDetalheKitLancheAvulsa = (uuid, tipoSolicitacao) => {
       return result.json();
     })
     .catch((error) => {
+      // eslint-disable-next-line
       console.log(error);
     });
 };
