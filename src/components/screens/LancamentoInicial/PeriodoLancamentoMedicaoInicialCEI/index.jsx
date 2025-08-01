@@ -1457,8 +1457,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     row,
     form
   ) => {
-    const ehZeroFrequencia =
-      (ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) &&
+    (ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) &&
       valorZeroFrequenciaCEI(
         value,
         row.name,
@@ -1602,7 +1601,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                 categoria,
                 alteracoesAlimentacaoAutorizadas
               ))))) ||
-        ehZeroFrequencia ||
         ((ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) &&
           campoFrequenciaValor0ESemObservacao(
             column.dia,
