@@ -109,7 +109,6 @@
     "locutus": "^2.0.32",
     "moment": "^2.30.1",
     "multiselect-react-dropdown": "^2.0.25",
-    "ramda": "^0.30.1",
     "react": "^18.3.1",
     "react-big-calendar": "^1.16.3",
     "react-bootstrap": "^2.10.10",

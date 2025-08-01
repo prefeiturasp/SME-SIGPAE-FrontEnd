@@ -1,13 +1,10 @@
 import React from "react";
-import * as R from "ramda";
 
 export const MotivoSuspensao = ({ logs }) => {
   const getSuspensao = (logs) => {
-    const arr = R.filter(
-      R.propEq("status_evento_explicacao", "CODAE suspendeu o produto"),
-      logs
+    return logs.find(
+      (log) => log.status_evento_explicacao === "CODAE suspendeu o produto"
     );
-    return arr[0];
   };
 
   const suspensao = getSuspensao(logs);
@@ -16,9 +13,9 @@ export const MotivoSuspensao = ({ logs }) => {
   return (
     <div className="row">
       <div className="col-12">
-        <label className="col-form-label ">{`Motivo da suspensão (Data: ${
-          suspensao.criado_em.split(" ")[0]
-        })`}</label>
+        <label className="col-form-label">
+          {`Motivo da suspensão (Data: ${suspensao.criado_em.split(" ")[0]})`}
+        </label>
       </div>
       <div className="col-12">
         <p
@@ -34,4 +31,5 @@ export const MotivoSuspensao = ({ logs }) => {
     </div>
   );
 };
+
 export default MotivoSuspensao;

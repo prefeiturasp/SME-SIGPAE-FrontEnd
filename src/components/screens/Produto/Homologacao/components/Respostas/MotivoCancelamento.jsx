@@ -1,20 +1,15 @@
 import React from "react";
-import * as R from "ramda";
 
 export const MotivoCancelamento = ({ logs }) => {
   const getCorrecao = (logs) => {
-    const arr = R.filter(
-      R.propEq(
-        "status_evento_explicacao",
+    return logs.find(
+      (log) =>
+        log.status_evento_explicacao ===
         "Terceirizada cancelou solicitação de homologação de produto"
-      ),
-      logs
     );
-    return arr[0];
   };
 
   const correcao = getCorrecao(logs);
-
   return (
     <div className="row">
       <div className="col-12">
