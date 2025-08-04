@@ -1,17 +1,10 @@
 import React from "react";
 import "./styles.scss";
-
-export const getHomologacao = (logs) => {
-  return logs.find(
-    (log) => log.status_evento_explicacao === "CODAE não homologou"
-  );
-};
+import { getLog } from "src/helpers/utilities";
 
 const MotivoHomologacao = ({ logs }) => {
-  const homolog = getHomologacao(logs);
-
+  const homolog = getLog(logs, "CODAE não homologou");
   if (!homolog) return false;
-
   return (
     <div className="componente-motivo-da-recusa-de-homologacao row">
       <div className="col-12">
