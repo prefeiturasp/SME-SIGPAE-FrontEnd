@@ -80,8 +80,14 @@ export const getNomesMarcas = async (queryparams) => {
   return await axios.get(url);
 };
 
-export const getNomesUnicosMarcas = async () =>
-  await axios.get("/marcas/lista-nomes-unicos/");
+export const getNomesUnicosMarcas = async () => {
+  const url = "/marcas/lista-nomes-unicos/";
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const getNomesFabricantes = async (queryparams) => {
   let url = `/fabricantes/lista-nomes/`;
@@ -89,8 +95,14 @@ export const getNomesFabricantes = async (queryparams) => {
   return await axios.get(url);
 };
 
-export const getNomesUnicosFabricantes = async () =>
-  await axios.get("/fabricantes/lista-nomes-unicos/");
+export const getNomesUnicosFabricantes = async () => {
+  const url = "/fabricantes/lista-nomes-unicos/";
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const getNovaReclamacaoNomesProdutos = async (params) => {
   const url = `/produtos/lista-nomes-nova-reclamacao/`;

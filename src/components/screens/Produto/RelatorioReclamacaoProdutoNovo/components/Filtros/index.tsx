@@ -8,8 +8,11 @@ import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import { requiredMultiselect } from "src/helpers/fieldValidators";
 import {
   getNomesUnicosEditais,
+  getNomesUnicosFabricantes,
+  getNomesUnicosMarcas,
   getNomesUnicosProdutos,
 } from "src/services/produto.service";
+import { getOpcoesStatusReclamacao } from "./helpers";
 
 type IFiltrosProps = {
   setErroAPI: (_erroAPI: string) => void;
@@ -22,8 +25,13 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     useState<Array<{ label: string; value: string }>>();
   const [produtos, setProdutos] = useState<Array<string>>();
   const [produtosFiltrados, setProdutosFiltrados] = useState<Array<string>>();
+  const [marcas, setMarcas] = useState<Array<string>>();
+  const [marcasFiltradas, setMarcasFiltradas] = useState<Array<string>>();
+  const [fabricantes, setFabricantes] = useState<Array<string>>();
+  const [fabricantesFiltrados, setFabricantesFiltrados] =
+    useState<Array<string>>();
 
-  const [loadingFiltros, setLoadingFiltros] = useState<boolean>(false);
+  const [loadingFiltros, setLoadingFiltros] = useState<boolean>(true);
 
   const getEditaisAsync = async () => {
     const response = await getNomesUnicosEditais();
@@ -47,12 +55,35 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     }
   };
 
+  const getMarcasAsync = async () => {
+    const response = await getNomesUnicosMarcas();
+    if (response.status === HTTP_STATUS.OK) {
+      setMarcas(response.data.results);
+    } else {
+      setErroAPI("Erro ao carregar Marcas. Tente novamente mais tarde.");
+    }
+  };
+
+  const getFabricantesAsync = async () => {
+    const response = await getNomesUnicosFabricantes();
+    if (response.status === HTTP_STATUS.OK) {
+      setFabricantes(response.data.results);
+    } else {
+      setErroAPI("Erro ao carregar Fabricantes. Tente novamente mais tarde.");
+    }
+  };
+
   useEffect(() => {
     requisicoesPreRender();
   }, []);
 
   const requisicoesPreRender = async (): Promise<void> => {
-    await Promise.all([getEditaisAsync(), getProdutosAsync()]).then(() => {
+    await Promise.all([
+      getEditaisAsync(),
+      getProdutosAsync(),
+      getMarcasAsync(),
+      getFabricantesAsync(),
+    ]).then(() => {
       setLoadingFiltros(false);
     });
   };
@@ -112,9 +143,53 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                     handleSearch(value, produtos, setProdutosFiltrados)
                   }
                   label="Nome do Produto"
-                  placeholder="Digite nome do produto"
-                  className="input-busca-produto"
+                  placeholder="Digite o nome do produto"
                   name="nome_produto"
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-4">
+                <Field
+                  component={AutoCompleteField}
+                  dataSource={marcasFiltradas}
+                  onSearch={(value: string) =>
+                    handleSearch(value, marcas, setMarcasFiltradas)
+                  }
+                  label="Marca"
+                  placeholder="Digite a marca do produto"
+                  name="nome_marca"
+                />
+              </div>
+              <div className="col-4">
+                <Field
+                  component={AutoCompleteField}
+                  dataSource={fabricantesFiltrados}
+                  onSearch={(value: string) =>
+                    handleSearch(value, fabricantes, setFabricantesFiltrados)
+                  }
+                  label="Fabricante"
+                  placeholder="Digite o fabricante do produto"
+                  name="nome_fabricante"
+                />
+              </div>
+              <div className="col-4">
+                <Field
+                  label="Status da Reclamação"
+                  component={MultiselectRaw}
+                  dataTestId="select-status"
+                  name="status"
+                  placeholder="Selecione os status"
+                  options={getOpcoesStatusReclamacao()}
+                  selected={values.status || []}
+                  onSelectedChanged={(
+                    values_: Array<{ label: string; value: string }>
+                  ) => {
+                    form.change(
+                      `status`,
+                      values_.map((value_) => value_.value)
+                    );
+                  }}
                 />
               </div>
             </div>
