@@ -10,7 +10,7 @@ export const RelatorioReclamacaoProduto = () => {
   return (
     <div>
       {erroAPI && <div>{erroAPI}</div>}
-      {!erroAPI && (
+      {!erroAPI && meusDados && (
         <>
           <Filtros setErroAPI={setErroAPI} meusDados={meusDados} />
         </>

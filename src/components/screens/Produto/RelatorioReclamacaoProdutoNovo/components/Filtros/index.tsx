@@ -23,6 +23,7 @@ import {
   getNomesUnicosProdutos,
 } from "src/services/produto.service";
 import { getOpcoesStatusReclamacao } from "./helpers";
+import { FormApi } from "final-form";
 
 type IFiltrosProps = {
   setErroAPI: (_erroAPI: string) => void;
@@ -31,6 +32,8 @@ type IFiltrosProps = {
 
 export const Filtros = ({ ...props }: IFiltrosProps) => {
   const { setErroAPI, meusDados } = props;
+
+  const [formInstance, setFormInstance] = useState<FormApi>();
 
   const [editais, setEditais] =
     useState<Array<{ label: string; value: string }>>();
@@ -114,7 +117,10 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
 
   const getTerceirizadasAsync = async () => {
     let params = {};
-    if (usuarioEhCogestorDRE()) {
+    if (usuarioEhEscola()) {
+      params["dre_uuid"] =
+        meusDados.vinculo_atual.instituicao.diretoria_regional.uuid;
+    } else if (usuarioEhCogestorDRE()) {
       params["dre_uuid"] = meusDados.vinculo_atual.instituicao.uuid;
     }
     const response = await getNomesTerceirizadas(params);
@@ -130,6 +136,18 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     } else {
       setErroAPI("Erro ao carregar terceirizadas. Tente novamente mais tarde.");
     }
+  };
+
+  const getInitialValues = () => {
+    if (loadingFiltros) return null;
+    const initialValues = { editais: [], terceirizadas: [] };
+    if (editais?.length === 1) {
+      initialValues.editais = editais.map((t) => t.value);
+    }
+    if (terceirizadas?.length === 1) {
+      initialValues.terceirizadas = terceirizadas.map((t) => t.value);
+    }
+    return initialValues;
   };
 
   useEffect(() => {
@@ -165,15 +183,33 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
 
   const onSubmit = async () => {};
 
+  const onClear = (form: FormApi) => {
+    if (terceirizadas?.length === 1) {
+      form.change(
+        "terceirizadas",
+        terceirizadas.map((t) => t.value)
+      );
+    }
+    if (editais?.length === 1) {
+      form.change(
+        "editais",
+        editais.map((t) => t.value)
+      );
+    }
+  };
+
   return (
     <CollapseFiltros
       onSubmit={onSubmit}
-      onClear={() => {}}
+      onClear={() => onClear(formInstance)}
       titulo="Filtrar Resultados"
+      initialValues={getInitialValues()}
+      keepDirtyOnReinitialize={usuarioEhEscola()}
     >
       {(values, form) => (
         <Spin tip="Carregando filtros..." spinning={loadingFiltros}>
           <>
+            {!formInstance && setFormInstance(form)}
             <div className="row">
               <div className="col-4">
                 <Field
@@ -194,6 +230,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                       values_.map((value_) => value_.value)
                     );
                   }}
+                  disabled={editais?.length === 1}
                 />
               </div>
               <div className="col-8">
@@ -329,6 +366,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                       values_.map((value_) => value_.value)
                     );
                   }}
+                  disabled={terceirizadas?.length === 1}
                 />
               </div>
             </div>
