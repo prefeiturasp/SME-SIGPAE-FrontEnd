@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import MotivoRecusa from "../MotivoRecusa";
-import { mockHomologacaoLogs } from "../../../../../../../mocks/Produto/Homologacao/mockHomologacaoLogs";
+import { mockHomologacaoLogs } from "src/mocks/Produto/Homologacao/mockHomologacaoLogs";
 
 describe("Teste de componente genérico motivo recusa", () => {
   it("deve renderizar o componente genérico", () => {

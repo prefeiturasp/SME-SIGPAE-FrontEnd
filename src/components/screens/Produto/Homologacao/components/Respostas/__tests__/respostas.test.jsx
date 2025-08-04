@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import Respostas from "..";
-import { mockHomologacao } from "../../../../../../../mocks/Produto/Homologacao/mockHomologacao";
+import { mockHomologacao } from "src/mocks/Produto/Homologacao/mockHomologacao";
 
 describe("Teste de componente retorno de repostas da homologação", () => {
   it("deve renderizar o componente", () => {

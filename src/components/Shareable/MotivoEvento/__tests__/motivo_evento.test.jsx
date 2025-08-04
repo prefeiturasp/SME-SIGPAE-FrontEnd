@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { mockHomologacaoLogs } from "../../../../mocks/Produto/Homologacao/mockHomologacaoLogs";
 import MotivoEvento from "src/components/Shareable/MotivoEvento";
+import { mockHomologacaoLogs } from "src/mocks/Produto/Homologacao/mockHomologacaoLogs";
 
 describe("Teste do componente de exibição do motivo do evento", () => {
   it("deve renderizar o componente de correção de homologação", () => {
