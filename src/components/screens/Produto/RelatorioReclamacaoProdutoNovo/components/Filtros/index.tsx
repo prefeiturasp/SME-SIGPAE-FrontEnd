@@ -13,13 +13,21 @@ import {
   getNomesUnicosProdutos,
 } from "src/services/produto.service";
 import { getOpcoesStatusReclamacao } from "./helpers";
+import { getLotesSimples } from "src/services/lote.service";
+import { MeusDadosInterface } from "src/context/MeusDadosContext/interfaces";
+import {
+  usuarioEhCogestorDRE,
+  usuarioEhEmpresa,
+  usuarioEhEscola,
+} from "src/helpers/utilities";
 
 type IFiltrosProps = {
   setErroAPI: (_erroAPI: string) => void;
+  meusDados: MeusDadosInterface;
 };
 
 export const Filtros = ({ ...props }: IFiltrosProps) => {
-  const { setErroAPI } = props;
+  const { setErroAPI, meusDados } = props;
 
   const [editais, setEditais] =
     useState<Array<{ label: string; value: string }>>();
@@ -30,6 +38,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
   const [fabricantes, setFabricantes] = useState<Array<string>>();
   const [fabricantesFiltrados, setFabricantesFiltrados] =
     useState<Array<string>>();
+  const [lotes, setLotes] = useState<Array<{ label: string; value: string }>>();
 
   const [loadingFiltros, setLoadingFiltros] = useState<boolean>(true);
 
@@ -73,6 +82,31 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     }
   };
 
+  const getLotesAsync = async () => {
+    let params = {};
+    if (usuarioEhEscola()) {
+      params["uuid"] = meusDados.vinculo_atual.instituicao.lotes[0].uuid;
+    } else if (usuarioEhCogestorDRE()) {
+      params["diretoria_regional__uuid"] =
+        meusDados.vinculo_atual.instituicao.uuid;
+    } else if (usuarioEhEmpresa()) {
+      params["terceirizada__uuid"] = meusDados.vinculo_atual.instituicao.uuid;
+    }
+    const response = await getLotesSimples(params);
+    if (response.status === HTTP_STATUS.OK) {
+      setLotes(
+        response.data.results.map((element) => {
+          return {
+            label: `${element.nome} - ${element.diretoria_regional.iniciais}`,
+            value: element.uuid,
+          };
+        })
+      );
+    } else {
+      setErroAPI("Erro ao carregar lotes. Tente novamente mais tarde.");
+    }
+  };
+
   useEffect(() => {
     requisicoesPreRender();
   }, []);
@@ -83,6 +117,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
       getProdutosAsync(),
       getMarcasAsync(),
       getFabricantesAsync(),
+      getLotesAsync(),
     ]).then(() => {
       setLoadingFiltros(false);
     });
@@ -187,6 +222,27 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   ) => {
                     form.change(
                       `status`,
+                      values_.map((value_) => value_.value)
+                    );
+                  }}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-4">
+                <Field
+                  label="Lote/DRE"
+                  component={MultiselectRaw}
+                  dataTestId="select-lote"
+                  name="lotes"
+                  placeholder="Selecione os status"
+                  options={lotes || []}
+                  selected={values.lotes || []}
+                  onSelectedChanged={(
+                    values_: Array<{ label: string; value: string }>
+                  ) => {
+                    form.change(
+                      `lotes`,
                       values_.map((value_) => value_.value)
                     );
                   }}

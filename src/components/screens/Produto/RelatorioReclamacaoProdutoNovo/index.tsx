@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Filtros } from "./components/Filtros";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 export const RelatorioReclamacaoProduto = () => {
+  const { meusDados } = useContext(MeusDadosContext);
+
   const [erroAPI, setErroAPI] = useState("");
 
   return (
@@ -9,7 +12,7 @@ export const RelatorioReclamacaoProduto = () => {
       {erroAPI && <div>{erroAPI}</div>}
       {!erroAPI && (
         <>
-          <Filtros setErroAPI={setErroAPI} />
+          <Filtros setErroAPI={setErroAPI} meusDados={meusDados} />
         </>
       )}
     </div>
