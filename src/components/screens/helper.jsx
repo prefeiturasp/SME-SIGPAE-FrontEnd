@@ -1,5 +1,3 @@
-import React from "react";
-import { filter, propEq } from "ramda";
 import {
   ALTERACAO_TIPO_ALIMENTACAO,
   ALTERACAO_TIPO_ALIMENTACAO_CEMEI,
@@ -290,11 +288,10 @@ export const mapeiaStatusAlimento = (str) => {
 };
 
 export const getDataHomologacao = (logs) => {
-  const arr = filter(
-    propEq("status_evento_explicacao", "CODAE homologou"),
-    logs
+  const homolog = logs.find(
+    (log) => log.status_evento_explicacao === "CODAE homologou"
   );
-  return arr[0] ? arr[0].criado_em : "--";
+  return homolog ? homolog.criado_em : "--";
 };
 
 export const deParaStatusAltCronograma = (status) =>

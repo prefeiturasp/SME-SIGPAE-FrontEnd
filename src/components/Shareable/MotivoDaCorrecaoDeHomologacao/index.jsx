@@ -1,15 +1,11 @@
 import React from "react";
-import * as R from "ramda";
 import "./styles.scss";
 
 export const getCorrecao = (logs) => {
-  const arr = R.filter(
-    R.propEq("status_evento_explicacao", "Questionamento pela CODAE"),
-    logs
+  const arr = logs.filter(
+    (log) => log.status_evento_explicacao === "Questionamento pela CODAE"
   );
-  const lastLogQuestionamento = arr.pop();
-
-  return lastLogQuestionamento;
+  return arr.pop();
 };
 
 export default ({ logs }) => {

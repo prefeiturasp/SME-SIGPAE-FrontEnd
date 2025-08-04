@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import HTTP_STATUS from "http-status-codes";
-import * as R from "ramda";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import CKEditorField from "src/components/Shareable/CKEditorField";
@@ -24,7 +23,7 @@ import { meusDados } from "src/services/perfil.service";
 import "./style.scss";
 import { getNumerosEditais } from "src/services/edital.service";
 
-const capitalizar = R.replace(/^./, R.toUpper);
+const capitalizar = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const ModalAtivacaoSuspensaoProduto = ({
   acao,
