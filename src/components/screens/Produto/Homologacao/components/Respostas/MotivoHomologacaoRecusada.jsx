@@ -1,11 +1,6 @@
+import { getLog } from "../../../../../../helpers/utilities";
 export const MotivoHomologacaoRecusada = ({ logs }) => {
-  const getRecusa = (logs) => {
-    return logs.find(
-      (log) => log.status_evento_explicacao === "CODAE não homologou"
-    );
-  };
-  const recusa = getRecusa(logs);
-
+  const recusa = getLog(logs, "CODAE não homologou");
   return (
     <div className="row">
       <div className="col-12">

@@ -1,15 +1,9 @@
 import React from "react";
+import { getLog } from "src/helpers/utilities";
 
 export const MotivoSuspensao = ({ logs }) => {
-  const getSuspensao = (logs) => {
-    return logs.find(
-      (log) => log.status_evento_explicacao === "CODAE suspendeu o produto"
-    );
-  };
-
-  const suspensao = getSuspensao(logs);
+  const suspensao = getLog(logs, "CODAE suspendeu o produto");
   if (!suspensao) return false;
-
   return (
     <div className="row">
       <div className="col-12">

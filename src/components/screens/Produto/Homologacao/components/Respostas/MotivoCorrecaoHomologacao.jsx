@@ -1,10 +1,7 @@
-export const MotivoCorrecaoHomologacao = ({ logs }) => {
-  const correcao = logs
-    .filter(
-      (log) => log.status_evento_explicacao === "Questionamento pela CODAE"
-    )
-    .pop();
+import { getUltimoLog } from "../../../../../../helpers/utilities";
 
+export const MotivoCorrecaoHomologacao = ({ logs }) => {
+  const correcao = getUltimoLog(logs, "Questionamento pela CODAE");
   return (
     correcao && (
       <div className="row">
