@@ -56,14 +56,23 @@ export const getInformacoesNutricionaisOrdenadas = async () => {
   return await axios.get(`/informacoes-nutricionais/ordenadas/`);
 };
 
-export const getNomesProdutos = async (queryparams) => {
-  let url = `/produtos/lista-nomes/`;
-  if (queryparams) url += queryparams + "/";
-  return await axios.get(url);
+export const getNomesProdutos = async (params) => {
+  const url = `/produtos/lista-nomes/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
-export const getNomesUnicosProdutos = async () =>
-  await axios.get("/produtos/lista-nomes-unicos/");
+export const getNomesUnicosProdutos = async () => {
+  const url = "/produtos/lista-nomes-unicos/";
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const getNomesMarcas = async (queryparams) => {
   let url = `/marcas/lista-nomes/`;
