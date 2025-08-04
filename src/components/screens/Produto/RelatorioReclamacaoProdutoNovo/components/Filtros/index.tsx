@@ -1,25 +1,28 @@
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
+import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
 import { Field } from "react-final-form";
 import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import { CollapseFiltros } from "src/components/Shareable/CollapseFiltros";
+import { InputComData } from "src/components/Shareable/DatePicker";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import { MeusDadosInterface } from "src/context/MeusDadosContext/interfaces";
 import { requiredMultiselect } from "src/helpers/fieldValidators";
 import {
+  usuarioEhCogestorDRE,
+  usuarioEhEmpresa,
+  usuarioEhEscola,
+} from "src/helpers/utilities";
+import { getLotesSimples } from "src/services/lote.service";
+import {
+  getNomesTerceirizadas,
   getNomesUnicosEditais,
   getNomesUnicosFabricantes,
   getNomesUnicosMarcas,
   getNomesUnicosProdutos,
 } from "src/services/produto.service";
 import { getOpcoesStatusReclamacao } from "./helpers";
-import { getLotesSimples } from "src/services/lote.service";
-import { MeusDadosInterface } from "src/context/MeusDadosContext/interfaces";
-import {
-  usuarioEhCogestorDRE,
-  usuarioEhEmpresa,
-  usuarioEhEscola,
-} from "src/helpers/utilities";
 
 type IFiltrosProps = {
   setErroAPI: (_erroAPI: string) => void;
@@ -39,6 +42,8 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
   const [fabricantesFiltrados, setFabricantesFiltrados] =
     useState<Array<string>>();
   const [lotes, setLotes] = useState<Array<{ label: string; value: string }>>();
+  const [terceirizadas, setTerceirizadas] =
+    useState<Array<{ label: string; value: string }>>();
 
   const [loadingFiltros, setLoadingFiltros] = useState<boolean>(true);
 
@@ -107,6 +112,26 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     }
   };
 
+  const getTerceirizadasAsync = async () => {
+    let params = {};
+    if (usuarioEhCogestorDRE()) {
+      params["dre_uuid"] = meusDados.vinculo_atual.instituicao.uuid;
+    }
+    const response = await getNomesTerceirizadas(params);
+    if (response.status === HTTP_STATUS.OK) {
+      setTerceirizadas(
+        response.data.results.map((element) => {
+          return {
+            label: `${element.nome_fantasia}`,
+            value: element.uuid,
+          };
+        })
+      );
+    } else {
+      setErroAPI("Erro ao carregar terceirizadas. Tente novamente mais tarde.");
+    }
+  };
+
   useEffect(() => {
     requisicoesPreRender();
   }, []);
@@ -118,6 +143,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
       getMarcasAsync(),
       getFabricantesAsync(),
       getLotesAsync(),
+      getTerceirizadasAsync(),
     ]).then(() => {
       setLoadingFiltros(false);
     });
@@ -229,7 +255,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
               </div>
             </div>
             <div className="row">
-              <div className="col-4">
+              <div className="col-6">
                 <Field
                   label="Lote/DRE"
                   component={MultiselectRaw}
@@ -243,6 +269,63 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   ) => {
                     form.change(
                       `lotes`,
+                      values_.map((value_) => value_.value)
+                    );
+                  }}
+                />
+              </div>
+              <div className="col-3">
+                <Field
+                  component={InputComData}
+                  name="data_inicial_reclamacao"
+                  className="data-inicial"
+                  label="Período"
+                  placeholder="De"
+                  minDate={null}
+                  maxDate={
+                    values.data_final_reclamacao
+                      ? moment(
+                          values.data_final_reclamacao,
+                          "DD/MM/YYYY"
+                        ).toDate()
+                      : moment().toDate()
+                  }
+                />
+              </div>
+              <div className="col-3">
+                <Field
+                  component={InputComData}
+                  name="data_final_reclamacao"
+                  popperPlacement="bottom-end"
+                  label="&nbsp;"
+                  placeholder="Até"
+                  minDate={
+                    values.data_inicial_reclamacao
+                      ? moment(
+                          values.data_inicial_reclamacao,
+                          "DD/MM/YYYY"
+                        ).toDate()
+                      : null
+                  }
+                  maxDate={moment().toDate()}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-12">
+                <Field
+                  label="Empresas"
+                  component={MultiselectRaw}
+                  dataTestId="select-empresas"
+                  name="terceirizadas"
+                  placeholder="Selecione as empresas"
+                  options={terceirizadas || []}
+                  selected={values.terceirizadas || []}
+                  onSelectedChanged={(
+                    values_: Array<{ label: string; value: string }>
+                  ) => {
+                    form.change(
+                      `terceirizadas`,
                       values_.map((value_) => value_.value)
                     );
                   }}
