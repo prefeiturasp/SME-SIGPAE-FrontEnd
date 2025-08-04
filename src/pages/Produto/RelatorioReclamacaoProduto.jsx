@@ -1,11 +1,10 @@
-import React from "react";
+import { RelatorioReclamacaoProduto } from "src/components/screens/Produto/RelatorioReclamacaoProdutoNovo";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
-import RelatorioReclamacaoProduto from "src/components/screens/Produto/RelatorioReclamacaoProduto";
 import Page from "src/components/Shareable/Page/Page";
 import {
   GESTAO_PRODUTO,
   RELATORIO_RECLAMACAO_PRODUTO,
-} from "../../configs/constants";
+} from "src/configs/constants";
 
 const atual = {
   href: `/${GESTAO_PRODUTO}/${RELATORIO_RECLAMACAO_PRODUTO}`,

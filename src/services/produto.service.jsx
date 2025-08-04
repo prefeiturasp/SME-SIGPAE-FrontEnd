@@ -1,9 +1,9 @@
 import { saveAs } from "file-saver";
 
 import { API_URL } from "../constants/config";
+import axios from "./_base";
 import authService from "./auth";
 import { ErrorHandlerFunction } from "./service-helpers";
-import axios from "./_base";
 
 const authToken = {
   Authorization: `JWT ${authService.getToken()}`,
@@ -142,7 +142,12 @@ export const getEditaisDre = async () => {
 };
 
 export const getNomesUnicosEditais = async () => {
-  return await axios.get(`/produtos-editais/lista-nomes-unicos/`);
+  const url = `/produtos-editais/lista-nomes-unicos/`;
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getProdutosPorNome = async (nomeProduto) => {
@@ -329,7 +334,6 @@ export const CODAEPedeAnaliseSensorialProduto = (
   })
     .then((res) => {
       status = res.status;
-      console.log("RES", res);
       return res.json();
     })
     .then((data) => {
