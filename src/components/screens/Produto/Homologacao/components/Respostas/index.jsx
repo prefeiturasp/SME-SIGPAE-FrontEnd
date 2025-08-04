@@ -1,29 +1,43 @@
-import React from "react";
 import JustificativaAnalise from "./JustificativaAnalise";
 import InformativoReclamacao from "src/components/Shareable/InformativoReclamacao";
-import { MotivoCorrecaoHomologacao } from "./MotivoCorrecaoHomologacao";
-import { MotivoHomologacaoRecusada } from "./MotivoHomologacaoRecusada";
-import { MotivoCancelamento } from "./MotivoCancelamento";
-import { MotivoSuspensao } from "./MotivoSuspensao";
+import { MotivoRecusa } from "./MotivoRecusa";
+
+const TIPOS_RECUSAS = [
+  {
+    tipo: "CODAE_SUSPENDEU",
+    titulo: "Motivo da suspensão",
+    status: "CODAE suspendeu o produto",
+  },
+  {
+    tipo: "CODAE_QUESTIONADO",
+    titulo: "Motivo da solicitação de correção do produto",
+    status: "Questionamento pela CODAE",
+  },
+  {
+    tipo: "CODAE_NAO_HOMOLOGADO",
+    titulo: "Motivo da recusa de homologação",
+    status: "CODAE não homologou",
+  },
+  {
+    tipo: "TERCEIRIZADA_CANCELOU_SOLICITACAO_HOMOLOGACAO",
+    titulo: "Motivo do cancelamento da homologação",
+    status: "Terceirizada cancelou solicitação de homologação de produto",
+  },
+];
 
 export const Respostas = ({ homologacao, logAnaliseSensorial }) => {
+  const recusa = TIPOS_RECUSAS.find(({ tipo }) => tipo === homologacao.status);
   return (
     <>
       {homologacao.status === "CODAE_AUTORIZOU_RECLAMACAO" && (
         <InformativoReclamacao homologacao={homologacao} />
       )}
-      {homologacao.status === "CODAE_SUSPENDEU" && (
-        <MotivoSuspensao logs={homologacao.logs} />
-      )}
-      {homologacao.status === "CODAE_QUESTIONADO" && (
-        <MotivoCorrecaoHomologacao logs={homologacao.logs} />
-      )}
-      {homologacao.status === "CODAE_NAO_HOMOLOGADO" && (
-        <MotivoHomologacaoRecusada logs={homologacao.logs} />
-      )}
-      {homologacao.status ===
-        "TERCEIRIZADA_CANCELOU_SOLICITACAO_HOMOLOGACAO" && (
-        <MotivoCancelamento logs={homologacao.logs} />
+      {recusa && (
+        <MotivoRecusa
+          logs={homologacao.logs || []}
+          titulo={recusa.titulo}
+          motivo={recusa.status}
+        />
       )}
       {homologacao.protocolo_analise_sensorial &&
         logAnaliseSensorial.length > 0 && (
