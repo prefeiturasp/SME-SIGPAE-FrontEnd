@@ -1325,3 +1325,13 @@ export const getYYYYMMDDfromDate = (date) => {
     .toString()
     .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
 };
+
+export const getLog = (logs, explicacao) => {
+  return logs.find((log) => log.status_evento_explicacao === explicacao);
+};
+
+export const getUltimoLog = (logs, explicacao) => {
+  return logs
+    .filter((log) => log.status_evento_explicacao === explicacao)
+    .pop();
+};
