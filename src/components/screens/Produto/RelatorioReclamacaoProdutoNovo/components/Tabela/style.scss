@@ -1,0 +1,64 @@
+@use "src/styles/variables.scss" as *;
+
+div.tabela-relatorio-reclamacoes-produto {
+  div.titulo {
+    color: $green;
+    font-weight: bold;
+
+    span {
+      font-weight: bolder;
+    }
+  }
+
+  table {
+    width: 100%;
+    font-size: 14px;
+    border-radius: 3px;
+
+    thead {
+      tr {
+        background-color: $grayBackground;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        border: 1px solid $grayDisabled;
+        color: $blackInput;
+
+        th {
+          padding: 1em;
+          &:not(:first-child) {
+            border-left: 1px solid $grayDisabled;
+          }
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        border: 1px solid $grayDisabled;
+        border-top: none;
+        color: $blackSubtle;
+
+        &.collapsed {
+          td {
+            padding: 1em;
+          }
+        }
+
+        &.reclamacoes {
+          background-color: $grayBackground;
+        }
+
+        td {
+          padding: 0.5em;
+          &:not(:first-child) {
+            border-left: 1px solid $grayDisabled;
+          }
+
+          i {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}

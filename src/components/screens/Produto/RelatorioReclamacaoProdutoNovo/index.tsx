@@ -14,10 +14,12 @@ export const RelatorioReclamacaoProduto = () => {
   const [produtos, setProdutos] = useState();
   const [, setProdutosCount] = useState(0);
   const [page, setPage] = useState(1);
+  const [loadingTabela, setLoadingTabela] = useState(false);
 
   const PAGE_SIZE = 10;
 
   const consultarProdutos = async (values: IFormValues) => {
+    setLoadingTabela(true);
     const formValues = { ...values };
     if (!values.status_reclamacao || values.status_reclamacao.length === 0) {
       formValues.status_reclamacao = getTodosStatusReclamacao();
@@ -37,6 +39,7 @@ export const RelatorioReclamacaoProduto = () => {
       setProdutosCount(0);
       setPage(1);
     }
+    setLoadingTabela(false);
   };
 
   return (
@@ -50,7 +53,11 @@ export const RelatorioReclamacaoProduto = () => {
               meusDados={meusDados}
               consultarProdutos={consultarProdutos}
             />
-            <Tabela produtos={produtos} />
+            <Tabela
+              produtos={produtos}
+              setProdutos={setProdutos}
+              loadingTabela={loadingTabela}
+            />
           </div>
         </div>
       )}
