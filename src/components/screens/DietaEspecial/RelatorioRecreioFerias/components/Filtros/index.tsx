@@ -36,7 +36,7 @@ interface opcaoMultiSelect {
 
 interface FiltrosProps {
   meusDados: any;
-  setDietas: (_e: IRelatorioDietaRecreioFerias[]) => void;
+  setDietas: (_e: IRelatorioDietaRecreioFerias[] | null) => void;
   setValuesForm: (_e: object) => void;
   carregaDietas: (_e: object) => Promise<void>;
   setErro: (_e: string) => void;
@@ -49,7 +49,6 @@ export const Filtros: React.FC<FiltrosProps> = ({
   setErro,
   setDietas,
 }) => {
-  const [formInstance, setFormInstance] = useState<any>(null);
   const [unidadesEducacionais, setUnidadesEducacionais] = useState<
     opcaoMultiSelect[]
   >([]);
@@ -165,7 +164,6 @@ export const Filtros: React.FC<FiltrosProps> = ({
       {(values, form) => (
         <Spin tip="Carregando filtros..." spinning={carregando}>
           <>
-            {!formInstance && setFormInstance(form)}
             <div className="row">
               <div className="col-4">
                 <Field
