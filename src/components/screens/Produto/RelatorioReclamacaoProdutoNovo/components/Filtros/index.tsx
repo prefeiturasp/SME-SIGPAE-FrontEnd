@@ -1,4 +1,5 @@
 import { Spin } from "antd";
+import { FormApi } from "final-form";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import { useCallback, useEffect, useState } from "react";
@@ -23,7 +24,6 @@ import {
   getNomesUnicosProdutos,
 } from "src/services/produto.service";
 import { getOpcoesStatusReclamacao } from "./helpers";
-import { FormApi } from "final-form";
 
 type IFiltrosProps = {
   setErroAPI: (_erroAPI: string) => void;
@@ -140,14 +140,23 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
 
   const getInitialValues = () => {
     if (loadingFiltros) return null;
-    const initialValues = { editais: [], terceirizadas: [] };
-    if (editais?.length === 1) {
-      initialValues.editais = editais.map((t) => t.value);
+
+    const getValues = (items?: { value: string }[]) =>
+      items?.length === 1 ? items.map((t) => t.value) : [];
+
+    const editaisValues = getValues(editais);
+    const lotesValues = getValues(lotes);
+
+    let terceirizadasValues = getValues(terceirizadas);
+    if (!terceirizadasValues.length && usuarioEhEmpresa()) {
+      terceirizadasValues = [meusDados.vinculo_atual.instituicao.uuid];
     }
-    if (terceirizadas?.length === 1) {
-      initialValues.terceirizadas = terceirizadas.map((t) => t.value);
-    }
-    return initialValues;
+
+    return {
+      editais: editaisValues,
+      terceirizadas: terceirizadasValues,
+      lotes: lotesValues,
+    };
   };
 
   useEffect(() => {
@@ -189,11 +198,19 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
         "terceirizadas",
         terceirizadas.map((t) => t.value)
       );
+    } else if (usuarioEhEmpresa()) {
+      form.change("terceirizadas", [meusDados.vinculo_atual.instituicao.uuid]);
     }
     if (editais?.length === 1) {
       form.change(
         "editais",
         editais.map((t) => t.value)
+      );
+    }
+    if (lotes?.length === 1) {
+      form.change(
+        "lotes",
+        lotes.map((t) => t.value)
       );
     }
   };
@@ -309,6 +326,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                       values_.map((value_) => value_.value)
                     );
                   }}
+                  disabled={lotes?.length === 1}
                 />
               </div>
               <div className="col-3">
@@ -366,7 +384,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                       values_.map((value_) => value_.value)
                     );
                   }}
-                  disabled={terceirizadas?.length === 1}
+                  disabled={terceirizadas?.length === 1 || usuarioEhEmpresa()}
                 />
               </div>
             </div>
