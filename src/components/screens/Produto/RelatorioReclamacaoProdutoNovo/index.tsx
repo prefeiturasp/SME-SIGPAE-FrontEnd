@@ -12,7 +12,7 @@ export const RelatorioReclamacaoProduto = () => {
 
   const [erroAPI, setErroAPI] = useState("");
   const [produtos, setProdutos] = useState();
-  const [, setProdutosCount] = useState(0);
+  const [produtosCount, setProdutosCount] = useState(0);
   const [page, setPage] = useState(1);
   const [loadingTabela, setLoadingTabela] = useState(false);
 
@@ -46,7 +46,7 @@ export const RelatorioReclamacaoProduto = () => {
     <div>
       {erroAPI && <div>{erroAPI}</div>}
       {!erroAPI && meusDados && (
-        <div className="card">
+        <div className="card mt-3">
           <div className="card-body">
             <Filtros
               setErroAPI={setErroAPI}
@@ -57,6 +57,7 @@ export const RelatorioReclamacaoProduto = () => {
               produtos={produtos}
               setProdutos={setProdutos}
               loadingTabela={loadingTabela}
+              produtosCount={produtosCount}
             />
           </div>
         </div>

@@ -8,12 +8,12 @@ import {
 
 const atual = {
   href: `/${GESTAO_PRODUTO}/${RELATORIO_RECLAMACAO_PRODUTO}`,
-  titulo: "Relatório de acompanhamento de reclamação de produto",
+  titulo: "Relatório de Reclamação de produto",
 };
 
 export default () => (
   <Page
-    titulo={"Relatório de acompanhamento de reclamação de produto"}
+    titulo="Relatório de Reclamação de produto"
     botaoVoltar
     voltarPara={"/"}
   >
