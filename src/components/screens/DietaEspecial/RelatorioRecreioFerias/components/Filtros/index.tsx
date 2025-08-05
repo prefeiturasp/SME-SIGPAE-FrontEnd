@@ -25,8 +25,6 @@ import { IRelatorioDietaRecreioFerias } from "../../interfaces";
 interface Lote {
   uuid: string;
   nome: string;
-  diretoria_regional: { nome: string; [key: string]: any };
-  [key: string]: any;
 }
 
 interface opcaoMultiSelect {
@@ -40,6 +38,7 @@ interface FiltrosProps {
   setValuesForm: (_e: object) => void;
   carregaDietas: (_e: object) => Promise<void>;
   setErro: (_e: string) => void;
+  setPage: (_e: number) => void;
 }
 
 export const Filtros: React.FC<FiltrosProps> = ({
@@ -48,6 +47,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
   carregaDietas,
   setErro,
   setDietas,
+  setPage,
 }) => {
   const [unidadesEducacionais, setUnidadesEducacionais] = useState<
     opcaoMultiSelect[]
@@ -85,7 +85,14 @@ export const Filtros: React.FC<FiltrosProps> = ({
     }
     const resposta = await getLotesSimples(params);
     if (resposta.status === HTTP_STATUS.OK) {
-      setLotes(resposta.data.results);
+      setLotes(
+        [{ nome: "Selecione a DRE/Lote", uuid: "" }].concat(
+          resposta.data.results.map(({ uuid, nome, diretoria_regional }) => ({
+            nome: `${nome} - ${diretoria_regional.nome}`,
+            uuid: uuid,
+          }))
+        )
+      );
     } else setErro("Erro ao carregar lotes.");
   };
 
@@ -151,7 +158,8 @@ export const Filtros: React.FC<FiltrosProps> = ({
   );
 
   const onClear = useCallback(() => {
-    setValuesForm({});
+    setPage(1);
+    setValuesForm({ page: 1 });
     setDietas(null);
   }, [setValuesForm, setDietas]);
 
@@ -173,16 +181,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   name="lote"
                   required
                   placeholder="Selecione a DRE/Lote"
-                  options={
-                    lotes
-                      ? [{ nome: "Selecione a DRE/Lote", uuid: "" }].concat(
-                          lotes.map((lote) => ({
-                            nome: `${lote.nome} - ${lote.diretoria_regional.nome}`,
-                            uuid: lote.uuid,
-                          }))
-                        )
-                      : []
-                  }
+                  options={lotes}
                   naoDesabilitarPrimeiraOpcao
                   onChangeEffect={async (e) => {
                     const value = e.target.value;

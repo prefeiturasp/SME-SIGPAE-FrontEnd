@@ -70,6 +70,7 @@ export const RelatorioRecreioFerias = () => {
                 setValuesForm={setValuesForm}
                 carregaDietas={getRelatorioRecreioFeriasAsync}
                 setErro={setErro}
+                setPage={setPage}
               />
               {dietas && (
                 <>
