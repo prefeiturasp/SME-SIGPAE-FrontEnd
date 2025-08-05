@@ -66,7 +66,7 @@ export const RelatorioReclamacaoProduto = () => {
               page={page}
               setPage={setPage}
               consultarProdutos={consultarProdutos}
-              values={formInstance.getState().values as IFormValues}
+              values={formInstance?.getState().values as IFormValues}
             />
           </div>
         </div>
