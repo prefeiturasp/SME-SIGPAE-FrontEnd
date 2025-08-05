@@ -29,13 +29,19 @@ import { getOpcoesStatusReclamacao } from "./helpers";
 type IFiltrosProps = {
   setErroAPI: (_erroAPI: string) => void;
   meusDados: MeusDadosInterface;
-  consultarProdutos: (_values: IFormValues) => void;
+  consultarProdutos: (_values: IFormValues, _page: number) => void;
+  formInstance: FormApi;
+  setFormInstance: (_formInstance: FormApi) => void;
 };
 
 export const Filtros = ({ ...props }: IFiltrosProps) => {
-  const { setErroAPI, meusDados, consultarProdutos } = props;
-
-  const [formInstance, setFormInstance] = useState<FormApi>();
+  const {
+    setErroAPI,
+    meusDados,
+    consultarProdutos,
+    formInstance,
+    setFormInstance,
+  } = props;
 
   const [editais, setEditais] =
     useState<Array<{ label: string; value: string }>>();
@@ -193,7 +199,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
   );
 
   const onSubmit = async (values: IFormValues) => {
-    consultarProdutos(values);
+    consultarProdutos(values, 1);
   };
 
   const onClear = (form: FormApi) => {

@@ -6,9 +6,12 @@ import { Filtros } from "./components/Filtros";
 import { getTodosStatusReclamacao } from "./components/Filtros/helpers";
 import { Tabela } from "./components/Tabela";
 import { IFormValues } from "./interfaces";
+import { FormApi } from "final-form";
 
 export const RelatorioReclamacaoProduto = () => {
   const { meusDados } = useContext(MeusDadosContext);
+
+  const [formInstance, setFormInstance] = useState<FormApi>();
 
   const [erroAPI, setErroAPI] = useState("");
   const [produtos, setProdutos] = useState();
@@ -18,7 +21,7 @@ export const RelatorioReclamacaoProduto = () => {
 
   const PAGE_SIZE = 10;
 
-  const consultarProdutos = async (values: IFormValues) => {
+  const consultarProdutos = async (values: IFormValues, page: number) => {
     setLoadingTabela(true);
     const formValues = { ...values };
     if (!values.status_reclamacao || values.status_reclamacao.length === 0) {
@@ -26,7 +29,7 @@ export const RelatorioReclamacaoProduto = () => {
     }
     const params = {
       ...formValues,
-      page: page,
+      page,
       page_size: PAGE_SIZE,
     };
     const response = await getProdutosReclamacoes(params);
@@ -52,12 +55,18 @@ export const RelatorioReclamacaoProduto = () => {
               setErroAPI={setErroAPI}
               meusDados={meusDados}
               consultarProdutos={consultarProdutos}
+              formInstance={formInstance}
+              setFormInstance={setFormInstance}
             />
             <Tabela
               produtos={produtos}
               setProdutos={setProdutos}
               loadingTabela={loadingTabela}
               produtosCount={produtosCount}
+              page={page}
+              setPage={setPage}
+              consultarProdutos={consultarProdutos}
+              values={formInstance.getState().values as IFormValues}
             />
           </div>
         </div>

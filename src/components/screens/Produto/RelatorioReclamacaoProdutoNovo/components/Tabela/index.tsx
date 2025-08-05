@@ -1,23 +1,43 @@
 import { Spin } from "antd";
 import { Dispatch } from "react";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import { deepCopy } from "src/helpers/utilities";
 import { Reclamacao } from "./components/Reclamacao";
 import "./style.scss";
+import { IFormValues } from "../../interfaces";
 
 type ITabelaProps = {
   produtos: Array<any>;
   setProdutos: Dispatch<(_prevState: undefined) => undefined>;
   loadingTabela: boolean;
   produtosCount: number;
+  page: number;
+  setPage: (_page: number) => void;
+  consultarProdutos: (_values: IFormValues, _page: number) => void;
+  values: IFormValues;
 };
 
 export const Tabela = ({ ...props }: ITabelaProps) => {
-  const { produtos, setProdutos, loadingTabela, produtosCount } = props;
+  const {
+    produtos,
+    setProdutos,
+    loadingTabela,
+    produtosCount,
+    page,
+    setPage,
+    values,
+    consultarProdutos,
+  } = props;
 
   const setCollapse = (key: number) => {
     const copyProdutos = deepCopy(produtos);
     copyProdutos[key].collapsed = !copyProdutos[key].collapsed;
     setProdutos(copyProdutos);
+  };
+
+  const nextPage = (page: number) => {
+    consultarProdutos(values, page);
+    setPage(page);
   };
 
   return (
@@ -84,6 +104,18 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
                 })}
               </tbody>
             </table>
+            <div className="row">
+              <div className="col">
+                <Paginacao
+                  className="mt-3 mb-3"
+                  current={page}
+                  total={produtosCount}
+                  showSizeChanger={false}
+                  onChange={nextPage}
+                  pageSize={10}
+                />
+              </div>
+            </div>
           </>
         )}
         {produtos?.length === 0 && (
