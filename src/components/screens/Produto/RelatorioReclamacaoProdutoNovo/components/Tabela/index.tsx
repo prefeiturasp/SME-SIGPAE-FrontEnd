@@ -2,9 +2,9 @@ import { Spin } from "antd";
 import { Dispatch } from "react";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import { deepCopy } from "src/helpers/utilities";
+import { IFormValues } from "../../interfaces";
 import { Reclamacao } from "./components/Reclamacao";
 import "./style.scss";
-import { IFormValues } from "../../interfaces";
 
 type ITabelaProps = {
   produtos: Array<any>;

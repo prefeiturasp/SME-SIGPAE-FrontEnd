@@ -1,6 +1,8 @@
 @use "src/styles/variables.scss" as *;
 
 div.tabela-relatorio-reclamacoes-produto {
+  min-height: 60vh;
+
   div.titulo {
     color: $green;
     font-weight: bold;
