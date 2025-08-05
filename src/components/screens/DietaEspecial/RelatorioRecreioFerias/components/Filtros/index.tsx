@@ -1,13 +1,14 @@
 import { Spin } from "antd";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import HTTP_STATUS from "http-status-codes";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Field } from "react-final-form";
 import Select from "src/components/Shareable/Select";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import moment from "moment";
 import {
+  addOpcaoTodas,
   usuarioEhCogestorDRE,
   usuarioEhEmpresa,
   usuarioEhEscola,
@@ -20,6 +21,13 @@ import {
 } from "src/services/dietaEspecial.service";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { IRelatorioDietaRecreioFerias } from "../../interfaces";
+
+interface Lote {
+  uuid: string;
+  nome: string;
+  diretoria_regional: { nome: string; [key: string]: any };
+  [key: string]: any;
+}
 
 interface opcaoMultiSelect {
   label: string;
@@ -47,46 +55,14 @@ export const Filtros: React.FC<FiltrosProps> = ({
   >([]);
   const [classificacoes, setClassificacoes] = useState<opcaoMultiSelect[]>([]);
   const [diagnosticos, setDiagnosticos] = useState<opcaoMultiSelect[]>([]);
-  const [lotes, setLotes] = useState<any[]>([]);
+  const [lotes, setLotes] = useState<Lote[]>([]);
   const [carregando, setCarregando] = useState<boolean>(false);
-
-  const getUnidadesEducacionais = async (values: object) => {
-    setUnidadesEducacionais([]);
-    let data = values;
-    const resposta = await getUnidadesEducacionaisComCodEol(data);
-    if (resposta.status === HTTP_STATUS.OK) {
-      if (resposta.data.length === 0 || resposta.data.mensagem) {
-        toastError("Não existem unidades para os filtros selecionados");
-      } else {
-        setUnidadesEducacionais(
-          [
-            {
-              label: "Todas as unidades",
-              value: "todas",
-            },
-          ].concat(
-            resposta.data.map(({ uuid, codigo_eol_escola }) => ({
-              value: uuid,
-              label: codigo_eol_escola,
-            }))
-          )
-        );
-      }
-    } else {
-      toastError("Erro ao carregar unidades educacionais.");
-    }
-  };
 
   const getDiagnosticos = async () => {
     const resposta = await getAlergiasIntolerancias();
     if (resposta.status === HTTP_STATUS.OK) {
       setDiagnosticos(
-        [
-          {
-            label: "Todos os diagnósticos",
-            value: "todas",
-          },
-        ].concat(
+        addOpcaoTodas("Todos os diagnósticos").concat(
           resposta.data.map(({ id, descricao }) => ({
             value: id,
             label: descricao,
@@ -118,12 +94,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
     const resposta = await getClassificacoesDietaEspecial();
     if (resposta.status === HTTP_STATUS.OK) {
       setClassificacoes(
-        [
-          {
-            label: "Todas as classificações",
-            value: "todas",
-          },
-        ].concat(
+        addOpcaoTodas("Todas as classificações").concat(
           resposta.data.map(({ id, nome }) => ({
             value: id,
             label: nome,
@@ -136,9 +107,11 @@ export const Filtros: React.FC<FiltrosProps> = ({
   const carregaFiltros = async () => {
     try {
       setCarregando(true);
-      await getLotes();
-      await getClassificacoesDieta();
-      await getDiagnosticos();
+      await Promise.all([
+        getLotes(),
+        getClassificacoesDieta(),
+        getDiagnosticos(),
+      ]);
     } finally {
       setCarregando(false);
     }
@@ -148,20 +121,45 @@ export const Filtros: React.FC<FiltrosProps> = ({
     carregaFiltros();
   }, []);
 
-  const onSubmit = async (params: object) => {
-    setValuesForm(params);
-    await carregaDietas(params);
+  const getUnidadesEducacionais = async (values: object) => {
+    setUnidadesEducacionais([]);
+    let data = values;
+    const resposta = await getUnidadesEducacionaisComCodEol(data);
+    if (resposta.status === HTTP_STATUS.OK) {
+      if (resposta.data.length === 0 || resposta.data.mensagem) {
+        toastError("Não existem unidades para os filtros selecionados");
+      } else {
+        setUnidadesEducacionais(
+          addOpcaoTodas("Todas as unidades").concat(
+            resposta.data.map(({ uuid, codigo_eol_escola }) => ({
+              value: uuid,
+              label: codigo_eol_escola,
+            }))
+          )
+        );
+      }
+    } else {
+      toastError("Erro ao carregar unidades educacionais.");
+    }
   };
 
-  const onClear = (_form: any) => {
+  const onSubmit = useCallback(
+    async (params: object) => {
+      setValuesForm(params);
+      await carregaDietas(params);
+    },
+    [setValuesForm, carregaDietas]
+  );
+
+  const onClear = useCallback(() => {
     setValuesForm({});
     setDietas(null);
-  };
+  }, [setValuesForm, setDietas]);
 
   return (
     <CollapseFiltros
       onSubmit={onSubmit}
-      onClear={() => onClear(formInstance)}
+      onClear={onClear}
       titulo="Filtrar Resultados"
     >
       {(values, form) => (
@@ -176,10 +174,10 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   dataTestId="select-dre-lote"
                   name="lote"
                   required
-                  placeholder="Selecione DRE/Lote"
+                  placeholder="Selecione a DRE/Lote"
                   options={
                     lotes
-                      ? [{ nome: "Selecione DRE/Lote", uuid: "" }].concat(
+                      ? [{ nome: "Selecione a DRE/Lote", uuid: "" }].concat(
                           lotes.map((lote) => ({
                             nome: `${lote.nome} - ${lote.diretoria_regional.nome}`,
                             uuid: lote.uuid,
@@ -240,9 +238,10 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   name="data_inicio"
                   className="data-inicio"
                   placeholder="De"
+                  minDate={null}
                   maxDate={
-                    values.data_final
-                      ? moment(values.data_final, "DD/MM/YYYY").toDate()
+                    values.data_termino
+                      ? moment(values.data_termino, "DD/MM/YYYY").toDate()
                       : null
                   }
                 />
@@ -251,13 +250,13 @@ export const Filtros: React.FC<FiltrosProps> = ({
                 <Field
                   component={InputComData}
                   label="&nbsp;"
-                  name="data_termino"
-                  className="data-data_termino"
+                  name="data_fim"
+                  className="data-fim"
                   popperPlacement="bottom-end"
                   placeholder="Até"
                   minDate={
-                    values.data_inicial
-                      ? moment(values.data_inicial, "DD/MM/YYYY").toDate()
+                    values.data_fim
+                      ? moment(values.data_fim, "DD/MM/YYYY").toDate()
                       : null
                   }
                 />
@@ -268,13 +267,13 @@ export const Filtros: React.FC<FiltrosProps> = ({
                 </label>
                 <Field
                   component={MultiselectRaw}
-                  name="diagnosticos_selecionados"
+                  name="alergias_intolerancias_selecionadas"
                   options={diagnosticos}
                   placeholder="Selecione as relações de diagnósticos"
-                  selected={values.diagnosticos_selecionados || []}
+                  selected={values.alergias_intolerancias_selecionadas || []}
                   onSelectedChanged={(values: opcaoMultiSelect[]) => {
                     form.change(
-                      `classificacoes_selecionadas`,
+                      "alergias_intolerancias_selecionadas",
                       values.map(({ value }) => value)
                     );
                   }}
