@@ -76,6 +76,8 @@ export const formatarParaMultiselect = (lista) => {
   });
 };
 
+export const addOpcaoTodas = (label, value = "todas") => [{ label, value }];
+
 export const extrairUUIDs = (lista) => {
   let uuids = [];
   lista.forEach((element) => {
