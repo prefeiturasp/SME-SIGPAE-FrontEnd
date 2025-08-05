@@ -20,3 +20,20 @@ export const getOpcoesStatusReclamacao = (): Array<{
     { value: "CODAE_RESPONDEU", label: "CODAE respondeu" },
   ];
 };
+
+export const getTodosStatusReclamacao = () => {
+  return [
+    "AGUARDANDO_AVALIACAO",
+    "AGUARDANDO_RESPOSTA_TERCEIRIZADA",
+    "RESPONDIDO_TERCEIRIZADA",
+    "AGUARDANDO_ANALISE_SENSORIAL",
+    "ANALISE_SENSORIAL_RESPONDIDA",
+    "AGUARDANDO_RESPOSTA_UE",
+    "RESPONDIDO_UE",
+    "AGUARDANDO_RESPOSTA_NUTRISUPERVISOR",
+    "RESPONDIDO_NUTRISUPERVISOR",
+    "CODAE_ACEITOU",
+    "CODAE_RECUSOU",
+    "CODAE_RESPONDEU",
+  ];
+};

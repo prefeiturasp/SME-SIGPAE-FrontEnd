@@ -23,15 +23,17 @@ import {
   getNomesUnicosMarcas,
   getNomesUnicosProdutos,
 } from "src/services/produto.service";
+import { IFormValues } from "../../interfaces";
 import { getOpcoesStatusReclamacao } from "./helpers";
 
 type IFiltrosProps = {
   setErroAPI: (_erroAPI: string) => void;
   meusDados: MeusDadosInterface;
+  consultarProdutos: (_values: IFormValues) => void;
 };
 
 export const Filtros = ({ ...props }: IFiltrosProps) => {
-  const { setErroAPI, meusDados } = props;
+  const { setErroAPI, meusDados, consultarProdutos } = props;
 
   const [formInstance, setFormInstance] = useState<FormApi>();
 
@@ -190,7 +192,9 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     []
   );
 
-  const onSubmit = async () => {};
+  const onSubmit = async (values: IFormValues) => {
+    consultarProdutos(values);
+  };
 
   const onClear = (form: FormApi) => {
     if (terceirizadas?.length === 1) {
@@ -200,19 +204,31 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
       );
     } else if (usuarioEhEmpresa()) {
       form.change("terceirizadas", [meusDados.vinculo_atual.instituicao.uuid]);
+    } else {
+      form.change("terceirizadas", undefined);
     }
     if (editais?.length === 1) {
       form.change(
         "editais",
         editais.map((t) => t.value)
       );
+    } else {
+      form.change("editais", undefined);
     }
     if (lotes?.length === 1) {
       form.change(
         "lotes",
         lotes.map((t) => t.value)
       );
+    } else {
+      form.change("lotes", undefined);
     }
+    form.change("status_reclamacao", undefined);
+    form.change("nome_produto", undefined);
+    form.change("nome_marca", undefined);
+    form.change("nome_fabricante", undefined);
+    form.change("data_inicial_reclamacao", undefined);
+    form.change("data_final_reclamacao", undefined);
   };
 
   return (
@@ -221,7 +237,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
       onClear={() => onClear(formInstance)}
       titulo="Filtrar Resultados"
       initialValues={getInitialValues()}
-      keepDirtyOnReinitialize={usuarioEhEscola()}
+      keepDirtyOnReinitialize
     >
       {(values, form) => (
         <Spin tip="Carregando filtros..." spinning={loadingFiltros}>
@@ -293,15 +309,15 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   label="Status da Reclamação"
                   component={MultiselectRaw}
                   dataTestId="select-status"
-                  name="status"
+                  name="status_reclamacao"
                   placeholder="Selecione os status"
                   options={getOpcoesStatusReclamacao()}
-                  selected={values.status || []}
+                  selected={values.status_reclamacao || []}
                   onSelectedChanged={(
                     values_: Array<{ label: string; value: string }>
                   ) => {
                     form.change(
-                      `status`,
+                      `status_reclamacao`,
                       values_.map((value_) => value_.value)
                     );
                   }}
