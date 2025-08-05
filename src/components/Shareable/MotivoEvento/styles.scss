@@ -1,15 +1,14 @@
 @use "src/styles/variables.scss" as *;
 
-.componente-motivo-da-suspensao {
+.componente-motivo-do-evento {
   color: #42474a;
 
-  .titulo-suspensao {
+  .titulo-evento {
     margin-top: 20px;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 16px;
   }
 
-  .texto-wysiwyg-suspensao {
+  .texto-wysiwyg-evento {
     border: 1px #dddddd solid !important;
     padding: 0.5rem;
     font-size: 12px;

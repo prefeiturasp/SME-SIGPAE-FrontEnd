@@ -1,11 +1,10 @@
 import React from "react";
-import * as R from "ramda";
 import "./styles.scss";
 
 const LabelResultadoDaBusca = ({ filtros }) => {
   const somenteFiltroDeNome =
     filtros &&
-    R.pathOr(0, ["nome_produto", "length"])(filtros) &&
+    filtros.nome_produto?.length > 0 &&
     Object.keys(filtros).length === 2;
 
   return (
