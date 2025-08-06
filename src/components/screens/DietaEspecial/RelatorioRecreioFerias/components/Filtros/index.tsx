@@ -25,8 +25,6 @@ import { IRelatorioDietaRecreioFerias } from "../../interfaces";
 interface Lote {
   uuid: string;
   nome: string;
-  diretoria_regional: { nome: string; [key: string]: any };
-  [key: string]: any;
 }
 
 interface opcaoMultiSelect {
@@ -36,10 +34,11 @@ interface opcaoMultiSelect {
 
 interface FiltrosProps {
   meusDados: any;
-  setDietas: (_e: IRelatorioDietaRecreioFerias[]) => void;
+  setDietas: (_e: IRelatorioDietaRecreioFerias[] | null) => void;
   setValuesForm: (_e: object) => void;
   carregaDietas: (_e: object) => Promise<void>;
   setErro: (_e: string) => void;
+  setPage: (_e: number) => void;
 }
 
 export const Filtros: React.FC<FiltrosProps> = ({
@@ -48,8 +47,8 @@ export const Filtros: React.FC<FiltrosProps> = ({
   carregaDietas,
   setErro,
   setDietas,
+  setPage,
 }) => {
-  const [formInstance, setFormInstance] = useState<any>(null);
   const [unidadesEducacionais, setUnidadesEducacionais] = useState<
     opcaoMultiSelect[]
   >([]);
@@ -86,7 +85,14 @@ export const Filtros: React.FC<FiltrosProps> = ({
     }
     const resposta = await getLotesSimples(params);
     if (resposta.status === HTTP_STATUS.OK) {
-      setLotes(resposta.data.results);
+      setLotes(
+        [{ nome: "Selecione a DRE/Lote", uuid: "" }].concat(
+          resposta.data.results.map(({ uuid, nome, diretoria_regional }) => ({
+            nome: `${nome} - ${diretoria_regional.nome}`,
+            uuid: uuid,
+          }))
+        )
+      );
     } else setErro("Erro ao carregar lotes.");
   };
 
@@ -152,8 +158,10 @@ export const Filtros: React.FC<FiltrosProps> = ({
   );
 
   const onClear = useCallback(() => {
-    setValuesForm({});
+    setPage(1);
+    setValuesForm({ page: 1 });
     setDietas(null);
+    setUnidadesEducacionais([]);
   }, [setValuesForm, setDietas]);
 
   return (
@@ -165,7 +173,6 @@ export const Filtros: React.FC<FiltrosProps> = ({
       {(values, form) => (
         <Spin tip="Carregando filtros..." spinning={carregando}>
           <>
-            {!formInstance && setFormInstance(form)}
             <div className="row">
               <div className="col-4">
                 <Field
@@ -175,16 +182,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   name="lote"
                   required
                   placeholder="Selecione a DRE/Lote"
-                  options={
-                    lotes
-                      ? [{ nome: "Selecione a DRE/Lote", uuid: "" }].concat(
-                          lotes.map((lote) => ({
-                            nome: `${lote.nome} - ${lote.diretoria_regional.nome}`,
-                            uuid: lote.uuid,
-                          }))
-                        )
-                      : []
-                  }
+                  options={lotes}
                   naoDesabilitarPrimeiraOpcao
                   onChangeEffect={async (e) => {
                     const value = e.target.value;
@@ -199,6 +197,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   Unidades de Destino
                 </label>
                 <Field
+                  dataTestId="unidades-educacionais-select"
                   component={MultiselectRaw}
                   name="unidades_educacionais_selecionadas"
                   placeholder="Selecione as unidades"
@@ -240,8 +239,8 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   placeholder="De"
                   minDate={null}
                   maxDate={
-                    values.data_termino
-                      ? moment(values.data_termino, "DD/MM/YYYY").toDate()
+                    values.data_fim
+                      ? moment(values.data_fim, "DD/MM/YYYY").toDate()
                       : null
                   }
                 />
@@ -255,8 +254,8 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   popperPlacement="bottom-end"
                   placeholder="Até"
                   minDate={
-                    values.data_fim
-                      ? moment(values.data_fim, "DD/MM/YYYY").toDate()
+                    values.data_inicio
+                      ? moment(values.data_inicio, "DD/MM/YYYY").toDate()
                       : null
                   }
                 />
