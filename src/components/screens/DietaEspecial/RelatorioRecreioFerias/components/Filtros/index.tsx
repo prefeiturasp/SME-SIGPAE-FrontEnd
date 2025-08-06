@@ -68,9 +68,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
           }))
         )
       );
-    } else {
-      setErro("Houve um erro ao carregar Alergias e Intolerâncias");
-    }
+    } else setErro("Houve um erro ao carregar Alergias e Intolerâncias");
   };
 
   const getLotes = async () => {
@@ -144,9 +142,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
           )
         );
       }
-    } else {
-      toastError("Erro ao carregar unidades educacionais.");
-    }
+    } else toastError("Erro ao carregar unidades educacionais.");
   };
 
   const onSubmit = useCallback(
@@ -217,6 +213,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   Classificação das Dietas
                 </label>
                 <Field
+                  dataTestId="classificassoes-select"
                   component={MultiselectRaw}
                   name="classificacoes_selecionadas"
                   placeholder="Selecione a classificação"
@@ -232,6 +229,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
               </div>
               <div className="col-4">
                 <Field
+                  dataTestId="data-inicio-input"
                   component={InputComData}
                   label="Período Atendimento da Dieta"
                   name="data_inicio"
@@ -247,6 +245,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
               </div>
               <div className="col-4">
                 <Field
+                  dataTestId="data-fim-input"
                   component={InputComData}
                   label="&nbsp;"
                   name="data_fim"
@@ -265,6 +264,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   Relação por Diagnóstico
                 </label>
                 <Field
+                  dataTestId="alergias-intolerancias-select"
                   component={MultiselectRaw}
                   name="alergias_intolerancias_selecionadas"
                   options={diagnosticos}
