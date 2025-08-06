@@ -13,7 +13,7 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { Filtros } from "./components/Filtros";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { normalizarValues } from "../RelatorioHistoricoDietas/helper";
+import { normalizarValores } from "./helper";
 
 export const RelatorioRecreioFerias = () => {
   const [dietas, setDietas] = useState<IRelatorioDietaRecreioFerias[] | null>(
@@ -27,7 +27,7 @@ export const RelatorioRecreioFerias = () => {
   const { meusDados } = useContext(MeusDadosContext);
 
   const getRelatorioRecreioFeriasAsync = async (values: object) => {
-    const params = normalizarValues(values, page);
+    const params = normalizarValores(values, page);
     const response = await getRelatorioRecreioFerias(params);
     if (response.status === HTTP_STATUS.OK) {
       setDietas(
