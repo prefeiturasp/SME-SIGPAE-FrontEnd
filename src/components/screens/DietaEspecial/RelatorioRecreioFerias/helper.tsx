@@ -24,10 +24,6 @@ export const normalizarValores = (
     }
   });
 
-  if (valuesCopy.tipo_gestao === "Selecione um tipo de gestão") {
-    delete valuesCopy.tipo_gestao;
-  }
-
   return {
     page_size: PAGE_SIZE,
     page,
