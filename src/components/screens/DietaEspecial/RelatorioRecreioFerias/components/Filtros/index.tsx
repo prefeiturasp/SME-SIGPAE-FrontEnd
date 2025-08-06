@@ -161,6 +161,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
     setPage(1);
     setValuesForm({ page: 1 });
     setDietas(null);
+    setUnidadesEducacionais([]);
   }, [setValuesForm, setDietas]);
 
   return (
@@ -196,6 +197,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   Unidades de Destino
                 </label>
                 <Field
+                  dataTestId="unidades-educacionais-select"
                   component={MultiselectRaw}
                   name="unidades_educacionais_selecionadas"
                   placeholder="Selecione as unidades"
@@ -237,8 +239,8 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   placeholder="De"
                   minDate={null}
                   maxDate={
-                    values.data_termino
-                      ? moment(values.data_termino, "DD/MM/YYYY").toDate()
+                    values.data_fim
+                      ? moment(values.data_fim, "DD/MM/YYYY").toDate()
                       : null
                   }
                 />
@@ -252,8 +254,8 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   popperPlacement="bottom-end"
                   placeholder="Até"
                   minDate={
-                    values.data_fim
-                      ? moment(values.data_fim, "DD/MM/YYYY").toDate()
+                    values.data_inicio
+                      ? moment(values.data_inicio, "DD/MM/YYYY").toDate()
                       : null
                   }
                 />
