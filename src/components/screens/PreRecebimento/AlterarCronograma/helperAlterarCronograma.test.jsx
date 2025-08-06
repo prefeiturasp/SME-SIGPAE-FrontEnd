@@ -18,7 +18,7 @@ describe("Funções de Preparação de Payload", () => {
     justificativa: "Justificativa Teste",
     empenho_0: "12345",
     etapa_0: "Etapa 1",
-    parte_0: "Parte A",
+    parte_0: "Parte 1",
     data_programada_0: "25/12/2025",
     quantidade_0: "500",
     total_embalagens_0: "10.000",
@@ -57,7 +57,7 @@ describe("Funções de Preparação de Payload", () => {
           {
             numero_empenho: "12345",
             etapa: 1,
-            parte: "Parte A",
+            parte: 1,
             data_programada: "2025-12-25",
             quantidade: "500",
             total_embalagens: 100,
@@ -97,7 +97,7 @@ describe("Funções de Preparação de Payload", () => {
           {
             numero_empenho: "12345",
             etapa: 1,
-            parte: "Parte A",
+            parte: 1,
             data_programada: "2025-12-25",
             quantidade: "500",
             total_embalagens: 100, // Esperado após conversão do stringDecimalToNumber
@@ -130,7 +130,7 @@ describe("Funções de Preparação de Payload", () => {
         {
           numero_empenho: "12345",
           etapa: 1,
-          parte: "Parte A",
+          parte: 1,
           data_programada: "2025-12-25",
           quantidade: "500",
           total_embalagens: 100, // Esperado após conversão do stringDecimalToNumber
