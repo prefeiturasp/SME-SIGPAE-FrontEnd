@@ -8,16 +8,23 @@ import {
 
 const atual = {
   href: `/${GESTAO_PRODUTO}/${RELATORIO_RECLAMACAO_PRODUTO}`,
-  titulo: "Relatório de acompanhamento de reclamação de produto",
+  titulo: "Relatório de Reclamação de Produto",
 };
+
+const anteriores = [
+  {
+    href: "/",
+    titulo: "Relatórios",
+  },
+];
 
 export default () => (
   <Page
-    titulo={"Relatório de acompanhamento de reclamação de produto"}
+    titulo="Relatório de Reclamação de Produto"
     botaoVoltar
     voltarPara={"/"}
   >
-    <Breadcrumb home={"/"} atual={atual} />
+    <Breadcrumb home={"/"} anteriores={anteriores} atual={atual} />
     <RelatorioReclamacaoProduto />
   </Page>
 );

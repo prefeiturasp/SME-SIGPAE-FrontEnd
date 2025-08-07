@@ -606,8 +606,14 @@ export const updateSolicitacaoCadastroProdutoDieta = async (uuid, params) =>
     params
   );
 
-export const getProdutosReclamacoes = async (params) =>
-  await axios.get("/produtos/filtro-reclamacoes/", { params });
+export const getProdutosReclamacoes = async (params) => {
+  const url = "/produtos/filtro-reclamacoes/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const getProdutosAvaliacaoReclamacao = async (params) =>
   await axios.get("/produtos/filtro-avaliar-reclamacoes/", { params });
