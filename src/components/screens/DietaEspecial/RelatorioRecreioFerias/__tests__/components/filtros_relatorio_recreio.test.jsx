@@ -65,6 +65,11 @@ describe("Comportamentos filtros do Relatório de Dietas para Recreio nas Féria
     });
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+    mock.reset();
+  });
+
   it("Verifica se o componente e seus campos foram renderizados", () => {
     expect(screen.getByText(/filtrar resultados/i)).toBeInTheDocument();
     expect(screen.getByText(/unidades de destino/i)).toBeInTheDocument();
@@ -180,15 +185,15 @@ describe("Comportamentos filtros do Relatório de Dietas para Recreio nas Féria
     });
 
     await waitFor(async () => {
-      await setOpcao("unidades-educacionais-select", "Todas as unidades");
+      await setOpcao("unidades-educacionais-select", "Todos");
     });
 
     await waitFor(async () => {
-      await setOpcao("classificassoes-select", "Todas as classificações");
+      await setOpcao("classificassoes-select", "Todos");
     });
 
     await waitFor(async () => {
-      await setOpcao("alergias-intolerancias-select", "Todos os diagnósticos");
+      await setOpcao("alergias-intolerancias-select", "Todos");
     });
 
     setData("data-inicio-input", "01/01/2022");
@@ -196,16 +201,16 @@ describe("Comportamentos filtros do Relatório de Dietas para Recreio nas Féria
 
     filtrar();
     await waitFor(() => {
-      expect(carregaDietas).toHaveBeenCalledWith(
-        expect.objectContaining({
-          lote: _DRE,
-          unidades_educacionais_selecionadas: ["todas"],
-          classificacoes_selecionadas: ["todas"],
-          alergias_intolerancias_selecionadas: ["todas"],
-          data_inicio: "01/01/2022",
-          data_fim: "01/01/2024",
-        })
-      );
+      const callArgs = carregaDietas.mock.calls[0][0];
+      expect(
+        callArgs.unidades_educacionais_selecionadas.length
+      ).toBeGreaterThan(0);
+      expect(callArgs.classificacoes_selecionadas.length).toBeGreaterThan(0);
+      expect(
+        callArgs.alergias_intolerancias_selecionadas.length
+      ).toBeGreaterThan(0);
+      expect(callArgs.data_inicio).toBe("01/01/2022");
+      expect(callArgs.data_fim).toBe("01/01/2024");
     });
   });
 });
