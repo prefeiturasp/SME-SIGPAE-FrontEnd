@@ -86,8 +86,10 @@ describe("Comportamentos filtros do Relatório de Dietas para Recreio nas Féria
     });
   };
 
-  it("Seleciona DRE, verifica se opção está selecionada", () => {
-    setDre(_DRE);
+  it("Seleciona DRE, verifica se opção está selecionada", async () => {
+    await act(async () => {
+      setDre(_DRE);
+    });
     expect(screen.getByText("1 - BUTANTA")).toBeInTheDocument();
   });
 
@@ -98,7 +100,9 @@ describe("Comportamentos filtros do Relatório de Dietas para Recreio nas Féria
   };
 
   it("Seleciona DRE e chama o filtro", async () => {
-    setDre(_DRE);
+    await act(async () => {
+      setDre(_DRE);
+    });
     filtrar();
     await waitFor(() => {
       expect(carregaDietas).toHaveBeenCalled();
