@@ -1,4 +1,3 @@
-import React from "react";
 import { RECLAMACAO_PRODUTO_STATUS_EXPLICACAO } from "src/constants/shared";
 import "./style.scss";
 
@@ -67,12 +66,14 @@ const LogReclamacao = ({ log }) => {
   );
 };
 
-const Reclamacao = ({ reclamacao }) => {
+export const Reclamacao = ({ reclamacao }) => {
   return (
     <div className="detalhes-reclamacao-relatorio">
       <div className="linha linha-1">
         <div className="item">
-          <div className="label-item">Reclamação #{reclamacao.id_externo}</div>
+          <div className="label-item">
+            Reclamação <b>#{reclamacao.id_externo}</b>
+          </div>
         </div>
         <div className="item item-horizontal">
           <div className="label-item">Status Reclamação:{"\u00A0"}</div>
@@ -81,22 +82,32 @@ const Reclamacao = ({ reclamacao }) => {
       </div>
       <div className="linha linha-2">
         <div className="item">
-          <div className="label-item">Nome Reclamante</div>
-          <div className="value-item">{reclamacao.reclamante_nome}</div>
-        </div>
-        <div className="item">
-          <div className="label-item">RF</div>
+          <div className="label-item">DRE/LOTE:</div>
           <div className="value-item">
-            {reclamacao.reclamante_registro_funcional}
+            {reclamacao.escola.diretoria_regional.iniciais} -{" "}
+            {reclamacao.escola.lote.nome}
           </div>
         </div>
         <div className="item">
-          <div className="label-item">Nome Escola</div>
-          <div className="value-item">{reclamacao.escola.nome}</div>
+          <div className="label-item">Empresa:</div>
+          <div className="value-item">
+            {reclamacao.escola.lote.terceirizada.nome_fantasia}
+          </div>
+        </div>
+      </div>
+      <div className="linha linha-2">
+        <div className="item">
+          <div className="label-item">RF e Nome do Reclamante:</div>
+          <div className="value-item">
+            {reclamacao.reclamante_registro_funcional} -{" "}
+            {reclamacao.reclamante_nome}
+          </div>
         </div>
         <div className="item">
-          <div className="label-item">Cód. EOL</div>
-          <div className="value-item">{reclamacao.escola.codigo_eol}</div>
+          <div className="label-item">Código EOL e Nome da Escola:</div>
+          <div className="value-item">
+            {reclamacao.escola.codigo_eol} - {reclamacao.escola.nome}
+          </div>
         </div>
       </div>
       <div className="linha linha-2 mt-3">
@@ -118,5 +129,3 @@ const Reclamacao = ({ reclamacao }) => {
     </div>
   );
 };
-
-export default Reclamacao;

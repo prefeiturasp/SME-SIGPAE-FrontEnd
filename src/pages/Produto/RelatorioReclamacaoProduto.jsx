@@ -1,24 +1,30 @@
-import React from "react";
+import { RelatorioReclamacaoProduto } from "src/components/screens/Produto/RelatorioReclamacaoProdutoNovo";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
-import RelatorioReclamacaoProduto from "src/components/screens/Produto/RelatorioReclamacaoProduto";
 import Page from "src/components/Shareable/Page/Page";
 import {
   GESTAO_PRODUTO,
   RELATORIO_RECLAMACAO_PRODUTO,
-} from "../../configs/constants";
+} from "src/configs/constants";
 
 const atual = {
   href: `/${GESTAO_PRODUTO}/${RELATORIO_RECLAMACAO_PRODUTO}`,
-  titulo: "Relatório de acompanhamento de reclamação de produto",
+  titulo: "Relatório de Reclamação de Produto",
 };
+
+const anteriores = [
+  {
+    href: "/",
+    titulo: "Relatórios",
+  },
+];
 
 export default () => (
   <Page
-    titulo={"Relatório de acompanhamento de reclamação de produto"}
+    titulo="Relatório de Reclamação de Produto"
     botaoVoltar
     voltarPara={"/"}
   >
-    <Breadcrumb home={"/"} atual={atual} />
+    <Breadcrumb home={"/"} anteriores={anteriores} atual={atual} />
     <RelatorioReclamacaoProduto />
   </Page>
 );
