@@ -1,3 +1,5 @@
+import { IFormValues } from "../../interfaces";
+
 export const getOpcoesStatusReclamacao = (): Array<{
   label: string;
   value: string;
@@ -36,4 +38,12 @@ export const getTodosStatusReclamacao = () => {
     "CODAE_RECUSOU",
     "CODAE_RESPONDEU",
   ];
+};
+
+export const formatarValues = (values: IFormValues) => {
+  const formValues = { ...values };
+  if (!values.status_reclamacao || values.status_reclamacao.length === 0) {
+    formValues.status_reclamacao = getTodosStatusReclamacao();
+  }
+  return formValues;
 };

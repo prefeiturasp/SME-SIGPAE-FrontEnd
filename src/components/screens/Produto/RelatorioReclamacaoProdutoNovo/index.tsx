@@ -1,12 +1,12 @@
+import { FormApi } from "final-form";
 import HTTP_STATUS from "http-status-codes";
 import { useContext, useState } from "react";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { getProdutosReclamacoes } from "src/services/produto.service";
 import { Filtros } from "./components/Filtros";
-import { getTodosStatusReclamacao } from "./components/Filtros/helpers";
+import { formatarValues } from "./components/Filtros/helpers";
 import { Tabela } from "./components/Tabela";
 import { IFormValues } from "./interfaces";
-import { FormApi } from "final-form";
 
 export const RelatorioReclamacaoProduto = () => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -23,10 +23,7 @@ export const RelatorioReclamacaoProduto = () => {
 
   const consultarProdutos = async (values: IFormValues, page: number) => {
     setLoadingTabela(true);
-    const formValues = { ...values };
-    if (!values.status_reclamacao || values.status_reclamacao.length === 0) {
-      formValues.status_reclamacao = getTodosStatusReclamacao();
-    }
+    const formValues = formatarValues(values);
     const params = {
       ...formValues,
       page,

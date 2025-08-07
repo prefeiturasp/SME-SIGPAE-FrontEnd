@@ -1,9 +1,18 @@
 import { Spin } from "antd";
-import { Dispatch } from "react";
+import { Dispatch, useState } from "react";
+import { Botao } from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import { deepCopy } from "src/helpers/utilities";
+import { getRelatorioReclamacao } from "src/services/relatorios.service";
 import { IFormValues } from "../../interfaces";
+import { formatarValues } from "../Filtros/helpers";
 import { Reclamacao } from "./components/Reclamacao";
+import { getConfigCabecario } from "./helpers";
 import "./style.scss";
 
 type ITabelaProps = {
@@ -29,6 +38,8 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
     consultarProdutos,
   } = props;
 
+  const [baixando, setBaixando] = useState(false);
+
   const setCollapse = (key: number) => {
     const copyProdutos = deepCopy(produtos);
     copyProdutos[key].collapsed = !copyProdutos[key].collapsed;
@@ -38,6 +49,16 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
   const nextPage = (page: number) => {
     consultarProdutos(values, page);
     setPage(page);
+  };
+
+  const handleBaixarPDF = async (values: IFormValues) => {
+    setBaixando(true);
+    const values_ = formatarValues(values);
+    await getRelatorioReclamacao({
+      ...values_,
+      ...getConfigCabecario(values_),
+    });
+    setBaixando(false);
   };
 
   return (
@@ -113,6 +134,28 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
                   showSizeChanger={false}
                   onChange={nextPage}
                   pageSize={10}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-12 text-end">
+                <Botao
+                  key={2}
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN}
+                  disabled={baixando}
+                  icon={!baixando && BUTTON_ICON.PRINT}
+                  texto={
+                    baixando ? (
+                      <img
+                        src="/assets/image/ajax-loader.gif"
+                        alt="ajax-loader"
+                      />
+                    ) : (
+                      "Baixar PDF"
+                    )
+                  }
+                  onClick={() => handleBaixarPDF(values)}
                 />
               </div>
             </div>
