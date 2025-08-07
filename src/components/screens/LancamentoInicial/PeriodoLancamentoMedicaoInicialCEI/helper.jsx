@@ -205,7 +205,11 @@ export const desabilitarField = (
               `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
             ]
           ) &&
-          inclusao.faixas_etarias.includes(uuidFaixaEtaria)
+          parseInt(
+            values[
+              `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+            ]
+          ) > 0
       );
       if (
         resultado &&
