@@ -30,7 +30,7 @@ export const Tabela = ({ ...props }) => {
 
   return (
     <>
-      <div className="titulo">
+      <div className="titulo mt-4">
         Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS PARA RECREIO NAS
         FÉRIAS: <span>{total}</span>
       </div>

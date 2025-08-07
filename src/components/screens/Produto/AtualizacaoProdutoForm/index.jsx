@@ -16,9 +16,6 @@ import WizardFormPrimeiraPagina from "./components/WizardFormPrimeiraPagina";
 import WizardFormSegundaPagina from "./components/WizardFormSegundaPagina";
 import WizardFormTerceiraPagina from "./components/WizardFormTerceiraPagina";
 import Wizard from "src/components/Shareable/Wizard";
-import MotivoDaRecusaDeHomologacao from "src/components/Shareable/MotivoDaRecusaDeHomologacao";
-import MotivoDaCorrecaoDeHomologacao from "src/components/Shareable/MotivoDaCorrecaoDeHomologacao";
-import MotivoCacelamentoSolicitacao from "src/components/Shareable/MotivoCancelamentoSolicitacao";
 import {
   getHomologacao,
   getMarcasProdutos,
@@ -28,8 +25,8 @@ import {
 } from "../../../../services/produto.service";
 import { connect } from "react-redux";
 import { getFormValues } from "redux-form";
-import MotivoHomologacao from "src/components/Shareable/MotivoHomologacao";
-import MotivoSuspensao from "src/components/Shareable/MotivoSuspensao";
+import MotivoEvento from "src/components/Shareable/MotivoEvento";
+import MotivoHomologacao from "../../../Shareable/MotivoHomologacao";
 import InformativoReclamacao from "src/components/Shareable/InformativoReclamacao";
 import { ModalPadrao } from "src/components/Shareable/ModalPadrao";
 
@@ -251,13 +248,21 @@ class AtualizacaoProdutoForm extends Component {
               {!!logs.length &&
                 !!status &&
                 status === STATUS_CODAE_SUSPENDEU && (
-                  <MotivoSuspensao logs={logs} />
+                  <MotivoEvento
+                    logs={logs}
+                    titulo="Motivo da suspensão"
+                    motivo="CODAE suspendeu o produto"
+                  />
                 )}
 
               {!!logs.length &&
                 !!status &&
                 status === STATUS_CODAE_QUESTIONADO && (
-                  <MotivoDaCorrecaoDeHomologacao logs={logs} />
+                  <MotivoEvento
+                    logs={logs}
+                    titulo="Motivo da solicitação de correção do produto"
+                    motivo="Questionamento pela CODAE"
+                  />
                 )}
 
               {!!logs.length &&
@@ -265,7 +270,11 @@ class AtualizacaoProdutoForm extends Component {
                 status !== STATUS_CODAE_SUSPENDEU &&
                 status !== STATUS_CODAE_AUTORIZOU_RECLAMACAO && (
                   <Fragment>
-                    <MotivoDaRecusaDeHomologacao logs={logs} />
+                    <MotivoEvento
+                      logs={logs}
+                      titulo="Motivo da recusa de homologação"
+                      motivo="CODAE não homologou"
+                    />
                     <MotivoHomologacao logs={logs} />
                   </Fragment>
                 )}
@@ -273,7 +282,11 @@ class AtualizacaoProdutoForm extends Component {
               {!!logs.length &&
                 !!status &&
                 status === STATUS_TERCEIRIZADA_CANCELOU_SOLICITACAO && (
-                  <MotivoCacelamentoSolicitacao logs={logs} />
+                  <MotivoEvento
+                    logs={logs}
+                    titulo="Motivo do cancelamento da homologação"
+                    motivo="Terceirizada cancelou solicitação de homologação de produto"
+                  />
                 )}
 
               <div className="row mb-2">
