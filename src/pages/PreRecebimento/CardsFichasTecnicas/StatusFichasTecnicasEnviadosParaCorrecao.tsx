@@ -48,7 +48,7 @@ export default () => {
         params={paramsDefault}
         limit={limit}
         urlBaseItem={gerarLinkItemFichaTecnica({
-          item: { status: "Enviada para Correção" },
+          status: "Enviada para Correção",
         } as unknown as FichaTecnicaDashboard)}
       />
     </Page>
