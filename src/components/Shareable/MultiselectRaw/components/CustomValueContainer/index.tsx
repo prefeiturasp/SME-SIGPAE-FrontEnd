@@ -7,7 +7,6 @@ export const CustomValueContainer = (
   const selectedCount = getValue().length;
 
   if (hasValue && selectedCount > 2) {
-    // Example: Collapse if more than 2 options selected
     return (
       <components.ValueContainer {...props}>
         <div style={{ paddingLeft: "8px" }}>
