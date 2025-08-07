@@ -68,7 +68,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
           }))
         )
       );
-    } else setErro("Houve um erro ao carregar Alergias e Intolerâncias");
+    } else setErro("Erro ao carregar diagnósticos.");
   };
 
   const getLotes = async () => {
