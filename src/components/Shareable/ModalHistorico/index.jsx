@@ -233,8 +233,12 @@ const ModalHistorico = ({
                             logSelecionado.status_evento_explicacao ===
                               "Terceirizada cancelou solicitação de correção" ? (
                               <div>Nome do Produto: </div>
-                            ) : logSelecionado.status_evento_explicacao !==
-                              "Vínculo do Edital ao Produto" ? (
+                            ) : ![
+                                "Vínculo do Edital ao Produto",
+                                "CODAE Atualizou o protocolo",
+                              ].includes(
+                                logSelecionado.status_evento_explicacao
+                              ) ? (
                               <div>Justificativa: </div>
                             ) : null}
                             <div
