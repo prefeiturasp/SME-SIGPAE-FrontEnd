@@ -1,8 +1,9 @@
-import TooltipIcone from "src/components/Shareable/TooltipIcone";
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactSelect from "react-select";
+import TooltipIcone from "src/components/Shareable/TooltipIcone";
 import { HelpText } from "../HelpText";
 import InputErroMensagem from "../Input/InputErroMensagem";
+import { CustomValueContainer } from "./components/CustomValueContainer";
 import { Option } from "./components/Option";
 
 export const MultiselectRaw = (props) => {
@@ -27,13 +28,18 @@ export const MultiselectRaw = (props) => {
     dataTestId,
   } = props;
 
+  const optionsComTodos = useMemo(
+    () => [{ label: "Todos", value: "*" }, ...options],
+    [options]
+  );
+
   const [opcoesSelecionadas, setOpcoesSelecionadas] = useState(
-    options.filter((option) => selected.includes(option.value))
+    optionsComTodos.filter((option) => selected.includes(option.value))
   );
 
   useEffect(() => {
     setOpcoesSelecionadas(
-      options.filter((option) => selected.includes(option.value))
+      optionsComTodos.filter((option) => selected.includes(option.value))
     );
   }, [selected]);
 
@@ -57,17 +63,48 @@ export const MultiselectRaw = (props) => {
       <ReactSelect
         {...input}
         classNamePrefix={dataTestId}
-        options={options}
+        options={optionsComTodos}
         isDisabled={disabled}
         isMulti={isMulti}
         closeMenuOnSelect={closeMenuOnSelect}
         hideSelectedOptions={hideSelectedOptions}
         components={{
           Option,
+          ValueContainer: CustomValueContainer,
         }}
         onChange={(values) => {
-          onSelectedChanged(values);
-          setOpcoesSelecionadas(values);
+          if (!Array.isArray(values)) return;
+
+          const isSelectAllSelected = values.some((v) => v.value === "*");
+          const allValues = options.map((o) => o.value);
+          const selectedValues = values.map((v) => v.value);
+          const isAllSelected = allValues.every((val) =>
+            selectedValues.includes(val)
+          );
+
+          if (isSelectAllSelected && isAllSelected) {
+            setOpcoesSelecionadas([]);
+            onSelectedChanged([]);
+            return;
+          }
+
+          if (isSelectAllSelected) {
+            const todasOpcoes = [...optionsComTodos];
+            setOpcoesSelecionadas(todasOpcoes);
+            onSelectedChanged(todasOpcoes.filter((v) => v.value !== "*"));
+            return;
+          }
+          const semSelectAll = values.filter((v) => v.value !== "*");
+          const isNowAllSelected = allValues.every((val) =>
+            semSelectAll.some((v) => v.value === val)
+          );
+
+          const novaSelecao = isNowAllSelected
+            ? [...semSelectAll, { label: "Todos", value: "*" }]
+            : semSelectAll;
+
+          setOpcoesSelecionadas(novaSelecao);
+          onSelectedChanged(novaSelecao.filter((v) => v.value !== "*"));
         }}
         allowSelectAll={allowSelectAll}
         value={opcoesSelecionadas}

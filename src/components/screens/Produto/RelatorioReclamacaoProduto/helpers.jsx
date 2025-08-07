@@ -1,8 +1,0 @@
-export const getStatusHomologacao = () => {
-  return [
-    "CODAE_PEDIU_ANALISE_RECLAMACAO",
-    "ESCOLA_OU_NUTRICIONISTA_RECLAMOU",
-    "TERCEIRIZADA_RESPONDEU_RECLAMACAO",
-    "CODAE_AUTORIZOU_RECLAMACAO",
-  ];
-};

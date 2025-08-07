@@ -1,9 +1,9 @@
 import { saveAs } from "file-saver";
 
 import { API_URL } from "../constants/config";
+import axios from "./_base";
 import authService from "./auth";
 import { ErrorHandlerFunction } from "./service-helpers";
-import axios from "./_base";
 
 const authToken = {
   Authorization: `JWT ${authService.getToken()}`,
@@ -56,14 +56,23 @@ export const getInformacoesNutricionaisOrdenadas = async () => {
   return await axios.get(`/informacoes-nutricionais/ordenadas/`);
 };
 
-export const getNomesProdutos = async (queryparams) => {
-  let url = `/produtos/lista-nomes/`;
-  if (queryparams) url += queryparams + "/";
-  return await axios.get(url);
+export const getNomesProdutos = async (params) => {
+  const url = `/produtos/lista-nomes/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
-export const getNomesUnicosProdutos = async () =>
-  await axios.get("/produtos/lista-nomes-unicos/");
+export const getNomesUnicosProdutos = async () => {
+  const url = "/produtos/lista-nomes-unicos/";
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const getNomesMarcas = async (queryparams) => {
   let url = `/marcas/lista-nomes/`;
@@ -71,8 +80,14 @@ export const getNomesMarcas = async (queryparams) => {
   return await axios.get(url);
 };
 
-export const getNomesUnicosMarcas = async () =>
-  await axios.get("/marcas/lista-nomes-unicos/");
+export const getNomesUnicosMarcas = async () => {
+  const url = "/marcas/lista-nomes-unicos/";
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const getNomesFabricantes = async (queryparams) => {
   let url = `/fabricantes/lista-nomes/`;
@@ -80,8 +95,14 @@ export const getNomesFabricantes = async (queryparams) => {
   return await axios.get(url);
 };
 
-export const getNomesUnicosFabricantes = async () =>
-  await axios.get("/fabricantes/lista-nomes-unicos/");
+export const getNomesUnicosFabricantes = async () => {
+  const url = "/fabricantes/lista-nomes-unicos/";
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const getNovaReclamacaoNomesProdutos = async (params) => {
   const url = `/produtos/lista-nomes-nova-reclamacao/`;
@@ -142,7 +163,12 @@ export const getEditaisDre = async () => {
 };
 
 export const getNomesUnicosEditais = async () => {
-  return await axios.get(`/produtos-editais/lista-nomes-unicos/`);
+  const url = `/produtos-editais/lista-nomes-unicos/`;
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getProdutosPorNome = async (nomeProduto) => {
@@ -329,7 +355,6 @@ export const CODAEPedeAnaliseSensorialProduto = (
   })
     .then((res) => {
       status = res.status;
-      console.log("RES", res);
       return res.json();
     })
     .then((data) => {
@@ -581,8 +606,14 @@ export const updateSolicitacaoCadastroProdutoDieta = async (uuid, params) =>
     params
   );
 
-export const getProdutosReclamacoes = async (params) =>
-  await axios.get("/produtos/filtro-reclamacoes/", { params });
+export const getProdutosReclamacoes = async (params) => {
+  const url = "/produtos/filtro-reclamacoes/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
 export const getProdutosAvaliacaoReclamacao = async (params) =>
   await axios.get("/produtos/filtro-avaliar-reclamacoes/", { params });
