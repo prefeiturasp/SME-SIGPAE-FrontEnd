@@ -27,7 +27,7 @@ export const MultiselectRaw = (props) => {
     usarDirty,
     dataTestId,
   } = props;
-
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
   const optionsComTodos = useMemo(
     () => [{ label: "Todos", value: "*" }, ...options],
     [options]
@@ -62,6 +62,9 @@ export const MultiselectRaw = (props) => {
       ]}
       <ReactSelect
         {...input}
+        menuIsOpen={menuIsOpen}
+        onMenuOpen={() => setMenuIsOpen(true)}
+        onMenuClose={() => setMenuIsOpen(false)}
         classNamePrefix={dataTestId}
         options={optionsComTodos}
         isDisabled={disabled}
@@ -83,8 +86,8 @@ export const MultiselectRaw = (props) => {
           );
 
           if (isSelectAllSelected && isAllSelected) {
-            setOpcoesSelecionadas([]);
             onSelectedChanged([]);
+            setMenuIsOpen(false);
             return;
           }
 
@@ -92,6 +95,7 @@ export const MultiselectRaw = (props) => {
             const todasOpcoes = [...optionsComTodos];
             setOpcoesSelecionadas(todasOpcoes);
             onSelectedChanged(todasOpcoes.filter((v) => v.value !== "*"));
+            setMenuIsOpen(false);
             return;
           }
           const semSelectAll = values.filter((v) => v.value !== "*");
