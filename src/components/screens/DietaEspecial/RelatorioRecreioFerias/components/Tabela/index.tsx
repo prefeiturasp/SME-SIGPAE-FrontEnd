@@ -50,11 +50,11 @@ export const Tabela = ({ ...props }) => {
             return [
               <tr key={key}>
                 <td>
-                  {dieta.aluno.codigo_eol} - {dieta.aluno.nome}
+                  {dieta.aluno?.codigo_eol} - {dieta.aluno?.nome}
                 </td>
                 <td>{dieta.escola.nome}</td>
-                <td>{dieta.escola_destino.nome}</td>
-                <td>{dieta.classificacao.nome}</td>
+                <td>{dieta.escola_destino?.nome}</td>
+                <td>{dieta.classificacao?.nome}</td>
                 <td>
                   De {dieta.data_inicio} até {dieta.data_termino}
                 </td>
