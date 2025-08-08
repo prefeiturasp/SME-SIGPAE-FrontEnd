@@ -8,7 +8,6 @@ import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import moment from "moment";
 import {
-  addOpcaoTodas,
   usuarioEhCogestorDRE,
   usuarioEhEmpresa,
   usuarioEhEscola,
@@ -61,16 +60,12 @@ export const Filtros: React.FC<FiltrosProps> = ({
     const resposta = await getAlergiasIntolerancias();
     if (resposta.status === HTTP_STATUS.OK) {
       setDiagnosticos(
-        addOpcaoTodas("Todos os diagnósticos").concat(
-          resposta.data.map(({ id, descricao }) => ({
-            value: id,
-            label: descricao,
-          }))
-        )
+        resposta.data.map(({ id, descricao }) => ({
+          value: id,
+          label: descricao,
+        }))
       );
-    } else {
-      setErro("Houve um erro ao carregar Alergias e Intolerâncias");
-    }
+    } else setErro("Erro ao carregar diagnósticos.");
   };
 
   const getLotes = async () => {
@@ -100,12 +95,10 @@ export const Filtros: React.FC<FiltrosProps> = ({
     const resposta = await getClassificacoesDietaEspecial();
     if (resposta.status === HTTP_STATUS.OK) {
       setClassificacoes(
-        addOpcaoTodas("Todas as classificações").concat(
-          resposta.data.map(({ id, nome }) => ({
-            value: id,
-            label: nome,
-          }))
-        )
+        resposta.data.map(({ id, nome }) => ({
+          value: id,
+          label: nome,
+        }))
       );
     } else setErro("Erro ao carregar classificações de dieta.");
   };
@@ -136,17 +129,13 @@ export const Filtros: React.FC<FiltrosProps> = ({
         toastError("Não existem unidades para os filtros selecionados");
       } else {
         setUnidadesEducacionais(
-          addOpcaoTodas("Todas as unidades").concat(
-            resposta.data.map(({ uuid, codigo_eol_escola }) => ({
-              value: uuid,
-              label: codigo_eol_escola,
-            }))
-          )
+          resposta.data.map(({ uuid, codigo_eol_escola }) => ({
+            value: uuid,
+            label: codigo_eol_escola,
+          }))
         );
       }
-    } else {
-      toastError("Erro ao carregar unidades educacionais.");
-    }
+    } else toastError("Erro ao carregar unidades educacionais.");
   };
 
   const onSubmit = useCallback(
@@ -202,6 +191,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   name="unidades_educacionais_selecionadas"
                   placeholder="Selecione as unidades"
                   options={unidadesEducacionais}
+                  labelAllOption="TODAS"
                   selected={values.unidades_educacionais_selecionadas || []}
                   onSelectedChanged={(values: opcaoMultiSelect[]) => {
                     form.change(
@@ -217,9 +207,11 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   Classificação das Dietas
                 </label>
                 <Field
+                  dataTestId="classificassoes-select"
                   component={MultiselectRaw}
                   name="classificacoes_selecionadas"
                   placeholder="Selecione a classificação"
+                  labelAllOption="TODAS"
                   options={classificacoes}
                   selected={values.classificacoes_selecionadas || []}
                   onSelectedChanged={(values: opcaoMultiSelect[]) => {
@@ -232,6 +224,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
               </div>
               <div className="col-4">
                 <Field
+                  dataTestId="data-inicio-input"
                   component={InputComData}
                   label="Período Atendimento da Dieta"
                   name="data_inicio"
@@ -247,6 +240,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
               </div>
               <div className="col-4">
                 <Field
+                  dataTestId="data-fim-input"
                   component={InputComData}
                   label="&nbsp;"
                   name="data_fim"
@@ -265,6 +259,8 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   Relação por Diagnóstico
                 </label>
                 <Field
+                  labelAllOption="TODOS"
+                  dataTestId="alergias-intolerancias-select"
                   component={MultiselectRaw}
                   name="alergias_intolerancias_selecionadas"
                   options={diagnosticos}
