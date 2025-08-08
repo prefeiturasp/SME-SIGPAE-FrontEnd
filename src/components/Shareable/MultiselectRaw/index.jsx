@@ -26,10 +26,11 @@ export const MultiselectRaw = (props) => {
     tooltipText,
     usarDirty,
     dataTestId,
+    labelAllOption = "Todos",
   } = props;
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const optionsComTodos = useMemo(
-    () => [{ label: "Todos", value: "*" }, ...options],
+    () => [{ label: labelAllOption, value: "*" }, ...options],
     [options]
   );
 
@@ -104,7 +105,7 @@ export const MultiselectRaw = (props) => {
           );
 
           const novaSelecao = isNowAllSelected
-            ? [...semSelectAll, { label: "Todos", value: "*" }]
+            ? [...semSelectAll, { label: labelAllOption, value: "*" }]
             : semSelectAll;
 
           setOpcoesSelecionadas(novaSelecao);
