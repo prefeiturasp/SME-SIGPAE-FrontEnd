@@ -83,7 +83,7 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
     expect(screen.getByText("Limpar Filtros")).toBeInTheDocument();
   });
 
-  const setDre = async (valor) => {
+  const setDre = (valor) => {
     const campoDre = screen.getByTestId("select-dre-lote");
     const select = campoDre.querySelector("select");
     fireEvent.change(select, {
@@ -112,7 +112,7 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
     });
   });
 
-  it("clica no collapse e gera protocolo", async () => {
+  it("Clica no collapse e gera protocolo", async () => {
     await act(async () => {
       setDre(_DRE);
     });
@@ -133,7 +133,9 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
       )
       .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
 
-    const botaoGerarProtocolo = screen.getByTestId("botao-gerar-protocolo-0");
-    fireEvent.click(botaoGerarProtocolo);
+    await act(async () => {
+      const botaoGerarProtocolo = screen.getByTestId("botao-gerar-protocolo-0");
+      fireEvent.click(botaoGerarProtocolo);
+    });
   });
 });

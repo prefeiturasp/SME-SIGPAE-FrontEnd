@@ -83,7 +83,7 @@ describe("Comportamentos filtros do Relatório de Dietas para Recreio nas Féria
     expect(screen.getByText("Limpar Filtros")).toBeInTheDocument();
   });
 
-  const setDre = async (valor) => {
+  const setDre = (valor) => {
     const campoDre = screen.getByTestId("select-dre-lote");
     const select = campoDre.querySelector("select");
     fireEvent.change(select, {
@@ -185,15 +185,15 @@ describe("Comportamentos filtros do Relatório de Dietas para Recreio nas Féria
     });
 
     await waitFor(async () => {
-      await setOpcao("unidades-educacionais-select", "Todos");
+      await setOpcao("unidades-educacionais-select", "TODAS");
     });
 
     await waitFor(async () => {
-      await setOpcao("classificassoes-select", "Todos");
+      await setOpcao("classificassoes-select", "TODAS");
     });
 
     await waitFor(async () => {
-      await setOpcao("alergias-intolerancias-select", "Todos");
+      await setOpcao("alergias-intolerancias-select", "TODOS");
     });
 
     setData("data-inicio-input", "01/01/2022");
