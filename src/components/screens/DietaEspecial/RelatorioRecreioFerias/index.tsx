@@ -13,7 +13,7 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { Filtros } from "./components/Filtros";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { normalizarValores } from "./helper";
+import { normalizarValores } from "./helpers";
 
 export const RelatorioRecreioFerias = () => {
   const [dietas, setDietas] = useState<IRelatorioDietaRecreioFerias[] | null>(
