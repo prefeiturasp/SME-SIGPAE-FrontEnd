@@ -1,4 +1,10 @@
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -11,6 +17,7 @@ import {
   mockListaMarcas,
   mockListaProdutos,
 } from "src/mocks/Produto/BuscaAvancada/listas";
+import { mockProdutosReclamacoesEscolaEMEF } from "src/mocks/services/produto.service/Escola/EMEF/produtosReclamacoes";
 import { RelatorioReclamacaoProdutoPage } from "src/pages/Produto/RelatorioReclamacaoProdutoPage";
 import mock from "src/services/_mock";
 
@@ -66,5 +73,35 @@ describe("Test Relatório Reclamação Produto - Usuário Escola", () => {
     expect(
       screen.queryAllByText("Relatório de Reclamação de Produto")
     ).toHaveLength(2);
+  });
+
+  it("Filtra e exibe resultados", async () => {
+    mock
+      .onGet("/produtos/filtro-reclamacoes/")
+      .reply(200, mockProdutosReclamacoesEscolaEMEF);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(screen.getByText("166")).toBeInTheDocument();
+    });
+  });
+
+  it("Renderiza erro ao carregar produtos", async () => {
+    mock
+      .onGet("/produtos/filtro-reclamacoes/")
+      .reply(400, { detail: "Erro ao carregar produtos" });
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Erro ao carregar produtos. Tente novamente mais tarde."
+        )
+      ).toBeInTheDocument();
+    });
   });
 });
