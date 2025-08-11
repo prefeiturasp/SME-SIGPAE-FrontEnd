@@ -22,6 +22,8 @@ import { RelatorioReclamacaoProdutoPage } from "src/pages/Produto/RelatorioRecla
 import mock from "src/services/_mock";
 
 describe("Test Relatório Reclamação Produto - Usuário Escola", () => {
+  let container;
+
   beforeEach(async () => {
     mock
       .onGet("/usuarios/meus-dados/")
@@ -49,7 +51,7 @@ describe("Test Relatório Reclamação Produto - Usuário Escola", () => {
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
 
     await act(async () => {
-      render(
+      ({ container } = render(
         <MemoryRouter
           future={{
             v7_startTransition: true,
@@ -65,7 +67,7 @@ describe("Test Relatório Reclamação Produto - Usuário Escola", () => {
             <RelatorioReclamacaoProdutoPage />
           </MeusDadosContext.Provider>
         </MemoryRouter>
-      );
+      ));
     });
   });
 
@@ -75,7 +77,7 @@ describe("Test Relatório Reclamação Produto - Usuário Escola", () => {
     ).toHaveLength(2);
   });
 
-  it("Filtra e exibe resultados", async () => {
+  it("Filtra e exibe resultados; muda de página", async () => {
     mock
       .onGet("/produtos/filtro-reclamacoes/")
       .reply(200, mockProdutosReclamacoesEscolaEMEF);
@@ -86,6 +88,10 @@ describe("Test Relatório Reclamação Produto - Usuário Escola", () => {
     await waitFor(() => {
       expect(screen.getByText("166")).toBeInTheDocument();
     });
+
+    const item = container.querySelector(".ant-pagination-item-2");
+    expect(item).toBeInTheDocument();
+    fireEvent.click(item);
   });
 
   it("Renderiza erro ao carregar produtos", async () => {
@@ -102,6 +108,26 @@ describe("Test Relatório Reclamação Produto - Usuário Escola", () => {
           "Erro ao carregar produtos. Tente novamente mais tarde."
         )
       ).toBeInTheDocument();
+    });
+  });
+
+  it("Exibe área do collapse", async () => {
+    mock
+      .onGet("/produtos/filtro-reclamacoes/")
+      .reply(200, mockProdutosReclamacoesEscolaEMEF);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(screen.getByText("166")).toBeInTheDocument();
+    });
+
+    const elementCollapse0 = screen.getByTestId("i-collapsed-0");
+    fireEvent.click(elementCollapse0);
+
+    await waitFor(() => {
+      expect(screen.getByText("#A856D")).toBeInTheDocument();
     });
   });
 });
