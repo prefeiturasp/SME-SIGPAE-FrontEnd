@@ -14,6 +14,7 @@ import { formatarValues } from "../Filtros/helpers";
 import { Reclamacao } from "./components/Reclamacao";
 import { getConfigCabecario } from "./helpers";
 import "./style.scss";
+import { ENVIRONMENT } from "src/constants/config";
 
 type ITabelaProps = {
   produtos: Array<any>;
@@ -143,8 +144,27 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
             </div>
             <div className="row">
               <div className="col-12 text-end">
+                {!ENVIRONMENT.includes("production") && (
+                  <Botao
+                    className="me-3"
+                    type={BUTTON_TYPE.BUTTON}
+                    style={BUTTON_STYLE.GREEN}
+                    disabled={baixando}
+                    icon={!baixando && BUTTON_ICON.FILE_EXCEL}
+                    texto={
+                      baixando ? (
+                        <img
+                          src="/assets/image/ajax-loader.gif"
+                          alt="ajax-loader"
+                        />
+                      ) : (
+                        "Baixar Excel"
+                      )
+                    }
+                    onClick={() => {}}
+                  />
+                )}
                 <Botao
-                  key={2}
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN}
                   disabled={baixando}
