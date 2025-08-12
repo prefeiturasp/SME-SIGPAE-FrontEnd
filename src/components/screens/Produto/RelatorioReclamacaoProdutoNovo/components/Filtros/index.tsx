@@ -285,6 +285,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   label="Nome do Produto"
                   placeholder="Digite o nome do produto"
                   name="nome_produto"
+                  dataTestId="div-input-nome-produto"
                 />
               </div>
             </div>
@@ -299,6 +300,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   label="Marca"
                   placeholder="Digite a marca do produto"
                   name="nome_marca"
+                  dataTestId="div-input-nome-marca"
                 />
               </div>
               <div className="col-4">
@@ -311,6 +313,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   label="Fabricante"
                   placeholder="Digite o fabricante do produto"
                   name="nome_fabricante"
+                  dataTestId="div-input-nome-fabricante"
                 />
               </div>
               <div className="col-4">
