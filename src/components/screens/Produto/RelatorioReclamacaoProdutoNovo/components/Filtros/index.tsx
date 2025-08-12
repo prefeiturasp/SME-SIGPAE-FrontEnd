@@ -158,7 +158,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     const lotesValues = getValues(lotes);
 
     let terceirizadasValues = getValues(terceirizadas);
-    if (!terceirizadasValues.length && usuarioEhEmpresa()) {
+    if (usuarioEhEmpresa()) {
       terceirizadasValues = [meusDados.vinculo_atual.instituicao.uuid];
     }
 
@@ -206,13 +206,13 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
   };
 
   const onClear = (form: FormApi) => {
-    if (terceirizadas?.length === 1) {
+    if (usuarioEhEmpresa()) {
+      form.change("terceirizadas", [meusDados.vinculo_atual.instituicao.uuid]);
+    } else if (terceirizadas?.length === 1) {
       form.change(
         "terceirizadas",
         terceirizadas.map((t) => t.value)
       );
-    } else if (usuarioEhEmpresa()) {
-      form.change("terceirizadas", [meusDados.vinculo_atual.instituicao.uuid]);
     } else {
       form.change("terceirizadas", undefined);
     }
