@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -65,6 +66,7 @@ describe("Test Relatório Reclamação Produto - Usuário DRE", () => {
             }}
           >
             <RelatorioReclamacaoProdutoPage />
+            <ToastContainer />
           </MeusDadosContext.Provider>
         </MemoryRouter>
       );
@@ -146,5 +148,94 @@ describe("Test Relatório Reclamação Produto - Usuário DRE", () => {
     expect(campoInputProduto).toHaveValue("");
     expect(campoInputMarca).toHaveValue("");
     expect(campoInputFabricante).toHaveValue("");
+  });
+
+  it("download pdf", async () => {
+    mock
+      .onGet("/produtos/filtro-reclamacoes/")
+      .reply(200, mockProdutosReclamacoesEscolaEMEF);
+
+    const selectEditais = screen.getByTestId("select-editais");
+    const selectControlEditais = within(selectEditais).getByRole("combobox");
+    fireEvent.mouseDown(selectControlEditais);
+    const option101010B = screen.getByText("101010B");
+    fireEvent.click(option101010B);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(screen.getByText("166")).toBeInTheDocument();
+    });
+
+    mock
+      .onGet(`/produtos/relatorio-reclamacao/`)
+      .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
+
+    const botaoBaixarPDF = screen.getByText("Baixar PDF").closest("button");
+    fireEvent.click(botaoBaixarPDF);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          "Houve um erro ao imprimir o relatório. Tente novamente mais tarde."
+        )
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("erro download pdf", async () => {
+    mock
+      .onGet("/produtos/filtro-reclamacoes/")
+      .reply(200, mockProdutosReclamacoesEscolaEMEF);
+
+    const selectEditais = screen.getByTestId("select-editais");
+    const selectControlEditais = within(selectEditais).getByRole("combobox");
+    fireEvent.mouseDown(selectControlEditais);
+    const option101010B = screen.getByText("101010B");
+    fireEvent.click(option101010B);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(screen.getByText("166")).toBeInTheDocument();
+    });
+
+    mock
+      .onGet(`/produtos/relatorio-reclamacao/`)
+      .reply(400, { detail: "Erro ao baixar PDF" });
+
+    const botaoBaixarPDF = screen.getByText("Baixar PDF").closest("button");
+    fireEvent.click(botaoBaixarPDF);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          "Houve um erro ao imprimir o relatório. Tente novamente mais tarde."
+        )
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Renderiza `Não foram encontrados resultados para estes filtros.`", async () => {
+    mock
+      .onGet("/produtos/filtro-reclamacoes/")
+      .reply(200, { count: 0, results: [] });
+
+    const selectEditais = screen.getByTestId("select-editais");
+    const selectControlEditais = within(selectEditais).getByRole("combobox");
+    fireEvent.mouseDown(selectControlEditais);
+    const option101010B = screen.getByText("101010B");
+    fireEvent.click(option101010B);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Não foram encontrados resultados para estes filtros.")
+      ).toBeInTheDocument();
+    });
   });
 });
