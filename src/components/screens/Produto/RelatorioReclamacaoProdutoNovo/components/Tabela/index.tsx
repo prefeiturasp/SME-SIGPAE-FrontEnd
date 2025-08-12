@@ -86,7 +86,11 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
                 {produtos.map((produto, key: number) => {
                   return [
                     <tr key={key}>
-                      <td></td>
+                      <td>
+                        {produto.ultima_homologacao.editais_reclamacoes.join(
+                          ", "
+                        )}
+                      </td>
                       <td>{produto.nome}</td>
                       <td>{produto.marca.nome}</td>
                       <td>{produto.fabricante.nome}</td>

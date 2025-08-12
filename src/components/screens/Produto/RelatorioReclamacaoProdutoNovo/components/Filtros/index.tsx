@@ -32,6 +32,7 @@ type IFiltrosProps = {
   consultarProdutos: (_values: IFormValues, _page: number) => void;
   formInstance: FormApi;
   setFormInstance: (_formInstance: FormApi) => void;
+  setPage: (_page: number) => void;
 };
 
 export const Filtros = ({ ...props }: IFiltrosProps) => {
@@ -41,6 +42,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     consultarProdutos,
     formInstance,
     setFormInstance,
+    setPage,
   } = props;
 
   const [editais, setEditais] =
@@ -200,6 +202,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
 
   const onSubmit = async (values: IFormValues) => {
     consultarProdutos(values, 1);
+    setPage(1);
   };
 
   const onClear = (form: FormApi) => {

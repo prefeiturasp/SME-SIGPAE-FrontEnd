@@ -53,6 +53,7 @@ export const RelatorioReclamacaoProduto = () => {
               meusDados={meusDados}
               consultarProdutos={consultarProdutos}
               formInstance={formInstance}
+              setPage={setPage}
               setFormInstance={setFormInstance}
             />
             <Tabela
