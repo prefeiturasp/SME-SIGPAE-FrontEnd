@@ -54,8 +54,7 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
       {(usuarioEhCronograma() ||
         usuarioEhDilogAbastecimento() ||
         usuarioEhCodaeDilog() ||
-        usuarioEhDilogDiretoria() ||
-        usuarioEhPreRecebimento()) && (
+        usuarioEhDilogDiretoria()) && (
         <LeafItem
           to={`/${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`}
         >
