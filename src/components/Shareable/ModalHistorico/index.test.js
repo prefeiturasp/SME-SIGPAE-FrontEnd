@@ -32,6 +32,18 @@ describe("Testa componete <ModalHistorico>", () => {
     expect(screen.getByText("Fechar")).toBeInTheDocument();
     expect(screen.getByText("Usuário")).toBeInTheDocument();
     expect(screen.getByText("Ações")).toBeInTheDocument();
+  });
+
+  it("Renderiza lista de históricos", async () => {
     preview.debug();
+    const historicoItems = document.querySelectorAll(".grid-item-log");
+    expect(historicoItems.length).toBe(dietaComHistorico.logs.length);
+    expect(screen.getAllByText("Solicitação Realiza...")).toHaveLength(1);
+    expect(screen.getAllByText("CODAE autorizou")).toHaveLength(1);
+    expect(screen.getAllByText("CODAE Atualizou o p...")).toHaveLength(7);
+    expect(screen.getAllByText("SUPER USUARIO ESCOLA EMEF")).toHaveLength(1);
+    expect(screen.getAllByText("Dieta Especial")).toHaveLength(8);
+    expect(screen.getAllByText("26/06/2025")).toHaveLength(1);
+    expect(screen.getAllByText("11/08/2025")).toHaveLength(8);
   });
 });
