@@ -1,5 +1,5 @@
 import React from "react";
-import { act, screen, render } from "@testing-library/react";
+import { act, fireEvent, screen, render } from "@testing-library/react";
 import ModalHistorico from "src/components/Shareable/ModalHistorico/index";
 import { MemoryRouter } from "react-router-dom";
 import { dietaComHistorico } from "src/mocks/DietaEspecial/Relatorio/mockDietaComLogDeHistorico.jsx";
@@ -45,5 +45,23 @@ describe("Testa componete <ModalHistorico>", () => {
     expect(screen.getAllByText("Dieta Especial")).toHaveLength(8);
     expect(screen.getAllByText("26/06/2025")).toHaveLength(1);
     expect(screen.getAllByText("11/08/2025")).toHaveLength(8);
+  });
+
+  test("Exibe os detalhes do histórico para o status Solicitação Realizada", () => {
+    const solictacaoRealizada = document.querySelectorAll(".grid-item-log")[0];
+    fireEvent.click(solictacaoRealizada);
+
+    const classeNomeFantasiaEmpresa = document.querySelector(
+      ".nome-fantasia-empresa"
+    );
+    expect(classeNomeFantasiaEmpresa.textContent).toBe(
+      "SUPER USUARIO ESCOLA EMEF"
+    );
+    expect(screen.getAllByText("26/06/2025")).toHaveLength(3);
+    expect(screen.getAllByText("11:52:55")).toHaveLength(2);
+
+    expect(screen.getByText("Solicitação Realizada")).toBeInTheDocument();
+    expect(screen.getByText("RF: 8115257")).toBeInTheDocument();
+    expect(screen.getByText("Data:")).toBeInTheDocument();
   });
 });
