@@ -109,6 +109,28 @@ describe("Test Relatório Reclamação Produto - Usuário DRE", () => {
     await usuario.type(campoInputFabricante, "PANCO LTDA");
     expect(campoInputFabricante).toHaveValue("PANCO LTDA");
 
+    const selectStatusReclamacao = screen.getByTestId("select-status");
+    const selectControlStatusReclamacao = within(
+      selectStatusReclamacao
+    ).getByRole("combobox");
+    fireEvent.mouseDown(selectControlStatusReclamacao);
+    const optionAGUARDANDO_AVALIACAO = screen.getByText(
+      "Aguardando avaliação da CODAE"
+    );
+    fireEvent.click(optionAGUARDANDO_AVALIACAO);
+
+    const selectLote = screen.getByTestId("select-lotes");
+    const selectControlLote = within(selectLote).getByRole("combobox");
+    fireEvent.mouseDown(selectControlLote);
+    const optionLote = screen.getByText("Teste - IP");
+    fireEvent.click(optionLote);
+
+    const selectEmpresa = screen.getByTestId("select-empresas");
+    const selectControlEmpresa = within(selectEmpresa).getByRole("combobox");
+    fireEvent.mouseDown(selectControlEmpresa);
+    const optionEmpresa = screen.getByText("ALIMENTAR");
+    fireEvent.click(optionEmpresa);
+
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
     fireEvent.click(botaoFiltrar);
 

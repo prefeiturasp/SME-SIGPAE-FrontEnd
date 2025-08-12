@@ -400,31 +400,5 @@ export const mockTerceirizadasListaNomes = {
         },
       ],
     },
-    {
-      uuid: "56c0a491-0ad5-4570-b033-b13050c4a313",
-      cnpj: "21080914000180",
-      nome_fantasia: "Empresa Dani Chichon",
-      contatos: [
-        {
-          nome: "",
-          telefone: "11 9999 9999",
-          telefone2: "",
-          celular: "",
-          email: "fake_daniellapch@yahoo.com.br",
-          eh_nutricionista: false,
-          crn_numero: "",
-        },
-        {
-          nome: "Juliana Lemos Demay",
-          telefone: "11 98885 0067",
-          telefone2: "",
-          celular: "",
-          email: "fake_jaqueline.sargi@hotmail.com",
-          eh_nutricionista: true,
-          crn_numero: "34457",
-        },
-      ],
-      contratos: [],
-    },
   ],
 };

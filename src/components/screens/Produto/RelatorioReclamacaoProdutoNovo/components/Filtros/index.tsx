@@ -341,7 +341,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                 <Field
                   label="Lote/DRE"
                   component={MultiselectRaw}
-                  dataTestId="select-lote"
+                  dataTestId="select-lotes"
                   name="lotes"
                   placeholder="Selecione os status"
                   options={lotes || []}

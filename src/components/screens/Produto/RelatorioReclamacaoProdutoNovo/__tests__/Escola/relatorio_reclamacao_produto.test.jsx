@@ -77,7 +77,7 @@ describe("Test Relatório Reclamação Produto - Usuário Escola", () => {
     ).toHaveLength(2);
   });
 
-  it("Filtra e exibe resultados; muda de página", async () => {
+  it("Filtra e exibe resultados; muda de página; limpa filtros", async () => {
     mock
       .onGet("/produtos/filtro-reclamacoes/")
       .reply(200, mockProdutosReclamacoesEscolaEMEF);
@@ -92,6 +92,11 @@ describe("Test Relatório Reclamação Produto - Usuário Escola", () => {
     const item = container.querySelector(".ant-pagination-item-2");
     expect(item).toBeInTheDocument();
     fireEvent.click(item);
+
+    const botaoLimparFiltros = screen
+      .getByText("Limpar Filtros")
+      .closest("button");
+    fireEvent.click(botaoLimparFiltros);
   });
 
   it("Renderiza erro ao carregar produtos", async () => {
