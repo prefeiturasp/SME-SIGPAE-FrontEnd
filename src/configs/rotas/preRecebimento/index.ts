@@ -94,7 +94,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhDilogAbastecimento() ||
       usuarioEhCodaeDilog() ||
       usuarioEhDilogDiretoria() ||
-      usuarioEhDilogVisualizacao(),
+      usuarioEhDilogVisualizacao() ||
+      usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR}`,
@@ -127,7 +128,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCodaeDilog() ||
       usuarioEhCODAEGabinete() ||
-      usuarioEhDilogVisualizacao(),
+      usuarioEhDilogVisualizacao() ||
+      usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.CADASTRO_CRONOGRAMA}`,
@@ -366,7 +368,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
       usuarioEhCODAEGabinete() ||
-      usuarioEhDilogVisualizacao(),
+      usuarioEhDilogVisualizacao() ||
+      usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.DILOG}/${constants.ALTERACOES_REPROVADAS}`,
@@ -376,7 +379,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
       usuarioEhCODAEGabinete() ||
-      usuarioEhDilogVisualizacao(),
+      usuarioEhDilogVisualizacao() ||
+      usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.CRONOGRAMA}/${constants.AGUARDANDO_ASSINATURAS}`,
@@ -385,7 +389,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
       usuarioEhCODAEGabinete() ||
-      usuarioEhDilogVisualizacao(),
+      usuarioEhDilogVisualizacao() ||
+      usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.ASSINADO_CODAE}`,
@@ -396,7 +401,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhCodaeDilog() ||
       usuarioEhCronograma() ||
       usuarioEhCODAEGabinete() ||
-      usuarioEhDilogVisualizacao(),
+      usuarioEhDilogVisualizacao() ||
+      usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.CRONOGRAMA}/${constants.SOLICITACOES_ALTERACOES}`,
@@ -405,7 +411,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog() ||
       usuarioEhCODAEGabinete() ||
-      usuarioEhDilogVisualizacao(),
+      usuarioEhDilogVisualizacao() ||
+      usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.CRONOGRAMA}/${constants.ALTERACOES_CODAE}`,
@@ -416,6 +423,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhCodaeDilog() ||
       usuarioEhDilogAbastecimento() ||
       usuarioEhCODAEGabinete() ||
-      usuarioEhDilogVisualizacao(),
+      usuarioEhDilogVisualizacao() ||
+      usuarioEhDilogQualidade(),
   },
 ];
