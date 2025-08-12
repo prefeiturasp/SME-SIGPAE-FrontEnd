@@ -255,13 +255,13 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
             <div className="row">
               <div className="col-4">
                 <Field
-                  label="Editais"
+                  label="Edital"
                   component={MultiselectRaw}
                   dataTestId="select-editais"
                   required
                   validate={requiredMultiselect}
                   name="editais"
-                  placeholder="Selecione os Editais"
+                  placeholder="Selecione o Edital"
                   options={editais || []}
                   selected={values.editais || []}
                   onSelectedChanged={(
@@ -322,7 +322,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   component={MultiselectRaw}
                   dataTestId="select-status"
                   name="status_reclamacao"
-                  placeholder="Selecione os status"
+                  placeholder="Selecione o status"
                   options={getOpcoesStatusReclamacao()}
                   selected={values.status_reclamacao || []}
                   onSelectedChanged={(
@@ -343,7 +343,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   component={MultiselectRaw}
                   dataTestId="select-lotes"
                   name="lotes"
-                  placeholder="Selecione os status"
+                  placeholder="Selecione Lotes/DREs"
                   options={lotes || []}
                   selected={values.lotes || []}
                   onSelectedChanged={(
