@@ -19,6 +19,7 @@ import ModalAnaliseDilog from "../Modals/ModalAnaliseDilog";
 import ModalEnviarAlteracao from "../Modals/ModalEnviarAlteracao";
 import ModalCienciaAlteracao from "../Modals/ModalCienciaAlteracao";
 import ModalVoltar from "../../../../../Shareable/Page/ModalVoltar";
+import { useNavigate } from "react-router-dom";
 
 export default ({
   handleSubmit,
@@ -31,10 +32,31 @@ export default ({
   const [show, setShow] = useState(false);
   const [showVoltar, setShowVoltar] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const handleShowVoltar = () => setShowVoltar(true);
+
+  const handleShowVoltar = () => {
+    if (
+      ehCronogramaNovo ||
+      ehFornecedorNovo ||
+      ehFornecedorCiente ||
+      ehDilogDiretoriaAbastecimento ||
+      ehDilogAbastecimentoCiente ||
+      ehCronogramaEmAnalise
+    ) {
+      setShowVoltar(true);
+    } else {
+      navigate(-1);
+    }
+  };
+
+  const handleSim = async () => {
+    setLoading(true);
+    await handleSubmit();
+    setLoading(false);
+  };
 
   const enviaAnaliseCronograma = async (values) => {
     setLoading(true);
@@ -42,158 +64,120 @@ export default ({
     setLoading(false);
   };
 
-  const handleSim = async () => {
-    setLoading(true);
-    handleSubmit();
-    setLoading(false);
+  const validarEnvio = () => {
+    if (!podeSubmeter) {
+      toastError("Selecione os campos obrigatórios");
+      return false;
+    }
+    return true;
   };
+
+  const ehFornecedorCiente =
+    usuarioEhEmpresaFornecedor() &&
+    solicitacaoAlteracaoCronograma?.status ===
+      "Alteração Enviada ao Fornecedor";
+
+  const ehFornecedorNovo =
+    usuarioEhEmpresaFornecedor() && !solicitacaoAlteracaoCronograma;
+
+  const ehCronogramaNovo =
+    (usuarioEhCronograma() || usuarioEhCodaeDilog()) &&
+    !solicitacaoAlteracaoCronograma;
+
+  const ehCronogramaEmAnalise =
+    (usuarioEhCronograma() || usuarioEhCodaeDilog()) &&
+    solicitacaoAlteracaoCronograma?.status === "Em análise";
+
+  const ehDilogAbastecimentoCiente =
+    usuarioEhDilogAbastecimento() &&
+    solicitacaoAlteracaoCronograma?.status === "Cronograma ciente";
+
+  const ehDilogDiretoriaAbastecimento =
+    usuarioEhDilogDiretoria() &&
+    ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
+      solicitacaoAlteracaoCronograma?.status
+    );
+
+  const botoes = [
+    {
+      cond: ehFornecedorCiente,
+      texto: "Ciente da Alteração",
+      Modal: ModalCienciaAlteracao,
+      handleSim,
+    },
+    {
+      cond: ehFornecedorNovo,
+      texto: "Enviar Solicitação",
+      Modal: ModalEnviarSolicitacao,
+      handleSim,
+      validar: validarEnvio,
+    },
+    {
+      cond: ehCronogramaNovo,
+      texto: "Enviar Alteração",
+      Modal: ModalEnviarAlteracao,
+      handleSim,
+      validar: validarEnvio,
+    },
+    {
+      cond: ehCronogramaEmAnalise,
+      texto: "Enviar Abastecimento",
+      Modal: ModalAnalise,
+      handleSim: enviaAnaliseCronograma,
+    },
+    {
+      cond: ehDilogAbastecimentoCiente,
+      texto: "Enviar DILOG",
+      Modal: ModalAnaliseAbastecimento,
+      handleSim,
+      disabled: disabledAbastecimento,
+    },
+    {
+      cond: ehDilogDiretoriaAbastecimento,
+      texto: "Enviar Fornecedor",
+      Modal: ModalAnaliseDilog,
+      handleSim,
+      disabled: disabledDilog,
+    },
+  ];
 
   return (
     <>
-      {usuarioEhEmpresaFornecedor() &&
-        solicitacaoAlteracaoCronograma &&
-        solicitacaoAlteracaoCronograma.status ===
-          "Alteração Enviada ao Fornecedor" && (
-          <>
+      {botoes.map(({ cond, texto, Modal, handleSim, disabled, validar }, i) =>
+        cond ? (
+          <React.Fragment key={i}>
             <Botao
-              texto="Ciente da Alteração"
+              texto={texto}
               type={BUTTON_TYPE.BUTTON}
               style={BUTTON_STYLE.GREEN}
               className="float-end ms-3"
+              disabled={disabled}
               onClick={() => {
+                if (validar && !validar()) return;
                 handleShow();
               }}
             />
-            <ModalCienciaAlteracao
+            <Modal
               show={show}
               handleClose={handleClose}
               loading={loading}
               handleSim={handleSim}
-            />
-          </>
-        )}
-
-      {usuarioEhEmpresaFornecedor() && !solicitacaoAlteracaoCronograma && (
-        <>
-          <Botao
-            texto="Enviar Solicitação"
-            type={BUTTON_TYPE.BUTTON}
-            disabled={!podeSubmeter}
-            style={BUTTON_STYLE.GREEN}
-            className="float-end ms-3"
-            onClick={() => {
-              if (!podeSubmeter) {
-                toastError("Selecione os campos obrigatórios");
-                return;
-              }
-              handleShow();
-            }}
-          />
-          <ModalEnviarSolicitacao
-            show={show}
-            handleClose={handleClose}
-            loading={loading}
-            handleSim={handleSim}
-          />
-        </>
-      )}
-
-      {(usuarioEhCronograma() || usuarioEhCodaeDilog()) &&
-        !solicitacaoAlteracaoCronograma && (
-          <>
-            <Botao
-              texto="Enviar Alteração"
-              type={BUTTON_TYPE.BUTTON}
-              disabled={!podeSubmeter}
-              style={BUTTON_STYLE.GREEN}
-              className="float-end ms-3"
-              onClick={() => {
-                if (!podeSubmeter) {
-                  toastError("Selecione os campos obrigatórios");
-                  return;
-                }
-                handleShow();
-              }}
-            />
-            <ModalEnviarAlteracao
-              show={show}
-              handleClose={handleClose}
-              loading={loading}
-              handleSim={handleSim}
-            />
-          </>
-        )}
-      {(usuarioEhCronograma() || usuarioEhCodaeDilog()) &&
-        solicitacaoAlteracaoCronograma &&
-        solicitacaoAlteracaoCronograma.status === "Em análise" && (
-          <>
-            <Botao
-              texto="Enviar Abastecimento"
-              type={BUTTON_TYPE.BUTTON}
-              style={BUTTON_STYLE.GREEN}
-              className="float-end ms-3"
-              onClick={() => handleShow()}
-              disabled={!podeSubmeter}
-            />
-            <ModalAnalise
-              show={show}
               setShow={setShow}
-              handleClose={handleClose}
-              loading={loading}
-              handleSim={enviaAnaliseCronograma}
             />
-          </>
-        )}
-
-      {usuarioEhDilogAbastecimento() &&
-        solicitacaoAlteracaoCronograma.status === "Cronograma ciente" && (
-          <>
-            <Botao
-              texto="Enviar DILOG"
-              type={BUTTON_TYPE.BUTTON}
-              style={BUTTON_STYLE.GREEN}
-              className="float-end ms-3"
-              onClick={() => handleShow()}
-              disabled={disabledAbastecimento}
-            />
-            <ModalAnaliseAbastecimento
-              show={show}
-              handleClose={handleClose}
-              loading={loading}
-              handleSim={handleSim}
-            />
-          </>
-        )}
-
-      {usuarioEhDilogDiretoria() &&
-        ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
-          solicitacaoAlteracaoCronograma.status
-        ) && (
-          <>
-            <Botao
-              texto="Enviar Fornecedor"
-              type={BUTTON_TYPE.BUTTON}
-              style={BUTTON_STYLE.GREEN}
-              className="float-end ms-3"
-              onClick={() => handleShow()}
-              disabled={disabledDilog}
-            />
-            <ModalAnaliseDilog
-              show={show}
-              handleClose={handleClose}
-              loading={loading}
-              handleSim={handleSim}
-            />
-          </>
-        )}
+          </React.Fragment>
+        ) : null
+      )}
       <Botao
         texto="Voltar"
         type={BUTTON_TYPE.BUTTON}
         style={BUTTON_STYLE.GREEN_OUTLINE}
         className="float-end ms-3"
-        onClick={() => handleShowVoltar()}
+        onClick={handleShowVoltar}
       />
-      <ModalVoltar modalVoltar={showVoltar} setModalVoltar={handleClose} />
+      <ModalVoltar
+        modalVoltar={showVoltar}
+        setModalVoltar={() => setShowVoltar(false)}
+      />
     </>
   );
 };
