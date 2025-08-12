@@ -80,4 +80,76 @@ describe("Testa componete <ModalHistorico>", () => {
     expect(screen.getByText("RF: 8107807")).toBeInTheDocument();
     expect(screen.getByText("Data:")).toBeInTheDocument();
   });
+
+  test("Exibe os detalhes do histórico para o status CODAE Atualizou o protocolo: Relação por Diagnóstico", () => {
+    const solictacaoRealizada = document.querySelectorAll(".grid-item-log")[4];
+    fireEvent.click(solictacaoRealizada);
+
+    preview.debug();
+    const classeNomeFantasiaEmpresa = document.querySelector(
+      ".nome-fantasia-empresa"
+    );
+    expect(classeNomeFantasiaEmpresa.textContent).toBe("Dieta Especial");
+    expect(screen.getAllByText("11/08/2025")).toHaveLength(10);
+    expect(screen.getAllByText("14:40:14")).toHaveLength(2);
+
+    expect(screen.getAllByText("CODAE Atualizou o protocolo")).toHaveLength(1);
+    expect(screen.getByText("RF: 8107807")).toBeInTheDocument();
+    expect(screen.getByText("Data:")).toBeInTheDocument();
+
+    expect(screen.getByText("Edições realizadas")).toBeInTheDocument();
+    expect(screen.getByText("Relação por Diagnóstico")).toBeInTheDocument();
+    expect(screen.getByText("ARGININEMIA")).toBeInTheDocument();
+    expect(
+      screen.getByText("ACIDOSE METABOLICA, ARGININEMIA")
+    ).toBeInTheDocument();
+  });
+
+  test("Exibe os detalhes do histórico para o status CODAE Atualizou o protocolo: Data de término", () => {
+    const solictacaoRealizada = document.querySelectorAll(".grid-item-log")[5];
+    fireEvent.click(solictacaoRealizada);
+
+    preview.debug();
+    const classeNomeFantasiaEmpresa = document.querySelector(
+      ".nome-fantasia-empresa"
+    );
+    expect(classeNomeFantasiaEmpresa.textContent).toBe("Dieta Especial");
+    expect(screen.getAllByText("11/08/2025")).toHaveLength(10);
+    expect(screen.getAllByText("14:40:53")).toHaveLength(2);
+
+    expect(screen.getAllByText("CODAE Atualizou o protocolo")).toHaveLength(1);
+    expect(screen.getByText("RF: 8107807")).toBeInTheDocument();
+    expect(screen.getByText("Data:")).toBeInTheDocument();
+
+    expect(screen.getByText("Edições realizadas")).toBeInTheDocument();
+    expect(screen.getByText("Data de término")).toBeInTheDocument();
+    expect(
+      screen.getByText("Com data de término 27/08/2025")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Com data de término 29/08/2025")
+    ).toBeInTheDocument();
+  });
+
+  test("Exibe os detalhes do histórico para o status CODAE Atualizou o protocolo: Classificação da Dieta", () => {
+    const solictacaoRealizada = document.querySelectorAll(".grid-item-log")[6];
+    fireEvent.click(solictacaoRealizada);
+
+    preview.debug();
+    const classeNomeFantasiaEmpresa = document.querySelector(
+      ".nome-fantasia-empresa"
+    );
+    expect(classeNomeFantasiaEmpresa.textContent).toBe("Dieta Especial");
+    expect(screen.getAllByText("11/08/2025")).toHaveLength(10);
+    expect(screen.getAllByText("14:42:14")).toHaveLength(2);
+
+    expect(screen.getAllByText("CODAE Atualizou o protocolo")).toHaveLength(1);
+    expect(screen.getByText("RF: 8107807")).toBeInTheDocument();
+    expect(screen.getByText("Data:")).toBeInTheDocument();
+
+    expect(screen.getByText("Edições realizadas")).toBeInTheDocument();
+    expect(screen.getByText("Classificação da Dieta")).toBeInTheDocument();
+    expect(screen.getByText("Tipo A")).toBeInTheDocument();
+    expect(screen.getByText("Tipo A ENTERAL")).toBeInTheDocument();
+  });
 });
