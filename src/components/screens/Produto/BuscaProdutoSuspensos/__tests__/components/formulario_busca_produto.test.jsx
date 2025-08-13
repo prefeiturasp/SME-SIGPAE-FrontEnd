@@ -13,9 +13,9 @@ import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import FormBuscaProduto from "../../components/FormBuscaProduto";
 import { mockListaMarcas } from "src/mocks/produto.service/mockGetNomesMarcas";
 import { mockListaFabricantes } from "src/mocks/produto.service/mockGetNomesFabricantes";
-import { mockListaTerceirizadas } from "src/mocks/produto.service/mockGetTerceirizadas";
 import { mockGetNomesProdutosReclamacao } from "src/mocks/produto.service/mockGetResponderReclamacaoNomesProdutos";
 import { mockListaEditais } from "src/mocks/produto.service/mockGetProdutosEditais";
+import { mockListaTerceirizadas } from "src/mocks/Produto/BuscaAvancada/listas";
 
 describe("Verifica comportamentos do formulário de busca de produtos suspensos", () => {
   const onSubmit = jest.fn();
@@ -77,15 +77,34 @@ describe("Verifica comportamentos do formulário de busca de produtos suspensos"
 
   it("Preenche o formulário e chama comportamento do botão 'consultar'", async () => {
     const botao = screen.getByText("Consultar");
+    expect(botao).toBeInTheDocument();
+    setInput("nome-edital-input", "23444");
+    setInput("nome-produto-input", "PATINHO");
+    setInput("nome-marca-input", "Carrera");
+    setInput("nome-fabricante-input", "Carrijo");
+    setInput("tipo-input", "Comum");
+    fireEvent.click(botao);
     await waitFor(() => {
-      expect(botao).toBeInTheDocument();
+      expect(onSubmit).toHaveBeenCalled();
     });
+  });
+
+  const setData = async (id, valor) => {
+    const divData = screen.getByTestId(id);
+    const input = divData.querySelector("input");
+    await waitFor(async () => {
+      fireEvent.change(input, {
+        target: { value: valor },
+      });
+    });
+  };
+
+  it("Preenche o formulário e chama comportamento do botão 'consultar'", async () => {
+    const botao = screen.getByText("Consultar");
+    expect(botao).toBeInTheDocument();
     await waitFor(() => {
-      setInput("nome-edital-input", "teste");
-      setInput("nome-produto-input", "teste");
-      setInput("nome-marca-input", "teste");
-      setInput("nome-fabricante-input", "teste");
-      setInput("tipo-input", "teste");
+      setInput("nome-edital-input", "23444");
+      setData("data-suspensao-input", "01/01/2024");
     });
     fireEvent.click(botao);
     await waitFor(() => {

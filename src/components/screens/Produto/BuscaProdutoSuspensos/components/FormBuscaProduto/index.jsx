@@ -164,6 +164,7 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
             </div>
             <div className="col-12 col-md-6 col-xl-6">
               <Field
+                dataTestId="data-suspensao-input"
                 component={InputComData}
                 name="data_suspensao_final"
                 label="Suspensos até"
