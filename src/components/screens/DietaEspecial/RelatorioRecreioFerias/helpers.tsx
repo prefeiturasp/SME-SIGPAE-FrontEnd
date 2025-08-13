@@ -1,27 +1,32 @@
 import { deepCopy } from "src/helpers/utilities";
 
+interface ICampo {
+  campo: string;
+  total: string;
+}
+
 const PAGE_SIZE: number = 10;
 
-const CAMPOS_MULTSELECT_PADRAO: string[] = [
-  "unidades_educacionais_selecionadas",
-  "alergias_intolerancias_selecionadas",
-  "classificacoes_selecionadas",
+const CAMPOS_MULTSELECT_PADRAO: ICampo[] = [
+  { campo: "unidades_educacionais_selecionadas", total: "unidades_length" },
+  {
+    campo: "classificacoes_selecionadas",
+    total: "classificacoes_length",
+  },
+  {
+    campo: "alergias_intolerancias_selecionadas",
+    total: "alergias_intolerancias_length",
+  },
 ];
 
-export const normalizarValores = (
-  values: object = {},
-  page: number = 1,
-  camposExtras: string[] = []
-) => {
+export const normalizarValores = (values: object = {}, page: number = 1) => {
   const valuesCopy = deepCopy(values);
-
-  const camposMultiselect = [...CAMPOS_MULTSELECT_PADRAO, ...camposExtras];
-
-  camposMultiselect.forEach((campo) => {
+  CAMPOS_MULTSELECT_PADRAO.forEach(({ campo, total }) => {
     const arr = valuesCopy[campo];
-    if (Array.isArray(arr) && arr.some((v) => ["todas", "todos"].includes(v))) {
+    if (arr?.length === valuesCopy[total]) {
       delete valuesCopy[campo];
     }
+    delete valuesCopy[total];
   });
 
   return {
