@@ -45,7 +45,7 @@ import CadastroProdutoPage from "src/pages/Produto/CadastroProdutoPage";
 import HomologacaoProdutoPage from "src/pages/Produto/HomologacaoProdutoPage";
 import RelatorioAnaliseSensorial from "src/pages/Produto/RelatorioAnaliseSensorial";
 import RelatorioProduto from "src/pages/Produto/RelatorioProduto";
-import RelatorioReclamacaoProduto from "src/pages/Produto/RelatorioReclamacaoProduto";
+import { RelatorioReclamacaoProdutoPage } from "src/pages/Produto/RelatorioReclamacaoProdutoPage";
 import * as StatusSolicitacoesGestaoProduto from "src/pages/Produto/StatusSolicitacoesGestaoProduto";
 import RelatorioProdutosHomologadosPage from "src/pages/RelatorioProdutosHomologados/RelatorioProdutosHomologadosPage";
 
@@ -97,7 +97,7 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.RELATORIO_RECLAMACAO_PRODUTO}`,
-    component: RelatorioReclamacaoProduto,
+    component: RelatorioReclamacaoProdutoPage,
     tipoUsuario:
       usuarioEhEmpresaTerceirizada() ||
       usuarioEhCODAEGestaoProduto() ||
@@ -305,12 +305,12 @@ export const rotasGestaoDeProdutos: Array<RotaInterface> = [
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.ATIVACAO_DE_PRODUTO}/consulta`,
     component: ConsultaAtivacaoDeProdutoPage,
-    tipoUsuario: usuarioEhCODAEGestaoProduto,
+    tipoUsuario: usuarioEhCODAEGestaoProduto(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/${constants.ATIVACAO_DE_PRODUTO}/detalhe`,
     component: AtivacaoDeProdutoPage,
-    tipoUsuario: usuarioEhCODAEGestaoProduto,
+    tipoUsuario: usuarioEhCODAEGestaoProduto(),
   },
   {
     path: `/${constants.GESTAO_PRODUTO}/relatorios/produtos-homologados`,
