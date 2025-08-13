@@ -7,6 +7,12 @@ const {
   CODAE_QUESTIONOU_TERCEIRIZADA,
   CODAE_RESPONDEU_RECLAMACAO,
   TERCEIRIZADA_RESPONDEU_RECLAMACAO,
+  ANALISE_SENSORIAL_RESPONDIDA,
+  CODAE_QUESTIONOU_UE,
+  NUTRISUPERVISOR_RESPONDEU_RECLAMACAO,
+  UE_RESPONDEU_RECLAMACAO,
+  AGUARDANDO_ANALISE_SENSORIAL,
+  CODAE_QUESTIONOU_NUTRISUPERVISOR,
 } = RECLAMACAO_PRODUTO_STATUS_EXPLICACAO;
 
 const obterTituloLog = (status_evento) => {
@@ -32,18 +38,35 @@ const obterTituloLog = (status_evento) => {
 };
 
 const obterRotuloDataLog = (log) => {
-  if (log.status_evento_explicacao === CODAE_QUESTIONOU_TERCEIRIZADA)
-    return "Data quest. CODAE";
-  if (log.status_evento_explicacao === TERCEIRIZADA_RESPONDEU_RECLAMACAO)
-    return "Data resposta terc.";
-  if (
-    log.status_evento_explicacao === CODAE_AUTORIZOU_RECLAMACAO ||
-    log.status_evento_explicacao === CODAE_RECUSOU_RECLAMACAO
-  )
-    return "Data avaliação CODAE";
-  if (log.status_evento_explicacao === CODAE_RESPONDEU_RECLAMACAO)
-    return "Data resposta CODAE";
-  return "Data reclamação";
+  switch (log.status_evento_explicacao) {
+    case UE_RESPONDEU_RECLAMACAO:
+      return "Data resposta UE";
+
+    case AGUARDANDO_ANALISE_SENSORIAL:
+      return "Data req. análise sens.";
+
+    case NUTRISUPERVISOR_RESPONDEU_RECLAMACAO:
+      return "Data resposta nutri";
+
+    case CODAE_QUESTIONOU_TERCEIRIZADA:
+    case CODAE_QUESTIONOU_UE:
+    case CODAE_QUESTIONOU_NUTRISUPERVISOR:
+      return "Data quest. CODAE";
+
+    case TERCEIRIZADA_RESPONDEU_RECLAMACAO:
+    case ANALISE_SENSORIAL_RESPONDIDA:
+      return "Data resposta terc.";
+
+    case CODAE_AUTORIZOU_RECLAMACAO:
+    case CODAE_RECUSOU_RECLAMACAO:
+      return "Data avaliação CODAE";
+
+    case CODAE_RESPONDEU_RECLAMACAO:
+      return "Data resposta CODAE";
+
+    default:
+      return "Data reclamação";
+  }
 };
 
 const LogReclamacao = ({ log }) => {

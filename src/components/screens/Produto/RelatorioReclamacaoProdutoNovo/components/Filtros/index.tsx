@@ -158,7 +158,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     const lotesValues = getValues(lotes);
 
     let terceirizadasValues = getValues(terceirizadas);
-    if (!terceirizadasValues.length && usuarioEhEmpresa()) {
+    if (usuarioEhEmpresa()) {
       terceirizadasValues = [meusDados.vinculo_atual.instituicao.uuid];
     }
 
@@ -206,13 +206,13 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
   };
 
   const onClear = (form: FormApi) => {
-    if (terceirizadas?.length === 1) {
+    if (usuarioEhEmpresa()) {
+      form.change("terceirizadas", [meusDados.vinculo_atual.instituicao.uuid]);
+    } else if (terceirizadas?.length === 1) {
       form.change(
         "terceirizadas",
         terceirizadas.map((t) => t.value)
       );
-    } else if (usuarioEhEmpresa()) {
-      form.change("terceirizadas", [meusDados.vinculo_atual.instituicao.uuid]);
     } else {
       form.change("terceirizadas", undefined);
     }
@@ -255,13 +255,13 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
             <div className="row">
               <div className="col-4">
                 <Field
-                  label="Editais"
+                  label="Edital"
                   component={MultiselectRaw}
                   dataTestId="select-editais"
                   required
                   validate={requiredMultiselect}
                   name="editais"
-                  placeholder="Selecione os Editais"
+                  placeholder="Selecione o Edital"
                   options={editais || []}
                   selected={values.editais || []}
                   onSelectedChanged={(
@@ -285,6 +285,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   label="Nome do Produto"
                   placeholder="Digite o nome do produto"
                   name="nome_produto"
+                  dataTestId="div-input-nome-produto"
                 />
               </div>
             </div>
@@ -299,6 +300,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   label="Marca"
                   placeholder="Digite a marca do produto"
                   name="nome_marca"
+                  dataTestId="div-input-nome-marca"
                 />
               </div>
               <div className="col-4">
@@ -311,6 +313,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   label="Fabricante"
                   placeholder="Digite o fabricante do produto"
                   name="nome_fabricante"
+                  dataTestId="div-input-nome-fabricante"
                 />
               </div>
               <div className="col-4">
@@ -319,7 +322,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   component={MultiselectRaw}
                   dataTestId="select-status"
                   name="status_reclamacao"
-                  placeholder="Selecione os status"
+                  placeholder="Selecione o status"
                   options={getOpcoesStatusReclamacao()}
                   selected={values.status_reclamacao || []}
                   onSelectedChanged={(
@@ -338,9 +341,9 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                 <Field
                   label="Lote/DRE"
                   component={MultiselectRaw}
-                  dataTestId="select-lote"
+                  dataTestId="select-lotes"
                   name="lotes"
-                  placeholder="Selecione os status"
+                  placeholder="Selecione Lotes/DREs"
                   options={lotes || []}
                   selected={values.lotes || []}
                   onSelectedChanged={(

@@ -18,7 +18,7 @@ const anteriores = [
   },
 ];
 
-export default () => (
+export const RelatorioReclamacaoProdutoPage = () => (
   <Page
     titulo="Relatório de Reclamação de Produto"
     botaoVoltar
