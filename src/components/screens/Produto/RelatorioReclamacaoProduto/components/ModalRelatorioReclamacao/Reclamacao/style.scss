@@ -1,0 +1,40 @@
+.detalhes-reclamacao-relatorio {
+  .linha {
+    display: grid;
+    margin-bottom: 10px;
+  }
+  .linha-1 {
+    grid-template-columns: 49% 61%;
+    margin-top: 10px;
+  }
+  .linha-2 {
+    grid-template-columns: 26% 23% 36% 16%;
+  }
+  .linha-3 {
+    grid-template-columns: 26% 74%;
+  }
+  .item {
+    padding: 5px 11px;
+    .label-item {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 14px;
+      line-height: 16px;
+      color: #686868;
+      margin-bottom: 0.5em;
+    }
+    .value-item {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 16px;
+      color: #42474a;
+    }
+    .value-uppercase {
+      text-transform: uppercase;
+    }
+  }
+  .item-horizontal {
+    display: flex;
+  }
+}
