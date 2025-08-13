@@ -45,6 +45,7 @@ import SubstituicoesField from "./componentes/SubstituicoesField";
 import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import {
   agregarDefault,
+  deepCopy,
   gerarParametrosConsulta,
   obtemIdentificacaoNutricionista,
 } from "src/helpers/utilities";
@@ -194,7 +195,8 @@ const FormAutorizaDietaEspecial = ({
     onAutorizarOuNegar();
   };
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values_) => {
+    const values = deepCopy(values_);
     if (!values.substituicoes || values.substituicoes.length === 0) {
       toastError(
         "É necessário ao menos um alimento na lista de substituições!"
@@ -229,7 +231,6 @@ const FormAutorizaDietaEspecial = ({
     if (showAutorizarModal) {
       setShowAutorizarModal(false);
     }
-
     let { nome_protocolo, data_termino } = values;
     if (nome_protocolo)
       if (nome_protocolo[0] === "") nome_protocolo.splice(0, 1);
