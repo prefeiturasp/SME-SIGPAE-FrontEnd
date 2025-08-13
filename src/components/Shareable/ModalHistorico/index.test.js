@@ -160,3 +160,68 @@ describe("Testa componete <ModalHistorico>", () => {
     expect(mockOnOk).toHaveBeenCalled();
   });
 });
+
+describe("Testa o método getArquivoUrl no componente <ModalHistorico>", () => {
+  const mockOnOk = jest.fn();
+  const mockLogComDownload = {
+    ...dietaComHistorico.logs[0],
+    status_evento_explicacao: "Enviado pela UE",
+    tipo_solicitacao_explicacao: "Solicitação de medição inicial",
+    anexos: [
+      { nome: "documento.pdf", arquivo_url: "http://exemplo.com/doc.pdf" },
+    ],
+  };
+
+  beforeEach(async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <ModalHistorico
+            visible={true}
+            onOk={mockOnOk}
+            onCancel={jest.fn()}
+            logs={[mockLogComDownload]} // Usa apenas o log modificado
+            getHistorico={() => [mockLogComDownload]}
+          />
+        </MemoryRouter>
+      );
+    });
+  });
+
+  it("Exibe botão de download quando há arquivo PDF para medição inicial", () => {
+    const itemLog = document.querySelectorAll(".grid-item-log")[0];
+    fireEvent.click(itemLog);
+    expect(screen.getByText("Download do formulário")).toBeInTheDocument();
+  });
+
+  it("Não exibe botão de download para status inválido", () => {
+    const mockLogSemDownload = {
+      ...mockLogComDownload,
+      status_evento_explicacao: "Status Inválido",
+    };
+    render(
+      <MemoryRouter>
+        <ModalHistorico
+          visible={true}
+          onOk={mockOnOk}
+          onCancel={jest.fn()}
+          logs={[mockLogSemDownload]}
+          getHistorico={() => [mockLogSemDownload]}
+        />
+      </MemoryRouter>,
+      { container: document.body }
+    );
+
+    const itemLog = document.querySelectorAll(".grid-item-log")[0];
+    fireEvent.click(itemLog);
+
+    expect(
+      screen.queryByText("Download do formulário")
+    ).not.toBeInTheDocument();
+  });
+});
