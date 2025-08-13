@@ -98,6 +98,7 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
           <div className="form-row">
             <div className="col-md-6 col-xl-6">
               <Field
+                dataTestId="nome-edital-input"
                 component={AutoCompleteField}
                 dataSource={state.editais}
                 label="Edital"
@@ -112,6 +113,7 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
             </div>
             <div className="col-md-6 col-xl-6">
               <Field
+                dataTestId="nome-produto-input"
                 component={AutoCompleteField}
                 dataSource={state.produtos}
                 label="Nome do Produto"
@@ -125,6 +127,7 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
           <div className="form-row">
             <div className="col-md-6 col-xl-6">
               <Field
+                dataTestId="nome-marca-input"
                 component={AutoCompleteField}
                 dataSource={state.marcas}
                 className="input-busca-produto"
@@ -136,6 +139,7 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
             </div>
             <div className="col-md-6 col-xl-6">
               <Field
+                dataTestId="nome-fabricante-input"
                 component={AutoCompleteField}
                 dataSource={state.fabricantes}
                 label="Fabricante do Produto"
@@ -148,6 +152,7 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
           <div className="form-row">
             <div className="col-md-6 col-xl-6">
               <Field
+                dataTestId="tipo-input"
                 component={AutoCompleteField}
                 dataSource={state.tipos}
                 label="Tipo"
@@ -159,6 +164,7 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
             </div>
             <div className="col-12 col-md-6 col-xl-6">
               <Field
+                dataTestId="data-suspensao-input"
                 component={InputComData}
                 name="data_suspensao_final"
                 label="Suspensos até"
@@ -175,6 +181,7 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
               style={BUTTON_STYLE.GREEN}
               className="float-end ms-3"
               disabled={submitting}
+              dataTestId="consultar-button"
             />
 
             <Botao
@@ -184,6 +191,7 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
               className="float-end ms-3"
               onClick={() => form.reset()}
               disabled={submitting}
+              dataTestId="limpar-filtros-button"
             />
           </div>
         </form>
