@@ -128,8 +128,11 @@ describe("Test Relatório Reclamação Produto - Usuário Escola", () => {
       expect(screen.getByText("166")).toBeInTheDocument();
     });
 
-    const elementCollapse0 = screen.getByTestId("i-collapsed-0");
-    fireEvent.click(elementCollapse0);
+    let i = 0;
+    for (i; i < 10; i++) {
+      const elementCollapse0 = screen.getByTestId(`i-collapsed-${i}`);
+      fireEvent.click(elementCollapse0);
+    }
 
     await waitFor(() => {
       expect(screen.getByText("#A856D")).toBeInTheDocument();
