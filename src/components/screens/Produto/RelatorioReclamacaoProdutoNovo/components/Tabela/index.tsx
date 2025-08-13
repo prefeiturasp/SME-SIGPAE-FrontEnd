@@ -7,6 +7,8 @@ import {
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
 import { Paginacao } from "src/components/Shareable/Paginacao";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { ENVIRONMENT } from "src/constants/config";
 import { deepCopy } from "src/helpers/utilities";
 import { getRelatorioReclamacao } from "src/services/relatorios.service";
 import { IFormValues } from "../../interfaces";
@@ -14,7 +16,6 @@ import { formatarValues } from "../Filtros/helpers";
 import { Reclamacao } from "./components/Reclamacao";
 import { getConfigCabecario } from "./helpers";
 import "./style.scss";
-import { ENVIRONMENT } from "src/constants/config";
 
 type ITabelaProps = {
   produtos: Array<any>;
@@ -54,11 +55,17 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
 
   const handleBaixarPDF = async (values: IFormValues) => {
     setBaixando(true);
-    const values_ = formatarValues(values);
-    await getRelatorioReclamacao({
-      ...values_,
-      ...getConfigCabecario(values_),
-    });
+    try {
+      const values_ = formatarValues(values);
+      await getRelatorioReclamacao({
+        ...values_,
+        ...getConfigCabecario(values_),
+      });
+    } catch {
+      toastError(
+        "Houve um erro ao imprimir o relatório. Tente novamente mais tarde."
+      );
+    }
     setBaixando(false);
   };
 
