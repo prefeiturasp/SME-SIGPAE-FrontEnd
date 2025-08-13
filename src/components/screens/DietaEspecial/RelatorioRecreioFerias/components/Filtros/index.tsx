@@ -179,7 +179,9 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   placeholder="Selecione a DRE/Lote"
                   options={lotes}
                   naoDesabilitarPrimeiraOpcao
-                  onChangeEffect={async (e: any) => {
+                  onChangeEffect={async (
+                    e: React.ChangeEvent<HTMLSelectElement>
+                  ) => {
                     const value = e.target.value;
                     form.change("unidades_educacionais_selecionadas", []);
                     if (value?.length === 0) setUnidadesEducacionais([]);
