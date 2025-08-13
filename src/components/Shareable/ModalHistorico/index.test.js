@@ -6,6 +6,7 @@ import { dietaComHistorico } from "src/mocks/DietaEspecial/Relatorio/mockDietaCo
 import preview from "jest-preview";
 
 describe("Testa componete <ModalHistorico>", () => {
+  const mockOnOk = jest.fn();
   beforeEach(async () => {
     await act(async () => {
       render(
@@ -17,7 +18,7 @@ describe("Testa componete <ModalHistorico>", () => {
         >
           <ModalHistorico
             visible={true}
-            onOk={jest.fn()}
+            onOk={mockOnOk}
             onCancel={jest.fn()}
             logs={dietaComHistorico.logs}
             getHistorico={() => dietaComHistorico.logs}
@@ -151,5 +152,11 @@ describe("Testa componete <ModalHistorico>", () => {
     expect(screen.getByText("Classificação da Dieta")).toBeInTheDocument();
     expect(screen.getByText("Tipo A")).toBeInTheDocument();
     expect(screen.getByText("Tipo A ENTERAL")).toBeInTheDocument();
+  });
+
+  test("Fecha o modal quando o botão Fechar é clicado", () => {
+    expect(screen.getByText("Fechar")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Fechar"));
+    expect(mockOnOk).toHaveBeenCalled();
   });
 });
