@@ -1,0 +1,156 @@
+.busca-produtos {
+  display: grid;
+
+  .header-busca-produto {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+    color: #42474a;
+    margin-bottom: 20px;
+  }
+
+  .input-busca-produto {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .marca-fabricante-inputs {
+    display: grid;
+    grid-template-columns: 49% 49%;
+    column-gap: 2%;
+    margin-bottom: 20px;
+  }
+
+  label {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 22px;
+    color: #42474a;
+  }
+
+  .resultados-busca-produtos {
+    border-radius: 4px;
+    border: 0.5px solid #f0f0f0;
+
+    .tabela-produto {
+      display: grid;
+      grid-template-columns: 45% 25% 30%;
+    }
+
+    .tabela-header-produto {
+      background: #f5f6f8;
+      height: 48px;
+
+      div {
+        padding: 5px 10px;
+        font-weight: bold;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        color: #42474a;
+        border: 1px solid #e9eaea;
+      }
+    }
+
+    .tabela-body-produto {
+      height: 48px;
+    }
+
+    .item-produto {
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 18px;
+      padding: 5px 10px;
+
+      display: flex;
+      align-items: center;
+
+      color: #686868;
+    }
+
+    .com-botao {
+      display: flex;
+      justify-content: space-between;
+
+      i {
+        font-weight: 900;
+        font-size: 18px;
+        line-height: 18px;
+        text-align: center;
+        letter-spacing: 0.01em;
+        color: #42474a;
+
+        cursor: pointer;
+      }
+
+      .editar {
+        font-size: 12px;
+      }
+
+      .botoes-produto {
+        width: 40px;
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+
+    .item-inativo {
+      border: 1px solid #e9eaea;
+    }
+
+    .detalhe-produto {
+      padding: 5px 10px;
+
+      .label-item {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 16px;
+        color: #686868;
+        margin-bottom: 0.5em;
+      }
+      .value-item {
+        font-style: normal;
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 16px;
+        text-transform: uppercase;
+
+        color: #42474a;
+      }
+
+      .contatos-terceirizada {
+        display: grid;
+        grid-template-columns: 40% 60%;
+        margin-bottom: 1em;
+      }
+
+      .componentes-produto {
+        margin-bottom: 1em;
+      }
+    }
+  }
+
+  .botoes-busca {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 3em;
+  }
+
+  .select {
+    label {
+      color: #42474a !important;
+      padding: 2px !important;
+    }
+  }
+}
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+.input-busca-nome {
+  margin-top: 2px !important;
+}
