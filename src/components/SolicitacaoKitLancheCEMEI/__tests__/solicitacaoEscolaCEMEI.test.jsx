@@ -122,6 +122,24 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     });
   });
 
+  beforeAll(async () => {
+    const RealDate = Date;
+    jest.spyOn(global, "Date").mockImplementation((...args) => {
+      if (args.length) {
+        return new RealDate(...args);
+      }
+      return new RealDate("2025-07-01T12:00:00Z");
+    });
+
+    global.Date.now = RealDate.now;
+    global.Date.UTC = RealDate.UTC;
+    global.Date.parse = RealDate.parse;
+  });
+
+  afterAll(async () => {
+    global.Date.mockRestore();
+  });
+
   it("Testa card Matriculados", async () => {
     await waitFor(() => {
       expect(screen.getAllByText(/Total de Matriculados/i)).toHaveLength(1);
