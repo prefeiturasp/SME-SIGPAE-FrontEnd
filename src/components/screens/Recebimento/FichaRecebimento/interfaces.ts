@@ -27,6 +27,7 @@ export interface FichaRecebimentoPayload {
   observacoes_conferencia?: string;
   questoes?: QuestoesPayload[];
   ocorrencias?: OcorrenciaFichaRecebimento[];
+  password?: string;
 }
 
 export interface QuestoesPayload {

@@ -18,6 +18,7 @@ export const ModalAssinaturaUsuario = ({
   handleSim,
   loading,
   titulo,
+  segundoTitulo = undefined,
   texto,
   textoBotao = "Sim, assinar cronograma",
 }) => {
@@ -35,7 +36,7 @@ export const ModalAssinaturaUsuario = ({
       <Spin tip="Carregando..." spinning={loading}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {!concordaAssinar ? titulo : "Confirme sua senha"}
+            {!concordaAssinar ? titulo : segundoTitulo ?? "Confirme sua senha"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

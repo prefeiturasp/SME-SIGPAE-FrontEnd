@@ -14,7 +14,10 @@ import {
   getListaCronogramasPraFichaRecebimento,
   getCronogramaPraCadastroRecebimento,
 } from "src/services/cronograma.service";
-import { cadastraRascunhoFichaRecebimento } from "src/services/fichaRecebimento.service";
+import {
+  cadastraRascunhoFichaRecebimento,
+  cadastraFichaRecebimento,
+} from "src/services/fichaRecebimento.service";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import Select from "src/components/Shareable/Select";
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
@@ -29,6 +32,7 @@ import Botao from "src/components/Shareable/Botao";
 import StepsSigpae from "src/components/Shareable/StepsSigpae";
 import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
+import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 import {
   toastError,
   toastSuccess,
@@ -104,6 +108,7 @@ export default () => {
   );
   const [showModal, setShowModal] = useState(false);
   const [showModalAtribuir, setShowModalAtribuir] = useState(false);
+  const [showModalAssinatura, setShowModalAssinatura] = useState(false);
   const [stepAtual, setStepAtual] = useState(0);
   const [veiculos, setVeiculos] = useState([{}]);
   const [arquivos, setArquivos] = useState<Arquivo[]>([]);
@@ -114,8 +119,6 @@ export default () => {
     QuestaoConferenciaSimples[]
   >([]);
   const [ocorrenciasCount, setOcorrenciasCount] = useState(1);
-
-  const onSubmit = (): void => {};
 
   const buscaCronogramas = async (): Promise<void> => {
     setCarregando(true);
@@ -215,12 +218,15 @@ export default () => {
   };
 
   const formataPayload = (
-    values: Record<string, any>
+    values: Record<string, any>,
+    password?: string
   ): FichaRecebimentoPayload => {
     let payloadQuestoes: QuestoesPayload[] = [
       ...formataPayloadQuestoes(values, questoesPrimarias, "PRIMARIA"),
       ...formataPayloadQuestoes(values, questoesSecundarias, "SECUNDARIA"),
     ];
+
+    const questoes = payloadQuestoes.length > 0 ? payloadQuestoes : undefined;
 
     let payload: FichaRecebimentoPayload = {
       etapa: values.etapa,
@@ -280,8 +286,9 @@ export default () => {
       observacao: values.observacao,
       arquivos: arquivos,
       observacoes_conferencia: values.observacoes_conferencia,
-      questoes: payloadQuestoes,
+      questoes: questoes,
       ocorrencias: extraiOcorrenciasDoFormulario(values),
+      ...(password && { password }),
     };
 
     return payload;
@@ -307,6 +314,30 @@ export default () => {
       exibeError(error, "Ocorreu um erro ao salvar o Rascunho");
     } finally {
       setShowModal(false);
+      setCarregando(false);
+    }
+  };
+
+  const assinarFichaRecebimento = async (
+    values: FichaRecebimentoPayload,
+    redirecionarPara: () => void,
+    password?: string
+  ) => {
+    setCarregando(true);
+    let payload: FichaRecebimentoPayload = formataPayload(values, password);
+
+    try {
+      let response = await cadastraFichaRecebimento(payload);
+      if (response.status === 201 || response.status === 200) {
+        toastSuccess("Ficha de recebimento Assinada com sucesso!");
+        redirecionarPara();
+      } else {
+        toastError("Ocorreu um erro ao salvar a Ficha de Recebimento");
+      }
+    } catch (error) {
+      exibeError(error);
+    } finally {
+      setShowModalAssinatura(false);
       setCarregando(false);
     }
   };
@@ -427,7 +458,7 @@ export default () => {
       <div className="card mt-3 card-cadastro-ficha-recebimento">
         <div className="card-body cadastro-ficha-recebimento">
           <Form
-            onSubmit={onSubmit}
+            onSubmit={() => setShowModalAssinatura(true)}
             initialValues={{}}
             render={({ handleSubmit, values, form, errors }) => (
               <form onSubmit={handleSubmit}>
@@ -1392,16 +1423,32 @@ export default () => {
                     </div>
                   )}
 
-                  <Botao
-                    texto="Salvar Rascunho"
-                    type={BUTTON_TYPE.BUTTON}
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                    className="float-end ms-3"
-                    disabled={!values.cronograma || !values.etapa}
-                    onClick={(): void => {
-                      setShowModal(true);
-                    }}
-                  />
+                  <div className="float-end">
+                    <Botao
+                      texto="Salvar Rascunho"
+                      type={BUTTON_TYPE.BUTTON}
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                      className="ms-3"
+                      disabled={!values.cronograma || !values.etapa}
+                      onClick={(): void => {
+                        setShowModal(true);
+                      }}
+                    />
+
+                    {stepAtual === 2 && (
+                      <Botao
+                        texto="Salvar e Assinar"
+                        type={BUTTON_TYPE.SUBMIT}
+                        style={BUTTON_STYLE.GREEN}
+                        className="ms-3"
+                        disabled={
+                          !questoesPrimarias?.length ||
+                          !questoesSecundarias?.length ||
+                          Object.keys(errors).length > 0
+                        }
+                      />
+                    )}
+                  </div>
 
                   {stepAtual > 0 && (
                     <div className="mt-4 mb-4">
@@ -1417,6 +1464,24 @@ export default () => {
                     </div>
                   )}
                 </div>
+
+                <ModalAssinaturaUsuario
+                  show={showModalAssinatura}
+                  handleClose={() => setShowModalAssinatura(false)}
+                  handleSim={(password: string) => {
+                    assinarFichaRecebimento(
+                      values as FichaRecebimentoPayload,
+                      paginaAnterior,
+                      password
+                    );
+                  }}
+                  loading={carregando}
+                  titulo="Assinar Ficha de Recebimento"
+                  segundoTitulo="Assinatura do Responsável pelo Recebimento"
+                  texto=" Você confirma o preenchimento correto de todas 
+                  as informações solicitadas na ficha de recebimento?"
+                  textoBotao="Sim, Assinar Ficha"
+                />
               </form>
             )}
           />

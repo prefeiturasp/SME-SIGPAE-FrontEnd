@@ -140,8 +140,14 @@ export const Filtros: React.FC<FiltrosProps> = ({
 
   const onSubmit = useCallback(
     async (params: object) => {
-      setValuesForm(params);
-      await carregaDietas(params);
+      const values = {
+        ...params,
+        unidades_length: unidadesEducacionais.length,
+        classificacoes_length: classificacoes.length,
+        alergias_intolerancias_length: diagnosticos.length,
+      };
+      setValuesForm(values);
+      await carregaDietas(values);
     },
     [setValuesForm, carregaDietas]
   );
@@ -173,7 +179,9 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   placeholder="Selecione a DRE/Lote"
                   options={lotes}
                   naoDesabilitarPrimeiraOpcao
-                  onChangeEffect={async (e) => {
+                  onChangeEffect={async (
+                    e: React.ChangeEvent<HTMLSelectElement>
+                  ) => {
                     const value = e.target.value;
                     form.change("unidades_educacionais_selecionadas", []);
                     if (value?.length === 0) setUnidadesEducacionais([]);
