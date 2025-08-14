@@ -51,7 +51,9 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
         toastSuccess(`Rascunho # ${id_externo} excluído com sucesso`);
         refresh(form);
       } else {
-        toastError(getError(response.data));
+        toastError(
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
+        );
       }
     }
   };

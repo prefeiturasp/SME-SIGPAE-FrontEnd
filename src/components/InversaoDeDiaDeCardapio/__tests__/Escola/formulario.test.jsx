@@ -98,4 +98,42 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
       ).toBeInTheDocument();
     });
   });
+
+  it("Exclui rascunho", async () => {
+    mock
+      .onDelete(
+        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`
+      )
+      .replyOnce(204, {});
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    mock.onGet("/inversoes-dia-cardapio/minhas-solicitacoes/").reply(200, []);
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
+    await waitFor(() => {
+      expect(screen.getByText(`Rascunho # 2E398 excluído com sucesso`));
+    });
+    expect(screen.queryByText("Rascunhos")).not.toBeInTheDocument();
+  });
+
+  it("Erro ao excluir rascunho", async () => {
+    mock
+      .onDelete(
+        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`
+      )
+      .replyOnce(400, { detail: "Erro ao excluir rascunho" });
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoRemoverRascunho);
+    });
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
+        )
+      ).toBeInTheDocument();
+    });
+  });
 });
