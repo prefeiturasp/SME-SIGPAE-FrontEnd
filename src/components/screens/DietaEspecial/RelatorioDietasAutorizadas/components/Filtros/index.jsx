@@ -122,6 +122,7 @@ export const Filtros = ({ ...props }) => {
                     Tipo de Gestão
                   </label>
                   <Field
+                    dataTestId="tipo-gestao-select"
                     component={Select}
                     name="tipo_gestao"
                     placeholder="Selecione o tipo de gestão"
@@ -161,8 +162,7 @@ export const Filtros = ({ ...props }) => {
                     selected={values.tipos_unidades_selecionadas || []}
                     onSelectedChanged={async (value) => {
                       form.change("tipos_unidades_selecionadas", value);
-
-                      const { lote } = form.getState().values; // lote atual
+                      const { lote } = form.getState().values;
                       if (lote) {
                         await getUnidadesEducacionaisAsync({
                           lote,
