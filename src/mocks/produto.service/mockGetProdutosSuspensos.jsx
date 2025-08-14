@@ -1,0 +1,91 @@
+export const mockProdutosSuspensos = {
+  count: 7,
+  next: null,
+  previous: null,
+  results: [
+    {
+      uuid: "55b48496-941b-4e64-ae20-449d3ed37edc",
+      nome: "ALCATRA NOVA",
+      marca: "MILANI",
+      fabricante: "LEITE II",
+      edital: {
+        nome: "Edital de Pregão n.o 23/sme/2018",
+        tipo: "Comum",
+        data_suspensao: "01/08/2023",
+      },
+      data_cadastro: "30/06/2023",
+    },
+    {
+      uuid: "a7e1e565-26fd-42f0-bf24-371a7ee8e6f5",
+      nome: "BANANA",
+      marca: "ALTO ALEGRE",
+      fabricante: "ALTO ALEGRE LTDA",
+      edital: {
+        nome: "Edital de Pregão n.o 23/sme/2018",
+        tipo: "Comum",
+        data_suspensao: "19/06/2023",
+      },
+      data_cadastro: "13/04/2023",
+    },
+    {
+      uuid: "4ba1dd6f-8a9d-45cf-8aa0-bda8ccf419b6",
+      nome: "CHÁ MATTE",
+      marca: "NESQUIK",
+      fabricante: "NESQUIK ME",
+      edital: {
+        nome: "Edital de Pregão n.o 23/sme/2018",
+        tipo: "Comum",
+        data_suspensao: "12/06/2024",
+      },
+      data_cadastro: "14/08/2023",
+    },
+    {
+      uuid: "9783914c-6df0-41ef-8f1b-c5ed7253d42e",
+      nome: "DROPS",
+      marca: "COCA COLA",
+      fabricante: "TESTE DUPLICIDADE FABRICANTE",
+      edital: {
+        nome: "Edital de Pregão n.o 23/sme/2018",
+        tipo: "COMUM",
+        data_suspensao: "21/06/2023",
+      },
+      data_cadastro: "28/10/2022",
+    },
+    {
+      uuid: "c67ee6c1-4b0f-4848-9c9f-a406ea6795b6",
+      nome: "HONDASHI",
+      marca: "COCA COLA",
+      fabricante: "FABRICANTE 3",
+      edital: {
+        nome: "Edital de Pregão n.o 23/sme/2018",
+        tipo: "Comum",
+        data_suspensao: "19/06/2023",
+      },
+      data_cadastro: "10/04/2023",
+    },
+    {
+      uuid: "a9bb3bbf-79f3-444c-ae12-7662b322fa2e",
+      nome: "HONDASHI",
+      marca: "EXBOM",
+      fabricante: "EXTREMO SUL SA",
+      edital: {
+        nome: "Edital de Pregão n.o 23/sme/2018",
+        tipo: "Comum",
+        data_suspensao: "07/07/2023",
+      },
+      data_cadastro: "23/03/2023",
+    },
+    {
+      uuid: "df461990-39af-4d22-b413-7023e0fe3cc8",
+      nome: "MACAÍBA",
+      marca: "MILANI",
+      fabricante: "ALIBRA LTDA",
+      edital: {
+        nome: "Edital de Pregão n.o 23/sme/2018",
+        tipo: "Comum",
+        data_suspensao: "01/08/2023",
+      },
+      data_cadastro: "27/07/2023",
+    },
+  ],
+};

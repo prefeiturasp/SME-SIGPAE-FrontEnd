@@ -3,7 +3,6 @@ import { act, fireEvent, screen, render } from "@testing-library/react";
 import ModalHistorico from "src/components/Shareable/ModalHistorico/index";
 import { MemoryRouter } from "react-router-dom";
 import { dietaComHistorico } from "src/mocks/DietaEspecial/Relatorio/mockDietaComLogDeHistorico.jsx";
-import preview from "jest-preview";
 
 describe("Testa componete <ModalHistorico>", () => {
   const mockOnOk = jest.fn();
@@ -69,7 +68,6 @@ describe("Testa componete <ModalHistorico>", () => {
     const solictacaoRealizada = document.querySelectorAll(".grid-item-log")[1];
     fireEvent.click(solictacaoRealizada);
 
-    preview.debug();
     const classeNomeFantasiaEmpresa = document.querySelector(
       ".nome-fantasia-empresa"
     );
@@ -86,7 +84,6 @@ describe("Testa componete <ModalHistorico>", () => {
     const solictacaoRealizada = document.querySelectorAll(".grid-item-log")[4];
     fireEvent.click(solictacaoRealizada);
 
-    preview.debug();
     const classeNomeFantasiaEmpresa = document.querySelector(
       ".nome-fantasia-empresa"
     );
@@ -110,7 +107,6 @@ describe("Testa componete <ModalHistorico>", () => {
     const solictacaoRealizada = document.querySelectorAll(".grid-item-log")[5];
     fireEvent.click(solictacaoRealizada);
 
-    preview.debug();
     const classeNomeFantasiaEmpresa = document.querySelector(
       ".nome-fantasia-empresa"
     );
@@ -136,7 +132,6 @@ describe("Testa componete <ModalHistorico>", () => {
     const solictacaoRealizada = document.querySelectorAll(".grid-item-log")[6];
     fireEvent.click(solictacaoRealizada);
 
-    preview.debug();
     const classeNomeFantasiaEmpresa = document.querySelector(
       ".nome-fantasia-empresa"
     );
