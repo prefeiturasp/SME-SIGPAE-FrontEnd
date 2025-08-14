@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import mock from "src/services/_mock";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { TIPO_SOLICITACAO } from "src/services/constants";
 import { TIPO_PERFIL } from "../../../constants/shared";
@@ -10,11 +10,74 @@ import { mockKitLancheAvulsa } from "src/mocks/SolicitacaokitLanche/mockKitLanch
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
-
+import * as detalheKitLanche from "src/services/relatorios";
 import preview from "jest-preview";
+
+const mockComNegacao = {
+  ...mockKitLancheAvulsa,
+  logs: [
+    ...mockKitLancheAvulsa.logs,
+    {
+      status_evento_explicacao: "DRE não validou",
+      justificativa: "Justificativa de negação teste",
+      criado_em: "29/09/2023 14:18:00",
+      usuario: {
+        registro_funcional: "0000012",
+        nome: "Usuário DRE que negou",
+      },
+    },
+  ],
+};
+
+const mockComDietaEspecial = {
+  ...mockKitLancheAvulsa,
+  alunos_com_dieta_especial_participantes: [
+    { codigo_eol: "123456", nome: "Aluno Teste 1" },
+    { codigo_eol: "789012", nome: "Aluno Teste 2" },
+  ],
+};
+
+const mockComSolicitacoesimilares = [
+  {
+    solicitacao_kit_lanche: {
+      kits: [
+        {
+          nome: "KIT 1",
+          status: "ATIVO",
+        },
+      ],
+      tempo_passeio_explicacao: "Quatro horas",
+      descricao: "<p>LOCAL 3</p>",
+      criado_em: "01/08/2023 09:49:54",
+      data: "29/08/2023",
+    },
+    id_externo: "E209F",
+    logs: [
+      {
+        criado_em: "01/08/2023 09:49:54",
+      },
+      {
+        criado_em: "01/08/2023 09:55:48",
+      },
+      {
+        status_evento_explicacao: "CODAE negou",
+      },
+    ],
+    data: "29/08/2023",
+    status: "CODAE_NEGOU_PEDIDO",
+    local: "LOCAL 3",
+    evento: "Evento 4",
+    quantidade_alunos: 23,
+  },
+];
 
 describe("Teste Relatorio - Visão ESCOLA", () => {
   const solicitacaoUuid = mockKitLancheAvulsa.uuid;
+
+  const mockGetDetalheKitLancheAvulso = jest
+    .spyOn(detalheKitLanche, "getDetalheKitLancheAvulso")
+    .mockImplementation(jest.fn());
+
   beforeEach(async () => {
     mock
       .onGet(`/solicitacoes-kit-lanche-avulsa/${solicitacaoUuid}/`)
@@ -53,7 +116,7 @@ describe("Teste Relatorio - Visão ESCOLA", () => {
         >
           <CorpoRelatorio
             solicitacaoKitLanche={mockKitLancheAvulsa}
-            solicitacoesSimilares={mockKitLancheAvulsa.solicitacoes_similares}
+            solicitacoesSimilares={mockComSolicitacoesimilares}
             prazoDoPedidoMensagem={""}
             tipoSolicitacao={TIPO_SOLICITACAO.SOLICITACAO_NORMAL}
             meusDados={mockMeusDadosEscolaEMEFPericles}
@@ -115,47 +178,161 @@ describe("Teste Relatorio - Visão ESCOLA", () => {
     ).toBeInTheDocument();
   });
 
-  it("Verifica as informações de solicitaçoes similares", async () => {
+  it("Verifica as informações de solicitaçoes similares ao clicar no toggle", async () => {
     expect(screen.getByText(/Solicitação Similar:/i)).toBeInTheDocument();
+    const spanToggleExpandirSolicitacaoSimilar = screen.getByTestId(
+      "colapse-solicitacao-similares"
+    );
+    fireEvent.click(spanToggleExpandirSolicitacaoSimilar);
+    preview.debug();
+    expect(screen.getAllByText("#E209F")).toHaveLength(2);
+    expect(screen.getByText(/Solicitação Número:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Data da Inclusão:/i)).toBeInTheDocument();
+    expect(screen.getByText("01/08/2023")).toBeInTheDocument();
+    expect(screen.getByText(/Status da Solicitação:/i)).toBeInTheDocument();
+    expect(screen.getByText(/CODAE negou/i)).toBeInTheDocument();
+
+    expect(screen.getAllByText(/Data do evento/i)).toHaveLength(2);
+    expect(
+      screen.getByText(
+        `${mockComSolicitacoesimilares[0].solicitacao_kit_lanche.data}`
+      )
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/Local do passeio/i)).toHaveLength(2);
+    expect(
+      screen.getAllByText(`${mockComSolicitacoesimilares[0].local}`)
+    ).toHaveLength(2);
+    expect(screen.getAllByText("Evento/Atividade")).toHaveLength(1);
+    expect(
+      screen.getAllByText(`${mockComSolicitacoesimilares[0].evento}`)
+    ).toHaveLength(1);
+    expect(screen.getAllByText(/Nº de Alunos/i)).toHaveLength(2);
+    expect(
+      screen.getAllByText(`${mockComSolicitacoesimilares[0].quantidade_alunos}`)
+    ).toHaveLength(2);
+    expect(screen.getAllByText(/Tempo Previsto de Passeio/i)).toHaveLength(2);
+    expect(
+      screen.getAllByText(
+        `${mockComSolicitacoesimilares[0].solicitacao_kit_lanche.tempo_passeio_explicacao}`
+      )
+    ).toHaveLength(2);
+    expect(screen.getAllByText(/Opção Desejada/i)).toHaveLength(2);
+    expect(screen.getAllByText(/KIT 1/)).toHaveLength(2);
+    expect(screen.getAllByText(/Nº Total de Kits/i)).toHaveLength(2);
+
+    fireEvent.click(spanToggleExpandirSolicitacaoSimilar);
   });
 
   it("Verifica as informações do passeio", async () => {
-    preview.debug();
-    expect(screen.getByText(/Data do evento/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Data do evento/i)).toHaveLength(2);
     expect(
       screen.getByText(`${mockKitLancheAvulsa.solicitacao_kit_lanche.data}`)
     ).toBeInTheDocument();
-    expect(screen.getByText(/Local do passeio/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Local do passeio/i)).toHaveLength(2);
     expect(
       screen.getByText(`${mockKitLancheAvulsa.local}`)
     ).toBeInTheDocument();
-    expect(screen.getByText("Evento/Atividade")).toBeInTheDocument();
-    expect(
-      screen.getByText(`${mockKitLancheAvulsa.evento}`)
-    ).toBeInTheDocument();
-    expect(screen.getByText(/Nº de Alunos/i)).toBeInTheDocument();
+    expect(screen.getAllByText("Evento/Atividade")).toHaveLength(1);
+    expect(screen.getAllByText(`${mockKitLancheAvulsa.evento}`)).toHaveLength(
+      1
+    );
+    expect(screen.getAllByText(/Nº de Alunos/i)).toHaveLength(2);
     expect(
       screen.getAllByText(`${mockKitLancheAvulsa.quantidade_alunos}`)
     ).toHaveLength(2);
-    expect(screen.getByText(/Tempo Previsto de Passeio/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Tempo Previsto de Passeio/i)).toHaveLength(2);
     expect(
-      screen.getByText(
+      screen.getAllByText(
         `${mockKitLancheAvulsa.solicitacao_kit_lanche.tempo_passeio_explicacao}`
       )
-    ).toBeInTheDocument();
-    expect(screen.getByText(/Opção Desejada/i)).toBeInTheDocument();
-    expect(screen.getByText(/KIT 1/)).toBeInTheDocument();
-    expect(screen.getByText(/Nº Total de Kits/i)).toBeInTheDocument();
+    ).toHaveLength(2);
+    expect(screen.getAllByText(/Opção Desejada/i)).toHaveLength(2);
+    expect(screen.getAllByText(/KIT 1/)).toHaveLength(2);
+    expect(screen.getAllByText(/Nº Total de Kits/i)).toHaveLength(2);
   });
 
   it("Verifica as informações adicionais", async () => {
-    preview.debug();
-    expect(screen.getByText(/Observações/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Observações/i)).toHaveLength(2);
     expect(screen.getByText(/teste/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Autorizou/i)).toHaveLength(2);
     expect(
       screen.getByText("29/09/2023 14:17:07 - Informações da CODAE")
     ).toBeInTheDocument();
     expect(screen.getByText(/aprovado/i)).toBeInTheDocument();
+  });
+
+  it("Deve renderizar justificativa de negação quando existir", async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CorpoRelatorio
+            solicitacaoKitLanche={mockComNegacao}
+            solicitacoesSimilares={mockComNegacao.solicitacoes_similares}
+            prazoDoPedidoMensagem={""}
+            tipoSolicitacao={TIPO_SOLICITACAO.SOLICITACAO_NORMAL}
+          />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText("Justificativa da negação")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Justificativa de negação teste/)
+    ).toBeInTheDocument();
+  });
+
+  it("Deve renderizar faixas etárias quando for inclusão CEI", async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CorpoRelatorio
+            solicitacaoKitLanche={mockKitLancheAvulsa}
+            solicitacoesSimilares={mockKitLancheAvulsa.solicitacoes_similares}
+            prazoDoPedidoMensagem={""}
+            tipoSolicitacao={TIPO_SOLICITACAO.SOLICITACAO_CEI}
+          />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText("Faixa Etária")).toBeInTheDocument();
+    expect(screen.getByText("Alunos Matriculados")).toBeInTheDocument();
+    expect(screen.getByText("Quantidade")).toBeInTheDocument();
+    expect(screen.getByText("Total")).toBeInTheDocument();
+    expect(screen.getByText("N/A")).toBeInTheDocument();
+  });
+
+  it("Deve renderizar alunos com dieta especial quando existirem", async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CorpoRelatorio
+            solicitacaoKitLanche={mockComDietaEspecial}
+            solicitacoesSimilares={mockComDietaEspecial.solicitacoes_similares}
+            prazoDoPedidoMensagem={""}
+            tipoSolicitacao={TIPO_SOLICITACAO.SOLICITACAO_NORMAL}
+          />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText("Alunos com dieta especial")).toBeInTheDocument();
+    expect(screen.getAllByText("Código EOL")).toHaveLength(3);
+    expect(screen.getByText("Nome")).toBeInTheDocument();
+    expect(screen.getByText("123456")).toBeInTheDocument();
+    expect(screen.getByText("Aluno Teste 1")).toBeInTheDocument();
+    expect(screen.getByText("789012")).toBeInTheDocument();
+    expect(screen.getByText("Aluno Teste 2")).toBeInTheDocument();
+  });
+
+  it("Deve chamar a função de impressão ao clicar no botão", async () => {
+    const imprimirButton = screen.getByTestId("botao-imprimir-relatorio");
+    await fireEvent.click(imprimirButton);
+    expect(mockGetDetalheKitLancheAvulso).toHaveBeenCalledTimes(1);
+    expect(mockGetDetalheKitLancheAvulso).toHaveBeenCalledWith(
+      mockKitLancheAvulsa.uuid,
+      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
+      mockKitLancheAvulsa.escola.nome
+    );
   });
 });
