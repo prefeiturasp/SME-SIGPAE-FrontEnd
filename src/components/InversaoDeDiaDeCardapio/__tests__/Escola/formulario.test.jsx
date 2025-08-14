@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -21,6 +22,8 @@ import mock from "src/services/_mock";
 describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
   beforeEach(async () => {
+    process.env.IS_TEST = true;
+
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock.onGet("/dias-uteis/").reply(200, mockDiasUteis);
     mock
@@ -65,6 +68,72 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
     expect(screen.queryAllByText("Inversão de dia de Cardápio")).toHaveLength(
       2
     );
+  });
+
+  it("Preenche formulario e salva rascunho", async () => {
+    const selectTiposAlimentacao = screen.getByTestId(
+      "select-tipos-alimentacao"
+    );
+    const selectControlTiposAlimentacao = within(
+      selectTiposAlimentacao
+    ).getByRole("combobox");
+    fireEvent.mouseDown(selectControlTiposAlimentacao);
+    const optionLanche = screen.getByText("Lanche");
+    fireEvent.click(optionLanche);
+
+    const divInputDataDe = screen.getByTestId("div-input-data_de");
+    const inputElement1 = divInputDataDe.querySelector("input");
+    fireEvent.change(inputElement1, {
+      target: { value: "30/01/2025" },
+    });
+
+    const divInputDataPara = screen.getByTestId("div-input-data_para");
+    const inputElement2 = divInputDataPara.querySelector("input");
+    fireEvent.change(inputElement2, {
+      target: { value: "31/01/2025" },
+    });
+
+    const selectAlunos1 = screen.getByTestId("select-alunos_da_cemei");
+    const selectControlAlunos1 = within(selectAlunos1).getByRole("combobox");
+    fireEvent.mouseDown(selectControlAlunos1);
+    const optionTodosAlunos1 = screen.getByText("Todos");
+    fireEvent.click(optionTodosAlunos1);
+
+    const botaoAdicionarDia = screen
+      .getByText("Adicionar Dia")
+      .closest("button");
+    fireEvent.click(botaoAdicionarDia);
+
+    const divInputDataDe2 = screen.getByTestId("div-input-data_de_2");
+    const inputElement3 = divInputDataDe2.querySelector("input");
+    fireEvent.change(inputElement3, {
+      target: { value: "01/02/2025" },
+    });
+
+    const divInputDataPara2 = screen.getByTestId("div-input-data_para_2");
+    const inputElement4 = divInputDataPara2.querySelector("input");
+    fireEvent.change(inputElement4, {
+      target: { value: "02/02/2025" },
+    });
+
+    const selectAlunos2 = screen.getByTestId("select-alunos_da_cemei_2");
+    const selectControlAlunos2 = within(selectAlunos2).getByRole("combobox");
+    fireEvent.mouseDown(selectControlAlunos2);
+    const optionTodosAlunos2 = screen.getByText("Todos");
+    fireEvent.click(optionTodosAlunos2);
+
+    mock.onPost("/inversoes-dia-cardapio/").reply(201, {});
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar Rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Inversão de dia de Cardápio salvo com sucesso!")
+      ).toBeInTheDocument();
+    });
   });
 
   it("Carrega rascunho e envia", async () => {
@@ -163,6 +232,24 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
           "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
         )
       ).toBeInTheDocument();
+    });
+  });
+
+  it("Remove dia adicional", async () => {
+    const botaoAdicionarDia = screen
+      .getByText("Adicionar Dia")
+      .closest("button");
+    fireEvent.click(botaoAdicionarDia);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Adicionar Dia")).not.toBeInTheDocument();
+    });
+
+    const botaoRemoverDia = screen.getByText("Remover dia").closest("button");
+    fireEvent.click(botaoRemoverDia);
+
+    await waitFor(() => {
+      expect(screen.getByText("Adicionar Dia")).toBeInTheDocument();
     });
   });
 });

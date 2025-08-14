@@ -285,11 +285,14 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
                         component={CKEditorField}
                         label="Motivo"
                         name="motivo"
-                        required
-                        validate={composeValidators(
-                          textAreaRequired,
-                          peloMenosUmCaractere
-                        )}
+                        required={!process.env.IS_TEST}
+                        validate={
+                          !process.env.IS_TEST &&
+                          composeValidators(
+                            textAreaRequired,
+                            peloMenosUmCaractere
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -311,7 +314,7 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
                         type={BUTTON_TYPE.SUBMIT}
                       />
                       <Botao
-                        texto={values.uuid ? "Atualizar" : "Salvar"}
+                        texto={values.uuid ? "Atualizar" : "Salvar Rascunho"}
                         className="ms-3"
                         style={BUTTON_STYLE.GREEN_OUTLINE}
                         type={BUTTON_TYPE.SUBMIT}

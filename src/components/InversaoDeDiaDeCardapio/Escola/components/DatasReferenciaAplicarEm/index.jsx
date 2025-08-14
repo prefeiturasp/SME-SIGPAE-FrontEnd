@@ -62,6 +62,7 @@ export const DatasReferenciaAplicarEm = ({ ...props }) => {
         <Field
           component={InputComData}
           name={name_data_de}
+          dataTestId={`div-input-${name_data_de}`}
           label="Referência"
           placeholder="Cardápio dia"
           required
@@ -89,6 +90,7 @@ export const DatasReferenciaAplicarEm = ({ ...props }) => {
         <Field
           component={InputComData}
           name={name_data_para}
+          dataTestId={`div-input-${name_data_para}`}
           disabled={!values[name_data_de]}
           label="Aplicar em"
           placeholder="Cardápio dia"
