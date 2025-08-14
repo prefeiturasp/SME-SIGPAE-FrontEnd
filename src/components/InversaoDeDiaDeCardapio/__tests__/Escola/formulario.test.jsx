@@ -98,6 +98,35 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
       ).toBeInTheDocument();
     });
   });
+  it("Carrega rascunho e erro ao enviar", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    expect(screen.getByText("Solicitação # 2E398")).toBeInTheDocument();
+    expect(screen.getByText("Atualizar")).toBeInTheDocument();
+
+    mock
+      .onPut(
+        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`
+      )
+      .reply(200, {
+        uuid: mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid,
+      });
+    mock
+      .onPatch(
+        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/inicio-pedido/`
+      )
+      .reply(400, { detail: "Erro ao enviar pedido." });
+
+    const botaoEnviar = screen.getByText("Enviar").closest("button");
+    fireEvent.click(botaoEnviar);
+
+    await waitFor(async () => {
+      expect(screen.getByText("Erro ao enviar pedido.")).toBeInTheDocument();
+    });
+  });
 
   it("Exclui rascunho", async () => {
     mock
