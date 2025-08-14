@@ -13,8 +13,10 @@ import mock from "src/services/_mock";
 import CadastroFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/CadastroFichaRecebimentoPage";
 import { mockListaCronogramasRecebimento } from "src/mocks/cronograma.service/mockGetCronogramasRecebimento";
 import { mockCronogramaCadastroRecebimento } from "src/mocks/cronograma.service/mockGetCronogramaCadastroRecebimento";
+import { mockCadastroFichaRecebimento } from "src/mocks/services/fichaRecebimento.service/mockCadastroFichaRecebimento";
 import { mockQuestoesPorCronograma } from "src/mocks/services/questoesConferencia.service/mockDetalharQuestoesPorCronograma";
 import moment from "moment";
+import { ToastContainer } from "react-toastify";
 
 beforeEach(() => {
   mock
@@ -32,6 +34,10 @@ beforeEach(() => {
     .reply(200, mockQuestoesPorCronograma);
 
   mock.onPost("/rascunho-ficha-de-recebimento/").reply(201);
+
+  mock
+    .onPost("/fichas-de-recebimento/")
+    .reply(201, mockCadastroFichaRecebimento);
 });
 
 const setup = async () => {
@@ -39,6 +45,7 @@ const setup = async () => {
     render(
       <MemoryRouter>
         <CadastroFichaRecebimentoPage />
+        <ToastContainer />
       </MemoryRouter>
     );
   });
@@ -56,6 +63,24 @@ const selecionaOpcao = (testId: string, value: string) => {
   fireEvent.change(selectCategoria, {
     target: { value: value },
   });
+};
+
+const preencheInputByPlaceholder = (Placeholder: string, value: string) => {
+  const element = screen.getByPlaceholderText(Placeholder);
+  fireEvent.change(element, {
+    target: { value: value },
+  });
+};
+
+const selecionaRadioButton = async (text: string, name: string) => {
+  const element = screen
+    .getByText(text)
+    .closest(".radio-button-sigpae") as HTMLElement;
+  const radio1 = within(element).getByRole("radio", {
+    name: name,
+  });
+  await fireEvent.click(radio1);
+  expect(radio1).toBeChecked();
 };
 
 describe("Cadastro de Ficha de Recebimento", () => {
@@ -100,19 +125,11 @@ describe("Cadastro de Ficha de Recebimento", () => {
       expect(radio).toBeChecked();
     }
 
-    const inputLoteArmazenagem = screen.getByPlaceholderText(
-      "Digite o número do lote de armazenagem"
+    preencheInputByPlaceholder(
+      "Digite o número do lote de armazenagem",
+      "123456"
     );
-    fireEvent.change(inputLoteArmazenagem, {
-      target: { value: "123456" },
-    });
-
-    const inputPaletes = screen.getByPlaceholderText(
-      "Digite o número de paletes"
-    );
-    fireEvent.change(inputPaletes, {
-      target: { value: "30" },
-    });
+    preencheInputByPlaceholder("Digite o número de paletes", "30");
 
     const inputsPeso = screen.getAllByPlaceholderText("Digite o peso");
     for (const input of inputsPeso) {
@@ -121,63 +138,16 @@ describe("Cadastro de Ficha de Recebimento", () => {
       });
     }
 
-    const temperaturaArea = screen.getByPlaceholderText("T °C da área");
-    fireEvent.change(temperaturaArea, {
-      target: { value: "10" },
-    });
-
-    const temperaturaProduto = screen.getByPlaceholderText("T °C do produto");
-    fireEvent.change(temperaturaProduto, {
-      target: { value: "10" },
-    });
-
-    const numeroLacre = screen.getByPlaceholderText("Digite o número do lacre");
-    fireEvent.change(numeroLacre, {
-      target: { value: "12345" },
-    });
-
-    const numeroSif = screen.getByPlaceholderText("Digite o número");
-    fireEvent.change(numeroSif, {
-      target: { value: "2149" },
-    });
-
-    const inputPlaca = screen.getByPlaceholderText("Digite a placa do veículo");
-    fireEvent.change(inputPlaca, {
-      target: { value: "ABC1345" },
-    });
-
-    const inputNotaFiscal = screen.getByPlaceholderText(
-      "Digite o número da nota"
-    );
-    fireEvent.change(inputNotaFiscal, {
-      target: { value: "8647" },
-    });
-
-    const inputQtdNota = screen.getByPlaceholderText("Digite a qtde da nota");
-    fireEvent.change(inputQtdNota, {
-      target: { value: "1" },
-    });
-
-    const inputQtdEmbalagens = screen.getByPlaceholderText(
-      "Digite a qtde de embalagens"
-    );
-    fireEvent.change(inputQtdEmbalagens, {
-      target: { value: "1" },
-    });
-
-    const inputQtdRecebida = screen.getByPlaceholderText(
-      "Digite a qtde recebida"
-    );
-    fireEvent.change(inputQtdRecebida, {
-      target: { value: "1" },
-    });
-
-    const inputEmbalagensRecebidas = screen.getByPlaceholderText(
-      "Digite qtde recebida"
-    );
-    fireEvent.change(inputEmbalagensRecebidas, {
-      target: { value: "1" },
-    });
+    preencheInputByPlaceholder("T °C da área", "10");
+    preencheInputByPlaceholder("T °C do produto", "10");
+    preencheInputByPlaceholder("Digite o número do lacre", "12345");
+    preencheInputByPlaceholder("Digite o número", "2149");
+    preencheInputByPlaceholder("Digite a placa do veículo", "ABC1345");
+    preencheInputByPlaceholder("Digite o número da nota", "8647");
+    preencheInputByPlaceholder("Digite a qtde da nota", "1");
+    preencheInputByPlaceholder("Digite a qtde de embalagens", "1");
+    preencheInputByPlaceholder("Digite a qtde recebida", "1");
+    preencheInputByPlaceholder("Digite qtde recebida", "1");
 
     const radioButtonAdequado = screen.getByLabelText("ADEQUADO");
     fireEvent.click(radioButtonAdequado);
@@ -194,14 +164,13 @@ describe("Cadastro de Ficha de Recebimento", () => {
     fireEvent.click(geladoButton);
     expect(geladoButton).toBeChecked();
 
-    const grupoOcorrencias = screen
-      .getByText("Houve Ocorrência(s) no Recebimento?")
-      .closest(".radio-button-sigpae") as HTMLElement;
-    const radioSim = within(grupoOcorrencias).getByRole("radio", {
-      name: "SIM",
-    });
-    await fireEvent.click(radioSim);
-    expect(radioSim).toBeChecked();
+    selecionaRadioButton("IDENTIFICAÇÃO DO PRODUTO", "SIM");
+    selecionaRadioButton("IDENTIFICAÇÃO DO FABRICANTE", "SIM");
+    selecionaRadioButton("DATA DE FABRICAÇÃO", "NÃO");
+    selecionaRadioButton("INFORMAÇÃO NUTRICIONAL", "SIM");
+    selecionaRadioButton("PESO LÍQUIDO (EXCETO SUCO)", "SIM");
+
+    selecionaRadioButton("Houve Ocorrência(s) no Recebimento?", "SIM");
 
     const label = screen.getByText("Tipo de Ocorrência");
     const select = label.parentElement?.querySelector(
@@ -217,40 +186,38 @@ describe("Cadastro de Ficha de Recebimento", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Quantidade Recusada")).toBeInTheDocument();
 
-    const numeroNotaFiscal = screen.getByPlaceholderText(
-      "Digite o número da nota fiscal"
-    );
-    fireEvent.change(numeroNotaFiscal, {
-      target: { value: "4321" },
-    });
-
-    const qtdRecusada = screen.getByPlaceholderText(
-      "Digite a quantidade recusada"
-    );
-    fireEvent.change(qtdRecusada, {
-      target: { value: "12" },
-    });
-
-    const descricaoOcorrencia = screen.getByPlaceholderText(
-      "Descreva a ocorrência"
-    );
-    fireEvent.change(descricaoOcorrencia, {
-      target: { value: "Teste - Descrição" },
-    });
+    preencheInputByPlaceholder("Digite o número da nota fiscal", "4321");
+    preencheInputByPlaceholder("Digite a quantidade recusada", "12");
+    preencheInputByPlaceholder("Descreva a ocorrência", "Teste - Descrição");
 
     // Submit
-    const btnRascunho = screen.getByText("Salvar Rascunho").closest("button");
-    expect(btnRascunho).not.toBeDisabled();
-    fireEvent.click(btnRascunho);
+    const btnSalvar = screen.getByText("Salvar e Assinar").closest("button");
+    expect(btnSalvar).not.toBeDisabled();
+    fireEvent.click(btnSalvar);
 
-    const btnSim = screen.getByText("Sim").closest("button");
-    fireEvent.click(btnSim);
+    expect(
+      screen.getByText(
+        "Você confirma o preenchimento correto de todas as informações solicitadas na ficha de recebimento?"
+      )
+    ).toBeInTheDocument();
+
+    const btnAssinar = screen.getByText("Sim, Assinar Ficha").closest("button");
+    fireEvent.click(btnAssinar);
+
+    expect(
+      screen.getByText("Assinatura do Responsável pelo Recebimento")
+    ).toBeInTheDocument();
+
+    preencheInputByPlaceholder("Digite sua senha", "teste");
+
+    const btnConfirmar = screen.getByText("Confirmar").closest("button");
+    expect(btnConfirmar).not.toBeDisabled();
+    fireEvent.click(btnConfirmar);
 
     await waitFor(() => {
-      expect(mock.history.post.length).toBe(1);
-      expect(JSON.parse(mock.history.post[0].data)).toMatchObject({
-        etapa: cronogramaDetalhado.etapas[0].uuid,
-      });
+      expect(
+        screen.getByText("Ficha de recebimento Assinada com sucesso!")
+      ).toBeInTheDocument();
     });
   });
 });
