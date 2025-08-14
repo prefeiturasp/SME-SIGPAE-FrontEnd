@@ -11,7 +11,6 @@ import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as detalheKitLanche from "src/services/relatorios";
-import preview from "jest-preview";
 
 const mockComNegacao = {
   ...mockKitLancheAvulsa,
@@ -184,7 +183,7 @@ describe("Teste Relatorio - Visão ESCOLA", () => {
       "colapse-solicitacao-similares"
     );
     fireEvent.click(spanToggleExpandirSolicitacaoSimilar);
-    preview.debug();
+
     expect(screen.getAllByText("#E209F")).toHaveLength(2);
     expect(screen.getByText(/Solicitação Número:/i)).toBeInTheDocument();
     expect(screen.getByText(/Data da Inclusão:/i)).toBeInTheDocument();
