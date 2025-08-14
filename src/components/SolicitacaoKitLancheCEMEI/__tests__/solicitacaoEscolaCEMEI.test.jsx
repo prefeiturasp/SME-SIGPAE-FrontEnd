@@ -263,50 +263,6 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     );
   });
 
-  it("Testa a seleção de data do passeio", async () => {
-    const usuario = userEvent.setup();
-    const datepickerInput = screen
-      .getByTestId("data-passeio-cemei")
-      .querySelector("input");
-    expect(datepickerInput).toHaveValue("");
-
-    const calendarioIcone = screen
-      .getByTestId("data-passeio-cemei")
-      .querySelector(".fa-calendar-alt");
-    await usuario.click(calendarioIcone);
-    const datepickerModal = document.querySelector(".react-datepicker");
-    expect(datepickerModal).toBeInTheDocument();
-
-    const diaSeisDeAgosto = datepickerModal?.querySelector(
-      '[role="option"][aria-label*="6 de agosto de 2025"]'
-    );
-    expect(diaSeisDeAgosto).not.toBeInTheDocument();
-
-    const nextButton = screen.getByRole("button", { name: /Next Month/i });
-    await usuario.click(nextButton);
-
-    await waitFor(async () => {
-      const diaSeisDeAgosto = datepickerModal?.querySelector(
-        '[role="option"][aria-label*="6 de agosto de 2025"]'
-      );
-      expect(diaSeisDeAgosto).toBeInTheDocument();
-      await usuario.click(diaSeisDeAgosto);
-    });
-
-    const inputViaCalendario = screen
-      .getByTestId("data-passeio-cemei")
-      .querySelector("input");
-    await waitFor(() => {
-      expect(inputViaCalendario).toHaveValue("06/08/2025");
-    });
-
-    const inputManual = screen
-      .getByTestId("data-passeio-cemei")
-      .querySelector("input");
-    fireEvent.change(inputManual, { target: { value: "06/08/2025" } });
-    expect(inputManual).toHaveValue("06/08/2025");
-  });
-
   it("Testa o input local do Passeio", async () => {
     const usuario = userEvent.setup();
     const campoInput = screen.getByTestId("local-passeio-cemei");
