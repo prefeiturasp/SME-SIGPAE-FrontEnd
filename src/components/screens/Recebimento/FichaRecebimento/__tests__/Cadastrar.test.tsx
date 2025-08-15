@@ -65,8 +65,8 @@ const selecionaOpcao = (testId: string, value: string) => {
   });
 };
 
-const preencheInputByPlaceholder = (Placeholder: string, value: string) => {
-  const element = screen.getByPlaceholderText(Placeholder);
+const preencheInputByPlaceholder = (placeholder: string, value: string) => {
+  const element = screen.getByPlaceholderText(placeholder);
   fireEvent.change(element, {
     target: { value: value },
   });
