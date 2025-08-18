@@ -14,7 +14,6 @@ import { getRelatorioReclamacao } from "src/services/relatorios.service";
 import { IFormValues } from "../../interfaces";
 import { formatarValues } from "../Filtros/helpers";
 import { Reclamacao } from "./components/Reclamacao";
-import { getConfigCabecario } from "./helpers";
 import "./style.scss";
 
 type ITabelaProps = {
@@ -40,7 +39,8 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
     consultarProdutos,
   } = props;
 
-  const [baixando, setBaixando] = useState(false);
+  const [baixandoExcel, setBaixandoExcel] = useState(false);
+  const [baixandoPDF, setBaixandoPDF] = useState(false);
 
   const setCollapse = (key: number) => {
     const copyProdutos = deepCopy(produtos);
@@ -54,19 +54,22 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
   };
 
   const handleBaixarPDF = async (values: IFormValues) => {
-    setBaixando(true);
+    setBaixandoPDF(true);
     try {
       const values_ = formatarValues(values);
       await getRelatorioReclamacao({
         ...values_,
-        ...getConfigCabecario(values_),
       });
     } catch {
       toastError(
         "Houve um erro ao imprimir o relatório. Tente novamente mais tarde."
       );
     }
-    setBaixando(false);
+    setBaixandoPDF(false);
+  };
+
+  const handleBaixarExcel = async () => {
+    setBaixandoExcel(false);
   };
 
   return (
@@ -156,10 +159,10 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
                     className="me-3"
                     type={BUTTON_TYPE.BUTTON}
                     style={BUTTON_STYLE.GREEN}
-                    disabled={baixando}
-                    icon={!baixando && BUTTON_ICON.FILE_EXCEL}
+                    disabled={baixandoExcel}
+                    icon={!baixandoExcel && BUTTON_ICON.FILE_EXCEL}
                     texto={
-                      baixando ? (
+                      baixandoExcel ? (
                         <img
                           src="/assets/image/ajax-loader.gif"
                           alt="ajax-loader"
@@ -168,16 +171,16 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
                         "Baixar Excel"
                       )
                     }
-                    onClick={() => {}}
+                    onClick={() => handleBaixarExcel()}
                   />
                 )}
                 <Botao
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN}
-                  disabled={baixando}
-                  icon={!baixando && BUTTON_ICON.PRINT}
+                  disabled={baixandoPDF}
+                  icon={!baixandoPDF && BUTTON_ICON.PRINT}
                   texto={
-                    baixando ? (
+                    baixandoPDF ? (
                       <img
                         src="/assets/image/ajax-loader.gif"
                         alt="ajax-loader"
