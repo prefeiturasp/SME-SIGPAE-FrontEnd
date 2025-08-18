@@ -20,6 +20,7 @@ const ListagemAlteracoesCronogramas = ({
     DILOG_DIRETORIA: ["Aprovado Abastecimento", "Reprovado Abastecimento"],
     DILOG_ABASTECIMENTO: ["Cronograma ciente"],
     DILOG_VISUALIZACAO: [],
+    DILOG_QUALIDADE: [],
   };
 
   const ehStatusPrioritario = (status) =>

@@ -68,6 +68,7 @@ export const CorpoRelatorio = (props) => {
                 solicitacaoKitLanche?.escola?.nome
               );
             }}
+            dataTestId="botao-imprimir-relatorio"
           />
         </p>
         <div className="col-2">
@@ -154,6 +155,7 @@ export const CorpoRelatorio = (props) => {
                       }
                       ativo={!solicitacao.collapsed}
                       className="icon-padding"
+                      dataTestId="colapse-solicitacao-similares"
                     />
                   </b>
                 </p>

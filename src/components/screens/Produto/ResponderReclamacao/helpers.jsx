@@ -1,5 +1,4 @@
 import moment from "moment";
-import * as R from "ramda";
 import {
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
@@ -15,22 +14,18 @@ export const ordenaLogs = (logs) => {
 };
 
 export const getReclamacao = (logs) => {
-  const arr = R.filter(
-    R.propEq(
-      "status_evento_explicacao",
+  return logs.find(
+    (log) =>
+      log.status_evento_explicacao ===
       "Escola/Nutricionista reclamou do produto"
-    ),
-    logs
   );
-  return arr[0];
 };
 
 export const getQuestionamentoCodae = (logs) => {
-  const arr = R.filter(
-    R.propEq("status_evento_explicacao", "CODAE pediu análise da reclamação"),
-    logs
+  return logs.find(
+    (log) =>
+      log.status_evento_explicacao === "CODAE pediu análise da reclamação"
   );
-  return arr[0];
 };
 
 export const getStatus = (values) => {

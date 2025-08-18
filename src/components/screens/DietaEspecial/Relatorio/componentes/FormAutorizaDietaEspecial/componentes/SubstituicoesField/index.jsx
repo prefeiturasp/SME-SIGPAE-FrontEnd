@@ -39,10 +39,7 @@ export default class SubstituicoesField extends Component {
                       alimentos={alimentos}
                       produtos={produtos}
                       addOption={() => fields.push({})}
-                      removeOption={() => {
-                        fields.swap(index, fields.length - 1);
-                        fields.pop();
-                      }}
+                      removeOption={() => fields.remove(index)}
                       validate={required}
                       deveHabilitarApagar
                       required

@@ -42,7 +42,7 @@ export const prepararPayloadEtapas = (values, etapas) => {
   etapasPayload = etapas.map((etapa, index) => ({
     numero_empenho: values[`empenho_${index}`],
     etapa: parseInt(values[`etapa_${index}`]?.replace("Etapa ", "") || 0, 10),
-    parte: values[`parte_${index}`],
+    parte: parseInt(values[`parte_${index}`]?.replace("Parte ", "") || 0, 10),
     data_programada: values[`data_programada_${index}`]
       ? moment(values[`data_programada_${index}`], "DD/MM/YYYY").format(
           "YYYY-MM-DD"

@@ -63,17 +63,10 @@ export const Filtros = ({ ...props }) => {
         toastError("Não existem unidades para os filtros selecionados");
       } else {
         setUnidadesEducacionais(
-          [
-            {
-              label: "Todas as unidades",
-              value: "todas",
-            },
-          ].concat(
-            response.data.map((unidade) => ({
-              label: unidade.codigo_eol_escola,
-              value: unidade.uuid,
-            }))
-          )
+          response.data.map((unidade) => ({
+            label: unidade.codigo_eol_escola,
+            value: unidade.uuid,
+          }))
         );
       }
     } else {
@@ -264,14 +257,10 @@ export const Filtros = ({ ...props }) => {
                   <Field
                     component={MultiselectRaw}
                     name="tipos_unidades_selecionadas"
-                    options={[
-                      { label: "Todos os tipos de unidade", value: "todos" },
-                    ].concat(
-                      tiposUnidades.map((tiposUnidade) => ({
-                        label: tiposUnidade.iniciais,
-                        value: tiposUnidade.uuid,
-                      }))
-                    )}
+                    options={tiposUnidades.map((tiposUnidade) => ({
+                      label: tiposUnidade.iniciais,
+                      value: tiposUnidade.uuid,
+                    }))}
                     selected={values.tipos_unidades_selecionadas || []}
                     onSelectedChanged={(values_) => {
                       form.change(
@@ -365,17 +354,10 @@ export const Filtros = ({ ...props }) => {
                     label="Períodos da Unidade"
                     component={MultiselectRaw}
                     name="periodos_escolares_selecionadas"
-                    options={[
-                      {
-                        label: "Todos os períodos escolares",
-                        value: "todos",
-                      },
-                    ].concat(
-                      periodos.map((periodo) => ({
-                        label: periodo.nome,
-                        value: periodo.uuid,
-                      }))
-                    )}
+                    options={periodos.map((periodo) => ({
+                      label: periodo.nome,
+                      value: periodo.uuid,
+                    }))}
                     selected={values.periodos_escolares_selecionadas || []}
                     onSelectedChanged={(values_) => {
                       form.change(
@@ -392,17 +374,10 @@ export const Filtros = ({ ...props }) => {
                   <Field
                     component={MultiselectRaw}
                     name="classificacoes_selecionadas"
-                    options={[
-                      {
-                        label: "Todas as classificações de dieta",
-                        value: "todas",
-                      },
-                    ].concat(
-                      classificacoesDieta.map((classificacao) => ({
-                        label: classificacao.nome,
-                        value: classificacao.id,
-                      }))
-                    )}
+                    options={classificacoesDieta.map((classificacao) => ({
+                      label: classificacao.nome,
+                      value: classificacao.id,
+                    }))}
                     selected={values.classificacoes_selecionadas || []}
                     onSelectedChanged={(values_) => {
                       form.change(

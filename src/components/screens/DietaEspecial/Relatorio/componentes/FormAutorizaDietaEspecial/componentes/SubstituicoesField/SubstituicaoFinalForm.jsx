@@ -126,6 +126,7 @@ export default class SubstituicoesField extends Component {
             <div className="col-1">
               <Botao
                 icon={BUTTON_ICON.TRASH}
+                type="button"
                 onClick={() => deveHabilitarApagar && removeOption()}
                 style={BUTTON_STYLE.GREEN_OUTLINE}
               />
