@@ -80,6 +80,11 @@
       "react": "$react",
       "react-dom": "$react-dom"
     },
+    "startbootstrap-sb-admin-2": {
+      "bootstrap": "$bootstrap",
+      "datatables.net": "2.3.2",
+      "datatables.net-bs4": "2.3.2"
+    },
     "jest-watch-typeahead": "2.2.2"
   },
   "dependencies": {
