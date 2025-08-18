@@ -172,7 +172,10 @@ const server = setupServer(
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+afterAll(() => {
+  server.close();
+  return new Promise((resolve) => setTimeout(resolve, 0));
+});
 
 test("Relatorio para cancelamento por atingir data termino - visão CODAE", async () => {
   const search = `?uuid=${cancelamento_data_termino.uuid}&ehInclusaoContinua=false&card=canceladas`;

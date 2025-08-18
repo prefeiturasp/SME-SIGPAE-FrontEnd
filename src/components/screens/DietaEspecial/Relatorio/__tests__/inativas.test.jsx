@@ -68,7 +68,10 @@ const server = setupServer(
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+afterAll(() => {
+  server.close();
+  return new Promise((resolve) => setTimeout(resolve, 0));
+});
 
 test("Relatório Inativas - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=inativas`;

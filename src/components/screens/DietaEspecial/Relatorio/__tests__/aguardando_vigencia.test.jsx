@@ -39,26 +39,29 @@ const server = setupServer(
   http.get(
     `${API_URL}/protocolo-padrao-dieta-especial/lista-protocolos-liberados/`,
     () => {
-      return http.HttpResponse.json(listaProtocolosLiberados());
+      return HttpResponse.json(listaProtocolosLiberados());
     }
   ),
   http.get(`${API_URL}/alimentos/`, () => {
-    return http.HttpResponse.json(alimentos());
+    return HttpResponse.json(alimentos());
   }),
   http.get(`${API_URL}/solicitacoes-dieta-especial/`, () => {
-    return http.HttpResponse.json(solicitacoesDietaEspecial());
+    return HttpResponse.json(solicitacoesDietaEspecial());
   }),
   http.get(
     `${API_URL}/protocolo-padrao-dieta-especial/${payload.protocolo_padrao}/`,
     () => {
-      return http.HttpResponse.json(protocoloPadraoDietaEspecial());
+      return HttpResponse.json(protocoloPadraoDietaEspecial());
     }
   )
 );
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+afterAll(() => {
+  server.close();
+  return new Promise((resolve) => setTimeout(resolve, 0));
+});
 
 test("Relatório Aguardando Vigência -  visão Terceirizada", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=aguardando-inicio-vigencia`;
