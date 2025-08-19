@@ -55,9 +55,7 @@ const ModalVoltar = ({
         <Botao
           texto="Permanecer"
           type={BUTTON_TYPE.BUTTON}
-          onClick={() => {
-            setModalVoltar(false);
-          }}
+          onClick={() => setModalVoltar(false)}
           style={BUTTON_STYLE.GREEN}
           className="ms-3"
         />

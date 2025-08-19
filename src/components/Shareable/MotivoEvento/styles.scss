@@ -1,0 +1,17 @@
+@use "src/styles/variables.scss" as *;
+
+.componente-motivo-do-evento {
+  color: #42474a;
+
+  .titulo-evento {
+    margin-top: 20px;
+    font-size: 16px;
+  }
+
+  .texto-wysiwyg-evento {
+    border: 1px #dddddd solid !important;
+    padding: 0.5rem;
+    font-size: 12px;
+    border-radius: 2px;
+  }
+}

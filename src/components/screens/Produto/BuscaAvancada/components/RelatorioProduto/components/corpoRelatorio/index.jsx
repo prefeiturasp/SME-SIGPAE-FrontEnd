@@ -1,6 +1,5 @@
-import { Modal } from "antd";
 import React, { Component, Fragment } from "react";
-
+import { Modal } from "antd";
 import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
 import { fluxoPartindoTerceirizada } from "src/components/Shareable/FluxoDeStatus/helper";
 import Botao from "src/components/Shareable/Botao";
@@ -10,16 +9,11 @@ import {
   BUTTON_ICON,
 } from "src/components/Shareable/Botao/constants";
 import { STATUS_CODAE_AUTORIZOU_RECLAMACAO } from "src/configs/constants";
-import MotivoDaCorrecaoDeHomologacao from "src/components/Shareable/MotivoDaCorrecaoDeHomologacao";
-import MotivoDaRecusaDeHomologacao from "src/components/Shareable/MotivoDaRecusaDeHomologacao";
-import MotivoSuspensao from "src/components/Shareable/MotivoSuspensao";
 import InformativoReclamacao from "src/components/Shareable/InformativoReclamacao";
-
 import { truncarString } from "src/helpers/utilities";
-
 import { getRelatorioProduto } from "src/services/relatorios";
-
 import "../styles.scss";
+import MotivoEvento from "src/components/Shareable/MotivoEvento";
 
 export default class CorpoRelatorio extends Component {
   constructor(props) {
@@ -134,9 +128,21 @@ export default class CorpoRelatorio extends Component {
       <section className="corpo-reatorio-produto">
         {!!logs.length && (
           <>
-            <MotivoDaCorrecaoDeHomologacao logs={historico.logs || []} />
-            <MotivoDaRecusaDeHomologacao logs={historico.logs || []} />
-            <MotivoSuspensao logs={historico.logs || []} />
+            <MotivoEvento
+              logs={historico?.logs || []}
+              titulo="Motivo da solicitação de correção do produto"
+              motivo="Questionamento pela CODAE"
+            />
+            <MotivoEvento
+              logs={historico?.logs || []}
+              titulo="Motivo da recusa de homologação"
+              motivo="CODAE não homologou"
+            />
+            <MotivoEvento
+              logs={historico.logs || []}
+              titulo="Motivo da suspensão"
+              motivo="CODAE suspendeu o produto"
+            />
           </>
         )}
         {status === STATUS_CODAE_AUTORIZOU_RECLAMACAO && (
