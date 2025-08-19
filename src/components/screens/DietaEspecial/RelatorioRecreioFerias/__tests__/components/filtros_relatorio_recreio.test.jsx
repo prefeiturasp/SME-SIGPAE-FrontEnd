@@ -184,17 +184,11 @@ describe("Comportamentos filtros do Relatório de Dietas para Recreio nas Féria
       setDre(_DRE);
     });
 
-    await waitFor(async () => {
-      await setOpcao("unidades-educacionais-select", "TODAS");
-    });
+    await setOpcao("unidades-educacionais-select", "TODAS");
 
-    await waitFor(async () => {
-      await setOpcao("classificassoes-select", "TODAS");
-    });
+    await setOpcao("classificassoes-select", "TODAS");
 
-    await waitFor(async () => {
-      await setOpcao("alergias-intolerancias-select", "TODOS");
-    });
+    await setOpcao("alergias-intolerancias-select", "TODOS");
 
     setData("data-inicio-input", "01/01/2022");
     setData("data-fim-input", "01/01/2024");
