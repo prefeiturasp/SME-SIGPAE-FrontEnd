@@ -780,7 +780,7 @@ const gerarCamposProponenteFabricante = (
   return {
     ...(ehAlterar ? {} : { empresa: proponente.uuid }),
     fabricante: fabricantes[0]?.fabricante && fabricantes[0],
-    envasador_distribuidor: fabricantes[1]?.fabricante ? fabricantes[1] : {},
+    envasador_distribuidor: fabricantes[1]?.fabricante ? fabricantes[1] : null,
   };
 };
 
