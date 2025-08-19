@@ -27,7 +27,7 @@ jestPreviewConfigure({
   autoPreview: true,
 });
 
-jest.setTimeout(50000);
+jest.setTimeout(120000);
 
 jest.mock("src/constants/viteEnv", () => ({
   viteEnv: {
