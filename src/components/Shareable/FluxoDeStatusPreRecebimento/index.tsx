@@ -1,13 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import {
   DETALHAR_ALTERACAO_CRONOGRAMA,
   PRE_RECEBIMENTO,
 } from "src/configs/constants";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { tipoDeStatusClasse } from "./helper";
-import { validate } from "uuid";
-import "./style.scss";
 import { LogSolicitacoesUsuarioSimples } from "src/interfaces/dados_comuns.interface";
+import { tipoDeStatusClasse } from "./helper";
+import "./style.scss";
 
 interface FluxoDeStatusPreRecebimentoProps {
   listaDeStatus: LogSolicitacoesUsuarioSimples[];
@@ -42,7 +40,7 @@ export const FluxoDeStatusPreRecebimento = ({
       </>
     );
 
-    const uuidValido = validate(status.justificativa);
+    const uuidValido = status.justificativa;
 
     return (
       <li
