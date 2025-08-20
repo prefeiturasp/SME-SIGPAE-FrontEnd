@@ -285,10 +285,7 @@ export const CorpoRelatorio = ({ ...props }) => {
         <div className="col-3 report-label-value">
           <p>Empresa</p>
           <p className="value-important">
-            {inclusaoDeAlimentacao.escola &&
-              inclusaoDeAlimentacao.escola.lote &&
-              inclusaoDeAlimentacao.escola.lote.terceirizada &&
-              inclusaoDeAlimentacao.escola.lote.terceirizada.nome_fantasia}
+            {inclusaoDeAlimentacao.rastro_terceirizada?.nome_fantasia}
           </p>
         </div>
       </div>
