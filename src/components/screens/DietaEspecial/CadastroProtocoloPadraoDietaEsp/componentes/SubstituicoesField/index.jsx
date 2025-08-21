@@ -26,7 +26,7 @@ export default class SubstituicoesField extends Component {
                 <Field
                   component={Substituicao}
                   name={name}
-                  key={index}
+                  key={values.substituicoes[index]?.id}
                   chave={index}
                   values={values}
                   form={form}
