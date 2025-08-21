@@ -1,6 +1,9 @@
 import HTTP_STATUS from "http-status-codes";
 import { useContext, useState } from "react";
-import { getRelatorioRecreioFerias } from "src/services/dietaEspecial.service";
+import {
+  gerarPdfRelatorioRecreioFerias,
+  getRelatorioRecreioFerias,
+} from "src/services/dietaEspecial.service";
 import { Tabela } from "./components/Tabela";
 import { IRelatorioDietaRecreioFerias } from "./interfaces";
 import { Paginacao } from "src/components/Shareable/Paginacao";
@@ -14,6 +17,8 @@ import {
 import { Filtros } from "./components/Filtros";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { normalizarValores } from "./helpers";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 
 export const RelatorioRecreioFerias = () => {
   const [dietas, setDietas] = useState<IRelatorioDietaRecreioFerias[] | null>(
@@ -23,6 +28,9 @@ export const RelatorioRecreioFerias = () => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [loadingPdf, setLoadingPdf] = useState(false);
+  const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
+    useState(false);
   const [valuesForm, setValuesForm] = useState<object>(null);
   const { meusDados } = useContext(MeusDadosContext);
 
@@ -55,6 +63,19 @@ export const RelatorioRecreioFerias = () => {
   const nextPage = (page: number) => {
     buscaResultado({ ...valuesForm, page: page });
     setPage(page);
+  };
+
+  const exportarPDF = async (values: object) => {
+    setLoadingPdf(true);
+    const response = await gerarPdfRelatorioRecreioFerias(
+      normalizarValores(values)
+    );
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao baixar PDF. Tente novamente mais tarde");
+    }
+    setLoadingPdf(false);
   };
 
   return (
@@ -103,12 +124,14 @@ export const RelatorioRecreioFerias = () => {
                           onClick={async () => {}}
                         />
                         <Botao
+                          dataTestId="botao-gerar-pdf"
                           texto="Baixar PDF"
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN}
                           icon={BUTTON_ICON.FILE_PDF}
-                          onClick={async () => {}}
+                          onClick={async () => exportarPDF(valuesForm)}
                           className="ms-3"
+                          disabled={loadingPdf}
                         />
                       </div>
                     </div>
@@ -117,6 +140,13 @@ export const RelatorioRecreioFerias = () => {
               )}
             </div>
           </div>
+        )}
+        {exibirModalCentralDownloads && (
+          <ModalSolicitacaoDownload
+            show={exibirModalCentralDownloads}
+            setShow={setExibirModalCentralDownloads}
+            callbackClose={() => {}}
+          />
         )}
       </Spin>
     </div>
