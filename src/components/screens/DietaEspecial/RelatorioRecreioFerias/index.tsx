@@ -129,7 +129,7 @@ export const RelatorioRecreioFerias = () => {
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN}
                           icon={BUTTON_ICON.FILE_PDF}
-                          onClick={async () => exportarPDF(valuesForm)}
+                          onClick={() => exportarPDF(valuesForm)}
                           className="ms-3"
                           disabled={loadingPdf}
                         />
