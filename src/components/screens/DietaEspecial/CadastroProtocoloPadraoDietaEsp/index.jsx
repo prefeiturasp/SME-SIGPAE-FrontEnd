@@ -31,6 +31,7 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import "./style.scss";
 import { getNumerosEditais } from "src/services/edital.service";
+import { formataSubstituicoes } from "../Relatorio/componentes/FormAutorizaDietaEspecial/helper";
 
 const FORM_NAME = "cadastrarProtocoloPadrao";
 
@@ -90,26 +91,13 @@ export default ({ uuid }) => {
 
   function getInitialValues(protocolo) {
     if (protocolo) {
-      const substituicoes = protocolo.substituicoes.map((substituicao) => {
-        const alimentos_substitutos = substituicao.alimentos_substitutos.map(
-          (alimento) => alimento.uuid
-        );
-        const substitutos = substituicao.substitutos.map(
-          (alimento) => alimento.uuid
-        );
-        return {
-          alimento: String(substituicao.alimento.id),
-          tipo: substituicao.tipo === "Substituir" ? "S" : "I",
-          substitutos: substitutos.concat(alimentos_substitutos),
-        };
-      });
       return {
         uuid: protocolo.uuid,
         nome_protocolo: protocolo.nome_protocolo,
         orientacoes_gerais: protocolo.orientacoes_gerais,
         status: protocolo.status === "Liberado" ? "LIBERADO" : "NAO_LIBERADO",
         editais: protocolo.editais.map((e) => e.uuid),
-        substituicoes: substituicoes,
+        substituicoes: formataSubstituicoes(protocolo),
       };
     } else {
       return {

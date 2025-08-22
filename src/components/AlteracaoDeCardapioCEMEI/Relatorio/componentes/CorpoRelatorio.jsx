@@ -107,7 +107,7 @@ export const CorpoRelatorio = ({ ...props }) => {
         <div className="col-3">
           <p>Empresa:</p>
           <p>
-            <b>{solicitacao.escola.lote.terceirizada.nome_fantasia}</b>
+            <b>{solicitacao.rastro_terceirizada?.nome_fantasia}</b>
           </p>
         </div>
       </div>
