@@ -1,7 +1,4 @@
 export const mockPedidosCODAEInversaoCardapio = {
-  count: 1,
-  next: null,
-  previous: null,
   results: [
     {
       cardapio_de: null,
