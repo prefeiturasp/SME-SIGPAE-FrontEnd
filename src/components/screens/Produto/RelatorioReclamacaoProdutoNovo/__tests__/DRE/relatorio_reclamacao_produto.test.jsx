@@ -211,9 +211,7 @@ describe("Test Relatório Reclamação Produto - Usuário DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText(
-          "Houve um erro ao imprimir o relatório. Tente novamente mais tarde."
-        )
+        screen.queryByText("Erro ao baixar PDF. Tente novamente mais tarde")
       ).toBeInTheDocument();
     });
   });
