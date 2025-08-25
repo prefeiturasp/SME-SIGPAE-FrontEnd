@@ -11,6 +11,7 @@ import Botao from "src/components/Shareable/Botao";
 import { RECEBIMENTO, CADASTRO_FICHA_RECEBIMENTO } from "src/configs/constants";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import { InputText } from "src/components/Shareable/Input/InputText";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import Label from "src/components/Shareable/Label";
@@ -43,6 +44,17 @@ const Filtros: React.FC<Props> = ({
 }) => {
   const [produtos, setProdutos] = useState<ProdutoLogistica[]>([]);
   const [empresas, setEmpresas] = useState<TerceirizadaSimplesInterface[]>([]);
+
+  const opcoesStatus = [
+    {
+      label: "Rascunho",
+      value: "RASCUNHO",
+    },
+    {
+      label: "Assinada",
+      value: "ASSINADA",
+    },
+  ];
 
   const buscarListaProdutos = async (): Promise<void> => {
     const response = await getListaCompletaProdutosLogistica();
@@ -101,7 +113,7 @@ const Filtros: React.FC<Props> = ({
         {(values) => (
           <>
             <div className="row">
-              <div className="col-6">
+              <div className="col-4">
                 <Field
                   component={InputText}
                   label="Filtrar por Nº do Cronograma"
@@ -110,7 +122,19 @@ const Filtros: React.FC<Props> = ({
                 />
               </div>
 
-              <div className="col-6">
+              <div className="col-4">
+                <Field
+                  component={MultiSelect}
+                  disableSearch
+                  options={opcoesStatus}
+                  label="Filtrar por Status"
+                  name="status"
+                  nomeDoItemNoPlural="Status"
+                  placeholder="Selecione os Status"
+                />
+              </div>
+
+              <div className="col-4">
                 <Field
                   component={AutoCompleteSelectField}
                   options={optionsCampoProdutos(values)}
