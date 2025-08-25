@@ -145,6 +145,7 @@ export interface FichaDeRecebimentoItemListagem {
   fornecedor?: string;
   pregao_chamada_publica?: string;
   data_recebimento?: string;
+  status?: string;
 }
 
 export interface ResponseFichasDeRecebimento extends ResponseInterface {
