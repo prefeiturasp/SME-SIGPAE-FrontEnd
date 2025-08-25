@@ -25,6 +25,8 @@ const Listagem: React.FC<Props> = ({ objetos }) => {
           <div>Fornecedor</div>
           <div>Nº do Pregão / Chamada Pública</div>
           <div>Data do Recebimento</div>
+          <div>Status</div>
+          <div>Ações</div>
         </div>
 
         {objetos.map((objeto) => {
@@ -44,6 +46,18 @@ const Listagem: React.FC<Props> = ({ objetos }) => {
                 </div>
                 <div>{objeto.pregao_chamada_publica}</div>
                 <div>{objeto.data_recebimento}</div>
+                <div>{objeto.status}</div>
+                <div>
+                  <span className="link-acoes px-1">
+                    <i title="Detalhar" className="fas fa-eye green" />
+                  </span>
+                  <span className="link-acoes px-1">
+                    <i title="Imprimir" className="fas fa-print green" />
+                  </span>
+                  <span className="link-acoes px-1">
+                    <i title="Alterar" className="fas fa-edit green" />
+                  </span>
+                </div>
               </div>
             </>
           );
