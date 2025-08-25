@@ -14,6 +14,19 @@ export const getRelatorioReclamacao = async (params) => {
   saveAs(data, "relatorio_reclamacao.pdf");
 };
 
+export const getGeraPdfRelatorioReclamacao = async (params) => {
+  const response = await axios
+    .get(`${API_URL}/produtos/relatorio-reclamacao/`, {
+      params,
+      responseType: "blob",
+    })
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
 export const filtrarSolicitacoesAlimentacaoDRE = async (payload) => {
   const response = await axios
     .post(

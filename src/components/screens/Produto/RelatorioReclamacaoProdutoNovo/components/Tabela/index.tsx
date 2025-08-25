@@ -10,12 +10,13 @@ import { Paginacao } from "src/components/Shareable/Paginacao";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { ENVIRONMENT } from "src/constants/config";
 import { deepCopy } from "src/helpers/utilities";
-import { getRelatorioReclamacao } from "src/services/relatorios.service";
+import { getGeraPdfRelatorioReclamacao } from "src/services/relatorios.service";
 import { IFormValues } from "../../interfaces";
 import { formatarValues } from "../Filtros/helpers";
 import { Reclamacao } from "./components/Reclamacao";
-import { getConfigCabecario } from "./helpers";
 import "./style.scss";
+import HTTP_STATUS from "http-status-codes";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 
 type ITabelaProps = {
   produtos: Array<any>;
@@ -40,7 +41,10 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
     consultarProdutos,
   } = props;
 
-  const [baixando, setBaixando] = useState(false);
+  const [baixandoExcel, setBaixandoExcel] = useState(false);
+  const [baixandoPDF, setBaixandoPDF] = useState(false);
+  const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
+    useState(false);
 
   const setCollapse = (key: number) => {
     const copyProdutos = deepCopy(produtos);
@@ -54,19 +58,19 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
   };
 
   const handleBaixarPDF = async (values: IFormValues) => {
-    setBaixando(true);
-    try {
-      const values_ = formatarValues(values);
-      await getRelatorioReclamacao({
-        ...values_,
-        ...getConfigCabecario(values_),
-      });
-    } catch {
-      toastError(
-        "Houve um erro ao imprimir o relatório. Tente novamente mais tarde."
-      );
+    setBaixandoPDF(true);
+    const values_ = formatarValues(values);
+    const response = await getGeraPdfRelatorioReclamacao({ ...values_ });
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao baixar PDF. Tente novamente mais tarde");
     }
-    setBaixando(false);
+    setBaixandoPDF(false);
+  };
+
+  const handleBaixarExcel = async () => {
+    setBaixandoExcel(false);
   };
 
   return (
@@ -156,10 +160,10 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
                     className="me-3"
                     type={BUTTON_TYPE.BUTTON}
                     style={BUTTON_STYLE.GREEN}
-                    disabled={baixando}
-                    icon={!baixando && BUTTON_ICON.FILE_EXCEL}
+                    disabled={baixandoExcel}
+                    icon={!baixandoExcel && BUTTON_ICON.FILE_EXCEL}
                     texto={
-                      baixando ? (
+                      baixandoExcel ? (
                         <img
                           src="/assets/image/ajax-loader.gif"
                           alt="ajax-loader"
@@ -168,16 +172,16 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
                         "Baixar Excel"
                       )
                     }
-                    onClick={() => {}}
+                    onClick={() => handleBaixarExcel()}
                   />
                 )}
                 <Botao
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN}
-                  disabled={baixando}
-                  icon={!baixando && BUTTON_ICON.PRINT}
+                  disabled={baixandoPDF}
+                  icon={!baixandoPDF && BUTTON_ICON.PRINT}
                   texto={
-                    baixando ? (
+                    baixandoPDF ? (
                       <img
                         src="/assets/image/ajax-loader.gif"
                         alt="ajax-loader"
@@ -188,6 +192,12 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
                   }
                   onClick={() => handleBaixarPDF(values)}
                 />
+                {exibirModalCentralDownloads && (
+                  <ModalSolicitacaoDownload
+                    show={exibirModalCentralDownloads}
+                    setShow={setExibirModalCentralDownloads}
+                  />
+                )}
               </div>
             </div>
           </>
