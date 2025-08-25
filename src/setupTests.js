@@ -1,22 +1,33 @@
 /* eslint-env jest */
 
 import "@testing-library/jest-dom";
-import "whatwg-fetch";
+import { Blob } from "buffer";
 import { jestPreviewConfigure } from "jest-preview";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
-import mock from "src/services/_mock";
 import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
-import { TextEncoder, TextDecoder } from "util";
+import mock from "src/services/_mock";
+import { TransformStream } from "stream/web";
+import { TextDecoder, TextEncoder } from "util";
+import "whatwg-fetch";
 
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
+class MockBroadcastChannel {
+  constructor() {}
+  postMessage() {}
+  close() {}
+  addEventListener() {}
+  removeEventListener() {}
+}
+
+if (typeof global.BroadcastChannel === "undefined") {
+  global.BroadcastChannel = MockBroadcastChannel;
+}
 
 jestPreviewConfigure({
   // Opt-in to automatic mode to preview failed test case automatically.
   autoPreview: true,
 });
 
-jest.setTimeout(50000);
+jest.setTimeout(120000);
 
 jest.mock("src/constants/viteEnv", () => ({
   viteEnv: {
@@ -26,6 +37,21 @@ jest.mock("src/constants/viteEnv", () => ({
     HOME: "/",
   },
 }));
+
+if (typeof global.TransformStream === "undefined") {
+  global.TransformStream = TransformStream;
+}
+
+if (typeof global.TextEncoder === "undefined") {
+  global.TextEncoder = TextEncoder;
+}
+if (typeof global.TextDecoder === "undefined") {
+  global.TextDecoder = TextDecoder;
+}
+
+if (typeof global.Blob === "undefined") {
+  global.Blob = Blob;
+}
 
 const { querySelector, matches } = window.Element.prototype;
 

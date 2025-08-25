@@ -897,5 +897,7 @@ export const mockAlteracaoCardapioCEMEIAValidar = {
   rastro_escola: 948,
   rastro_dre: 6,
   rastro_lote: 21,
-  rastro_terceirizada: 5,
+  rastro_terceirizada: {
+    nome_fantasia: "ALIMENTAR",
+  },
 };

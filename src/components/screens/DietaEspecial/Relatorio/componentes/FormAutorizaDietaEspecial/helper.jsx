@@ -30,6 +30,7 @@ export const formataSubstituicoes = (dietaEspecial) => {
         (alimento) => alimento.uuid
       );
       return {
+        id: substituicao.id,
         alimento: String(substituicao.alimento.id),
         tipo: ["Substituir", "S"].includes(substituicao.tipo) ? "S" : "I",
         substitutos: substitutos.concat(alimentos_substitutos),

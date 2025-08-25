@@ -94,6 +94,7 @@ export const Filtros = ({ ...props }) => {
                 <div className="row">
                   <div className="col-4">
                     <Field
+                      dataTestId="data-cancelamento-inicial"
                       component={InputComData}
                       label="Período de:"
                       name="data_cancelamento_inicial"
@@ -106,6 +107,7 @@ export const Filtros = ({ ...props }) => {
                   </div>
                   <div className="col-4">
                     <Field
+                      dataTestId="data-cancelamento-final"
                       component={InputComData}
                       label="Até:"
                       name="data_cancelamento_final"
@@ -122,6 +124,7 @@ export const Filtros = ({ ...props }) => {
                   <div className="col-4">
                     <label className="label fw-normal pb-2 pt-2">Lote</label>
                     <Field
+                      dataTestId="lotes-select"
                       component={StatefulMultiSelect}
                       name="lotes"
                       options={filtros.lotes.map((lote) => ({

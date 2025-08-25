@@ -38,7 +38,7 @@ const SelectSelecione = (props) => {
 };
 
 const SubstituicoesField = ({
-  chave,
+  index,
   alimentos,
   produtos,
   removeOption,
@@ -103,7 +103,7 @@ const SubstituicoesField = ({
               valoresSelecionados && valoresSelecionados.length > 0
                 ? valoresSelecionados
                 : values.substituicoes &&
-                  produtosSelecionados(values.substituicoes[chave].substitutos)
+                  produtosSelecionados(values.substituicoes[index].substitutos)
             }
           >
             <span>
@@ -112,7 +112,7 @@ const SubstituicoesField = ({
                 name={`${name}.substitutos`}
                 selected={
                   (values.substituicoes &&
-                    values.substituicoes[chave].substitutos) ||
+                    values.substituicoes[index].substitutos) ||
                   []
                 }
                 options={produtos.map((produto) => ({
@@ -120,7 +120,7 @@ const SubstituicoesField = ({
                   label: produto.nome,
                 }))}
                 onSelectedChanged={(values_) => {
-                  form.change(`substituicoes[${chave}].substitutos`, values_);
+                  form.change(`substituicoes[${index}].substitutos`, values_);
                   produtosSelecionados(values_);
                 }}
                 validate={required}
@@ -135,7 +135,7 @@ const SubstituicoesField = ({
             </span>
           </Tooltip>
         </div>
-        {deveHabilitarApagar && chave > 0 && (
+        {deveHabilitarApagar && index > 0 && (
           <div className="col-1">
             <Botao
               icon={BUTTON_ICON.TRASH}
