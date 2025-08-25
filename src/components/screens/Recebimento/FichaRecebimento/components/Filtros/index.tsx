@@ -51,7 +51,7 @@ const Filtros: React.FC<Props> = ({
       value: "RASCUNHO",
     },
     {
-      label: "Assinada",
+      label: "Assinado CODAE",
       value: "ASSINADA",
     },
   ];
@@ -130,7 +130,7 @@ const Filtros: React.FC<Props> = ({
                   label="Filtrar por Status"
                   name="status"
                   nomeDoItemNoPlural="Status"
-                  placeholder="Selecione os Status"
+                  placeholder="Selecione um Status"
                 />
               </div>
 
