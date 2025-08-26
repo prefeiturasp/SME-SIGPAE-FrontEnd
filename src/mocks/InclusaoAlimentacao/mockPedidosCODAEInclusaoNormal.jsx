@@ -1,7 +1,4 @@
 export const mockPedidosCODAEInclusaoNormal = {
-  count: 5,
-  next: null,
-  previous: null,
   results: [
     {
       prioridade: "VENCIDO",
