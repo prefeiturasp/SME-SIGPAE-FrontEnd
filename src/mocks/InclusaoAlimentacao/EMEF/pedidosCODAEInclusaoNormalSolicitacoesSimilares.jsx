@@ -1,7 +1,4 @@
 export const mockPedidosCODAEInclusaoNormalSolicitacoesSimilares = {
-  count: 2,
-  next: null,
-  previous: null,
   results: [
     {
       prioridade: "REGULAR",
