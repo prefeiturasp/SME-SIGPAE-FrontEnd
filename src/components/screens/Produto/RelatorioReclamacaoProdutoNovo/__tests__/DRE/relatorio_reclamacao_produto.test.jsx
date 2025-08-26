@@ -150,7 +150,7 @@ describe("Test Relatório Reclamação Produto - Usuário DRE", () => {
     expect(campoInputFabricante).toHaveValue("");
   });
 
-  it("download pdf", async () => {
+  it("Realiza download do PDF e verifica exibição da modal do Central de Downloads", async () => {
     mock
       .onGet("/produtos/filtro-reclamacoes/")
       .reply(200, mockProdutosReclamacoesEscolaEMEF);
@@ -170,18 +170,28 @@ describe("Test Relatório Reclamação Produto - Usuário DRE", () => {
 
     mock
       .onGet(`/produtos/relatorio-reclamacao/`)
-      .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
+      .reply(200, {
+        detail: "Solicitação de geração de arquivo recebida com sucesso.",
+      });
 
     const botaoBaixarPDF = screen.getByText("Baixar PDF").closest("button");
     fireEvent.click(botaoBaixarPDF);
 
     await waitFor(() => {
       expect(
-        screen.queryByText(
-          "Houve um erro ao imprimir o relatório. Tente novamente mais tarde."
-        )
-      ).not.toBeInTheDocument();
+        screen.queryByText("Geração solicitada com sucesso.")
+      ).toBeInTheDocument();
     });
+    expect(
+      screen.getByText(
+        "Como este arquivo poderá ser muito grande, acompanhe o seu processamento na Central de Downloads."
+      )
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("Fechar")).toBeInTheDocument();
+    expect(
+      screen.getByText("Ir para a Central de Downloads")
+    ).toBeInTheDocument();
   });
 
   it("erro download pdf", async () => {
