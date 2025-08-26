@@ -60,6 +60,7 @@ export const geraInitialValuesCadastrar = (
   ficha: FichaRecebimentoDetalhada
 ) => {
   let initialValues: Record<string, any> = {
+    uuid: ficha.uuid,
     cronograma: ficha.dados_cronograma.numero,
     etapa: ficha.etapa,
     data_entrega: ficha.data_entrega || "",

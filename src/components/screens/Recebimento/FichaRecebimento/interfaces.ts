@@ -153,7 +153,7 @@ export interface ResponseFichasDeRecebimento extends ResponseInterface {
 }
 
 export interface OcorrenciaFichaRecebimento {
-  houve_ocorrencia: string;
+  houve_ocorrencia?: string;
   tipo: string;
   relacao?: string;
   numero_nota?: string;
