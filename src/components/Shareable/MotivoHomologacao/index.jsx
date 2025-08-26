@@ -1,20 +1,10 @@
 import React from "react";
-import * as R from "ramda";
 import "./styles.scss";
-
-export const getHomologacao = (logs) => {
-  const arr = R.filter(
-    R.propEq("status_evento_explicacao", "CODAE homologou"),
-    logs
-  );
-  return arr[0];
-};
+import { getLog } from "src/helpers/utilities";
 
 const MotivoHomologacao = ({ logs }) => {
-  const homolog = getHomologacao(logs);
-
+  const homolog = getLog(logs, "CODAE não homologou");
   if (!homolog) return false;
-
   return (
     <div className="componente-motivo-da-recusa-de-homologacao row">
       <div className="col-12">
