@@ -9,13 +9,15 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
+import { mockMeusDadosNutriSupervisao } from "src/mocks/meusDados/nutri-supervisao";
 import RelatorioGerencialDietas from "src/pages/DietaEspecial/RelatorioGerencialDietas";
 import mock from "src/services/_mock";
 
 describe("Teste interface de Relatório Gerencial de Dietas", () => {
   beforeEach(async () => {
-    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosNutriSupervisao);
     mock
       .onGet("/nutrisupervisao-solicitacoes/totais-gerencial-dietas/")
       .reply(200, {
@@ -39,7 +41,7 @@ describe("Teste interface de Relatório Gerencial de Dietas", () => {
         >
           <MeusDadosContext.Provider
             value={{
-              meusDados: mockMeusDadosCODAEGA,
+              meusDados: mockMeusDadosNutriSupervisao,
               setMeusDados: jest.fn(),
             }}
           >

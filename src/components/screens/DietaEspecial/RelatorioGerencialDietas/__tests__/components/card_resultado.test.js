@@ -3,14 +3,16 @@ import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
+import { mockMeusDadosNutriSupervisao } from "src/mocks/meusDados/nutri-supervisao";
 import CardResultado from "../../components/CardResultado";
 
 import mock from "src/services/_mock";
 
 describe("Verifica renderização de componente de Card de Resultados - Relatório Gerencial de Dietas", () => {
   beforeEach(async () => {
-    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosNutriSupervisao);
     localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_SUPERVISAO_NUTRICAO);
 
     await act(async () => {
@@ -23,7 +25,7 @@ describe("Verifica renderização de componente de Card de Resultados - Relatór
         >
           <MeusDadosContext.Provider
             value={{
-              meusDados: mockMeusDadosCODAEGA,
+              meusDados: mockMeusDadosNutriSupervisao,
               setMeusDados: jest.fn(),
             }}
           >
