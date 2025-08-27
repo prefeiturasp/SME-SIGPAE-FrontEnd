@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 import React from "react";
 import { ModalEditar } from "src/components/Shareable/Calendario/componentes/ModalEditar/index.jsx";
 import { MemoryRouter } from "react-router-dom";
@@ -40,24 +46,43 @@ describe("Teste componete ModalEditar", () => {
     nomeObjetoNoCalendarioMinusculo: "sobremesa",
   };
 
+  const renderModalEditar = (props = {}) => {
+    return render(
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <ModalEditar {...defaultProps} {...props} />
+      </MemoryRouter>
+    );
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    await act(async () => {
-      render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <ModalEditar {...defaultProps} />
-        </MemoryRouter>
-      );
-    });
+    // await act(async () => {
+    //   render(
+    //     <MemoryRouter
+    //       future={{
+    //         v7_startTransition: true,
+    //         v7_relativeSplatPath: true,
+    //       }}
+    //     >
+    //       <ModalEditar {...defaultProps} />
+    //     </MemoryRouter>
+    //   );
+    // });
+  });
+  afterEach(() => {
+    cleanup();
   });
 
-  it("deve exibir o modal com informações corretas", () => {
+  it("deve exibir o modal com informações corretas", async () => {
+    await act(async () => {
+      renderModalEditar();
+    });
     expect(screen.getByText(/Informações de cadastro/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Sobremesa/i)).toHaveLength(2);
     expect(screen.getByText(/para a unidade/)).toBeInTheDocument();
@@ -72,16 +97,31 @@ describe("Teste componete ModalEditar", () => {
     expect(screen.getAllByText("15/06/2023")).toHaveLength(1);
   });
 
-  it("deve chamar closeModal e setShowModalConfirmarExclusao ao clicar em Excluir", () => {
+  it("deve chamar closeModal e setShowModalConfirmarExclusao ao clicar em Excluir", async () => {
+    await act(async () => {
+      renderModalEditar();
+    });
     const botaoExcluir = screen.getByText("Excluir");
     fireEvent.click(botaoExcluir);
     expect(defaultProps.closeModal).toHaveBeenCalled();
     expect(defaultProps.setShowModalConfirmarExclusao).toHaveBeenCalled();
   });
 
-  it("deve chamar closeModal ao clicar em Manter", () => {
+  it("deve chamar closeModal ao clicar em Manter", async () => {
+    await act(async () => {
+      renderModalEditar();
+    });
     const botaoManter = screen.getByText("Manter");
     fireEvent.click(botaoManter);
     expect(defaultProps.closeModal).toHaveBeenCalled();
+  });
+
+  it("não deve exibir o modal quando showModal for false", async () => {
+    await act(async () => {
+      renderModalEditar({ showModal: false });
+    });
+    expect(
+      screen.queryByText("Informações de cadastro")
+    ).not.toBeInTheDocument();
   });
 });
