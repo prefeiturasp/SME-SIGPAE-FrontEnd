@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { ModalEditar } from "src/components/Shareable/Calendario/componentes/ModalEditar/index.jsx";
 import { MemoryRouter } from "react-router-dom";
@@ -70,5 +70,18 @@ describe("Teste componete ModalEditar", () => {
       screen.getByText(new RegExp(mockEvent.criado_em, "i"))
     ).toBeInTheDocument();
     expect(screen.getAllByText("15/06/2023")).toHaveLength(1);
+  });
+
+  it("deve chamar closeModal e setShowModalConfirmarExclusao ao clicar em Excluir", () => {
+    const botaoExcluir = screen.getByText("Excluir");
+    fireEvent.click(botaoExcluir);
+    expect(defaultProps.closeModal).toHaveBeenCalled();
+    expect(defaultProps.setShowModalConfirmarExclusao).toHaveBeenCalled();
+  });
+
+  it("deve chamar closeModal ao clicar em Manter", () => {
+    const botaoManter = screen.getByText("Manter");
+    fireEvent.click(botaoManter);
+    expect(defaultProps.closeModal).toHaveBeenCalled();
   });
 });
