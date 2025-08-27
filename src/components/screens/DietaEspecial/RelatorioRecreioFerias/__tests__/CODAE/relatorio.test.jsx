@@ -138,4 +138,32 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
       fireEvent.click(botaoGerarProtocolo);
     });
   });
+
+  it("Clica botão de baixar PDF e recebe confirmação", async () => {
+    await act(async () => {
+      setDre(_DRE);
+    });
+
+    await act(async () => {
+      filtrar();
+    });
+
+    mock
+      .onGet(
+        "/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-pdf/"
+      )
+      .reply(200, {
+        detail: "Solicitação de geração de arquivo recebida com sucesso.",
+      });
+
+    const botao = screen.getByTestId("botao-gerar-pdf");
+    expect(botao).toBeInTheDocument();
+    await act(async () => fireEvent.click(botao));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Geração solicitada com sucesso.")
+      ).toBeInTheDocument();
+    });
+  });
 });
