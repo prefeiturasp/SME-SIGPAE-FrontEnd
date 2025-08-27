@@ -85,6 +85,7 @@ export class ModalAlterarSenha extends Component {
                 letra={letra}
                 numero={numero}
                 tamanho={tamanho}
+                ultimasSenhas
               />
             </div>
           </div>
