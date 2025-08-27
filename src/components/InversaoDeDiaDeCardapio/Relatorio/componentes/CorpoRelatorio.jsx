@@ -1,35 +1,33 @@
-import React, { useState } from "react";
-import { FluxoDeStatus } from "../../../Shareable/FluxoDeStatus";
+import { useState } from "react";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
+import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
+import { statusEnum } from "src/constants/shared";
 import {
   corDaMensagem,
   justificativaAoNegarSolicitacao,
   stringSeparadaPorVirgulas,
-} from "../../../../helpers/utilities";
-import Botao from "../../../Shareable/Botao";
-import {
-  BUTTON_TYPE,
-  BUTTON_STYLE,
-  BUTTON_ICON,
-} from "../../../Shareable/Botao/constants";
-
-import { getDetalheInversaoCardapio } from "../../../../services/relatorios";
-import { fluxoPartindoEscola } from "../../../Shareable/FluxoDeStatus/helper";
-import { statusEnum } from "src/constants/shared";
+} from "src/helpers/utilities";
+import { getDetalheInversaoCardapio } from "src/services/relatorios";
 
 export const CorpoRelatorio = (props) => {
   const [imprimindo, setimprimindo] = useState(false);
-  const { inversaoDiaCardapio, prazoDoPedidoMensagem, escolaDaInversao } =
-    props;
+  const { solicitacao, prazoDoPedidoMensagem } = props;
 
   const justificativaNegacao = justificativaAoNegarSolicitacao(
-    inversaoDiaCardapio.logs
+    solicitacao.logs
   );
 
   const btnImprimirRelatorio = async () => {
     setimprimindo(true);
     await getDetalheInversaoCardapio(
-      inversaoDiaCardapio.uuid,
-      inversaoDiaCardapio?.escola?.nome
+      solicitacao.uuid,
+      solicitacao?.escola?.nome
     );
     setimprimindo(false);
   };
@@ -56,7 +54,7 @@ export const CorpoRelatorio = (props) => {
         <div className="col-2">
           <span className="badge-sme badge-secondary-sme">
             <span className="id-of-solicitation-dre">
-              # {inversaoDiaCardapio.id_externo}
+              # {solicitacao.id_externo}
             </span>
             <br />{" "}
             <span className="number-of-order-label">Nº DA SOLICITAÇÃO</span>
@@ -66,15 +64,14 @@ export const CorpoRelatorio = (props) => {
           <span className="requester">Escola Solicitante</span>
           <br />
           <span className="dre-name">
-            {inversaoDiaCardapio.escola && inversaoDiaCardapio.escola.nome}
+            {solicitacao.escola && solicitacao.escola.nome}
           </span>
         </div>
         <div className="my-auto col-4">
           <span className="requester">Código EOL</span>
           <br />
           <span className="dre-name">
-            {inversaoDiaCardapio.escola &&
-              inversaoDiaCardapio.escola.codigo_eol}
+            {solicitacao.escola && solicitacao.escola.codigo_eol}
           </span>
         </div>
       </div>
@@ -82,53 +79,46 @@ export const CorpoRelatorio = (props) => {
         <div className="col-3 report-label-value">
           <p>DRE</p>
           <p className="value-important">
-            {inversaoDiaCardapio.escola &&
-              inversaoDiaCardapio.escola.diretoria_regional &&
-              inversaoDiaCardapio.escola.diretoria_regional.nome}
+            {solicitacao.escola &&
+              solicitacao.escola.diretoria_regional &&
+              solicitacao.escola.diretoria_regional.nome}
           </p>
         </div>
         <div className="col-3 report-label-value">
           <p>Lote</p>
-          <p className="value-important">
-            {escolaDaInversao.lote && escolaDaInversao.lote.nome}
-          </p>
+          <p className="value-important">{solicitacao.escola?.lote?.nome}</p>
         </div>
         <div className="col-3 report-label-value">
           <p>Tipo de Gestão</p>
           <p className="value-important">
-            {escolaDaInversao &&
-              escolaDaInversao.tipo_gestao &&
-              escolaDaInversao.tipo_gestao.nome}
+            {solicitacao.escola?.tipo_gestao?.nome}
           </p>
         </div>
         <div className="col-3 report-label-value">
           <p>Empresa</p>
           <p className="value-important">
-            {inversaoDiaCardapio.rastro_terceirizada &&
-              inversaoDiaCardapio.rastro_terceirizada.nome_fantasia}
+            {solicitacao.rastro_terceirizada &&
+              solicitacao.rastro_terceirizada.nome_fantasia}
           </p>
         </div>
       </div>
       <hr />
-      {inversaoDiaCardapio.logs && (
+      {solicitacao.logs && (
         <div className="row">
           <FluxoDeStatus
-            listaDeStatus={inversaoDiaCardapio.logs}
+            listaDeStatus={solicitacao.logs}
             fluxo={fluxoPartindoEscola}
             eh_gestao_alimentacao={true}
           />
         </div>
       )}
       <hr />
-      {inversaoDiaCardapio.tipos_alimentacao.length > 0 && (
+      {solicitacao.tipos_alimentacao.length > 0 && (
         <div className="row">
           <div className="col-12 report-label-value">
             <p>Tipos de Alimentação para inversão:</p>
             <p className="fw-bold">
-              {stringSeparadaPorVirgulas(
-                inversaoDiaCardapio.tipos_alimentacao,
-                "nome"
-              )}
+              {stringSeparadaPorVirgulas(solicitacao.tipos_alimentacao, "nome")}
             </p>
           </div>
         </div>
@@ -142,21 +132,21 @@ export const CorpoRelatorio = (props) => {
         <tr>
           <td />
           <td className="pe-5">
-            {inversaoDiaCardapio.cardapio_de
-              ? inversaoDiaCardapio.cardapio_de.data
-              : inversaoDiaCardapio.data_de_inversao}
+            {solicitacao.cardapio_de
+              ? solicitacao.cardapio_de.data
+              : solicitacao.data_de_inversao}
           </td>
           <td>
-            {inversaoDiaCardapio.cardapio_para
-              ? inversaoDiaCardapio.cardapio_para.data
-              : inversaoDiaCardapio.data_para_inversao}
+            {solicitacao.cardapio_para
+              ? solicitacao.cardapio_para.data
+              : solicitacao.data_para_inversao}
           </td>
         </tr>
-        {inversaoDiaCardapio.data_de_inversao_2 && (
+        {solicitacao.data_de_inversao_2 && (
           <tr>
             <td />
-            <td className="pe-5">{inversaoDiaCardapio.data_de_inversao_2}</td>
-            <td>{inversaoDiaCardapio.data_para_inversao_2}</td>
+            <td className="pe-5">{solicitacao.data_de_inversao_2}</td>
+            <td>{solicitacao.data_para_inversao_2}</td>
           </tr>
         )}
       </table>
@@ -166,48 +156,44 @@ export const CorpoRelatorio = (props) => {
           <p
             className="value fw-bold"
             dangerouslySetInnerHTML={{
-              __html: inversaoDiaCardapio.motivo,
+              __html: solicitacao.motivo,
             }}
           />
         </div>
       </div>
-      {inversaoDiaCardapio.observacao && (
+      {solicitacao.observacao && (
         <div className="row">
           <div className="col-12 report-label-value">
             <p>Observações</p>
             <p
               className="fw-bold value"
               dangerouslySetInnerHTML={{
-                __html: inversaoDiaCardapio.observacao,
+                __html: solicitacao.observacao,
               }}
             />
           </div>
         </div>
       )}
-      {inversaoDiaCardapio.logs &&
-        !inversaoDiaCardapio.prioridade !== "REGULAR" &&
-        inversaoDiaCardapio.status === statusEnum.CODAE_AUTORIZADO && (
+      {solicitacao.logs &&
+        !solicitacao.prioridade !== "REGULAR" &&
+        solicitacao.status === statusEnum.CODAE_AUTORIZADO && (
           <div className="row">
             <div className="col-12 report-label-value">
               <p>
                 <b>Autorizou</b>
               </p>
               <div>
-                {
-                  inversaoDiaCardapio.logs[inversaoDiaCardapio.logs.length - 1]
-                    .criado_em
-                }{" "}
-                - Informações da CODAE
+                {solicitacao.logs[solicitacao.logs.length - 1].criado_em} -
+                Informações da CODAE
               </div>
-              {inversaoDiaCardapio.logs[inversaoDiaCardapio.logs.length - 1]
-                .justificativa !== "" ? (
+              {solicitacao.logs[solicitacao.logs.length - 1].justificativa !==
+              "" ? (
                 <p
                   className="value"
                   dangerouslySetInnerHTML={{
                     __html:
-                      inversaoDiaCardapio.logs[
-                        inversaoDiaCardapio.logs.length - 1
-                      ].justificativa,
+                      solicitacao.logs[solicitacao.logs.length - 1]
+                        .justificativa,
                   }}
                 />
               ) : (

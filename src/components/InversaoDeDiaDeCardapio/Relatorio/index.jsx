@@ -1,421 +1,312 @@
+import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Navigate } from "react-router-dom";
-import { formValueSelector, reduxForm } from "redux-form";
+import { useContext, useEffect, useState } from "react";
+import { Form } from "react-final-form";
 import {
-  INVERSAO_CARDAPIO,
-  CODAE,
-  TERCEIRIZADA,
-} from "../../../configs/constants";
-import { TIPO_PERFIL } from "../../../constants/shared";
-import { statusEnum } from "../../../constants/shared";
+  exibeBotaoAprovar,
+  exibeBotaoNaoAprovar,
+  exibirBotaoMarcarConferencia,
+  exibirBotaoQuestionamento,
+  exibirModalAutorizacaoAposQuestionamento,
+} from "src/components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
+import Botao from "src/components/Shareable/Botao";
 import {
-  visualizaBotoesDoFluxo,
-  prazoDoPedidoMensagem,
-  getError,
-  ehUsuarioEmpresa,
-} from "src/helpers/utilities";
-import { getInversaoDeDiaDeCardapio } from "../../../services/inversaoDeDiaDeCardapio.service";
-import Botao from "../../Shareable/Botao";
-import { BUTTON_STYLE, BUTTON_TYPE } from "../../Shareable/Botao/constants";
-import { toastError, toastSuccess } from "../../Shareable/Toast/dialogs";
-import RelatorioHistoricoQuestionamento from "../../Shareable/RelatorioHistoricoQuestionamento";
-import RelatorioHistoricoJustificativaEscola from "../../Shareable/RelatorioHistoricoJustificativaEscola";
-import ModalAutorizarAposQuestionamento from "../../Shareable/ModalAutorizarAposQuestionamento";
-import CorpoRelatorio from "./componentes/CorpoRelatorio";
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import ModalAutorizarAposQuestionamento from "src/components/Shareable/ModalAutorizarAposQuestionamento";
 import ModalMarcarConferencia from "src/components/Shareable/ModalMarcarConferencia";
+import RelatorioHistoricoJustificativaEscola from "src/components/Shareable/RelatorioHistoricoJustificativaEscola";
+import RelatorioHistoricoQuestionamento from "src/components/Shareable/RelatorioHistoricoQuestionamento";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import {
+  prazoDoPedidoMensagem,
+  visualizaBotoesDoFluxo,
+} from "src/helpers/utilities";
+import { getInversaoDeDiaDeCardapio } from "src/services/inversaoDeDiaDeCardapio.service";
+import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
+import { DRE } from "src/configs/constants";
+import { statusEnum, TIPO_PERFIL } from "src/constants/shared";
 
-class Relatorio extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      unifiedSolicitationList: [],
-      uuid: null,
-      redirect: false,
-      showNaoAprovaModal: false,
-      showModal: false,
-      showAutorizarModal: false,
-      showModalCodaeAutorizar: false,
-      inversaoDiaCardapio: null,
-      escolaDaInversao: null,
-      prazoDoPedidoMensagem: null,
-      erro: false,
-      showModalMarcarConferencia: false,
-    };
-    this.closeQuestionamentoModal = this.closeQuestionamentoModal.bind(this);
-    this.closeNaoAprovaModal = this.closeNaoAprovaModal.bind(this);
-    this.closeAutorizarModal = this.closeAutorizarModal.bind(this);
-    this.closeModalCodaeAutorizar = this.closeModalCodaeAutorizar.bind(this);
-    this.loadSolicitacao = this.loadSolicitacao.bind(this);
-    this.closeModalMarcarConferencia =
-      this.closeModalMarcarConferencia.bind(this);
-  }
+export const Relatorio = ({ ...props }) => {
+  const { meusDados } = useContext(MeusDadosContext);
 
-  setRedirect() {
-    this.setState({
-      redirect: true,
-    });
-  }
+  const [uuid, setUuid] = useState();
+  const [solicitacao, setAlteracaoDoTipoDeAlimentacao] = useState();
+  const [prazoMensagem, setPrazoMensagem] = useState();
+  const [respostaSimNao, setRespostaSimNao] = useState();
 
-  renderizarRedirecionamentoParaInversoesDeCardapio = () => {
-    if (this.state.redirect) {
-      return <Navigate to={`/${this.props.VISAO}/${INVERSAO_CARDAPIO}`} />;
+  const [showNaoAprovaModal, setShowNaoAprovaModal] = useState(false);
+  const [showAutorizarModal, setShowAutorizarModal] = useState(false);
+  const [showModalCodaeAutorizar, setShowModalCodaeAutorizar] = useState(false);
+  const [showModalMarcarConferencia, setShowModalMarcarConferencia] =
+    useState(false);
+  const [showQuestionamentoModal, setShowQuestionamentoModal] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
+
+  const {
+    endpointAprovaSolicitacao,
+    visao,
+    textoBotaoNaoAprova,
+    textoBotaoAprova,
+    endpointNaoAprovaSolicitacao,
+    endpointQuestionamento,
+    ModalNaoAprova,
+    ModalQuestionamento,
+    motivosDREnaoValida,
+    ModalCODAEAutoriza,
+    toastAprovaMensagem,
+    toastAprovaMensagemErro,
+  } = props;
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const uuid_ = urlParams.get("uuid");
+
+    if (!uuid_) {
+      setErro(
+        "Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente."
+      );
+      return;
+    }
+
+    setUuid(uuid_);
+    getSolicitacaoAsync(uuid_);
+  }, []);
+
+  const getSolicitacaoAsync = async (uuid_ = uuid) => {
+    setLoading(true);
+    const response = await getInversaoDeDiaDeCardapio(uuid_);
+    if (response.status === HTTP_STATUS.OK) {
+      setAlteracaoDoTipoDeAlimentacao(response.data);
+      setPrazoMensagem(prazoDoPedidoMensagem(response.data.prioridade));
+    } else {
+      setErro(
+        "Erro ao carregar Inversão do dia de Cardápio. Tente novamente mais tarde."
+      );
+    }
+    setLoading(false);
+  };
+
+  const BotaoMarcarConferencia = () => {
+    return (
+      <Botao
+        texto="Marcar Conferência"
+        type={BUTTON_TYPE.BUTTON}
+        style={BUTTON_STYLE.GREEN}
+        className="ms-3"
+        onClick={() => {
+          setShowModalMarcarConferencia(true);
+        }}
+        disabled={loading}
+      />
+    );
+  };
+
+  const onSubmit = async () => {
+    const response = await endpointAprovaSolicitacao(uuid);
+    if (response.status === HTTP_STATUS.OK) {
+      toastSuccess(toastAprovaMensagem);
+      getSolicitacaoAsync();
+    } else {
+      toastError(toastAprovaMensagemErro);
     }
   };
 
-  componentDidMount() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const uuid = urlParams.get("uuid");
-    if (uuid) {
-      getInversaoDeDiaDeCardapio(uuid).then((response) => {
-        if (response.status === HTTP_STATUS.OK) {
-          const inversaoDiaCardapio = response.data;
-          this.setState({
-            inversaoDiaCardapio,
-            uuid,
-            escolaDaInversao: inversaoDiaCardapio.escola,
-            prazoDoPedidoMensagem: prazoDoPedidoMensagem(
-              inversaoDiaCardapio.prioridade
-            ),
-          });
-        } else if (response.data.detail) {
-          this.setState({ erro: true });
-          toastError(getError(response.data));
-        } else {
-          this.setState({ erro: true });
-          toastError(
-            `Erro ao carregar relatório de Inversão de dia de Cardápio ${getError(
-              response.data
-            )}`
-          );
-        }
-      });
-    }
-  }
+  const tipoPerfil = localStorage.getItem("tipo_perfil");
 
-  showQuestionamentoModal(resposta_sim_nao) {
-    this.setState({ resposta_sim_nao, showQuestionamentoModal: true });
-  }
-
-  closeQuestionamentoModal() {
-    this.setState({ showQuestionamentoModal: false });
-  }
-
-  showNaoAprovaModal(resposta_sim_nao) {
-    this.setState({ resposta_sim_nao, showNaoAprovaModal: true });
-  }
-
-  closeNaoAprovaModal() {
-    this.setState({ showNaoAprovaModal: false });
-  }
-
-  showAutorizarModal() {
-    this.setState({ showAutorizarModal: true });
-  }
-
-  closeAutorizarModal() {
-    this.setState({ showAutorizarModal: false });
-  }
-
-  showModalCodaeAutorizar() {
-    this.setState({ showModalCodaeAutorizar: true });
-  }
-
-  closeModalCodaeAutorizar() {
-    this.setState({ showModalCodaeAutorizar: false });
-  }
-
-  showModalMarcarConferencia() {
-    this.setState({ showModalMarcarConferencia: true });
-  }
-
-  closeModalMarcarConferencia() {
-    this.setState({ showModalMarcarConferencia: false });
-  }
-
-  loadSolicitacao(uuid) {
-    getInversaoDeDiaDeCardapio(uuid).then((response) => {
-      this.setState({
-        inversaoDiaCardapio: response.data,
-      });
-    });
-  }
-
-  handleSubmit() {
-    const { toastAprovaMensagem, toastAprovaMensagemErro } = this.props;
-    const uuid = this.state.uuid;
-    this.props.endpointAprovaSolicitacao(uuid).then(
-      (response) => {
-        if (response.status === HTTP_STATUS.OK) {
-          toastSuccess(toastAprovaMensagem);
-          this.loadSolicitacao(uuid);
-        } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(toastAprovaMensagemErro);
-        }
-      },
-      function () {
-        toastError(toastAprovaMensagemErro);
-      }
-    );
-  }
-
-  render() {
-    const {
-      inversaoDiaCardapio,
-      prazoDoPedidoMensagem,
-      escolaDaInversao,
-      uuid,
-      resposta_sim_nao,
-      showNaoAprovaModal,
-      showQuestionamentoModal,
-      showAutorizarModal,
-      showModalCodaeAutorizar,
-      erro,
-      showModalMarcarConferencia,
-    } = this.state;
-    const {
-      visao,
-      motivo_cancelamento,
-      justificativa,
-      motivosDREnaoValida,
-      textoBotaoNaoAprova,
-      textoBotaoAprova,
-      endpointAprovaSolicitacao,
-      endpointNaoAprovaSolicitacao,
-      endpointQuestionamento,
-      ModalNaoAprova,
-      ModalQuestionamento,
-      ModalCodaeAutoriza,
-    } = this.props;
-    const tipoPerfil = localStorage.getItem("tipo_perfil");
-    const EXIBIR_BOTAO_NAO_APROVAR =
-      tipoPerfil !== TIPO_PERFIL.TERCEIRIZADA ||
-      (inversaoDiaCardapio &&
-        inversaoDiaCardapio.prioridade !== "REGULAR" &&
-        inversaoDiaCardapio.status === statusEnum.CODAE_QUESTIONADO &&
-        textoBotaoNaoAprova);
-    const EXIBIR_BOTAO_APROVAR =
-      (![
-        TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
-        TIPO_PERFIL.TERCEIRIZADA,
-      ].includes(tipoPerfil) &&
-        textoBotaoAprova) ||
-      (inversaoDiaCardapio &&
-        (inversaoDiaCardapio.prioridade === "REGULAR" ||
-          [
-            statusEnum.TERCEIRIZADA_RESPONDEU_QUESTIONAMENTO,
-            statusEnum.CODAE_AUTORIZADO,
-          ].includes(inversaoDiaCardapio.status)) &&
-        textoBotaoAprova);
-    const EXIBIR_BOTAO_QUESTIONAMENTO =
-      [
-        TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
-        TIPO_PERFIL.TERCEIRIZADA,
-      ].includes(tipoPerfil) &&
-      inversaoDiaCardapio &&
-      (inversaoDiaCardapio.prioridade !== "REGULAR" ||
-        (visao === CODAE && inversaoDiaCardapio.prioridade !== "REGULAR")) &&
-      [statusEnum.DRE_VALIDADO, statusEnum.CODAE_QUESTIONADO].includes(
-        inversaoDiaCardapio.status
-      );
-    const EXIBIR_MODAL_AUTORIZACAO =
-      visao === CODAE &&
-      inversaoDiaCardapio &&
-      inversaoDiaCardapio.prioridade !== "REGULAR" &&
-      !inversaoDiaCardapio.logs[inversaoDiaCardapio.logs.length - 1]
-        .resposta_sim_nao;
-    const EXIBIR_BOTAO_MARCAR_CONFERENCIA =
-      !ehUsuarioEmpresa() &&
-      visao === TERCEIRIZADA &&
-      inversaoDiaCardapio &&
-      [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(
-        inversaoDiaCardapio.status
-      );
-
-    const BotaoMarcarConferencia = () => {
-      return (
-        <Botao
-          texto="Marcar Conferência"
-          type={BUTTON_TYPE.BUTTON}
-          style={BUTTON_STYLE.GREEN}
-          className="ms-3"
-          onClick={() => {
-            this.showModalMarcarConferencia();
-          }}
+  return (
+    <div className="report">
+      {ModalNaoAprova && showNaoAprovaModal && (
+        <ModalNaoAprova
+          showModal={showNaoAprovaModal}
+          closeModal={() => setShowNaoAprovaModal(false)}
+          endpoint={endpointNaoAprovaSolicitacao}
+          solicitacao={solicitacao}
+          loadSolicitacao={getSolicitacaoAsync}
+          resposta_sim_nao={respostaSimNao}
+          uuid={uuid}
+          motivosDREnaoValida={motivosDREnaoValida}
         />
-      );
-    };
-
-    const handleClickBotaoAprova = () => {
-      if (EXIBIR_MODAL_AUTORIZACAO) {
-        this.showAutorizarModal();
-      } else if (visao === CODAE && inversaoDiaCardapio) {
-        this.showModalCodaeAutorizar();
-      } else {
-        this.handleSubmit();
-      }
-    };
-
-    return (
-      <div className="report">
-        {ModalCodaeAutoriza && (
-          <ModalCodaeAutoriza
-            showModal={showModalCodaeAutorizar}
-            loadSolicitacao={this.loadSolicitacao}
-            closeModal={this.closeModalCodaeAutorizar}
-            endpoint={endpointAprovaSolicitacao}
-            uuid={uuid}
-          />
-        )}
-        {ModalNaoAprova && (
-          <ModalNaoAprova
-            showModal={showNaoAprovaModal}
-            motivoCancelamento={motivo_cancelamento}
-            closeModal={this.closeNaoAprovaModal}
-            endpoint={endpointNaoAprovaSolicitacao}
-            solicitacao={inversaoDiaCardapio}
-            loadSolicitacao={this.loadSolicitacao}
-            justificativa={justificativa}
-            resposta_sim_nao={resposta_sim_nao}
-            motivosDREnaoValida={motivosDREnaoValida}
-            uuid={uuid}
-          />
-        )}
-        {ModalQuestionamento && (
-          <ModalQuestionamento
-            closeModal={this.closeQuestionamentoModal}
-            showModal={showQuestionamentoModal}
-            justificativa={justificativa}
-            uuid={uuid}
-            loadSolicitacao={this.loadSolicitacao}
-            resposta_sim_nao={resposta_sim_nao}
-            endpoint={endpointQuestionamento}
-          />
-        )}
-        {inversaoDiaCardapio && (
-          <ModalMarcarConferencia
-            showModal={showModalMarcarConferencia}
-            closeModal={() => this.closeModalMarcarConferencia()}
-            onMarcarConferencia={() => {
-              this.loadSolicitacao(uuid, this.state.tipoSolicitacao);
-            }}
-            uuid={inversaoDiaCardapio.uuid}
-            endpoint="inversoes-dia-cardapio"
-          />
-        )}
-        {erro && (
-          <div>Opss... parece que ocorreu um erro ao carregar a página.</div>
-        )}
-        {!inversaoDiaCardapio && !erro && <div>Carregando...</div>}
-        {inversaoDiaCardapio && (
-          <form onSubmit={() => this.handleSubmit()}>
-            {EXIBIR_MODAL_AUTORIZACAO && (
-              <ModalAutorizarAposQuestionamento
-                showModal={showAutorizarModal}
-                loadSolicitacao={this.loadSolicitacao}
-                justificativa={justificativa}
-                closeModal={this.closeAutorizarModal}
-                endpoint={endpointAprovaSolicitacao}
-                uuid={uuid}
-              />
-            )}
-            <span className="page-title">{`Inversão de dia de Cardápio - Solicitação # ${inversaoDiaCardapio.id_externo}`}</span>
-            <div className="card mt-3">
-              <div className="card-body">
-                <CorpoRelatorio
-                  inversaoDiaCardapio={inversaoDiaCardapio}
-                  escolaDaInversao={escolaDaInversao}
-                  prazoDoPedidoMensagem={prazoDoPedidoMensagem}
-                />
-                <RelatorioHistoricoJustificativaEscola
-                  solicitacao={inversaoDiaCardapio}
-                />
-                <RelatorioHistoricoQuestionamento
-                  solicitacao={inversaoDiaCardapio}
-                />
-                {visualizaBotoesDoFluxo(inversaoDiaCardapio) && (
-                  <div className="row mt-4">
-                    <div className="col-12 text-end">
-                      {EXIBIR_BOTAO_NAO_APROVAR && (
-                        <Botao
-                          texto={textoBotaoNaoAprova}
-                          className="ms-3"
-                          onClick={() => this.showNaoAprovaModal("Não")}
-                          type={BUTTON_TYPE.BUTTON}
-                          style={BUTTON_STYLE.GREEN_OUTLINE}
-                        />
-                      )}
-                      {EXIBIR_BOTAO_APROVAR &&
-                        textoBotaoAprova !== "Ciente" &&
-                        (visao === CODAE &&
-                        inversaoDiaCardapio.logs.filter(
-                          (log) =>
-                            log.status_evento_explicacao ===
-                              "Terceirizada respondeu questionamento" &&
-                            !log.resposta_sim_nao
-                        ).length > 0 ? null : (
-                          <Botao
-                            texto={textoBotaoAprova}
-                            className="ms-3"
-                            onClick={() => handleClickBotaoAprova()}
-                            type={BUTTON_TYPE.BUTTON}
-                            style={BUTTON_STYLE.GREEN}
-                          />
-                        ))}
-                      {EXIBIR_BOTAO_QUESTIONAMENTO && (
-                        <Botao
-                          texto={
-                            tipoPerfil ===
-                            TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
-                              ? "Questionar"
-                              : "Sim"
-                          }
-                          type={BUTTON_TYPE.BUTTON}
-                          onClick={() => this.showQuestionamentoModal("Sim")}
-                          style={BUTTON_STYLE.GREEN}
-                          className="ms-3"
-                        />
-                      )}
-                      {EXIBIR_BOTAO_MARCAR_CONFERENCIA && (
-                        <div className="form-group float-end mt-4">
-                          {inversaoDiaCardapio.terceirizada_conferiu_gestao ? (
-                            <label className="ms-3 conferido">
-                              <i className="fas fa-check me-2" />
-                              Solicitação Conferida
-                            </label>
-                          ) : (
-                            <BotaoMarcarConferencia
-                              uuid={inversaoDiaCardapio.uuid}
-                            />
-                          )}
+      )}
+      {ModalQuestionamento && (
+        <ModalQuestionamento
+          closeModal={() => setShowQuestionamentoModal(false)}
+          showModal={showQuestionamentoModal}
+          uuid={uuid}
+          loadSolicitacao={getSolicitacaoAsync}
+          resposta_sim_nao={respostaSimNao}
+          endpoint={endpointQuestionamento}
+        />
+      )}
+      {solicitacao && (
+        <ModalMarcarConferencia
+          showModal={showModalMarcarConferencia}
+          closeModal={() => setShowModalMarcarConferencia(false)}
+          onMarcarConferencia={getSolicitacaoAsync}
+          uuid={uuid}
+          endpoint="inversoes-dia-cardapio"
+        />
+      )}
+      {ModalCODAEAutoriza && (
+        <ModalCODAEAutoriza
+          showModal={showModalCodaeAutorizar}
+          loadSolicitacao={getSolicitacaoAsync}
+          closeModal={() => setShowModalCodaeAutorizar(false)}
+          endpoint={endpointAprovaSolicitacao}
+          uuid={uuid}
+          ehInclusao={true}
+        />
+      )}
+      {erro && <div>{erro}</div>}
+      {!erro && (
+        <Spin tip="Carregando..." spinning={loading || !solicitacao}>
+          {solicitacao && (
+            <Form onSubmit={onSubmit}>
+              {({ handleSubmit, values, submitting }) => (
+                <form onSubmit={handleSubmit}>
+                  {endpointAprovaSolicitacao && (
+                    <ModalAutorizarAposQuestionamento
+                      showModal={showAutorizarModal}
+                      loadSolicitacao={getSolicitacaoAsync}
+                      closeModal={() => setShowAutorizarModal(false)}
+                      endpoint={endpointAprovaSolicitacao}
+                      uuid={uuid}
+                    />
+                  )}
+                  <span className="page-title">
+                    Inversão de dia de Cardápio - Solicitação #{" "}
+                    {solicitacao.id_externo}
+                  </span>
+                  <div className="card mt-3">
+                    <div className="card-body">
+                      <CorpoRelatorio
+                        solicitacao={solicitacao}
+                        prazoDoPedidoMensagem={prazoMensagem}
+                        meusDados={meusDados}
+                      />
+                      <RelatorioHistoricoJustificativaEscola
+                        solicitacao={solicitacao}
+                      />
+                      <RelatorioHistoricoQuestionamento
+                        solicitacao={solicitacao}
+                      />
+                      {visualizaBotoesDoFluxo(solicitacao) && (
+                        <div className="row mt-4 me-3">
+                          <div className="col-12 text-end">
+                            {exibeBotaoNaoAprovar(
+                              solicitacao,
+                              textoBotaoNaoAprova
+                            ) && (
+                              <Botao
+                                texto={textoBotaoNaoAprova}
+                                className="ms-3"
+                                onClick={() => {
+                                  setRespostaSimNao("Não");
+                                  setShowNaoAprovaModal(true);
+                                }}
+                                type={BUTTON_TYPE.BUTTON}
+                                style={BUTTON_STYLE.GREEN_OUTLINE}
+                              />
+                            )}
+                            {exibeBotaoAprovar(
+                              solicitacao,
+                              visao,
+                              textoBotaoAprova
+                            ) && (
+                              <Botao
+                                texto={textoBotaoAprova}
+                                type={BUTTON_TYPE.BUTTON}
+                                onClick={() =>
+                                  visao === DRE
+                                    ? onSubmit(values)
+                                    : exibirModalAutorizacaoAposQuestionamento(
+                                        solicitacao,
+                                        visao
+                                      )
+                                    ? setShowAutorizarModal(true)
+                                    : setShowModalCodaeAutorizar(true)
+                                }
+                                disabled={submitting}
+                                style={BUTTON_STYLE.GREEN}
+                                className="ms-3"
+                              />
+                            )}
+                            {exibirBotaoQuestionamento(
+                              solicitacao,
+                              visao,
+                              tipoPerfil
+                            ) && (
+                              <>
+                                {solicitacao.status ===
+                                  statusEnum.CODAE_QUESTIONADO &&
+                                tipoPerfil === TIPO_PERFIL.TERCEIRIZADA ? (
+                                  <Botao
+                                    key="1"
+                                    texto="Não"
+                                    type={BUTTON_TYPE.BUTTON}
+                                    onClick={() => {
+                                      setRespostaSimNao("Não");
+                                      setShowQuestionamentoModal(true);
+                                    }}
+                                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                                    className="ms-3"
+                                  />
+                                ) : (
+                                  <></>
+                                )}
+                                <Botao
+                                  key="2"
+                                  texto={
+                                    tipoPerfil ===
+                                    TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+                                      ? "Questionar"
+                                      : "Sim"
+                                  }
+                                  type={BUTTON_TYPE.BUTTON}
+                                  onClick={() => {
+                                    setRespostaSimNao("Sim");
+                                    setShowQuestionamentoModal(true);
+                                  }}
+                                  style={BUTTON_STYLE.GREEN}
+                                  className="ms-3"
+                                />
+                              </>
+                            )}
+                            {exibirBotaoMarcarConferencia(
+                              solicitacao,
+                              visao
+                            ) && (
+                              <div className="form-group float-end mt-4">
+                                {solicitacao.terceirizada_conferiu_gestao ? (
+                                  <label className="ms-3 conferido">
+                                    <i className="fas fa-check me-2" />
+                                    Solicitação Conferida
+                                  </label>
+                                ) : (
+                                  <BotaoMarcarConferencia
+                                    uuid={solicitacao.uuid}
+                                  />
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
-                )}
-              </div>
-            </div>
-          </form>
-        )}
-      </div>
-    );
-  }
-}
-
-const formName = "relatorioInversaoDeDiaDeCardapio";
-const RelatorioForm = reduxForm({
-  form: formName,
-  enableReinitialize: true,
-})(Relatorio);
-
-const selector = formValueSelector(formName);
-
-const mapStateToProps = (state) => {
-  return {
-    justificativa: selector(state, "justificativa"),
-    motivo_cancelamento: selector(state, "motivo_cancelamento"),
-  };
+                </form>
+              )}
+            </Form>
+          )}
+        </Spin>
+      )}
+    </div>
+  );
 };
-
-export default connect(mapStateToProps)(RelatorioForm);

@@ -2,7 +2,7 @@ import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
 import { getMotivosDREnaoValida } from "src/services/relatorios";
 import { Container } from "src/components/InversaoDeDiaDeCardapio/Escola/components/Container";
-import Relatorio from "src/components/InversaoDeDiaDeCardapio/Relatorio";
+import { Relatorio } from "src/components/InversaoDeDiaDeCardapio/Relatorio";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import ModalCancelarSolicitacao from "src/components/Shareable/ModalCancelarSolicitacao_";
 import { ModalCODAEQuestiona } from "src/components/Shareable/ModalCODAEQuestiona";
