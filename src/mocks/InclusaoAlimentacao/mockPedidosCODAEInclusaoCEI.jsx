@@ -1,7 +1,4 @@
 export const mockPedidosCODAEInclusaoCEI = {
-  count: 1,
-  next: null,
-  previous: null,
   results: [
     {
       escola: {

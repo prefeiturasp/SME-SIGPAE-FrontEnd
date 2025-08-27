@@ -1,7 +1,4 @@
 export const mockPedidosDREAlteracaoCardapio = {
-  count: 30,
-  next: null,
-  previous: null,
   results: [
     {
       escola: {
