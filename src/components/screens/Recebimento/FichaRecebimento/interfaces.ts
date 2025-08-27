@@ -64,15 +64,26 @@ export interface FichaRecebimentoDetalhada {
   observacao?: string;
   observacoes_conferencia?: string;
   veiculos?: VeiculoPayload[];
-  questoes?: QuestoesPayload[];
+  questoes?: QuestaoInitialValue[];
   ocorrencias?: OcorrenciaFichaRecebimento[];
   arquivos?: Arquivo[];
+}
+
+export interface QuestaoInitialValue {
+  questao_conferencia: QuestaoConferencia;
+  resposta: boolean;
+  tipo_questao: string;
 }
 
 export interface QuestoesPayload {
   questao_conferencia: string;
   resposta: boolean;
   tipo_questao: string;
+}
+
+export interface QuestaoConferencia {
+  questao: string;
+  uuid: string;
 }
 
 export interface VeiculoPayload {

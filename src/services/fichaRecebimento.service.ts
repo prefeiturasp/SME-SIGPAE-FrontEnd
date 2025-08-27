@@ -31,7 +31,7 @@ export const editaRascunhoFichaRecebimento = async (
 ): Promise<ResponseFichaRecebimento> =>
   await axios.put(`/rascunho-ficha-de-recebimento/${uuid}/`, payload);
 
-export const cadastrarFichaRecebimentoDoRascunho = async (
+export const editarFichaRecebimento = async (
   payload: FichaRecebimentoPayload,
   uuid: string
 ): Promise<ResponseFichaRecebimento> =>

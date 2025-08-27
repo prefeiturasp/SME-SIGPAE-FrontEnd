@@ -151,8 +151,9 @@ export const geraInitialValuesCadastrar = (
 
   if (ficha.questoes && ficha.questoes.length > 0) {
     ficha.questoes.forEach((questao) => {
-      initialValues[`${questao.tipo_questao}_${questao.questao_conferencia}`] =
-        booleanToString(questao.resposta);
+      initialValues[
+        `${questao.tipo_questao}_${questao.questao_conferencia.uuid}`
+      ] = booleanToString(questao.resposta);
     });
   }
 

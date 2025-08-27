@@ -17,7 +17,7 @@ import {
 import {
   cadastraRascunhoFichaRecebimento,
   cadastraFichaRecebimento,
-  cadastrarFichaRecebimentoDoRascunho,
+  editarFichaRecebimento,
   editaRascunhoFichaRecebimento,
 } from "src/services/fichaRecebimento.service";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
@@ -148,7 +148,7 @@ export default () => {
     if (initialValues.etapa) {
       options.push({
         uuid: initialValues.etapa.uuid,
-        nome: `Etapa ${initialValues.etapa.etapa} - Parte ${initialValues.etapa.parte}`,
+        nome: `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`,
       });
     }
     return options;
@@ -340,7 +340,7 @@ export default () => {
 
     try {
       const response = initialValues.uuid
-        ? await cadastrarFichaRecebimentoDoRascunho(payload, initialValues.uuid)
+        ? await editarFichaRecebimento(payload, initialValues.uuid)
         : await cadastraFichaRecebimento(payload);
       if (response.status === 201 || response.status === 200) {
         toastSuccess("Ficha de recebimento Assinada com sucesso!");
