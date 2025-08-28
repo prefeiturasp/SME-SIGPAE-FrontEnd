@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, cleanup } from "@testing-library/react";
+import { act, render, screen, cleanup } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import HTTP_STATUS from "http-status-codes";
@@ -105,6 +105,19 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
 
   afterEach(() => {
     cleanup();
+  });
+
+  it("deve exibir título e informações corretas", async () => {
+    await act(async () => {
+      renderModalCadastrarNoCalendario();
+    });
+    expect(screen.getByText(/Cadastrar dia de Sobremesa/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Cadastro de sobremesa para o dia/)
+    ).toBeInTheDocument();
+    expect(screen.getByText("15/06/2023")).toBeInTheDocument();
+    expect(screen.getByText(/EMEF/i)).toBeInTheDocument();
+    expect(screen.getByText(/Edital 001/i)).toBeInTheDocument();
   });
 
   it("", async () => {
