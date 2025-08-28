@@ -4,7 +4,6 @@ import { getFichaRecebimentoDetalhada } from "../../../../services/fichaRecebime
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { Arquivo, ArquivoForm } from "src/interfaces/pre_recebimento.interface";
 import { downloadAndConvertToBase64 } from "src/components/Shareable/Input/InputFile/helper";
-import { CollapseControl } from "src/components/Shareable/Collapse";
 
 export const carregarArquivo = async (arquivo: Arquivo) => {
   const file = {
@@ -21,18 +20,14 @@ export const carregarEdicaoFichaDeRecebimento = async (
   setCarregando: Dispatch<SetStateAction<boolean>>,
   setVeiculos?: Dispatch<SetStateAction<any[]>>,
   setOcorrenciasCount?: Dispatch<SetStateAction<number>>,
-  setArquivos?: Dispatch<SetStateAction<any[]>>,
-  setCollapse1?: Dispatch<SetStateAction<CollapseControl>>
+  setArquivos?: Dispatch<SetStateAction<any[]>>
 ) => {
   const urlParams = new URLSearchParams(window.location.search);
   const uuid = urlParams.get("uuid");
 
   if (!uuid) {
-    setCollapse1({ 0: true });
     return;
   }
-
-  setCollapse1({ 0: false, 1: true });
 
   try {
     setCarregando(true);

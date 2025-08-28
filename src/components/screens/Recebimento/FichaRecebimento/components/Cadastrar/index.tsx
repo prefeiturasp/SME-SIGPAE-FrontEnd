@@ -388,8 +388,7 @@ export default () => {
         setCarregando,
         setVeiculos,
         setOcorrenciasCount,
-        setArquivos,
-        setCollapse1
+        setArquivos
       );
     };
 
