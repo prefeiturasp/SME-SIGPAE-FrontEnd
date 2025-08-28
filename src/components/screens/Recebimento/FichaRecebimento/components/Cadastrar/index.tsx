@@ -48,7 +48,6 @@ import { exibeError } from "src/helpers/utilities";
 import { deletaValues } from "src/helpers/formHelper";
 import { stringToBoolean } from "src/helpers/parsers";
 import {
-  Arquivo,
   ArquivoForm,
   CronogramaSimples,
 } from "src/interfaces/pre_recebimento.interface";
@@ -99,11 +98,21 @@ const collapseConfigStep3 = [
   },
 ];
 
+const iniciaStateCollapse = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const uuid = urlParams.get("uuid");
+
+  if (!uuid) return { 0: true };
+  else return { 0: false, 1: true };
+};
+
 export default () => {
   const navigate = useNavigate();
   const [carregando, setCarregando] = useState<boolean>(true);
   const [cronogramas, setCronogramas] = useState<Array<CronogramaSimples>>([]);
-  const [collapse1, setCollapse1] = useState<CollapseControl>({ 0: true });
+  const [collapse1, setCollapse1] = useState<CollapseControl>(
+    iniciaStateCollapse()
+  );
   const [collapse2, setCollapse2] = useState<CollapseControl>({ 0: true });
   const [collapse3, setCollapse3] = useState<CollapseControl>({ 0: true });
   const [cronograma, setCronograma] = useState<CronogramaFicha>(
@@ -115,7 +124,7 @@ export default () => {
   const [showModalAssinatura, setShowModalAssinatura] = useState(false);
   const [stepAtual, setStepAtual] = useState(0);
   const [veiculos, setVeiculos] = useState([{}]);
-  const [arquivos, setArquivos] = useState<Arquivo[]>([]);
+  const [arquivos, setArquivos] = useState<ArquivoForm[]>([]);
   const [questoesPrimarias, setQuestoesPrimarias] = useState<
     QuestaoConferenciaSimples[]
   >([]);
@@ -186,6 +195,16 @@ export default () => {
           })
           .filter((x) => x !== null)
       : [];
+  };
+
+  const formataPayloadArquivos = (files: ArquivoForm[]) => {
+    const arquivosAtualizados = files.map((arquivo: ArquivoForm) => {
+      return {
+        nome: arquivo.nome,
+        arquivo: arquivo.base64,
+      };
+    });
+    return arquivosAtualizados;
   };
 
   const extraiOcorrenciasDoFormulario = (values: Record<string, any>) => {
@@ -294,7 +313,7 @@ export default () => {
           ? cronograma.sistema_vedacao_embalagem_secundaria
           : values.sistema_vedacao_embalagem_secundaria_outra_opcao,
       observacao: values.observacao,
-      arquivos: arquivos,
+      arquivos: formataPayloadArquivos(arquivos),
       observacoes_conferencia: values.observacoes_conferencia,
       questoes: questoes,
       ocorrencias: extraiOcorrenciasDoFormulario(values),
@@ -406,21 +425,19 @@ export default () => {
 
   useEffect(() => {
     if (initialValues.etapa && formRef.current && cronograma.etapas) {
-      setTimeout(() => {
-        const selectElement = document.querySelector(
-          'select[data-cy="Etapa e Parte"]'
-        ) as HTMLSelectElement;
-        if (selectElement) {
-          const optionToSelect = Array.from(selectElement.options).find(
-            (option) => option.value === initialValues.etapa.uuid
-          );
+      const selectElement = document.querySelector(
+        'select[data-cy="Etapa e Parte"]'
+      ) as HTMLSelectElement;
+      if (selectElement) {
+        const optionToSelect = Array.from(selectElement.options).find(
+          (option) => option.value === initialValues.etapa.uuid
+        );
 
-          if (optionToSelect) {
-            optionToSelect.selected = true;
-            selectElement.dispatchEvent(new Event("change", { bubbles: true }));
-          }
+        if (optionToSelect) {
+          optionToSelect.selected = true;
+          selectElement.dispatchEvent(new Event("change", { bubbles: true }));
         }
-      }, 200);
+      }
     }
   }, [cronograma.etapas, initialValues.etapa]);
 
@@ -510,14 +527,7 @@ export default () => {
   };
 
   const setFiles = (files: Array<ArquivoForm>): void => {
-    const arquivosAtualizados = files.map((arquivo: ArquivoForm) => {
-      return {
-        nome: arquivo.nome,
-        arquivo: arquivo.base64,
-      };
-    });
-
-    setArquivos(arquivosAtualizados);
+    setArquivos(files);
   };
 
   const removeFiles = (index: number): void => {
@@ -1481,6 +1491,7 @@ export default () => {
                             name="arquivo"
                             setFiles={setFiles}
                             removeFile={removeFiles}
+                            arquivosIniciais={arquivos as ArquivoForm[]}
                             toastSuccess="Documento incluído com sucesso!"
                             textoBotao="Anexar Documento"
                             helpText="Envie arquivos nos formatos: PDF, PNG, JPG ou JPEG  com até 10MB."
