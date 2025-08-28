@@ -191,6 +191,31 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     expect(defaultProps.getObjetosAsync).not.toHaveBeenCalled();
   });
 
+  it("deve adicionar e remover cadastros", async () => {
+    await act(async () => {
+      renderModalCadastrarNoCalendario();
+    });
+
+    const adicionar = screen.getByText("Adicionar");
+    await act(async () => {
+      fireEvent.click(adicionar);
+    });
+
+    const selects = screen.getAllByTestId(
+      /multiselect-cadastros_calendario\[\d+\].editais/
+    );
+    expect(selects.length).toBe(2);
+
+    const remover = screen.getAllByText("Remover")[0];
+    await act(async () => {
+      fireEvent.click(remover);
+    });
+    const selectsAposRemover = screen.getAllByTestId(
+      /multiselect-cadastros_calendario\[\d+\].editais/
+    );
+    expect(selectsAposRemover.length).toBe(1);
+  });
+
   it("", async () => {
     await act(async () => {
       renderModalCadastrarNoCalendario();
