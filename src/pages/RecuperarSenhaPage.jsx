@@ -81,8 +81,14 @@ class RecuperarSenhaPage extends Component {
                   onChange={(event) => this.onSenhaChanged(event.target.value)}
                   maxlength={20}
                   pattern="(?=.*\d)(?=.*[a-z]).{8,}"
-                  title="Pelo menos 8 caracteres, uma letra e um número"
-                  helpText="Pelo menos 8 caracteres, uma letra e um número"
+                  title="Pelo menos 8 caracteres, uma letra e um número. A nova senha não pode ser igual as últimas 5 anteriores."
+                  helpText={
+                    <>
+                      Pelo menos 8 caracteres, uma letra e um número
+                      <br />A nova senha não pode ser igual as últimas 5
+                      anteriores.
+                    </>
+                  }
                   required
                   validate={required}
                 />
@@ -96,8 +102,14 @@ class RecuperarSenhaPage extends Component {
                   onChange={(event) => this.onSenhaChanged(event.target.value)}
                   maxlength={20}
                   pattern="(?=.*\d)(?=.*[a-z]).{8,}"
-                  title="Pelo menos 8 caracteres, uma letra e um número"
-                  helpText="Pelo menos 8 caracteres, uma letra e um número"
+                  title="Pelo menos 8 caracteres, uma letra e um número. A nova senha não pode ser igual as últimas 5 anteriores."
+                  helpText={
+                    <>
+                      Pelo menos 8 caracteres, uma letra e um número
+                      <br />A nova senha não pode ser igual as últimas 5
+                      anteriores.
+                    </>
+                  }
                   required
                   validate={required}
                 />
