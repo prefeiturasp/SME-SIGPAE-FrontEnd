@@ -11,7 +11,6 @@ import { MemoryRouter } from "react-router-dom";
 import HTTP_STATUS from "http-status-codes";
 import { ModalCadastrarNoCalendario } from "src/components/Shareable/Calendario/componentes/ModalCadastrarNoCalendario/index.jsx";
 
-import preview from "jest-preview";
 // Mocks
 jest.mock("src/components/Shareable/Botao", () => ({
   __esModule: true,
@@ -166,7 +165,6 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     });
 
     const { toastSuccess } = require("src/components/Shareable/Toast/dialogs");
-    preview.debug();
     expect(toastSuccess).toHaveBeenCalledWith(
       "Dia de Sobremesa criado com sucesso"
     );
@@ -235,21 +233,11 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     await act(async () => {
       fireEvent.click(atualizar);
     });
-    preview.debug();
     const { toastSuccess } = require("src/components/Shareable/Toast/dialogs");
     expect(toastSuccess).toHaveBeenCalledWith(
       "Dia de Sobremesa atualizado com sucesso"
     );
     expect(defaultProps.closeModal).toHaveBeenCalled();
     expect(defaultProps.getObjetosAsync).toHaveBeenCalled();
-  });
-
-  it("", async () => {
-    await act(async () => {
-      renderModalCadastrarNoCalendario();
-    });
-    preview.debug();
-    criaObjetoSucesso();
-    criaObjetoFalha();
   });
 });
