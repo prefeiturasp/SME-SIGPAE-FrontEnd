@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, cleanup } from "@testing-library/react";
+import {
+  act,
+  render,
+  screen,
+  fireEvent,
+  cleanup,
+} from "@testing-library/react";
 import React from "react";
 import { ModalConfirmarExclusao } from "src/components/Shareable/Calendario/componentes/ModalConfirmarExclusao/index.jsx";
 import { MemoryRouter } from "react-router-dom";
@@ -79,14 +85,45 @@ describe("Teste <ModalConfirmarExclusao>", () => {
 
   it("deve exibir o modal de exclusão com informações corretas", async () => {
     await act(async () => {
-      renderModalConfirmarExclusao({ deleteObjetoAsync: deletaObjetoFalha });
+      renderModalConfirmarExclusao();
     });
-    preview.debug();
     expect(screen.getByText(/Excluir Sobremesa/i)).toBeInTheDocument();
     expect(
       screen.getByText(/Deseja realmente excluir o cadastro de/)
     ).toBeInTheDocument();
     expect(screen.getByText(mockEvent.title)).toBeInTheDocument();
     expect(screen.getByText("15/06/2023")).toBeInTheDocument();
+  });
+
+  it("deve chamar closeModal ao clicar em Não", async () => {
+    await act(async () => {
+      renderModalConfirmarExclusao();
+    });
+
+    const botaoNao = screen.getByText("Não");
+    fireEvent.click(botaoNao);
+    expect(defaultProps.closeModal).toHaveBeenCalled();
+  });
+
+  it("deve submeter o formulário e ter sucesso ao clicar em Sim", async () => {
+    await act(async () => {
+      renderModalConfirmarExclusao();
+    });
+    const botaoSim = screen.getByText("Sim");
+    await act(async () => {
+      fireEvent.click(botaoSim);
+    });
+    expect(deletaObjetoSucesso).toHaveBeenCalledWith(mockEvent.uuid);
+    const { toastSuccess } = require("src/components/Shareable/Toast/dialogs");
+    expect(toastSuccess).toHaveBeenCalledWith("Registro excluído com sucesso");
+    expect(defaultProps.closeModal).toHaveBeenCalled();
+    expect(defaultProps.getObjetosAsync).toHaveBeenCalled();
+  });
+
+  it("", async () => {
+    await act(async () => {
+      renderModalConfirmarExclusao(deletaObjetoFalha);
+    });
+    preview.debug();
   });
 });
