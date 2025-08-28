@@ -30,10 +30,60 @@ export interface FichaRecebimentoPayload {
   password?: string;
 }
 
+export interface DadosCronogramaSimples {
+  uuid: string;
+  numero: string;
+  embalagem_primaria: string;
+  embalagem_secundaria: string;
+  peso_liquido_embalagem_primaria: string;
+  peso_liquido_embalagem_secundaria: string;
+  sistema_vedacao_embalagem_secundaria: string;
+}
+
+export interface FichaRecebimentoDetalhada {
+  uuid: string;
+  dados_cronograma: DadosCronogramaSimples;
+  data_recebimento: string;
+  status: string;
+  etapa: EtapaFicha;
+  data_entrega: string;
+  documentos_recebimento?: string[];
+  lote_fabricante_de_acordo?: boolean | string;
+  lote_fabricante_divergencia?: string;
+  data_fabricacao_de_acordo?: boolean | string;
+  data_fabricacao_divergencia?: string;
+  data_validade_de_acordo?: boolean | string;
+  data_validade_divergencia?: string;
+  numero_lote_armazenagem?: string;
+  numero_paletes?: string;
+  peso_embalagem_primaria_1?: string;
+  peso_embalagem_primaria_2?: string;
+  peso_embalagem_primaria_3?: string;
+  peso_embalagem_primaria_4?: string;
+  sistema_vedacao_embalagem_secundaria?: string;
+  observacao?: string;
+  observacoes_conferencia?: string;
+  veiculos?: VeiculoPayload[];
+  questoes?: QuestaoInitialValue[];
+  ocorrencias?: OcorrenciaFichaRecebimento[];
+  arquivos?: Arquivo[];
+}
+
+export interface QuestaoInitialValue {
+  questao_conferencia: QuestaoConferencia;
+  resposta: boolean;
+  tipo_questao: string;
+}
+
 export interface QuestoesPayload {
   questao_conferencia: string;
   resposta: boolean;
   tipo_questao: string;
+}
+
+export interface QuestaoConferencia {
+  questao: string;
+  uuid: string;
 }
 
 export interface VeiculoPayload {
@@ -114,6 +164,7 @@ export interface ResponseFichasDeRecebimento extends ResponseInterface {
 }
 
 export interface OcorrenciaFichaRecebimento {
+  houve_ocorrencia?: string;
   tipo: string;
   relacao?: string;
   numero_nota?: string;

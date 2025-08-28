@@ -37,6 +37,7 @@ import {
   UtensilioCozinhaInterface,
   UtensilioMesaInterface,
 } from "./imr.interface";
+import { FichaRecebimentoDetalhada } from "src/components/screens/Recebimento/FichaRecebimento/interfaces";
 
 export interface ResponseInterface {
   data: Object;
@@ -221,6 +222,10 @@ export interface ResponseGetEditalCotratoInterface extends ResponseInterface {
 
 export interface ResponseFichaRecebimento extends ResponseInterface {
   data: FichaRecebimento;
+}
+
+export interface ResponseFichaRecebimentoDetalhada extends ResponseInterface {
+  data: FichaRecebimentoDetalhada;
 }
 
 export interface ResponseGetEscolasTercTotalInterface
