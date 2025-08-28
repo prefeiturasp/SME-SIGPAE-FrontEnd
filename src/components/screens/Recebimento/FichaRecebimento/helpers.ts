@@ -2,6 +2,18 @@ import { Dispatch, SetStateAction } from "react";
 import { FichaRecebimentoDetalhada } from "../FichaRecebimento/interfaces";
 import { getFichaRecebimentoDetalhada } from "../../../../services/fichaRecebimento.service";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { Arquivo, ArquivoForm } from "src/interfaces/pre_recebimento.interface";
+import { downloadAndConvertToBase64 } from "src/components/Shareable/Input/InputFile/helper";
+
+export const carregarArquivo = async (arquivo: Arquivo) => {
+  const file = {
+    nome: arquivo.nome,
+    arquivo: arquivo.arquivo,
+    base64: await downloadAndConvertToBase64(arquivo.arquivo),
+  };
+
+  return file;
+};
 
 export const carregarEdicaoFichaDeRecebimento = async (
   setInitialValues: Dispatch<SetStateAction<Record<string, any>>>,
@@ -40,7 +52,12 @@ export const carregarEdicaoFichaDeRecebimento = async (
     }
 
     if (setArquivos && fichaRecebimento.arquivos) {
-      setArquivos(fichaRecebimento.arquivos);
+      const listaArquivos: ArquivoForm[] = [];
+      for (const arquivo of fichaRecebimento.arquivos) {
+        let arq = await carregarArquivo(arquivo);
+        listaArquivos.push(arq);
+      }
+      setArquivos(listaArquivos);
     }
 
     setInitialValues(geraInitialValuesCadastrar(fichaRecebimento));
