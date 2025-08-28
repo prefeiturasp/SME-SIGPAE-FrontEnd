@@ -1,9 +1,10 @@
 import "@testing-library/jest-dom";
-import { act, render, cleanup } from "@testing-library/react";
+import { act, render, screen, cleanup } from "@testing-library/react";
 import React from "react";
 import { ModalConfirmarExclusao } from "src/components/Shareable/Calendario/componentes/ModalConfirmarExclusao/index.jsx";
 import { MemoryRouter } from "react-router-dom";
 import HTTP_STATUS from "http-status-codes";
+import preview from "jest-preview";
 
 jest.mock("src/components/Shareable/Botao", () => ({
   __esModule: true,
@@ -76,9 +77,16 @@ describe("Teste <ModalConfirmarExclusao>", () => {
     cleanup();
   });
 
-  it("", async () => {
+  it("deve exibir o modal de exclusão com informações corretas", async () => {
     await act(async () => {
-      renderModalConfirmarExclusao(deletaObjetoFalha);
+      renderModalConfirmarExclusao({ deleteObjetoAsync: deletaObjetoFalha });
     });
+    preview.debug();
+    expect(screen.getByText(/Excluir Sobremesa/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Deseja realmente excluir o cadastro de/)
+    ).toBeInTheDocument();
+    expect(screen.getByText(mockEvent.title)).toBeInTheDocument();
+    expect(screen.getByText("15/06/2023")).toBeInTheDocument();
   });
 });
