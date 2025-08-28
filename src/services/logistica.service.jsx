@@ -230,7 +230,11 @@ export const solicitarAlteracaoNotificacao = async (uuid, payload) => {
 
 export const assinarEnviarNotificacao = async (uuid, payload) => {
   const url = `/notificacao-guias-com-ocorrencias/${uuid}/assinar/`;
-  const response = await axios.patch(url, payload).catch(ErrorHandlerFunction);
+  const response = await axios
+    .patch(url, payload, {
+      skipAuthRefresh: true,
+    })
+    .catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;
