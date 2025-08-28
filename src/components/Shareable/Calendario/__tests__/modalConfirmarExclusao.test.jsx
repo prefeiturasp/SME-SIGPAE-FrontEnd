@@ -36,7 +36,7 @@ jest.mock("src/components/Shareable/Toast/dialogs", () => ({
   toastError: jest.fn(),
 }));
 
-describe("Teste <ModalConfirmarExclusao>", () => {
+describe("Teste componete ModalConfirmarExclusao", () => {
   const mockEvent = {
     uuid: "12345",
     title: "Unidade Teste",
