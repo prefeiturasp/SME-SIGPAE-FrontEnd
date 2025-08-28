@@ -10,7 +10,6 @@ import React from "react";
 import { ModalConfirmarExclusao } from "src/components/Shareable/Calendario/componentes/ModalConfirmarExclusao/index.jsx";
 import { MemoryRouter } from "react-router-dom";
 import HTTP_STATUS from "http-status-codes";
-import preview from "jest-preview";
 
 jest.mock("src/components/Shareable/Botao", () => ({
   __esModule: true,
@@ -129,11 +128,18 @@ describe("Teste <ModalConfirmarExclusao>", () => {
     await act(async () => {
       fireEvent.click(botaoSim);
     });
-    preview.debug();
     expect(deletaObjetoFalha).toHaveBeenCalledWith(mockEvent.uuid);
     const { toastError } = require("src/components/Shareable/Toast/dialogs");
     expect(toastError).toHaveBeenCalledWith("Erro ao excluir");
     expect(defaultProps.closeModal).not.toHaveBeenCalled();
     expect(defaultProps.getObjetosAsync).not.toHaveBeenCalled();
+  });
+
+  it("não deve exibir o modal quando showModal for false", async () => {
+    await act(async () => {
+      renderModalConfirmarExclusao({ showModal: false });
+    });
+
+    expect(screen.queryByText(/Excluir Sobremesa/i)).not.toBeInTheDocument();
   });
 });
