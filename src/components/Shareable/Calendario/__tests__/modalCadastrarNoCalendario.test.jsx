@@ -138,6 +138,59 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     expect(defaultProps.closeModal).toHaveBeenCalled();
   });
 
+  it("deve submeter o formulário com sucesso (novo cadastro)", async () => {
+    await act(async () => {
+      renderModalCadastrarNoCalendario({ setObjetoAsync: criaObjetoSucesso });
+    });
+
+    const editalSelect = screen.getByTestId(
+      "multiselect-cadastros_calendario[0].editais"
+    );
+    fireEvent.change(editalSelect, { target: { value: "6789" } });
+    const unidadeSelect = screen.getByTestId(
+      "multiselect-cadastros_calendario[0].tipo_unidades"
+    );
+    fireEvent.change(unidadeSelect, { target: { value: "1234" } });
+
+    const cadastrar = screen.getByText("Cadastrar");
+    await act(async () => {
+      fireEvent.click(cadastrar);
+    });
+
+    const { toastSuccess } = require("src/components/Shareable/Toast/dialogs");
+    preview.debug();
+    expect(toastSuccess).toHaveBeenCalledWith(
+      "Dia de Sobremesa criado com sucesso"
+    );
+    expect(defaultProps.closeModal).toHaveBeenCalled();
+    expect(defaultProps.getObjetosAsync).toHaveBeenCalled();
+  });
+
+  it("deve mostrar erro ao falhar no cadastro", async () => {
+    await act(async () => {
+      renderModalCadastrarNoCalendario({ setObjetoAsync: criaObjetoFalha });
+    });
+
+    const editalSelect = screen.getByTestId(
+      "multiselect-cadastros_calendario[0].editais"
+    );
+    fireEvent.change(editalSelect, { target: { value: "6789" } });
+    const unidadeSelect = screen.getByTestId(
+      "multiselect-cadastros_calendario[0].tipo_unidades"
+    );
+    fireEvent.change(unidadeSelect, { target: { value: "1234" } });
+
+    const cadastrar = screen.getByText("Cadastrar");
+    await act(async () => {
+      fireEvent.click(cadastrar);
+    });
+
+    const { toastError } = require("src/components/Shareable/Toast/dialogs");
+    expect(toastError).toHaveBeenCalledWith("Erro ao salvar");
+    expect(defaultProps.closeModal).not.toHaveBeenCalled();
+    expect(defaultProps.getObjetosAsync).not.toHaveBeenCalled();
+  });
+
   it("", async () => {
     await act(async () => {
       renderModalCadastrarNoCalendario();
