@@ -80,6 +80,14 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     data: { message: "Erro ao salvar" },
   });
 
+  const objetos = [
+    {
+      data: "15/06/2023",
+      editais_uuids: ["6789"],
+      tipo_unidade: { uuid: "1234" },
+    },
+  ];
+
   const defaultProps = {
     tiposUnidades: [{ uuid: "1234", iniciais: "EMEF" }],
     editais: [{ uuid: "6789", numero: "Edital 001" }],
@@ -214,6 +222,26 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
       /multiselect-cadastros_calendario\[\d+\].editais/
     );
     expect(selectsAposRemover.length).toBe(1);
+  });
+
+  it("deve submeter com sucesso quando já existe cadastro (atualização)", async () => {
+    await act(async () => {
+      renderModalCadastrarNoCalendario({
+        setObjetoAsync: criaObjetoSucesso,
+        objetos: objetos,
+      });
+    });
+    const atualizar = screen.getByText("Atualizar");
+    await act(async () => {
+      fireEvent.click(atualizar);
+    });
+    preview.debug();
+    const { toastSuccess } = require("src/components/Shareable/Toast/dialogs");
+    expect(toastSuccess).toHaveBeenCalledWith(
+      "Dia de Sobremesa atualizado com sucesso"
+    );
+    expect(defaultProps.closeModal).toHaveBeenCalled();
+    expect(defaultProps.getObjetosAsync).toHaveBeenCalled();
   });
 
   it("", async () => {
