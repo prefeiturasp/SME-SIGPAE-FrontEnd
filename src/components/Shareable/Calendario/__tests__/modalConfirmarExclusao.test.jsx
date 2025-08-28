@@ -120,10 +120,20 @@ describe("Teste <ModalConfirmarExclusao>", () => {
     expect(defaultProps.getObjetosAsync).toHaveBeenCalled();
   });
 
-  it("", async () => {
+  it("deve submeter o formulário e falhar ao clicar em Sim", async () => {
     await act(async () => {
-      renderModalConfirmarExclusao(deletaObjetoFalha);
+      renderModalConfirmarExclusao({ deleteObjetoAsync: deletaObjetoFalha });
+    });
+
+    const botaoSim = screen.getByText("Sim");
+    await act(async () => {
+      fireEvent.click(botaoSim);
     });
     preview.debug();
+    expect(deletaObjetoFalha).toHaveBeenCalledWith(mockEvent.uuid);
+    const { toastError } = require("src/components/Shareable/Toast/dialogs");
+    expect(toastError).toHaveBeenCalledWith("Erro ao excluir");
+    expect(defaultProps.closeModal).not.toHaveBeenCalled();
+    expect(defaultProps.getObjetosAsync).not.toHaveBeenCalled();
   });
 });
