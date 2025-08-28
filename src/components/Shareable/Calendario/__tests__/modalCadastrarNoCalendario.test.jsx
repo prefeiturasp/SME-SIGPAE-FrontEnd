@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, cleanup } from "@testing-library/react";
+import {
+  act,
+  render,
+  screen,
+  fireEvent,
+  cleanup,
+} from "@testing-library/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import HTTP_STATUS from "http-status-codes";
@@ -86,6 +92,7 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     nomeObjetoNoCalendario: "Sobremesa",
     nomeObjetoNoCalendarioMinusculo: "sobremesa",
   };
+
   const renderModalCadastrarNoCalendario = (props = {}) => {
     return render(
       <MemoryRouter
@@ -118,6 +125,17 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     expect(screen.getByText("15/06/2023")).toBeInTheDocument();
     expect(screen.getByText(/EMEF/i)).toBeInTheDocument();
     expect(screen.getByText(/Edital 001/i)).toBeInTheDocument();
+  });
+
+  it("deve chamar closeModal ao clicar em Cancelar", async () => {
+    await act(async () => {
+      renderModalCadastrarNoCalendario();
+    });
+
+    const cancelar = screen.getByText("Cancelar");
+    fireEvent.click(cancelar);
+
+    expect(defaultProps.closeModal).toHaveBeenCalled();
   });
 
   it("", async () => {
