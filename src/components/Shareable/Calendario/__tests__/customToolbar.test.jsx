@@ -1,9 +1,14 @@
 import "@testing-library/jest-dom";
-import { act, render, cleanup } from "@testing-library/react";
+import {
+  act,
+  screen,
+  render,
+  fireEvent,
+  cleanup,
+} from "@testing-library/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { CustomToolbar } from "src/components/Shareable/Calendario/componentes/CustomToolbar/index.jsx";
-import preview from "jest-preview";
 
 jest.mock("src/components/Shareable/Botao", () => ({
   __esModule: true,
@@ -29,15 +34,10 @@ jest.mock("moment", () => {
   });
 });
 
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  useEffect: (effect) => effect(),
-}));
-
 describe("Teste componente CustomToolbar", () => {
   const mockOnNavigate = jest.fn();
   const mockOnView = jest.fn();
-  const currentDate = new Date(2023, 5, 15); // 15 de junho de 2023
+  const currentDate = new Date(2023, 5, 15);
 
   const defaultProps = {
     date: currentDate,
@@ -67,10 +67,72 @@ describe("Teste componente CustomToolbar", () => {
     cleanup();
   });
 
-  it("", async () => {
+  it("deve exibir as informações corretamente", async () => {
     await act(async () => {
       renderCustomToolbar();
     });
-    preview.debug();
+
+    expect(screen.getByText(/Mês/i)).toBeInTheDocument();
+    expect(screen.getByText(/junho 2023/i)).toBeInTheDocument();
+    expect(screen.getByText(/Anterior/i)).toBeInTheDocument();
+    expect(screen.getByText(/Próximo/i)).toBeInTheDocument();
+  });
+
+  it("não deve exibir os botões de navegação quando a view não for 'month'", async () => {
+    await act(async () => {
+      renderCustomToolbar({ view: "week" });
+    });
+
+    expect(screen.queryByText("Anterior")).not.toBeInTheDocument();
+    expect(screen.queryByText("Próximo")).not.toBeInTheDocument();
+  });
+
+  it("deve chamar onNavigate com 'prev' ao clicar no botão Anterior", async () => {
+    await act(async () => {
+      renderCustomToolbar();
+    });
+
+    const botaoAnterior = screen.getByText("Anterior");
+    fireEvent.click(botaoAnterior);
+    expect(mockOnNavigate).toHaveBeenCalledWith("prev");
+  });
+
+  it("deve chamar onNavigate com 'current' ao clicar no botão Próximo", async () => {
+    await act(async () => {
+      renderCustomToolbar();
+    });
+
+    const botaoProximo = screen.getByText("Próximo");
+    fireEvent.click(botaoProximo);
+
+    expect(mockOnNavigate).toHaveBeenCalledWith("current");
+  });
+
+  it("deve chamar onView com 'month' ao clicar na tab Mês", async () => {
+    await act(async () => {
+      renderCustomToolbar();
+    });
+
+    const tabMes = screen.getByText("Mês");
+    fireEvent.click(tabMes);
+
+    expect(mockOnView).toHaveBeenCalledWith("month");
+  });
+
+  it("deve ajustar a data para o mês atual no useEffect", async () => {
+    const mockDate = new Date(2022, 10, 15);
+    const mockSetMonth = jest.fn();
+    const mockSetYear = jest.fn();
+
+    mockDate.setMonth = mockSetMonth;
+    mockDate.setYear = mockSetYear;
+
+    await act(async () => {
+      renderCustomToolbar({ date: mockDate });
+    });
+    expect(mockSetMonth).toHaveBeenCalled();
+    expect(mockSetYear).toHaveBeenCalled();
+
+    expect(mockOnNavigate).toHaveBeenCalledWith("current");
   });
 });
