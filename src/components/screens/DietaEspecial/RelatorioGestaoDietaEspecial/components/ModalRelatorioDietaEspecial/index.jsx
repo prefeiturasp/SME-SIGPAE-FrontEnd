@@ -144,10 +144,12 @@ const ModalRelatorioDietaEspecial = ({
                   return (
                     <>
                       <div className="item-grid-produto item-prod-detalhe">
-                        <div>{dieta.rastro_escola.diretoria_regional.nome}</div>
-                        <div>{dieta.rastro_escola.nome}</div>
-                        <div>{dieta.rastro_escola.lote.nome}</div>
-                        <div>{dieta.rastro_escola.tipo_gestao.nome}</div>
+                        <div>
+                          {dieta.rastro_escola.diretoria_regional?.nome}
+                        </div>
+                        <div>{dieta.rastro_escola?.nome}</div>
+                        <div>{dieta.rastro_escola.lote?.nome}</div>
+                        <div>{dieta.rastro_escola.tipo_gestao?.nome}</div>
                         <div>{dieta.criado_em.split(" ")[0]}</div>
                         <div>{dieta.ativo ? "Ativa" : "Inativa"}</div>
                       </div>
@@ -181,7 +183,7 @@ const ModalRelatorioDietaEspecial = ({
                         <div className="col-md-5">
                           <label>Nome do Aluno</label>
                           <br />
-                          <b>{dieta.aluno.nome}</b>
+                          <b>{dieta.aluno?.nome}</b>
                         </div>
 
                         <div className="col-md-2">
@@ -194,7 +196,7 @@ const ModalRelatorioDietaEspecial = ({
                           <br />
                           <b>
                             {dieta.classificacao
-                              ? dieta.classificacao.nome
+                              ? dieta.classificacao?.nome
                               : ""}
                           </b>
                         </div>
