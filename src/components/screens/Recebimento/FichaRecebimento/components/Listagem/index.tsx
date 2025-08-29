@@ -18,7 +18,7 @@ const renderizarAcoes = (
 ): ReactElement => {
   const iconeEditar = (
     <span className="link-acoes px-2">
-      <i title="Continuar Cadastro" className="fas fa-edit green" />
+      <i title="Editar" className="fas fa-edit green" />
     </span>
   );
 
@@ -47,7 +47,7 @@ const renderizarAcoes = (
   );
 
   return (
-    <div className="d-flex">
+    <div className="d-flex border-0">
       {botaoDetalhar}
       {botaoEditar}
       {botaoImprimir}
