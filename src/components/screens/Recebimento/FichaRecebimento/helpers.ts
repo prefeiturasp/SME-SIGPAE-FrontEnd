@@ -73,6 +73,19 @@ const booleanToString = (value: boolean | undefined): string => {
   return value ? "1" : "0";
 };
 
+const formataSistemaVedacao = (ficha: FichaRecebimentoDetalhada): string => {
+  if (
+    ficha.sistema_vedacao_embalagem_secundaria === undefined ||
+    ficha.sistema_vedacao_embalagem_secundaria === null
+  )
+    return null;
+
+  return ficha.sistema_vedacao_embalagem_secundaria ===
+    ficha.dados_cronograma?.sistema_vedacao_embalagem_secundaria
+    ? "0"
+    : "1";
+};
+
 export const geraInitialValuesCadastrar = (
   ficha: FichaRecebimentoDetalhada
 ) => {
@@ -102,11 +115,7 @@ export const geraInitialValuesCadastrar = (
     peso_embalagem_primaria_3: ficha.peso_embalagem_primaria_3,
     peso_embalagem_primaria_4: ficha.peso_embalagem_primaria_4,
 
-    sistema_vedacao_embalagem_secundaria:
-      ficha.sistema_vedacao_embalagem_secundaria ===
-      ficha.dados_cronograma?.sistema_vedacao_embalagem_secundaria
-        ? "0"
-        : "1",
+    sistema_vedacao_embalagem_secundaria: formataSistemaVedacao(ficha),
     sistema_vedacao_embalagem_secundaria_outra_opcao:
       ficha.sistema_vedacao_embalagem_secundaria !==
       ficha.dados_cronograma?.sistema_vedacao_embalagem_secundaria

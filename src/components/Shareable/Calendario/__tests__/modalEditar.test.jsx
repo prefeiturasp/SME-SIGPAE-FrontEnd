@@ -1,0 +1,127 @@
+import "@testing-library/jest-dom";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
+import React from "react";
+import { ModalEditar } from "src/components/Shareable/Calendario/componentes/ModalEditar/index.jsx";
+import { MemoryRouter } from "react-router-dom";
+
+jest.mock("src/components/Shareable/Botao", () => ({
+  __esModule: true,
+  default: ({ texto, onClick, style, className, type }) => (
+    <button
+      onClick={onClick}
+      data-style={style}
+      data-type={type}
+      className={className}
+    >
+      {texto}
+    </button>
+  ),
+}));
+
+jest.mock("src/helpers/utilities", () => ({
+  getDDMMYYYfromDate: (date) => date.toLocaleDateString("pt-BR"),
+}));
+
+describe("Teste componete ModalEditar", () => {
+  const mockEvent = {
+    title: "Unidade Teste",
+    editais_numeros_virgula: "EDITAL 001, EDITAL 002",
+    start: new Date(2023, 5, 15),
+    criado_por: { nome: "Sergio" },
+    criado_em: "15/06/2023 10:00",
+  };
+
+  const defaultProps = {
+    event: mockEvent,
+    showModal: true,
+    closeModal: jest.fn(),
+    setShowModalConfirmarExclusao: jest.fn(),
+    nomeObjetoNoCalendario: "Sobremesa",
+    nomeObjetoNoCalendarioMinusculo: "sobremesa",
+  };
+
+  const renderModalEditar = (props = {}) => {
+    return render(
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <ModalEditar {...defaultProps} {...props} />
+      </MemoryRouter>
+    );
+  };
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+
+    // await act(async () => {
+    //   render(
+    //     <MemoryRouter
+    //       future={{
+    //         v7_startTransition: true,
+    //         v7_relativeSplatPath: true,
+    //       }}
+    //     >
+    //       <ModalEditar {...defaultProps} />
+    //     </MemoryRouter>
+    //   );
+    // });
+  });
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("deve exibir o modal com informações corretas", async () => {
+    await act(async () => {
+      renderModalEditar();
+    });
+    expect(screen.getByText(/Informações de cadastro/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Sobremesa/i)).toHaveLength(2);
+    expect(screen.getByText(/para a unidade/)).toBeInTheDocument();
+    expect(screen.getByText(mockEvent.title)).toBeInTheDocument();
+    expect(
+      screen.getByText(mockEvent.editais_numeros_virgula)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Sergio/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(new RegExp(mockEvent.criado_em, "i"))
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("15/06/2023")).toHaveLength(1);
+  });
+
+  it("deve chamar closeModal e setShowModalConfirmarExclusao ao clicar em Excluir", async () => {
+    await act(async () => {
+      renderModalEditar();
+    });
+    const botaoExcluir = screen.getByText("Excluir");
+    fireEvent.click(botaoExcluir);
+    expect(defaultProps.closeModal).toHaveBeenCalled();
+    expect(defaultProps.setShowModalConfirmarExclusao).toHaveBeenCalled();
+  });
+
+  it("deve chamar closeModal ao clicar em Manter", async () => {
+    await act(async () => {
+      renderModalEditar();
+    });
+    const botaoManter = screen.getByText("Manter");
+    fireEvent.click(botaoManter);
+    expect(defaultProps.closeModal).toHaveBeenCalled();
+  });
+
+  it("não deve exibir o modal quando showModal for false", async () => {
+    await act(async () => {
+      renderModalEditar({ showModal: false });
+    });
+    expect(
+      screen.queryByText("Informações de cadastro")
+    ).not.toBeInTheDocument();
+  });
+});
