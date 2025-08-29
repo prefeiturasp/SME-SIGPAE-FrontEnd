@@ -33,19 +33,15 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
     mock
       .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
       .reply(200, mockGetUnidadeEducacional);
-    localStorage.setItem(
-      "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
-    );
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
-      "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
-    );
-    localStorage.setItem(
       "perfil",
       PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+    );
+    localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
     );
 
     await act(async () => {
