@@ -183,6 +183,7 @@ export default ({ onSubmit, setCarregando }) => {
             <div className="row">
               <div className="col-4">
                 <Field
+                  dataTestId="select-dre"
                   label="Diretoria Regional de Educação"
                   component={SSelect}
                   className="input-busca-dre form-control"

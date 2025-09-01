@@ -54,6 +54,7 @@ export default ({ index, handleClose, aprovacoes, setAprovacoes }) => {
                         component={TextArea}
                         label={"Justificativa"}
                         name="justificativa"
+                        placeholder="Digite a justificativa"
                         required
                         validate={textAreaRequired}
                       />

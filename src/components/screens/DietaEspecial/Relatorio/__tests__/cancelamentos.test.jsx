@@ -1,26 +1,23 @@
-import React from "react";
-
-import { rest } from "msw";
-import { setupServer } from "msw/node";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { TIPO_PERFIL } from "src/constants/shared";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
+import { API_URL } from "src/constants/config";
+import { PERFIL, TIPO_PERFIL, VISAO } from "src/constants/shared";
+import mock from "src/services/_mock";
 import Relatorio from "../";
 import {
-  respostaApiCancelamentoporDataTermino,
   alergiasIntolerantes,
-  motivosNegacao,
+  alimentos,
   classificacoesDieta,
   listaProtocolosLiberados,
-  alimentos,
+  motivosNegacao,
+  protocoloPadraoDietaEspecial,
+  respostaApiCancelamentoporDataTermino,
   solicitacoesDietaEspecial,
   solicitacoesDietaEspecialDoAluno,
-  protocoloPadraoDietaEspecial,
 } from "../dados";
-import { API_URL } from "src/constants/config";
 import { formataJustificativa } from "../helpers";
-import mock from "src/services/_mock";
-import { VISAO, PERFIL } from "src/constants/shared";
 
 const cancelamento_data_termino = respostaApiCancelamentoporDataTermino();
 const logsAposAprovacao = [
@@ -132,50 +129,53 @@ const logsAntesAprovacao = [
 ];
 
 const server = setupServer(
-  rest.get(
+  http.get(
     `${API_URL}/solicitacoes-dieta-especial/${cancelamento_data_termino.uuid}/`,
-    (req, res, ctx) => {
-      return res(ctx.json(cancelamento_data_termino));
+    () => {
+      return HttpResponse.json(cancelamento_data_termino);
     }
   ),
-  rest.get(`${API_URL}/motivos-negacao/`, (req, res, ctx) => {
-    return res(ctx.json(motivosNegacao()));
+  http.get(`${API_URL}/motivos-negacao/`, () => {
+    return HttpResponse.json(motivosNegacao());
   }),
-  rest.get(`${API_URL}/alergias-intolerancias/`, (req, res, ctx) => {
-    return res(ctx.json(alergiasIntolerantes()));
+  http.get(`${API_URL}/alergias-intolerancias/`, () => {
+    return HttpResponse.json(alergiasIntolerantes());
   }),
-  rest.get(`${API_URL}/classificacoes-dieta/`, (req, res, ctx) => {
-    return res(ctx.json(classificacoesDieta()));
+  http.get(`${API_URL}/classificacoes-dieta/`, () => {
+    return HttpResponse.json(classificacoesDieta());
   }),
-  rest.get(
+  http.get(
     `${API_URL}/protocolo-padrao-dieta-especial/lista-protocolos-liberados/`,
-    (req, res, ctx) => {
-      return res(ctx.json(listaProtocolosLiberados()));
+    () => {
+      return HttpResponse.json(listaProtocolosLiberados());
     }
   ),
-  rest.get(`${API_URL}/alimentos/`, (req, res, ctx) => {
-    return res(ctx.json(alimentos()));
+  http.get(`${API_URL}/alimentos/`, () => {
+    return HttpResponse.json(alimentos());
   }),
-  rest.get(`${API_URL}/solicitacoes-dieta-especial/`, (req, res, ctx) => {
-    return res(ctx.json(solicitacoesDietaEspecial()));
+  http.get(`${API_URL}/solicitacoes-dieta-especial/`, () => {
+    return HttpResponse.json(solicitacoesDietaEspecial());
   }),
-  rest.get(
+  http.get(
     `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/7772877/`,
-    (req, res, ctx) => {
-      return res(ctx.json(solicitacoesDietaEspecialDoAluno()));
+    () => {
+      return HttpResponse.json(solicitacoesDietaEspecialDoAluno());
     }
   ),
-  rest.get(
+  http.get(
     `${API_URL}/protocolo-padrao-dieta-especial/${cancelamento_data_termino.protocolo_padrao}/`,
-    (req, res, ctx) => {
-      return res(ctx.json(protocoloPadraoDietaEspecial()));
+    () => {
+      return HttpResponse.json(protocoloPadraoDietaEspecial());
     }
   )
 );
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+afterAll(() => {
+  server.close();
+  return new Promise((resolve) => setTimeout(resolve, 0));
+});
 
 test("Relatorio para cancelamento por atingir data termino - visão CODAE", async () => {
   const search = `?uuid=${cancelamento_data_termino.uuid}&ehInclusaoContinua=false&card=canceladas`;

@@ -33,19 +33,15 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
     mock
       .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
       .reply(200, mockGetUnidadeEducacional);
-    localStorage.setItem(
-      "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
-    );
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
-      "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
-    );
-    localStorage.setItem(
       "perfil",
       PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+    );
+    localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
     );
 
     await act(async () => {
@@ -136,6 +132,34 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
     await act(async () => {
       const botaoGerarProtocolo = screen.getByTestId("botao-gerar-protocolo-0");
       fireEvent.click(botaoGerarProtocolo);
+    });
+  });
+
+  it("Clica botão de baixar PDF e recebe confirmação", async () => {
+    await act(async () => {
+      setDre(_DRE);
+    });
+
+    await act(async () => {
+      filtrar();
+    });
+
+    mock
+      .onGet(
+        "/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-pdf/"
+      )
+      .reply(200, {
+        detail: "Solicitação de geração de arquivo recebida com sucesso.",
+      });
+
+    const botao = screen.getByTestId("botao-gerar-pdf");
+    expect(botao).toBeInTheDocument();
+    await act(async () => fireEvent.click(botao));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Geração solicitada com sucesso.")
+      ).toBeInTheDocument();
     });
   });
 });
