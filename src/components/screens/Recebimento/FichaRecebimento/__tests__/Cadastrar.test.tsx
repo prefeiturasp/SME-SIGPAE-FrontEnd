@@ -17,6 +17,7 @@ import { mockCadastroFichaRecebimento } from "src/mocks/services/fichaRecebiment
 import { mockQuestoesPorCronograma } from "src/mocks/services/questoesConferencia.service/mockDetalharQuestoesPorCronograma";
 import moment from "moment";
 import { ToastContainer } from "react-toastify";
+import { mockGetFichaRecebimentoDetalhada } from "src/mocks/services/fichaRecebimento.service/mockGetFichaRecebimentoDetalhada";
 
 beforeEach(() => {
   mock
@@ -38,6 +39,12 @@ beforeEach(() => {
   mock
     .onPost("/fichas-de-recebimento/")
     .reply(201, mockCadastroFichaRecebimento);
+
+  mock
+    .onGet(`/fichas-de-recebimento/${mockGetFichaRecebimentoDetalhada.uuid}/`)
+    .reply(200, mockGetFichaRecebimentoDetalhada);
+  mock.onPut("/rascunho-ficha-de-recebimento/").reply(200);
+  mock.onPut("/fichas-de-recebimento/").reply(200);
 });
 
 const setup = async () => {
@@ -219,5 +226,42 @@ describe("Cadastro de Ficha de Recebimento", () => {
         screen.getByText("Ficha de recebimento Assinada com sucesso!")
       ).toBeInTheDocument();
     });
+  });
+
+  it("carrega dados pré-existentes de rascunho para edição", async () => {
+    mock
+      .onGet(
+        `/cronogramas/${mockGetFichaRecebimentoDetalhada.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`
+      )
+      .reply(200, mockCronogramaCadastroRecebimento);
+
+    const search = `?uuid=${mockGetFichaRecebimentoDetalhada.uuid}`;
+    Object.defineProperty(window, "location", {
+      value: {
+        search: search,
+      },
+    });
+
+    await setup();
+
+    expect(
+      screen.getByText("Etapa, Parte e Data do Recebimento")
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByDisplayValue(
+          mockGetFichaRecebimentoDetalhada.dados_cronograma.numero
+        )
+      ).toBeInTheDocument();
+    });
+
+    // Verifica se o campo de cronograma está desabilitado
+    const cronogramaInput = screen.getByTestId("cronograma");
+    expect(cronogramaInput).toHaveAttribute("disabled");
+
+    const btnProximo = screen.getByText("Próximo").closest("button");
+    expect(btnProximo).not.toBeDisabled();
+    fireEvent.click(btnProximo);
   });
 });
