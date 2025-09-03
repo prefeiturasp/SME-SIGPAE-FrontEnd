@@ -316,6 +316,7 @@ export default () => {
       arquivos: formataPayloadArquivos(arquivos),
       observacoes_conferencia: values.observacoes_conferencia,
       questoes: questoes,
+      houve_ocorrencia: stringToBoolean(values.houve_ocorrencia),
       ocorrencias: extraiOcorrenciasDoFormulario(values),
       ...(password && { password }),
     };
@@ -1443,7 +1444,7 @@ export default () => {
                       <section id="ocorrencias">
                         <div className="col-6">
                           <RadioButtonField
-                            name="ocorrencias.houve_ocorrencia"
+                            name="houve_ocorrencia"
                             label="Houve Ocorrência(s) no Recebimento?"
                             options={[
                               { value: "1", label: "SIM" },
@@ -1451,7 +1452,7 @@ export default () => {
                             ]}
                           />
                         </div>
-                        {values?.ocorrencias?.houve_ocorrencia === "1" && (
+                        {values?.houve_ocorrencia === "1" && (
                           <>
                             <FormOcorrencia
                               ocorrenciasCount={ocorrenciasCount}
