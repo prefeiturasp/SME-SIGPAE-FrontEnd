@@ -209,9 +209,6 @@ export const LancamentoPorPeriodo = ({
           !nomesPeriodosNormais.includes(vinculo.periodo_escolar.nome)
       );
       let periodos = periodosEscolaSimples.concat(pEspecificos);
-      periodos = periodos.sort((obj1, obj2) =>
-        obj1.periodo_escolar.posicao > obj2.periodo_escolar.posicao ? 1 : -1
-      );
       setPeriodosEspecificos(periodos);
     } else {
       setErroAPI(
