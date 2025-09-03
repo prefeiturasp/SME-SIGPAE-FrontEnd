@@ -502,6 +502,20 @@ export const LancamentoPorPeriodo = ({
                 ehPeriodoEspecifico={true}
               />
             ))}
+          {solicitacoesInclusoesEtecAutorizadas &&
+            solicitacoesInclusoesEtecAutorizadas.length > 0 && (
+              <CardLancamento
+                grupo="ETEC"
+                cor={CORES[6]}
+                tipos_alimentacao={tiposAlimentacaoETEC()}
+                periodoSelecionado={periodoSelecionado}
+                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                ehGrupoETEC={true}
+                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
+                errosAoSalvar={errosAoSalvar}
+              />
+            )}
           {periodosInclusaoContinua &&
             (!ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola) ||
               frequenciasDietasCEUGESTAO) && (
@@ -535,20 +549,6 @@ export const LancamentoPorPeriodo = ({
               errosAoSalvar={errosAoSalvar}
             />
           )}
-          {solicitacoesInclusoesEtecAutorizadas &&
-            solicitacoesInclusoesEtecAutorizadas.length > 0 && (
-              <CardLancamento
-                grupo="ETEC"
-                cor={CORES[6]}
-                tipos_alimentacao={tiposAlimentacaoETEC()}
-                periodoSelecionado={periodoSelecionado}
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                ehGrupoETEC={true}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                errosAoSalvar={errosAoSalvar}
-              />
-            )}
 
           <div className="mt-4">
             {renderBotaoFinalizar() ? (
