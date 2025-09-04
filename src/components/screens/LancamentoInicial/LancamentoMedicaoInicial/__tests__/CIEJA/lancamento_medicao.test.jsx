@@ -127,8 +127,8 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CIEJA", () => {
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("Renderiza período `INTERMEDIARIO`", () => {
-    expect(screen.getByText("INTERMEDIARIO")).toBeInTheDocument();
+  it("Renderiza período `Intermediário`", () => {
+    expect(screen.getByText("Intermediário")).toBeInTheDocument();
   });
 
   it("Renderiza período `Programas e Projetos`", () => {
