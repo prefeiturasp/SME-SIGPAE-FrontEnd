@@ -44,6 +44,7 @@ import {
   removeObjetosDuplicados,
   renderBotaoEnviarCorrecao,
   verificaSeEnviarCorrecaoDisabled,
+  formataPeriodosNormais,
 } from "./helpers";
 
 export const LancamentoPorPeriodo = ({
@@ -435,7 +436,9 @@ export const LancamentoPorPeriodo = ({
             periodosEspecificos.map((periodo, index) => (
               <CardLancamento
                 key={index}
-                textoCabecalho={periodo.periodo_escolar.nome}
+                textoCabecalho={formataPeriodosNormais(
+                  periodo.periodo_escolar.nome
+                )}
                 cor={CORES[index]}
                 tipos_alimentacao={periodo.tipos_alimentacao}
                 periodoSelecionado={periodoSelecionado}
@@ -461,7 +464,9 @@ export const LancamentoPorPeriodo = ({
             periodosEscolaSimples.map((periodo, index) => (
               <CardLancamento
                 key={index}
-                textoCabecalho={periodo.periodo_escolar.nome}
+                textoCabecalho={formataPeriodosNormais(
+                  periodo.periodo_escolar.nome
+                )}
                 cor={CORES[index]}
                 tipos_alimentacao={periodo.tipos_alimentacao}
                 periodoSelecionado={periodoSelecionado}
@@ -487,7 +492,9 @@ export const LancamentoPorPeriodo = ({
             periodosCEUGESTAO.map((periodo, index) => (
               <CardLancamento
                 key={index}
-                textoCabecalho={periodo.nome}
+                textoCabecalho={formataPeriodosNormais(
+                  periodo.periodo_escolar?.nome || periodo.nome
+                )}
                 cor={CORES[index]}
                 tipos_alimentacao={periodo.tipos_alimentacao}
                 periodoSelecionado={periodoSelecionado}
