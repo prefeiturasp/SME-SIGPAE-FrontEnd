@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import {
   act,
   fireEvent,
@@ -5,23 +6,23 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import mock from "src/services/_mock";
 import { MemoryRouter } from "react-router-dom";
-import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
+import { ToastContainer } from "react-toastify";
+import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosEscolaCEMEI } from "src/mocks/meusDados/escola/CEMEI";
+import { mockRelatorioRecreioNasFerias } from "src/mocks/services/dietaEspecial.service/relatorioRecreioNasFerias";
 import { RelatorioRecreioFeriasPage } from "src/pages/DietaEspecial/RelatorioRecreioFeriasPage";
 import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
-import { mockGetUnidadeEducacional } from "src/mocks/services/dietaEspecial.service/mockGetUnidadeEducacional";
 import { mockGetClassificacaoDieta } from "src/mocks/services/dietaEspecial.service/mockGetClassificacoesDietas";
+import { mockGetUnidadeEducacional } from "src/mocks/services/dietaEspecial.service/mockGetUnidadeEducacional";
 import { alergiasIntolerantes } from "src/components/screens/DietaEspecial/Relatorio/dados";
-import { mockRelatorioRecreioNasFerias } from "src/mocks/services/dietaEspecial.service/relatorioRecreioNasFerias";
-import { ToastContainer } from "react-toastify";
+import mock from "src/services/_mock";
 
-describe("Verifica comportamento da interface ao receber retorno de erro na exportação de relatório - PDF", () => {
+describe("Teste Relatório Recreio Férias - Usuário Escola CEMEI", () => {
   beforeEach(async () => {
-    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
+    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock
       .onGet("/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/")
       .reply(200, mockRelatorioRecreioNasFerias);
@@ -31,14 +32,13 @@ describe("Verifica comportamento da interface ao receber retorno de erro na expo
     mock
       .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
       .reply(200, mockGetUnidadeEducacional);
-    localStorage.setItem(
-      "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
-    );
-    localStorage.setItem(
-      "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
-    );
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("eh_cemei", "true");
 
     await act(async () => {
       render(
@@ -50,7 +50,7 @@ describe("Verifica comportamento da interface ao receber retorno de erro na expo
         >
           <MeusDadosContext.Provider
             value={{
-              meusDados: mockMeusDadosCODAEGA,
+              meusDados: mockMeusDadosEscolaCEMEI,
               setMeusDados: jest.fn(),
             }}
           >
@@ -62,7 +62,20 @@ describe("Verifica comportamento da interface ao receber retorno de erro na expo
     });
   });
 
-  it("Clica botão de baixar PDF e recebe erro", async () => {
+  it("Renderiza título e breadcrumb `Relatório de Dietas para Recreio nas Férias`", () => {
+    expect(
+      screen.queryAllByText("Relatório de Dietas para Recreio nas Férias")
+    ).toHaveLength(2);
+  });
+
+  it("Renderiza componente de filtros", () => {
+    expect(screen.getByText("Filtrar Resultados")).toBeInTheDocument();
+    expect(screen.getByText("DRE / Lote")).toBeInTheDocument();
+    expect(screen.getByText("Filtrar")).toBeInTheDocument();
+    expect(screen.getByText("Limpar Filtros")).toBeInTheDocument();
+  });
+
+  it("Clica botão de baixar Excel e recebe confirmação", async () => {
     await act(async () => {
       const campoDre = screen.getByTestId("select-dre-lote");
       const select = campoDre.querySelector("select");
@@ -79,17 +92,19 @@ describe("Verifica comportamento da interface ao receber retorno de erro na expo
 
     mock
       .onGet(
-        "/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-pdf/"
+        "/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-excel/"
       )
-      .reply(400, {});
+      .reply(200, {
+        detail: "Solicitação de geração de arquivo recebida com sucesso.",
+      });
 
-    const botao = screen.getByTestId("botao-gerar-pdf");
+    const botao = screen.getByTestId("botao-gerar-excel");
     expect(botao).toBeInTheDocument();
     await act(async () => fireEvent.click(botao));
 
     await waitFor(() => {
       expect(
-        screen.getByText("Erro ao baixar PDF, tente novamente mais tarde.")
+        screen.getByText("Geração solicitada com sucesso.")
       ).toBeInTheDocument();
     });
   });
