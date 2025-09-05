@@ -149,7 +149,7 @@
     "prettier": "prettier  --check src/**/**/**/*.{jsx,js,scss,tsx,ts}",
     "prettier-fix": "prettier  --write src/**/**/**/*.{jsx,js,scss,tsx,ts}",
     "coverage": "jest --coverage",
-    "prepare": "husky install",
+    "prepare": "husky init",
     "jest-preview": "jest-preview",
     "lint": "NODE_OPTIONS=--max_old_space_size=4096 eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "NODE_OPTIONS=--max_old_space_size=4096 eslint . --ext .js,.jsx,.ts,.tsx --fix"
