@@ -7,7 +7,11 @@ import { truncarString } from "src/helpers/utilities";
 import { FichaDeRecebimentoItemListagem } from "../../interfaces";
 
 import "./styles.scss";
-import { CADASTRO_FICHA_RECEBIMENTO, RECEBIMENTO } from "src/configs/constants";
+import {
+  CADASTRO_FICHA_RECEBIMENTO,
+  EDITAR_FICHA_RECEBIMENTO,
+  RECEBIMENTO,
+} from "src/configs/constants";
 
 interface Props {
   objetos: FichaDeRecebimentoItemListagem[];
@@ -31,7 +35,12 @@ const renderizarAcoes = (
         {iconeEditar}
       </NavLink>
     ) : (
-      iconeEditar
+      <NavLink
+        className="float-start"
+        to={`/${RECEBIMENTO}/${EDITAR_FICHA_RECEBIMENTO}?uuid=${objeto.uuid}`}
+      >
+        {iconeEditar}
+      </NavLink>
     );
 
   const botaoDetalhar = (
