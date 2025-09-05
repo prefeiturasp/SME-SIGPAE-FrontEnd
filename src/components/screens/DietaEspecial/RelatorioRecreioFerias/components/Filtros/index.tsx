@@ -71,7 +71,9 @@ export const Filtros: React.FC<FiltrosProps> = ({
   const getLotes = async () => {
     let params = {};
     if (usuarioEhEscola()) {
-      params["uuid"] = meusDados.vinculo_atual.instituicao.lotes[0].uuid;
+      const { lotes } = meusDados.vinculo_atual.instituicao;
+      if (lotes.length > 0)
+        params["uuid"] = meusDados.vinculo_atual.instituicao.lotes[0].uuid;
     } else if (usuarioEhCogestorDRE()) {
       params["diretoria_regional__uuid"] =
         meusDados.vinculo_atual.instituicao.uuid;
