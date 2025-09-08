@@ -10,6 +10,7 @@ import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/help
 import { statusEnum } from "src/constants/shared";
 import {
   corDaMensagem,
+  ehEscolaTipoCEMEI,
   justificativaAoNegarSolicitacao,
   stringSeparadaPorVirgulas,
 } from "src/helpers/utilities";
@@ -128,6 +129,9 @@ export const CorpoRelatorio = (props) => {
           <th className="col-3">Data de Inversão</th>
           <th className="col-3">Referência:</th>
           <th className="col-3">Aplicar em:</th>
+          {ehEscolaTipoCEMEI(solicitacao.escola) && (
+            <th className="col-3">Alunos</th>
+          )}
         </tr>
         <tr>
           <td />
@@ -141,12 +145,18 @@ export const CorpoRelatorio = (props) => {
               ? solicitacao.cardapio_para.data
               : solicitacao.data_para_inversao}
           </td>
+          {ehEscolaTipoCEMEI(solicitacao.escola) && (
+            <td className="col-3">{solicitacao.alunos_da_cemei}</td>
+          )}
         </tr>
         {solicitacao.data_de_inversao_2 && (
           <tr>
             <td />
             <td className="pe-5">{solicitacao.data_de_inversao_2}</td>
             <td>{solicitacao.data_para_inversao_2}</td>
+            {ehEscolaTipoCEMEI(solicitacao.escola) && (
+              <td className="col-3">{solicitacao.alunos_da_cemei_2}</td>
+            )}
           </tr>
         )}
       </table>
