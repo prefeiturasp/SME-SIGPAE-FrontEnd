@@ -183,7 +183,6 @@ export const CorpoRelatorio = (props) => {
         </div>
       )}
       {solicitacao.logs &&
-        !solicitacao.prioridade !== "REGULAR" &&
         solicitacao.status === statusEnum.CODAE_AUTORIZADO && (
           <div className="row">
             <div className="col-12 report-label-value">
