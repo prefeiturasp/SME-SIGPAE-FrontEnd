@@ -54,7 +54,7 @@ describe("Teste Relatório Inversão de dia de Cardápio CEMEI - Visão DRE", ()
               setMeusDados: jest.fn(),
             }}
           >
-            <RelatoriosInversaoDiaCardapio.RelatorioCODAE />
+            <RelatoriosInversaoDiaCardapio.RelatorioDRE />
             <ToastContainer />
           </MeusDadosContext.Provider>
         </MemoryRouter>

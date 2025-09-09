@@ -7,6 +7,7 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
 import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { statusEnum } from "src/constants/shared";
 import {
   corDaMensagem,
@@ -26,10 +27,14 @@ export const CorpoRelatorio = (props) => {
 
   const btnImprimirRelatorio = async () => {
     setimprimindo(true);
-    await getDetalheInversaoCardapio(
-      solicitacao.uuid,
-      solicitacao?.escola?.nome
-    );
+    try {
+      await getDetalheInversaoCardapio(
+        solicitacao.uuid,
+        solicitacao?.escola?.nome
+      );
+    } catch {
+      toastError("Houve um erro ao imprimir o relatório");
+    }
     setimprimindo(false);
   };
 
@@ -44,6 +49,7 @@ export const CorpoRelatorio = (props) => {
           {prazoDoPedidoMensagem}
           <Botao
             type={BUTTON_TYPE.BUTTON}
+            dataTestId="botao-imprimir"
             titulo="imprimir"
             style={imprimindo ? BUTTON_STYLE.GREEN_OUTLINE : BUTTON_STYLE.GREEN}
             icon={imprimindo ? BUTTON_ICON.LOADING : BUTTON_ICON.PRINT}

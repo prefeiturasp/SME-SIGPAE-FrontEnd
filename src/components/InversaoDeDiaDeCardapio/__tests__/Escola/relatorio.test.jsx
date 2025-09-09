@@ -134,4 +134,34 @@ describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => 
       screen.getByText("08/09/2025 18:10:36 - ESCOLA CANCELOU")
     ).toBeInTheDocument();
   });
+
+  it("download pdf", async () => {
+    mock
+      .onGet(`/inversoes-dia-cardapio/${uuidInversao}/relatorio/`)
+      .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
+
+    const botaoImprimir = screen.getByTestId("botao-imprimir");
+    fireEvent.click(botaoImprimir);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Houve um erro ao imprimir o relatório")
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("erro download pdf", async () => {
+    mock
+      .onGet(`/inversoes-dia-cardapio/${uuidInversao}/relatorio/`)
+      .reply(400, { detail: "Erro ao baixar PDF" });
+
+    const botaoImprimir = screen.getByTestId("botao-imprimir");
+    fireEvent.click(botaoImprimir);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Houve um erro ao imprimir o relatório")
+      ).toBeInTheDocument();
+    });
+  });
 });
