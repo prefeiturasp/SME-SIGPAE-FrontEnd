@@ -135,16 +135,8 @@ export const CorpoRelatorio = (props) => {
         </tr>
         <tr>
           <td />
-          <td className="pe-5">
-            {solicitacao.cardapio_de
-              ? solicitacao.cardapio_de.data
-              : solicitacao.data_de_inversao}
-          </td>
-          <td>
-            {solicitacao.cardapio_para
-              ? solicitacao.cardapio_para.data
-              : solicitacao.data_para_inversao}
-          </td>
+          <td className="pe-5">{solicitacao.data_de_inversao}</td>
+          <td>{solicitacao.data_para_inversao}</td>
           {ehEscolaTipoCEMEI(solicitacao.escola) && (
             <td className="col-3">{solicitacao.alunos_da_cemei}</td>
           )}
