@@ -150,14 +150,18 @@ export default () => {
       if (etapa.desvinculada_recebimento) {
         options.push({
           uuid: etapa.uuid,
-          nome: `${etapa.etapa} - ${etapa.parte}`,
+          nome: etapa.parte
+            ? `${etapa.etapa} - ${etapa.parte}`
+            : `${etapa.etapa}`,
         });
       }
     });
     if (initialValues.etapa) {
       options.push({
         uuid: initialValues.etapa.uuid,
-        nome: `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`,
+        nome: initialValues.etapa.parte
+          ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
+          : `${initialValues.etapa.etapa}`,
       });
     }
     return options;

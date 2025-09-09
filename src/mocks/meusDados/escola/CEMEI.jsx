@@ -14,7 +14,12 @@ export const mockMeusDadosEscolaCEMEI = {
       uuid: "68b35061-9942-4aa2-9cbf-88363127688e",
       codigo_eol: "400232",
       quantidade_alunos: 187,
-      lotes: [],
+      lotes: [
+        {
+          uuid: "655a63ff-dd0b-4259-86a0-cdd43ac36030",
+          nome: "3567-3",
+        },
+      ],
       periodos_escolares: [
         {
           tipos_alimentacao: [
