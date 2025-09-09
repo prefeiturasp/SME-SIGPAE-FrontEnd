@@ -98,7 +98,7 @@ export const RelatorioCODAE = () => (
   <RelatorioBase
     visao={CODAE}
     ModalNaoAprova={ModalNegarSolicitacao}
-    ModalCodaeAutoriza={ModalAprovarGenericoSimOpcional}
+    ModalCODAEAutoriza={ModalAprovarGenericoSimOpcional}
     HandleAprovaPedido={CODAEAutorizaPedidoDRE}
     ModalQuestionamento={ModalCODAEQuestiona}
     toastAprovaMensagem={"Inversão de dia de Cardápio autorizada com sucesso!"}

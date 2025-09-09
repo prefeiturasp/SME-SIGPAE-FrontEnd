@@ -154,7 +154,7 @@ export const Relatorio = ({ ...props }) => {
           endpoint="inversoes-dia-cardapio"
         />
       )}
-      {ModalCODAEAutoriza && (
+      {ModalCODAEAutoriza && showModalCodaeAutorizar && (
         <ModalCODAEAutoriza
           showModal={showModalCodaeAutorizar}
           loadSolicitacao={getSolicitacaoAsync}
