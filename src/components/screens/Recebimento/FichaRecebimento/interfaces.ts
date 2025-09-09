@@ -26,6 +26,7 @@ export interface FichaRecebimentoPayload {
   arquivos?: Arquivo[];
   observacoes_conferencia?: string;
   questoes?: QuestoesPayload[];
+  houve_ocorrencia?: boolean | string;
   ocorrencias?: OcorrenciaFichaRecebimento[];
   password?: string;
 }
@@ -65,6 +66,7 @@ export interface FichaRecebimentoDetalhada {
   observacoes_conferencia?: string;
   veiculos?: VeiculoPayload[];
   questoes?: QuestaoInitialValue[];
+  houve_ocorrencia?: boolean | string;
   ocorrencias?: OcorrenciaFichaRecebimento[];
   arquivos?: Arquivo[];
 }
