@@ -87,7 +87,7 @@ export const RelatorioDRE = () => (
     ModalNaoAprova={ModalNaoValidarSolicitacao}
     toastAprovaMensagem={"Inversão de dia de Cardápio validada com sucesso!"}
     toastAprovaMensagemErro={
-      "Houve um erro ao validar a Inversão de dia de Cardápio"
+      "Houve um erro ao validar a Inversão de dia de Cardápio. Tente novamente mais tarde."
     }
     textoBotaoNaoAprova="Não Validar"
     textoBotaoAprova="Validar"

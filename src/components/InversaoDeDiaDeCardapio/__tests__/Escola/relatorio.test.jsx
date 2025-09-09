@@ -13,13 +13,14 @@ import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosEscolaCEMEI } from "src/mocks/meusDados/escola/CEMEI";
 import { mockInversaoDiaCardapioAValidarCEMEI } from "src/mocks/services/inversaoDiaCardapio.service/Escola/CEMEI/inversaoAValidar";
+import { mockInversaoDiaCardapioCanceladaCEMEI } from "src/mocks/services/inversaoDiaCardapio.service/Escola/CEMEI/inversaoCancelada";
 import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as RelatoriosInversaoDiaCardapio from "src/pages/InversaoDeDiaDeCardapio/RelatorioPage";
 import mock from "src/services/_mock";
-import { mockInversaoDiaCardapioCanceladaCEMEI } from "../../../../mocks/services/inversaoDiaCardapio.service/Escola/CEMEI/inversaoCancelada";
 
 describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => {
   const uuidInversao = mockInversaoDiaCardapioAValidarCEMEI.uuid;
+
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock
