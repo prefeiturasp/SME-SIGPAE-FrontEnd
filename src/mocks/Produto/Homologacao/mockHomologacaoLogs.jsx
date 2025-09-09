@@ -45,6 +45,28 @@ export const mockHomologacaoLogs = [
   },
   {
     anexos: [],
+    status_evento_explicacao: "CODAE homologou",
+    usuario: {
+      uuid: "4d1d0941-f02f-4a07-8dbb-5a57dfffd1fa",
+      cpf: null,
+      nome: "USUARIO GESTAO PRODUTO CODAE",
+      email: "gpcodae@admin.com",
+      date_joined: "10/07/2020 13:15:17",
+      registro_funcional: "0170494",
+      tipo_usuario: "gestao_produto",
+      cargo: "ANALISTA DE SAUDE NIVEL I",
+      crn_numero: null,
+      nome_fantasia: null,
+    },
+    criado_em: "29/12/2024 14:43:15",
+    descricao: "Homologação #139A4",
+    justificativa: "",
+    resposta_sim_nao: false,
+    tipo_solicitacao_explicacao: "Homologação de Produto",
+    ativo: false,
+  },
+  {
+    anexos: [],
     status_evento_explicacao: "Escola/Nutricionista reclamou do produto",
     usuario: {
       uuid: "36750ded-5790-433e-b765-0507303828df",

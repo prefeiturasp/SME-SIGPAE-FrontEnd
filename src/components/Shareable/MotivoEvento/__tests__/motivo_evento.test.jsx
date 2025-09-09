@@ -12,7 +12,7 @@ describe("Teste do componente de exibição do motivo do evento", () => {
       />
     );
     expect(
-      screen.getByText("Motivo do teste (Data: 27/12/2023):")
+      screen.getByText("Motivo do teste (Data: 29/12/2024):")
     ).toBeInTheDocument();
   });
 });
