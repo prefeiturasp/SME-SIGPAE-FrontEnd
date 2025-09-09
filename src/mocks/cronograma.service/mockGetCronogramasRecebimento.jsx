@@ -18,5 +18,11 @@ export const mockListaCronogramasRecebimento = {
       pregao_chamada_publica: "",
       nome_produto: "ARROZ",
     },
+    {
+      uuid: "a11ded5a-e3b3-480f-8132-f412b9c9b5be",
+      numero: "148/2024A",
+      pregao_chamada_publica: "12345",
+      nome_produto: "CAQUI",
+    },
   ],
 };

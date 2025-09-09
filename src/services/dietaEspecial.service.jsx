@@ -503,3 +503,14 @@ export const gerarPdfRelatorioRecreioFerias = async (params) => {
     return data;
   }
 };
+
+export const gerarExcelRelatorioRecreioFerias = async (params) => {
+  const url = `/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-excel/`;
+  const response = await axios
+    .get(url, { params, responseType: "blob" })
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
