@@ -1,6 +1,6 @@
 import React from "react";
 import "./styles.scss";
-import { getLog } from "src/helpers/utilities";
+import { getUltimoLog } from "src/helpers/utilities";
 
 interface LogEvento {
   criado_em: string;
@@ -16,7 +16,7 @@ interface MotivoProps {
 }
 
 const MotivoEvento: React.FC<MotivoProps> = ({ logs, motivo, titulo }) => {
-  const evento: LogEvento | undefined = getLog(logs, motivo);
+  const evento: LogEvento | undefined = getUltimoLog(logs, motivo);
   if (!evento) return null;
   return (
     <div className="componente-motivo-do-evento row">
