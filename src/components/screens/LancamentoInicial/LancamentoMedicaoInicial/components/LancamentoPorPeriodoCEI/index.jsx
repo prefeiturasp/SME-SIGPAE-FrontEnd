@@ -41,10 +41,6 @@ import { ModalFinalizarMedicaoSemLancamentos } from "../ModalFinalizarSemLancame
 import { ModalSemOcorrenciasIMR } from "../ModalSemOcorrenciasIMR";
 import { CardLancamentoCEI } from "./CardLancamentoCEI";
 import { ehEmeiDaCemei } from "./helpers";
-import {
-  formataPeriodosCEMEI,
-  formataPeriodosCEI,
-} from "src/components/screens/LancamentoInicial/LancamentoMedicaoInicial/components/LancamentoPorPeriodoCEI/helpers";
 
 export const LancamentoPorPeriodoCEI = ({
   mes,
@@ -132,12 +128,8 @@ export const LancamentoPorPeriodoCEI = ({
     if (ehEscolaTipoCEMEI(escolaInstituicao)) {
       periodos = periodos
         .filter((periodo) => !["MANHA", "TARDE"].includes(periodo))
-        .concat(periodosEscolaCemeiComAlunosEmei)
-        .map(formataPeriodosCEMEI);
-    } else {
-      periodos = periodos.map(formataPeriodosCEI);
+        .concat(periodosEscolaCemeiComAlunosEmei);
     }
-
     setPeriodosComAlunos(periodos);
   }, [
     escolaInstituicao,
