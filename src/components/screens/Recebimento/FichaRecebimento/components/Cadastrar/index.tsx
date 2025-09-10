@@ -150,14 +150,18 @@ export default () => {
       if (etapa.desvinculada_recebimento) {
         options.push({
           uuid: etapa.uuid,
-          nome: `${etapa.etapa} - ${etapa.parte}`,
+          nome: etapa.parte
+            ? `${etapa.etapa} - ${etapa.parte}`
+            : `${etapa.etapa}`,
         });
       }
     });
     if (initialValues.etapa) {
       options.push({
         uuid: initialValues.etapa.uuid,
-        nome: `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`,
+        nome: initialValues.etapa.parte
+          ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
+          : `${initialValues.etapa.etapa}`,
       });
     }
     return options;
@@ -316,6 +320,7 @@ export default () => {
       arquivos: formataPayloadArquivos(arquivos),
       observacoes_conferencia: values.observacoes_conferencia,
       questoes: questoes,
+      houve_ocorrencia: stringToBoolean(values.houve_ocorrencia),
       ocorrencias: extraiOcorrenciasDoFormulario(values),
       ...(password && { password }),
     };
@@ -1443,7 +1448,7 @@ export default () => {
                       <section id="ocorrencias">
                         <div className="col-6">
                           <RadioButtonField
-                            name="ocorrencias.houve_ocorrencia"
+                            name="houve_ocorrencia"
                             label="Houve Ocorrência(s) no Recebimento?"
                             options={[
                               { value: "1", label: "SIM" },
@@ -1451,7 +1456,7 @@ export default () => {
                             ]}
                           />
                         </div>
-                        {values?.ocorrencias?.houve_ocorrencia === "1" && (
+                        {values?.houve_ocorrencia === "1" && (
                           <>
                             <FormOcorrencia
                               ocorrenciasCount={ocorrenciasCount}

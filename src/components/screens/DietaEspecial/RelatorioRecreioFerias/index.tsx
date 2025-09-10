@@ -1,6 +1,7 @@
 import HTTP_STATUS from "http-status-codes";
 import { useContext, useState } from "react";
 import {
+  gerarExcelRelatorioRecreioFerias,
   gerarPdfRelatorioRecreioFerias,
   getRelatorioRecreioFerias,
 } from "src/services/dietaEspecial.service";
@@ -29,6 +30,7 @@ export const RelatorioRecreioFerias = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [loadingPdf, setLoadingPdf] = useState(false);
+  const [loadingExcel, setLoadingExcel] = useState(false);
   const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
     useState(false);
   const [valuesForm, setValuesForm] = useState<object>(null);
@@ -70,12 +72,21 @@ export const RelatorioRecreioFerias = () => {
     const response = await gerarPdfRelatorioRecreioFerias(
       normalizarValores(values)
     );
-    if (response.status === HTTP_STATUS.OK) {
+    if (response.status === HTTP_STATUS.OK)
       setExibirModalCentralDownloads(true);
-    } else {
-      toastError("Erro ao baixar PDF. Tente novamente mais tarde");
-    }
+    else toastError("Erro ao baixar PDF, tente novamente mais tarde.");
     setLoadingPdf(false);
+  };
+
+  const exportarExcel = async (values: object) => {
+    setLoadingExcel(true);
+    const response = await gerarExcelRelatorioRecreioFerias(
+      normalizarValores(values)
+    );
+    if (response.status === HTTP_STATUS.OK)
+      setExibirModalCentralDownloads(true);
+    else toastError("Erro ao baixar Excel, tente novamente mais tarde.");
+    setLoadingExcel(false);
   };
 
   return (
@@ -117,11 +128,13 @@ export const RelatorioRecreioFerias = () => {
                     <div className="row">
                       <div className="col-12 text-end">
                         <Botao
+                          dataTestId="botao-gerar-excel"
                           texto="Baixar Excel"
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN}
                           icon={BUTTON_ICON.FILE_EXCEL}
-                          onClick={async () => {}}
+                          onClick={() => exportarExcel(valuesForm)}
+                          disabled={loadingExcel}
                         />
                         <Botao
                           dataTestId="botao-gerar-pdf"

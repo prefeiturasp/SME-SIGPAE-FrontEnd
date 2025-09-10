@@ -264,4 +264,21 @@ describe("Cadastro de Ficha de Recebimento", () => {
     expect(btnProximo).not.toBeDisabled();
     fireEvent.click(btnProximo);
   });
+
+  it("não deve ilustrar 'parte' quando o valor de parte for null", async () => {
+    await setup();
+
+    preencheInput(
+      "cronograma",
+      mockListaCronogramasRecebimento.results[0].numero
+    );
+
+    const select = screen
+      .getByTestId("etapa")
+      .querySelector("select") as HTMLSelectElement;
+    const options = Array.from(select.options).map((opt) => opt.textContent);
+
+    expect(options).toContain("Etapa 99");
+    expect(options).not.toContain("Etapa 99 - null");
+  });
 });
