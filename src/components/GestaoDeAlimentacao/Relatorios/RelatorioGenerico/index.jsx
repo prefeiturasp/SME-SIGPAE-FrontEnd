@@ -29,6 +29,7 @@ import {
   prazoDoPedidoMensagem,
   visualizaBotoesDoFluxo,
 } from "src/helpers/utilities";
+import { BotaoMarcarConferencia } from "./components/BotaoMarcarConferencia";
 
 export const RelatorioGenerico = ({ ...props }) => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -96,19 +97,14 @@ export const RelatorioGenerico = ({ ...props }) => {
     setLoading(false);
   };
 
-  const BotaoMarcarConferencia = () => {
-    return (
-      <Botao
-        texto="Marcar Conferência"
-        type={BUTTON_TYPE.BUTTON}
-        style={BUTTON_STYLE.GREEN}
-        className="ms-3"
-        onClick={() => {
-          setShowModalMarcarConferencia(true);
-        }}
-        disabled={loading}
-      />
-    );
+  const handleClickBotaoAprova = () => {
+    if (visao === DRE) {
+      onSubmit();
+    } else if (exibirModalAutorizacaoAposQuestionamento(solicitacao, visao)) {
+      setShowAutorizarModal(true);
+    } else {
+      setShowModalCodaeAutorizar(true);
+    }
   };
 
   const onSubmit = async () => {
@@ -171,7 +167,7 @@ export const RelatorioGenerico = ({ ...props }) => {
         <Spin tip="Carregando..." spinning={loading || !solicitacao}>
           {solicitacao && (
             <Form onSubmit={onSubmit}>
-              {({ handleSubmit, values, submitting }) => (
+              {({ handleSubmit, submitting }) => (
                 <form onSubmit={handleSubmit}>
                   {endpointAprovaSolicitacao && (
                     <ModalAutorizarAposQuestionamento
@@ -225,16 +221,7 @@ export const RelatorioGenerico = ({ ...props }) => {
                               <Botao
                                 texto={textoBotaoAprova}
                                 type={BUTTON_TYPE.BUTTON}
-                                onClick={() =>
-                                  visao === DRE
-                                    ? onSubmit(values)
-                                    : exibirModalAutorizacaoAposQuestionamento(
-                                        solicitacao,
-                                        visao
-                                      )
-                                    ? setShowAutorizarModal(true)
-                                    : setShowModalCodaeAutorizar(true)
-                                }
+                                onClick={() => handleClickBotaoAprova}
                                 disabled={submitting}
                                 style={BUTTON_STYLE.GREEN}
                                 className="ms-3"
@@ -287,13 +274,16 @@ export const RelatorioGenerico = ({ ...props }) => {
                             ) && (
                               <div className="form-group float-end mt-4">
                                 {solicitacao.terceirizada_conferiu_gestao ? (
-                                  <label className="ms-3 conferido">
-                                    <i className="fas fa-check me-2" />
+                                  <span className="ms-3 conferido">
+                                    <i className="fas fa-check me-2" />{" "}
                                     Solicitação Conferida
-                                  </label>
+                                  </span>
                                 ) : (
                                   <BotaoMarcarConferencia
-                                    uuid={solicitacao.uuid}
+                                    setShowModalMarcarConferencia={
+                                      setShowModalMarcarConferencia
+                                    }
+                                    loading={loading}
                                   />
                                 )}
                               </div>
