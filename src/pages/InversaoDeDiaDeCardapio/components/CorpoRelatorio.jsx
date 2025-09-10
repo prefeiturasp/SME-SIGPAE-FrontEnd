@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
 import Botao from "src/components/Shareable/Botao";
 import {
@@ -224,6 +225,11 @@ export const CorpoRelatorio = (props) => {
       )}
     </div>
   );
+};
+
+CorpoRelatorio.propTypes = {
+  solicitacao: PropTypes.object.isRequired,
+  prazoDoPedidoMensagem: PropTypes.string.isRequired,
 };
 
 export default CorpoRelatorio;

@@ -1,6 +1,7 @@
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import { useContext, useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import {
   exibeBotaoAprovar,
@@ -24,7 +25,6 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import { DRE } from "src/configs/constants";
 import { statusEnum, TIPO_PERFIL } from "src/constants/shared";
-import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
   prazoDoPedidoMensagem,
   visualizaBotoesDoFluxo,
@@ -32,8 +32,6 @@ import {
 import { BotaoMarcarConferencia } from "./components/BotaoMarcarConferencia";
 
 export const RelatorioGenerico = ({ ...props }) => {
-  const { meusDados } = useContext(MeusDadosContext);
-
   const [uuid, setUuid] = useState();
   const [solicitacao, setSolicitacao] = useState();
   const [prazoMensagem, setPrazoMensagem] = useState();
@@ -187,7 +185,6 @@ export const RelatorioGenerico = ({ ...props }) => {
                       <CorpoRelatorio
                         solicitacao={solicitacao}
                         prazoDoPedidoMensagem={prazoMensagem}
-                        meusDados={meusDados}
                       />
                       <RelatorioHistoricoJustificativaEscola
                         solicitacao={solicitacao}
@@ -221,7 +218,7 @@ export const RelatorioGenerico = ({ ...props }) => {
                               <Botao
                                 texto={textoBotaoAprova}
                                 type={BUTTON_TYPE.BUTTON}
-                                onClick={() => handleClickBotaoAprova}
+                                onClick={handleClickBotaoAprova}
                                 disabled={submitting}
                                 style={BUTTON_STYLE.GREEN}
                                 className="ms-3"
@@ -301,4 +298,23 @@ export const RelatorioGenerico = ({ ...props }) => {
       )}
     </div>
   );
+};
+
+RelatorioGenerico.propTypes = {
+  endpointAprovaSolicitacao: PropTypes.func.isRequired,
+  visao: PropTypes.string.isRequired,
+  textoBotaoNaoAprova: PropTypes.string.isRequired,
+  textoBotaoAprova: PropTypes.string.isRequired,
+  endpointNaoAprovaSolicitacao: PropTypes.func.isRequired,
+  endpointQuestionamento: PropTypes.func.isRequired,
+  ModalNaoAprova: PropTypes.element.isRequired,
+  ModalQuestionamento: PropTypes.element.isRequired,
+  motivosDREnaoValida: PropTypes.array.isRequired,
+  ModalCODAEAutoriza: PropTypes.element.isRequired,
+  toastAprovaMensagem: PropTypes.string.isRequired,
+  toastAprovaMensagemErro: PropTypes.string.isRequired,
+  getSolicitacao: PropTypes.func.isRequired,
+  nomeSolicitacao: PropTypes.string.isRequired,
+  endpointMarcarConferencia: PropTypes.func.isRequired,
+  CorpoRelatorio: PropTypes.element.isRequired,
 };
