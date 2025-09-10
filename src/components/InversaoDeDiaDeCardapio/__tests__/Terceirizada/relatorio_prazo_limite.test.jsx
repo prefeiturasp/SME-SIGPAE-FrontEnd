@@ -14,10 +14,10 @@ import { mockMotivosDRENaoValida } from "src/mocks/InclusaoAlimentacao/mockMotiv
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosTerceirizada } from "src/mocks/meusDados/terceirizada";
 import { mockInversaoDiaCardapioQuestionadaCEMEI } from "src/mocks/services/inversaoDiaCardapio.service/Escola/CEMEI/inversaoQuestionada";
+import { mockInversaoDiaCardapioRespondidaNaoCEMEI } from "src/mocks/services/inversaoDiaCardapio.service/Escola/CEMEI/inversaoRespondidaNao";
 import { mockInversaoDiaCardapioRespondidaSimCEMEI } from "src/mocks/services/inversaoDiaCardapio.service/Escola/CEMEI/inversaoRespondidaSim";
 import * as RelatoriosInversaoDiaCardapio from "src/pages/InversaoDeDiaDeCardapio/RelatorioPage";
 import mock from "src/services/_mock";
-import { mockInversaoDiaCardapioRespondidaNaoCEMEI } from "../../../../mocks/services/inversaoDiaCardapio.service/Escola/CEMEI/inversaoRespondidaNao";
 
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
