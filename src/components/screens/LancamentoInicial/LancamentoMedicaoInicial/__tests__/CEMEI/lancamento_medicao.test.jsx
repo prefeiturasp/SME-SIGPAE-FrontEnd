@@ -21,7 +21,6 @@ import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
@@ -141,7 +140,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
   });
 
   it("Verifica a ordem dos cards", () => {
-    preview.debug();
     const textos = [
       "Período Integral",
       "Período Parcial",
