@@ -21,6 +21,7 @@ import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
+import preview from "jest-preview";
 
 describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
@@ -44,7 +45,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/periodos-escola-cemei-com-alunos-emei/"
       )
-      .reply(200, { results: ["Infantil INTEGRAL"] });
+      .reply(200, {
+        results: ["Infantil MANHA", "Infantil TARDE", "Infantil INTEGRAL"],
+      });
     mock
       .onGet(
         "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/"
@@ -135,5 +138,27 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
     expect(
       screen.getByText("Solicitações de Alimentação - Infantil")
     ).toBeInTheDocument();
+  });
+
+  it("Verifica a ordem dos cards", () => {
+    preview.debug();
+    const textos = [
+      "Período Integral",
+      "Período Parcial",
+      "Infantil Manhã",
+      "Infantil Tarde",
+      "Infantil Integral",
+      "Programas e Projetos",
+      "Solicitações de Alimentação - Infantil",
+    ];
+
+    const elementos = textos.map((texto) => screen.getByText(texto));
+
+    for (let i = 0; i < elementos.length - 1; i++) {
+      const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
+      expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING
+      );
+    }
   });
 });
