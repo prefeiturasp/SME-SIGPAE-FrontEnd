@@ -45,10 +45,10 @@ describe("Relatório Inversão - Visão Escola - Erro parâmetro UUID", () => {
     });
   });
 
-  it("renderiza erro `Erro ao carregar Inversão do dia de Cardápio. Tente novamente mais tarde.", async () => {
+  it("renderiza erro `Erro ao carregar Inversão de dia de Cardápio. Tente novamente mais tarde.", async () => {
     expect(
       screen.getByText(
-        "Erro ao carregar Inversão do dia de Cardápio. Tente novamente mais tarde."
+        "Erro ao carregar Inversão de dia de Cardápio. Tente novamente mais tarde."
       )
     ).toBeInTheDocument();
   });

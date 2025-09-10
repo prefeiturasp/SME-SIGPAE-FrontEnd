@@ -50,8 +50,8 @@ export const RelatorioBase = ({ ...props }) => {
       <Breadcrumb home={HOME} atual={atual} />
       <RelatorioGenerico
         getSolicitacao={getInversaoDeDiaDeCardapio}
-        nomeSolicitacao="Inversão do dia de Cardápio"
-        endpointMarcarConferencia="inversoes-dia-cardapio"
+        nomeSolicitacao="Inversão de dia de Cardápio"
+        endpointMarcarConferencia={() => "inversoes-dia-cardapio"}
         motivosDREnaoValida={motivosDREnaoValida}
         CorpoRelatorio={CorpoRelatorio}
         {...props}

@@ -33,6 +33,7 @@ import { BotaoMarcarConferencia } from "./components/BotaoMarcarConferencia";
 
 export const RelatorioGenerico = ({ ...props }) => {
   const [uuid, setUuid] = useState();
+  const [tipoSolicitacao, setTipoSolicitacao] = useState();
   const [solicitacao, setSolicitacao] = useState();
   const [prazoMensagem, setPrazoMensagem] = useState();
   const [respostaSimNao, setRespostaSimNao] = useState();
@@ -64,11 +65,13 @@ export const RelatorioGenerico = ({ ...props }) => {
     nomeSolicitacao,
     endpointMarcarConferencia,
     CorpoRelatorio,
+    tipoSolicitacaoObrigatorio = false,
   } = props;
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const uuid_ = urlParams.get("uuid");
+    const tipoSolicitacao_ = urlParams.get("tipoSolicitacao");
 
     if (!uuid_) {
       setErro(
@@ -77,13 +80,24 @@ export const RelatorioGenerico = ({ ...props }) => {
       return;
     }
 
+    if (tipoSolicitacaoObrigatorio && !tipoSolicitacao_) {
+      setErro(
+        "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente."
+      );
+      return;
+    }
+
     setUuid(uuid_);
-    getSolicitacaoAsync(uuid_);
+    setTipoSolicitacao(tipoSolicitacao_);
+    getSolicitacaoAsync(uuid_, tipoSolicitacao_);
   }, []);
 
-  const getSolicitacaoAsync = async (uuid_ = uuid) => {
+  const getSolicitacaoAsync = async (
+    uuid_ = uuid,
+    tipoSolicitacao_ = tipoSolicitacao
+  ) => {
     setLoading(true);
-    const response = await getSolicitacao(uuid_);
+    const response = await getSolicitacao(uuid_, tipoSolicitacao_);
     if (response.status === HTTP_STATUS.OK) {
       setSolicitacao(response.data);
       setPrazoMensagem(prazoDoPedidoMensagem(response.data.prioridade));
@@ -95,9 +109,9 @@ export const RelatorioGenerico = ({ ...props }) => {
     setLoading(false);
   };
 
-  const handleClickBotaoAprova = () => {
+  const handleClickBotaoAprova = (values) => {
     if (visao === DRE) {
-      onSubmit();
+      onSubmit(values);
     } else if (exibirModalAutorizacaoAposQuestionamento(solicitacao, visao)) {
       setShowAutorizarModal(true);
     } else {
@@ -105,8 +119,12 @@ export const RelatorioGenerico = ({ ...props }) => {
     }
   };
 
-  const onSubmit = async () => {
-    const response = await endpointAprovaSolicitacao(uuid);
+  const onSubmit = async (values) => {
+    const response = await endpointAprovaSolicitacao(
+      uuid,
+      values.justificativa,
+      tipoSolicitacao
+    );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess(toastAprovaMensagem);
       getSolicitacaoAsync();
@@ -129,6 +147,7 @@ export const RelatorioGenerico = ({ ...props }) => {
           resposta_sim_nao={respostaSimNao}
           uuid={uuid}
           motivosDREnaoValida={motivosDREnaoValida}
+          tipoSolicitacao={tipoSolicitacao}
         />
       )}
       {ModalQuestionamento && (
@@ -139,6 +158,7 @@ export const RelatorioGenerico = ({ ...props }) => {
           loadSolicitacao={getSolicitacaoAsync}
           resposta_sim_nao={respostaSimNao}
           endpoint={endpointQuestionamento}
+          tipoSolicitacao={tipoSolicitacao}
         />
       )}
       {solicitacao && (
@@ -147,7 +167,7 @@ export const RelatorioGenerico = ({ ...props }) => {
           closeModal={() => setShowModalMarcarConferencia(false)}
           onMarcarConferencia={getSolicitacaoAsync}
           uuid={uuid}
-          endpoint={endpointMarcarConferencia}
+          endpoint={endpointMarcarConferencia(tipoSolicitacao)}
         />
       )}
       {ModalCODAEAutoriza && showModalCodaeAutorizar && (
@@ -158,6 +178,7 @@ export const RelatorioGenerico = ({ ...props }) => {
           endpoint={endpointAprovaSolicitacao}
           uuid={uuid}
           ehInclusao={true}
+          tipoSolicitacao={tipoSolicitacao}
         />
       )}
       {erro && <div>{erro}</div>}
@@ -165,7 +186,7 @@ export const RelatorioGenerico = ({ ...props }) => {
         <Spin tip="Carregando..." spinning={loading || !solicitacao}>
           {solicitacao && (
             <Form onSubmit={onSubmit}>
-              {({ handleSubmit, submitting }) => (
+              {({ handleSubmit, values, submitting }) => (
                 <form onSubmit={handleSubmit}>
                   {endpointAprovaSolicitacao && (
                     <ModalAutorizarAposQuestionamento
@@ -174,17 +195,18 @@ export const RelatorioGenerico = ({ ...props }) => {
                       closeModal={() => setShowAutorizarModal(false)}
                       endpoint={endpointAprovaSolicitacao}
                       uuid={uuid}
+                      tipoSolicitacao={tipoSolicitacao}
                     />
                   )}
                   <span className="page-title">
-                    Inversão de dia de Cardápio - Solicitação #{" "}
-                    {solicitacao.id_externo}
+                    {nomeSolicitacao} - Solicitação # {solicitacao.id_externo}
                   </span>
                   <div className="card mt-3">
                     <div className="card-body">
                       <CorpoRelatorio
                         solicitacao={solicitacao}
                         prazoDoPedidoMensagem={prazoMensagem}
+                        tipoSolicitacao={tipoSolicitacao}
                       />
                       <RelatorioHistoricoJustificativaEscola
                         solicitacao={solicitacao}
@@ -218,7 +240,7 @@ export const RelatorioGenerico = ({ ...props }) => {
                               <Botao
                                 texto={textoBotaoAprova}
                                 type={BUTTON_TYPE.BUTTON}
-                                onClick={handleClickBotaoAprova}
+                                onClick={() => handleClickBotaoAprova(values)}
                                 disabled={submitting}
                                 style={BUTTON_STYLE.GREEN}
                                 className="ms-3"

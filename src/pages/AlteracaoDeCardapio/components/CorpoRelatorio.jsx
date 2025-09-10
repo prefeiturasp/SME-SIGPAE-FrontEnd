@@ -19,20 +19,20 @@ import { existeLogDeQuestionamentoDaCODAE } from "src/components/Shareable/Relat
 import "./style.scss";
 
 export const CorpoRelatorio = (props) => {
-  const { alteracaoDeCardapio, prazoDoPedidoMensagem, tipoSolicitacao } = props;
+  const { solicitacao, prazoDoPedidoMensagem, tipoSolicitacao } = props;
   const [baixandoPDF, setBaixandoPDF] = useState(false);
 
   const justificativaNegacao = justificativaAoNegarSolicitacao(
-    alteracaoDeCardapio.logs
+    solicitacao.logs
   );
 
   const justificativaAprovacao = justificativaAoAprovarSolicitacao(
-    alteracaoDeCardapio.logs
+    solicitacao.logs
   );
 
   const EXIBIR_HISTORICO =
-    alteracaoDeCardapio.prioridade !== "REGULAR" &&
-    existeLogDeQuestionamentoDaCODAE(alteracaoDeCardapio.logs);
+    solicitacao.prioridade !== "REGULAR" &&
+    existeLogDeQuestionamentoDaCODAE(solicitacao.logs);
 
   return (
     <div>
@@ -57,9 +57,9 @@ export const CorpoRelatorio = (props) => {
             onClick={async () => {
               setBaixandoPDF(true);
               await getRelatorioAlteracaoCardapio(
-                alteracaoDeCardapio.uuid,
+                solicitacao.uuid,
                 tipoSolicitacao,
-                alteracaoDeCardapio?.escola?.nome
+                solicitacao?.escola?.nome
               );
               setBaixandoPDF(false);
             }}
@@ -68,7 +68,7 @@ export const CorpoRelatorio = (props) => {
         <div className="col-2">
           <span className="badge-sme badge-secondary-sme">
             <span className="id-of-solicitation-dre">
-              # {alteracaoDeCardapio.id_externo}
+              # {solicitacao.id_externo}
             </span>
             <br />{" "}
             <span className="number-of-order-label">Nº DA SOLICITAÇÃO</span>
@@ -77,57 +77,43 @@ export const CorpoRelatorio = (props) => {
         <div className="ps-2 my-auto offset-1 col-5">
           <span className="requester">Escola Solicitante</span>
           <br />
-          <span className="dre-name">
-            {alteracaoDeCardapio.escola && alteracaoDeCardapio.escola.nome}
-          </span>
+          <span className="dre-name">{solicitacao.escola?.nome}</span>
         </div>
         <div className="my-auto col-4">
           <span className="requester">Código EOL</span>
           <br />
-          <span className="dre-name">
-            {alteracaoDeCardapio.escola &&
-              alteracaoDeCardapio.escola.codigo_eol}
-          </span>
+          <span className="dre-name">{solicitacao.escola?.codigo_eol}</span>
         </div>
       </div>
       <div className="row">
         <div className="col-3 report-label-value">
           <p>DRE</p>
           <p className="value-important">
-            {alteracaoDeCardapio.escola &&
-              alteracaoDeCardapio.escola.diretoria_regional &&
-              alteracaoDeCardapio.escola.diretoria_regional.nome}
+            {solicitacao.escola?.diretoria_regional?.nome}
           </p>
         </div>
         <div className="col-3 report-label-value">
           <p>Lote</p>
-          <p className="value-important">
-            {alteracaoDeCardapio.escola &&
-              alteracaoDeCardapio.escola.lote &&
-              alteracaoDeCardapio.escola.lote.nome}
-          </p>
+          <p className="value-important">{solicitacao.escola?.lote?.nome}</p>
         </div>
         <div className="col-3 report-label-value">
           <p>Tipo de Gestão</p>
           <p className="value-important">
-            {alteracaoDeCardapio.escola &&
-              alteracaoDeCardapio.escola.tipo_gestao &&
-              alteracaoDeCardapio.escola.tipo_gestao.nome}
+            {solicitacao.escola?.tipo_gestao?.nome}
           </p>
         </div>
         <div className="col-3 report-label-value">
           <p>Empresa</p>
           <p className="value-important">
-            {alteracaoDeCardapio.rastro_terceirizada &&
-              alteracaoDeCardapio.rastro_terceirizada.nome_fantasia}
+            {solicitacao.rastro_terceirizada?.nome_fantasia}
           </p>
         </div>
       </div>
       <hr />
-      {alteracaoDeCardapio.logs && (
+      {solicitacao.logs && (
         <div className="row">
           <FluxoDeStatus
-            listaDeStatus={alteracaoDeCardapio.logs}
+            listaDeStatus={solicitacao.logs}
             fluxo={fluxoPartindoEscola}
             eh_gestao_alimentacao={true}
           />
@@ -138,8 +124,7 @@ export const CorpoRelatorio = (props) => {
         <thead>
           <tr className="row">
             <th className="col-2">Tipo de Alteração</th>
-            {alteracaoDeCardapio.data_inicial ===
-            alteracaoDeCardapio.data_final ? (
+            {solicitacao.data_inicial === solicitacao.data_final ? (
               <th className="col-2">Alterar dia</th>
             ) : (
               <th className="col-2">Dia(s) de Alteração</th>
@@ -148,14 +133,13 @@ export const CorpoRelatorio = (props) => {
         </thead>
         <tbody>
           <tr className="row">
-            <td className="col-2">{alteracaoDeCardapio.motivo.nome}</td>
-            {alteracaoDeCardapio.data_inicial ===
-            alteracaoDeCardapio.data_final ? (
+            <td className="col-2">{solicitacao.motivo.nome}</td>
+            {solicitacao.data_inicial === solicitacao.data_final ? (
               <td className="col-2">
-                {alteracaoDeCardapio.data_inicial || alteracaoDeCardapio.data}
+                {solicitacao.data_inicial || solicitacao.data}
               </td>
             ) : (
-              alteracaoDeCardapio.datas_intervalo.map((data_intervalo, key) => {
+              solicitacao.datas_intervalo.map((data_intervalo, key) => {
                 return (
                   <td
                     className={`col-2 ${
@@ -195,7 +179,7 @@ export const CorpoRelatorio = (props) => {
           <th>Alteração alimentação para:</th>
           {!ehInclusaoCei(tipoSolicitacao) && <th>Número de alunos</th>}
         </tr>
-        {alteracaoDeCardapio.substituicoes.map(
+        {solicitacao.substituicoes.map(
           (
             {
               periodo_escolar,
@@ -264,21 +248,21 @@ export const CorpoRelatorio = (props) => {
             <p
               className="value"
               dangerouslySetInnerHTML={{
-                __html: alteracaoDeCardapio.observacao,
+                __html: solicitacao.observacao,
               }}
             />
           </td>
         </tr>
       </table>
       {!ehInclusaoCei(tipoSolicitacao) &&
-        alteracaoDeCardapio.datas_intervalo.find(
+        solicitacao.datas_intervalo.find(
           (data_intervalo) => data_intervalo.cancelado_justificativa
         ) && (
           <>
             <hr />
             <p>
               <strong>Histórico de cancelamento</strong>
-              {alteracaoDeCardapio.datas_intervalo
+              {solicitacao.datas_intervalo
                 .filter(
                   (data_intervalo) => data_intervalo.cancelado_justificativa
                 )
@@ -321,7 +305,7 @@ export const CorpoRelatorio = (props) => {
             </tr>
             <tr>
               <th>{`${
-                alteracaoDeCardapio.logs.find(
+                solicitacao.logs.find(
                   (log) => log.status_evento_explicacao === "CODAE autorizou"
                 ).criado_em
               } - Informações da CODAE`}</th>
