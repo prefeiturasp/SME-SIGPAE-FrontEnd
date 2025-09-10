@@ -339,4 +339,5 @@ RelatorioGenerico.propTypes = {
   nomeSolicitacao: PropTypes.string.isRequired,
   endpointMarcarConferencia: PropTypes.func.isRequired,
   CorpoRelatorio: PropTypes.element.isRequired,
+  tipoSolicitacaoObrigatorio: PropTypes.bool,
 };

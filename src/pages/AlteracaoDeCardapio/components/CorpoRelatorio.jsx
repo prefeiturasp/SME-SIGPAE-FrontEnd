@@ -17,6 +17,7 @@ import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/help
 import TabelaFaixaEtaria from "src/components/Shareable/TabelaFaixaEtaria";
 import { existeLogDeQuestionamentoDaCODAE } from "src/components/Shareable/RelatorioHistoricoQuestionamento/helper";
 import "./style.scss";
+import PropTypes from "prop-types";
 
 export const CorpoRelatorio = (props) => {
   const { solicitacao, prazoDoPedidoMensagem, tipoSolicitacao } = props;
@@ -296,35 +297,39 @@ export const CorpoRelatorio = (props) => {
         </table>
       )}
       {justificativaAprovacao && !EXIBIR_HISTORICO && (
-        <Fragment>
-          <table className="table-periods">
-            <tr>
-              <th>
-                <b>Autorizou</b>
-              </th>
-            </tr>
-            <tr>
-              <th>{`${
-                solicitacao.logs.find(
-                  (log) => log.status_evento_explicacao === "CODAE autorizou"
-                ).criado_em
-              } - Informações da CODAE`}</th>
-            </tr>
-            <tr>
-              <td>
-                <p
-                  className="value"
-                  dangerouslySetInnerHTML={{
-                    __html: justificativaAprovacao,
-                  }}
-                />
-              </td>
-            </tr>
-          </table>
-        </Fragment>
+        <table className="table-periods">
+          <tr>
+            <th>
+              <b>Autorizou</b>
+            </th>
+          </tr>
+          <tr>
+            <th>{`${
+              solicitacao.logs.find(
+                (log) => log.status_evento_explicacao === "CODAE autorizou"
+              ).criado_em
+            } - Informações da CODAE`}</th>
+          </tr>
+          <tr>
+            <td>
+              <p
+                className="value"
+                dangerouslySetInnerHTML={{
+                  __html: justificativaAprovacao,
+                }}
+              />
+            </td>
+          </tr>
+        </table>
       )}
     </div>
   );
+};
+
+CorpoRelatorio.propTypes = {
+  solicitacao: PropTypes.object.isRequired,
+  prazoDoPedidoMensagem: PropTypes.string.isRequired,
+  tipoSolicitacao: PropTypes.string.isRequired,
 };
 
 export default CorpoRelatorio;
