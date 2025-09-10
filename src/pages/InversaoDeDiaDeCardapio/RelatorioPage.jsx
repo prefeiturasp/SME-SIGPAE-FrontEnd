@@ -1,9 +1,9 @@
 import HTTP_STATUS from "http-status-codes";
 import React, { useEffect, useState } from "react";
-import { getMotivosDREnaoValida } from "src/services/relatorios";
+import { RelatorioGenerico } from "src/components/GestaoDeAlimentacao/Relatorios/RelatorioGenerico";
 import { Container } from "src/components/InversaoDeDiaDeCardapio/Escola/components/Container";
-import { Relatorio } from "src/components/InversaoDeDiaDeCardapio/Relatorio";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
+import { ModalAprovarGenericoSimOpcional } from "src/components/Shareable/ModalAprovarGenericoSimOpcional";
 import ModalCancelarSolicitacao from "src/components/Shareable/ModalCancelarSolicitacao_";
 import { ModalCODAEQuestiona } from "src/components/Shareable/ModalCODAEQuestiona";
 import { ModalNaoValidarSolicitacao } from "src/components/Shareable/ModalNaoValidarSolicitacaoReduxForm";
@@ -12,6 +12,7 @@ import { ModalTerceirizadaRespondeQuestionamento } from "src/components/Shareabl
 import Page from "src/components/Shareable/Page/Page";
 import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
 import { HOME } from "src/constants/config";
+import { CorpoRelatorio } from "src/pages/InversaoDeDiaDeCardapio/components/CorpoRelatorio";
 import {
   CODAEAutorizaPedidoDRE,
   CODAENegaInversaoDeDiaDeCardapio,
@@ -19,10 +20,11 @@ import {
   DRENegaInversaoDeDiaDeCardapio,
   dreValidaPedidoEscola,
   escolaCancelaInversaoDiaCardapio,
+  getInversaoDeDiaDeCardapio,
   TerceirizadaRespondeQuestionamentoInversaoDeDiaDeCardapio,
   terceirizadaTomaCiencia,
 } from "src/services/inversaoDeDiaDeCardapio.service";
-import { ModalAprovarGenericoSimOpcional } from "src/components/Shareable/ModalAprovarGenericoSimOpcional";
+import { getMotivosDREnaoValida } from "src/services/relatorios";
 
 export const RelatorioBase = ({ ...props }) => {
   const [motivosDREnaoValida, setMotivosDREnaoValida] = useState();
@@ -46,7 +48,14 @@ export const RelatorioBase = ({ ...props }) => {
   return (
     <Page botaoVoltar>
       <Breadcrumb home={HOME} atual={atual} />
-      <Relatorio motivosDREnaoValida={motivosDREnaoValida} {...props} />
+      <RelatorioGenerico
+        getSolicitacao={getInversaoDeDiaDeCardapio}
+        nomeSolicitacao="Inversão do dia de Cardápio"
+        endpointMarcarConferencia="inversoes-dia-cardapio"
+        motivosDREnaoValida={motivosDREnaoValida}
+        CorpoRelatorio={CorpoRelatorio}
+        {...props}
+      ></RelatorioGenerico>
     </Page>
   );
 };
