@@ -51,13 +51,13 @@ export const CorpoRelatorio = (props) => {
                 {solicitacao.data_inicial || solicitacao.data}
               </td>
             ) : (
-              solicitacao.datas_intervalo.map((data_intervalo, key) => {
+              solicitacao.datas_intervalo.map((data_intervalo, index) => {
                 return (
                   <td
                     className={`col-2 ${
-                      key > 0 && key % 5 === 0 ? "offset-2" : ""
+                      index > 0 && index % 5 === 0 ? "offset-2" : ""
                     }`}
-                    key={key}
+                    key={data_intervalo.data}
                   >
                     <span
                       className={
@@ -101,7 +101,7 @@ export const CorpoRelatorio = (props) => {
               qtd_alunos,
               faixas_etarias,
             },
-            key
+            index
           ) => {
             let alimentos = tipos_alimentacao_de.map(
               (alimento) => alimento.nome
@@ -130,11 +130,11 @@ export const CorpoRelatorio = (props) => {
                 }
               }
             }
-
+            const key = `${periodo_escolar.nome}-${index}`;
             return (
               <Fragment key={key}>
                 <tr>
-                  <td>{periodo_escolar && periodo_escolar.nome}</td>
+                  <td>{periodo_escolar?.nome}</td>
                   <td>{tipos_alimentos_formatados}</td>
                   <td>{substitutos_formatados}</td>
                   {!ehInclusaoCei(tipoSolicitacao) && <td>{qtd_alunos}</td>}
@@ -178,9 +178,9 @@ export const CorpoRelatorio = (props) => {
                 .filter(
                   (data_intervalo) => data_intervalo.cancelado_justificativa
                 )
-                .map((data_intervalo, key) => {
+                .map((data_intervalo) => {
                   return (
-                    <div key={key}>
+                    <div key={data_intervalo.data}>
                       {data_intervalo.data}
                       {" - justificativa: "}
                       {data_intervalo.cancelado_justificativa}
