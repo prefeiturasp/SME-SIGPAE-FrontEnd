@@ -25,3 +25,19 @@ export const mockQuestoesPorCronograma = {
     },
   ],
 };
+
+export const mockQuestoesPorCronograma2 = {
+  uuid: "87471120-b48a-4ad7-a998-36f23087a855",
+  questoes_primarias: [
+    {
+      uuid: "d2d54f8f-e575-40ca-8e18-de1e5fa0adbd",
+      questao: "IDENTIFICAÇÃO DO PRODUTO",
+    },
+  ],
+  questoes_secundarias: [
+    {
+      uuid: "4f18316e-3ba5-4490-b75f-1ecd3c8505ce",
+      questao: "DATA DE VALIDADE",
+    },
+  ],
+};

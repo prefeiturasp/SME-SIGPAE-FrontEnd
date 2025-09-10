@@ -121,6 +121,8 @@ export const geraInitialValuesCadastrar = (
       ficha.dados_cronograma?.sistema_vedacao_embalagem_secundaria
         ? ficha.sistema_vedacao_embalagem_secundaria
         : "",
+
+    houve_ocorrencia: booleanToString(ficha.houve_ocorrencia as boolean),
   };
 
   if (!ficha.lote_fabricante_de_acordo) {
@@ -183,8 +185,7 @@ export const geraInitialValuesCadastrar = (
     });
   }
 
-  if (ficha.ocorrencias && ficha.ocorrencias.length > 0) {
-    initialValues.ocorrencias = { houve_ocorrencia: "1" };
+  if (initialValues.houve_ocorrencia === "1" && ficha.ocorrencias) {
     ficha.ocorrencias.forEach((ocorrencia, index) => {
       initialValues[`tipo_${index}`] = ocorrencia.tipo;
       initialValues[`relacao_${index}`] = ocorrencia.relacao;
@@ -192,8 +193,6 @@ export const geraInitialValuesCadastrar = (
       initialValues[`quantidade_${index}`] = ocorrencia.quantidade;
       initialValues[`descricao_${index}`] = ocorrencia.descricao;
     });
-  } else {
-    initialValues.ocorrencias = { houve_ocorrencia: "0" };
   }
 
   return initialValues as Record<string, any>;

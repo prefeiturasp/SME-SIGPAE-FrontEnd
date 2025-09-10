@@ -7,7 +7,11 @@ import { imprimirFichaRecebimento } from "src/services/fichaRecebimento.service"
 import { FichaDeRecebimentoItemListagem } from "../../interfaces";
 
 import "./styles.scss";
-import { CADASTRO_FICHA_RECEBIMENTO, RECEBIMENTO } from "src/configs/constants";
+import {
+  CADASTRO_FICHA_RECEBIMENTO,
+  EDITAR_FICHA_RECEBIMENTO,
+  RECEBIMENTO,
+} from "src/configs/constants";
 
 interface Props {
   objetos: FichaDeRecebimentoItemListagem[];
@@ -45,7 +49,12 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
           {iconeEditar}
         </NavLink>
       ) : (
-        iconeEditar
+        <NavLink
+          className="float-start"
+          to={`/${RECEBIMENTO}/${EDITAR_FICHA_RECEBIMENTO}?uuid=${objeto.uuid}`}
+        >
+          {iconeEditar}
+        </NavLink>
       );
 
     const botaoDetalhar = (
