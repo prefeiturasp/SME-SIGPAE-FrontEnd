@@ -32,33 +32,33 @@ import {
 import { BotaoMarcarConferencia } from "./components/BotaoMarcarConferencia";
 
 export const RelatorioGenerico = ({ ...props }) => {
-  const [uuid, setUuid] = useState();
-  const [tipoSolicitacao, setTipoSolicitacao] = useState();
-  const [solicitacao, setSolicitacao] = useState();
   const [prazoMensagem, setPrazoMensagem] = useState();
   const [respostaSimNao, setRespostaSimNao] = useState();
 
-  const [showNaoAprovaModal, setShowNaoAprovaModal] = useState(false);
-  const [showAutorizarModal, setShowAutorizarModal] = useState(false);
+  const [uuid, setUuid] = useState();
+  const [tipoSolicitacao, setTipoSolicitacao] = useState();
+  const [solicitacao, setSolicitacao] = useState();
+
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
   const [showModalCodaeAutorizar, setShowModalCodaeAutorizar] = useState(false);
   const [showModalMarcarConferencia, setShowModalMarcarConferencia] =
     useState(false);
   const [showQuestionamentoModal, setShowQuestionamentoModal] = useState(false);
-
-  const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState("");
+  const [showNaoAprovaModal, setShowNaoAprovaModal] = useState(false);
+  const [showAutorizarModal, setShowAutorizarModal] = useState(false);
 
   const {
-    endpointAprovaSolicitacao,
-    visao,
-    textoBotaoNaoAprova,
-    textoBotaoAprova,
-    endpointNaoAprovaSolicitacao,
     endpointQuestionamento,
     ModalNaoAprova,
     ModalQuestionamento,
     motivosDREnaoValida,
     ModalCODAEAutoriza,
+    endpointAprovaSolicitacao,
+    visao,
+    textoBotaoNaoAprova,
+    textoBotaoAprova,
+    endpointNaoAprovaSolicitacao,
     toastAprovaMensagem,
     toastAprovaMensagemErro,
     getSolicitacao,
