@@ -1,17 +1,7 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
-import Botao from "src/components/Shareable/Botao";
-import {
-  BUTTON_ICON,
-  BUTTON_STYLE,
-  BUTTON_TYPE,
-} from "src/components/Shareable/Botao/constants";
-import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
-import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { HeaderCorpoRelatorio } from "src/components/GestaoDeAlimentacao/Relatorios/RelatorioGenerico/components/HeaderCorpoRelatorio";
 import { statusEnum } from "src/constants/shared";
 import {
-  corDaMensagem,
   ehEscolaTipoCEMEI,
   justificativaAoNegarSolicitacao,
   stringSeparadaPorVirgulas,
@@ -19,101 +9,18 @@ import {
 import { getDetalheInversaoCardapio } from "src/services/relatorios";
 
 export const CorpoRelatorio = (props) => {
-  const [imprimindo, setimprimindo] = useState(false);
-  const { solicitacao, prazoDoPedidoMensagem } = props;
+  const { solicitacao } = props;
 
   const justificativaNegacao = justificativaAoNegarSolicitacao(
     solicitacao.logs
   );
 
-  const btnImprimirRelatorio = async () => {
-    setimprimindo(true);
-    try {
-      await getDetalheInversaoCardapio(
-        solicitacao.uuid,
-        solicitacao?.escola?.nome
-      );
-    } catch {
-      toastError("Houve um erro ao imprimir o relatório");
-    }
-    setimprimindo(false);
-  };
-
   return (
     <div>
-      <div className="row">
-        <p
-          className={`col-12 title-message ${corDaMensagem(
-            prazoDoPedidoMensagem
-          )}`}
-        >
-          {prazoDoPedidoMensagem}
-          <Botao
-            type={BUTTON_TYPE.BUTTON}
-            dataTestId="botao-imprimir"
-            titulo="imprimir"
-            style={imprimindo ? BUTTON_STYLE.GREEN_OUTLINE : BUTTON_STYLE.GREEN}
-            icon={imprimindo ? BUTTON_ICON.LOADING : BUTTON_ICON.PRINT}
-            disabled={imprimindo}
-            className="float-end"
-            onClick={() => btnImprimirRelatorio()}
-          />
-        </p>
-        <div className="col-2">
-          <span className="badge-sme badge-secondary-sme">
-            <span className="id-of-solicitation-dre">
-              # {solicitacao.id_externo}
-            </span>
-            <br />{" "}
-            <span className="number-of-order-label">Nº DA SOLICITAÇÃO</span>
-          </span>
-        </div>
-        <div className="ps-2 my-auto offset-1 col-5">
-          <span className="requester">Escola Solicitante</span>
-          <br />
-          <span className="dre-name">{solicitacao.escola?.nome}</span>
-        </div>
-        <div className="my-auto col-4">
-          <span className="requester">Código EOL</span>
-          <br />
-          <span className="dre-name">{solicitacao.escola?.codigo_eol}</span>
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-3 report-label-value">
-          <p>DRE</p>
-          <p className="value-important">
-            {solicitacao.escola?.diretoria_regional?.nome}
-          </p>
-        </div>
-        <div className="col-3 report-label-value">
-          <p>Lote</p>
-          <p className="value-important">{solicitacao.escola?.lote?.nome}</p>
-        </div>
-        <div className="col-3 report-label-value">
-          <p>Tipo de Gestão</p>
-          <p className="value-important">
-            {solicitacao.escola?.tipo_gestao?.nome}
-          </p>
-        </div>
-        <div className="col-3 report-label-value">
-          <p>Empresa</p>
-          <p className="value-important">
-            {solicitacao.rastro_terceirizada?.nome_fantasia}
-          </p>
-        </div>
-      </div>
-      <hr />
-      {solicitacao.logs && (
-        <div className="row">
-          <FluxoDeStatus
-            listaDeStatus={solicitacao.logs}
-            fluxo={fluxoPartindoEscola}
-            eh_gestao_alimentacao={true}
-          />
-        </div>
-      )}
-      <hr />
+      <HeaderCorpoRelatorio
+        getRelatorio={getDetalheInversaoCardapio}
+        {...props}
+      />
       {solicitacao.tipos_alimentacao.length > 0 && (
         <div className="row">
           <div className="col-12 report-label-value">
