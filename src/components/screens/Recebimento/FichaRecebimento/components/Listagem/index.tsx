@@ -35,7 +35,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
     objeto: FichaDeRecebimentoItemListagem
   ): ReactElement => {
     const iconeEditar = (
-      <span className="link-acoes px-2">
+      <span className="link-acoes px-1">
         <i title="Editar" className="fas fa-edit green" />
       </span>
     );
@@ -65,13 +65,17 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
 
     const botaoImprimir = (
       <span className="link-acoes px-1">
-        <i
+        <button
+          type="button"
           title="Imprimir"
-          className="fas fa-print green"
           onClick={() =>
             imprimirFicha(objeto.uuid, objeto.numero_cronograma, setCarregando)
           }
-        />
+          aria-label="Imprimir"
+          className="button-icon px-0"
+        >
+          <i className="fas fa-print green" />
+        </button>
       </span>
     );
 
