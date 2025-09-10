@@ -71,25 +71,19 @@ export const CorpoRelatorio = (props) => {
         <div className="ps-2 my-auto offset-1 col-5">
           <span className="requester">Escola Solicitante</span>
           <br />
-          <span className="dre-name">
-            {solicitacao.escola && solicitacao.escola.nome}
-          </span>
+          <span className="dre-name">{solicitacao.escola?.nome}</span>
         </div>
         <div className="my-auto col-4">
           <span className="requester">Código EOL</span>
           <br />
-          <span className="dre-name">
-            {solicitacao.escola && solicitacao.escola.codigo_eol}
-          </span>
+          <span className="dre-name">{solicitacao.escola?.codigo_eol}</span>
         </div>
       </div>
       <div className="row">
         <div className="col-3 report-label-value">
           <p>DRE</p>
           <p className="value-important">
-            {solicitacao.escola &&
-              solicitacao.escola.diretoria_regional &&
-              solicitacao.escola.diretoria_regional.nome}
+            {solicitacao.escola?.diretoria_regional?.nome}
           </p>
         </div>
         <div className="col-3 report-label-value">
@@ -105,8 +99,7 @@ export const CorpoRelatorio = (props) => {
         <div className="col-3 report-label-value">
           <p>Empresa</p>
           <p className="value-important">
-            {solicitacao.rastro_terceirizada &&
-              solicitacao.rastro_terceirizada.nome_fantasia}
+            {solicitacao.rastro_terceirizada?.nome_fantasia}
           </p>
         </div>
       </div>

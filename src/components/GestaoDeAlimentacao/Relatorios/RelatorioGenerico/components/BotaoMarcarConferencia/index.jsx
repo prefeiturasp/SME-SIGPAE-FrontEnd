@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -19,4 +20,9 @@ export const BotaoMarcarConferencia = ({ ...props }) => {
       disabled={loading}
     />
   );
+};
+
+BotaoMarcarConferencia.propTypes = {
+  setShowModalMarcarConferencia: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
