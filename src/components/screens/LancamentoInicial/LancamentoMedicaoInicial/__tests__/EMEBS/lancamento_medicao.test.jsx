@@ -19,7 +19,6 @@ import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 describe("Teste <LancamentoMedicaoInicial> - Usuário EMEBS", () => {
   const escolaUuid = mockMeusDadosEscolaEMEBS.vinculo_atual.instituicao.uuid;
@@ -155,7 +154,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEBS", () => {
   });
 
   it("Verifica a ordem dos cards", () => {
-    preview.debug();
     const textos = [
       "Manhã",
       "Tarde",
