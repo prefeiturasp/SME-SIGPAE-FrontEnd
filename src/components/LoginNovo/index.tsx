@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ComponenteLogin } from "./components/Login";
 import { PrimeiroAcesso } from "./components/PrimeiroAcesso";
 import { RecuperarSenha } from "./components/RecuperarSenha";
@@ -12,6 +12,7 @@ export const Login = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const param = urlParams.get("componenteRenderizado");
     if (param) setComponenteRenderizado(param);
+    if (param === "primeiroAcesso") setTexto("Primeiro Acesso");
   }, []);
 
   const componentes = useMemo(
@@ -23,17 +24,23 @@ export const Login = () => {
         />
       ),
       recuperarSenha: (
-        <RecuperarSenha setComponenteRenderizado={setComponenteRenderizado} />
+        <RecuperarSenha
+          setComponenteRenderizado={setComponenteRenderizado}
+          setTexto={setTexto}
+        />
       ),
       primeiroAcesso: (
-        <PrimeiroAcesso setComponenteRenderizado={setComponenteRenderizado} />
+        <PrimeiroAcesso
+          setComponenteRenderizado={setComponenteRenderizado}
+          setTexto={setTexto}
+        />
       ),
     }),
     []
   );
 
   return (
-    <div>
+    <>
       <div className="login-bg" />
       <div className="right-half">
         <div className="container my-auto">
@@ -55,6 +62,6 @@ export const Login = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

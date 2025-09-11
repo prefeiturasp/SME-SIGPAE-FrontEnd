@@ -17,6 +17,7 @@ import { atualizarSenhaLogado } from "src/services/perfil.service";
 
 type PrimeiroAcessoProps = {
   setComponenteRenderizado: (_componente: string) => void;
+  setTexto: (_texto?: string) => void;
 };
 
 type ValuesType = {
@@ -25,7 +26,7 @@ type ValuesType = {
 };
 
 export const PrimeiroAcesso = ({ ...props }: PrimeiroAcessoProps) => {
-  const { setComponenteRenderizado } = props;
+  const { setComponenteRenderizado, setTexto } = props;
 
   const onSubmit = async (values: ValuesType) => {
     const values_ = { ...values };
@@ -34,6 +35,7 @@ export const PrimeiroAcesso = ({ ...props }: PrimeiroAcessoProps) => {
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Senha atualizada com sucesso!");
       localStorage.removeItem("senhaAtual");
+      setTexto("");
       setComponenteRenderizado("login");
     } else {
       toastError(getError(response.data));

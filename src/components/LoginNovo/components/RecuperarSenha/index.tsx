@@ -13,10 +13,11 @@ import { recuperaSenha } from "src/services/perfil.service";
 
 type RecuperarSenhaProps = {
   setComponenteRenderizado: (_componente: string) => void;
+  setTexto: (_texto: string) => void;
 };
 
 export const RecuperarSenha = ({ ...props }: RecuperarSenhaProps) => {
-  const { setComponenteRenderizado } = props;
+  const { setComponenteRenderizado, setTexto } = props;
 
   const [emailRecuperadoMascarado, setEmailRecuperadoMascarado] = useState("");
 
@@ -75,7 +76,10 @@ export const RecuperarSenha = ({ ...props }: RecuperarSenhaProps) => {
                     texto="Cancelar"
                     style={BUTTON_STYLE.GREEN_OUTLINE}
                     type={BUTTON_TYPE.BUTTON}
-                    onClick={() => setComponenteRenderizado("login")}
+                    onClick={() => {
+                      setTexto("");
+                      setComponenteRenderizado("login");
+                    }}
                   />
                   <Botao
                     className="col-md-3 ms-3"

@@ -25,9 +25,7 @@ export const ComponenteLogin = ({ ...props }: ComponenteLoginProps) => {
 
   const onSubmit = async (values: { login: string; password: string }) => {
     const { login, password } = values;
-    if (login && password) {
-      await authService.login(login, password);
-    }
+    await authService.login(login, password);
   };
 
   const handleRecuperarSenha = () => {
