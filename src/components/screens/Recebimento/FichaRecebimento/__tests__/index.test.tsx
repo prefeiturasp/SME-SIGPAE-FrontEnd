@@ -100,6 +100,27 @@ describe("FichaRecebimentoListagem", () => {
     });
   });
 
+  it("deve baixar o PDF da ficha de recebimento quando o botão de impressão for clicado", async () => {
+    window.URL.createObjectURL = jest.fn();
+
+    mock
+      .onGet(/\/fichas-de-recebimento\/[^/]+\/gerar-pdf-ficha\//)
+      .reply(200, new Blob());
+
+    await setup();
+
+    await waitFor(() => {
+      expect(screen.getByText("CRONO-001")).toBeInTheDocument();
+    });
+
+    const botoesImprimir = screen.getAllByTitle("Imprimir");
+    fireEvent.click(botoesImprimir[0]);
+
+    await waitFor(() => {
+      expect(window.URL.createObjectURL).toHaveBeenCalled();
+    });
+  });
+
   it("deve limpar filtros quando o botão de limpar é clicado", async () => {
     await setup();
 
