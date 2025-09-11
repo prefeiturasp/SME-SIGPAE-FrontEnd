@@ -1,4 +1,8 @@
 import { Spin } from "antd";
+import HTTP_STATUS from "http-status-codes";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import { Form } from "react-final-form";
 import {
   exibeBotaoAprovar,
   exibeBotaoNaoAprovar,
@@ -6,7 +10,7 @@ import {
   exibirBotaoQuestionamento,
   exibirModalAutorizacaoAposQuestionamento,
 } from "src/components/GestaoDeAlimentacao/Relatorios/logicaExibirBotoes.helper";
-import { Botao } from "src/components/Shareable/Botao";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
@@ -20,55 +24,48 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { DRE } from "src/configs/constants";
-import {
-  statusEnum,
-  TIPO_PERFIL,
-  TIPO_SOLICITACAO,
-} from "src/constants/shared";
-import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { statusEnum, TIPO_PERFIL } from "src/constants/shared";
 import {
   prazoDoPedidoMensagem,
   visualizaBotoesDoFluxo,
 } from "src/helpers/utilities";
-import HTTP_STATUS from "http-status-codes";
-import { useContext, useEffect, useState } from "react";
-import { Form } from "react-final-form";
-import { getAlteracaoCardapio } from "src/services/alteracaoDeCardapio";
-import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
+import { BotaoMarcarConferencia } from "./components/BotaoMarcarConferencia";
 
-export const Relatorio = ({ ...props }) => {
-  const { meusDados } = useContext(MeusDadosContext);
-
-  const [uuid, setUuid] = useState();
-  const [tipoSolicitacao, setTipoSolicitacao] = useState();
-  const [alteracaoDoTipoDeAlimentacao, setAlteracaoDoTipoDeAlimentacao] =
-    useState();
+export const RelatorioGenerico = ({ ...props }) => {
   const [prazoMensagem, setPrazoMensagem] = useState();
   const [respostaSimNao, setRespostaSimNao] = useState();
 
-  const [showNaoAprovaModal, setShowNaoAprovaModal] = useState(false);
-  const [showAutorizarModal, setShowAutorizarModal] = useState(false);
+  const [uuid, setUuid] = useState();
+  const [tipoSolicitacao, setTipoSolicitacao] = useState();
+  const [solicitacao, setSolicitacao] = useState();
+
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
   const [showModalCodaeAutorizar, setShowModalCodaeAutorizar] = useState(false);
   const [showModalMarcarConferencia, setShowModalMarcarConferencia] =
     useState(false);
   const [showQuestionamentoModal, setShowQuestionamentoModal] = useState(false);
-
-  const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState("");
+  const [showNaoAprovaModal, setShowNaoAprovaModal] = useState(false);
+  const [showAutorizarModal, setShowAutorizarModal] = useState(false);
 
   const {
-    endpointAprovaSolicitacao,
-    visao,
-    textoBotaoNaoAprova,
-    textoBotaoAprova,
-    endpointNaoAprovaSolicitacao,
     endpointQuestionamento,
     ModalNaoAprova,
     ModalQuestionamento,
     motivosDREnaoValida,
     ModalCODAEAutoriza,
+    endpointAprovaSolicitacao,
+    visao,
+    textoBotaoNaoAprova,
+    textoBotaoAprova,
+    endpointNaoAprovaSolicitacao,
     toastAprovaMensagem,
     toastAprovaMensagemErro,
+    getSolicitacao,
+    nomeSolicitacao,
+    endpointMarcarConferencia,
+    CorpoRelatorio,
+    tipoSolicitacaoObrigatorio = false,
   } = props;
 
   useEffect(() => {
@@ -83,7 +80,7 @@ export const Relatorio = ({ ...props }) => {
       return;
     }
 
-    if (!tipoSolicitacao_) {
+    if (tipoSolicitacaoObrigatorio && !tipoSolicitacao_) {
       setErro(
         "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente."
       );
@@ -100,31 +97,26 @@ export const Relatorio = ({ ...props }) => {
     tipoSolicitacao_ = tipoSolicitacao
   ) => {
     setLoading(true);
-    const response = await getAlteracaoCardapio(uuid_, tipoSolicitacao_);
+    const response = await getSolicitacao(uuid_, tipoSolicitacao_);
     if (response.status === HTTP_STATUS.OK) {
-      setAlteracaoDoTipoDeAlimentacao(response.data);
+      setSolicitacao(response.data);
       setPrazoMensagem(prazoDoPedidoMensagem(response.data.prioridade));
     } else {
       setErro(
-        "Erro ao carregar Alteração do tipo de alimentação. Tente novamente mais tarde."
+        `Erro ao carregar ${nomeSolicitacao}. Tente novamente mais tarde.`
       );
     }
     setLoading(false);
   };
 
-  const BotaoMarcarConferencia = () => {
-    return (
-      <Botao
-        texto="Marcar Conferência"
-        type={BUTTON_TYPE.BUTTON}
-        style={BUTTON_STYLE.GREEN}
-        className="ms-3"
-        onClick={() => {
-          setShowModalMarcarConferencia(true);
-        }}
-        disabled={loading}
-      />
-    );
+  const handleClickBotaoAprova = (values) => {
+    if (visao === DRE) {
+      onSubmit(values);
+    } else if (exibirModalAutorizacaoAposQuestionamento(solicitacao, visao)) {
+      setShowAutorizarModal(true);
+    } else {
+      setShowModalCodaeAutorizar(true);
+    }
   };
 
   const onSubmit = async (values) => {
@@ -150,12 +142,12 @@ export const Relatorio = ({ ...props }) => {
           showModal={showNaoAprovaModal}
           closeModal={() => setShowNaoAprovaModal(false)}
           endpoint={endpointNaoAprovaSolicitacao}
-          solicitacao={alteracaoDoTipoDeAlimentacao}
+          solicitacao={solicitacao}
           loadSolicitacao={getSolicitacaoAsync}
           resposta_sim_nao={respostaSimNao}
           uuid={uuid}
-          tipoSolicitacao={tipoSolicitacao}
           motivosDREnaoValida={motivosDREnaoValida}
+          tipoSolicitacao={tipoSolicitacao}
         />
       )}
       {ModalQuestionamento && (
@@ -169,18 +161,16 @@ export const Relatorio = ({ ...props }) => {
           tipoSolicitacao={tipoSolicitacao}
         />
       )}
-      {alteracaoDoTipoDeAlimentacao && (
+      {solicitacao && (
         <ModalMarcarConferencia
           showModal={showModalMarcarConferencia}
           closeModal={() => setShowModalMarcarConferencia(false)}
           onMarcarConferencia={getSolicitacaoAsync}
           uuid={uuid}
-          endpoint={`alteracoes-cardapio${
-            tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEI ? "-cei" : ""
-          }`}
+          endpoint={endpointMarcarConferencia(tipoSolicitacao)}
         />
       )}
-      {ModalCODAEAutoriza && (
+      {ModalCODAEAutoriza && showModalCodaeAutorizar && (
         <ModalCODAEAutoriza
           showModal={showModalCodaeAutorizar}
           loadSolicitacao={getSolicitacaoAsync}
@@ -193,11 +183,8 @@ export const Relatorio = ({ ...props }) => {
       )}
       {erro && <div>{erro}</div>}
       {!erro && (
-        <Spin
-          tip="Carregando..."
-          spinning={loading || !alteracaoDoTipoDeAlimentacao}
-        >
-          {alteracaoDoTipoDeAlimentacao && (
+        <Spin tip="Carregando..." spinning={loading || !solicitacao}>
+          {solicitacao && (
             <Form onSubmit={onSubmit}>
               {({ handleSubmit, values, submitting }) => (
                 <form onSubmit={handleSubmit}>
@@ -212,28 +199,26 @@ export const Relatorio = ({ ...props }) => {
                     />
                   )}
                   <span className="page-title">
-                    Alteração do tipo de alimentação - Solicitação #{" "}
-                    {alteracaoDoTipoDeAlimentacao.id_externo}
+                    {nomeSolicitacao} - Solicitação # {solicitacao.id_externo}
                   </span>
                   <div className="card mt-3">
                     <div className="card-body">
                       <CorpoRelatorio
-                        alteracaoDeCardapio={alteracaoDoTipoDeAlimentacao}
+                        solicitacao={solicitacao}
                         prazoDoPedidoMensagem={prazoMensagem}
                         tipoSolicitacao={tipoSolicitacao}
-                        meusDados={meusDados}
                       />
                       <RelatorioHistoricoJustificativaEscola
-                        solicitacao={alteracaoDoTipoDeAlimentacao}
+                        solicitacao={solicitacao}
                       />
                       <RelatorioHistoricoQuestionamento
-                        solicitacao={alteracaoDoTipoDeAlimentacao}
+                        solicitacao={solicitacao}
                       />
-                      {visualizaBotoesDoFluxo(alteracaoDoTipoDeAlimentacao) && (
+                      {visualizaBotoesDoFluxo(solicitacao) && (
                         <div className="row mt-4 me-3">
                           <div className="col-12 text-end">
                             {exibeBotaoNaoAprovar(
-                              alteracaoDoTipoDeAlimentacao,
+                              solicitacao,
                               textoBotaoNaoAprova
                             ) && (
                               <Botao
@@ -248,35 +233,26 @@ export const Relatorio = ({ ...props }) => {
                               />
                             )}
                             {exibeBotaoAprovar(
-                              alteracaoDoTipoDeAlimentacao,
+                              solicitacao,
                               visao,
                               textoBotaoAprova
                             ) && (
                               <Botao
                                 texto={textoBotaoAprova}
                                 type={BUTTON_TYPE.BUTTON}
-                                onClick={() =>
-                                  visao === DRE
-                                    ? onSubmit(values)
-                                    : exibirModalAutorizacaoAposQuestionamento(
-                                        alteracaoDoTipoDeAlimentacao,
-                                        visao
-                                      )
-                                    ? setShowAutorizarModal(true)
-                                    : setShowModalCodaeAutorizar(true)
-                                }
+                                onClick={() => handleClickBotaoAprova(values)}
                                 disabled={submitting}
                                 style={BUTTON_STYLE.GREEN}
                                 className="ms-3"
                               />
                             )}
                             {exibirBotaoQuestionamento(
-                              alteracaoDoTipoDeAlimentacao,
+                              solicitacao,
                               visao,
                               tipoPerfil
                             ) && (
                               <>
-                                {alteracaoDoTipoDeAlimentacao.status ===
+                                {solicitacao.status ===
                                   statusEnum.CODAE_QUESTIONADO &&
                                 tipoPerfil === TIPO_PERFIL.TERCEIRIZADA ? (
                                   <Botao
@@ -312,18 +288,21 @@ export const Relatorio = ({ ...props }) => {
                               </>
                             )}
                             {exibirBotaoMarcarConferencia(
-                              alteracaoDoTipoDeAlimentacao,
+                              solicitacao,
                               visao
                             ) && (
                               <div className="form-group float-end mt-4">
-                                {alteracaoDoTipoDeAlimentacao.terceirizada_conferiu_gestao ? (
-                                  <label className="ms-3 conferido">
-                                    <i className="fas fa-check me-2" />
+                                {solicitacao.terceirizada_conferiu_gestao ? (
+                                  <span className="ms-3 conferido">
+                                    <i className="fas fa-check me-2" />{" "}
                                     Solicitação Conferida
-                                  </label>
+                                  </span>
                                 ) : (
                                   <BotaoMarcarConferencia
-                                    uuid={alteracaoDoTipoDeAlimentacao.uuid}
+                                    setShowModalMarcarConferencia={
+                                      setShowModalMarcarConferencia
+                                    }
+                                    loading={loading}
                                   />
                                 )}
                               </div>
@@ -341,4 +320,24 @@ export const Relatorio = ({ ...props }) => {
       )}
     </div>
   );
+};
+
+RelatorioGenerico.propTypes = {
+  endpointAprovaSolicitacao: PropTypes.func.isRequired,
+  visao: PropTypes.string.isRequired,
+  textoBotaoNaoAprova: PropTypes.string.isRequired,
+  textoBotaoAprova: PropTypes.string.isRequired,
+  endpointNaoAprovaSolicitacao: PropTypes.func.isRequired,
+  endpointQuestionamento: PropTypes.func.isRequired,
+  ModalNaoAprova: PropTypes.element.isRequired,
+  ModalQuestionamento: PropTypes.element.isRequired,
+  motivosDREnaoValida: PropTypes.array.isRequired,
+  ModalCODAEAutoriza: PropTypes.element.isRequired,
+  toastAprovaMensagem: PropTypes.string.isRequired,
+  toastAprovaMensagemErro: PropTypes.string.isRequired,
+  getSolicitacao: PropTypes.func.isRequired,
+  nomeSolicitacao: PropTypes.string.isRequired,
+  endpointMarcarConferencia: PropTypes.func.isRequired,
+  CorpoRelatorio: PropTypes.element.isRequired,
+  tipoSolicitacaoObrigatorio: PropTypes.bool,
 };

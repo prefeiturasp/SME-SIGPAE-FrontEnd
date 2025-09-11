@@ -139,10 +139,10 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEBS", () => {
   });
 
   it("Renderiza períodos escolares", () => {
-    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
-    expect(screen.getByText("MANHA")).toBeInTheDocument();
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
-    expect(screen.getByText("NOITE")).toBeInTheDocument();
+    expect(screen.getByText("Integral")).toBeInTheDocument();
+    expect(screen.getByText("Manhã")).toBeInTheDocument();
+    expect(screen.getByText("Tarde")).toBeInTheDocument();
+    expect(screen.getByText("Noite")).toBeInTheDocument();
   });
 
   it("Renderiza período `Programas e Projetos`", () => {

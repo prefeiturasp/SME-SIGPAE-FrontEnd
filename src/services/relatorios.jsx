@@ -50,8 +50,8 @@ export const getRelatorioKitLancheUnificado = (uuid) => {
 
 export const getRelatorioAlteracaoCardapio = async (
   uuid,
-  tipoSolicitacao,
-  escola
+  escola,
+  tipoSolicitacao
 ) => {
   let url = `${getAlteracaoPath(tipoSolicitacao)}/${uuid}/relatorio/`;
   const { data } = await axios.get(url, {
