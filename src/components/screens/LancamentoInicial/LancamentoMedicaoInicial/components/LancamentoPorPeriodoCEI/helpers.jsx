@@ -1,4 +1,7 @@
-import { ehEscolaTipoCEMEI } from "../../../../../../helpers/utilities";
+import {
+  ehEscolaTipoCEMEI,
+  capitalize,
+} from "../../../../../../helpers/utilities";
 
 export const ehEmeiDaCemei = (
   escolaInstituicao,
@@ -42,5 +45,35 @@ export const numeroRefeicoesDiarias = (textoCabecalho) => {
       return 5;
     default:
       return 2;
+  }
+};
+
+export const formataPeriodosCEMEI = (periodo) => {
+  switch (periodo) {
+    case "INTEGRAL":
+      return "Período Integral";
+    case "PARCIAL":
+      return "Período Parcial";
+    case "Infantil MANHA":
+      return "Infantil Manhã";
+    case "Infantil TARDE":
+      return "Infantil Tarde";
+    case "Infantil INTEGRAL":
+      return "Infantil Integral";
+    default:
+      return capitalize(periodo);
+  }
+};
+
+export const formataPeriodosCEI = (periodo) => {
+  switch (periodo) {
+    case "INTEGRAL":
+      return "Período Integral";
+    case "PARCIAL":
+      return "Período Parcial";
+    case "MANHA":
+      return "Manhã";
+    default:
+      return capitalize(periodo);
   }
 };
