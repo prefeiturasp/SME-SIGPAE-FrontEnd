@@ -136,8 +136,8 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
   });
 
   it("Renderiza períodos escolares de EMEF", () => {
-    expect(screen.getByText("MANHA")).toBeInTheDocument();
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
+    expect(screen.getByText("Manhã")).toBeInTheDocument();
+    expect(screen.getByText("Tarde")).toBeInTheDocument();
     expect(screen.getByText("Programas e Projetos")).toBeInTheDocument();
   });
 

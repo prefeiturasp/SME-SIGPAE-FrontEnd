@@ -119,8 +119,8 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("Renderiza período `TARDE`", () => {
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
+  it("Renderiza período `Tarde`", () => {
+    expect(screen.getByText("Tarde")).toBeInTheDocument();
   });
 
   it("Renderiza período `Programas e Projetos`", () => {

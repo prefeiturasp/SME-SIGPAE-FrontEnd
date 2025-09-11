@@ -1338,3 +1338,8 @@ export const getUltimoLog = (logs, explicacao) => {
     .filter((log) => log.status_evento_explicacao === explicacao)
     .pop();
 };
+
+export const capitalize = (str) => {
+  const lower = str.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+};
