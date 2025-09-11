@@ -31,6 +31,9 @@ const postLogin = async (login_, password) => {
 };
 
 const login = async (login, password) => {
+  localStorage.removeItem(TOKEN_ALIAS);
+  localStorage.removeItem(TOKEN_REFRESH_ALIAS);
+
   try {
     const response = await postLogin(login, password);
     if (response.status !== HTTP_STATUS.OK) {
@@ -53,7 +56,7 @@ const login = async (login, password) => {
 
       if (!json.last_login) {
         localStorage.setItem("senhaAtual", password);
-        window.location.href = "/login?tab=PRIMEIRO_ACESSO";
+        window.location.href = "/login?componenteRenderizado=primeiroAcesso";
       }
 
       await fetch(`${API_URL}/usuarios/meus-dados/`, {
@@ -159,7 +162,7 @@ const login = async (login, password) => {
     }
     return isValid;
   } catch (error) {
-    return false;
+    return error.json();
   }
 };
 
@@ -219,7 +222,7 @@ const isValidResponse = (json) => {
     const test1 = json.token.length >= 203 ? true : false;
     return test1 && test2;
   } catch (error) {
-    return false;
+    return error.json();
   }
 };
 
@@ -249,8 +252,7 @@ export const isTokenExpired = (token) => {
       return true;
     } else return false;
   } catch (err) {
-    console.log("Falha ao verificar token expirado");
-    return true;
+    return err.json();
   }
 };
 
