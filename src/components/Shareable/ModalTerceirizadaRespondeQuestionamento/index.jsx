@@ -70,6 +70,7 @@ export const ModalTerceirizadaRespondeQuestionamento = ({ ...props }) => {
                 <div className="col-12">
                   <Field
                     component={TextArea}
+                    dataTestId="textarea-observacao-questionamento"
                     label="Observação"
                     placeholder="Qual a sua justificativa para a resposta acima?"
                     name="justificativa"

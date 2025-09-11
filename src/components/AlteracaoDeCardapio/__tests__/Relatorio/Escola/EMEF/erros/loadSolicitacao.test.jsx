@@ -56,10 +56,10 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF
     });
   });
 
-  it("renderiza erro `Erro ao carregar Alteração do tipo de alimentação. Tente novamente mais tarde.`", async () => {
+  it("renderiza erro `Erro ao carregar Alteração do Tipo de Alimentação. Tente novamente mais tarde.`", async () => {
     expect(
       screen.getByText(
-        "Erro ao carregar Alteração do tipo de alimentação. Tente novamente mais tarde."
+        "Erro ao carregar Alteração do Tipo de Alimentação. Tente novamente mais tarde."
       )
     ).toBeInTheDocument();
   });
