@@ -1,11 +1,10 @@
-import { API_URL } from "../constants/config";
-import authService from "./auth";
-import axios from "./_base";
-import { AUTH_TOKEN } from "./constants";
 import Cookies from "js-cookie";
-import { ErrorHandlerFunction } from "./service-helpers";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
+import { API_URL } from "../constants/config";
+import axios from "./_base";
+import authService from "./auth";
+import { ErrorHandlerFunction } from "./service-helpers";
 
 const authToken = {
   Authorization: `JWT ${authService.getToken()}`,
@@ -32,27 +31,17 @@ export const setUsuario = (payload) => {
       return { data: data, status: status };
     })
     .catch((error) => {
-      return console.log(error);
+      return error.json();
     });
 };
 
-export const recuperaSenha = (registro_funcional) => {
+export const recuperaSenha = async (registro_funcional) => {
   const url = `${API_URL}/cadastro/recuperar-senha/${registro_funcional}/`;
-  let status = 0;
-  return fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return console.log(error);
-    });
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const atualizarSenha = (uuid, confirmationKey, payLoad) => {
@@ -102,8 +91,7 @@ export const atualizarCargo = () => {
       return result.json();
     })
     .catch((error) => {
-      console.log(error);
-      return error;
+      return error.json();
     });
 };
 
