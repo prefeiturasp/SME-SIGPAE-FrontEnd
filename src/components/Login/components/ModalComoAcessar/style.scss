@@ -1,0 +1,50 @@
+@use "src/styles/variables.scss" as *;
+
+.modal-como-acessar {
+  width: 55vw !important;
+  max-width: 55vw !important;
+  margin: 33vh auto !important;
+
+  text-align: center;
+  .flex-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 8px;
+    height: 100%;
+
+    div {
+      margin: 4px 0;
+    }
+
+    .titulo {
+      color: $greenButtonHover;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 18px;
+    }
+
+    .texto {
+      font-size: 15px;
+      line-height: 17px;
+      color: $blackInput;
+    }
+
+    .icone {
+      color: $green;
+      font-size: 60px;
+    }
+
+    .rodape {
+      padding: 8px;
+      color: $blackInput;
+      font-size: 12px;
+      line-height: 14px;
+      background-color: #f3f3f3;
+    }
+
+    .rodape-fake {
+      height: 44px;
+    }
+  }
+}

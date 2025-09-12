@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import Login from "./components/Login";
+import { Login } from "./components/Login";
 import { rotas } from "./configs/rotas";
 import ConfirmarEmailPage from "./pages/ConfirmarEmailPage";
 import NotFoundPage from "./pages/NotFoundPage";

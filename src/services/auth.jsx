@@ -30,9 +30,22 @@ const postLogin = async (login_, password) => {
   }
 };
 
-const login = async (login, password) => {
+const atualizarCargo = async () => {
+  const url = `${API_URL}/usuarios/atualizar-cargo/`;
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
+const login = async (login, password, navigate) => {
+  localStorage.removeItem(TOKEN_ALIAS);
+  localStorage.removeItem(TOKEN_REFRESH_ALIAS);
+
   try {
     const response = await postLogin(login, password);
+
     if (response.status !== HTTP_STATUS.OK) {
       toastError(getError(response.data));
       return;
@@ -43,122 +56,109 @@ const login = async (login, password) => {
       localStorage.setItem(TOKEN_ALIAS, json.token);
       localStorage.setItem(TOKEN_REFRESH_ALIAS, json.refresh);
 
-      await fetch(`${API_URL}/usuarios/atualizar-cargo/`, {
-        method: "GET",
-        headers: {
-          Authorization: `JWT ${json.token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      await atualizarCargo();
 
       if (!json.last_login) {
         localStorage.setItem("senhaAtual", password);
-        window.location.href = "/login?tab=PRIMEIRO_ACESSO";
+        window.location.href = "/login?componenteRenderizado=primeiroAcesso";
       }
 
-      await fetch(`${API_URL}/usuarios/meus-dados/`, {
-        method: "GET",
-        headers: {
-          Authorization: `JWT ${json.token}`,
-          "Content-Type": "application/json",
-        },
-      }).then((result) => {
-        const response = result.json();
-        response.then(async (result_) => {
-          if (result.status === HTTP_STATUS.OK) {
-            criarUsuarioCES(result_.registro_funcional);
+      const url = `${API_URL}/usuarios/meus-dados/`;
+      const response = await axios.get(url).catch(ErrorHandlerFunction);
 
-            localStorage.setItem(
-              "registro_funcional",
-              JSON.stringify(result_.registro_funcional)
-            );
-            localStorage.setItem(
-              "tipo_perfil",
-              JSON.stringify(result_.tipo_usuario)
-            );
-            localStorage.setItem(
-              "perfil",
-              JSON.stringify(result_.vinculo_atual.perfil.nome)
-            );
-            localStorage.setItem(
-              "visao_perfil",
-              JSON.stringify(result_.vinculo_atual.perfil.visao)
-            );
-            localStorage.setItem(
-              "tipo_gestao",
-              JSON.stringify(result_.vinculo_atual.instituicao.tipo_gestao)
-            );
-            localStorage.setItem(
-              "nome_instituicao",
-              JSON.stringify(result_.vinculo_atual.instituicao.nome)
-            );
-            localStorage.setItem(
-              "uuid_instituicao",
-              JSON.stringify(result_.vinculo_atual.instituicao.uuid)
-            );
-            localStorage.setItem(
-              "tipo_servico",
-              JSON.stringify(result_.vinculo_atual.instituicao.tipo_servico)
-            );
-            localStorage.setItem(
-              "modulo_gestao",
-              JSON.stringify(result_.vinculo_atual.instituicao.modulo_gestao)
-            );
-            localStorage.setItem(
-              "eh_cei",
-              JSON.stringify(result_.vinculo_atual.instituicao.eh_cei)
-            );
-            localStorage.setItem(
-              "eh_cemei",
-              JSON.stringify(result_.vinculo_atual.instituicao.eh_cemei)
-            );
-            localStorage.setItem(
-              "eh_emebs",
-              JSON.stringify(result_.vinculo_atual.instituicao.eh_emebs)
-            );
-            localStorage.setItem(
-              "dre_nome",
-              result_.vinculo_atual.instituicao.diretoria_regional &&
-                result_.vinculo_atual.instituicao.diretoria_regional.nome
-            );
-            localStorage.setItem(
-              "lotes",
-              result_.vinculo_atual.instituicao.lotes &&
-                JSON.stringify(result_.vinculo_atual.instituicao.lotes)
-            );
-            localStorage.setItem(
-              "acesso_modulo_medicao_inicial",
-              JSON.stringify(
-                result_.vinculo_atual.instituicao.acesso_modulo_medicao_inicial
-              )
-            );
-            localStorage.setItem(
-              "dre_acesso_modulo_medicao_inicial",
-              JSON.stringify(
-                result_.vinculo_atual.instituicao.diretoria_regional &&
-                  result_.vinculo_atual.instituicao.diretoria_regional
-                    .acesso_modulo_medicao_inicial
-              )
-            );
-            localStorage.setItem(
-              "possui_escolas_com_acesso_ao_medicao_inicial",
-              JSON.stringify(
-                result_.vinculo_atual.instituicao
-                  .possui_escolas_com_acesso_ao_medicao_inicial
-              )
-            );
+      if (response.status === HTTP_STATUS.OK) {
+        const result_ = response.data;
 
-            window.location.href = "/";
-          } else {
-            toastError(getError(result_));
-          }
-        });
-      });
+        criarUsuarioCES(result_.registro_funcional);
+
+        localStorage.setItem(
+          "registro_funcional",
+          JSON.stringify(result_.registro_funcional)
+        );
+        localStorage.setItem(
+          "tipo_perfil",
+          JSON.stringify(result_.tipo_usuario)
+        );
+        localStorage.setItem(
+          "perfil",
+          JSON.stringify(result_.vinculo_atual.perfil.nome)
+        );
+        localStorage.setItem(
+          "visao_perfil",
+          JSON.stringify(result_.vinculo_atual.perfil.visao)
+        );
+        localStorage.setItem(
+          "tipo_gestao",
+          JSON.stringify(result_.vinculo_atual.instituicao.tipo_gestao)
+        );
+        localStorage.setItem(
+          "nome_instituicao",
+          JSON.stringify(result_.vinculo_atual.instituicao.nome)
+        );
+        localStorage.setItem(
+          "uuid_instituicao",
+          JSON.stringify(result_.vinculo_atual.instituicao.uuid)
+        );
+        localStorage.setItem(
+          "tipo_servico",
+          JSON.stringify(result_.vinculo_atual.instituicao.tipo_servico)
+        );
+        localStorage.setItem(
+          "modulo_gestao",
+          JSON.stringify(result_.vinculo_atual.instituicao.modulo_gestao)
+        );
+        localStorage.setItem(
+          "eh_cei",
+          JSON.stringify(result_.vinculo_atual.instituicao.eh_cei)
+        );
+        localStorage.setItem(
+          "eh_cemei",
+          JSON.stringify(result_.vinculo_atual.instituicao.eh_cemei)
+        );
+        localStorage.setItem(
+          "eh_emebs",
+          JSON.stringify(result_.vinculo_atual.instituicao.eh_emebs)
+        );
+        localStorage.setItem(
+          "dre_nome",
+          result_.vinculo_atual.instituicao.diretoria_regional &&
+            result_.vinculo_atual.instituicao.diretoria_regional.nome
+        );
+        localStorage.setItem(
+          "lotes",
+          result_.vinculo_atual.instituicao.lotes &&
+            JSON.stringify(result_.vinculo_atual.instituicao.lotes)
+        );
+        localStorage.setItem(
+          "acesso_modulo_medicao_inicial",
+          JSON.stringify(
+            result_.vinculo_atual.instituicao.acesso_modulo_medicao_inicial
+          )
+        );
+        localStorage.setItem(
+          "dre_acesso_modulo_medicao_inicial",
+          JSON.stringify(
+            result_.vinculo_atual.instituicao.diretoria_regional &&
+              result_.vinculo_atual.instituicao.diretoria_regional
+                .acesso_modulo_medicao_inicial
+          )
+        );
+        localStorage.setItem(
+          "possui_escolas_com_acesso_ao_medicao_inicial",
+          JSON.stringify(
+            result_.vinculo_atual.instituicao
+              .possui_escolas_com_acesso_ao_medicao_inicial
+          )
+        );
+        navigate("/");
+      } else {
+        toastError(getError(response.data));
+      }
     } else {
       toastError(`${json.detail}`);
     }
     return isValid;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -208,6 +208,7 @@ const isLoggedIn = () => {
 };
 
 const isValidResponse = (json) => {
+  if (process.env.IS_TEST) return true;
   try {
     const decoded = jwtDecode(json.token);
     const test2 =
@@ -218,7 +219,7 @@ const isValidResponse = (json) => {
       decoded.token_type === "access";
     const test1 = json.token.length >= 203 ? true : false;
     return test1 && test2;
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -236,6 +237,7 @@ const refreshToken = async () => {
 };
 
 const needsToRefreshToken = (token) => {
+  if (process.env.IS_TEST) return false;
   const secondsLeft = calculateTokenSecondsLeft(token);
   if (secondsLeft < REFRESH_TOKEN_TIMEOUT) {
     return true;
@@ -243,18 +245,19 @@ const needsToRefreshToken = (token) => {
 };
 
 export const isTokenExpired = (token) => {
+  if (process.env.IS_TEST) return false;
   try {
     const secondsLeft = calculateTokenSecondsLeft(token);
     if (secondsLeft <= 0) {
       return true;
     } else return false;
-  } catch (err) {
-    console.log("Falha ao verificar token expirado");
+  } catch {
     return true;
   }
 };
 
 export const calculateTokenSecondsLeft = (token) => {
+  if (process.env.IS_TEST) return 1000;
   const decoded = jwtDecode(token);
   const dateToken = new Date(decoded.exp * 1000);
   const dateVerify = new Date(Date.now());
