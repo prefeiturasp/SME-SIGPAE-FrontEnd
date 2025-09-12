@@ -148,7 +148,7 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
                         {quantidade_periodo.numero_alunos}
                       </div>
                     </div>,
-                    <hr />,
+                    <hr key={"hr" + key} />,
                   ];
                 }
               )}

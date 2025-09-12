@@ -8,7 +8,7 @@ export const mockFichas: FichaDeRecebimentoItemListagem[] = [
     fornecedor: "Fornecedor Teste com nome muito longo que deve ser truncado",
     pregao_chamada_publica: "PC-001",
     data_recebimento: "2023-10-01",
-    status: "ASSINADA",
+    status: "Assinado CODAE",
   },
   {
     uuid: "2",
