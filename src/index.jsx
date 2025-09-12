@@ -1,28 +1,25 @@
-import React from "react";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import "react-big-calendar/lib/css/react-big-calendar.css";
 // Redux
 import { applyMiddleware, createStore } from "redux";
 import multi from "redux-multi";
 // Middleware
+import * as Sentry from "@sentry/browser";
 import promise from "redux-promise";
 import thunk from "redux-thunk";
-import { App } from "./App";
 import { ENVIRONMENT } from "src/constants/config";
+import { App } from "./App";
 import reducers from "./reducers";
-import * as serviceWorker from "./serviceWorker";
+import "./styles/_overrides.scss";
 import "./styles/custom.css";
 import "./styles/sb-admin-2.css";
-import "./styles/_overrides.scss";
-import * as Sentry from "@sentry/browser";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-//eslint-disable-next-line
 if (["development", "homolog", "treinamento"].includes(ENVIRONMENT)) {
   document.addEventListener("keydown", async function (event) {
     if (event.key === "PrintScreen") {
@@ -34,7 +31,6 @@ if (["development", "homolog", "treinamento"].includes(ENVIRONMENT)) {
   });
 }
 
-/* eslint-disable-next-line */
 if (process.env.IS_DOCKER_ENVIRONMENT === true) {
   // This way we can pass params to static files. see Dockerfile.
   // when build default env is production
@@ -44,7 +40,7 @@ if (process.env.IS_DOCKER_ENVIRONMENT === true) {
 
 // see https://github.com/zalmoxisus/redux-devtools-extension
 let devTools = undefined;
-//eslint-disable-next-line
+
 if (process.env.NODE_ENV === "development") {
   devTools =
     window.__REDUX_DEVTOOLS_EXTENSION__ &&
@@ -67,8 +63,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <App />
   </Provider>
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
