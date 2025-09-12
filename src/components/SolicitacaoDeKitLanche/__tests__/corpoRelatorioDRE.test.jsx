@@ -11,7 +11,6 @@ import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { mockMeusDadosDRE } from "src/mocks/meusDados/diretoria_regional";
 import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/mockMotivosDRENaoValida";
 import * as detalheKitLanche from "src/services/relatorios";
-import preview from "jest-preview";
 
 const mockComNegacao = {
   ...mockKitLancheAvulsa,
@@ -323,8 +322,14 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
     expect(screen.getByText("Aluno Teste 2")).toBeInTheDocument();
   });
 
-  it("", async () => {
-    preview.debug();
-    mockGetDetalheKitLancheAvulso;
+  it("Deve chamar a função de impressão ao clicar no botão", async () => {
+    const imprimirButton = screen.getByTestId("botao-imprimir-relatorio");
+    await fireEvent.click(imprimirButton);
+    expect(mockGetDetalheKitLancheAvulso).toHaveBeenCalledTimes(1);
+    expect(mockGetDetalheKitLancheAvulso).toHaveBeenCalledWith(
+      mockKitLancheAvulsa.uuid,
+      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
+      mockKitLancheAvulsa.escola.nome
+    );
   });
 });
