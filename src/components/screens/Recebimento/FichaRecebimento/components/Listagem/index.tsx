@@ -83,7 +83,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
       <div className="d-flex border-0">
         {botaoDetalhar}
         {botaoEditar}
-        {botaoImprimir}
+        {objeto.status === "Assinado CODAE" && botaoImprimir}
       </div>
     );
   };
