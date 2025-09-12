@@ -298,12 +298,19 @@ export const noSpaceStartOrEnd = (value) =>
     ? "Remover espaço do início e/ou final"
     : undefined;
 
-export const alphaNumericAndSingleSpaceBetweenCharacters = (value) =>
-  value && /[^a-zA-Z0-9\s]/.test(value)
-    ? "Apenas letras e números"
-    : value && /\s{2,}/.test(value)
-    ? "Remover excesso de espaços"
-    : undefined;
+export const alphaNumericAndSingleSpaceBetweenCharacters = (value) => {
+  if (!value) return undefined;
+
+  if (/[^a-zA-Z0-9\s]/.test(value)) {
+    return "Apenas letras e números";
+  }
+
+  if (/\s{2,}/.test(value)) {
+    return "Remover excesso de espaços";
+  }
+
+  return undefined;
+};
 
 export const apenasLetras = (value) =>
   value && /[^a-zA-Zà-úÀ-Ú ]/i.test(value)
