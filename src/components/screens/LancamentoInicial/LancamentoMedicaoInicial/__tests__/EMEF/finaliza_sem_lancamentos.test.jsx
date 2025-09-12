@@ -236,4 +236,16 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
       screen.getByText("Solicitação de Correção da CODAE")
     ).toBeInTheDocument("Não pode fazer sem lançamentos!");
   });
+  it("Verifica a ordem dos cards", () => {
+    const textos = ["Manhã", "Tarde", "Programas e Projetos"];
+
+    const elementos = textos.map((texto) => screen.getByText(texto));
+
+    for (let i = 0; i < elementos.length - 1; i++) {
+      const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
+      expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING
+      );
+    }
+  });
 });
