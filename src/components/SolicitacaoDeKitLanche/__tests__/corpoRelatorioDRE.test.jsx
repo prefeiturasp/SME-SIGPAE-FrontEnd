@@ -175,6 +175,7 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
       screen.getByText(/CODAE Gestão de Terceirizadas/i)
     ).toBeInTheDocument();
   });
+
   it("Verifica as informações de solicitaçoes similares ao clicar no toggle", async () => {
     expect(screen.getByText(/Solicitação Similar:/i)).toBeInTheDocument();
     const spanToggleExpandirSolicitacaoSimilar = screen.getByTestId(
@@ -218,6 +219,34 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
     expect(screen.getAllByText(/Nº Total de Kits/i)).toHaveLength(2);
 
     fireEvent.click(spanToggleExpandirSolicitacaoSimilar);
+  });
+
+  it("Verifica as informações do passeio", async () => {
+    expect(screen.getAllByText(/Data do evento/i)).toHaveLength(2);
+    expect(
+      screen.getByText(`${mockKitLancheAvulsa.solicitacao_kit_lanche.data}`)
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/Local do passeio/i)).toHaveLength(2);
+    expect(
+      screen.getByText(`${mockKitLancheAvulsa.local}`)
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("Evento/Atividade")).toHaveLength(1);
+    expect(screen.getAllByText(`${mockKitLancheAvulsa.evento}`)).toHaveLength(
+      1
+    );
+    expect(screen.getAllByText(/Nº de Alunos/i)).toHaveLength(2);
+    expect(
+      screen.getAllByText(`${mockKitLancheAvulsa.quantidade_alunos}`)
+    ).toHaveLength(2);
+    expect(screen.getAllByText(/Tempo Previsto de Passeio/i)).toHaveLength(2);
+    expect(
+      screen.getAllByText(
+        `${mockKitLancheAvulsa.solicitacao_kit_lanche.tempo_passeio_explicacao}`
+      )
+    ).toHaveLength(2);
+    expect(screen.getAllByText(/Opção Desejada/i)).toHaveLength(2);
+    expect(screen.getAllByText(/KIT 1/)).toHaveLength(2);
+    expect(screen.getAllByText(/Nº Total de Kits/i)).toHaveLength(2);
   });
 
   it("", async () => {
