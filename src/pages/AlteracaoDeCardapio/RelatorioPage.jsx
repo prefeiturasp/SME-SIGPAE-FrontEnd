@@ -1,4 +1,3 @@
-import { Relatorio } from "src/components/AlteracaoDeCardapio/Relatorio";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import { ModalCancelarAlteracaoCardapio } from "src/components/Shareable/ModalCancelaAlteracaoCardapio";
 import { ModalCODAEAutoriza } from "src/components/Shareable/ModalCODAEAutoriza";
@@ -9,9 +8,10 @@ import { ModalTerceirizadaRespondeQuestionamento } from "src/components/Shareabl
 import Page from "src/components/Shareable/Page/Page";
 import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
 
-import { HOME } from "src/constants/config";
 import HTTP_STATUS from "http-status-codes";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { RelatorioGenerico } from "src/components/GestaoDeAlimentacao/Relatorios/RelatorioGenerico";
+import { HOME } from "src/constants/config";
 import {
   // CODAE
   codaeAutorizarSolicitacaoDeAlteracaoDeCardapio,
@@ -22,10 +22,13 @@ import {
   dreValidarSolicitacaoDeAlteracaoDeCardapio,
   // escola
   escolaCancelarSolicitacaoDeAlteracaoDeCardapio,
+  getAlteracaoCardapio,
   terceirizadaRespondeQuestionamentoAlteracaoCardapio,
   TerceirizadaTomaCienciaAlteracaoCardapio,
 } from "src/services/alteracaoDeCardapio";
 import { getMotivosDREnaoValida } from "src/services/relatorios";
+import CorpoRelatorio from "./components/CorpoRelatorio";
+import { TIPO_SOLICITACAO } from "src/constants/shared";
 
 export const RelatorioBase = ({ ...props }) => {
   const [motivosDREnaoValida, setMotivosDREnaoValida] = useState();
@@ -49,7 +52,19 @@ export const RelatorioBase = ({ ...props }) => {
   return (
     <Page botaoVoltar>
       <Breadcrumb home={HOME} atual={atual} />
-      <Relatorio motivosDREnaoValida={motivosDREnaoValida} {...props} />
+      <RelatorioGenerico
+        motivosDREnaoValida={motivosDREnaoValida}
+        getSolicitacao={getAlteracaoCardapio}
+        nomeSolicitacao="Alteração do Tipo de Alimentação"
+        endpointMarcarConferencia={(tipoSolicitacao) =>
+          `alteracoes-cardapio${
+            tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEI ? "-cei" : ""
+          }`
+        }
+        CorpoRelatorio={CorpoRelatorio}
+        tipoSolicitacaoObrigatorio={true}
+        {...props}
+      />
     </Page>
   );
 };
