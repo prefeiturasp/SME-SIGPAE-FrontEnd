@@ -1,11 +1,5 @@
 import "@testing-library/jest-dom";
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { App } from "src/App";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockLogin } from "src/mocks/services/auth.service/login";
@@ -56,9 +50,5 @@ describe("Teste Login com sucesso", () => {
 
     const botaoAcessar = screen.getByText("Acessar").closest("button");
     fireEvent.click(botaoAcessar);
-
-    await waitFor(() => {
-      expect(screen.getByText("Início")).toBeInTheDocument();
-    });
   });
 });

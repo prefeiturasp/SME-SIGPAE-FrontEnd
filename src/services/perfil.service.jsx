@@ -1,39 +1,8 @@
-import Cookies from "js-cookie";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { API_URL } from "../constants/config";
 import axios from "./_base";
-import authService from "./auth";
 import { ErrorHandlerFunction } from "./service-helpers";
-
-const authToken = {
-  Authorization: `JWT ${authService.getToken()}`,
-  "Content-Type": "application/json",
-};
-
-export const setUsuario = (payload) => {
-  const url = `${API_URL}/cadastro/`;
-  let status = 0;
-
-  return fetch(url, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": Cookies.get("csrftoken"),
-    },
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
-};
 
 export const recuperaSenha = async (registro_funcional) => {
   const url = `${API_URL}/cadastro/recuperar-senha/${registro_funcional}/`;
@@ -79,26 +48,6 @@ export const getMeusDados = async () => {
     const data = { data: response.data, status: response.status };
     return data;
   }
-};
-
-export const atualizarEmail = (payload) => {
-  const url = `${API_URL}/usuarios/atualizar-email/`;
-  let status = 0;
-  return fetch(url, {
-    method: "PATCH",
-    body: JSON.stringify(payload),
-    headers: authToken,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
 };
 
 export const atualizarSenhaLogado = async (payload) => {
