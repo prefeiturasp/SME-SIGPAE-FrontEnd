@@ -1,4 +1,4 @@
-import { formataMilhar, formataMilharDecimal } from "../utilities";
+import { formataMilhar, formataMilharDecimal, geradorUUID } from "../utilities";
 
 describe("formataMilhar", () => {
   test("deve formatar números corretamente", () => {
@@ -44,5 +44,25 @@ describe("formataMilharDecimal", () => {
   test("deve lidar com valores zero", () => {
     expect(formataMilharDecimal(0)).toBe("0,00");
     expect(formataMilharDecimal(0.0)).toBe("0,00");
+  });
+});
+
+describe("Testes para geradorUUID", () => {
+  test("deve gerar um UUID no formato correto", () => {
+    const uuid = geradorUUID();
+
+    expect(uuid).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+    );
+  });
+
+  test("deve gerar UUIDs únicos em chamadas consecutivas", () => {
+    const uuid1 = geradorUUID();
+    const uuid2 = geradorUUID();
+    const uuid3 = geradorUUID();
+
+    expect(uuid1).not.toBe(uuid2);
+    expect(uuid1).not.toBe(uuid3);
+    expect(uuid2).not.toBe(uuid3);
   });
 });

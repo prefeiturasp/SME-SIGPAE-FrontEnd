@@ -17,6 +17,7 @@ import {
 import { RELATORIO } from "../configs/constants";
 import { ENVIRONMENT } from "src/constants/config";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { v4 as uuidv4 } from "uuid";
 
 // TODO: Quebrar esse arquivo, tem muitos helpers de diferentes tipo num único arquivo
 //       Dá pra separar por tipo de helper:
@@ -98,23 +99,7 @@ export const dataParaUTC = (data) => {
 };
 
 export const geradorUUID = () => {
-  let S4 = function () {
-    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-  };
-  return (
-    S4() +
-    S4() +
-    "-" +
-    S4() +
-    "-" +
-    S4() +
-    "-" +
-    S4() +
-    "-" +
-    S4() +
-    S4() +
-    S4()
-  );
+  return uuidv4();
 };
 
 export const stringSeparadaPorVirgulas = (obj, campo) => {
