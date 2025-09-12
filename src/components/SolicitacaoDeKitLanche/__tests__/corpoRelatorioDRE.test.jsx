@@ -300,9 +300,31 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
     expect(screen.getByText("N/A")).toBeInTheDocument();
   });
 
+  it("Deve renderizar alunos com dieta especial quando existirem", async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CorpoRelatorio
+            solicitacaoKitLanche={mockComDietaEspecial}
+            solicitacoesSimilares={mockComDietaEspecial.solicitacoes_similares}
+            prazoDoPedidoMensagem={""}
+            tipoSolicitacao={TIPO_SOLICITACAO.SOLICITACAO_NORMAL}
+          />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText("Alunos com dieta especial")).toBeInTheDocument();
+    expect(screen.getAllByText("Código EOL")).toHaveLength(3);
+    expect(screen.getByText("Nome")).toBeInTheDocument();
+    expect(screen.getByText("123456")).toBeInTheDocument();
+    expect(screen.getByText("Aluno Teste 1")).toBeInTheDocument();
+    expect(screen.getByText("789012")).toBeInTheDocument();
+    expect(screen.getByText("Aluno Teste 2")).toBeInTheDocument();
+  });
+
   it("", async () => {
     preview.debug();
     mockGetDetalheKitLancheAvulso;
-    mockComDietaEspecial;
   });
 });
