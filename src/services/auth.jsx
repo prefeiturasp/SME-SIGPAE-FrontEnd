@@ -39,7 +39,86 @@ const atualizarCargo = async () => {
   }
 };
 
-const login = async (login, password, navigate) => {
+const atualizaLocalStorage = (result_) => {
+  localStorage.setItem(
+    "registro_funcional",
+    JSON.stringify(result_.registro_funcional)
+  );
+  localStorage.setItem("tipo_perfil", JSON.stringify(result_.tipo_usuario));
+  localStorage.setItem(
+    "perfil",
+    JSON.stringify(result_.vinculo_atual.perfil.nome)
+  );
+  localStorage.setItem(
+    "visao_perfil",
+    JSON.stringify(result_.vinculo_atual.perfil.visao)
+  );
+  localStorage.setItem(
+    "tipo_gestao",
+    JSON.stringify(result_.vinculo_atual.instituicao.tipo_gestao)
+  );
+  localStorage.setItem(
+    "nome_instituicao",
+    JSON.stringify(result_.vinculo_atual.instituicao.nome)
+  );
+  localStorage.setItem(
+    "uuid_instituicao",
+    JSON.stringify(result_.vinculo_atual.instituicao.uuid)
+  );
+  localStorage.setItem(
+    "tipo_servico",
+    JSON.stringify(result_.vinculo_atual.instituicao.tipo_servico)
+  );
+  localStorage.setItem(
+    "modulo_gestao",
+    JSON.stringify(result_.vinculo_atual.instituicao.modulo_gestao)
+  );
+  localStorage.setItem(
+    "eh_cei",
+    JSON.stringify(result_.vinculo_atual.instituicao.eh_cei)
+  );
+  localStorage.setItem(
+    "eh_cemei",
+    JSON.stringify(result_.vinculo_atual.instituicao.eh_cemei)
+  );
+  localStorage.setItem(
+    "eh_emebs",
+    JSON.stringify(result_.vinculo_atual.instituicao.eh_emebs)
+  );
+  localStorage.setItem(
+    "dre_nome",
+    result_.vinculo_atual.instituicao.diretoria_regional &&
+      result_.vinculo_atual.instituicao.diretoria_regional.nome
+  );
+  localStorage.setItem(
+    "lotes",
+    result_.vinculo_atual.instituicao.lotes &&
+      JSON.stringify(result_.vinculo_atual.instituicao.lotes)
+  );
+  localStorage.setItem(
+    "acesso_modulo_medicao_inicial",
+    JSON.stringify(
+      result_.vinculo_atual.instituicao.acesso_modulo_medicao_inicial
+    )
+  );
+  localStorage.setItem(
+    "dre_acesso_modulo_medicao_inicial",
+    JSON.stringify(
+      result_.vinculo_atual.instituicao.diretoria_regional &&
+        result_.vinculo_atual.instituicao.diretoria_regional
+          .acesso_modulo_medicao_inicial
+    )
+  );
+  localStorage.setItem(
+    "possui_escolas_com_acesso_ao_medicao_inicial",
+    JSON.stringify(
+      result_.vinculo_atual.instituicao
+        .possui_escolas_com_acesso_ao_medicao_inicial
+    )
+  );
+};
+
+const login = async (login, password) => {
   localStorage.removeItem(TOKEN_ALIAS);
   localStorage.removeItem(TOKEN_REFRESH_ALIAS);
 
@@ -70,87 +149,8 @@ const login = async (login, password, navigate) => {
         const result_ = response.data;
 
         criarUsuarioCES(result_.registro_funcional);
-
-        localStorage.setItem(
-          "registro_funcional",
-          JSON.stringify(result_.registro_funcional)
-        );
-        localStorage.setItem(
-          "tipo_perfil",
-          JSON.stringify(result_.tipo_usuario)
-        );
-        localStorage.setItem(
-          "perfil",
-          JSON.stringify(result_.vinculo_atual.perfil.nome)
-        );
-        localStorage.setItem(
-          "visao_perfil",
-          JSON.stringify(result_.vinculo_atual.perfil.visao)
-        );
-        localStorage.setItem(
-          "tipo_gestao",
-          JSON.stringify(result_.vinculo_atual.instituicao.tipo_gestao)
-        );
-        localStorage.setItem(
-          "nome_instituicao",
-          JSON.stringify(result_.vinculo_atual.instituicao.nome)
-        );
-        localStorage.setItem(
-          "uuid_instituicao",
-          JSON.stringify(result_.vinculo_atual.instituicao.uuid)
-        );
-        localStorage.setItem(
-          "tipo_servico",
-          JSON.stringify(result_.vinculo_atual.instituicao.tipo_servico)
-        );
-        localStorage.setItem(
-          "modulo_gestao",
-          JSON.stringify(result_.vinculo_atual.instituicao.modulo_gestao)
-        );
-        localStorage.setItem(
-          "eh_cei",
-          JSON.stringify(result_.vinculo_atual.instituicao.eh_cei)
-        );
-        localStorage.setItem(
-          "eh_cemei",
-          JSON.stringify(result_.vinculo_atual.instituicao.eh_cemei)
-        );
-        localStorage.setItem(
-          "eh_emebs",
-          JSON.stringify(result_.vinculo_atual.instituicao.eh_emebs)
-        );
-        localStorage.setItem(
-          "dre_nome",
-          result_.vinculo_atual.instituicao.diretoria_regional &&
-            result_.vinculo_atual.instituicao.diretoria_regional.nome
-        );
-        localStorage.setItem(
-          "lotes",
-          result_.vinculo_atual.instituicao.lotes &&
-            JSON.stringify(result_.vinculo_atual.instituicao.lotes)
-        );
-        localStorage.setItem(
-          "acesso_modulo_medicao_inicial",
-          JSON.stringify(
-            result_.vinculo_atual.instituicao.acesso_modulo_medicao_inicial
-          )
-        );
-        localStorage.setItem(
-          "dre_acesso_modulo_medicao_inicial",
-          JSON.stringify(
-            result_.vinculo_atual.instituicao.diretoria_regional &&
-              result_.vinculo_atual.instituicao.diretoria_regional
-                .acesso_modulo_medicao_inicial
-          )
-        );
-        localStorage.setItem(
-          "possui_escolas_com_acesso_ao_medicao_inicial",
-          JSON.stringify(
-            result_.vinculo_atual.instituicao
-              .possui_escolas_com_acesso_ao_medicao_inicial
-          )
-        );
-        navigate("/");
+        atualizaLocalStorage(result_);
+        window.location.href = "/";
       } else {
         toastError(getError(response.data));
       }
