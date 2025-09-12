@@ -58,7 +58,9 @@ a.hyperlink {
       .como-acessar {
         margin: 0;
 
-        span {
+        button {
+          background: none;
+          border: none;
           cursor: pointer;
           color: #035d96;
           &:hover {

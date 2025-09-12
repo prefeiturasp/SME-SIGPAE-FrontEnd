@@ -41,9 +41,12 @@ export const ComponenteLogin = ({ ...props }: ComponenteLoginProps) => {
         {({ handleSubmit, submitting }) => (
           <form onSubmit={handleSubmit}>
             <p className="como-acessar text-end">
-              <span onClick={() => setShowModalComoAcessar(true)}>
+              <button
+                type="button"
+                onClick={() => setShowModalComoAcessar(true)}
+              >
                 Como Acessar?
-              </span>
+              </button>
             </p>
             <Field
               component={InputText}

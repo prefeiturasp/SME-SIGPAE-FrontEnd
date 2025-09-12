@@ -40,19 +40,19 @@ export const RecuperarSenha = ({ ...props }: RecuperarSenhaProps) => {
               <div className="form">
                 <div className="texto-simples mt-3">
                   <span className="texto-simples-verde fw-bold">
-                    Servidor Municipal: &nbsp;
+                    Servidor Municipal:{" "}
                   </span>
                   Digite seu <strong>RF</strong>.
                 </div>
                 <div className="texto-simples mt-3">
                   <span className="texto-simples-verde fw-bold">
-                    Fornecedor ou Distribuidor: &nbsp;
+                    Fornecedor ou Distribuidor:{" "}
                   </span>
                   Digite seu <strong>CPF</strong>.
                 </div>
                 <div className="texto-simples mt-3">
                   <span className="texto-simples-verde fw-bold">
-                    Rede Parceira: &nbsp;
+                    Rede Parceira:{" "}
                   </span>
                   Digite seu <strong>CPF</strong>.
                 </div>

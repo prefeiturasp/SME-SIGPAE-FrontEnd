@@ -43,7 +43,7 @@ export const PrimeiroAcesso = ({ ...props }: PrimeiroAcessoProps) => {
   };
 
   const getNumero = (values: ValuesType) => {
-    return values.senha?.match(/[0-9]/g);
+    return values.senha?.match(/\d/g);
   };
 
   const getTamanho = (values: ValuesType) => {

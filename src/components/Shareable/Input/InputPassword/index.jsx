@@ -97,6 +97,12 @@ InputPassword.propTypes = {
   required: PropTypes.bool,
   type: PropTypes.string,
   contador: PropTypes.number,
+  dataTestIdDiv: PropTypes.string,
+  title: PropTypes.string,
+  tooltipText: PropTypes.string,
+  maxlength: PropTypes.number,
+  pattern: PropTypes.string,
+  toUppercaseActive: PropTypes.bool,
 };
 
 InputPassword.defaultProps = {
