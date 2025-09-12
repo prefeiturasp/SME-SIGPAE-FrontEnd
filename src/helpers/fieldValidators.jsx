@@ -276,12 +276,12 @@ export const cep = (value) =>
   value && /^[\d]{5}-[\d]{3}/.test(value) ? undefined : "Cep inválido";
 
 export const prefeituraEmail = (value) =>
-  value && /.+@\prefeitura.sp.gov.br/.test(value)
+  value && /^[^\s@]+@prefeitura\.sp\.gov\.br$/.test(value)
     ? undefined
     : "Somente emails da prefeitura de São Paulo";
 
 export const SMEPrefeituraEmail = (value) =>
-  value && /.+@sme.prefeitura.sp.gov.br/.test(value)
+  value && /^[^\s@]+@sme\.prefeitura\.sp\.gov\.br$/.test(value)
     ? undefined
     : "Digite o E-mail @sme.prefeitura.sp.gov.br";
 
@@ -294,16 +294,23 @@ export const alphaNumeric = (value) =>
   value && /[^a-zA-Z0-9]/i.test(value) ? "Apenas letras e números" : undefined;
 
 export const noSpaceStartOrEnd = (value) =>
-  value && /^\s+|\s+$/.test(value)
+  value && (value.startsWith(" ") || value.endsWith(" "))
     ? "Remover espaço do início e/ou final"
     : undefined;
 
-export const alphaNumericAndSingleSpaceBetweenCharacters = (value) =>
-  value && /[^a-zA-Z0-9\s]/.test(value)
-    ? "Apenas letras e números"
-    : /[^a-zA-Z0-9]+[\s]/.test(value)
-    ? "Remover excesso de espaços"
-    : undefined;
+export const alphaNumericAndSingleSpaceBetweenCharacters = (value) => {
+  if (!value) return undefined;
+
+  if (/[^a-zA-Z0-9\s]/.test(value)) {
+    return "Apenas letras e números";
+  }
+
+  if (/\s{2,}/.test(value)) {
+    return "Remover excesso de espaços";
+  }
+
+  return undefined;
+};
 
 export const apenasLetras = (value) =>
   value && /[^a-zA-Zà-úÀ-Ú ]/i.test(value)

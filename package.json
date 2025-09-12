@@ -22,7 +22,8 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-      "^src/(.*)$": "<rootDir>/src/$1"
+      "^src/(.*)$": "<rootDir>/src/$1",
+      "^uuid$": "<rootDir>/node_modules/uuid/dist/cjs/index.js"
     },
     "watchPathIgnorePatterns": [
       "src/components/Shareable/Avatar"
@@ -40,7 +41,8 @@
       "/src/mocks/"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!axios)"
+      "node_modules/(?!axios)",
+      "node_modules/(?!uuid/)"
     ],
     "transform": {
       "\\.js$": [

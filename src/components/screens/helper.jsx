@@ -327,10 +327,18 @@ export const MSG_SENHA_INVALIDA = () => (
 );
 
 export const formataValorDecimal = (value) => {
-  if (!value) return "";
-  return `${value}`
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-    .replace(/\.(?=\d{0,2}$)/g, ",");
+  if (value === null || value === undefined || value === "") return "";
+
+  const str = `${value}`;
+  const parts = str.split(".");
+  let int = parts[0];
+  let decimal = parts.length > 1 ? parts[1] : "";
+
+  int = int.replace(/(\d)(?=(\d{3})+$)/g, "$1.");
+
+  decimal = decimal.slice(0, 2);
+
+  return decimal ? `${int},${decimal}` : int;
 };
 
 export const parserValorDecimal = (value) => {
