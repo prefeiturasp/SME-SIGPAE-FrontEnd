@@ -161,8 +161,8 @@ const login = async (login, password) => {
       toastError(`${json.detail}`);
     }
     return isValid;
-  } catch (error) {
-    return error.json();
+  } catch {
+    return false;
   }
 };
 
@@ -221,8 +221,8 @@ const isValidResponse = (json) => {
       decoded.token_type === "access";
     const test1 = json.token.length >= 203 ? true : false;
     return test1 && test2;
-  } catch (error) {
-    return error.json();
+  } catch {
+    return false;
   }
 };
 
@@ -251,8 +251,8 @@ export const isTokenExpired = (token) => {
     if (secondsLeft <= 0) {
       return true;
     } else return false;
-  } catch (err) {
-    return err.json();
+  } catch {
+    return true;
   }
 };
 
