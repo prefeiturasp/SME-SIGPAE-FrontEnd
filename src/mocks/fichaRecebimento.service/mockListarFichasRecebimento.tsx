@@ -17,6 +17,6 @@ export const mockFichas: FichaDeRecebimentoItemListagem[] = [
     fornecedor: "Fornecedor Teste 2",
     pregao_chamada_publica: "PC-002",
     data_recebimento: "2023-10-02",
-    status: "RASCUNHO",
+    status: "Rascunho",
   },
 ];
