@@ -249,6 +249,16 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
     expect(screen.getAllByText(/Nº Total de Kits/i)).toHaveLength(2);
   });
 
+  it("Verifica as informações adicionais", async () => {
+    expect(screen.getAllByText(/Observações/i)).toHaveLength(2);
+    expect(screen.getByText(/teste/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Autorizou/i)).toHaveLength(2);
+    expect(
+      screen.getByText("29/09/2023 14:17:07 - Informações da CODAE")
+    ).toBeInTheDocument();
+    expect(screen.getByText(/aprovado/i)).toBeInTheDocument();
+  });
+
   it("", async () => {
     preview.debug();
     mockGetDetalheKitLancheAvulso;
