@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import mock from "src/services/_mock";
-import { act, render, screen } from "@testing-library/react";
+import { act, render, fireEvent, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { TIPO_SOLICITACAO } from "src/services/constants";
 import { TIPO_PERFIL } from "../../../constants/shared";
@@ -158,7 +158,6 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
   });
 
   it("Verifica as informações da linha do tempo", async () => {
-    preview.debug();
     expect(screen.getByText(/Solicitação Realizada/i)).toBeInTheDocument();
     expect(screen.getByText("29/09/2023 11:34:26")).toBeInTheDocument();
     expect(screen.getByText(/RF: 8115257/i)).toBeInTheDocument();
@@ -176,8 +175,53 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
       screen.getByText(/CODAE Gestão de Terceirizadas/i)
     ).toBeInTheDocument();
   });
+  it("Verifica as informações de solicitaçoes similares ao clicar no toggle", async () => {
+    expect(screen.getByText(/Solicitação Similar:/i)).toBeInTheDocument();
+    const spanToggleExpandirSolicitacaoSimilar = screen.getByTestId(
+      "colapse-solicitacao-similares"
+    );
+    fireEvent.click(spanToggleExpandirSolicitacaoSimilar);
+
+    expect(screen.getAllByText("#E209F")).toHaveLength(2);
+    expect(screen.getByText(/Solicitação Número:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Data da Inclusão:/i)).toBeInTheDocument();
+    expect(screen.getByText("01/08/2023")).toBeInTheDocument();
+    expect(screen.getByText(/Status da Solicitação:/i)).toBeInTheDocument();
+    expect(screen.getByText(/CODAE negou/i)).toBeInTheDocument();
+
+    expect(screen.getAllByText(/Data do evento/i)).toHaveLength(2);
+    expect(
+      screen.getByText(
+        `${mockComSolicitacoesimilares[0].solicitacao_kit_lanche.data}`
+      )
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/Local do passeio/i)).toHaveLength(2);
+    expect(
+      screen.getAllByText(`${mockComSolicitacoesimilares[0].local}`)
+    ).toHaveLength(2);
+    expect(screen.getAllByText("Evento/Atividade")).toHaveLength(1);
+    expect(
+      screen.getAllByText(`${mockComSolicitacoesimilares[0].evento}`)
+    ).toHaveLength(1);
+    expect(screen.getAllByText(/Nº de Alunos/i)).toHaveLength(2);
+    expect(
+      screen.getAllByText(`${mockComSolicitacoesimilares[0].quantidade_alunos}`)
+    ).toHaveLength(2);
+    expect(screen.getAllByText(/Tempo Previsto de Passeio/i)).toHaveLength(2);
+    expect(
+      screen.getAllByText(
+        `${mockComSolicitacoesimilares[0].solicitacao_kit_lanche.tempo_passeio_explicacao}`
+      )
+    ).toHaveLength(2);
+    expect(screen.getAllByText(/Opção Desejada/i)).toHaveLength(2);
+    expect(screen.getAllByText(/KIT 1/)).toHaveLength(2);
+    expect(screen.getAllByText(/Nº Total de Kits/i)).toHaveLength(2);
+
+    fireEvent.click(spanToggleExpandirSolicitacaoSimilar);
+  });
 
   it("", async () => {
+    preview.debug();
     mockGetDetalheKitLancheAvulso;
     mockComDietaEspecial;
     mockComNegacao;
