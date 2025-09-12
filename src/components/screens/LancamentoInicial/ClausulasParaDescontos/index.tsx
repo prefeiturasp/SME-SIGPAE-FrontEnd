@@ -31,6 +31,7 @@ import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
+import { formataValor } from "./helpers";
 
 type Edital = {
   uuid: string;
@@ -108,15 +109,6 @@ export function ClausulasParaDescontos() {
     setPaginaAtual(1);
     requisicoesPreRender();
   }, []);
-
-  const formataValor = (value: number) => {
-    return (
-      `${value}`
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-        .replace(/\.(?=\d{0,2}$)/g, ",")
-        .replace(/,00/, "") + "%"
-    );
-  };
 
   const onChangePage = async (page: number, filtros: FiltrosInterface) => {
     setPaginaAtual(page);

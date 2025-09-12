@@ -243,7 +243,7 @@ export const formataCPFCensurado = (cpf) => {
 
 export const formataMilhar = (value) => {
   const valor = value?.toString().replace(/\D/g, "");
-  return valor?.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return valor?.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
 };
 
 export const formataMilharDecimal = (value) => {
@@ -251,8 +251,8 @@ export const formataMilharDecimal = (value) => {
     ? Number(value)
         .toFixed(2)
         .replace(/\D/g, "")
-        .replace(/(\d)(?=(\d{2})\b)/g, "$1,")
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+        .replace(/(\d)(?=(\d{2})$)/g, "$1,")
+        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
     : value;
 };
 
