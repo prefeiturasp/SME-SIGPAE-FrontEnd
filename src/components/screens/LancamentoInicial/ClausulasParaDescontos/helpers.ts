@@ -1,8 +1,13 @@
 export const formataValor = (value: number) => {
-  return (
-    `${value}`
-      .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
-      .replace(/\.(?=\d{0,2}$)/g, ",")
-      .replace(/,00/, "") + "%"
-  );
+  if (value === null) return "";
+
+  const [integer, decimal] = value.toString().split(".");
+  const formattedInteger = integer.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+
+  let result = decimal
+    ? `${formattedInteger},${decimal.slice(0, 2)}`
+    : formattedInteger;
+  result = result.replace(/,00$/, "").replace(/,0$/, "");
+
+  return `${result}%`;
 };

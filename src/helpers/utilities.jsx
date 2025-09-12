@@ -228,7 +228,7 @@ export const formataCPFCensurado = (cpf) => {
 
 export const formataMilhar = (value) => {
   const valor = value?.toString().replace(/\D/g, "");
-  return valor?.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+  return valor?.replace(/\d(?=(\d{3})+$)/g, "$&.");
 };
 
 export const formataMilharDecimal = (value) => {
