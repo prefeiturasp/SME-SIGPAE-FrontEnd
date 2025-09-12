@@ -279,6 +279,27 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
     ).toBeInTheDocument();
   });
 
+  it("Deve renderizar faixas etárias quando for inclusão CEI", async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CorpoRelatorio
+            solicitacaoKitLanche={mockKitLancheAvulsa}
+            solicitacoesSimilares={mockKitLancheAvulsa.solicitacoes_similares}
+            prazoDoPedidoMensagem={""}
+            tipoSolicitacao={TIPO_SOLICITACAO.SOLICITACAO_CEI}
+          />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText("Faixa Etária")).toBeInTheDocument();
+    expect(screen.getByText("Alunos Matriculados")).toBeInTheDocument();
+    expect(screen.getByText("Quantidade")).toBeInTheDocument();
+    expect(screen.getByText("Total")).toBeInTheDocument();
+    expect(screen.getByText("N/A")).toBeInTheDocument();
+  });
+
   it("", async () => {
     preview.debug();
     mockGetDetalheKitLancheAvulso;
