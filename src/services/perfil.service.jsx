@@ -81,20 +81,6 @@ export const getMeusDados = async () => {
   }
 };
 
-export const atualizarCargo = () => {
-  const url = `${API_URL}/usuarios/atualizar-cargo/`;
-  return fetch(url, {
-    method: "GET",
-    headers: authToken,
-  })
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
-};
-
 export const atualizarEmail = (payload) => {
   const url = `${API_URL}/usuarios/atualizar-email/`;
   let status = 0;

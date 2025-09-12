@@ -17,7 +17,7 @@ import { atualizarSenhaLogado } from "src/services/perfil.service";
 
 type PrimeiroAcessoProps = {
   setComponenteRenderizado: (_componente: string) => void;
-  setTexto: (_texto?: string) => void;
+  setTexto: (_texto: string) => void;
 };
 
 type ValuesType = {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Field, Form } from "react-final-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -21,11 +21,13 @@ type ComponenteLoginProps = {
 export const ComponenteLogin = ({ ...props }: ComponenteLoginProps) => {
   const { setComponenteRenderizado, setTexto } = props;
 
+  const navigate = useNavigate();
+
   const [showModalComoAcessar, setShowModalComoAcessar] = useState(false);
 
   const onSubmit = async (values: { login: string; password: string }) => {
     const { login, password } = values;
-    await authService.login(login, password);
+    await authService.login(login, password, navigate);
   };
 
   const handleRecuperarSenha = () => {
@@ -45,6 +47,7 @@ export const ComponenteLogin = ({ ...props }: ComponenteLoginProps) => {
             </p>
             <Field
               component={InputText}
+              dataTestIdDiv="div-input-login"
               className="input-login"
               esconderAsterisco
               label="Usuário"
@@ -57,6 +60,7 @@ export const ComponenteLogin = ({ ...props }: ComponenteLoginProps) => {
             />
             <Field
               component={InputPassword}
+              dataTestIdDiv="div-input-password"
               className="input-login"
               esconderAsterisco
               label="Senha"
