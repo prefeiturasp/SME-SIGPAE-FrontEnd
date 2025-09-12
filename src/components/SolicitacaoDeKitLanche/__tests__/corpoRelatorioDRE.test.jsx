@@ -259,10 +259,29 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
     expect(screen.getByText(/aprovado/i)).toBeInTheDocument();
   });
 
+  it("Deve renderizar justificativa de negação quando existir", async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CorpoRelatorio
+            solicitacaoKitLanche={mockComNegacao}
+            solicitacoesSimilares={mockComNegacao.solicitacoes_similares}
+            prazoDoPedidoMensagem={""}
+            tipoSolicitacao={TIPO_SOLICITACAO.SOLICITACAO_NORMAL}
+          />
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByText("Justificativa da negação")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Justificativa de negação teste/)
+    ).toBeInTheDocument();
+  });
+
   it("", async () => {
     preview.debug();
     mockGetDetalheKitLancheAvulso;
     mockComDietaEspecial;
-    mockComNegacao;
   });
 });
