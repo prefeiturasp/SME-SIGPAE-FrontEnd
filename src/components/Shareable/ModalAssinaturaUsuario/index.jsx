@@ -32,6 +32,7 @@ export const ModalAssinaturaUsuario = ({
         setConcordaAssinar(false);
       }}
       backdrop={"static"}
+      dialogClassName="modal-assinatura-usuario"
     >
       <Spin tip="Carregando..." spinning={loading}>
         <Modal.Header closeButton>

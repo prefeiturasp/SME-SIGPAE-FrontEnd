@@ -23,6 +23,7 @@ export const InputPassword = (props) => {
     maxlength,
     pattern,
     toUppercaseActive,
+    dataTestIdDiv,
   } = props;
 
   const [passwordShown, setPasswordShown] = useState(false);
@@ -30,7 +31,7 @@ export const InputPassword = (props) => {
     setPasswordShown(passwordShown ? false : true);
   };
   return (
-    <div className={"input show-hide-password "}>
+    <div className={"input show-hide-password "} data-testid={dataTestIdDiv}>
       {label && [
         required && !esconderAsterisco && (
           <span key={0} className="required-asterisk">
@@ -96,6 +97,12 @@ InputPassword.propTypes = {
   required: PropTypes.bool,
   type: PropTypes.string,
   contador: PropTypes.number,
+  dataTestIdDiv: PropTypes.string,
+  title: PropTypes.string,
+  tooltipText: PropTypes.string,
+  maxlength: PropTypes.number,
+  pattern: PropTypes.string,
+  toUppercaseActive: PropTypes.bool,
 };
 
 InputPassword.defaultProps = {
