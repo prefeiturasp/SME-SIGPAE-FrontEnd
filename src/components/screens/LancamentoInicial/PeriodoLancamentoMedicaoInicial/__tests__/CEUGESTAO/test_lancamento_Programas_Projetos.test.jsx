@@ -12,6 +12,7 @@ import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGesta
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
+import { mockTipoAlimentacao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockTipoAlimentacao";
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
@@ -52,6 +53,8 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
     mock
       .onGet("/medicao-inicial/medicao/feriados-no-mes/")
       .reply(200, { results: ["02", "15", "20"] });
+
+    mock.onGet("/tipos-alimentacao/").reply(200, mockTipoAlimentacao);
 
     const search = `?uuid=546505cb-eef1-4080-a8e8-7538faccf969&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
     Object.defineProperty(window, "location", {

@@ -152,4 +152,24 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEBS", () => {
   it("Renderiza período `Solicitações de Alimentação`", () => {
     expect(screen.getByText("Solicitações de Alimentação")).toBeInTheDocument();
   });
+
+  it("Verifica a ordem dos cards", () => {
+    const textos = [
+      "Manhã",
+      "Tarde",
+      "Integral",
+      "Noite",
+      "Programas e Projetos",
+      "Solicitações de Alimentação",
+    ];
+
+    const elementos = textos.map((texto) => screen.getByText(texto));
+
+    for (let i = 0; i < elementos.length - 1; i++) {
+      const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
+      expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING
+      );
+    }
+  });
 });
