@@ -2,7 +2,7 @@ export const formataValor = (value: number) => {
   if (value === null) return "";
 
   const [integer, decimal] = value.toString().split(".");
-  const formattedInteger = integer.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+  const formattedInteger = integer.replace(/(\d)(?=(\d{3})+$)/g, "$1.");
 
   let result = decimal
     ? `${formattedInteger},${decimal.slice(0, 2)}`

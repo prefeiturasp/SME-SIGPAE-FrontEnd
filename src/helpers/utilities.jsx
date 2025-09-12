@@ -232,13 +232,15 @@ export const formataMilhar = (value) => {
 };
 
 export const formataMilharDecimal = (value) => {
-  return ![undefined, null].includes(value)
-    ? Number(value)
-        .toFixed(2)
-        .replace(/\D/g, "")
-        .replace(/(\d)(?=(\d{2})$)/g, "$1,")
-        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
-    : value;
+  if (value === undefined || value === null) return value;
+
+  const number = Number(value);
+  if (isNaN(number)) return value;
+
+  return number.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 };
 
 export const truncarString = (str, numeroMaximoChars) => {
