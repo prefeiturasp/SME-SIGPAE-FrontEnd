@@ -76,7 +76,7 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
 
   const mockGetDetalheKitLancheAvulso = jest
     .spyOn(detalheKitLanche, "getDetalheKitLancheAvulso")
-    .mockImplementation(mockComNegacao);
+    .mockImplementation(jest.fn());
 
   beforeEach(async () => {
     mock
@@ -85,7 +85,7 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
 
     mock
       .onGet("/downloads/quantidade-nao-vistos/")
-      .reply(200, { quantidade_nao_vistos: mockComDietaEspecial });
+      .reply(200, { quantidade_nao_vistos: 170 });
 
     mock.onGet("/notificacoes/").reply(200, {
       next: null,
@@ -100,7 +100,7 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet("/downloads/quantidade-nao-vistos/")
-      .reply(200, { quantidade_nao_lidos: mockGetDetalheKitLancheAvulso });
+      .reply(200, { quantidade_nao_lidos: 0 });
 
     window.localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
 
@@ -125,7 +125,6 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
   });
 
   it("Verifica as informações da Escola", async () => {
-    preview.debug();
     expect(
       screen.getByText(`# ${mockKitLancheAvulsa.id_externo}`)
     ).toBeInTheDocument();
@@ -156,5 +155,31 @@ describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão DRE", () => {
         `${mockKitLancheAvulsa.rastro_terceirizada.nome_fantasia}`
       )
     ).toBeInTheDocument();
+  });
+
+  it("Verifica as informações da linha do tempo", async () => {
+    preview.debug();
+    expect(screen.getByText(/Solicitação Realizada/i)).toBeInTheDocument();
+    expect(screen.getByText("29/09/2023 11:34:26")).toBeInTheDocument();
+    expect(screen.getByText(/RF: 8115257/i)).toBeInTheDocument();
+    expect(screen.getByText(/SUPER USUARIO ESCOLA EMEF/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/DRE validou/i)).toBeInTheDocument();
+    expect(screen.getByText("29/09/2023 14:16:17")).toBeInTheDocument();
+    expect(screen.getByText(/RF: 0000010/i)).toBeInTheDocument();
+    expect(screen.getByText(/SUPER USUARIO DRE/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/CODAE autorizou/i)).toBeInTheDocument();
+    expect(screen.getByText("29/09/2023 14:17:07")).toBeInTheDocument();
+    expect(screen.getByText(/RF: 0000011/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/CODAE Gestão de Terceirizadas/i)
+    ).toBeInTheDocument();
+  });
+
+  it("", async () => {
+    mockGetDetalheKitLancheAvulso;
+    mockComDietaEspecial;
+    mockComNegacao;
   });
 });
