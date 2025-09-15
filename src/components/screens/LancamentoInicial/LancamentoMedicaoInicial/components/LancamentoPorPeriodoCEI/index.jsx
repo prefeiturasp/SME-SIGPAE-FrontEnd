@@ -392,7 +392,7 @@ export const LancamentoPorPeriodoCEI = ({
               <CardLancamentoCEI
                 key={periodosComAlunos.length + 1}
                 textoCabecalho={"Programas e Projetos"}
-                cor={CORES[periodosComAlunos.length + 1]}
+                cor={CORES[9]}
                 solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                 escolaInstituicao={escolaInstituicao}
                 quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
