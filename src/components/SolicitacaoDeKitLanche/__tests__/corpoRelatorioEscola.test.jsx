@@ -70,7 +70,7 @@ const mockComSolicitacoesimilares = [
   },
 ];
 
-describe("Teste Relatorio - Visão ESCOLA", () => {
+describe("Teste Corpo Relatorio Kit Lanche Passeio - Visão ESCOLA", () => {
   const solicitacaoUuid = mockKitLancheAvulsa.uuid;
 
   const mockGetDetalheKitLancheAvulso = jest

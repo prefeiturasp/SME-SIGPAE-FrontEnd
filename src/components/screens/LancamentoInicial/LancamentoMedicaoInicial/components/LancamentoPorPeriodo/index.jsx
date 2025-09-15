@@ -209,9 +209,6 @@ export const LancamentoPorPeriodo = ({
           !nomesPeriodosNormais.includes(vinculo.periodo_escolar.nome)
       );
       let periodos = periodosEscolaSimples.concat(pEspecificos);
-      periodos = periodos.sort((obj1, obj2) =>
-        obj1.periodo_escolar.posicao > obj2.periodo_escolar.posicao ? 1 : -1
-      );
       setPeriodosEspecificos(periodos);
     } else {
       setErroAPI(
@@ -490,7 +487,7 @@ export const LancamentoPorPeriodo = ({
             periodosCEUGESTAO.map((periodo, index) => (
               <CardLancamento
                 key={index}
-                textoCabecalho={periodo.nome}
+                textoCabecalho={periodo.periodo_escolar?.nome || periodo.nome}
                 cor={CORES[index]}
                 tipos_alimentacao={periodo.tipos_alimentacao}
                 periodoSelecionado={periodoSelecionado}
@@ -502,6 +499,20 @@ export const LancamentoPorPeriodo = ({
                 ehPeriodoEspecifico={true}
               />
             ))}
+          {solicitacoesInclusoesEtecAutorizadas &&
+            solicitacoesInclusoesEtecAutorizadas.length > 0 && (
+              <CardLancamento
+                grupo="ETEC"
+                cor={CORES[6]}
+                tipos_alimentacao={tiposAlimentacaoETEC()}
+                periodoSelecionado={periodoSelecionado}
+                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                ehGrupoETEC={true}
+                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
+                errosAoSalvar={errosAoSalvar}
+              />
+            )}
           {periodosInclusaoContinua &&
             (!ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola) ||
               frequenciasDietasCEUGESTAO) && (
@@ -535,20 +546,6 @@ export const LancamentoPorPeriodo = ({
               errosAoSalvar={errosAoSalvar}
             />
           )}
-          {solicitacoesInclusoesEtecAutorizadas &&
-            solicitacoesInclusoesEtecAutorizadas.length > 0 && (
-              <CardLancamento
-                grupo="ETEC"
-                cor={CORES[6]}
-                tipos_alimentacao={tiposAlimentacaoETEC()}
-                periodoSelecionado={periodoSelecionado}
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                ehGrupoETEC={true}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                errosAoSalvar={errosAoSalvar}
-              />
-            )}
 
           <div className="mt-4">
             {renderBotaoFinalizar() ? (

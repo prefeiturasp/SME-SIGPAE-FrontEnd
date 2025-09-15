@@ -1,9 +1,9 @@
-import React, { ReactElement } from "react";
+import React, { Dispatch, SetStateAction, ReactElement } from "react";
 import { Tooltip } from "antd";
 import { NavLink } from "react-router-dom";
 
 import { truncarString } from "src/helpers/utilities";
-
+import { imprimirFichaRecebimento } from "src/services/fichaRecebimento.service";
 import { FichaDeRecebimentoItemListagem } from "../../interfaces";
 
 import "./styles.scss";
@@ -15,58 +15,79 @@ import {
 
 interface Props {
   objetos: FichaDeRecebimentoItemListagem[];
+  setCarregando: Dispatch<SetStateAction<boolean>>;
 }
-
-const renderizarAcoes = (
-  objeto: FichaDeRecebimentoItemListagem
-): ReactElement => {
-  const iconeEditar = (
-    <span className="link-acoes px-2">
-      <i title="Editar" className="fas fa-edit green" />
-    </span>
-  );
-
-  const botaoEditar =
-    objeto.status === "Rascunho" ? (
-      <NavLink
-        className="float-start"
-        to={`/${RECEBIMENTO}/${CADASTRO_FICHA_RECEBIMENTO}?uuid=${objeto.uuid}`}
-      >
-        {iconeEditar}
-      </NavLink>
-    ) : (
-      <NavLink
-        className="float-start"
-        to={`/${RECEBIMENTO}/${EDITAR_FICHA_RECEBIMENTO}?uuid=${objeto.uuid}`}
-      >
-        {iconeEditar}
-      </NavLink>
-    );
-
-  const botaoDetalhar = (
-    <span className="link-acoes px-1">
-      <i title="Detalhar" className="fas fa-eye green" />
-    </span>
-  );
-
-  const botaoImprimir = (
-    <span className="link-acoes px-1">
-      <i title="Imprimir" className="fas fa-print green" />
-    </span>
-  );
-
-  return (
-    <div className="d-flex border-0">
-      {botaoDetalhar}
-      {botaoEditar}
-      {botaoImprimir}
-    </div>
-  );
-};
 
 const TAMANHO_MAXIMO = 30;
 
-const Listagem: React.FC<Props> = ({ objetos }) => {
+const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
+  const imprimirFicha = async (
+    uuid: string,
+    numero: string,
+    setCarregando: Dispatch<SetStateAction<boolean>>
+  ) => {
+    setCarregando(true);
+    await imprimirFichaRecebimento(uuid, numero);
+    setCarregando(false);
+  };
+
+  const renderizarAcoes = (
+    objeto: FichaDeRecebimentoItemListagem
+  ): ReactElement => {
+    const iconeEditar = (
+      <span className="link-acoes px-1">
+        <i title="Editar" className="fas fa-edit green" />
+      </span>
+    );
+
+    const botaoEditar =
+      objeto.status === "Rascunho" ? (
+        <NavLink
+          className="float-start"
+          to={`/${RECEBIMENTO}/${CADASTRO_FICHA_RECEBIMENTO}?uuid=${objeto.uuid}`}
+        >
+          {iconeEditar}
+        </NavLink>
+      ) : (
+        <NavLink
+          className="float-start"
+          to={`/${RECEBIMENTO}/${EDITAR_FICHA_RECEBIMENTO}?uuid=${objeto.uuid}`}
+        >
+          {iconeEditar}
+        </NavLink>
+      );
+
+    const botaoDetalhar = (
+      <span className="link-acoes px-1">
+        <i title="Detalhar" className="fas fa-eye green" />
+      </span>
+    );
+
+    const botaoImprimir = (
+      <span className="link-acoes px-1">
+        <button
+          type="button"
+          title="Imprimir"
+          onClick={() =>
+            imprimirFicha(objeto.uuid, objeto.numero_cronograma, setCarregando)
+          }
+          aria-label="Imprimir"
+          className="button-icon px-0"
+        >
+          <i className="fas fa-print green" />
+        </button>
+      </span>
+    );
+
+    return (
+      <div className="d-flex border-0">
+        {botaoDetalhar}
+        {botaoEditar}
+        {objeto.status === "Assinado CODAE" && botaoImprimir}
+      </div>
+    );
+  };
+
   return (
     <div className="listagem-fichas-recebimento">
       <div className="titulo-verde mt-4 mb-3">Recebimentos Cadastrados</div>

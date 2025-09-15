@@ -17,6 +17,7 @@ import {
 import { RELATORIO } from "../configs/constants";
 import { ENVIRONMENT } from "src/constants/config";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { v4 as uuidv4 } from "uuid";
 
 // TODO: Quebrar esse arquivo, tem muitos helpers de diferentes tipo num único arquivo
 //       Dá pra separar por tipo de helper:
@@ -98,23 +99,7 @@ export const dataParaUTC = (data) => {
 };
 
 export const geradorUUID = () => {
-  let S4 = function () {
-    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-  };
-  return (
-    S4() +
-    S4() +
-    "-" +
-    S4() +
-    "-" +
-    S4() +
-    "-" +
-    S4() +
-    "-" +
-    S4() +
-    S4() +
-    S4()
-  );
+  return uuidv4();
 };
 
 export const stringSeparadaPorVirgulas = (obj, campo) => {
@@ -243,17 +228,19 @@ export const formataCPFCensurado = (cpf) => {
 
 export const formataMilhar = (value) => {
   const valor = value?.toString().replace(/\D/g, "");
-  return valor?.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return valor?.replace(/\d(?=(\d{3})+$)/g, "$&.");
 };
 
 export const formataMilharDecimal = (value) => {
-  return ![undefined, null].includes(value)
-    ? Number(value)
-        .toFixed(2)
-        .replace(/\D/g, "")
-        .replace(/(\d)(?=(\d{2})\b)/g, "$1,")
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
-    : value;
+  if (value === undefined || value === null) return value;
+
+  const number = Number(value);
+  if (isNaN(number)) return value;
+
+  return number.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 };
 
 export const truncarString = (str, numeroMaximoChars) => {
@@ -1337,4 +1324,9 @@ export const getUltimoLog = (logs, explicacao) => {
   return logs
     .filter((log) => log.status_evento_explicacao === explicacao)
     .pop();
+};
+
+export const capitalize = (str) => {
+  const lower = str.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
 };

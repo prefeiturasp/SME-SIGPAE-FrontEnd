@@ -16,6 +16,7 @@ import {
   statusPeriodo,
   styleBotaoCardLancamento,
   textoBotaoCardLancamento,
+  formataPeriodosNormais,
 } from "../helpers";
 import "./styles.scss";
 
@@ -169,7 +170,9 @@ export const CardLancamento = ({
           <div className="wraper-periodo-status mb-2">
             <div className="periodo-cabecalho">
               {grupo && grupo}
-              {textoCabecalho}
+              {textoCabecalho
+                ? formataPeriodosNormais(textoCabecalho)
+                : textoCabecalho}
             </div>
             <div>
               <div

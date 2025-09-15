@@ -10,6 +10,7 @@ import {
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { AxiosRequestConfig } from "axios";
+import { saveAs } from "file-saver";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   skipAuthRefresh?: boolean;
@@ -70,4 +71,13 @@ export const getFichaRecebimentoDetalhada = async (
   } catch (error) {
     toastError(getMensagemDeErro(error.response.status));
   }
+};
+
+export const imprimirFichaRecebimento = async (
+  uuid: string,
+  numero: string
+) => {
+  const url = `/fichas-de-recebimento/${uuid}/gerar-pdf-ficha/`;
+  const { data } = await axios.get(url, { responseType: "blob" });
+  saveAs(data, "ficha_recebimento_" + numero + ".pdf");
 };

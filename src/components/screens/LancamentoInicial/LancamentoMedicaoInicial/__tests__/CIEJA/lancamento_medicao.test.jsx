@@ -127,8 +127,8 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CIEJA", () => {
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("Renderiza período `INTERMEDIARIO`", () => {
-    expect(screen.getByText("INTERMEDIARIO")).toBeInTheDocument();
+  it("Renderiza período `Intermediário`", () => {
+    expect(screen.getByText("Intermediário")).toBeInTheDocument();
   });
 
   it("Renderiza período `Programas e Projetos`", () => {
@@ -137,5 +137,26 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CIEJA", () => {
 
   it("Renderiza período `Solicitações de Alimentação`", () => {
     expect(screen.getByText("Solicitações de Alimentação")).toBeInTheDocument();
+  });
+
+  it("Verifica a ordem dos cards", () => {
+    const textos = [
+      "Manhã",
+      "Intermediário",
+      "Tarde",
+      "Vespertino",
+      "Noite",
+      "Programas e Projetos",
+      "Solicitações de Alimentação",
+    ];
+
+    const elementos = textos.map((texto) => screen.getByText(texto));
+
+    for (let i = 0; i < elementos.length - 1; i++) {
+      const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
+      expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING
+      );
+    }
   });
 });
