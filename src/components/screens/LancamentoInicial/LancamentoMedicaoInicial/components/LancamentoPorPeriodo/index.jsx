@@ -518,7 +518,7 @@ export const LancamentoPorPeriodo = ({
               frequenciasDietasCEUGESTAO) && (
               <CardLancamento
                 grupo="Programas e Projetos"
-                cor={CORES[4]}
+                cor={CORES[9]}
                 tipos_alimentacao={tiposAlimentacaoProgramasEProjetos()}
                 periodoSelecionado={periodoSelecionado}
                 solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
