@@ -1,58 +1,16 @@
-import { API_URL } from "../constants/config";
-import authService from "./auth";
-import axios from "./_base";
-import { AUTH_TOKEN } from "./constants";
-import Cookies from "js-cookie";
-import { ErrorHandlerFunction } from "./service-helpers";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
+import { API_URL } from "../constants/config";
+import axios from "./_base";
+import { ErrorHandlerFunction } from "./service-helpers";
 
-const authToken = {
-  Authorization: `JWT ${authService.getToken()}`,
-  "Content-Type": "application/json",
-};
-
-export const setUsuario = (payload) => {
-  const url = `${API_URL}/cadastro/`;
-  let status = 0;
-
-  return fetch(url, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": Cookies.get("csrftoken"),
-    },
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return console.log(error);
-    });
-};
-
-export const recuperaSenha = (registro_funcional) => {
+export const recuperaSenha = async (registro_funcional) => {
   const url = `${API_URL}/cadastro/recuperar-senha/${registro_funcional}/`;
-  let status = 0;
-  return fetch(url, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return console.log(error);
-    });
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const atualizarSenha = (uuid, confirmationKey, payLoad) => {
@@ -90,41 +48,6 @@ export const getMeusDados = async () => {
     const data = { data: response.data, status: response.status };
     return data;
   }
-};
-
-export const atualizarCargo = () => {
-  const url = `${API_URL}/usuarios/atualizar-cargo/`;
-  return fetch(url, {
-    method: "GET",
-    headers: authToken,
-  })
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      console.log(error);
-      return error;
-    });
-};
-
-export const atualizarEmail = (payload) => {
-  const url = `${API_URL}/usuarios/atualizar-email/`;
-  let status = 0;
-  return fetch(url, {
-    method: "PATCH",
-    body: JSON.stringify(payload),
-    headers: authToken,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
 };
 
 export const atualizarSenhaLogado = async (payload) => {

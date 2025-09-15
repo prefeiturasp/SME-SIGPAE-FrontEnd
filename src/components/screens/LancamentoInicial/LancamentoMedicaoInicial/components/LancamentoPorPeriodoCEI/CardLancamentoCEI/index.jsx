@@ -10,11 +10,7 @@ import {
   styleBotaoCardLancamento,
   textoBotaoCardLancamento,
 } from "../../LancamentoPorPeriodo/helpers";
-import {
-  deepCopy,
-  ehEscolaTipoCEMEI,
-  ehEscolaTipoCEI,
-} from "src/helpers/utilities";
+import { deepCopy, ehEscolaTipoCEMEI } from "src/helpers/utilities";
 import {
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
@@ -25,7 +21,6 @@ import {
   ehEmeiDaCemei,
   numeroRefeicoesDiarias,
   textoCabecalhoFormatado,
-  formataPeriodosCEI,
 } from "../helpers";
 
 export const CardLancamentoCEI = ({
@@ -178,9 +173,7 @@ export const CardLancamentoCEI = ({
         >
           <div className="wraper-periodo-status mb-2">
             <div className="periodo-cabecalho">
-              {ehEscolaTipoCEI(escolaInstituicao)
-                ? formataPeriodosCEI(textoCabecalho)
-                : textoCabecalhoFormatado(textoCabecalho)}
+              {textoCabecalhoFormatado(textoCabecalho)}
             </div>
             <div>
               <div
