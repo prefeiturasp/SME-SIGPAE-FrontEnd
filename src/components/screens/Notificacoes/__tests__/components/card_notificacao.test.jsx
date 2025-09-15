@@ -53,7 +53,7 @@ describe("Testes do componente de Card de Notificações", () => {
     });
   });
 
-  test("Verifica se componente foi renderizado", () => {
+  it("Verifica se componente foi renderizado", () => {
     expect(screen.getByText("Notificação de teste")).toBeInTheDocument();
     expect(screen.getByText("Escola")).toBeInTheDocument();
     expect(screen.getByText("01/10/2025")).toBeInTheDocument();
@@ -65,7 +65,7 @@ describe("Testes do componente de Card de Notificações", () => {
     ).toBeInTheDocument();
   });
 
-  test("Busca botão de toggle e dispara toggleBtnNotificacoes ao clicar", () => {
+  it("Busca botão de toggle e dispara toggleBtnNotificacoes ao clicar", () => {
     const [toggleBtn] = screen.getAllByRole("button");
     fireEvent.click(toggleBtn);
     expect(mockToggleBtnNotificacoes).toHaveBeenCalledWith(
@@ -73,7 +73,7 @@ describe("Testes do componente de Card de Notificações", () => {
     );
   });
 
-  test("Busca checkbox 'Marcar como lida' e chama callback ao clicar", () => {
+  it("Busca checkbox 'Marcar como lida' e chama callback ao clicar", () => {
     const checkbox = screen.getByText("Marcar como lida");
     expect(checkbox).toBeInTheDocument();
 
