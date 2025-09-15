@@ -149,6 +149,7 @@ export const CORES = [
   "#B58B00",
   "#ff0095",
   "#00f7ff",
+  "#599E00",
 ];
 
 export const OPCOES_AVALIACAO_A_CONTENTO = {
