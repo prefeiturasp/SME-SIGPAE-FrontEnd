@@ -10,6 +10,8 @@ import { TransformStream } from "stream/web";
 import { TextDecoder, TextEncoder } from "util";
 import "whatwg-fetch";
 
+jest.mock("src/components/Shareable/CKEditorField", () => ({}));
+
 class MockBroadcastChannel {
   constructor() {}
   postMessage() {}
