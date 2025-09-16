@@ -9,9 +9,14 @@ export const getListaFiltradaAutoCompleteSelect = (
   });
 
   if (valorFiltro) {
-    const reg = new RegExp(valorFiltro, regex);
+    const valorFiltroEscapado = escaparRegex(valorFiltro);
+    const reg = new RegExp(valorFiltroEscapado, regex);
     return listaUnica.filter((e) => reg.test(e.value));
   }
 
   return exibirListaCompleta ? listaUnica : [];
 };
+
+function escaparRegex(texto) {
+  return texto.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
