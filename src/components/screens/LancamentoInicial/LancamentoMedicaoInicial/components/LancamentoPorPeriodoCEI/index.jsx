@@ -113,12 +113,16 @@ export const LancamentoPorPeriodoCEI = ({
         periodosEscolaSimples.map((periodo) => periodo.periodo_escolar.nome)
       ),
     ];
-
     if (
       solicitacaoMedicaoInicial?.ue_possui_alunos_periodo_parcial ||
       solicitacaoMedicaoInicial?.escola_cei_com_inclusao_parcial_autorizada
     ) {
-      periodos.splice(1, 0, "PARCIAL");
+      if (!periodos.includes("PARCIAL")) {
+        const indexPeriodoParcial = periodos.includes("INTEGRAL")
+          ? periodos.indexOf("INTEGRAL") + 1
+          : 0;
+        periodos.splice(indexPeriodoParcial, 0, "PARCIAL");
+      }
     }
 
     if (ehEscolaTipoCEMEI(escolaInstituicao)) {
@@ -126,7 +130,6 @@ export const LancamentoPorPeriodoCEI = ({
         .filter((periodo) => !["MANHA", "TARDE"].includes(periodo))
         .concat(periodosEscolaCemeiComAlunosEmei);
     }
-
     setPeriodosComAlunos(periodos);
   }, [
     escolaInstituicao,
@@ -389,7 +392,7 @@ export const LancamentoPorPeriodoCEI = ({
               <CardLancamentoCEI
                 key={periodosComAlunos.length + 1}
                 textoCabecalho={"Programas e Projetos"}
-                cor={CORES[periodosComAlunos.length + 1]}
+                cor={CORES[9]}
                 solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                 escolaInstituicao={escolaInstituicao}
                 quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}

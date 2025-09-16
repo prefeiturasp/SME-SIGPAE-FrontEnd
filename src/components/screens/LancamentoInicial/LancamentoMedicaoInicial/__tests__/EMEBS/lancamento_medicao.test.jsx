@@ -139,10 +139,10 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEBS", () => {
   });
 
   it("Renderiza períodos escolares", () => {
-    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
-    expect(screen.getByText("MANHA")).toBeInTheDocument();
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
-    expect(screen.getByText("NOITE")).toBeInTheDocument();
+    expect(screen.getByText("Integral")).toBeInTheDocument();
+    expect(screen.getByText("Manhã")).toBeInTheDocument();
+    expect(screen.getByText("Tarde")).toBeInTheDocument();
+    expect(screen.getByText("Noite")).toBeInTheDocument();
   });
 
   it("Renderiza período `Programas e Projetos`", () => {
@@ -151,5 +151,25 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEBS", () => {
 
   it("Renderiza período `Solicitações de Alimentação`", () => {
     expect(screen.getByText("Solicitações de Alimentação")).toBeInTheDocument();
+  });
+
+  it("Verifica a ordem dos cards", () => {
+    const textos = [
+      "Manhã",
+      "Tarde",
+      "Integral",
+      "Noite",
+      "Programas e Projetos",
+      "Solicitações de Alimentação",
+    ];
+
+    const elementos = textos.map((texto) => screen.getByText(texto));
+
+    for (let i = 0; i < elementos.length - 1; i++) {
+      const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
+      expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING
+      );
+    }
   });
 });

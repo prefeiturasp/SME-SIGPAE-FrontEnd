@@ -195,6 +195,7 @@ export default ({
             <div className="row">
               <div className="col-3">
                 <Field
+                  dataTestId="codigo-eol-aluno"
                   label="Cód. EOL do Aluno"
                   component={InputText}
                   name="codigo_eol_aluno"
@@ -246,6 +247,7 @@ export default ({
             <div className="row">
               <div className="col-md-5">
                 <Field
+                  dataTestId="motivo-alteracao"
                   label="Motivo da alteração"
                   component={SSelect}
                   className="form-control"
@@ -270,6 +272,7 @@ export default ({
                 <div className="row">
                   <div className="col">
                     <Field
+                      dataTestId="data-inicio"
                       component={InputComData}
                       name="data_inicio"
                       className="form-control"
@@ -287,6 +290,7 @@ export default ({
                   </div>
                   <div className="col">
                     <Field
+                      dataTestId="data-termino"
                       component={InputComData}
                       name="data_termino"
                       className="form-control"
@@ -315,6 +319,7 @@ export default ({
             <div className="row">
               <div className="col-3">
                 <Field
+                  dataTestId="codigo-eol-escola"
                   label="Cód. EOL da Escola"
                   component={InputText}
                   name="codigo_eol_escola"
@@ -355,6 +360,7 @@ export default ({
 
             <div className="mt-5">
               <Botao
+                dataTestId="botao-enviar"
                 texto="Enviar"
                 className="float-end ms-3"
                 type={BUTTON_TYPE.SUBMIT}
@@ -362,6 +368,7 @@ export default ({
                 style={BUTTON_STYLE.GREEN}
               />
               <Botao
+                dataTestId="botao-limpar"
                 texto="Limpar Campos"
                 className="float-end ms-3"
                 onClick={() => {

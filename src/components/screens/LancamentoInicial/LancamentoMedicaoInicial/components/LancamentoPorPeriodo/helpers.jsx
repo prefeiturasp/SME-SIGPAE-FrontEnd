@@ -1,6 +1,6 @@
 import { get, set } from "lodash";
 import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
-import { usuarioEhDiretorUE } from "src/helpers/utilities";
+import { usuarioEhDiretorUE, capitalize } from "src/helpers/utilities";
 
 const grupos = {
   convencional: "Convencional",
@@ -149,6 +149,7 @@ export const CORES = [
   "#B58B00",
   "#ff0095",
   "#00f7ff",
+  "#599E00",
 ];
 
 export const OPCOES_AVALIACAO_A_CONTENTO = {
@@ -359,4 +360,15 @@ export const verificaSeEnviarCorrecaoDisabled = (
         "MEDICAO_CORRIGIDA_PARA_CODAE",
       ].includes(solicitacaoMedicaoInicial.ocorrencia.status))
   );
+};
+
+export const formataPeriodosNormais = (periodo) => {
+  switch (periodo) {
+    case "MANHA":
+      return "Manhã";
+    case "INTERMEDIARIO":
+      return "Intermediário";
+    default:
+      return capitalize(periodo);
+  }
 };

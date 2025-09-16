@@ -71,10 +71,10 @@ export default ({ filtros, setFiltros }) => {
         render={({ form, handleSubmit, submitting, values }) => (
           <form onSubmit={handleSubmit}>
             <FinalFormToRedux form={FORM_NAME} />
-
             <div className="row">
               <div className="col-6">
                 <Field
+                  dataTestId="input-tema"
                   component={InputText}
                   label="Tema"
                   name="categoria"
@@ -82,7 +82,6 @@ export default ({ filtros, setFiltros }) => {
                   className="input-busca-produto"
                 />
               </div>
-
               <div className="col-6">
                 <Field
                   label="Tipo"
@@ -111,6 +110,7 @@ export default ({ filtros, setFiltros }) => {
             <div className="row">
               <div className="col-3">
                 <Field
+                  dataTestId="data-inicial"
                   component={InputComData}
                   label="Período"
                   name="data_inicial"
@@ -125,9 +125,9 @@ export default ({ filtros, setFiltros }) => {
                   writable
                 />
               </div>
-
               <div className="col-3">
                 <Field
+                  dataTestId="data-final"
                   component={InputComData}
                   label="&nbsp;"
                   name="data_final"
@@ -143,7 +143,6 @@ export default ({ filtros, setFiltros }) => {
                 />
               </div>
             </div>
-
             <div className="mt-4 mb-4" ref={inicioResultado}>
               <Botao
                 texto="Consultar"
@@ -153,7 +152,6 @@ export default ({ filtros, setFiltros }) => {
                 disabled={submitting}
                 onClick={() => inicioResultado.current.scrollIntoView()}
               />
-
               <Botao
                 texto="Limpar Filtros"
                 type={BUTTON_TYPE.BUTTON}

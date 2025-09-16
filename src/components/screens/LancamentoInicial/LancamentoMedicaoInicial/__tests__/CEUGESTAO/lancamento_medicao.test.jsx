@@ -19,6 +19,7 @@ import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
+import preview from "jest-preview";
 
 describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
@@ -119,8 +120,8 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("Renderiza período `TARDE`", () => {
-    expect(screen.getByText("TARDE")).toBeInTheDocument();
+  it("Renderiza período `Tarde`", () => {
+    expect(screen.getByText("Tarde")).toBeInTheDocument();
   });
 
   it("Renderiza período `Programas e Projetos`", () => {
@@ -129,5 +130,26 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
 
   it("Renderiza período `Solicitações de Alimentação`", () => {
     expect(screen.getByText("Solicitações de Alimentação")).toBeInTheDocument();
+  });
+
+  it("Verifica a ordem dos cards", () => {
+    preview.debug();
+    const textos = [
+      "Manhã",
+      "Tarde",
+      "Integral",
+      "Noite",
+      "Programas e Projetos",
+      "Solicitações de Alimentação",
+    ];
+
+    const elementos = textos.map((texto) => screen.getByText(texto));
+
+    for (let i = 0; i < elementos.length - 1; i++) {
+      const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
+      expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+        Node.DOCUMENT_POSITION_FOLLOWING
+      );
+    }
   });
 });

@@ -1,6 +1,5 @@
 import * as constants from "src/configs/constants";
 
-import { Login } from "src/components/Login";
 import CentralDownloadsPage from "src/pages/CentralDownloads/CentralDownloadsPage";
 import FaqPage from "src/pages/Faq/FaqPage";
 import NotificacoesPage from "src/pages/Notificacoes/NotificacoesPage";
@@ -22,11 +21,6 @@ export let rotas = [
   {
     path: "/",
     component: PainelInicialPage,
-    tipoUsuario: constants.QUALQUER_USUARIO,
-  },
-  {
-    path: "/login",
-    component: Login,
     tipoUsuario: constants.QUALQUER_USUARIO,
   },
   {
