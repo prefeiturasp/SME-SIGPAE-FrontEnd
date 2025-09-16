@@ -68,7 +68,10 @@ export default () => {
               </div>
             ) : (
               <>
-                <Listagem objetos={fichasRecebimento} />
+                <Listagem
+                  objetos={fichasRecebimento}
+                  setCarregando={setCarregando}
+                />
 
                 <div className="row">
                   <div className="col">

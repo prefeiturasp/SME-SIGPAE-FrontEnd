@@ -61,9 +61,9 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF
     });
   });
 
-  it("renderiza título da página `Alteração do tipo de alimentação - Solicitação # EF99C`", async () => {
+  it("renderiza título da página `Alteração do Tipo de Alimentação - Solicitação # EF99C`", async () => {
     expect(
-      screen.getByText("Alteração do tipo de alimentação - Solicitação # EF99C")
+      screen.getByText("Alteração do Tipo de Alimentação - Solicitação # EF99C")
     ).toBeInTheDocument();
   });
 

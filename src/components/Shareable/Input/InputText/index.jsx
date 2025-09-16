@@ -123,14 +123,14 @@ export const InputText = (props) => {
               ? e.target.value
                   .toString()
                   .replace(/\D/g, "")
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                  .replace(/\d(?=(\d{3})+$)/g, "$&.")
               : e.target.value;
             e.target.value = agrupadorMilharComDecimal
               ? e.target.value
                   .toString()
                   .replace(/\D/g, "")
-                  .replace(/(\d)(?=(\d{2})\b)/g, "$1,")
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                  .replace(/(\d)(?=(\d{2})$)/g, "$1,")
+                  .replace(/\d(?=(\d{3})+$)/g, "$&.")
               : e.target.value;
           }}
         />

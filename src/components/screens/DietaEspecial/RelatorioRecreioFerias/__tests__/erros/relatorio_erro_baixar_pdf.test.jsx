@@ -89,7 +89,7 @@ describe("Verifica comportamento da interface ao receber retorno de erro na expo
 
     await waitFor(() => {
       expect(
-        screen.getByText("Erro ao baixar PDF. Tente novamente mais tarde")
+        screen.getByText("Erro ao baixar PDF, tente novamente mais tarde.")
       ).toBeInTheDocument();
     });
   });
