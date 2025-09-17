@@ -23,13 +23,6 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
-jest.mock("src/components/Shareable/CKEditorField", () => ({
-  __esModule: true,
-  default: () => (
-    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
-  ),
-}));
-
 jest.mock("react-toastify", () => ({
   success: jest.fn(),
   error: jest.fn(),
