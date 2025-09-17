@@ -10,6 +10,12 @@ import { TransformStream } from "stream/web";
 import { TextDecoder, TextEncoder } from "util";
 import "whatwg-fetch";
 
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: () => (
+    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
+  ),
+}));
 class MockBroadcastChannel {
   constructor() {}
   postMessage() {}
