@@ -16,13 +16,6 @@ import { mockMeusDadosEscolaCEMEI } from "src/mocks/meusDados/escola/CEMEI";
 import { AlteracaoUEPage } from "src/pages/Escola/DietaEspecial/AlteracaoUEPage";
 import mock from "src/services/_mock";
 
-jest.mock("src/components/Shareable/CKEditorField", () => ({
-  __esModule: true,
-  default: () => (
-    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
-  ),
-}));
-
 describe("Erro dietas ativas do aluno - Alteração UE", () => {
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);

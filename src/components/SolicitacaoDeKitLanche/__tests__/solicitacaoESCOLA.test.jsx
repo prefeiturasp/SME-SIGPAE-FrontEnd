@@ -20,13 +20,6 @@ import { localStorageMock } from "src/mocks/localStorageMock";
 import userEvent from "@testing-library/user-event";
 import { dataParaUTC } from "src/helpers/utilities";
 
-jest.mock("src/components/Shareable/CKEditorField", () => ({
-  __esModule: true,
-  default: () => (
-    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
-  ),
-}));
-
 describe("Teste de Solicitação de Kit Lanche", () => {
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;

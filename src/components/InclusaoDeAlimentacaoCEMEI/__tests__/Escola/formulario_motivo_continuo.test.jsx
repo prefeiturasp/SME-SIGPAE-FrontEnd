@@ -23,13 +23,6 @@ import { mockQuantidadeAlunosPorPeriodoCEMEI } from "src/mocks/services/escola.s
 import { InclusaoDeAlimentacaoCEMEIPage } from "src/pages/Escola/InclusaoDeAlimentacaoCEMEIPage";
 import mock from "src/services/_mock";
 
-jest.mock("src/components/Shareable/CKEditorField", () => ({
-  __esModule: true,
-  default: () => (
-    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
-  ),
-}));
-
 describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
 

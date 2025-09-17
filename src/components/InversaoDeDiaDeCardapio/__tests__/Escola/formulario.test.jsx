@@ -19,13 +19,6 @@ import { mockRascunhosInversaoDiaCardapioCEMEI } from "src/mocks/services/invers
 import { InversaoDeDiaDeCardapioPage } from "src/pages/InversaoDeDiaDeCardapio/RelatorioPage";
 import mock from "src/services/_mock";
 
-jest.mock("src/components/Shareable/CKEditorField", () => ({
-  __esModule: true,
-  default: () => (
-    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
-  ),
-}));
-
 describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
   beforeEach(async () => {
