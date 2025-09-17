@@ -1544,7 +1544,6 @@ export default () => {
                           className="ms-3"
                           disabled={
                             !questoesPrimarias?.length ||
-                            !questoesSecundarias?.length ||
                             Object.keys(errors).length > 0
                           }
                         />
