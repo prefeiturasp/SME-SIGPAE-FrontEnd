@@ -46,6 +46,13 @@ jest.mock("src/services/escola.service");
 jest.mock("src/services/diasUteis.service");
 jest.mock("src/services/inclusaoDeAlimentacao");
 
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: () => (
+    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
+  ),
+}));
+
 const awaitServices = async () => {
   await waitFor(() => {
     expect(getDiasUteis).toHaveBeenCalled();

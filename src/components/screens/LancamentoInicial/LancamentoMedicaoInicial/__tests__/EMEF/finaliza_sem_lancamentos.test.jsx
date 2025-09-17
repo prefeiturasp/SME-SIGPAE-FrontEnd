@@ -27,6 +27,13 @@ import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitaca
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: () => (
+    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
+  ),
+}));
+
 describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição Inicial Sem Lançamentos", () => {
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;

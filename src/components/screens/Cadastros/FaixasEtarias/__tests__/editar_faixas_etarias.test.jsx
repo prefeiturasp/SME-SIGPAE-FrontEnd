@@ -13,6 +13,13 @@ import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
 import FaixasEtariasPage from "src/pages/Cadastros/FaixasEtariasPage";
 
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: () => (
+    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
+  ),
+}));
+
 describe("Verifica os comportamentos do formulário de edição de faixas etárias", () => {
   beforeEach(async () => {
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);

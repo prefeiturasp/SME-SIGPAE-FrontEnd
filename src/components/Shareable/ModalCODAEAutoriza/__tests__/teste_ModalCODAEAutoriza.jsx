@@ -17,7 +17,12 @@ import { mockCODAEAutoriza } from "src/mocks/services/inclusaoDeAlimentacao/coda
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
-
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: () => (
+    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
+  ),
+}));
 jest.mock("src/services/inclusaoDeAlimentacao");
 
 describe("Teste <ModalCODAEAutoriza>", () => {

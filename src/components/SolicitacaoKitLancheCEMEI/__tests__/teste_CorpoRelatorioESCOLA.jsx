@@ -21,7 +21,12 @@ import { mockGetSolicitacaoKitLancheCEMEI } from "src/mocks/SolicitacaoKitLanche
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 }));
-
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: () => (
+    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
+  ),
+}));
 jest.mock("src/services/kitLanche");
 jest.mock("src/services/relatorios");
 

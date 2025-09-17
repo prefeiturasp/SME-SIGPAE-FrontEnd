@@ -31,6 +31,12 @@ jest.mock("src/components/Shareable/DatePicker", () => ({
     />
   ),
 }));
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: () => (
+    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
+  ),
+}));
 
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);

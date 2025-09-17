@@ -6,6 +6,12 @@ import TabelaDieta from "../index";
 import { getSolicitacoesDietaEspecial } from "src/services/dietaEspecial.service";
 
 jest.mock("src/services/dietaEspecial.service");
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: () => (
+    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
+  ),
+}));
 
 describe("Componente TabelaDieta", () => {
   const mockDieta = {
