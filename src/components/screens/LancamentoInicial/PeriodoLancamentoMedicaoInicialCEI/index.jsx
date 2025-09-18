@@ -35,7 +35,7 @@ import {
   DETALHAMENTO_DO_LANCAMENTO,
   MEDICAO_INICIAL,
 } from "src/configs/constants";
-import { deepCopy } from "src/helpers/utilities";
+import { deepCopy, ehFimDeSemanaUTC } from "src/helpers/utilities";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import {
   getCategoriasDeMedicao,
@@ -1412,11 +1412,34 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const validacaoDiaLetivo = (dia) => {
-    const objDia = calendarioMesConsiderado.find(
-      (objDia) => Number(objDia.dia) === Number(dia)
+    const diaCalendario = calendarioMesConsiderado.find(
+      (item) => Number(item.dia) === Number(dia)
     );
-    const ehDiaLetivo = objDia && objDia.dia_letivo;
-    return ehDiaLetivo;
+
+    const ehDiaLetivo = diaCalendario?.dia_letivo === true;
+    if (!ehDiaLetivo) return false;
+
+    const dataAtual = new Date(
+      mesAnoConsiderado.getFullYear(),
+      mesAnoConsiderado.getMonth(),
+      dia
+    );
+
+    const temInclusaoAutorizada = inclusoesAutorizadas.some(
+      (inclusao) => Number(inclusao.dia) === Number(dia)
+    );
+
+    const ehFeriado = feriadosNoMes.some(
+      (feriado) => Number(feriado) === Number(dia)
+    );
+
+    const ehFinalDeSemanaOuFeriado = ehFimDeSemanaUTC(dataAtual) || ehFeriado;
+
+    if (ehFinalDeSemanaOuFeriado) {
+      return temInclusaoAutorizada;
+    }
+
+    return true;
   };
 
   const openModalObservacaoDiaria = (dia, categoria) => {
