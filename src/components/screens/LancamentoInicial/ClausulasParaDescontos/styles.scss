@@ -26,6 +26,10 @@
     }
   }
 
+  .ant-col.ant-form-item-control {
+    flex: none !important;
+  }
+
   .tabela-clausulas {
     .titulo-tabela {
       font-weight: bold;
