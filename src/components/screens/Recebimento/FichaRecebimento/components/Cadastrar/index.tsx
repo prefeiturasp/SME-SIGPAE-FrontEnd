@@ -1347,14 +1347,22 @@ export default () => {
                         {questoesPrimarias || questoesSecundarias ? (
                           <>
                             <div>
-                              <table className="table tabela-conferencia-embalagens">
+                              <table
+                                className={`table tabela-conferencia-embalagens ${
+                                  questoesSecundarias.length === 0
+                                    ? "only-primaria"
+                                    : ""
+                                }`}
+                              >
                                 <thead>
                                   <tr>
+                                    {questoesSecundarias.length > 0 && (
+                                      <th className="">
+                                        Conferência Embalagem Secundária
+                                      </th>
+                                    )}
                                     <th className="">
                                       Conferência Embalagem Primária
-                                    </th>
-                                    <th className="">
-                                      Conferência Embalagem Secundária
                                     </th>
                                   </tr>
                                 </thead>
@@ -1368,29 +1376,31 @@ export default () => {
                                   }).map((_, index) => {
                                     const primaria = questoesPrimarias[index];
                                     const secundaria =
-                                      questoesSecundarias[index];
+                                      questoesSecundarias?.[index];
 
                                     return (
                                       <tr key={index} className="">
+                                        {questoesSecundarias.length > 0 && (
+                                          <td className="">
+                                            {secundaria && (
+                                              <RadioButtonField
+                                                name={`SECUNDARIA_${secundaria.uuid}`}
+                                                label={secundaria.questao}
+                                                options={[
+                                                  { value: "1", label: "SIM" },
+                                                  { value: "0", label: "NÃO" },
+                                                ]}
+                                                modoTabela={true}
+                                              />
+                                            )}
+                                          </td>
+                                        )}
+
                                         <td className="">
                                           {primaria && (
                                             <RadioButtonField
                                               name={`PRIMARIA_${primaria.uuid}`}
                                               label={primaria.questao}
-                                              options={[
-                                                { value: "1", label: "SIM" },
-                                                { value: "0", label: "NÃO" },
-                                              ]}
-                                              modoTabela={true}
-                                            />
-                                          )}
-                                        </td>
-
-                                        <td className="">
-                                          {secundaria && (
-                                            <RadioButtonField
-                                              name={`SECUNDARIA_${secundaria.uuid}`}
-                                              label={secundaria.questao}
                                               options={[
                                                 { value: "1", label: "SIM" },
                                                 { value: "0", label: "NÃO" },
