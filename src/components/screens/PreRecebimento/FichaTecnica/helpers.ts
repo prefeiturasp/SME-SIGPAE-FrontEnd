@@ -570,6 +570,10 @@ export const geraInitialValuesDetalharEAnalisar = (
       ficha.analise?.informacoes_nutricionais_correcoes,
     temperatura_e_transporte_correcoes:
       ficha.analise?.temperatura_e_transporte_correcoes,
+    fabricante_envasador_correcoes:
+      ficha.analise?.fabricante_envasador_correcoes,
+    modo_preparo_correcoes: ficha.analise?.modo_preparo_correcoes,
+    responsavel_tecnico_correcoes: ficha.analise?.responsavel_tecnico_correcoes,
   };
 
   return initialValues as FichaTecnicaPayload;
