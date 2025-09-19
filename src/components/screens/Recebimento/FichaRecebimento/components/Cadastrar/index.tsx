@@ -1371,7 +1371,7 @@ export default () => {
                                   {Array.from({
                                     length: Math.max(
                                       questoesPrimarias.length,
-                                      questoesSecundarias.length || 0
+                                      questoesSecundarias.length
                                     ),
                                   }).map((_, index) => {
                                     const primaria = questoesPrimarias[index];
