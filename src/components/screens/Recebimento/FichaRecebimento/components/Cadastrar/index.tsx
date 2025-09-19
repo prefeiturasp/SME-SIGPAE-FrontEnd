@@ -1351,10 +1351,10 @@ export default () => {
                                 <thead>
                                   <tr>
                                     <th className="">
-                                      Conferência Embalagem Primária
+                                      Conferência Embalagem Secundária
                                     </th>
                                     <th className="">
-                                      Conferência Embalagem Secundária
+                                      Conferência Embalagem Primária
                                     </th>
                                   </tr>
                                 </thead>
@@ -1373,10 +1373,10 @@ export default () => {
                                     return (
                                       <tr key={index} className="">
                                         <td className="">
-                                          {primaria && (
+                                          {secundaria && (
                                             <RadioButtonField
-                                              name={`PRIMARIA_${primaria.uuid}`}
-                                              label={primaria.questao}
+                                              name={`SECUNDARIA_${secundaria.uuid}`}
+                                              label={secundaria.questao}
                                               options={[
                                                 { value: "1", label: "SIM" },
                                                 { value: "0", label: "NÃO" },
@@ -1387,10 +1387,10 @@ export default () => {
                                         </td>
 
                                         <td className="">
-                                          {secundaria && (
+                                          {primaria && (
                                             <RadioButtonField
-                                              name={`SECUNDARIA_${secundaria.uuid}`}
-                                              label={secundaria.questao}
+                                              name={`PRIMARIA_${primaria.uuid}`}
+                                              label={primaria.questao}
                                               options={[
                                                 { value: "1", label: "SIM" },
                                                 { value: "0", label: "NÃO" },
