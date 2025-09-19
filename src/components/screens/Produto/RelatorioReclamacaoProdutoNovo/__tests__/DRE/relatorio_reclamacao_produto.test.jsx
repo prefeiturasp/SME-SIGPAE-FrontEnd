@@ -168,11 +168,9 @@ describe("Test Relatório Reclamação Produto - Usuário DRE", () => {
       expect(screen.getByText("166")).toBeInTheDocument();
     });
 
-    mock
-      .onGet(`/produtos/relatorio-reclamacao/`)
-      .reply(200, {
-        detail: "Solicitação de geração de arquivo recebida com sucesso.",
-      });
+    mock.onGet(`/produtos/relatorio-reclamacao/`).reply(200, {
+      detail: "Solicitação de geração de arquivo recebida com sucesso.",
+    });
 
     const botaoBaixarPDF = screen.getByText("Baixar PDF").closest("button");
     fireEvent.click(botaoBaixarPDF);
@@ -243,6 +241,80 @@ describe("Test Relatório Reclamação Produto - Usuário DRE", () => {
     await waitFor(() => {
       expect(
         screen.getByText("Não foram encontrados resultados para estes filtros.")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Realiza download do EXCEL e verifica exibição da modal do Central de Downloads", async () => {
+    mock
+      .onGet("/produtos/filtro-reclamacoes/")
+      .reply(200, mockProdutosReclamacoesEscolaEMEF);
+
+    const selectEditais = screen.getByTestId("select-editais");
+    const selectControlEditais = within(selectEditais).getByRole("combobox");
+    fireEvent.mouseDown(selectControlEditais);
+    const option101010B = screen.getByText("101010B");
+    fireEvent.click(option101010B);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(screen.getByText("166")).toBeInTheDocument();
+    });
+
+    mock.onGet(`/produtos/relatorio-reclamacao-excel/`).reply(200, {
+      detail: "Solicitação de geração de arquivo recebida com sucesso.",
+    });
+
+    const botaoBaixarExcel = screen.getByText("Baixar Excel").closest("button");
+    fireEvent.click(botaoBaixarExcel);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Geração solicitada com sucesso.")
+      ).toBeInTheDocument();
+    });
+    expect(
+      screen.getByText(
+        "Como este arquivo poderá ser muito grande, acompanhe o seu processamento na Central de Downloads."
+      )
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("Fechar")).toBeInTheDocument();
+    expect(
+      screen.getByText("Ir para a Central de Downloads")
+    ).toBeInTheDocument();
+  });
+
+  it("Erro download EXCEL", async () => {
+    mock
+      .onGet("/produtos/filtro-reclamacoes/")
+      .reply(200, mockProdutosReclamacoesEscolaEMEF);
+
+    const selectEditais = screen.getByTestId("select-editais");
+    const selectControlEditais = within(selectEditais).getByRole("combobox");
+    fireEvent.mouseDown(selectControlEditais);
+    const option101010B = screen.getByText("101010B");
+    fireEvent.click(option101010B);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(screen.getByText("166")).toBeInTheDocument();
+    });
+
+    mock
+      .onGet(`/produtos/relatorio-reclamacao-excel/`)
+      .reply(400, { detail: "Erro ao baixar Excel" });
+
+    const botaoBaixarPDF = screen.getByText("Baixar Excel").closest("button");
+    fireEvent.click(botaoBaixarPDF);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Erro ao baixar Excel. Tente novamente mais tarde")
       ).toBeInTheDocument();
     });
   });
