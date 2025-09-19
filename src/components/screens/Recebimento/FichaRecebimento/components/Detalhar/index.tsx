@@ -64,16 +64,16 @@ export default () => {
 
     try {
       setCarregando(true);
-      const { status, data } = await getFichaRecebimentoDetalhada(uuid);
-      if (status === 200) {
-        setFichaRecebimento(data);
-        setEtapa(data.etapa);
-        getCronogramaPraCadastroRecebimento(data.dados_cronograma.uuid).then(
-          ({ status, data }) => {
-            if (status === 200) setDadosCronograma(data.results);
-            else toastError("Erro ao carregar dados do cronograma.");
-          }
-        );
+      const resposta = await getFichaRecebimentoDetalhada(uuid);
+      if (resposta?.status === 200) {
+        setFichaRecebimento(resposta.data);
+        setEtapa(resposta.data.etapa);
+        getCronogramaPraCadastroRecebimento(
+          resposta.data.dados_cronograma.uuid
+        ).then((resp) => {
+          if (resp?.status === 200) setDadosCronograma(resp?.data?.results);
+          else toastError("Erro ao carregar dados do cronograma.");
+        });
       } else toastError("Erro ao carregar ficha de recebimento.");
     } catch (error) {
       toastError("Erro ao carregar ficha de recebimento:", error);
