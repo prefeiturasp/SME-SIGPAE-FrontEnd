@@ -309,8 +309,8 @@ describe("Test Relatório Reclamação Produto - Usuário DRE", () => {
       .onGet(`/produtos/relatorio-reclamacao-excel/`)
       .reply(400, { detail: "Erro ao baixar Excel" });
 
-    const botaoBaixarPDF = screen.getByText("Baixar Excel").closest("button");
-    fireEvent.click(botaoBaixarPDF);
+    const botaoBaixarExcel = screen.getByText("Baixar Excel").closest("button");
+    fireEvent.click(botaoBaixarExcel);
 
     await waitFor(() => {
       expect(
