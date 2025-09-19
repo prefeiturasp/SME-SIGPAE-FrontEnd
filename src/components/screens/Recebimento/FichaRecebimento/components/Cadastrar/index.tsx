@@ -1347,12 +1347,20 @@ export default () => {
                         {questoesPrimarias || questoesSecundarias ? (
                           <>
                             <div>
-                              <table className="table tabela-conferencia-embalagens">
+                              <table
+                                className={`table tabela-conferencia-embalagens ${
+                                  questoesSecundarias.length === 0
+                                    ? "only-primaria"
+                                    : ""
+                                }`}
+                              >
                                 <thead>
                                   <tr>
-                                    <th className="">
-                                      Conferência Embalagem Secundária
-                                    </th>
+                                    {questoesSecundarias.length > 0 && (
+                                      <th className="">
+                                        Conferência Embalagem Secundária
+                                      </th>
+                                    )}
                                     <th className="">
                                       Conferência Embalagem Primária
                                     </th>
@@ -1363,28 +1371,30 @@ export default () => {
                                   {Array.from({
                                     length: Math.max(
                                       questoesPrimarias.length,
-                                      questoesSecundarias.length
+                                      questoesSecundarias.length || 0
                                     ),
                                   }).map((_, index) => {
                                     const primaria = questoesPrimarias[index];
                                     const secundaria =
-                                      questoesSecundarias[index];
+                                      questoesSecundarias?.[index];
 
                                     return (
                                       <tr key={index} className="">
-                                        <td className="">
-                                          {secundaria && (
-                                            <RadioButtonField
-                                              name={`SECUNDARIA_${secundaria.uuid}`}
-                                              label={secundaria.questao}
-                                              options={[
-                                                { value: "1", label: "SIM" },
-                                                { value: "0", label: "NÃO" },
-                                              ]}
-                                              modoTabela={true}
-                                            />
-                                          )}
-                                        </td>
+                                        {questoesSecundarias.length > 0 && (
+                                          <td className="">
+                                            {secundaria && (
+                                              <RadioButtonField
+                                                name={`SECUNDARIA_${secundaria.uuid}`}
+                                                label={secundaria.questao}
+                                                options={[
+                                                  { value: "1", label: "SIM" },
+                                                  { value: "0", label: "NÃO" },
+                                                ]}
+                                                modoTabela={true}
+                                              />
+                                            )}
+                                          </td>
+                                        )}
 
                                         <td className="">
                                           {primaria && (
