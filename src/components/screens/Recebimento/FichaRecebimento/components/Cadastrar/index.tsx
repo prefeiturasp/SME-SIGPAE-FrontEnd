@@ -947,6 +947,7 @@ export default () => {
                                   label: "Divergente",
                                 },
                               ]}
+                              disabled={naoExistemLaudos}
                             />
                           </div>
                           {values.lote_fabricante_de_acordo === "0" && (
@@ -980,6 +981,7 @@ export default () => {
                                   label: "Divergente",
                                 },
                               ]}
+                              disabled={naoExistemLaudos}
                             />
                           </div>
                           {values.data_fabricacao_de_acordo === "0" && (
@@ -1013,6 +1015,7 @@ export default () => {
                                   label: "Divergente",
                                 },
                               ]}
+                              disabled={naoExistemLaudos}
                             />
                           </div>
                           {values.data_validade_de_acordo === "0" && (
