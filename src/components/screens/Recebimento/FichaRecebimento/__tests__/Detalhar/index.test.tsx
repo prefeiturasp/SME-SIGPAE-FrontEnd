@@ -16,7 +16,16 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
       .reply(200, mockCronogramaCadastroRecebimento);
     mock
       .onGet(`/fichas-de-recebimento/${mockGetFichaRecebimentoDetalhada.uuid}/`)
-      .reply(200, mockGetFichaRecebimentoDetalhada);
+      .reply(200, {
+        ...mockGetFichaRecebimentoDetalhada,
+        arquivos: [
+          {
+            nome: "teste.pdf",
+            arquivo:
+              "http://teste/media/arquivos_fichas_de_recebimentos/ec5fd0b5-5238-4633-8da7-1ed52abbceee.pdf",
+          },
+        ],
+      });
 
     Object.defineProperty(window, "location", {
       value: {
