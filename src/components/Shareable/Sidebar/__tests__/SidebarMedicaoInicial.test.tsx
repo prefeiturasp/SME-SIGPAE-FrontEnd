@@ -115,7 +115,7 @@ describe("Test <Sidebar> - Diferentes perfis", () => {
     }
   );
 
-  it("não deve encontrar o seletor caso use um Perfil não permitido", async () => {
+  it("não deve renderizar o link `Medição Inicial` caso use um Perfil não permitido", async () => {
     cleanup();
     localStorage.setItem("tipo_perfil", "Qualquer tipo_perfil Não Permitido");
     localStorage.setItem("perfil", "Qualquer perfil Não Permitido");
