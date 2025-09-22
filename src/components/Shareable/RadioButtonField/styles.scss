@@ -30,3 +30,21 @@
     padding-bottom: 0;
   }
 }
+
+.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    
+    .label-radio {
+      color: #6c757d; 
+    }
+    
+    .container-radio {
+      cursor: not-allowed;
+      
+      .checkmark {
+        background-color: #e9ecef;
+        border-color: #6c757d;
+      }
+    }
+  }
