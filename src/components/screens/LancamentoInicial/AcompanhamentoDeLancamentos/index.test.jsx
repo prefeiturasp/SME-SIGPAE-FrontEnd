@@ -227,12 +227,9 @@ describe("AcompanhamentoDeLancamentos", () => {
 
     it("não deve encontrar o seletor caso use um Perfil não permitido", async () => {
       cleanup();
-      localStorage.setItem("tipo_perfil", "Qualquer tipo_perfil Não Permitido");
-      localStorage.setItem("perfil", "Qualquer perfil Não Permitido");
-      localStorage.setItem(
-        "tipo_servico",
-        "Qualquer tipo_servico Não Permitido"
-      );
+      localStorage.setItem("tipo_perfil", "PERFIL_SEM_PERMISSAO");
+      localStorage.setItem("perfil", "PERFIL_SEM_PERMISSAO");
+      localStorage.setItem("tipo_servico", "SERVICO_SEM_PERMISSAO");
       await renderComponent();
 
       const seletor = screen.queryByTestId("select-diretoria-regional");
