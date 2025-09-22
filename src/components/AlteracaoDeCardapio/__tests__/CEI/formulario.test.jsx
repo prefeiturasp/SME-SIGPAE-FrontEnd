@@ -20,13 +20,6 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
-jest.mock("src/components/Shareable/CKEditorField", () => ({
-  __esModule: true,
-  default: () => (
-    <textarea data-testid="ckeditor-mock" name="observacoes" required={false} />
-  ),
-}));
-
 describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
   const escolaUuid = mockMeusDadosCEI.vinculo_atual.instituicao.uuid;
 

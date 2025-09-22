@@ -1,12 +1,26 @@
-import React, { useState } from "react";
-
 import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic/build/ckeditor";
-
+import {
+  Alignment,
+  Bold,
+  ClassicEditor,
+  Essentials,
+  Font,
+  FontBackgroundColor,
+  FontColor,
+  FontFamily,
+  Italic,
+  List,
+  Paragraph,
+  Strikethrough,
+  Table,
+} from "ckeditor5";
+import "ckeditor5/ckeditor5.css";
+import { useState } from "react";
 import { HelpText } from "../HelpText";
 import InputErroMensagemCKEditor from "../Input/InputErroMensagemCKEditor";
+import "./style.scss";
 
-const CKEditorField = (props) => {
+export const CKEditorField = (props) => {
   const {
     helpText,
     label,
@@ -24,27 +38,52 @@ const CKEditorField = (props) => {
 
   const config = {
     licenseKey: "GPL",
-    placeholder: placeholder,
-    removePlugins: ["Heading", "BlockQuote", "CKFinder", "Link"],
+    plugins: [
+      Essentials,
+      Bold,
+      Italic,
+      Strikethrough,
+      Font,
+      FontFamily,
+      FontBackgroundColor,
+      FontColor,
+      Paragraph,
+      List,
+      Table,
+      Alignment,
+    ],
     toolbar:
       toolbar === false
-        ? toolbar
+        ? []
         : [
             "bold",
             "italic",
+            "strikethrough",
+            "|",
+            "|",
+            "fontfamily",
+            "fontsize",
+            "fontColor",
+            "fontBackgroundColor",
             "|",
             "bulletedList",
             "numberedList",
             "|",
             "insertTable",
             "|",
+            "alignment",
+            "|",
             "undo",
             "redo",
           ],
+    placeholder: placeholder,
   };
 
   return (
-    <div className="select" data-testid={dataTestId}>
+    <div
+      className={`select ${meta.error && touched && "ckeditor-error"}`}
+      data-testid={dataTestId}
+    >
       {label && [
         required && (
           <span key={1} className="required-asterisk">
