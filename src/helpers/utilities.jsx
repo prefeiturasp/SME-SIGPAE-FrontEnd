@@ -1145,13 +1145,15 @@ export const exibirModuloMedicaoInicial = () => {
     case `"medicao"`:
       return true;
     case `"nutricao_manifestacao"`:
-    case `"supervisao_nutricao"`:
-    case `"terceirizada"`:
     case `"gestao_alimentacao_terceirizada"`:
     case `"codae_gabinete"`:
       return acessoModuloMedicaoInicialCODAE();
     case `"pre_recebimento"`:
       return usuarioEhDinutreDiretoria();
+    case `"supervisao_nutricao"`:
+      return usuarioEhCoordenadorNutriSupervisao();
+    case `"terceirizada"`:
+      return usuarioEhEmpresaTerceirizada();
     default:
       return false;
   }
