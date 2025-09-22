@@ -23,6 +23,8 @@ import {
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
   usuarioEhMedicao,
+  usuarioEhEmpresaTerceirizada,
+  usuarioEhCoordenadorNutriSupervisao,
 } from "src/helpers/utilities";
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
@@ -34,7 +36,13 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
     usuarioEhCODAEGestaoAlimentacao() ||
     usuarioEhDRE() ||
     usuarioEhEscolaTerceirizadaQualquerPerfil() ||
-    usuarioEhDinutreDiretoria();
+    usuarioEhDinutreDiretoria() ||
+    usuarioEhEmpresaTerceirizada() ||
+    usuarioEhCoordenadorNutriSupervisao();
+  const exibeAcompanhamentoLancamento =
+    exibeRelatorios ||
+    usuarioEhCODAENutriManifestacao() ||
+    usuarioEhCODAEGabinete();
 
   return (
     exibirModuloMedicaoInicial() && (
@@ -50,13 +58,7 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
             Lançamento Medição Inicial
           </LeafItem>
         )}
-        {(usuarioEhDRE() ||
-          usuarioEhMedicao() ||
-          usuarioEhEscolaTerceirizadaQualquerPerfil() ||
-          usuarioEhCODAEGestaoAlimentacao() ||
-          usuarioEhCODAENutriManifestacao() ||
-          usuarioEhCODAEGabinete() ||
-          usuarioEhDinutreDiretoria()) && (
+        {exibeAcompanhamentoLancamento && (
           <LeafItem to={`/${MEDICAO_INICIAL}/${ACOMPANHAMENTO_DE_LANCAMENTOS}`}>
             Acompanhamento de Lançamentos
           </LeafItem>

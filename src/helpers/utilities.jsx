@@ -1,6 +1,8 @@
 import moment from "moment";
-import { createTextMask } from "redux-form-input-masks";
 import "moment/locale/pt-br";
+import { createTextMask } from "redux-form-input-masks";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { ENVIRONMENT } from "src/constants/config";
 import {
   JS_DATE_DEZEMBRO,
   statusEnum,
@@ -8,16 +10,14 @@ import {
   TIPO_SERVICO,
   TIPO_SOLICITACAO,
 } from "src/constants/shared";
+import { v4 as uuidv4 } from "uuid";
+import { RELATORIO } from "../configs/constants";
 import {
   MODULO_GESTAO,
   PERFIL,
-  TIPO_PERFIL,
   TIPO_GESTAO,
+  TIPO_PERFIL,
 } from "../constants/shared";
-import { RELATORIO } from "../configs/constants";
-import { ENVIRONMENT } from "src/constants/config";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
-import { v4 as uuidv4 } from "uuid";
 
 // TODO: Quebrar esse arquivo, tem muitos helpers de diferentes tipo num único arquivo
 //       Dá pra separar por tipo de helper:
@@ -1132,7 +1132,9 @@ export const exibirModuloMedicaoInicial = () => {
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhCODAEGabinete() ||
-      usuarioEhDinutreDiretoria()
+      usuarioEhDinutreDiretoria() ||
+      usuarioEhEmpresaTerceirizada() ||
+      usuarioEhCoordenadorNutriSupervisao()
     );
 
   switch (localStorage.getItem("tipo_perfil")) {
@@ -1143,6 +1145,8 @@ export const exibirModuloMedicaoInicial = () => {
     case `"medicao"`:
       return true;
     case `"nutricao_manifestacao"`:
+    case `"supervisao_nutricao"`:
+    case `"terceirizada"`:
     case `"gestao_alimentacao_terceirizada"`:
     case `"codae_gabinete"`:
       return acessoModuloMedicaoInicialCODAE();
