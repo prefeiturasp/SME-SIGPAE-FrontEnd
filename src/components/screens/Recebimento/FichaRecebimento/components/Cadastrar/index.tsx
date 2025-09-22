@@ -542,6 +542,7 @@ export default () => {
   };
 
   const ehEdicao = !!initialValues.cronograma;
+  const naoExistemLaudos = cronograma.documentos_de_recebimento?.length === 0;
 
   return (
     <Spin tip="Carregando..." spinning={carregando}>
@@ -876,9 +877,14 @@ export default () => {
                               multiple
                               nomeDoItemNoPlural="laudos"
                               options={getOpcoesDocumentos()}
-                              placeholder="Selecione os Laudos"
+                              placeholder={
+                                naoExistemLaudos
+                                  ? "Não existem laudos aprovados"
+                                  : "Selecione os Laudos"
+                              }
                               required
                               validate={required}
+                              disabled={naoExistemLaudos}
                             />
                           </div>
                         </div>
