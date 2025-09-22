@@ -1,6 +1,7 @@
 import { usuarioEhRecebimento } from "src/helpers/utilities";
 
 import CadastroFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/CadastroFichaRecebimentoPage";
+import DetalharFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/DetalharFichaRecebimentoPage";
 import EditarFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/EditarFichaRecebimentoPage";
 import FichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/FichaRecebimentoPage";
 import AtribuirQuestoesPage from "src/pages/Recebimento/QuestoesPorProduto/AtribuirQuestoesPage";
@@ -45,6 +46,11 @@ export const rotasRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.RECEBIMENTO}/${constants.EDITAR_FICHA_RECEBIMENTO}`,
     component: EditarFichaRecebimentoPage,
+    tipoUsuario: usuarioEhRecebimento(),
+  },
+  {
+    path: `/${constants.RECEBIMENTO}/${constants.DETALHAR_FICHA_RECEBIMENTO}`,
+    component: DetalharFichaRecebimentoPage,
     tipoUsuario: usuarioEhRecebimento(),
   },
 ];
