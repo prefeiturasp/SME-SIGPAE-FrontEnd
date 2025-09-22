@@ -1,0 +1,8 @@
+@use "src/styles/variables.scss" as *;
+
+div.ckeditor-error {
+  .ck.ck-reset.ck-editor.ck-rounded-corners {
+    border: 1px solid $redAlert;
+    border-radius: 7px;
+  }
+}

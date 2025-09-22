@@ -53,6 +53,11 @@ export const useTransferMultiSelect = ({
         ])
       : setTargetKeys(newTargetKeys);
 
+    if (!required) {
+      setStatus("");
+      return;
+    }
+
     newTargetKeys.length ? setStatus("") : setStatus("error");
   };
 
