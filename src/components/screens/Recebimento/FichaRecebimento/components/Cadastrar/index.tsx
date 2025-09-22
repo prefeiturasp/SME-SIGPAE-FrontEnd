@@ -1043,6 +1043,7 @@ export default () => {
                               placeholder="Digite o número do lote de armazenagem"
                               required
                               validate={required}
+                              agrupadorMilhar
                             />
                           </div>
                           <div className="col-6">
@@ -1053,6 +1054,7 @@ export default () => {
                               placeholder="Digite o número de paletes"
                               required
                               validate={required}
+                              agrupadorMilhar
                             />
                           </div>
                         </div>
@@ -1074,6 +1076,7 @@ export default () => {
                               placeholder="Digite o peso"
                               required
                               validate={required}
+                              agrupadorMilharComDecimal
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1085,6 +1088,7 @@ export default () => {
                               name={`peso_embalagem_primaria_2`}
                               placeholder="Digite o peso"
                               validate={required}
+                              agrupadorMilharComDecimal
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1096,6 +1100,7 @@ export default () => {
                               name={`peso_embalagem_primaria_3`}
                               placeholder="Digite o peso"
                               validate={required}
+                              agrupadorMilharComDecimal
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1107,6 +1112,7 @@ export default () => {
                               name={`peso_embalagem_primaria_4`}
                               placeholder="Digite o peso"
                               validate={required}
+                              agrupadorMilharComDecimal
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
