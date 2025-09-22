@@ -561,9 +561,11 @@ export const usuarioComAcessoAoPainelEmbalagens = () => {
 };
 
 export const usuarioPodeAnalisarLayoutEmbalagem = () =>
-  [PERFIL.DILOG_QUALIDADE, PERFIL.COORDENADOR_GESTAO_PRODUTO].includes(
-    localStorage.getItem("perfil")
-  );
+  [
+    PERFIL.DILOG_QUALIDADE,
+    PERFIL.COORDENADOR_GESTAO_PRODUTO,
+    PERFIL.ADMINISTRADOR_GESTAO_PRODUTO,
+  ].includes(localStorage.getItem("perfil"));
 
 export const usuarioComAcessoAoPainelDocumentos = () => {
   return [
