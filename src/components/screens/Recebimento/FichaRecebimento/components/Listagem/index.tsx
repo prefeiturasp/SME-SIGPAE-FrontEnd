@@ -9,6 +9,7 @@ import { FichaDeRecebimentoItemListagem } from "../../interfaces";
 import "./styles.scss";
 import {
   CADASTRO_FICHA_RECEBIMENTO,
+  DETALHAR_FICHA_RECEBIMENTO,
   EDITAR_FICHA_RECEBIMENTO,
   RECEBIMENTO,
 } from "src/configs/constants";
@@ -39,6 +40,11 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
         <i title="Editar" className="fas fa-edit green" />
       </span>
     );
+    const iconeDetalhar = (
+      <span className="link-acoes px-1">
+        <i title="Detalhar" className="fas fa-eye green" />
+      </span>
+    );
 
     const botaoEditar =
       objeto.status === "Rascunho" ? (
@@ -58,9 +64,12 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
       );
 
     const botaoDetalhar = (
-      <span className="link-acoes px-1">
-        <i title="Detalhar" className="fas fa-eye green" />
-      </span>
+      <NavLink
+        className="float-start"
+        to={`/${RECEBIMENTO}/${DETALHAR_FICHA_RECEBIMENTO}?uuid=${objeto.uuid}`}
+      >
+        {iconeDetalhar}
+      </NavLink>
     );
 
     const botaoImprimir = (
@@ -81,7 +90,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
 
     return (
       <div className="d-flex border-0">
-        {botaoDetalhar}
+        {objeto.status === "Assinado CODAE" && botaoDetalhar}
         {botaoEditar}
         {objeto.status === "Assinado CODAE" && botaoImprimir}
       </div>
