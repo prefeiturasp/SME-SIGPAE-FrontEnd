@@ -4,6 +4,7 @@ import { getFichaRecebimentoDetalhada } from "../../../../services/fichaRecebime
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { Arquivo, ArquivoForm } from "src/interfaces/pre_recebimento.interface";
 import { downloadAndConvertToBase64 } from "src/components/Shareable/Input/InputFile/helper";
+import { formataMilhar, formataMilharDecimal } from "src/helpers/utilities";
 
 export const carregarArquivo = async (arquivo: Arquivo) => {
   const file = {
@@ -108,12 +109,20 @@ export const geraInitialValuesCadastrar = (
     ),
 
     numero_lote_armazenagem: ficha.numero_lote_armazenagem,
-    numero_paletes: ficha.numero_paletes,
+    numero_paletes: formataMilhar(ficha.numero_paletes),
 
-    peso_embalagem_primaria_1: ficha.peso_embalagem_primaria_1,
-    peso_embalagem_primaria_2: ficha.peso_embalagem_primaria_2,
-    peso_embalagem_primaria_3: ficha.peso_embalagem_primaria_3,
-    peso_embalagem_primaria_4: ficha.peso_embalagem_primaria_4,
+    peso_embalagem_primaria_1: formataMilharDecimal(
+      ficha.peso_embalagem_primaria_1
+    ),
+    peso_embalagem_primaria_2: formataMilharDecimal(
+      ficha.peso_embalagem_primaria_2
+    ),
+    peso_embalagem_primaria_3: formataMilharDecimal(
+      ficha.peso_embalagem_primaria_3
+    ),
+    peso_embalagem_primaria_4: formataMilharDecimal(
+      ficha.peso_embalagem_primaria_4
+    ),
 
     sistema_vedacao_embalagem_secundaria: formataSistemaVedacao(ficha),
     sistema_vedacao_embalagem_secundaria_outra_opcao:
