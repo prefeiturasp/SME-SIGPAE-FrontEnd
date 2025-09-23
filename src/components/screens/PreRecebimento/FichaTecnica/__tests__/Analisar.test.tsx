@@ -5,7 +5,6 @@ import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockListaInformacoesNutricionais } from "src/mocks/produto.service/mockGetInformacoesNutricionaisOrdenadas";
 import { mockEmpresa } from "src/mocks/terceirizada.service/mockGetTerceirizadaUUID";
-import { debug } from "jest-preview";
 import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
 import {
   mockFichaTecnicaComDetalhe,
@@ -87,8 +86,6 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     const btnRascunho = screen.getByText("Salvar Rascunho").closest("button");
     expect(btnRascunho).not.toBeDisabled();
     fireEvent.click(btnRascunho);
-
-    debug();
   });
 
   it("cadastra Analise da Ficha", async () => {
@@ -129,8 +126,6 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       .getAllByText("Solicitar Correção")[1]
       .closest("button");
     fireEvent.click(btnCorrecao);
-
-    debug();
 
     let inputCorrecoes = screen.getByTestId("detalhes_produto_correcoes");
     fireEvent.change(inputCorrecoes, {
