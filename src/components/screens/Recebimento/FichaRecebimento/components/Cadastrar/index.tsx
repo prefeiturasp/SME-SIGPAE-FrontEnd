@@ -1043,7 +1043,6 @@ export default () => {
                               placeholder="Digite o número do lote de armazenagem"
                               required
                               validate={required}
-                              agrupadorMilhar
                             />
                           </div>
                           <div className="col-6">
