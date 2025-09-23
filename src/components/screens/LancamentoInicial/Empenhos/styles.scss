@@ -26,6 +26,10 @@
     }
   }
 
+  .ant-col.ant-form-item-control {
+    flex: none !important;
+  }
+
   .tabela-empenhos {
     .titulo-tabela {
       font-weight: bold;
