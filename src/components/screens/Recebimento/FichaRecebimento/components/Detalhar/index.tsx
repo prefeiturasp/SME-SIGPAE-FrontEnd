@@ -370,17 +370,15 @@ export default () => {
                           <strong>{veiculo.termografo ? "SIM" : "NÃO"}</strong>
                         </p>
                         <hr />
-                        <p>
-                          Sistema de Vedação da Embalagem Secundária:{" "}
-                          <strong>
-                            {
-                              fichaRecebimento.sistema_vedacao_embalagem_secundaria
-                            }
-                          </strong>
-                        </p>
                       </>
                     );
                   })}
+                  <p>
+                    Sistema de Vedação da Embalagem Secundária:{" "}
+                    <strong>
+                      {fichaRecebimento.sistema_vedacao_embalagem_secundaria}
+                    </strong>
+                  </p>
                 </section>
                 <section id="conferenciaRotulagens">
                   <div className="divisao-colunas">
