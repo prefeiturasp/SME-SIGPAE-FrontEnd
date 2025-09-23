@@ -22,7 +22,11 @@ import {
 } from "../../interfaces";
 import { getCronogramaPraCadastroRecebimento } from "src/services/cronograma.service";
 import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
-import { formataData } from "src/helpers/utilities";
+import {
+  formataData,
+  formataMilhar,
+  formataMilharDecimal,
+} from "src/helpers/utilities";
 import { NavLink } from "react-router-dom";
 import { FICHA_RECEBIMENTO, RECEBIMENTO } from "src/configs/constants";
 
@@ -289,23 +293,37 @@ export default () => {
                     </p>
                     <p>
                       Nº de Paletes:{" "}
-                      <strong>{fichaRecebimento?.numero_paletes}</strong>
+                      <strong>
+                        {formataMilhar(fichaRecebimento?.numero_paletes)}
+                      </strong>
                     </p>
                   </div>
                   <p>
                     Peso da Embalagem Primária:{" "}
                     <strong>
                       <span>
-                        {fichaRecebimento?.peso_embalagem_primaria_1}kg
+                        {formataMilharDecimal(
+                          fichaRecebimento?.peso_embalagem_primaria_1
+                        )}
+                        kg
                       </span>
                       <span>
-                        {fichaRecebimento?.peso_embalagem_primaria_2}kg
+                        {formataMilharDecimal(
+                          fichaRecebimento?.peso_embalagem_primaria_2
+                        )}
+                        kg
                       </span>
                       <span>
-                        {fichaRecebimento?.peso_embalagem_primaria_3}kg
+                        {formataMilharDecimal(
+                          fichaRecebimento?.peso_embalagem_primaria_3
+                        )}
+                        kg
                       </span>
                       <span>
-                        {fichaRecebimento?.peso_embalagem_primaria_4}kg
+                        {formataMilharDecimal(
+                          fichaRecebimento?.peso_embalagem_primaria_4
+                        )}
+                        kg
                       </span>
                     </strong>
                   </p>
