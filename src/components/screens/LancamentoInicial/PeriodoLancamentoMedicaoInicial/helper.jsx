@@ -212,6 +212,7 @@ const validaAlimentacoesEDietasCEUGESTAO = (
       "repeticao_refeicao",
       "sobremesa",
       "repeticao_sobremesa",
+      "repeticao_2_sobremesa",
       "frequencia",
     ].includes(rowName)
   )
@@ -427,7 +428,8 @@ export const desabilitarField = (
     ) {
       return false;
     } else if (
-      rowName === "repeticao_sobremesa" &&
+      (rowName === "repeticao_sobremesa" ||
+        rowName === "repeticao_2_sobremesa") &&
       validacaoDiaLetivo(dia) &&
       !validacaoSemana(dia) &&
       inclusao.length &&
@@ -582,7 +584,8 @@ export const desabilitarField = (
   } else if (
     `sobremesa__dia_${dia}__categoria_${categoria}` in
       dadosValoresInclusoesAutorizadasState &&
-    rowName === "repeticao_sobremesa" &&
+    (rowName === "repeticao_sobremesa" ||
+      rowName === "repeticao_2_sobremesa") &&
     !["Mês anterior", "Mês posterior"].includes(
       values[`${rowName}__dia_${dia}__categoria_${categoria}`]
     )
