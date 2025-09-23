@@ -166,7 +166,11 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
 
       if (response.status === 201 || response.status === 200) {
         toastSuccess("Rascunho salvo com sucesso!");
-        setFicha(response.data);
+        const fichaAtualizada = {
+          ...response.data,
+          uuid: response.data.ficha_tecnica,
+        };
+        setFicha(fichaAtualizada);
       }
     } catch (error) {
       toastError(getMensagemDeErro(error.response.status));
