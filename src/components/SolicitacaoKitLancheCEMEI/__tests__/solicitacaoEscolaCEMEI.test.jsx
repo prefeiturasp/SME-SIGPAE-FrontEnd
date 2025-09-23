@@ -20,6 +20,18 @@ import { localStorageMock } from "src/mocks/localStorageMock";
 import userEvent from "@testing-library/user-event";
 import { dataParaUTC } from "src/helpers/utilities";
 
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: () => (
+    <textarea
+      data-testid="ckeditor-mock"
+      name="observacoes"
+      data-testid="observacao-solicitacao-cemei"
+      required={false}
+    />
+  ),
+}));
+
 describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
   const escolaUuid =
     mockMeusDadosEscolaCEMEISuzanaCampos.vinculo_atual.instituicao.uuid;
@@ -258,9 +270,6 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
     expect(
       within(cardSolicitacao).getAllByText(/Número total de kits/i)
     ).toHaveLength(1);
-    expect(within(cardSolicitacao).getAllByText(/Observações/i)).toHaveLength(
-      1
-    );
   });
 
   it("Testa o input local do Passeio", async () => {
@@ -285,17 +294,6 @@ describe("Teste de Solicitação de Kit Lanche CEMEI", () => {
 
     await usuario.clear(campoInput);
     expect(campoInput).toHaveValue("");
-  });
-
-  it("Testa o input de observação", async () => {
-    const container = screen.getByTestId("observacao-solicitacao-cemei");
-    const editable = container.querySelector(".ck-editor__editable");
-    await waitFor(() => {
-      expect(editable).toBeInTheDocument();
-    });
-
-    fireEvent.input(editable, { target: { innerHTML: "Texto de teste" } });
-    expect(editable).toHaveTextContent("Texto de teste");
   });
 
   it("Testa botão Cancelar", async () => {

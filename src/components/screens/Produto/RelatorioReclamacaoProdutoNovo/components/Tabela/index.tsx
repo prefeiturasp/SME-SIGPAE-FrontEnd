@@ -8,9 +8,11 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
-import { ENVIRONMENT } from "src/constants/config";
 import { deepCopy } from "src/helpers/utilities";
-import { getGeraPdfRelatorioReclamacao } from "src/services/relatorios.service";
+import {
+  getGeraExcelRelatorioReclamacao,
+  getGeraPdfRelatorioReclamacao,
+} from "src/services/relatorios.service";
 import { IFormValues } from "../../interfaces";
 import { formatarValues } from "../Filtros/helpers";
 import { Reclamacao } from "./components/Reclamacao";
@@ -69,7 +71,15 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
     setBaixandoPDF(false);
   };
 
-  const handleBaixarExcel = async () => {
+  const handleBaixarExcel = async (values: IFormValues) => {
+    setBaixandoExcel(true);
+    const values_ = formatarValues(values);
+    const response = await getGeraExcelRelatorioReclamacao({ ...values_ });
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao baixar Excel. Tente novamente mais tarde");
+    }
     setBaixandoExcel(false);
   };
 
@@ -155,26 +165,24 @@ export const Tabela = ({ ...props }: ITabelaProps) => {
             </div>
             <div className="row">
               <div className="col-12 text-end">
-                {!ENVIRONMENT.includes("production") && (
-                  <Botao
-                    className="me-3"
-                    type={BUTTON_TYPE.BUTTON}
-                    style={BUTTON_STYLE.GREEN}
-                    disabled={baixandoExcel}
-                    icon={!baixandoExcel && BUTTON_ICON.FILE_EXCEL}
-                    texto={
-                      baixandoExcel ? (
-                        <img
-                          src="/assets/image/ajax-loader.gif"
-                          alt="ajax-loader"
-                        />
-                      ) : (
-                        "Baixar Excel"
-                      )
-                    }
-                    onClick={() => handleBaixarExcel()}
-                  />
-                )}
+                <Botao
+                  className="me-3"
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN}
+                  disabled={baixandoExcel}
+                  icon={!baixandoExcel && BUTTON_ICON.FILE_EXCEL}
+                  texto={
+                    baixandoExcel ? (
+                      <img
+                        src="/assets/image/ajax-loader.gif"
+                        alt="ajax-loader"
+                      />
+                    ) : (
+                      "Baixar Excel"
+                    )
+                  }
+                  onClick={() => handleBaixarExcel(values)}
+                />
                 <Botao
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN}

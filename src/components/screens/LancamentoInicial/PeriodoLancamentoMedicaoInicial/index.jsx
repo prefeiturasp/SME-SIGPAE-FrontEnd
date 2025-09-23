@@ -37,6 +37,7 @@ import {
 } from "src/configs/constants";
 import {
   deepCopy,
+  ehFimDeSemanaUTC,
   escolaEhEMEBS,
   tiposAlimentacaoETEC,
 } from "src/helpers/utilities";
@@ -1926,7 +1927,21 @@ export default () => {
       (objDia) => Number(objDia.dia) === Number(dia)
     );
     const ehDiaLetivo = objDia && objDia.dia_letivo;
-    return ehDiaLetivo;
+    if (!ehDiaLetivo) return false;
+    const dateObj = new Date(
+      mesAnoConsiderado.getFullYear(),
+      mesAnoConsiderado.getMonth(),
+      dia
+    );
+    const temInclusaoAutorizadaNoDia = inclusoesAutorizadas.some(
+      (inclusao) => inclusao.dia === dia
+    );
+    const ehFeriadoNoDia = feriadosNoMes.some(
+      (feriado) => Number(feriado) === Number(dia)
+    );
+    if (ehFimDeSemanaUTC(dateObj) || ehFeriadoNoDia)
+      return temInclusaoAutorizadaNoDia;
+    return true;
   };
 
   const classNameFieldTabelaDieta = (
