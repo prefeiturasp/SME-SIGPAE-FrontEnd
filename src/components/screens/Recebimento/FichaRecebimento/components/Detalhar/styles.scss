@@ -1,0 +1,53 @@
+@use "src/styles/variables.scss" as *;
+
+div.detalhes-ficha {
+  strong span {
+    margin-right: 20px;
+  }
+
+  th {
+    border: 1px solid #dddddd !important;
+    font-size: 14px;
+    padding: 4px;
+    text-align: center;
+  }
+}
+
+.divisao-colunas {
+  display: flex;
+  gap: 20px;
+}
+
+.divisao-colunas > div {
+  flex: 1;
+  padding: 10px;
+}
+
+.divisao-colunas > div:first-child {
+  border-right: 1px solid #ccc;
+}
+
+.linha-dupla {
+  display: flex;
+  margin: 4px 0;
+}
+
+.linha-dupla p {
+  flex: 1;
+}
+
+.registro-info strong {
+  color: $green;
+  font-weight: bold;
+}
+
+.botao-container div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.collapse-wrapper .titulo {
+  font-weight: normal !important;
+}

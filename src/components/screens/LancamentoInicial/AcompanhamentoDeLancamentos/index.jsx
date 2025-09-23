@@ -46,6 +46,9 @@ import {
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhDinutreDiretoria,
+  usuarioEhEmpresaTerceirizada,
+  usuarioEhCoordenadorNutriSupervisao,
+  usuarioEhAdministradorNutriSupervisao,
 } from "src/helpers/utilities";
 import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
@@ -506,7 +509,10 @@ export const AcompanhamentoDeLancamentos = () => {
                   usuarioEhCODAENutriManifestacao() ||
                   usuarioEhQualquerCODAE() ||
                   usuarioEhDinutreDiretoria() ||
-                  usuarioEhCODAEGabinete() ? (
+                  usuarioEhCODAEGabinete() ||
+                  usuarioEhEmpresaTerceirizada() ||
+                  usuarioEhCoordenadorNutriSupervisao() ||
+                  usuarioEhAdministradorNutriSupervisao() ? (
                     <div className="col-5">
                       <Field
                         component={ASelect}
