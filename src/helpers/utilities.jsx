@@ -1134,7 +1134,8 @@ export const exibirModuloMedicaoInicial = () => {
       usuarioEhCODAEGabinete() ||
       usuarioEhDinutreDiretoria() ||
       usuarioEhEmpresaTerceirizada() ||
-      usuarioEhCoordenadorNutriSupervisao()
+      usuarioEhCoordenadorNutriSupervisao() ||
+      usuarioEhAdministradorNutriSupervisao()
     );
 
   switch (localStorage.getItem("tipo_perfil")) {
@@ -1151,7 +1152,10 @@ export const exibirModuloMedicaoInicial = () => {
     case `"pre_recebimento"`:
       return usuarioEhDinutreDiretoria();
     case `"supervisao_nutricao"`:
-      return usuarioEhCoordenadorNutriSupervisao();
+      return (
+        usuarioEhCoordenadorNutriSupervisao() ||
+        usuarioEhAdministradorNutriSupervisao()
+      );
     case `"terceirizada"`:
       return usuarioEhEmpresaTerceirizada();
     default:

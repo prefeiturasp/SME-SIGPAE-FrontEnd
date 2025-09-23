@@ -37,6 +37,7 @@ import {
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
   usuarioEhCoordenadorNutriSupervisao,
+  usuarioEhAdministradorNutriSupervisao,
 } from "src/helpers/utilities";
 
 const PainelInicial = () => {
@@ -125,7 +126,8 @@ const PainelInicial = () => {
                 usuarioEhCODAEGabinete() ||
                 usuarioEhDinutreDiretoria() ||
                 usuarioEhEmpresaTerceirizada() ||
-                usuarioEhCoordenadorNutriSupervisao()) &&
+                usuarioEhCoordenadorNutriSupervisao() ||
+                usuarioEhAdministradorNutriSupervisao()) &&
                 navigate(`/medicao-inicial/${ACOMPANHAMENTO_DE_LANCAMENTOS}`);
             }}
           >

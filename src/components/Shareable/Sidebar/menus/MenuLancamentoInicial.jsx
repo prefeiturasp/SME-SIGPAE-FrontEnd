@@ -25,6 +25,7 @@ import {
   usuarioEhMedicao,
   usuarioEhEmpresaTerceirizada,
   usuarioEhCoordenadorNutriSupervisao,
+  usuarioEhAdministradorNutriSupervisao,
 } from "src/helpers/utilities";
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
@@ -38,7 +39,8 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
     usuarioEhEscolaTerceirizadaQualquerPerfil() ||
     usuarioEhDinutreDiretoria() ||
     usuarioEhEmpresaTerceirizada() ||
-    usuarioEhCoordenadorNutriSupervisao();
+    usuarioEhCoordenadorNutriSupervisao() ||
+    usuarioEhAdministradorNutriSupervisao();
   const exibeAcompanhamentoLancamento =
     exibeRelatorios ||
     usuarioEhCODAENutriManifestacao() ||
