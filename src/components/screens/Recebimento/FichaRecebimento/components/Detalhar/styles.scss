@@ -1,5 +1,18 @@
 @use "src/styles/variables.scss" as *;
 
+div.detalhes-ficha {
+  strong span {
+    margin-right: 20px;
+  }
+
+  th {
+    border: 1px solid #dddddd !important;
+    font-size: 14px;
+    padding: 4px;
+    text-align: center;
+  }
+}
+
 .divisao-colunas {
   display: flex;
   gap: 20px;
@@ -37,15 +50,4 @@
 
 .collapse-wrapper .titulo {
   font-weight: normal !important;
-}
-
-strong span {
-  margin-right: 20px;
-}
-
-th {
-  border: 10px solid #000 !important;
-  font-size: 14px;
-  padding: 4px;
-  text-align: center;
 }

@@ -92,7 +92,7 @@ export default () => {
 
   return (
     <Spin tip="Carregando..." spinning={carregando}>
-      <div className="card mt-3">
+      <div className="card mt-3 detalhes-ficha">
         <div className="card-body">
           <div className="d-flex justify-content-between registro-info">
             <span>

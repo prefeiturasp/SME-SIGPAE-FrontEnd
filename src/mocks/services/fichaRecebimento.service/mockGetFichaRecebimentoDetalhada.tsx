@@ -88,13 +88,7 @@ export const mockGetFichaRecebimentoDetalhada = {
     },
   ],
   ocorrencias: [],
-  arquivos: [
-    {
-      nome: "teste.pdf",
-      arquivo:
-        "http://teste/media/arquivos_fichas_de_recebimentos/ec5fd0b5-5238-4633-8da7-1ed52abbceee.pdf",
-    },
-  ],
+  arquivos: [],
 };
 
 export const mockGetFichaRecebimentoDetalhadaAssinada = {
