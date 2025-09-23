@@ -173,7 +173,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
         setFicha(fichaAtualizada);
       }
     } catch (error) {
-      toastError(getMensagemDeErro(error.response.status));
+      toastError(getMensagemDeErro(error.response?.status));
     } finally {
       setCarregando(false);
     }
@@ -192,7 +192,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
         voltarPagina();
       }
     } catch (error) {
-      toastError(getMensagemDeErro(error.response.status));
+      toastError(getMensagemDeErro(error.response?.status));
     } finally {
       setCarregando(false);
     }
