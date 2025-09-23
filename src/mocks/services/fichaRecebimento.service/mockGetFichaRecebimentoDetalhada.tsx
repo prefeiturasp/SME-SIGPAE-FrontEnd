@@ -88,6 +88,7 @@ export const mockGetFichaRecebimentoDetalhada = {
     },
   ],
   ocorrencias: [],
+  arquivos: [],
 };
 
 export const mockGetFichaRecebimentoDetalhadaAssinada = {

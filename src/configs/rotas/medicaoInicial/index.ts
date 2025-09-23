@@ -6,6 +6,9 @@ import {
   usuarioEhDRE,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
   usuarioEhMedicao,
+  usuarioEhEmpresaTerceirizada,
+  usuarioEhCoordenadorNutriSupervisao,
+  usuarioEhAdministradorNutriSupervisao,
 } from "src/helpers/utilities";
 import { ListaOcorrenciasPage } from "src/pages/IMR/ListaOcorrenciasPage";
 import { RegistrarNovaOcorrenciaPage } from "src/pages/IMR/RegistrarNovaOcorrenciaPage";
@@ -67,7 +70,10 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhCODAEGabinete() ||
-      usuarioEhDinutreDiretoria(),
+      usuarioEhDinutreDiretoria() ||
+      usuarioEhEmpresaTerceirizada() ||
+      usuarioEhCoordenadorNutriSupervisao() ||
+      usuarioEhAdministradorNutriSupervisao(),
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.CONFERENCIA_DOS_LANCAMENTOS}`,
@@ -78,7 +84,10 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhCODAEGabinete() ||
-      usuarioEhDinutreDiretoria(),
+      usuarioEhDinutreDiretoria() ||
+      usuarioEhEmpresaTerceirizada() ||
+      usuarioEhCoordenadorNutriSupervisao() ||
+      usuarioEhAdministradorNutriSupervisao(),
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.DETALHAMENTO_DO_LANCAMENTO}`,
@@ -143,7 +152,10 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhDRE() ||
       usuarioEhEscolaTerceirizadaQualquerPerfil() ||
-      usuarioEhDinutreDiretoria(),
+      usuarioEhDinutreDiretoria() ||
+      usuarioEhEmpresaTerceirizada() ||
+      usuarioEhCoordenadorNutriSupervisao() ||
+      usuarioEhAdministradorNutriSupervisao(),
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.RELATORIO_FINANCEIRO}`,

@@ -5,8 +5,10 @@ import {
   render,
   screen,
   waitFor,
+  cleanup,
 } from "@testing-library/react";
-import { TIPO_PERFIL } from "src/constants/shared";
+import { MemoryRouter } from "react-router-dom";
+import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -17,8 +19,6 @@ import { mockGetLotesSimples } from "src/mocks/services/lote.service/mockGetLote
 import { mockGetDashboardMedicaoInicial } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicial";
 import { mockGetDashboardMedicaoInicialNoresults } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicialNoResults";
 import { mockGetMesesAnosSolicitacoesMedicaoinicial } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetMesesAnosSolicitacoesMedicaoinicial";
-import React from "react";
-import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 import { AcompanhamentoDeLancamentos } from "./index";
 
@@ -33,12 +33,6 @@ const renderComponent = async (
         </MeusDadosContext.Provider>
       </MemoryRouter>
     );
-  });
-
-  await waitFor(() => {
-    expect(
-      screen.getByText("Selecione a DRE para visualizar os resultados")
-    ).toBeInTheDocument();
   });
 };
 
@@ -91,6 +85,7 @@ describe("AcompanhamentoDeLancamentos", () => {
 
   afterEach(() => {
     mock.reset();
+    cleanup();
   });
 
   describe("Erros de API", () => {
@@ -184,15 +179,62 @@ describe("AcompanhamentoDeLancamentos", () => {
   });
 
   describe("Interações com a interface", () => {
-    it("selecionar DRE Ipiranga", async () => {
-      await selecionarDRE();
+    describe("selecionar DRE Ipiranga com diferentes perfis", () => {
+      const perfis = [
+        {
+          nome: "Medicao",
+          localStorage: {
+            tipo_perfil: TIPO_PERFIL.MEDICAO,
+          },
+        },
+        {
+          nome: "Terceirizada",
+          localStorage: {
+            tipo_perfil: TIPO_PERFIL.TERCEIRIZADA,
+            perfil: PERFIL.USUARIO_EMPRESA,
+            tipo_servico: TIPO_SERVICO.TERCEIRIZADA,
+          },
+        },
+        {
+          nome: "SupervisaoNutri",
+          localStorage: {
+            tipo_perfil: TIPO_PERFIL.SUPERVISAO_NUTRICAO,
+            perfil: PERFIL.COORDENADOR_SUPERVISAO_NUTRICAO,
+          },
+        },
+      ];
 
-      expect(screen.getByText("Aprovado pela DRE")).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          "Selecione os status acima para visualizar a listagem detalhada"
-        )
-      ).toBeInTheDocument();
+      it.each(perfis)(
+        "selecionar DRE Ipiranga - Perfil $nome",
+        async ({ localStorage: ls }) => {
+          cleanup();
+          Object.entries(ls).forEach(([key, value]) =>
+            localStorage.setItem(key, value)
+          );
+          await renderComponent();
+
+          await selecionarDRE();
+
+          expect(screen.getByText("Aprovado pela DRE")).toBeInTheDocument();
+          expect(
+            screen.getByText(
+              "Selecione os status acima para visualizar a listagem detalhada"
+            )
+          ).toBeInTheDocument();
+        }
+      );
+    });
+
+    it("não deve encontrar o seletor caso use um Perfil não permitido", async () => {
+      cleanup();
+      localStorage.setItem("tipo_perfil", "PERFIL_SEM_PERMISSAO");
+      localStorage.setItem("perfil", "PERFIL_SEM_PERMISSAO");
+      localStorage.setItem("tipo_servico", "SERVICO_SEM_PERMISSAO");
+      await renderComponent();
+
+      const seletor = screen.queryByTestId("select-diretoria-regional");
+
+      expect(seletor).not.toBeInTheDocument();
     });
 
     it("deve exibir o modal filtragem com resultados", async () => {
