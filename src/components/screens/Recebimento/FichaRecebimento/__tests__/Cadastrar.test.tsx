@@ -281,4 +281,51 @@ describe("Cadastro de Ficha de Recebimento", () => {
     expect(options).toContain("Etapa 99");
     expect(options).not.toContain("Etapa 99 - null");
   });
+
+  it("Campo select - não deve permitir interação quando não existe documento do laudo", async () => {
+    const mockCronogramaSemDocumentos = {
+      ...mockCronogramaCadastroRecebimento,
+      results: {
+        ...mockCronogramaCadastroRecebimento.results,
+        documentos_de_recebimento: [],
+      },
+    };
+    mock
+      .onGet(
+        `/cronogramas/${mockListaCronogramasRecebimento.results[0].uuid}/dados-cronograma-ficha-recebimento/`
+      )
+      .reply(200, mockCronogramaSemDocumentos);
+    await setup();
+
+    let cronograma = mockListaCronogramasRecebimento.results[0];
+    let cronogramaDetalhado = mockCronogramaCadastroRecebimento.results;
+
+    // Step 1
+    preencheInput("cronograma", cronograma.numero);
+
+    await waitFor(() => {
+      expect(
+        screen.getByDisplayValue(cronogramaDetalhado.fornecedor)
+      ).toBeInTheDocument();
+    });
+
+    selecionaOpcao("etapa", cronogramaDetalhado.etapas[0].uuid);
+
+    const inputDataEntrega = screen
+      .getByTestId("data_entrega")
+      .querySelector("input");
+    fireEvent.change(inputDataEntrega, {
+      target: { value: moment().add(7, "days").format("DD/MM/YYYY") },
+    });
+
+    const btnProximo = screen.getByText("Próximo").closest("button");
+    expect(btnProximo).not.toBeDisabled();
+    fireEvent.click(btnProximo);
+
+    // Step 2
+    const input = screen.getByPlaceholderText("Não existem laudos aprovados");
+    expect(input).toBeInTheDocument();
+    expect(input).toBeDisabled();
+    expect(screen.queryByText("Selecione os Laudos")).not.toBeInTheDocument();
+  });
 });
