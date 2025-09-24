@@ -6,6 +6,7 @@ import {
   screen,
   waitFor,
   cleanup,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
@@ -313,6 +314,33 @@ describe("AcompanhamentoDeLancamentos", () => {
       });
 
       expect(selectElementMesReferencia.value).toBe("");
+    });
+
+    it("deve selecionar 'Com ocorrências' e depois limpar o campo", async () => {
+      await selecionarDRE();
+
+      const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
+      fireEvent.click(statusCard);
+
+      const divOcorrencias = screen.getByTestId("div-select-ocorrencias");
+      const select = within(divOcorrencias).getByRole("combobox");
+
+      fireEvent.change(select, { target: { value: "true" } });
+      expect(
+        within(select).getByRole("option", { name: "Com ocorrências" }).selected
+      ).toBe(true);
+
+      const botaoLimpar = screen.getByText("Limpar");
+      await act(async () => {
+        fireEvent.click(botaoLimpar);
+      });
+
+      expect(select.value).toBe("");
+      expect(
+        within(select).getByRole("option", {
+          name: "Selecione a Avaliação do Serviço",
+        }).selected
+      ).toBe(true);
     });
   });
 });
