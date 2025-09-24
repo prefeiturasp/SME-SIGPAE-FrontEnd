@@ -388,17 +388,15 @@ export default () => {
                           <strong>{veiculo.termografo ? "SIM" : "NÃO"}</strong>
                         </p>
                         <hr />
-                        <p>
-                          Sistema de Vedação da Embalagem Secundária:{" "}
-                          <strong>
-                            {
-                              fichaRecebimento.sistema_vedacao_embalagem_secundaria
-                            }
-                          </strong>
-                        </p>
                       </>
                     );
                   })}
+                  <p>
+                    Sistema de Vedação da Embalagem Secundária:{" "}
+                    <strong>
+                      {fichaRecebimento.sistema_vedacao_embalagem_secundaria}
+                    </strong>
+                  </p>
                 </section>
                 <section id="conferenciaRotulagens">
                   <div className="divisao-colunas">
@@ -407,7 +405,7 @@ export default () => {
                         <strong>Conferência Embalagem Secundária</strong>
                       </p>
                       {fichaRecebimento.questoes
-                        .filter((e) => e.tipo_questao === "PRIMARIA")
+                        .filter((e) => e.tipo_questao === "SECUNDARIA")
                         .map(({ questao_conferencia, resposta }, idx) => (
                           <p key={idx}>
                             {questao_conferencia.questao}:{" "}
@@ -420,7 +418,7 @@ export default () => {
                         <strong>Conferência Embalagem Primária</strong>
                       </p>
                       {fichaRecebimento.questoes
-                        .filter((e) => e.tipo_questao === "SECUNDARIA")
+                        .filter((e) => e.tipo_questao === "PRIMARIA")
                         .map(({ questao_conferencia, resposta }, idx) => (
                           <p key={idx}>
                             {questao_conferencia.questao}:{" "}

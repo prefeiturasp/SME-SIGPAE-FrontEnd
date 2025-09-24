@@ -2950,7 +2950,8 @@ export default () => {
                                                             formValuesAtualizados,
                                                             row,
                                                             column,
-                                                            categoria
+                                                            categoria,
+                                                            diasSobremesaDoce
                                                           )}
                                                           exibeTooltipAlimentacoesAutorizadasDiaNaoLetivo={
                                                             `${row.name}__dia_${column.dia}__categoria_${categoria.id}` in
