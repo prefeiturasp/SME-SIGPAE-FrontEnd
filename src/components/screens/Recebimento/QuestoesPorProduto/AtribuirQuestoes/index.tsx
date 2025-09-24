@@ -75,7 +75,7 @@ export default () => {
   });
 
   const transferConfigSecundarias = useTransferMultiSelect({
-    required: true,
+    required: false,
   });
 
   const navigate = useNavigate();
@@ -244,9 +244,7 @@ export default () => {
     );
 
   const botaoSalvarDesabilitado = (values: Record<string, string>) =>
-    !values.ficha_tecnica ||
-    !transferConfigPrimarias.targetKeys.length ||
-    !transferConfigSecundarias.targetKeys.length;
+    !values.ficha_tecnica || !transferConfigPrimarias.targetKeys.length;
 
   useEffect(() => {
     carregarDados();
@@ -291,7 +289,6 @@ export default () => {
                   <div className="col">
                     <TransferMultiSelect
                       {...transferConfigSecundarias}
-                      required
                       labels={labelsTransferSecundarias}
                     />
                   </div>

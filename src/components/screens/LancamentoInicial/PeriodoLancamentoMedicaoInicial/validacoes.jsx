@@ -10,13 +10,14 @@ export const repeticaoSobremesaDoceComValorESemObservacao = (
 ) => {
   const value =
     values[`repeticao_sobremesa__dia_${dia}__categoria_${categoria.id}`];
+  const value2 =
+    values[`repeticao_2_sobremesa__dia_${dia}__categoria_${categoria.id}`];
   const observacoesValue =
     values[`observacoes__dia_${dia}__categoria_${categoria.id}`];
 
   return (
-    value &&
-    value !== "0" &&
-    Number(value) !== 0 &&
+    ((value && value !== "0" && Number(value) !== 0) ||
+      (value2 && value2 !== "0" && Number(value2) !== 0)) &&
     diasSobremesaDoce.includes(
       `${new Date(location.state.mesAnoSelecionado).getFullYear()}-${(
         new Date(location.state.mesAnoSelecionado).getMonth() + 1
@@ -314,11 +315,17 @@ export const camposLancheEmergTabelaEtec = (
     formValuesAtualizados[
       `repeticao_sobremesa__dia_${column.dia}__categoria_${categoria.id}`
     ];
+  const repeticao2SobremesaValue =
+    formValuesAtualizados[
+      `repeticao_sobremesa__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
   const existeRefeicaoOuSobremesaValue =
     (refeicaoValue && refeicaoValue > 0) ||
     (repeticaoRefeicaoValue && repeticaoRefeicaoValue > 0) ||
     (sobremesaValue && sobremesaValue > 0) ||
-    (repeticaoSobremesaValue && repeticaoSobremesaValue > 0);
+    (repeticaoSobremesaValue && repeticaoSobremesaValue > 0) ||
+    (repeticao2SobremesaValue && repeticao2SobremesaValue > 0);
   if (
     ehGrupoETECUrlParam &&
     categoria.nome === "ALIMENTAÇÃO" &&
@@ -1352,7 +1359,8 @@ export const exibirTooltipLancheEmergTabelaEtec = (
     (row.name.includes("refeicao") ||
       row.name.includes("repeticao_refeicao") ||
       row.name.includes("sobremesa") ||
-      row.name.includes("repeticao_sobremesa")) &&
+      row.name.includes("repeticao_sobremesa") ||
+      row.name.includes("repeticao_2_sobremesa")) &&
     inclusoesEtecAutorizadas
       .filter((inc) => inc.dia === column.dia)[0]
       .alimentacoes.includes("lanche_emergencial")
@@ -1363,7 +1371,8 @@ export const exibirTooltipRepeticao = (
   formValuesAtualizados,
   row,
   column,
-  categoria
+  categoria,
+  diasSobremesaDoce
 ) => {
   const value =
     formValuesAtualizados[
@@ -1377,8 +1386,12 @@ export const exibirTooltipRepeticao = (
     formValuesAtualizados[
       `sobremesa__dia_${column.dia}__categoria_${categoria.id}`
     ];
+  const ehDiaSobremesaDoce = diasSobremesaDoce.some(
+    (data) => data.slice(-2) === column.dia
+  );
 
   return (
+    !ehDiaSobremesaDoce &&
     value &&
     Number(value) > 0 &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
@@ -1388,7 +1401,8 @@ export const exibirTooltipRepeticao = (
         (Number(maxRefeicao) && Number(value) > Number(maxRefeicao)))
     ) ||
       !!(
-        row.name.includes("repeticao_sobremesa") &&
+        (row.name.includes("repeticao_sobremesa") ||
+          row.name.includes("repeticao_2_sobremesa")) &&
         (!maxSobremesa ||
           (Number(maxSobremesa) && Number(value) > Number(maxSobremesa)))
       ))
@@ -1410,7 +1424,8 @@ export const exibirTooltipPadraoRepeticaoDiasSobremesaDoce = (
 
   return (
     [null, undefined].includes(value) &&
-    row.name === "repeticao_sobremesa" &&
+    (row.name === "repeticao_sobremesa" ||
+      row.name === "repeticao_2_sobremesa") &&
     diasSobremesaDoce.includes(
       `${new Date(location.state.mesAnoSelecionado).getFullYear()}-${(
         new Date(location.state.mesAnoSelecionado).getMonth() + 1
@@ -1435,7 +1450,9 @@ export const exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero = (
     ];
   const sobremesaValue =
     formValuesAtualizados[
-      `sobremesa__dia_${column.dia}__categoria_${categoria.id}`
+      row.name === "repeticao_sobremesa"
+        ? `sobremesa__dia_${column.dia}__categoria_${categoria.id}`
+        : `2_sobremesa_1_oferta__dia_${column.dia}__categoria_${categoria.id}`
     ];
   const observacoesValue =
     formValuesAtualizados[
@@ -1446,7 +1463,8 @@ export const exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero = (
     value &&
     value !== "0" &&
     Number(value) !== 0 &&
-    row.name === "repeticao_sobremesa" &&
+    (row.name === "repeticao_sobremesa" ||
+      row.name === "repeticao_2_sobremesa") &&
     diasSobremesaDoce.includes(
       `${new Date(location.state.mesAnoSelecionado).getFullYear()}-${(
         new Date(location.state.mesAnoSelecionado).getMonth() + 1
@@ -1455,8 +1473,7 @@ export const exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero = (
         .padStart(2, "0")}-${column.dia}`
     ) &&
     Number(sobremesaValue) > 0 &&
-    !observacoesValue &&
-    Number(sobremesaValue) >= Number(value)
+    !observacoesValue
   );
 };
 
@@ -1475,7 +1492,8 @@ export const exibirTooltipRepeticaoDiasSobremesaDoceDreCodae = (
     !(
       [4, 5, 6].includes(Number(semanaSelecionada)) && Number(column.dia) < 10
     ) &&
-    row.name === "repeticao_sobremesa" &&
+    (row.name === "repeticao_sobremesa" ||
+      row.name === "repeticao_2_sobremesa") &&
     diasSobremesaDoce.includes(
       `${anoSolicitacao}-${mesSolicitacao}-${column.dia}`
     )

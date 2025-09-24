@@ -330,6 +330,7 @@ export const COPIAR_ATRIBUICAO_QUESTOES_CONFERENCIA =
 export const FICHA_RECEBIMENTO = "ficha-recebimento";
 export const CADASTRO_FICHA_RECEBIMENTO = "cadastro-ficha-recebimento";
 export const EDITAR_FICHA_RECEBIMENTO = "editar-ficha-recebimento";
+export const DETALHAR_FICHA_RECEBIMENTO = "detalhar-ficha-recebimento";
 // Status dos pedidos
 
 export const STATUS_DRE_A_VALIDAR = "DRE_A_VALIDAR";

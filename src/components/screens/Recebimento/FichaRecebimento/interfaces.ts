@@ -48,7 +48,7 @@ export interface FichaRecebimentoDetalhada {
   status: string;
   etapa: EtapaFicha;
   data_entrega: string;
-  documentos_recebimento?: string[];
+  documentos_recebimento?: object[];
   lote_fabricante_de_acordo?: boolean | string;
   lote_fabricante_divergencia?: string;
   data_fabricacao_de_acordo?: boolean | string;
@@ -69,6 +69,7 @@ export interface FichaRecebimentoDetalhada {
   houve_ocorrencia?: boolean | string;
   ocorrencias?: OcorrenciaFichaRecebimento[];
   arquivos?: Arquivo[];
+  alterado_em: string;
 }
 
 export interface QuestaoInitialValue {

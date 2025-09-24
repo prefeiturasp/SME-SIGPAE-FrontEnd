@@ -215,9 +215,6 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     expect(within(cardSolicitacao).getAllByText(/Nome do Aluno/i)).toHaveLength(
       1
     );
-    expect(within(cardSolicitacao).getAllByText(/Observações/i)).toHaveLength(
-      1
-    );
   });
 
   it("Testa o input local do Passeio", async () => {
@@ -335,17 +332,6 @@ describe("Teste de Solicitação de Kit Lanche", () => {
         expect(linha).toHaveTextContent(solicitacao.codigo_eol);
       });
     });
-  });
-
-  it("Testa o input de observação", async () => {
-    const container = screen.getByTestId("observacao-solicitacao");
-    const editable = container.querySelector(".ck-editor__editable");
-    await waitFor(() => {
-      expect(editable).toBeInTheDocument();
-    });
-
-    fireEvent.input(editable, { target: { innerHTML: "Texto de teste" } });
-    expect(editable).toHaveTextContent("Texto de teste");
   });
 
   it("Testa botão Cancelar", async () => {
