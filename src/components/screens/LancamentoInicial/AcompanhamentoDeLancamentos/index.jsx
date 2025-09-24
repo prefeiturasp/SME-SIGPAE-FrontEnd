@@ -109,6 +109,7 @@ export const AcompanhamentoDeLancamentos = () => {
       : null,
     tipo_unidade: searchParams.get("tipo_unidade"),
     escola: searchParams.get("escola"),
+    ocorrencias: null,
   });
 
   const PAGE_SIZE = 10;
@@ -119,9 +120,14 @@ export const AcompanhamentoDeLancamentos = () => {
     }
 
     setLoadingComFiltros(true);
-    if (diretoriaRegional) {
-      params = { ...params, dre: diretoriaRegional };
-    }
+    if (diretoriaRegional)
+      params = {
+        ...params,
+        dre: diretoriaRegional,
+      };
+    if (!["true", "false"].includes(params.ocorrencias))
+      delete params.ocorrencias;
+
     const [responseDre, response] = await Promise.all([
       getDashboardMedicaoInicial({ dre: diretoriaRegional }),
       getDashboardMedicaoInicial(params),
@@ -707,7 +713,33 @@ export const AcompanhamentoDeLancamentos = () => {
                                 }}
                               />
                             </div>
-                            <div className="col-4 mt-auto text-end">
+                            <div className="col-4">
+                              <Field
+                                dataTestId="div-select-ocorrencias"
+                                component={Select}
+                                name="ocorrencias"
+                                label="Ocorrências"
+                                options={[
+                                  {
+                                    nome: "Selecione a Avaliação do Serviço",
+                                    uuid: "",
+                                  },
+                                ].concat([
+                                  { uuid: null, nome: "Todos" },
+                                  { uuid: false, nome: "Sem ocorrências" },
+                                  { uuid: true, nome: "Com ocorrências" },
+                                ])}
+                                onChangeEffect={(e) => {
+                                  adicionaFiltroNaURL(
+                                    "ocorrencias",
+                                    e.target.value
+                                  );
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div className="row">
+                            <div className="col-12 mt-auto text-end">
                               <Botao
                                 type={BUTTON_TYPE.BUTTON}
                                 onClick={() => resetForm(form)}
