@@ -204,7 +204,7 @@
     "lint-staged": "^16.2.0",
     "msw": "^2.11.3",
     "node-localstorage": "^3.0.5",
-    "prettier": "^2.8.8",
+    "prettier": "^3.6.2",
     "redux-mock-store": "^1.5.5",
     "sass": "^1.83.0",
     "ts-jest": "^29.3.4",
