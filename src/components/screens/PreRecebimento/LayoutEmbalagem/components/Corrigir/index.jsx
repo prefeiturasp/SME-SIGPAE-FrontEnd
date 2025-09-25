@@ -75,19 +75,19 @@ export default ({ atualizar }) => {
 
     const layoutEmbalagensPrimarias = tiposDeEmbalagens
       .filter(
-        (tipoDeEmbalagem) => tipoDeEmbalagem.tipo_embalagem === "PRIMARIA"
+        (tipoDeEmbalagem) => tipoDeEmbalagem?.tipo_embalagem === "PRIMARIA"
       )
       .pop();
 
     const layoutEmbalagensSecundarias = tiposDeEmbalagens
       .filter(
-        (tipoDeEmbalagem) => tipoDeEmbalagem.tipo_embalagem === "SECUNDARIA"
+        (tipoDeEmbalagem) => tipoDeEmbalagem?.tipo_embalagem === "SECUNDARIA"
       )
       .pop();
 
     const layoutEmbalagensTerciarias = tiposDeEmbalagens
       .filter(
-        (tipoDeEmbalagem) => tipoDeEmbalagem.tipo_embalagem === "TERCIARIA"
+        (tipoDeEmbalagem) => tipoDeEmbalagem?.tipo_embalagem === "TERCIARIA"
       )
       .pop();
 
@@ -100,10 +100,11 @@ export default ({ atualizar }) => {
       setArquivosLayoutsPrimarios
     );
 
-    await obterArquivosTipoDeEmbalagem(
-      layoutEmbalagensSecundarias,
-      setArquivosLayoutsSecundarios
-    );
+    layoutEmbalagensSecundarias &&
+      (await obterArquivosTipoDeEmbalagem(
+        layoutEmbalagensSecundarias,
+        setArquivosLayoutsSecundarios
+      ));
 
     layoutEmbalagensTerciarias &&
       (await obterArquivosTipoDeEmbalagem(
