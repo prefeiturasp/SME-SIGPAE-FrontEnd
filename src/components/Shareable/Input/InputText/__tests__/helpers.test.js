@@ -1,4 +1,7 @@
-import { agruparMilharDecimal } from "../helpers";
+import {
+  agruparMilharDecimal,
+  agruparMilharInteirosPositivos,
+} from "../helpers";
 
 describe("agruparMilharDecimal", () => {
   test("deve retornar string vazia para valores null/undefined", () => {
@@ -51,5 +54,44 @@ describe("agruparMilharDecimal", () => {
 
   test("deve lidar com strings vazias", () => {
     expect(agruparMilharDecimal("")).toBe("");
+  });
+});
+
+describe("agruparMilharInteirosPositivos", () => {
+  test("deve retornar string vazia para valores null/undefined", () => {
+    expect(agruparMilharInteirosPositivos(null)).toBe("");
+    expect(agruparMilharInteirosPositivos(undefined)).toBe("");
+  });
+
+  test("deve retornar string vazia para zero ou valores não numéricos", () => {
+    expect(agruparMilharInteirosPositivos("0")).toBe("");
+    expect(agruparMilharInteirosPositivos(0)).toBe("");
+    expect(agruparMilharInteirosPositivos("abc")).toBe("");
+    expect(agruparMilharInteirosPositivos("")).toBe("");
+  });
+
+  test("deve manter números pequenos sem formatação", () => {
+    expect(agruparMilharInteirosPositivos("1")).toBe("1");
+    expect(agruparMilharInteirosPositivos("12")).toBe("12");
+    expect(agruparMilharInteirosPositivos(7)).toBe("7");
+    expect(agruparMilharInteirosPositivos(99)).toBe("99");
+  });
+
+  test("deve formatar milhares corretamente", () => {
+    expect(agruparMilharInteirosPositivos("1000")).toBe("1.000");
+    expect(agruparMilharInteirosPositivos(1234)).toBe("1.234");
+    expect(agruparMilharInteirosPositivos("123456")).toBe("123.456");
+    expect(agruparMilharInteirosPositivos(987654321)).toBe("987.654.321");
+  });
+
+  test("deve remover caracteres não numéricos", () => {
+    expect(agruparMilharInteirosPositivos("1a2b3c")).toBe("123");
+    expect(agruparMilharInteirosPositivos("R$ 1.234,56")).toBe("123.456");
+    expect(agruparMilharInteirosPositivos("12-34-56")).toBe("123.456");
+  });
+
+  test("deve ignorar sinais negativos", () => {
+    expect(agruparMilharInteirosPositivos("-1234")).toBe("1.234");
+    expect(agruparMilharInteirosPositivos("-56")).toBe("56");
   });
 });
