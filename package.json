@@ -206,7 +206,7 @@
     "node-localstorage": "^3.0.5",
     "prettier": "^3.6.2",
     "redux-mock-store": "^1.5.5",
-    "sass": "^1.83.0",
+    "sass": "^1.93.2",
     "ts-jest": "^29.3.4",
     "vite": "^7.1.5",
     "vite-plugin-environment": "^1.1.3",
