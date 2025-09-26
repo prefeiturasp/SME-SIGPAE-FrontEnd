@@ -9,3 +9,14 @@ export const agruparMilharDecimal = (valor) => {
 
   return inteiros.replace(/\d(?=(\d{3})+$)/g, "$&.") + "," + decimais;
 };
+
+export const agruparMilharInteirosPositivos = (valor) => {
+  if (valor === null || valor === undefined) return "";
+
+  const nums = valor.toString().replace(/\D/g, "");
+  const num = parseInt(nums, 10);
+
+  if (isNaN(num) || num <= 0) return "";
+
+  return num.toString().replace(/\d(?=(\d{3})+$)/g, "$&.");
+};

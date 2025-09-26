@@ -100,10 +100,11 @@ export default ({ atualizar }) => {
       setArquivosLayoutsPrimarios
     );
 
-    await obterArquivosTipoDeEmbalagem(
-      layoutEmbalagensSecundarias,
-      setArquivosLayoutsSecundarios
-    );
+    layoutEmbalagensSecundarias &&
+      (await obterArquivosTipoDeEmbalagem(
+        layoutEmbalagensSecundarias,
+        setArquivosLayoutsSecundarios
+      ));
 
     layoutEmbalagensTerciarias &&
       (await obterArquivosTipoDeEmbalagem(
