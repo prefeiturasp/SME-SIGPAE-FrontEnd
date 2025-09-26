@@ -6,6 +6,7 @@ import {
   screen,
   waitFor,
   cleanup,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
@@ -237,20 +238,22 @@ describe("AcompanhamentoDeLancamentos", () => {
       expect(seletor).not.toBeInTheDocument();
     });
 
+    const setMesReferencia = () => {
+      const divMesReferencia = screen.getByTestId("div-select-mes-referencia");
+      const selectMesReferencia = divMesReferencia.querySelector("select");
+      fireEvent.change(selectMesReferencia, {
+        target: { value: "03_2025" },
+      });
+      return selectMesReferencia;
+    };
+
     it("deve exibir o modal filtragem com resultados", async () => {
       await selecionarDRE();
 
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
 
-      const selectMesReferenciaDiv = screen.getByTestId(
-        "div-select-mes-referencia"
-      );
-      const selectElementMesReferencia =
-        selectMesReferenciaDiv.querySelector("select");
-      fireEvent.change(selectElementMesReferencia, {
-        target: { value: "03_2025" },
-      });
+      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
@@ -268,14 +271,7 @@ describe("AcompanhamentoDeLancamentos", () => {
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
 
-      const selectMesReferenciaDiv = screen.getByTestId(
-        "div-select-mes-referencia"
-      );
-      const selectElementMesReferencia =
-        selectMesReferenciaDiv.querySelector("select");
-      fireEvent.change(selectElementMesReferencia, {
-        target: { value: "03_2025" },
-      });
+      setMesReferencia();
 
       mock
         .onGet("/medicao-inicial/solicitacao-medicao-inicial/dashboard/")
@@ -298,21 +294,70 @@ describe("AcompanhamentoDeLancamentos", () => {
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
 
-      const selectMesReferenciaDiv = screen.getByTestId(
-        "div-select-mes-referencia"
-      );
-      const selectElementMesReferencia =
-        selectMesReferenciaDiv.querySelector("select");
-      fireEvent.change(selectElementMesReferencia, {
-        target: { value: "03_2025" },
-      });
+      const selectMes = setMesReferencia();
 
       const botaoLimpar = screen.getByText("Limpar");
       await act(async () => {
         fireEvent.click(botaoLimpar);
       });
 
-      expect(selectElementMesReferencia.value).toBe("");
+      expect(selectMes.value).toBe("");
+    });
+
+    const setOcorrencias = (value = "true") => {
+      const divOcorrencias = screen.getByTestId("div-select-ocorrencias");
+      const select = within(divOcorrencias).getByRole("combobox");
+      fireEvent.change(select, { target: { value: value } });
+      return select;
+    };
+
+    it("deve selecionar 'Com ocorrências' e depois limpar o campo", async () => {
+      await selecionarDRE();
+
+      const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
+      fireEvent.click(statusCard);
+
+      const selectOcorrencias = setOcorrencias();
+      expect(
+        within(selectOcorrencias).getByRole("option", {
+          name: "Com ocorrências",
+        }).selected
+      ).toBe(true);
+
+      const botaoLimpar = screen.getByText("Limpar");
+      await act(async () => {
+        fireEvent.click(botaoLimpar);
+      });
+
+      expect(selectOcorrencias.value).toBe("");
+      expect(
+        within(selectOcorrencias).getByRole("option", {
+          name: "Selecione a Avaliação do Serviço",
+        }).selected
+      ).toBe(true);
+    });
+
+    it("deve preencher mes e ocorrencias, filtrar e verificar resultados", async () => {
+      await selecionarDRE();
+
+      const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
+      fireEvent.click(statusCard);
+
+      setMesReferencia();
+
+      const botaoFiltrar = screen.getByText("Filtrar");
+      await act(async () => {
+        fireEvent.click(botaoFiltrar);
+      });
+
+      await waitFor(async () => {
+        expect(
+          await screen.findAllByText("CEI DIRET OLGA BENARIO PRESTES")
+        ).toHaveLength(7);
+        expect(await screen.findAllByText("EMEF M BOI MIRIM I")).toHaveLength(
+          1
+        );
+      });
     });
   });
 });
