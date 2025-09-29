@@ -2,6 +2,8 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { CardMedicaoPorStatus } from "./index";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import * as utilities from "src/helpers/utilities";
 
 describe("Testes de comportamento para componente - CardMedicaoPorStatus", () => {
@@ -62,7 +64,14 @@ describe("Testes de comportamento para componente - CardMedicaoPorStatus", () =>
             v7_relativeSplatPath: true,
           }}
         >
-          <CardMedicaoPorStatus {...baseProps} />
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosCODAEGA,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <CardMedicaoPorStatus {...baseProps} />
+          </MeusDadosContext.Provider>
         </MemoryRouter>
       );
     });
