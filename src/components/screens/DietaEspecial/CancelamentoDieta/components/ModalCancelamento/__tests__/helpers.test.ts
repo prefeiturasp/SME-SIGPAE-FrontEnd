@@ -1,33 +1,17 @@
 import { getStatusSolicitacaoFrontend } from "../helpers";
 
 describe("getStatusSolicitacaoFrontend", () => {
-  it("retorna 'Aguardando Autorização' para 'CODAE_A_AUTORIZAR'", () => {
-    expect(getStatusSolicitacaoFrontend("CODAE_A_AUTORIZAR")).toBe(
-      "Aguardando Autorização"
-    );
-  });
+  const cases: Array<[string, string | undefined]> = [
+    ["CODAE_A_AUTORIZAR", "Aguardando Autorização"],
+    ["CODAE_NEGOU_PEDIDO", "Negada"],
+    ["CODAE_AUTORIZADO", "Autorizada"],
+    ["ESCOLA_CANCELOU", "Cancelada"],
+    ["STATUS_DESCONHECIDO", undefined],
+    ["", undefined],
+    [null as any, undefined],
+  ];
 
-  it("retorna 'Negada' para 'CODAE_NEGOU_PEDIDO'", () => {
-    expect(getStatusSolicitacaoFrontend("CODAE_NEGOU_PEDIDO")).toBe("Negada");
-  });
-
-  it("retorna 'Autorizada' para 'CODAE_AUTORIZADO'", () => {
-    expect(getStatusSolicitacaoFrontend("CODAE_AUTORIZADO")).toBe("Autorizada");
-  });
-
-  it("retorna 'Cancelada' para 'ESCOLA_CANCELOU'", () => {
-    expect(getStatusSolicitacaoFrontend("ESCOLA_CANCELOU")).toBe("Cancelada");
-  });
-
-  it("retorna undefined para um status desconhecido", () => {
-    expect(getStatusSolicitacaoFrontend("STATUS_DESCONHECIDO")).toBeUndefined();
-  });
-
-  it("retorna undefined para um status nulo", () => {
-    expect(getStatusSolicitacaoFrontend(null)).toBeUndefined();
-  });
-
-  it("retorna undefined para um status vazio", () => {
-    expect(getStatusSolicitacaoFrontend("")).toBeUndefined();
+  it.each(cases)("retorna '%s' → '%s'", (input, expected) => {
+    expect(getStatusSolicitacaoFrontend(input)).toBe(expected);
   });
 });
