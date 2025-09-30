@@ -82,4 +82,17 @@ describe("ListagemSolicitacoes", () => {
     fireEvent.click(iconePlus.closest("span"));
     expect(vincularGuia).toHaveBeenCalledWith(mockGuias[0]);
   });
+
+  it("clica no ícone de 'lixeira' chama desvincularGuia", () => {
+    const { container } = renderComponent([mockGuias[0]]);
+    const iconeLixeira = container.querySelector(".fa-trash-alt");
+    fireEvent.click(iconeLixeira.closest("span"));
+    expect(desvincularGuia).toHaveBeenCalledWith(mockGuias[0]);
+  });
+
+  it("mostra ícone 'plus' para guia não vinculada", () => {
+    const { container } = renderComponent([]);
+    expect(container.querySelector(".fa-plus")).toBeInTheDocument();
+    expect(container.querySelector(".fa-trash-alt")).not.toBeInTheDocument();
+  });
 });
