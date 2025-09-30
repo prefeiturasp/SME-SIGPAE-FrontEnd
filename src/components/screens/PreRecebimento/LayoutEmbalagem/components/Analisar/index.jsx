@@ -3,7 +3,7 @@ import { Spin } from "antd";
 import "./styles.scss";
 import { PRE_RECEBIMENTO } from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
-import { detalharLayoutEmabalagem } from "src/services/layoutEmbalagem.service";
+import { detalharLayoutEmbalagem } from "src/services/layoutEmbalagem.service";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
 import Botao from "src/components/Shareable/Botao";
@@ -63,7 +63,7 @@ export default () => {
   const carregarDados = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
-    const response = await detalharLayoutEmabalagem(uuid);
+    const response = await detalharLayoutEmbalagem(uuid);
 
     const layoutDeEmbalagem = definirLayoutDeEmbalagem(response);
     setLayoutDeEmbalagem(layoutDeEmbalagem);
@@ -79,7 +79,7 @@ export default () => {
     const layoutDeEmbalagem = response.data;
 
     layoutDeEmbalagem.tipos_de_embalagens = ordenaTiposDeEmbalagem(
-      layoutDeEmbalagem.tipos_de_embalagens
+      layoutDeEmbalagem.tipos_de_embalagens,
     );
 
     return layoutDeEmbalagem;
@@ -98,7 +98,7 @@ export default () => {
   const definirAprovacoes = (layoutDeEmbalagem) => {
     const aprovacoes = layoutDeEmbalagem.tipos_de_embalagens.map(
       (tipoEmbalagem) =>
-        tipoEmbalagem?.status === "APROVADO" ? true : undefined
+        tipoEmbalagem?.status === "APROVADO" ? true : undefined,
     );
 
     return aprovacoes;
@@ -144,7 +144,7 @@ export default () => {
     form,
     values,
     solicitada,
-    setSolicitada
+    setSolicitada,
   ) => {
     return (
       <>
@@ -213,7 +213,7 @@ export default () => {
 
   const retornaBotoesAprovacao = (index, form) => {
     const textoAprovacao = `Embalagem Aprovada em ${moment().format(
-      "DD/MM/YYYY - HH:mm"
+      "DD/MM/YYYY - HH:mm",
     )}\n|Por: ${meusDados?.nome}`;
 
     return (
@@ -307,13 +307,13 @@ export default () => {
         cancelar={() => {
           atualizarAprovacoes(
             index,
-            definirAprovacoes(layoutDeEmbalagem)[index]
+            definirAprovacoes(layoutDeEmbalagem)[index],
           );
 
           form.change(
             `justificativa_${index}`,
             layoutDeEmbalagem.tipos_de_embalagens[index]
-              ?.complemento_do_status || ""
+              ?.complemento_do_status || "",
           );
 
           !layoutDeEmbalagem.tipos_de_embalagens[index] && setSolicitada(false);
@@ -347,7 +347,7 @@ export default () => {
     try {
       let response = await analiseCodaeLayoutEmbalagem(
         layoutDeEmbalagem.uuid,
-        payload
+        payload,
       );
       if (response.status === 201 || response.status === 200) {
         toastSuccess("Sua avaliação foi enviada com sucesso!");
@@ -516,7 +516,7 @@ export default () => {
                           <div className="w-75" key={e.arquivo}>
                             <BotaoAnexo urlAnexo={e.arquivo} />
                           </div>
-                        )
+                        ),
                       )}
                       {!somenteLeitura && retornaBotoesAprovacao(0, form)}
                     </div>
@@ -529,7 +529,7 @@ export default () => {
                     form,
                     values,
                     embalagemSecundariaSolicitada,
-                    setEmbalagemSecundariaSolicitada
+                    setEmbalagemSecundariaSolicitada,
                   )}
 
                   {retornaEmbalagemOpcional(
@@ -538,7 +538,7 @@ export default () => {
                     form,
                     values,
                     embalagemTerciariaSolicitada,
-                    setEmbalagemTerciariaSolicitada
+                    setEmbalagemTerciariaSolicitada,
                   )}
 
                   <hr />

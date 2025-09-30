@@ -178,6 +178,7 @@ export default ({ setLoading, setFiltros }) => {
                 label="Cód. EOL do Aluno"
                 component={InputText}
                 name="codigo_eol_aluno"
+                data-testid="input-codigo-eol"
                 placeholder="Insira o Código"
                 type="number"
                 validate={length(7)}
@@ -198,6 +199,7 @@ export default ({ setLoading, setFiltros }) => {
                 placeholder="Insira o Nome do Aluno"
                 className="input-busca-aluno"
                 disabled={carregandoAluno | desabilitarAluno}
+                data-testid="input-nome-aluno"
               />
             </div>
           </div>

@@ -25,7 +25,7 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import {
   analiseCodaeLayoutEmbalagem,
-  detalharLayoutEmabalagem,
+  detalharLayoutEmbalagem,
 } from "src/services/layoutEmbalagem.service";
 
 import ModalCancelarAnalise from "./components/ModalCancelarAnalise";
@@ -60,11 +60,11 @@ export default () => {
       setCarregando(true);
       const urlParams = new URLSearchParams(window.location.search);
       const uuid = urlParams.get("uuid");
-      const response = await detalharLayoutEmabalagem(uuid);
+      const response = await detalharLayoutEmbalagem(uuid);
 
       const objeto = response.data;
       objeto.tipos_de_embalagens = ordenarTiposDeEmbalagens(
-        objeto.tipos_de_embalagens
+        objeto.tipos_de_embalagens,
       );
       setObjeto(objeto);
       setEmbalagemPrimaria(obterImagensEmbalagem(response, "PRIMARIA"));
@@ -103,7 +103,7 @@ export default () => {
   const definirAprovacoes = (objeto) => {
     if (["Aprovado", "Solicitado Correção"].includes(objeto.status)) {
       const aprovacoesAtualizadas = objeto.tipos_de_embalagens.map((layout) =>
-        layout?.status === "APROVADO" ? true : false
+        layout?.status === "APROVADO" ? true : false,
       );
 
       setAprovacoes(aprovacoesAtualizadas);
@@ -377,21 +377,21 @@ export default () => {
                     0,
                     "Embalagem Primária",
                     embalagemPrimaria,
-                    values
+                    values,
                   )}
 
                   {renderizarTipoEmbalagem(
                     1,
                     "Embalagem Secundária",
                     embalagemSecundaria,
-                    values
+                    values,
                   )}
 
                   {renderizarTipoEmbalagem(
                     2,
                     "Embalagem Terciária",
                     embalagemTerciaria,
-                    values
+                    values,
                   )}
 
                   {!visaoCODAE && objeto.observacoes && (
