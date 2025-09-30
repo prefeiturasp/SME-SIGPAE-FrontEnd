@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import "./styles.scss";
 import {
-  detalharLayoutEmabalagem,
+  detalharLayoutEmbalagem,
   corrigirLayoutEmbalagem,
 } from "src/services/layoutEmbalagem.service";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
@@ -46,12 +46,12 @@ export default ({ atualizar }) => {
   const [showModal, setShowModal] = useState(false);
   const [objeto, setObjeto] = useState({});
   const [layoutEmbalagensPrimarias, setLayoutEmbalagensPrimarias] = useState(
-    {}
+    {},
   );
   const [layoutEmbalagensSecundarias, setLayoutEmbalagensSecundarias] =
     useState({});
   const [layoutEmbalagensTerciarias, setLayoutEmbalagensTerciarias] = useState(
-    {}
+    {},
   );
   const [arquivosLayoutsPrimarios, setArquivosLayoutsPrimarios] = useState();
   const [arquivosLayoutsSecundarios, setArquivosLayoutsSecundarios] =
@@ -67,7 +67,7 @@ export default ({ atualizar }) => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
-    const response = await detalharLayoutEmabalagem(uuid);
+    const response = await detalharLayoutEmbalagem(uuid);
 
     setObjeto(response.data);
 
@@ -75,19 +75,19 @@ export default ({ atualizar }) => {
 
     const layoutEmbalagensPrimarias = tiposDeEmbalagens
       .filter(
-        (tipoDeEmbalagem) => tipoDeEmbalagem?.tipo_embalagem === "PRIMARIA"
+        (tipoDeEmbalagem) => tipoDeEmbalagem?.tipo_embalagem === "PRIMARIA",
       )
       .pop();
 
     const layoutEmbalagensSecundarias = tiposDeEmbalagens
       .filter(
-        (tipoDeEmbalagem) => tipoDeEmbalagem?.tipo_embalagem === "SECUNDARIA"
+        (tipoDeEmbalagem) => tipoDeEmbalagem?.tipo_embalagem === "SECUNDARIA",
       )
       .pop();
 
     const layoutEmbalagensTerciarias = tiposDeEmbalagens
       .filter(
-        (tipoDeEmbalagem) => tipoDeEmbalagem?.tipo_embalagem === "TERCIARIA"
+        (tipoDeEmbalagem) => tipoDeEmbalagem?.tipo_embalagem === "TERCIARIA",
       )
       .pop();
 
@@ -97,19 +97,19 @@ export default ({ atualizar }) => {
 
     await obterArquivosTipoDeEmbalagem(
       layoutEmbalagensPrimarias,
-      setArquivosLayoutsPrimarios
+      setArquivosLayoutsPrimarios,
     );
 
     layoutEmbalagensSecundarias &&
       (await obterArquivosTipoDeEmbalagem(
         layoutEmbalagensSecundarias,
-        setArquivosLayoutsSecundarios
+        setArquivosLayoutsSecundarios,
       ));
 
     layoutEmbalagensTerciarias &&
       (await obterArquivosTipoDeEmbalagem(
         layoutEmbalagensTerciarias,
-        setArquivosLayoutsTerciarios
+        setArquivosLayoutsTerciarios,
       ));
 
     if (atualizar && !layoutEmbalagensTerciarias) {
@@ -124,7 +124,7 @@ export default ({ atualizar }) => {
 
   const obterArquivosTipoDeEmbalagem = async (
     tipoDeEmbalagem,
-    setArquivosTipoEmbalagem
+    setArquivosTipoEmbalagem,
   ) => {
     const arquivosTipoImagem = await Promise.all(
       tipoDeEmbalagem.imagens.map(async (imagem) => {
@@ -133,7 +133,7 @@ export default ({ atualizar }) => {
           nome: imagem.nome,
           base64,
         };
-      })
+      }),
     );
     setArquivosTipoEmbalagem(arquivosTipoImagem);
   };
@@ -141,13 +141,13 @@ export default ({ atualizar }) => {
   const renderizarSecaoTipoDeEmbalagem = (
     tipoDeEmbalagem,
     arquivosTipoDeLayoutEmbalagem,
-    setArquivosLayoutsPrimarios
+    setArquivosLayoutsPrimarios,
   ) => {
     if (atualizar && arquivosTipoDeLayoutEmbalagem) {
       return renderizarSecaoAtualizacao(
         tipoDeEmbalagem,
         arquivosTipoDeLayoutEmbalagem,
-        setArquivosLayoutsPrimarios
+        setArquivosLayoutsPrimarios,
       );
     } else {
       if (
@@ -163,7 +163,7 @@ export default ({ atualizar }) => {
         return renderizarSecaoReprovada(
           tipoDeEmbalagem,
           arquivosTipoDeLayoutEmbalagem,
-          setArquivosLayoutsPrimarios
+          setArquivosLayoutsPrimarios,
         );
     }
   };
@@ -208,7 +208,7 @@ export default ({ atualizar }) => {
   const renderizarSecaoAtualizacao = (
     tipoDeEmbalagem,
     arquivosTipoDeLayoutEmbalagem,
-    setArquivosTipoDeLayoutEmbalagem
+    setArquivosTipoDeLayoutEmbalagem,
   ) => {
     const setFiles = (arquivos) => {
       setFilesGeral(arquivos, setArquivosTipoDeLayoutEmbalagem);
@@ -218,7 +218,7 @@ export default ({ atualizar }) => {
       removeFileGeral(
         index,
         arquivosTipoDeLayoutEmbalagem,
-        setArquivosTipoDeLayoutEmbalagem
+        setArquivosTipoDeLayoutEmbalagem,
       );
     };
 
@@ -230,6 +230,9 @@ export default ({ atualizar }) => {
           arquivosIniciais={arquivosTipoDeLayoutEmbalagem}
           atualizar={true}
           tipoEmbalagem={tipoDeEmbalagem.tipo_embalagem}
+          dataTestId={
+            "inserir-arquivo-" + tipoDeEmbalagem.tipo_embalagem.toLowerCase()
+          }
         />
         <hr />
       </>
@@ -239,7 +242,7 @@ export default ({ atualizar }) => {
   const renderizarSecaoReprovada = (
     tipoDeEmbalagem,
     arquivosTipoDeLayoutEmbalagem,
-    setArquivosTipoDeLayoutEmbalagem
+    setArquivosTipoDeLayoutEmbalagem,
   ) => {
     const dadosCorrecao = tipoDeEmbalagem.complemento_do_status;
 
@@ -251,7 +254,7 @@ export default ({ atualizar }) => {
       removeFileGeral(
         index,
         arquivosTipoDeLayoutEmbalagem,
-        setArquivosTipoDeLayoutEmbalagem
+        setArquivosTipoDeLayoutEmbalagem,
       );
     };
 
@@ -297,6 +300,9 @@ export default ({ atualizar }) => {
             multiple={true}
             limiteTamanho={DEZ_MB}
             concatenarNovosArquivos
+            dataTestId={
+              "inserir-arquivo-" + tipoDeEmbalagem.tipo_embalagem.toLowerCase()
+            }
           />
           <label className="col-12 label-imagem">
             <span className="red">
@@ -391,7 +397,7 @@ export default ({ atualizar }) => {
         uuid: layoutEmbalagensPrimarias.uuid,
         tipo_embalagem: layoutEmbalagensPrimarias.tipo_embalagem,
         imagens_do_tipo_de_embalagem: formatarImagensPayload(
-          arquivosLayoutsPrimarios
+          arquivosLayoutsPrimarios,
         ),
       });
     }
@@ -401,7 +407,7 @@ export default ({ atualizar }) => {
         uuid: layoutEmbalagensSecundarias.uuid,
         tipo_embalagem: layoutEmbalagensSecundarias.tipo_embalagem,
         imagens_do_tipo_de_embalagem: formatarImagensPayload(
-          arquivosLayoutsSecundarios
+          arquivosLayoutsSecundarios,
         ),
       });
     }
@@ -414,7 +420,7 @@ export default ({ atualizar }) => {
         uuid: layoutEmbalagensTerciarias.uuid,
         tipo_embalagem: layoutEmbalagensTerciarias.tipo_embalagem,
         imagens_do_tipo_de_embalagem: formatarImagensPayload(
-          arquivosLayoutsTerciarios
+          arquivosLayoutsTerciarios,
         ),
       });
     }
@@ -522,20 +528,20 @@ export default ({ atualizar }) => {
                 {renderizarSecaoTipoDeEmbalagem(
                   layoutEmbalagensPrimarias,
                   arquivosLayoutsPrimarios,
-                  setArquivosLayoutsPrimarios
+                  setArquivosLayoutsPrimarios,
                 )}
 
                 {renderizarSecaoTipoDeEmbalagem(
                   layoutEmbalagensSecundarias,
                   arquivosLayoutsSecundarios,
-                  setArquivosLayoutsSecundarios
+                  setArquivosLayoutsSecundarios,
                 )}
 
                 {(layoutEmbalagensTerciarias || atualizar) &&
                   renderizarSecaoTipoDeEmbalagem(
                     layoutEmbalagensTerciarias,
                     arquivosLayoutsTerciarios,
-                    setArquivosLayoutsTerciarios
+                    setArquivosLayoutsTerciarios,
                   )}
 
                 <div className="row mb-3">
@@ -544,6 +550,7 @@ export default ({ atualizar }) => {
                       component={TextArea}
                       label="Observações"
                       name="observacoes"
+                      dataTestId="observacoes"
                     />
                   </div>
                 </div>
