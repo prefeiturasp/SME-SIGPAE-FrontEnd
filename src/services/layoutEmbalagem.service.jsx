@@ -15,7 +15,7 @@ export const listarLayoutsEmbalagens = async (params) => {
   }
 };
 
-export const detalharLayoutEmabalagem = async (uuid) => {
+export const detalharLayoutEmbalagem = async (uuid) => {
   try {
     return await axios.get(`/layouts-de-embalagem/${uuid}/`);
   } catch (error) {
@@ -35,14 +35,14 @@ export const getDashboardLayoutEmbalagem = async (params = null) => {
 export const corrigirLayoutEmbalagem = async (uuid, payload) =>
   await axios.patch(
     `/layouts-de-embalagem/${uuid}/fornecedor-realiza-correcao/`,
-    payload
+    payload,
   );
 
 export const analiseCodaeLayoutEmbalagem = async (uuid, payload) => {
   try {
     return await axios.patch(
       `/layouts-de-embalagem/${uuid}/codae-aprova-ou-solicita-correcao/`,
-      payload
+      payload,
     );
   } catch (error) {
     toastError(getMensagemDeErro(error.response.status));
