@@ -1053,7 +1053,7 @@ export default () => {
                               placeholder="Digite o número de paletes"
                               required
                               validate={required}
-                              agrupadorMilhar
+                              agrupadorMilharPositivo
                             />
                           </div>
                         </div>

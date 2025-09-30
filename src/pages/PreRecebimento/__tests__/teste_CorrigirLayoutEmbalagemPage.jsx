@@ -14,57 +14,57 @@ import { localStorageMock } from "src/mocks/localStorageMock";
 
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 
-import { debug } from "jest-preview";
+const setupTest = async (mockData) => {
+  const search = `?uuid=${mockData.uuid}`;
+  Object.defineProperty(window, "location", {
+    value: {
+      search: search,
+    },
+  });
 
-describe("Teste <SolicitacoesAlimentacao> (RelatorioSolicitacoesAlimentacao)", () => {
-  beforeEach(async () => {
-    const search = `?uuid=${mockDetalharLayoutEmbalagem.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+  Object.defineProperty(global, "localStorage", { value: localStorageMock });
 
-    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+  localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
+  localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
 
-    localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
-    localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
+  mock.onGet(`/layouts-de-embalagem/${mockData.uuid}/`).reply(200, mockData);
 
-    mock
-      .onGet(`/layouts-de-embalagem/${mockDetalharLayoutEmbalagem.uuid}/`)
-      .reply(200, mockDetalharLayoutEmbalagem);
+  mock
+    .onGet(
+      `http://localhost:8000/media/layouts_de_embalagens/a4e26aab-d35a-43ac-af1d-af3ae866984e.pdf`
+    )
+    .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
 
-    mock
-      .onGet(
-        `http://localhost:8000/media/layouts_de_embalagens/a4e26aab-d35a-43ac-af1d-af3ae866984e.pdf`
-      )
-      .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
+  mock
+    .onGet(
+      `http://localhost:8000/media/layouts_de_embalagens/49023fda-3280-4bd8-ab04-569a3afa36bf.pdf`
+    )
+    .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
 
-    mock
-      .onGet(
-        `http://localhost:8000/media/layouts_de_embalagens/49023fda-3280-4bd8-ab04-569a3afa36bf.pdf`
-      )
-      .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
-
-    await act(async () => {
-      render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
+  await act(async () => {
+    render(
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <MeusDadosContext.Provider
+          value={{
+            meusDados: mockMeusDadosTerceirizadaAdmEmpresa,
+            setMeusDados: jest.fn(),
           }}
         >
-          <MeusDadosContext.Provider
-            value={{
-              meusDados: mockMeusDadosTerceirizadaAdmEmpresa,
-              setMeusDados: jest.fn(),
-            }}
-          >
-            <CorrigirLayoutEmbalagemPage />
-          </MeusDadosContext.Provider>
-        </MemoryRouter>
-      );
-    });
+          <CorrigirLayoutEmbalagemPage />
+        </MeusDadosContext.Provider>
+      </MemoryRouter>
+    );
+  });
+};
+
+describe("Teste Layout Embalagem sem Terciária", () => {
+  beforeEach(async () => {
+    await setupTest(mockDetalharLayoutEmbalagem);
   });
 
   it("Testa a renderização da página quando embalagem terciária é null", async () => {
@@ -78,14 +78,14 @@ describe("Teste <SolicitacoesAlimentacao> (RelatorioSolicitacoesAlimentacao)", (
 
     expect(screen.queryAllByText("Embalagem Terciária")).toHaveLength(0);
   });
+});
+
+describe("Teste Layout Embalagem sem Secundária", () => {
+  beforeEach(async () => {
+    await setupTest(mockDetalharLayoutEmbalagemSemSecundaria);
+  });
 
   it("Testa a renderização da página quando embalagens secundaria e terciaria são null", async () => {
-    mock
-      .onGet(
-        `/layouts-de-embalagem/${mockDetalharLayoutEmbalagemSemSecundaria.uuid}/`
-      )
-      .reply(200, mockDetalharLayoutEmbalagemSemSecundaria);
-
     await waitFor(() => {
       expect(
         screen.getByText("FT023 - BOLACHINHA DE NATA")
@@ -95,7 +95,5 @@ describe("Teste <SolicitacoesAlimentacao> (RelatorioSolicitacoesAlimentacao)", (
 
     expect(screen.queryAllByText("Embalagem Secundária")).toHaveLength(0);
     expect(screen.queryAllByText("Embalagem Terciária")).toHaveLength(0);
-
-    debug();
   });
 });

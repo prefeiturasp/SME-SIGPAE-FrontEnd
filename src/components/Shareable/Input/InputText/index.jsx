@@ -5,7 +5,10 @@ import { HelpText } from "../../../Shareable/HelpText";
 import { ContadorCaracteres } from "../../ContadorCaracteres";
 import "../style.scss";
 import TooltipIcone from "../../TooltipIcone";
-import { agruparMilharDecimal } from "./helpers";
+import {
+  agruparMilharDecimal,
+  agruparMilharInteirosPositivos,
+} from "./helpers";
 
 export const InputText = (props) => {
   const {
@@ -38,6 +41,7 @@ export const InputText = (props) => {
     proibeNumeros,
     agrupadorMilhar,
     agrupadorMilharComDecimal,
+    agrupadorMilharPositivo,
     valorInicial,
     inputOnChange,
     prefix,
@@ -128,6 +132,9 @@ export const InputText = (props) => {
               : e.target.value;
             e.target.value = agrupadorMilharComDecimal
               ? agruparMilharDecimal(e.target.value)
+              : e.target.value;
+            e.target.value = agrupadorMilharPositivo
+              ? agruparMilharInteirosPositivos(e.target.value)
               : e.target.value;
           }}
         />
