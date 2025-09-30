@@ -68,7 +68,13 @@ export default () => {
                 username: values.registro_funcional,
                 email: values.email_atualizado,
               };
-              let response = await alterarEmailCore(payload);
+
+              let response;
+              try {
+                response = await alterarEmailCore(payload);
+              } catch (error) {
+                response = error.response;
+              }
 
               if (response.status === 200) {
                 toastSuccess("E-mail atualizado com sucesso no EOL!");
@@ -85,6 +91,7 @@ export default () => {
                   <div className="row">
                     <div className="col-6">
                       <Field
+                        dataTestId="input-rf"
                         component={InputText}
                         id="inputRF"
                         label="Pesquisar RF"
@@ -95,6 +102,7 @@ export default () => {
                     </div>
                     <div className="col-6 ps-0">
                       <Botao
+                        dataTestId="botao-buscar-rf"
                         texto=""
                         icon="fas fa-search"
                         type={BUTTON_TYPE.BUTTON}
@@ -107,6 +115,7 @@ export default () => {
                   <div className="row">
                     <div className="col-7">
                       <Field
+                        dataTestId="input-nome-usuario"
                         component={InputText}
                         label="Nome do Usuário"
                         name="nome_servidor"
@@ -116,6 +125,7 @@ export default () => {
                     </div>
                     <div className="col-5">
                       <Field
+                        dataTestId="input-cargo"
                         component={InputText}
                         label="Cargo"
                         name="cargo_servidor"
@@ -127,6 +137,7 @@ export default () => {
                   <div className="row">
                     <div className="col-7">
                       <Field
+                        dataTestId="input-email"
                         component={InputText}
                         label="E-mail"
                         name="email_servidor"
@@ -136,6 +147,7 @@ export default () => {
                     </div>
                     <div className="col-5">
                       <Field
+                        dataTestId="input-cpf"
                         component={InputText}
                         label="CPF"
                         name="cpf_servidor"
@@ -172,13 +184,14 @@ export default () => {
 
                   <div className="mt-4 mb-4">
                     <Botao
+                      dataTestId="botao-salvar"
                       texto="Salvar"
                       type={BUTTON_TYPE.SUBMIT}
                       style={BUTTON_STYLE.GREEN}
                       className="float-end ms-3"
                     />
-
                     <Botao
+                      dataTestId="botao-limpar"
                       texto="Limpar"
                       type={BUTTON_TYPE.BUTTON}
                       style={BUTTON_STYLE.GREEN_OUTLINE}
