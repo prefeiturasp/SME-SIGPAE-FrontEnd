@@ -2,7 +2,7 @@ import { useEffect, useState, Dispatch, SetStateAction } from "react";
 
 import { getNumerosEditais } from "src/services/edital.service";
 import { getLotesSimples } from "src/services/lote.service";
-import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
+import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
 
@@ -63,10 +63,10 @@ export default ({
           data.results.map((edital) => ({
             uuid: edital.uuid,
             nome: edital.numero,
-          }))
-        )
+          })),
+        ),
       );
-    } catch (error) {
+    } catch {
       toastError("Erro ao carregar editais. Tente novamente mais tarde.");
     }
   };
@@ -88,16 +88,16 @@ export default ({
           lotesOrdenados.map((lote) => ({
             uuid: lote.uuid,
             nome: `${lote.nome} - ${lote.diretoria_regional.nome}`,
-          }))
-        )
+          })),
+        ),
       );
-    } catch (error) {
+    } catch {
       toastError("Erro ao carregar lotes. Tente novamente mais tarde.");
     }
   };
 
   const getTiposUnidadeEscolarAsync = async () => {
-    const response = await getTiposUnidadeEscolar();
+    const response = await getTiposUnidadeEscolarTiposAlimentacao();
     if (response.status === 200) {
       setTiposUnidades(response.data.results);
       setTiposUnidadesOpcoes(
@@ -106,11 +106,11 @@ export default ({
             uuid: "",
             nome: "Selecione o tipo de unidade",
           },
-        ].concat(getGruposTiposUnidades(response.data.results))
+        ].concat(getGruposTiposUnidades(response.data.results)),
       );
     } else {
       toastError(
-        "Erro ao carregar tipos de unidades. Tente novamente mais tarde."
+        "Erro ao carregar tipos de unidades. Tente novamente mais tarde.",
       );
     }
   };
@@ -119,9 +119,9 @@ export default ({
     try {
       const { data } = await getFaixasEtarias();
       setFaixasEtarias(data.results);
-    } catch (error) {
+    } catch {
       toastError(
-        "Erro ao carregar faixas etárias. Tente novamente mais tarde."
+        "Erro ao carregar faixas etárias. Tente novamente mais tarde.",
       );
     }
   };
@@ -153,9 +153,9 @@ export default ({
       };
 
       setParametrizacao(parametrizacao);
-    } catch (error) {
+    } catch {
       toastError(
-        "Erro ao carregar parametrização financeira. Tente novamente mais tarde."
+        "Erro ao carregar parametrização financeira. Tente novamente mais tarde.",
       );
     }
   };
@@ -184,7 +184,7 @@ export default ({
         }, {});
 
         return [tabela.nome, values];
-      })
+      }),
     );
     return tabelasValores;
   };
@@ -241,7 +241,7 @@ export default ({
         const grupo = TIPOS_UNIDADES_GRUPOS[i];
         const todasUnidadesNoGrupo = unidadesArray
           .map(
-            (unidade) => tiposUnidades.find((u) => u.uuid === unidade).iniciais
+            (unidade) => tiposUnidades.find((u) => u.uuid === unidade).iniciais,
           )
           .every((unidade) => grupo.includes(unidade));
 
@@ -281,7 +281,7 @@ export default ({
           .periodos_escolares.reduce((acc, periodoEscolar) => {
             acc.push(...periodoEscolar.tipos_alimentacao);
             return acc;
-          }, [])
+          }, []),
       );
       return acc;
     }, []);
@@ -297,7 +297,7 @@ export default ({
         uuid,
         nome,
         grupo: null,
-      })
+      }),
     );
 
     setTiposAlimentacao(tiposAlimentacao);

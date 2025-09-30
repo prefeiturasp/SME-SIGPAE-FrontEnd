@@ -31,7 +31,7 @@ export const getVinculosTipoAlimentacaoPorTipoUnidadeEscolar = async (uuid) => {
 };
 
 export const updateVinculosTipoAlimentacaoPorTipoUnidadeEscolar = async (
-  values
+  values,
 ) => {
   try {
     const response = await fetch(
@@ -40,7 +40,7 @@ export const updateVinculosTipoAlimentacaoPorTipoUnidadeEscolar = async (
         method: "PUT",
         headers: authHeader,
         body: JSON.stringify(values),
-      }
+      },
     );
     let json = await response.json();
     const status = await response.status;
@@ -52,7 +52,7 @@ export const updateVinculosTipoAlimentacaoPorTipoUnidadeEscolar = async (
 };
 
 export const updateListaVinculosTipoAlimentacaoPorTipoUnidadeEscolar = async (
-  values
+  values,
 ) => {
   const url = `/vinculos-tipo-alimentacao-u-e-periodo-escolar/atualizar_lista_de_vinculos/`;
   const response = await axios.put(url, values).catch(ErrorHandlerFunction);
@@ -64,7 +64,7 @@ export const updateListaVinculosTipoAlimentacaoPorTipoUnidadeEscolar = async (
 
 export const getVinculosTipoAlimentacaoPorEscola = async (
   uuid,
-  params = null
+  params = null,
 ) => {
   const url = `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -82,7 +82,7 @@ export const alteraVinculosTipoAlimentacao = async (uuid, values) => {
         method: "PUT",
         headers: authHeader,
         body: JSON.stringify(values),
-      }
+      },
     );
     let json = await response.json();
     const status = await response.status;
@@ -213,7 +213,7 @@ export const putHorariosCombosPorEscola = async (payload, uuid) => {
         method: "PUT",
         headers: authHeader,
         body: JSON.stringify(payload),
-      }
+      },
     );
     let json = await response.json();
     const status = await response.status;
@@ -232,7 +232,7 @@ export const atualizaQuantidadeDeAlunos = async (payload, uuid) => {
         method: "PUT",
         headers: authHeader,
         body: JSON.stringify(payload),
-      }
+      },
     );
     let json = await response.json();
     const status = await response.status;
@@ -244,10 +244,19 @@ export const atualizaQuantidadeDeAlunos = async (payload, uuid) => {
 };
 
 export const getVinculosTipoAlimentacaoMotivoInclusaoEspecifico = async (
-  params = null
+  params = null,
 ) => {
   const url =
     "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
+export const getTiposUnidadeEscolarTiposAlimentacao = async (params = null) => {
+  const url = "/tipos-unidade-escolar-agrupados/";
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
