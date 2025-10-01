@@ -1,4 +1,7 @@
-import { deepCopy, ehEscolaTipoCEUGESTAO } from "src/helpers/utilities";
+import {
+  deepCopy,
+  escolaNaoPossuiAlunosRegulares,
+} from "src/helpers/utilities";
 import { ALUNOS_EMEBS } from "../constants";
 
 export const repeticaoSobremesaDoceComValorESemObservacao = (
@@ -6,7 +9,7 @@ export const repeticaoSobremesaDoceComValorESemObservacao = (
   dia,
   categoria,
   diasSobremesaDoce,
-  location
+  location,
 ) => {
   const value =
     values[`repeticao_sobremesa__dia_${dia}__categoria_${categoria.id}`];
@@ -23,7 +26,7 @@ export const repeticaoSobremesaDoceComValorESemObservacao = (
         new Date(location.state.mesAnoSelecionado).getMonth() + 1
       )
         .toString()
-        .padStart(2, "0")}-${dia}`
+        .padStart(2, "0")}-${dia}`,
     ) &&
     !observacoesValue
   );
@@ -34,11 +37,11 @@ export const botaoAddObrigatorioDiaNaoLetivoComInclusaoAutorizada = (
   dia,
   categoria,
   dadosValoresInclusoesAutorizadasState,
-  validacaoDiaLetivo
+  validacaoDiaLetivo,
 ) => {
   if (
     Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
-      String(key).includes(`__dia_${dia}__categoria_${categoria.id}`)
+      String(key).includes(`__dia_${dia}__categoria_${categoria.id}`),
     )
   ) {
     if (
@@ -55,7 +58,7 @@ export const campoComInclusaoContinuaValor0ESemObservacao = (
   dia,
   categoria,
   dadosValoresInclusoesAutorizadasState,
-  values
+  values,
 ) => {
   const alimentacoes = ["lanche_4h", "lanche", "refeicao", "sobremesa"];
   let erro = false;
@@ -64,7 +67,7 @@ export const campoComInclusaoContinuaValor0ESemObservacao = (
       `${alimentacao}__dia_${dia}__categoria_${categoria.id}` in
         dadosValoresInclusoesAutorizadasState &&
       Number(
-        values[`${alimentacao}__dia_${dia}__categoria_${categoria.id}`]
+        values[`${alimentacao}__dia_${dia}__categoria_${categoria.id}`],
       ) === 0 &&
       !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
     ) {
@@ -78,7 +81,7 @@ export const campoLancheEmergencialComZeroOuSemObservacao = (
   values,
   column,
   categoria,
-  alteracoesAlimentacaoAutorizadas
+  alteracoesAlimentacaoAutorizadas,
 ) => {
   const value =
     values[`lanche_emergencial__dia_${column.dia}__categoria_${categoria.id}`];
@@ -89,7 +92,7 @@ export const campoLancheEmergencialComZeroOuSemObservacao = (
     categoria.nome.includes("SOLICITAÇÕES") &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
     alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === column.dia
+      (alteracao) => alteracao.dia === column.dia,
     ).length > 0
   );
 };
@@ -98,7 +101,7 @@ export const campoLancheEmergencialSemAutorizacaoSemObservacao = (
   values,
   column,
   categoria,
-  alteracoesAlimentacaoAutorizadas
+  alteracoesAlimentacaoAutorizadas,
 ) => {
   const value =
     values[`lanche_emergencial__dia_${column.dia}__categoria_${categoria.id}`];
@@ -109,7 +112,7 @@ export const campoLancheEmergencialSemAutorizacaoSemObservacao = (
     categoria.nome.includes("SOLICITAÇÕES") &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
     alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === column.dia
+      (alteracao) => alteracao.dia === column.dia,
     ).length === 0
   );
 };
@@ -118,7 +121,7 @@ export const campoComInclusaoContinuaValorMaiorQueAutorizadoESemObservacao = (
   dia,
   categoria,
   dadosValoresInclusoesAutorizadasState,
-  values
+  values,
 ) => {
   const alimentacoes = ["lanche_4h", "lanche", "refeicao", "sobremesa"];
   let erro = false;
@@ -130,7 +133,7 @@ export const campoComInclusaoContinuaValorMaiorQueAutorizadoESemObservacao = (
         Number(
           dadosValoresInclusoesAutorizadasState[
             `${alimentacao}__dia_${dia}__categoria_${categoria.id}`
-          ]
+          ],
         ) &&
       !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
     ) {
@@ -157,7 +160,7 @@ export const campoComSuspensaoAutorizadaESemObservacao = (
   formValuesAtualizados,
   column,
   categoria,
-  suspensoesAutorizadas
+  suspensoesAutorizadas,
 ) => {
   let erro = false;
   let alimentacoes = [];
@@ -176,7 +179,7 @@ export const campoComSuspensaoAutorizadaESemObservacao = (
       Number(
         formValuesAtualizados[
           `${alimentacao}__dia_${column.dia}__categoria_${categoria.id}`
-        ]
+        ],
       ) > 0 &&
       !formValuesAtualizados[
         `observacoes__dia_${column.dia}__categoria_${categoria.id}`
@@ -192,7 +195,7 @@ export const campoRefeicaoComRPLAutorizadaESemObservacao = (
   formValuesAtualizados,
   column,
   categoria,
-  alteracoesAlimentacaoAutorizadas
+  alteracoesAlimentacaoAutorizadas,
 ) => {
   let erro = false;
   if (
@@ -200,7 +203,7 @@ export const campoRefeicaoComRPLAutorizadaESemObservacao = (
     alteracoesAlimentacaoAutorizadas &&
     alteracoesAlimentacaoAutorizadas.filter(
       (alteracao) =>
-        alteracao.dia === column.dia && alteracao.motivo.includes("RPL")
+        alteracao.dia === column.dia && alteracao.motivo.includes("RPL"),
     ).length > 0 &&
     formValuesAtualizados[
       `refeicao__dia_${column.dia}__categoria_${categoria.id}`
@@ -208,7 +211,7 @@ export const campoRefeicaoComRPLAutorizadaESemObservacao = (
     Number(
       formValuesAtualizados[
         `refeicao__dia_${column.dia}__categoria_${categoria.id}`
-      ]
+      ],
     ) !== 0
   ) {
     erro = true;
@@ -220,7 +223,7 @@ export const campoLancheComLPRAutorizadaESemObservacao = (
   formValuesAtualizados,
   column,
   categoria,
-  alteracoesAlimentacaoAutorizadas
+  alteracoesAlimentacaoAutorizadas,
 ) => {
   let erro = false;
   if (
@@ -228,7 +231,7 @@ export const campoLancheComLPRAutorizadaESemObservacao = (
     alteracoesAlimentacaoAutorizadas &&
     alteracoesAlimentacaoAutorizadas.filter(
       (alteracao) =>
-        alteracao.dia === column.dia && alteracao.motivo.includes("LPR")
+        alteracao.dia === column.dia && alteracao.motivo.includes("LPR"),
     ).length > 0 &&
     (formValuesAtualizados[
       `lanche__dia_${column.dia}__categoria_${categoria.id}`
@@ -246,7 +249,7 @@ export const camposKitLancheSolicitacoesAlimentacaoESemObservacao = (
   formValuesAtualizados,
   column,
   categoria,
-  kitLanchesAutorizadas
+  kitLanchesAutorizadas,
 ) => {
   let erro = false;
   const kitLancheValue =
@@ -293,7 +296,7 @@ export const camposLancheEmergTabelaEtec = (
   column,
   categoria,
   inclusoesEtecAutorizadas,
-  ehGrupoETECUrlParam
+  ehGrupoETECUrlParam,
 ) => {
   let erro = false;
   const inclusaoEtec = ehGrupoETECUrlParam
@@ -353,7 +356,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   kitLanchesAutorizadas,
   inclusoesEtecAutorizadas,
   ehGrupoETECUrlParam = false,
-  feriadosNoMes
+  feriadosNoMes,
 ) => {
   if (
     location.state.grupo === "Programas e Projetos" &&
@@ -367,56 +370,56 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         dia,
         categoria,
         diasSobremesaDoce,
-        location
+        location,
       ) ||
       campoComInclusaoContinuaValorMaiorQueAutorizadoESemObservacao(
         dia,
         categoria,
         dadosValoresInclusoesAutorizadasState,
-        formValuesAtualizados
+        formValuesAtualizados,
       ) ||
       campoFrequenciaValor0ESemObservacao(
         dia,
         categoria,
-        formValuesAtualizados
+        formValuesAtualizados,
       ) ||
       campoComSuspensaoAutorizadaESemObservacao(
         formValuesAtualizados,
         column,
         categoria,
         suspensoesAutorizadas,
-        row
+        row,
       ) ||
       campoRefeicaoComRPLAutorizadaESemObservacao(
         formValuesAtualizados,
         column,
         categoria,
-        alteracoesAlimentacaoAutorizadas
+        alteracoesAlimentacaoAutorizadas,
       ) ||
       campoLancheComLPRAutorizadaESemObservacao(
         formValuesAtualizados,
         column,
         categoria,
-        alteracoesAlimentacaoAutorizadas
+        alteracoesAlimentacaoAutorizadas,
       ) ||
       camposKitLancheSolicitacoesAlimentacaoESemObservacao(
         formValuesAtualizados,
         column,
         categoria,
-        kitLanchesAutorizadas
+        kitLanchesAutorizadas,
       ) ||
       camposLancheEmergTabelaEtec(
         formValuesAtualizados,
         column,
         categoria,
         inclusoesEtecAutorizadas,
-        ehGrupoETECUrlParam
+        ehGrupoETECUrlParam,
       ) ||
       campoLancheEmergencialComZeroOuSemObservacao(
         formValuesAtualizados,
         column,
         categoria,
-        alteracoesAlimentacaoAutorizadas
+        alteracoesAlimentacaoAutorizadas,
       )
     );
   }
@@ -427,7 +430,7 @@ export const botaoAdicionarObrigatorio = (
   dia,
   categoria,
   diasSobremesaDoce,
-  location
+  location,
 ) => {
   return (
     repeticaoSobremesaDoceComValorESemObservacao(
@@ -435,7 +438,7 @@ export const botaoAdicionarObrigatorio = (
       dia,
       categoria,
       diasSobremesaDoce,
-      location
+      location,
     ) || campoFrequenciaValor0ESemObservacao(dia, categoria, values)
   );
 };
@@ -446,10 +449,10 @@ export const validarFormulario = (
   location,
   categoriasDeMedicao,
   dadosValoresInclusoesAutorizadasState,
-  weekColumns
+  weekColumns,
 ) => {
   const categoriaAlimentacao = categoriasDeMedicao.find((categoria) =>
-    categoria.nome.includes("ALIMENTAÇÃO")
+    categoria.nome.includes("ALIMENTAÇÃO"),
   );
   let erro = false;
 
@@ -460,7 +463,7 @@ export const validarFormulario = (
         .map((wc) => wc.dia)
         .includes(
           value.includes("__dia_") &&
-            value.split("__dia_")[1].split("__categoria")[0]
+            value.split("__dia_")[1].split("__categoria")[0],
         )
     ) {
       delete values_[value];
@@ -478,7 +481,7 @@ export const validarFormulario = (
           dia.split("-")[2],
           categoria,
           diasSobremesaDoce,
-          location
+          location,
         )
       ) {
         erro = `Dia ${
@@ -495,7 +498,7 @@ export const validarFormulario = (
             dia,
             categoria,
             dadosValoresInclusoesAutorizadasState,
-            values_
+            values_,
           )
         ) {
           erro = `Dia ${dia} está com valor maior que o autorizado. Justifique nas observações`;
@@ -507,7 +510,7 @@ export const validarFormulario = (
   let keysFromValues = Object.keys(values_);
 
   for (const key in Object.fromEntries(
-    Object.entries(dadosValoresInclusoesAutorizadasState)
+    Object.entries(dadosValoresInclusoesAutorizadasState),
   )) {
     if (keysFromValues.includes(key)) {
       const keySplitted = key.split("__");
@@ -537,10 +540,10 @@ export const validacoesTabelaAlimentacao = (
   feriadosNoMes,
   valoresPeriodosLancamentos,
   escolaEhEMEBS,
-  alunosTabSelecionada
+  alunosTabSelecionada,
 ) => {
   const maxFrequencia = Number(
-    allValues[`frequencia__dia_${dia}__categoria_${categoria}`]
+    allValues[`frequencia__dia_${dia}__categoria_${categoria}`],
   );
   const inputName = `${rowName}__dia_${dia}__categoria_${categoria}`;
 
@@ -564,28 +567,28 @@ export const validacoesTabelaAlimentacao = (
   const existeAlteracaoAlimentacaoRPL =
     alteracoesAlimentacaoAutorizadas &&
     alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL")
+      (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL"),
     ).length > 0;
 
   const existeAlteracaoAlimentacaoLPR =
     alteracoesAlimentacaoAutorizadas &&
     alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("LPR")
+      (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("LPR"),
     ).length > 0;
 
   const maxMatriculados = Number(
-    allValues[`matriculados__dia_${dia}__categoria_${categoria}`]
+    allValues[`matriculados__dia_${dia}__categoria_${categoria}`],
   );
 
   const maxNumeroDeAlunos = Number(
-    allValues[`numero_de_alunos__dia_${dia}__categoria_${categoria}`]
+    allValues[`numero_de_alunos__dia_${dia}__categoria_${categoria}`],
   );
 
   if (
     `${rowName}__dia_${dia}__categoria_${categoria}` ===
       `frequencia__dia_${dia}__categoria_${categoria}` &&
     Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
-      String(key).includes(`__dia_${dia}__categoria_${categoria}`)
+      String(key).includes(`__dia_${dia}__categoria_${categoria}`),
     ) &&
     !(["Mês anterior", "Mês posterior"].includes(value) || Number(value) > 0)
   ) {
@@ -608,7 +611,7 @@ export const validacoesTabelaAlimentacao = (
     return "Frequência acima inválida ou não preenchida.";
   } else if (
     inputName in dadosValoresInclusoesAutorizadasState &&
-    !ehEscolaTipoCEUGESTAO(location.state.solicitacaoMedicaoInicial.escola) &&
+    !escolaNaoPossuiAlunosRegulares(location.state.solicitacaoMedicaoInicial) &&
     !location.state.periodoEspecifico
   ) {
     if (
@@ -668,8 +671,8 @@ export const validacoesTabelaAlimentacao = (
     Number(value) >
       (location.state &&
       (location.state.grupo === "Programas e Projetos" ||
-        ehEscolaTipoCEUGESTAO(
-          location.state.solicitacaoMedicaoInicial.escola
+        escolaNaoPossuiAlunosRegulares(
+          location.state.solicitacaoMedicaoInicial,
         ) ||
         location.state.periodoEspecifico)
         ? maxNumeroDeAlunos
@@ -679,8 +682,8 @@ export const validacoesTabelaAlimentacao = (
     const complemento =
       location.state &&
       (location.state.grupo === "Programas e Projetos" ||
-        ehEscolaTipoCEUGESTAO(
-          location.state.solicitacaoMedicaoInicial.escola
+        escolaNaoPossuiAlunosRegulares(
+          location.state.solicitacaoMedicaoInicial,
         ) ||
         location.state.periodoEspecifico)
         ? "em Número de Alunos"
@@ -694,7 +697,7 @@ export const validacoesTabelaAlimentacao = (
     !["Mês anterior", "Mês posterior"].includes(value)
   ) {
     const tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
-      ([, v]) => v.key === alunosTabSelecionada
+      ([, v]) => v.key === alunosTabSelecionada,
     )[0][0];
     const infantilOuFundamentalParaFiltrar =
       tabSelecionada === "INFANTIL" ? "FUNDAMENTAL" : "INFANTIL";
@@ -703,7 +706,7 @@ export const validacoesTabelaAlimentacao = (
         valor.nome_campo === "frequencia" &&
         String(valor.dia) === String(dia) &&
         String(valor.categoria_medicao) === String(categoria) &&
-        valor.infantil_ou_fundamental === infantilOuFundamentalParaFiltrar
+        valor.infantil_ou_fundamental === infantilOuFundamentalParaFiltrar,
     )[0];
     if (
       objValorFrequenciaDaOutraTab &&
@@ -723,7 +726,7 @@ const validaFrequenciaDietasCEUGESTAO = (
   value,
   rowName,
   medicaoUuid,
-  maxDietasAutorizadas
+  maxDietasAutorizadas,
 ) => {
   if (rowName !== "frequencia") return false;
   const totalFrequencia = location.state.frequenciasDietasCEUGESTAO
@@ -731,7 +734,7 @@ const validaFrequenciaDietasCEUGESTAO = (
       (campoFrequencia) =>
         campoFrequencia.categoria_medicao === categoria &&
         Number(campoFrequencia.dia) === Number(dia) &&
-        campoFrequencia.medicao_uuid !== medicaoUuid
+        campoFrequencia.medicao_uuid !== medicaoUuid,
     )
     .reduce(function (total, cf) {
       return total + Number(cf.valor);
@@ -757,26 +760,26 @@ export const validacoesTabelasDietas = (
   validacaoDiaLetivo,
   dadosValoresInclusoesAutorizadasState,
   inclusoesAutorizadas,
-  alteracoesAlimentacaoAutorizadas
+  alteracoesAlimentacaoAutorizadas,
 ) => {
   const idCategoriaAlimentacao = categoriasDeMedicao.find((categoria) =>
-    categoria.nome.includes("ALIMENTAÇÃO")
+    categoria.nome.includes("ALIMENTAÇÃO"),
   ).id;
 
   const maxDietasAutorizadas = Number(
-    allValues[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]
+    allValues[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
   );
   const maxFrequencia = Number(
-    allValues[`frequencia__dia_${dia}__categoria_${categoria}`]
+    allValues[`frequencia__dia_${dia}__categoria_${categoria}`],
   );
   const maxFrequenciaAlimentacao = Number(
-    allValues[`frequencia__dia_${dia}__categoria_${idCategoriaAlimentacao}`]
+    allValues[`frequencia__dia_${dia}__categoria_${idCategoriaAlimentacao}`],
   );
   const lanche_4h_value = Number(
-    allValues[`lanche_4h__dia_${dia}__categoria_${categoria}`]
+    allValues[`lanche_4h__dia_${dia}__categoria_${categoria}`],
   );
   const lanche_value = Number(
-    allValues[`lanche__dia_${dia}__categoria_${categoria}`]
+    allValues[`lanche__dia_${dia}__categoria_${categoria}`],
   );
   const totalLanchesDieta = lanche_4h_value + lanche_value;
   const inputName = `${rowName}__dia_${dia}__categoria_${categoria}`;
@@ -785,7 +788,7 @@ export const validacoesTabelasDietas = (
     (key) =>
       String(key).includes(`dia_${dia}__categoria_${categoria}`) &&
       !String(key).includes("numero_de_alunos") &&
-      !String(key).includes("frequencia")
+      !String(key).includes("frequencia"),
   );
 
   const EH_INCLUSAO_SOMENTE_SOBREMESA =
@@ -795,7 +798,7 @@ export const validacoesTabelasDietas = (
   const somaDosValoresPorCampo = (campo) =>
     categoriasDeMedicao.reduce((total, categoria) => {
       const valor = Number(
-        allValues[`${campo}__dia_${dia}__categoria_${categoria.id}`]
+        allValues[`${campo}__dia_${dia}__categoria_${categoria.id}`],
       );
       return total + (isNaN(valor) ? 0 : valor);
     }, 0);
@@ -803,7 +806,7 @@ export const validacoesTabelasDietas = (
   if (
     rowName === "frequencia" &&
     Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
-      String(key).includes(`__dia_${dia}__categoria_${categoria}`)
+      String(key).includes(`__dia_${dia}__categoria_${categoria}`),
     ) &&
     !(["Mês anterior", "Mês posterior"].includes(value) || Number(value) > 0) &&
     alimentacoesDoDia.some((ali) => allValues[ali])
@@ -819,8 +822,8 @@ export const validacoesTabelasDietas = (
           item.includes(
             inclusoesAutorizadas
               .find((inc) => inc.dia === dia)
-              .alimentacoes.split(", ")
-          )
+              .alimentacoes.split(", "),
+          ),
         )
     ) {
       return `Foi autorizada inclusão de alimentação ${
@@ -858,7 +861,8 @@ export const validacoesTabelasDietas = (
     (!alteracoesAlimentacaoAutorizadas ||
       alteracoesAlimentacaoAutorizadas.length === 0 ||
       alteracoesAlimentacaoAutorizadas.filter(
-        (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL")
+        (alteracao) =>
+          alteracao.dia === dia && alteracao.motivo.includes("RPL"),
       ).length === 0)
   ) {
     return "O número máximo de alimentações foi excedido. É preciso subtrair o aluno com Dieta Especial Autorizada do apontamento de Lanche na planilha de Alimentação.";
@@ -870,7 +874,8 @@ export const validacoesTabelasDietas = (
     (!alteracoesAlimentacaoAutorizadas ||
       alteracoesAlimentacaoAutorizadas.length === 0 ||
       alteracoesAlimentacaoAutorizadas.filter(
-        (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL")
+        (alteracao) =>
+          alteracao.dia === dia && alteracao.motivo.includes("RPL"),
       ).length === 0)
   ) {
     return "O número máximo de alimentações foi excedido. É preciso subtrair o aluno com Dieta Especial Autorizada do apontamento de Lanche na planilha de Alimentação.";
@@ -894,7 +899,7 @@ export const validacoesTabelasDietas = (
     return "Quantidade de dietas especiais autorizadas foi excedida.";
   }
   if (
-    ehEscolaTipoCEUGESTAO(location.state.solicitacaoMedicaoInicial.escola) ||
+    escolaNaoPossuiAlunosRegulares(location.state.solicitacaoMedicaoInicial) ||
     location.state.periodoEspecifico
   ) {
     return validaFrequenciaDietasCEUGESTAO(
@@ -904,7 +909,7 @@ export const validacoesTabelasDietas = (
       value,
       rowName,
       medicaoUuid,
-      maxDietasAutorizadas
+      maxDietasAutorizadas,
     );
   }
   return undefined;
@@ -917,13 +922,13 @@ export const validacoesTabelaEtecAlimentacao = (
   value,
   allValues,
   validacaoDiaLetivo,
-  validacaoSemana
+  validacaoSemana,
 ) => {
   const maxNumeroAlunos = Number(
-    allValues[`numero_de_alunos__dia_${dia}__categoria_${categoria}`]
+    allValues[`numero_de_alunos__dia_${dia}__categoria_${categoria}`],
   );
   const maxFrequencia = Number(
-    allValues[`frequencia__dia_${dia}__categoria_${categoria}`]
+    allValues[`frequencia__dia_${dia}__categoria_${categoria}`],
   );
   const inputName = `${rowName}__dia_${dia}__categoria_${categoria}`;
   if (
@@ -966,7 +971,7 @@ export const exibirTooltipErroQtdMaiorQueAutorizado = (
   row,
   column,
   categoria,
-  dadosValoresInclusoesAutorizadasState
+  dadosValoresInclusoesAutorizadasState,
 ) => {
   return (
     `${row.name}__dia_${column.dia}__categoria_${categoria.id}` in
@@ -974,12 +979,12 @@ export const exibirTooltipErroQtdMaiorQueAutorizado = (
     Number(
       formValuesAtualizados[
         `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-      ]
+      ],
     ) >
       Number(
         dadosValoresInclusoesAutorizadasState[
           `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-        ]
+        ],
       ) &&
     !formValuesAtualizados[
       `observacoes__dia_${column.dia}__categoria_${categoria.id}`
@@ -993,7 +998,7 @@ export const exibeTooltipInclusoesAutorizadasComZero = (
   column,
   categoria,
   inclusoesAutorizadas,
-  ehProgramasEProjetosLocation = false
+  ehProgramasEProjetosLocation = false,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1003,7 +1008,7 @@ export const exibeTooltipInclusoesAutorizadasComZero = (
   return (
     !ehProgramasEProjetosLocation &&
     inclusoesAutorizadas.some(
-      (inclusao) => column.dia === String(inclusao.dia)
+      (inclusao) => column.dia === String(inclusao.dia),
     ) &&
     categoria.nome === "ALIMENTAÇÃO" &&
     !row.name.includes("repeticao") &&
@@ -1021,7 +1026,7 @@ export const exibirTooltipSuspensoesAutorizadas = (
   row,
   column,
   categoria,
-  suspensoesAutorizadas
+  suspensoesAutorizadas,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1037,7 +1042,7 @@ export const exibirTooltipSuspensoesAutorizadas = (
     suspensoesAutorizadas.filter(
       (suspensao) =>
         suspensao.dia === column.dia &&
-        suspensao.alimentacoes.includes(row.name)
+        suspensao.alimentacoes.includes(row.name),
     ).length > 0 &&
     !formValuesAtualizados[
       `observacoes__dia_${column.dia}__categoria_${categoria.id}`
@@ -1050,7 +1055,7 @@ export const exibirTooltipRPLAutorizadas = (
   row,
   column,
   categoria,
-  alteracoesAlimentacaoAutorizadas
+  alteracoesAlimentacaoAutorizadas,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1064,7 +1069,7 @@ export const exibirTooltipRPLAutorizadas = (
     alteracoesAlimentacaoAutorizadas &&
     alteracoesAlimentacaoAutorizadas.filter(
       (alteracao) =>
-        alteracao.dia === column.dia && alteracao.motivo.includes("RPL")
+        alteracao.dia === column.dia && alteracao.motivo.includes("RPL"),
     ).length > 0 &&
     row.name.includes("refeicao") &&
     !row.name.includes("repeticao")
@@ -1076,7 +1081,7 @@ export const exibirTooltipLPRAutorizadas = (
   row,
   column,
   categoria,
-  alteracoesAlimentacaoAutorizadas
+  alteracoesAlimentacaoAutorizadas,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1091,7 +1096,7 @@ export const exibirTooltipLPRAutorizadas = (
     alteracoesAlimentacaoAutorizadas &&
     alteracoesAlimentacaoAutorizadas.filter(
       (alteracao) =>
-        alteracao.dia === column.dia && alteracao.motivo.includes("LPR")
+        alteracao.dia === column.dia && alteracao.motivo.includes("LPR"),
     ).length > 0 &&
     row.name.includes("lanche") &&
     !row.name.includes("emergencial")
@@ -1105,7 +1110,7 @@ export const exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas = (
   categoria,
   kitLanchesAutorizadas,
   value_ = undefined,
-  ehChangeInput = false
+  ehChangeInput = false,
 ) => {
   if (ehChangeInput && !value_) {
     return false;
@@ -1147,7 +1152,7 @@ export const exibirTooltipKitLancheSolAlimentacoes = (
   categoria,
   kitLanchesAutorizadas,
   value_ = undefined,
-  ehChangeInput = false
+  ehChangeInput = false,
 ) => {
   if (!value_ && ehChangeInput) return false;
   const value = ehChangeInput
@@ -1172,7 +1177,7 @@ export const exibirTooltipQtdLancheEmergencialDiferenteSolAlimentacoesAutorizada
     row,
     column,
     categoria,
-    alteracoesAlimentacaoAutorizadas
+    alteracoesAlimentacaoAutorizadas,
   ) => {
     const value =
       formValuesAtualizados[
@@ -1210,7 +1215,7 @@ export const exibirTooltipLancheEmergencialNaoAutorizado = (
   categoria,
   alteracoesAlimentacaoAutorizadas,
   value_ = undefined,
-  ehChangeInput = false
+  ehChangeInput = false,
 ) => {
   if (!value_ && ehChangeInput) return false;
   const value = ehChangeInput
@@ -1227,7 +1232,7 @@ export const exibirTooltipLancheEmergencialNaoAutorizado = (
     categoria.nome.includes("SOLICITAÇÕES") &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
     alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === column.dia
+      (alteracao) => alteracao.dia === column.dia,
     ).length === 0 &&
     row.name.includes("lanche_emergencial")
   );
@@ -1238,7 +1243,7 @@ export const exibirTooltipLancheEmergencialAutorizado = (
   row,
   column,
   categoria,
-  alteracoesAlimentacaoAutorizadas
+  alteracoesAlimentacaoAutorizadas,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1254,7 +1259,7 @@ export const exibirTooltipLancheEmergencialAutorizado = (
     !["Mês anterior", "Mês posterior"].includes(value) &&
     row.name.includes("lanche_emergencial") &&
     alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === column.dia
+      (alteracao) => alteracao.dia === column.dia,
     ).length > 0
   );
 };
@@ -1265,7 +1270,7 @@ export const exibirTooltipLancheEmergencialZeroAutorizado = (
   column,
   categoria,
   alteracoesAlimentacaoAutorizadas,
-  validacaoDiaLetivo
+  validacaoDiaLetivo,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1280,7 +1285,7 @@ export const exibirTooltipLancheEmergencialZeroAutorizado = (
     !["Mês anterior", "Mês posterior"].includes(value) &&
     row.name.includes("lanche_emergencial") &&
     alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === column.dia
+      (alteracao) => alteracao.dia === column.dia,
     ).length > 0 &&
     validacaoDiaLetivo(column.dia) &&
     value &&
@@ -1294,7 +1299,7 @@ export const exibirTooltipLancheEmergencialZeroAutorizadoJustificado = (
   column,
   categoria,
   alteracoesAlimentacaoAutorizadas,
-  validacaoDiaLetivo
+  validacaoDiaLetivo,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1309,7 +1314,7 @@ export const exibirTooltipLancheEmergencialZeroAutorizadoJustificado = (
     !["Mês anterior", "Mês posterior"].includes(value) &&
     row.name.includes("lanche_emergencial") &&
     alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === column.dia
+      (alteracao) => alteracao.dia === column.dia,
     ).length > 0 &&
     validacaoDiaLetivo(column.dia) &&
     value &&
@@ -1322,7 +1327,7 @@ export const exibirTooltipFrequenciaZeroTabelaEtec = (
   row,
   column,
   categoria,
-  ehGrupoETECUrlParam
+  ehGrupoETECUrlParam,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1344,7 +1349,7 @@ export const exibirTooltipLancheEmergTabelaEtec = (
   column,
   categoria,
   ehGrupoETECUrlParam,
-  inclusoesEtecAutorizadas
+  inclusoesEtecAutorizadas,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1372,7 +1377,7 @@ export const exibirTooltipRepeticao = (
   row,
   column,
   categoria,
-  diasSobremesaDoce
+  diasSobremesaDoce,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1387,7 +1392,7 @@ export const exibirTooltipRepeticao = (
       `sobremesa__dia_${column.dia}__categoria_${categoria.id}`
     ];
   const ehDiaSobremesaDoce = diasSobremesaDoce.some(
-    (data) => data.slice(-2) === column.dia
+    (data) => data.slice(-2) === column.dia,
   );
 
   return (
@@ -1415,7 +1420,7 @@ export const exibirTooltipPadraoRepeticaoDiasSobremesaDoce = (
   column,
   categoria,
   diasSobremesaDoce,
-  location
+  location,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1431,7 +1436,7 @@ export const exibirTooltipPadraoRepeticaoDiasSobremesaDoce = (
         new Date(location.state.mesAnoSelecionado).getMonth() + 1
       )
         .toString()
-        .padStart(2, "0")}-${column.dia}`
+        .padStart(2, "0")}-${column.dia}`,
     )
   );
 };
@@ -1442,7 +1447,7 @@ export const exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero = (
   column,
   categoria,
   diasSobremesaDoce,
-  location
+  location,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1470,7 +1475,7 @@ export const exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero = (
         new Date(location.state.mesAnoSelecionado).getMonth() + 1
       )
         .toString()
-        .padStart(2, "0")}-${column.dia}`
+        .padStart(2, "0")}-${column.dia}`,
     ) &&
     Number(sobremesaValue) > 0 &&
     !observacoesValue
@@ -1484,7 +1489,7 @@ export const exibirTooltipRepeticaoDiasSobremesaDoceDreCodae = (
   diasSobremesaDoce,
   column,
   row,
-  categoria
+  categoria,
 ) => {
   return (
     categoria.nome === "ALIMENTAÇÃO" &&
@@ -1495,7 +1500,7 @@ export const exibirTooltipRepeticaoDiasSobremesaDoceDreCodae = (
     (row.name === "repeticao_sobremesa" ||
       row.name === "repeticao_2_sobremesa") &&
     diasSobremesaDoce.includes(
-      `${anoSolicitacao}-${mesSolicitacao}-${column.dia}`
+      `${anoSolicitacao}-${mesSolicitacao}-${column.dia}`,
     )
   );
 };
@@ -1505,7 +1510,7 @@ export const exibirTooltipInclusaoAlimentacaoAutorizadaDreCodae = (
   inclusoesAutorizadas,
   column,
   row,
-  categoria
+  categoria,
 ) => {
   return (
     categoria.nome === "ALIMENTAÇÃO" &&
@@ -1524,7 +1529,7 @@ export const exibirTooltipAlteracaoAlimentacaoAutorizadaDreCodae = (
   alteracoesAlimentacaoAutorizadas,
   column,
   row,
-  categoria
+  categoria,
 ) => {
   return (
     categoria.nome === "ALIMENTAÇÃO" &&
@@ -1535,13 +1540,13 @@ export const exibirTooltipAlteracaoAlimentacaoAutorizadaDreCodae = (
     ((row.name === "lanche" &&
       alteracoesAlimentacaoAutorizadas.filter(
         (alteracao) =>
-          alteracao.dia === column.dia && alteracao.motivo.includes("LPR")
+          alteracao.dia === column.dia && alteracao.motivo.includes("LPR"),
       ).length > 0) ||
       (row.name === "refeicao" &&
         !row.name.includes("repeticao") &&
         alteracoesAlimentacaoAutorizadas.filter(
           (alteracao) =>
-            alteracao.dia === column.dia && alteracao.motivo.includes("RPL")
+            alteracao.dia === column.dia && alteracao.motivo.includes("RPL"),
         ).length > 0))
   );
 };
@@ -1553,19 +1558,19 @@ const todasAlimentacoesSuspensas = (periodo, suspensoesAutorizadas, column) => {
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
-        .replaceAll(/ /g, "_")
+        .replaceAll(/ /g, "_"),
     )
     .filter((tipo_ali) => tipo_ali !== "lanche_emergencial");
   const tiposAlimentacaoSuspensasDia = [
     ...new Set(
       suspensoesAutorizadas
         .filter((suspensao) => suspensao.dia === column.dia)
-        .flatMap((suspensao) => suspensao.alimentacoes)
+        .flatMap((suspensao) => suspensao.alimentacoes),
     ),
   ];
 
   return tiposAlimentacaoPeriodo.every((tipo_ali) =>
-    tiposAlimentacaoSuspensasDia.includes(tipo_ali)
+    tiposAlimentacaoSuspensasDia.includes(tipo_ali),
   );
 };
 
@@ -1575,7 +1580,7 @@ export const exibirTooltipSuspensaoAutorizadaFrequenciaDreCodae = (
   column,
   row,
   categoria,
-  periodo
+  periodo,
 ) => {
   return (
     categoria.nome === "ALIMENTAÇÃO" &&
@@ -1596,7 +1601,7 @@ export const exibirTooltipSuspensaoAutorizadaAlimentacaoDreCodae = (
   column,
   row,
   categoria,
-  periodo
+  periodo,
 ) => {
   return (
     categoria.nome === "ALIMENTAÇÃO" &&
@@ -1608,7 +1613,7 @@ export const exibirTooltipSuspensaoAutorizadaAlimentacaoDreCodae = (
       ...new Set(
         suspensoesAutorizadas
           .filter((suspensao) => suspensao.dia === column.dia)
-          .flatMap((suspensao) => suspensao.alimentacoes)
+          .flatMap((suspensao) => suspensao.alimentacoes),
       ),
     ].includes(row.name) &&
     !todasAlimentacoesSuspensas(periodo, suspensoesAutorizadas, column)
