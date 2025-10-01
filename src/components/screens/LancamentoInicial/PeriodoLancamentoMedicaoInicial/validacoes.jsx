@@ -729,7 +729,7 @@ const validaFrequenciaDietasCEUGESTAO = (
   maxDietasAutorizadas,
 ) => {
   if (rowName !== "frequencia") return false;
-  const totalFrequencia = location.state.frequenciasDietasCEUGESTAO
+  const totalFrequencia = location.state.frequenciasDietasEscolaSemAlunoRegular
     .filter(
       (campoFrequencia) =>
         campoFrequencia.categoria_medicao === categoria &&

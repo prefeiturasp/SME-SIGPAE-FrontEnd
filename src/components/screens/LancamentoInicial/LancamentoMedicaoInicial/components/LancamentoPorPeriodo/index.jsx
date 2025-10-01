@@ -19,7 +19,7 @@ import {
   usuarioEhEscolaTerceirizadaDiretor,
 } from "src/helpers/utilities";
 import {
-  getCEUGESTAOPeriodosSolicitacoesAutorizadasEscola,
+  getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola,
   getPeriodosInclusaoContinua,
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
   getSolicitacoesInclusoesEtecAutorizadasEscola,
@@ -29,7 +29,7 @@ import {
 import {
   escolaEnviaCorrecaoMedicaoInicialCODAE,
   escolaEnviaCorrecaoMedicaoInicialDRE,
-  getCEUGESTAOFrequenciasDietas,
+  getEscolaSemAlunosRegularesFrequenciasDietas,
   getQuantidadeAlimentacoesLancadasPeriodoGrupo,
   getSolicitacaoMedicaoInicial,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
@@ -98,9 +98,14 @@ export const LancamentoPorPeriodo = ({
     solicitacoesInclusoesEtecAutorizadas,
     setSolicitacoesInclusoesEtecAutorizadas,
   ] = useState(undefined);
-  const [periodosCEUGESTAO, setPeriodosCEUGESTAO] = useState(undefined);
-  const [frequenciasDietasCEUGESTAO, setFrequenciasDietasCEUGESTAO] =
-    useState(undefined);
+  const [
+    periodosEscolaSemAlunosRegulares,
+    setPeriodosEscolaSemAlunosRegulares,
+  ] = useState(undefined);
+  const [
+    frequenciasDietasEscolaSemAlunoRegular,
+    setfrequenciasDietasEscolaSemAlunoRegular,
+  ] = useState(undefined);
 
   const [
     frequenciasDietasPeriodosEspeciais,
@@ -230,15 +235,16 @@ export const LancamentoPorPeriodo = ({
     }
   };
 
-  const getPeriodosCEUGESTAOAsync = async () => {
+  const getperiodosEscolaSemAlunosRegularesAsync = async () => {
     const escola_uuid = escolaInstituicao.uuid;
-    const response = await getCEUGESTAOPeriodosSolicitacoesAutorizadasEscola({
-      escola_uuid,
-      mes,
-      ano,
-    });
+    const response =
+      await getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola({
+        escola_uuid,
+        mes,
+        ano,
+      });
     if (response.status === HTTP_STATUS.OK) {
-      setPeriodosCEUGESTAO(response.data);
+      setPeriodosEscolaSemAlunosRegulares(response.data);
     } else {
       setErroAPI(
         "Erro ao carregar períodos de escolas CEU GESTÃO. Tente novamente mais tarde.",
@@ -246,12 +252,12 @@ export const LancamentoPorPeriodo = ({
     }
   };
 
-  const getCEUGESTAOFrequenciasDietasAsync = async () => {
-    const response = await getCEUGESTAOFrequenciasDietas(
+  const getEscolaSemAlunosRegularesFrequenciasDietasAsync = async () => {
+    const response = await getEscolaSemAlunosRegularesFrequenciasDietas(
       solicitacaoMedicaoInicial.uuid,
     );
     if (response.status === HTTP_STATUS.OK) {
-      setFrequenciasDietasCEUGESTAO(response.data);
+      setfrequenciasDietasEscolaSemAlunoRegular(response.data);
     } else {
       setErroAPI(
         "Erro ao carregar frequência de dietas de escolas CEU GESTÃO. Tente novamente mais tarde.",
@@ -260,7 +266,7 @@ export const LancamentoPorPeriodo = ({
   };
 
   const getFrequenciasDietasAsync = async () => {
-    const response = await getCEUGESTAOFrequenciasDietas(
+    const response = await getEscolaSemAlunosRegularesFrequenciasDietas(
       solicitacaoMedicaoInicial.uuid,
     );
     if (response.status === HTTP_STATUS.OK) {
@@ -282,8 +288,8 @@ export const LancamentoPorPeriodo = ({
     solicitacaoMedicaoInicial &&
       getQuantidadeAlimentacoesLancadasPeriodoGrupoAsync() &&
       escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
-      getPeriodosCEUGESTAOAsync() &&
-      getCEUGESTAOFrequenciasDietasAsync();
+      getperiodosEscolaSemAlunosRegularesAsync() &&
+      getEscolaSemAlunosRegularesFrequenciasDietasAsync();
   }, [periodoSelecionado, solicitacaoMedicaoInicial]);
 
   const getPathPlanilhaOcorr = () => {
@@ -447,7 +453,9 @@ export const LancamentoPorPeriodo = ({
                 periodoEspecifico={
                   periodo.periodo_escolar.eh_periodo_especifico ? periodo : null
                 }
-                frequenciasDietasCEUGESTAO={frequenciasDietasPeriodosEspeciais}
+                frequenciasDietasEscolaSemAlunoRegular={
+                  frequenciasDietasPeriodosEspeciais
+                }
                 errosAoSalvar={errosAoSalvar}
                 periodosPermissoesLancamentosEspeciais={
                   periodosPermissoesLancamentosEspeciais
@@ -473,7 +481,9 @@ export const LancamentoPorPeriodo = ({
                 periodoEspecifico={
                   periodo.periodo_escolar.eh_periodo_especifico ? periodo : null
                 }
-                frequenciasDietasCEUGESTAO={frequenciasDietasPeriodosEspeciais}
+                frequenciasDietasEscolaSemAlunoRegular={
+                  frequenciasDietasPeriodosEspeciais
+                }
                 errosAoSalvar={errosAoSalvar}
                 periodosPermissoesLancamentosEspeciais={
                   periodosPermissoesLancamentosEspeciais
@@ -481,9 +491,9 @@ export const LancamentoPorPeriodo = ({
               />
             ))}
           {escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
-            periodosCEUGESTAO &&
-            frequenciasDietasCEUGESTAO &&
-            periodosCEUGESTAO.map((periodo, index) => (
+            periodosEscolaSemAlunosRegulares &&
+            frequenciasDietasEscolaSemAlunoRegular &&
+            periodosEscolaSemAlunosRegulares.map((periodo, index) => (
               <CardLancamento
                 key={index}
                 textoCabecalho={periodo.periodo_escolar?.nome || periodo.nome}
@@ -493,7 +503,9 @@ export const LancamentoPorPeriodo = ({
                 solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                 objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
                 quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                frequenciasDietasCEUGESTAO={frequenciasDietasCEUGESTAO}
+                frequenciasDietasEscolaSemAlunoRegular={
+                  frequenciasDietasEscolaSemAlunoRegular
+                }
                 errosAoSalvar={errosAoSalvar}
                 ehPeriodoEspecifico={true}
               />
@@ -514,7 +526,7 @@ export const LancamentoPorPeriodo = ({
             )}
           {periodosInclusaoContinua &&
             (!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) ||
-              frequenciasDietasCEUGESTAO) && (
+              frequenciasDietasEscolaSemAlunoRegular) && (
               <CardLancamento
                 grupo="Programas e Projetos"
                 cor={CORES[9]}
@@ -524,7 +536,9 @@ export const LancamentoPorPeriodo = ({
                 objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
                 quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
                 periodosInclusaoContinua={periodosInclusaoContinua}
-                frequenciasDietasCEUGESTAO={frequenciasDietasCEUGESTAO}
+                frequenciasDietasEscolaSemAlunoRegular={
+                  frequenciasDietasEscolaSemAlunoRegular
+                }
                 errosAoSalvar={errosAoSalvar}
               />
             )}
