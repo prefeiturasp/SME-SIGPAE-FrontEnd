@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -20,6 +20,7 @@ import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "src/
 import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEUGESTAO/getSolicitacaoMedicaoInicialCEUGESTAO";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
+import { mockInclusoesAutorizadas } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockInclusoesAutorizadas";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
@@ -130,42 +131,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO"
           excluir_inclusoes_continuas: true,
         },
       })
-      .reply(200, {
-        results: [
-          {
-            dia: "6",
-            periodo: "TARDE",
-            alimentacoes: "lanche",
-            numero_alunos: 10,
-            dias_semana: null,
-            inclusao_id_externo: "6773E",
-          },
-          {
-            dia: "6",
-            periodo: "TARDE",
-            alimentacoes: "lanche",
-            numero_alunos: 50,
-            dias_semana: null,
-            inclusao_id_externo: "1929D",
-          },
-          {
-            dia: "6",
-            periodo: "TARDE",
-            alimentacoes: "lanche",
-            numero_alunos: 50,
-            dias_semana: null,
-            inclusao_id_externo: "96C41",
-          },
-          {
-            dia: "6",
-            periodo: "TARDE",
-            alimentacoes: "lanche",
-            numero_alunos: 50,
-            dias_semana: null,
-            inclusao_id_externo: "09927",
-          },
-        ],
-      });
+      .reply(200, mockInclusoesAutorizadas);
 
     const search = `?uuid=546505cb-eef1-4080-a8e8-7538faccf969&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=true`;
     Object.defineProperty(window, "location", {
@@ -198,8 +164,51 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO"
       );
     });
   });
-
   it("Renderiza título da página `Lançamento Medição Inicial`", () => {
+    expect(screen.getAllByText("Lançamento Medição Inicial").length).toBe(2);
+  });
+
+  it("Renderiza label `Mês do Lançamento` e seu valor", () => {
+    expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
+  });
+
+  it("renderiza valor `Novembro / 2024` no input `Mês do Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-mes-lancamento");
+    expect(inputElement).toHaveAttribute("value", "Novembro / 2024");
+  });
+
+  it("renderiza label `Período de Lançamento`", () => {
+    expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
+  });
+
+  it("renderiza valor `TARDE` no input `Período de Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-periodo-lancamento");
+    expect(inputElement).toHaveAttribute("value", "TARDE");
+  });
+
+  it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
+    expect(
+      screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
+    ).toBeInTheDocument();
+  });
+
+  it("renderiza labels de com as semanas`", async () => {
+    expect(screen.getByText("Semana 1")).toBeInTheDocument();
+    expect(screen.getByText("Semana 2")).toBeInTheDocument();
+    expect(screen.getByText("Semana 3")).toBeInTheDocument();
+    expect(screen.getByText("Semana 4")).toBeInTheDocument();
+    expect(screen.getByText("Semana 5")).toBeInTheDocument();
+  });
+
+  it("renderiza informações da label `ALIMENTAÇÃO` da semana 1", async () => {
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+    expect(screen.getByText("Número de Alunos")).toBeInTheDocument();
+    expect(screen.getByText("Frequência")).toBeInTheDocument();
+  });
+
+  it("ao clicar na tab `Semana 2`, exibe as informações de inclusões autorizadas", async () => {
+    const semanaDois = screen.getByText("Semana 2");
+    fireEvent.click(semanaDois);
     preview.debug();
   });
 });
