@@ -210,5 +210,43 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO"
     const semanaDois = screen.getByText("Semana 2");
     fireEvent.click(semanaDois);
     preview.debug();
+
+    const inputNumeroAlunosDiaSeis = screen.getByTestId(
+      "numero_de_alunos__dia_06__categoria_1",
+    );
+    expect(inputNumeroAlunosDiaSeis).toHaveAttribute("value", "160");
+  });
+
+  it("Verifica se o valor exibido na tela é igual ao valor de medicao", async () => {
+    const semanaDois = screen.getByText("Semana 2");
+    fireEvent.click(semanaDois);
+    preview.debug();
+
+    const inputNumeroAlunosDiaSeis = screen.getByTestId(
+      "numero_de_alunos__dia_06__categoria_1",
+    );
+    const numeroAlunos =
+      mockValoresMedicaoCEUGESTAOParaInclusoesAutorizadas.find(
+        (item) => item.nome_campo === "numero_de_alunos",
+      )?.valor;
+    expect(inputNumeroAlunosDiaSeis).toHaveAttribute("value", numeroAlunos);
+  });
+
+  it("Verifica se o valor exibido na tela é igual ao da soma das inclusões autorizadas", async () => {
+    const semanaDois = screen.getByText("Semana 2");
+    fireEvent.click(semanaDois);
+    preview.debug();
+
+    const inputNumeroAlunosDiaSeis = screen.getByTestId(
+      "numero_de_alunos__dia_06__categoria_1",
+    );
+    const numeroAlunos = mockInclusoesAutorizadas.results.reduce(
+      (soma, item) => soma + item.numero_alunos,
+      0,
+    );
+    expect(inputNumeroAlunosDiaSeis).toHaveAttribute(
+      "value",
+      numeroAlunos.toString(),
+    );
   });
 });
