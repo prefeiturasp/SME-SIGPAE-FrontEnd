@@ -37,7 +37,15 @@ export const mockCronogramaCadastroRecebimento = {
         desvinculada_recebimento: true,
       },
     ],
-    documentos_de_recebimento: [],
+    documentos_de_recebimento: [
+      {
+        uuid: "9ca7bec2-8446-44b2-8ddd-f808f71484c9",
+        numero_laudo: "9876",
+        numero_lote_laudo: "23",
+        datas_fabricacao: "12/08/2025",
+        datas_validade: "31/08/2025",
+      },
+    ],
     sistema_vedacao_embalagem_secundaria: "gelado",
   },
 };

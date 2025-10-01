@@ -542,6 +542,7 @@ export default () => {
   };
 
   const ehEdicao = !!initialValues.cronograma;
+  const naoExistemLaudos = cronograma.documentos_de_recebimento?.length === 0;
 
   return (
     <Spin tip="Carregando..." spinning={carregando}>
@@ -876,9 +877,14 @@ export default () => {
                               multiple
                               nomeDoItemNoPlural="laudos"
                               options={getOpcoesDocumentos()}
-                              placeholder="Selecione os Laudos"
+                              placeholder={
+                                naoExistemLaudos
+                                  ? "Não existem laudos aprovados"
+                                  : "Selecione os Laudos"
+                              }
                               required
                               validate={required}
+                              disabled={naoExistemLaudos}
                             />
                           </div>
                         </div>
@@ -941,6 +947,7 @@ export default () => {
                                   label: "Divergente",
                                 },
                               ]}
+                              disabled={naoExistemLaudos}
                             />
                           </div>
                           {values.lote_fabricante_de_acordo === "0" && (
@@ -974,6 +981,7 @@ export default () => {
                                   label: "Divergente",
                                 },
                               ]}
+                              disabled={naoExistemLaudos}
                             />
                           </div>
                           {values.data_fabricacao_de_acordo === "0" && (
@@ -1007,6 +1015,7 @@ export default () => {
                                   label: "Divergente",
                                 },
                               ]}
+                              disabled={naoExistemLaudos}
                             />
                           </div>
                           {values.data_validade_de_acordo === "0" && (
@@ -1044,6 +1053,7 @@ export default () => {
                               placeholder="Digite o número de paletes"
                               required
                               validate={required}
+                              agrupadorMilharPositivo
                             />
                           </div>
                         </div>
@@ -1065,6 +1075,7 @@ export default () => {
                               placeholder="Digite o peso"
                               required
                               validate={required}
+                              agrupadorMilharComDecimal
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1076,6 +1087,7 @@ export default () => {
                               name={`peso_embalagem_primaria_2`}
                               placeholder="Digite o peso"
                               validate={required}
+                              agrupadorMilharComDecimal
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1087,6 +1099,7 @@ export default () => {
                               name={`peso_embalagem_primaria_3`}
                               placeholder="Digite o peso"
                               validate={required}
+                              agrupadorMilharComDecimal
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1098,6 +1111,7 @@ export default () => {
                               name={`peso_embalagem_primaria_4`}
                               placeholder="Digite o peso"
                               validate={required}
+                              agrupadorMilharComDecimal
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1347,14 +1361,22 @@ export default () => {
                         {questoesPrimarias || questoesSecundarias ? (
                           <>
                             <div>
-                              <table className="table tabela-conferencia-embalagens">
+                              <table
+                                className={`table tabela-conferencia-embalagens ${
+                                  questoesSecundarias.length === 0
+                                    ? "only-primaria"
+                                    : ""
+                                }`}
+                              >
                                 <thead>
                                   <tr>
+                                    {questoesSecundarias.length > 0 && (
+                                      <th className="">
+                                        Conferência Embalagem Secundária
+                                      </th>
+                                    )}
                                     <th className="">
                                       Conferência Embalagem Primária
-                                    </th>
-                                    <th className="">
-                                      Conferência Embalagem Secundária
                                     </th>
                                   </tr>
                                 </thead>
@@ -1368,29 +1390,31 @@ export default () => {
                                   }).map((_, index) => {
                                     const primaria = questoesPrimarias[index];
                                     const secundaria =
-                                      questoesSecundarias[index];
+                                      questoesSecundarias?.[index];
 
                                     return (
                                       <tr key={index} className="">
+                                        {questoesSecundarias.length > 0 && (
+                                          <td className="">
+                                            {secundaria && (
+                                              <RadioButtonField
+                                                name={`SECUNDARIA_${secundaria.uuid}`}
+                                                label={secundaria.questao}
+                                                options={[
+                                                  { value: "1", label: "SIM" },
+                                                  { value: "0", label: "NÃO" },
+                                                ]}
+                                                modoTabela={true}
+                                              />
+                                            )}
+                                          </td>
+                                        )}
+
                                         <td className="">
                                           {primaria && (
                                             <RadioButtonField
                                               name={`PRIMARIA_${primaria.uuid}`}
                                               label={primaria.questao}
-                                              options={[
-                                                { value: "1", label: "SIM" },
-                                                { value: "0", label: "NÃO" },
-                                              ]}
-                                              modoTabela={true}
-                                            />
-                                          )}
-                                        </td>
-
-                                        <td className="">
-                                          {secundaria && (
-                                            <RadioButtonField
-                                              name={`SECUNDARIA_${secundaria.uuid}`}
-                                              label={secundaria.questao}
                                               options={[
                                                 { value: "1", label: "SIM" },
                                                 { value: "0", label: "NÃO" },
@@ -1544,7 +1568,6 @@ export default () => {
                           className="ms-3"
                           disabled={
                             !questoesPrimarias?.length ||
-                            !questoesSecundarias?.length ||
                             Object.keys(errors).length > 0
                           }
                         />

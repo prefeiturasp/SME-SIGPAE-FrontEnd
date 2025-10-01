@@ -58,6 +58,7 @@ export const RecuperarSenha = ({ ...props }: RecuperarSenhaProps) => {
                 </div>
 
                 <Field
+                  dataTestId="recuperar-login"
                   component={InputText}
                   className="input-login"
                   esconderAsterisco
