@@ -719,7 +719,7 @@ export const validacoesTabelaAlimentacao = (
   return undefined;
 };
 
-const validaFrequenciaDietasCEUGESTAO = (
+const validaFrequenciaDietasEscolaSemAlunosRegulares = (
   location,
   categoria,
   dia,
@@ -902,7 +902,7 @@ export const validacoesTabelasDietas = (
     escolaNaoPossuiAlunosRegulares(location.state.solicitacaoMedicaoInicial) ||
     location.state.periodoEspecifico
   ) {
-    return validaFrequenciaDietasCEUGESTAO(
+    return validaFrequenciaDietasEscolaSemAlunosRegulares(
       location,
       categoria,
       dia,

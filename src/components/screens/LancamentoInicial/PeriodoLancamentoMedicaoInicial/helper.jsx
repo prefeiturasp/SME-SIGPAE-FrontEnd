@@ -29,7 +29,7 @@ export const formatarPayloadPeriodoLancamento = (
   ehGrupoSolicitacoesDeAlimentacaoUrlParam,
   ehGrupoETECUrlParam,
   grupoLocation,
-  tabelaAlimentacaoProgramasProjetosOuCEUGESTAORows,
+  tabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows,
 ) => {
   if (
     (values["periodo_escolar"] &&
@@ -71,9 +71,10 @@ export const formatarPayloadPeriodoLancamento = (
       );
     }
     if (!tipoAlimentacao) {
-      tipoAlimentacao = tabelaAlimentacaoProgramasProjetosOuCEUGESTAORows.find(
-        (row) => row.name === nome_campo,
-      );
+      tipoAlimentacao =
+        tabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows.find(
+          (row) => row.name === nome_campo,
+        );
     }
 
     return valoresMedicao.push({
@@ -192,7 +193,7 @@ export const valorZeroFrequencia = (
   return false;
 };
 
-const validaAlimentacoesEDietasCEUGESTAO = (
+const validaAlimentacoesEDietasEscolaSemAlunosRegulares = (
   inclusoesAutorizadas,
   rowName,
   dia,
@@ -470,7 +471,7 @@ export const desabilitarField = (
       ] ||
       (mesConsiderado === mesAtual &&
         Number(dia) >= format(mesAnoDefault, "dd")) ||
-      validaAlimentacoesEDietasCEUGESTAO(
+      validaAlimentacoesEDietasEscolaSemAlunosRegulares(
         inclusoesAutorizadas,
         rowName,
         dia,
