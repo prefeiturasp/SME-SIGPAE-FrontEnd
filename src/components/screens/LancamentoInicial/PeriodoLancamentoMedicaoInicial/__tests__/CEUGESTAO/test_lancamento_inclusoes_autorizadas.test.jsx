@@ -24,7 +24,6 @@ import { mockInclusoesAutorizadas } from "src/mocks/medicaoInicial/PeriodoLancam
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
@@ -209,7 +208,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO"
   it("ao clicar na tab `Semana 2`, exibe as informações de inclusões autorizadas", async () => {
     const semanaDois = screen.getByText("Semana 2");
     fireEvent.click(semanaDois);
-    preview.debug();
 
     const inputNumeroAlunosDiaSeis = screen.getByTestId(
       "numero_de_alunos__dia_06__categoria_1",
@@ -220,7 +218,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO"
   it("Verifica se o valor exibido na tela é igual ao valor de medicao", async () => {
     const semanaDois = screen.getByText("Semana 2");
     fireEvent.click(semanaDois);
-    preview.debug();
 
     const inputNumeroAlunosDiaSeis = screen.getByTestId(
       "numero_de_alunos__dia_06__categoria_1",
@@ -235,7 +232,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO"
   it("Verifica se o valor exibido na tela é igual ao da soma das inclusões autorizadas", async () => {
     const semanaDois = screen.getByText("Semana 2");
     fireEvent.click(semanaDois);
-    preview.debug();
 
     const inputNumeroAlunosDiaSeis = screen.getByTestId(
       "numero_de_alunos__dia_06__categoria_1",
