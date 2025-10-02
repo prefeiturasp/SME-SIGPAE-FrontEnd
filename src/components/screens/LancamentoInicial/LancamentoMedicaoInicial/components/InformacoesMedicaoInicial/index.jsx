@@ -139,95 +139,134 @@ export default ({
   };
 
   const handleClickSalvar = async () => {
-    if (!responsaveis.some((resp) => resp.nome !== "" && resp.rf !== "")) {
-      toastError("Pelo menos um responsável deve ser cadastrado");
-      return;
-    }
-    if (
-      responsaveis.some(
-        (resp) =>
-          (resp.nome !== "" && resp.rf === "") ||
-          (resp.nome === "" && resp.rf !== ""),
-      )
-    ) {
-      toastError("Responsável com dados incompletos");
-      return;
-    }
-    const responsaveisPayload = responsaveis.filter(
-      (resp) => resp.nome !== "" && resp.rf !== "",
-    );
-    if (responsaveisPayload.some((resp) => resp.rf.length !== 7)) {
-      toastError("O campo de RF deve conter 7 números");
-      return;
-    }
+    if (!validarResponsaveis()) return;
+
     if (solicitacaoMedicaoInicial) {
-      let data = new FormData();
-      data.append("escola", String(escolaInstituicao.uuid));
-      for (let index = 0; index < tipoDeContagemSelecionada.length; index++) {
-        data.append(
-          "tipos_contagem_alimentacao[]",
-          tipoDeContagemSelecionada[index],
-        );
-      }
-      data.append("responsaveis", JSON.stringify(responsaveisPayload));
-      const response = await updateInformacoesBasicas(
-        solicitacaoMedicaoInicial.uuid,
-        data,
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        setIsOpen(false);
-        if (
-          responsaveisPayload.length ===
-          solicitacaoMedicaoInicial.responsaveis.length
-        ) {
-          let toast = false;
-          for (let i = 0; i < responsaveisPayload.length; i++) {
-            if (
-              JSON.stringify(responsaveisPayload[i]) !==
-                JSON.stringify(solicitacaoMedicaoInicial.responsaveis[i]) &&
-              !toast
-            ) {
-              toastSuccess("Responsável atualizado com sucesso");
-              toast = true;
-            }
-          }
-          !toast &&
-            toastSuccess(
-              "Método de Contagem / Responsável atualizado com sucesso",
-            );
-        } else if (
-          responsaveisPayload.length >
-          solicitacaoMedicaoInicial.responsaveis.length
-        ) {
-          toastSuccess("Responsável adicionado com sucesso");
-        } else if (
-          responsaveisPayload.length <
-          solicitacaoMedicaoInicial.responsaveis.length
-        ) {
-          toastSuccess("Responsável excluído com sucesso");
-        }
-      } else {
-        toastError("Não foi possível salvar as alterações!");
-      }
+      await atualizarSolicitacaoExistente();
     } else {
-      const payload = {
-        escola: escolaInstituicao.uuid,
-        tipos_contagem_alimentacao: tipoDeContagemSelecionada,
-        responsaveis: responsaveisPayload,
-        mes: format(new Date(periodoSelecionado), "MM").toString(),
-        ano: getYear(new Date(periodoSelecionado)).toString(),
-      };
-      const response = await setSolicitacaoMedicaoInicial(payload);
-      if (response.status === HTTP_STATUS.CREATED) {
-        setIsOpen(false);
-        toastSuccess("Medição Inicial criada com sucesso!");
-      } else {
-        const errorMessage = Object.values(response.data).join("; ");
-        toastError(`Erro: ${errorMessage}`);
-      }
+      await criarNovaSolicitacao();
     }
+
+    setIsOpen(false);
     setEmEdicao(false);
     onClickInfoBasicas();
+  };
+
+  const validarResponsaveis = () => {
+    if (!temPeloMenosUmResponsavelValido()) {
+      toastError("Pelo menos um responsável deve ser cadastrado");
+      return false;
+    }
+
+    if (temResponsaveisComDadosIncompletos()) {
+      toastError("Responsável com dados incompletos");
+      return false;
+    }
+
+    if (temRFInvalido()) {
+      toastError("O campo de RF deve conter 7 números");
+      return false;
+    }
+
+    return true;
+  };
+
+  const temPeloMenosUmResponsavelValido = () => {
+    return responsaveis.some((resp) => resp.nome !== "" && resp.rf !== "");
+  };
+
+  const temResponsaveisComDadosIncompletos = () => {
+    return responsaveis.some(
+      (resp) =>
+        (resp.nome !== "" && resp.rf === "") ||
+        (resp.nome === "" && resp.rf !== ""),
+    );
+  };
+
+  const temRFInvalido = () => {
+    const responsaveisValidos = responsaveis.filter(
+      (resp) => resp.nome !== "" && resp.rf !== "",
+    );
+
+    return responsaveisValidos.some((resp) => resp.rf.length !== 7);
+  };
+
+  const getResponsaveisPayload = () => {
+    return responsaveis.filter((resp) => resp.nome !== "" && resp.rf !== "");
+  };
+
+  const criarPayloadAtualizacao = () => {
+    const data = new FormData();
+    data.append("escola", String(escolaInstituicao.uuid));
+
+    for (let index = 0; index < tipoDeContagemSelecionada.length; index++) {
+      data.append(
+        "tipos_contagem_alimentacao[]",
+        tipoDeContagemSelecionada[index],
+      );
+    }
+
+    data.append("responsaveis", JSON.stringify(getResponsaveisPayload()));
+    return data;
+  };
+
+  const criarPayloadNovaSolicitacao = () => {
+    const dataPeriodo = new Date(periodoSelecionado);
+
+    return {
+      escola: escolaInstituicao.uuid,
+      tipos_contagem_alimentacao: tipoDeContagemSelecionada,
+      responsaveis: getResponsaveisPayload(),
+      mes: format(dataPeriodo, "MM").toString(),
+      ano: getYear(dataPeriodo).toString(),
+    };
+  };
+
+  const mostrarMensagemSucessoAtualizacao = (responsaveisPayload) => {
+    const responsaveisOriginais = solicitacaoMedicaoInicial.responsaveis;
+
+    if (responsaveisPayload.length === responsaveisOriginais.length) {
+      const houveAlteracao = responsaveisPayload.some(
+        (resp, i) =>
+          JSON.stringify(resp) !== JSON.stringify(responsaveisOriginais[i]),
+      );
+
+      if (houveAlteracao) {
+        toastSuccess("Responsável atualizado com sucesso");
+      } else {
+        toastSuccess("Método de Contagem / Responsável atualizado com sucesso");
+      }
+    } else if (responsaveisPayload.length > responsaveisOriginais.length) {
+      toastSuccess("Responsável adicionado com sucesso");
+    } else if (responsaveisPayload.length < responsaveisOriginais.length) {
+      toastSuccess("Responsável excluído com sucesso");
+    }
+  };
+
+  const atualizarSolicitacaoExistente = async () => {
+    const data = criarPayloadAtualizacao();
+    const response = await updateInformacoesBasicas(
+      solicitacaoMedicaoInicial.uuid,
+      data,
+    );
+
+    if (response.status === HTTP_STATUS.OK) {
+      mostrarMensagemSucessoAtualizacao(getResponsaveisPayload());
+    } else {
+      toastError("Não foi possível salvar as alterações!");
+    }
+  };
+
+  const criarNovaSolicitacao = async () => {
+    const payload = criarPayloadNovaSolicitacao();
+    const response = await setSolicitacaoMedicaoInicial(payload);
+
+    if (response.status === HTTP_STATUS.CREATED) {
+      toastSuccess("Medição Inicial criada com sucesso!");
+    } else {
+      const errorMessage = Object.values(response.data).join("; ");
+      toastError(`Erro: ${errorMessage}`);
+    }
   };
 
   const getDefaultValueSelectTipoContagem = () => {
