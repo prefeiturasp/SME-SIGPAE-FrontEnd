@@ -119,12 +119,10 @@ describe("CadastroProduto - Submit", () => {
       </Provider>
     );
 
-    // Aguarda o componente montar
     await waitFor(() => {
       expect(container).toBeInTheDocument();
     });
 
-    // Força o estado para step 2 (onde está o botão Enviar)
     const instance = getComponentInstance(container.firstChild);
     instance.setState({
       currentStep: 2,
@@ -170,12 +168,11 @@ describe("CadastroProduto - Submit", () => {
       expect(container).toBeInTheDocument();
     });
 
-    // Força o estado para step 2 com isSubmitting inicializado
     const instance = getComponentInstance(container.firstChild);
     instance.setState({
       currentStep: 2,
       renderBuscaProduto: false,
-      isSubmitting: false, // estado que será usado na correção
+      isSubmitting: false,
       payload: {
         uuid: null,
         nome: "Produto Teste",
@@ -197,13 +194,11 @@ describe("CadastroProduto - Submit", () => {
 
     const botaoEnviar = await screen.findByTestId("botao-enviar");
 
-    // Dispara múltiplos cliques rapidamente
     fireEvent.click(botaoEnviar);
     fireEvent.click(botaoEnviar);
     fireEvent.click(botaoEnviar);
 
     await waitFor(() => {
-      // Comportamento esperado após implementar isSubmitting: apenas 1 chamada
       expect(submitProduto).toHaveBeenCalledTimes(1);
     });
   });
