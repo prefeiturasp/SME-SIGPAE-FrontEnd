@@ -141,131 +141,206 @@ export const InformacoesMedicaoInicialCEI = ({
   };
 
   const handleClickSalvar = async () => {
+    if (!validarDados()) return;
+
+    if (solicitacaoMedicaoInicial) {
+      await atualizarSolicitacaoExistente();
+    } else {
+      await criarNovaSolicitacao();
+    }
+
+    setEmEdicao(false);
+    await onClickInfoBasicas();
+    setLoadingInfoBasicas(false);
+  };
+
+  const validarDados = () => {
+    if (!validarPeriodoParcial()) return false;
+    if (!validarResponsaveis()) return false;
+    return true;
+  };
+
+  const validarPeriodoParcial = () => {
     if (!uePossuiAlunosPeriodoParcial) {
       toastError("Obrigatório preencher se UE possui aluno no período Parcial");
-      return;
+      return false;
     }
+
     if (
       uePossuiAlunosPeriodoParcial === "true" &&
       alunosAdicionados.length < 1
     ) {
-      toastError("Obrigatório adicionar alunos pariciais");
-      return;
+      toastError("Obrigatório adicionar alunos parciais");
+      return false;
     }
-    if (!responsaveis.some((resp) => resp.nome !== "" && resp.rf !== "")) {
+
+    return true;
+  };
+
+  const validarResponsaveis = () => {
+    if (!temPeloMenosUmResponsavelValido()) {
       toastError("Pelo menos um responsável deve ser cadastrado");
-      return;
+      return false;
     }
-    if (
-      responsaveis.some(
-        (resp) =>
-          (resp.nome !== "" && resp.rf === "") ||
-          (resp.nome === "" && resp.rf !== ""),
-      )
-    ) {
+
+    if (temResponsaveisComDadosIncompletos()) {
       toastError("Responsável com dados incompletos");
-      return;
+      return false;
     }
-    const responsaveisPayload = responsaveis.filter(
-      (resp) => resp.nome !== "" && resp.rf !== "",
-    );
-    if (responsaveisPayload.some((resp) => resp.rf.length !== 7)) {
+
+    if (temRFInvalido()) {
       toastError("O campo de RF deve conter 7 números");
-      return;
+      return false;
     }
-    setLoadingInfoBasicas(true);
-    if (solicitacaoMedicaoInicial) {
-      let data = new FormData();
-      data.append("escola", String(escolaInstituicao.uuid));
-      data.append("responsaveis", JSON.stringify(responsaveisPayload));
+
+    return true;
+  };
+
+  const temPeloMenosUmResponsavelValido = () => {
+    return responsaveis.some((resp) => resp.nome !== "" && resp.rf !== "");
+  };
+
+  const temResponsaveisComDadosIncompletos = () => {
+    return responsaveis.some(
+      (resp) =>
+        (resp.nome !== "" && resp.rf === "") ||
+        (resp.nome === "" && resp.rf !== ""),
+    );
+  };
+
+  const temRFInvalido = () => {
+    const responsaveisValidos = getResponsaveisPayload();
+    return responsaveisValidos.some((resp) => resp.rf.length !== 7);
+  };
+
+  const getResponsaveisPayload = () => {
+    return responsaveis.filter((resp) => resp.nome !== "" && resp.rf !== "");
+  };
+
+  const criarPayloadAlunosParciais = () => {
+    if (!Array.isArray(alunosAdicionados) || alunosAdicionados.length === 0) {
+      return null;
+    }
+
+    let alunos = [];
+    alunosAdicionados.forEach((alunoAdicionado) => {
+      alunos.push({
+        aluno: alunoAdicionado.uuid,
+        data: alunoAdicionado.data,
+      });
+    });
+
+    return alunos;
+  };
+
+  const atualizaPayloadAlunosParciais = () => {
+    if (!Array.isArray(alunosAdicionados) || alunosAdicionados.length === 0) {
+      return null;
+    }
+
+    let alunos = [];
+    alunosAdicionados.forEach((alunoAdicionado) => {
+      alunos.push({
+        aluno: alunoAdicionado.uuid,
+        data: alunoAdicionado.data,
+        data_removido: alunoAdicionado.data_removido,
+      });
+    });
+
+    return alunos;
+  };
+
+  const criarPayloadAtualizacao = () => {
+    const data = new FormData();
+    const alunosParciais = atualizaPayloadAlunosParciais();
+
+    data.append("escola", String(escolaInstituicao.uuid));
+    data.append("responsaveis", JSON.stringify(getResponsaveisPayload()));
+    data.append(
+      "ue_possui_alunos_periodo_parcial",
+      uePossuiAlunosPeriodoParcial === "true",
+    );
+
+    for (let index = 0; index < tipoDeContagemSelecionada.length; index++) {
       data.append(
-        "ue_possui_alunos_periodo_parcial",
-        uePossuiAlunosPeriodoParcial === "true",
+        "tipos_contagem_alimentacao[]",
+        tipoDeContagemSelecionada[index],
       );
-      for (let index = 0; index < tipoDeContagemSelecionada.length; index++) {
-        data.append(
-          "tipos_contagem_alimentacao[]",
-          tipoDeContagemSelecionada[index],
-        );
-      }
-      if (Array.isArray(alunosAdicionados) && alunosAdicionados.length > 0) {
-        let alunos = [];
-        alunosAdicionados.forEach((alunoAdicionado) => {
-          alunos.push({
-            aluno: alunoAdicionado.uuid,
-            data: alunoAdicionado.data,
-            data_removido: alunoAdicionado.data_removido,
-          });
-        });
-        data.append("alunos_periodo_parcial", JSON.stringify(alunos));
-        data.append("alunos_parcial_alterado", alunosParcialAlterado);
-      }
-      const response = await updateInformacoesBasicas(
-        solicitacaoMedicaoInicial.uuid,
-        data,
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        if (
-          responsaveisPayload.length ===
-          solicitacaoMedicaoInicial.responsaveis.length
-        ) {
-          let toast = false;
-          for (let i = 0; i < responsaveisPayload.length; i++) {
-            if (
-              JSON.stringify(responsaveisPayload[i]) !==
-                JSON.stringify(solicitacaoMedicaoInicial.responsaveis[i]) &&
-              !toast
-            ) {
-              toastSuccess("Responsável atualizado com sucesso");
-              toast = true;
-            }
-          }
-          !toast && toastSuccess("Informações atualizadas com sucesso");
-        } else if (
-          responsaveisPayload.length >
-          solicitacaoMedicaoInicial.responsaveis.length
-        ) {
-          toastSuccess("Responsável adicionado com sucesso");
-        } else if (
-          responsaveisPayload.length <
-          solicitacaoMedicaoInicial.responsaveis.length
-        ) {
-          toastSuccess("Responsável excluído com sucesso");
-        }
-      } else {
-        toastError("Não foi possível salvar as alterações!");
-      }
-    } else {
-      const payload = {
-        escola: escolaInstituicao.uuid,
-        tipos_contagem_alimentacao: tipoDeContagemSelecionada,
-        responsaveis: responsaveisPayload,
-        ue_possui_alunos_periodo_parcial:
-          uePossuiAlunosPeriodoParcial === "true",
-        mes: format(new Date(periodoSelecionado), "MM").toString(),
-        ano: getYear(new Date(periodoSelecionado)).toString(),
-      };
-      if (alunosAdicionados && alunosAdicionados.length > 0) {
-        let alunos = [];
-        alunosAdicionados.forEach((alunoAdicionado) => {
-          alunos.push({
-            aluno: alunoAdicionado.uuid,
-            data: alunoAdicionado.data,
-          });
-        });
-        payload.alunos_periodo_parcial = alunos;
-      }
-      const response = await setSolicitacaoMedicaoInicial(payload);
-      if (response.status === HTTP_STATUS.CREATED) {
-        toastSuccess("Medição Inicial criada com sucesso");
-      } else {
-        const errorMessage = Object.values(response.data).join("; ");
-        toastError(`Erro: ${errorMessage}`);
-      }
     }
-    setEmEdicao(false);
-    await onClickInfoBasicas();
-    setLoadingInfoBasicas(false);
+
+    if (alunosParciais) {
+      data.append("alunos_periodo_parcial", JSON.stringify(alunosParciais));
+      data.append("alunos_parcial_alterado", alunosParcialAlterado);
+    }
+
+    return data;
+  };
+
+  const criarPayloadNovaSolicitacao = () => {
+    const dataPeriodo = new Date(periodoSelecionado);
+    const alunosParciais = criarPayloadAlunosParciais();
+
+    const payload = {
+      escola: escolaInstituicao.uuid,
+      tipos_contagem_alimentacao: tipoDeContagemSelecionada,
+      responsaveis: getResponsaveisPayload(),
+      ue_possui_alunos_periodo_parcial: uePossuiAlunosPeriodoParcial === "true",
+      mes: format(dataPeriodo, "MM").toString(),
+      ano: getYear(dataPeriodo).toString(),
+    };
+
+    if (alunosParciais) {
+      payload.alunos_periodo_parcial = alunosParciais;
+    }
+
+    return payload;
+  };
+
+  const mostrarMensagemSucessoAtualizacao = (responsaveisPayload) => {
+    const responsaveisOriginais = solicitacaoMedicaoInicial.responsaveis;
+
+    if (responsaveisPayload.length === responsaveisOriginais.length) {
+      const houveAlteracao = responsaveisPayload.some(
+        (resp, i) =>
+          JSON.stringify(resp) !== JSON.stringify(responsaveisOriginais[i]),
+      );
+
+      if (houveAlteracao) {
+        toastSuccess("Responsável atualizado com sucesso");
+      } else {
+        toastSuccess("Informações atualizadas com sucesso");
+      }
+    } else if (responsaveisPayload.length > responsaveisOriginais.length) {
+      toastSuccess("Responsável adicionado com sucesso");
+    } else if (responsaveisPayload.length < responsaveisOriginais.length) {
+      toastSuccess("Responsável excluído com sucesso");
+    }
+  };
+
+  const atualizarSolicitacaoExistente = async () => {
+    const data = criarPayloadAtualizacao();
+    const response = await updateInformacoesBasicas(
+      solicitacaoMedicaoInicial.uuid,
+      data,
+    );
+
+    if (response.status === HTTP_STATUS.OK) {
+      mostrarMensagemSucessoAtualizacao(getResponsaveisPayload());
+    } else {
+      toastError("Não foi possível salvar as alterações!");
+    }
+  };
+
+  const criarNovaSolicitacao = async () => {
+    const payload = criarPayloadNovaSolicitacao();
+    const response = await setSolicitacaoMedicaoInicial(payload);
+
+    if (response.status === HTTP_STATUS.CREATED) {
+      toastSuccess("Medição Inicial criada com sucesso");
+    } else {
+      const errorMessage = Object.values(response.data).join("; ");
+      throw new Error(errorMessage);
+    }
   };
 
   const options = [
