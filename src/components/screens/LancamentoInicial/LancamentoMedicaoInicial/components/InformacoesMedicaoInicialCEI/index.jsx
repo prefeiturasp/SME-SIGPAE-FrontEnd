@@ -19,7 +19,7 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import {
   getTiposDeContagemAlimentacao,
   setSolicitacaoMedicaoInicial,
-  updateSolicitacaoMedicaoInicial,
+  updateInformacoesBasicas,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getAlunosListagem } from "src/services/perfil.service";
 import ResponsaveisInputs from "../ResponsaveisInput";
@@ -200,7 +200,7 @@ export const InformacoesMedicaoInicialCEI = ({
         data.append("alunos_periodo_parcial", JSON.stringify(alunos));
         data.append("alunos_parcial_alterado", alunosParcialAlterado);
       }
-      const response = await updateSolicitacaoMedicaoInicial(
+      const response = await updateInformacoesBasicas(
         solicitacaoMedicaoInicial.uuid,
         data,
       );

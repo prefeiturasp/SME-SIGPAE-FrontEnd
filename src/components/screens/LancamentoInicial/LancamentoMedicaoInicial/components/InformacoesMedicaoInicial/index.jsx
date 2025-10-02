@@ -16,7 +16,7 @@ import { DETALHAMENTO_DO_LANCAMENTO } from "src/configs/constants";
 import {
   getTiposDeContagemAlimentacao,
   setSolicitacaoMedicaoInicial,
-  updateSolicitacaoMedicaoInicial,
+  updateInformacoesBasicas,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 
@@ -170,7 +170,7 @@ export default ({
         );
       }
       data.append("responsaveis", JSON.stringify(responsaveisPayload));
-      const response = await updateSolicitacaoMedicaoInicial(
+      const response = await updateInformacoesBasicas(
         solicitacaoMedicaoInicial.uuid,
         data,
       );
