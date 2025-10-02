@@ -136,6 +136,9 @@ class WizardFormTerceiraPagina extends Component {
   };
 
   enviaDados = async (values) => {
+    if (this.state.enviando) return;
+    this.setState({ enviando: true });
+
     const { valoresSegundoForm, produto } = this.props;
     values["uuid"] = produto.uuid;
     values["cadastro_atualizado"] = true;
@@ -219,7 +222,11 @@ class WizardFormTerceiraPagina extends Component {
       this.props;
     const { mostraModalConfimacao, ehUsuarioEmpresa } = this.state;
     return (
-      <form onSubmit={handleSubmit} className="cadastro-produto-step3">
+      <form
+        onSubmit={handleSubmit}
+        data-testid="cadastro-form"
+        className="cadastro-produto-step3"
+      >
         <ModalConfirmacaoSimNao
           showModal={mostraModalConfimacao}
           closeModal={() => this.setState({ mostraModalConfimacao: false })}
@@ -230,6 +237,8 @@ class WizardFormTerceiraPagina extends Component {
             </p>
           }
           onSimClick={() => this.enviaDados(this.state.formValues)}
+          disableSimBtn={this.state.enviando}
+          textoBtnSim={this.state.enviando ? "Enviando..." : "Sim"}
         />
         <div className="header-card-title">
           Informação do Produto (classificação)
