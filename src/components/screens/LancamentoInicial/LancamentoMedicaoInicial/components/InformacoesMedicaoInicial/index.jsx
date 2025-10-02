@@ -29,7 +29,7 @@ export default ({
 }) => {
   const [tiposDeContagem, setTiposDeContagem] = useState([]);
   const [tipoDeContagemSelecionada, setTipoDeContagemSelecionada] = useState(
-    []
+    [],
   );
   const [responsaveis, setResponsaveis] = useState([
     {
@@ -64,7 +64,7 @@ export default ({
       });
       setResponsaveis(resps);
       setTipoDeContagemSelecionada(
-        solicitacaoMedicaoInicial.tipos_contagem_alimentacao.map((t) => t.uuid)
+        solicitacaoMedicaoInicial.tipos_contagem_alimentacao.map((t) => t.uuid),
       );
     }
     if (!solicitacaoMedicaoInicial) {
@@ -122,7 +122,7 @@ export default ({
               disabled={!emEdicao}
             />
           </div>
-        </div>
+        </div>,
       );
     }
 
@@ -135,9 +135,7 @@ export default ({
 
   const handleClickEditar = () => {
     setEmEdicao(true);
-    !solicitacaoMedicaoInicial &&
-      opcoesContagem.length > 0 &&
-      setTipoDeContagemSelecionada([tiposDeContagem[0].uuid]);
+    !solicitacaoMedicaoInicial && opcoesContagem.length > 0;
   };
 
   const handleClickSalvar = async () => {
@@ -149,14 +147,14 @@ export default ({
       responsaveis.some(
         (resp) =>
           (resp.nome !== "" && resp.rf === "") ||
-          (resp.nome === "" && resp.rf !== "")
+          (resp.nome === "" && resp.rf !== ""),
       )
     ) {
       toastError("Responsável com dados incompletos");
       return;
     }
     const responsaveisPayload = responsaveis.filter(
-      (resp) => resp.nome !== "" && resp.rf !== ""
+      (resp) => resp.nome !== "" && resp.rf !== "",
     );
     if (responsaveisPayload.some((resp) => resp.rf.length !== 7)) {
       toastError("O campo de RF deve conter 7 números");
@@ -168,13 +166,13 @@ export default ({
       for (let index = 0; index < tipoDeContagemSelecionada.length; index++) {
         data.append(
           "tipos_contagem_alimentacao[]",
-          tipoDeContagemSelecionada[index]
+          tipoDeContagemSelecionada[index],
         );
       }
       data.append("responsaveis", JSON.stringify(responsaveisPayload));
       const response = await updateSolicitacaoMedicaoInicial(
         solicitacaoMedicaoInicial.uuid,
-        data
+        data,
       );
       if (response.status === HTTP_STATUS.OK) {
         setIsOpen(false);
@@ -195,7 +193,7 @@ export default ({
           }
           !toast &&
             toastSuccess(
-              "Método de Contagem / Responsável atualizado com sucesso"
+              "Método de Contagem / Responsável atualizado com sucesso",
             );
         } else if (
           responsaveisPayload.length >
@@ -235,9 +233,8 @@ export default ({
   const getDefaultValueSelectTipoContagem = () => {
     if (solicitacaoMedicaoInicial)
       return solicitacaoMedicaoInicial.tipos_contagem_alimentacao.map(
-        (t) => t.nome
+        (t) => t.nome,
       );
-    if (opcoesContagem.length) return tiposDeContagem[0].nome;
   };
 
   return (

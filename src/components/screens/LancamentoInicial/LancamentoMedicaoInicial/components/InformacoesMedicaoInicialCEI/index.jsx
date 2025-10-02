@@ -37,8 +37,8 @@ function useResponsaveis(initialState) {
   const setaResponsavel = useCallback((input, value, index) => {
     setResponsaveis((currentResponsaveis) =>
       currentResponsaveis.map((resp, i) =>
-        i === index ? { ...resp, [input]: value } : resp
-      )
+        i === index ? { ...resp, [input]: value } : resp,
+      ),
     );
   }, []);
 
@@ -53,7 +53,7 @@ export const InformacoesMedicaoInicialCEI = ({
   onClickInfoBasicas,
 }) => {
   const { responsaveis, setaResponsavel } = useResponsaveis(
-    RESPONSABLES_INITIAL_STATE
+    RESPONSABLES_INITIAL_STATE,
   );
 
   const [uePossuiAlunosPeriodoParcial, setUePossuiAlunosPeriodoParcial] =
@@ -68,7 +68,7 @@ export const InformacoesMedicaoInicialCEI = ({
   const [alunosAdicionados, setAlunosAdicionados] = useState([]);
   const [tiposDeContagem, setTiposDeContagem] = useState([]);
   const [tipoDeContagemSelecionada, setTipoDeContagemSelecionada] = useState(
-    []
+    [],
   );
   const [alunosParcialAlterado, setAlunosParcialAlterado] = useState(false);
   const [loadingInfoBasicas, setLoadingInfoBasicas] = useState(false);
@@ -107,7 +107,7 @@ export const InformacoesMedicaoInicialCEI = ({
         setaResponsavel("rf", responsavel.rf, index);
       });
       setTipoDeContagemSelecionada(
-        solicitacaoMedicaoInicial.tipos_contagem_alimentacao.map((t) => t.uuid)
+        solicitacaoMedicaoInicial.tipos_contagem_alimentacao.map((t) => t.uuid),
       );
       if (solicitacaoMedicaoInicial.ue_possui_alunos_periodo_parcial) {
         setUePossuiAlunosPeriodoParcial("true");
@@ -137,9 +137,7 @@ export const InformacoesMedicaoInicialCEI = ({
 
   const handleClickEditar = () => {
     setEmEdicao(true);
-    !solicitacaoMedicaoInicial &&
-      opcoesContagem.length > 0 &&
-      setTipoDeContagemSelecionada([tiposDeContagem[0].uuid]);
+    !solicitacaoMedicaoInicial && opcoesContagem.length > 0;
   };
 
   const handleClickSalvar = async () => {
@@ -162,14 +160,14 @@ export const InformacoesMedicaoInicialCEI = ({
       responsaveis.some(
         (resp) =>
           (resp.nome !== "" && resp.rf === "") ||
-          (resp.nome === "" && resp.rf !== "")
+          (resp.nome === "" && resp.rf !== ""),
       )
     ) {
       toastError("Responsável com dados incompletos");
       return;
     }
     const responsaveisPayload = responsaveis.filter(
-      (resp) => resp.nome !== "" && resp.rf !== ""
+      (resp) => resp.nome !== "" && resp.rf !== "",
     );
     if (responsaveisPayload.some((resp) => resp.rf.length !== 7)) {
       toastError("O campo de RF deve conter 7 números");
@@ -182,12 +180,12 @@ export const InformacoesMedicaoInicialCEI = ({
       data.append("responsaveis", JSON.stringify(responsaveisPayload));
       data.append(
         "ue_possui_alunos_periodo_parcial",
-        uePossuiAlunosPeriodoParcial === "true"
+        uePossuiAlunosPeriodoParcial === "true",
       );
       for (let index = 0; index < tipoDeContagemSelecionada.length; index++) {
         data.append(
           "tipos_contagem_alimentacao[]",
-          tipoDeContagemSelecionada[index]
+          tipoDeContagemSelecionada[index],
         );
       }
       if (Array.isArray(alunosAdicionados) && alunosAdicionados.length > 0) {
@@ -204,7 +202,7 @@ export const InformacoesMedicaoInicialCEI = ({
       }
       const response = await updateSolicitacaoMedicaoInicial(
         solicitacaoMedicaoInicial.uuid,
-        data
+        data,
       );
       if (response.status === HTTP_STATUS.OK) {
         if (
@@ -318,9 +316,8 @@ export const InformacoesMedicaoInicialCEI = ({
   const getDefaultValueSelectTipoContagem = () => {
     if (solicitacaoMedicaoInicial)
       return solicitacaoMedicaoInicial.tipos_contagem_alimentacao.map(
-        (t) => t.nome
+        (t) => t.nome,
       );
-    if (opcoesContagem.length) return tiposDeContagem[0].nome;
   };
 
   return (
