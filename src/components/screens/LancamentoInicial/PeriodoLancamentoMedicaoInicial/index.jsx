@@ -591,9 +591,9 @@ export default () => {
         (ali) => ali.nome === "Lanche",
       );
       if (
-        (indexLanche !== -1 && grupoLocation !== "Programas e Projetos") ||
-        (indexLanche !== -1 &&
-          !(urlParams.get("ehPeriodoEspecifico") === "true"))
+        indexLanche !== -1 &&
+        grupoLocation !== "Programas e Projetos" &&
+        urlParams.get("ehPeriodoEspecifico") !== "true"
       ) {
         rowsDietas.push({
           nome: "Lanche",
