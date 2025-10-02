@@ -33,6 +33,7 @@ class cadastroProduto extends Component {
     this.state = {
       rascunhos: [],
       currentStep: 0,
+      isSubmitting: false,
       wizardSteps: [
         {
           step: {
@@ -282,6 +283,9 @@ class cadastroProduto extends Component {
   };
 
   onSubmit = async (values) => {
+    if (this.state.isSubmitting) return;
+    this.setState({ isSubmitting: true });
+
     let erro = null;
     const { payload } = this.state;
     payload["nome"] = values.nome.split("+")[0];
@@ -330,13 +334,16 @@ class cadastroProduto extends Component {
         defaultFabricanteStep1: null,
         renderBuscaProduto: true,
         currentStep: 0,
+        isSubmitting: false,
       });
       this.getRascunhos();
       this.props.reset("cadastroProduto");
     } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
       toastError(getError(response.data));
+      this.setState({ isSubmitting: false });
     } else {
       toastError(`Erro ao criar produto: ${getError(response.data)}`);
+      this.setState({ isSubmitting: false });
     }
   };
 
@@ -591,7 +598,11 @@ class cadastroProduto extends Component {
 
                     {currentStep === 2 && (
                       <Botao
-                        texto={"Enviar"}
+                        texto={
+                          this.state.isSubmitting ? "Enviando..." : "Enviar"
+                        }
+                        disabled={this.state.isSubmitting}
+                        dataTestId="botao-enviar"
                         type={BUTTON_TYPE.SUBMIT}
                         style={BUTTON_STYLE.GREEN}
                         onClick={handleSubmit((values) =>
