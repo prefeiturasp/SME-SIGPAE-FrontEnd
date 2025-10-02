@@ -592,6 +592,7 @@ class cadastroProduto extends Component {
                     {currentStep === 2 && (
                       <Botao
                         texto={"Enviar"}
+                        dataTestId="botao-enviar"
                         type={BUTTON_TYPE.SUBMIT}
                         style={BUTTON_STYLE.GREEN}
                         onClick={handleSubmit((values) =>
