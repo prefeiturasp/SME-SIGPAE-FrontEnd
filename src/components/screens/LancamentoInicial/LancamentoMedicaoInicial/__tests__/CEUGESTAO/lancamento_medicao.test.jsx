@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -16,10 +17,7 @@ import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "src/
 import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEUGESTAO/getSolicitacaoMedicaoInicialCEUGESTAO";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
-import React from "react";
-import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
@@ -136,7 +134,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
   });
 
   it("Verifica a ordem dos cards", () => {
-    preview.debug();
     const textos = [
       "Manhã",
       "Tarde",

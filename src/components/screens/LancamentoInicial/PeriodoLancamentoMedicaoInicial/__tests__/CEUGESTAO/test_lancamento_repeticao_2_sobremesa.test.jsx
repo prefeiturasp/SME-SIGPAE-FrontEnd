@@ -6,6 +6,8 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -15,6 +17,7 @@ import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancament
 import { mockDiasCalendarioCEUGESTAO_NOVEMBRO24 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/diasCalendarioCEUGESTAO_NOVEMBRO24";
 import { mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/logQuantidadeDietasAutorizadasCEUGESTAO";
 import { mockLocationStateCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockStateCEUGESTAO_TARDE";
+import { mockPermissoesLancamentosEspeciaisCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/permissoesLancamentosEspeciais";
 import { mockValoresMedicaoCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/valoresMedicaoCEUGESTAO_TARDE";
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
@@ -26,10 +29,7 @@ import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "src/
 import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEUGESTAO/getSolicitacaoMedicaoInicialCEUGESTAO";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
-import { mockPermissoesLancamentosEspeciaisCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/permissoesLancamentosEspeciais";
-import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
-import { ToastContainer } from "react-toastify";
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 2ª Sobremesa", () => {
   beforeEach(async () => {
@@ -215,7 +215,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
     const botao = screen.getByText("Salvar Lançamentos").closest("button");
     expect(botao).toBeInTheDocument();
     fireEvent.click(botao);
-
     await waitFor(() => {
       expect(
         screen.getByText(

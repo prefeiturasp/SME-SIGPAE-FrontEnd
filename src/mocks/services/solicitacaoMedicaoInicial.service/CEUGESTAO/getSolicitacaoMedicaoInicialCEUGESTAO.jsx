@@ -42,6 +42,7 @@ export const mockGetSolicitacaoMedicaoInicialCEUGESTAO = [
     historico: null,
     escola_eh_emebs: false,
     escola_cei_com_inclusao_parcial_autorizada: false,
+    escola_possui_alunos_regulares: false,
     criado_em: "13/02/2025 09:14:11",
     uuid: "546505cb-eef1-4080-a8e8-7538faccf969",
     ano: "2024",

@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
-import preview from "jest-preview";
 import { MemoryRouter } from "react-router-dom";
 import {
   PANORAMA_ESCOLA,
@@ -155,7 +154,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CMCT", () => {
   });
 
   it("Verifica a ordem dos cards", () => {
-    preview.debug();
     const textos = [
       "Manhã",
       "Noite",
