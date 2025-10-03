@@ -10,30 +10,30 @@ jest.mock("../../../../../services/produto.service", () => ({
   submitProduto: jest.fn(() => Promise.resolve({ status: 201 })),
   updateProduto: jest.fn(() => Promise.resolve({ status: 200 })),
   getInformacoesGrupo: jest.fn(() =>
-    Promise.resolve({ data: { results: [] } })
+    Promise.resolve({ data: { results: [] } }),
   ),
   getRascunhosDeProduto: jest.fn(() =>
-    Promise.resolve({ data: { results: [] } })
+    Promise.resolve({ data: { results: [] } }),
   ),
   produtoJaExiste: jest.fn(() =>
-    Promise.resolve({ status: 200, data: { produto_existe: false } })
+    Promise.resolve({ status: 200, data: { produto_existe: false } }),
   ),
   excluirRascunhoDeProduto: jest.fn(),
   excluirImagemDoProduto: jest.fn(),
   getUnidadesDeMedidaProduto: jest.fn(() =>
-    Promise.resolve({ data: { results: [] } })
+    Promise.resolve({ data: { results: [] } }),
   ),
   getEmbalagensProduto: jest.fn(() =>
-    Promise.resolve({ data: { results: [] } })
+    Promise.resolve({ data: { results: [] } }),
   ),
   getNomesUnicosProdutos: jest.fn(() =>
-    Promise.resolve({ data: { results: [] } })
+    Promise.resolve({ data: { results: [] } }),
   ),
   getNomesUnicosMarcas: jest.fn(() =>
-    Promise.resolve({ data: { results: [] } })
+    Promise.resolve({ data: { results: [] } }),
   ),
   getNomesUnicosFabricantes: jest.fn(() =>
-    Promise.resolve({ data: { results: [] } })
+    Promise.resolve({ data: { results: [] } }),
   ),
 }));
 
@@ -116,7 +116,7 @@ describe("CadastroProduto - Submit", () => {
     const { container } = render(
       <Provider store={store}>
         <CadastroProduto />
-      </Provider>
+      </Provider>,
     );
 
     await waitFor(() => {
@@ -161,7 +161,7 @@ describe("CadastroProduto - Submit", () => {
     const { container } = render(
       <Provider store={store}>
         <CadastroProduto />
-      </Provider>
+      </Provider>,
     );
 
     await waitFor(() => {

@@ -1,5 +1,5 @@
 export const mockLocationStateCEUGESTAO_TARDE = {
-  frequenciasDietasCEUGESTAO: [],
+  frequenciasDietasEscolaSemAlunoRegular: [],
   grupo: undefined,
   justificativa_periodo: null,
   mesAnoSelecionado: new Date("2024-11-01T00:00:00-03:00"),

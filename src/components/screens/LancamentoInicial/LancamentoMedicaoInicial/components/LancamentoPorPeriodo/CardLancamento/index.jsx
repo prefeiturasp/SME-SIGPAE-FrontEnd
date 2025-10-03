@@ -33,7 +33,7 @@ export const CardLancamento = ({
   quantidadeAlimentacoesLancadas,
   periodosInclusaoContinua = null,
   periodoEspecifico = null,
-  frequenciasDietasCEUGESTAO,
+  frequenciasDietasEscolaSemAlunoRegular,
   errosAoSalvar,
   periodosPermissoesLancamentosEspeciais,
 }) => {
@@ -47,14 +47,14 @@ export const CardLancamento = ({
     typeof errosAoSalvar === "object" &&
     errosAoSalvar.length > 0 &&
     errosAoSalvar.filter((obj) =>
-      [textoCabecalho, grupo].includes(obj.periodo_escolar)
+      [textoCabecalho, grupo].includes(obj.periodo_escolar),
     );
 
   const qtdAlimentacaoPeriodoFiltrada = () => {
     return quantidadeAlimentacoesLancadas.filter(
       (qtdAlimentacaoPeriodo) =>
         qtdAlimentacaoPeriodo.nome_periodo_grupo ===
-        nomePeriodoGrupo(grupo, textoCabecalho)
+        nomePeriodoGrupo(grupo, textoCabecalho),
     );
   };
 
@@ -68,7 +68,7 @@ export const CardLancamento = ({
     if (qtdAlimentacaoPeriodoFiltrada().length > 0) {
       const qtdAlimentacaoFiltrada =
         qtdAlimentacaoPeriodoFiltrada()[0].valores.filter(
-          (v) => v.nome_campo === alimentacao
+          (v) => v.nome_campo === alimentacao,
         );
       if (qtdAlimentacaoFiltrada.length > 0) {
         quantidade = qtdAlimentacaoFiltrada[0].valor;
@@ -80,7 +80,7 @@ export const CardLancamento = ({
   if (ehGrupoSolicitacoesDeAlimentacao || ehGrupoETEC) {
     if (ehGrupoETEC) {
       tipos_alimentacao = tipos_alimentacao.filter(
-        (alimentacao) => alimentacao !== "Lanche Emergencial"
+        (alimentacao) => alimentacao !== "Lanche Emergencial",
       );
     }
     alimentacoesFormatadas = tipos_alimentacao.map((alimentacao, key) => (
@@ -97,7 +97,7 @@ export const CardLancamento = ({
     if (
       periodosPermissoesLancamentosEspeciais
         ?.find(
-          (periodoPermissao) => periodoPermissao.periodo === textoCabecalho
+          (periodoPermissao) => periodoPermissao.periodo === textoCabecalho,
         )
         ?.alimentacoes.includes("Lanche Extra")
     ) {
@@ -123,7 +123,7 @@ export const CardLancamento = ({
       quantidadeAlimentacoesLancadas,
       solicitacaoMedicaoInicial,
       grupo,
-      textoCabecalho
+      textoCabecalho,
     );
   };
 
@@ -145,15 +145,16 @@ export const CardLancamento = ({
           justificativa_periodo: justificativaPeriodo(
             quantidadeAlimentacoesLancadas,
             grupo,
-            textoCabecalho
+            textoCabecalho,
           ),
           periodosInclusaoContinua: periodosInclusaoContinua,
           solicitacaoMedicaoInicial: solicitacaoMedicaoInicial,
-          frequenciasDietasCEUGESTAO: frequenciasDietasCEUGESTAO,
+          frequenciasDietasEscolaSemAlunoRegular:
+            frequenciasDietasEscolaSemAlunoRegular,
           periodoEspecifico: periodoEspecifico,
           ...location.state,
         },
-      }
+      },
     );
   };
 
@@ -183,11 +184,11 @@ export const CardLancamento = ({
                   ].includes(getStatusPeriodo())
                     ? "red"
                     : [
-                        "MEDICAO_CORRIGIDA_PELA_UE",
-                        "MEDICAO_CORRIGIDA_PARA_CODAE",
-                      ].includes(getStatusPeriodo())
-                    ? "blue"
-                    : ""
+                          "MEDICAO_CORRIGIDA_PELA_UE",
+                          "MEDICAO_CORRIGIDA_PARA_CODAE",
+                        ].includes(getStatusPeriodo())
+                      ? "blue"
+                      : ""
                 }`}
               >
                 {PERIODO_STATUS_DE_PROGRESSO[getStatusPeriodo()]
@@ -239,13 +240,13 @@ export const CardLancamento = ({
                       quantidadeAlimentacoesLancadas,
                       solicitacaoMedicaoInicial,
                       grupo,
-                      textoCabecalho
+                      textoCabecalho,
                     )}
                     style={styleBotaoCardLancamento(
                       quantidadeAlimentacoesLancadas,
                       solicitacaoMedicaoInicial,
                       grupo,
-                      textoCabecalho
+                      textoCabecalho,
                     )}
                     className="mt-auto"
                     onClick={() => handleClickEditar()}
@@ -253,7 +254,7 @@ export const CardLancamento = ({
                       quantidadeAlimentacoesLancadas,
                       solicitacaoMedicaoInicial,
                       grupo,
-                      textoCabecalho
+                      textoCabecalho,
                     )}
                   />
                 </div>
