@@ -253,3 +253,17 @@ export const codaePedeCorrecaoSolicitacaoMedicaoSemLancamentos = async (
     return data;
   }
 };
+
+export const updateInformacoesBasicas = async (uuid, params) => {
+  const url = `medicao-inicial/solicitacao-medicao-inicial/${uuid}/informacoes-basicas/`;
+  const headers = { "content-type": "multipart/form-data" };
+  const response = await axios
+    .patch(url, params, {
+      headers: headers,
+    })
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
