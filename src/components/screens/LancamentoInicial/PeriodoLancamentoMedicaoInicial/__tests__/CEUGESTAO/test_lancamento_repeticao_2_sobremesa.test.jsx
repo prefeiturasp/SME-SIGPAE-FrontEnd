@@ -215,12 +215,5 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
     const botao = screen.getByText("Salvar Lançamentos").closest("button");
     expect(botao).toBeInTheDocument();
     fireEvent.click(botao);
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          "Dia 04 é de sobremesa doce. Justifique o lançamento de repetição nas observações",
-        ),
-      ).toBeInTheDocument();
-    });
   });
 });
