@@ -99,3 +99,8 @@ export interface FichaRecebimento {
   etapa: string;
   uuid: string;
 }
+
+export interface OpcoesReposicaoCronograma {
+  tipo: string;
+  descricao: string;
+}

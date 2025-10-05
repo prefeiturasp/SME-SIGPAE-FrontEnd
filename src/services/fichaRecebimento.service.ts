@@ -6,6 +6,7 @@ import axios from "./_base";
 import {
   ResponseFichaRecebimento,
   ResponseFichaRecebimentoDetalhada,
+  ResponseOpcoesReposicaoCronograma,
 } from "src/interfaces/responses.interface";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -53,6 +54,22 @@ export const cadastraFichaRecebimento = async (
   }
 };
 
+export const cadastraReposicaoFichaRecebimento = async (
+  payload: FichaRecebimentoPayload
+): Promise<ResponseFichaRecebimento> => {
+  try {
+    return await axios.post("/reposicao-ficha-de-recebimento/", payload);
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response.status));
+  }
+};
+
+export const editaReposicaoFichaRecebimento = async (
+  payload: FichaRecebimentoPayload,
+  uuid: string
+): Promise<ResponseFichaRecebimento> =>
+  await axios.put(`/reposicao-ficha-de-recebimento/${uuid}/`, payload);
+
 export const listarFichasRecebimentos = async (
   params: URLSearchParams
 ): Promise<ResponseFichasDeRecebimento> => {
@@ -81,3 +98,7 @@ export const imprimirFichaRecebimento = async (
   const { data } = await axios.get(url, { responseType: "blob" });
   saveAs(data, "ficha_recebimento_" + numero + ".pdf");
 };
+
+export const listarOpcoesReposicao =
+  async (): Promise<ResponseOpcoesReposicaoCronograma> =>
+    await axios.get("/reposicao-cronograma-ficha-recebimento/");
