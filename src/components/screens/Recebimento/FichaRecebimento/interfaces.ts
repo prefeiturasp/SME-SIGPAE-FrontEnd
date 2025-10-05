@@ -29,6 +29,7 @@ export interface FichaRecebimentoPayload {
   houve_ocorrencia?: boolean | string;
   ocorrencias?: OcorrenciaFichaRecebimento[];
   password?: string;
+  reposicao_cronograma?: string;
 }
 
 export interface DadosCronogramaSimples {
