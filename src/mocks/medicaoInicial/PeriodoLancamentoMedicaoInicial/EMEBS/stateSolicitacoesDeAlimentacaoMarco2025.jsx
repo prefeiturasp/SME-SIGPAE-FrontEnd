@@ -1,5 +1,5 @@
 export const mockStateSolicitacoesDeAlimentacaoMarco2025EMEBS = {
-  frequenciasDietasCEUGESTAO: undefined,
+  frequenciasDietasEscolaSemAlunoRegular: undefined,
   grupo: "Solicitações de Alimentação",
   justificativa_periodo: null,
   mesAnoSelecionado: new Date("2025-03-01T00:00:00-03:00"),
