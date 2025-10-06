@@ -69,7 +69,7 @@ import {
 import "./styles.scss";
 import { detalharQuestoesPorCronograma } from "src/services/recebimento/questoesConferencia.service";
 import {
-  OpcoesReposicaoCronograma,
+  ReposicaoCronograma,
   QuestaoConferenciaSimples,
 } from "src/interfaces/recebimento.interface";
 
@@ -138,9 +138,9 @@ export default () => {
     QuestaoConferenciaSimples[]
   >([]);
   const [ocorrenciasCount, setOcorrenciasCount] = useState(1);
-  const [opcoesReposicao, setOpcoesReposicao] = useState<
-    OpcoesReposicaoCronograma[]
-  >([]);
+  const [opcoesReposicao, setOpcoesReposicao] = useState<ReposicaoCronograma[]>(
+    []
+  );
 
   const buscaCronogramas = async (): Promise<void> => {
     setCarregando(true);
@@ -376,7 +376,10 @@ export default () => {
     try {
       let cadastrar = cadastraFichaRecebimento;
       let editar = editarFichaRecebimento;
-      if (values.reposicao_cronograma === "Credito") {
+      if (
+        opcoesReposicao.find(({ uuid }) => uuid === values.reposicao_cronograma)
+          ?.tipo === "Credito"
+      ) {
         cadastrar = cadastraReposicaoFichaRecebimento;
         editar = editaReposicaoFichaRecebimento;
       }
@@ -921,7 +924,7 @@ export default () => {
                                 label="Referente à ocorrência registrada nesta etapa, o Fornecedor optou por:"
                                 name="reposicao_cronograma"
                                 options={opcoesReposicao.map(
-                                  (e: OpcoesReposicaoCronograma) => {
+                                  (e: ReposicaoCronograma) => {
                                     return {
                                       value: e.uuid,
                                       label: e.descricao,
@@ -1611,7 +1614,7 @@ export default () => {
 
                   <div className="mt-4 mb-4">
                     {stepAtual < ITENS_STEPS.length - 1 &&
-                      values.reposicao_cronograma !== "C" && (
+                      reposicaoSelecionada?.tipo !== "Credito" && (
                         <div className="mt-4 mb-4">
                           <Botao
                             texto="Próximo"
@@ -1639,7 +1642,7 @@ export default () => {
                       />
 
                       {(stepAtual === 2 ||
-                        values.reposicao_cronograma === "Credito") && (
+                        reposicaoSelecionada?.tipo === "Credito") && (
                         <Botao
                           texto="Salvar e Assinar"
                           type={BUTTON_TYPE.SUBMIT}

@@ -6,7 +6,7 @@ import axios from "./_base";
 import {
   ResponseFichaRecebimento,
   ResponseFichaRecebimentoDetalhada,
-  ResponseOpcoesReposicaoCronograma,
+  ResponseReposicaoCronograma,
 } from "src/interfaces/responses.interface";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -100,5 +100,5 @@ export const imprimirFichaRecebimento = async (
 };
 
 export const listarOpcoesReposicao =
-  async (): Promise<ResponseOpcoesReposicaoCronograma> =>
+  async (): Promise<ResponseReposicaoCronograma> =>
     await axios.get("/reposicao-cronograma-ficha-recebimento/");

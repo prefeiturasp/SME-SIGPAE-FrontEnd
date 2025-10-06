@@ -1,4 +1,5 @@
 import { Arquivo } from "src/interfaces/pre_recebimento.interface";
+import { ReposicaoCronograma } from "src/interfaces/recebimento.interface";
 import {
   ListagemPaginada,
   ResponseInterface,
@@ -71,6 +72,7 @@ export interface FichaRecebimentoDetalhada {
   ocorrencias?: OcorrenciaFichaRecebimento[];
   arquivos?: Arquivo[];
   alterado_em: string;
+  reposicao_cronograma: ReposicaoCronograma;
 }
 
 export interface QuestaoInitialValue {
