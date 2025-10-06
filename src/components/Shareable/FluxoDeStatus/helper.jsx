@@ -130,6 +130,7 @@ export const tipoDeStatus = (status) => {
     case "Corrigido para DRE":
     case "Corrigido para CODAE":
     case "Solicitação de Alteração de UE Realizada":
+    case "CODAE autorizou a Alteração de UE":
       return "prosseguiu";
 
     case "CODAE pediu correção":
@@ -159,6 +160,7 @@ export const tipoDeStatus = (status) => {
     case "CODAE negou cancelamento":
     case "Terceirizada recusou":
     case "CODAE não homologou":
+    case "CODAE negou a Alteração de UE":
       return "reprovado";
 
     default:
