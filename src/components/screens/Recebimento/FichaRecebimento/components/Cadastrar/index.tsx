@@ -159,9 +159,13 @@ export default () => {
       if (etapa.desvinculada_recebimento) {
         options.push({
           uuid: etapa.uuid,
-          nome: etapa.parte
-            ? `${etapa.etapa} - ${etapa.parte}`
-            : `${etapa.etapa}`,
+          nome: `${
+            etapa.parte ? `${etapa.etapa} - ${etapa.parte}` : `${etapa.etapa}`
+          }${
+            etapa.houve_ocorrencia
+              ? " - Reposição / Pagamento de Notificação"
+              : ""
+          }`,
           houve_ocorrencia: etapa.houve_ocorrencia,
         });
       }
