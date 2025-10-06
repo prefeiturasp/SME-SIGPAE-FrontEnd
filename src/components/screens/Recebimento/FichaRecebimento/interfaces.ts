@@ -124,6 +124,7 @@ export interface EtapaFicha {
   quantidade: string;
   total_embalagens: string;
   uuid: string;
+  houve_ocorrencia: boolean;
 }
 
 export interface CronogramaFicha {

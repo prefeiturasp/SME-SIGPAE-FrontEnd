@@ -162,6 +162,7 @@ export default () => {
           nome: etapa.parte
             ? `${etapa.etapa} - ${etapa.parte}`
             : `${etapa.etapa}`,
+          houve_ocorrencia: etapa.houve_ocorrencia,
         });
       }
     });
@@ -375,7 +376,7 @@ export default () => {
     try {
       let cadastrar = cadastraFichaRecebimento;
       let editar = editarFichaRecebimento;
-      if (values.reposicao_cronograma === "C") {
+      if (values.reposicao_cronograma === "Credito") {
         cadastrar = cadastraReposicaoFichaRecebimento;
         editar = editaReposicaoFichaRecebimento;
       }
@@ -611,6 +612,9 @@ export default () => {
             initialValues={initialValues}
             render={({ handleSubmit, values, form, errors }) => {
               formRef.current = form;
+              const reposicaoSelecionada = opcoesReposicao.find(
+                ({ uuid }) => uuid === values.reposicao_cronograma
+              );
 
               return (
                 <form onSubmit={handleSubmit}>
@@ -908,32 +912,36 @@ export default () => {
                             />
                           </div>
                         </div>
-                        <div className="row reposicao">
-                          <div className="col-6">
-                            <RadioButtonField
-                              label="Referente à ocorrência registrada nesta etapa, o Fornecedor optou por:"
-                              name="reposicao_cronograma"
-                              options={opcoesReposicao.map(
-                                (e: OpcoesReposicaoCronograma) => {
-                                  return {
-                                    value: e.tipo,
-                                    label: e.descricao,
-                                  };
-                                }
-                              )}
-                            />
-                          </div>
-                          {values.reposicao_cronograma === "C" && (
+                        {getOpcoesEtapas().some(
+                          (opt) => opt.houve_ocorrencia
+                        ) && (
+                          <div className="row reposicao">
                             <div className="col-6">
-                              <p>
-                                Anexe os documentos relacionados a reposição /
-                                pagamento da notificação:
-                              </p>
-                              {anexarArquivo}
+                              <RadioButtonField
+                                label="Referente à ocorrência registrada nesta etapa, o Fornecedor optou por:"
+                                name="reposicao_cronograma"
+                                options={opcoesReposicao.map(
+                                  (e: OpcoesReposicaoCronograma) => {
+                                    return {
+                                      value: e.uuid,
+                                      label: e.descricao,
+                                    };
+                                  }
+                                )}
+                              />
                             </div>
-                          )}
-                        </div>
-                        {values.reposicao_cronograma === "C" && (
+                            {reposicaoSelecionada?.tipo === "Credito" && (
+                              <div className="col-6">
+                                <p>
+                                  Anexe os documentos relacionados a reposição /
+                                  pagamento da notificação:
+                                </p>
+                                {anexarArquivo}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {reposicaoSelecionada?.tipo === "Credito" && (
                           <div className="row">{observacoes}</div>
                         )}
                       </section>
@@ -1631,7 +1639,7 @@ export default () => {
                       />
 
                       {(stepAtual === 2 ||
-                        values.reposicao_cronograma === "C") && (
+                        values.reposicao_cronograma === "Credito") && (
                         <Botao
                           texto="Salvar e Assinar"
                           type={BUTTON_TYPE.SUBMIT}
@@ -1640,7 +1648,7 @@ export default () => {
                           disabled={
                             (!questoesPrimarias?.length ||
                               Object.keys(errors).length > 0) &&
-                            (values.reposicao_cronograma === "1" ||
+                            (values.reposicao_cronograma === "Repor" ||
                               !values.cronograma ||
                               !values.etapa)
                           }

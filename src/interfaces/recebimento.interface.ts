@@ -101,6 +101,7 @@ export interface FichaRecebimento {
 }
 
 export interface OpcoesReposicaoCronograma {
+  uuid: string;
   tipo: string;
   descricao: string;
 }
