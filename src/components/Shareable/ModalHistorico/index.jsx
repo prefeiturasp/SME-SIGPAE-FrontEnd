@@ -17,6 +17,8 @@ const ModalHistorico = ({
   getHistorico,
   titulo,
   logs: logsProps,
+  motivoNegacao,
+  justificativaNegacao,
 }) => {
   const [logs, setLogs] = useState([]);
   const [logSelecionado, setLogSelecionado] = useState(null);
@@ -70,18 +72,6 @@ const ModalHistorico = ({
     return iniciais;
   };
 
-  // const getPdfUrl = log => {
-  //   let urlArquivoPDF = "";
-  //   if (statusValidosDownload.includes(log.status_evento_explicacao)) {
-  //     log.anexos.forEach(anexo => {
-  //       if (anexo.nome.includes("pdf")) {
-  //         urlArquivoPDF = anexo.arquivo_url;
-  //       }
-  //     });
-  //   }
-  //   return urlArquivoPDF;
-  // };
-
   const getArquivoUrl = (log) => {
     let urlArquivo = "";
 
@@ -91,7 +81,7 @@ const ModalHistorico = ({
       switch (tipoSolicitacao) {
         case "Solicitação de medição inicial": {
           const anexoPDF = log.anexos.find((anexo) =>
-            anexo.nome.includes("pdf")
+            anexo.nome.includes("pdf"),
           );
           if (anexoPDF) {
             urlArquivo = anexoPDF.arquivo_url;
@@ -225,6 +215,20 @@ const ModalHistorico = ({
                           <div>{logSelecionado.criado_em.split(" ")[0]}</div>
                         </div>
                       </article>
+                      {motivoNegacao &&
+                        [
+                          "CODAE negou a Alteração de UE",
+                          "CODAE negou cancelamento",
+                        ].includes(logSelecionado.status_evento_explicacao) && (
+                          <article>
+                            <>
+                              <div>Motivo:</div>
+                              <div>
+                                <p>{motivoNegacao}</p>
+                              </div>
+                            </>
+                          </article>
+                        )}
                       <article className="preenchimento">
                         {logSelecionado.justificativa !== "" && (
                           <>
@@ -237,7 +241,7 @@ const ModalHistorico = ({
                                 "Vínculo do Edital ao Produto",
                                 "CODAE Atualizou o protocolo",
                               ].includes(
-                                logSelecionado.status_evento_explicacao
+                                logSelecionado.status_evento_explicacao,
                               ) ? (
                               <div>Justificativa: </div>
                             ) : null}
@@ -248,6 +252,17 @@ const ModalHistorico = ({
                             />
                           </>
                         )}
+                        {logSelecionado.justificativa === "" &&
+                          justificativaNegacao && (
+                            <>
+                              <div>Justificativa: </div>
+                              <div
+                                dangerouslySetInnerHTML={{
+                                  __html: justificativaNegacao,
+                                }}
+                              />
+                            </>
+                          )}
                       </article>
                     </section>
                   </div>
@@ -258,7 +273,7 @@ const ModalHistorico = ({
             </header>
             {logSelecionado !== null &&
               statusValidosDownload.includes(
-                logSelecionado.status_evento_explicacao
+                logSelecionado.status_evento_explicacao,
               ) && (
                 <footer className="footer-historico">
                   <article>

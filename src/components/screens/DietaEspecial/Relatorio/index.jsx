@@ -93,7 +93,7 @@ const Relatorio = ({ visao }) => {
       setStatus(responseDietaEspecial.data.status_solicitacao);
       setHistorico(responseDietaEspecial.data.logs);
       await getSolicitacoesVigentes(
-        responseDietaEspecial.data.aluno.codigo_eol
+        responseDietaEspecial.data.aluno.codigo_eol,
       );
       setCarregando(false);
     } else {
@@ -102,9 +102,8 @@ const Relatorio = ({ visao }) => {
   };
 
   const getSolicitacoesVigentes = async (codigo_eol) => {
-    const responseDietasVigentes = await getDietasEspeciaisVigentesDeUmAluno(
-      codigo_eol
-    );
+    const responseDietasVigentes =
+      await getDietasEspeciaisVigentesDeUmAluno(codigo_eol);
     if (
       responseDietasVigentes &&
       responseDietasVigentes.status === HTTP_STATUS.OK
@@ -130,7 +129,7 @@ const Relatorio = ({ visao }) => {
         dadosDietaAberta,
         setDadosDietaAberta,
         setUuidDieta,
-        setDietasAbertas
+        setDietasAbertas,
       );
   }, []);
 
@@ -172,7 +171,7 @@ const Relatorio = ({ visao }) => {
             escolaCancelaSolicitacao(uuid).then(() => {
               onAutorizar();
               toastSuccess(
-                "Autorização do Cancelamento realizada com sucesso!"
+                "Autorização do Cancelamento realizada com sucesso!",
               );
             });
           }}
@@ -258,7 +257,7 @@ const Relatorio = ({ visao }) => {
   const dietasFiltradas = () => {
     return (
       dietasAbertas?.filter((dieta) =>
-        dieta.uuid_solicitacao.includes(uuidDieta)
+        dieta.uuid_solicitacao.includes(uuidDieta),
       ) || []
     );
   };
@@ -412,6 +411,12 @@ const Relatorio = ({ visao }) => {
                 onCancel={handleCancel}
                 logs={historico}
                 getHistorico={getHistorico}
+                {...(dietaEspecial.motivo_negacao?.descricao && {
+                  motivoNegacao: dietaEspecial.motivo_negacao.descricao,
+                })}
+                {...(dietaEspecial.justificativa_negacao && {
+                  justificativaNegacao: dietaEspecial.justificativa_negacao,
+                })}
               />
             </>
           )}
