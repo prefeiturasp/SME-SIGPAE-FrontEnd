@@ -1,13 +1,6 @@
 import "@testing-library/jest-dom";
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -16,13 +9,13 @@ import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
 import { mockDiasCalendarioCEUGESTAO_NOVEMBRO24 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/diasCalendarioCEUGESTAO_NOVEMBRO24";
 import { mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/logQuantidadeDietasAutorizadasCEUGESTAO";
+import { mockInclusoesAutorizadas } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockInclusoesAutorizadas";
 import { mockLocationStateCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockStateCEUGESTAO_TARDE";
-import { mockPermissoesLancamentosEspeciaisCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/permissoesLancamentosEspeciais";
-import { mockValoresMedicaoCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/valoresMedicaoCEUGESTAO_TARDE";
+import { mockValoresMedicaoCEUGESTAOParaInclusoesAutorizadas } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/valoresMedicaoCEUGESTAO_TARDE";
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { mockGetEscolaSimplesCEUGESTAO } from "src/mocks/services/escola.service/CEUGESTAO/mockGetEscolaSimplesCEUGESTAO";
-import { mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
+import { mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
 import { mockGetPeriodosInclusaoContinuaCEUGESTAO } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getPeriodosInclusaoContinuaCEUGESTAO";
 import { mockGetSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO";
 import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEUGESTAO/getQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO";
@@ -31,7 +24,7 @@ import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitaca
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
-describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 2ª Sobremesa", () => {
+describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
     mock
       .onGet("/usuarios/meus-dados/")
@@ -52,13 +45,13 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
       .reply(200, mockCategoriasMedicao);
     mock
       .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
-      .reply(200, ["2024-11-04"]); // Dia com 2ª sobremesa
+      .reply(200, []);
     mock
       .onGet("/log-quantidade-dietas-autorizadas/")
       .reply(200, mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE);
     mock
       .onGet("/medicao-inicial/valores-medicao/")
-      .reply(200, mockValoresMedicaoCEUGESTAO_TARDE);
+      .reply(200, mockValoresMedicaoCEUGESTAOParaInclusoesAutorizadas);
     mock.onGet("/medicao-inicial/dias-para-corrigir/").reply(200, []);
     mock.onGet("/matriculados-no-mes/").reply(200, []);
     mock
@@ -86,13 +79,19 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
       .onGet(
         "/medicao-inicial/permissao-lancamentos-especiais/permissoes-lancamentos-especiais-mes-ano-por-periodo/",
       )
-      .reply(200, mockPermissoesLancamentosEspeciaisCEUGESTAO);
+      .reply(200, {
+        results: {
+          alimentacoes_lancamentos_especiais: [],
+          permissoes_por_dia: [],
+          data_inicio_permissoes: null,
+        },
+      });
     mock
       .onGet("/dias-calendario/")
       .reply(200, mockDiasCalendarioCEUGESTAO_NOVEMBRO24);
     mock
       .onGet("/medicao-inicial/medicao/feriados-no-mes/")
-      .reply(200, { results: [] });
+      .reply(200, { results: ["02", "15", "20"] });
     mock
       .onGet(
         "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
@@ -112,17 +111,27 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
       .onGet(
         "/escola-solicitacoes/ceu-gestao-periodos-com-solicitacoes-autorizadas/",
       )
-      .reply(
-        200,
-        mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola,
-      );
+      .reply(200, mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola);
     mock
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/",
       )
       .reply(200, []);
 
-    const search = `?uuid=546505cb-eef1-4080-a8e8-7538faccf969&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
+    mock
+      .onGet("/escola-solicitacoes/inclusoes-autorizadas/", {
+        params: {
+          escola_uuid: mockMeusDadosEscolaCEUGESTAO.uuid,
+          tipo_solicitacao: "Inclusão de",
+          mes: 10,
+          ano: 2024,
+          periodos_escolares: ["TARDE"],
+          excluir_inclusoes_continuas: true,
+        },
+      })
+      .reply(200, mockInclusoesAutorizadas);
+
+    const search = `?uuid=546505cb-eef1-4080-a8e8-7538faccf969&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=true`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,
@@ -140,6 +149,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
             v7_relativeSplatPath: true,
           }}
         >
+          {" "}
           <MeusDadosContext.Provider
             value={{
               meusDados: mockMeusDadosEscolaCEUGESTAO,
@@ -147,13 +157,11 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
             }}
           >
             <PeriodoLancamentoMedicaoInicialPage />
-            <ToastContainer />
           </MeusDadosContext.Provider>
         </MemoryRouter>,
       );
     });
   });
-
   it("Renderiza título da página `Lançamento Medição Inicial`", () => {
     expect(screen.getAllByText("Lançamento Medição Inicial").length).toBe(2);
   });
@@ -167,53 +175,73 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
     expect(inputElement).toHaveAttribute("value", "Novembro / 2024");
   });
 
-  const setSemana2 = () => {
-    const semana2Element = screen.getByText("Semana 2");
-    fireEvent.click(semana2Element);
-  };
-
-  const setInput = (id, valor) => {
-    const input = screen.getByTestId(id);
-    expect(input).toBeInTheDocument();
-    fireEvent.change(input, {
-      target: { value: valor },
-    });
-    return input;
-  };
-
-  it("ao clicar na tab `Semana 2`, preenche oferta/repetição 2ª sobremesa sem a frequência e verifica bloqueio salvar", async () => {
-    setSemana2();
-    setInput("2_sobremesa_1_oferta__dia_04__categoria_1", "2");
-    setInput("repeticao_2_sobremesa__dia_04__categoria_1", "2");
-
-    await waitFor(() => {
-      const botao = screen.getByText("Salvar Lançamentos").closest("button");
-      expect(botao).toBeDisabled();
-    });
+  it("renderiza label `Período de Lançamento`", () => {
+    expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("ao clicar na tab `Semana 2`, preenche repetição menor do que oferta e verifica comportamento input", async () => {
-    setSemana2();
-    setInput("frequencia__dia_04__categoria_1", "2");
-    setInput("2_sobremesa_1_oferta__dia_04__categoria_1", "2");
-    const repeticao = setInput(
-      "repeticao_2_sobremesa__dia_04__categoria_1",
-      "1",
+  it("renderiza valor `TARDE` no input `Período de Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-periodo-lancamento");
+    expect(inputElement).toHaveAttribute("value", "TARDE");
+  });
+
+  it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
+    expect(
+      screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
+    ).toBeInTheDocument();
+  });
+
+  it("renderiza labels de com as semanas`", async () => {
+    expect(screen.getByText("Semana 1")).toBeInTheDocument();
+    expect(screen.getByText("Semana 2")).toBeInTheDocument();
+    expect(screen.getByText("Semana 3")).toBeInTheDocument();
+    expect(screen.getByText("Semana 4")).toBeInTheDocument();
+    expect(screen.getByText("Semana 5")).toBeInTheDocument();
+  });
+
+  it("renderiza informações da label `ALIMENTAÇÃO` da semana 1", async () => {
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+    expect(screen.getByText("Número de Alunos")).toBeInTheDocument();
+    expect(screen.getByText("Frequência")).toBeInTheDocument();
+  });
+
+  it("ao clicar na tab `Semana 2`, exibe as informações de inclusões autorizadas", async () => {
+    const semanaDois = screen.getByText("Semana 2");
+    fireEvent.click(semanaDois);
+
+    const inputNumeroAlunosDiaSeis = screen.getByTestId(
+      "numero_de_alunos__dia_06__categoria_1",
     );
-
-    await waitFor(() => {
-      expect(repeticao).toHaveClass("border-warning");
-    });
+    expect(inputNumeroAlunosDiaSeis).toHaveAttribute("value", "160");
   });
 
-  it("Preenche oferta/repetição 2ª sobremesa e verifica validação ao tentar salvar lançamento sem observação", async () => {
-    setSemana2();
-    setInput("frequencia__dia_04__categoria_1", "2");
-    setInput("2_sobremesa_1_oferta__dia_04__categoria_1", "2");
-    setInput("repeticao_2_sobremesa__dia_04__categoria_1", "2");
+  it("Verifica se o valor exibido na tela é igual ao valor de medicao", async () => {
+    const semanaDois = screen.getByText("Semana 2");
+    fireEvent.click(semanaDois);
 
-    const botao = screen.getByText("Salvar Lançamentos").closest("button");
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
+    const inputNumeroAlunosDiaSeis = screen.getByTestId(
+      "numero_de_alunos__dia_06__categoria_1",
+    );
+    const numeroAlunos =
+      mockValoresMedicaoCEUGESTAOParaInclusoesAutorizadas.find(
+        (item) => item.nome_campo === "numero_de_alunos",
+      )?.valor;
+    expect(inputNumeroAlunosDiaSeis).toHaveAttribute("value", numeroAlunos);
+  });
+
+  it("Verifica se o valor exibido na tela é igual ao da soma das inclusões autorizadas", async () => {
+    const semanaDois = screen.getByText("Semana 2");
+    fireEvent.click(semanaDois);
+
+    const inputNumeroAlunosDiaSeis = screen.getByTestId(
+      "numero_de_alunos__dia_06__categoria_1",
+    );
+    const numeroAlunos = mockInclusoesAutorizadas.results.reduce(
+      (soma, item) => soma + item.numero_alunos,
+      0,
+    );
+    expect(inputNumeroAlunosDiaSeis).toHaveAttribute(
+      "value",
+      numeroAlunos.toString(),
+    );
   });
 });
