@@ -156,7 +156,7 @@ export default () => {
   const getOpcoesEtapas = () => {
     let options = [];
     cronograma.etapas?.forEach((etapa) => {
-      if (etapa.desvinculada_recebimento) {
+      if (etapa.desvinculada_recebimento || etapa.houve_ocorrencia) {
         options.push({
           uuid: etapa.uuid,
           nome: `${
@@ -919,9 +919,9 @@ export default () => {
                             />
                           </div>
                         </div>
-                        {getOpcoesEtapas().some(
-                          (opt) => opt.houve_ocorrencia
-                        ) && (
+                        {getOpcoesEtapas()?.find(
+                          (opt) => opt.uuid === values.etapa
+                        )?.houve_ocorrencia && (
                           <div className="row reposicao">
                             <div className="col-6">
                               <RadioButtonField
