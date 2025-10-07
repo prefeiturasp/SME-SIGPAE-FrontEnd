@@ -2325,28 +2325,23 @@ export default () => {
   };
 
   const exibeBotaoAdicionarObservacao = (dia, categoriaId) => {
+    if (
+      [
+        "MEDICAO_CORRECAO_SOLICITADA",
+        "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+        "MEDICAO_CORRIGIDA_PELA_UE",
+        "MEDICAO_CORRIGIDA_PARA_CODAE",
+      ].includes(location.state.status_periodo)
+    )
+      return true;
     const temInclusaoAutorizadaNoDia = inclusoesAutorizadas.some(
       (inclusao) => inclusao.dia === dia,
     );
     return (
       (!validacaoSemana(dia) &&
         (validacaoDiaLetivo(dia) || temInclusaoAutorizadaNoDia) &&
-        !(
-          escolaEhEMEBS() &&
-          [
-            "MEDICAO_CORRECAO_SOLICITADA",
-            "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-            "MEDICAO_CORRIGIDA_PELA_UE",
-            "MEDICAO_CORRIGIDA_PARA_CODAE",
-          ].includes(location.state.status_periodo)
-        )) ||
+        !escolaEhEMEBS()) ||
       (escolaEhEMEBS() &&
-        [
-          "MEDICAO_CORRECAO_SOLICITADA",
-          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-          "MEDICAO_CORRIGIDA_PELA_UE",
-          "MEDICAO_CORRIGIDA_PARA_CODAE",
-        ].includes(location.state.status_periodo) &&
         !validacaoSemana(dia) &&
         diasParaCorrecao.find(
           (diaParaCorrecao) =>
