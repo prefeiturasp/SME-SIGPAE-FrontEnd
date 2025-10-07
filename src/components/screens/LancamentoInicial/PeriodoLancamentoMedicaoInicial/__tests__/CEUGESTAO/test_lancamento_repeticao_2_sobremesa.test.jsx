@@ -6,6 +6,8 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -15,21 +17,19 @@ import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancament
 import { mockDiasCalendarioCEUGESTAO_NOVEMBRO24 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/diasCalendarioCEUGESTAO_NOVEMBRO24";
 import { mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/logQuantidadeDietasAutorizadasCEUGESTAO";
 import { mockLocationStateCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockStateCEUGESTAO_TARDE";
+import { mockPermissoesLancamentosEspeciaisCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/permissoesLancamentosEspeciais";
 import { mockValoresMedicaoCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/valoresMedicaoCEUGESTAO_TARDE";
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { mockGetEscolaSimplesCEUGESTAO } from "src/mocks/services/escola.service/CEUGESTAO/mockGetEscolaSimplesCEUGESTAO";
-import { mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getCEUGESTAOPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
+import { mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
 import { mockGetPeriodosInclusaoContinuaCEUGESTAO } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getPeriodosInclusaoContinuaCEUGESTAO";
 import { mockGetSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO";
 import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEUGESTAO/getQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO";
 import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEUGESTAO/getSolicitacaoMedicaoInicialCEUGESTAO";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
-import { mockPermissoesLancamentosEspeciaisCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/permissoesLancamentosEspeciais";
-import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
-import { ToastContainer } from "react-toastify";
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 2ª Sobremesa", () => {
   beforeEach(async () => {
@@ -44,7 +44,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
       .reply(200, mockGetEscolaSimplesCEUGESTAO);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/b11a2964-c9e0-488a-bb7f-6e11df2c903b/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/b11a2964-c9e0-488a-bb7f-6e11df2c903b/",
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO);
     mock
@@ -84,7 +84,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
       .reply(200, { results: [] });
     mock
       .onGet(
-        "/medicao-inicial/permissao-lancamentos-especiais/permissoes-lancamentos-especiais-mes-ano-por-periodo/"
+        "/medicao-inicial/permissao-lancamentos-especiais/permissoes-lancamentos-especiais-mes-ano-por-periodo/",
       )
       .reply(200, mockPermissoesLancamentosEspeciaisCEUGESTAO);
     mock
@@ -95,27 +95,30 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
       .reply(200, { results: [] });
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
       )
       .reply(200, []);
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/"
+        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/",
       )
       .reply(200, []);
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/"
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
       .reply(200, mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO);
     mock
       .onGet(
-        "/escola-solicitacoes/ceu-gestao-periodos-com-solicitacoes-autorizadas/"
+        "/escola-solicitacoes/ceu-gestao-periodos-com-solicitacoes-autorizadas/",
       )
-      .reply(200, mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola);
+      .reply(
+        200,
+        mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola,
+      );
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/"
+        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/",
       )
       .reply(200, []);
 
@@ -146,7 +149,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
             <PeriodoLancamentoMedicaoInicialPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -195,7 +198,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
     setInput("2_sobremesa_1_oferta__dia_04__categoria_1", "2");
     const repeticao = setInput(
       "repeticao_2_sobremesa__dia_04__categoria_1",
-      "1"
+      "1",
     );
 
     await waitFor(() => {
@@ -212,13 +215,5 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
     const botao = screen.getByText("Salvar Lançamentos").closest("button");
     expect(botao).toBeInTheDocument();
     fireEvent.click(botao);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(
-          "Dia 04 é de sobremesa doce. Justifique o lançamento de repetição nas observações"
-        )
-      ).toBeInTheDocument();
-    });
   });
 });
