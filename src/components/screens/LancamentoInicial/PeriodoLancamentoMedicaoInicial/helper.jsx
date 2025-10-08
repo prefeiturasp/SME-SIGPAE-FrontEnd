@@ -620,6 +620,8 @@ export const desabilitarField = (
       ((!values[`matriculados__dia_${dia}__categoria_${categoria}`] ||
         Number(values[`matriculados__dia_${dia}__categoria_${categoria}`]) ===
           0) &&
+        !location.state.ehPeriodoEspecifico &&
+        grupoLocation !== "Programas e Projetos" &&
         !nomeCategoria.includes("DIETA ESPECIAL")) ||
       Number(
         values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
