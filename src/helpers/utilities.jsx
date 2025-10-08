@@ -1163,7 +1163,11 @@ export const exibirModuloMedicaoInicial = () => {
         usuarioEhAdministradorNutriSupervisao()
       );
     case `"terceirizada"`:
-      return usuarioEhEmpresaTerceirizada();
+      return (
+        usuarioEhEmpresaTerceirizada() &&
+        localStorage.getItem("possui_escolas_com_acesso_ao_medicao_inicial") ===
+          "true"
+      );
     default:
       return false;
   }
