@@ -19,6 +19,9 @@ import {
   cadastraFichaRecebimento,
   editarFichaRecebimento,
   editaRascunhoFichaRecebimento,
+  cadastraReposicaoFichaRecebimento,
+  editaReposicaoFichaRecebimento,
+  listarOpcoesReposicao,
 } from "src/services/fichaRecebimento.service";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import Select from "src/components/Shareable/Select";
@@ -65,7 +68,10 @@ import {
 
 import "./styles.scss";
 import { detalharQuestoesPorCronograma } from "src/services/recebimento/questoesConferencia.service";
-import { QuestaoConferenciaSimples } from "src/interfaces/recebimento.interface";
+import {
+  ReposicaoCronograma,
+  QuestaoConferenciaSimples,
+} from "src/interfaces/recebimento.interface";
 
 const ITENS_STEPS = [
   {
@@ -132,6 +138,9 @@ export default () => {
     QuestaoConferenciaSimples[]
   >([]);
   const [ocorrenciasCount, setOcorrenciasCount] = useState(1);
+  const [opcoesReposicao, setOpcoesReposicao] = useState<ReposicaoCronograma[]>(
+    []
+  );
 
   const buscaCronogramas = async (): Promise<void> => {
     setCarregando(true);
@@ -147,12 +156,17 @@ export default () => {
   const getOpcoesEtapas = () => {
     let options = [];
     cronograma.etapas?.forEach((etapa) => {
-      if (etapa.desvinculada_recebimento) {
+      if (etapa.desvinculada_recebimento || etapa.houve_ocorrencia) {
         options.push({
           uuid: etapa.uuid,
-          nome: etapa.parte
-            ? `${etapa.etapa} - ${etapa.parte}`
-            : `${etapa.etapa}`,
+          nome: `${
+            etapa.parte ? `${etapa.etapa} - ${etapa.parte}` : `${etapa.etapa}`
+          }${
+            etapa.houve_ocorrencia
+              ? " - Reposição / Pagamento de Notificação"
+              : ""
+          }`,
+          houve_ocorrencia: etapa.houve_ocorrencia,
         });
       }
     });
@@ -322,6 +336,7 @@ export default () => {
       questoes: questoes,
       houve_ocorrencia: stringToBoolean(values.houve_ocorrencia),
       ocorrencias: extraiOcorrenciasDoFormulario(values),
+      reposicao_cronograma: values.reposicao_cronograma,
       ...(password && { password }),
     };
 
@@ -363,9 +378,19 @@ export default () => {
     let payload: FichaRecebimentoPayload = formataPayload(values, password);
 
     try {
+      let cadastrar = cadastraFichaRecebimento;
+      let editar = editarFichaRecebimento;
+      if (
+        opcoesReposicao.find(({ uuid }) => uuid === values.reposicao_cronograma)
+          ?.tipo === "Credito"
+      ) {
+        cadastrar = cadastraReposicaoFichaRecebimento;
+        editar = editaReposicaoFichaRecebimento;
+      }
+
       const response = initialValues.uuid
-        ? await editarFichaRecebimento(payload, initialValues.uuid)
-        : await cadastraFichaRecebimento(payload);
+        ? await editar(payload, initialValues.uuid)
+        : await cadastrar(payload);
       if (response.status === 201 || response.status === 200) {
         toastSuccess("Ficha de recebimento Assinada com sucesso!");
         redirecionarPara();
@@ -544,6 +569,47 @@ export default () => {
   const ehEdicao = !!initialValues.cronograma;
   const naoExistemLaudos = cronograma.documentos_de_recebimento?.length === 0;
 
+  const observacoes = (
+    <Field
+      component={TextArea}
+      label={
+        stepAtual === 0 ? "Observações:" : "Descreva as observações necessárias"
+      }
+      required={stepAtual === 0}
+      name={`observacao`}
+      placeholder="Descreva as observações necessárias"
+    />
+  );
+
+  const anexarArquivo = (
+    <InputFileField
+      name="arquivo"
+      setFiles={setFiles}
+      removeFile={removeFiles}
+      arquivosIniciais={arquivos as ArquivoForm[]}
+      toastSuccess="Documento incluído com sucesso!"
+      textoBotao="Anexar Documento"
+      helpText={
+        stepAtual !== 0
+          ? "Envie arquivos nos formatos: PDF, PNG, JPG ou JPEG  com até 10MB."
+          : ""
+      }
+    />
+  );
+
+  const carregarOpcoesReposicao = async () => {
+    try {
+      const resposta = await listarOpcoesReposicao();
+      if (resposta.status === 200) setOpcoesReposicao(resposta.data.results);
+    } catch (error) {
+      toastError("Erro ao carregar opções reposição de cronograma:", error);
+    }
+  };
+
+  useEffect(() => {
+    carregarOpcoesReposicao();
+  }, []);
+
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       <div className="card mt-3 card-cadastro-ficha-recebimento">
@@ -553,6 +619,9 @@ export default () => {
             initialValues={initialValues}
             render={({ handleSubmit, values, form, errors }) => {
               formRef.current = form;
+              const reposicaoSelecionada = opcoesReposicao.find(
+                ({ uuid }) => uuid === values.reposicao_cronograma
+              );
 
               return (
                 <form onSubmit={handleSubmit}>
@@ -850,6 +919,38 @@ export default () => {
                             />
                           </div>
                         </div>
+                        {getOpcoesEtapas()?.find(
+                          (opt) => opt.uuid === values.etapa
+                        )?.houve_ocorrencia && (
+                          <div className="row reposicao">
+                            <div className="col-6">
+                              <RadioButtonField
+                                label="Referente à ocorrência registrada nesta etapa, o Fornecedor optou por:"
+                                name="reposicao_cronograma"
+                                options={opcoesReposicao.map(
+                                  (e: ReposicaoCronograma) => {
+                                    return {
+                                      value: e.uuid,
+                                      label: e.descricao,
+                                    };
+                                  }
+                                )}
+                              />
+                            </div>
+                            {reposicaoSelecionada?.tipo === "Credito" && (
+                              <div className="col-6">
+                                <p>
+                                  Anexe os documentos relacionados a reposição /
+                                  pagamento da notificação:
+                                </p>
+                                {anexarArquivo}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {reposicaoSelecionada?.tipo === "Credito" && (
+                          <div className="row">{observacoes}</div>
+                        )}
                       </section>
                     </Collapse>
                   )}
@@ -1505,27 +1606,10 @@ export default () => {
 
                       <section id="observacoes">
                         <div className="row">
-                          <div className="col">
-                            <Field
-                              component={TextArea}
-                              label="Descreva as observações necessárias"
-                              name={`observacao`}
-                              placeholder="Descreva as observações necessárias"
-                            />
-                          </div>
+                          <div className="col">{observacoes}</div>
                         </div>
 
-                        <div className="row">
-                          <InputFileField
-                            name="arquivo"
-                            setFiles={setFiles}
-                            removeFile={removeFiles}
-                            arquivosIniciais={arquivos as ArquivoForm[]}
-                            toastSuccess="Documento incluído com sucesso!"
-                            textoBotao="Anexar Documento"
-                            helpText="Envie arquivos nos formatos: PDF, PNG, JPG ou JPEG  com até 10MB."
-                          />
-                        </div>
+                        <div className="row">{anexarArquivo}</div>
                       </section>
                     </Collapse>
                   )}
@@ -1533,20 +1617,21 @@ export default () => {
                   <hr />
 
                   <div className="mt-4 mb-4">
-                    {stepAtual < ITENS_STEPS.length - 1 && (
-                      <div className="mt-4 mb-4">
-                        <Botao
-                          texto="Próximo"
-                          type={BUTTON_TYPE.BUTTON}
-                          style={BUTTON_STYLE.GREEN_OUTLINE}
-                          className="float-end ms-3"
-                          onClick={() =>
-                            setStepAtual((stepAtual) => stepAtual + 1)
-                          }
-                          disabled={Object.keys(errors).length > 0}
-                        />
-                      </div>
-                    )}
+                    {stepAtual < ITENS_STEPS.length - 1 &&
+                      reposicaoSelecionada?.tipo !== "Credito" && (
+                        <div className="mt-4 mb-4">
+                          <Botao
+                            texto="Próximo"
+                            type={BUTTON_TYPE.BUTTON}
+                            style={BUTTON_STYLE.GREEN_OUTLINE}
+                            className="float-end ms-3"
+                            onClick={() =>
+                              setStepAtual((stepAtual) => stepAtual + 1)
+                            }
+                            disabled={Object.keys(errors).length > 0}
+                          />
+                        </div>
+                      )}
 
                     <div className="float-end">
                       <Botao
@@ -1560,15 +1645,19 @@ export default () => {
                         }}
                       />
 
-                      {stepAtual === 2 && (
+                      {(stepAtual === 2 ||
+                        reposicaoSelecionada?.tipo === "Credito") && (
                         <Botao
                           texto="Salvar e Assinar"
                           type={BUTTON_TYPE.SUBMIT}
                           style={BUTTON_STYLE.GREEN}
                           className="ms-3"
                           disabled={
-                            !questoesPrimarias?.length ||
-                            Object.keys(errors).length > 0
+                            (!questoesPrimarias?.length ||
+                              Object.keys(errors).length > 0) &&
+                            (values.reposicao_cronograma === "Repor" ||
+                              !values.cronograma ||
+                              !values.etapa)
                           }
                         />
                       )}
