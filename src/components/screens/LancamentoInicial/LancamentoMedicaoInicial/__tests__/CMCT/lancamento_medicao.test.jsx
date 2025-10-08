@@ -7,49 +7,74 @@ import {
 } from "src/configs/constants";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
-import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
-import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
-import { mockGetEscolaSimplesCEUGESTAO } from "src/mocks/services/escola.service/CEUGESTAO/mockGetEscolaSimplesCEUGESTAO";
-import { mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
-import { mockGetPeriodosInclusaoContinuaCEUGESTAO } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getPeriodosInclusaoContinuaCEUGESTAO";
-import { mockGetSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO";
-import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEUGESTAO/getQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO";
-import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEUGESTAO/getSolicitacaoMedicaoInicialCEUGESTAO";
+import { mockDiasCalendarioSetembro2025CMCT } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CMCT/Setembro2025/diasCalendario";
+import { mockMeusDadosEscolaCMCT } from "src/mocks/meusDados/escolaCMCT";
+import { mockGetVinculosTipoAlimentacaoPorEscolaCMCT } from "src/mocks/services/cadastroTipoAlimentacao.service/CMCT/mockGetVinculosTipoAlimentacaoPorEscolaCMCT";
+import { mockEscolaSimplesCMCT } from "src/mocks/services/escola.service/CMCT/escolaSimples";
+import { mockEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscolaCMCT } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CMCT/periodosSolicitacoesAutorizadasEscola";
+import { mockPanoramaEscolaCMCTSetembro2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/CMCT/Setembro2025/panoramaEscola";
+import { mockSolicitacaoMedicaoInicialCMCTSetembro2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/CMCT/Setembro2025/solicitacaoMedicaoInicial";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
-describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
+describe("Teste <LancamentoMedicaoInicial> - Usuário CMCT", () => {
+  const escolaUuid = mockMeusDadosEscolaCMCT.vinculo_atual.instituicao.uuid;
+  const solicitacaoMedicaoInicialUuid =
+    mockSolicitacaoMedicaoInicialCMCTSetembro2025[0].uuid;
+
   beforeEach(async () => {
-    mock
-      .onGet("/usuarios/meus-dados/")
-      .reply(200, mockMeusDadosEscolaCEUGESTAO);
+    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCMCT);
     mock
       .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
-      .reply(200, []);
+      .reply(200, mockPanoramaEscolaCMCTSetembro2025);
     mock
-      .onGet("/escolas-simples/b11a2964-c9e0-488a-bb7f-6e11df2c903b/")
-      .reply(200, mockGetEscolaSimplesCEUGESTAO);
+      .onGet(`/escolas-simples/${escolaUuid}/`)
+      .reply(200, mockEscolaSimplesCMCT);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/b11a2964-c9e0-488a-bb7f-6e11df2c903b/",
+        "/medicao-inicial/solicitacao-medicao-inicial/solicitacoes-lancadas/",
       )
-      .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO);
+      .reply(200, []);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
+      )
+      .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCMCT);
+    mock
+      .onGet(
+        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano",
+      )
+      .reply(200, []);
     mock
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-      .reply(200, mockGetSolicitacaoMedicaoInicialCEUGESTAO);
+      .reply(200, mockSolicitacaoMedicaoInicialCMCTSetembro2025);
+    mock
+      .onGet("/dias-calendario/")
+      .reply(200, mockDiasCalendarioSetembro2025CMCT);
     mock
       .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
       .reply(200, mockGetTiposDeContagemAlimentacao);
-    mock
-      .onGet("/periodos-escolares/inclusao-continua-por-mes/")
-      .reply(200, mockGetPeriodosInclusaoContinuaCEUGESTAO);
-    mock
-      .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
-      .reply(200, mockGetSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO);
+    mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
+      periodos: { TARDE: "20bd9ca9-d499-456a-bd86-fb8f297947d6" },
+    });
+    mock.onGet("/escola-solicitacoes/kit-lanches-autorizadas/").reply(200, {
+      results: [
+        { dia: "02", numero_alunos: 100, kit_lanche_id_externo: "2EB2A" },
+      ],
+    });
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-      .reply(200, { results: [] });
+      .reply(200, {
+        results: [
+          {
+            dia: "02",
+            numero_alunos: 100,
+            inclusao_id_externo: "6DA39",
+            motivo: "Lanche Emergencial",
+          },
+        ],
+      });
     mock
       .onGet("/escola-solicitacoes/inclusoes-etec-autorizadas/")
       .reply(200, { results: [] });
@@ -60,27 +85,22 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
       .reply(200, []);
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/",
+        `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoMedicaoInicialUuid}/ceu-gestao-frequencias-dietas/`,
       )
       .reply(200, []);
     mock
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
-      .reply(200, mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO);
+      .reply(200, { results: [] });
     mock
       .onGet(
         "/escola-solicitacoes/ceu-gestao-periodos-com-solicitacoes-autorizadas/",
       )
       .reply(
         200,
-        mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola,
+        mockEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscolaCMCT,
       );
-    mock
-      .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/",
-      )
-      .reply(200, []);
 
     const search = `?mes=11&ano=2024`;
     Object.defineProperty(window, "location", {
@@ -102,7 +122,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
           {" "}
           <MeusDadosContext.Provider
             value={{
-              meusDados: mockMeusDadosEscolaCEUGESTAO,
+              meusDados: mockMeusDadosEscolaCMCT,
               setMeusDados: jest.fn(),
             }}
           >
@@ -121,8 +141,8 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("Renderiza período `Tarde`", () => {
-    expect(screen.getByText("Tarde")).toBeInTheDocument();
+  it("Renderiza período `Manhã`", () => {
+    expect(screen.getByText("Manhã")).toBeInTheDocument();
   });
 
   it("Renderiza período `Programas e Projetos`", () => {
@@ -136,8 +156,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
   it("Verifica a ordem dos cards", () => {
     const textos = [
       "Manhã",
-      "Tarde",
-      "Integral",
       "Noite",
       "Programas e Projetos",
       "Solicitações de Alimentação",

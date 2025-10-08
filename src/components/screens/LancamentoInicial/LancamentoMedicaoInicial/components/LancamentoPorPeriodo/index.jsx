@@ -13,13 +13,13 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import {
   deepCopy,
-  ehEscolaTipoCEUGESTAO,
+  escolaNaoPossuiAlunosRegulares,
   getError,
   tiposAlimentacaoETEC,
   usuarioEhEscolaTerceirizadaDiretor,
 } from "src/helpers/utilities";
 import {
-  getCEUGESTAOPeriodosSolicitacoesAutorizadasEscola,
+  getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola,
   getPeriodosInclusaoContinua,
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
   getSolicitacoesInclusoesEtecAutorizadasEscola,
@@ -29,7 +29,7 @@ import {
 import {
   escolaEnviaCorrecaoMedicaoInicialCODAE,
   escolaEnviaCorrecaoMedicaoInicialDRE,
-  getCEUGESTAOFrequenciasDietas,
+  getEscolaSemAlunosRegularesFrequenciasDietas,
   getQuantidadeAlimentacoesLancadasPeriodoGrupo,
   getSolicitacaoMedicaoInicial,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
@@ -98,9 +98,14 @@ export const LancamentoPorPeriodo = ({
     solicitacoesInclusoesEtecAutorizadas,
     setSolicitacoesInclusoesEtecAutorizadas,
   ] = useState(undefined);
-  const [periodosCEUGESTAO, setPeriodosCEUGESTAO] = useState(undefined);
-  const [frequenciasDietasCEUGESTAO, setFrequenciasDietasCEUGESTAO] =
-    useState(undefined);
+  const [
+    periodosEscolaSemAlunosRegulares,
+    setPeriodosEscolaSemAlunosRegulares,
+  ] = useState(undefined);
+  const [
+    frequenciasDietasEscolaSemAlunoRegular,
+    setfrequenciasDietasEscolaSemAlunoRegular,
+  ] = useState(undefined);
 
   const [
     frequenciasDietasPeriodosEspeciais,
@@ -123,7 +128,7 @@ export const LancamentoPorPeriodo = ({
       setPeriodosInclusaoContinua(response.data.periodos);
     } else {
       setErroAPI(
-        "Erro ao carregar períodos de inclusão contínua. Tente novamente mais tarde."
+        "Erro ao carregar períodos de inclusão contínua. Tente novamente mais tarde.",
       );
     }
   };
@@ -141,7 +146,7 @@ export const LancamentoPorPeriodo = ({
       setSolicitacoesKitLanchesAutorizadas(response.data.results);
     } else {
       setErroAPI(
-        "Erro ao carregar Kit Lanches Autorizadas. Tente novamente mais tarde."
+        "Erro ao carregar Kit Lanches Autorizadas. Tente novamente mais tarde.",
       );
     }
   };
@@ -158,11 +163,11 @@ export const LancamentoPorPeriodo = ({
         await getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola(params);
       if (response.status === HTTP_STATUS.OK) {
         setSolicitacoesAlteracaoLancheEmergencialAutorizadas(
-          response.data.results
+          response.data.results,
         );
       } else {
         setErroAPI(
-          "Erro ao carregar Alteração de Lanche Emergencial Autorizadas. Tente novamente mais tarde."
+          "Erro ao carregar Alteração de Lanche Emergencial Autorizadas. Tente novamente mais tarde.",
         );
       }
     };
@@ -180,7 +185,7 @@ export const LancamentoPorPeriodo = ({
       setSolicitacoesInclusoesEtecAutorizadas(response.data.results);
     } else {
       setErroAPI(
-        "Erro ao carregar Inclusões ETEC Autorizadas. Tente novamente mais tarde."
+        "Erro ao carregar Inclusões ETEC Autorizadas. Tente novamente mais tarde.",
       );
     }
   };
@@ -202,73 +207,73 @@ export const LancamentoPorPeriodo = ({
         return vinculo;
       });
       const nomesPeriodosNormais = periodosEscolaSimples.map(
-        (vinculo) => vinculo.periodo_escolar.nome
+        (vinculo) => vinculo.periodo_escolar.nome,
       );
       const pEspecificos = data.filter(
         (vinculo) =>
-          !nomesPeriodosNormais.includes(vinculo.periodo_escolar.nome)
+          !nomesPeriodosNormais.includes(vinculo.periodo_escolar.nome),
       );
       let periodos = periodosEscolaSimples.concat(pEspecificos);
       setPeriodosEspecificos(periodos);
     } else {
       setErroAPI(
-        "Erro ao carregar Inclusões Autorizadas com Evento Específico. Tente novamente mais tarde."
+        "Erro ao carregar Inclusões Autorizadas com Evento Específico. Tente novamente mais tarde.",
       );
     }
   };
 
   const getQuantidadeAlimentacoesLancadasPeriodoGrupoAsync = async () => {
     const params = { uuid_solicitacao: solicitacaoMedicaoInicial.uuid };
-    const response = await getQuantidadeAlimentacoesLancadasPeriodoGrupo(
-      params
-    );
+    const response =
+      await getQuantidadeAlimentacoesLancadasPeriodoGrupo(params);
     if (response.status === HTTP_STATUS.OK) {
       setQuantidadeAlimentacoesLancadas(response.data.results);
     } else {
       toastError(
-        "Erro ao carregar quantidades de alimentações lançadas. Tente novamente mais tarde."
+        "Erro ao carregar quantidades de alimentações lançadas. Tente novamente mais tarde.",
       );
     }
   };
 
-  const getPeriodosCEUGESTAOAsync = async () => {
+  const getperiodosEscolaSemAlunosRegularesAsync = async () => {
     const escola_uuid = escolaInstituicao.uuid;
-    const response = await getCEUGESTAOPeriodosSolicitacoesAutorizadasEscola({
-      escola_uuid,
-      mes,
-      ano,
-    });
+    const response =
+      await getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola({
+        escola_uuid,
+        mes,
+        ano,
+      });
     if (response.status === HTTP_STATUS.OK) {
-      setPeriodosCEUGESTAO(response.data);
+      setPeriodosEscolaSemAlunosRegulares(response.data);
     } else {
       setErroAPI(
-        "Erro ao carregar períodos de escolas CEU GESTÃO. Tente novamente mais tarde."
+        "Erro ao carregar períodos de escolas CEU GESTÃO. Tente novamente mais tarde.",
       );
     }
   };
 
-  const getCEUGESTAOFrequenciasDietasAsync = async () => {
-    const response = await getCEUGESTAOFrequenciasDietas(
-      solicitacaoMedicaoInicial.uuid
+  const getEscolaSemAlunosRegularesFrequenciasDietasAsync = async () => {
+    const response = await getEscolaSemAlunosRegularesFrequenciasDietas(
+      solicitacaoMedicaoInicial.uuid,
     );
     if (response.status === HTTP_STATUS.OK) {
-      setFrequenciasDietasCEUGESTAO(response.data);
+      setfrequenciasDietasEscolaSemAlunoRegular(response.data);
     } else {
       setErroAPI(
-        "Erro ao carregar frequência de dietas de escolas CEU GESTÃO. Tente novamente mais tarde."
+        "Erro ao carregar frequência de dietas de escolas CEU GESTÃO. Tente novamente mais tarde.",
       );
     }
   };
 
   const getFrequenciasDietasAsync = async () => {
-    const response = await getCEUGESTAOFrequenciasDietas(
-      solicitacaoMedicaoInicial.uuid
+    const response = await getEscolaSemAlunosRegularesFrequenciasDietas(
+      solicitacaoMedicaoInicial.uuid,
     );
     if (response.status === HTTP_STATUS.OK) {
       setFrequenciasDietasPeriodosEspeciais(response.data);
     } else {
       setErroAPI(
-        "Erro ao carregar frequência de dietas de escolas. Tente novamente mais tarde."
+        "Erro ao carregar frequência de dietas de escolas. Tente novamente mais tarde.",
       );
     }
   };
@@ -282,9 +287,9 @@ export const LancamentoPorPeriodo = ({
     solicitacaoMedicaoInicial && getFrequenciasDietasAsync();
     solicitacaoMedicaoInicial &&
       getQuantidadeAlimentacoesLancadasPeriodoGrupoAsync() &&
-      ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola) &&
-      getPeriodosCEUGESTAOAsync() &&
-      getCEUGESTAOFrequenciasDietasAsync();
+      escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
+      getperiodosEscolaSemAlunosRegularesAsync() &&
+      getEscolaSemAlunosRegularesFrequenciasDietasAsync();
   }, [periodoSelecionado, solicitacaoMedicaoInicial]);
 
   const getPathPlanilhaOcorr = () => {
@@ -296,7 +301,7 @@ export const LancamentoPorPeriodo = ({
 
   const gerarPDFMedicaoInicial = async () => {
     const response = await relatorioMedicaoInicialPDF(
-      solicitacaoMedicaoInicial.uuid
+      solicitacaoMedicaoInicial.uuid,
     );
     if (response.status === HTTP_STATUS.OK) {
       setExibirModalCentralDownloads(true);
@@ -371,7 +376,7 @@ export const LancamentoPorPeriodo = ({
     let tiposAlimentacao = [];
     Object.keys(periodosInclusaoContinua).forEach((periodo) => {
       const periodoProgramasEProjetos = periodosEscolaSimples.find(
-        (p) => p.periodo_escolar.nome === periodo
+        (p) => p.periodo_escolar.nome === periodo,
       );
       if (periodoProgramasEProjetos) {
         const tipos = periodoProgramasEProjetos.tipos_alimentacao;
@@ -429,7 +434,7 @@ export const LancamentoPorPeriodo = ({
           <div className="pb-2">
             <b className="section-title">Períodos</b>
           </div>
-          {!ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola) &&
+          {!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
             frequenciasDietasPeriodosEspeciais &&
             periodosEspecificos.length &&
             periodosEspecificos.map((periodo, index) => (
@@ -448,14 +453,16 @@ export const LancamentoPorPeriodo = ({
                 periodoEspecifico={
                   periodo.periodo_escolar.eh_periodo_especifico ? periodo : null
                 }
-                frequenciasDietasCEUGESTAO={frequenciasDietasPeriodosEspeciais}
+                frequenciasDietasEscolaSemAlunoRegular={
+                  frequenciasDietasPeriodosEspeciais
+                }
                 errosAoSalvar={errosAoSalvar}
                 periodosPermissoesLancamentosEspeciais={
                   periodosPermissoesLancamentosEspeciais
                 }
               />
             ))}
-          {!ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola) &&
+          {!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
             frequenciasDietasPeriodosEspeciais &&
             !periodosEspecificos.length &&
             periodosEscolaSimples.map((periodo, index) => (
@@ -474,17 +481,19 @@ export const LancamentoPorPeriodo = ({
                 periodoEspecifico={
                   periodo.periodo_escolar.eh_periodo_especifico ? periodo : null
                 }
-                frequenciasDietasCEUGESTAO={frequenciasDietasPeriodosEspeciais}
+                frequenciasDietasEscolaSemAlunoRegular={
+                  frequenciasDietasPeriodosEspeciais
+                }
                 errosAoSalvar={errosAoSalvar}
                 periodosPermissoesLancamentosEspeciais={
                   periodosPermissoesLancamentosEspeciais
                 }
               />
             ))}
-          {ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola) &&
-            periodosCEUGESTAO &&
-            frequenciasDietasCEUGESTAO &&
-            periodosCEUGESTAO.map((periodo, index) => (
+          {escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
+            periodosEscolaSemAlunosRegulares &&
+            frequenciasDietasEscolaSemAlunoRegular &&
+            periodosEscolaSemAlunosRegulares.map((periodo, index) => (
               <CardLancamento
                 key={index}
                 textoCabecalho={periodo.periodo_escolar?.nome || periodo.nome}
@@ -494,7 +503,9 @@ export const LancamentoPorPeriodo = ({
                 solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                 objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
                 quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                frequenciasDietasCEUGESTAO={frequenciasDietasCEUGESTAO}
+                frequenciasDietasEscolaSemAlunoRegular={
+                  frequenciasDietasEscolaSemAlunoRegular
+                }
                 errosAoSalvar={errosAoSalvar}
                 ehPeriodoEspecifico={true}
               />
@@ -514,8 +525,8 @@ export const LancamentoPorPeriodo = ({
               />
             )}
           {periodosInclusaoContinua &&
-            (!ehEscolaTipoCEUGESTAO(solicitacaoMedicaoInicial.escola) ||
-              frequenciasDietasCEUGESTAO) && (
+            (!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) ||
+              frequenciasDietasEscolaSemAlunoRegular) && (
               <CardLancamento
                 grupo="Programas e Projetos"
                 cor={CORES[9]}
@@ -525,7 +536,9 @@ export const LancamentoPorPeriodo = ({
                 objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
                 quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
                 periodosInclusaoContinua={periodosInclusaoContinua}
-                frequenciasDietasCEUGESTAO={frequenciasDietasCEUGESTAO}
+                frequenciasDietasEscolaSemAlunoRegular={
+                  frequenciasDietasEscolaSemAlunoRegular
+                }
                 errosAoSalvar={errosAoSalvar}
               />
             )}
@@ -556,8 +569,8 @@ export const LancamentoPorPeriodo = ({
                     style={BUTTON_STYLE.GREEN_OUTLINE}
                     disabled={
                       (!usuarioEhEscolaTerceirizadaDiretor() &&
-                        !ehEscolaTipoCEUGESTAO(
-                          solicitacaoMedicaoInicial.escola
+                        !escolaNaoPossuiAlunosRegulares(
+                          solicitacaoMedicaoInicial,
                         )) ||
                       comOcorrencias === "true" ||
                       naoPodeFinalizar
@@ -573,8 +586,8 @@ export const LancamentoPorPeriodo = ({
                     className="ms-3"
                     disabled={
                       (!usuarioEhEscolaTerceirizadaDiretor() &&
-                        !ehEscolaTipoCEUGESTAO(
-                          solicitacaoMedicaoInicial.escola
+                        !escolaNaoPossuiAlunosRegulares(
+                          solicitacaoMedicaoInicial,
                         )) ||
                       naoPodeFinalizar
                     }
@@ -613,7 +626,7 @@ export const LancamentoPorPeriodo = ({
                       onClick={() => setShowModalEnviarCorrecao(true)}
                       disabled={verificaSeEnviarCorrecaoDisabled(
                         quantidadeAlimentacoesLancadas,
-                        solicitacaoMedicaoInicial
+                        solicitacaoMedicaoInicial,
                       )}
                     />
                   )}
