@@ -26,7 +26,7 @@ export const repeticaoSobremesaDoceComValorESemObservacao = (
         new Date(location.state.mesAnoSelecionado).getMonth() + 1
       )
         .toString()
-        .padStart(2, "0")}-${dia}`,
+        .padStart(2, "0")}-${dia.toString().padStart(2, "0")}`,
     ) &&
     !observacoesValue
   );
