@@ -564,6 +564,15 @@ export const desabilitarField = (
     return true;
   }
   if (
+    (location.state.ehPeriodoEspecifico ||
+      grupoLocation === "Programas e Projetos") &&
+    inclusoesAutorizadas?.length > 0 &&
+    nomeCategoria.includes("DIETA ESPECIAL") &&
+    !inclusoesAutorizadas.some((inclusao) => inclusao.dia === dia)
+  ) {
+    return true;
+  }
+  if (
     `${rowName}__dia_${dia}__categoria_${categoria}` in
       dadosValoresInclusoesAutorizadasState &&
     !["Mês anterior", "Mês posterior"].includes(
