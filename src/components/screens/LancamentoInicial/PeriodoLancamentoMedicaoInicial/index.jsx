@@ -329,7 +329,7 @@ export default () => {
   ) => {
     if (
       grupoLocation !== "Programas e Projetos" &&
-      !(urlParams.get("ehPeriodoEspecifico") === "true")
+      urlParams.get("ehPeriodoEspecifico") !== "true"
     )
       return response_categorias_medicao;
     if (
@@ -642,7 +642,7 @@ export default () => {
           (grupoLocation !== "Programas e Projetos" ||
             tiposAlimentacaoInclusaoContinua.includes("refeicao"))) ||
         (indexRefeicaoDieta !== -1 &&
-          (!(urlParams.get("ehPeriodoEspecifico") === "true") ||
+          (urlParams.get("ehPeriodoEspecifico") !== "true" ||
             tiposAlimentacaoInclusaoContinua.includes("refeicao")))
       ) {
         cloneRowsDietas.splice(cloneRowsDietas.length - 1, 0, {
@@ -757,7 +757,7 @@ export default () => {
       };
       if (
         grupoLocation !== "Programas e Projetos" &&
-        !(urlParams.get("ehPeriodoEspecifico") === "true")
+        urlParams.get("ehPeriodoEspecifico") !== "true"
       ) {
         params_dietas_autorizadas["periodo_escolar"] =
           periodo.periodo_escolar.uuid;
