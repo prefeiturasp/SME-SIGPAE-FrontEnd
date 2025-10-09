@@ -954,6 +954,10 @@ export const ehEscolaTipoCEUGESTAO = (nome_escola) => {
   return nome_escola.startsWith("CEU GESTAO");
 };
 
+export const escolaNaoPossuiAlunosRegulares = (solicitacaoMedicaoInicial) => {
+  return solicitacaoMedicaoInicial.escola_possui_alunos_regulares === false;
+};
+
 export const tipoSolicitacaoComoQuery = (obj) => {
   return `tipoSolicitacao=${comoTipo(obj)}`;
 };
