@@ -43,7 +43,7 @@ export const dateDelta = (daysDelta) => {
 export const checaSeDataEstaEntre2e5DiasUteis = (
   value,
   two_working_days,
-  five_working_days
+  five_working_days,
 ) => {
   const _date = value.split("/");
   if (
@@ -58,7 +58,7 @@ export const checaSeDataEstaEntre2e5DiasUteis = (
 export const dataPrioritaria = (
   data,
   proximos_dois_dias_uteis,
-  proximos_cinco_dias_uteis
+  proximos_cinco_dias_uteis,
 ) => {
   const data_objeto = new Date(moment(data).format("DD/MM/YYYY"));
   return (
@@ -94,7 +94,7 @@ export const dataParaUTC = (data) => {
     data.getUTCDate(),
     data.getUTCHours(),
     data.getUTCMinutes(),
-    data.getUTCSeconds()
+    data.getUTCSeconds(),
   );
 };
 
@@ -263,7 +263,7 @@ export const visualizaBotoesDoFluxo = (solicitacao) => {
   switch (solicitacao.status) {
     case statusEnum.DRE_A_VALIDAR:
       return [TIPO_PERFIL.DIRETORIA_REGIONAL, TIPO_PERFIL.ESCOLA].includes(
-        tipoPerfil
+        tipoPerfil,
       );
     case statusEnum.DRE_VALIDADO:
     case statusEnum.CODAE_A_AUTORIZAR:
@@ -276,11 +276,11 @@ export const visualizaBotoesDoFluxo = (solicitacao) => {
     case statusEnum.CODAE_AUTORIZADO:
     case statusEnum.CODAE_QUESTIONADO:
       return [TIPO_PERFIL.TERCEIRIZADA, TIPO_PERFIL.ESCOLA].includes(
-        tipoPerfil
+        tipoPerfil,
       );
     case statusEnum.TERCEIRIZADA_TOMOU_CIENCIA:
       return [TIPO_PERFIL.DIRETORIA_REGIONAL, TIPO_PERFIL.ESCOLA].includes(
-        tipoPerfil
+        tipoPerfil,
       );
     case statusEnum.ESCOLA_CANCELOU:
     case statusEnum.DRE_CANCELOU:
@@ -346,7 +346,7 @@ export const formatarCPFouCNPJ = (value) => {
   }
   return cnpjCpf.replace(
     /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g,
-    "$1.$2.$3/$4-$5"
+    "$1.$2.$3/$4-$5",
   );
 };
 
@@ -423,7 +423,7 @@ export const usuarioEhEscolaTerceirizadaQualquerPerfil = () => {
 
 export const usuarioEhAdmQualquerEmpresa = () => {
   return [PERFIL.ADMINISTRADOR_EMPRESA].includes(
-    localStorage.getItem("perfil")
+    localStorage.getItem("perfil"),
   );
 };
 
@@ -437,13 +437,13 @@ export const usuarioEhDiretorUE = () => {
 
 export const usuarioEhEscola = () => {
   return [PERFIL.DIRETOR_UE, PERFIL.ADMINISTRADOR_UE].includes(
-    localStorage.getItem("perfil")
+    localStorage.getItem("perfil"),
   );
 };
 
 export const usuarioEscolaEhGestaoMistaParceira = () => {
   return [TIPO_GESTAO.MISTA, TIPO_GESTAO.PARCEIRA].includes(
-    localStorage.getItem("tipo_gestao")
+    localStorage.getItem("tipo_gestao"),
   );
 };
 
@@ -497,7 +497,7 @@ export const usuarioEhOutrosDilog = () => {
 
 export const usuarioEhDilogJuridico = () => {
   return [PERFIL.ADMINISTRADOR_CODAE_DILOG_JURIDICO].includes(
-    localStorage.getItem("perfil")
+    localStorage.getItem("perfil"),
   );
 };
 
@@ -650,7 +650,7 @@ export const usuarioEhCronograma = () => {
 
 export const usuarioEhAdministradorCONTRATOS = () => {
   return [PERFIL.ADMINISTRADOR_CONTRATOS].includes(
-    localStorage.getItem("perfil")
+    localStorage.getItem("perfil"),
   );
 };
 
@@ -661,7 +661,7 @@ export const usuarioEhDilogAbastecimento = () => {
 export const usuarioEhEmpresaDistribuidora = () => {
   return (
     [PERFIL.ADMINISTRADOR_EMPRESA, PERFIL.USUARIO_EMPRESA].includes(
-      localStorage.getItem("perfil")
+      localStorage.getItem("perfil"),
     ) &&
     [
       TIPO_SERVICO.DISTRIBUIDOR_ARMAZEM,
@@ -673,17 +673,17 @@ export const usuarioEhEmpresaDistribuidora = () => {
 export const usuarioEhEmpresaFornecedor = () => {
   return (
     [PERFIL.ADMINISTRADOR_EMPRESA, PERFIL.USUARIO_EMPRESA].includes(
-      localStorage.getItem("perfil")
+      localStorage.getItem("perfil"),
     ) &&
     [TIPO_SERVICO.FORNECEDOR, TIPO_SERVICO.FORNECEDOR_E_DISTRIBUIDOR].includes(
-      localStorage.getItem("tipo_servico")
+      localStorage.getItem("tipo_servico"),
     )
   );
 };
 
 export const usuarioEhAdministradorRepresentanteCodae = () => {
   return [PERFIL.ADMINISTRADOR_REPRESENTANTE_CODAE].includes(
-    localStorage.getItem("perfil")
+    localStorage.getItem("perfil"),
   );
 };
 
@@ -792,7 +792,7 @@ export const usuarioEhEmpresa = () => {
 export const usuarioEhEmpresaTerceirizada = () => {
   return (
     [PERFIL.ADMINISTRADOR_EMPRESA, PERFIL.USUARIO_EMPRESA].includes(
-      localStorage.getItem("perfil")
+      localStorage.getItem("perfil"),
     ) &&
     [TIPO_SERVICO.TERCEIRIZADA].includes(localStorage.getItem("tipo_servico"))
   );
@@ -854,7 +854,7 @@ export const converterDDMMYYYYparaYYYYMMDD = (data) => {
 
 export const obtemIdentificacaoNutricionista = () =>
   `Elaborado por ${localStorage.getItem("nome")} - RF ${localStorage.getItem(
-    "registro_funcional"
+    "registro_funcional",
   )}`.replace(/[^\w\s-]/g, "");
 
 export const getKey = (obj) => {
@@ -954,6 +954,10 @@ export const ehEscolaTipoCEUGESTAO = (nome_escola) => {
   return nome_escola.startsWith("CEU GESTAO");
 };
 
+export const escolaNaoPossuiAlunosRegulares = (solicitacaoMedicaoInicial) => {
+  return solicitacaoMedicaoInicial.escola_possui_alunos_regulares === false;
+};
+
 export const tipoSolicitacaoComoQuery = (obj) => {
   return `tipoSolicitacao=${comoTipo(obj)}`;
 };
@@ -1042,7 +1046,7 @@ export const composeValidators =
   (value) =>
     validators.reduce(
       (error, validator) => error || validator(value),
-      undefined
+      undefined,
     );
 
 export const transformaNullsEmUndefined = (objeto) => {
@@ -1089,11 +1093,11 @@ export const exibirGA = () => {
   switch (localStorage.getItem("tipo_perfil")) {
     case `"diretoriaregional"`:
       return dresPermitidas.some((dre) =>
-        localStorage.getItem("nome_instituicao").includes(dre)
+        localStorage.getItem("nome_instituicao").includes(dre),
       );
     case `"escola"`:
       return dresPermitidas.some((dre) =>
-        localStorage.getItem("dre_nome").includes(dre)
+        localStorage.getItem("dre_nome").includes(dre),
       );
     case `"terceirizada"`:
       return (
@@ -1107,8 +1111,8 @@ export const exibirGA = () => {
         ].includes(localStorage.getItem("nome_instituicao")) ||
         JSON.parse(localStorage.getItem("lotes")).find((lote) =>
           dresPermitidas.some((dre) =>
-            lote.diretoria_regional.nome.includes(dre)
-          )
+            lote.diretoria_regional.nome.includes(dre),
+          ),
         )
       );
     case `"gestao_alimentacao_terceirizada"`:
@@ -1159,7 +1163,11 @@ export const exibirModuloMedicaoInicial = () => {
         usuarioEhAdministradorNutriSupervisao()
       );
     case `"terceirizada"`:
-      return usuarioEhEmpresaTerceirizada();
+      return (
+        usuarioEhEmpresaTerceirizada() &&
+        localStorage.getItem("possui_escolas_com_acesso_ao_medicao_inicial") ===
+          "true"
+      );
     default:
       return false;
   }
@@ -1181,7 +1189,7 @@ export const justificativaAoNegarSolicitacao = (logs) => {
   let justificativa = null;
   if (logs.length) {
     justificativa = logs.filter((log) =>
-      ["DRE não validou", "CODAE negou"].includes(log.status_evento_explicacao)
+      ["DRE não validou", "CODAE negou"].includes(log.status_evento_explicacao),
     );
     justificativa = justificativa.length
       ? justificativa[0].justificativa
@@ -1194,7 +1202,7 @@ export const justificativaAoAprovarSolicitacao = (logs) => {
   let justificativa = null;
   if (logs.length) {
     justificativa = logs.filter((log) =>
-      ["CODAE autorizou"].includes(log.status_evento_explicacao)
+      ["CODAE autorizou"].includes(log.status_evento_explicacao),
     );
     justificativa = justificativa.length
       ? justificativa[0].justificativa
@@ -1294,7 +1302,7 @@ export const ehFimDeSemana = (dateObj) => {
 export const getISOLocalDatetimeString = () => {
   const date = new Date();
   const isoDateTime = new Date(
-    date.getTime() - date.getTimezoneOffset() * 60000
+    date.getTime() - date.getTimezoneOffset() * 60000,
   ).toISOString();
   return isoDateTime;
 };

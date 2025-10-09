@@ -85,7 +85,7 @@ export const mockStateMANHAEMEFAbril2025 = {
     dre_ciencia_correcao_usuario: null,
     relatorio_financeiro: null,
   },
-  frequenciasDietasCEUGESTAO: [
+  frequenciasDietasEscolaSemAlunoRegular: [
     {
       categoria_medicao: 2,
       nome_campo: "frequencia",

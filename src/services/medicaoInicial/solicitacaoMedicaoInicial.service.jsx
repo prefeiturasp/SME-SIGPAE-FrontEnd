@@ -224,7 +224,7 @@ export const getSolicitacoesLancadas = async (params) => {
   }
 };
 
-export const getCEUGESTAOFrequenciasDietas = async (uuid) => {
+export const getEscolaSemAlunosRegularesFrequenciasDietas = async (uuid) => {
   const url = `medicao-inicial/solicitacao-medicao-inicial/${uuid}/ceu-gestao-frequencias-dietas/`;
   const response = await axios.get(url).catch(ErrorHandlerFunction);
   if (response) {
