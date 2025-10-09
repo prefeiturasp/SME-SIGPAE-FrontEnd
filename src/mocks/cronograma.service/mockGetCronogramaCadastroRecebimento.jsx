@@ -24,6 +24,7 @@ export const mockCronogramaCadastroRecebimento = {
         quantidade: "301,00 kg",
         total_embalagens: "4,00 EMB",
         desvinculada_recebimento: true,
+        houve_ocorrencia: false,
       },
       {
         uuid: "33169dd2-f33b-46c4-b1a1-0f26a3ce8532",
@@ -35,6 +36,19 @@ export const mockCronogramaCadastroRecebimento = {
         quantidade: "301,00 kg",
         total_embalagens: "4,00 EMB",
         desvinculada_recebimento: true,
+        houve_ocorrencia: false,
+      },
+      {
+        uuid: "7f2e4b1a-6c32-4d3a-82c4-3a192a872cc2",
+        numero_empenho: "111",
+        qtd_total_empenho: "123,00 kg",
+        etapa: "Etapa 3",
+        parte: null,
+        data_programada: "08/02/2024",
+        quantidade: "301,00 kg",
+        total_embalagens: "4,00 EMB",
+        desvinculada_recebimento: false,
+        houve_ocorrencia: true,
       },
     ],
     documentos_de_recebimento: [
