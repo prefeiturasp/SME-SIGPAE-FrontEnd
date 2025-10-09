@@ -145,6 +145,7 @@ export const DadosEmpresa = ({ ehDistribuidor }) => {
                 naoDesabilitarPrimeiraOpcao
                 options={optionsTiposServico}
                 validate={required}
+                dataTestId="tipo-servico-select"
               />
             </div>
             <div className="col-4">
@@ -156,6 +157,7 @@ export const DadosEmpresa = ({ ehDistribuidor }) => {
                 naoDesabilitarPrimeiraOpcao
                 options={optionsTiposEmpresas}
                 validate={required}
+                dataTestId="tipo-empresa-select"
               />
             </div>
             <div className="col-4">
@@ -167,6 +169,7 @@ export const DadosEmpresa = ({ ehDistribuidor }) => {
                 naoDesabilitarPrimeiraOpcao
                 options={optionsTiposAlimento}
                 validate={required}
+                dataTestId="tipo-alimento-select"
               />
             </div>
           </div>
