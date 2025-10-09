@@ -73,21 +73,25 @@ const setup = async () => {
   });
 };
 
-describe("Carrega página de Empresas visão Fornecedor (Logistica)", () => {
+describe("Carrega página de Empresas visão não Fornecedor (Alimentação)", () => {
   beforeAll(() => {
-    localStorage.setItem("tipo_perfil", TIPO_PERFIL.GESTAO_PRODUTO);
+    localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
   });
 
   it("Verifica Dados da Empresa", async () => {
     await setup();
+
     expect(screen.getByText(/Dados da Empresa/i)).toBeInTheDocument();
     expect(screen.getByText(/Razão social/i)).toBeInTheDocument();
-    expect(screen.getByText(/Data de Cadastro/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Data de Cadastro/i)).not.toBeInTheDocument();
     expect(screen.getByText(/Nome Usual/i)).toBeInTheDocument();
     expect(screen.getByText(/CNPJ/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tipo de Serviço/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tipo de Empresa/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tipo de Alimento/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Tipo de Serviço/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Tipo de Empresa/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Tipo de Alimento/i)).not.toBeInTheDocument();
   });
 
   it("Verifica Endereço da Empresa", async () => {
@@ -99,33 +103,35 @@ describe("Carrega página de Empresas visão Fornecedor (Logistica)", () => {
     expect(screen.getByText(/Bairro/i)).toBeInTheDocument();
     expect(screen.getByText(/Cidade/i)).toBeInTheDocument();
     expect(screen.getByText(/Estado/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Telefone/i)).toHaveLength(4);
+    expect(screen.getAllByText(/E-mail/i)).toHaveLength(4);
   });
 
-  it("Verifica Dados do Representante do Contrato", async () => {
+  it("Verifica Principal administrador do sistema", async () => {
     await setup();
-    expect(screen.getAllByText(/Nome/i)).toHaveLength(3);
+    expect(screen.getAllByText(/E-mail/i)).toHaveLength(4);
+    expect(screen.getAllByText(/Nome/i)).toHaveLength(2);
     expect(screen.getByText(/CPF/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Telefone/i)).toHaveLength(4);
     expect(screen.getByText(/Cargo/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/Telefone/i)).toHaveLength(2);
-    expect(screen.getAllByText(/E-mail/i)).toHaveLength(2);
   });
 
-  it("Verifica Contatos", async () => {
+  it("Verifica Representante Legal", async () => {
     await setup();
-    expect(screen.getAllByText(/Nome/i)).toHaveLength(3);
-    expect(screen.getAllByText(/Telefone/i)).toHaveLength(2);
-    expect(screen.getAllByText(/E-mail/i)).toHaveLength(2);
+    expect(screen.getAllByText(/Telefone/i)).toHaveLength(4);
+    expect(screen.getAllByText(/E-mail/i)).toHaveLength(4);
   });
 
-  it("Verifica Contratos", async () => {
+  it("Verifica Nutricionista", async () => {
     await setup();
-    expect(
-      screen.getByText("Nº do Processo Administrativo (SEI)"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Nº do Contrato")).toBeInTheDocument();
-    expect(screen.getByText(/Vigência do Contrato/i)).toBeInTheDocument();
-    expect(screen.getByText(/Modalidade/i)).toBeInTheDocument();
-    expect(screen.getByText(/Situação/i)).toBeInTheDocument();
+    expect(screen.getByText(/CRN/i)).toBeInTheDocument();
+    expect(screen.getAllByText("Telefone/Celular Técnico")).toHaveLength(1);
+    expect(screen.getAllByText(/E-mail/i)).toHaveLength(4);
+  });
+
+  it("Verifica Lotes", async () => {
+    await setup();
+    expect(screen.getByText(/Lotes de atendimento/i)).toBeInTheDocument();
   });
 
   it("Verifica se botão salvar está desabilbitado", async () => {
@@ -134,22 +140,13 @@ describe("Carrega página de Empresas visão Fornecedor (Logistica)", () => {
     expect(botao).toBeDisabled();
   });
 
-  it("Verifica se os campos 'Tipo de Serviço', 'Tipo de Empresa' e 'Tipo de Alimento' são obrigatórios", async () => {
+  it("Verifica se os campos 'Tipo de Serviço', 'Tipo de Empresa' e 'Tipo de Alimento' não parecem", async () => {
     await setup();
 
-    const selectTipoServico = screen
-      .getByTestId("tipo-servico-select")
-      .querySelector("select");
-    expect(selectTipoServico).toBeRequired();
-
-    const selectTipoEmpresa = screen
-      .getByTestId("tipo-empresa-select")
-      .querySelector("select");
-    expect(selectTipoEmpresa).toBeRequired();
-
-    const selectTipoalimento = screen
-      .getByTestId("tipo-alimento-select")
-      .querySelector("select");
-    expect(selectTipoalimento).toBeRequired();
+    expect(screen.queryByTestId("tipo-servico-select")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("tipo-empresa-select")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("tipo-alimento-select"),
+    ).not.toBeInTheDocument();
   });
 });
