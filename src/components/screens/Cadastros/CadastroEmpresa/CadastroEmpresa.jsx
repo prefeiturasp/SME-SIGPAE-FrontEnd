@@ -249,7 +249,7 @@ export const CadastroEmpresa = () => {
     data.situacao = data.ativo;
 
     data.data_cadastro = moment(data.criado_em, "DD/MM/YYYY").format(
-      "DD/MM/YYYY"
+      "DD/MM/YYYY",
     );
     data = atribuiContatosPessoaEmpresaForm(data);
     data = atribuiContratosForm(data);
@@ -307,7 +307,7 @@ export const CadastroEmpresa = () => {
         navigate("/configuracoes/cadastros/empresas-cadastradas");
       } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
         toastError(
-          `Erro ao atualizar cadastro de empresa: ${getError(response.data)}.`
+          `Erro ao atualizar cadastro de empresa: ${getError(response.data)}.`,
         );
       } else {
         toastError(`Erro ao atualizar cadastro de empresa`);
@@ -409,7 +409,13 @@ export const CadastroEmpresa = () => {
               <Form
                 initialValues={initialValuesForm}
                 onSubmit={onSubmit}
-                render={({ form, handleSubmit, values }) => (
+                render={({
+                  form,
+                  handleSubmit,
+                  values,
+                  hasValidationErrors,
+                  submitting,
+                }) => (
                   <form onSubmit={handleSubmit}>
                     <DadosEmpresa ehDistribuidor={ehDistribuidor} />
                     <EnderecoEmpresa
@@ -511,6 +517,7 @@ export const CadastroEmpresa = () => {
                               }}
                               type={BUTTON_TYPE.SUBMIT}
                               style={BUTTON_STYLE.GREEN}
+                              disabled={hasValidationErrors || submitting}
                             />
                           </div>
                         ) : (
@@ -530,6 +537,7 @@ export const CadastroEmpresa = () => {
                               className="ms-3"
                               type={BUTTON_TYPE.SUBMIT}
                               style={BUTTON_STYLE.GREEN}
+                              disabled={hasValidationErrors || submitting}
                             />
                           </div>
                         )}

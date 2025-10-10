@@ -564,6 +564,15 @@ export const desabilitarField = (
     return true;
   }
   if (
+    (location.state.ehPeriodoEspecifico ||
+      grupoLocation === "Programas e Projetos") &&
+    inclusoesAutorizadas?.length > 0 &&
+    nomeCategoria.includes("DIETA ESPECIAL") &&
+    !inclusoesAutorizadas.some((inclusao) => inclusao.dia === dia)
+  ) {
+    return true;
+  }
+  if (
     `${rowName}__dia_${dia}__categoria_${categoria}` in
       dadosValoresInclusoesAutorizadasState &&
     !["Mês anterior", "Mês posterior"].includes(
@@ -611,6 +620,8 @@ export const desabilitarField = (
       ((!values[`matriculados__dia_${dia}__categoria_${categoria}`] ||
         Number(values[`matriculados__dia_${dia}__categoria_${categoria}`]) ===
           0) &&
+        !location.state.ehPeriodoEspecifico &&
+        grupoLocation !== "Programas e Projetos" &&
         !nomeCategoria.includes("DIETA ESPECIAL")) ||
       Number(
         values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
