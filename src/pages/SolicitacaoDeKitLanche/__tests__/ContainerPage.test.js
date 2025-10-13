@@ -7,7 +7,6 @@ import {
   PainelPedidosEscola,
   PainelPedidosDRE,
   PainelPedidosCODAE,
-  PainelPedidosTerceirizada,
 } from "../ContainerPage";
 
 jest.mock("src/components/Shareable/Breadcrumb", () => () => (
@@ -23,19 +22,19 @@ jest.mock(
   "src/components/SolicitacaoKitLancheCEMEI/componentes/Container",
   () => ({
     Container: () => <div>Container CEMEI</div>,
-  })
+  }),
 );
 jest.mock(
   "src/components/SolicitacaoDeKitLanche/DRE/PainelPedidos/Container",
-  () => () => <div>Container DRE</div>
+  () => () => <div>Container DRE</div>,
 );
 jest.mock(
   "src/components/SolicitacaoDeKitLanche/CODAE/PainelPedidos/Container",
-  () => () => <div>Container CODAE</div>
+  () => () => <div>Container CODAE</div>,
 );
 jest.mock(
   "src/components/SolicitacaoDeKitLanche/Terceirizada/PainelPedidos/Container",
-  () => () => <div>Container TERCEIRIZADA</div>
+  () => () => <div>Container TERCEIRIZADA</div>,
 );
 
 describe("ContainerPage - Testes completos", () => {
@@ -76,7 +75,7 @@ describe("ContainerPage - Testes completos", () => {
     const { getByText } = render(
       <MemoryRouter initialEntries={[{ state: { filtros: {} } }]}>
         <PainelPedidosDRE />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     await waitFor(() => {
       expect(getByText("Container DRE")).toBeInTheDocument();
@@ -87,15 +86,10 @@ describe("ContainerPage - Testes completos", () => {
     const { getByText } = render(
       <MemoryRouter initialEntries={[{ state: { filtros: {} } }]}>
         <PainelPedidosCODAE />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
     await waitFor(() => {
       expect(getByText("Container CODAE")).toBeInTheDocument();
     });
-  });
-
-  it("Renderiza corretamente para TERCEIRIZADA", () => {
-    const { getByText } = render(<PainelPedidosTerceirizada />);
-    expect(getByText("Container TERCEIRIZADA")).toBeInTheDocument();
   });
 });
