@@ -32,10 +32,6 @@ jest.mock(
   "src/components/SolicitacaoDeKitLanche/CODAE/PainelPedidos/Container",
   () => () => <div>Container CODAE</div>,
 );
-jest.mock(
-  "src/components/SolicitacaoDeKitLanche/Terceirizada/PainelPedidos/Container",
-  () => () => <div>Container TERCEIRIZADA</div>,
-);
 
 describe("ContainerPage - Testes completos", () => {
   const mockDados = {
