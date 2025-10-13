@@ -102,7 +102,7 @@ describe("WizardFormTerceiraPagina – proteção contra cliques múltiplos", ()
             {...defaultProps}
           />
         </MemoryRouter>
-      </Provider>
+      </Provider>,
     );
   };
 
@@ -112,7 +112,7 @@ describe("WizardFormTerceiraPagina – proteção contra cliques múltiplos", ()
       screen.getByPlaceholderText(/Digite o prazo da validade/i),
       {
         target: { value: "10 dias" },
-      }
+      },
     );
     fireEvent.click(screen.getByText("Enviar"));
     expect(await screen.findByText(/Deseja continuar?/i)).toBeInTheDocument();

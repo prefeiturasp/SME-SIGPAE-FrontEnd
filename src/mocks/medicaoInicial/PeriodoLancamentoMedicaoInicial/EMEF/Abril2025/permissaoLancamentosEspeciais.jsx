@@ -16,6 +16,16 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         name: "repeticao_2_refeicao",
         uuid: null,
       },
+      {
+        nome: "2ª Sobremesa 1ª oferta",
+        name: "2_sobremesa_1_oferta",
+        uuid: null,
+      },
+      {
+        nome: "Repetição 2ª Sobremesa",
+        name: "repeticao_2_sobremesa",
+        uuid: null,
+      },
     ],
     permissoes_por_dia: [
       {
@@ -24,7 +34,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -34,7 +45,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -44,7 +56,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -54,7 +67,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -64,7 +78,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -74,7 +89,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -84,7 +100,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -94,7 +111,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -104,7 +122,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -114,7 +133,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -124,7 +144,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -134,7 +155,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -144,7 +166,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -154,7 +177,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -164,7 +188,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -174,7 +199,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -184,7 +210,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -194,7 +221,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -204,7 +232,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -214,7 +243,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -224,7 +254,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -234,7 +265,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -244,7 +276,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -254,7 +287,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -264,7 +298,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -274,7 +309,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -284,7 +320,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -294,7 +331,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -304,7 +342,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
@@ -314,7 +353,8 @@ export const mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025 = {
         alimentacoes: [
           "2_refeicao_1_oferta",
           "repeticao_2_refeicao",
-          "lanche_extra",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
         ],
         permissao_id_externo: "30603",
       },
