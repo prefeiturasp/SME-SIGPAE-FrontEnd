@@ -62,7 +62,7 @@ export const UsuarioResponsavel = ({ ehDistribuidor }) => {
               <div className="col-8">
                 <Field
                   component={InputText}
-                  label="Email"
+                  label="E-mail"
                   name="responsavel_email"
                   type="email"
                   validate={required}

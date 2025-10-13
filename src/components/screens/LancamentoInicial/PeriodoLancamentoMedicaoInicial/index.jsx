@@ -128,8 +128,8 @@ export default () => {
   const [weekColumns, setWeekColumns] = useState(initialStateWeekColumns);
   const [tabelaAlimentacaoRows, setTabelaAlimentacaoRows] = useState([]);
   const [
-    tabelaAlimentacaoProgramasProjetosOuCEUGESTAORows,
-    setTabelaAlimentacaoProgramasProjetosOuCEUGESTAORows,
+    tabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows,
+    setTabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows,
   ] = useState([]);
   const [tabelaDietaRows, setTabelaDietaRows] = useState([]);
   const [tabelaDietaEnteralRows, setTabelaDietaEnteralRows] = useState([]);
@@ -246,24 +246,24 @@ export default () => {
     return tiposAlimentacao;
   };
 
-  const trataTabelaAlimentacaoCEUGESTAO = (
-    tiposAlimentacaoProgramasProjetosOuCEUGESTAO,
+  const trataTabelaAlimentacaoEscolaSemAlunosRegulares = (
+    tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares,
     tiposAlimentacaoInclusaoContinua,
   ) => {
     if (!tiposAlimentacaoInclusaoContinua.includes("refeicao")) {
       const indexRefeicao1Oferta =
-        tiposAlimentacaoProgramasProjetosOuCEUGESTAO.findIndex(
+        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.findIndex(
           (ali) => ali.nome === "Refeição 1ª Oferta",
         );
-      tiposAlimentacaoProgramasProjetosOuCEUGESTAO.splice(
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.splice(
         indexRefeicao1Oferta,
         1,
       );
       const indexRefeicaoRepeticao =
-        tiposAlimentacaoProgramasProjetosOuCEUGESTAO.findIndex(
+        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.findIndex(
           (ali) => ali.nome === "Repetição Refeição",
         );
-      tiposAlimentacaoProgramasProjetosOuCEUGESTAO.splice(
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.splice(
         indexRefeicaoRepeticao,
         1,
       );
@@ -271,18 +271,18 @@ export default () => {
 
     if (!tiposAlimentacaoInclusaoContinua.includes("sobremesa")) {
       const indexRefeicao1Oferta =
-        tiposAlimentacaoProgramasProjetosOuCEUGESTAO.findIndex(
+        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.findIndex(
           (ali) => ali.nome === "Sobremesa 1º Oferta",
         );
-      tiposAlimentacaoProgramasProjetosOuCEUGESTAO.splice(
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.splice(
         indexRefeicao1Oferta,
         1,
       );
       const indexRefeicaoRepeticao =
-        tiposAlimentacaoProgramasProjetosOuCEUGESTAO.findIndex(
+        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.findIndex(
           (ali) => ali.nome === "Repetição Sobremesa",
         );
-      tiposAlimentacaoProgramasProjetosOuCEUGESTAO.splice(
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.splice(
         indexRefeicaoRepeticao,
         1,
       );
@@ -290,40 +290,46 @@ export default () => {
 
     if (!tiposAlimentacaoInclusaoContinua.includes("lanche")) {
       const indexLanche =
-        tiposAlimentacaoProgramasProjetosOuCEUGESTAO.findIndex(
+        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.findIndex(
           (ali) => ali.nome === "Lanche",
         );
-      tiposAlimentacaoProgramasProjetosOuCEUGESTAO.splice(indexLanche, 1);
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.splice(
+        indexLanche,
+        1,
+      );
     }
 
     if (!tiposAlimentacaoInclusaoContinua.includes("lanche_4h")) {
       const indexLanche4h =
-        tiposAlimentacaoProgramasProjetosOuCEUGESTAO.findIndex(
+        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.findIndex(
           (ali) => ali.nome === "Lanche 4h",
         );
-      tiposAlimentacaoProgramasProjetosOuCEUGESTAO.splice(indexLanche4h, 1);
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.splice(
+        indexLanche4h,
+        1,
+      );
     }
     if (
-      !tiposAlimentacaoProgramasProjetosOuCEUGESTAO.find(
+      !tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
         (t) => t.name === "observacoes",
       )
     ) {
-      tiposAlimentacaoProgramasProjetosOuCEUGESTAO.push({
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.push({
         nome: "Observações",
         name: "observacoes",
         uuid: null,
       });
     }
-    return tiposAlimentacaoProgramasProjetosOuCEUGESTAO;
+    return tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares;
   };
 
-  const trataCategoriasMedicaoCEUGESTAO = (
+  const trataCategoriasMedicaoEscolaSemAlunosRegulares = (
     response_categorias_medicao,
     tiposAlimentacaoInclusaoContinua,
   ) => {
     if (
       grupoLocation !== "Programas e Projetos" &&
-      !(urlParams.get("ehPeriodoEspecifico") === "true")
+      urlParams.get("ehPeriodoEspecifico") !== "true"
     )
       return response_categorias_medicao;
     if (
@@ -473,15 +479,14 @@ export default () => {
         });
       }
 
-      const tiposAlimentacaoProgramasProjetosOuCEUGESTAO = deepCopy(
-        tiposAlimentacaoFormatadas,
-      );
+      const tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares =
+        deepCopy(tiposAlimentacaoFormatadas);
 
       if (
         tiposAlimentacaoInclusaoContinua.includes("lanche_4h") &&
         !tiposAlimentacaoFormatadas.find((taf) => taf.nome === "Lanche 4h")
       ) {
-        tiposAlimentacaoProgramasProjetosOuCEUGESTAO.push({
+        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.push({
           nome: "Lanche 4h",
           name: "lanche_4h",
           uuid: response_get_tipos_alimentacao.data.results.find((tp) =>
@@ -511,7 +516,7 @@ export default () => {
 
       setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
 
-      tiposAlimentacaoProgramasProjetosOuCEUGESTAO.unshift(
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.unshift(
         {
           nome: "Número de Alunos",
           name: "numero_de_alunos",
@@ -524,15 +529,15 @@ export default () => {
         },
       );
 
-      tiposAlimentacaoProgramasProjetosOuCEUGESTAO.push({
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.push({
         nome: "Observações",
         name: "observacoes",
         uuid: null,
       });
 
-      setTabelaAlimentacaoProgramasProjetosOuCEUGESTAORows(
-        trataTabelaAlimentacaoCEUGESTAO(
-          tiposAlimentacaoProgramasProjetosOuCEUGESTAO,
+      setTabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows(
+        trataTabelaAlimentacaoEscolaSemAlunosRegulares(
+          tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares,
           tiposAlimentacaoInclusaoContinua,
         ),
       );
@@ -560,8 +565,8 @@ export default () => {
           rowsDietas.push({
             nome: "Lanche 4h",
             name: "lanche_4h",
-            uuid: tiposAlimentacaoProgramasProjetosOuCEUGESTAO.find((tp) =>
-              tp.nome.includes("4h"),
+            uuid: tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
+              (tp) => tp.nome.includes("4h"),
             ).uuid,
           });
         }
@@ -613,7 +618,7 @@ export default () => {
               .replace(/[\u0300-\u036f]/g, "")
               .toLowerCase()
               .replaceAll(/ /g, "_"),
-            uuid: tiposAlimentacaoProgramasProjetosOuCEUGESTAO.find(
+            uuid: tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
               (tp) => tp.nome === "Lanche",
             ).uuid,
           });
@@ -637,7 +642,7 @@ export default () => {
           (grupoLocation !== "Programas e Projetos" ||
             tiposAlimentacaoInclusaoContinua.includes("refeicao"))) ||
         (indexRefeicaoDieta !== -1 &&
-          (!(urlParams.get("ehPeriodoEspecifico") === "true") ||
+          (urlParams.get("ehPeriodoEspecifico") !== "true" ||
             tiposAlimentacaoInclusaoContinua.includes("refeicao")))
       ) {
         cloneRowsDietas.splice(cloneRowsDietas.length - 1, 0, {
@@ -752,7 +757,7 @@ export default () => {
       };
       if (
         grupoLocation !== "Programas e Projetos" &&
-        !(urlParams.get("ehPeriodoEspecifico") === "true")
+        urlParams.get("ehPeriodoEspecifico") !== "true"
       ) {
         params_dietas_autorizadas["periodo_escolar"] =
           periodo.periodo_escolar.uuid;
@@ -851,7 +856,7 @@ export default () => {
         }
         setLogQtdDietasAutorizadas(response_log_dietas_autorizadas.data);
         setCategoriasDeMedicao(
-          trataCategoriasMedicaoCEUGESTAO(
+          trataCategoriasMedicaoEscolaSemAlunosRegulares(
             response_categorias_medicao,
             tiposAlimentacaoInclusaoContinua,
           ),
@@ -1772,7 +1777,7 @@ export default () => {
       ehGrupoSolicitacoesDeAlimentacaoUrlParam,
       ehGrupoETECUrlParam,
       grupoLocation,
-      tabelaAlimentacaoProgramasProjetosOuCEUGESTAORows,
+      tabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows,
     );
     if (payload.valores_medicao.length === 0)
       return (
@@ -2281,7 +2286,7 @@ export default () => {
       grupoLocation === "Programas e Projetos" ||
       urlParams.get("ehPeriodoEspecifico") === "true"
     ) {
-      return tabelaAlimentacaoProgramasProjetosOuCEUGESTAORows;
+      return tabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows;
     } else {
       return tabelaAlimentacaoRows;
     }

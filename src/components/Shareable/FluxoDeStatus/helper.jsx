@@ -129,6 +129,8 @@ export const tipoDeStatus = (status) => {
     case "CODAE Atualizou o protocolo":
     case "Corrigido para DRE":
     case "Corrigido para CODAE":
+    case "Solicitação de Alteração de UE Realizada":
+    case "CODAE autorizou a Alteração de UE":
       return "prosseguiu";
 
     case "CODAE pediu correção":
@@ -150,6 +152,7 @@ export const tipoDeStatus = (status) => {
     case "CODAE cancelou análise sensorial":
     case "CODAE cancelou solicitação de correção":
     case "Terceirizada cancelou solicitação de correção":
+    case "CODAE autorizou o cancelamento":
       return "cancelado";
 
     case "DRE não validou":
@@ -157,6 +160,7 @@ export const tipoDeStatus = (status) => {
     case "CODAE negou cancelamento":
     case "Terceirizada recusou":
     case "CODAE não homologou":
+    case "CODAE negou a Alteração de UE":
       return "reprovado";
 
     default:
@@ -168,12 +172,12 @@ export const tipoDeStatusClasse = (status) => {
   return tipoDeStatus(status.status_evento_explicacao) === "prosseguiu"
     ? "active"
     : tipoDeStatus(status.status_evento_explicacao) === "reprovado"
-    ? "disapproved"
-    : tipoDeStatus(status.status_evento_explicacao) === "questionado"
-    ? "questioned"
-    : tipoDeStatus(status.status_evento_explicacao) === "cancelado"
-    ? "cancelled"
-    : "pending";
+      ? "disapproved"
+      : tipoDeStatus(status.status_evento_explicacao) === "questionado"
+        ? "questioned"
+        : tipoDeStatus(status.status_evento_explicacao) === "cancelado"
+          ? "cancelled"
+          : "pending";
 };
 
 export const formatarFluxoDietaEspecial = () => {
@@ -187,7 +191,7 @@ export const existeAlgumStatusFimDeFluxo = (logs) => {
         log.status_evento_explicacao.includes("neg") ||
         log.status_evento_explicacao.includes("não") ||
         log.status_evento_explicacao.includes("cancel") ||
-        log.status_evento_explicacao.includes("Terminada")
+        log.status_evento_explicacao.includes("Terminada"),
     ) === -1
   );
 };

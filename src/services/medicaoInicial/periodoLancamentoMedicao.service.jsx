@@ -113,7 +113,7 @@ export const getSolicitacoesInclusoesEtecAutorizadasEscola = async (params) => {
 };
 
 export const getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola = async (
-  params
+  params,
 ) => {
   const url =
     "vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/";
@@ -142,20 +142,21 @@ export const getSolicitacoesSuspensoesAutorizadasEscola = async (params) => {
   }
 };
 
-export const getCEUGESTAOPeriodosSolicitacoesAutorizadasEscola = async (
-  params
-) => {
-  const url =
-    "escola-solicitacoes/ceu-gestao-periodos-com-solicitacoes-autorizadas/";
-  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
-  if (response) {
-    const data = { data: response.data, status: response.status };
-    return data;
-  }
-};
+export const getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola =
+  async (params) => {
+    const url =
+      "escola-solicitacoes/ceu-gestao-periodos-com-solicitacoes-autorizadas/";
+    const response = await axios
+      .get(url, { params })
+      .catch(ErrorHandlerFunction);
+    if (response) {
+      const data = { data: response.data, status: response.status };
+      return data;
+    }
+  };
 
 export const getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola = async (
-  params
+  params,
 ) => {
   const url = "escola-solicitacoes/alteracoes-alimentacao-autorizadas/";
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
