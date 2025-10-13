@@ -7,7 +7,7 @@ export const agruparMilharDecimal = (valor) => {
   const decimais = nums.slice(-2);
   const inteiros = nums.slice(0, -2) || "0";
 
-  return inteiros.replace(/\d(?=(\d{3})+$)/g, "$&.") + "," + decimais;
+  return inteiros.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "," + decimais;
 };
 
 export const agruparMilharInteirosPositivos = (valor) => {
@@ -18,5 +18,5 @@ export const agruparMilharInteirosPositivos = (valor) => {
 
   if (isNaN(num) || num <= 0) return "";
 
-  return num.toString().replace(/\d(?=(\d{3})+$)/g, "$&.");
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };

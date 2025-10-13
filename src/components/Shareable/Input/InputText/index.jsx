@@ -128,7 +128,7 @@ export const InputText = (props) => {
               ? e.target.value
                   .toString()
                   .replace(/\D/g, "")
-                  .replace(/\d(?=(\d{3})+$)/g, "$&.")
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
               : e.target.value;
             e.target.value = agrupadorMilharComDecimal
               ? agruparMilharDecimal(e.target.value)
