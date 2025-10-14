@@ -16,7 +16,12 @@ import {
   mockLayoutEmbalagemReprovado,
   mockLayoutEmbalagemAprovado,
   mockLayoutComTerciaria,
+  mockLayoutEmbalagemReprovadoSomenteEmbalagemPrimeria,
 } from "src/mocks/services/layoutEmbalagem.service/mockDetalharLayoutEmbalagem";
+
+import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
+
+jest.mock("src/components/Shareable/Toast/dialogs");
 
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -260,6 +265,33 @@ describe("LayoutEmbalagemCorrecaoAtualizacao - Testes Completos", () => {
 
       await waitFor(() => {
         expect(screen.getByText("Embalagem Terciária")).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("Testes do Enviar Correção com somente uma embalagem", () => {
+    it("Testa se o envio foi realizado", async () => {
+      mock
+        .onGet(/\/layouts-de-embalagem\/.*\/?/)
+        .reply(200, mockLayoutEmbalagemReprovadoSomenteEmbalagemPrimeria);
+
+      await setup(false);
+      simularUpload("inserir-arquivo-primaria", "primaria-correcao.jpg");
+      await clicarBotao("Enviar Correção");
+
+      await waitFor(() => {
+        expect(screen.getAllByText("Enviar Correção")).toHaveLength(2);
+        expect(
+          screen.getByText(
+            "Confirma o envio da correção no layout das embalagens para análise da CODAE?",
+          ),
+        ).toBeInTheDocument();
+      });
+      clicarBotao("Sim");
+      await waitFor(() => {
+        expect(toastSuccess).toHaveBeenCalledWith(
+          "Layout atualizado e enviado para análise com sucesso!",
+        );
       });
     });
   });

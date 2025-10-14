@@ -1,5 +1,11 @@
 import React from "react";
-import { render, screen, act, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  act,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -13,6 +19,9 @@ import {
 import DetalharFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/DetalharFichaTecnicaPage";
 import AnalisarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/AnalisarFichaTecnicaPage";
 import mock from "src/services/_mock";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+
+jest.mock("src/components/Shareable/Toast/dialogs");
 
 beforeEach(() => {
   mock
@@ -25,13 +34,13 @@ beforeEach(() => {
 
   mock
     .onGet(
-      `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/detalhar-com-analise/`
+      `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/detalhar-com-analise/`,
     )
     .reply(200, mockFichaTecnicaComDetalheSemAnalise);
 
   mock
     .onPost(
-      `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/analise-gpcodae/`
+      `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/analise-gpcodae/`,
     )
     .reply(201);
 });
@@ -64,7 +73,7 @@ const setup = async (somenteLeitura = false) => {
             <AnalisarFichaTecnicaPage />
           )}
         </MeusDadosContext.Provider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -74,12 +83,12 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     await setup();
     expect(screen.getByText(`Identificação do Produto`)).toBeInTheDocument();
     expect(
-      screen.getAllByText(`Indicações de Correções CODAE`)[0]
+      screen.getAllByText(`Indicações de Correções CODAE`)[0],
     ).toBeInTheDocument();
 
     mock
       .onPost(
-        `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/rascunho-analise-gpcodae/`
+        `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/rascunho-analise-gpcodae/`,
       )
       .reply(201);
 
@@ -92,7 +101,7 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     await setup();
     expect(screen.getByText(`Identificação do Produto`)).toBeInTheDocument();
     expect(
-      screen.getAllByText(`Indicações de Correções CODAE`)[0]
+      screen.getAllByText(`Indicações de Correções CODAE`)[0],
     ).toBeInTheDocument();
 
     let tagsPendentes = screen.getAllByText("Pendente de Análise");
@@ -115,7 +124,7 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     fireEvent.click(btnCorrecao);
 
     let inputFabricanteCorrecoes = screen.getByTestId(
-      "fabricante_envasador_correcoes"
+      "fabricante_envasador_correcoes",
     );
     expect(inputFabricanteCorrecoes).toBeInTheDocument();
 
@@ -144,18 +153,18 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
   it("carrega no modo Detalhar", async () => {
     mock
       .onGet(
-        `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/detalhar-com-analise/`
+        `/ficha-tecnica/${mockFichaTecnicaComDetalheSemAnalise.uuid}/detalhar-com-analise/`,
       )
       .reply(200, mockFichaTecnicaComDetalhe);
 
     await setup(true);
     expect(
       screen.getByText(
-        `Solicitada correção em ${mockFichaTecnicaComDetalhe.log_mais_recente}`
-      )
+        `Solicitada correção em ${mockFichaTecnicaComDetalhe.log_mais_recente}`,
+      ),
     ).toBeInTheDocument();
     expect(
-      screen.getAllByText(`Indicações de Correções CODAE`)[0]
+      screen.getAllByText(`Indicações de Correções CODAE`)[0],
     ).toBeInTheDocument();
   });
 
@@ -165,12 +174,56 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     mock
       .onGet(
-        `/ficha-tecnica/${mockFichaTecnicaComDetalhe.uuid}/gerar-pdf-ficha/`
+        `/ficha-tecnica/${mockFichaTecnicaComDetalhe.uuid}/gerar-pdf-ficha/`,
       )
       .reply(200, new Blob());
 
     const btnImprimir = screen.getByText("Ficha em PDF").closest("button");
     fireEvent.click(btnImprimir);
+
+    expect(btnImprimir).toBeInTheDocument();
+  });
+
+  it("Verifica mensagem de falha ao baixar o PDF: erro 400", async () => {
+    window.URL.createObjectURL = jest.fn();
+    await setup(true);
+
+    mock
+      .onGet(
+        `/ficha-tecnica/${mockFichaTecnicaComDetalhe.uuid}/gerar-pdf-ficha/`,
+      )
+      .reply(400);
+
+    const btnImprimir = screen.getByText("Ficha em PDF").closest("button");
+    fireEvent.click(btnImprimir);
+
+    await waitFor(() => {
+      expect(toastError).toHaveBeenCalledWith(
+        "Ocorreu um erro durante a geração do pdf de Ficha Técnica",
+      );
+    });
+
+    expect(btnImprimir).toBeInTheDocument();
+  });
+
+  it("Verifica mensagem de falha ao baixar o PDF: erro 500", async () => {
+    window.URL.createObjectURL = jest.fn();
+    await setup(true);
+
+    mock
+      .onGet(
+        `/ficha-tecnica/${mockFichaTecnicaComDetalhe.uuid}/gerar-pdf-ficha/`,
+      )
+      .reply(500);
+
+    const btnImprimir = screen.getByText("Ficha em PDF").closest("button");
+    fireEvent.click(btnImprimir);
+
+    await waitFor(() => {
+      expect(toastError).toHaveBeenCalledWith(
+        "Erro interno do servidor. Tente novamente em alguns instantes.",
+      );
+    });
 
     expect(btnImprimir).toBeInTheDocument();
   });

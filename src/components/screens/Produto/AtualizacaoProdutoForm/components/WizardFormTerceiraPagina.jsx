@@ -192,6 +192,9 @@ class WizardFormTerceiraPagina extends Component {
       this.props.navigate("/painel-gestao-produto");
     } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
       toastError(getError(response.data));
+    } else if (response.status === HTTP_STATUS.CONFLICT) {
+      toastError(getError(response.data));
+      this.props.navigate("/painel-gestao-produto");
     } else {
       toastError(`Erro ao atualizar homologação`);
       this.props.navigate("/painel-gestao-produto");
