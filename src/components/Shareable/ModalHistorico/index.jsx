@@ -19,6 +19,7 @@ const ModalHistorico = ({
   logs: logsProps,
   motivoNegacao,
   justificativaNegacao,
+  printHistorico,
 }) => {
   const [logs, setLogs] = useState([]);
   const [logSelecionado, setLogSelecionado] = useState(null);
@@ -137,6 +138,27 @@ const ModalHistorico = ({
       okButtonProps={{
         style: { background: "#198459", borderColor: "#198459" },
       }}
+      footer={[
+        <Botao
+          key="imprimir"
+          texto="Imprimir"
+          style={BUTTON_STYLE.GREEN_OUTLINE}
+          className="me-3"
+          onClick={() => {
+            if (printHistorico) {
+              printHistorico();
+            }
+          }}
+        />,
+        <Botao
+          key="fechar"
+          type="button"
+          className="me-2"
+          style={BUTTON_STYLE.GREEN}
+          onClick={onOk}
+          texto={"Fechar"}
+        />,
+      ]}
     >
       <section className="body-modal-produto">
         <div>Usuário</div>
