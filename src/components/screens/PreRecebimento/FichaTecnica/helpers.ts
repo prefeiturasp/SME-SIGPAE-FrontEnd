@@ -57,7 +57,7 @@ import { NavigateFunction } from "react-router-dom";
 import { CATEGORIA_OPTIONS } from "./constants";
 
 export const cepCalculator = (
-  setDesabilitaEndereco: React.Dispatch<React.SetStateAction<Array<boolean>>>
+  setDesabilitaEndereco: React.Dispatch<React.SetStateAction<Array<boolean>>>,
 ) => {
   const lastCepValues: Record<string, string> = {};
 
@@ -86,7 +86,7 @@ export const buscaCEP = async (
   cep: string,
   values: FichaTecnicaPayload,
   setDesabilitaEndereco: React.Dispatch<React.SetStateAction<Array<boolean>>>,
-  index: string
+  index: string,
 ) => {
   try {
     const response = await getEnderecoPorCEP(cep);
@@ -115,28 +115,28 @@ export const buscaCEP = async (
 };
 
 export const carregarProdutos = async (
-  setProdutosOptions: Dispatch<SetStateAction<OptionsGenerico[]>>
+  setProdutosOptions: Dispatch<SetStateAction<OptionsGenerico[]>>,
 ) => {
   const response = await getListaCompletaProdutosLogistica();
   setProdutosOptions(response.data.results);
 };
 
 export const carregarMarcas = async (
-  setMarcasOptions: Dispatch<SetStateAction<OptionsGenerico[]>>
+  setMarcasOptions: Dispatch<SetStateAction<OptionsGenerico[]>>,
 ) => {
   const response = await getNomesMarcas();
   setMarcasOptions(response.data.results);
 };
 
 export const carregarFabricantes = async (
-  setFabricantesOptions: Dispatch<SetStateAction<OptionsGenerico[]>>
+  setFabricantesOptions: Dispatch<SetStateAction<OptionsGenerico[]>>,
 ) => {
   const response = await getNomesFabricantes();
   setFabricantesOptions(response.data.results);
 };
 
 export const carregarUnidadesMedida = async (
-  setUnidadesMedidaOptions: Dispatch<SetStateAction<OptionsGenerico[]>>
+  setUnidadesMedidaOptions: Dispatch<SetStateAction<OptionsGenerico[]>>,
 ) => {
   const response = await getUnidadesDeMedidaLogistica();
   setUnidadesMedidaOptions(response.data.results);
@@ -145,14 +145,14 @@ export const carregarUnidadesMedida = async (
 export const carregarTerceirizada = async (
   ficha: FichaTecnicaDetalhada,
   meusDados: Record<string, any>,
-  setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>
+  setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>,
 ) => {
   if (ficha.empresa?.uuid) {
     const response = await getTerceirizadaUUID(ficha.empresa.uuid);
     setProponente(response.data);
   } else if (meusDados) {
     const response = await getTerceirizadaUUID(
-      meusDados.vinculo_atual.instituicao.uuid
+      meusDados.vinculo_atual.instituicao.uuid,
     );
     setProponente(response.data);
   }
@@ -168,7 +168,7 @@ export const carregarDadosCadastrar = async (
   setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>,
   setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>,
   setFabricantesCount: Dispatch<SetStateAction<number>>,
-  setCarregando: Dispatch<SetStateAction<boolean>>
+  setCarregando: Dispatch<SetStateAction<boolean>>,
 ) => {
   try {
     setCarregando(true);
@@ -182,7 +182,7 @@ export const carregarDadosCadastrar = async (
 
       listaInformacoesNutricionaisFichaTecnica.current =
         fichaTecnica.informacoes_nutricionais.map(
-          ({ informacao_nutricional }) => informacao_nutricional
+          ({ informacao_nutricional }) => informacao_nutricional,
         );
 
       setFicha(fichaTecnica);
@@ -198,7 +198,7 @@ export const carregarDadosCadastrar = async (
       }
     } else if (meusDados) {
       const response = await getTerceirizadaUUID(
-        meusDados.vinculo_atual.instituicao.uuid
+        meusDados.vinculo_atual.instituicao.uuid,
       );
       setProponente(response.data);
     }
@@ -217,7 +217,7 @@ export const carregarDadosCorrgir = async (
   setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>,
   setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>,
   setFabricantesCount: Dispatch<SetStateAction<number>>,
-  setCarregando: Dispatch<SetStateAction<boolean>>
+  setCarregando: Dispatch<SetStateAction<boolean>>,
 ) => {
   try {
     setCarregando(true);
@@ -235,7 +235,7 @@ export const carregarDadosCorrgir = async (
 
     listaInformacoesNutricionaisFichaTecnica.current =
       fichaTecnica.informacoes_nutricionais.map(
-        ({ informacao_nutricional }) => informacao_nutricional
+        ({ informacao_nutricional }) => informacao_nutricional,
       );
 
     if (fichaTecnica.arquivo) {
@@ -259,7 +259,7 @@ export const carregarDadosAtualizar = async (
   setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>,
   setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>,
   setFabricantesCount: Dispatch<SetStateAction<number>>,
-  setCarregando: Dispatch<SetStateAction<boolean>>
+  setCarregando: Dispatch<SetStateAction<boolean>>,
 ) => {
   try {
     setCarregando(true);
@@ -283,7 +283,7 @@ export const carregarDadosAtualizar = async (
 
     listaInformacoesNutricionaisFichaTecnica.current =
       fichaTecnica.informacoes_nutricionais.map(
-        ({ informacao_nutricional }) => informacao_nutricional
+        ({ informacao_nutricional }) => informacao_nutricional,
       );
 
     const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
@@ -301,7 +301,7 @@ export const carregarDadosAnalisarDetalhar = async (
   setConferidos: Dispatch<SetStateAction<StateConferidosAnalise>>,
   setInitialValues: Dispatch<SetStateAction<Record<string, any>>>,
   setProponente: Dispatch<SetStateAction<TerceirizadaComEnderecoInterface>>,
-  setCarregando: Dispatch<SetStateAction<boolean>>
+  setCarregando: Dispatch<SetStateAction<boolean>>,
 ) => {
   try {
     setCarregando(true);
@@ -318,7 +318,7 @@ export const carregarDadosAnalisarDetalhar = async (
 
     listaInformacoesNutricionaisFichaTecnica.current =
       fichaTecnica.informacoes_nutricionais.map(
-        ({ informacao_nutricional }) => informacao_nutricional
+        ({ informacao_nutricional }) => informacao_nutricional,
       );
 
     const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
@@ -331,7 +331,7 @@ export const carregarDadosAnalisarDetalhar = async (
 export const carregaListaCompletaInformacoesNutricionais = async (
   listaCompletaInformacoesNutricionais: MutableRefObject<
     InformacaoNutricional[]
-  >
+  >,
 ) => {
   const responseInformacoes: ResponseInformacoesNutricionais =
     await getInformacoesNutricionaisOrdenadas();
@@ -351,7 +351,7 @@ export const validaRascunho = (values: FichaTecnicaPayload): boolean => {
 export const validaProximo = (
   values: FichaTecnicaPayload,
   errors: Record<string, string>,
-  stepAtual: number
+  stepAtual: number,
 ): boolean => {
   const validaStepMap = [
     validaProximoIdentificacaoProduto,
@@ -363,7 +363,7 @@ export const validaProximo = (
 
 export const validaProximoIdentificacaoProduto = (
   values: FichaTecnicaPayload,
-  errors: Record<string, string>
+  errors: Record<string, string>,
 ): boolean => {
   const campoAlergenicosValido =
     (values.alergenicos === "1" && values.ingredientes_alergenicos) ||
@@ -397,7 +397,7 @@ export const validaProximoIdentificacaoProduto = (
 
 export const validaProximoInformacoesNutricionais = (
   values: FichaTecnicaPayload,
-  errors: Record<string, string>
+  errors: Record<string, string>,
 ): boolean => {
   return (
     Object.keys(errors).length !== 0 ||
@@ -411,7 +411,7 @@ export const validaProximoInformacoesNutricionais = (
 export const validaAssinarEnviar = (
   values: FichaTecnicaPayload,
   errors: Record<string, string>,
-  arquivo: ArquivoForm[]
+  arquivo: ArquivoForm[],
 ): boolean => {
   return (
     Object.keys(errors).length !== 0 ||
@@ -494,7 +494,7 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
     prazo_validade_descongelamento: ficha.prazo_validade_descongelamento,
     condicoes_de_conservacao: ficha.condicoes_de_conservacao,
     temperatura_congelamento: numberToStringDecimal(
-      ficha.temperatura_congelamento
+      ficha.temperatura_congelamento,
     ),
     temperatura_veiculo: numberToStringDecimal(ficha.temperatura_veiculo),
     condicoes_de_transporte: ficha.condicoes_de_transporte,
@@ -504,19 +504,19 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
     material_embalagem_primaria: ficha.material_embalagem_primaria,
     produto_eh_liquido: booleanToString(ficha.produto_eh_liquido),
     volume_embalagem_primaria: numberToStringDecimal(
-      ficha.volume_embalagem_primaria
+      ficha.volume_embalagem_primaria,
     ),
     peso_liquido_embalagem_primaria: numberToStringDecimal(
-      ficha.peso_liquido_embalagem_primaria
+      ficha.peso_liquido_embalagem_primaria,
     ),
     peso_liquido_embalagem_secundaria: numberToStringDecimal(
-      ficha.peso_liquido_embalagem_secundaria
+      ficha.peso_liquido_embalagem_secundaria,
     ),
     peso_embalagem_primaria_vazia: numberToStringDecimal(
-      ficha.peso_embalagem_primaria_vazia
+      ficha.peso_embalagem_primaria_vazia,
     ),
     peso_embalagem_secundaria_vazia: numberToStringDecimal(
-      ficha.peso_embalagem_secundaria_vazia
+      ficha.peso_embalagem_secundaria_vazia,
     ),
     sistema_vedacao_embalagem_secundaria:
       ficha.sistema_vedacao_embalagem_secundaria,
@@ -533,7 +533,7 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
 };
 
 export const geraInitialValuesCorrigir = (
-  ficha: FichaTecnicaDetalhadaComAnalise
+  ficha: FichaTecnicaDetalhadaComAnalise,
 ) => {
   const initialValues = {
     ...geraInitialValuesCadastrar(ficha),
@@ -547,7 +547,7 @@ export const geraInitialValuesCorrigir = (
 };
 
 export const geraInitialValuesDetalharEAnalisar = (
-  ficha: FichaTecnicaDetalhadaComAnalise
+  ficha: FichaTecnicaDetalhadaComAnalise,
 ) => {
   const initialValues = {
     ...geraInitialValuesCadastrar(ficha),
@@ -581,7 +581,7 @@ export const geraInitialValuesDetalharEAnalisar = (
 
 export const carregaTagsCollapses = (
   ficha: FichaTecnicaDetalhadaComAnalise,
-  setConferidos: Dispatch<SetStateAction<StateConferidosAnalise>>
+  setConferidos: Dispatch<SetStateAction<StateConferidosAnalise>>,
 ) => {
   const stateConferidos: StateConferidosAnalise = {
     fabricante_envasador: ficha.analise?.fabricante_envasador_conferido,
@@ -615,7 +615,7 @@ export const formataPayloadCadastroFichaTecnica = (
   fabricantesOptions: OptionsGenerico[],
   arquivo: ArquivoForm[],
   fabricantesCount: number,
-  password?: string
+  password?: string,
 ) => {
   const ehPereciveis = values.categoria === "PERECIVEIS";
 
@@ -625,7 +625,7 @@ export const formataPayloadCadastroFichaTecnica = (
       values,
       proponente,
       fabricantesOptions,
-      fabricantesCount
+      fabricantesCount,
     ),
     ...gerarCamposDetalhesProduto(values),
     ...gerarCamposInformacoesNutricionais(values),
@@ -652,7 +652,7 @@ export const formataPayloadCorrecaoFichaTecnica = (
   fabricantesCount: number,
   arquivo: ArquivoForm[],
   ehPereciveis: boolean,
-  password: string
+  password: string,
 ) => {
   let payload: FichaTecnicaPayload = {
     ...(!conferidos.fabricante_envasador
@@ -661,7 +661,7 @@ export const formataPayloadCorrecaoFichaTecnica = (
           proponente,
           fabricantesOptions,
           fabricantesCount,
-          true
+          true,
         )
       : {}),
     ...(!conferidos.detalhes_produto ? gerarCamposDetalhesProduto(values) : {}),
@@ -703,7 +703,7 @@ export const formataPayloadAtualizacaoFichaTecnica = (
   fabricantesOptions: OptionsGenerico[],
   fabricantesCount: number,
   arquivo: ArquivoForm[],
-  password: string
+  password: string,
 ): FichaTecnicaPayload => {
   let payload: FichaTecnicaPayload = {
     ...gerarCamposProponenteFabricante(
@@ -711,7 +711,7 @@ export const formataPayloadAtualizacaoFichaTecnica = (
       proponente,
       fabricantesOptions,
       fabricantesCount,
-      true
+      true,
     ),
     password: password,
   };
@@ -744,7 +744,7 @@ export const formataPayloadAtualizacaoFichaTecnica = (
 
 const gerarCamposObrigatoriosRascunho = (
   values: Record<string, any>,
-  produtosOptions: OptionsGenerico[]
+  produtosOptions: OptionsGenerico[],
 ) => {
   return {
     produto: produtosOptions.find((p) => p.nome === values.produto)?.uuid,
@@ -759,14 +759,14 @@ const gerarCamposProponenteFabricante = (
   proponente: TerceirizadaComEnderecoInterface,
   fabricantesOptions: OptionsGenerico[],
   fabricantesCount: number,
-  ehAlterar: boolean = false
+  ehAlterar: boolean = false,
 ) => {
   const fabricantes: FabricanteFichaPayload[] = Array.from({
     length: fabricantesCount,
   }).map((_, idx) => {
     return {
       fabricante: fabricantesOptions.find(
-        (p) => p.nome === values[`fabricante_${idx}`]
+        (p) => p.nome === values[`fabricante_${idx}`],
       )?.uuid,
       cnpj: removeCaracteresEspeciais(values[`cnpj_fabricante_${idx}`]) || "",
       cep: removeCaracteresEspeciais(values[`cep_fabricante_${idx}`]) || "",
@@ -816,7 +816,7 @@ const gerarCamposInformacoesNutricionais = (values: Record<string, any>) => {
 
 const gerarCamposConservacao = (
   values: Record<string, any>,
-  ehPereciveis: boolean
+  ehPereciveis: boolean,
 ) => {
   return {
     prazo_validade_descongelamento: ehPereciveis
@@ -828,17 +828,17 @@ const gerarCamposConservacao = (
 
 const gerarCamposTemperaturaTransporte = (
   values: Record<string, any>,
-  ehPereciveis: boolean
+  ehPereciveis: boolean,
 ) => {
   return {
     temperatura_congelamento: stringDecimalToNumber(
-      values.temperatura_congelamento
+      values.temperatura_congelamento,
     ),
     temperatura_veiculo: stringDecimalToNumber(values.temperatura_veiculo),
     condicoes_de_transporte: retornaValorSeCategoriaPereciveis(
       values,
       ehPereciveis,
-      "condicoes_de_transporte"
+      "condicoes_de_transporte",
     ),
   };
 };
@@ -852,7 +852,7 @@ const gerarCamposArmazenamento = (values: Record<string, any>) => {
 
 const gerarCamposEmbalagemRotulagem = (
   values: Record<string, any>,
-  ehPereciveis: boolean
+  ehPereciveis: boolean,
 ) => {
   return {
     embalagens_de_acordo_com_anexo:
@@ -866,19 +866,19 @@ const gerarCamposEmbalagemRotulagem = (
       ? values.unidade_medida_volume_primaria || null
       : undefined,
     peso_liquido_embalagem_primaria: stringDecimalToNumber(
-      values.peso_liquido_embalagem_primaria
+      values.peso_liquido_embalagem_primaria,
     ),
     unidade_medida_primaria: values.unidade_medida_primaria || null,
     peso_liquido_embalagem_secundaria: stringDecimalToNumber(
-      values.peso_liquido_embalagem_secundaria
+      values.peso_liquido_embalagem_secundaria,
     ),
     unidade_medida_secundaria: values.unidade_medida_secundaria || null,
     peso_embalagem_primaria_vazia: stringDecimalToNumber(
-      values.peso_embalagem_primaria_vazia
+      values.peso_embalagem_primaria_vazia,
     ),
     unidade_medida_primaria_vazia: values.unidade_medida_primaria_vazia || null,
     peso_embalagem_secundaria_vazia: stringDecimalToNumber(
-      values.peso_embalagem_secundaria_vazia
+      values.peso_embalagem_secundaria_vazia,
     ),
     unidade_medida_secundaria_vazia:
       values.unidade_medida_secundaria_vazia || null,
@@ -893,7 +893,7 @@ const gerarCamposEmbalagemRotulagem = (
 
 const gerarCamposResponsavelTecnico = (
   values: Record<string, any>,
-  arquivo: ArquivoForm[]
+  arquivo: ArquivoForm[],
 ) => {
   return {
     nome_responsavel_tecnico: values.nome_responsavel_tecnico || "",
@@ -918,7 +918,7 @@ const gerarCamposOutrasInformacoes = (values: Record<string, any>) => {
 const retornaValorSeCategoriaPereciveis = (
   values: Record<string, any>,
   ehPereciveis: boolean,
-  campo: string
+  campo: string,
 ) => (ehPereciveis ? values[campo] : undefined);
 
 export const formataInformacoesNutricionais = (values: Record<string, any>) => {
@@ -940,13 +940,13 @@ export const formataInformacoesNutricionais = (values: Record<string, any>) => {
 
 export const inserirArquivoFichaAssinadaRT = (
   files: ArquivoForm[],
-  setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>
+  setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>,
 ) => {
   setArquivo(files);
 };
 
 export const removerArquivoFichaAssinadaRT = (
-  setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>
+  setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>,
 ) => {
   setArquivo([]);
 };
@@ -955,7 +955,7 @@ export const salvarRascunho = async (
   payload: FichaTecnicaPayload,
   ficha: FichaTecnicaDetalhada,
   setFicha: Dispatch<SetStateAction<FichaTecnicaDetalhada>>,
-  setCarregando: Dispatch<SetStateAction<boolean>>
+  setCarregando: Dispatch<SetStateAction<boolean>>,
 ) => {
   try {
     setCarregando(true);
@@ -981,7 +981,7 @@ export const assinarEnviarFichaTecnica = async (
   payload: FichaTecnicaPayload,
   ficha: FichaTecnicaDetalhada,
   setCarregando: Dispatch<SetStateAction<boolean>>,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
 ) => {
   try {
     setCarregando(true);
@@ -1007,7 +1007,7 @@ export const assinarCorrigirFichaTecnica = async (
   payload: FichaTecnicaPayload,
   ficha: FichaTecnicaDetalhadaComAnalise,
   setCarregando: Dispatch<SetStateAction<boolean>>,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
 ) => {
   try {
     setCarregando(true);
@@ -1031,7 +1031,7 @@ export const atualizarAssinarFichaTecnica = async (
   payload: FichaTecnicaPayload,
   ficha: FichaTecnicaDetalhadaComAnalise,
   setCarregando: Dispatch<SetStateAction<boolean>>,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
 ) => {
   try {
     setCarregando(true);
@@ -1054,7 +1054,7 @@ export const atualizarAssinarFichaTecnica = async (
 export const gerenciaModalCadastroExterno = (
   tipo: string,
   setTipoCadastro: Dispatch<SetStateAction<string>>,
-  setShowModalCadastro: Dispatch<SetStateAction<boolean>>
+  setShowModalCadastro: Dispatch<SetStateAction<boolean>>,
 ) => {
   setTipoCadastro(tipo);
   setShowModalCadastro(true);
@@ -1063,14 +1063,20 @@ export const gerenciaModalCadastroExterno = (
 export const imprimirFicha = (
   uuid: string,
   numero: string,
-  setCarregando: Dispatch<SetStateAction<boolean>>
+  setCarregando: Dispatch<SetStateAction<boolean>>,
 ) => {
   imprimirFichaTecnica(uuid, numero)
     .then(() => {
       setCarregando(false);
     })
     .catch((error) => {
-      error.response.data.text().then((text) => toastError(text));
+      if (error.status === 400) {
+        toastError("Ocorreu um erro durante a geração do pdf de Ficha Técnica");
+      } else {
+        toastError(
+          "Erro interno do servidor. Tente novamente em alguns instantes.",
+        );
+      }
       setCarregando(false);
     });
 };

@@ -117,12 +117,12 @@ export default () => {
   const [carregando, setCarregando] = useState<boolean>(true);
   const [cronogramas, setCronogramas] = useState<Array<CronogramaSimples>>([]);
   const [collapse1, setCollapse1] = useState<CollapseControl>(
-    iniciaStateCollapse()
+    iniciaStateCollapse(),
   );
   const [collapse2, setCollapse2] = useState<CollapseControl>({ 0: true });
   const [collapse3, setCollapse3] = useState<CollapseControl>({ 0: true });
   const [cronograma, setCronograma] = useState<CronogramaFicha>(
-    {} as CronogramaFicha
+    {} as CronogramaFicha,
   );
   const [initialValues, setInitialValues] = useState<Record<string, any>>({});
   const [showModal, setShowModal] = useState(false);
@@ -139,7 +139,7 @@ export default () => {
   >([]);
   const [ocorrenciasCount, setOcorrenciasCount] = useState(1);
   const [opcoesReposicao, setOpcoesReposicao] = useState<ReposicaoCronograma[]>(
-    []
+    [],
   );
 
   const buscaCronogramas = async (): Promise<void> => {
@@ -155,8 +155,14 @@ export default () => {
 
   const getOpcoesEtapas = () => {
     let options = [];
+
     cronograma.etapas?.forEach((etapa) => {
-      if (etapa.desvinculada_recebimento || etapa.houve_ocorrencia) {
+      if (
+        etapa.desvinculada_recebimento ||
+        (!initialValues.etapa &&
+          etapa.houve_ocorrencia &&
+          !etapa.houve_reposicao)
+      ) {
         options.push({
           uuid: etapa.uuid,
           nome: `${
@@ -171,12 +177,21 @@ export default () => {
       }
     });
     if (initialValues.etapa) {
-      options.push({
+      let obj = {
         uuid: initialValues.etapa.uuid,
-        nome: initialValues.etapa.parte
-          ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
-          : `${initialValues.etapa.etapa}`,
-      });
+        nome: `${
+          initialValues.etapa.parte
+            ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
+            : `${initialValues.etapa.etapa}`
+        }${
+          initialValues.reposicao_cronograma &&
+          initialValues.etapa.houve_ocorrencia
+            ? " - Reposição / Pagamento de Notificação"
+            : ""
+        }`,
+      };
+      if (initialValues.reposicao_cronograma) obj["houve_ocorrencia"] = true;
+      options.push(obj);
     }
     return options;
   };
@@ -195,13 +210,13 @@ export default () => {
   const formataPayloadQuestoes = (
     values: Record<string, any>,
     listaQuestoes: QuestaoConferenciaSimples[],
-    tipoQuestao: string
+    tipoQuestao: string,
   ): QuestoesPayload[] => {
     return listaQuestoes
       ? listaQuestoes
           .map((questao) => {
             let resposta = stringToBoolean(
-              values[`${tipoQuestao}_${questao.uuid}`]
+              values[`${tipoQuestao}_${questao.uuid}`],
             );
             return resposta !== undefined
               ? {
@@ -266,7 +281,7 @@ export default () => {
 
   const formataPayload = (
     values: Record<string, any>,
-    password?: string
+    password?: string,
   ): FichaRecebimentoPayload => {
     let payloadQuestoes: QuestoesPayload[] = [
       ...formataPayloadQuestoes(values, questoesPrimarias, "PRIMARIA"),
@@ -281,18 +296,18 @@ export default () => {
         ? moment(values.data_entrega, "DD/MM/YYYY").format("YYYY-MM-DD")
         : undefined,
       documentos_recebimento: values.documentos_recebimento?.map(
-        (x: DocumentoFicha) => x.uuid
+        (x: DocumentoFicha) => x.uuid,
       ),
       lote_fabricante_de_acordo: stringToBoolean(
-        values.lote_fabricante_de_acordo as string
+        values.lote_fabricante_de_acordo as string,
       ),
       lote_fabricante_divergencia: values.lote_fabricante_divergencia,
       data_fabricacao_de_acordo: stringToBoolean(
-        values.data_fabricacao_de_acordo as string
+        values.data_fabricacao_de_acordo as string,
       ),
       data_fabricacao_divergencia: values.data_fabricacao_divergencia,
       data_validade_de_acordo: stringToBoolean(
-        values.data_validade_de_acordo as string
+        values.data_validade_de_acordo as string,
       ),
       data_validade_divergencia: values.data_validade_divergencia,
       numero_lote_armazenagem: values.numero_lote_armazenagem,
@@ -320,10 +335,10 @@ export default () => {
                 quantidade_recebida: values[`quantidade_recebida_${index}`],
                 embalagens_recebidas: values[`embalagens_recebidas_${index}`],
                 estado_higienico_adequado: stringToBoolean(
-                  values[`estado_higienico_adequado_${index}`]
+                  values[`estado_higienico_adequado_${index}`],
                 ),
                 termografo: stringToBoolean(values[`termografo_${index}`]),
-              } as VeiculoPayload)
+              }) as VeiculoPayload,
           )
         : undefined,
       sistema_vedacao_embalagem_secundaria:
@@ -345,7 +360,7 @@ export default () => {
 
   const salvarRascunho = async (
     values: FichaRecebimentoPayload,
-    redirecionarPara: () => void
+    redirecionarPara: () => void,
   ): Promise<void> => {
     setCarregando(true);
 
@@ -372,7 +387,7 @@ export default () => {
   const assinarFichaRecebimento = async (
     values: FichaRecebimentoPayload,
     redirecionarPara: () => void,
-    password?: string
+    password?: string,
   ) => {
     setCarregando(true);
     let payload: FichaRecebimentoPayload = formataPayload(values, password);
@@ -418,7 +433,7 @@ export default () => {
         setCarregando,
         setVeiculos,
         setOcorrenciasCount,
-        setArquivos
+        setArquivos,
       );
     };
 
@@ -442,7 +457,7 @@ export default () => {
       const documentosSelecionados = initialValues.documentos_recebimento
         .map((doc) => {
           return cronograma.documentos_de_recebimento.find(
-            (docOpcao) => docOpcao.uuid === doc.uuid
+            (docOpcao) => docOpcao.uuid === doc.uuid,
           );
         })
         .filter(Boolean);
@@ -456,11 +471,11 @@ export default () => {
   useEffect(() => {
     if (initialValues.etapa && formRef.current && cronograma.etapas) {
       const selectElement = document.querySelector(
-        'select[data-cy="Etapa e Parte"]'
+        'select[data-cy="Etapa e Parte"]',
       ) as HTMLSelectElement;
       if (selectElement) {
         const optionToSelect = Array.from(selectElement.options).find(
-          (option) => option.value === initialValues.etapa.uuid
+          (option) => option.value === initialValues.etapa.uuid,
         );
 
         if (optionToSelect) {
@@ -475,7 +490,7 @@ export default () => {
     getListaFiltradaAutoCompleteSelect(
       cronogramas.map(({ numero }) => numero),
       values.cronograma,
-      true
+      true,
     );
 
   const atualizarCamposCronograma = async (value: string, form: FormApi) => {
@@ -485,7 +500,7 @@ export default () => {
       let cronogramaSelecionado = cronogramas.find((c) => c.numero === value);
       if (cronogramaSelecionado?.uuid) {
         let { data } = await getCronogramaPraCadastroRecebimento(
-          cronogramaSelecionado.uuid
+          cronogramaSelecionado.uuid,
         );
         let cronograma = data.results;
         setCronograma(cronograma);
@@ -520,11 +535,11 @@ export default () => {
     form.change("emb_secundaria", cronograma.embalagem_secundaria);
     form.change(
       "peso_emb_primaria",
-      cronograma.peso_liquido_embalagem_primaria
+      cronograma.peso_liquido_embalagem_primaria,
     );
     form.change(
       "peso_emb_secundaria",
-      cronograma.peso_liquido_embalagem_secundaria
+      cronograma.peso_liquido_embalagem_secundaria,
     );
   };
 
@@ -620,7 +635,7 @@ export default () => {
             render={({ handleSubmit, values, form, errors }) => {
               formRef.current = form;
               const reposicaoSelecionada = opcoesReposicao.find(
-                ({ uuid }) => uuid === values.reposicao_cronograma
+                ({ uuid }) => uuid === values.reposicao_cronograma,
               );
 
               return (
@@ -632,7 +647,7 @@ export default () => {
                     handleSim={() =>
                       salvarRascunho(
                         values as FichaRecebimentoPayload,
-                        paginaAnterior
+                        paginaAnterior,
                       )
                     }
                     titulo={<span>Salvar Rascunho</span>}
@@ -650,7 +665,7 @@ export default () => {
                     handleSim={() =>
                       salvarRascunho(
                         values as FichaRecebimentoPayload,
-                        paginaQuestoesPorProduto
+                        paginaQuestoesPorProduto,
                       )
                     }
                     titulo="Salvar Rascunho e Atribuir Questões"
@@ -832,7 +847,7 @@ export default () => {
                               required
                               validate={required}
                               onChangeEffect={(
-                                e: ChangeEvent<HTMLInputElement>
+                                e: ChangeEvent<HTMLInputElement>,
                               ) => {
                                 atualizarCamposEtapa(e.target.value, form);
                               }}
@@ -920,7 +935,7 @@ export default () => {
                           </div>
                         </div>
                         {getOpcoesEtapas()?.find(
-                          (opt) => opt.uuid === values.etapa
+                          (opt) => opt.uuid === values.etapa,
                         )?.houve_ocorrencia && (
                           <div className="row reposicao">
                             <div className="col-6">
@@ -933,7 +948,7 @@ export default () => {
                                       value: e.uuid,
                                       label: e.descricao,
                                     };
-                                  }
+                                  },
                                 )}
                               />
                             </div>
@@ -1025,7 +1040,7 @@ export default () => {
                                           </td>
                                         </tr>
                                       );
-                                    }
+                                    },
                                   )}
                                 </tbody>
                               </table>
@@ -1486,7 +1501,7 @@ export default () => {
                                   {Array.from({
                                     length: Math.max(
                                       questoesPrimarias.length,
-                                      questoesSecundarias.length
+                                      questoesSecundarias.length,
                                     ),
                                   }).map((_, index) => {
                                     const primaria = questoesPrimarias[index];
@@ -1653,11 +1668,12 @@ export default () => {
                           style={BUTTON_STYLE.GREEN}
                           className="ms-3"
                           disabled={
-                            (!questoesPrimarias?.length ||
-                              Object.keys(errors).length > 0) &&
-                            (values.reposicao_cronograma === "Repor" ||
-                              !values.cronograma ||
-                              !values.etapa)
+                            ((!values.reposicao_cronograma ||
+                              values.reposicao_cronograma === "Repor") &&
+                              !questoesPrimarias?.length) ||
+                            (values.reposicao_cronograma === "Credito" &&
+                              (!values.cronograma || !values.etapa)) ||
+                            Object.keys(errors).length > 0
                           }
                         />
                       )}
@@ -1685,7 +1701,7 @@ export default () => {
                       assinarFichaRecebimento(
                         values as FichaRecebimentoPayload,
                         paginaAnterior,
-                        password
+                        password,
                       );
                     }}
                     loading={carregando}

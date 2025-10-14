@@ -25,6 +25,7 @@ export const mockCronogramaCadastroRecebimento = {
         total_embalagens: "4,00 EMB",
         desvinculada_recebimento: true,
         houve_ocorrencia: false,
+        houve_reposicao: false,
       },
       {
         uuid: "33169dd2-f33b-46c4-b1a1-0f26a3ce8532",
@@ -37,6 +38,7 @@ export const mockCronogramaCadastroRecebimento = {
         total_embalagens: "4,00 EMB",
         desvinculada_recebimento: true,
         houve_ocorrencia: false,
+        houve_reposicao: false,
       },
       {
         uuid: "7f2e4b1a-6c32-4d3a-82c4-3a192a872cc2",
@@ -49,6 +51,7 @@ export const mockCronogramaCadastroRecebimento = {
         total_embalagens: "4,00 EMB",
         desvinculada_recebimento: false,
         houve_ocorrencia: true,
+        houve_reposicao: false,
       },
     ],
     documentos_de_recebimento: [

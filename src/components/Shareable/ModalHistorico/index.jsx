@@ -275,7 +275,13 @@ const ModalHistorico = ({
                           </>
                         )}
                         {logSelecionado.justificativa === "" &&
-                          justificativaNegacao && (
+                          justificativaNegacao &&
+                          [
+                            "CODAE negou a Alteração de UE",
+                            "CODAE negou cancelamento",
+                          ].includes(
+                            logSelecionado.status_evento_explicacao,
+                          ) && (
                             <>
                               <div>Justificativa: </div>
                               <div
