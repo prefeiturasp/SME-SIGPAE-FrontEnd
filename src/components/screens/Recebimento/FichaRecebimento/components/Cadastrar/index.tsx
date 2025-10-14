@@ -155,28 +155,41 @@ export default () => {
 
   const getOpcoesEtapas = () => {
     let options = [];
-    cronograma.etapas?.forEach((etapa) => {
-      if (etapa.desvinculada_recebimento || etapa.houve_ocorrencia) {
-        options.push({
-          uuid: etapa.uuid,
-          nome: `${
-            etapa.parte ? `${etapa.etapa} - ${etapa.parte}` : `${etapa.etapa}`
-          }${
-            etapa.houve_ocorrencia
-              ? " - Reposição / Pagamento de Notificação"
-              : ""
-          }`,
-          houve_ocorrencia: etapa.houve_ocorrencia,
-        });
-      }
-    });
-    if (initialValues.etapa) {
-      options.push({
-        uuid: initialValues.etapa.uuid,
-        nome: initialValues.etapa.parte
-          ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
-          : `${initialValues.etapa.etapa}`,
+    if (!initialValues.reposicao_cronograma)
+      cronograma.etapas?.forEach((etapa) => {
+        if (
+          etapa.desvinculada_recebimento ||
+          (etapa.houve_ocorrencia && !etapa.houve_reposicao)
+        ) {
+          options.push({
+            uuid: etapa.uuid,
+            nome: `${
+              etapa.parte ? `${etapa.etapa} - ${etapa.parte}` : `${etapa.etapa}`
+            }${
+              etapa.houve_ocorrencia
+                ? " - Reposição / Pagamento de Notificação"
+                : ""
+            }`,
+            houve_ocorrencia: etapa.houve_ocorrencia,
+          });
+        }
       });
+    if (initialValues.etapa) {
+      let obj = {
+        uuid: initialValues.etapa.uuid,
+        nome: `${
+          initialValues.etapa.parte
+            ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
+            : `${initialValues.etapa.etapa}`
+        }${
+          initialValues.reposicao_cronograma &&
+          initialValues.etapa.houve_ocorrencia
+            ? " - Reposição / Pagamento de Notificação"
+            : ""
+        }`,
+      };
+      if (initialValues.reposicao_cronograma) obj["houve_ocorrencia"] = true;
+      options.push(obj);
     }
     return options;
   };
