@@ -88,7 +88,7 @@ const gerarLinkDoItem = (item, apontaParaEdicao, titulo) => {
     }&card_suspensos=${true}`;
   } else if (
     usuarioEhEmpresaTerceirizada() &&
-    item.tem_copia &&
+    (item.tem_copia || item.produto_eh_copia) &&
     [
       CODAE_HOMOLOGADO,
       CODAE_SUSPENDEU,
@@ -159,7 +159,7 @@ const getText = (item) => {
 
   return `${item.id_externo} - ${truncarString(
     item.nome_produto,
-    TAMANHO_MAXIMO - appendix.length
+    TAMANHO_MAXIMO - appendix.length,
   )}${appendix}`;
 };
 

@@ -9,6 +9,7 @@ import {
   agruparMilharDecimal,
   agruparMilharInteirosPositivos,
 } from "./helpers";
+import { formataMilhar } from "src/helpers/utilities";
 
 export const InputText = (props) => {
   const {
@@ -125,10 +126,7 @@ export const InputText = (props) => {
               ? e.target.value.replace(/[0-9]/, "")
               : e.target.value;
             e.target.value = agrupadorMilhar
-              ? e.target.value
-                  .toString()
-                  .replace(/\D/g, "")
-                  .replace(/\d(?=(\d{3})+$)/g, "$&.")
+              ? formataMilhar(e.target.value)
               : e.target.value;
             e.target.value = agrupadorMilharComDecimal
               ? agruparMilharDecimal(e.target.value)
