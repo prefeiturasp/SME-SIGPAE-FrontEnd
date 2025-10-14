@@ -13,14 +13,24 @@ set -xe
 : "${CES_URL?Precisa de uma variavel de ambiente CES_URL}"
 : "${CES_TOKEN?Precisa de uma variavel de ambiente CES_TOKEN}"
 
-envsubst '${WEBSOCKET_SERVER} ${SERVER_NAME}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+TMP_CONF=$(mktemp)
+envsubst '${WEBSOCKET_SERVER} ${SERVER_NAME}' < /etc/nginx/conf.d/default.conf.template > "$TMP_CONF"
+cat "$TMP_CONF" > /etc/nginx/conf.d/default.conf
+rm -f "$TMP_CONF"
 
 for file in /usr/share/nginx/html/assets/*.js; do
-  sed -i "s|API_URL_REPLACE_ME|$API_URL|g" "$file"
-  sed -i "s|SENTRY_URL_REPLACE_ME|$SENTRY_URL|g" "$file"
-  sed -i "s|NODE_ENV_REPLACE_ME|$NODE_ENV|g" "$file"
-  sed -i "s|CES_URL_REPLACE_ME|$CES_URL|g" "$file"
-  sed -i "s|CES_TOKEN_REPLACE_ME|$CES_TOKEN|g" "$file"
+  if [ -f "$file" ]; then
+    TMP_FILE=$(mktemp)
+    sed \
+      -e "s|API_URL_REPLACE_ME|$API_URL|g" \
+      -e "s|SENTRY_URL_REPLACE_ME|$SENTRY_URL|g" \
+      -e "s|NODE_ENV_REPLACE_ME|$NODE_ENV|g" \
+      -e "s|CES_URL_REPLACE_ME|$CES_URL|g" \
+      -e "s|CES_TOKEN_REPLACE_ME|$CES_TOKEN|g" \
+      "$file" > "$TMP_FILE"
+    cat "$TMP_FILE" > "$file"
+    rm -f "$TMP_FILE"
+  fi
 done
 
 exec "$@"

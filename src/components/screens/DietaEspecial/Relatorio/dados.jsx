@@ -191,7 +191,7 @@ export const respostaApiCancelamentoporDataTermino = () => {
     },
     anexos: [
       {
-        arquivo: "http://fake/cccc2937-cccc-dddd-kkkk-0f2d85797777.pdf",
+        arquivo: "https://fake/cccc2937-cccc-dddd-kkkk-0f2d85797777.pdf",
         nome: "6uuX0J-FULL.pdf",
         eh_laudo_alta: false,
       },
@@ -1982,7 +1982,7 @@ export const solicitacoesDietaEspecial = () => {
         },
         anexos: [
           {
-            arquivo: "http://fake/cee154d8-bbbb-bbbb-bbbb-cccccdabc33d.pdf",
+            arquivo: "https://fake/cee154d8-bbbb-bbbb-bbbb-cccccdabc33d.pdf",
             nome: "6uuX0J-FULL.pdf",
             eh_laudo_alta: false,
           },
@@ -2423,7 +2423,7 @@ export const solicitacoesDietaEspecialDoAluno = () => {
             arquivo_url:
               "https://hom-sigpae.sme.prefeitura.sp.gov.br/media/ddfa422f-1024-4258-ad96-23c4ce0d7151.pdf",
             arquivo:
-              "http://hom-sigpae.sme.prefeitura.sp.gov.br/media/ddfa422f-1024-4258-ad96-23c4ce0d7151.pdf",
+              "https://hom-sigpae.sme.prefeitura.sp.gov.br/media/ddfa422f-1024-4258-ad96-23c4ce0d7151.pdf",
             nome: "3.pdf",
             eh_laudo_alta: false,
           },
@@ -3142,7 +3142,7 @@ export const solicitacoesDietaEspecialDoAluno = () => {
             arquivo_url:
               "https://hom-sigpae.sme.prefeitura.sp.gov.br/media/df05f464-4bdc-4472-b5e9-86ef5bb806f7.pdf",
             arquivo:
-              "http://hom-sigpae.sme.prefeitura.sp.gov.br/media/df05f464-4bdc-4472-b5e9-86ef5bb806f7.pdf",
+              "https://hom-sigpae.sme.prefeitura.sp.gov.br/media/df05f464-4bdc-4472-b5e9-86ef5bb806f7.pdf",
             nome: "inclusao_alimentacao (10).pdf",
             eh_laudo_alta: false,
           },
@@ -3549,7 +3549,7 @@ export const solicitacoesDietaEspecialDoAluno = () => {
             arquivo_url:
               "https://hom-sigpae.sme.prefeitura.sp.gov.br/media/df05f464-4bdc-4472-b5e9-86ef5bb806f7.pdf",
             arquivo:
-              "http://hom-sigpae.sme.prefeitura.sp.gov.br/media/df05f464-4bdc-4472-b5e9-86ef5bb806f7.pdf",
+              "https://hom-sigpae.sme.prefeitura.sp.gov.br/media/df05f464-4bdc-4472-b5e9-86ef5bb806f7.pdf",
             nome: "inclusao_alimentacao (10).pdf",
             eh_laudo_alta: false,
           },
