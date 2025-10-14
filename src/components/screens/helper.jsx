@@ -75,7 +75,7 @@ export const ajustaFormatoLogPainelDietaEspecial = (logs, card) => {
             ? " - " + serie
             : ""
         }`,
-        41
+        41,
       ),
       texto_inteiro: `${textoDieta}${
         usuarioEhEscolaTerceirizadaDiretor() || usuarioEhEscolaTerceirizada()
@@ -196,7 +196,7 @@ export const ajustarFormatoLog = (logs, card) => {
         log.escolas_quantidades &&
         log.escolas_quantidades[0].cancelado &&
         ["escola", "diretoriaregional"].includes(
-          log.escolas_quantidades[0].cancelado_por.tipo_usuario
+          log.escolas_quantidades[0].cancelado_por.tipo_usuario,
         )
       ) {
         date = log.escolas_quantidades[0].cancelado_em;
@@ -289,7 +289,7 @@ export const mapeiaStatusAlimento = (str) => {
 
 export const getDataHomologacao = (logs) => {
   const homolog = logs.find(
-    (log) => log.status_evento_explicacao === "CODAE homologou"
+    (log) => log.status_evento_explicacao === "CODAE homologou",
   );
   return homolog ? homolog.criado_em : "--";
 };
@@ -302,8 +302,8 @@ export const deParaStatusAltCronograma = (status) =>
   ].includes(status)
     ? "Em análise"
     : ["Alteração Enviada ao Fornecedor"].includes(status)
-    ? "Recebida Alteração da CODAE"
-    : status;
+      ? "Recebida Alteração da CODAE"
+      : status;
 
 export const formatarPara4Digitos = (numero) => {
   let numeroFormatado = numero.toString();
@@ -334,16 +334,17 @@ export const formataValorDecimal = (value) => {
   let int = parts[0];
   let decimal = parts.length > 1 ? parts[1] : "";
 
-  int = int.replace(/(\d)(?=(\d{3})+$)/g, "$1.");
+  const n = Number(int);
+  const formatted = n.toLocaleString("pt-BR");
 
   decimal = decimal.slice(0, 2);
 
-  return decimal ? `${int},${decimal}` : int;
+  return decimal ? `${formatted},${decimal}` : formatted;
 };
 
 export const parserValorDecimal = (value) => {
   if (!value) return "";
   return Number.parseFloat(
-    value.replace(/\$\s?|(\.*)/g, "").replace(/(,{1})/g, ".")
+    value.replace(/\$\s?|(\.*)/g, "").replace(/(,{1})/g, "."),
   ).toFixed(2);
 };

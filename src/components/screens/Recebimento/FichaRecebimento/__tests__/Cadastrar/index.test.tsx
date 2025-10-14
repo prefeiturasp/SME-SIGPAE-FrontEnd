@@ -1,4 +1,3 @@
-import React from "react";
 import {
   render,
   screen,
@@ -6,6 +5,7 @@ import {
   fireEvent,
   waitFor,
   within,
+  cleanup,
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
@@ -14,6 +14,7 @@ import CadastroFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento
 import { mockListaCronogramasRecebimento } from "src/mocks/cronograma.service/mockGetCronogramasRecebimento";
 import { mockCronogramaCadastroRecebimento } from "src/mocks/cronograma.service/mockGetCronogramaCadastroRecebimento";
 import { mockCadastroFichaRecebimento } from "src/mocks/services/fichaRecebimento.service/mockCadastroFichaRecebimento";
+import { mockOpcoesReposicaoCronograma } from "src/mocks/services/fichaRecebimento.service/mockOpcoesReposicaoCronograma";
 import { mockQuestoesPorCronograma } from "src/mocks/services/questoesConferencia.service/mockDetalharQuestoesPorCronograma";
 import moment from "moment";
 import { ToastContainer } from "react-toastify";
@@ -45,6 +46,15 @@ beforeEach(() => {
     .reply(200, mockGetFichaRecebimentoDetalhada);
   mock.onPut("/rascunho-ficha-de-recebimento/").reply(200);
   mock.onPut("/fichas-de-recebimento/").reply(200);
+  mock
+    .onGet("/reposicao-cronograma-ficha-recebimento/")
+    .reply(200, mockOpcoesReposicaoCronograma);
+});
+
+afterEach(() => {
+  cleanup();
+  jest.clearAllMocks();
+  jest.resetAllMocks;
 });
 
 const setup = async () => {

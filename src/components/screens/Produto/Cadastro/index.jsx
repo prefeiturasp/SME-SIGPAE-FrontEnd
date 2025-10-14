@@ -143,7 +143,7 @@ class cadastroProduto extends Component {
         },
         function () {
           toastError("Houve um erro ao excluir o rascunho");
-        }
+        },
       );
     }
   };
@@ -391,7 +391,7 @@ class cadastroProduto extends Component {
       const resposta = await produtoJaExiste(
         payload["nome"],
         payload["marca"],
-        payload["fabricante"]
+        payload["fabricante"],
       );
 
       if (resposta.status !== HTTP_STATUS.OK) {
@@ -560,7 +560,7 @@ class cadastroProduto extends Component {
                       onClick={handleSubmit((values) =>
                         this.updateOrCreateProduto({
                           ...values,
-                        })
+                        }),
                       )}
                       disabled={
                         (currentStep === 1 &&
@@ -608,7 +608,7 @@ class cadastroProduto extends Component {
                         onClick={handleSubmit((values) =>
                           this.onSubmit({
                             ...values,
-                          })
+                          }),
                         )}
                       />
                     )}
@@ -640,7 +640,7 @@ const mapDispatchToProps = (dispatch) =>
     {
       loadProduto,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchToProps)(componentNameForm);
