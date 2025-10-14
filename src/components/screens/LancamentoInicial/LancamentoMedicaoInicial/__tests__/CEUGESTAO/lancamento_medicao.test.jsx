@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -9,17 +10,14 @@ import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { mockGetEscolaSimplesCEUGESTAO } from "src/mocks/services/escola.service/CEUGESTAO/mockGetEscolaSimplesCEUGESTAO";
-import { mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getCEUGESTAOPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
+import { mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
 import { mockGetPeriodosInclusaoContinuaCEUGESTAO } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getPeriodosInclusaoContinuaCEUGESTAO";
 import { mockGetSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getSolicitacoesKitLanchesAutorizadasEscolaCEUGESTAO";
 import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEUGESTAO/getQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO";
 import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEUGESTAO/getSolicitacaoMedicaoInicialCEUGESTAO";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
-import React from "react";
-import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
@@ -34,7 +32,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
       .reply(200, mockGetEscolaSimplesCEUGESTAO);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/b11a2964-c9e0-488a-bb7f-6e11df2c903b/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/b11a2964-c9e0-488a-bb7f-6e11df2c903b/",
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO);
     mock
@@ -57,27 +55,30 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
       .reply(200, { results: [] });
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
       )
       .reply(200, []);
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/"
+        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/",
       )
       .reply(200, []);
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/"
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
       .reply(200, mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO);
     mock
       .onGet(
-        "/escola-solicitacoes/ceu-gestao-periodos-com-solicitacoes-autorizadas/"
+        "/escola-solicitacoes/ceu-gestao-periodos-com-solicitacoes-autorizadas/",
       )
-      .reply(200, mockGetCEUGESTAOPeriodosSolicitacoesAutorizadasEscola);
+      .reply(
+        200,
+        mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola,
+      );
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/"
+        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/",
       )
       .reply(200, []);
 
@@ -107,7 +108,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
           >
             <LancamentoMedicaoInicialPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -133,7 +134,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
   });
 
   it("Verifica a ordem dos cards", () => {
-    preview.debug();
     const textos = [
       "Manhã",
       "Tarde",
@@ -148,7 +148,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO", () => {
     for (let i = 0; i < elementos.length - 1; i++) {
       const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
       expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
-        Node.DOCUMENT_POSITION_FOLLOWING
+        Node.DOCUMENT_POSITION_FOLLOWING,
       );
     }
   });

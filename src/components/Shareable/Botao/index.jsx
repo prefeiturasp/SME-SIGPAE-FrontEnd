@@ -83,6 +83,7 @@ Botao.propTypes = {
   tooltipTitulo: PropTypes.string,
   classTooltip: PropTypes.string,
   dataTestId: PropTypes.string,
+  tooltipExterno: PropTypes.string,
 };
 
 export default Botao;

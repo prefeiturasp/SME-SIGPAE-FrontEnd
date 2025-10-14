@@ -207,7 +207,7 @@ export const LancamentoPorPeriodoCEI = ({
   const getSolicitacoesKitLanchesAutorizadasAsync = async () => {
     if (ehEscolaTipoCEMEI(escolaInstituicao)) {
       const escola_uuid = escolaInstituicao.uuid;
-      const tipo_solicitacao = "Kit Lanche Passeio de CEMEI";
+      const tipo_solicitacao = "Kit Lanche";
       const response = await getSolicitacoesKitLanchesAutorizadasEscola({
         escola_uuid,
         mes,

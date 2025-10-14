@@ -14,6 +14,8 @@ const ModalConfirmacaoSimNao = ({
   corpo,
   onSimClick,
   onNaoClick,
+  disableSimBtn = false,
+  textoBtnSim = "Sim",
 }) => {
   return (
     <Modal
@@ -39,7 +41,8 @@ const ModalConfirmacaoSimNao = ({
           className="ms-3"
         />
         <Botao
-          texto="Sim"
+          texto={textoBtnSim}
+          disabled={disableSimBtn}
           type={BUTTON_TYPE.BUTTON}
           onClick={onSimClick}
           style={BUTTON_STYLE.BLUE}

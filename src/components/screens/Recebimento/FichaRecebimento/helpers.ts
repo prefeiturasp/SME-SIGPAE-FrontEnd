@@ -204,5 +204,9 @@ export const geraInitialValuesCadastrar = (
     });
   }
 
+  if (ficha.reposicao_cronograma) {
+    initialValues.reposicao_cronograma = ficha.reposicao_cronograma.uuid;
+  }
+
   return initialValues as Record<string, any>;
 };

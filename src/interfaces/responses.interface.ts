@@ -25,7 +25,7 @@ import { InformacaoNutricional } from "./produto.interface";
 import { LoteRascunhosInterface } from "./rascunhos.interface";
 import { TerceirizadaInterface } from "./terceirizada.interface";
 import { EditalContratoInterface } from "src/components/screens/Cadastros/EditaisContratosRefatorado/interfaces";
-import { FichaRecebimento } from "./recebimento.interface";
+import { FichaRecebimento, ReposicaoCronograma } from "./recebimento.interface";
 import {
   EquipamentoInterface,
   InsumoInterface,
@@ -284,4 +284,8 @@ export interface ResponseExportarPDFAssincronoInterface
   data: {
     detail: string;
   };
+}
+
+export interface ResponseReposicaoCronograma extends ResponseInterface {
+  data: { results: ReposicaoCronograma[] };
 }
