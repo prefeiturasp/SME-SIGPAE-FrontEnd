@@ -155,39 +155,42 @@ export default () => {
 
   const getOpcoesEtapas = () => {
     let options = [];
-    cronograma.etapas?.forEach((etapa) => {
-      if (
-        etapa.desvinculada_recebimento ||
-        (etapa.houve_ocorrencia && !etapa.houve_reposicao)
-      ) {
-        options.push({
-          uuid: etapa.uuid,
-          nome: `${
-            etapa.parte ? `${etapa.etapa} - ${etapa.parte}` : `${etapa.etapa}`
-          }${
-            etapa.houve_ocorrencia
-              ? " - Reposição / Pagamento de Notificação"
-              : ""
-          }`,
-          houve_ocorrencia: etapa.houve_ocorrencia,
-        });
-      }
-    });
     if (initialValues.etapa) {
-      options.push({
+      let obj = {
         uuid: initialValues.etapa.uuid,
         nome: `${
           initialValues.etapa.parte
             ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
             : `${initialValues.etapa.etapa}`
         }${
+          initialValues.reposicao_cronograma &&
           initialValues.etapa.houve_ocorrencia
             ? " - Reposição / Pagamento de Notificação"
             : ""
         }`,
-        houve_ocorrencia: initialValues.etapa.houve_ocorrencia,
+      };
+      if (initialValues.reposicao_cronograma) obj["houve_ocorrencia"] = true;
+      options.push(obj);
+    } else
+      cronograma.etapas?.forEach((etapa) => {
+        if (
+          etapa.desvinculada_recebimento ||
+          (etapa.houve_ocorrencia && !etapa.houve_reposicao)
+        ) {
+          options.push({
+            uuid: etapa.uuid,
+            nome: `${
+              etapa.parte ? `${etapa.etapa} - ${etapa.parte}` : `${etapa.etapa}`
+            }${
+              etapa.houve_ocorrencia
+                ? " - Reposição / Pagamento de Notificação"
+                : ""
+            }`,
+            houve_ocorrencia: etapa.houve_ocorrencia,
+          });
+        }
       });
-    }
+
     return options;
   };
 
