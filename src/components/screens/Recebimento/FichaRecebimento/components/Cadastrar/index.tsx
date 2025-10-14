@@ -155,25 +155,27 @@ export default () => {
 
   const getOpcoesEtapas = () => {
     let options = [];
-    if (!initialValues.reposicao_cronograma)
-      cronograma.etapas?.forEach((etapa) => {
-        if (
-          etapa.desvinculada_recebimento ||
-          (etapa.houve_ocorrencia && !etapa.houve_reposicao)
-        ) {
-          options.push({
-            uuid: etapa.uuid,
-            nome: `${
-              etapa.parte ? `${etapa.etapa} - ${etapa.parte}` : `${etapa.etapa}`
-            }${
-              etapa.houve_ocorrencia
-                ? " - Reposição / Pagamento de Notificação"
-                : ""
-            }`,
-            houve_ocorrencia: etapa.houve_ocorrencia,
-          });
-        }
-      });
+
+    cronograma.etapas?.forEach((etapa) => {
+      if (
+        etapa.desvinculada_recebimento ||
+        (!initialValues.etapa &&
+          etapa.houve_ocorrencia &&
+          !etapa.houve_reposicao)
+      ) {
+        options.push({
+          uuid: etapa.uuid,
+          nome: `${
+            etapa.parte ? `${etapa.etapa} - ${etapa.parte}` : `${etapa.etapa}`
+          }${
+            etapa.houve_ocorrencia
+              ? " - Reposição / Pagamento de Notificação"
+              : ""
+          }`,
+          houve_ocorrencia: etapa.houve_ocorrencia,
+        });
+      }
+    });
     if (initialValues.etapa) {
       let obj = {
         uuid: initialValues.etapa.uuid,
