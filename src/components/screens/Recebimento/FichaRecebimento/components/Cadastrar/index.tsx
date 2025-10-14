@@ -155,23 +155,7 @@ export default () => {
 
   const getOpcoesEtapas = () => {
     let options = [];
-    if (initialValues.etapa) {
-      let obj = {
-        uuid: initialValues.etapa.uuid,
-        nome: `${
-          initialValues.etapa.parte
-            ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
-            : `${initialValues.etapa.etapa}`
-        }${
-          initialValues.reposicao_cronograma &&
-          initialValues.etapa.houve_ocorrencia
-            ? " - Reposição / Pagamento de Notificação"
-            : ""
-        }`,
-      };
-      if (initialValues.reposicao_cronograma) obj["houve_ocorrencia"] = true;
-      options.push(obj);
-    } else
+    if (!initialValues.reposicao_cronograma)
       cronograma.etapas?.forEach((etapa) => {
         if (
           etapa.desvinculada_recebimento ||
@@ -190,7 +174,23 @@ export default () => {
           });
         }
       });
-
+    if (initialValues.etapa) {
+      let obj = {
+        uuid: initialValues.etapa.uuid,
+        nome: `${
+          initialValues.etapa.parte
+            ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
+            : `${initialValues.etapa.etapa}`
+        }${
+          initialValues.reposicao_cronograma &&
+          initialValues.etapa.houve_ocorrencia
+            ? " - Reposição / Pagamento de Notificação"
+            : ""
+        }`,
+      };
+      if (initialValues.reposicao_cronograma) obj["houve_ocorrencia"] = true;
+      options.push(obj);
+    }
     return options;
   };
 
