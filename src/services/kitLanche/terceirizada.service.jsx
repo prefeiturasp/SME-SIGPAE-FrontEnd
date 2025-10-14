@@ -1,10 +1,10 @@
-import { PEDIDOS, FLUXO, AUTH_TOKEN } from "src/services/constants";
+import { AUTH_TOKEN, FLUXO } from "src/services/constants";
 import { getPath } from "./helper";
 
 export const terceirizadaRespondeQuestionamentoKitLanche = async (
   uuid,
   payload,
-  tipoSolicitacao
+  tipoSolicitacao,
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${
     FLUXO.TERCEIRIZADA_RESPONDE_QUESTIONAMENTO
@@ -44,25 +44,5 @@ export const terceirizadaTomaCienciaKitLanche = (uuid, tipoSolicitacao) => {
     })
     .catch((error) => {
       return error.json();
-    });
-};
-
-export const getTerceirizadasPedidosDeKitLanche = (
-  filtroAplicado,
-  tipoSolicitacao
-) => {
-  const url = `${getPath(tipoSolicitacao)}/${
-    PEDIDOS.TERCEIRIZADA
-  }/${filtroAplicado}/`;
-  const OBJ_REQUEST = {
-    headers: AUTH_TOKEN,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      console.log(error);
     });
 };
