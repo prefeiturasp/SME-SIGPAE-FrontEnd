@@ -402,7 +402,11 @@ export default ({ atualizar }) => {
       });
     }
 
-    if (layoutEmbalagensSecundarias.status === "REPROVADO" || atualizar) {
+    if (
+      (layoutEmbalagensSecundarias &&
+        layoutEmbalagensSecundarias.status === "REPROVADO") ||
+      atualizar
+    ) {
       payload.tipos_de_embalagens.push({
         uuid: layoutEmbalagensSecundarias.uuid,
         tipo_embalagem: layoutEmbalagensSecundarias.tipo_embalagem,
