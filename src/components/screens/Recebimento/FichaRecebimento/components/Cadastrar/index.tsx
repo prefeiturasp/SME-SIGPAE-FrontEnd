@@ -156,7 +156,10 @@ export default () => {
   const getOpcoesEtapas = () => {
     let options = [];
     cronograma.etapas?.forEach((etapa) => {
-      if (etapa.desvinculada_recebimento || etapa.houve_ocorrencia) {
+      if (
+        etapa.desvinculada_recebimento ||
+        (etapa.houve_ocorrencia && !etapa.houve_reposicao)
+      ) {
         options.push({
           uuid: etapa.uuid,
           nome: `${
@@ -173,9 +176,16 @@ export default () => {
     if (initialValues.etapa) {
       options.push({
         uuid: initialValues.etapa.uuid,
-        nome: initialValues.etapa.parte
-          ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
-          : `${initialValues.etapa.etapa}`,
+        nome: `${
+          initialValues.etapa.parte
+            ? `${initialValues.etapa.etapa} - ${initialValues.etapa.parte}`
+            : `${initialValues.etapa.etapa}`
+        }${
+          initialValues.etapa.houve_ocorrencia
+            ? " - Reposição / Pagamento de Notificação"
+            : ""
+        }`,
+        houve_ocorrencia: initialValues.etapa.houve_ocorrencia,
       });
     }
     return options;
