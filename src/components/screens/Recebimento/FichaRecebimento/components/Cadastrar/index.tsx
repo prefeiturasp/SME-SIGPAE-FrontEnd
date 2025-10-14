@@ -46,7 +46,11 @@ import RadioButtonField from "src/components/Shareable/RadioButtonField";
 import Label from "src/components/Shareable/Label";
 import InputFileField from "src/components/Shareable/InputFileField";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
-import { required } from "src/helpers/fieldValidators";
+import {
+  composeValidators,
+  maxValue,
+  required,
+} from "src/helpers/fieldValidators";
 import { exibeError } from "src/helpers/utilities";
 import { deletaValues } from "src/helpers/formHelper";
 import { stringToBoolean } from "src/helpers/parsers";
@@ -141,6 +145,8 @@ export default () => {
   const [opcoesReposicao, setOpcoesReposicao] = useState<ReposicaoCronograma[]>(
     [],
   );
+  const [showModalOcorrencia, setShowModalOcorrencia] = useState(false);
+  const [modalZeroExibido, setModalZeroExibido] = useState<boolean>(false);
 
   const buscaCronogramas = async (): Promise<void> => {
     setCarregando(true);
@@ -621,6 +627,39 @@ export default () => {
     }
   };
 
+  const handleQuantidadeChange = (
+    value: string,
+    values: Record<string, any>,
+    fieldName: string,
+    form: FormApi,
+  ) => {
+    const updatedValues = {
+      ...values,
+      [fieldName]: value,
+    };
+
+    const quantidades = Object.entries(updatedValues)
+      .filter(([key]) => key.startsWith("qtd_recebida_laudo_"))
+      .map(([_, val]) => parseInt(val) || 0);
+
+    const algumZero = quantidades.some((qtd) => qtd === 0);
+    const saldoTotalZero =
+      quantidades.length > 0 && quantidades.every((qtd) => qtd === 0);
+
+    if (algumZero) {
+      form.change("houve_ocorrencia", "1");
+    }
+
+    setCollapse3(
+      saldoTotalZero ? { 0: false, 2: true } : { 0: true, 2: false },
+    );
+
+    if (parseInt(value) === 0 && !modalZeroExibido) {
+      setShowModalOcorrencia(true);
+      setModalZeroExibido(true);
+    }
+  };
+
   useEffect(() => {
     carregarOpcoesReposicao();
   }, []);
@@ -632,11 +671,30 @@ export default () => {
           <Form
             onSubmit={() => setShowModalAssinatura(true)}
             initialValues={initialValues}
+            validateOnBlur={true}
             render={({ handleSubmit, values, form, errors }) => {
               formRef.current = form;
               const reposicaoSelecionada = opcoesReposicao.find(
                 ({ uuid }) => uuid === values.reposicao_cronograma,
               );
+
+              const quantidades =
+                values.documentos_recebimento?.map(
+                  (_: any, index: number) =>
+                    parseInt(values[`qtd_recebida_laudo_${index}`]) || 0,
+                ) || [];
+
+              const saldoZero = quantidades.some((qtd) => qtd === 0);
+              const saldoTotalZero =
+                quantidades.length > 0 && quantidades.every((qtd) => qtd === 0);
+
+              const requiredSaldoTotalZero =
+                (validator: (_v: string) => string) => (value: string) => {
+                  if (saldoTotalZero) {
+                    return undefined;
+                  }
+                  return validator(value);
+                };
 
               return (
                 <form onSubmit={handleSubmit}>
@@ -672,6 +730,23 @@ export default () => {
                     texto="Deseja salvar o rascunho e ir para a página de Atribuição
                   de Questões por Produto?"
                     textoBotaoSim="Salvar e Ir para Página"
+                  />
+
+                  <ModalGenerico
+                    show={showModalOcorrencia}
+                    handleClose={() => setShowModalOcorrencia(false)}
+                    handleSim={() => setShowModalOcorrencia(false)}
+                    titulo="Registre uma ocorrência no próximo passo..."
+                    texto={
+                      <span>
+                        Ao inserir{" "}
+                        <strong>0 no campo de quantidade recebida</strong> do
+                        laudo, será necessário registrar uma ocorrência para
+                        salvar esse recebimento.
+                      </span>
+                    }
+                    unicoBotao={true}
+                    textoBotaoSim="Ciente"
                   />
 
                   <StepsSigpae current={stepAtual} items={ITENS_STEPS} />
@@ -1020,6 +1095,15 @@ export default () => {
                                   <th className="borda-crono">
                                     Data(s) de Validade
                                   </th>
+                                  <th className="borda-crono">
+                                    Saldo do Laudo
+                                  </th>
+                                  <th className="borda-crono">
+                                    Qtde Recebida
+                                    <span className="required-asterisk bg-transparent">
+                                      *
+                                    </span>
+                                  </th>
                                 </thead>
                                 <tbody>
                                   {values.documentos_recebimento.map(
@@ -1037,6 +1121,35 @@ export default () => {
                                           </td>
                                           <td className="borda-crono">
                                             {doc.datas_validade}
+                                          </td>
+                                          <td className="borda-crono">
+                                            {doc.saldo_laudo}
+                                          </td>
+                                          <td className="borda-crono">
+                                            <Field
+                                              component={InputText}
+                                              name={`qtd_recebida_laudo_${key}`}
+                                              placeholder="Digite a Quantidade"
+                                              required
+                                              apenasNumeros
+                                              validate={composeValidators(
+                                                required,
+                                                maxValue(
+                                                  doc.saldo_laudo,
+                                                  "Não pode ser maior que o saldo do laudo",
+                                                ),
+                                              )}
+                                              inputOnChange={(
+                                                e: React.ChangeEvent<HTMLInputElement>,
+                                              ) =>
+                                                handleQuantidadeChange(
+                                                  e.target.value,
+                                                  values,
+                                                  `qtd_recebida_laudo_${key}`,
+                                                  form,
+                                                )
+                                              }
+                                            />
                                           </td>
                                         </tr>
                                       );
@@ -1063,7 +1176,8 @@ export default () => {
                                   label: "Divergente",
                                 },
                               ]}
-                              disabled={naoExistemLaudos}
+                              validate={requiredSaldoTotalZero(required)}
+                              disabled={naoExistemLaudos || saldoTotalZero}
                             />
                           </div>
                           {values.lote_fabricante_de_acordo === "0" && (
@@ -1097,7 +1211,8 @@ export default () => {
                                   label: "Divergente",
                                 },
                               ]}
-                              disabled={naoExistemLaudos}
+                              validate={requiredSaldoTotalZero(required)}
+                              disabled={naoExistemLaudos || saldoTotalZero}
                             />
                           </div>
                           {values.data_fabricacao_de_acordo === "0" && (
@@ -1131,7 +1246,8 @@ export default () => {
                                   label: "Divergente",
                                 },
                               ]}
-                              disabled={naoExistemLaudos}
+                              validate={requiredSaldoTotalZero(required)}
+                              disabled={naoExistemLaudos || saldoTotalZero}
                             />
                           </div>
                           {values.data_validade_de_acordo === "0" && (
@@ -1158,7 +1274,8 @@ export default () => {
                               name={`numero_lote_armazenagem`}
                               placeholder="Digite o número do lote de armazenagem"
                               required
-                              validate={required}
+                              validate={requiredSaldoTotalZero(required)}
+                              disabled={saldoTotalZero}
                             />
                           </div>
                           <div className="col-6">
@@ -1168,8 +1285,9 @@ export default () => {
                               name={`numero_paletes`}
                               placeholder="Digite o número de paletes"
                               required
-                              validate={required}
+                              validate={requiredSaldoTotalZero(required)}
                               agrupadorMilharPositivo
+                              disabled={saldoTotalZero}
                             />
                           </div>
                         </div>
@@ -1190,8 +1308,9 @@ export default () => {
                               name={`peso_embalagem_primaria_1`}
                               placeholder="Digite o peso"
                               required
-                              validate={required}
+                              validate={requiredSaldoTotalZero(required)}
                               agrupadorMilharComDecimal
+                              disabled={saldoTotalZero}
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1202,8 +1321,9 @@ export default () => {
                               component={InputText}
                               name={`peso_embalagem_primaria_2`}
                               placeholder="Digite o peso"
-                              validate={required}
+                              validate={requiredSaldoTotalZero(required)}
                               agrupadorMilharComDecimal
+                              disabled={saldoTotalZero}
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1214,8 +1334,9 @@ export default () => {
                               component={InputText}
                               name={`peso_embalagem_primaria_3`}
                               placeholder="Digite o peso"
-                              validate={required}
+                              validate={requiredSaldoTotalZero(required)}
                               agrupadorMilharComDecimal
+                              disabled={saldoTotalZero}
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1226,8 +1347,9 @@ export default () => {
                               component={InputText}
                               name={`peso_embalagem_primaria_4`}
                               placeholder="Digite o peso"
-                              validate={required}
+                              validate={requiredSaldoTotalZero(required)}
                               agrupadorMilharComDecimal
+                              disabled={saldoTotalZero}
                             />
                           </div>
                           <div className="w-auto label-peso-embalagem">
@@ -1278,7 +1400,10 @@ export default () => {
                                       name={`temperatura_recebimento_${index}`}
                                       placeholder="T °C da área"
                                       required
-                                      validate={required}
+                                      validate={requiredSaldoTotalZero(
+                                        required,
+                                      )}
+                                      disabled={saldoTotalZero}
                                     />
                                   </div>
                                   <div className="col-3">
@@ -1288,7 +1413,10 @@ export default () => {
                                       name={`temperatura_produto_${index}`}
                                       placeholder="T °C do produto"
                                       required
-                                      validate={required}
+                                      validate={requiredSaldoTotalZero(
+                                        required,
+                                      )}
+                                      disabled={saldoTotalZero}
                                     />
                                   </div>
                                 </>
@@ -1299,6 +1427,7 @@ export default () => {
                                   label="Placa do Veículo"
                                   name={`placa_${index}`}
                                   placeholder="Digite a placa do veículo"
+                                  disabled={saldoTotalZero}
                                 />
                               </div>
 
@@ -1311,7 +1440,10 @@ export default () => {
                                       name={`lacre_${index}`}
                                       placeholder="Digite o número do lacre"
                                       required
-                                      validate={required}
+                                      validate={requiredSaldoTotalZero(
+                                        required,
+                                      )}
+                                      disabled={saldoTotalZero}
                                     />
                                   </div>
                                   <div className="col-3">
@@ -1321,7 +1453,10 @@ export default () => {
                                       name={`numero_sif_sisbi_sisp_${index}`}
                                       placeholder="Digite o número"
                                       required
-                                      validate={required}
+                                      validate={requiredSaldoTotalZero(
+                                        required,
+                                      )}
+                                      disabled={saldoTotalZero}
                                     />
                                   </div>
                                 </>
@@ -1333,7 +1468,8 @@ export default () => {
                                   name={`numero_nota_fiscal_${index}`}
                                   placeholder="Digite o número da nota"
                                   required
-                                  validate={required}
+                                  validate={requiredSaldoTotalZero(required)}
+                                  disabled={saldoTotalZero}
                                 />
                               </div>
                               <div className="col-3">
@@ -1343,7 +1479,8 @@ export default () => {
                                   name={`quantidade_nota_fiscal_${index}`}
                                   placeholder="Digite a qtde da nota"
                                   required
-                                  validate={required}
+                                  validate={requiredSaldoTotalZero(required)}
+                                  disabled={saldoTotalZero}
                                 />
                               </div>
                               <div className="col-3">
@@ -1353,7 +1490,8 @@ export default () => {
                                   name={`embalagens_nota_fiscal_${index}`}
                                   placeholder="Digite a qtde de embalagens"
                                   required
-                                  validate={required}
+                                  validate={requiredSaldoTotalZero(required)}
+                                  disabled={saldoTotalZero}
                                 />
                               </div>
                               <div className="col-3">
@@ -1363,7 +1501,8 @@ export default () => {
                                   name={`quantidade_recebida_${index}`}
                                   placeholder="Digite a qtde recebida"
                                   required
-                                  validate={required}
+                                  validate={requiredSaldoTotalZero(required)}
+                                  disabled={saldoTotalZero}
                                 />
                               </div>
                               <div className="col-3">
@@ -1373,7 +1512,8 @@ export default () => {
                                   name={`embalagens_recebidas_${index}`}
                                   placeholder="Digite qtde recebida"
                                   required
-                                  validate={required}
+                                  validate={requiredSaldoTotalZero(required)}
+                                  disabled={saldoTotalZero}
                                 />
                               </div>
                             </div>
@@ -1393,6 +1533,8 @@ export default () => {
                                       label: "INADEQUADO",
                                     },
                                   ]}
+                                  validate={requiredSaldoTotalZero(required)}
+                                  disabled={saldoTotalZero}
                                 />
                               </div>
                               {cronograma.categoria === "PERECIVEIS" && (
@@ -1410,6 +1552,8 @@ export default () => {
                                         label: "SIM",
                                       },
                                     ]}
+                                    validate={requiredSaldoTotalZero(required)}
+                                    disabled={saldoTotalZero}
                                   />
                                 </div>
                               )}
@@ -1421,6 +1565,7 @@ export default () => {
                                 type={BUTTON_TYPE.BUTTON}
                                 style={BUTTON_STYLE.GREEN_OUTLINE}
                                 onClick={() => adicionaVeiculo()}
+                                disabled={saldoTotalZero}
                               />
                             </div>
                           </>
@@ -1453,6 +1598,8 @@ export default () => {
                                 },
                               ]}
                               className="radio-sistema-vedacao"
+                              validate={requiredSaldoTotalZero(required)}
+                              disabled={saldoTotalZero}
                             />
                           </div>
                           {values.sistema_vedacao_embalagem_secundaria ===
@@ -1521,6 +1668,10 @@ export default () => {
                                                   { value: "0", label: "NÃO" },
                                                 ]}
                                                 modoTabela={true}
+                                                validate={requiredSaldoTotalZero(
+                                                  required,
+                                                )}
+                                                disabled={saldoTotalZero}
                                               />
                                             )}
                                           </td>
@@ -1536,6 +1687,10 @@ export default () => {
                                                 { value: "0", label: "NÃO" },
                                               ]}
                                               modoTabela={true}
+                                              validate={requiredSaldoTotalZero(
+                                                required,
+                                              )}
+                                              disabled={saldoTotalZero}
                                             />
                                           )}
                                         </td>
@@ -1550,6 +1705,7 @@ export default () => {
                                 label="Observações da Conferência"
                                 name={`observacoes_conferencia`}
                                 placeholder="Descreva as observações das conferências"
+                                disabled={saldoTotalZero}
                               />
                             </div>
                           </>
@@ -1594,6 +1750,8 @@ export default () => {
                               { value: "1", label: "SIM" },
                               { value: "0", label: "NÃO" },
                             ]}
+                            disabled={saldoZero}
+                            defaultValue={saldoZero ? "1" : undefined}
                           />
                         </div>
                         {values?.houve_ocorrencia === "1" && (

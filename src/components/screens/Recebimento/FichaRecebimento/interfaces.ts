@@ -113,6 +113,7 @@ export interface DocumentoFicha {
   datas_validade: string;
   numero_laudo: string;
   numero_lote_laudo: string;
+  saldo_laudo: string;
   uuid: string;
 }
 

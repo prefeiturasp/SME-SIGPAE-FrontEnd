@@ -43,7 +43,7 @@ export const composeValidators =
   (value) =>
     validators.reduce(
       (error, validator) => error || validator(value),
-      undefined
+      undefined,
     );
 
 export const requiredOptionSearchSelect = (escolas) => (value) =>
@@ -58,7 +58,7 @@ export const requiredSearchSelectUnidEducDietas = (escolas) => (value) => {
   }
   return value_ === undefined ||
     escolas.find(
-      (escola) => escola.label === value_.substring(value_.indexOf("- ") + 2)
+      (escola) => escola.label === value_.substring(value_.indexOf("- ") + 2),
     )
     ? undefined
     : "Selecione uma opção válida";
@@ -181,8 +181,10 @@ export const minValue = (min) => (value) =>
 export const naoPodeSerZero = (value) =>
   value && value < 1 ? "Deve ser ao menos 1" : undefined;
 
-export const maxValue = (max) => (value) =>
-  value && value > max ? `Não pode ser maior que ${max}` : undefined;
+export const maxValue = (max, mensagem) => (value) =>
+  value && value > max
+    ? mensagem || `Não pode ser maior que ${max}`
+    : undefined;
 
 export const maxValueFrequenciaAlimentacao = (max, inputName) => (value) => {
   return value && value > max && inputName.includes("frequencia")
@@ -200,21 +202,21 @@ export const maxValueLancheRefeicaoSobremesa1Oferta =
   (max, inputName, solicitacoesAutorizadas, mesAnoConsiderado, dia) =>
   (value) => {
     const data = `${dia}/${format(mesAnoConsiderado, "MM")}/${getYear(
-      mesAnoConsiderado
+      mesAnoConsiderado,
     )}`;
     const existeAlteracaoCardapioRPL =
       solicitacoesAutorizadas.filter(
         (solicitacao) =>
           solicitacao.tipo_doc === ALT_CARDAPIO &&
           solicitacao.data_evento === data &&
-          solicitacao.motivo === "RPL - Refeição por Lanche"
+          solicitacao.motivo === "RPL - Refeição por Lanche",
       ).length > 0;
     const existeAlteracaoCardapioLPR =
       solicitacoesAutorizadas.filter(
         (solicitacao) =>
           solicitacao.tipo_doc === ALT_CARDAPIO &&
           solicitacao.data_evento === data &&
-          solicitacao.motivo === "LPR - Lanche por Refeição"
+          solicitacao.motivo === "LPR - Lanche por Refeição",
       ).length > 0;
 
     if (
