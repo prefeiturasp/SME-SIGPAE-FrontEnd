@@ -71,7 +71,7 @@ export const DadosEmpresa = ({ ehDistribuidor }) => {
     (value) =>
       validators.reduce(
         (error, validator) => error || validator(value),
-        undefined
+        undefined,
       );
 
   return (
@@ -144,6 +144,8 @@ export const DadosEmpresa = ({ ehDistribuidor }) => {
                 required
                 naoDesabilitarPrimeiraOpcao
                 options={optionsTiposServico}
+                validate={required}
+                dataTestId="tipo-servico-select"
               />
             </div>
             <div className="col-4">
@@ -154,6 +156,8 @@ export const DadosEmpresa = ({ ehDistribuidor }) => {
                 required
                 naoDesabilitarPrimeiraOpcao
                 options={optionsTiposEmpresas}
+                validate={required}
+                dataTestId="tipo-empresa-select"
               />
             </div>
             <div className="col-4">
@@ -164,6 +168,8 @@ export const DadosEmpresa = ({ ehDistribuidor }) => {
                 required
                 naoDesabilitarPrimeiraOpcao
                 options={optionsTiposAlimento}
+                validate={required}
+                dataTestId="tipo-alimento-select"
               />
             </div>
           </div>

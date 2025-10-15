@@ -54,12 +54,6 @@ export const FluxoDeStatus = (props) => {
     if (log.status_evento_explicacao === "Escola solicitou cancelamento") {
       logFormatado = "Escola solicitou cancelamento";
     }
-    if (
-      log.status_evento_explicacao === "Escola cancelou" &&
-      !eh_gestao_alimentacao
-    ) {
-      logFormatado = "CODAE autorizou cancelamento";
-    }
     return logFormatado;
   });
 
@@ -121,8 +115,8 @@ export const FluxoDeStatus = (props) => {
     return cloneListaDeStatus[key].usuario.tipo_usuario === "terceirizada"
       ? `CPF: ${novoStatus.usuario.cpf}`
       : novoStatus.usuario.registro_funcional
-      ? `RF: ${novoStatus.usuario.registro_funcional || "sem RF"}`
-      : "";
+        ? `RF: ${novoStatus.usuario.registro_funcional || "sem RF"}`
+        : "";
   };
 
   const tipoPerfil = localStorage.getItem("tipo_perfil");
@@ -160,8 +154,8 @@ export const FluxoDeStatus = (props) => {
                   tipoDeStatusClasse(novoStatus) !== "pending"
                     ? tipoDeStatusClasse(novoStatus)
                     : fluxoNaoFinalizado || temStatusDeAnaliseSensorialCancelada
-                    ? "pending"
-                    : ""
+                      ? "pending"
+                      : ""
                 }`}
               >
                 {novoStatus.criado_em}

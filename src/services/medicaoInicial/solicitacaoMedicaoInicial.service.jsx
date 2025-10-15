@@ -38,7 +38,7 @@ export const updateSolicitacaoMedicaoInicial = async (uuid, params) => {
 
 export const updateOcorrenciaSolicitacaoMedicaoInicial = async (
   uuid,
-  params
+  params,
 ) => {
   const url = `medicao-inicial/solicitacao-medicao-inicial/${uuid}/ue-atualiza-ocorrencia/`;
   const headers = { "content-type": "multipart/form-data" };
@@ -224,7 +224,7 @@ export const getSolicitacoesLancadas = async (params) => {
   }
 };
 
-export const getCEUGESTAOFrequenciasDietas = async (uuid) => {
+export const getEscolaSemAlunosRegularesFrequenciasDietas = async (uuid) => {
   const url = `medicao-inicial/solicitacao-medicao-inicial/${uuid}/ceu-gestao-frequencias-dietas/`;
   const response = await axios.get(url).catch(ErrorHandlerFunction);
   if (response) {
@@ -244,10 +244,24 @@ export const getPeriodosEscolaCemeiComAlunosEmei = async (params) => {
 
 export const codaePedeCorrecaoSolicitacaoMedicaoSemLancamentos = async (
   uuid,
-  payload
+  payload,
 ) => {
   const url = `medicao-inicial/solicitacao-medicao-inicial/${uuid}/codae-solicita-correcao-sem-lancamentos/`;
   const response = await axios.patch(url, payload).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
+export const updateInformacoesBasicas = async (uuid, params) => {
+  const url = `medicao-inicial/solicitacao-medicao-inicial/${uuid}/informacoes-basicas/`;
+  const headers = { "content-type": "multipart/form-data" };
+  const response = await axios
+    .patch(url, params, {
+      headers: headers,
+    })
+    .catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;
