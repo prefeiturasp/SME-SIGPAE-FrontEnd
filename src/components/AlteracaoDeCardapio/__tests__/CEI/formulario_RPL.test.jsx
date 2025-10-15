@@ -20,7 +20,7 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
-describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
+describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RPL", () => {
   const escolaUuid = mockMeusDadosCEI.vinculo_atual.instituicao.uuid;
 
   const responseFaixasEtarias = {
@@ -52,7 +52,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     });
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarCEI);
     mock
@@ -63,7 +63,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
       .reply(200, mockRascunhosAlteracaoCEI);
     mock
       .onGet(
-        "/periodos-escolares/e17e2405-36be-4981-a09c-35c89ae0f8b7/alunos-por-faixa-etaria/2025-04-23/"
+        "/periodos-escolares/e17e2405-36be-4981-a09c-35c89ae0f8b7/alunos-por-faixa-etaria/2025-04-23/",
       )
       .reply(200, responseFaixasEtarias);
     mock
@@ -71,17 +71,17 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
       .reply(201, mockAlteracaoCardapioCEI);
     mock
       .onPatch(
-        `/alteracoes-cardapio-cei/${mockRascunhosAlteracaoCEI.results[0].uuid}/`
+        `/alteracoes-cardapio-cei/${mockRascunhosAlteracaoCEI.results[0].uuid}/`,
       )
       .reply(200, mockAlteracaoCardapioCEI);
     mock
       .onPatch(
-        `/alteracoes-cardapio-cei/${mockAlteracaoCardapioCEI.uuid}/inicio-pedido/`
+        `/alteracoes-cardapio-cei/${mockAlteracaoCardapioCEI.uuid}/inicio-pedido/`,
       )
       .reply(200, mockAlteracaoCardapioCEI);
     mock
       .onDelete(
-        `/alteracoes-cardapio-cei/${mockRascunhosAlteracaoCEI.results[0].uuid}/`
+        `/alteracoes-cardapio-cei/${mockRascunhosAlteracaoCEI.results[0].uuid}/`,
       )
       .reply(204);
 
@@ -107,14 +107,14 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
           >
             <AlteracaoDeCardapioCEIPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("Renderiza título da página `Alteração do Tipo de Alimentação`", () => {
     expect(screen.getAllByText("Alteração do Tipo de Alimentação").length).toBe(
-      2
+      2,
     );
   });
 
@@ -123,26 +123,26 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     expect(screen.getByText("50")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Alteração do Tipo de Alimentação # 8A5BA")
+      screen.getByText("Alteração do Tipo de Alimentação # 8A5BA"),
     ).toBeInTheDocument();
     expect(screen.getByText("Dia: 23/04/2025")).toBeInTheDocument();
     expect(
-      screen.getByText("Salvo em: 11/04/2025 10:10:43")
+      screen.getByText("Salvo em: 11/04/2025 10:10:43"),
     ).toBeInTheDocument();
   });
   const setMotivoRPL = () => {
     const selectMotivo = screen.getByTestId("select-motivo");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoRPL = mockMotivosAlteracaoCardapioCEI.results.find(
-      (motivo) => motivo.nome.includes("RPL")
+      (motivo) => motivo.nome.includes("RPL"),
     ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoRPL },
@@ -157,8 +157,8 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     expect(screen.queryByText("Atenção")).not.toBeInTheDocument();
     expect(
       screen.queryByText(
-        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
-      )
+        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada.",
+      ),
     ).not.toBeInTheDocument();
 
     fireEvent.change(inputElement, {
@@ -168,8 +168,8 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     expect(screen.queryByText("Atenção")).toBeInTheDocument();
     expect(
       screen.queryByText(
-        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
-      )
+        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -179,7 +179,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     const uuidAlmoco = mockVinculosTipoAlimentacaoPeriodoEscolarCEI.results
       .find((vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL")
       .tipos_alimentacao.find((tipo_alimentacao) =>
-        tipo_alimentacao.nome.includes("Almoço")
+        tipo_alimentacao.nome.includes("Almoço"),
       ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidAlmoco },
@@ -192,7 +192,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     const uuidLanche = mockVinculosTipoAlimentacaoPeriodoEscolarCEI.results
       .find((vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL")
       .tipos_alimentacao.find((tipo_alimentacao) =>
-        tipo_alimentacao.nome.includes("Lanche")
+        tipo_alimentacao.nome.includes("Lanche"),
       ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidLanche },
@@ -234,7 +234,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     await waitFor(() => {
       expect(screen.getByText("Faixa Etária")).toBeInTheDocument();
       expect(
-        screen.getByText("01 ano a 03 anos e 11 meses")
+        screen.getByText("01 ano a 03 anos e 11 meses"),
       ).toBeInTheDocument();
     });
 
@@ -242,7 +242,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     setTipoAlimentacaoParaLanche();
 
     const divInputQuantidade = screen.getByTestId(
-      "substituicoes[0].faixas.e3030bd1-2e85-4676-87b3-96b4032370d4"
+      "substituicoes[0].faixas.e3030bd1-2e85-4676-87b3-96b4032370d4",
     );
     const inputElementQuantidade = divInputQuantidade.querySelector("input");
     fireEvent.change(inputElementQuantidade, {
@@ -269,7 +269,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     expect(screen.getByText("Solicitação # 8A5BA")).toBeInTheDocument();
 
     const divInputQuantidade = screen.getByTestId(
-      "substituicoes[0].faixas.e3030bd1-2e85-4676-87b3-96b4032370d4"
+      "substituicoes[0].faixas.e3030bd1-2e85-4676-87b3-96b4032370d4",
     );
     const inputElementQuantidade = divInputQuantidade.querySelector("input");
     expect(inputElementQuantidade).toHaveAttribute("value", "50");
@@ -291,7 +291,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
   it("Erro ao excluir rascunho", async () => {
     mock
       .onDelete(
-        `/alteracoes-cardapio/${mockRascunhosAlteracaoCEI.results[0].uuid}/`
+        `/alteracoes-cardapio/${mockRascunhosAlteracaoCEI.results[0].uuid}/`,
       )
       .reply(400, { detail: "Erro ao excluir rascunho" });
     window.confirm = jest.fn().mockImplementation(() => true);
