@@ -25,15 +25,6 @@ import {
 //         - lidar com tipo de usuário ou perfil
 //       Os que não tiverem categoria definida podem ficar aqui
 
-export const showResults = (values) =>
-  new Promise((resolve) => {
-    setTimeout(() => {
-      // simulate server latency
-      window.alert(`You submitted:\n\n${JSON.stringify(values, null, 2)}`);
-      resolve();
-    }, 1500);
-  });
-
 export const dateDelta = (daysDelta) => {
   let today = new Date();
   today.setDate(today.getDate() + daysDelta);
@@ -76,8 +67,6 @@ export const formatarParaMultiselect = (lista) => {
     return { value: element.uuid, label: element.nome };
   });
 };
-
-export const addOpcaoTodas = (label, value = "todas") => [{ label, value }];
 
 export const extrairUUIDs = (lista) => {
   let uuids = [];
@@ -1062,12 +1051,6 @@ export const composeValidators =
       undefined,
     );
 
-export const transformaNullsEmUndefined = (objeto) => {
-  for (let chave of Object.keys(objeto)) {
-    if (objeto[chave] === null) objeto[chave] = undefined;
-  }
-};
-
 export const corrigeLinkAnexo = (url) => {
   if (
     window.location.href.startsWith("https://") &&
@@ -1080,9 +1063,6 @@ export const corrigeLinkAnexo = (url) => {
 
 export const trocaAcentuadasPorSemAcento = (texto) =>
   texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-export const retornaDuplicadasArray = (arr) =>
-  arr.filter((item, index) => arr.indexOf(item) !== index);
 
 export const exibirGA = () => {
   if (!["production"].includes(ENVIRONMENT)) return true;
