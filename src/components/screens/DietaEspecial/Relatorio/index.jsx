@@ -27,6 +27,7 @@ import {
 import {
   getProtocoloDietaEspecial,
   getRelatorioDietaEspecial,
+  getPdfHistoricoDieta,
 } from "src/services/relatorios";
 import EscolaCancelaDietaEspecial from "./componentes/EscolaCancelaDietaEspecial";
 
@@ -155,6 +156,12 @@ const Relatorio = ({ visao }) => {
   const gerarRelatorio = async (uuid) => {
     setCarregando(true);
     await getRelatorioDietaEspecial(uuid);
+    setCarregando(false);
+  };
+
+  const geraPdfHistoricoDieta = async (uuid) => {
+    setCarregando(true);
+    await getPdfHistoricoDieta(uuid);
     setCarregando(false);
   };
 
@@ -411,10 +418,11 @@ const Relatorio = ({ visao }) => {
                 onCancel={handleCancel}
                 logs={historico}
                 getHistorico={getHistorico}
-                {...(dietaEspecial.motivo_negacao?.descricao && {
+                printHistorico={() => geraPdfHistoricoDieta(dietaEspecial.uuid)}
+                {...(dietaEspecial?.motivo_negacao?.descricao && {
                   motivoNegacao: dietaEspecial.motivo_negacao.descricao,
                 })}
-                {...(dietaEspecial.justificativa_negacao && {
+                {...(dietaEspecial?.justificativa_negacao && {
                   justificativaNegacao: dietaEspecial.justificativa_negacao,
                 })}
               />
