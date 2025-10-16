@@ -45,53 +45,6 @@ export const LOG_PARA = {
   NUTRISUPERVISAO: 4,
 };
 
-export const ajustaFormatoLogPainelDietaEspecial = (logs, card) => {
-  if (!logs) return;
-  return logs.map((log) => {
-    let tamanhoString = 53;
-    let descricao = log.descricao;
-    let texto = truncarString(descricao, tamanhoString);
-    let nomeAluno = log.nome_aluno;
-    let textoDieta =
-      (log.codigo_eol_aluno !== null
-        ? log.codigo_eol_aluno
-        : "(Aluno não matriculado)") +
-      " - " +
-      nomeAluno;
-    let serie = log.serie ? log.serie : "";
-    // Faz uma abreviação no texto quando tiver data com hora pra não quebrar o layout.
-    if (
-      log.data_log.length > 10 &&
-      texto.split("-").pop().trim() === "Alteração U.E"
-    ) {
-      texto = texto.replace("Alteração", "Alt.");
-    }
-    return {
-      conferido: log.conferido,
-      lote_uuid: log.lote_uuid,
-      text: truncarString(
-        `${textoDieta}${
-          usuarioEhEscolaTerceirizadaDiretor() || usuarioEhEscolaTerceirizada()
-            ? " - " + serie
-            : ""
-        }`,
-        41
-      ),
-      texto_inteiro: `${textoDieta}${
-        usuarioEhEscolaTerceirizadaDiretor() || usuarioEhEscolaTerceirizada()
-          ? " - " + serie
-          : ""
-      }`,
-      date: log.data_log,
-      link: `/${DIETA_ESPECIAL}/${RELATORIO}?uuid=${
-        log.uuid
-      }&ehInclusaoContinua=${
-        log.tipo_doc === INC_ALIMENTA_CONTINUA
-      }&card=${card}`,
-    };
-  });
-};
-
 export const ajustarFormatoLog = (logs, card) => {
   return logs.map((log) => {
     let tamanhoString = 52;
@@ -196,7 +149,7 @@ export const ajustarFormatoLog = (logs, card) => {
         log.escolas_quantidades &&
         log.escolas_quantidades[0].cancelado &&
         ["escola", "diretoriaregional"].includes(
-          log.escolas_quantidades[0].cancelado_por.tipo_usuario
+          log.escolas_quantidades[0].cancelado_por.tipo_usuario,
         )
       ) {
         date = log.escolas_quantidades[0].cancelado_em;
@@ -248,17 +201,6 @@ export const ajustarFormatoLog = (logs, card) => {
   });
 };
 
-export const ajustarFormaLotes = (lotes) => {
-  return lotes.map((lote) => {
-    return {
-      id: lote.uuid,
-      lote: lote.nome,
-      dre: lote.diretoria_regional && lote.diretoria_regional.nome,
-      tipo: lote.tipo_gestao && lote.tipo_gestao.nome,
-    };
-  });
-};
-
 export const slugify = (str) => {
   // Function from https://gist.github.com/marcelo-ribeiro/abd651b889e4a20e0bab558a05d38d77
   const map = {
@@ -289,7 +231,7 @@ export const mapeiaStatusAlimento = (str) => {
 
 export const getDataHomologacao = (logs) => {
   const homolog = logs.find(
-    (log) => log.status_evento_explicacao === "CODAE homologou"
+    (log) => log.status_evento_explicacao === "CODAE homologou",
   );
   return homolog ? homolog.criado_em : "--";
 };
@@ -302,8 +244,8 @@ export const deParaStatusAltCronograma = (status) =>
   ].includes(status)
     ? "Em análise"
     : ["Alteração Enviada ao Fornecedor"].includes(status)
-    ? "Recebida Alteração da CODAE"
-    : status;
+      ? "Recebida Alteração da CODAE"
+      : status;
 
 export const formatarPara4Digitos = (numero) => {
   let numeroFormatado = numero.toString();
@@ -334,16 +276,17 @@ export const formataValorDecimal = (value) => {
   let int = parts[0];
   let decimal = parts.length > 1 ? parts[1] : "";
 
-  int = int.replace(/(\d)(?=(\d{3})+$)/g, "$1.");
+  const n = Number(int);
+  const formatted = n.toLocaleString("pt-BR");
 
   decimal = decimal.slice(0, 2);
 
-  return decimal ? `${int},${decimal}` : int;
+  return decimal ? `${formatted},${decimal}` : formatted;
 };
 
 export const parserValorDecimal = (value) => {
   if (!value) return "";
   return Number.parseFloat(
-    value.replace(/\$\s?|(\.*)/g, "").replace(/(,{1})/g, ".")
+    value.replace(/\$\s?|(\.*)/g, "").replace(/(,{1})/g, "."),
   ).toFixed(2);
 };

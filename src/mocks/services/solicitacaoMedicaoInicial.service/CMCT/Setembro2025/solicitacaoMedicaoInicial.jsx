@@ -1,0 +1,63 @@
+export const mockSolicitacaoMedicaoInicialCMCTSetembro2025 = [
+  {
+    escola: "CMCT VANDYR DA SILVA, PROF",
+    escola_uuid: "f206b315-fa30-4768-9fa6-07b952800284",
+    tipos_contagem_alimentacao: [
+      {
+        nome: "Fichas Coloridas",
+        ativo: true,
+        uuid: "ecf37fa8-4f6c-4b55-9df3-868c12999015",
+      },
+    ],
+    responsaveis: [
+      {
+        nome: "teste",
+        rf: "1231231",
+      },
+    ],
+    ocorrencia: null,
+    logs: [
+      {
+        status_evento_explicacao: "Em aberto para preenchimento pela UE",
+        usuario: {
+          uuid: "e6191cb1-6b55-45dc-a4a4-b4e59729ad8a",
+          cpf: null,
+          nome: "ESCOLA CMCT TESTE",
+          email: "escolacmct@admin.com",
+          date_joined: "17/02/2025 12:08:51",
+          registro_funcional: null,
+          tipo_usuario: "escola",
+          cargo: "",
+          crn_numero: null,
+          nome_fantasia: null,
+        },
+        criado_em: "02/10/2025 13:19:53",
+        descricao:
+          "Solicitação #BB177 -- Escola CMCT VANDYR DA SILVA, PROF -- 09/2025",
+        justificativa: "",
+        resposta_sim_nao: false,
+      },
+    ],
+    alunos_periodo_parcial: [],
+    historico: null,
+    escola_eh_emebs: false,
+    escola_cei_com_inclusao_parcial_autorizada: false,
+    escola_possui_alunos_regulares: false,
+    sem_lancamentos: false,
+    justificativa_sem_lancamentos: null,
+    justificativa_codae_correcao_sem_lancamentos: null,
+    criado_em: "02/10/2025 13:19:53",
+    uuid: "bb17747b-ad51-4ac3-b0ef-8f344dde8c32",
+    ano: "2025",
+    mes: "09",
+    status: "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE",
+    com_ocorrencias: false,
+    ue_possui_alunos_periodo_parcial: false,
+    logs_salvos: false,
+    dre_ciencia_correcao_data: null,
+    rastro_lote: 22,
+    rastro_terceirizada: 324,
+    dre_ciencia_correcao_usuario: null,
+    relatorio_financeiro: null,
+  },
+];

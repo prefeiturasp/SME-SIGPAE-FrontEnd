@@ -25,15 +25,6 @@ import {
 //         - lidar com tipo de usuário ou perfil
 //       Os que não tiverem categoria definida podem ficar aqui
 
-export const showResults = (values) =>
-  new Promise((resolve) => {
-    setTimeout(() => {
-      // simulate server latency
-      window.alert(`You submitted:\n\n${JSON.stringify(values, null, 2)}`);
-      resolve();
-    }, 1500);
-  });
-
 export const dateDelta = (daysDelta) => {
   let today = new Date();
   today.setDate(today.getDate() + daysDelta);
@@ -76,8 +67,6 @@ export const formatarParaMultiselect = (lista) => {
     return { value: element.uuid, label: element.nome };
   });
 };
-
-export const addOpcaoTodas = (label, value = "todas") => [{ label, value }];
 
 export const extrairUUIDs = (lista) => {
   let uuids = [];
@@ -228,7 +217,20 @@ export const formataCPFCensurado = (cpf) => {
 
 export const formataMilhar = (value) => {
   const valor = value?.toString().replace(/\D/g, "");
-  return valor?.replace(/\d(?=(\d{3})+$)/g, "$&.");
+  if (!valor) return valor;
+
+  let resultado = "";
+  let contador = 0;
+
+  for (let i = valor.length - 1; i >= 0; i--) {
+    resultado = valor[i] + resultado;
+    contador++;
+    if (contador % 3 === 0 && i > 0) {
+      resultado = "." + resultado;
+    }
+  }
+
+  return resultado;
 };
 
 export const formataMilharDecimal = (value) => {
@@ -954,6 +956,10 @@ export const ehEscolaTipoCEUGESTAO = (nome_escola) => {
   return nome_escola.startsWith("CEU GESTAO");
 };
 
+export const escolaNaoPossuiAlunosRegulares = (solicitacaoMedicaoInicial) => {
+  return solicitacaoMedicaoInicial.escola_possui_alunos_regulares === false;
+};
+
 export const tipoSolicitacaoComoQuery = (obj) => {
   return `tipoSolicitacao=${comoTipo(obj)}`;
 };
@@ -1045,12 +1051,6 @@ export const composeValidators =
       undefined,
     );
 
-export const transformaNullsEmUndefined = (objeto) => {
-  for (let chave of Object.keys(objeto)) {
-    if (objeto[chave] === null) objeto[chave] = undefined;
-  }
-};
-
 export const corrigeLinkAnexo = (url) => {
   if (
     window.location.href.startsWith("https://") &&
@@ -1063,9 +1063,6 @@ export const corrigeLinkAnexo = (url) => {
 
 export const trocaAcentuadasPorSemAcento = (texto) =>
   texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-export const retornaDuplicadasArray = (arr) =>
-  arr.filter((item, index) => arr.indexOf(item) !== index);
 
 export const exibirGA = () => {
   if (!["production"].includes(ENVIRONMENT)) return true;

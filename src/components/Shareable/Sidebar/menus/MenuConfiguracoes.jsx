@@ -1,38 +1,36 @@
-import React from "react";
-import { Menu, LeafItem, SubMenu } from "./shared";
 import {
+  ATUALIZACAO_EMAIL_EOL,
+  CARGAS_USUARIOS,
+  CARGAS_USUARIOS_SERVIDORES,
   CONFIGURACOES,
-  MENSAGEM,
   GERENCIAMENTO_EMAILS,
   GESTAO_ACESSO_CODAE_DILOG,
+  GESTAO_ACESSO_COGESTOR,
   GESTAO_ACESSO_DIRETOR_ESCOLA,
-  CARGAS_USUARIOS,
   GESTAO_ACESSO_EMPRESA,
   GESTAO_ACESSO_GERAL,
-  GESTAO_ACESSO_COGESTOR,
   GESTAO_ACESSO_MASTER,
-  CARGAS_USUARIOS_SERVIDORES,
-  ATUALIZACAO_EMAIL_EOL,
 } from "src/configs/constants";
 import {
+  usuarioEhAdministradorCONTRATOS,
   usuarioEhAdministradorGpCODAE,
-  usuarioEhCODAEGestaoAlimentacao,
-  usuarioEhCODAEDietaEspecial,
-  usuarioEhEmpresaTerceirizada,
-  usuarioEhCoordenadorNutriSupervisao,
-  usuarioEhCoordenadorGpCODAE,
-  usuarioEhCoordenadorNutriCODAE,
-  usuarioEhCoordenadorCODAE,
   usuarioEhAdministradorRepresentanteCodae,
   usuarioEhAdmQualquerEmpresa,
-  usuarioEhCogestorDRE,
+  usuarioEhCODAEDietaEspecial,
   usuarioEhCodaeDilog,
-  usuarioEhDiretorUE,
   usuarioEhCODAEGabinete,
+  usuarioEhCODAEGestaoAlimentacao,
+  usuarioEhCogestorDRE,
+  usuarioEhCoordenadorCODAE,
+  usuarioEhCoordenadorGpCODAE,
+  usuarioEhCoordenadorNutriCODAE,
+  usuarioEhCoordenadorNutriSupervisao,
   usuarioEhDilogDiretoria,
+  usuarioEhDiretorUE,
+  usuarioEhEmpresaTerceirizada,
   usuarioEhGticCODAE,
-  usuarioEhAdministradorCONTRATOS,
 } from "src/helpers/utilities";
+import { LeafItem, Menu, SubMenu } from "./shared";
 
 const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
   const exibirConfigEmail =
@@ -68,9 +66,6 @@ const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
       {exibirConfigEmail && (
         <>
           <LeafItem to={`/${CONFIGURACOES}`}>Disparo de E-mail</LeafItem>
-          <LeafItem to={`/${CONFIGURACOES}/${MENSAGEM}`}>
-            Configuração de Mensagem
-          </LeafItem>
         </>
       )}
       {exibirGerenciamentoEmails && (

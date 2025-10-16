@@ -398,11 +398,6 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
     tipoUsuario: usuarioEhEmpresaTerceirizada(),
   },
   {
-    path: `/${constants.TERCEIRIZADA}/${constants.SOLICITACAO_KIT_LANCHE}`,
-    component: PainelPageKitLanche.PainelPedidosTerceirizada,
-    tipoUsuario: usuarioEhEmpresaTerceirizada(),
-  },
-  {
     path: `/${constants.TERCEIRIZADA}/${constants.SUSPENSAO_ALIMENTACAO}`,
     component: PainelPedidosSuspensaoAlimentacao,
     tipoUsuario: usuarioEhEmpresaTerceirizada(),
