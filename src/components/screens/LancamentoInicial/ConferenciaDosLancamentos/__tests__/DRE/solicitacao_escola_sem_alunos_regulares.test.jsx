@@ -1,9 +1,20 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
 import { mockDiasCalendarioSetembro2025CMCT } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CMCT/Setembro2025/diasCalendario";
+import { mockMedicaoMANHAAprovadaCMCTSetembro2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CMCT/Setembro2025/medicaoMANHAAprovada";
+import { mockPermissoesLancamentosEspeciaisCMCTSetembro2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CMCT/Setembro2025/permissoesLancamentosEspeciais";
+import { mockValoresMedicaoCMCTMANHASetembro2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CMCT/Setembro2025/valoresMedicaoMANHA";
 import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCMCT } from "src/mocks/services/cadastroTipoAlimentacao.service/CMCT/mockGetVinculosTipoAlimentacaoPorEscolaCMCT";
 import { mockPeriodosGruposMedicaoCMCTSetembro2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CMCT/Setembro2025/periodosGruposMedicao";
@@ -14,6 +25,9 @@ import mock from "src/services/_mock";
 describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT (Escola sem alunos regulares)", () => {
   const escolaUuid = mockSolicitacaoMedicaoInicialCMCTSetembro2025.escola_uuid;
   const solicitacaoUuid = mockSolicitacaoMedicaoInicialCMCTSetembro2025.uuid;
+  const MANHAuuid = mockPeriodosGruposMedicaoCMCTSetembro2025.results.find(
+    (periodo) => periodo.nome_periodo_grupo === "MANHA",
+  ).uuid_medicao_periodo_grupo;
 
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
@@ -65,6 +79,7 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT
             v7_relativeSplatPath: true,
           }}
         >
+          <ToastContainer />
           <ConferenciaDosLancamentosPage />
         </MemoryRouter>,
       );
@@ -82,6 +97,38 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT
     });
   });
 
+  const carregaMedicaoManha = () => {
+    mock
+      .onGet("/medicao-inicial/valores-medicao/")
+      .reply(200, mockValoresMedicaoCMCTMANHASetembro2025);
+    mock
+      .onGet("/medicao-inicial/categorias-medicao/")
+      .reply(200, mockCategoriasMedicao);
+    mock
+      .onGet(
+        "/medicao-inicial/permissao-lancamentos-especiais/permissoes-lancamentos-especiais-mes-ano-por-periodo/",
+      )
+      .reply(200, mockPermissoesLancamentosEspeciaisCMCTSetembro2025);
+    mock.onGet("/escola-solicitacoes/inclusoes-autorizadas/").reply(200, {
+      results: [
+        {
+          dia: "02",
+          periodo: "MANHA",
+          alimentacoes: "lanche_4h, lanche, sobremesa",
+          numero_alunos: 100,
+          dias_semana: [],
+          inclusao_id_externo: "E1351",
+        },
+      ],
+    });
+    mock
+      .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet("/escolas-solicitacoes/suspensoes-autorizadas/")
+      .reply(200, { results: [] });
+  };
+
   it("Renderiza título da página `Conferência dos Lançamentos`", () => {
     expect(screen.getAllByText("Conferência dos Lançamentos").length).toBe(2);
   });
@@ -93,5 +140,67 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT
 
   it("Renderiza label `Mês do Lançamento`", () => {
     expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
+  });
+
+  it("Renderiza status de progresso `Recebido para análise`", () => {
+    expect(screen.getByText("Recebido para análise")).toBeInTheDocument();
+  });
+
+  it("Renderiza medições da solicitação", () => {
+    expect(screen.getByText("MANHA")).toBeInTheDocument();
+    expect(screen.getByText("NOITE")).toBeInTheDocument();
+    expect(screen.getByText("Programas e Projetos")).toBeInTheDocument();
+    expect(screen.getByText("Solicitações de Alimentação")).toBeInTheDocument();
+  });
+
+  it("Visualiza `MANHA` com campo `Número de Alunos` renderizado", async () => {
+    const visualizarLancamentosManha = screen.getByTestId(
+      "visualizar-lancamento-MANHA",
+    );
+
+    carregaMedicaoManha();
+
+    await act(async () => {
+      fireEvent.click(visualizarLancamentosManha);
+    });
+
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+    expect(screen.getByText("Número de Alunos")).toBeInTheDocument();
+    expect(screen.getByText("2ª Refeição 1ª oferta")).toBeInTheDocument();
+  });
+
+  it("Aprova período `MANHA`", async () => {
+    const visualizarLancamentosManha = screen.getByTestId(
+      "visualizar-lancamento-MANHA",
+    );
+
+    carregaMedicaoManha();
+
+    await act(async () => {
+      fireEvent.click(visualizarLancamentosManha);
+    });
+
+    const botaoAprovarPeriodo = screen
+      .getByText("Aprovar Período")
+      .closest("button");
+    fireEvent.click(botaoAprovarPeriodo);
+
+    await waitFor(() => {
+      expect(screen.getByText("Sim")).toBeInTheDocument();
+    });
+
+    const botaoSim = screen.getByText("Sim").closest("button");
+
+    mock
+      .onPatch(`/medicao-inicial/medicao/${MANHAuuid}/dre-aprova-medicao/`)
+      .reply(200, mockMedicaoMANHAAprovadaCMCTSetembro2025);
+
+    fireEvent.click(botaoSim);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Período Manhã aprovado com sucesso!"),
+      ).toBeInTheDocument();
+    });
   });
 });

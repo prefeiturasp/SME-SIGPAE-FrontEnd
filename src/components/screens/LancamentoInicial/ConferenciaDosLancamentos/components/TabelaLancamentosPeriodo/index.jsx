@@ -1133,6 +1133,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
             {periodoGrupo.status !== "MEDICAO_SEM_LANCAMENTOS" && (
               <p
                 className="visualizar-lancamento mb-0"
+                data-testid={`visualizar-lancamento-${periodoGrupo.nome_periodo_grupo}`}
                 onClick={() => onClickVisualizarFechar(periodoGrupo)}
               >
                 <b>{showTabelaLancamentosPeriodo ? "FECHAR" : "VISUALIZAR"}</b>
