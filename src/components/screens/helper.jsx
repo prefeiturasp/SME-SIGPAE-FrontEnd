@@ -45,53 +45,6 @@ export const LOG_PARA = {
   NUTRISUPERVISAO: 4,
 };
 
-export const ajustaFormatoLogPainelDietaEspecial = (logs, card) => {
-  if (!logs) return;
-  return logs.map((log) => {
-    let tamanhoString = 53;
-    let descricao = log.descricao;
-    let texto = truncarString(descricao, tamanhoString);
-    let nomeAluno = log.nome_aluno;
-    let textoDieta =
-      (log.codigo_eol_aluno !== null
-        ? log.codigo_eol_aluno
-        : "(Aluno não matriculado)") +
-      " - " +
-      nomeAluno;
-    let serie = log.serie ? log.serie : "";
-    // Faz uma abreviação no texto quando tiver data com hora pra não quebrar o layout.
-    if (
-      log.data_log.length > 10 &&
-      texto.split("-").pop().trim() === "Alteração U.E"
-    ) {
-      texto = texto.replace("Alteração", "Alt.");
-    }
-    return {
-      conferido: log.conferido,
-      lote_uuid: log.lote_uuid,
-      text: truncarString(
-        `${textoDieta}${
-          usuarioEhEscolaTerceirizadaDiretor() || usuarioEhEscolaTerceirizada()
-            ? " - " + serie
-            : ""
-        }`,
-        41,
-      ),
-      texto_inteiro: `${textoDieta}${
-        usuarioEhEscolaTerceirizadaDiretor() || usuarioEhEscolaTerceirizada()
-          ? " - " + serie
-          : ""
-      }`,
-      date: log.data_log,
-      link: `/${DIETA_ESPECIAL}/${RELATORIO}?uuid=${
-        log.uuid
-      }&ehInclusaoContinua=${
-        log.tipo_doc === INC_ALIMENTA_CONTINUA
-      }&card=${card}`,
-    };
-  });
-};
-
 export const ajustarFormatoLog = (logs, card) => {
   return logs.map((log) => {
     let tamanhoString = 52;
@@ -244,17 +197,6 @@ export const ajustarFormatoLog = (logs, card) => {
         log.tipo_doc === INC_ALIMENTA_CONTINUA
       }&tipoSolicitacao=${tipo}&card=${card_}`,
       tipo_solicitacao_dieta: log?.tipo_solicitacao_dieta,
-    };
-  });
-};
-
-export const ajustarFormaLotes = (lotes) => {
-  return lotes.map((lote) => {
-    return {
-      id: lote.uuid,
-      lote: lote.nome,
-      dre: lote.diretoria_regional && lote.diretoria_regional.nome,
-      tipo: lote.tipo_gestao && lote.tipo_gestao.nome,
     };
   });
 };
