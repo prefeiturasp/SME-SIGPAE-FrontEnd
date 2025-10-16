@@ -62,11 +62,11 @@ export default ({
       "quantidade",
       "total_embalagens",
     ];
-
     deletaValues(etapas, listaChaves, values, index);
 
     let etapasNovo = [...etapas];
     etapasNovo.splice(index, 1);
+
     setEtapas(etapasNovo);
   };
 
@@ -110,7 +110,7 @@ export default ({
   const buscaFeriados = async () => {
     const response = await getFeriadosAnoAtualEProximo();
     const datas = response.data.results.map((dateString) =>
-      moment(dateString, "YYYY-MM-DD").toDate()
+      moment(dateString, "YYYY-MM-DD").toDate(),
     );
     setFeriados(datas);
   };
@@ -150,7 +150,7 @@ export default ({
         etapas.forEach((etapa, index) => {
           let dataProgramada = moment(
             values[`data_programada_${index}`],
-            "DD/MM/YYYY"
+            "DD/MM/YYYY",
           ).toDate();
           if (dataProgramada <= new Date().setHours(0, 0, 0, 0)) {
             arrayDesabilitar[index] = true;
@@ -183,6 +183,7 @@ export default ({
                 <div className="row">
                   <div className="w-100">
                     <Botao
+                      dataTestId={`remover_etapa_${index}`}
                       texto=""
                       type={BUTTON_TYPE.BUTTON}
                       style={BUTTON_STYLE.GREEN_OUTLINE}
@@ -201,6 +202,7 @@ export default ({
                 <>
                   <div className="col">
                     <Field
+                      dataTestId={`numero_empenho_${index}`}
                       component={InputText}
                       label="Nº do Empenho"
                       name={`empenho_${index}`}
@@ -213,6 +215,7 @@ export default ({
                   </div>
                   <div className="col">
                     <Field
+                      dataTestId={`quantidade_empenho_${index}`}
                       component={InputText}
                       label="Qtde. Total do Empenho"
                       name={`qtd_total_empenho_${index}`}
@@ -228,6 +231,7 @@ export default ({
               )}
               <div className="col">
                 <Field
+                  dataTestId={`etapa_${index}`}
                   component={AutoCompleteField}
                   options={getEtapasFiltrado(values[`etapa_${index}`])}
                   label="Etapa"
@@ -246,6 +250,7 @@ export default ({
               </div>
               <div className="col">
                 <Field
+                  dataTestId={`parte_${index}`}
                   component={Select}
                   naoDesabilitarPrimeiraOpcao
                   options={[
@@ -286,6 +291,7 @@ export default ({
             <div className="row">
               <div className="col-4">
                 <Field
+                  dataTestId={`data_programada_${index}`}
                   component={InputComData}
                   label="Data Programada"
                   name={`data_programada_${index}`}
@@ -301,6 +307,7 @@ export default ({
               </div>
               <div className="col-4">
                 <Field
+                  dataTestId={`quantidade_${index}`}
                   component={InputText}
                   label="Quantidade"
                   name={`quantidade_${index}`}
@@ -314,6 +321,7 @@ export default ({
               </div>
               <div className="col-4">
                 <Field
+                  dataTestId={`total_embalagens_${index}`}
                   component={InputText}
                   label="Total de Embalagens"
                   name={`total_embalagens_${index}`}
@@ -331,6 +339,7 @@ export default ({
 
       <div className="text-center mb-2 mt-2">
         <Botao
+          dataTestId="adicionar-etapa"
           texto="+ Adicionar Etapa"
           type={BUTTON_TYPE.BUTTON}
           style={BUTTON_STYLE.GREEN_OUTLINE}

@@ -19,8 +19,6 @@ import { STATUS_DRE_A_VALIDAR } from "src/configs/constants";
 import { TIPO_SOLICITACAO } from "src/constants/shared";
 import arrayMutators from "final-form-arrays";
 import {
-  // eslint-disable-next-line no-unused-vars
-  ehDiaUtil,
   maxValue,
   naoPodeSerZero,
   peloMenosUmCaractere,
@@ -76,7 +74,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
 
   const getRascunhos = async () => {
     const response = await getRascunhosAlteracaoTipoAlimentacao(
-      TIPO_SOLICITACAO.SOLICITACAO_CEI
+      TIPO_SOLICITACAO.SOLICITACAO_CEI,
     );
     if (response.status === HTTP_STATUS.OK) {
       setRascunhos(response.data.results);
@@ -95,7 +93,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
       checaSeDataEstaEntre2e5DiasUteis(
         value,
         proximosDoisDiasUteis,
-        proximosCincoDiasUteis
+        proximosCincoDiasUteis,
       )
     ) {
       setShowModalDataPrioritaria(true);
@@ -105,7 +103,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
   const iniciarPedido = async (uuid, form) => {
     const response = await escolaIniciarSolicitacaoDeAlteracaoDeCardapio(
       uuid,
-      SOLICITACAO_CEI
+      SOLICITACAO_CEI,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Alteração do tipo de alimentação enviada com sucesso!");
@@ -124,7 +122,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     if (!values.uuid) {
       const response = await escolaCriarSolicitacaoDeAlteracaoCardapio(
         formataPayload(values),
-        SOLICITACAO_CEI
+        SOLICITACAO_CEI,
       );
       if (response.status === HTTP_STATUS.CREATED) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
@@ -140,14 +138,14 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
       const response = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
         values.uuid,
         formataPayload(values),
-        SOLICITACAO_CEI
+        SOLICITACAO_CEI,
       );
       if (response.status === HTTP_STATUS.OK) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
           iniciarPedido(response.data.uuid, form);
         } else {
           toastSuccess(
-            "Alteração do tipo de alimentação alterada com sucesso!"
+            "Alteração do tipo de alimentação alterada com sucesso!",
           );
         }
         refresh(form);
@@ -163,7 +161,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
 
   const encontrarIndiceSubstituicao = (
     periodoEscolarUuid,
-    solicitacao_ = solicitacao
+    solicitacao_ = solicitacao,
   ) => {
     for (let index = 0; index < solicitacao_.substituicoes.length; index++) {
       const substituicao = solicitacao_.substituicoes[index];
@@ -179,7 +177,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     data,
     index,
     form,
-    solicitacao_ = solicitacao
+    solicitacao_ = solicitacao,
   ) => {
     form.change(`substituicoes[${index}].loading_faixas`, true);
     const response = await getAlunosPorFaixaEtariaNumaData(periodo, data);
@@ -187,8 +185,8 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
       await form.change(
         `substituicoes[${index}].faixas_etarias`,
         response.data.results.filter(
-          (faixas) => faixas.faixa_etaria.inicio > 11 && faixas.count > 0
-        )
+          (faixas) => faixas.faixa_etaria.inicio > 11 && faixas.count > 0,
+        ),
       );
       if (solicitacao_) {
         const faixasQuantidades = {};
@@ -196,14 +194,14 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
         const periodoEscolarUuid = periodo;
         const indiceSubstituicao = encontrarIndiceSubstituicao(
           periodoEscolarUuid,
-          solicitacao_
+          solicitacao_,
         );
 
         solicitacao_.substituicoes[indiceSubstituicao] &&
           solicitacao_.substituicoes[indiceSubstituicao].faixas_etarias.forEach(
             (faixa) => {
               faixasQuantidades[faixa.faixa_etaria.uuid] = faixa.quantidade;
-            }
+            },
           );
         await form.change(`substituicoes[${index}].faixas`, faixasQuantidades);
         await form.change(`substituicoes[${index}].loading_faixas`, false);
@@ -218,10 +216,10 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
   const ehMotivoRPL = (values) => {
     return (
       motivos.find(
-        (motivo) => motivo.nome.toUpperCase() === "RPL - REFEIÇÃO POR LANCHE"
+        (motivo) => motivo.nome.toUpperCase() === "RPL - REFEIÇÃO POR LANCHE",
       ) &&
       motivos.find(
-        (motivo) => motivo.nome.toUpperCase() === "RPL - REFEIÇÃO POR LANCHE"
+        (motivo) => motivo.nome.toUpperCase() === "RPL - REFEIÇÃO POR LANCHE",
       ).uuid === values.motivo
     );
   };
@@ -229,10 +227,10 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
   const ehMotivoLPR = (values) => {
     return (
       motivos.find(
-        (motivo) => motivo.nome.toUpperCase() === "LPR - LANCHE POR REFEIÇÃO"
+        (motivo) => motivo.nome.toUpperCase() === "LPR - LANCHE POR REFEIÇÃO",
       ) &&
       motivos.find(
-        (motivo) => motivo.nome.toUpperCase() === "LPR - LANCHE POR REFEIÇÃO"
+        (motivo) => motivo.nome.toUpperCase() === "LPR - LANCHE POR REFEIÇÃO",
       ).uuid === values.motivo
     );
   };
@@ -246,23 +244,23 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
 
   const getTiposAlimentacaoDe = (values) => {
     const tipos_alimentacao_de = vinculos.find(
-      (vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL"
+      (vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL",
     ).tipos_alimentacao;
     if (ehMotivoRPL(values)) {
       return agregarDefault(
         tipos_alimentacao_de
           .filter((tipo_alimentacao) =>
-            ["Refeição da tarde", "Almoço"].includes(tipo_alimentacao.nome)
+            ["Refeição da tarde", "Almoço"].includes(tipo_alimentacao.nome),
           )
           .map((tipo_alimentacao) => ({
             nome: tipo_alimentacao.nome,
             uuid: tipo_alimentacao.uuid,
-          }))
+          })),
       );
     } else if (ehMotivoLPR(values)) {
       return tipos_alimentacao_de
         .filter((tipo_alimentacao) =>
-          ["Lanche"].includes(tipo_alimentacao.nome)
+          ["Lanche"].includes(tipo_alimentacao.nome),
         )
         .map((tipo_alimentacao) => ({
           label: tipo_alimentacao.nome,
@@ -278,29 +276,29 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
 
   const getTiposAlimentacaoPara = (values, index) => {
     const tipos_alimentacao_de = vinculos.find(
-      (vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL"
+      (vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL",
     ).tipos_alimentacao;
     if (ehMotivoRPL(values)) {
       return agregarDefault(
         tipos_alimentacao_de
           .filter((tipo_alimentacao) =>
-            ["Lanche"].includes(tipo_alimentacao.nome)
+            ["Lanche"].includes(tipo_alimentacao.nome),
           )
           .map((tipo_alimentacao) => ({
             nome: tipo_alimentacao.nome,
             uuid: tipo_alimentacao.uuid,
-          }))
+          })),
       );
     } else if (ehMotivoLPR(values)) {
       return agregarDefault(
         tipos_alimentacao_de
           .filter((tipo_alimentacao) =>
-            ["Refeição da tarde", "Almoço"].includes(tipo_alimentacao.nome)
+            ["Refeição da tarde", "Almoço"].includes(tipo_alimentacao.nome),
           )
           .map((tipo_alimentacao) => ({
             nome: tipo_alimentacao.nome,
             uuid: tipo_alimentacao.uuid,
-          }))
+          })),
       );
     } else {
       return agregarDefault(
@@ -310,15 +308,15 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
               ? !values.substituicoes[
                   index
                 ].tipos_alimentacao_de_selecionados.includes(
-                  tipo_alimentacao.uuid
+                  tipo_alimentacao.uuid,
                 )
               : tipo_alimentacao.uuid !==
-                values.substituicoes[index].tipo_alimentacao_para
+                values.substituicoes[index].tipo_alimentacao_para,
           )
           .map((tipo_alimentacao) => ({
             nome: tipo_alimentacao.nome,
             uuid: tipo_alimentacao.uuid,
-          }))
+          })),
       );
     }
   };
@@ -331,7 +329,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     await form.change("uuid", solicitacao.uuid);
     solicitacao.substituicoes.forEach((substituicao) => {
       const index = substituicoes.findIndex(
-        (subs) => subs.uuid === substituicao.periodo_escolar.uuid
+        (subs) => subs.uuid === substituicao.periodo_escolar.uuid,
       );
       substituicoes[index].checked = true;
       substituicoes[index].tipo_alimentacao_para =
@@ -348,7 +346,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
           solicitacao.data.split("/").reverse().join("-"),
           index,
           form,
-          solicitacao
+          solicitacao,
         );
         substituicoes[index][`faixas.${faixa.faixa_etaria.uuid}`] =
           faixa.quantidade;
@@ -365,14 +363,14 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     if (window.confirm("Deseja remover este rascunho?")) {
       const response = await escolaExcluirSolicitacaoDeAlteracaoCardapio(
         uuid,
-        SOLICITACAO_CEI
+        SOLICITACAO_CEI,
       );
       if (response.status === HTTP_STATUS.NO_CONTENT) {
         toastSuccess(`Rascunho # ${id_externo} excluído com sucesso`);
         refresh(form);
       } else {
         toastError(
-          `Houve um erro ao excluir o rascunho: ${getError(response.data)}`
+          `Houve um erro ao excluir o rascunho: ${getError(response.data)}`,
         );
       }
     }
@@ -438,7 +436,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                           options={motivos.filter(
                             ({ nome }) =>
                               nome.toUpperCase() !==
-                              "Lanche emergencial".toUpperCase()
+                              "Lanche emergencial".toUpperCase(),
                           )}
                           validate={required}
                           onChangeEffect={async (e) => {
@@ -474,10 +472,10 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                       values_.substituicoes[indice].uuid,
                                       value.split("/").reverse().join("-"),
                                       indice,
-                                      form
+                                      form,
                                     );
                                   }
-                                }
+                                },
                               );
                             }
                           }}
@@ -518,7 +516,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                               `${name}.checked`,
                                               !values.substituicoes[indice][
                                                 `checked`
-                                              ]
+                                              ],
                                             );
                                             await form.change(
                                               `${name}.multiselect`,
@@ -526,7 +524,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                                 `checked`
                                               ]
                                                 ? "multiselect-wrapper-enabled"
-                                                : "multiselect-wrapper-disabled"
+                                                : "multiselect-wrapper-disabled",
                                             );
                                             if (
                                               values.substituicoes[indice][
@@ -535,15 +533,15 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                             ) {
                                               form.change(
                                                 `substituicoes[${indice}].tipos_alimentacao_de`,
-                                                undefined
+                                                undefined,
                                               );
                                               form.change(
                                                 `substituicoes[${indice}].tipos_alimentacao_de_selecionados`,
-                                                undefined
+                                                undefined,
                                               );
                                               form.change(
                                                 `substituicoes[${indice}].tipo_alimentacao_para`,
-                                                undefined
+                                                undefined,
                                               );
                                             } else {
                                               getFaixasEtariasPorPeriodo(
@@ -554,7 +552,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                                   .reverse()
                                                   .join("-"),
                                                 indice,
-                                                form
+                                                form,
                                               );
                                             }
                                           }}
@@ -609,8 +607,8 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                           form.change(
                                             `substituicoes[${indice}].tipos_alimentacao_de_selecionados`,
                                             values_.map(
-                                              (value_) => value_.value
-                                            )
+                                              (value_) => value_.value,
+                                            ),
                                           );
                                         }}
                                         placeholder="Selecione tipos de alimentação"
@@ -624,7 +622,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                       name={`${name}.tipo_alimentacao_para`}
                                       options={getTiposAlimentacaoPara(
                                         values,
-                                        indice
+                                        indice,
                                       )}
                                       validate={
                                         getPeriodo(values, indice).checked &&
@@ -689,7 +687,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                                         .checked &&
                                                       composeValidators(
                                                         naoPodeSerZero,
-                                                        maxValue(faixa.count)
+                                                        maxValue(faixa.count),
                                                       )
                                                     }
                                                   />
@@ -704,13 +702,13 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                           <td className="col-2 text-center">
                                             {totalAlunosPorPeriodo(
                                               values,
-                                              indice
+                                              indice,
                                             )}
                                           </td>
                                           <td className="col-2 text-center">
                                             {totalAlunosInputPorPeriodo(
                                               values,
-                                              indice
+                                              indice,
                                             )}
                                           </td>
                                         </tr>
@@ -734,7 +732,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                           !process.env.IS_TEST &&
                           composeValidators(
                             textAreaRequired,
-                            peloMenosUmCaractere
+                            peloMenosUmCaractere,
                           )
                         }
                       />

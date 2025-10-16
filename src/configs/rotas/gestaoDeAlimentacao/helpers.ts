@@ -47,8 +47,8 @@ export const inclusaoAlimentacao = () => {
   return escolaEhCei()
     ? InclusaoDeAlimentacaoCEIPage
     : escolaEhCEMEI()
-    ? InclusaoDeAlimentacaoCEMEIPage
-    : InclusaoDeAlimentacaoPage;
+      ? InclusaoDeAlimentacaoCEMEIPage
+      : InclusaoDeAlimentacaoPage;
 };
 
 export const relatoriosInclusaoDeAlimentacao = () => {
@@ -81,8 +81,8 @@ export const alteracaoCardapio = () => {
   return escolaEhCei()
     ? AlteracaoDeCardapioCEIPage
     : escolaEhCEMEI()
-    ? AlteracaoDeCardapioCEMEIPage
-    : AlteracaoDeCardapioPage;
+      ? AlteracaoDeCardapioCEMEIPage
+      : AlteracaoDeCardapioPage;
 };
 
 export const relatoriosAlteracaoDeCardapio = () => {

@@ -25,7 +25,7 @@ export const obterRelatorioQuantitativo = async (params) => {
   let totalProdutos = 0;
 
   Object.values(MAPEAMENTO_STATUS_LABEL).forEach(
-    (status) => (qtdePorStatusZerado[status] = 0)
+    (status) => (qtdePorStatusZerado[status] = 0),
   );
 
   dadosRelatorio.data.results.forEach((dadosTerceirizada) => {
@@ -70,64 +70,4 @@ export const conferidaClass = (solicitation, cardTitle) => {
   }
 
   return conferida;
-};
-
-export const formataLotes = (lotes, lista = [], obj = {}) => {
-  try {
-    lotes.forEach((lote) => {
-      obj.uuid = lote["uuid"];
-      obj.label = lote["nome"];
-      obj.value = lote["uuid"];
-      lista.push(obj);
-      obj = {};
-    });
-  } catch (err) {
-    return lista;
-  }
-  return lista;
-};
-
-export const formataClassificacoes = (classificacoes, lista = [], obj = {}) => {
-  try {
-    classificacoes.forEach((classificacao) => {
-      obj.uuid = classificacao["id"];
-      obj.label = classificacao["nome"];
-      obj.value = classificacao["id"];
-      lista.push(obj);
-      obj = {};
-    });
-  } catch (err) {
-    return lista;
-  }
-  return lista;
-};
-
-export const formataProtocolos = (protocolos, lista = [], obj = {}) => {
-  try {
-    protocolos.forEach((protocolo) => {
-      obj.uuid = protocolo["nome_protocolo"] || protocolo;
-      obj.label = protocolo["nome_protocolo"] || protocolo;
-      obj.value = protocolo["nome_protocolo"] || protocolo;
-      lista.push(obj);
-      obj = {};
-    });
-  } catch (err) {
-    return lista;
-  }
-  return lista;
-};
-
-export const formataDiagnosticos = (diagnosticos, lista = [], obj = {}) => {
-  try {
-    diagnosticos.forEach((diagnostico) => {
-      obj.uuid = diagnostico["descricao"] || diagnostico;
-      obj.label = diagnostico["descricao"] || diagnostico;
-      obj.value = diagnostico["descricao"] || diagnostico;
-      lista.push(obj);
-      obj = {};
-    });
-  } catch (err) {
-    return lista;
-  }
-  return lista;
 };

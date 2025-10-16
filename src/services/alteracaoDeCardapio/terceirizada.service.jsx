@@ -1,27 +1,12 @@
-import axios from "../_base";
-import { FLUXO, AUTH_TOKEN } from "src/services/constants";
+import { FLUXO } from "src/services/constants";
 import { ErrorHandlerFunction } from "src/services/service-helpers";
+import axios from "../_base";
 import { getPath } from "./helper";
-
-export const getTerceirizadaPedidosReprovados = (tipoSolicitacao) => {
-  const url = `${getPath(tipoSolicitacao)}/pedidos-reprovados-terceirizada/`;
-  const OBJ_REQUEST = {
-    headers: AUTH_TOKEN,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
 
 export const TerceirizadaTomaCienciaAlteracaoCardapio = async (
   uuid,
   payload,
-  tipoSolicitacao
+  tipoSolicitacao,
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${
     FLUXO.TERCEIRIZADA_TOMA_CIENCIA
@@ -36,7 +21,7 @@ export const TerceirizadaTomaCienciaAlteracaoCardapio = async (
 export const terceirizadaRespondeQuestionamentoAlteracaoCardapio = async (
   uuid,
   payload,
-  tipoSolicitacao
+  tipoSolicitacao,
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${
     FLUXO.TERCEIRIZADA_RESPONDE_QUESTIONAMENTO

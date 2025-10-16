@@ -1,22 +1,20 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import Page from "src/components/Shareable/Page/Page";
-import { Container } from "src/components/SolicitacaoDeKitLanche/Container";
-import { Container as ContainerCEMEI } from "src/components/SolicitacaoKitLancheCEMEI/componentes/Container";
-import PainelPedidosKitLancheDRE from "src/components/SolicitacaoDeKitLanche/DRE/PainelPedidos/Container";
 import PainelPedidosKitLancheCODAE from "src/components/SolicitacaoDeKitLanche/CODAE/PainelPedidos/Container";
-import PainelPedidosKitLancheTerceirizada from "src/components/SolicitacaoDeKitLanche/Terceirizada/PainelPedidos/Container";
-import { meusDados } from "src/services/perfil.service";
+import { Container } from "src/components/SolicitacaoDeKitLanche/Container";
+import PainelPedidosKitLancheDRE from "src/components/SolicitacaoDeKitLanche/DRE/PainelPedidos/Container";
+import { Container as ContainerCEMEI } from "src/components/SolicitacaoKitLancheCEMEI/componentes/Container";
 import { HOME } from "src/constants/config";
-import {
-  SOLICITACAO_KIT_LANCHE,
-  ESCOLA,
-  DRE,
-  CODAE,
-  TERCEIRIZADA,
-} from "../../configs/constants";
 import { escolaEhCEMEI } from "src/helpers/utilities";
-import { useLocation } from "react-router-dom";
+import { meusDados } from "src/services/perfil.service";
+import {
+  CODAE,
+  DRE,
+  ESCOLA,
+  SOLICITACAO_KIT_LANCHE,
+} from "../../configs/constants";
 
 export class PainelPedidosBase extends React.Component {
   constructor(props) {
@@ -70,9 +68,6 @@ export class PainelPedidosBase extends React.Component {
         {this.props.VISAO === CODAE && (
           <PainelPedidosKitLancheCODAE filtros={this.props.filtros} />
         )}
-        {this.props.VISAO === TERCEIRIZADA && (
-          <PainelPedidosKitLancheTerceirizada />
-        )}
       </Page>
     );
   }
@@ -92,8 +87,3 @@ export const PainelPedidosCODAE = () => {
   const filtros = location.state && location.state.filtros;
   return <PainelPedidosBase VISAO={CODAE} filtros={filtros} />;
 };
-
-//TERCEIRIZADA
-export const PainelPedidosTerceirizada = () => (
-  <PainelPedidosBase VISAO={TERCEIRIZADA} />
-);
