@@ -48,6 +48,8 @@ export default () => {
       let t = document.getElementById("inputRF");
       t.focus();
       setRfBuscado(true);
+    } else if (response.status === 403) {
+      toastError("RF não pertence a uma unidade de sua DRE.");
     } else {
       if (values.registro_funcional) {
         toastError(

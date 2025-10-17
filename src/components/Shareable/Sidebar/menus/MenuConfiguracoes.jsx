@@ -129,9 +129,13 @@ const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
           onClick={onSubmenuClick}
           title="Gestão de Usuários"
           activeMenu={activeMenu}
+          dataTestId="gestao-de-usuarios"
         >
           <LeafItem to={`/${CONFIGURACOES}/${GESTAO_ACESSO_COGESTOR}/`}>
             Gestão de Acesso
+          </LeafItem>
+          <LeafItem to={`/${CONFIGURACOES}/${ATUALIZACAO_EMAIL_EOL}/`}>
+            Atualização de E-mail do EOL
           </LeafItem>
         </SubMenu>
       )}
