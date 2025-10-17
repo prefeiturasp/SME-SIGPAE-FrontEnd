@@ -40,9 +40,7 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
     usuarioEhDinutreDiretoria() ||
     usuarioEhEmpresaTerceirizada() ||
     usuarioEhCoordenadorNutriSupervisao() ||
-    usuarioEhAdministradorNutriSupervisao();
-  const exibeAcompanhamentoLancamento =
-    exibeRelatorios ||
+    usuarioEhAdministradorNutriSupervisao() ||
     usuarioEhCODAENutriManifestacao() ||
     usuarioEhCODAEGabinete();
 
@@ -60,7 +58,7 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
             Lançamento Medição Inicial
           </LeafItem>
         )}
-        {exibeAcompanhamentoLancamento && (
+        {exibeRelatorios && (
           <LeafItem to={`/${MEDICAO_INICIAL}/${ACOMPANHAMENTO_DE_LANCAMENTOS}`}>
             Acompanhamento de Lançamentos
           </LeafItem>
