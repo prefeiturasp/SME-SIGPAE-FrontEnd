@@ -314,3 +314,65 @@ export const mockGetDashboardMedicaoInicial = {
     },
   ],
 };
+
+export const mockGetDashboardMedicaoInicialAprovadas = {
+  results: [
+    {
+      status: "MEDICAO_APROVADA_PELA_DRE",
+      total: 0,
+      dados: [],
+    },
+    {
+      status: "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+      total: 0,
+      dados: [],
+    },
+    {
+      status: "MEDICAO_CORRIGIDA_PARA_CODAE",
+      total: 0,
+      dados: [],
+    },
+    {
+      status: "MEDICAO_APROVADA_PELA_CODAE",
+      total: 1,
+      dados: [
+        {
+          uuid: "ba006555-621a-4e83-b69d-188c6ae20e38",
+          escola: "CEI DIRET JOSE DE MOURA, VER.",
+          escola_uuid: "bc553257-0556-4e3b-90cf-c6d540ac402b",
+          mes: "03",
+          ano: "2025",
+          mes_ano: "Março 2025",
+          tipo_unidade: "CEI DIRET",
+          status: "Aprovado por CODAE",
+          log_mais_recente: "06/05/2025 15:40",
+          dre_ciencia_correcao_data: null,
+          todas_medicoes_e_ocorrencia_aprovados_por_medicao: true,
+          escola_cei_com_inclusao_parcial_autorizada: false,
+          sem_lancamentos: false,
+        },
+      ],
+    },
+    {
+      status: "TODOS_OS_LANCAMENTOS",
+      total: 1,
+      dados: [
+        {
+          uuid: "ba006555-621a-4e83-b69d-188c6ae20e38",
+          escola: "CEI DIRET JOSE DE MOURA, VER.",
+          escola_uuid: "bc553257-0556-4e3b-90cf-c6d540ac402b",
+          mes: "03",
+          ano: "2025",
+          mes_ano: "Março 2025",
+          tipo_unidade: "CEI DIRET",
+          status: "Aprovado por CODAE",
+          log_mais_recente: "06/05/2025 15:40",
+          dre_ciencia_correcao_data: null,
+          todas_medicoes_e_ocorrencia_aprovados_por_medicao: true,
+          escola_cei_com_inclusao_parcial_autorizada: false,
+          sem_lancamentos: false,
+        },
+      ],
+    },
+  ],
+};
