@@ -101,6 +101,7 @@ export const rotasConfiguracoes: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCoordenadorCODAE() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhGticCODAE(),
+      usuarioEhGticCODAE() ||
+      usuarioEhCogestorDRE(),
   },
 ];
