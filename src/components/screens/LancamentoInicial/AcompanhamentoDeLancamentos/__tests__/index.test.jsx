@@ -21,7 +21,7 @@ import { mockGetDashboardMedicaoInicial } from "src/mocks/services/medicaoInicia
 import { mockGetDashboardMedicaoInicialNoresults } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicialNoResults";
 import { mockGetMesesAnosSolicitacoesMedicaoinicial } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetMesesAnosSolicitacoesMedicaoinicial";
 import mock from "src/services/_mock";
-import { AcompanhamentoDeLancamentos } from "./index";
+import { AcompanhamentoDeLancamentos } from "../index";
 
 const renderComponent = async (
   mockMeusDados = mockMeusDadosSuperUsuarioMedicao,
