@@ -206,6 +206,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                   }
                   icon={BUTTON_ICON.PLUS}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
+                  type={BUTTON_TYPE.SUBMIT}
                   className="botao-adicionar"
                 />
               </div>
