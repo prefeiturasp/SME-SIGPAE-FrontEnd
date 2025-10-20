@@ -175,7 +175,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                           />
                         </div>
                         <div className="col-2">
-                          {index > 0 && (
+                          {cadastrosSalvosNoDia.length > 0 && (
                             <Botao
                               texto="Remover"
                               onClick={() =>
