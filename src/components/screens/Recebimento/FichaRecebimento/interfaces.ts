@@ -8,7 +8,7 @@ import {
 export interface FichaRecebimentoPayload {
   etapa: string;
   data_entrega: string;
-  documentos_recebimento?: string[];
+  documentos_recebimento?: DocumentoFichaPayload[];
   lote_fabricante_de_acordo?: boolean | string;
   lote_fabricante_divergencia?: string;
   data_fabricacao_de_acordo?: boolean | string;
@@ -31,6 +31,11 @@ export interface FichaRecebimentoPayload {
   ocorrencias?: OcorrenciaFichaRecebimento[];
   password?: string;
   reposicao_cronograma?: string;
+}
+
+export interface DocumentoFichaPayload {
+  documento_recebimento: string;
+  quantidade_recebida: string;
 }
 
 export interface DadosCronogramaSimples {
@@ -114,6 +119,7 @@ export interface DocumentoFicha {
   numero_laudo: string;
   numero_lote_laudo: string;
   saldo_laudo: string;
+  quantidade_recebida: string;
   uuid: string;
 }
 

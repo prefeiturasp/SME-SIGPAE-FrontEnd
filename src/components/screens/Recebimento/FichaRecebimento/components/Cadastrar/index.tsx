@@ -22,6 +22,8 @@ import {
   cadastraReposicaoFichaRecebimento,
   editaReposicaoFichaRecebimento,
   listarOpcoesReposicao,
+  cadastraFichaRecebimentoSaldoZero,
+  editaFichaRecebimentoSaldoZero,
 } from "src/services/fichaRecebimento.service";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import Select from "src/components/Shareable/Select";
@@ -64,6 +66,7 @@ import { carregarEdicaoFichaDeRecebimento } from "../../helpers";
 import {
   CronogramaFicha,
   DocumentoFicha,
+  DocumentoFichaPayload,
   FichaRecebimentoPayload,
   OcorrenciaFichaRecebimento,
   QuestoesPayload,
@@ -289,6 +292,14 @@ export default () => {
     values: Record<string, any>,
     password?: string,
   ): FichaRecebimentoPayload => {
+    const quantidades =
+      values.documentos_recebimento?.map(
+        (_: any, index: number) =>
+          parseInt(values[`qtd_recebida_laudo_${index}`]) || 0,
+      ) || [];
+    const saldoTotalZero =
+      quantidades.length > 0 && quantidades.every((qtd) => qtd === 0);
+
     let payloadQuestoes: QuestoesPayload[] = [
       ...formataPayloadQuestoes(values, questoesPrimarias, "PRIMARIA"),
       ...formataPayloadQuestoes(values, questoesSecundarias, "SECUNDARIA"),
@@ -296,72 +307,91 @@ export default () => {
 
     const questoes = payloadQuestoes.length > 0 ? payloadQuestoes : undefined;
 
-    let payload: FichaRecebimentoPayload = {
+    const payloadBase: Partial<FichaRecebimentoPayload> = {
       etapa: values.etapa,
       data_entrega: values.data_entrega
         ? moment(values.data_entrega, "DD/MM/YYYY").format("YYYY-MM-DD")
         : undefined,
       documentos_recebimento: values.documentos_recebimento?.map(
-        (x: DocumentoFicha) => x.uuid,
+        (x: DocumentoFicha, key: number) =>
+          ({
+            documento_recebimento: x.uuid,
+            quantidade_recebida: values[`qtd_recebida_laudo_${key}`],
+          }) as DocumentoFichaPayload,
       ),
-      lote_fabricante_de_acordo: stringToBoolean(
-        values.lote_fabricante_de_acordo as string,
-      ),
-      lote_fabricante_divergencia: values.lote_fabricante_divergencia,
-      data_fabricacao_de_acordo: stringToBoolean(
-        values.data_fabricacao_de_acordo as string,
-      ),
-      data_fabricacao_divergencia: values.data_fabricacao_divergencia,
-      data_validade_de_acordo: stringToBoolean(
-        values.data_validade_de_acordo as string,
-      ),
-      data_validade_divergencia: values.data_validade_divergencia,
-      numero_lote_armazenagem: values.numero_lote_armazenagem,
-      numero_paletes: values.numero_paletes,
-      peso_embalagem_primaria_1: values.peso_embalagem_primaria_1,
-      peso_embalagem_primaria_2: values.peso_embalagem_primaria_2,
-      peso_embalagem_primaria_3: values.peso_embalagem_primaria_3,
-      peso_embalagem_primaria_4: values.peso_embalagem_primaria_4,
-      veiculos: values.numero_0
-        ? veiculos.map(
-            (v, index) =>
-              ({
-                numero: values[`numero_${index}`],
-                temperatura_recebimento:
-                  values[`temperatura_recebimento_${index}`],
-                temperatura_produto: values[`temperatura_produto_${index}`],
-                placa: values[`placa_${index}`],
-                lacre: values[`lacre_${index}`],
-                numero_sif_sisbi_sisp: values[`numero_sif_sisbi_sisp_${index}`],
-                numero_nota_fiscal: values[`numero_nota_fiscal_${index}`],
-                quantidade_nota_fiscal:
-                  values[`quantidade_nota_fiscal_${index}`],
-                embalagens_nota_fiscal:
-                  values[`embalagens_nota_fiscal_${index}`],
-                quantidade_recebida: values[`quantidade_recebida_${index}`],
-                embalagens_recebidas: values[`embalagens_recebidas_${index}`],
-                estado_higienico_adequado: stringToBoolean(
-                  values[`estado_higienico_adequado_${index}`],
-                ),
-                termografo: stringToBoolean(values[`termografo_${index}`]),
-              }) as VeiculoPayload,
-          )
-        : undefined,
-      sistema_vedacao_embalagem_secundaria:
-        values.sistema_vedacao_embalagem_secundaria === "0"
-          ? cronograma.sistema_vedacao_embalagem_secundaria
-          : values.sistema_vedacao_embalagem_secundaria_outra_opcao,
       observacao: values.observacao,
       arquivos: formataPayloadArquivos(arquivos),
-      observacoes_conferencia: values.observacoes_conferencia,
-      questoes: questoes,
       houve_ocorrencia: stringToBoolean(values.houve_ocorrencia),
       ocorrencias: extraiOcorrenciasDoFormulario(values),
       reposicao_cronograma: values.reposicao_cronograma,
       ...(password && { password }),
     };
 
-    return payload;
+    const payloadQuandoHaSaldo: Partial<FichaRecebimentoPayload> =
+      saldoTotalZero
+        ? {}
+        : {
+            lote_fabricante_de_acordo: stringToBoolean(
+              values.lote_fabricante_de_acordo as string,
+            ),
+            lote_fabricante_divergencia: values.lote_fabricante_divergencia,
+            data_fabricacao_de_acordo: stringToBoolean(
+              values.data_fabricacao_de_acordo as string,
+            ),
+            data_fabricacao_divergencia: values.data_fabricacao_divergencia,
+            data_validade_de_acordo: stringToBoolean(
+              values.data_validade_de_acordo as string,
+            ),
+            data_validade_divergencia: values.data_validade_divergencia,
+            numero_lote_armazenagem: values.numero_lote_armazenagem,
+            numero_paletes: values.numero_paletes,
+            peso_embalagem_primaria_1: values.peso_embalagem_primaria_1,
+            peso_embalagem_primaria_2: values.peso_embalagem_primaria_2,
+            peso_embalagem_primaria_3: values.peso_embalagem_primaria_3,
+            peso_embalagem_primaria_4: values.peso_embalagem_primaria_4,
+            veiculos: values.numero_0
+              ? veiculos.map(
+                  (v, index) =>
+                    ({
+                      numero: values[`numero_${index}`],
+                      temperatura_recebimento:
+                        values[`temperatura_recebimento_${index}`],
+                      temperatura_produto:
+                        values[`temperatura_produto_${index}`],
+                      placa: values[`placa_${index}`],
+                      lacre: values[`lacre_${index}`],
+                      numero_sif_sisbi_sisp:
+                        values[`numero_sif_sisbi_sisp_${index}`],
+                      numero_nota_fiscal: values[`numero_nota_fiscal_${index}`],
+                      quantidade_nota_fiscal:
+                        values[`quantidade_nota_fiscal_${index}`],
+                      embalagens_nota_fiscal:
+                        values[`embalagens_nota_fiscal_${index}`],
+                      quantidade_recebida:
+                        values[`quantidade_recebida_${index}`],
+                      embalagens_recebidas:
+                        values[`embalagens_recebidas_${index}`],
+                      estado_higienico_adequado: stringToBoolean(
+                        values[`estado_higienico_adequado_${index}`],
+                      ),
+                      termografo: stringToBoolean(
+                        values[`termografo_${index}`],
+                      ),
+                    }) as VeiculoPayload,
+                )
+              : undefined,
+            sistema_vedacao_embalagem_secundaria:
+              values.sistema_vedacao_embalagem_secundaria === "0"
+                ? cronograma.sistema_vedacao_embalagem_secundaria
+                : values.sistema_vedacao_embalagem_secundaria_outra_opcao,
+            observacoes_conferencia: values.observacoes_conferencia,
+            questoes: questoes,
+          };
+
+    return {
+      ...payloadBase,
+      ...payloadQuandoHaSaldo,
+    } as FichaRecebimentoPayload;
   };
 
   const salvarRascunho = async (
@@ -401,7 +431,20 @@ export default () => {
     try {
       let cadastrar = cadastraFichaRecebimento;
       let editar = editarFichaRecebimento;
-      if (
+
+      // Refatorar pra usar o mesmo que tá dentro do form
+      const quantidades =
+        values.documentos_recebimento?.map(
+          (_: any, index: number) =>
+            parseInt(values[`qtd_recebida_laudo_${index}`]) || 0,
+        ) || [];
+      const saldoTotalZero =
+        quantidades.length > 0 && quantidades.every((qtd) => qtd === 0);
+
+      if (saldoTotalZero) {
+        cadastrar = cadastraFichaRecebimentoSaldoZero;
+        editar = editaFichaRecebimentoSaldoZero;
+      } else if (
         opcoesReposicao.find(({ uuid }) => uuid === values.reposicao_cronograma)
           ?.tipo === "Credito"
       ) {
@@ -412,6 +455,7 @@ export default () => {
       const response = initialValues.uuid
         ? await editar(payload, initialValues.uuid)
         : await cadastrar(payload);
+
       if (response.status === 201 || response.status === 200) {
         toastSuccess("Ficha de recebimento Assinada com sucesso!");
         redirecionarPara();
@@ -671,7 +715,7 @@ export default () => {
           <Form
             onSubmit={() => setShowModalAssinatura(true)}
             initialValues={initialValues}
-            validateOnBlur={true}
+            //validateOnBlur={true}
             render={({ handleSubmit, values, form, errors }) => {
               formRef.current = form;
               const reposicaoSelecionada = opcoesReposicao.find(
@@ -1129,6 +1173,7 @@ export default () => {
                                             <Field
                                               component={InputText}
                                               name={`qtd_recebida_laudo_${key}`}
+                                              dataTestId={`qtd_recebida_laudo_${key}`}
                                               placeholder="Digite a Quantidade"
                                               required
                                               apenasNumeros
@@ -1189,7 +1234,8 @@ export default () => {
                                   name={`lote_fabricante_divergencia`}
                                   placeholder="Descreva a divergência"
                                   required
-                                  validate={required}
+                                  validate={requiredSaldoTotalZero(required)}
+                                  disabled={saldoTotalZero}
                                 />
                               </div>
                             </div>
@@ -1224,7 +1270,8 @@ export default () => {
                                   name={`data_fabricacao_divergencia`}
                                   placeholder="Descreva a divergência"
                                   required
-                                  validate={required}
+                                  validate={requiredSaldoTotalZero(required)}
+                                  disabled={saldoTotalZero}
                                 />
                               </div>
                             </div>
@@ -1259,7 +1306,8 @@ export default () => {
                                   name={`data_validade_divergencia`}
                                   placeholder="Descreva a divergência"
                                   required
-                                  validate={required}
+                                  validate={requiredSaldoTotalZero(required)}
+                                  disabled={saldoTotalZero}
                                 />
                               </div>
                             </div>
