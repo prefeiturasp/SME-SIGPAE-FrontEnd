@@ -35,7 +35,7 @@ describe("Teste comportamento ao não retornar dados - AtualizacaoEmailEOL", () 
             <AtualizacaoEmail />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   };
@@ -62,7 +62,7 @@ describe("Teste comportamento ao não retornar dados - AtualizacaoEmailEOL", () 
 
     await waitFor(() => {
       expect(toastErrorSpy).toHaveBeenCalledWith(
-        "RF não pertence a uma unidade de sua DRE."
+        "RF não pertence a uma unidade de sua DRE.",
       );
     });
   });
@@ -80,7 +80,7 @@ describe("Teste comportamento ao não retornar dados - AtualizacaoEmailEOL", () 
 
     await waitFor(() => {
       expect(toastErrorSpy).toHaveBeenCalledWith(
-        "API do EOL não retornou nada para o RF 99999"
+        "API do EOL não retornou nada para o RF 99999",
       );
     });
   });

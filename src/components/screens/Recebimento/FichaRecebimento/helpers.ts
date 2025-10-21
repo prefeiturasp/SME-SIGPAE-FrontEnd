@@ -1,5 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
-import { FichaRecebimentoDetalhada } from "../FichaRecebimento/interfaces";
+import {
+  DocumentoFicha,
+  FichaRecebimentoDetalhada,
+} from "../FichaRecebimento/interfaces";
 import { getFichaRecebimentoDetalhada } from "../../../../services/fichaRecebimento.service";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { Arquivo, ArquivoForm } from "src/interfaces/pre_recebimento.interface";
@@ -21,7 +24,7 @@ export const carregarEdicaoFichaDeRecebimento = async (
   setCarregando: Dispatch<SetStateAction<boolean>>,
   setVeiculos?: Dispatch<SetStateAction<any[]>>,
   setOcorrenciasCount?: Dispatch<SetStateAction<number>>,
-  setArquivos?: Dispatch<SetStateAction<any[]>>
+  setArquivos?: Dispatch<SetStateAction<any[]>>,
 ) => {
   const urlParams = new URLSearchParams(window.location.search);
   const uuid = urlParams.get("uuid");
@@ -88,7 +91,7 @@ const formataSistemaVedacao = (ficha: FichaRecebimentoDetalhada): string => {
 };
 
 export const geraInitialValuesCadastrar = (
-  ficha: FichaRecebimentoDetalhada
+  ficha: FichaRecebimentoDetalhada,
 ) => {
   let initialValues: Record<string, any> = {
     uuid: ficha.uuid,
@@ -99,29 +102,29 @@ export const geraInitialValuesCadastrar = (
     documentos_recebimento: ficha.documentos_recebimento,
 
     lote_fabricante_de_acordo: booleanToString(
-      ficha.lote_fabricante_de_acordo as boolean
+      ficha.lote_fabricante_de_acordo as boolean,
     ),
     data_fabricacao_de_acordo: booleanToString(
-      ficha.data_fabricacao_de_acordo as boolean
+      ficha.data_fabricacao_de_acordo as boolean,
     ),
     data_validade_de_acordo: booleanToString(
-      ficha.data_validade_de_acordo as boolean
+      ficha.data_validade_de_acordo as boolean,
     ),
 
     numero_lote_armazenagem: ficha.numero_lote_armazenagem,
     numero_paletes: formataMilhar(ficha.numero_paletes),
 
     peso_embalagem_primaria_1: formataMilharDecimal(
-      ficha.peso_embalagem_primaria_1
+      ficha.peso_embalagem_primaria_1,
     ),
     peso_embalagem_primaria_2: formataMilharDecimal(
-      ficha.peso_embalagem_primaria_2
+      ficha.peso_embalagem_primaria_2,
     ),
     peso_embalagem_primaria_3: formataMilharDecimal(
-      ficha.peso_embalagem_primaria_3
+      ficha.peso_embalagem_primaria_3,
     ),
     peso_embalagem_primaria_4: formataMilharDecimal(
-      ficha.peso_embalagem_primaria_4
+      ficha.peso_embalagem_primaria_4,
     ),
 
     sistema_vedacao_embalagem_secundaria: formataSistemaVedacao(ficha),
@@ -178,10 +181,10 @@ export const geraInitialValuesCadastrar = (
       initialValues[`embalagens_recebidas_${index}`] =
         veiculo.embalagens_recebidas;
       initialValues[`estado_higienico_adequado_${index}`] = booleanToString(
-        veiculo.estado_higienico_adequado as boolean
+        veiculo.estado_higienico_adequado as boolean,
       );
       initialValues[`termografo_${index}`] = booleanToString(
-        veiculo.termografo as boolean
+        veiculo.termografo as boolean,
       );
     });
   }
@@ -202,6 +205,15 @@ export const geraInitialValuesCadastrar = (
       initialValues[`quantidade_${index}`] = ocorrencia.quantidade;
       initialValues[`descricao_${index}`] = ocorrencia.descricao;
     });
+  }
+
+  if (ficha.documentos_recebimento && ficha.documentos_recebimento.length > 0) {
+    ficha.documentos_recebimento.forEach(
+      (documento: DocumentoFicha, index: number) => {
+        initialValues[`qtd_recebida_laudo_${index}`] =
+          documento.quantidade_recebida;
+      },
+    );
   }
 
   if (ficha.reposicao_cronograma) {
