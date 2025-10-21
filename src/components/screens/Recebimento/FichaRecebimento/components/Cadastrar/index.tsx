@@ -1122,6 +1122,19 @@ export default () => {
                               disabled={naoExistemLaudos}
                             />
                           </div>
+                          <div className="col-6">
+                            <div className="alerta-saldos">
+                              <div>
+                                <span className="required-asterisk bg-transparent">
+                                  *
+                                </span>
+                                <span>
+                                  Para calcular a quantidade a ser preenchida,
+                                  desconte possíveis recusas ou faltas.
+                                </span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
 
                         {values.documentos_recebimento?.length > 0 && (
