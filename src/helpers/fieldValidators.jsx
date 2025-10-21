@@ -1,42 +1,11 @@
-import moment from "moment";
-import { format, getYear, isWeekend } from "date-fns";
 import strip_tags from "locutus/php/strings/strip_tags";
-import { ALT_CARDAPIO } from "src/components/screens/helper";
+import moment from "moment";
 import { TIPO_PERFIL } from "src/constants/shared";
 
 export const required = (value) =>
   value === null || value === undefined || value === ""
     ? "Campo obrigatório"
     : undefined;
-
-export const ehDiaUtil = (values, motivos, feriadosAno) => (value) => {
-  const ehLPRouRPL = () => {
-    return (
-      values &&
-      values.motivo &&
-      motivos &&
-      (motivos
-        .find((motivo) => motivo.uuid === values.motivo)
-        .nome.includes("LPR") ||
-        motivos
-          .find((motivo) => motivo.uuid === values.motivo)
-          .nome.includes("RPL"))
-    );
-  };
-
-  const ehFinalDeSemana = (value) => {
-    const valores = value.split("/");
-    const dataFormatada = `${valores[1]}/${valores[0]}/${valores[2]}`;
-    return isWeekend(new Date(dataFormatada));
-  };
-
-  return value &&
-    ![undefined].includes(value) &&
-    ehLPRouRPL() &&
-    (ehFinalDeSemana(value) || (feriadosAno && feriadosAno.includes(value)))
-    ? "Não é possível solicitar LPR ou RPL para dia não útil!"
-    : undefined;
-};
 
 export const composeValidators =
   (...validators) =>
@@ -186,88 +155,11 @@ export const maxValue = (max, mensagem) => (value) =>
     ? mensagem || `Não pode ser maior que ${max}`
     : undefined;
 
-export const maxValueFrequenciaAlimentacao = (max, inputName) => (value) => {
-  return value && value > max && inputName.includes("frequencia")
-    ? "A quantidade de alunos frequentes não pode ser maior do que a quantidade de alunos matriculados."
-    : undefined;
-};
-
 export const maxValueMaiorFrequenciaNoPeriodoIMR = (max) => (value) => {
   return value && value > max
     ? "Não pode ser maior que o Nº de matriculados"
     : undefined;
 };
-
-export const maxValueLancheRefeicaoSobremesa1Oferta =
-  (max, inputName, solicitacoesAutorizadas, mesAnoConsiderado, dia) =>
-  (value) => {
-    const data = `${dia}/${format(mesAnoConsiderado, "MM")}/${getYear(
-      mesAnoConsiderado,
-    )}`;
-    const existeAlteracaoCardapioRPL =
-      solicitacoesAutorizadas.filter(
-        (solicitacao) =>
-          solicitacao.tipo_doc === ALT_CARDAPIO &&
-          solicitacao.data_evento === data &&
-          solicitacao.motivo === "RPL - Refeição por Lanche",
-      ).length > 0;
-    const existeAlteracaoCardapioLPR =
-      solicitacoesAutorizadas.filter(
-        (solicitacao) =>
-          solicitacao.tipo_doc === ALT_CARDAPIO &&
-          solicitacao.data_evento === data &&
-          solicitacao.motivo === "LPR - Lanche por Refeição",
-      ).length > 0;
-
-    if (
-      value &&
-      !["Mês anterior", "Mês posterior"].includes(value) &&
-      [NaN, 0].includes(max) &&
-      (inputName.includes("refeicao") ||
-        inputName.includes("sobremesa") ||
-        inputName.includes("lanche")) &&
-      !inputName.includes("repeticao") &&
-      !inputName.includes("emergencial")
-    ) {
-      return "Frequência acima inválida ou não preenchida";
-    }
-    if (
-      value &&
-      existeAlteracaoCardapioRPL &&
-      inputName.includes("lanche") &&
-      !inputName.includes("emergencial")
-    ) {
-      if (value > 2 * max) {
-        return "Lançamento maior que 2x a frequência de alunos no dia";
-      } else {
-        return undefined;
-      }
-    }
-    if (
-      value &&
-      existeAlteracaoCardapioLPR &&
-      inputName.includes("refeicao") &&
-      !inputName.includes("repeticao")
-    ) {
-      if (value > 2 * max) {
-        return "Lançamento maior que 2x a frequência de alunos no dia";
-      } else {
-        return undefined;
-      }
-    }
-    if (
-      value &&
-      value > max &&
-      (inputName.includes("refeicao") ||
-        inputName.includes("sobremesa") ||
-        inputName.includes("lanche")) &&
-      !inputName.includes("repeticao") &&
-      !inputName.includes("emergencial")
-    ) {
-      return "Lançamento maior que a frequência de alunos no dia";
-    }
-    return undefined;
-  };
 
 export const email = (value) =>
   value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)
@@ -330,26 +222,11 @@ export const nonRequiredNumericInteger = (value) => {
   }
 };
 
-export const phoneNumber = (value) =>
-  value && !/^(0|[1-9][0-9]{9})$/i.test(value)
-    ? "Invalid phone number, must be 10 digits"
-    : undefined;
-
 export const tamanhoCnpj = (value) =>
   value.length < 14 ? "CNPJ Inválido" : undefined;
 
 export const tamanhoCnpjMascara = (value) =>
   value.length < 18 ? "CNPJ Inválido" : undefined;
-
-export const semCaracteresEspeciais = (value) =>
-  value && !/^[\w&.-]+$/i.test(value)
-    ? `Não permite caracteres especiais`
-    : undefined;
-
-export const numeroDecimal = (value) => {
-  const er = new RegExp("[0-9],[0-9]");
-  return value ? (er.test(value) ? undefined : "Deve ser um decimal") : [];
-};
 
 export const inteiroOuDecimal = (value) => {
   return value && !/^[0-9]+([,.][0-9]+)?$/g.test(value)
@@ -374,9 +251,6 @@ export const decimalMonetario = (value) => {
     ? "Somente números com duas casas decimais (ex: 00,00)"
     : undefined;
 };
-
-export const numeroInteiro = (value) =>
-  value ? (!/\D/.test(value) ? undefined : "Somente números") : [];
 
 export const validaCPF = (value) => {
   if (!value) return undefined;

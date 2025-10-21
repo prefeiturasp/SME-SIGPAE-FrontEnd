@@ -545,7 +545,6 @@ export default () => {
 
   const atualizarCamposCronograma = async (value: string, form: FormApi) => {
     setCarregando(true);
-
     try {
       let cronogramaSelecionado = cronogramas.find((c) => c.numero === value);
       if (cronogramaSelecionado?.uuid) {
@@ -569,6 +568,7 @@ export default () => {
       } else {
         setCronograma({} as CronogramaFicha);
         form.reset({});
+        form.change("cronograma", value);
       }
     } finally {
       setCarregando(false);

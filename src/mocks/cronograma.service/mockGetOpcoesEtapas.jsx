@@ -1,0 +1,28 @@
+export const mockGetOpcoesEtapas = [
+  {
+    uuid: "33169dd2-f33b-46c4-b1a1-0f26a3ce8532",
+    numero_empenho: "111",
+    qtd_total_empenho: "123,00 kg",
+    etapa: "Etapa 1",
+    parte: "Parte 1",
+    data_programada: "08/02/2024",
+    quantidade: "301,00 kg",
+    total_embalagens: "4,00 EMB",
+    desvinculada_recebimento: true,
+    houve_ocorrencia: false,
+    houve_reposicao: false,
+  },
+  {
+    uuid: "33169dd2-f33b-46c4-b1a1-0f26a3ce8532",
+    numero_empenho: "111",
+    qtd_total_empenho: "123,00 kg",
+    etapa: "Etapa 2",
+    parte: null,
+    data_programada: "08/02/2024",
+    quantidade: "301,00 kg",
+    total_embalagens: "4,00 EMB",
+    desvinculada_recebimento: true,
+    houve_ocorrencia: false,
+    houve_reposicao: false,
+  },
+];

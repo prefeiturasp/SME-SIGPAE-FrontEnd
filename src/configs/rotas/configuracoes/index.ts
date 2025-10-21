@@ -27,7 +27,6 @@ import GestaoAcessoDiretorEscolaPage from "src/pages/Configuracoes/GestaoAcessoD
 import GestaoAcessoEmpresaPage from "src/pages/Configuracoes/GestaoAcessoEmpresaPage";
 import GestaoAcessoGeralPage from "src/pages/Configuracoes/GestaoAcessoGeralPage";
 import GestaoAcessoMasterPage from "src/pages/Configuracoes/GestaoAcessoMasterPage";
-import MensagemPage from "src/pages/Configuracoes/MensagemPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
@@ -41,11 +40,6 @@ export const rotasConfiguracoes: Array<RotaInterface> = [
   {
     path: `/${constants.CONFIGURACOES}/gerenciamento-emails`,
     component: GerenciamentoEmailsPage,
-    tipoUsuario: usuarioEhQualquerCODAE(),
-  },
-  {
-    path: `/${constants.CONFIGURACOES}/mensagem`,
-    component: MensagemPage,
     tipoUsuario: usuarioEhQualquerCODAE(),
   },
   {
@@ -107,6 +101,7 @@ export const rotasConfiguracoes: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCoordenadorCODAE() ||
       usuarioEhCodaeDilog() ||
-      usuarioEhGticCODAE(),
+      usuarioEhGticCODAE() ||
+      usuarioEhCogestorDRE(),
   },
 ];

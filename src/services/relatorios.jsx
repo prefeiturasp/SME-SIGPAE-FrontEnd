@@ -51,7 +51,7 @@ export const getRelatorioKitLancheUnificado = (uuid) => {
 export const getRelatorioAlteracaoCardapio = async (
   uuid,
   escola,
-  tipoSolicitacao
+  tipoSolicitacao,
 ) => {
   let url = `${getAlteracaoPath(tipoSolicitacao)}/${uuid}/relatorio/`;
   const { data } = await axios.get(url, {
@@ -69,6 +69,14 @@ export const getRelatorioDietaEspecial = async (uuid) => {
   saveAs(data, "relatorio_dieta_especial.pdf");
 };
 
+export const getPdfHistoricoDieta = async (uuid) => {
+  const url = `/solicitacoes-dieta-especial/${uuid}/relatorio-historico-dieta/`;
+  const { data } = await axios.get(url, {
+    responseType: "blob",
+  });
+  saveAs(data, "historico_dieta_especial.pdf");
+};
+
 export const getProtocoloDietaEspecial = async (uuid, dietaEspecial) => {
   const url = `${API_URL}/solicitacoes-dieta-especial/${uuid}/protocolo/`;
   const { data } = await axios.get(url, {
@@ -81,7 +89,7 @@ export const getProtocoloDietaEspecial = async (uuid, dietaEspecial) => {
 export const getRelatorioInclusaoAlimentacao = async (
   uuid,
   tipoSolicitacao,
-  escola
+  escola,
 ) => {
   let url = `${getInclusaoPath(tipoSolicitacao)}/${uuid}/relatorio/`;
   const { data } = await axios.get(url, {
@@ -94,7 +102,7 @@ export const getRelatorioInclusaoAlimentacao = async (
 export const getRelatorioInclusaoAlimentacaoCEMEI = async (
   uuid,
   tipoSolicitacao,
-  escola
+  escola,
 ) => {
   const url = `${getInclusaoPath(tipoSolicitacao)}/${uuid}/relatorio/`;
   const response = await axios.get(url, {
@@ -112,7 +120,7 @@ export const getRelatorioInclusaoAlimentacaoCEMEI = async (
 export const getRelatorioAlteracaoTipoAlimentacao = async (
   uuid,
   tipoSolicitacao,
-  escola
+  escola,
 ) => {
   const url = `${getAlteracaoPath(tipoSolicitacao)}/${uuid}/relatorio/`;
   const response = await axios.get(url, {
@@ -175,7 +183,7 @@ export const getDetalheInversaoCardapio = async (uuid, escola) => {
 export const imprimeRelatorioSuspensaoAlimentacao = async (
   uuid,
   escola,
-  ehCei = false
+  ehCei = false,
 ) => {
   let url = `/grupos-suspensoes-alimentacao/${uuid}/relatorio/`;
   if (ehCei) url = `/suspensao-alimentacao-de-cei/${uuid}/relatorio/`;
@@ -227,7 +235,7 @@ export const getRelatorioProdutoAnaliseSensorialRecebimento = ({
 export const getRelatorioEmAnaliseSensorial = async (params) => {
   const { data } = await axios.get(
     `${API_URL}/produtos/relatorio-em-analise-sensorial/`,
-    { params, responseType: "blob" }
+    { params, responseType: "blob" },
   );
   saveAs(data, "relatorio_analise_sensorial.pdf");
 };
@@ -235,7 +243,7 @@ export const getRelatorioEmAnaliseSensorial = async (params) => {
 export const getRelatorioProdutoSuspenso = async (params) => {
   const { data } = await axios.get(
     `${API_URL}/produtos/relatorio-produto-suspenso/`,
-    { params, responseType: "blob" }
+    { params, responseType: "blob" },
   );
   saveAs(data, "relatorio_produto_suspenso.pdf");
 };
@@ -246,20 +254,20 @@ export const imprimeRelatorioQuantitativoSolicDietaEsp = async (payload) => {
     payload,
     {
       responseType: "blob",
-    }
+    },
   );
   saveAs(data, "relatorio_quantitativo_solicitacoes_dieta_especial.pdf");
 };
 
 export const imprimeRelatorioQuantitativoClassificacaoDietaEsp = async (
-  payload
+  payload,
 ) => {
   const { data } = await axios.post(
     `/${SOLICITACOES_DIETA_ESPECIAL}/imprime-${RELATORIO_QUANTITATIVO_CLASSIFICACAO_DIETA_ESP}/`,
     payload,
     {
       responseType: "blob",
-    }
+    },
   );
   saveAs(data, "relatorio_quantitativo_classificacao_dieta_especial.pdf");
 };
@@ -278,7 +286,7 @@ export const imprimeRelatorioDietaEspecial = async (filtros, params) => {
     .post(
       `${SOLICITACOES_DIETA_ESPECIAL}/imprime-relatorio-dieta-especial/`,
       filtros,
-      { params: params }
+      { params: params },
     )
     .catch(ErrorHandlerFunction);
   if (response) {
@@ -301,7 +309,7 @@ export const getMotivosDREnaoValida = async () => {
 export const getRelatorioKitLancheCEMEI = async (
   tipoSolicitacao,
   uuid,
-  escola
+  escola,
 ) => {
   const url = `/solicitacao-kit-lanche-cemei/${uuid}/relatorio/`;
   const { data } = await axios.get(url, {
