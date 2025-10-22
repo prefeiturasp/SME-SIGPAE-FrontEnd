@@ -700,7 +700,9 @@ export default () => {
       setModalZeroExibido(true);
     }
 
-    form.mutators.forceValidation();
+    setTimeout(() => {
+      form.mutators.forceValidation();
+    }, 10);
   };
 
   useEffect(() => {
