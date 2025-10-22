@@ -1,14 +1,15 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
   waitFor,
-  cleanup,
   within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { AcompanhamentoDeLancamentos } from "src/components/screens/LancamentoInicial/AcompanhamentoDeLancamentos";
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
@@ -21,7 +22,6 @@ import { mockGetDashboardMedicaoInicial } from "src/mocks/services/medicaoInicia
 import { mockGetDashboardMedicaoInicialNoresults } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicialNoResults";
 import { mockGetMesesAnosSolicitacoesMedicaoinicial } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetMesesAnosSolicitacoesMedicaoinicial";
 import mock from "src/services/_mock";
-import { AcompanhamentoDeLancamentos } from "../index";
 
 const renderComponent = async (
   mockMeusDados = mockMeusDadosSuperUsuarioMedicao,

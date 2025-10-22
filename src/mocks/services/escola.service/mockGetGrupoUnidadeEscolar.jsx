@@ -60,10 +60,6 @@ export const mockGetGrupoUnidadeEscolar = {
           iniciais: "CEU GESTAO",
         },
         {
-          uuid: "ee610092-329a-4b33-8439-813f9dcfabd4",
-          iniciais: "CIEJA",
-        },
-        {
           uuid: "1cc69b3e-6210-4825-bf67-274d3c050bc0",
           iniciais: "EMEF",
         },
@@ -84,6 +80,20 @@ export const mockGetGrupoUnidadeEscolar = {
       ],
       nome: "Grupo 5",
       uuid: "fd9907bf-b64e-4e35-8e8d-4909d4daa778",
+    },
+    {
+      tipos_unidades: [
+        {
+          uuid: "ee610092-329a-4b33-8439-813f9dcfabd4",
+          iniciais: "CIEJA",
+        },
+        {
+          uuid: "2af50d2a-4232-4a6a-97e4-19f99171949b",
+          iniciais: "CMCT",
+        },
+      ],
+      nome: "Grupo 6",
+      uuid: "fd04e2b8-c952-46f4-b5af-7260e6b7ace8",
     },
   ],
 };
