@@ -39,7 +39,7 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
             />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
 
@@ -48,10 +48,10 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
 
   it("renderiza o título e a descrição inicial", () => {
     expect(
-      screen.getByText("Impressão de Relatório Unificado")
+      screen.getByText("Impressão de Relatório Unificado"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Selecione o grupo de Unidade/)
+      screen.getByText(/Selecione o grupo de Unidade/),
     ).toBeInTheDocument();
   });
 
@@ -60,9 +60,10 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
     expect(screen.getByText("Grupo 2 (CEMEI, CEU CEMEI)")).toBeInTheDocument();
     expect(screen.getByText("Grupo 3 (CEU EMEI, EMEI)")).toBeInTheDocument();
     expect(
-      screen.getByText("Grupo 4 (CEU EMEF, CEU GESTAO, CIEJA, EMEF, EMEFM)")
+      screen.getByText("Grupo 4 (CEU EMEF, CEU GESTAO, EMEF, EMEFM)"),
     ).toBeInTheDocument();
     expect(screen.getByText("Grupo 5 (EMEBS)")).toBeInTheDocument();
+    expect(screen.getByText("Grupo 6 (CIEJA, CMCT)")).toBeInTheDocument();
   });
 
   it("desabilita grupos 1, 2 e 5 conforme a regra do Relatório Unificado", () => {
