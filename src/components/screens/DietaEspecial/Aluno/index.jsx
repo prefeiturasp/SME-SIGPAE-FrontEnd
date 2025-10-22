@@ -89,19 +89,19 @@ class solicitacaoDietaEspecial extends Component {
               <table className="tabela-informacoes-aluno">
                 <tr>
                   <th>Diretoria Regional de Educação</th>
-                  <th>Unidade escolar</th>
+                  <th>Unidade Educacional</th>
                 </tr>
                 <tr>
                   <td>{dreAtual}</td>
                   <td>{escolaAtual}</td>
                 </tr>
                 <tr>
-                  <th>Código EOL</th>
-                  <th>Nome Completo</th>
+                  <th>Cód. EOL e Nome Completo do Aluno</th>
                 </tr>
                 <tr>
-                  <td>{eolAluno}</td>
-                  <td>{nomeAluno}</td>
+                  <td>
+                    {eolAluno} - {nomeAluno}
+                  </td>
                 </tr>
               </table>
             </div>
