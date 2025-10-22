@@ -175,7 +175,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                           />
                         </div>
                         <div className="col-2">
-                          {cadastrosSalvosNoDia.length > 0 && (
+                          {(cadastrosSalvosNoDia.length > 0 || index > 0) && (
                             <Botao
                               texto="Remover"
                               onClick={() =>
@@ -206,7 +206,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                   }
                   icon={BUTTON_ICON.PLUS}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
-                  type={BUTTON_TYPE.SUBMIT}
+                  type={BUTTON_TYPE.BUTTON}
                   className="botao-adicionar"
                 />
               </div>
