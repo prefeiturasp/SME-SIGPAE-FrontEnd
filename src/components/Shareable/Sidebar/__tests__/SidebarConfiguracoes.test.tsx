@@ -39,7 +39,7 @@ const renderSidebarComponent = async (nome = "Usuario") => {
     render(
       <MemoryRouter initialEntries={[{ pathname: "/" }]}>
         <TestSidebarComponent />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -71,7 +71,7 @@ describe("Test <Sidebar> - Diferentes perfis", () => {
     "renderiza link `Configurações` com seus submenus - Perfil $nome",
     async ({ localStorage: ls, nomeUsuario }) => {
       Object.entries(ls).forEach(([key, value]) =>
-        localStorage.setItem(key, value)
+        localStorage.setItem(key, value),
       );
 
       await renderSidebarComponent(nomeUsuario);
@@ -89,6 +89,6 @@ describe("Test <Sidebar> - Diferentes perfis", () => {
       const linkAtualizaEmail = screen.getByText(linkAtualizaEmailTexto);
 
       expect(linkAtualizaEmail).toHaveTextContent(linkAtualizaEmailTexto);
-    }
+    },
   );
 });

@@ -28,20 +28,20 @@ export default () => {
       const usuarioEOL = response.data;
       form.change(
         "nome_servidor",
-        usuarioEOL.nome ? usuarioEOL.nome : undefined
+        usuarioEOL.nome ? usuarioEOL.nome : undefined,
       );
       form.change(
         "cargo_servidor",
-        usuarioEOL.cargo ? usuarioEOL.cargo : undefined
+        usuarioEOL.cargo ? usuarioEOL.cargo : undefined,
       );
       form.change(
         "email_servidor",
-        usuarioEOL.email ? usuarioEOL.email : undefined
+        usuarioEOL.email ? usuarioEOL.email : undefined,
       );
       form.change("cpf", usuarioEOL.cpf);
       form.change(
         "cpf_servidor",
-        usuarioEOL.cpf ? formataCPFCensurado(usuarioEOL.cpf) : undefined
+        usuarioEOL.cpf ? formataCPFCensurado(usuarioEOL.cpf) : undefined,
       );
       form.change("codigo_eol_unidade", usuarioEOL.codigo_eol_unidade);
 
@@ -53,7 +53,7 @@ export default () => {
     } else {
       if (values.registro_funcional) {
         toastError(
-          `API do EOL não retornou nada para o RF ${values.registro_funcional}`
+          `API do EOL não retornou nada para o RF ${values.registro_funcional}`,
         );
       }
     }

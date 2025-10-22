@@ -16,6 +16,7 @@ export interface ModalGenericoProps {
   handleClose: () => void;
   textoBotaoSim?: string;
   handleSim: () => void;
+  unicoBotao?: boolean;
 }
 
 const ModalGenerico: React.FC<ModalGenericoProps> = ({
@@ -27,6 +28,7 @@ const ModalGenerico: React.FC<ModalGenericoProps> = ({
   handleSim,
   titulo,
   texto,
+  unicoBotao = false,
 }) => {
   return (
     <Modal show={show} onHide={handleClose} backdrop={"static"}>
@@ -41,15 +43,17 @@ const ModalGenerico: React.FC<ModalGenericoProps> = ({
           <p>{texto}</p>
         </Modal.Body>
         <Modal.Footer>
+          {!unicoBotao && (
+            <Botao
+              texto={textoBotaoClose}
+              type={BUTTON_TYPE.BUTTON}
+              onClick={() => handleClose()}
+              style={BUTTON_STYLE.GREEN_OUTLINE}
+              className="ms-3"
+            />
+          )}
           <Botao
-            texto={textoBotaoClose}
-            type={BUTTON_TYPE.BUTTON}
-            onClick={() => handleClose()}
-            style={BUTTON_STYLE.GREEN_OUTLINE}
-            className="ms-3"
-          />
-          <Botao
-            texto={textoBotaoSim}
+            texto={unicoBotao ? textoBotaoSim || "OK" : textoBotaoSim}
             type={BUTTON_TYPE.BUTTON}
             style={BUTTON_STYLE.GREEN}
             className="ms-3"

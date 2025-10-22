@@ -44,7 +44,7 @@ describe("DadosEmpresa", () => {
     render(<DadosEmpresa produto={mockProduto} />);
 
     expect(
-      screen.getByText("Empresa solicitante (Terceirizada)")
+      screen.getByText("Empresa solicitante (Terceirizada)"),
     ).toBeInTheDocument();
     expect(screen.getByText("Empresa Teste LTDA")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
