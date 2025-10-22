@@ -44,7 +44,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
         cadastros_calendario.push({
           editais: obj.editais_uuids,
           tipo_unidades: [obj.tipo_unidade.uuid],
-        })
+        }),
       );
     setCadastrosSalvosNoDia(cadastros_calendario);
   }, [event.start]);
@@ -175,17 +175,18 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                           />
                         </div>
                         <div className="col-2">
-                          {index > 0 && (
+                          {(cadastrosSalvosNoDia.length > 0 || index > 0) && (
                             <Botao
                               texto="Remover"
                               onClick={() =>
                                 form.change(
                                   "cadastros_calendario",
                                   values["cadastros_calendario"].filter(
-                                    (_, i) => i !== index
-                                  )
+                                    (_, i) => i !== index,
+                                  ),
                                 )
                               }
+                              type={BUTTON_TYPE.BUTTON}
                               icon={BUTTON_ICON.TRASH}
                               style={BUTTON_STYLE.RED_OUTLINE}
                               className="ms-3 botao-excluir"
@@ -205,6 +206,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                   }
                   icon={BUTTON_ICON.PLUS}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
+                  type={BUTTON_TYPE.BUTTON}
                   className="botao-adicionar"
                 />
               </div>
