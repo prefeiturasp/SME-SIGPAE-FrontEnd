@@ -30,7 +30,7 @@ const TabelaDietas = ({ solicitacoes }) => {
     if (!dados.codigo_eol) {
       link = `/aluno/dieta-especial?eh_aluno_nao_matriculado=true&codigo_eol_escola=${dados.codigo_eol_escola}&nome_aluno=${dados.nome}`;
     } else {
-      link = `/aluno/dieta-especial?codigo_eol=${dados.codigo_eol}`;
+      link = `/aluno/dieta-especial?codigo_eol=${dados.codigo_eol}&codigo_eol_escola=${dados.codigo_eol_escola}`;
     }
     return link;
   };

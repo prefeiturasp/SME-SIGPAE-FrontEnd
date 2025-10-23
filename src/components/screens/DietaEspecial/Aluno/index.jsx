@@ -59,13 +59,15 @@ class solicitacaoDietaEspecial extends Component {
           dreAtual: dados.nome_dre,
         });
       });
-      getDietasEspeciaisVigentesDeUmAluno(codigo_eol).then((response) => {
-        this.setState({
-          solicitacoesVigentes: formatarSolicitacoesVigentes(
-            response.data.results
-          ),
-        });
-      });
+      getDietasEspeciaisVigentesDeUmAluno(codigo_eol, codigo_eol_escola).then(
+        (response) => {
+          this.setState({
+            solicitacoesVigentes: formatarSolicitacoesVigentes(
+              response.data.results
+            ),
+          });
+        }
+      );
     }
   }
 
