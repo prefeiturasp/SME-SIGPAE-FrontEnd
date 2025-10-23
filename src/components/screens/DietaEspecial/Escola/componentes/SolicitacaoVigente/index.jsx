@@ -181,7 +181,9 @@ export class SolicitacaoVigente extends Component {
                               Classificação da Dieta Especial:
                             </p>
                             <span className="value mx-1">
-                              {solicitacaoVigente.classificacao.nome}
+                              {solicitacaoVigente.ativo
+                                ? solicitacaoVigente.classificacao.nome
+                                : "--"}
                             </span>
                           </div>
                           <div className="row pb-3">
