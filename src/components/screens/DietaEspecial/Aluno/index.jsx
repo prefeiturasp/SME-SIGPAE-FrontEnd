@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 import { formValueSelector, reduxForm } from "redux-form";
 import {
@@ -8,9 +8,9 @@ import {
   getDietasEspeciaisVigentesDeUmAlunoNaoMatriculado,
 } from "../../../../services/dietaEspecial.service";
 import { dadosDoAluno } from "../../../../services/perfil.service";
-import "./style.scss";
-import { formatarSolicitacoesVigentes } from "../Escola/helper";
 import SolicitacaoVigente from "../Escola/componentes/SolicitacaoVigente";
+import { formatarSolicitacoesVigentes } from "../Escola/helper";
+import "./style.scss";
 
 class solicitacaoDietaEspecial extends Component {
   constructor(props) {
@@ -65,6 +65,9 @@ class solicitacaoDietaEspecial extends Component {
             solicitacoesVigentes: formatarSolicitacoesVigentes(
               response.data.results
             ),
+            escolaAtual: response.data.results[0]?.escola?.nome || "",
+            dreAtual:
+              response.data.results[0]?.escola?.diretoria_regional?.nome || "",
           });
         }
       );
