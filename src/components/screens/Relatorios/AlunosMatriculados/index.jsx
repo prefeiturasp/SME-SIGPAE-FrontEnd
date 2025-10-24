@@ -81,7 +81,7 @@ export const AlunosMatriculados = () => {
       setShowPeriodosFaixas(formataOpcoesDropdown(response.data.results));
     } else {
       toastError(
-        "Houve um erro ao trocar de página, tente novamente mais tarde"
+        "Houve um erro ao trocar de página, tente novamente mais tarde",
       );
     }
     setFiltrando(false);
@@ -152,7 +152,7 @@ export const AlunosMatriculados = () => {
                 <div className="col-12 text-end">
                   <Botao
                     className="me-2"
-                    texto="Baixar XLSX"
+                    texto="Baixar EXCEL"
                     style={BUTTON_STYLE.GREEN_OUTLINE}
                     icon={BUTTON_ICON.FILE_EXCEL}
                     type={BUTTON_TYPE.BUTTON}

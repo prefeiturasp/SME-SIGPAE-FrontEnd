@@ -122,6 +122,8 @@ export const mockGetFichaRecebimentoDetalhadaAssinada = {
       numero_lote_laudo: "23",
       datas_fabricacao: "12/08/2025",
       datas_validade: "31/08/2025",
+      saldo_laudo: 897897.0,
+      quantidade_recebida: 12,
     },
   ],
   lote_fabricante_de_acordo: true,
