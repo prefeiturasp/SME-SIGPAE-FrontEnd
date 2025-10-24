@@ -36,17 +36,13 @@ describe("Testar Relatório de Alunos Matriculados", () => {
       .onGet(`/relatorio-alunos-matriculados/filtrar/`)
       .reply(200, mockFiltrarAlunosMatriculadosUnicaEscola);
 
-    mock
-      .onGet(`/relatorio-alunos-matriculados/gerar-pdf/`)
-      .reply(200, {
-        detail: "Solicitação de geração de arquivo recebida com sucesso.",
-      });
+    mock.onGet(`/relatorio-alunos-matriculados/gerar-pdf/`).reply(200, {
+      detail: "Solicitação de geração de arquivo recebida com sucesso.",
+    });
 
-    mock
-      .onGet(`/relatorio-alunos-matriculados/gerar-xlsx/`)
-      .reply(200, {
-        detail: "Solicitação de geração de arquivo recebida com sucesso.",
-      });
+    mock.onGet(`/relatorio-alunos-matriculados/gerar-xlsx/`).reply(200, {
+      detail: "Solicitação de geração de arquivo recebida com sucesso.",
+    });
 
     await act(async () => {
       render(
@@ -123,7 +119,7 @@ describe("Testar Relatório de Alunos Matriculados", () => {
       expect(screen.getByText("256")).toBeInTheDocument();
     });
 
-    const botaoBaixarXlsx = screen.getByText("Baixar XLSX").closest("button");
+    const botaoBaixarXlsx = screen.getByText("Baixar EXCEL").closest("button");
     await act(async () => {
       fireEvent.click(botaoBaixarXlsx);
     });
