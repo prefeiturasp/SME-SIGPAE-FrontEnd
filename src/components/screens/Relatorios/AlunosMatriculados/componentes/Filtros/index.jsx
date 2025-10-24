@@ -52,14 +52,19 @@ export const Filtros = ({ ...props }) => {
 
   const filtrarOpcoesEscola = (values) => {
     let escolas = listaOpcoes.escolas;
-    if (values.diretorias_regionais && values.diretorias_regionais.length) {
+    if (values.diretorias_regionais?.length) {
       escolas = escolas.filter((escola) =>
         values.diretorias_regionais.includes(escola.diretoria_regional.uuid),
       );
     }
-    if (values.lotes && values.lotes.length) {
+    if (values.lotes?.length) {
       escolas = escolas.filter((escola) =>
         values.lotes.includes(escola.lote.uuid),
+      );
+    }
+    if (values.tipos_unidades?.length) {
+      escolas = escolas.filter((escola) =>
+        values.tipos_unidades.includes(escola.tipo_unidade.uuid),
       );
     }
     return formataOpcoes(escolas);
@@ -146,9 +151,9 @@ export const Filtros = ({ ...props }) => {
                       name="unidades_educacionais"
                       selected={values.unidades_educacionais || []}
                       options={
-                        (values.diretorias_regionais &&
-                          values.diretorias_regionais.length) ||
-                        (values.lotes && values.lotes.length)
+                        values.diretorias_regionais?.length ||
+                        values.lotes?.length ||
+                        values.tipos_unidades?.length
                           ? filtrarOpcoesEscola(values)
                           : unidadesEducacionais
                       }
@@ -287,9 +292,9 @@ export const Filtros = ({ ...props }) => {
                           : [])
                       }
                       options={
-                        (values.diretorias_regionais &&
-                          values.diretorias_regionais.length) ||
-                        (values.lotes && values.lotes.length)
+                        values.diretorias_regionais?.length ||
+                        values.lotes?.length ||
+                        values.tipos_unidades?.length
                           ? filtrarOpcoesEscola(values)
                           : unidadesEducacionais
                       }
