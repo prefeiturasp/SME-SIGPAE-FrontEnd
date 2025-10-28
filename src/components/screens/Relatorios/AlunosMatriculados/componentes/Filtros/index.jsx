@@ -1,18 +1,16 @@
-import React, { Fragment } from "react";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import HTTP_STATUS from "http-status-codes";
+import { Fragment } from "react";
 import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
-import HTTP_STATUS from "http-status-codes";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
-import { formataOpcoes } from "../../helpers";
-import { filtrarAlunosMatriculados } from "src/services/alunosMatriculados.service";
-import { deepCopy, usuarioEhDRE } from "src/helpers/utilities";
-import { formataOpcoesDropdown } from "../../helpers";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { deepCopy, usuarioEhDRE } from "src/helpers/utilities";
+import { filtrarAlunosMatriculados } from "src/services/alunosMatriculados.service";
+import { formataOpcoes, formataOpcoesDropdown } from "../../helpers";
 
 export const Filtros = ({ ...props }) => {
   const {
@@ -95,8 +93,7 @@ export const Filtros = ({ ...props }) => {
                       placeholder="Selecione os lotes"
                       selected={values.lotes || []}
                       options={
-                        values.diretorias_regionais &&
-                        values.diretorias_regionais.length
+                        values.diretorias_regionais?.length
                           ? formataOpcoes(
                               listaOpcoes.lotes.filter((lote) =>
                                 values.diretorias_regionais.includes(
@@ -193,49 +190,41 @@ export const Filtros = ({ ...props }) => {
               <>
                 <div className="row">
                   <div className="col-4">
-                    <label>DRE</label>
                     <Field
-                      component={StatefulMultiSelect}
+                      label="DRE"
+                      dataTestId="select-dres"
+                      component={MultiselectRaw}
                       name="diretorias_regionais"
+                      placeholder="Selecione as DREs"
                       selected={
                         values.diretorias_regionais ||
                         (dres.length === 1 ? [dres[0].value] : [])
                       }
                       options={dres}
                       onSelectedChanged={(values_) => {
-                        form.change("diretorias_regionais", values_);
+                        form.change(
+                          "diretorias_regionais",
+                          values_.map((value_) => value_.value),
+                        );
                         form.change("lotes", []);
                         form.change("unidades_educacionais", []);
                       }}
                       disabled={dres.length === 1}
-                      hasSelectAll={dres.length > 1}
-                      overrideStrings={
-                        dres.length > 1
-                          ? {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected: "Todas as DREs",
-                              selectAll: "Todas",
-                            }
-                          : {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected:
-                                dres[0]?.label || "Selecionado",
-                            }
-                      }
                     />
                   </div>
                   <div className="col-4">
-                    <label>Lote</label>
                     <Field
-                      component={StatefulMultiSelect}
+                      label="Lotes"
+                      component={MultiselectRaw}
                       name="lotes"
+                      dataTestId="select-lotes"
+                      placeholder="Selecione os lotes"
                       selected={
                         values.lotes ||
                         (lotes.length === 1 ? [lotes[0].value] : [])
                       }
                       options={
-                        values.diretorias_regionais &&
-                        values.diretorias_regionais.length
+                        values.diretorias_regionais?.length
                           ? formataOpcoes(
                               listaOpcoes.lotes.filter((lote) =>
                                 values.diretorias_regionais.includes(
@@ -246,29 +235,20 @@ export const Filtros = ({ ...props }) => {
                           : lotes
                       }
                       onSelectedChanged={(values_) => {
-                        form.change("lotes", values_);
+                        form.change(
+                          "lotes",
+                          values_.map((value_) => value_.value),
+                        );
                         form.change("unidades_educacionais", []);
                       }}
                       disabled={lotes.length === 1}
-                      hasSelectAll={lotes.length > 1}
-                      overrideStrings={
-                        lotes.length > 1
-                          ? {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected: "Todos os lotes",
-                              selectAll: "Todos",
-                            }
-                          : {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected: lotes[0]?.label,
-                            }
-                      }
                     />
                   </div>
                   <div className="col-4">
-                    <label>Tipo de Unidade</label>
                     <Field
-                      component={StatefulMultiSelect}
+                      label="Tipo de Unidade"
+                      component={MultiselectRaw}
+                      dataTestId="select-tipos-unidades"
                       name="tipos_unidades"
                       selected={
                         values.tipos_unidades ||
@@ -278,36 +258,26 @@ export const Filtros = ({ ...props }) => {
                       }
                       options={tiposUnidades}
                       onSelectedChanged={(values_) =>
-                        form.change("tipos_unidades", values_)
+                        form.change(
+                          "tipos_unidades",
+                          values_.map((value_) => value_.value),
+                        )
                       }
                       disabled={tiposUnidades.length === 1}
-                      hasSelectAll={tiposUnidades.length > 1}
-                      overrideStrings={
-                        tiposUnidades.length > 1
-                          ? {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected: "Todos os Tipos de Unidades",
-                              selectAll: "Todos",
-                            }
-                          : {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected:
-                                tiposUnidades[0]?.label || "Selecionado",
-                            }
-                      }
                     />
                   </div>
                 </div>
                 <div className="row mt-3">
                   <div className="col-8">
-                    <label>Unidade Educacional</label>
                     <div>
                       {naoHaEscolasParaOsFiltrosSelecionados(values) &&
                         "Não existem resultados para os filtros selecionados"}
                     </div>
                     {!naoHaEscolasParaOsFiltrosSelecionados(values) && (
                       <Field
-                        component={StatefulMultiSelect}
+                        label="Unidade Educacional"
+                        component={MultiselectRaw}
+                        dataTestId="select-unidades-educacionais"
                         name="unidades_educacionais"
                         selected={
                           values.unidades_educacionais ||
@@ -323,44 +293,29 @@ export const Filtros = ({ ...props }) => {
                             : unidadesEducacionais
                         }
                         onSelectedChanged={(values_) =>
-                          form.change("unidades_educacionais", values_)
+                          form.change(
+                            "unidades_educacionais",
+                            values_.map((value_) => value_.value),
+                          )
                         }
                         disabled={unidadesEducacionais.length === 1}
-                        hasSelectAll={unidadesEducacionais.length > 1}
-                        overrideStrings={
-                          unidadesEducacionais.length > 1
-                            ? {
-                                selectSomeItems: "Selecione",
-                                allItemsAreSelected:
-                                  "Todas as Unidades Educacionais",
-                                selectAll: "Todas",
-                              }
-                            : {
-                                selectSomeItems: "Selecione",
-                                allItemsAreSelected:
-                                  unidadesEducacionais[0]?.label ||
-                                  "Selecionado",
-                              }
-                        }
                       />
                     )}
                   </div>
                   <div className="col-4">
-                    <label>Tipo de Turma</label>
                     <Field
-                      component={StatefulMultiSelect}
+                      label="Tipo de Turma"
+                      component={MultiselectRaw}
+                      dataTestId="select-tipos-turmas"
                       name="tipos_turmas"
                       selected={values.tipos_turmas || []}
                       options={tiposTurmas}
                       onSelectedChanged={(values_) =>
-                        form.change("tipos_turmas", values_)
+                        form.change(
+                          "tipos_turmas",
+                          values_.map((value_) => value_.value),
+                        )
                       }
-                      hasSelectAll
-                      overrideStrings={{
-                        selectSomeItems: "Selecione",
-                        allItemsAreSelected: "Todos os Tipos de Turmas",
-                        selectAll: "Todos",
-                      }}
                     />
                   </div>
                 </div>
