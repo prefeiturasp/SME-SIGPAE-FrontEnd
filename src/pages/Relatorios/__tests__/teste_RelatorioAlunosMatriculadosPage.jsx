@@ -69,21 +69,29 @@ describe("Testar Relatório de Alunos Matriculados", () => {
       screen.getByText("EMEF PERICLES EUGENIO DA SILVA RAMOS"),
     ).toBeInTheDocument();
 
-    const dropdownDRE = screen
-      .getByText("DIRETORIA REGIONAL DE EDUCACAO IPIRANGA")
-      .closest(".dropdown");
-    expect(dropdownDRE).toHaveAttribute("aria-disabled", "true");
+    const selectDRE = screen.getByTestId("select-dres");
+    const elementoDesabilitadoDRE = selectDRE.querySelector(
+      '[aria-disabled="true"]',
+    );
+    expect(elementoDesabilitadoDRE).toBeInTheDocument();
 
-    const dropdownLote = screen.getByText("Teste").closest(".dropdown");
-    expect(dropdownLote).toHaveAttribute("aria-disabled", "true");
+    const selectLote = screen.getByTestId("select-lotes");
+    const elementoDesabilitadoLote = selectLote.querySelector(
+      '[aria-disabled="true"]',
+    );
+    expect(elementoDesabilitadoLote).toBeInTheDocument();
 
-    const dropdownTipoUnidade = screen.getByText("EMEF").closest(".dropdown");
-    expect(dropdownTipoUnidade).toHaveAttribute("aria-disabled", "true");
+    const selectTipoUnidade = screen.getByTestId("select-tipos-unidades");
+    const elementoDesabilitadoTipoUnidade = selectTipoUnidade.querySelector(
+      '[aria-disabled="true"]',
+    );
+    expect(elementoDesabilitadoTipoUnidade).toBeInTheDocument();
 
-    const dropdownUE = screen
-      .getByText("EMEF PERICLES EUGENIO DA SILVA RAMOS")
-      .closest(".dropdown");
-    expect(dropdownUE).toHaveAttribute("aria-disabled", "true");
+    const selectUE = screen.getByTestId("select-unidades-educacionais");
+    const elementoDesabilitadoUE = selectUE.querySelector(
+      '[aria-disabled="true"]',
+    );
+    expect(elementoDesabilitadoUE).toBeInTheDocument();
   });
 
   it("Testa renderização da tabela e botão de Exportar PDF", async () => {
