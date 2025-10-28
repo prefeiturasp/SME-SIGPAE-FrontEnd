@@ -1391,7 +1391,7 @@ export const exibirTooltipRepeticao = (
     formValuesAtualizados[
       `sobremesa__dia_${column.dia}__categoria_${categoria.id}`
     ];
-  const ehDiaSobremesaDoce = diasSobremesaDoce?.some(
+  const ehDiaSobremesaDoce = diasSobremesaDoce.some(
     (data) => data.slice(-2) === column.dia,
   );
 

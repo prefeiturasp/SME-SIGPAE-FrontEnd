@@ -239,13 +239,3 @@ export const mockGetMesesAnosSolicitacoesMedicaoinicial = {
     },
   ],
 };
-
-export const mockGetMesesAnosSolicitacoesMedicaoinicialAprovadas = {
-  results: [
-    {
-      mes: "03",
-      ano: "2025",
-      status: ["MEDICAO_APROVADA_PELA_CODAE"],
-    },
-  ],
-};

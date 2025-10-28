@@ -8,7 +8,6 @@ import {
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
-  usuarioEhEscolaTerceirizadaQualquerPerfil,
   usuarioEhGticCODAE,
   usuarioEhMedicao,
   usuarioEhNutricionistaSupervisao,
@@ -432,7 +431,6 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
       usuarioEhCODAEGabinete() ||
       ehUsuarioRelatorios() ||
       usuarioEhGticCODAE() ||
-      usuarioEhDinutreDiretoria() ||
-      usuarioEhEscolaTerceirizadaQualquerPerfil(),
+      usuarioEhDinutreDiretoria(),
   },
 ];

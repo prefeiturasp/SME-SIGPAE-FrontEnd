@@ -30,6 +30,7 @@ import {
   usuarioEhDRE,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
+  usuarioEhEscolaTerceirizadaQualquerPerfil,
   usuarioEhGticCODAE,
   usuarioEhMedicao,
   usuarioEhNutricionistaSupervisao,
@@ -51,19 +52,19 @@ const MenuGestaoDeAlimentacao = ({ activeMenu, onSubmenuClick }) => {
     usuarioEhEscolaTerceirizada() || usuarioEhEscolaTerceirizadaDiretor()
       ? ESCOLA
       : usuarioEhDRE()
-        ? DRE
-        : usuarioEhCODAEGestaoAlimentacao()
-          ? CODAE
-          : usuarioEhCODAENutriManifestacao() ||
-              usuarioEhMedicao() ||
-              usuarioEhCODAEGabinete() ||
-              usuarioEhDinutreDiretoria()
-            ? NUTRIMANIFESTACAO
-            : usuarioEhNutricionistaSupervisao()
-              ? NUTRISUPERVISAO
-              : ehUsuarioRelatorios()
-                ? USUARIO_RELATORIOS
-                : TERCEIRIZADA;
+      ? DRE
+      : usuarioEhCODAEGestaoAlimentacao()
+      ? CODAE
+      : usuarioEhCODAENutriManifestacao() ||
+        usuarioEhMedicao() ||
+        usuarioEhCODAEGabinete() ||
+        usuarioEhDinutreDiretoria()
+      ? NUTRIMANIFESTACAO
+      : usuarioEhNutricionistaSupervisao()
+      ? NUTRISUPERVISAO
+      : ehUsuarioRelatorios()
+      ? USUARIO_RELATORIOS
+      : TERCEIRIZADA;
   return (
     <Menu
       id="GestaoAlimentacao"
@@ -203,9 +204,11 @@ const MenuGestaoDeAlimentacao = ({ activeMenu, onSubmenuClick }) => {
             </LeafItem>
           )}
 
-          <LeafItem to={`/relatorio/alunos-matriculados`}>
-            Alunos Matriculados
-          </LeafItem>
+          {!usuarioEhEscolaTerceirizadaQualquerPerfil() && (
+            <LeafItem to={`/relatorio/alunos-matriculados`}>
+              Alunos Matriculados
+            </LeafItem>
+          )}
         </SubMenu>
       )}
     </Menu>

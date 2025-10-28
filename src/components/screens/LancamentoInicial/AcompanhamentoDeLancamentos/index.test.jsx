@@ -1,15 +1,14 @@
 import "@testing-library/jest-dom";
 import {
   act,
-  cleanup,
   fireEvent,
   render,
   screen,
   waitFor,
+  cleanup,
   within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { AcompanhamentoDeLancamentos } from "src/components/screens/LancamentoInicial/AcompanhamentoDeLancamentos";
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
@@ -22,9 +21,10 @@ import { mockGetDashboardMedicaoInicial } from "src/mocks/services/medicaoInicia
 import { mockGetDashboardMedicaoInicialNoresults } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicialNoResults";
 import { mockGetMesesAnosSolicitacoesMedicaoinicial } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetMesesAnosSolicitacoesMedicaoinicial";
 import mock from "src/services/_mock";
+import { AcompanhamentoDeLancamentos } from "./index";
 
 const renderComponent = async (
-  mockMeusDados = mockMeusDadosSuperUsuarioMedicao,
+  mockMeusDados = mockMeusDadosSuperUsuarioMedicao
 ) => {
   await act(async () => {
     render(
@@ -32,7 +32,7 @@ const renderComponent = async (
         <MeusDadosContext.Provider value={{ meusDados: mockMeusDados }}>
           <AcompanhamentoDeLancamentos />
         </MeusDadosContext.Provider>
-      </MemoryRouter>,
+      </MemoryRouter>
     );
   });
 };
@@ -42,7 +42,7 @@ const selecionarDRE = async () => {
     fireEvent.mouseDown(
       screen
         .getByTestId("select-diretoria-regional")
-        .querySelector(".ant-select-selection-search-input"),
+        .querySelector(".ant-select-selection-search-input")
     );
   });
 
@@ -102,30 +102,30 @@ describe("AcompanhamentoDeLancamentos", () => {
       await renderComponent();
       await waitFor(() =>
         screen.getByText(
-          "Erro ao carregar tipos de unidades. Tente novamente mais tarde.",
-        ),
+          "Erro ao carregar tipos de unidades. Tente novamente mais tarde."
+        )
       );
       expect(
         screen.getByText(
-          "Erro ao carregar tipos de unidades. Tente novamente mais tarde.",
-        ),
+          "Erro ao carregar tipos de unidades. Tente novamente mais tarde."
+        )
       ).toBeInTheDocument();
     });
 
     it("deve retornar erro quando falhar ao obter meses e anos para solicitação de medição inicial", async () => {
       setupErrorMocks(
-        "/medicao-inicial/solicitacao-medicao-inicial/meses-anos/",
+        "/medicao-inicial/solicitacao-medicao-inicial/meses-anos/"
       );
       await renderComponent();
       await waitFor(() =>
         screen.getByText(
-          "Erro ao carregar meses/anos das solicitações de medição inicial. Tente novamente mais tarde.",
-        ),
+          "Erro ao carregar meses/anos das solicitações de medição inicial. Tente novamente mais tarde."
+        )
       );
       expect(
         screen.getByText(
-          "Erro ao carregar meses/anos das solicitações de medição inicial. Tente novamente mais tarde.",
-        ),
+          "Erro ao carregar meses/anos das solicitações de medição inicial. Tente novamente mais tarde."
+        )
       ).toBeInTheDocument();
     });
 
@@ -136,13 +136,13 @@ describe("AcompanhamentoDeLancamentos", () => {
 
       await waitFor(() =>
         screen.getByText(
-          /Erro ao carregar escolas. Tente novamente mais tarde./,
-        ),
+          /Erro ao carregar escolas. Tente novamente mais tarde./
+        )
       );
       expect(
         screen.getByText(
-          /Erro ao carregar escolas. Tente novamente mais tarde./,
-        ),
+          /Erro ao carregar escolas. Tente novamente mais tarde./
+        )
       ).toBeInTheDocument();
     });
 
@@ -152,29 +152,29 @@ describe("AcompanhamentoDeLancamentos", () => {
       await selecionarDRE();
 
       await waitFor(() =>
-        screen.getByText(/Erro ao carregar lotes. Tente novamente mais tarde./),
+        screen.getByText(/Erro ao carregar lotes. Tente novamente mais tarde./)
       );
       expect(
-        screen.getByText(/Erro ao carregar lotes. Tente novamente mais tarde./),
+        screen.getByText(/Erro ao carregar lotes. Tente novamente mais tarde./)
       ).toBeInTheDocument();
     });
 
     it("deve retornar erro quando falhar ao obter dashboard de medição inicial", async () => {
       setupErrorMocks(
-        "/medicao-inicial/solicitacao-medicao-inicial/dashboard/",
+        "/medicao-inicial/solicitacao-medicao-inicial/dashboard/"
       );
 
       await selecionarDRE();
 
       await waitFor(() =>
         screen.getByText(
-          /Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde./,
-        ),
+          /Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde./
+        )
       );
       expect(
         screen.getByText(
-          /Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde./,
-        ),
+          /Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde./
+        )
       ).toBeInTheDocument();
     });
   });
@@ -210,7 +210,7 @@ describe("AcompanhamentoDeLancamentos", () => {
         async ({ localStorage: ls }) => {
           cleanup();
           Object.entries(ls).forEach(([key, value]) =>
-            localStorage.setItem(key, value),
+            localStorage.setItem(key, value)
           );
           await renderComponent();
 
@@ -219,10 +219,10 @@ describe("AcompanhamentoDeLancamentos", () => {
           expect(screen.getByText("Aprovado pela DRE")).toBeInTheDocument();
           expect(
             screen.getByText(
-              "Selecione os status acima para visualizar a listagem detalhada",
-            ),
+              "Selecione os status acima para visualizar a listagem detalhada"
+            )
           ).toBeInTheDocument();
-        },
+        }
       );
     });
 
@@ -284,7 +284,7 @@ describe("AcompanhamentoDeLancamentos", () => {
 
       await waitFor(() => screen.getByText("Nenhum resultado encontrado."));
       expect(
-        screen.getByText("Nenhum resultado encontrado."),
+        screen.getByText("Nenhum resultado encontrado.")
       ).toBeInTheDocument();
     });
 
@@ -321,7 +321,7 @@ describe("AcompanhamentoDeLancamentos", () => {
       expect(
         within(selectOcorrencias).getByRole("option", {
           name: "Com ocorrências",
-        }).selected,
+        }).selected
       ).toBe(true);
 
       const botaoLimpar = screen.getByText("Limpar");
@@ -333,7 +333,7 @@ describe("AcompanhamentoDeLancamentos", () => {
       expect(
         within(selectOcorrencias).getByRole("option", {
           name: "Selecione a Avaliação do Serviço",
-        }).selected,
+        }).selected
       ).toBe(true);
     });
 
@@ -352,10 +352,10 @@ describe("AcompanhamentoDeLancamentos", () => {
 
       await waitFor(async () => {
         expect(
-          await screen.findAllByText("CEI DIRET OLGA BENARIO PRESTES"),
+          await screen.findAllByText("CEI DIRET OLGA BENARIO PRESTES")
         ).toHaveLength(7);
         expect(await screen.findAllByText("EMEF M BOI MIRIM I")).toHaveLength(
-          1,
+          1
         );
       });
     });

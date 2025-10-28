@@ -850,18 +850,6 @@ export const acessoModuloMedicaoInicialCODAE = () => {
   );
 };
 
-export const acessoModuloMedicaoRelatorioConsolidado = () => {
-  return (
-    usuarioEhCODAEGestaoAlimentacao() ||
-    usuarioEhAdministradorEmpresaTerceirizada() ||
-    usuarioEhCODAENutriManifestacao() ||
-    usuarioEhDinutreDiretoria() ||
-    usuarioEhCODAEGabinete() ||
-    usuarioEhDRE() ||
-    usuarioEhMedicao()
-  );
-};
-
 export const converterDDMMYYYYparaYYYYMMDD = (data) => {
   return moment(data, "DD/MM/YYYY").format("YYYY-MM-DD");
 };

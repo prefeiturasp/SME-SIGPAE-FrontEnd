@@ -13,8 +13,6 @@ export interface Props {
   className?: string;
   modoTabela?: boolean;
   disabled?: boolean;
-  defaultValue?: string;
-  validate?: (_v: string) => string | undefined;
 }
 
 const RadioButtonField: React.FC<Props> = ({
@@ -24,14 +22,12 @@ const RadioButtonField: React.FC<Props> = ({
   className,
   modoTabela = false,
   disabled = false,
-  defaultValue,
-  validate = undefined,
 }) => {
   return (
     <div
-      className={`radio-button-sigpae ${className || ""} ${disabled ? "disabled" : ""} ${
+      className={`radio-button-sigpae ${className} ${
         modoTabela ? "modo-tabela" : ""
-      }`}
+      }${disabled ? "disabled" : ""}`}
     >
       {label && (
         <p className="label-radio">
@@ -47,11 +43,8 @@ const RadioButtonField: React.FC<Props> = ({
               type="radio"
               value={option.value}
               name={name}
-              validate={validate ? validate : required}
+              validate={required}
               disabled={disabled}
-              {...(defaultValue !== undefined && {
-                checked: defaultValue === option.value,
-              })}
             />
             <span className="checkmark" />
           </label>

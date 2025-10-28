@@ -44,7 +44,7 @@ export const Filtros = ({ ...props }) => {
       setShowPeriodosFaixas(formataOpcoesDropdown(response.data.results));
     } else {
       toastError(
-        "Houve um erro ao filtrar alunos matriculados, tente novamente mais tarde",
+        "Houve um erro ao filtrar alunos matriculados, tente novamente mais tarde"
       );
     }
     setFiltrando(false);
@@ -54,12 +54,12 @@ export const Filtros = ({ ...props }) => {
     let escolas = listaOpcoes.escolas;
     if (values.diretorias_regionais && values.diretorias_regionais.length) {
       escolas = escolas.filter((escola) =>
-        values.diretorias_regionais.includes(escola.diretoria_regional.uuid),
+        values.diretorias_regionais.includes(escola.diretoria_regional.uuid)
       );
     }
     if (values.lotes && values.lotes.length) {
       escolas = escolas.filter((escola) =>
-        values.lotes.includes(escola.lote.uuid),
+        values.lotes.includes(escola.lote.uuid)
       );
     }
     return formataOpcoes(escolas);
@@ -85,9 +85,9 @@ export const Filtros = ({ ...props }) => {
                           ? formataOpcoes(
                               listaOpcoes.lotes.filter((lote) =>
                                 values.diretorias_regionais.includes(
-                                  lote.diretoria_regional.uuid,
-                                ),
-                              ),
+                                  lote.diretoria_regional.uuid
+                                )
+                              )
                             )
                           : lotes
                       }
@@ -173,31 +173,19 @@ export const Filtros = ({ ...props }) => {
                     <Field
                       component={StatefulMultiSelect}
                       name="diretorias_regionais"
-                      selected={
-                        values.diretorias_regionais ||
-                        (dres.length === 1 ? [dres[0].value] : [])
-                      }
+                      selected={values.diretorias_regionais || []}
                       options={dres}
                       onSelectedChanged={(values_) => {
                         form.change("diretorias_regionais", values_);
                         form.change("lotes", []);
                         form.change("unidades_educacionais", []);
                       }}
-                      disabled={dres.length === 1}
-                      hasSelectAll={dres.length > 1}
-                      overrideStrings={
-                        dres.length > 1
-                          ? {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected: "Todas as DREs",
-                              selectAll: "Todas",
-                            }
-                          : {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected:
-                                dres[0]?.label || "Selecionado",
-                            }
-                      }
+                      hasSelectAll
+                      overrideStrings={{
+                        selectSomeItems: "Selecione",
+                        allItemsAreSelected: "Todas as DREs",
+                        selectAll: "Todas",
+                      }}
                     />
                   </div>
                   <div className="col-4">
@@ -205,19 +193,16 @@ export const Filtros = ({ ...props }) => {
                     <Field
                       component={StatefulMultiSelect}
                       name="lotes"
-                      selected={
-                        values.lotes ||
-                        (lotes.length === 1 ? [lotes[0].value] : [])
-                      }
+                      selected={values.lotes || []}
                       options={
                         values.diretorias_regionais &&
                         values.diretorias_regionais.length
                           ? formataOpcoes(
                               listaOpcoes.lotes.filter((lote) =>
                                 values.diretorias_regionais.includes(
-                                  lote.diretoria_regional.uuid,
-                                ),
-                              ),
+                                  lote.diretoria_regional.uuid
+                                )
+                              )
                             )
                           : lotes
                       }
@@ -225,20 +210,12 @@ export const Filtros = ({ ...props }) => {
                         form.change("lotes", values_);
                         form.change("unidades_educacionais", []);
                       }}
-                      disabled={lotes.length === 1}
-                      hasSelectAll={lotes.length > 1}
-                      overrideStrings={
-                        lotes.length > 1
-                          ? {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected: "Todos os lotes",
-                              selectAll: "Todos",
-                            }
-                          : {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected: lotes[0]?.label,
-                            }
-                      }
+                      hasSelectAll
+                      overrideStrings={{
+                        selectSomeItems: "Selecione",
+                        allItemsAreSelected: "Todos os lotes",
+                        selectAll: "Todos",
+                      }}
                     />
                   </div>
                   <div className="col-4">
@@ -246,31 +223,17 @@ export const Filtros = ({ ...props }) => {
                     <Field
                       component={StatefulMultiSelect}
                       name="tipos_unidades"
-                      selected={
-                        values.tipos_unidades ||
-                        (tiposUnidades.length === 1
-                          ? [tiposUnidades[0].value]
-                          : [])
-                      }
+                      selected={values.tipos_unidades || []}
                       options={tiposUnidades}
                       onSelectedChanged={(values_) =>
                         form.change("tipos_unidades", values_)
                       }
-                      disabled={tiposUnidades.length === 1}
-                      hasSelectAll={tiposUnidades.length > 1}
-                      overrideStrings={
-                        tiposUnidades.length > 1
-                          ? {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected: "Todos os Tipos de Unidades",
-                              selectAll: "Todos",
-                            }
-                          : {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected:
-                                tiposUnidades[0]?.label || "Selecionado",
-                            }
-                      }
+                      hasSelectAll
+                      overrideStrings={{
+                        selectSomeItems: "Selecione",
+                        allItemsAreSelected: "Todos os Tipos de Unidades",
+                        selectAll: "Todos",
+                      }}
                     />
                   </div>
                 </div>
@@ -280,12 +243,7 @@ export const Filtros = ({ ...props }) => {
                     <Field
                       component={StatefulMultiSelect}
                       name="unidades_educacionais"
-                      selected={
-                        values.unidades_educacionais ||
-                        (unidadesEducacionais.length === 1
-                          ? [unidadesEducacionais[0].value]
-                          : [])
-                      }
+                      selected={values.unidades_educacionais || []}
                       options={
                         (values.diretorias_regionais &&
                           values.diretorias_regionais.length) ||
@@ -296,22 +254,12 @@ export const Filtros = ({ ...props }) => {
                       onSelectedChanged={(values_) =>
                         form.change("unidades_educacionais", values_)
                       }
-                      disabled={unidadesEducacionais.length === 1}
-                      hasSelectAll={unidadesEducacionais.length > 1}
-                      overrideStrings={
-                        unidadesEducacionais.length > 1
-                          ? {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected:
-                                "Todas as Unidades Educacionais",
-                              selectAll: "Todas",
-                            }
-                          : {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected:
-                                unidadesEducacionais[0]?.label || "Selecionado",
-                            }
-                      }
+                      hasSelectAll
+                      overrideStrings={{
+                        selectSomeItems: "Selecione",
+                        allItemsAreSelected: "Todas as Unidades Educacionais",
+                        selectAll: "Todas",
+                      }}
                     />
                   </div>
                   <div className="col-4">

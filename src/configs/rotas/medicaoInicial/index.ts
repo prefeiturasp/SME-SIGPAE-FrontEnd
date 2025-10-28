@@ -155,9 +155,7 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
       usuarioEhDinutreDiretoria() ||
       usuarioEhEmpresaTerceirizada() ||
       usuarioEhCoordenadorNutriSupervisao() ||
-      usuarioEhAdministradorNutriSupervisao() ||
-      usuarioEhCODAENutriManifestacao() ||
-      usuarioEhCODAEGabinete(),
+      usuarioEhAdministradorNutriSupervisao(),
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.RELATORIO_FINANCEIRO}`,
