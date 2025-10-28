@@ -9,14 +9,15 @@ import { Form } from "react-final-form";
 import { MemoryRouter } from "react-router-dom";
 import FormRecebimento from "../index";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockMeusDadosDilogQualidade } from "src/mocks/meusDados/dilog-qualidade";
+import { mockMeusDadosCronograma } from "src/mocks/PreRecebimento/CadastroCronograma/mockMeusDadosCronograma";
+import mock from "src/services/_mock";
 
 describe("Testes no componente de FormRecebimento - PreRecebimento", () => {
   const setRecebimentos = jest.fn();
   const props = {
     values: {
       empresa: "PETISTICO PET LTDA",
-      contrato: "34a23e02-723b-4a1a-a66f-59064499d57e",
+      contrato: "34a23e02-723b-4a1a-a66f-59064433d57e",
       numero_processo: "4325354",
       numero_pregao_chamada_publica: "",
       ata: "",
@@ -27,6 +28,8 @@ describe("Testes no componente de FormRecebimento - PreRecebimento", () => {
   };
 
   beforeEach(async () => {
+    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCronograma);
+
     await act(async () => {
       render(
         <MemoryRouter
@@ -37,7 +40,7 @@ describe("Testes no componente de FormRecebimento - PreRecebimento", () => {
         >
           <MeusDadosContext.Provider
             value={{
-              meusDados: mockMeusDadosDilogQualidade,
+              meusDados: mockMeusDadosCronograma,
               setMeusDados: jest.fn(),
             }}
           >
