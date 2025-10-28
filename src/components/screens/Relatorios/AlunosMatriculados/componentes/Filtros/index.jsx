@@ -142,12 +142,6 @@ export const Filtros = ({ ...props }) => {
                           values_.map((value_) => value_.value),
                         )
                       }
-                      hasSelectAll
-                      overrideStrings={{
-                        selectSomeItems: "Selecione",
-                        allItemsAreSelected: "Todos os Tipos de Turmas",
-                        selectAll: "Todos",
-                      }}
                     />
                   </div>
                   <div className="col-4 my-auto">
@@ -175,12 +169,6 @@ export const Filtros = ({ ...props }) => {
                             values_.map((value_) => value_.value),
                           )
                         }
-                        hasSelectAll
-                        overrideStrings={{
-                          selectSomeItems: "Selecione",
-                          allItemsAreSelected: "Todas as Unidades Educacionais",
-                          selectAll: "Todas",
-                        }}
                       />
                     )}
                   </div>
