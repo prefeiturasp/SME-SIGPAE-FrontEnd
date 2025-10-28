@@ -1,22 +1,21 @@
+import "@testing-library/jest-dom";
 import {
-  render,
   act,
-  screen,
   fireEvent,
+  render,
+  screen,
   waitFor,
 } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import mock from "src/services/_mock";
 import { MemoryRouter } from "react-router-dom";
-import RelatorioAlunosMatriculadosPage from "src/pages/Relatorios/RelatorioAlunosMatriculadosPage";
-import { localStorageMock } from "src/mocks/localStorageMock";
-import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
-
-import { mockGetFiltros } from "src/mocks/services/alunosMatriculados.service/mockGetFiltros";
-import { mockFiltrarAlunosMatriculadosUnicaEscola } from "src/mocks/services/alunosMatriculados.service/mockFiltrarAlunosMatriculados";
-import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
+import { mockFiltrarAlunosMatriculadosUnicaEscola } from "src/mocks/services/alunosMatriculados.service/mockFiltrarAlunosMatriculados";
+import { mockGetFiltros } from "src/mocks/services/alunosMatriculados.service/mockGetFiltros";
+import RelatorioAlunosMatriculadosPage from "src/pages/Relatorios/RelatorioAlunosMatriculadosPage";
+import mock from "src/services/_mock";
 
 describe("Testar Relatório de Alunos Matriculados", () => {
   beforeEach(async () => {

@@ -86,7 +86,7 @@ export const Filtros = ({ ...props }) => {
                 <div className="row">
                   <div className="col-2">
                     <Field
-                      label="Lotes"
+                      label="Lote"
                       component={MultiselectRaw}
                       name="lotes"
                       dataTestId="select-lotes"
@@ -214,7 +214,7 @@ export const Filtros = ({ ...props }) => {
                   </div>
                   <div className="col-4">
                     <Field
-                      label="Lotes"
+                      label="Lote"
                       component={MultiselectRaw}
                       name="lotes"
                       dataTestId="select-lotes"
