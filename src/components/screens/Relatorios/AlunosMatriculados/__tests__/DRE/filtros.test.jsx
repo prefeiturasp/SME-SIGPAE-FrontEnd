@@ -7,6 +7,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
+import { ToastContainer } from "react-toastify";
 import { MemoryRouter } from "react-router-dom";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -45,6 +46,7 @@ describe("Teste Relatório Alunos Matriculados - Usuário DRE - Filtros", () => 
               setMeusDados: jest.fn(),
             }}
           >
+            <ToastContainer />
             <RelatorioAlunosMatriculadosPage />
           </MeusDadosContext.Provider>
         </MemoryRouter>,
@@ -120,6 +122,108 @@ describe("Teste Relatório Alunos Matriculados - Usuário DRE - Filtros", () => 
       expect(
         screen.queryByText("CEMEI SUZANA CAMPOS TAUIL"),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  it("Deve renderizar erro ao ir para página 2", async () => {
+    mock
+      .onGet("/relatorio-alunos-matriculados/filtrar/")
+      .replyOnce(200, mockRelatorioAlunosMatriculadosDREResultados);
+
+    const botaoConsultar = screen.getByText("Consultar").closest("button");
+    fireEvent.click(botaoConsultar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Relação de alunos matriculados"),
+      ).toBeInTheDocument();
+    });
+
+    const paginaDois = document.querySelector(
+      ".ant-pagination .ant-pagination-item-2",
+    );
+
+    mock.onGet("/relatorio-alunos-matriculados/filtrar/").replyOnce(400, {});
+
+    fireEvent.click(paginaDois);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Houve um erro ao trocar de página, tente novamente mais tarde",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve exibir mensagem quando não há alunos matriculados", async () => {
+    mock
+      .onGet("/relatorio-alunos-matriculados/filtrar/")
+      .replyOnce(200, { results: [], count: 0 });
+
+    const botaoConsultar = screen.getByText("Consultar").closest("button");
+    fireEvent.click(botaoConsultar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Não há alunos matriculados para os filtros selecionados.",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve renderizar erro ao exportar xlsx", async () => {
+    mock
+      .onGet("/relatorio-alunos-matriculados/filtrar/")
+      .replyOnce(200, mockRelatorioAlunosMatriculadosDREResultados);
+
+    const botaoConsultar = screen.getByText("Consultar").closest("button");
+    fireEvent.click(botaoConsultar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Relação de alunos matriculados"),
+      ).toBeInTheDocument();
+    });
+
+    const botaoBaixarExcel = screen.getByText("Baixar EXCEL").closest("button");
+
+    mock.onGet("/relatorio-alunos-matriculados/gerar-xlsx/").replyOnce(400, {});
+
+    fireEvent.click(botaoBaixarExcel);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Erro ao exportar xls. Tente novamente mais tarde."),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve renderizar erro ao exportar pdf", async () => {
+    mock
+      .onGet("/relatorio-alunos-matriculados/filtrar/")
+      .replyOnce(200, mockRelatorioAlunosMatriculadosDREResultados);
+
+    const botaoConsultar = screen.getByText("Consultar").closest("button");
+    fireEvent.click(botaoConsultar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Relação de alunos matriculados"),
+      ).toBeInTheDocument();
+    });
+
+    const botaoBaixarPDF = screen.getByText("Baixar PDF").closest("button");
+
+    mock.onGet("/relatorio-alunos-matriculados/gerar-pdf/").replyOnce(400, {});
+
+    fireEvent.click(botaoBaixarPDF);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Erro ao exportar pdf. Tente novamente mais tarde."),
+      ).toBeInTheDocument();
     });
   });
 });
