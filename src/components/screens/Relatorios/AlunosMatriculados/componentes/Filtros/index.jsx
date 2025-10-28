@@ -12,6 +12,7 @@ import { formataOpcoes } from "../../helpers";
 import { filtrarAlunosMatriculados } from "src/services/alunosMatriculados.service";
 import { deepCopy, usuarioEhDRE } from "src/helpers/utilities";
 import { formataOpcoesDropdown } from "../../helpers";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 
 export const Filtros = ({ ...props }) => {
   const {
@@ -86,10 +87,12 @@ export const Filtros = ({ ...props }) => {
               <>
                 <div className="row">
                   <div className="col-2">
-                    <label>Lote</label>
                     <Field
-                      component={StatefulMultiSelect}
+                      label="Lotes"
+                      component={MultiselectRaw}
                       name="lotes"
+                      dataTestId="select-lotes"
+                      placeholder="Selecione os lotes"
                       selected={values.lotes || []}
                       options={
                         values.diretorias_regionais &&
@@ -104,44 +107,43 @@ export const Filtros = ({ ...props }) => {
                           : lotes
                       }
                       onSelectedChanged={(values_) => {
-                        form.change("lotes", values_);
+                        form.change(
+                          "lotes",
+                          values_.map((value_) => value_.value),
+                        );
                         form.change("unidades_educacionais", []);
-                      }}
-                      hasSelectAll
-                      overrideStrings={{
-                        selectSomeItems: "Selecione",
-                        allItemsAreSelected: "Todos os lotes",
-                        selectAll: "Todos",
                       }}
                     />
                   </div>
                   <div className="col-2">
-                    <label>Tipo de Unidade</label>
                     <Field
-                      component={StatefulMultiSelect}
+                      label="Tipo de Unidade"
+                      component={MultiselectRaw}
                       name="tipos_unidades"
+                      dataTestId="select-tipos-unidades"
                       selected={values.tipos_unidades || []}
                       options={tiposUnidades}
                       onSelectedChanged={(values_) =>
-                        form.change("tipos_unidades", values_)
+                        form.change(
+                          "tipos_unidades",
+                          values_.map((value_) => value_.value),
+                        )
                       }
-                      hasSelectAll
-                      overrideStrings={{
-                        selectSomeItems: "Selecione",
-                        allItemsAreSelected: "Todos os Tipos de Unidades",
-                        selectAll: "Todos",
-                      }}
                     />
                   </div>
                   <div className="col-2">
-                    <label>Tipo de Turma</label>
                     <Field
-                      component={StatefulMultiSelect}
+                      label="Tipo de Turma"
+                      component={MultiselectRaw}
                       name="tipos_turmas"
+                      dataTestId="select-tipos-turmas"
                       selected={values.tipos_turmas || []}
                       options={tiposTurmas}
                       onSelectedChanged={(values_) =>
-                        form.change("tipos_turmas", values_)
+                        form.change(
+                          "tipos_turmas",
+                          values_.map((value_) => value_.value),
+                        )
                       }
                       hasSelectAll
                       overrideStrings={{
@@ -152,14 +154,15 @@ export const Filtros = ({ ...props }) => {
                     />
                   </div>
                   <div className="col-6">
-                    <label>Unidade Educacional</label>
                     <div>
                       {naoHaEscolasParaOsFiltrosSelecionados(values) &&
                         "Não existem resultados para os filtros selecionados"}
                     </div>
                     {!naoHaEscolasParaOsFiltrosSelecionados(values) && (
                       <Field
-                        component={StatefulMultiSelect}
+                        label="Unidade Educacional"
+                        dataTestId="select-unidades-educacionais"
+                        component={MultiselectRaw}
                         name="unidades_educacionais"
                         selected={values.unidades_educacionais || []}
                         options={
@@ -170,7 +173,10 @@ export const Filtros = ({ ...props }) => {
                             : unidadesEducacionais
                         }
                         onSelectedChanged={(values_) =>
-                          form.change("unidades_educacionais", values_)
+                          form.change(
+                            "unidades_educacionais",
+                            values_.map((value_) => value_.value),
+                          )
                         }
                         hasSelectAll
                         overrideStrings={{
