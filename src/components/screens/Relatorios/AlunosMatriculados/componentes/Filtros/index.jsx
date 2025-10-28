@@ -70,6 +70,13 @@ export const Filtros = ({ ...props }) => {
     return formataOpcoes(escolas);
   };
 
+  const naoHaEscolasParaOsFiltrosSelecionados = (values) => {
+    return (
+      values.tipos_unidades?.length > 0 &&
+      filtrarOpcoesEscola(values).length === 0
+    );
+  };
+
   return (
     <Fragment>
       <Form onSubmit={onSubmit}>
@@ -146,27 +153,33 @@ export const Filtros = ({ ...props }) => {
                   </div>
                   <div className="col-6">
                     <label>Unidade Educacional</label>
-                    <Field
-                      component={StatefulMultiSelect}
-                      name="unidades_educacionais"
-                      selected={values.unidades_educacionais || []}
-                      options={
-                        values.diretorias_regionais?.length ||
-                        values.lotes?.length ||
-                        values.tipos_unidades?.length
-                          ? filtrarOpcoesEscola(values)
-                          : unidadesEducacionais
-                      }
-                      onSelectedChanged={(values_) =>
-                        form.change("unidades_educacionais", values_)
-                      }
-                      hasSelectAll
-                      overrideStrings={{
-                        selectSomeItems: "Selecione",
-                        allItemsAreSelected: "Todas as Unidades Educacionais",
-                        selectAll: "Todas",
-                      }}
-                    />
+                    <div>
+                      {naoHaEscolasParaOsFiltrosSelecionados(values) &&
+                        "Não existem resultados para os filtros selecionados"}
+                    </div>
+                    {!naoHaEscolasParaOsFiltrosSelecionados(values) && (
+                      <Field
+                        component={StatefulMultiSelect}
+                        name="unidades_educacionais"
+                        selected={values.unidades_educacionais || []}
+                        options={
+                          values.diretorias_regionais?.length ||
+                          values.lotes?.length ||
+                          values.tipos_unidades?.length
+                            ? filtrarOpcoesEscola(values)
+                            : unidadesEducacionais
+                        }
+                        onSelectedChanged={(values_) =>
+                          form.change("unidades_educacionais", values_)
+                        }
+                        hasSelectAll
+                        overrideStrings={{
+                          selectSomeItems: "Selecione",
+                          allItemsAreSelected: "Todas as Unidades Educacionais",
+                          selectAll: "Todas",
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
               </>
@@ -282,42 +295,49 @@ export const Filtros = ({ ...props }) => {
                 <div className="row mt-3">
                   <div className="col-8">
                     <label>Unidade Educacional</label>
-                    <Field
-                      component={StatefulMultiSelect}
-                      name="unidades_educacionais"
-                      selected={
-                        values.unidades_educacionais ||
-                        (unidadesEducacionais.length === 1
-                          ? [unidadesEducacionais[0].value]
-                          : [])
-                      }
-                      options={
-                        values.diretorias_regionais?.length ||
-                        values.lotes?.length ||
-                        values.tipos_unidades?.length
-                          ? filtrarOpcoesEscola(values)
-                          : unidadesEducacionais
-                      }
-                      onSelectedChanged={(values_) =>
-                        form.change("unidades_educacionais", values_)
-                      }
-                      disabled={unidadesEducacionais.length === 1}
-                      hasSelectAll={unidadesEducacionais.length > 1}
-                      overrideStrings={
-                        unidadesEducacionais.length > 1
-                          ? {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected:
-                                "Todas as Unidades Educacionais",
-                              selectAll: "Todas",
-                            }
-                          : {
-                              selectSomeItems: "Selecione",
-                              allItemsAreSelected:
-                                unidadesEducacionais[0]?.label || "Selecionado",
-                            }
-                      }
-                    />
+                    <div>
+                      {naoHaEscolasParaOsFiltrosSelecionados(values) &&
+                        "Não existem resultados para os filtros selecionados"}
+                    </div>
+                    {!naoHaEscolasParaOsFiltrosSelecionados(values) && (
+                      <Field
+                        component={StatefulMultiSelect}
+                        name="unidades_educacionais"
+                        selected={
+                          values.unidades_educacionais ||
+                          (unidadesEducacionais.length === 1
+                            ? [unidadesEducacionais[0].value]
+                            : [])
+                        }
+                        options={
+                          values.diretorias_regionais?.length ||
+                          values.lotes?.length ||
+                          values.tipos_unidades?.length
+                            ? filtrarOpcoesEscola(values)
+                            : unidadesEducacionais
+                        }
+                        onSelectedChanged={(values_) =>
+                          form.change("unidades_educacionais", values_)
+                        }
+                        disabled={unidadesEducacionais.length === 1}
+                        hasSelectAll={unidadesEducacionais.length > 1}
+                        overrideStrings={
+                          unidadesEducacionais.length > 1
+                            ? {
+                                selectSomeItems: "Selecione",
+                                allItemsAreSelected:
+                                  "Todas as Unidades Educacionais",
+                                selectAll: "Todas",
+                              }
+                            : {
+                                selectSomeItems: "Selecione",
+                                allItemsAreSelected:
+                                  unidadesEducacionais[0]?.label ||
+                                  "Selecionado",
+                              }
+                        }
+                      />
+                    )}
                   </div>
                   <div className="col-4">
                     <label>Tipo de Turma</label>
