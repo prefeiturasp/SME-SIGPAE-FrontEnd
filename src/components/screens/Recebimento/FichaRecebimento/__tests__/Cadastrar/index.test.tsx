@@ -27,7 +27,7 @@ beforeEach(() => {
 
   mock
     .onGet(
-      `/cronogramas/${mockListaCronogramasRecebimento.results[0].uuid}/dados-cronograma-ficha-recebimento/`
+      `/cronogramas/${mockListaCronogramasRecebimento.results[0].uuid}/dados-cronograma-ficha-recebimento/`,
     )
     .reply(200, mockCronogramaCadastroRecebimento);
 
@@ -39,6 +39,10 @@ beforeEach(() => {
 
   mock
     .onPost("/fichas-de-recebimento/")
+    .reply(201, mockCadastroFichaRecebimento);
+
+  mock
+    .onPost("/fichas-de-recebimento/cadastrar-saldo-zero/")
     .reply(201, mockCadastroFichaRecebimento);
 
   mock
@@ -63,7 +67,7 @@ const setup = async () => {
       <MemoryRouter>
         <CadastroFichaRecebimentoPage />
         <ToastContainer />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -112,7 +116,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByDisplayValue(cronogramaDetalhado.fornecedor)
+        screen.getByDisplayValue(cronogramaDetalhado.fornecedor),
       ).toBeInTheDocument();
     });
 
@@ -136,6 +140,15 @@ describe("Cadastro de Ficha de Recebimento", () => {
     const opcaoTodos = await screen.findByText("Todos");
     await fireEvent.click(opcaoTodos);
 
+    const quantidadeInputs = screen.getAllByPlaceholderText(
+      "Digite a Quantidade",
+    );
+    for (const input of quantidadeInputs) {
+      fireEvent.change(input, {
+        target: { value: "12" },
+      });
+    }
+
     const radios = screen.getAllByLabelText("De acordo com o Laudo");
     for (const radio of radios) {
       fireEvent.click(radio);
@@ -144,7 +157,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
 
     preencheInputByPlaceholder(
       "Digite o número do lote de armazenagem",
-      "123456"
+      "123456",
     );
     preencheInputByPlaceholder("Digite o número de paletes", "30");
 
@@ -191,7 +204,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
 
     const label = screen.getByText("Tipo de Ocorrência");
     const select = label.parentElement?.querySelector(
-      "select"
+      "select",
     ) as HTMLSelectElement;
     fireEvent.change(select, { target: { value: "RECUSA" } });
 
@@ -199,7 +212,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
     fireEvent.click(botaoTotal);
 
     expect(
-      screen.getByText("Nº das Notas Fiscais Sujeitas a Pagamento Parcial")
+      screen.getByText("Nº das Notas Fiscais Sujeitas a Pagamento Parcial"),
     ).toBeInTheDocument();
     expect(screen.getByText("Quantidade Recusada")).toBeInTheDocument();
 
@@ -214,15 +227,15 @@ describe("Cadastro de Ficha de Recebimento", () => {
 
     expect(
       screen.getByText(
-        "Você confirma o preenchimento correto de todas as informações solicitadas na ficha de recebimento?"
-      )
+        "Você confirma o preenchimento correto de todas as informações solicitadas na ficha de recebimento?",
+      ),
     ).toBeInTheDocument();
 
     const btnAssinar = screen.getByText("Sim, Assinar Ficha").closest("button");
     fireEvent.click(btnAssinar);
 
     expect(
-      screen.getByText("Assinatura do Responsável pelo Recebimento")
+      screen.getByText("Assinatura do Responsável pelo Recebimento"),
     ).toBeInTheDocument();
 
     preencheInputByPlaceholder("Digite sua senha", "teste");
@@ -233,7 +246,196 @@ describe("Cadastro de Ficha de Recebimento", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Ficha de recebimento Assinada com sucesso!")
+        screen.getByText("Ficha de recebimento Assinada com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("deve exibir modal e preencher formulário quando todos os saldos são zero", async () => {
+    await setup();
+
+    let cronograma = mockListaCronogramasRecebimento.results[0];
+    let cronogramaDetalhado = mockCronogramaCadastroRecebimento.results;
+
+    // Step 1
+    preencheInput("cronograma", cronograma.numero);
+
+    await waitFor(() => {
+      expect(
+        screen.getByDisplayValue(cronogramaDetalhado.fornecedor),
+      ).toBeInTheDocument();
+    });
+
+    selecionaOpcao("etapa", cronogramaDetalhado.etapas[0].uuid);
+
+    const inputDataEntrega = screen
+      .getByTestId("data_entrega")
+      .querySelector("input");
+    fireEvent.change(inputDataEntrega, {
+      target: { value: moment().add(7, "days").format("DD/MM/YYYY") },
+    });
+
+    const btnProximo = screen.getByText("Próximo").closest("button");
+    expect(btnProximo).not.toBeDisabled();
+    fireEvent.click(btnProximo);
+
+    // Step 2
+    const dropdown = screen.getByText("Selecione os Laudos");
+    await fireEvent.click(dropdown);
+
+    const opcaoTodos = await screen.findByText("Todos");
+    await fireEvent.click(opcaoTodos);
+
+    // Preenche todas as quantidades recebidas com zero
+    const quantidadeInputs = screen.getAllByPlaceholderText(
+      "Digite a Quantidade",
+    );
+    for (const input of quantidadeInputs) {
+      fireEvent.change(input, {
+        target: { value: "0" },
+      });
+    }
+
+    // Verifica se o modal foi exibido
+    await waitFor(() => {
+      expect(
+        screen.getByText("Registre uma ocorrência no próximo passo..."),
+      ).toBeInTheDocument();
+    });
+
+    const btnCiente = screen.getByText("Ciente").closest("button");
+    fireEvent.click(btnCiente);
+
+    // Verifica se os campos de validação estão desabilitados
+    const radiosDeAcordo = screen.getAllByLabelText("De acordo com o Laudo");
+    radiosDeAcordo.forEach((radio) => {
+      expect(radio).toBeDisabled();
+    });
+
+    const inputsDesabilitados = [
+      "Digite o número do lote de armazenagem",
+      "Digite o número de paletes",
+      "T °C da área",
+      "T °C do produto",
+      "Digite o número do lacre",
+      "Digite o número",
+      "Digite a placa do veículo",
+      "Digite o número da nota",
+      "Digite a qtde da nota",
+      "Digite a qtde de embalagens",
+      "Digite a qtde recebida",
+      "Digite qtde recebida",
+    ];
+
+    for (const placeholder of inputsDesabilitados) {
+      const element = screen.getByPlaceholderText(placeholder);
+      expect(element).toBeDisabled();
+    }
+
+    const inputsPeso = screen.getAllByPlaceholderText("Digite o peso");
+    for (const input of inputsPeso) {
+      expect(input).toBeDisabled();
+    }
+
+    fireEvent.click(btnProximo);
+
+    // Step 3
+    await selecionaRadioButton("Houve Ocorrência(s) no Recebimento?", "SIM");
+
+    const labelTipoOcorrencia = screen.getByText("Tipo de Ocorrência");
+    const selectTipoOcorrencia =
+      labelTipoOcorrencia.parentElement?.querySelector(
+        "select",
+      ) as HTMLSelectElement;
+    fireEvent.change(selectTipoOcorrencia, { target: { value: "FALTA" } });
+
+    const botaoParcial = screen.getByLabelText("NOTA(S) FISCAL(IS)");
+    fireEvent.click(botaoParcial);
+
+    preencheInputByPlaceholder("Digite o número da nota fiscal", "1234");
+    preencheInputByPlaceholder("Digite a quantidade faltante", "10");
+    preencheInputByPlaceholder(
+      "Descreva a ocorrência",
+      "Produto em falta na entrega",
+    );
+
+    preencheInputByPlaceholder(
+      "Descreva as observações necessárias",
+      "Observação para saldo zero",
+    );
+
+    const btnSalvar = screen.getByText("Salvar e Assinar").closest("button");
+    expect(btnSalvar).not.toBeDisabled();
+    fireEvent.click(btnSalvar);
+
+    expect(
+      screen.getByText(
+        "Você confirma o preenchimento correto de todas as informações solicitadas na ficha de recebimento?",
+      ),
+    ).toBeInTheDocument();
+
+    const btnAssinar = screen.getByText("Sim, Assinar Ficha").closest("button");
+    fireEvent.click(btnAssinar);
+
+    expect(
+      screen.getByText("Assinatura do Responsável pelo Recebimento"),
+    ).toBeInTheDocument();
+
+    preencheInputByPlaceholder("Digite sua senha", "teste");
+
+    const btnConfirmar = screen.getByText("Confirmar").closest("button");
+    expect(btnConfirmar).not.toBeDisabled();
+    fireEvent.click(btnConfirmar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Ficha de recebimento Assinada com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("deve salvar rascunho preenchendo apenas campos obrigatórios", async () => {
+    await setup();
+
+    let cronograma = mockListaCronogramasRecebimento.results[0];
+    let cronogramaDetalhado = mockCronogramaCadastroRecebimento.results;
+
+    preencheInput("cronograma", cronograma.numero);
+
+    await waitFor(() => {
+      expect(
+        screen.getByDisplayValue(cronogramaDetalhado.fornecedor),
+      ).toBeInTheDocument();
+    });
+
+    selecionaOpcao("etapa", cronogramaDetalhado.etapas[0].uuid);
+
+    const inputDataEntrega = screen
+      .getByTestId("data_entrega")
+      .querySelector("input");
+    fireEvent.change(inputDataEntrega, {
+      target: { value: moment().add(7, "days").format("DD/MM/YYYY") },
+    });
+
+    const btnSalvarRascunho = screen
+      .getByText("Salvar Rascunho")
+      .closest("button");
+    expect(btnSalvarRascunho).not.toBeDisabled();
+
+    fireEvent.click(btnSalvarRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Deseja salvar o rascunho da Ficha de Recebimento?"),
+      ).toBeInTheDocument();
+    });
+
+    const btnConfirmarSalvar = screen.getByText("Sim").closest("button");
+    fireEvent.click(btnConfirmarSalvar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Rascunho salvo com sucesso!"),
       ).toBeInTheDocument();
     });
   });
@@ -241,7 +443,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
   it("carrega dados pré-existentes de rascunho para edição", async () => {
     mock
       .onGet(
-        `/cronogramas/${mockGetFichaRecebimentoDetalhada.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`
+        `/cronogramas/${mockGetFichaRecebimentoDetalhada.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`,
       )
       .reply(200, mockCronogramaCadastroRecebimento);
 
@@ -255,14 +457,14 @@ describe("Cadastro de Ficha de Recebimento", () => {
     await setup();
 
     expect(
-      screen.getByText("Etapa, Parte e Data do Recebimento")
+      screen.getByText("Etapa, Parte e Data do Recebimento"),
     ).toBeInTheDocument();
 
     await waitFor(() => {
       expect(
         screen.getByDisplayValue(
-          mockGetFichaRecebimentoDetalhada.dados_cronograma.numero
-        )
+          mockGetFichaRecebimentoDetalhada.dados_cronograma.numero,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -280,7 +482,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
 
     preencheInput(
       "cronograma",
-      mockListaCronogramasRecebimento.results[0].numero
+      mockListaCronogramasRecebimento.results[0].numero,
     );
 
     const select = screen
@@ -302,7 +504,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
     };
     mock
       .onGet(
-        `/cronogramas/${mockListaCronogramasRecebimento.results[0].uuid}/dados-cronograma-ficha-recebimento/`
+        `/cronogramas/${mockListaCronogramasRecebimento.results[0].uuid}/dados-cronograma-ficha-recebimento/`,
       )
       .reply(200, mockCronogramaSemDocumentos);
     await setup();
@@ -315,7 +517,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByDisplayValue(cronogramaDetalhado.fornecedor)
+        screen.getByDisplayValue(cronogramaDetalhado.fornecedor),
       ).toBeInTheDocument();
     });
 
@@ -349,7 +551,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
     };
     mock
       .onGet(
-        `/cronogramas/${mockListaCronogramasRecebimento.results[0].uuid}/dados-cronograma-ficha-recebimento/`
+        `/cronogramas/${mockListaCronogramasRecebimento.results[0].uuid}/dados-cronograma-ficha-recebimento/`,
       )
       .reply(200, mockCronogramaSemDocumentos);
     await setup();
@@ -362,7 +564,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByDisplayValue(cronogramaDetalhado.fornecedor)
+        screen.getByDisplayValue(cronogramaDetalhado.fornecedor),
       ).toBeInTheDocument();
     });
 
@@ -381,7 +583,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
 
     // Step 2
     expect(
-      screen.getByText("Lote(s) do Fabricante Observado(s)")
+      screen.getByText("Lote(s) do Fabricante Observado(s)"),
     ).toBeInTheDocument();
 
     const radiosDeAcordo = screen.getAllByLabelText("De acordo com o Laudo");
