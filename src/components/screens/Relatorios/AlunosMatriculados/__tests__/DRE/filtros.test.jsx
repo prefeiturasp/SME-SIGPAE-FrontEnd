@@ -226,4 +226,19 @@ describe("Teste Relatório Alunos Matriculados - Usuário DRE - Filtros", () => 
       ).toBeInTheDocument();
     });
   });
+
+  it("Deve renderizar erro ao filtrar", async () => {
+    mock.onGet("/relatorio-alunos-matriculados/filtrar/").replyOnce(400, {});
+
+    const botaoConsultar = screen.getByText("Consultar").closest("button");
+    fireEvent.click(botaoConsultar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Houve um erro ao filtrar alunos matriculados, tente novamente mais tarde",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
 });

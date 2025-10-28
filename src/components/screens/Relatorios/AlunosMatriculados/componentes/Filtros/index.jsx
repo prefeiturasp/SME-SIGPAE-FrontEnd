@@ -150,10 +150,10 @@ export const Filtros = ({ ...props }) => {
                       }}
                     />
                   </div>
-                  <div className="col-4">
-                    <div>
+                  <div className="col-4 my-auto">
+                    <div className="helper-grid-alunos-matriculados">
                       {naoHaEscolasParaOsFiltrosSelecionados(values) &&
-                        "Não existem resultados para os filtros selecionados"}
+                        "Não existem resultados para os filtros selecionados."}
                     </div>
                     {!naoHaEscolasParaOsFiltrosSelecionados(values) && (
                       <Field
@@ -268,10 +268,10 @@ export const Filtros = ({ ...props }) => {
                   </div>
                 </div>
                 <div className="row mt-3">
-                  <div className="col-8">
-                    <div>
+                  <div className="col-8 my-auto">
+                    <div className="helper-grid-alunos-matriculados">
                       {naoHaEscolasParaOsFiltrosSelecionados(values) &&
-                        "Não existem resultados para os filtros selecionados"}
+                        "Não existem resultados para os filtros selecionados."}
                     </div>
                     {!naoHaEscolasParaOsFiltrosSelecionados(values) && (
                       <Field
