@@ -1,5 +1,12 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -7,6 +14,8 @@ import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEt
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
 import { mockRelatorioAlunosMatriculadosDREFiltros } from "src/mocks/services/alunosMatriculados.service/DRE/filtros";
+import { mockRelatorioAlunosMatriculadosDREResultados } from "src/mocks/services/alunosMatriculados.service/DRE/resultados";
+import { mockRelatorioAlunosMatriculadosDREResultadosPagina2 } from "src/mocks/services/alunosMatriculados.service/DRE/resultadosPagina2";
 import RelatorioAlunosMatriculadosPage from "src/pages/Relatorios/RelatorioAlunosMatriculadosPage";
 import mock from "src/services/_mock";
 
@@ -71,5 +80,46 @@ describe("Teste Relatório Alunos Matriculados - Usuário DRE - Filtros", () => 
     fireEvent.click(optionCEIDIRETMONUMENTO);
 
     expect(screen.queryByText("EMEI CIDADE DO SOL")).not.toBeInTheDocument();
+  });
+
+  it("Consulta dietas, expande faixas etárias e avança página", async () => {
+    mock
+      .onGet("/relatorio-alunos-matriculados/filtrar/")
+      .replyOnce(200, mockRelatorioAlunosMatriculadosDREResultados);
+
+    const botaoConsultar = screen.getByText("Consultar").closest("button");
+    fireEvent.click(botaoConsultar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Relação de alunos matriculados"),
+      ).toBeInTheDocument();
+    });
+
+    const iconeFaixasEtarias0 = screen.getByTestId("icone-faixas-etarias-0");
+    fireEvent.click(iconeFaixasEtarias0);
+
+    // expande faixas etárias
+
+    await waitFor(() => {
+      expect(screen.getByText("00 meses")).toBeInTheDocument();
+      expect(screen.getByText("04 anos a 06 anos")).toBeInTheDocument();
+    });
+
+    const paginaDois = document.querySelector(
+      ".ant-pagination .ant-pagination-item-2",
+    );
+
+    mock
+      .onGet("/relatorio-alunos-matriculados/filtrar/")
+      .replyOnce(200, mockRelatorioAlunosMatriculadosDREResultadosPagina2);
+
+    fireEvent.click(paginaDois);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("CEMEI SUZANA CAMPOS TAUIL"),
+      ).not.toBeInTheDocument();
+    });
   });
 });
