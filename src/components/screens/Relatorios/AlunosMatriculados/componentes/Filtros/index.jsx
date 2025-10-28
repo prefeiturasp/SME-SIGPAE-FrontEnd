@@ -112,7 +112,7 @@ export const Filtros = ({ ...props }) => {
                       }}
                     />
                   </div>
-                  <div className="col-2">
+                  <div className="col-3">
                     <Field
                       label="Tipo de Unidade"
                       component={MultiselectRaw}
@@ -128,7 +128,7 @@ export const Filtros = ({ ...props }) => {
                       }
                     />
                   </div>
-                  <div className="col-2">
+                  <div className="col-3">
                     <Field
                       label="Tipo de Turma"
                       component={MultiselectRaw}
@@ -150,7 +150,7 @@ export const Filtros = ({ ...props }) => {
                       }}
                     />
                   </div>
-                  <div className="col-6">
+                  <div className="col-4">
                     <div>
                       {naoHaEscolasParaOsFiltrosSelecionados(values) &&
                         "Não existem resultados para os filtros selecionados"}
