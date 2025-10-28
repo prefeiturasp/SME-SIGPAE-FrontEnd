@@ -47,14 +47,8 @@ const TabelaDietas = ({ solicitacoes }) => {
                   {dados.codigo_eol_escola} {dados.escola}
                 </p>
               </div>
-              <div className="row col-12 m-0 p-0">
-                <div className="col-xl-1 col-lg-2 my-auto p-0 foto-aluno">
-                  <img
-                    src={dados.foto_aluno || "/assets/image/no-avatar.png"}
-                    alt="foto-aluno"
-                  />
-                </div>
-                <div className="col-xl-11 col-lg-10 pe-0 ps-4">
+              <div className="col-12 m-0 p-0">
+                <div className="pe-0 ps-0">
                   <div className="mb-3">
                     <Form
                       onSubmit={() => {}}
