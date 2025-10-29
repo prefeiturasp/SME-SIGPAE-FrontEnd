@@ -55,6 +55,7 @@ import {
 } from "src/helpers/fieldValidators";
 import {
   converterDDMMYYYYparaYYYYMMDD,
+  dataParaUTC,
   exibeError,
 } from "src/helpers/utilities";
 import { deletaValues } from "src/helpers/formHelper";
@@ -184,10 +185,8 @@ export default () => {
               ? " - Reposição / Pagamento de Notificação"
               : ""
           }`,
-          houve_ocorrencia: etapa.houve_ocorrencia,
-          data_ocorrencia: etapa.data_ocorrencia,
-          houve_reposicao: etapa.houve_reposicao,
           data_programada: etapa.data_programada,
+          houve_ocorrencia: etapa.houve_ocorrencia,
         });
       }
     });
@@ -206,8 +205,6 @@ export default () => {
         }`,
         data_programada: initialValues.etapa.data_programada,
         houve_ocorrencia: false,
-        data_ocorrencia: initialValues.etapa.data_ocorrencia,
-        houve_reposicao: initialValues.etapa.houve_reposicao,
       };
       if (initialValues.reposicao_cronograma) obj["houve_ocorrencia"] = true;
       options.push(obj);
@@ -1006,12 +1003,12 @@ export default () => {
                               writable={false}
                               disabled={!etapaSelecionada}
                               minDate={
-                                etapaSelecionada
-                                  ? new Date(
-                                      converterDDMMYYYYparaYYYYMMDD(
-                                        etapaSelecionada.houve_ocorrencia
-                                          ? etapaSelecionada.data_ocorrencia
-                                          : etapaSelecionada?.data_programada,
+                                etapaSelecionada?.data_programada
+                                  ? dataParaUTC(
+                                      new Date(
+                                        converterDDMMYYYYparaYYYYMMDD(
+                                          etapaSelecionada.data_programada,
+                                        ),
                                       ),
                                     )
                                   : null
