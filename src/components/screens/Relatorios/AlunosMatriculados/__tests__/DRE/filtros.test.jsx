@@ -84,7 +84,7 @@ describe("Teste Relatório Alunos Matriculados - Usuário DRE - Filtros", () => 
     expect(screen.queryByText("EMEI CIDADE DO SOL")).not.toBeInTheDocument();
   });
 
-  it("Consulta dietas, expande faixas etárias e avança página", async () => {
+  it("Consulta dietas, expande faixas etárias, avança página e limpa filtros", async () => {
     mock
       .onGet("/relatorio-alunos-matriculados/filtrar/")
       .replyOnce(200, mockRelatorioAlunosMatriculadosDREResultados);
@@ -121,6 +121,17 @@ describe("Teste Relatório Alunos Matriculados - Usuário DRE - Filtros", () => 
     await waitFor(() => {
       expect(
         screen.queryByText("CEMEI SUZANA CAMPOS TAUIL"),
+      ).not.toBeInTheDocument();
+    });
+
+    const botaoLimparFiltros = screen
+      .getByText("Limpar Filtros")
+      .closest("button");
+    fireEvent.click(botaoLimparFiltros);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Relação de alunos matriculados"),
       ).not.toBeInTheDocument();
     });
   });
@@ -237,6 +248,41 @@ describe("Teste Relatório Alunos Matriculados - Usuário DRE - Filtros", () => 
       expect(
         screen.getByText(
           "Houve um erro ao filtrar alunos matriculados, tente novamente mais tarde",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve filtrar por lote e tipo de turma", () => {
+    const selectLotes = screen.getByTestId("select-lotes");
+    const selectControlLote = within(selectLotes).getByRole("combobox");
+    fireEvent.mouseDown(selectControlLote);
+
+    const optionLOTE7 = screen.getByText("LOTE 07");
+    fireEvent.click(optionLOTE7);
+
+    const selectTiposTurmas = screen.getByTestId("select-tipos-turmas");
+    const selectControlTipoTurma =
+      within(selectTiposTurmas).getByRole("combobox");
+    fireEvent.mouseDown(selectControlTipoTurma);
+
+    const optionREGULAR = screen.getByText("REGULAR");
+    fireEvent.click(optionREGULAR);
+  });
+
+  it("Deve renderizar `Não existem resultados para os filtros selecionados.`", async () => {
+    const selectTipoUnidade = screen.getByTestId("select-tipos-unidades");
+    const selectControlTipoUnidade =
+      within(selectTipoUnidade).getByRole("combobox");
+    fireEvent.mouseDown(selectControlTipoUnidade);
+
+    const optionEMEFPFOM = screen.getByText("EMEF P FOM");
+    fireEvent.click(optionEMEFPFOM);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Não existem resultados para os filtros selecionados.",
         ),
       ).toBeInTheDocument();
     });

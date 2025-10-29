@@ -491,22 +491,6 @@ export const mockRelatorioAlunosMatriculadosDREFiltros = {
       },
     },
     {
-      uuid: "9adc4204-c25f-4282-be51-2ccd9c1b8cf5",
-      nome: "EMEF P FOM LICEU",
-      diretoria_regional: {
-        uuid: "680b362b-8f4c-4932-9fd2-6b0aa122fc43",
-        nome: "IPIRANGA",
-      },
-      tipo_unidade: {
-        uuid: "d15aabc7-4277-4deb-a2e6-a77862ed5af6",
-        iniciais: "EMEF P FOM",
-      },
-      lote: {
-        uuid: "87f3e59d-f45f-4dc2-bfb1-0ff6c54d899c",
-        nome: "LOTE 07",
-      },
-    },
-    {
       uuid: "4d608546-d927-426d-901a-668b9317b221",
       nome: "EMEF ARTUR SABOIA",
       diretoria_regional: {
