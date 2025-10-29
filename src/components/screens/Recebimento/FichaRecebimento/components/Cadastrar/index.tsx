@@ -53,7 +53,11 @@ import {
   maxValue,
   required,
 } from "src/helpers/fieldValidators";
-import { exibeError } from "src/helpers/utilities";
+import {
+  converterDDMMYYYYparaYYYYMMDD,
+  dataParaUTC,
+  exibeError,
+} from "src/helpers/utilities";
 import { deletaValues } from "src/helpers/formHelper";
 import { stringToBoolean } from "src/helpers/parsers";
 import {
@@ -181,6 +185,7 @@ export default () => {
               ? " - Reposição / Pagamento de Notificação"
               : ""
           }`,
+          data_programada: etapa.data_programada,
           houve_ocorrencia: etapa.houve_ocorrencia,
         });
       }
@@ -198,6 +203,8 @@ export default () => {
             ? " - Reposição / Pagamento de Notificação"
             : ""
         }`,
+        data_programada: initialValues.etapa.data_programada,
+        houve_ocorrencia: false,
       };
       if (initialValues.reposicao_cronograma) obj["houve_ocorrencia"] = true;
       options.push(obj);
@@ -292,13 +299,7 @@ export default () => {
     values: Record<string, any>,
     password?: string,
   ): FichaRecebimentoPayload => {
-    const quantidades =
-      values.documentos_recebimento?.map(
-        (_: any, index: number) =>
-          parseInt(values[`qtd_recebida_laudo_${index}`]) || 0,
-      ) || [];
-    const saldoTotalZero =
-      quantidades.length > 0 && quantidades.every((qtd) => qtd === 0);
+    const { saldoTotalZero } = getQuantidadesESaldo(values);
 
     let payloadQuestoes: QuestoesPayload[] = [
       ...formataPayloadQuestoes(values, questoesPrimarias, "PRIMARIA"),
@@ -432,14 +433,7 @@ export default () => {
       let cadastrar = cadastraFichaRecebimento;
       let editar = editarFichaRecebimento;
 
-      // Refatorar pra usar o mesmo que tá dentro do form
-      const quantidades =
-        values.documentos_recebimento?.map(
-          (_: any, index: number) =>
-            parseInt(values[`qtd_recebida_laudo_${index}`]) || 0,
-        ) || [];
-      const saldoTotalZero =
-        quantidades.length > 0 && quantidades.every((qtd) => qtd === 0);
+      const { saldoTotalZero } = getQuantidadesESaldo(values);
 
       if (saldoTotalZero) {
         cadastrar = cadastraFichaRecebimentoSaldoZero;
@@ -671,6 +665,22 @@ export default () => {
     }
   };
 
+  const getQuantidadesESaldo = (
+    values: Record<string, any>,
+  ): { saldoTotalZero: boolean; algumZero: boolean } => {
+    const quantidades =
+      values.documentos_recebimento?.map(
+        (_: DocumentoFicha, index: number) =>
+          parseInt(values[`qtd_recebida_laudo_${index}`]) || 0,
+      ) || [];
+
+    const saldoTotalZero: boolean =
+      quantidades.length > 0 && quantidades.every((qtd: number) => qtd === 0);
+    const algumZero: boolean = quantidades.some((qtd: number) => qtd === 0);
+
+    return { saldoTotalZero, algumZero };
+  };
+
   const handleQuantidadeChange = (
     value: string,
     values: Record<string, any>,
@@ -682,13 +692,7 @@ export default () => {
       [fieldName]: value,
     };
 
-    const quantidades = Object.entries(updatedValues)
-      .filter(([key]) => key.startsWith("qtd_recebida_laudo_"))
-      .map(([_, val]) => parseInt(val) || 0);
-
-    const algumZero = quantidades.some((qtd) => qtd === 0);
-    const saldoTotalZero =
-      quantidades.length > 0 && quantidades.every((qtd) => qtd === 0);
+    const { algumZero, saldoTotalZero } = getQuantidadesESaldo(updatedValues);
 
     if (algumZero) {
       form.change("houve_ocorrencia", "1");
@@ -702,6 +706,10 @@ export default () => {
       setShowModalOcorrencia(true);
       setModalZeroExibido(true);
     }
+
+    setTimeout(() => {
+      form.mutators.forceValidation();
+    }, 10);
   };
 
   useEffect(() => {
@@ -715,22 +723,23 @@ export default () => {
           <Form
             onSubmit={() => setShowModalAssinatura(true)}
             initialValues={initialValues}
-            //validateOnBlur={true}
+            mutators={{
+              forceValidation: (args, state) => {
+                state.formState.valid = undefined;
+                state.formState.errors = {};
+              },
+            }}
             render={({ handleSubmit, values, form, errors }) => {
               formRef.current = form;
               const reposicaoSelecionada = opcoesReposicao.find(
                 ({ uuid }) => uuid === values.reposicao_cronograma,
               );
+              const etapaSelecionada = getOpcoesEtapas()?.find(
+                (opt) => opt.uuid === values.etapa,
+              );
 
-              const quantidades =
-                values.documentos_recebimento?.map(
-                  (_: any, index: number) =>
-                    parseInt(values[`qtd_recebida_laudo_${index}`]) || 0,
-                ) || [];
-
-              const saldoZero = quantidades.some((qtd) => qtd === 0);
-              const saldoTotalZero =
-                quantidades.length > 0 && quantidades.every((qtd) => qtd === 0);
+              const { saldoTotalZero, algumZero } =
+                getQuantidadesESaldo(values);
 
               const requiredSaldoTotalZero =
                 (validator: (_v: string) => string) => (value: string) => {
@@ -992,6 +1001,18 @@ export default () => {
                               required
                               validate={required}
                               writable={false}
+                              disabled={!etapaSelecionada}
+                              minDate={
+                                etapaSelecionada?.data_programada
+                                  ? dataParaUTC(
+                                      new Date(
+                                        converterDDMMYYYYparaYYYYMMDD(
+                                          etapaSelecionada.data_programada,
+                                        ),
+                                      ),
+                                    )
+                                  : null
+                              }
                             />
                           </div>
                         </div>
@@ -1053,9 +1074,7 @@ export default () => {
                             />
                           </div>
                         </div>
-                        {getOpcoesEtapas()?.find(
-                          (opt) => opt.uuid === values.etapa,
-                        )?.houve_ocorrencia && (
+                        {etapaSelecionada?.houve_ocorrencia && (
                           <div className="row reposicao">
                             <div className="col-6">
                               <RadioButtonField
@@ -1121,6 +1140,19 @@ export default () => {
                               validate={required}
                               disabled={naoExistemLaudos}
                             />
+                          </div>
+                          <div className="col-6">
+                            <div className="alerta-saldos">
+                              <div>
+                                <span className="required-asterisk bg-transparent">
+                                  *
+                                </span>
+                                <span>
+                                  Para calcular a quantidade a ser preenchida,
+                                  desconte possíveis recusas ou faltas.
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
 
@@ -1798,8 +1830,8 @@ export default () => {
                               { value: "1", label: "SIM" },
                               { value: "0", label: "NÃO" },
                             ]}
-                            disabled={saldoZero}
-                            defaultValue={saldoZero ? "1" : undefined}
+                            disabled={algumZero}
+                            defaultValue={algumZero ? "1" : undefined}
                           />
                         </div>
                         {values?.houve_ocorrencia === "1" && (
