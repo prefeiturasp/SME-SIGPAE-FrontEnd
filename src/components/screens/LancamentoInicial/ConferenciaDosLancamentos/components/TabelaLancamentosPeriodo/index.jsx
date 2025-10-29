@@ -364,23 +364,17 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
 
           const somaPorCategoria = {};
 
-          response_valores_periodos.data
-            .filter((valor) => valor.nome_campo === "dietas_autorizadas")
-            .forEach((valor) => {
-              const catId = valor.categoria_medicao;
-              somaPorCategoria[catId] =
-                (somaPorCategoria[catId] || 0) + parseInt(valor.valor || 0);
-            });
-
-          const categoriasParaRemover = Object.keys(somaPorCategoria)
-            .filter((catId) => somaPorCategoria[catId] === 0)
-            .map((catId) => parseInt(catId));
+          valoresDietasAutorizadas.forEach((valor) => {
+            const catId = valor.categoria_medicao;
+            somaPorCategoria[catId] =
+              (somaPorCategoria[catId] || 0) + parseInt(valor.valor || 0);
+          });
 
           response_valores_periodos.data =
             response_valores_periodos.data.filter(
               (valor) =>
                 valor.nome_campo !== "dietas_autorizadas" ||
-                !categoriasParaRemover.includes(valor.categoria_medicao),
+                (somaPorCategoria[valor.categoria_medicao] || 0) > 0,
             );
 
           setValoresLancamentos(response_valores_periodos.data);
@@ -415,9 +409,12 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 setCategoriasDeMedicao(categoriasMedicao);
               }
 
-              categoriasMedicao = categoriasMedicao.filter(
-                (categoria) => !categoriasParaRemover.includes(categoria.id),
-              );
+              categoriasMedicao = categoriasMedicao.filter((categoria) => {
+                if (!categoria.nome.includes("DIETA")) return true;
+
+                const soma = somaPorCategoria[categoria.id] || 0;
+                return soma > 0;
+              });
 
               setCategoriasDeMedicao(categoriasMedicao);
             }
