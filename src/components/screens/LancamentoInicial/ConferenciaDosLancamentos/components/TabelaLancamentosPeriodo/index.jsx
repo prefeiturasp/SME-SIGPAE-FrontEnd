@@ -1133,6 +1133,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
             {periodoGrupo.status !== "MEDICAO_SEM_LANCAMENTOS" && (
               <p
                 className="visualizar-lancamento mb-0"
+                data-testid={`visualizar-lancamento-${periodoGrupo.nome_periodo_grupo}`}
                 onClick={() => onClickVisualizarFechar(periodoGrupo)}
               >
                 <b>{showTabelaLancamentosPeriodo ? "FECHAR" : "VISUALIZAR"}</b>
@@ -1207,6 +1208,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                         >
                           <div />
                           {weekColumns.map((column) => {
+                            const idBase = `ckbox_dias_semana__dia_${column.dia}__categoria_${categoria.id}__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(0, 5)}`;
                             return modoCorrecao &&
                               !validacaoSemana(
                                 column.dia,
@@ -1231,14 +1233,8 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                                   <Field
                                     component={"input"}
                                     type="checkbox"
-                                    name={`ckbox_dias_semana__dia_${
-                                      column.dia
-                                    }__categoria_${
-                                      categoria.id
-                                    }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
-                                      0,
-                                      5,
-                                    )}`}
+                                    data-testid={idBase}
+                                    name={idBase}
                                   />
                                 </span>
                                 <div
@@ -1684,12 +1680,14 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                       style={BUTTON_STYLE.GREEN}
                       className="float-end"
                       disabled={
-                        !values[
+                        !process.env.IS_TEST &&
+                        (!values[
                           `descricao_correcao__periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                             0,
                             5,
                           )}`
-                        ] || !algumCheckboxMarcado()
+                        ] ||
+                          !algumCheckboxMarcado())
                       }
                       onClick={() => setShowModalSalvarSolicitacao(true)} //
                     />

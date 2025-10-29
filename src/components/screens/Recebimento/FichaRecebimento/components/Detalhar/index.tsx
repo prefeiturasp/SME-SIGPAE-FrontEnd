@@ -56,7 +56,7 @@ export default () => {
     setCarregandoPdf(true);
     await imprimirFichaRecebimento(
       fichaRecebimento.uuid,
-      fichaRecebimento.dados_cronograma.numero
+      fichaRecebimento.dados_cronograma.numero,
     );
     setCarregandoPdf(false);
   };
@@ -73,7 +73,7 @@ export default () => {
         setFichaRecebimento(resposta.data);
         setEtapa(resposta.data.etapa);
         getCronogramaPraCadastroRecebimento(
-          resposta.data.dados_cronograma.uuid
+          resposta.data.dados_cronograma.uuid,
         ).then((resp) => {
           if (resp?.status === 200) setDadosCronograma(resp?.data?.results);
           else toastError("Erro ao carregar dados do cronograma.");
@@ -104,7 +104,7 @@ export default () => {
               {formataData(
                 fichaRecebimento?.alterado_em,
                 "DD/MM/YYYY HH:mm:ss",
-                "DD/MM/YYYY"
+                "DD/MM/YYYY",
               )}
             </span>
           </div>
@@ -199,307 +199,356 @@ export default () => {
                     Embalagem Secundária:{" "}
                     <strong>{dadosCronograma?.embalagem_secundaria}</strong>
                   </p>
+                  {fichaRecebimento?.reposicao_cronograma && (
+                    <>
+                      <p>
+                        Referente a ocorrência registrada nesta etapa, o
+                        Fornecedor optou por:{" "}
+                        <strong>
+                          {fichaRecebimento?.reposicao_cronograma.descricao}
+                        </strong>
+                      </p>
+                      {fichaRecebimento?.reposicao_cronograma?.tipo ===
+                        "Credito" && (
+                        <>
+                          <p>
+                            Observações:{" "}
+                            <strong>{fichaRecebimento.observacao}</strong>
+                          </p>
+                          <div className="col-6">
+                            {fichaRecebimento.arquivos.map(({ arquivo }) => (
+                              <BotaoAnexo urlAnexo={arquivo} />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
                 </section>
-                <section id="laudos">
-                  {
-                    <table className="table tabela-dados-cronograma">
-                      <thead className="head-crono">
-                        <th className="borda-crono">N° do Laudo</th>
-                        <th className="borda-crono">Lote(s) do Laudo</th>
-                        <th className="borda-crono">Data(s) Fabricação</th>
-                        <th className="borda-crono">Data(s) Validade</th>
-                      </thead>
-                      <tbody>
-                        {dadosCronograma?.documentos_de_recebimento?.map(
-                          (documento, key) => {
-                            return (
-                              <tr key={key}>
-                                <td className="borda-crono">
-                                  {documento.numero_laudo}
-                                </td>
-                                <td className="borda-crono">
-                                  {documento.numero_lote_laudo}
-                                </td>
-                                <td className="borda-crono">
-                                  {documento.datas_fabricacao}
-                                </td>
-                                <td className="borda-crono">
-                                  {documento.datas_validade}
-                                </td>
-                              </tr>
-                            );
-                          }
-                        )}
-                      </tbody>
-                    </table>
-                  }
-                  <p>
-                    Lote(s) do Fabricante Observado(s):{" "}
-                    <strong>
-                      {fichaRecebimento.lote_fabricante_de_acordo
-                        ? "DE ACORDO COM O LAUDO"
-                        : "DIVERGÊNCIA"}
-                    </strong>
-                  </p>
-                  {!fichaRecebimento.lote_fabricante_de_acordo && (
+                {fichaRecebimento?.reposicao_cronograma?.tipo !== "Credito" && (
+                  <section id="laudos">
+                    {
+                      <table className="table tabela-dados-cronograma">
+                        <thead className="head-crono">
+                          <th className="borda-crono">N° do Laudo</th>
+                          <th className="borda-crono">Lote(s) do Laudo</th>
+                          <th className="borda-crono">Data(s) Fabricação</th>
+                          <th className="borda-crono">Data(s) Validade</th>
+                        </thead>
+                        <tbody>
+                          {dadosCronograma?.documentos_de_recebimento?.map(
+                            (documento, key) => {
+                              return (
+                                <tr key={key}>
+                                  <td className="borda-crono">
+                                    {documento.numero_laudo}
+                                  </td>
+                                  <td className="borda-crono">
+                                    {documento.numero_lote_laudo}
+                                  </td>
+                                  <td className="borda-crono">
+                                    {documento.datas_fabricacao}
+                                  </td>
+                                  <td className="borda-crono">
+                                    {documento.datas_validade}
+                                  </td>
+                                </tr>
+                              );
+                            },
+                          )}
+                        </tbody>
+                      </table>
+                    }
                     <p>
-                      Descrição da Divergência Observada:{" "}
+                      Lote(s) do Fabricante Observado(s):{" "}
                       <strong>
-                        {fichaRecebimento?.lote_fabricante_divergencia}
+                        {fichaRecebimento.lote_fabricante_de_acordo
+                          ? "DE ACORDO COM O LAUDO"
+                          : "DIVERGÊNCIA"}
                       </strong>
                     </p>
-                  )}
-                  <hr />
-                  <p>
-                    Data(s) de Fabricação Observado(s):{" "}
-                    <strong>
-                      {fichaRecebimento.data_fabricacao_de_acordo
-                        ? "DE ACORDO COM O LAUDO"
-                        : "DIVERGÊNCIA"}
-                    </strong>
-                  </p>
-                  {!fichaRecebimento.data_fabricacao_de_acordo && (
+                    {!fichaRecebimento.lote_fabricante_de_acordo && (
+                      <p>
+                        Descrição da Divergência Observada:{" "}
+                        <strong>
+                          {fichaRecebimento?.lote_fabricante_divergencia}
+                        </strong>
+                      </p>
+                    )}
+                    <hr />
                     <p>
-                      Descrição da Divergência Observada:{" "}
+                      Data(s) de Fabricação Observado(s):{" "}
                       <strong>
-                        {fichaRecebimento?.data_fabricacao_divergencia}
+                        {fichaRecebimento.data_fabricacao_de_acordo
+                          ? "DE ACORDO COM O LAUDO"
+                          : "DIVERGÊNCIA"}
                       </strong>
                     </p>
-                  )}
-                  <hr />
-                  <p>
-                    Data(s) de Validade Obeservada(s):{" "}
-                    <strong>
-                      {fichaRecebimento.data_validade_de_acordo
-                        ? "DE ACORDO COM O LAUDO"
-                        : "DIVERGÊNCIA"}
-                    </strong>
-                  </p>
-                  {!fichaRecebimento.data_validade_de_acordo && (
+                    {!fichaRecebimento.data_fabricacao_de_acordo && (
+                      <p>
+                        Descrição da Divergência Observada:{" "}
+                        <strong>
+                          {fichaRecebimento?.data_fabricacao_divergencia}
+                        </strong>
+                      </p>
+                    )}
+                    <hr />
                     <p>
-                      Descrição da Divergência Observada:{" "}
+                      Data(s) de Validade Obeservada(s):{" "}
                       <strong>
-                        {fichaRecebimento?.data_validade_divergencia}
+                        {fichaRecebimento.data_validade_de_acordo
+                          ? "DE ACORDO COM O LAUDO"
+                          : "DIVERGÊNCIA"}
                       </strong>
                     </p>
-                  )}
-                  <hr />
-                  <div className="linha-dupla">
+                    {!fichaRecebimento.data_validade_de_acordo && (
+                      <p>
+                        Descrição da Divergência Observada:{" "}
+                        <strong>
+                          {fichaRecebimento?.data_validade_divergencia}
+                        </strong>
+                      </p>
+                    )}
+                    <hr />
+                    <div className="linha-dupla">
+                      <p>
+                        Nº Lote Armazenagem:{" "}
+                        <strong>
+                          {fichaRecebimento?.numero_lote_armazenagem}
+                        </strong>
+                      </p>
+                      <p>
+                        Nº de Paletes:{" "}
+                        <strong>
+                          {formataMilhar(fichaRecebimento?.numero_paletes)}
+                        </strong>
+                      </p>
+                    </div>
                     <p>
-                      Nº Lote Armazenagem:{" "}
+                      Peso da Embalagem Primária:{" "}
                       <strong>
-                        {fichaRecebimento?.numero_lote_armazenagem}
+                        <span>
+                          {formataMilharDecimal(
+                            fichaRecebimento?.peso_embalagem_primaria_1,
+                          )}
+                          kg
+                        </span>
+                        <span>
+                          {formataMilharDecimal(
+                            fichaRecebimento?.peso_embalagem_primaria_2,
+                          )}
+                          kg
+                        </span>
+                        <span>
+                          {formataMilharDecimal(
+                            fichaRecebimento?.peso_embalagem_primaria_3,
+                          )}
+                          kg
+                        </span>
+                        <span>
+                          {formataMilharDecimal(
+                            fichaRecebimento?.peso_embalagem_primaria_4,
+                          )}
+                          kg
+                        </span>
                       </strong>
                     </p>
+                  </section>
+                )}
+                {fichaRecebimento?.reposicao_cronograma?.tipo !== "Credito" && (
+                  <section id="veiculosQuantidadeRecebimento">
+                    {fichaRecebimento.veiculos.map(
+                      (veiculo: VeiculoPayload) => {
+                        return (
+                          <>
+                            <div className="linha-dupla">
+                              <p>
+                                Nº do Veículo: <strong>{veiculo.numero}</strong>
+                              </p>
+                              <p>
+                                Placa do Veículo:{" "}
+                                <strong>{veiculo.placa}</strong>
+                              </p>
+                            </div>
+                            <div className="linha-dupla">
+                              <p>
+                                T ºC (Área de Recebimento):{" "}
+                                <strong>
+                                  + {veiculo.temperatura_recebimento}
+                                </strong>
+                              </p>
+                              <p>
+                                T ºC (Produto):{" "}
+                                <strong>- {veiculo.temperatura_produto}</strong>
+                              </p>
+                            </div>
+                            <div className="linha-dupla">
+                              <p>
+                                Lacre: <strong>{veiculo.lacre}</strong>
+                              </p>
+                              <p>
+                                Nº SIF, SISBI ou SISP:{" "}
+                                <strong>{veiculo.numero_sif_sisbi_sisp}</strong>
+                              </p>
+                            </div>
+                            <div className="linha-dupla">
+                              <p>
+                                Embalagens da Nota Fiscal:{" "}
+                                <strong>
+                                  {veiculo.embalagens_nota_fiscal}
+                                </strong>
+                              </p>
+                              <p>
+                                Quantidade da Nota Fiscal:{" "}
+                                <strong>
+                                  {veiculo.quantidade_nota_fiscal}
+                                </strong>
+                              </p>
+                            </div>
+                            <div className="linha-dupla">
+                              <p>
+                                Embalagens Recebidas:{" "}
+                                <strong>{veiculo.embalagens_recebidas}</strong>
+                              </p>
+                              <p>
+                                Estado Higiênico-Sanitário:{" "}
+                                <strong>
+                                  {veiculo.estado_higienico_adequado
+                                    ? "ADEQUADO"
+                                    : "INADEQUADO"}
+                                </strong>
+                              </p>
+                            </div>
+                            <p>
+                              Termógrafo:{" "}
+                              <strong>
+                                {veiculo.termografo ? "SIM" : "NÃO"}
+                              </strong>
+                            </p>
+                            <hr />
+                          </>
+                        );
+                      },
+                    )}
                     <p>
-                      Nº de Paletes:{" "}
+                      Sistema de Vedação da Embalagem Secundária:{" "}
                       <strong>
-                        {formataMilhar(fichaRecebimento?.numero_paletes)}
+                        {fichaRecebimento.sistema_vedacao_embalagem_secundaria}
                       </strong>
                     </p>
-                  </div>
-                  <p>
-                    Peso da Embalagem Primária:{" "}
-                    <strong>
-                      <span>
-                        {formataMilharDecimal(
-                          fichaRecebimento?.peso_embalagem_primaria_1
-                        )}
-                        kg
-                      </span>
-                      <span>
-                        {formataMilharDecimal(
-                          fichaRecebimento?.peso_embalagem_primaria_2
-                        )}
-                        kg
-                      </span>
-                      <span>
-                        {formataMilharDecimal(
-                          fichaRecebimento?.peso_embalagem_primaria_3
-                        )}
-                        kg
-                      </span>
-                      <span>
-                        {formataMilharDecimal(
-                          fichaRecebimento?.peso_embalagem_primaria_4
-                        )}
-                        kg
-                      </span>
-                    </strong>
-                  </p>
-                </section>
-                <section id="veiculosQuantidadeRecebimento">
-                  {fichaRecebimento.veiculos.map((veiculo: VeiculoPayload) => {
-                    return (
-                      <>
-                        <div className="linha-dupla">
-                          <p>
-                            Nº do Veículo: <strong>{veiculo.numero}</strong>
-                          </p>
-                          <p>
-                            Placa do Veículo: <strong>{veiculo.placa}</strong>
-                          </p>
-                        </div>
-                        <div className="linha-dupla">
-                          <p>
-                            T ºC (Área de Recebimento):{" "}
-                            <strong>+ {veiculo.temperatura_recebimento}</strong>
-                          </p>
-                          <p>
-                            T ºC (Produto):{" "}
-                            <strong>- {veiculo.temperatura_produto}</strong>
-                          </p>
-                        </div>
-                        <div className="linha-dupla">
-                          <p>
-                            Lacre: <strong>{veiculo.lacre}</strong>
-                          </p>
-                          <p>
-                            Nº SIF, SISBI ou SISP:{" "}
-                            <strong>{veiculo.numero_sif_sisbi_sisp}</strong>
-                          </p>
-                        </div>
-                        <div className="linha-dupla">
-                          <p>
-                            Embalagens da Nota Fiscal:{" "}
-                            <strong>{veiculo.embalagens_nota_fiscal}</strong>
-                          </p>
-                          <p>
-                            Quantidade da Nota Fiscal:{" "}
-                            <strong>{veiculo.quantidade_nota_fiscal}</strong>
-                          </p>
-                        </div>
-                        <div className="linha-dupla">
-                          <p>
-                            Embalagens Recebidas:{" "}
-                            <strong>{veiculo.embalagens_recebidas}</strong>
-                          </p>
-                          <p>
-                            Estado Higiênico-Sanitário:{" "}
-                            <strong>
-                              {veiculo.estado_higienico_adequado
-                                ? "ADEQUADO"
-                                : "INADEQUADO"}
-                            </strong>
-                          </p>
-                        </div>
+                  </section>
+                )}
+                {fichaRecebimento?.reposicao_cronograma?.tipo !== "Credito" && (
+                  <section id="conferenciaRotulagens">
+                    <div className="divisao-colunas">
+                      <div>
                         <p>
-                          Termógrafo:{" "}
-                          <strong>{veiculo.termografo ? "SIM" : "NÃO"}</strong>
+                          <strong>Conferência Embalagem Secundária</strong>
                         </p>
-                        <hr />
-                      </>
-                    );
-                  })}
-                  <p>
-                    Sistema de Vedação da Embalagem Secundária:{" "}
-                    <strong>
-                      {fichaRecebimento.sistema_vedacao_embalagem_secundaria}
-                    </strong>
-                  </p>
-                </section>
-                <section id="conferenciaRotulagens">
-                  <div className="divisao-colunas">
-                    <div>
-                      <p>
-                        <strong>Conferência Embalagem Secundária</strong>
-                      </p>
-                      {fichaRecebimento.questoes
-                        .filter((e) => e.tipo_questao === "SECUNDARIA")
-                        .map(({ questao_conferencia, resposta }, idx) => (
-                          <p key={idx}>
-                            {questao_conferencia.questao}:{" "}
-                            <strong>{resposta ? "SIM" : "NÃO"}</strong>
-                          </p>
-                        ))}
+                        {fichaRecebimento.questoes
+                          .filter((e) => e.tipo_questao === "SECUNDARIA")
+                          .map(({ questao_conferencia, resposta }, idx) => (
+                            <p key={idx}>
+                              {questao_conferencia.questao}:{" "}
+                              <strong>{resposta ? "SIM" : "NÃO"}</strong>
+                            </p>
+                          ))}
+                      </div>
+                      <div>
+                        <p>
+                          <strong>Conferência Embalagem Primária</strong>
+                        </p>
+                        {fichaRecebimento.questoes
+                          .filter((e) => e.tipo_questao === "PRIMARIA")
+                          .map(({ questao_conferencia, resposta }, idx) => (
+                            <p key={idx}>
+                              {questao_conferencia.questao}:{" "}
+                              <strong>{resposta ? "SIM" : "NÃO"}</strong>
+                            </p>
+                          ))}
+                      </div>
                     </div>
-                    <div>
-                      <p>
-                        <strong>Conferência Embalagem Primária</strong>
-                      </p>
-                      {fichaRecebimento.questoes
-                        .filter((e) => e.tipo_questao === "PRIMARIA")
-                        .map(({ questao_conferencia, resposta }, idx) => (
-                          <p key={idx}>
-                            {questao_conferencia.questao}:{" "}
-                            <strong>{resposta ? "SIM" : "NÃO"}</strong>
-                          </p>
-                        ))}
-                    </div>
-                  </div>
-                  <hr />
-                  <p>
-                    Observações da Conferência:{" "}
-                    <strong>{fichaRecebimento.observacoes_conferencia}</strong>
-                  </p>
-                </section>
-                <section id="ocorrencias">
-                  <>
+                    <hr />
                     <p>
-                      HOUVE OCORRÊNCIA(S) NO RECEBIMENTO:{" "}
+                      Observações da Conferência:{" "}
                       <strong>
-                        {fichaRecebimento.houve_ocorrencia ? "SIM" : "NÃO"}
+                        {fichaRecebimento.observacoes_conferencia}
                       </strong>
                     </p>
-                    {fichaRecebimento.ocorrencias.length > 0 &&
-                      fichaRecebimento.ocorrencias.map(
-                        (ocorrencia: OcorrenciaFichaRecebimento) => {
-                          if (ocorrencia.tipo === "OUTROS_MOTIVOS")
+                  </section>
+                )}
+                {fichaRecebimento?.reposicao_cronograma?.tipo !== "Credito" && (
+                  <section id="ocorrencias">
+                    <>
+                      <p>
+                        HOUVE OCORRÊNCIA(S) NO RECEBIMENTO:{" "}
+                        <strong>
+                          {fichaRecebimento.houve_ocorrencia ? "SIM" : "NÃO"}
+                        </strong>
+                      </p>
+                      {fichaRecebimento.ocorrencias.length > 0 &&
+                        fichaRecebimento.ocorrencias.map(
+                          (ocorrencia: OcorrenciaFichaRecebimento) => {
+                            if (ocorrencia.tipo === "OUTROS_MOTIVOS")
+                              return (
+                                <>
+                                  <p>
+                                    Tipo de Ocorrência:{" "}
+                                    <strong>OUTROS MOTIVOS</strong>
+                                  </p>
+                                  <p>
+                                    Descrever a ocorrência:{" "}
+                                    <strong>{ocorrencia.descricao}</strong>
+                                  </p>
+                                </>
+                              );
                             return (
                               <>
                                 <p>
                                   Tipo de Ocorrência:{" "}
-                                  <strong>OUTROS MOTIVOS</strong>
+                                  <strong>{ocorrencia.tipo}</strong>
+                                </p>
+                                <p>
+                                  Ocorrência em relação a:{" "}
+                                  <strong>{ocorrencia.relacao}</strong>
+                                </p>
+                                {ocorrencia?.numero_nota && (
+                                  <p>
+                                    Nº das Notas Fiscais Sujeitas a Pagamento
+                                    Parcial:{" "}
+                                    <strong>{ocorrencia.relacao}</strong>
+                                  </p>
+                                )}
+                                <p>
+                                  Quantidade Faltante:{" "}
+                                  <strong>{ocorrencia.quantidade}</strong>
                                 </p>
                                 <p>
                                   Descrever a ocorrência:{" "}
                                   <strong>{ocorrencia.descricao}</strong>
                                 </p>
+                                <hr />
                               </>
                             );
-                          return (
-                            <>
-                              <p>
-                                Tipo de Ocorrência:{" "}
-                                <strong>{ocorrencia.tipo}</strong>
-                              </p>
-                              <p>
-                                Ocorrência em relação a:{" "}
-                                <strong>{ocorrencia.relacao}</strong>
-                              </p>
-                              {ocorrencia?.numero_nota && (
-                                <p>
-                                  Nº das Notas Fiscais Sujeitas a Pagamento
-                                  Parcial: <strong>{ocorrencia.relacao}</strong>
-                                </p>
-                              )}
-                              <p>
-                                Quantidade Faltante:{" "}
-                                <strong>{ocorrencia.quantidade}</strong>
-                              </p>
-                              <p>
-                                Descrever a ocorrência:{" "}
-                                <strong>{ocorrencia.descricao}</strong>
-                              </p>
-                              <hr />
-                            </>
-                          );
-                        }
-                      )}
-                  </>
-                </section>
-                <section id="observacoes">
-                  <p>
-                    Descreva as observações necessárias:{" "}
-                    <strong>{fichaRecebimento.observacao}</strong>
-                  </p>
-                  <p>Documentos anexados:</p>
-                  <div className="col-3">
-                    {fichaRecebimento.arquivos.map(({ arquivo }) => (
-                      <BotaoAnexo urlAnexo={arquivo} />
-                    ))}
-                  </div>
-                </section>
+                          },
+                        )}
+                    </>
+                  </section>
+                )}
+                {fichaRecebimento?.reposicao_cronograma?.tipo !== "Credito" && (
+                  <section id="observacoes">
+                    <p>
+                      Descreva as observações necessárias:{" "}
+                      <strong>{fichaRecebimento.observacao}</strong>
+                    </p>
+                    <p>Documentos anexados:</p>
+                    <div className="col-3">
+                      {fichaRecebimento.arquivos.map(({ arquivo }) => (
+                        <BotaoAnexo urlAnexo={arquivo} />
+                      ))}
+                    </div>
+                  </section>
+                )}
               </Collapse>
             </div>
           )}

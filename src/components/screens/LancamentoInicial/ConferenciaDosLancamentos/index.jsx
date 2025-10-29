@@ -123,7 +123,7 @@ export const ConferenciaDosLancamentos = () => {
       setFeriadosNoMes(response.data.results);
     } else {
       setErroAPI(
-        "Erro ao carregar feriados do mês para esta escola. Tente novamente mais tarde."
+        "Erro ao carregar feriados do mês para esta escola. Tente novamente mais tarde.",
       );
     }
   };
@@ -139,7 +139,7 @@ export const ConferenciaDosLancamentos = () => {
       setDiasCalendario(response.data);
     } else {
       setErroAPI(
-        "Erro ao carregar dias do calendário escolar para esta escola. Tente novamente mais tarde."
+        "Erro ao carregar dias do calendário escolar para esta escola. Tente novamente mais tarde.",
       );
     }
   };
@@ -153,7 +153,7 @@ export const ConferenciaDosLancamentos = () => {
       setPeriodosGruposMedicao(response.data.results);
     } else {
       setErroAPI(
-        "Erro ao carregar períodos/grupos da solicitação de medição. Tente novamente mais tarde."
+        "Erro ao carregar períodos/grupos da solicitação de medição. Tente novamente mais tarde.",
       );
     }
   };
@@ -162,14 +162,14 @@ export const ConferenciaDosLancamentos = () => {
     usuarioEhDRE() &&
     solicitacao &&
     ["MEDICAO_ENVIADA_PELA_UE", "MEDICAO_CORRIGIDA_PELA_UE"].includes(
-      solicitacao.status
+      solicitacao.status,
     );
 
   const exibirBotoesOcorrenciaCODAE =
     usuarioEhMedicao() &&
     solicitacao &&
     ["MEDICAO_APROVADA_PELA_DRE", "MEDICAO_CORRIGIDA_PARA_CODAE"].includes(
-      solicitacao.status
+      solicitacao.status,
     );
 
   const desabilitarSolicitarCorrecaoOcorrenciaDRE =
@@ -233,7 +233,7 @@ export const ConferenciaDosLancamentos = () => {
 
   const habilitaBotaoCienteCorrecoes = () => {
     const todosPeriodosGruposAprovadosCODAE = !periodosGruposMedicao.some(
-      (periodoGrupo) => periodoGrupo.status !== "MEDICAO_APROVADA_PELA_CODAE"
+      (periodoGrupo) => periodoGrupo.status !== "MEDICAO_APROVADA_PELA_CODAE",
     );
     return (
       usuarioEhDRE() &&
@@ -251,7 +251,7 @@ export const ConferenciaDosLancamentos = () => {
     payload.append("dre_ciencia_correcao_data", getISOLocalDatetimeString());
     const response = await updateSolicitacaoMedicaoInicial(
       solicitacao.uuid,
-      payload
+      payload,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Assinatura confirmada com sucesso!");
@@ -291,13 +291,13 @@ export const ConferenciaDosLancamentos = () => {
         const arquivoPdfOcorrencia = response.data.ocorrencia;
         const logOcorrencia = arquivoPdfOcorrencia.logs.find((log) =>
           ["Correção solicitada", "Aprovado pela DRE"].includes(
-            log.status_evento_explicacao
-          )
+            log.status_evento_explicacao,
+          ),
         );
         const logOcorrenciaCODAE = arquivoPdfOcorrencia.logs.find((log) =>
           ["Correção solicitada pela CODAE", "Aprovado pela CODAE"].includes(
-            log.status_evento_explicacao
-          )
+            log.status_evento_explicacao,
+          ),
         );
         setOcorrencia(arquivoPdfOcorrencia);
         setLogCorrecaoOcorrencia(logOcorrencia);
@@ -313,7 +313,7 @@ export const ConferenciaDosLancamentos = () => {
                 logOcorrenciaCODAE.status_evento_explicacao ===
                   "Correção solicitada pela CODAE")
               ? "Solicitação de correção no Formulário de Ocorrências realizada em"
-              : "Formulário de Ocorrências aprovado em"
+              : "Formulário de Ocorrências aprovado em",
           );
         }
       }
@@ -351,20 +351,20 @@ export const ConferenciaDosLancamentos = () => {
     const escolaUuid = location.state.escolaUuid;
     const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
       escolaUuid,
-      { ano: anoSolicitacao, mes: mesSolicitacao, escola: escolaUuid }
+      { ano: anoSolicitacao, mes: mesSolicitacao, escola: escolaUuid },
     );
     if (response_vinculos.status === HTTP_STATUS.OK) {
       setPeriodosSimples(response_vinculos.data.results);
     } else {
       setErroAPI(
-        "Erro ao carregar períodos simples. Tente novamente mais tarde."
+        "Erro ao carregar períodos simples. Tente novamente mais tarde.",
       );
     }
     await getPeriodosComEventoEspecificoAsync(response_vinculos.data.results);
   };
 
   const getPeriodosComEventoEspecificoAsync = async (
-    periodosSimplesVinculos
+    periodosSimplesVinculos,
   ) => {
     const escola_uuid = location.state.escolaUuid;
     const tipo_solicitacao = "Inclusão de";
@@ -383,20 +383,20 @@ export const ConferenciaDosLancamentos = () => {
         return vinculo;
       });
       const nomesPeriodosNormais = periodosSimplesVinculos.map(
-        (vinculo) => vinculo.periodo_escolar.nome
+        (vinculo) => vinculo.periodo_escolar.nome,
       );
       const pEspecificos = data.filter(
         (vinculo) =>
-          !nomesPeriodosNormais.includes(vinculo.periodo_escolar.nome)
+          !nomesPeriodosNormais.includes(vinculo.periodo_escolar.nome),
       );
       let periodos = periodosSimplesVinculos.concat(pEspecificos);
       periodos = periodos.sort((obj1, obj2) =>
-        obj1.periodo_escolar.posicao > obj2.periodo_escolar.posicao ? 1 : -1
+        obj1.periodo_escolar.posicao > obj2.periodo_escolar.posicao ? 1 : -1,
       );
       setPeriodosSimples(periodos);
     } else {
       setErroAPI(
-        "Erro ao carregar Inclusões Autorizadas com Evento Específico. Tente novamente mais tarde."
+        "Erro ao carregar Inclusões Autorizadas com Evento Específico. Tente novamente mais tarde.",
       );
     }
   };
@@ -413,10 +413,10 @@ export const ConferenciaDosLancamentos = () => {
   useEffect(() => {
     if (solicitacao && periodosGruposMedicao) {
       const todosPeriodosGruposAprovadosDRE = !periodosGruposMedicao.some(
-        (periodoGrupo) => periodoGrupo.status !== "MEDICAO_APROVADA_PELA_DRE"
+        (periodoGrupo) => periodoGrupo.status !== "MEDICAO_APROVADA_PELA_DRE",
       );
       const todosPeriodosGruposAprovadosCODAE = !periodosGruposMedicao.some(
-        (periodoGrupo) => periodoGrupo.status !== "MEDICAO_APROVADA_PELA_CODAE"
+        (periodoGrupo) => periodoGrupo.status !== "MEDICAO_APROVADA_PELA_CODAE",
       );
       if (
         ([
@@ -465,35 +465,35 @@ export const ConferenciaDosLancamentos = () => {
       ];
 
       const algumPeriodoGrupoParaCorrigirPelaDRE = periodosGruposMedicao.some(
-        (periodoGrupo) => periodoGrupo.status === "MEDICAO_CORRECAO_SOLICITADA"
+        (periodoGrupo) => periodoGrupo.status === "MEDICAO_CORRECAO_SOLICITADA",
       );
 
       const algumPeriodoGrupoParaCorrigirPelaCODAE = periodosGruposMedicao.some(
         (periodoGrupo) =>
-          periodoGrupo.status === "MEDICAO_CORRECAO_SOLICITADA_CODAE"
+          periodoGrupo.status === "MEDICAO_CORRECAO_SOLICITADA_CODAE",
       );
 
       const todosPeriodosGruposAnalisadosPelaDRE = periodosGruposMedicao.every(
         (periodoGrupo) =>
           periodoGrupo.status === "MEDICAO_CORRECAO_SOLICITADA" ||
-          periodoGrupo.status === "MEDICAO_APROVADA_PELA_DRE"
+          periodoGrupo.status === "MEDICAO_APROVADA_PELA_DRE",
       );
 
       const todosPeriodosGruposAnalisadosPelaCODAE =
         periodosGruposMedicao.every(
           (periodoGrupo) =>
             periodoGrupo.status === "MEDICAO_CORRECAO_SOLICITADA_CODAE" ||
-            periodoGrupo.status === "MEDICAO_APROVADA_PELA_CODAE"
+            periodoGrupo.status === "MEDICAO_APROVADA_PELA_CODAE",
         );
 
       if (
         (usuarioEhDRE() &&
           !statusPermitidosSolicitarCorrecaoPelaDRE.includes(
-            solicitacao.status
+            solicitacao.status,
           )) ||
         (usuarioEhMedicao() &&
           !statusPermitidosSolicitarCorrecaoPelaCODAE.includes(
-            solicitacao.status
+            solicitacao.status,
           ))
       ) {
         if (solicitacao.com_ocorrencias) {
@@ -543,7 +543,7 @@ export const ConferenciaDosLancamentos = () => {
       toastSuccess(`Período ${nomePeridoFormatado} aprovado com sucesso!`);
     } else {
       setErroAPI(
-        `Erro ao aprovar Período ${nomePeridoFormatado}. Tente novamente mais tarde.`
+        `Erro ao aprovar Período ${nomePeridoFormatado}. Tente novamente mais tarde.`,
       );
     }
     Promise.all([
@@ -568,7 +568,7 @@ export const ConferenciaDosLancamentos = () => {
       const response = await dreAprovaSolicitacaoMedicao(solicitacao.uuid);
       if (response.status === HTTP_STATUS.OK) {
         toastSuccess(
-          "Medição aprovada pela DRE e enviada para análise de CODAE"
+          "Medição aprovada pela DRE e enviada para análise de CODAE",
         );
       } else {
         setErroAPI(msgErro);
@@ -654,6 +654,7 @@ export const ConferenciaDosLancamentos = () => {
                         <b className="pb-2 mb-2">Mês do Lançamento</b>
                         <Field
                           component={InputText}
+                          dataTestId="input-mes-lancamento"
                           name="mes_lancamento"
                           disabled={true}
                           placeholder="Mês do Lançamento"
@@ -768,11 +769,11 @@ export const ConferenciaDosLancamentos = () => {
                                       className="download-ocorrencias me-0"
                                       onClick={() => {
                                         medicaoInicialExportarOcorrenciasPDF(
-                                          ocorrencia.ultimo_arquivo
+                                          ocorrencia.ultimo_arquivo,
                                         );
                                         usuarioEhMedicao() &&
                                           medicaoInicialExportarOcorrenciasXLSX(
-                                            ocorrencia.ultimo_arquivo_excel
+                                            ocorrencia.ultimo_arquivo_excel,
                                           );
                                       }}
                                     >
@@ -884,11 +885,11 @@ export const ConferenciaDosLancamentos = () => {
                               form={form}
                               aprovarPeriodo={(
                                 periodoGrupo,
-                                nomePeridoFormatado
+                                nomePeridoFormatado,
                               ) =>
                                 aprovarPeriodo(
                                   periodoGrupo,
-                                  nomePeridoFormatado
+                                  nomePeridoFormatado,
                                 )
                               }
                               values={values}
