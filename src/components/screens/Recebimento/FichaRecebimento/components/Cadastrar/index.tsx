@@ -53,7 +53,10 @@ import {
   maxValue,
   required,
 } from "src/helpers/fieldValidators";
-import { exibeError } from "src/helpers/utilities";
+import {
+  converterDDMMYYYYparaYYYYMMDD,
+  exibeError,
+} from "src/helpers/utilities";
 import { deletaValues } from "src/helpers/formHelper";
 import { stringToBoolean } from "src/helpers/parsers";
 import {
@@ -182,6 +185,9 @@ export default () => {
               : ""
           }`,
           houve_ocorrencia: etapa.houve_ocorrencia,
+          data_ocorrencia: etapa.data_ocorrencia,
+          houve_reposicao: etapa.houve_reposicao,
+          data_programada: etapa.data_programada,
         });
       }
     });
@@ -198,6 +204,10 @@ export default () => {
             ? " - Reposição / Pagamento de Notificação"
             : ""
         }`,
+        data_programada: initialValues.etapa.data_programada,
+        houve_ocorrencia: false,
+        data_ocorrencia: initialValues.etapa.data_ocorrencia,
+        houve_reposicao: initialValues.etapa.houve_reposicao,
       };
       if (initialValues.reposicao_cronograma) obj["houve_ocorrencia"] = true;
       options.push(obj);
@@ -727,6 +737,9 @@ export default () => {
               const reposicaoSelecionada = opcoesReposicao.find(
                 ({ uuid }) => uuid === values.reposicao_cronograma,
               );
+              const etapaSelecionada = getOpcoesEtapas()?.find(
+                (opt) => opt.uuid === values.etapa,
+              );
 
               const { saldoTotalZero, algumZero } =
                 getQuantidadesESaldo(values);
@@ -991,6 +1004,18 @@ export default () => {
                               required
                               validate={required}
                               writable={false}
+                              disabled={!etapaSelecionada}
+                              minDate={
+                                etapaSelecionada
+                                  ? new Date(
+                                      converterDDMMYYYYparaYYYYMMDD(
+                                        etapaSelecionada.houve_ocorrencia
+                                          ? etapaSelecionada.data_ocorrencia
+                                          : etapaSelecionada?.data_programada,
+                                      ),
+                                    )
+                                  : null
+                              }
                             />
                           </div>
                         </div>
@@ -1052,9 +1077,7 @@ export default () => {
                             />
                           </div>
                         </div>
-                        {getOpcoesEtapas()?.find(
-                          (opt) => opt.uuid === values.etapa,
-                        )?.houve_ocorrencia && (
+                        {etapaSelecionada?.houve_ocorrencia && (
                           <div className="row reposicao">
                             <div className="col-6">
                               <RadioButtonField

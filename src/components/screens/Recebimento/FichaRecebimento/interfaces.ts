@@ -134,6 +134,7 @@ export interface EtapaFicha {
   total_embalagens: string;
   uuid: string;
   houve_ocorrencia: boolean;
+  data_ocorrencia: string;
   houve_reposicao: boolean;
 }
 
