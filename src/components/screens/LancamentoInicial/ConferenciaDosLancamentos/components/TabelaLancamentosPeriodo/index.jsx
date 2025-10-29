@@ -357,6 +357,34 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
             params_get_valores_periodos,
           );
           setValoresLancamentos(response_valores_periodos.data);
+          const valoresDietasAutorizadas =
+            response_valores_periodos?.data.filter(
+              (valor) => valor.nome_campo === "dietas_autorizadas",
+            );
+
+          const somaPorCategoria = {};
+
+          response_valores_periodos.data
+            .filter((valor) => valor.nome_campo === "dietas_autorizadas")
+            .forEach((valor) => {
+              const catId = valor.categoria_medicao;
+              somaPorCategoria[catId] =
+                (somaPorCategoria[catId] || 0) + parseInt(valor.valor || 0);
+            });
+
+          const categoriasParaRemover = Object.keys(somaPorCategoria)
+            .filter((catId) => somaPorCategoria[catId] === 0)
+            .map((catId) => parseInt(catId));
+
+          response_valores_periodos.data =
+            response_valores_periodos.data.filter(
+              (valor) =>
+                valor.nome_campo !== "dietas_autorizadas" ||
+                !categoriasParaRemover.includes(valor.categoria_medicao),
+            );
+
+          setValoresLancamentos(response_valores_periodos.data);
+
           let categoriasMedicao;
           const getCategoriasDeMedicaoAsync = async () => {
             if (!categoriasDeMedicao) {
@@ -386,6 +414,12 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 );
                 setCategoriasDeMedicao(categoriasMedicao);
               }
+
+              categoriasMedicao = categoriasMedicao.filter(
+                (categoria) => !categoriasParaRemover.includes(categoria.id),
+              );
+
+              setCategoriasDeMedicao(categoriasMedicao);
             }
           };
           await getCategoriasDeMedicaoAsync();
@@ -408,10 +442,6 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           const valoresMatriculados = response_valores_periodos?.data.filter(
             (valor) => valor.nome_campo === "matriculados",
           );
-          const valoresDietasAutorizadas =
-            response_valores_periodos?.data.filter(
-              (valor) => valor.nome_campo === "dietas_autorizadas",
-            );
 
           tabAlunosEmebs(
             solicitacao?.escola_eh_emebs === true,
