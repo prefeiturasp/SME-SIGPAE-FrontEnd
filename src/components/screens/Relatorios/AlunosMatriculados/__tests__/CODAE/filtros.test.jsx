@@ -81,6 +81,19 @@ describe("Teste Relatório Alunos Matriculados - Usuário CODAE - Filtros", () =
     const optionLOTE1 = screen.getByText("LOTE 01");
     fireEvent.click(optionLOTE1);
 
+    const selectUnidadeEducacional = screen.getByTestId(
+      "select-unidades-educacionais",
+    );
+    const selectControlUE = within(selectUnidadeEducacional).getByRole(
+      "combobox",
+    );
+    fireEvent.mouseDown(selectControlUE);
+
+    const optionEMEFARTHURWHITAKERDES = screen.getByText(
+      "EMEF ARTHUR WHITAKER, DES.",
+    );
+    fireEvent.click(optionEMEFARTHURWHITAKERDES);
+
     const selectTiposTurmas = screen.getByTestId("select-tipos-turmas");
     const selectControlTipoTurma =
       within(selectTiposTurmas).getByRole("combobox");

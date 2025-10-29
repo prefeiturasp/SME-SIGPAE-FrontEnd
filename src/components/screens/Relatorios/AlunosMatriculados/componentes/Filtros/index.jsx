@@ -92,17 +92,7 @@ export const Filtros = ({ ...props }) => {
                       dataTestId="select-lotes"
                       placeholder="Selecione os lotes"
                       selected={values.lotes || []}
-                      options={
-                        values.diretorias_regionais?.length
-                          ? formataOpcoes(
-                              listaOpcoes.lotes.filter((lote) =>
-                                values.diretorias_regionais.includes(
-                                  lote.diretoria_regional.uuid,
-                                ),
-                              ),
-                            )
-                          : lotes
-                      }
+                      options={lotes}
                       onSelectedChanged={(values_) => {
                         form.change(
                           "lotes",
