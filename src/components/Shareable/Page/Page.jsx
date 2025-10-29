@@ -47,11 +47,11 @@ export const Page = ({ ...props }) => {
         if (meusDados.tipo_usuario === "dieta_especial") {
           localStorage.setItem(
             "crn_numero",
-            JSON.stringify(meusDados.crn_numero)
+            JSON.stringify(meusDados.crn_numero),
           );
           localStorage.setItem(
             "registro_funcional",
-            JSON.stringify(meusDados.registro_funcional)
+            JSON.stringify(meusDados.registro_funcional),
           );
         }
         if (
@@ -79,8 +79,8 @@ export const Page = ({ ...props }) => {
   };
 
   const mostrarModalCestaBasica = () => {
-    let dataInicial = new Date("2024-06-03T00:00:00");
-    let dataFinal = new Date("2024-06-29T00:00:00");
+    let dataInicial = new Date("2025-11-03T00:00:00");
+    let dataFinal = new Date("2025-12-06T00:00:00");
     let now = new Date();
 
     if (!ENVIRONMENT.includes("production")) {
