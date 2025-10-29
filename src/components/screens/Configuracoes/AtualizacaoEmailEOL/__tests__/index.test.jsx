@@ -21,7 +21,7 @@ describe("Testes da interface de AtualizacaoEmailEOL", () => {
       .reply(200, mockGetDadosUsuarioEOL);
     mock
       .onPatch(
-        `/cadastro-com-coresso/${mockGetDadosUsuarioEOL.rf}/alterar-email/`
+        `/cadastro-com-coresso/${mockGetDadosUsuarioEOL.rf}/alterar-email/`,
       )
       .reply(200, {});
 
@@ -42,7 +42,7 @@ describe("Testes da interface de AtualizacaoEmailEOL", () => {
             <AtualizacaoEmail />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -77,16 +77,16 @@ describe("Testes da interface de AtualizacaoEmailEOL", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("input-nome-usuario")).toHaveValue(
-        "EDNA INES NATALI DEMETRIO"
+        "EDNA INES NATALI DEMETRIO",
       );
       expect(screen.getByTestId("input-cargo")).toHaveValue(
-        "PROF.ENS.FUND.II E MED.-MATEMATICA"
+        "PROF.ENS.FUND.II E MED.-MATEMATICA",
       );
       expect(screen.getByTestId("input-email")).toHaveValue(
-        "edna.demetrio@sme.prefeitura.sp.gov.br"
+        "edna.demetrio@sme.prefeitura.sp.gov.br",
       );
       expect(screen.getByTestId("input-cpf").value).toEqual(
-        expect.stringContaining("***")
+        expect.stringContaining("***"),
       );
     });
   });
@@ -107,8 +107,21 @@ describe("Testes da interface de AtualizacaoEmailEOL", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("E-mail atualizado com sucesso no EOL!")
+        screen.getByText("E-mail atualizado com sucesso no EOL!"),
       ).toBeInTheDocument();
+    });
+  });
+
+  it("campo RF deve estar desativado ao preencher RF e buscar", async () => {
+    const campoRf = screen.getByTestId("input-rf");
+    fireEvent.change(campoRf, {
+      target: { value: mockGetDadosUsuarioEOL.rf },
+    });
+
+    fireEvent.click(screen.getByTestId("botao-buscar-rf"));
+
+    await waitFor(() => {
+      expect(campoRf).toBeDisabled();
     });
   });
 });

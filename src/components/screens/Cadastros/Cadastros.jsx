@@ -47,21 +47,6 @@ class Cadastros extends Component {
         )}
         {USUARIO_CODAE && (
           <div className="row mt-3">
-            {/* <div
-              className="col-4"
-              onClick={() =>
-                this.setState({ gestaoDeAlimentacao: !gestaoDeAlimentacao })
-              }
-            >
-              <CardLogo titulo={"Cadastro de Perfis"} disabled>
-                <IconePerfil />
-              </CardLogo>
-            </div> */}
-            {/* <div className="col-4">
-              <CardLogo titulo={"Cadastro de Unidades Escolares"} disabled>
-                <IconeUnidadeEscolar />
-              </CardLogo>
-            </div> */}
             <div
               onMouseEnter={() => this.setState({ hoverLotes: true })}
               onMouseLeave={() => this.setState({ hoverLotes: false })}
