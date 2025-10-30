@@ -10,7 +10,6 @@ import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.
 import { getLotesSimples } from "src/services/lote.service";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
-import preview from "jest-preview";
 
 jest.mock("src/services/lote.service");
 jest.mock("src/services/diretoriaRegional.service");
@@ -155,7 +154,6 @@ describe("Container - Dashboard CODAE", () => {
         </Provider>,
       );
     });
-    preview.debug();
     await waitFor(() => {
       expect(screen.getByText("Erro ao carregar lotes")).toBeInTheDocument();
     });

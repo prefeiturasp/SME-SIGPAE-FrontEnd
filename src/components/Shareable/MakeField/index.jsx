@@ -1,4 +1,3 @@
-/* eslint-disable react/no-children-prop */
 import React, { useState } from "react";
 import {
   Form,
@@ -52,6 +51,7 @@ export const makeField =
         ]}
       >
         <Component
+          data-testid={dataTestId}
           className="input-make-field"
           {...input}
           {...rest}

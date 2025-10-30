@@ -69,7 +69,7 @@ export const DashboardCODAE = (props) => {
               {dre.label}
             </Option>
           );
-        })
+        }),
       )
     : [];
 
@@ -85,7 +85,7 @@ export const DashboardCODAE = (props) => {
               {lote.label}
             </Option>
           );
-        })
+        }),
       )
     : [];
 
@@ -165,7 +165,7 @@ export const DashboardCODAE = (props) => {
     await getSolicitacoesPendentesAutorizacaoCODAESecaoPendencias(
       filtroPorVencimento,
       visao,
-      prepararParametros(values)
+      prepararParametros(values),
     ).then((response) => {
       const resumo = response.data.results;
       const correcaoOk = corrigeResumo(resumo);
@@ -255,6 +255,7 @@ export const DashboardCODAE = (props) => {
                             .toLowerCase()
                             .includes(inputValue.toLowerCase())
                         }
+                        data-testid="select-dre"
                       >
                         {opcoesDRE}
                       </Field>
@@ -275,6 +276,7 @@ export const DashboardCODAE = (props) => {
                             .toLowerCase()
                             .includes(inputValue.toLowerCase())
                         }
+                        data-testid="select-lote"
                       >
                         {opcoesLote}
                       </Field>
