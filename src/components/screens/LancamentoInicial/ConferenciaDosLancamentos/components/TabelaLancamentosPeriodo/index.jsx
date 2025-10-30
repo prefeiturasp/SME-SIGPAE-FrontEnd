@@ -357,6 +357,28 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
             params_get_valores_periodos,
           );
           setValoresLancamentos(response_valores_periodos.data);
+          const valoresDietasAutorizadas =
+            response_valores_periodos?.data.filter(
+              (valor) => valor.nome_campo === "dietas_autorizadas",
+            );
+
+          const somaPorCategoria = {};
+
+          valoresDietasAutorizadas.forEach((valor) => {
+            const catId = valor.categoria_medicao;
+            somaPorCategoria[catId] =
+              (somaPorCategoria[catId] || 0) + parseInt(valor.valor || 0);
+          });
+
+          response_valores_periodos.data =
+            response_valores_periodos.data.filter(
+              (valor) =>
+                valor.nome_campo !== "dietas_autorizadas" ||
+                (somaPorCategoria[valor.categoria_medicao] || 0) > 0,
+            );
+
+          setValoresLancamentos(response_valores_periodos.data);
+
           let categoriasMedicao;
           const getCategoriasDeMedicaoAsync = async () => {
             if (!categoriasDeMedicao) {
@@ -386,6 +408,15 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 );
                 setCategoriasDeMedicao(categoriasMedicao);
               }
+
+              categoriasMedicao = categoriasMedicao.filter((categoria) => {
+                if (!categoria.nome.includes("DIETA")) return true;
+
+                const soma = somaPorCategoria[categoria.id] || 0;
+                return soma > 0;
+              });
+
+              setCategoriasDeMedicao(categoriasMedicao);
             }
           };
           await getCategoriasDeMedicaoAsync();
@@ -408,10 +439,6 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           const valoresMatriculados = response_valores_periodos?.data.filter(
             (valor) => valor.nome_campo === "matriculados",
           );
-          const valoresDietasAutorizadas =
-            response_valores_periodos?.data.filter(
-              (valor) => valor.nome_campo === "dietas_autorizadas",
-            );
 
           tabAlunosEmebs(
             solicitacao?.escola_eh_emebs === true,
@@ -1198,7 +1225,12 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 categoriasDeMedicao.length > 0 &&
                 categoriasDeMedicao.map((categoria, idx) => [
                   <div key={categoria.id}>
-                    <b className="pb-2 section-title">{categoria.nome}</b>
+                    <b
+                      className="pb-2 section-title"
+                      data-testid={`categoria-${categoria.nome}`}
+                    >
+                      {categoria.nome}
+                    </b>
                     <section className="tabela-tipos-alimentacao">
                       <article>
                         <div
