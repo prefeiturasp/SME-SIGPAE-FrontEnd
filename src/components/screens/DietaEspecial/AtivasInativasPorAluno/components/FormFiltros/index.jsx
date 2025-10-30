@@ -241,7 +241,9 @@ const FormFiltros = ({
                   component={AutoCompleteField}
                   name="escola"
                   label="Unidade Educacional"
-                  placeholder="Digite um nome"
+                  placeholder={
+                    carregandoEscolas ? "Carregando..." : "Digite um nome"
+                  }
                   className="input-busca-nome-item"
                   disabled={
                     carregandoEscolas ||
