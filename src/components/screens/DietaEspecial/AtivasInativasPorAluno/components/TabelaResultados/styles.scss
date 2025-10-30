@@ -16,6 +16,19 @@
 
 .info-unid-escolar {
   border-top: 1px solid #dadada;
+  display: flex;
+  flex-direction: row;
+}
+
+.texto-destacado {
+  color: green;
+  font-weight: bold;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .foto-aluno {
