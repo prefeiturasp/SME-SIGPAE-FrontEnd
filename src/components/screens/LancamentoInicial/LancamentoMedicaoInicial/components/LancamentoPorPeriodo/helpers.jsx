@@ -1,143 +1,5 @@
-import { get, set } from "lodash";
 import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
-import { usuarioEhDiretorUE, capitalize } from "src/helpers/utilities";
-
-const grupos = {
-  convencional: "Convencional",
-  grupoA: "Dieta especial Grupo A",
-  grupoB: "Dieta especial Grupo B",
-};
-
-const camposMetadeFrequencia = {
-  lanche_4h: "Lanche 4h",
-  lanche: "Lanche",
-  ref_enteral: "Refeição enteral",
-  "refeicoes.0.ref_oferta": "Refeição 1ª oferta",
-  "refeicoes.1.ref_oferta": "Refeição 2ª oferta",
-  "refeicoes.0.sob_oferta": "Sobremesa 1ª oferta",
-  "refeicoes.1.sob_oferta": "Sobremesa 2ª oferta",
-};
-
-export const objectFlattener = (object) => {
-  return Reflect.apply(
-    Array.prototype.concat,
-    [],
-    Object.keys(object).map((key) => {
-      if (object[key] instanceof Object) {
-        return objectFlattener(object[key]);
-      }
-      return object[key];
-    })
-  );
-};
-
-export const tamanhoMaximoObsDiarias = (value) =>
-  value && value.length > 90
-    ? `Observações diárias devem ter 90 caracteres ou menos`
-    : undefined;
-
-export const validateFormLancamento = (
-  formValues,
-  panorama,
-  dadosMatriculados
-) => {
-  let erros = {};
-  if (
-    get(formValues, "convencional.eh_dia_de_sobremesa_doce") === true &&
-    get(formValues, "convencional.tem_sobremesa_doce_na_semana") === true &&
-    get(formValues, "convencional.observacoes") === undefined
-  ) {
-    set(
-      erros,
-      `convencional.observacoes`,
-      "Deve preencher observações diárias"
-    );
-  }
-  for (let grupo of Object.keys(grupos)) {
-    if (formValues[grupo] === undefined) continue;
-    if (grupo === "convencional" && panorama.horas_atendimento === 4) {
-      if (
-        (get(formValues, "convencional.lanche_4h") !== undefined &&
-          get(formValues, "convencional.refeicoes.0.ref_oferta") !==
-            undefined) ||
-        (get(formValues, "convencional.lanche_4h") === undefined &&
-          get(formValues, "convencional.refeicoes.0.ref_oferta") === undefined)
-      ) {
-        const msgErro =
-          'O atendimento dessa escola nesse período é de apenas 4 horas. Preencha OU "Lanche 4h" OU "Refeição 1ª oferta"';
-        set(erros, `convencional.lanche_4h`, msgErro);
-        set(erros, `convencional.refeicoes.0.ref_oferta`, msgErro);
-      }
-    }
-    if (formValues[grupo].frequencia === undefined) {
-      set(erros, `${grupo}.frequencia`, "Deve preencher a frequência");
-      continue;
-    }
-    const frequencia = formValues[grupo]
-      ? parseInt(formValues[grupo].frequencia)
-      : 0;
-    if (frequencia > dadosMatriculados[grupo]) {
-      set(
-        erros,
-        `${grupo}.frequencia`,
-        `Não é possível informar quantidade superior ao número de Dietas Ativas (${dadosMatriculados[grupo]}).`
-      );
-    }
-    for (let [nomeCampo, nomeAmigavelCampo] of Object.entries(
-      camposMetadeFrequencia
-    )) {
-      const valorCampo = get(formValues[grupo], nomeCampo);
-      if (valorCampo) {
-        const valorChave = parseInt(valorCampo);
-        if (
-          valorChave < frequencia / 2 &&
-          get(formValues[grupo], "observacoes") === undefined
-        ) {
-          set(
-            erros,
-            `${grupo}.${nomeCampo}`,
-            "Deve preencher observações diárias"
-          );
-          set(
-            erros,
-            `${grupo}.observacoes`,
-            "Deve preencher observações diárias"
-          );
-        }
-        if (valorChave > frequencia) {
-          set(
-            erros,
-            `${grupo}.${nomeCampo}`,
-            `O valor de ${nomeAmigavelCampo} não pode ser maior que a frequência`
-          );
-        }
-      }
-    }
-  }
-
-  return erros;
-};
-
-export const mockLogs = [
-  {
-    criado_em: "13/07/2022 18:17:32",
-    descricao: "6105374: LAURA PORTO GONCALVES",
-    justificativa: "",
-    resposta_sim_nao: false,
-    status_evento_explicacao: "Em aberto para preenchimento pela UE",
-    usuario: {
-      cargo: "ANALISTA DE SAUDE NIVEL I",
-      cpf: null,
-      crn_numero: null,
-      date_joined: "10/07/2020 13:15:23",
-      email: "escolaemef@admin.com",
-      nome: "SUPER USUARIO ESCOLA EMEF",
-      registro_funcional: "8115257",
-      tipo_usuario: "escola",
-      uuid: "36750ded-5790-433e-b765-0507303828df",
-    },
-  },
-];
+import { capitalize, usuarioEhDiretorUE } from "src/helpers/utilities";
 
 export const CORES = [
   "#198459",
@@ -176,11 +38,11 @@ export const statusPeriodo = (
   quantidadeAlimentacoesLancadas,
   solicitacaoMedicaoInicial,
   grupo = null,
-  textoCabecalho
+  textoCabecalho,
 ) => {
   const obj = quantidadeAlimentacoesLancadas.find(
     (each) =>
-      each.nome_periodo_grupo === nomePeriodoGrupo(grupo, textoCabecalho)
+      each.nome_periodo_grupo === nomePeriodoGrupo(grupo, textoCabecalho),
   );
   if (obj) {
     return obj.status;
@@ -197,11 +59,11 @@ export const statusPeriodo = (
 export const justificativaPeriodo = (
   quantidadeAlimentacoesLancadas,
   grupo = null,
-  textoCabecalho
+  textoCabecalho,
 ) => {
   const obj = quantidadeAlimentacoesLancadas.find(
     (each) =>
-      each.nome_periodo_grupo === nomePeriodoGrupo(grupo, textoCabecalho)
+      each.nome_periodo_grupo === nomePeriodoGrupo(grupo, textoCabecalho),
   );
   if (obj) {
     return obj.justificativa;
@@ -214,7 +76,7 @@ export const desabilitarBotaoEditar = (
   quantidadeAlimentacoesLancadas,
   solicitacaoMedicaoInicial,
   grupo = null,
-  textoCabecalho
+  textoCabecalho,
 ) => {
   if (
     !solicitacaoMedicaoInicial ||
@@ -223,8 +85,8 @@ export const desabilitarBotaoEditar = (
         quantidadeAlimentacoesLancadas,
         solicitacaoMedicaoInicial,
         grupo,
-        textoCabecalho
-      )
+        textoCabecalho,
+      ),
     )
   ) {
     return true;
@@ -238,7 +100,7 @@ export const desabilitarBotaoEditar = (
       quantidadeAlimentacoesLancadas,
       solicitacaoMedicaoInicial,
       grupo,
-      textoCabecalho
+      textoCabecalho,
     ) === "MEDICAO_APROVADA_PELA_DRE"
   ) {
     return false;
@@ -253,78 +115,78 @@ export const textoBotaoCardLancamento = (
   quantidadeAlimentacoesLancadas,
   solicitacaoMedicaoInicial,
   grupo = null,
-  textoCabecalho
+  textoCabecalho,
 ) => {
   return ["MEDICAO_APROVADA_PELA_DRE", "MEDICAO_APROVADA_PELA_CODAE"].includes(
-    solicitacaoMedicaoInicial.status
+    solicitacaoMedicaoInicial.status,
   ) ||
     ["MEDICAO_APROVADA_PELA_DRE", "MEDICAO_APROVADA_PELA_CODAE"].includes(
       statusPeriodo(
         quantidadeAlimentacoesLancadas,
         solicitacaoMedicaoInicial,
         grupo,
-        textoCabecalho
-      )
+        textoCabecalho,
+      ),
     )
     ? "Visualizar"
     : [
-        "MEDICAO_CORRECAO_SOLICITADA",
-        "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-      ].includes(solicitacaoMedicaoInicial.status) &&
-      [
-        "MEDICAO_CORRECAO_SOLICITADA",
-        "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-        "MEDICAO_CORRIGIDA_PELA_UE",
-        "MEDICAO_CORRIGIDA_PARA_CODAE",
-      ].includes(
-        statusPeriodo(
-          quantidadeAlimentacoesLancadas,
-          solicitacaoMedicaoInicial,
-          grupo,
-          textoCabecalho
+          "MEDICAO_CORRECAO_SOLICITADA",
+          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+        ].includes(solicitacaoMedicaoInicial.status) &&
+        [
+          "MEDICAO_CORRECAO_SOLICITADA",
+          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+          "MEDICAO_CORRIGIDA_PELA_UE",
+          "MEDICAO_CORRIGIDA_PARA_CODAE",
+        ].includes(
+          statusPeriodo(
+            quantidadeAlimentacoesLancadas,
+            solicitacaoMedicaoInicial,
+            grupo,
+            textoCabecalho,
+          ),
         )
-      )
-    ? "Corrigir"
-    : "Editar";
+      ? "Corrigir"
+      : "Editar";
 };
 
 export const styleBotaoCardLancamento = (
   quantidadeAlimentacoesLancadas,
   solicitacaoMedicaoInicial,
   grupo = null,
-  textoCabecalho
+  textoCabecalho,
 ) => {
   return ["MEDICAO_APROVADA_PELA_DRE", "MEDICAO_APROVADA_PELA_CODAE"].includes(
-    solicitacaoMedicaoInicial.status
+    solicitacaoMedicaoInicial.status,
   ) ||
     ["MEDICAO_APROVADA_PELA_DRE", "MEDICAO_APROVADA_PELA_CODAE"].includes(
       statusPeriodo(
         quantidadeAlimentacoesLancadas,
         solicitacaoMedicaoInicial,
         grupo,
-        textoCabecalho
-      )
+        textoCabecalho,
+      ),
     )
     ? BUTTON_STYLE.GREEN_OUTLINE
     : [
-        "MEDICAO_CORRECAO_SOLICITADA",
-        "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-      ].includes(solicitacaoMedicaoInicial.status) &&
-      [
-        "MEDICAO_CORRECAO_SOLICITADA",
-        "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-        "MEDICAO_CORRIGIDA_PELA_UE",
-        "MEDICAO_CORRIGIDA_PARA_CODAE",
-      ].includes(
-        statusPeriodo(
-          quantidadeAlimentacoesLancadas,
-          solicitacaoMedicaoInicial,
-          grupo,
-          textoCabecalho
+          "MEDICAO_CORRECAO_SOLICITADA",
+          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+        ].includes(solicitacaoMedicaoInicial.status) &&
+        [
+          "MEDICAO_CORRECAO_SOLICITADA",
+          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+          "MEDICAO_CORRIGIDA_PELA_UE",
+          "MEDICAO_CORRIGIDA_PARA_CODAE",
+        ].includes(
+          statusPeriodo(
+            quantidadeAlimentacoesLancadas,
+            solicitacaoMedicaoInicial,
+            grupo,
+            textoCabecalho,
+          ),
         )
-      )
-    ? BUTTON_STYLE.GREEN
-    : BUTTON_STYLE.GREEN_OUTLINE;
+      ? BUTTON_STYLE.GREEN
+      : BUTTON_STYLE.GREEN_OUTLINE;
 };
 
 export const renderBotaoEnviarCorrecao = (solicitacaoMedicaoInicial) => {
@@ -340,7 +202,7 @@ export const renderBotaoEnviarCorrecao = (solicitacaoMedicaoInicial) => {
 
 export const verificaSeEnviarCorrecaoDisabled = (
   quantidadeAlimentacoesLancadas,
-  solicitacaoMedicaoInicial
+  solicitacaoMedicaoInicial,
 ) => {
   return (
     quantidadeAlimentacoesLancadas.some(
@@ -350,7 +212,7 @@ export const verificaSeEnviarCorrecaoDisabled = (
           "MEDICAO_APROVADA_PELA_CODAE",
           "MEDICAO_CORRIGIDA_PELA_UE",
           "MEDICAO_CORRIGIDA_PARA_CODAE",
-        ].includes(periodo.status)
+        ].includes(periodo.status),
     ) ||
     (solicitacaoMedicaoInicial.com_ocorrencias &&
       ![

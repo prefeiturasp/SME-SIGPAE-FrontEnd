@@ -13,7 +13,12 @@ const ModalCestasBasicas = () => {
   };
 
   return (
-    <Modal dialogClassName="modal-cestas" show={showModal} onHide={closeModal}>
+    <Modal
+      data-testid="modal-cestas"
+      dialogClassName="modal-cestas"
+      show={showModal}
+      onHide={closeModal}
+    >
       <>
         <Modal.Header closeButton>
           <Modal.Title>
