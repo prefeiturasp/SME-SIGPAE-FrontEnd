@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactSelect from "react-select";
 import TooltipIcone from "src/components/Shareable/TooltipIcone";
 import { HelpText } from "../HelpText";
@@ -29,23 +29,37 @@ export const MultiselectRaw = (props) => {
     labelAllOption = "Todos",
   } = props;
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const selectRef = useRef(null);
   const optionsComTodos = useMemo(
     () => [{ label: labelAllOption, value: "*" }, ...options],
-    [options]
+    [options],
   );
 
   const [opcoesSelecionadas, setOpcoesSelecionadas] = useState(
-    optionsComTodos.filter((option) => selected.includes(option.value))
+    optionsComTodos.filter((option) => selected.includes(option.value)),
   );
 
   useEffect(() => {
     setOpcoesSelecionadas(
-      optionsComTodos.filter((option) => selected.includes(option.value))
+      optionsComTodos.filter((option) => selected.includes(option.value)),
     );
   }, [selected]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (selectRef.current && !selectRef.current.contains(event.target)) {
+        setMenuIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="select" data-testid={dataTestId}>
+    <div className="select" data-testid={dataTestId} ref={selectRef}>
       {label && [
         required && !disabled && (
           <span key={0} className="required-asterisk">
@@ -83,7 +97,7 @@ export const MultiselectRaw = (props) => {
           const allValues = options.map((o) => o.value);
           const selectedValues = values.map((v) => v.value);
           const isAllSelected = allValues.every((val) =>
-            selectedValues.includes(val)
+            selectedValues.includes(val),
           );
 
           if (isSelectAllSelected && isAllSelected) {
@@ -101,7 +115,7 @@ export const MultiselectRaw = (props) => {
           }
           const semSelectAll = values.filter((v) => v.value !== "*");
           const isNowAllSelected = allValues.every((val) =>
-            semSelectAll.some((v) => v.value === val)
+            semSelectAll.some((v) => v.value === val),
           );
 
           const novaSelecao = isNowAllSelected
