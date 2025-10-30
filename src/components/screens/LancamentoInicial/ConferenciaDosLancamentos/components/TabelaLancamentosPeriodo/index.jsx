@@ -1225,7 +1225,12 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 categoriasDeMedicao.length > 0 &&
                 categoriasDeMedicao.map((categoria, idx) => [
                   <div key={categoria.id}>
-                    <b className="pb-2 section-title">{categoria.nome}</b>
+                    <b
+                      className="pb-2 section-title"
+                      data-testid={`categoria-${categoria.nome}`}
+                    >
+                      {categoria.nome}
+                    </b>
                     <section className="tabela-tipos-alimentacao">
                       <article>
                         <div
