@@ -100,6 +100,7 @@ export default () => {
                         name="registro_funcional"
                         placeholder="Digite o RF do Servidor"
                         className="input-busca-produto"
+                        disabled={rfBuscado}
                       />
                     </div>
                     <div className="col-6 ps-0">
