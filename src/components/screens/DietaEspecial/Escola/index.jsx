@@ -378,7 +378,7 @@ class solicitacaoDietaEspecial extends Component {
           </div>
           <hr />
           <div className="d-flex justify-content-between align-items-center mb-2">
-            <span className="card-title fw-bold cinza-escuro">
+            <span className="ms-3 card-title fw-bold cinza-escuro">
               Descrição da Solicitação
             </span>
             {!ENVIRONMENT.includes("production") &&
