@@ -12,7 +12,6 @@ import { agregarDefault } from "src/helpers/utilities";
 export default ({ values, form, etapas, recebimentos, setRecebimentos }) => {
   const [collapse, setCollapse] = useState(false);
   const [datasProgramadas, setDatasProgramadas] = useState([]);
-
   const toggleCollapse = () => {
     setCollapse(!collapse);
   };
@@ -86,6 +85,7 @@ export default ({ values, form, etapas, recebimentos, setRecebimentos }) => {
                     <div className="row">
                       <div className="w-100">
                         <Botao
+                          dataTestId={`botao_remover_${index}`}
                           texto=""
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN_OUTLINE}
@@ -101,20 +101,21 @@ export default ({ values, form, etapas, recebimentos, setRecebimentos }) => {
                 <div className="row">
                   <div className="col-4">
                     <Field
+                      dataTestId={`data_recebimento_${index}`}
                       component={SelectSelecione}
                       naoDesabilitarPrimeiraOpcao
                       options={getOptionsDataProgramada(values).filter(
                         (op) =>
                           !datasProgramadas.find(
-                            (dp) => dp.nome === op.nome && dp.index !== index
-                          )
+                            (dp) => dp.nome === op.nome && dp.index !== index,
+                          ),
                       )}
                       label="Data Programada"
                       name={`data_recebimento_${index}`}
                       placeholder={"Selecionar a Data"}
                       onChangeEffect={(e) => {
                         const index_ = datasProgramadas.findIndex(
-                          (dp) => dp.index === index
+                          (dp) => dp.index === index,
                         );
                         const values_ = form.getState().values;
                         const value = e.target.value;
@@ -132,6 +133,7 @@ export default ({ values, form, etapas, recebimentos, setRecebimentos }) => {
                   </div>
                   <div className="col-4">
                     <Field
+                      dataTestId={`carga_select_${index}`}
                       component={SelectSelecione}
                       naoDesabilitarPrimeiraOpcao
                       options={[
@@ -155,6 +157,7 @@ export default ({ values, form, etapas, recebimentos, setRecebimentos }) => {
 
             <div className="text-center mb-2 mt-2">
               <Botao
+                dataTestId="botao-adicionar"
                 texto="+ Adicionar Recebimento"
                 type={BUTTON_TYPE.BUTTON}
                 style={BUTTON_STYLE.GREEN_OUTLINE}

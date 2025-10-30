@@ -59,7 +59,7 @@ export const TabelaResultado = ({ ...props }) => {
                 let totalMatriculados = item.quantidade_alunos;
                 if (item.alunos_por_faixa_etaria && item.escola.exibir_faixas) {
                   totalMatriculados = Object.values(
-                    item.alunos_por_faixa_etaria
+                    item.alunos_por_faixa_etaria,
                   ).reduce((total, value) => {
                     return total + value;
                   }, 0);
@@ -97,19 +97,19 @@ export const TabelaResultado = ({ ...props }) => {
                       </td>
                       <td className="text-center">{totalMatriculados}</td>
                       <td className="text-center">
-                        {item.escola.eh_cei || item.escola.eh_cemei ? (
-                          <i
-                            className={`fas fa-${
-                              showPeridosFaixas[index] &&
-                              showPeridosFaixas[index].active
-                                ? "angle-up"
-                                : "angle-down"
-                            }`}
-                            onClick={() => changeToActive(index)}
-                          />
-                        ) : (
-                          <></>
-                        )}
+                        {(item.escola.eh_cei || item.escola.eh_cemei) &&
+                          item.alunos_por_faixa_etaria && (
+                            <i
+                              data-testid={`icone-faixas-etarias-${index}`}
+                              className={`fas fa-${
+                                showPeridosFaixas[index] &&
+                                showPeridosFaixas[index].active
+                                  ? "angle-up"
+                                  : "angle-down"
+                              }`}
+                              onClick={() => changeToActive(index)}
+                            />
+                          )}
                       </td>
                     </tr>
                     {showPeridosFaixas[index] &&
