@@ -1,9 +1,9 @@
-import { ehEscolaTipoCEMEI } from "../../../../../../helpers/utilities";
+import { ehEscolaTipoCEMEI } from "src/helpers/utilities";
 
 export const ehEmeiDaCemei = (
   escolaInstituicao,
   periodosEscolaCemeiComAlunosEmei,
-  nomeGrupo
+  nomeGrupo,
 ) => {
   return (
     ehEscolaTipoCEMEI(escolaInstituicao) &&
