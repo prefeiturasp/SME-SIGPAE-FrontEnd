@@ -297,6 +297,7 @@ const FormFiltros = ({
                   <Botao
                     texto="Limpar Filtros"
                     className="float-end ms-3"
+                    type="button"
                     onClick={() => {
                       if (tipoUsuario === TIPO_PERFIL.ESCOLA)
                         form.restart({
