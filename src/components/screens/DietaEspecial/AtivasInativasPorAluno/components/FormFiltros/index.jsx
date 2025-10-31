@@ -245,6 +245,7 @@ const FormFiltros = ({
                     carregandoEscolas ? "Carregando..." : "Digite um nome"
                   }
                   className="input-busca-nome-item"
+                  dataTestId="ue-autocomplete"
                   disabled={
                     carregandoEscolas ||
                     tipoUsuario === TIPO_PERFIL.ESCOLA ||
