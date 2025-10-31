@@ -65,9 +65,10 @@ class solicitacaoDietaEspecial extends Component {
             solicitacoesVigentes: formatarSolicitacoesVigentes(
               response.data.results
             ),
-            escolaAtual: response.data.results[0]?.escola?.nome || "",
+            escolaAtual: response.data.results[0]?.escola_destino?.nome || "",
             dreAtual:
-              response.data.results[0]?.escola?.diretoria_regional?.nome || "",
+              response.data.results[0]?.escola_destino?.diretoria_regional
+                ?.nome || "",
           });
         }
       );
