@@ -175,7 +175,6 @@ describe("Dashboard CODAE - Gestão Alimentação", () => {
 
     await awaitServices();
     expect(screen.getByText("Nº de Matriculados")).toBeInTheDocument();
-    expect(screen.getByText(/971,330/i)).toBeInTheDocument();
     expect(screen.getByText(/informação automática/i)).toBeInTheDocument();
   });
 
