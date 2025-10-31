@@ -51,7 +51,6 @@ export const makeField =
         ]}
       >
         <Component
-          data-testid={dataTestId}
           className="input-make-field"
           {...input}
           {...rest}
