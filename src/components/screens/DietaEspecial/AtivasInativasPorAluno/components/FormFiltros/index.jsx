@@ -245,6 +245,7 @@ const FormFiltros = ({
                     carregandoEscolas ? "Carregando..." : "Digite um nome"
                   }
                   className="input-busca-nome-item"
+                  dataTestId="ue-autocomplete"
                   disabled={
                     carregandoEscolas ||
                     tipoUsuario === TIPO_PERFIL.ESCOLA ||
@@ -297,6 +298,7 @@ const FormFiltros = ({
                   <Botao
                     texto="Limpar Filtros"
                     className="float-end ms-3"
+                    type="button"
                     onClick={() => {
                       if (tipoUsuario === TIPO_PERFIL.ESCOLA)
                         form.restart({
