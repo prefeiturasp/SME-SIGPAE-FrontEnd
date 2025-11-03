@@ -229,7 +229,7 @@ describe("AnaliseDocumentosRecebimento - Testes Completos", () => {
       const selectLaboratorio = screen.getByTestId("select-laboratorio");
       const inputLaboratorio = selectLaboratorio.querySelector("select");
       fireEvent.change(inputLaboratorio, {
-        target: { value: "Laboratório Teste" },
+        target: { value: "lab124" },
       });
     });
 
@@ -253,13 +253,13 @@ describe("AnaliseDocumentosRecebimento - Testes Completos", () => {
       const selectLaboratorio = screen.getByTestId("select-laboratorio");
       const inputLaboratorio = selectLaboratorio.querySelector("select");
       fireEvent.change(inputLaboratorio, {
-        target: { value: "Laboratório Teste" },
+        target: { value: "lab124" },
       });
 
       await waitFor(() => {
         expect(
           screen.getByText(
-            "Não se esqueça de verificar se o Laboratório é credenciado",
+            /Não se esqueça de verificar se o Laboratório é credenciado/,
           ),
         ).toBeInTheDocument();
       });
@@ -293,7 +293,7 @@ describe("AnaliseDocumentosRecebimento - Testes Completos", () => {
 
       const selectPrazo = screen.getByTestId("prazo_maximo_0");
       const selectElement = selectPrazo.querySelector("select");
-      fireEvent.change(selectElement, { target: { value: "OUTROS" } });
+      fireEvent.change(selectElement, { target: { value: "OUTRO" } });
 
       await waitFor(() => {
         expect(
