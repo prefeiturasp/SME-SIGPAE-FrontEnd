@@ -35,6 +35,7 @@ export class Calendario extends React.Component {
       currentEvent: undefined,
       mes: moment().month() + 1,
       ano: moment().year(),
+      hasNavigatedOnce: false,
     };
 
     this.moveEvent = this.moveEvent.bind(this);
@@ -57,7 +58,7 @@ export class Calendario extends React.Component {
     const { mes, ano } = this.state;
     this.setState({ loadingDiasCalendario: true });
     const response = await getObjetos(
-      params ? { mes: params.mes, ano: params.ano } : { mes, ano }
+      params ? { mes: params.mes, ano: params.ano } : { mes, ano },
     );
     if (response.status === HTTP_STATUS.OK) {
       this.setState({
@@ -119,7 +120,7 @@ export class Calendario extends React.Component {
         cadastros_calendario_payload.push({
           editais: evento.editais_uuids,
           tipo_unidades: [evento.tipo_unidade.uuid],
-        })
+        }),
       );
     const payload = {
       cadastros_calendario: cadastros_calendario_payload,
@@ -135,7 +136,7 @@ export class Calendario extends React.Component {
         cadastros_calendario_payload2.push({
           editais: evento.editais_uuids,
           tipo_unidades: [evento.tipo_unidade.uuid],
-        })
+        }),
       );
     const payload2 = {
       cadastros_calendario: cadastros_calendario_payload2,
@@ -177,6 +178,7 @@ export class Calendario extends React.Component {
       showModalEditar,
       showModalConfirmarExclusao,
       editais,
+      hasNavigatedOnce,
     } = this.state;
     const {
       nomeObjeto,
@@ -234,6 +236,10 @@ export class Calendario extends React.Component {
                       ),
                     }}
                     onNavigate={(date) => {
+                      if (!hasNavigatedOnce) {
+                        this.setState({ hasNavigatedOnce: true });
+                        return;
+                      }
                       this.setState({
                         mes: date.getMonth() + 1,
                         ano: date.getFullYear(),

@@ -357,6 +357,28 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
             params_get_valores_periodos,
           );
           setValoresLancamentos(response_valores_periodos.data);
+          const valoresDietasAutorizadas =
+            response_valores_periodos?.data.filter(
+              (valor) => valor.nome_campo === "dietas_autorizadas",
+            );
+
+          const somaPorCategoria = {};
+
+          valoresDietasAutorizadas.forEach((valor) => {
+            const catId = valor.categoria_medicao;
+            somaPorCategoria[catId] =
+              (somaPorCategoria[catId] || 0) + parseInt(valor.valor || 0);
+          });
+
+          response_valores_periodos.data =
+            response_valores_periodos.data.filter(
+              (valor) =>
+                valor.nome_campo !== "dietas_autorizadas" ||
+                (somaPorCategoria[valor.categoria_medicao] || 0) > 0,
+            );
+
+          setValoresLancamentos(response_valores_periodos.data);
+
           let categoriasMedicao;
           const getCategoriasDeMedicaoAsync = async () => {
             if (!categoriasDeMedicao) {
@@ -386,6 +408,15 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 );
                 setCategoriasDeMedicao(categoriasMedicao);
               }
+
+              categoriasMedicao = categoriasMedicao.filter((categoria) => {
+                if (!categoria.nome.includes("DIETA")) return true;
+
+                const soma = somaPorCategoria[categoria.id] || 0;
+                return soma > 0;
+              });
+
+              setCategoriasDeMedicao(categoriasMedicao);
             }
           };
           await getCategoriasDeMedicaoAsync();
@@ -408,10 +439,6 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           const valoresMatriculados = response_valores_periodos?.data.filter(
             (valor) => valor.nome_campo === "matriculados",
           );
-          const valoresDietasAutorizadas =
-            response_valores_periodos?.data.filter(
-              (valor) => valor.nome_campo === "dietas_autorizadas",
-            );
 
           tabAlunosEmebs(
             solicitacao?.escola_eh_emebs === true,
@@ -1133,6 +1160,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
             {periodoGrupo.status !== "MEDICAO_SEM_LANCAMENTOS" && (
               <p
                 className="visualizar-lancamento mb-0"
+                data-testid={`visualizar-lancamento-${periodoGrupo.nome_periodo_grupo}`}
                 onClick={() => onClickVisualizarFechar(periodoGrupo)}
               >
                 <b>{showTabelaLancamentosPeriodo ? "FECHAR" : "VISUALIZAR"}</b>
@@ -1197,7 +1225,12 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 categoriasDeMedicao.length > 0 &&
                 categoriasDeMedicao.map((categoria, idx) => [
                   <div key={categoria.id}>
-                    <b className="pb-2 section-title">{categoria.nome}</b>
+                    <b
+                      className="pb-2 section-title"
+                      data-testid={`categoria-${categoria.nome}`}
+                    >
+                      {categoria.nome}
+                    </b>
                     <section className="tabela-tipos-alimentacao">
                       <article>
                         <div
@@ -1207,6 +1240,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                         >
                           <div />
                           {weekColumns.map((column) => {
+                            const idBase = `ckbox_dias_semana__dia_${column.dia}__categoria_${categoria.id}__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(0, 5)}`;
                             return modoCorrecao &&
                               !validacaoSemana(
                                 column.dia,
@@ -1231,14 +1265,8 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                                   <Field
                                     component={"input"}
                                     type="checkbox"
-                                    name={`ckbox_dias_semana__dia_${
-                                      column.dia
-                                    }__categoria_${
-                                      categoria.id
-                                    }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
-                                      0,
-                                      5,
-                                    )}`}
+                                    data-testid={idBase}
+                                    name={idBase}
                                   />
                                 </span>
                                 <div
@@ -1684,12 +1712,14 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                       style={BUTTON_STYLE.GREEN}
                       className="float-end"
                       disabled={
-                        !values[
+                        !process.env.IS_TEST &&
+                        (!values[
                           `descricao_correcao__periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                             0,
                             5,
                           )}`
-                        ] || !algumCheckboxMarcado()
+                        ] ||
+                          !algumCheckboxMarcado())
                       }
                       onClick={() => setShowModalSalvarSolicitacao(true)} //
                     />

@@ -28,30 +28,32 @@ export default () => {
       const usuarioEOL = response.data;
       form.change(
         "nome_servidor",
-        usuarioEOL.nome ? usuarioEOL.nome : undefined
+        usuarioEOL.nome ? usuarioEOL.nome : undefined,
       );
       form.change(
         "cargo_servidor",
-        usuarioEOL.cargo ? usuarioEOL.cargo : undefined
+        usuarioEOL.cargo ? usuarioEOL.cargo : undefined,
       );
       form.change(
         "email_servidor",
-        usuarioEOL.email ? usuarioEOL.email : undefined
+        usuarioEOL.email ? usuarioEOL.email : undefined,
       );
       form.change("cpf", usuarioEOL.cpf);
       form.change(
         "cpf_servidor",
-        usuarioEOL.cpf ? formataCPFCensurado(usuarioEOL.cpf) : undefined
+        usuarioEOL.cpf ? formataCPFCensurado(usuarioEOL.cpf) : undefined,
       );
       form.change("codigo_eol_unidade", usuarioEOL.codigo_eol_unidade);
 
       let t = document.getElementById("inputRF");
       t.focus();
       setRfBuscado(true);
+    } else if (response.status === 403) {
+      toastError("RF não pertence a uma unidade de sua DRE.");
     } else {
       if (values.registro_funcional) {
         toastError(
-          `API do EOL não retornou nada para o RF ${values.registro_funcional}`
+          `API do EOL não retornou nada para o RF ${values.registro_funcional}`,
         );
       }
     }
@@ -98,6 +100,7 @@ export default () => {
                         name="registro_funcional"
                         placeholder="Digite o RF do Servidor"
                         className="input-busca-produto"
+                        disabled={rfBuscado}
                       />
                     </div>
                     <div className="col-6 ps-0">

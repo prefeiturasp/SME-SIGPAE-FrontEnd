@@ -1,59 +1,57 @@
-import CheckboxField from "src/components/Shareable/Checkbox/Field";
-import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
-import withNavigationType from "src/components/Shareable/withNavigationType";
 import { bindActionCreators } from "redux";
 import { Field, FormSection, formValueSelector, reduxForm } from "redux-form";
+import { Botao } from "src/components/Shareable/Botao";
 import {
-  DIETA_ESPECIAL,
-  ESCOLA,
-  RELATORIO,
-} from "../../../../configs/constants";
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import CheckboxField from "src/components/Shareable/Checkbox/Field";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import InputText from "src/components/Shareable/Input/InputText";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import withNavigationType from "src/components/Shareable/withNavigationType";
+import { DIETA_ESPECIAL, ESCOLA, RELATORIO } from "src/configs/constants";
+import { ENVIRONMENT } from "src/constants/config";
+import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import {
   length,
   minLength,
   required,
   validaCPF,
-} from "../../../../helpers/fieldValidators";
+} from "src/helpers/fieldValidators";
 import {
   cpfMask,
   dateDelta,
   deepCopy,
   gerarParametrosConsulta,
   getError,
-} from "../../../../helpers/utilities";
+} from "src/helpers/utilities";
+import { loadSolicitacoesVigentes } from "src/reducers/incluirDietaEspecialReducer";
 import {
-  updateFotoAluno,
+  deleteFotoAluno,
   getAlunoPertenceAEscola,
   getFotoAluno,
-  deleteFotoAluno,
-} from "../../../../services/aluno.service";
+  updateFotoAluno,
+} from "src/services/aluno.service";
 import {
   criaDietaEspecial,
   getDietasEspeciaisVigentesDeUmAluno,
   getSolicitacoesDietaEspecial,
-} from "../../../../services/dietaEspecial.service";
-import { getEscolasSimplissima } from "../../../../services/escola.service";
-import {
-  meusDados,
-  obtemDadosAlunoPeloEOL,
-} from "../../../../services/perfil.service";
-import { Botao } from "../../../Shareable/Botao";
-import { BUTTON_STYLE, BUTTON_TYPE } from "../../../Shareable/Botao/constants";
-import CardMatriculados from "../../../Shareable/CardMatriculados";
-import { InputComData } from "../../../Shareable/DatePicker";
-import InputText from "../../../Shareable/Input/InputText";
-import { toastError, toastSuccess } from "../../../Shareable/Toast/dialogs";
+} from "src/services/dietaEspecial.service";
+import { getEscolasSimplissima } from "src/services/escola.service";
+import { meusDados, obtemDadosAlunoPeloEOL } from "src/services/perfil.service";
 import Laudo from "./componentes/Laudo";
 import Prescritor from "./componentes/Prescritor";
 import SolicitacaoVigente from "./componentes/SolicitacaoVigente";
 import { formatarSolicitacoesVigentes, podeAtualizarFoto } from "./helper";
-import { ENVIRONMENT } from "src/constants/config";
-import { loadSolicitacoesVigentes } from "src/reducers/incluirDietaEspecialReducer";
-
 import "./style.scss";
 
 const minLength6 = minLength(6);
@@ -170,10 +168,10 @@ class solicitacaoDietaEspecial extends Component {
     }
 
     getDietasEspeciaisVigentesDeUmAluno(
-      event.target.value.padStart(6, "0")
+      event.target.value.padStart(6, "0"),
     ).then((response) => {
       this.props.loadSolicitacoesVigentes(
-        formatarSolicitacoesVigentes(response.data.results.slice(0, 1))
+        formatarSolicitacoesVigentes(response.data.results.slice(0, 1)),
       );
     });
 
@@ -190,8 +188,8 @@ class solicitacaoDietaEspecial extends Component {
             change(
               "aluno_json.data_nascimento",
               moment(resposta.data.detail.dt_nascimento_aluno).format(
-                "DD/MM/YYYY"
-              )
+                "DD/MM/YYYY",
+              ),
             );
             getFotoAluno(event.target.value).then((responseFoto) => {
               if (responseFoto.status === HTTP_STATUS.OK) {
@@ -216,7 +214,7 @@ class solicitacaoDietaEspecial extends Component {
             criadoRf: null,
           });
         }
-      }
+      },
     );
   };
 
@@ -283,7 +281,7 @@ class solicitacaoDietaEspecial extends Component {
     });
     const resposta = await getSolicitacoesDietaEspecial(params);
     this.props.loadSolicitacoesVigentes(
-      formatarSolicitacoesVigentes(resposta.data.results)
+      formatarSolicitacoesVigentes(resposta.data.results),
     );
   };
 
@@ -380,7 +378,7 @@ class solicitacaoDietaEspecial extends Component {
           </div>
           <hr />
           <div className="d-flex justify-content-between align-items-center mb-2">
-            <span className="card-title fw-bold cinza-escuro">
+            <span className="ms-3 card-title fw-bold cinza-escuro">
               Descrição da Solicitação
             </span>
             {!ENVIRONMENT.includes("production") &&
@@ -659,7 +657,7 @@ class solicitacaoDietaEspecial extends Component {
                             inputOnChange={(value) => {
                               this.props.change(
                                 "periodo_recreio_inicio",
-                                value
+                                value,
                               );
                             }}
                             showMonthDropdown
@@ -677,7 +675,7 @@ class solicitacaoDietaEspecial extends Component {
                               this.props.periodo_recreio_inicio
                                 ? moment(
                                     this.props.periodo_recreio_inicio,
-                                    "DD/MM/YYYY"
+                                    "DD/MM/YYYY",
                                   ).toDate()
                                 : dateDelta(-360 * 99)
                             }
@@ -691,8 +689,8 @@ class solicitacaoDietaEspecial extends Component {
                                   moment(value, "YYYY-MM-DD").isBefore(
                                     moment(
                                       allValues.periodo_recreio_inicio,
-                                      "YYYY-MM-DD"
-                                    )
+                                      "YYYY-MM-DD",
+                                    ),
                                   )
                                 ) {
                                   return "A data final não pode ser menor que a inicial.";
@@ -722,35 +720,36 @@ class solicitacaoDietaEspecial extends Component {
             </>
           )}
 
-          <hr />
-
-          <article className="card-body footer-button">
-            <Botao
-              texto="Limpar campos"
-              onClick={() => {
-                this.props.reset();
-                this.props.loadSolicitacoesVigentes(null);
-                this.setState({ aluno_nao_matriculado: false });
-                this.setState({ pertence_a_escola: null });
-              }}
-              disabled={pristine || submitting}
-              style={BUTTON_STYLE.GREEN_OUTLINE}
-            />
-            <Botao
-              texto="Enviar"
-              type={BUTTON_TYPE.SUBMIT}
-              onClick={handleSubmit((values) =>
-                this.onSubmit({
-                  ...values,
-                })
-              )}
-              style={BUTTON_STYLE.GREEN}
-              disabled={
-                this.state.pertence_a_escola !== true &&
-                this.state.aluno_nao_matriculado !== true
-              }
-            />
-          </article>
+          <div className="row">
+            <div className="col-12 text-end">
+              <Botao
+                texto="Limpar campos"
+                className="me-4"
+                onClick={() => {
+                  this.props.reset();
+                  this.props.loadSolicitacoesVigentes(null);
+                  this.setState({ aluno_nao_matriculado: false });
+                  this.setState({ pertence_a_escola: null });
+                }}
+                disabled={pristine || submitting}
+                style={BUTTON_STYLE.GREEN_OUTLINE}
+              />
+              <Botao
+                texto="Enviar"
+                type={BUTTON_TYPE.SUBMIT}
+                onClick={handleSubmit((values) =>
+                  this.onSubmit({
+                    ...values,
+                  }),
+                )}
+                style={BUTTON_STYLE.GREEN}
+                disabled={
+                  this.state.pertence_a_escola !== true &&
+                  this.state.aluno_nao_matriculado !== true
+                }
+              />
+            </div>
+          </div>
         </div>
       </form>
     );
@@ -780,7 +779,7 @@ const mapDispatchToProps = (dispatch) =>
     {
       loadSolicitacoesVigentes,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchToProps)(componentNameForm);

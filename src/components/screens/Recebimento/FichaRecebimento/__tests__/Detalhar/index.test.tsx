@@ -11,7 +11,7 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
   beforeEach(async () => {
     mock
       .onGet(
-        `/cronogramas/${mockGetFichaRecebimentoDetalhada.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`
+        `/cronogramas/${mockGetFichaRecebimentoDetalhada.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`,
       )
       .reply(200, mockCronogramaCadastroRecebimento);
     mock
@@ -39,7 +39,7 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
         <MemoryRouter>
           <Detalhar />
           <ToastContainer />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -47,12 +47,12 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
   it("Renderiza dados principais da ficha", async () => {
     expect(
       await screen.findByText(
-        mockGetFichaRecebimentoDetalhada.dados_cronograma.numero
-      )
+        mockGetFichaRecebimentoDetalhada.dados_cronograma.numero,
+      ),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText(mockCronogramaCadastroRecebimento.results.contrato)
+      screen.getByText(mockCronogramaCadastroRecebimento.results.contrato),
     ).toBeInTheDocument();
 
     expect(screen.getByText("Ficha em PDF")).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
       expect(
         screen.getByText((content) => content.includes(titulo), {
           selector: "span.col-8.titulo",
-        })
+        }),
       ).toBeInTheDocument();
     });
   });
@@ -88,12 +88,12 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
 
     expect(
       await screen.findByText(
-        mockCronogramaCadastroRecebimento.results.contrato
-      )
+        mockCronogramaCadastroRecebimento.results.contrato,
+      ),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText(mockCronogramaCadastroRecebimento.results.fornecedor)
+      screen.getByText(mockCronogramaCadastroRecebimento.results.fornecedor),
     ).toBeInTheDocument();
   });
 
@@ -104,7 +104,7 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
     fireEvent.click(collapseTitulo);
 
     expect(
-      await screen.findByText("Observações da Conferência:")
+      await screen.findByText("Observações da Conferência:"),
     ).toBeInTheDocument();
   });
 
@@ -115,9 +115,110 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
     fireEvent.click(collapseTitulo);
 
     expect(
-      await screen.findByText("Descreva as observações necessárias:")
+      await screen.findByText("Descreva as observações necessárias:"),
     ).toBeInTheDocument();
 
     expect(screen.getByText("Visualizar Anexo")).toBeInTheDocument();
+  });
+});
+
+describe("Testes quando reposicao_cronograma.tipo é Credito", () => {
+  beforeEach(async () => {
+    const mockFichaComCredito = {
+      ...mockGetFichaRecebimentoDetalhada,
+      reposicao_cronograma: {
+        tipo: "Credito",
+        descricao: "Crédito",
+      },
+      observacao: "Observação de crédito",
+      arquivos: [
+        {
+          nome: "teste.pdf",
+          arquivo:
+            "https://teste/media/arquivos_fichas_de_recebimentos/ec5fd0b5-5238-4633-8da7-1ed52abbceee.pdf",
+        },
+      ],
+    };
+
+    mock
+      .onGet(
+        `/cronogramas/${mockFichaComCredito.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`,
+      )
+      .reply(200, mockCronogramaCadastroRecebimento);
+    mock
+      .onGet(`/fichas-de-recebimento/${mockFichaComCredito.uuid}/`)
+      .reply(200, mockFichaComCredito);
+
+    Object.defineProperty(window, "location", {
+      value: {
+        search: `?uuid=${mockFichaComCredito.uuid}`,
+      },
+      writable: true,
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Detalhar />
+          <ToastContainer />
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("Não renderiza collapses específicos quando reposicao_cronograma.tipo é Credito", async () => {
+    const collapsesNaoRenderizados = [
+      "Laudos",
+      "Veículos e Quantidade do Recebimento",
+      "Conferência das Rotulagens",
+      "Ocorrências",
+      "Observações",
+    ];
+
+    const collapsesRenderizados = [
+      "Dados do Cronograma de Entregas",
+      "Etapas, Partes e Datas do Recebimento",
+    ];
+
+    collapsesNaoRenderizados.forEach((titulo) => {
+      expect(screen.queryByText(titulo)).not.toBeInTheDocument();
+    });
+
+    collapsesRenderizados.forEach((titulo) => {
+      expect(screen.getByText(titulo)).toBeInTheDocument();
+    });
+  });
+
+  it("Renderiza informações de crédito na seção de Etapas, Partes e Datas", async () => {
+    const collapseTitulo = screen.getByText(
+      "Etapas, Partes e Datas do Recebimento",
+      {
+        selector: "span",
+      },
+    );
+    fireEvent.click(collapseTitulo);
+
+    expect(
+      await screen.findByText(
+        "Referente a ocorrência registrada nesta etapa, o Fornecedor optou por:",
+      ),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("Crédito")).toBeInTheDocument();
+    expect(screen.getByText("Observações:")).toBeInTheDocument();
+    expect(screen.getByText("Observação de crédito")).toBeInTheDocument();
+    expect(screen.getByText("Visualizar Anexo")).toBeInTheDocument();
+  });
+
+  it("Renderiza anexos na seção de Etapas quando é crédito", async () => {
+    const collapseTitulo = screen.getByText(
+      "Etapas, Partes e Datas do Recebimento",
+      {
+        selector: "span",
+      },
+    );
+    fireEvent.click(collapseTitulo);
+
+    expect(await screen.findByText("Visualizar Anexo")).toBeInTheDocument();
   });
 });

@@ -6,17 +6,16 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import mock from "src/services/_mock";
-import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
-import React from "react";
 import { MemoryRouter } from "react-router-dom";
+import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
+import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
 import { mockPedidosDREAlteracaoCardapio } from "src/mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapio";
 import { mockPedidosDREAlteracaoCardapioCEI } from "src/mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapioCEI";
 import { mockPedidosDREAlteracaoCardapioCEMEI } from "src/mocks/services/alteracaoCardapio.service/DRE/pedidosDREAlteracaoCardapioCEMEI";
 import PainelPedidosAlteracaoCardapioDREPage from "src/pages/DRE/AlteracaoDeCardapio/PainelPedidosPage.jsx";
-import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
-import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
+import mock from "src/services/_mock";
 
 describe("Teste Página do Painel Pedidos - DRE - Alteração do Tipo de Alimentação", () => {
   beforeEach(async () => {
@@ -47,7 +46,7 @@ describe("Teste Página do Painel Pedidos - DRE - Alteração do Tipo de Aliment
           }}
         >
           <PainelPedidosAlteracaoCardapioDREPage />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -55,14 +54,14 @@ describe("Teste Página do Painel Pedidos - DRE - Alteração do Tipo de Aliment
   it("renderiza blocos de solicitações vencendo, limite e regular", async () => {
     expect(
       screen.getByText(
-        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
-      )
+        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)",
+      ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Solicitações no prazo limite")
+      screen.getByText("Solicitações no prazo limite"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Solicitações no prazo regular")
+      screen.getByText("Solicitações no prazo regular"),
     ).toBeInTheDocument();
   });
 
@@ -71,7 +70,7 @@ describe("Teste Página do Painel Pedidos - DRE - Alteração do Tipo de Aliment
       fireEvent.mouseDown(
         screen
           .getByTestId("select-lote")
-          .querySelector(".ant-select-selection-search-input")
+          .querySelector(".ant-select-selection-search-input"),
       );
     });
 

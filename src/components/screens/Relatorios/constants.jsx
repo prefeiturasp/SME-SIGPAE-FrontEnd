@@ -97,5 +97,5 @@ export const OPTIONS = {
 
 export const TIPOS_TURMAS = {
   REGULAR: "REGULAR",
-  PROGRAMAS: "PROGRAMAS E PROJETOS",
+  PROGRAMAS: "PROGRAMAS",
 };

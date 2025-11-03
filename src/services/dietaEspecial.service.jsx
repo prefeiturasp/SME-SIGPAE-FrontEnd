@@ -56,8 +56,16 @@ export const getDietaEspecial = async (uuid) => {
   }
 };
 
-export const getDietasEspeciaisVigentesDeUmAluno = async (codigo_eol_aluno) => {
-  const url = `${URL_DIETA_ESPECIAL}/solicitacoes-aluno/${codigo_eol_aluno}/`;
+export const getDietasEspeciaisVigentesDeUmAluno = async (
+  codigo_eol_aluno,
+  codigo_eol_escola = null
+) => {
+  let url = `${URL_DIETA_ESPECIAL}/solicitacoes-aluno/${codigo_eol_aluno}/`;
+
+  if (codigo_eol_escola) {
+    url += `?codigo_eol_escola=${codigo_eol_escola}`;
+  }
+
   const OBJ_REQUEST = {
     headers: authToken,
     method: "GET",

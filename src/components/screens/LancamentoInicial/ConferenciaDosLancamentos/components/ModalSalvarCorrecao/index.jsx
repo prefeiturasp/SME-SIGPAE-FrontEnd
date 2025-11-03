@@ -10,7 +10,7 @@ import {
 export const ModalSalvarCorrecao = ({ ...props }) => {
   const { showModal, setShowModal, periodoGrupo, salvarCorrecao } = props;
   const nomePeridoFormatado = formatarNomePeriodo(
-    periodoGrupo.nome_periodo_grupo
+    periodoGrupo.nome_periodo_grupo,
   );
 
   return (

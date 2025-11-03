@@ -1,17 +1,18 @@
 import {
+  act,
+  fireEvent,
   render,
   screen,
-  fireEvent,
   waitFor,
-  act,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
+import configureStore from "redux-mock-store";
 import thunk from "redux-thunk";
-import FormFiltros from "../index";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
+import * as escolaService from "src/services/escola.service";
+import FormFiltros from "../index";
 
 jest.mock("src/services/perfil.service", () => ({
   meusDados: jest.fn().mockResolvedValue({ tipo_perfil: "ADMIN" }),
@@ -47,6 +48,10 @@ jest.mock("src/components/Shareable/Toast/dialogs", () => ({
 }));
 
 jest.mock("src/components/Shareable/FinalFormToRedux", () => () => null);
+
+jest.mock("src/services/escola.service", () => ({
+  getEscolasTercTotal: jest.fn(),
+}));
 
 beforeAll(() => {
   Storage.prototype.getItem = jest.fn(() => "ADMIN");
@@ -143,6 +148,61 @@ describe("FormFiltros - Integração completa", () => {
 
     await act(async () => {
       fireEvent.click(botaoLimpar);
+    });
+  });
+
+  it('não deve submeter o formulário ao clicar em "Limpar Filtros"', async () => {
+    const botaoLimpar = await screen.findByRole("button", {
+      name: /limpar filtros/i,
+    });
+    expect(botaoLimpar).toHaveAttribute("type", "button");
+
+    const form = botaoLimpar.closest("form");
+    expect(form).not.toBeNull();
+
+    const onSubmitSpy = jest.fn((e) => e.preventDefault());
+    form.addEventListener("submit", onSubmitSpy);
+
+    await act(async () => {
+      fireEvent.click(botaoLimpar);
+    });
+
+    await waitFor(() => {
+      expect(onSubmitSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  it("exibe 'Carregando...' na UI enquanto carrega as escolas por DRE", async () => {
+    let resolveRequest;
+    const pending = new Promise((resolve) => (resolveRequest = resolve));
+    escolaService.getEscolasTercTotal.mockReturnValue(pending);
+
+    const optionButanta = await screen.findByRole("option", {
+      name: "BUTANTA",
+    });
+    const selectDre = optionButanta.closest("select");
+    await act(async () => {
+      fireEvent.change(selectDre, { target: { value: "123" } });
+    });
+
+    const loadingText = await screen.findByText("Carregando...");
+    expect(loadingText).toBeInTheDocument();
+
+    await act(async () => {
+      resolveRequest({
+        data: [
+          { uuid: "escola-1", nome: "EMEF ABC", codigo_eol: "000001" },
+          { uuid: "escola-2", nome: "EMEF XYZ", codigo_eol: "000002" },
+        ],
+      });
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText("Carregando...")).toBeNull();
+    });
+    expect(await screen.findByText(/Digite um nome/i)).toBeInTheDocument();
+    expect(escolaService.getEscolasTercTotal).toHaveBeenCalledWith({
+      dre: "123",
     });
   });
 });

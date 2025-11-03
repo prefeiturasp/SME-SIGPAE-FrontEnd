@@ -59,7 +59,7 @@ const formataUuidNomeParaMultiSelect = (results) =>
     };
   });
 
-const formataUuidNomeComCodEol = (results) =>
+export const formataUuidNomeComCodEol = (results) =>
   results.map((r) => {
     return {
       label: r.nome,
@@ -69,7 +69,7 @@ const formataUuidNomeComCodEol = (results) =>
     };
   });
 
-const formataNomeComCodEol = (results) =>
+export const formataNomeComCodEol = (results) =>
   results.map((r) => `${r.codigo_eol} - ${r.nome}`);
 
 export const formFiltrosObtemDreEEscolasNovo = async (
@@ -128,12 +128,9 @@ export const formFiltrosObtemDreEEscolasDietas = async (
       setEscolas(formataUuidNomeComCodEol(resposta2.data));
     } else {
       const respostaDre = await getDiretoriaregionalSimplissima();
-      const respostaEscola = await getEscolasTercTotal();
       setDiretoriasRegionais(
         formataUuidNomeComCodEol(respostaDre.data.results)
       );
-      setNomeEscolas(formataNomeComCodEol(respostaEscola.data));
-      setEscolas(formataUuidNomeComCodEol(respostaEscola.data));
     }
   }
 };

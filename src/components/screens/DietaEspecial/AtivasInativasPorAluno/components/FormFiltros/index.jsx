@@ -13,14 +13,18 @@ import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
 import InputText from "src/components/Shareable/Input/InputText";
 import Select from "src/components/Shareable/Select";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { TIPO_PERFIL } from "src/constants/shared";
 import {
   length,
   requiredSearchSelectUnidEducDietas,
 } from "src/helpers/fieldValidators";
+import { getEscolasTercTotal } from "src/services/escola.service";
 
-import { TIPO_PERFIL } from "src/constants/shared";
-
-import { formFiltrosObtemDreEEscolasDietas } from "src/helpers/dietaEspecial";
+import {
+  formataNomeComCodEol,
+  formataUuidNomeComCodEol,
+  formFiltrosObtemDreEEscolasDietas,
+} from "src/helpers/dietaEspecial";
 
 import {
   dadosDoAluno,
@@ -41,6 +45,7 @@ const FormFiltros = ({
   const navigationType = useNavigationType();
 
   const [carregandoAluno, setCarregandoAluno] = useState(false);
+  const [carregandoEscolas, setCarregandoEscolas] = useState(false);
   const [dadosIniciais, setDadosIniciais] = useState({});
   const [diretoriasRegionais, setDiretoriasRegionais] = useState([]);
   const [desabilitarAluno, setDesabilitarAluno] = useState(null);
@@ -86,7 +91,11 @@ const FormFiltros = ({
   }, []);
 
   const onSubmit = async (formValues) => {
-    setFiltros({ ...formValues, escolas: escolas });
+    const filtros = { ...formValues, escolas: escolas };
+    if (filtros?.dre === "TODAS" || filtros?.dre === "" || !filtros.dre) {
+      delete filtros.dre;
+    }
+    setFiltros(filtros);
   };
 
   const getAlunosFiltrado = (nomeAluno) => {
@@ -162,9 +171,24 @@ const FormFiltros = ({
     return [];
   };
 
+  const carregarEscolasPorDre = async (dreUuid) => {
+    try {
+      const resp =
+        dreUuid === "TODAS"
+          ? await getEscolasTercTotal()
+          : await getEscolasTercTotal({ dre: dreUuid });
+
+      setNomeEscolas(formataNomeComCodEol(resp.data));
+      setEscolas(formataUuidNomeComCodEol(resp.data));
+    } catch {
+      setNomeEscolas([]);
+      setEscolas([]);
+    }
+  };
+
   const tipoUsuario = localStorage.getItem("tipo_perfil");
   return (
-    <Spin tip="Carregando..." spinning={!escolas.length}>
+    <Spin tip="Carregando..." spinning={!diretoriasRegionais.length}>
       <Form
         onSubmit={onSubmit}
         initialValues={dadosIniciais}
@@ -179,7 +203,10 @@ const FormFiltros = ({
                   component={Select}
                   className="input-busca-dre form-control"
                   name="dre"
-                  options={[{ uuid: "", nome: "Todas" }].concat(
+                  options={[
+                    { uuid: "", nome: "Selecione uma opção" },
+                    { uuid: "TODAS", nome: "Todas" },
+                  ].concat(
                     diretoriasRegionais.map((dre) => {
                       return { uuid: dre.value, nome: dre.label };
                     })
@@ -191,15 +218,20 @@ const FormFiltros = ({
                   naoDesabilitarPrimeiraOpcao
                   onChangeEffect={async (e) => {
                     const value = e.target.value;
-                    setNomeEscolas(
-                      escolas
-                        .filter((escola) => value.includes(escola.dre.uuid))
-                        .map(
-                          (escola) => `${escola.codigo_eol} - ${escola.label}`
-                        )
-                    );
-                    tipoUsuario !== TIPO_PERFIL.ESCOLA &&
+
+                    if (tipoUsuario !== TIPO_PERFIL.ESCOLA) {
                       form.change("escola", undefined);
+                    }
+
+                    if (!value) {
+                      setNomeEscolas([]);
+                      setEscolas([]);
+                      return;
+                    }
+
+                    setCarregandoEscolas(true);
+                    await carregarEscolasPorDre(value);
+                    setCarregandoEscolas(false);
                   }}
                 />
               </div>
@@ -209,9 +241,17 @@ const FormFiltros = ({
                   component={AutoCompleteField}
                   name="escola"
                   label="Unidade Educacional"
-                  placeholder={"Digite um nome"}
+                  placeholder={
+                    carregandoEscolas ? "Carregando..." : "Digite um nome"
+                  }
                   className="input-busca-nome-item"
-                  disabled={tipoUsuario === TIPO_PERFIL.ESCOLA || !values.dre}
+                  dataTestId="ue-autocomplete"
+                  disabled={
+                    carregandoEscolas ||
+                    tipoUsuario === TIPO_PERFIL.ESCOLA ||
+                    !values.dre?.[0] ||
+                    values.dre?.[0] === ""
+                  }
                   validate={requiredSearchSelectUnidEducDietas(escolas)}
                 />
               </div>
@@ -258,6 +298,7 @@ const FormFiltros = ({
                   <Botao
                     texto="Limpar Filtros"
                     className="float-end ms-3"
+                    type="button"
                     onClick={() => {
                       if (tipoUsuario === TIPO_PERFIL.ESCOLA)
                         form.restart({

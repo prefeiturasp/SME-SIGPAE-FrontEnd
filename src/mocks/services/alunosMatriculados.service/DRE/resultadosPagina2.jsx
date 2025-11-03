@@ -1,0 +1,296 @@
+export const mockRelatorioAlunosMatriculadosDREResultadosPagina2 = {
+  count: 19,
+  next: null,
+  previous:
+    "http://localhost:8002/relatorio-alunos-matriculados/filtrar/?limit=10&unidades_educacionais%5B%5D=2bdb8564-549c-480c-9205-a66b0d808d2f&unidades_educacionais%5B%5D=faa7c83b-5d21-4870-a756-3852aaf5e48d&unidades_educacionais%5B%5D=370b8839-ec34-44ad-acd9-b5f96a3d0c8c&unidades_educacionais%5B%5D=09fc7985-00c3-48fc-91c7-45ce6b7c9e77",
+  results: [
+    {
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "NOITE",
+        uuid: "2e1424d1-0938-4b78-a644-eca5f1b1f43b",
+        posicao: null,
+        tipo_turno: 5,
+      },
+      escola: {
+        uuid: "faa7c83b-5d21-4870-a756-3852aaf5e48d",
+        nome: "EMEF LUIZ GONZAGA DO NASCIMENTO JR. - GONZAGUINHA",
+        diretoria_regional: {
+          uuid: "680b362b-8f4c-4932-9fd2-6b0aa122fc43",
+          nome: "IPIRANGA",
+        },
+        tipo_unidade: {
+          uuid: "be5dcccc-be9a-4703-a7fa-5ccc23f4d6a0",
+          iniciais: "EMEF",
+        },
+        quantidade_alunos: 1090,
+        lote: {
+          uuid: "87f3e59d-f45f-4dc2-bfb1-0ff6c54d899c",
+          nome: "LOTE 07",
+        },
+        exibir_faixas: false,
+        eh_cei: false,
+        eh_cemei: false,
+      },
+      alunos_por_faixa_etaria: null,
+      quantidade_alunos: 64,
+      tipo_turma: "PROGRAMAS",
+    },
+    {
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "MANHA",
+        uuid: "ce7f3cb2-a216-4931-a04a-43dbcf690a84",
+        posicao: null,
+        tipo_turno: 1,
+      },
+      escola: {
+        uuid: "2bdb8564-549c-480c-9205-a66b0d808d2f",
+        nome: "EMEI ANTONIO RUBBO MULLER, PROF.",
+        diretoria_regional: {
+          uuid: "680b362b-8f4c-4932-9fd2-6b0aa122fc43",
+          nome: "IPIRANGA",
+        },
+        tipo_unidade: {
+          uuid: "789d7af7-3970-4455-9d5c-80118b91d652",
+          iniciais: "EMEI",
+        },
+        quantidade_alunos: 299,
+        lote: {
+          uuid: "87f3e59d-f45f-4dc2-bfb1-0ff6c54d899c",
+          nome: "LOTE 07",
+        },
+        exibir_faixas: false,
+        eh_cei: false,
+        eh_cemei: false,
+      },
+      alunos_por_faixa_etaria: null,
+      quantidade_alunos: 150,
+      tipo_turma: "REGULAR",
+    },
+    {
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "TARDE",
+        uuid: "a12d4887-372a-4452-938b-abd78f6cc466",
+        posicao: null,
+        tipo_turno: 3,
+      },
+      escola: {
+        uuid: "2bdb8564-549c-480c-9205-a66b0d808d2f",
+        nome: "EMEI ANTONIO RUBBO MULLER, PROF.",
+        diretoria_regional: {
+          uuid: "680b362b-8f4c-4932-9fd2-6b0aa122fc43",
+          nome: "IPIRANGA",
+        },
+        tipo_unidade: {
+          uuid: "789d7af7-3970-4455-9d5c-80118b91d652",
+          iniciais: "EMEI",
+        },
+        quantidade_alunos: 299,
+        lote: {
+          uuid: "87f3e59d-f45f-4dc2-bfb1-0ff6c54d899c",
+          nome: "LOTE 07",
+        },
+        exibir_faixas: false,
+        eh_cei: false,
+        eh_cemei: false,
+      },
+      alunos_por_faixa_etaria: null,
+      quantidade_alunos: 149,
+      tipo_turma: "REGULAR",
+    },
+    {
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "MANHA",
+        uuid: "ce7f3cb2-a216-4931-a04a-43dbcf690a84",
+        posicao: null,
+        tipo_turno: 1,
+      },
+      escola: {
+        uuid: "2bdb8564-549c-480c-9205-a66b0d808d2f",
+        nome: "EMEI ANTONIO RUBBO MULLER, PROF.",
+        diretoria_regional: {
+          uuid: "680b362b-8f4c-4932-9fd2-6b0aa122fc43",
+          nome: "IPIRANGA",
+        },
+        tipo_unidade: {
+          uuid: "789d7af7-3970-4455-9d5c-80118b91d652",
+          iniciais: "EMEI",
+        },
+        quantidade_alunos: 299,
+        lote: {
+          uuid: "87f3e59d-f45f-4dc2-bfb1-0ff6c54d899c",
+          nome: "LOTE 07",
+        },
+        exibir_faixas: false,
+        eh_cei: false,
+        eh_cemei: false,
+      },
+      alunos_por_faixa_etaria: null,
+      quantidade_alunos: 1,
+      tipo_turma: "PROGRAMAS",
+    },
+    {
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "INTERMEDIARIO",
+        uuid: "01660a0a-95e3-43c4-a591-86558f96663e",
+        posicao: null,
+        tipo_turno: 2,
+      },
+      escola: {
+        uuid: "2bdb8564-549c-480c-9205-a66b0d808d2f",
+        nome: "EMEI ANTONIO RUBBO MULLER, PROF.",
+        diretoria_regional: {
+          uuid: "680b362b-8f4c-4932-9fd2-6b0aa122fc43",
+          nome: "IPIRANGA",
+        },
+        tipo_unidade: {
+          uuid: "789d7af7-3970-4455-9d5c-80118b91d652",
+          iniciais: "EMEI",
+        },
+        quantidade_alunos: 299,
+        lote: {
+          uuid: "87f3e59d-f45f-4dc2-bfb1-0ff6c54d899c",
+          nome: "LOTE 07",
+        },
+        exibir_faixas: false,
+        eh_cei: false,
+        eh_cemei: false,
+      },
+      alunos_por_faixa_etaria: null,
+      quantidade_alunos: 2,
+      tipo_turma: "PROGRAMAS",
+    },
+    {
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "TARDE",
+        uuid: "a12d4887-372a-4452-938b-abd78f6cc466",
+        posicao: null,
+        tipo_turno: 3,
+      },
+      escola: {
+        uuid: "2bdb8564-549c-480c-9205-a66b0d808d2f",
+        nome: "EMEI ANTONIO RUBBO MULLER, PROF.",
+        diretoria_regional: {
+          uuid: "680b362b-8f4c-4932-9fd2-6b0aa122fc43",
+          nome: "IPIRANGA",
+        },
+        tipo_unidade: {
+          uuid: "789d7af7-3970-4455-9d5c-80118b91d652",
+          iniciais: "EMEI",
+        },
+        quantidade_alunos: 299,
+        lote: {
+          uuid: "87f3e59d-f45f-4dc2-bfb1-0ff6c54d899c",
+          nome: "LOTE 07",
+        },
+        exibir_faixas: false,
+        eh_cei: false,
+        eh_cemei: false,
+      },
+      alunos_por_faixa_etaria: null,
+      quantidade_alunos: 4,
+      tipo_turma: "PROGRAMAS",
+    },
+    {
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "VESPERTINO",
+        uuid: "78fe422c-0f6d-4c87-9d3d-66a59de5a9c6",
+        posicao: null,
+        tipo_turno: 4,
+      },
+      escola: {
+        uuid: "2bdb8564-549c-480c-9205-a66b0d808d2f",
+        nome: "EMEI ANTONIO RUBBO MULLER, PROF.",
+        diretoria_regional: {
+          uuid: "680b362b-8f4c-4932-9fd2-6b0aa122fc43",
+          nome: "IPIRANGA",
+        },
+        tipo_unidade: {
+          uuid: "789d7af7-3970-4455-9d5c-80118b91d652",
+          iniciais: "EMEI",
+        },
+        quantidade_alunos: 299,
+        lote: {
+          uuid: "87f3e59d-f45f-4dc2-bfb1-0ff6c54d899c",
+          nome: "LOTE 07",
+        },
+        exibir_faixas: false,
+        eh_cei: false,
+        eh_cemei: false,
+      },
+      alunos_por_faixa_etaria: null,
+      quantidade_alunos: 1,
+      tipo_turma: "PROGRAMAS",
+    },
+    {
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "MANHA",
+        uuid: "ce7f3cb2-a216-4931-a04a-43dbcf690a84",
+        posicao: null,
+        tipo_turno: 1,
+      },
+      escola: {
+        uuid: "09fc7985-00c3-48fc-91c7-45ce6b7c9e77",
+        nome: "EMEI OTAVIO JOSE DA SILVA JUNIOR",
+        diretoria_regional: {
+          uuid: "680b362b-8f4c-4932-9fd2-6b0aa122fc43",
+          nome: "IPIRANGA",
+        },
+        tipo_unidade: {
+          uuid: "789d7af7-3970-4455-9d5c-80118b91d652",
+          iniciais: "EMEI",
+        },
+        quantidade_alunos: 300,
+        lote: {
+          uuid: "87f3e59d-f45f-4dc2-bfb1-0ff6c54d899c",
+          nome: "LOTE 07",
+        },
+        exibir_faixas: false,
+        eh_cei: false,
+        eh_cemei: false,
+      },
+      alunos_por_faixa_etaria: null,
+      quantidade_alunos: 149,
+      tipo_turma: "REGULAR",
+    },
+    {
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "TARDE",
+        uuid: "a12d4887-372a-4452-938b-abd78f6cc466",
+        posicao: null,
+        tipo_turno: 3,
+      },
+      escola: {
+        uuid: "09fc7985-00c3-48fc-91c7-45ce6b7c9e77",
+        nome: "EMEI OTAVIO JOSE DA SILVA JUNIOR",
+        diretoria_regional: {
+          uuid: "680b362b-8f4c-4932-9fd2-6b0aa122fc43",
+          nome: "IPIRANGA",
+        },
+        tipo_unidade: {
+          uuid: "789d7af7-3970-4455-9d5c-80118b91d652",
+          iniciais: "EMEI",
+        },
+        quantidade_alunos: 300,
+        lote: {
+          uuid: "87f3e59d-f45f-4dc2-bfb1-0ff6c54d899c",
+          nome: "LOTE 07",
+        },
+        exibir_faixas: false,
+        eh_cei: false,
+        eh_cemei: false,
+      },
+      alunos_por_faixa_etaria: null,
+      quantidade_alunos: 151,
+      tipo_turma: "REGULAR",
+    },
+  ],
+};

@@ -1,12 +1,11 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 import Botao from "src/components/Shareable/Botao";
 import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
 
-import "./styles.scss";
-import { Form, Field } from "react-final-form";
+import { Field, Form } from "react-final-form";
 import InputText from "src/components/Shareable/Input/InputText";
+import "./styles.scss";
 
 const CabecalhoPainel = ({ totalDietasAtivas, totalDietasInativas }) => (
   <div className="row cabecalho-painel">
@@ -31,7 +30,7 @@ const TabelaDietas = ({ solicitacoes }) => {
     if (!dados.codigo_eol) {
       link = `/aluno/dieta-especial?eh_aluno_nao_matriculado=true&codigo_eol_escola=${dados.codigo_eol_escola}&nome_aluno=${dados.nome}`;
     } else {
-      link = `/aluno/dieta-especial?codigo_eol=${dados.codigo_eol}`;
+      link = `/aluno/dieta-especial?codigo_eol=${dados.codigo_eol}&codigo_eol_escola=${dados.codigo_eol_escola}`;
     }
     return link;
   };
@@ -43,19 +42,13 @@ const TabelaDietas = ({ solicitacoes }) => {
           return (
             <div key={key}>
               <div className="mt-4 pt-4 info-unid-escolar">
-                <p className="mb-0">Unidade Escolar</p>
-                <p>
+                <p className="mb-0 texto-destacado">Unidade Educacional:</p>
+                <p className="mx-1">
                   {dados.codigo_eol_escola} {dados.escola}
                 </p>
               </div>
-              <div className="row col-12 m-0 p-0">
-                <div className="col-xl-1 col-lg-2 my-auto p-0 foto-aluno">
-                  <img
-                    src={dados.foto_aluno || "/assets/image/no-avatar.png"}
-                    alt="foto-aluno"
-                  />
-                </div>
-                <div className="col-xl-11 col-lg-10 pe-0 ps-4">
+              <div className="col-12 m-0 p-0">
+                <div className="pe-0 ps-0">
                   <div className="mb-3">
                     <Form
                       onSubmit={() => {}}
@@ -87,23 +80,29 @@ const TabelaDietas = ({ solicitacoes }) => {
                   </div>
                   <div className="row">
                     <div className="row col-lg-10 ms-0">
-                      <div>
-                        <p className="fw-bold mb-0">
-                          Quantidade Ativas <br />
-                        </p>
-                        {dados.ativas}
+                      <div className="flex-row">
+                        <div className="flex-row">
+                          <p className="fw-bold mb-0">Quantidade Ativas:</p>
+                          <span className="texto-destacado mx-1">
+                            {dados.ativas}
+                          </span>
+                        </div>
+
+                        <div className="ps-4 flex-row">
+                          <p className="fw-bold mb-0">
+                            Classificação da Dieta Especial:
+                          </p>
+                          <span className="texto-destacado mx-1">
+                            {dados.classificacao_dieta_ativa || "--"}
+                          </span>
+                        </div>
                       </div>
-                      <div className="ps-4">
-                        <p className="fw-bold mb-0">
-                          Classificação da Dieta Especial <br />
-                        </p>
-                        {dados.classificacao_dieta_ativa || "--"}
-                      </div>
-                      <div className="ps-4">
-                        <p className="fw-bold mb-0">
-                          Quantidade Inativas <br />
-                        </p>
-                        {dados.inativas}
+
+                      <div className="mt-2 flex-row">
+                        <p className="fw-bold mb-0">Quantidade Inativas:</p>
+                        <span className="texto-destacado mx-1">
+                          {dados.inativas}
+                        </span>
                       </div>
                     </div>
                     <div className="col-lg-2 pe-0">

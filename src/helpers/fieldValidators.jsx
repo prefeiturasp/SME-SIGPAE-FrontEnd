@@ -150,8 +150,10 @@ export const minValue = (min) => (value) =>
 export const naoPodeSerZero = (value) =>
   value && value < 1 ? "Deve ser ao menos 1" : undefined;
 
-export const maxValue = (max) => (value) =>
-  value && value > max ? `Não pode ser maior que ${max}` : undefined;
+export const maxValue = (max, mensagem) => (value) =>
+  value && value > max
+    ? mensagem || `Não pode ser maior que ${max}`
+    : undefined;
 
 export const maxValueMaiorFrequenciaNoPeriodoIMR = (max) => (value) => {
   return value && value > max

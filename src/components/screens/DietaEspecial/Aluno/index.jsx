@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { Component } from "react";
+import { Component } from "react";
 import { connect } from "react-redux";
 import { formValueSelector, reduxForm } from "redux-form";
 import {
@@ -8,9 +8,9 @@ import {
   getDietasEspeciaisVigentesDeUmAlunoNaoMatriculado,
 } from "../../../../services/dietaEspecial.service";
 import { dadosDoAluno } from "../../../../services/perfil.service";
-import "./style.scss";
-import { formatarSolicitacoesVigentes } from "../Escola/helper";
 import SolicitacaoVigente from "../Escola/componentes/SolicitacaoVigente";
+import { formatarSolicitacoesVigentes } from "../Escola/helper";
+import "./style.scss";
 
 class solicitacaoDietaEspecial extends Component {
   constructor(props) {
@@ -59,13 +59,19 @@ class solicitacaoDietaEspecial extends Component {
           dreAtual: dados.nome_dre,
         });
       });
-      getDietasEspeciaisVigentesDeUmAluno(codigo_eol).then((response) => {
-        this.setState({
-          solicitacoesVigentes: formatarSolicitacoesVigentes(
-            response.data.results
-          ),
-        });
-      });
+      getDietasEspeciaisVigentesDeUmAluno(codigo_eol, codigo_eol_escola).then(
+        (response) => {
+          this.setState({
+            solicitacoesVigentes: formatarSolicitacoesVigentes(
+              response.data.results
+            ),
+            escolaAtual: response.data.results[0]?.escola_destino?.nome || "",
+            dreAtual:
+              response.data.results[0]?.escola_destino?.diretoria_regional
+                ?.nome || "",
+          });
+        }
+      );
     }
   }
 
@@ -89,19 +95,19 @@ class solicitacaoDietaEspecial extends Component {
               <table className="tabela-informacoes-aluno">
                 <tr>
                   <th>Diretoria Regional de Educação</th>
-                  <th>Unidade escolar</th>
+                  <th>Unidade Educacional</th>
                 </tr>
                 <tr>
                   <td>{dreAtual}</td>
                   <td>{escolaAtual}</td>
                 </tr>
                 <tr>
-                  <th>Código EOL</th>
-                  <th>Nome Completo</th>
+                  <th>Cód. EOL e Nome Completo do Aluno</th>
                 </tr>
                 <tr>
-                  <td>{eolAluno}</td>
-                  <td>{nomeAluno}</td>
+                  <td>
+                    {eolAluno} - {nomeAluno}
+                  </td>
                 </tr>
               </table>
             </div>

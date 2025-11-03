@@ -27,6 +27,7 @@ const ModalRelatorio = ({ show, onClose, onSubmit, nomeRelatorio }) => {
       gruposDesabilitados.push("Grupo 1");
       gruposDesabilitados.push("Grupo 2");
       gruposDesabilitados.push("Grupo 5");
+      gruposDesabilitados.push("Grupo 6");
     }
 
     return gruposDesabilitados.includes(grupo);
@@ -39,7 +40,7 @@ const ModalRelatorio = ({ show, onClose, onSubmit, nomeRelatorio }) => {
     } else {
       handleCloseModal();
       toastError(
-        "Erro ao buscar grupos de unidade escolar. Tente novamente mais tarde."
+        "Erro ao buscar grupos de unidade escolar. Tente novamente mais tarde.",
       );
     }
   };

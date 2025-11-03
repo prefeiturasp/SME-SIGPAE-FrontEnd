@@ -49,6 +49,7 @@ import {
   usuarioEhEmpresaTerceirizada,
   usuarioEhCoordenadorNutriSupervisao,
   usuarioEhAdministradorNutriSupervisao,
+  acessoModuloMedicaoRelatorioConsolidado,
 } from "src/helpers/utilities";
 import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";
@@ -77,7 +78,7 @@ export const AcompanhamentoDeLancamentos = () => {
 
   const [dadosDashboard, setDadosDashboard] = useState(null);
   const [statusSelecionado, setStatusSelecionado] = useState(
-    searchParams.get("status")
+    searchParams.get("status"),
   );
   const [resultados, setResultados] = useState(null);
   const [mesesAnos, setMesesAnos] = useState(null);
@@ -86,7 +87,7 @@ export const AcompanhamentoDeLancamentos = () => {
   const [nomesEscolas, setNomesEscolas] = useState(DEFAULT_STATE);
   const [diretoriasRegionais, setDiretoriasRegionais] = useState(null);
   const [diretoriaRegional, setDiretoriaRegional] = useState(
-    searchParams.get("diretoria_regional")
+    searchParams.get("diretoria_regional"),
   );
   const [mudancaDre, setMudancaDre] = useState(false);
 
@@ -152,13 +153,13 @@ export const AcompanhamentoDeLancamentos = () => {
           usuarioEhCODAEGabinete()
         ) {
           NovoDashboardResults = NovoDashboardResults.filter(
-            (medicoes) => !STATUS_RELACAO_DRE_UE.includes(medicoes.status)
+            (medicoes) => !STATUS_RELACAO_DRE_UE.includes(medicoes.status),
           );
         }
 
         if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
           NovoDashboardResults = NovoDashboardResults.filter(
-            (medicoes) => medicoes.status !== "TODOS_OS_LANCAMENTOS"
+            (medicoes) => medicoes.status !== "TODOS_OS_LANCAMENTOS",
           );
         }
 
@@ -172,12 +173,12 @@ export const AcompanhamentoDeLancamentos = () => {
       }
       if (statusSelecionado) {
         setResultados(
-          response.data.results.find((res) => res.status === statusSelecionado)
+          response.data.results.find((res) => res.status === statusSelecionado),
         );
       }
     } else {
       setErroAPI(
-        "Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde."
+        "Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde.",
       );
     }
     setLoadingComFiltros(false);
@@ -190,7 +191,7 @@ export const AcompanhamentoDeLancamentos = () => {
     payload.append("dre_ciencia_correcao_data", getISOLocalDatetimeString());
     const response = await updateSolicitacaoMedicaoInicial(
       solicitacao.uuid,
-      payload
+      payload,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Assinatura confirmada com sucesso!");
@@ -225,7 +226,7 @@ export const AcompanhamentoDeLancamentos = () => {
       setMesesAnos(response.data.results);
     } else {
       setErroAPI(
-        "Erro ao carregar meses/anos das solicitações de medição inicial. Tente novamente mais tarde."
+        "Erro ao carregar meses/anos das solicitações de medição inicial. Tente novamente mais tarde.",
       );
     }
   };
@@ -243,7 +244,7 @@ export const AcompanhamentoDeLancamentos = () => {
         setTiposUnidades(response.data.results);
       } else {
         setErroAPI(
-          "Erro ao carregar tipos de unidades. Tente novamente mais tarde."
+          "Erro ao carregar tipos de unidades. Tente novamente mais tarde.",
         );
       }
     };
@@ -285,8 +286,8 @@ export const AcompanhamentoDeLancamentos = () => {
         if (response.status === HTTP_STATUS.OK) {
           setNomesEscolas(
             response.data.map(
-              (escola) => `${escola.codigo_eol} - ${escola.nome}`
-            )
+              (escola) => `${escola.codigo_eol} - ${escola.nome}`,
+            ),
           );
         } else {
           setErroAPI("Erro ao carregar escolas. Tente novamente mais tarde.");
@@ -338,7 +339,7 @@ export const AcompanhamentoDeLancamentos = () => {
           <Option value="" key={0} hidden>
             Selecione a DRE para visualizar os resultados
           </Option>,
-        ].concat(dres)
+        ].concat(dres),
       );
     } else {
       setErroAPI("Erro ao carregar DREs");
@@ -369,7 +370,7 @@ export const AcompanhamentoDeLancamentos = () => {
     escolaUuid,
     mes,
     ano,
-    status
+    status,
   ) => {
     if (usuarioEhEscolaTerceirizada() || usuarioEhEscolaTerceirizadaDiretor()) {
       navigate(
@@ -382,7 +383,7 @@ export const AcompanhamentoDeLancamentos = () => {
             veioDoAcompanhamentoDeLancamentos: true,
             status,
           },
-        }
+        },
       );
     } else {
       navigate(
@@ -396,7 +397,7 @@ export const AcompanhamentoDeLancamentos = () => {
             mes: mes,
             ano: ano,
           },
-        }
+        },
       );
     }
   };
@@ -413,7 +414,7 @@ export const AcompanhamentoDeLancamentos = () => {
   const handleSubmitRelatorio = async (
     values,
     grupoSelecionado,
-    nomeRelatorio
+    nomeRelatorio,
   ) => {
     const dre = usuarioEhDRE()
       ? meusDados && meusDados.vinculo_atual.instituicao.uuid
@@ -627,16 +628,16 @@ export const AcompanhamentoDeLancamentos = () => {
                                       statusSelecionado !==
                                       "TODOS_OS_LANCAMENTOS"
                                         ? mesAno.status.includes(
-                                            statusSelecionado
+                                            statusSelecionado,
                                           )
-                                        : true
+                                        : true,
                                     )
                                     .map((mesAno) => ({
                                       nome: `${
                                         MESES[parseInt(mesAno.mes) - 1]
                                       } - ${mesAno.ano}`,
                                       uuid: `${mesAno.mes}_${mesAno.ano}`,
-                                    }))
+                                    })),
                                 )}
                                 naoDesabilitarPrimeiraOpcao
                                 validate={required}
@@ -644,7 +645,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                 onChangeEffect={(e) => {
                                   adicionaFiltroNaURL(
                                     "mes_ano",
-                                    e.target.value
+                                    e.target.value,
                                   );
                                 }}
                               />
@@ -683,13 +684,13 @@ export const AcompanhamentoDeLancamentos = () => {
                                   tiposUnidades.map((tipoUnidade) => ({
                                     nome: tipoUnidade.iniciais,
                                     uuid: tipoUnidade.uuid,
-                                  }))
+                                  })),
                                 )}
                                 naoDesabilitarPrimeiraOpcao
                                 onChangeEffect={(e) => {
                                   adicionaFiltroNaURL(
                                     "tipo_unidade",
-                                    e.target.value
+                                    e.target.value,
                                   );
                                 }}
                               />
@@ -701,7 +702,7 @@ export const AcompanhamentoDeLancamentos = () => {
                             <div className="col-8">
                               <Field
                                 dataSource={getNomesItemsFiltrado(
-                                  values.escola
+                                  values.escola,
                                 )}
                                 component={AutoCompleteField}
                                 name="escola"
@@ -732,7 +733,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                 onChangeEffect={(e) => {
                                   adicionaFiltroNaURL(
                                     "ocorrencias",
-                                    e.target.value
+                                    e.target.value,
                                   );
                                 }}
                               />
@@ -835,7 +836,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                                 dado.escola_uuid,
                                                 dado.mes,
                                                 dado.ano,
-                                                dado.status
+                                                dado.status,
                                               )
                                             }
                                             disabled={
@@ -843,7 +844,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                               !usuarioEhDRE()
                                             }
                                             tooltipExterno={getTooltipAcoes(
-                                              dado
+                                              dado,
                                             )}
                                           />
                                           {usuarioEhDRE() &&
@@ -855,13 +856,13 @@ export const AcompanhamentoDeLancamentos = () => {
                                                 icon={BUTTON_ICON.EDIT}
                                                 onClick={async () => {
                                                   await atualizaSolicitacaoMedicaoInicial(
-                                                    dado
+                                                    dado,
                                                   );
                                                   await getDashboardMedicaoInicialAsync(
                                                     {
                                                       status: statusSelecionado,
                                                       ...values,
-                                                    }
+                                                    },
                                                   );
                                                 }}
                                                 disabled={
@@ -874,7 +875,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                               />
                                             )}
                                           {solicitacaoPossuiLancamentos(
-                                            dado
+                                            dado,
                                           ) && (
                                             <Botao
                                               type={BUTTON_TYPE.BUTTON}
@@ -911,31 +912,35 @@ export const AcompanhamentoDeLancamentos = () => {
                                 pageSize={PAGE_SIZE}
                                 current={currentPage}
                               />
-                              {statusSelecionado ===
-                                "MEDICAO_APROVADA_PELA_CODAE" &&
-                              (usuarioEhDRE() || usuarioEhMedicao()) ? (
-                                <div className="col-12 mt-4 botoes-relatorios">
-                                  <Botao
-                                    type={BUTTON_TYPE.BUTTON}
-                                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                                    icon={BUTTON_ICON.FILE_PDF}
-                                    texto="Relatório Unificado"
-                                    onClick={() =>
-                                      setExibirModalRelatorioUnificado(true)
-                                    }
-                                  />
 
-                                  <Botao
-                                    type={BUTTON_TYPE.BUTTON}
-                                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                                    icon={BUTTON_ICON.FILE_EXCEL}
-                                    texto="Relatório Consolidado"
-                                    onClick={() =>
-                                      setExibirModalRelatorioConsolidado(true)
-                                    }
-                                  />
+                              {statusSelecionado ===
+                              "MEDICAO_APROVADA_PELA_CODAE" ? (
+                                <div className="col-12 mt-4 botoes-relatorios">
+                                  {(usuarioEhDRE() || usuarioEhMedicao()) && (
+                                    <Botao
+                                      type={BUTTON_TYPE.BUTTON}
+                                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                                      icon={BUTTON_ICON.FILE_PDF}
+                                      texto="Relatório Unificado"
+                                      onClick={() =>
+                                        setExibirModalRelatorioUnificado(true)
+                                      }
+                                    />
+                                  )}
+                                  {acessoModuloMedicaoRelatorioConsolidado() && (
+                                    <Botao
+                                      type={BUTTON_TYPE.BUTTON}
+                                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                                      icon={BUTTON_ICON.FILE_EXCEL}
+                                      texto="Relatório Consolidado"
+                                      onClick={() =>
+                                        setExibirModalRelatorioConsolidado(true)
+                                      }
+                                    />
+                                  )}
                                 </div>
                               ) : null}
+
                               <ModalSolicitacaoDownload
                                 show={exibirModalCentralDownloads}
                                 setShow={setExibirModalCentralDownloads}
@@ -950,7 +955,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                   handleSubmitRelatorio(
                                     values,
                                     grupoSelecionado,
-                                    "Relatório Unificado"
+                                    "Relatório Unificado",
                                   )
                                 }
                                 nomeRelatorio="Relatório Unificado"
@@ -965,7 +970,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                   handleSubmitRelatorio(
                                     values,
                                     grupoSelecionado,
-                                    "Relatório Consolidado"
+                                    "Relatório Consolidado",
                                   )
                                 }
                                 nomeRelatorio="Relatório Consolidado"
