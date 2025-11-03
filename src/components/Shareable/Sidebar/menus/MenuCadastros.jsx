@@ -17,6 +17,7 @@ import {
   UNIDADES_MEDIDA,
   MARCAS,
   FABRICANTES,
+  RECREIO_NAS_FERIAS,
 } from "src/configs/constants";
 import {
   usuarioEhAdministradorCONTRATOS,
@@ -102,6 +103,13 @@ const MenuCadastros = () => {
           >
             Suspensão de Atividades
           </LeafItem>
+          <>
+            <LeafItem
+              to={`/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`}
+            >
+              Recreio nas Férias
+            </LeafItem>
+          </>
         </>
       )}
       {usuarioEhMedicao() && (
