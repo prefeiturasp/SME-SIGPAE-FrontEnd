@@ -18,6 +18,7 @@ import { mockMeusDadosSuperUsuarioMedicao } from "src/mocks/meusDados/superUsuar
 import { mockGetTiposUnidadeEscolar } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
 import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
 import { mockGetLotesSimples } from "src/mocks/services/lote.service/mockGetLotesSimples";
+import { mockDashboardResultados } from "src/mocks/services/medicaoInicial/dashboard.service/dashboardResultados";
 import { mockGetDashboardMedicaoInicial } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicial";
 import { mockGetDashboardMedicaoInicialNoresults } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetDashboardMedicaoInicialNoResults";
 import { mockGetMesesAnosSolicitacoesMedicaoinicial } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetMesesAnosSolicitacoesMedicaoinicial";
@@ -64,8 +65,13 @@ const setupMocks = () => {
     .onGet("/usuarios/meus-dados/")
     .reply(200, mockMeusDadosSuperUsuarioMedicao);
   mock
-    .onGet("/medicao-inicial/solicitacao-medicao-inicial/dashboard/")
+    .onGet(
+      "/medicao-inicial/solicitacao-medicao-inicial/dashboard-totalizadores/",
+    )
     .reply(200, mockGetDashboardMedicaoInicial);
+  mock
+    .onGet("/medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/")
+    .reply(200, mockDashboardResultados);
   mock
     .onGet("/escolas-simplissima-com-dre-unpaginated/terc-total/")
     .reply(200, mockGetEscolaTercTotal);
@@ -161,7 +167,7 @@ describe("AcompanhamentoDeLancamentos", () => {
 
     it("deve retornar erro quando falhar ao obter dashboard de medição inicial", async () => {
       setupErrorMocks(
-        "/medicao-inicial/solicitacao-medicao-inicial/dashboard/",
+        "/medicao-inicial/solicitacao-medicao-inicial/dashboard-totalizadores/",
       );
 
       await selecionarDRE();
@@ -274,8 +280,15 @@ describe("AcompanhamentoDeLancamentos", () => {
       setMesReferencia();
 
       mock
-        .onGet("/medicao-inicial/solicitacao-medicao-inicial/dashboard/")
+        .onGet(
+          "/medicao-inicial/solicitacao-medicao-inicial/dashboard-totalizadores/",
+        )
         .reply(200, mockGetDashboardMedicaoInicialNoresults);
+      mock
+        .onGet(
+          "/medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/",
+        )
+        .reply(200, { results: { total: 0, dados: [] } });
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
