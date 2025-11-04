@@ -178,7 +178,7 @@ export const AcompanhamentoDeLancamentos = () => {
 
     const response = await getDashboardMedicaoInicialResultados(params);
     if (response.status === HTTP_STATUS.OK) {
-      if (statusSelecionado) {
+      if (statusSelecionado || usuarioEhEscolaTerceirizadaQualquerPerfil()) {
         setResultados(response.data.results);
       }
     } else {
@@ -594,6 +594,9 @@ export const AcompanhamentoDeLancamentos = () => {
                                     }`
                               }
                               dataTestId={dadosPorStatus.status}
+                              getDashboardMedicaoInicialAsync={
+                                getDashboardMedicaoInicialAsync
+                              }
                             >
                               {
                                 MEDICAO_CARD_NOME_POR_STATUS_DRE[
@@ -766,10 +769,10 @@ export const AcompanhamentoDeLancamentos = () => {
                       {resultados && (
                         <>
                           <div className="titulo-tabela m-3">Resultados</div>
-                          {resultados.dados.length === 0 && (
+                          {resultados.dados?.length === 0 && (
                             <div>Nenhum resultado encontrado.</div>
                           )}
-                          {resultados.dados.length > 0 && (
+                          {resultados.dados?.length > 0 && (
                             <>
                               <table className="resultados">
                                 <thead>
