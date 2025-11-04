@@ -105,6 +105,7 @@ export const CadastroEmpresa = () => {
       numero_chamada_publica: null,
       vigencia_de: null,
       vigencia_ate: null,
+      programa: null,
     },
   ]);
   const [terceirizada, setTerceirizada] = useState(undefined);
@@ -285,6 +286,7 @@ export const CadastroEmpresa = () => {
         contrato.numero_chamada_publica;
       data[`vigencia_de_${indice}`] = contrato.vigencias[0]?.data_inicial;
       data[`vigencia_ate_${indice}`] = contrato.vigencias[0]?.data_final;
+      data[`programa_${indice}`] = contrato.programa;
     });
 
     return data;
