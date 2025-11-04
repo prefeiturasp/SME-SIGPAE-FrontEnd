@@ -53,7 +53,7 @@ export const RecreioFerias = () => {
               </div>
 
               <div className="row mt-2">
-                <div className={`col-4`}>
+                <div className="col-2">
                   <Field
                     component={InputComData}
                     label="Período de Realização"
@@ -78,7 +78,7 @@ export const RecreioFerias = () => {
                     // )}
                   />
                 </div>
-                <div className={`col-4`}>
+                <div className="col-2">
                   <Field
                     component={InputComData}
                     label="&nbsp;"

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
@@ -5,25 +6,29 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import Select from "src/components/Shareable/Select";
 import { required } from "src/helpers/fieldValidators";
+import { getLotesAsync } from "src/services/lote.service";
 import "../../style.scss";
 
 interface ModalAdicionarUnidadeEducacionalInterface {
   showModal: boolean;
   closeModal: () => void;
   submitting: boolean;
-  // values: any;
-  // onSubmit: (_values: any) => void;
 }
 
 export const ModalAdicionarUnidadeEducacional = ({
   showModal,
   closeModal,
   submitting,
-}: // values,
-// onSubmit,
-ModalAdicionarUnidadeEducacionalInterface) => {
+}: ModalAdicionarUnidadeEducacionalInterface) => {
+  const [lotes, setLotes] = useState([]);
+
+  useEffect(() => {
+    getLotesAsync(setLotes, "uuid", "nome");
+  }, []);
+
   return (
     <Modal
       dialogClassName="modal-adicionar-unidades-educacionais"
@@ -53,7 +58,7 @@ ModalAdicionarUnidadeEducacionalInterface) => {
                         nome: "Selecione a DRE/Lote",
                         uuid: "",
                       },
-                    ]}
+                    ].concat(lotes)}
                     required
                     validate={required}
                   />
@@ -77,9 +82,10 @@ ModalAdicionarUnidadeEducacionalInterface) => {
 
               <div className="row">
                 <Field
-                  component={Select}
+                  component={MultiselectRaw}
                   label="Unidades Educacionais"
                   name="unidades_educacionais"
+                  selected={[]}
                   options={[
                     {
                       nome: "Selecione as Unidades Educacionais",
@@ -88,6 +94,7 @@ ModalAdicionarUnidadeEducacionalInterface) => {
                   ]}
                   required
                   validate={required}
+                  disabled
                 />
               </div>
 
@@ -105,6 +112,7 @@ ModalAdicionarUnidadeEducacionalInterface) => {
                     ]}
                     required
                     validate={required}
+                    disabled
                   />
                 </div>
                 <div className="w-50">
@@ -118,6 +126,7 @@ ModalAdicionarUnidadeEducacionalInterface) => {
                         uuid: "",
                       },
                     ]}
+                    disabled
                   />
                 </div>
               </div>
