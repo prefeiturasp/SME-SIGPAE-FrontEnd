@@ -95,6 +95,9 @@ const MenuCadastros = () => {
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${FAIXAS_ETARIAS}`}>
             Faixas Etárias
           </LeafItem>
+          <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`}>
+            Recreio nas Férias
+          </LeafItem>
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`}>
             Sobremesa Doce
           </LeafItem>
@@ -103,13 +106,6 @@ const MenuCadastros = () => {
           >
             Suspensão de Atividades
           </LeafItem>
-          <>
-            <LeafItem
-              to={`/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`}
-            >
-              Recreio nas Férias
-            </LeafItem>
-          </>
         </>
       )}
       {usuarioEhMedicao() && (
