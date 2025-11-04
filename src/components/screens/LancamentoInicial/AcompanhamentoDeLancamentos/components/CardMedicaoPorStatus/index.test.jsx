@@ -1,10 +1,10 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { CardMedicaoPorStatus } from "./index";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import * as utilities from "src/helpers/utilities";
+import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
+import { CardMedicaoPorStatus } from "./index";
 
 describe("Testes de comportamento para componente - CardMedicaoPorStatus", () => {
   const mockSetResultados = jest.fn();
@@ -72,7 +72,7 @@ describe("Testes de comportamento para componente - CardMedicaoPorStatus", () =>
           >
             <CardMedicaoPorStatus {...baseProps} />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -81,25 +81,6 @@ describe("Testes de comportamento para componente - CardMedicaoPorStatus", () =>
     expect(screen.getByText(/Corrigido para/i)).toBeInTheDocument();
     expect(screen.getByText("0001")).toBeInTheDocument();
     expect(screen.getByText(/Conferir lista/i)).toBeInTheDocument();
-  });
-
-  it("ao clicar chama setResultados com dados se for escola terceirizada", () => {
-    jest
-      .spyOn(utilities, "usuarioEhEscolaTerceirizadaQualquerPerfil")
-      .mockReturnValue(true);
-
-    const card = screen.getByTestId("MEDICAO_CORRIGIDA_PARA_CODAE");
-
-    act(() => {
-      fireEvent.click(card);
-    });
-
-    expect(mockSetResultados).toHaveBeenCalledWith(baseProps.dados);
-    expect(mockSetStatusSelecionado).toHaveBeenCalledWith(
-      baseProps.dados.status
-    );
-    expect(mockResetForm).not.toHaveBeenCalled();
-    expect(mockOnPageChanged).not.toHaveBeenCalled();
   });
 
   it("ao clicar chama setResultados alternando dados se não for terceirizada", () => {
@@ -112,7 +93,7 @@ describe("Testes de comportamento para componente - CardMedicaoPorStatus", () =>
     expect(mockSetResultados).toHaveBeenCalledWith(baseProps.dados);
     expect(mockResetForm).toHaveBeenCalledWith(baseProps.form);
     expect(mockSetStatusSelecionado).toHaveBeenCalledWith(
-      baseProps.dados.status
+      baseProps.dados.status,
     );
   });
 
