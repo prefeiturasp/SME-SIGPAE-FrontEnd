@@ -35,7 +35,7 @@ const setup = async () => {
       >
         <EmpresasCadastradas />
       </MemoryRouter>,
-      {}
+      {},
     );
   });
 };
@@ -77,7 +77,7 @@ describe("Carrega página de Empresas Cadastradas - CODAE", () => {
   beforeAll(() => {
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
   });
 
@@ -86,5 +86,22 @@ describe("Carrega página de Empresas Cadastradas - CODAE", () => {
     await waitFor(() => expect(getTerceirizada).toHaveBeenCalled());
 
     expect(screen.getByText("Razão Social")).toBeInTheDocument();
+  });
+});
+
+describe("Carrega página de Empresas Cadastradas - CODAE LOGISTICA", () => {
+  beforeAll(() => {
+    localStorage.setItem("perfil", PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA);
+  });
+
+  it("Verifica se empresas foram carregadas e renderizadas corretamente", async () => {
+    await setup();
+    await waitFor(() => expect(getTerceirizada).toHaveBeenCalled());
+
+    expect(screen.getByText("Razão Social")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("botao-expandir-0"));
+    expect(screen.getByText("Leve Leite")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("botao-expandir-1"));
+    expect(screen.getByText("Alimentação Escolar")).toBeInTheDocument();
   });
 });
