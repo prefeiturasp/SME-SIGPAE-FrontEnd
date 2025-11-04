@@ -90,6 +90,7 @@ export const mockEmpresa2 = {
       ata: "54321",
       numero_pregao: "12345",
       numero_chamada_publica: "",
+      programa: "LEVE_LEITE",
     },
   ],
   lotes: [],
