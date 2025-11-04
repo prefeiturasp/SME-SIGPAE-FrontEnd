@@ -9,6 +9,7 @@ import {
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import Select from "src/components/Shareable/Select";
 import { required } from "src/helpers/fieldValidators";
+import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import { getLotesAsync } from "src/services/lote.service";
 import "../../style.scss";
 
@@ -26,18 +27,35 @@ export const ModalAdicionarUnidadeEducacional = ({
   submitting,
 }: ModalAdicionarUnidadeEducacionalInterface) => {
   const [lotes, setLotes] = useState<Option[]>([]);
+  const [unidadesEscolares, setUnidadesEscolares] = useState([]);
 
   useEffect(() => {
-    getLotesAsync(setLotes, "uuid", "nome");
+    const handleCarregaSeletor = async () => {
+      const unidadesEscolares = await getTiposUnidadeEscolar();
+      const formatOpcoesUnidadesEscolares = unidadesEscolares.data.results.map(
+        (unidadeEscolar) => ({
+          nome: unidadeEscolar.iniciais,
+          uuid: unidadeEscolar.iniciais,
+        })
+      );
+      setUnidadesEscolares(formatOpcoesUnidadesEscolares);
+      getLotesAsync(setLotes, "uuid", "nome");
+    };
+
+    handleCarregaSeletor();
   }, []);
 
+  const lotesOpts = useMemo<Option[]>(
+    () => [{ uuid: "", nome: "Selecione a DRE/Lote" }].concat(lotes || []),
+    [lotes]
+  );
+
   const tiposUnidadesOpts = useMemo<Option[]>(
-    () => [
-      { uuid: "", nome: "Selecione o Tipo de Unidade" },
-      { uuid: "ceu", nome: "CEU" },
-      { uuid: "emei", nome: "EMEI" },
-    ],
-    []
+    () =>
+      [{ uuid: "", nome: "Selecione o Tipo de Unidade" }].concat(
+        unidadesEscolares || []
+      ),
+    [unidadesEscolares]
   );
 
   const unidadesEducacionaisOpts = useMemo<Option[]>(
@@ -56,11 +74,6 @@ export const ModalAdicionarUnidadeEducacional = ({
       { uuid: "lanche", nome: "Lanche" },
     ],
     []
-  );
-
-  const lotesOpts = useMemo<Option[]>(
-    () => [{ uuid: "", nome: "Selecione a DRE/Lote" }].concat(lotes || []),
-    [lotes]
   );
 
   return (
