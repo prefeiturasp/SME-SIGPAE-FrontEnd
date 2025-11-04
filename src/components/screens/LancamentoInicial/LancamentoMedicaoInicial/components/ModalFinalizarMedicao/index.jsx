@@ -99,10 +99,11 @@ export const ModalFinalizarMedicao = ({ ...props }) => {
     setValidationFile(validation);
   };
 
-  const removeFile = () => {
-    let arquivos = arquivo;
-    isValidFiles(arquivos);
-    setArquivo(arquivos);
+  const removeFile = (index) => {
+    let newFiles = [...arquivo];
+    newFiles.splice(index, 1);
+    isValidFiles(newFiles);
+    setArquivo(newFiles);
     setDesativarAnexar(false);
   };
 
@@ -151,7 +152,7 @@ export const ModalFinalizarMedicao = ({ ...props }) => {
             </Radio>
           </Radio.Group>
         </div>
-        <div className="row ps-2">
+        <div className="row">
           {showButtonAnexarPlanilha && (
             <Form
               onSubmit={() => {}}
