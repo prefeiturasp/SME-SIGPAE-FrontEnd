@@ -51,7 +51,7 @@ export default () => {
 
   const [carregando, setCarregando] = useState(true);
   const [objeto, setObjeto] = useState<DocumentosRecebimentoParaAnalise>(
-    {} as DocumentosRecebimentoParaAnalise
+    {} as DocumentosRecebimentoParaAnalise,
   );
   const [laudo, setLaudo] = useState<TiposDocumentos>({} as TiposDocumentos);
   const [showModalCancelar, setShowModalCancelar] = useState(false);
@@ -62,7 +62,7 @@ export default () => {
   const [unidades, setUnidades] = useState<OptionsGenerico[]>([]);
   const [laboratorios, setLaboratorios] = useState<OptionsGenerico[]>([]);
   const [initialValues, setInitialValues] = useState<AnaliseDocumentoPayload>(
-    {} as AnaliseDocumentoPayload
+    {} as AnaliseDocumentoPayload,
   );
 
   const voltarPagina = () =>
@@ -76,7 +76,7 @@ export default () => {
     const objeto = response.data;
 
     const laudoIndex = objeto.tipos_de_documentos.findIndex(
-      (tipo) => tipo.tipo_documento === "LAUDO"
+      (tipo) => tipo.tipo_documento === "LAUDO",
     );
     if (laudoIndex !== -1) {
       const laudo = objeto.tipos_de_documentos.splice(laudoIndex, 1)[0];
@@ -93,7 +93,7 @@ export default () => {
       (unidade: UnidadeMedidaSimples) => ({
         uuid: unidade.uuid,
         nome: unidade.nome,
-      })
+      }),
     );
 
     setUnidades(objeto);
@@ -113,7 +113,7 @@ export default () => {
 
   const deletaPrazo = (
     values: AnaliseDocumentoPayload,
-    index: number
+    index: number,
   ): void => {
     let listaChaves = [
       "data_fabricacao",
@@ -145,15 +145,15 @@ export default () => {
         let index = name.split("_")[2];
         return calculaDataMaxima(
           allValues as AnaliseDocumentoPayload,
-          Number(index)
+          Number(index),
         );
       },
-    }
+    },
   );
 
   const calculaDataMaxima = (
     values: AnaliseDocumentoPayload,
-    index: number
+    index: number,
   ): AnaliseDocumentoPayload => {
     let data = values[`data_fabricacao_${index}`];
     let prazo = values[`prazo_maximo_${index}`];
@@ -167,7 +167,7 @@ export default () => {
   };
 
   const formataPayload = (
-    values: AnaliseDocumentoPayload
+    values: AnaliseDocumentoPayload,
   ): AnaliseDocumentoPayload => {
     let payload: AnaliseDocumentoPayload = {
       laboratorio: values.laboratorio,
@@ -175,7 +175,6 @@ export default () => {
       unidade_medida: values.unidade_medida,
       data_final_lote: values.data_final_lote,
       numero_lote_laudo: values.numero_lote_laudo,
-      saldo_laudo: values.saldo_laudo?.split(".").join(""),
       datas_fabricacao_e_prazos: prazos.map((prazo, index) => ({
         data_fabricacao: values[`data_fabricacao_${index}`],
         data_validade: values[`data_validade_${index}`],
@@ -189,13 +188,13 @@ export default () => {
   };
 
   const salvarRascunho = async (
-    values: AnaliseDocumentoPayload
+    values: AnaliseDocumentoPayload,
   ): Promise<void> => {
     let payload = formataPayload(values);
     try {
       let response = await analisaDocumentoRecebimentoRascunho(
         payload,
-        objeto.uuid
+        objeto.uuid,
       );
       if (response.status === 201 || response.status === 200) {
         setCarregando(false);
@@ -212,7 +211,7 @@ export default () => {
   };
 
   const salvarAnalise = async (
-    values: AnaliseDocumentoPayload
+    values: AnaliseDocumentoPayload,
   ): Promise<void> => {
     let payload = formataPayload(values);
     try {
@@ -222,7 +221,7 @@ export default () => {
         toastSuccess(
           values.correcao_solicitada
             ? "Correções solicitadas ao Fornecedor com sucesso!"
-            : "Documentos aprovados com sucesso!"
+            : "Documentos aprovados com sucesso!",
         );
         setShowModalAprovar(false);
         setShowModalCorrecao(false);
@@ -246,7 +245,6 @@ export default () => {
       numero_lote_laudo: doc.numero_lote_laudo
         ? doc.numero_lote_laudo
         : undefined,
-      saldo_laudo: doc.saldo_laudo?.toString(),
     };
     doc.datas_fabricacao_e_prazos?.map((obj, index) => {
       iniciais[`data_fabricacao_${index}`] = obj.data_fabricacao;
@@ -275,7 +273,7 @@ export default () => {
       objeto.logs.filter(
         (_log) =>
           _log.status_evento_explicacao ===
-          STATUS_DOCUMENTOS_DE_RECEBIMENTO.APROVADO
+          STATUS_DOCUMENTOS_DE_RECEBIMENTO.APROVADO,
       ).length > 0
     );
   }, [objeto.logs]);
@@ -428,6 +426,7 @@ export default () => {
                       options={laboratorios}
                       label="Nome do Laboratório"
                       name={`laboratorio`}
+                      dataTestId="select-laboratorio"
                       placeholder="Selecione um Laboratório"
                       className="input-analise"
                       required
@@ -477,12 +476,10 @@ export default () => {
                     <Field
                       component={InputText}
                       label="Saldo do Laudo"
-                      name={`saldo_laudo`}
+                      name={`quantidade_laudo`}
                       placeholder="Digite o Saldo do Lote"
                       required
-                      validate={required}
-                      agrupadorMilhar
-                      disabled={documentoRecebimentoPassouPorAprovacao}
+                      disabled={true}
                     />
                   </div>
                   <div className="col-4">
@@ -545,6 +542,7 @@ export default () => {
                           component={SelectSelecione}
                           naoDesabilitarPrimeiraOpcao
                           options={PRAZO_RECEBIMENTO_OPTIONS}
+                          dataTestId={`prazo_maximo_${index}`}
                           className="input-analise"
                           label="Prazo Máximo de Recebimento"
                           name={`prazo_maximo_${index}`}
@@ -588,7 +586,7 @@ export default () => {
                             onClick={() =>
                               deletaPrazo(
                                 values as AnaliseDocumentoPayload,
-                                index
+                                index,
                               )
                             }
                             tooltipExterno={"Remover data de fabricação"}
