@@ -16,6 +16,7 @@ export const CardMedicaoPorStatus = ({ ...props }) => {
     total,
     resetForm,
     dataTestId,
+    getDashboardMedicaoInicialAsync,
   } = props;
 
   return (
@@ -24,13 +25,15 @@ export const CardMedicaoPorStatus = ({ ...props }) => {
       onClick={() => {
         if (total) {
           if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-            setResultados(dados);
+            getDashboardMedicaoInicialAsync({
+              status: dados.status === statusSelecionado ? null : dados.status,
+            });
           } else {
             setResultados(statusSelecionado === dados.status ? null : dados);
             resetForm(form);
           }
           setStatusSelecionado(
-            statusSelecionado === dados.status ? null : dados.status
+            statusSelecionado === dados.status ? null : dados.status,
           );
           page !== 1 && onPageChanged(1);
         }
