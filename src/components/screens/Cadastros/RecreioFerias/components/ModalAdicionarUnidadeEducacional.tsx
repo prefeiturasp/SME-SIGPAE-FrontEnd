@@ -58,11 +58,10 @@ export const ModalAdicionarUnidadeEducacional = ({
     [unidadesEscolares]
   );
 
-  const unidadesEducacionaisOpts = useMemo<Option[]>(
+  const unidadesEducacionaisOpts = useMemo(
     () => [
-      { uuid: "", nome: "Selecione as Unidades Educacionais" },
-      { uuid: "u1", nome: "Unidade 1" },
-      { uuid: "u2", nome: "Unidade 2" },
+      { value: "u1", label: "Unidade 1" },
+      { value: "u2", label: "Unidade 2" },
     ],
     []
   );
@@ -130,6 +129,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                     component={MultiselectRaw}
                     label="Unidades Educacionais"
                     name="unidades_educacionais"
+                    placeholder="Selecione as Unidades Educacionais"
                     selected={values?.unidades_educacionais || []}
                     options={unidadesEducacionaisOpts}
                     required
