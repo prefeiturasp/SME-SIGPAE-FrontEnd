@@ -1,4 +1,5 @@
 import { Spin } from "antd";
+import moment from "moment";
 import { useState } from "react";
 import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
@@ -36,7 +37,7 @@ export const RecreioFerias = () => {
         <Form
           keepDirtyOnReinitialize
           onSubmit={() => {}}
-          render={({ handleSubmit }) => (
+          render={({ handleSubmit, values }) => (
             <form onSubmit={handleSubmit}>
               <div className="row">
                 <div className="">
@@ -60,22 +61,13 @@ export const RecreioFerias = () => {
                     name="periodo_realizacao_de"
                     placeholder="De"
                     writable={false}
-                    // minDate={getMinDateDataInicial(
-                    //   index_contratos,
-                    //   indexVigencia
-                    // )}
-                    // maxDate={moment(
-                    //   values.contratos[index_contratos].vigencias[
-                    //     indexVigencia
-                    //   ]?.data_final,
-                    //   "DD/MM/YYYY"
-                    // ).toDate()}
+                    minDate={null}
+                    maxDate={moment(
+                      values.periodo_realizacao_ate,
+                      "DD/MM/YYYY"
+                    )}
                     required
                     validate={required}
-                    // disabled={getDataInicialDisabled(
-                    //   index_contratos,
-                    //   indexVigencia
-                    // )}
                   />
                 </div>
                 <div className="col-2">
@@ -85,15 +77,8 @@ export const RecreioFerias = () => {
                     name="periodo_realizacao_ate"
                     placeholder="Até"
                     writable={false}
-                    // minDate={getMinDateDataFinal(
-                    //   index_contratos,
-                    //   indexVigencia
-                    // )}
+                    minDate={moment(values.periodo_realizacao_de, "DD/MM/YYYY")}
                     maxDate={null}
-                    // disabled={getDataFinalDisabled(
-                    //   index_contratos,
-                    //   indexVigencia
-                    // )}
                   />
                 </div>
 
