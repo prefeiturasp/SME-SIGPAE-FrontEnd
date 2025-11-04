@@ -6,6 +6,7 @@ import { InputComData } from "src/components/Shareable/DatePicker";
 import { Tooltip } from "antd";
 import Select from "src/components/Shareable/Select";
 import Botao from "src/components/Shareable/Botao";
+import { optionsPrograma } from "../../constants";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
@@ -61,6 +62,7 @@ export const ContratosFormSet = ({
       "numero_chamada_publica",
       "vigencia_de",
       "vigencia_ate",
+      "programa",
     ];
     deletaValues(contratos, camposParaDeletar, values, index);
 
@@ -143,7 +145,7 @@ export const ContratosFormSet = ({
                             required,
                             !contratos[index].uuid
                               ? contratoJaCadastrado
-                              : () => {}
+                              : () => {},
                           )}
                           disabled={!!contratos[index].uuid}
                         />
@@ -197,6 +199,15 @@ export const ContratosFormSet = ({
                             form.change(`numero_chamada_publica_${index}`, "");
                             form.change(`modalidade_${index}`, value);
                           }}
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          name={`programa_${index}`}
+                          component={Select}
+                          label="Programa"
+                          naoDesabilitarPrimeiraOpcao
+                          options={optionsPrograma}
                         />
                       </div>
                       {getNomeModalidade(values[`modalidade_${index}`]) ===
