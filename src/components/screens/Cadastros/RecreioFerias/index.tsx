@@ -1,3 +1,5 @@
+import { Spin } from "antd";
+import { useState } from "react";
 import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
 import {
@@ -6,10 +8,14 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import InputText from "src/components/Shareable/Input/InputText";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import { required } from "src/helpers/fieldValidators";
+import { ModalAdicionarUnidadeEducacional } from "./components/ModalAdicionarUnidadeEducacional";
 import "./style.scss";
 
 export const RecreioFerias = () => {
+  const [showModal, setShowModal] = useState<boolean>(false);
+
   return (
     <div className="card recreio-nas-ferias-container">
       <div className="card-body">
@@ -27,7 +33,6 @@ export const RecreioFerias = () => {
           </div>
         </div>
 
-        {/* Use o Form do react-final-form */}
         <Form
           keepDirtyOnReinitialize
           onSubmit={() => {}}
@@ -100,9 +105,46 @@ export const RecreioFerias = () => {
                     // disabled={submitting}
                     type={BUTTON_TYPE.BUTTON}
                     style={BUTTON_STYLE.GREEN_OUTLINE}
+                    onClick={() => setShowModal(true)}
                   />
                 </div>
               </div>
+
+              <Spin tip="Carregando..." spinning={false}>
+                <>
+                  <table className="tabela-unidades-participantes">
+                    <thead>
+                      <tr className="row">
+                        <th className="col-2 text-center">DRE/LOTE</th>
+
+                        <th className="col-2 text-center">
+                          Unidade Educacional
+                        </th>
+                        <th className="col-2 text-center">Nº de Inscritos</th>
+                        <th className="col-2 text-center">
+                          Nº de Colaboradores
+                        </th>
+                        <th className="col-2 text-center">Liberar Medição?</th>
+                        <th className="col-1 text-center"></th>
+                        <th className="col-1 text-center"></th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                  <Paginacao
+                    onChange={() =>
+                      // onPageChanged(page, {
+                      //   status: statusSelecionado,
+                      //   ...values,
+                      // })
+                      {}
+                    }
+                    total={0}
+                    pageSize={1}
+                    current={1}
+                  />
+                </>
+              </Spin>
 
               <div className="row">
                 <div className="col-12 text-end">
@@ -114,7 +156,12 @@ export const RecreioFerias = () => {
                   />
                 </div>
               </div>
-              {/* Modal... */}
+
+              <ModalAdicionarUnidadeEducacional
+                showModal={showModal}
+                closeModal={() => setShowModal(false)}
+                submitting={false}
+              />
             </form>
           )}
         />

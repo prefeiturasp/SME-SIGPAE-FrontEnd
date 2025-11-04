@@ -12,4 +12,37 @@
     align-items: center;
     justify-content: space-between;
   }
+
+  .tabela-unidades-participantes {
+    font-size: 12px;
+    color: $blackInput;
+    width: 98%;
+    font-size: 14px;
+
+    thead {
+      tr {
+        background-color: $grayLightHeader;
+        font-weight: 700;
+
+        th {
+          border: 1px solid $grayDisabled;
+          padding: 0.5em;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          border: 1px solid $grayDisabled;
+          padding: 0.5em;
+        }
+      }
+    }
+  }
+}
+
+.modal-adicionar-unidades-educacionais {
+  width: 40vw !important;
+  max-width: 40vw !important;
 }
