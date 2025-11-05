@@ -40,6 +40,32 @@
       }
     }
   }
+
+  .verde {
+    cursor: pointer;
+    color: $green;
+  }
+
+  table {
+    .action-column {
+      // max-width: 60px;
+    }
+
+    td {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .excluir-botao {
+        border: none;
+        background-color: transparent;
+      }
+
+      button i {
+        font-size: 18px;
+      }
+    }
+  }
 }
 
 .modal-adicionar-unidades-educacionais {

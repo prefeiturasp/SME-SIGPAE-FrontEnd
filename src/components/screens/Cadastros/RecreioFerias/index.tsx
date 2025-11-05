@@ -1,6 +1,7 @@
-import { Spin } from "antd";
+import { Spin, Switch, Tooltip } from "antd";
 import moment from "moment";
 import { useState } from "react";
+import { Collapse } from "react-collapse";
 import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
 import {
@@ -10,12 +11,29 @@ import {
 import { InputComData } from "src/components/Shareable/DatePicker";
 import InputText from "src/components/Shareable/Input/InputText";
 import { Paginacao } from "src/components/Shareable/Paginacao";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { required } from "src/helpers/fieldValidators";
 import { ModalAdicionarUnidadeEducacional } from "./components/ModalAdicionarUnidadeEducacional";
 import "./style.scss";
 
 export const RecreioFerias = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [unidadesParticipantes, setUnidadesParticipantes] = useState([
+    {
+      dreLote: "LOTE 01 - BUTANTA",
+      unidadeEducacional: "CEI DIRET ALOYSIO DE MENEZES",
+      numeroInscritos: 0,
+      numeroColaboradores: 0,
+      liberarMedicao: true,
+    },
+    {
+      dreLote: "LOTE 01 - BUTANTA",
+      unidadeEducacional: "CEI DIRET ANTONIO JOAO",
+      numeroInscritos: 0,
+      numeroColaboradores: 0,
+      liberarMedicao: false,
+    },
+  ]);
 
   return (
     <div className="card recreio-nas-ferias-container">
@@ -23,14 +41,6 @@ export const RecreioFerias = () => {
         <div className="row mt-3 mb-3">
           <div className="col-6">
             <div className="title">Informe o Período do Recreio nas Férias</div>
-          </div>
-          <div className="col-6 text-end">
-            <Botao
-              texto="Recreios Cadastrados"
-              onClick={() => {}}
-              type={BUTTON_TYPE.BUTTON}
-              style={BUTTON_STYLE.GREEN_OUTLINE}
-            />
           </div>
         </div>
 
@@ -83,7 +93,9 @@ export const RecreioFerias = () => {
                 </div>
 
                 <div className="space-between mb-2 mt-4">
-                  <span className="title">Unidades Participantes: 0</span>
+                  <span className="title">
+                    Unidades Participantes: {unidadesParticipantes.length}
+                  </span>
                   <Botao
                     className="text-end"
                     texto="+ Adicionar Unidades"
@@ -110,28 +122,96 @@ export const RecreioFerias = () => {
                           Nº de Colaboradores
                         </th>
                         <th className="col-2 text-center">Liberar Medição?</th>
-                        <th className="col-1 text-center"></th>
-                        <th className="col-1 text-center"></th>
+                        <th className="action-column col-1 text-center"></th>
+                        <th className="action-column col-1 text-center"></th>
                       </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                      {unidadesParticipantes.map((participante) => (
+                        <>
+                          <tr className="row">
+                            <td className="col-2">{participante.dreLote}</td>
+                            <td className="col-2">
+                              {participante.unidadeEducacional}
+                            </td>
+                            <td className="col-2">
+                              <Field
+                                component={InputText}
+                                name="numero_inscritos"
+                                required
+                                validate={required}
+                                initialValue={participante.numeroInscritos}
+                              />
+                            </td>
+                            <td className="col-2">
+                              <Field
+                                component={InputText}
+                                name="numero_colaboradores"
+                                required
+                                validate={required}
+                                initialValue={participante.numeroColaboradores}
+                              />
+                            </td>
+                            <td className="col-2">
+                              {participante.liberarMedicao}
+                              <label
+                                className={`col-form-label ${
+                                  !participante.liberarMedicao && "green"
+                                }`}
+                              >
+                                Não
+                              </label>
+                              <Switch
+                                size="small"
+                                className="mx-2"
+                                // onChange={onChangeSwitchImr}
+                                // checked={switchAtivoImr}
+                              />
+                              <label
+                                className={`col-form-label ${
+                                  participante.liberarMedicao && "green"
+                                }`}
+                              >
+                                Sim
+                              </label>
+                            </td>
+                            <td className="action-column col-1">
+                              <Tooltip title="Remover Unidade">
+                                <button
+                                  className="excluir-botao verde"
+                                  // onClick={() => toggleExclusao(true, vinculo)}
+                                >
+                                  <i className="fas fa-trash" />
+                                </button>
+                              </Tooltip>
+                            </td>
+                            <td className="action-column col-1">
+                              <ToggleExpandir />
+                            </td>
+                          </tr>
+                          <Collapse isOpened={true}></Collapse>
+                        </>
+                      ))}
+                    </tbody>
                   </table>
-                  <Paginacao
-                    onChange={() =>
-                      // onPageChanged(page, {
-                      //   status: statusSelecionado,
-                      //   ...values,
-                      // })
-                      {}
-                    }
-                    total={0}
-                    pageSize={1}
-                    current={1}
-                  />
+                  {unidadesParticipantes.length > 10 && (
+                    <Paginacao
+                      onChange={() =>
+                        // onPageChanged(page, {
+                        //   status: statusSelecionado,
+                        //   ...values,
+                        // })
+                        {}
+                      }
+                      total={0}
+                      pageSize={1}
+                      current={1}
+                    />
+                  )}
                 </>
               </Spin>
 
-              <div className="row">
+              <div className="row mt-4">
                 <div className="col-12 text-end">
                   <Botao
                     texto="Salvar Recreio nas Férias"
@@ -146,6 +226,7 @@ export const RecreioFerias = () => {
                 showModal={showModal}
                 closeModal={() => setShowModal(false)}
                 submitting={false}
+                setUnidadesParticipantes={setUnidadesParticipantes}
               />
             </form>
           )}
