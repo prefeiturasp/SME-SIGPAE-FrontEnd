@@ -65,6 +65,18 @@
         font-size: 18px;
       }
     }
+
+    .collapse-container {
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      border: 1px solid #e3e6f0;
+
+      span {
+        margin-top: 4px;
+        margin-bottom: 4px;
+      }
+    }
   }
 }
 
