@@ -160,7 +160,6 @@ export const RecreioFerias = () => {
                                   name={`numero_inscritos_${participante.id}`}
                                   required
                                   validate={required}
-                                  initialValue={participante.numeroInscritos}
                                 />
                               </td>
                               <td className="col-2">
@@ -169,9 +168,6 @@ export const RecreioFerias = () => {
                                   name={`numero_colaboradores_${participante.id}`}
                                   required
                                   validate={required}
-                                  initialValue={
-                                    participante.numeroColaboradores
-                                  }
                                 />
                               </td>
                               <td className="col-2">
