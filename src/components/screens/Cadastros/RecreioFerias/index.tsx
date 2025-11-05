@@ -27,6 +27,8 @@ export const RecreioFerias = () => {
       numeroInscritos: 0,
       numeroColaboradores: 0,
       liberarMedicao: true,
+      alimentacaoInscritos: ["Almoço", "Desjejum"],
+      alimentacaoColaboradores: ["Lanche", "Refeição"],
     },
     {
       id: "2",
@@ -35,6 +37,8 @@ export const RecreioFerias = () => {
       numeroInscritos: 0,
       numeroColaboradores: 0,
       liberarMedicao: false,
+      alimentacaoInscritos: ["Janta", "Almoço"],
+      alimentacaoColaboradores: ["Sobremesa"],
     },
   ]);
 
@@ -218,16 +222,27 @@ export const RecreioFerias = () => {
                             </tr>
                             <Collapse isOpened={aberto}>
                               <div className="collapse-container">
-                                <span>
+                                <div>
                                   <strong>
-                                    Tipos de Alimentação Inscritos:
+                                    Tipos de Alimentação Inscritos:{" "}
                                   </strong>
-                                </span>
-                                <span>
+                                  <span>
+                                    {participante.alimentacaoInscritos?.join(
+                                      ", "
+                                    )}
+                                  </span>
+                                </div>
+
+                                <div>
                                   <strong>
-                                    Tipos de Alimentação Colaboradores:
+                                    Tipos de Alimentação Colaboradores:{" "}
                                   </strong>
-                                </span>
+                                  <span>
+                                    {participante.alimentacaoColaboradores?.join(
+                                      ", "
+                                    )}
+                                  </span>
+                                </div>
                               </div>
                             </Collapse>
                           </React.Fragment>

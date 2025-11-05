@@ -138,6 +138,7 @@ export const getLotesAsync = async (
       return {
         [valueField]: lote.uuid,
         [labelField]: `${lote.nome} - ${lote.diretoria_regional.nome}`,
+        dreUuid: lote.diretoria_regional.uuid,
       };
     });
     setLotes(lotes);
