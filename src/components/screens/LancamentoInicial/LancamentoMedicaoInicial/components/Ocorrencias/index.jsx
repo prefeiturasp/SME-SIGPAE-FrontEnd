@@ -60,7 +60,7 @@ export default ({
                             "MEDICAO_CORRECAO_SOLICITADA",
                             "MEDICAO_CORRECAO_SOLICITADA_CODAE",
                           ].includes(
-                            solicitacaoMedicaoInicial.ocorrencia.status
+                            solicitacaoMedicaoInicial.ocorrencia.status,
                           )
                             ? "red"
                             : ""
@@ -78,7 +78,7 @@ export default ({
                       className="download-ocorrencias me-0"
                       onClick={() =>
                         medicaoInicialExportarOcorrenciasPDF(
-                          solicitacaoMedicaoInicial.ocorrencia.ultimo_arquivo
+                          solicitacaoMedicaoInicial.ocorrencia.ultimo_arquivo,
                         )
                       }
                     >
@@ -102,7 +102,7 @@ export default ({
                                 solicitacaoMedicaoInicial.ocorrencia.logs.find(
                                   (log) =>
                                     log.status_evento_explicacao ===
-                                    "Correção solicitada"
+                                    "Correção solicitada",
                                 ).justificativa,
                             }}
                           />
@@ -124,7 +124,7 @@ export default ({
                           "MEDICAO_CORRECAO_SOLICITADA_CODAE",
                           "MEDICAO_CORRIGIDA_PARA_CODAE",
                         ].includes(
-                          solicitacaoMedicaoInicial.ocorrencia.status
+                          solicitacaoMedicaoInicial.ocorrencia.status,
                         ) && (
                           <Botao
                             className="float-end ms-3"

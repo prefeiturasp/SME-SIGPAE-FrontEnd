@@ -774,6 +774,7 @@ export const ConferenciaDosLancamentos = () => {
                                         usuarioEhMedicao() &&
                                           medicaoInicialExportarOcorrenciasXLSX(
                                             ocorrencia.ultimo_arquivo_excel,
+                                            ocorrencia.nome_ultimo_arquivo,
                                           );
                                       }}
                                     >
