@@ -190,4 +190,76 @@ describe("Teste <LancamentoMedicaoInicial> - Finaliza Lançamento com Ocorrênci
       ).toBeInTheDocument();
     });
   });
+
+  it("Remove arquivo e exibe erro", async () => {
+    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
+    expect(botaoFinalizar).not.toBeDisabled();
+    fireEvent.click(botaoFinalizar);
+
+    await waitFor(() => {
+      expect(screen.getByText("Avaliação do Serviço")).toBeInTheDocument();
+    });
+
+    const radioNaoComOcorrencias = screen.getByLabelText(
+      "Não, com ocorrências",
+    );
+    fireEvent.click(radioNaoComOcorrencias);
+
+    await waitFor(() => {
+      expect(screen.getByText("Anexar arquivos")).toBeInTheDocument();
+    });
+
+    const botaoAnexarArquivos = screen
+      .getByText("Anexar arquivos")
+      .closest("button");
+    expect(botaoAnexarArquivos).not.toBeDisabled();
+    fireEvent.click(botaoAnexarArquivos);
+
+    const inputFile = screen.getByTestId("input-anexar-arquivos");
+
+    const pdfFile = new File(["dummy pdf content"], "documento.pdf", {
+      type: "application/pdf",
+    });
+    const xlsxFile = new File(["dummy excel content"], "planilha.xlsx", {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    fireEvent.change(inputFile, {
+      target: { files: [pdfFile, xlsxFile] },
+    });
+
+    expect(inputFile.files).toHaveLength(2);
+    expect(inputFile.files[0].name).toBe("documento.pdf");
+    expect(inputFile.files[1].name).toBe("planilha.xlsx");
+
+    await waitFor(() => {
+      expect(screen.getByText("documento.pdf")).toBeInTheDocument();
+      expect(screen.getByText("planilha.xlsx")).toBeInTheDocument();
+    });
+
+    const botaoFinalizarMedicao = screen
+      .getByText("Finalizar Medição")
+      .closest("button");
+    expect(botaoFinalizarMedicao).not.toBeDisabled();
+
+    const botaoRemoverXlsx = screen.getByTestId("delete-file-1");
+    fireEvent.click(botaoRemoverXlsx);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Falta anexar o arquivo em Excel"),
+      ).toBeInTheDocument();
+    });
+    expect(botaoFinalizarMedicao).toBeDisabled();
+
+    const botaoRemoverPdf = screen.getByTestId("delete-file-0");
+    fireEvent.click(botaoRemoverPdf);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Falta anexar o arquivo em PDF"),
+      ).toBeInTheDocument();
+    });
+    expect(botaoFinalizarMedicao).toBeDisabled();
+  });
 });

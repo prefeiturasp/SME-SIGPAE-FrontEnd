@@ -267,6 +267,7 @@ const InputFile = forwardRef((props, ref) => {
                 </span>
                 <i
                   onClick={() => deleteFile(key)}
+                  data-testid={`delete-file-${key}`}
                   className={`fas ${
                     ehPlanilhaMedicaoInicial ? "fa-times" : "fa-trash-alt"
                   } exclude-icon`}
