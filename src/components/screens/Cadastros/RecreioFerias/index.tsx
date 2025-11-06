@@ -279,6 +279,7 @@ export const RecreioFerias = () => {
                 closeModal={() => setShowModal(false)}
                 submitting={false}
                 setUnidadesParticipantes={setUnidadesParticipantes}
+                unidadesParticipantes={unidadesParticipantes}
               />
             </form>
           )}

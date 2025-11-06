@@ -23,6 +23,7 @@ type ModalAdicionarUnidadeEducacionalInterface = {
   closeModal: () => void;
   submitting: boolean;
   setUnidadesParticipantes: React.Dispatch<React.SetStateAction<any[]>>;
+  unidadesParticipantes: any[];
 };
 
 type Option = { uuid: string; nome: string };
@@ -32,6 +33,7 @@ export const ModalAdicionarUnidadeEducacional = ({
   closeModal,
   submitting,
   setUnidadesParticipantes,
+  unidadesParticipantes,
 }: ModalAdicionarUnidadeEducacionalInterface) => {
   const [lotes, setLotes] = useState<Option[]>([]);
   const [tiposUnidadesEscolares, setTiposUnidadesEscolares] = useState([]);
@@ -78,6 +80,17 @@ export const ModalAdicionarUnidadeEducacional = ({
       ),
     [tiposUnidadesEscolares]
   );
+
+  // Filtra as unidades já adicionadas
+  const unidadesEducacionaisFiltradas = useMemo(() => {
+    const uuidsJaAdicionados = unidadesParticipantes.map(
+      (unidade) => unidade.unidadeEducacionalUuid
+    );
+
+    return unidadesEducacionaisOpts.filter(
+      (unidade: any) => !uuidsJaAdicionados.includes(unidade.value)
+    );
+  }, [unidadesEducacionaisOpts, unidadesParticipantes]);
 
   const handleBuscarUnidadesEducacionais = async (
     dreUuid: string,
@@ -147,6 +160,11 @@ export const ModalAdicionarUnidadeEducacional = ({
   };
 
   const handleAdicionarUnidade = (values: any) => {
+    // Busca o lote selecionado
+    const loteSelecionado = lotes.find(
+      (lote) => lote.uuid === values.dres_lote
+    );
+
     // Busca os nomes das alimentações selecionadas
     const alimentacoesInscritosNomes = tiposAlimentacaoInscritos
       .filter((tipo: any) =>
@@ -169,7 +187,7 @@ export const ModalAdicionarUnidadeEducacional = ({
 
         return {
           id: `${Date.now()}-${Math.random()}`,
-          dreLote: values.dres_lote.nome,
+          dreLote: loteSelecionado?.nome || "",
           unidadeEducacional: unidadeEducacional?.label || "",
           unidadeEducacionalUuid: unidadeUuid,
           numeroInscritos: 0,
@@ -182,7 +200,6 @@ export const ModalAdicionarUnidadeEducacional = ({
     );
 
     setUnidadesParticipantes((prev) => [...prev, ...novasUnidades]);
-
     closeModal();
   };
 
@@ -217,15 +234,19 @@ export const ModalAdicionarUnidadeEducacional = ({
 
             useEffect(() => {
               if (hasDreLote && hasTipoUnidade) {
-                const dreUuid = values.dres_lote.dreUuid;
-
-                handleBuscarUnidadesEducacionais(
-                  dreUuid,
-                  values.tipos_unidades
+                const loteSelecionado = lotes.find(
+                  (lote) => lote.uuid === values.dres_lote
                 );
+                const dreUuid = loteSelecionado?.dreUuid;
 
-                handleBuscarTipoAlimentacaoInscritos(values.tipos_unidades);
-                handleBuscarTipoAlimentacaoColaboradores();
+                if (dreUuid) {
+                  handleBuscarUnidadesEducacionais(
+                    dreUuid,
+                    values.tipos_unidades
+                  );
+                  handleBuscarTipoAlimentacaoInscritos(values.tipos_unidades);
+                  handleBuscarTipoAlimentacaoColaboradores();
+                }
               } else {
                 setUnidadesEducacionaisOpts([]);
               }
@@ -242,11 +263,6 @@ export const ModalAdicionarUnidadeEducacional = ({
                       options={lotesOpts}
                       required
                       validate={required}
-                      parse={(value) => {
-                        return (
-                          lotes.find((lote) => lote.uuid === value) || value
-                        );
-                      }}
                     />
                   </div>
                   <div className="w-50">
@@ -267,7 +283,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                     label="Unidades Educacionais"
                     name="unidades_educacionais"
                     placeholder="Selecione as Unidades Educacionais"
-                    options={unidadesEducacionaisOpts}
+                    options={unidadesEducacionaisFiltradas}
                     selected={values?.unidades_educacionais || []}
                     required
                     validate={required}
