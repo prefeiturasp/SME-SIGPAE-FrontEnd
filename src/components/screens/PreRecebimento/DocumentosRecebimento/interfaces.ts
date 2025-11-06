@@ -42,7 +42,6 @@ export interface AnaliseDocumentoPayload {
   laboratorio: string;
   quantidade_laudo: string;
   unidade_medida: string;
-  saldo_laudo: string;
   numero_lote_laudo: string;
   data_final_lote: string;
   datas_fabricacao_e_prazos: DatasFabricacaoPrazos[];
