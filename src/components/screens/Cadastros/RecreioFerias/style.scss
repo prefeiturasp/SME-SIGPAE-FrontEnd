@@ -43,7 +43,12 @@
 
   .verde {
     cursor: pointer;
-    color: $green;
+    color: $green !important;
+    font-weight: bold;
+  }
+
+  .preto {
+    color: black !important;
   }
 
   table {

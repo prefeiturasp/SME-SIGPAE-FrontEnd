@@ -52,6 +52,12 @@ export const RecreioFerias = () => {
     setShowModalRemover(false);
   };
 
+  const toggleLiberarMedicao = (id: string, checked: boolean) => {
+    setUnidadesParticipantes((prev: any[]) =>
+      prev.map((u) => (u.id === id ? { ...u, liberarMedicao: checked } : u))
+    );
+  };
+
   return (
     <div className="card recreio-nas-ferias-container">
       <div className="card-body">
@@ -176,7 +182,7 @@ export const RecreioFerias = () => {
                                 {participante.liberarMedicao}
                                 <label
                                   className={`col-form-label ${
-                                    !participante.liberarMedicao && "green"
+                                    !participante.liberarMedicao && "preto"
                                   }`}
                                 >
                                   Não
@@ -184,12 +190,17 @@ export const RecreioFerias = () => {
                                 <Switch
                                   size="small"
                                   className="mx-2"
-                                  // onChange={onChangeSwitchImr}
-                                  // checked={switchAtivoImr}
+                                  checked={!!participante.liberarMedicao}
+                                  onChange={(checked) =>
+                                    toggleLiberarMedicao(
+                                      participante.id,
+                                      checked
+                                    )
+                                  }
                                 />
                                 <label
                                   className={`col-form-label ${
-                                    participante.liberarMedicao && "green"
+                                    participante.liberarMedicao ? "verde" : ""
                                   }`}
                                 >
                                   Sim
