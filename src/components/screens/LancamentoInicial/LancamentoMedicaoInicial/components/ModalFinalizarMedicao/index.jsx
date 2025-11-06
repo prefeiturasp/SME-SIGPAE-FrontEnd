@@ -160,6 +160,7 @@ export const ModalFinalizarMedicao = ({ ...props }) => {
                 <Field
                   component={InputFile}
                   className="inputfile"
+                  dataTestId="input-anexar-arquivos"
                   alignLeft={true}
                   texto="Anexar arquivos"
                   name="files"
