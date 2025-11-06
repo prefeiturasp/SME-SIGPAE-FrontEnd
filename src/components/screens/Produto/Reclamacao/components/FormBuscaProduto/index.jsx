@@ -119,6 +119,14 @@ const FormBuscaProduto = ({
     }
   };
 
+  const getEditaisFiltrados = (numEdital) => {
+    if (numEdital) {
+      const reg = new RegExp(numEdital, "i");
+      return state.dados.editais.filter((a) => reg.test(a));
+    }
+    return [];
+  };
+
   useEffect(() => {
     if (edital || !novaReclamacao) {
       handleEditalChange(edital);
@@ -133,14 +141,14 @@ const FormBuscaProduto = ({
           initialValues={{
             nome_edital: edital,
           }}
-          render={({ form, handleSubmit, submitting }) => (
+          render={({ form, values, handleSubmit, submitting }) => (
             <form onSubmit={handleSubmit} className="busca-produtos-formulario">
               <FinalFormToRedux form={formName} />
               {novaReclamacao && (
                 <div className="col-12 p-0">
                   <Field
                     component={AutoCompleteField}
-                    dataSource={state.dados.editais}
+                    dataSource={getEditaisFiltrados(values.nome_edital)}
                     data-testid="edital"
                     label="Edital"
                     className="input-busca-produto"
