@@ -8,7 +8,7 @@ import {
 import Breadcrumb from "../../../components/Shareable/Breadcrumb";
 import Page from "../../../components/Shareable/Page/Page";
 
-import ParametrizacaoFinanceira from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/ParametrizacaoFinanceira";
+import ParametrizacaoFinanceira from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira";
 
 const atual = {
   href: `/${MEDICAO_INICIAL}/${PARAMETRIZACAO_FINANCEIRA}/`,
