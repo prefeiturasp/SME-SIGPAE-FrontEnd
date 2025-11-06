@@ -233,7 +233,10 @@ export const RecreioFerias = () => {
                               <div className="collapse-container">
                                 <div>
                                   <strong>
-                                    Tipos de Alimentação Inscritos:{" "}
+                                    Tipos de Alimentação Inscritos
+                                    {participante.alimentacaoInscritosInfantil
+                                      .length > 0 && " CEI"}
+                                    :{" "}
                                   </strong>
                                   <span>
                                     {participante.alimentacaoInscritos?.join(
@@ -241,6 +244,20 @@ export const RecreioFerias = () => {
                                     )}
                                   </span>
                                 </div>
+
+                                {participante.alimentacaoInscritosInfantil
+                                  .length > 0 && (
+                                  <div>
+                                    <strong>
+                                      Tipos de Alimentação Inscritos - INFANTIL:{" "}
+                                    </strong>
+                                    <span>
+                                      {participante.alimentacaoInscritosInfantil?.join(
+                                        ", "
+                                      )}
+                                    </span>
+                                  </div>
+                                )}
 
                                 <div>
                                   <strong>

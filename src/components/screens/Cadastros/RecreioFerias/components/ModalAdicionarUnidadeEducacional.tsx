@@ -296,7 +296,9 @@ export const ModalAdicionarUnidadeEducacional = ({
                   <div className="w-50">
                     <Field
                       component={MultiselectRaw}
-                      label="Tipos de Alimentações para Inscritos"
+                      label={`Tipos de Alimentações para Inscritos ${
+                        mostrarSeletorInfantil && "CEI"
+                      }`}
                       name="tipos_alimentacao_inscritos"
                       options={tiposAlimentacaoInscritos}
                       selected={values?.tipos_alimentacao_inscritos || []}
