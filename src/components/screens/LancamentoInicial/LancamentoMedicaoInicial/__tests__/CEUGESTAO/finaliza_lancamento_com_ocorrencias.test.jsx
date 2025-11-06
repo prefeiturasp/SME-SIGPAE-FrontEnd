@@ -7,6 +7,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -116,6 +117,7 @@ describe("Teste <LancamentoMedicaoInicial> - Finaliza Lançamento com Ocorrênci
               setMeusDados: jest.fn(),
             }}
           >
+            <ToastContainer />
             <LancamentoMedicaoInicialPage />
           </MeusDadosContext.Provider>
         </MemoryRouter>,
@@ -181,5 +183,11 @@ describe("Teste <LancamentoMedicaoInicial> - Finaliza Lançamento com Ocorrênci
       .reply(200, {});
 
     fireEvent.click(botaoFinalizarMedicao);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Medição Inicial finalizada com sucesso!"),
+      ).toBeInTheDocument();
+    });
   });
 });
