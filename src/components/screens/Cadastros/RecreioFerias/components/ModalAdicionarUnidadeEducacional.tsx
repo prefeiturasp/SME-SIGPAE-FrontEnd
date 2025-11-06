@@ -174,7 +174,7 @@ export const ModalAdicionarUnidadeEducacional = ({
       };
     });
 
-    setUnidadesParticipantes((prev) => [...prev, ...novasUnidades]);
+    setUnidadesParticipantes((prev) => [...novasUnidades, ...prev]);
     closeModal();
   };
 

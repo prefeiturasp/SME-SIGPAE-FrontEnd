@@ -211,6 +211,7 @@ export const RecreioFerias = () => {
                                   <button
                                     type="button"
                                     className="excluir-botao verde"
+                                    data-testid="remover-unidade-botao"
                                     onClick={() =>
                                       openRemoverModal(participante.id)
                                     }
