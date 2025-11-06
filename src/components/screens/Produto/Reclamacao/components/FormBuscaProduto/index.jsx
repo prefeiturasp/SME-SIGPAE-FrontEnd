@@ -124,7 +124,7 @@ const FormBuscaProduto = ({
       const reg = new RegExp(numEdital, "i");
       return state.dados.editais.filter((a) => reg.test(a));
     }
-    return [];
+    return state.dados.editais;
   };
 
   useEffect(() => {
