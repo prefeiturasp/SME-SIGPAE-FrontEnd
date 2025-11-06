@@ -14,12 +14,17 @@ import { Paginacao } from "src/components/Shareable/Paginacao";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { required } from "src/helpers/fieldValidators";
 import { ModalAdicionarUnidadeEducacional } from "./components/ModalAdicionarUnidadeEducacional";
+import { ModalRemoverUnidadeEducacional } from "./components/ModalRemoverUnidadeEducacional";
 import "./style.scss";
 
 export const RecreioFerias = () => {
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showModalAdicionar, setShowModalAdicionar] = useState<boolean>(false);
+  const [showModalRemover, setShowModalRemover] = useState<boolean>(false);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
   const [unidadesParticipantes, setUnidadesParticipantes] = useState([]);
+  const [selectedUnidadeId, setSelectedUnidadeId] = useState<string | null>(
+    null
+  );
 
   const handleRemoverUnidade = (id: string) => {
     setUnidadesParticipantes((prev) => prev.filter((u) => u.id !== id));
@@ -27,6 +32,24 @@ export const RecreioFerias = () => {
 
   const toggleExpandir = (id: string) => {
     setExpandidos((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const confirmRemoverUnidade = () => {
+    if (selectedUnidadeId) {
+      handleRemoverUnidade(selectedUnidadeId);
+      setSelectedUnidadeId(null);
+      setShowModalRemover(false);
+    }
+  };
+
+  const openRemoverModal = (id: string) => {
+    setSelectedUnidadeId(id);
+    setShowModalRemover(true);
+  };
+
+  const closeRemoverModal = () => {
+    setSelectedUnidadeId(null);
+    setShowModalRemover(false);
   };
 
   return (
@@ -96,7 +119,7 @@ export const RecreioFerias = () => {
                     // disabled={submitting}
                     type={BUTTON_TYPE.BUTTON}
                     style={BUTTON_STYLE.GREEN_OUTLINE}
-                    onClick={() => setShowModal(true)}
+                    onClick={() => setShowModalAdicionar(true)}
                   />
                 </div>
               </div>
@@ -178,7 +201,7 @@ export const RecreioFerias = () => {
                                     type="button"
                                     className="excluir-botao verde"
                                     onClick={() =>
-                                      handleRemoverUnidade(participante.id)
+                                      openRemoverModal(participante.id)
                                     }
                                   >
                                     <i className="fas fa-trash" />
@@ -254,11 +277,17 @@ export const RecreioFerias = () => {
               </div>
 
               <ModalAdicionarUnidadeEducacional
-                showModal={showModal}
-                closeModal={() => setShowModal(false)}
+                showModal={showModalAdicionar}
+                closeModal={() => setShowModalAdicionar(false)}
                 submitting={false}
                 setUnidadesParticipantes={setUnidadesParticipantes}
                 unidadesParticipantes={unidadesParticipantes}
+              />
+
+              <ModalRemoverUnidadeEducacional
+                showModal={showModalRemover}
+                closeModal={closeRemoverModal}
+                handleRemoverUnidade={confirmRemoverUnidade}
               />
             </form>
           )}
