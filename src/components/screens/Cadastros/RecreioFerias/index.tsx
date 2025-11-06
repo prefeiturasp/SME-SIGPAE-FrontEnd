@@ -19,28 +19,7 @@ import "./style.scss";
 export const RecreioFerias = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
-  const [unidadesParticipantes, setUnidadesParticipantes] = useState([
-    {
-      id: "1",
-      dreLote: "LOTE 01 - BUTANTA",
-      unidadeEducacional: "CEI DIRET ALOYSIO DE MENEZES",
-      numeroInscritos: 0,
-      numeroColaboradores: 0,
-      liberarMedicao: true,
-      alimentacaoInscritos: ["Almoço", "Desjejum"],
-      alimentacaoColaboradores: ["Lanche", "Refeição"],
-    },
-    {
-      id: "2",
-      dreLote: "LOTE 01 - BUTANTA",
-      unidadeEducacional: "CEI DIRET ANTONIO JOAO",
-      numeroInscritos: 0,
-      numeroColaboradores: 0,
-      liberarMedicao: false,
-      alimentacaoInscritos: ["Janta", "Almoço"],
-      alimentacaoColaboradores: ["Sobremesa"],
-    },
-  ]);
+  const [unidadesParticipantes, setUnidadesParticipantes] = useState([]);
 
   const handleRemoverUnidade = (id: string) => {
     setUnidadesParticipantes((prev) => prev.filter((u) => u.id !== id));
