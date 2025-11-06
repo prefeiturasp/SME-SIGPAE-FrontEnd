@@ -1,29 +1,23 @@
 import React, { ChangeEvent, Dispatch, SetStateAction } from "react";
-import { Skeleton } from "antd";
 import { Field } from "react-final-form";
 import { FormApi } from "final-form";
-
 import { required } from "src/helpers/fieldValidators";
-
 import { Select } from "src/components/Shareable/Select";
-
 import useView from "./view";
-
-type FormValues = {
-  edital: string;
-  lote: string;
-  tipos_unidades: string;
-  tabelas?: Record<string, any>;
-  legenda: string;
-};
+import { InputComData } from "src/components/Shareable/DatePicker";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 
 type Cadastro = {
-  setTiposAlimentacao: Dispatch<SetStateAction<Array<any>>>;
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
   setFaixasEtarias: Dispatch<SetStateAction<Array<any>>>;
-  setParametrizacao: Dispatch<SetStateAction<FormValues>>;
+  setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
   form: FormApi<any, any>;
-  uuidParametrizacao: string;
+  uuidParametrizacao: string | null;
   ehCadastro: true;
 };
 
@@ -33,9 +27,8 @@ type Filtro = {
 
 type Props = Cadastro | Filtro;
 
-export default ({ ...props }: Props) => {
+export default (props: Props) => {
   const ehCadastro = props.ehCadastro;
-  const setTiposAlimentacao = props.ehCadastro && props.setTiposAlimentacao;
   const setGrupoSelecionado = props.ehCadastro && props.setGrupoSelecionado;
   const setFaixasEtarias = props.ehCadastro && props.setFaixasEtarias;
   const setParametrizacao = props.ehCadastro && props.setParametrizacao;
@@ -43,69 +36,95 @@ export default ({ ...props }: Props) => {
   const uuidParametrizacao = props.ehCadastro && props.uuidParametrizacao;
 
   const view = useView({
-    setTiposAlimentacao,
-    setGrupoSelecionado,
     setFaixasEtarias,
     setParametrizacao,
     uuidParametrizacao,
-    form,
   });
 
   return (
     <div className="row">
       <div className="col-4">
-        {view.carregando ? (
-          <Skeleton paragraph={false} active />
-        ) : (
-          <Field
-            component={Select}
-            name="edital"
-            label="Nº do Edital"
-            naoDesabilitarPrimeiraOpcao
-            options={view.editais}
-            validate={ehCadastro && required}
-            required={ehCadastro}
-            disabled={uuidParametrizacao}
-          />
-        )}
+        <Field
+          dataTestId="edital-select"
+          component={Select}
+          name="edital"
+          label="Nº do Edital"
+          naoDesabilitarPrimeiraOpcao
+          options={view.editais}
+          validate={ehCadastro && required}
+          required={ehCadastro}
+          disabled={uuidParametrizacao}
+        />
       </div>
-
       <div className="col-8">
-        {view.carregando ? (
-          <Skeleton paragraph={false} active />
-        ) : (
-          <Field
-            component={Select}
-            name="lote"
-            label="Lote e DRE"
-            naoDesabilitarPrimeiraOpcao
-            options={view.lotes}
-            validate={ehCadastro && required}
-            required={ehCadastro}
-            disabled={uuidParametrizacao}
-          />
-        )}
+        <Field
+          dataTestId="lote-select"
+          component={Select}
+          name="lote"
+          label="Lote e DRE"
+          naoDesabilitarPrimeiraOpcao
+          options={view.lotes}
+          validate={ehCadastro && required}
+          required={ehCadastro}
+          disabled={uuidParametrizacao}
+        />
       </div>
-
       <div className="col-4">
-        {view.carregando ? (
-          <Skeleton paragraph={false} active />
-        ) : (
-          <Field
-            component={Select}
-            name="tipos_unidades"
-            label="Tipo de Unidade"
-            naoDesabilitarPrimeiraOpcao
-            options={view.tiposUnidadesOpcoes}
-            validate={ehCadastro && required}
-            required={ehCadastro}
-            onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
-              ehCadastro && view.onChangeTiposUnidades(e.target.value)
-            }
-            disabled={uuidParametrizacao}
-          />
-        )}
+        <Field
+          dataTestId="grupo-unidade-select"
+          component={Select}
+          name="grupo_unidade_escolar"
+          label="Tipo de Unidade"
+          naoDesabilitarPrimeiraOpcao
+          options={view.gruposUnidadesOpcoes}
+          validate={ehCadastro && required}
+          required={ehCadastro}
+          onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
+            form.change("grupo_unidade_escolar", e.target.value);
+            setGrupoSelecionado(
+              view.gruposUnidadesOpcoes.find(
+                (grupo) => grupo.uuid === e.target.value,
+              ).nome,
+            );
+          }}
+          disabled={uuidParametrizacao}
+        />
       </div>
+      <div className="col-3">
+        <Field
+          dataTestId="data-inicio-input"
+          component={InputComData}
+          label="Período de Vigência"
+          name="data_inicio"
+          className="data-inicio"
+          placeholder="De"
+          validate={ehCadastro && required}
+          required={ehCadastro}
+        />
+      </div>
+      <div className="col-3">
+        <Field
+          dataTestId="data-fim-input"
+          component={InputComData}
+          label="&nbsp;"
+          name="data_fim"
+          className="data-fim"
+          popperPlacement="bottom-end"
+          placeholder="Até"
+        />
+      </div>
+      {ehCadastro && (
+        <div className="col-2 mt-1">
+          <br />
+          <Botao
+            dataTestId="botao-carregar"
+            texto="Carregar Tabelas"
+            disabled
+            style={BUTTON_STYLE.ORANGE_OUTLINE}
+            type={BUTTON_TYPE.BUTTON}
+          />
+        </div>
+      )}
     </div>
   );
 };
