@@ -36,7 +36,9 @@ export const ModalAdicionarUnidadeEducacional = ({
   unidadesParticipantes,
 }: ModalAdicionarUnidadeEducacionalInterface) => {
   const [lotes, setLotes] = useState<Option[]>([]);
-  const [tiposUnidadesEscolares, setTiposUnidadesEscolares] = useState([]);
+  const [tiposUnidadesEscolares, setTiposUnidadesEscolares] = useState<
+    Option[]
+  >([]);
   const [tiposAlimentacaoInscritos, setTiposAlimentacaoInscritos] = useState(
     []
   );
@@ -47,69 +49,46 @@ export const ModalAdicionarUnidadeEducacional = ({
   const [tiposAlimentacaoColaboradores, setTiposAlimentacaoColaboradores] =
     useState([]);
   const [unidadesEducacionaisOpts, setUnidadesEducacionaisOpts] = useState([]);
-  const [emefTipo, setEmefTipo] = useState<{
-    nome: string;
-    uuid: string;
-  } | null>(null);
-  const [emeiTipo, setEmeiTipo] = useState<{
-    nome: string;
-    uuid: string;
-  } | null>(null);
-  const [ceiDiretTipo, setCeiDiretTipo] = useState<{
-    nome: string;
-    uuid: string;
-  } | null>(null);
+
+  const tiposMap = useMemo(() => {
+    const map: Record<string, Option> = {};
+    tiposUnidadesEscolares.forEach((t) => {
+      map[t.nome] = t;
+    });
+    return map;
+  }, [tiposUnidadesEscolares]);
 
   useEffect(() => {
-    const handleCarregaSeletor = async () => {
-      const tiposUnidadesEscolares = await getTiposUnidadeEscolar();
-      const formatTiposOpcoesUnidadesEscolares =
-        tiposUnidadesEscolares.data.results.map((unidadeEscolar) => ({
-          nome: unidadeEscolar.iniciais,
-          uuid: unidadeEscolar.uuid,
-        }));
-
-      setTiposUnidadesEscolares(formatTiposOpcoesUnidadesEscolares);
-      setEmefTipo(
-        formatTiposOpcoesUnidadesEscolares.find((t) => t.nome === "EMEF") ||
-          null
-      );
-      setEmeiTipo(
-        formatTiposOpcoesUnidadesEscolares.find((t) => t.nome === "EMEI") ||
-          null
-      );
-      setCeiDiretTipo(
-        formatTiposOpcoesUnidadesEscolares.find(
-          (t) => t.nome === "CEI DIRET"
-        ) || null
-      );
+    const fetchData = async () => {
+      const tipos = await getTiposUnidadeEscolar();
+      const formatTipos = tipos.data.results.map((t) => ({
+        nome: t.iniciais,
+        uuid: t.uuid,
+      }));
+      setTiposUnidadesEscolares(formatTipos);
       getLotesAsync(setLotes, "uuid", "nome");
     };
-
-    handleCarregaSeletor();
+    fetchData();
   }, []);
 
-  const lotesOpts = useMemo<Option[]>(
-    () => [{ uuid: "", nome: "Selecione a DRE/Lote" }].concat(lotes || []),
+  const lotesOpts = useMemo(
+    () => [{ uuid: "", nome: "Selecione a DRE/Lote" }, ...lotes],
     [lotes]
   );
-
-  const tiposUnidadesOpts = useMemo<Option[]>(
-    () =>
-      [{ uuid: "", nome: "Selecione o Tipo de Unidade" }].concat(
-        tiposUnidadesEscolares || []
-      ),
+  const tiposUnidadesOpts = useMemo(
+    () => [
+      { uuid: "", nome: "Selecione o Tipo de Unidade" },
+      ...tiposUnidadesEscolares,
+    ],
     [tiposUnidadesEscolares]
   );
 
-  // Filtra as unidades já adicionadas
   const unidadesEducacionaisFiltradas = useMemo(() => {
     const uuidsJaAdicionados = unidadesParticipantes.map(
-      (unidade) => unidade.unidadeEducacionalUuid
+      (u) => u.unidadeEducacionalUuid
     );
-
     return unidadesEducacionaisOpts.filter(
-      (unidade: any) => !uuidsJaAdicionados.includes(unidade.value)
+      (u: any) => !uuidsJaAdicionados.includes(u.value)
     );
   }, [unidadesEducacionaisOpts, unidadesParticipantes]);
 
@@ -118,154 +97,68 @@ export const ModalAdicionarUnidadeEducacional = ({
     tipoUnidadeUuid: string
   ) => {
     if (!dreUuid || !tipoUnidadeUuid) return;
-
     const response: ResponseGetEscolasTercTotalInterface =
       await getEscolasTercTotal({
         dre: dreUuid,
         tipo_unidade: tipoUnidadeUuid,
       });
-
     if (response.status === 200) {
-      const formatOpcoesUnidades = response.data.map((escola) => ({
-        value: escola.uuid,
-        label: escola.nome,
-      }));
-      setUnidadesEducacionaisOpts(formatOpcoesUnidades);
+      setUnidadesEducacionaisOpts(
+        response.data.map((escola) => ({
+          value: escola.uuid,
+          label: escola.nome,
+        }))
+      );
     }
   };
 
-  const handleBuscarTipoAlimentacaoInscritos = async (
+  const handleBuscarTipoAlimentacao = async (
     tipoUnidadeUuid: string,
-    mostrarSeletorInfantil: boolean
+    setter: any
   ) => {
     if (!tipoUnidadeUuid) return;
-
-    // Se mostrar seletor infantil, busca EMEI para inscritos normais
-    if (mostrarSeletorInfantil && emeiTipo?.uuid) {
-      const responseEmei =
-        await getVinculosTipoAlimentacaoPorTipoUnidadeEscolar(emeiTipo.uuid);
-
-      if (responseEmei.results[0]?.tipos_alimentacao) {
-        const opcoesEmei = responseEmei.results[0].tipos_alimentacao.map(
-          (tipo: any) => ({
-            value: tipo.uuid,
-            label: tipo.nome,
-          })
-        );
-        setTiposAlimentacaoInscritos(opcoesEmei);
-      } else {
-        setTiposAlimentacaoInscritos([]);
-      }
-
-      // Busca CEI DIRET para inscritos infantil
-      if (ceiDiretTipo?.uuid) {
-        const responseCeiDiret =
-          await getVinculosTipoAlimentacaoPorTipoUnidadeEscolar(
-            ceiDiretTipo.uuid
-          );
-
-        if (responseCeiDiret.results[0]?.tipos_alimentacao) {
-          const opcoesCeiDiret =
-            responseCeiDiret.results[0].tipos_alimentacao.map((tipo: any) => ({
-              value: tipo.uuid,
-              label: tipo.nome,
-            }));
-          setTiposAlimentacaoInscritosInfantil(opcoesCeiDiret);
-        } else {
-          setTiposAlimentacaoInscritosInfantil([]);
-        }
-      }
-    } else {
-      // Caso contrário, busca normalmente com o tipo de unidade selecionado
-      const response = await getVinculosTipoAlimentacaoPorTipoUnidadeEscolar(
-        tipoUnidadeUuid
-      );
-
-      if (response.results[0]?.tipos_alimentacao) {
-        const opcoes = response.results[0].tipos_alimentacao.map(
-          (tipo: any) => ({
-            value: tipo.uuid,
-            label: tipo.nome,
-          })
-        );
-        setTiposAlimentacaoInscritos(opcoes);
-      } else {
-        setTiposAlimentacaoInscritos([]);
-      }
-      setTiposAlimentacaoInscritosInfantil([]);
-    }
-  };
-
-  const handleBuscarTipoAlimentacaoColaboradores = async () => {
-    if (!emefTipo?.uuid) return;
-
-    const responseEmef = await getVinculosTipoAlimentacaoPorTipoUnidadeEscolar(
-      emefTipo.uuid
+    const response = await getVinculosTipoAlimentacaoPorTipoUnidadeEscolar(
+      tipoUnidadeUuid
     );
-
-    const integralItem = responseEmef.results.find(
-      (item: any) => item?.periodo_escolar?.nome?.toUpperCase() === "INTEGRAL"
-    );
-
-    if (!integralItem || !Array.isArray(integralItem.tipos_alimentacao)) {
-      setTiposAlimentacaoColaboradores([]);
-      return;
-    }
-
-    const opcoes = integralItem.tipos_alimentacao.map((tipo: any) => ({
-      value: tipo.uuid,
-      label: tipo.nome,
-    }));
-
-    setTiposAlimentacaoColaboradores(opcoes);
+    const tipos = response.results[0]?.tipos_alimentacao || [];
+    setter(tipos.map((t: any) => ({ value: t.uuid, label: t.nome })));
   };
 
   const handleAdicionarUnidade = (values: any) => {
-    // Busca o lote selecionado
-    const loteSelecionado = lotes.find(
-      (lote) => lote.uuid === values.dres_lote
-    );
+    const lote = lotes.find((l) => l.uuid === values.dres_lote);
+    const alimentacoesInscritos = tiposAlimentacaoInscritos
+      .filter((t: any) => values.tipos_alimentacao_inscritos?.includes(t.value))
+      .map((t: any) => t.label);
 
-    // Busca os nomes das alimentações selecionadas
-    const alimentacoesInscritosNomes = tiposAlimentacaoInscritos
-      .filter((tipo: any) =>
-        values.tipos_alimentacao_inscritos?.includes(tipo.value)
+    const alimentacoesColaboradores = tiposAlimentacaoColaboradores
+      .filter((t: any) =>
+        values.tipos_alimentacao_colaboradores?.includes(t.value)
       )
-      .map((tipo: any) => tipo.label);
+      .map((t: any) => t.label);
 
-    const alimentacoesColaboradoresNomes = tiposAlimentacaoColaboradores
-      .filter((tipo: any) =>
-        values.tipos_alimentacao_colaboradores?.includes(tipo.value)
+    const alimentacoesInfantil = tiposAlimentacaoInscritosInfantil
+      .filter((t: any) =>
+        values.tipos_alimentacao_inscritos_infantil?.includes(t.value)
       )
-      .map((tipo: any) => tipo.label);
+      .map((t: any) => t.label);
 
-    const alimentacoesInscritosInfantilNomes = tiposAlimentacaoInscritosInfantil
-      .filter((tipo: any) =>
-        values.tipos_alimentacao_inscritos_infantil?.includes(tipo.value)
-      )
-      .map((tipo: any) => tipo.label);
-
-    // Para cada unidade educacional selecionada, cria um objeto
-    const novasUnidades = values.unidades_educacionais.map(
-      (unidadeUuid: string) => {
-        const unidadeEducacional = unidadesEducacionaisOpts.find(
-          (u: any) => u.value === unidadeUuid
-        );
-
-        return {
-          id: `${Date.now()}-${Math.random()}`,
-          dreLote: loteSelecionado?.nome || "",
-          unidadeEducacional: unidadeEducacional?.label || "",
-          unidadeEducacionalUuid: unidadeUuid,
-          numeroInscritos: 0,
-          numeroColaboradores: 0,
-          liberarMedicao: true,
-          alimentacaoInscritos: alimentacoesInscritosNomes,
-          alimentacaoColaboradores: alimentacoesColaboradoresNomes,
-          alimentacaoInscritosInfantil: alimentacoesInscritosInfantilNomes,
-        };
-      }
-    );
+    const novasUnidades = values.unidades_educacionais.map((uuid: string) => {
+      const unidade = unidadesEducacionaisOpts.find(
+        (u: any) => u.value === uuid
+      );
+      return {
+        id: `${Date.now()}-${Math.random()}`,
+        dreLote: lote?.nome || "",
+        unidadeEducacional: unidade?.label || "",
+        unidadeEducacionalUuid: uuid,
+        numeroInscritos: 0,
+        numeroColaboradores: 0,
+        liberarMedicao: true,
+        alimentacaoInscritos: alimentacoesInscritos,
+        alimentacaoColaboradores: alimentacoesColaboradores,
+        alimentacaoInscritosInfantil: alimentacoesInfantil,
+      };
+    });
 
     setUnidadesParticipantes((prev) => [...prev, ...novasUnidades]);
     closeModal();
@@ -295,14 +188,11 @@ export const ModalAdicionarUnidadeEducacional = ({
           }) => {
             const hasDreLote = Boolean(values?.dres_lote);
             const hasTipoUnidade = Boolean(values?.tipos_unidades);
-
             const enableSeletores = hasDreLote && hasTipoUnidade;
-
             const addDisabled = submitting || formSubmitting;
 
-            // Verifica se o tipo de unidade selecionado é CEMEI ou CEU CEMEI
             const tipoUnidadeSelecionado = tiposUnidadesEscolares.find(
-              (tipo: any) => tipo.uuid === values?.tipos_unidades
+              (t: any) => t.uuid === values?.tipos_unidades
             );
             const mostrarSeletorInfantil =
               tipoUnidadeSelecionado?.nome === "CEMEI" ||
@@ -310,21 +200,33 @@ export const ModalAdicionarUnidadeEducacional = ({
 
             useEffect(() => {
               if (hasDreLote && hasTipoUnidade) {
-                const loteSelecionado = lotes.find(
-                  (lote) => lote.uuid === values.dres_lote
-                );
-                const dreUuid = loteSelecionado?.dreUuid;
+                const lote = lotes.find((l) => l.uuid === values.dres_lote);
+                const dreUuid = lote?.dreUuid;
 
                 if (dreUuid) {
                   handleBuscarUnidadesEducacionais(
                     dreUuid,
                     values.tipos_unidades
                   );
-                  handleBuscarTipoAlimentacaoInscritos(
+                  handleBuscarTipoAlimentacao(
                     values.tipos_unidades,
-                    mostrarSeletorInfantil
+                    setTiposAlimentacaoInscritos
                   );
-                  handleBuscarTipoAlimentacaoColaboradores();
+                  handleBuscarTipoAlimentacao(
+                    tiposMap["EMEF"]?.uuid,
+                    setTiposAlimentacaoColaboradores
+                  );
+
+                  if (mostrarSeletorInfantil) {
+                    handleBuscarTipoAlimentacao(
+                      tiposMap["CEI DIRET"]?.uuid,
+                      setTiposAlimentacaoInscritos
+                    );
+                    handleBuscarTipoAlimentacao(
+                      tiposMap["EMEI"]?.uuid,
+                      setTiposAlimentacaoInscritosInfantil
+                    );
+                  }
                 }
               } else {
                 setUnidadesEducacionaisOpts([]);
