@@ -121,13 +121,13 @@ export default () => {
                   uuidParametrizacao={uuidParametrizacao}
                   ehCadastro
                 />
-                {exibeTabelasCEI ? (
+                {exibeTabelasCEI && (
                   <TabelasGrupoCEI
                     form={form}
                     faixasEtarias={faixasEtarias}
                     grupoSelecionado={grupoSelecionado}
                   />
-                ) : null}
+                )}
                 {exibeTabelasEMEFeEMEI ||
                 exibeTabelasCEI ||
                 exibeTabelasCEMEI ||
@@ -153,6 +153,7 @@ export default () => {
                         : setShowModalCancelar(true);
                     }}
                     style={BUTTON_STYLE.GREEN_OUTLINE}
+                    type={BUTTON_TYPE.BUTTON}
                   />
                   <Botao
                     texto="Salvar"

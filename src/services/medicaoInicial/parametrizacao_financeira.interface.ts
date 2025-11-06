@@ -3,7 +3,7 @@ export interface ParametrizacaoFinanceiraPayload {
   lote: string;
   grupo_unidade_escolar: string;
   data_inicial: string;
-  data_final: string;
+  data_final?: string;
   legenda: string;
 }
 

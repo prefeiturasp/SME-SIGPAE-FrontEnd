@@ -36,9 +36,11 @@ export default (props: Props) => {
   const uuidParametrizacao = props.ehCadastro && props.uuidParametrizacao;
 
   const view = useView({
+    setGrupoSelecionado,
     setFaixasEtarias,
     setParametrizacao,
     uuidParametrizacao,
+    form,
   });
 
   return (
@@ -79,23 +81,18 @@ export default (props: Props) => {
           options={view.gruposUnidadesOpcoes}
           validate={ehCadastro && required}
           required={ehCadastro}
-          onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
-            form.change("grupo_unidade_escolar", e.target.value);
-            setGrupoSelecionado(
-              view.gruposUnidadesOpcoes.find(
-                (grupo) => grupo.uuid === e.target.value,
-              ).nome,
-            );
-          }}
+          onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
+            view.onChangeTiposUnidades(e.target.value)
+          }
           disabled={uuidParametrizacao}
         />
       </div>
       <div className="col-3">
         <Field
-          dataTestId="data-inicio-input"
+          dataTestId="data-inicial-input"
           component={InputComData}
           label="Período de Vigência"
-          name="data_inicio"
+          name="data_inicial"
           className="data-inicio"
           placeholder="De"
           validate={ehCadastro && required}
@@ -104,11 +101,11 @@ export default (props: Props) => {
       </div>
       <div className="col-3">
         <Field
-          dataTestId="data-fim-input"
+          dataTestId="data-final-input"
           component={InputComData}
           label="&nbsp;"
-          name="data_fim"
-          className="data-fim"
+          name="data_final"
+          className="data-final"
           popperPlacement="bottom-end"
           placeholder="Até"
         />

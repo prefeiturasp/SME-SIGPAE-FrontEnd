@@ -17,6 +17,7 @@ import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import Filtros from "./AdicionarParametrizacaoFinanceira/components/Filtros";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import {
+  GrupoUnidadeEscolar,
   ParametrizacaoFinanceiraInterface,
   ParametrizacaoFinanceiraParams,
   ParametrizacaoFinanceiraResponse,
@@ -59,8 +60,8 @@ export default () => {
     }
   };
 
-  const formataTiposUnidades = (tiposUnidades: TipoUnidade[]) => {
-    return tiposUnidades.map((tipoUnidade) => tipoUnidade.iniciais).join(", ");
+  const formataTiposUnidades = (grupo: GrupoUnidadeEscolar) => {
+    return grupo.tipos_unidades.map((e: TipoUnidade) => e.iniciais).join(", ");
   };
 
   const onChangePage = async (
@@ -136,8 +137,7 @@ export default () => {
                           <td className="col-1">{parametrizacao.lote.nome}</td>
                           <td className="col-3">
                             {formataTiposUnidades(
-                              parametrizacao.grupo_unidade_escolar
-                                .tipos_unidades,
+                              parametrizacao.grupo_unidade_escolar,
                             )}
                           </td>
                           <td className="col-1 d-flex justify-content-center align-item-center">

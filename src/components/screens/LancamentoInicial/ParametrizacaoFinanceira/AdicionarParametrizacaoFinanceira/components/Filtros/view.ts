@@ -10,18 +10,23 @@ import {
   TipoUnidade,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { SelectOption } from "src/interfaces/option.interface";
+import { FormApi } from "final-form";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
 
 type Props = {
+  setGrupoSelecionado: Dispatch<SetStateAction<string>>;
   setFaixasEtarias: Dispatch<SetStateAction<Array<any>>>;
   setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
   uuidParametrizacao: string;
+  form: FormApi<any, any>;
 };
 
 export default ({
+  setGrupoSelecionado,
   setFaixasEtarias,
   setParametrizacao,
   uuidParametrizacao,
+  form,
 }: Props) => {
   const [editais, setEditais] = useState<SelectOption[]>([]);
   const [lotes, setLotes] = useState<SelectOption[]>([]);
@@ -150,10 +155,26 @@ export default ({
     requisicoesPreRender();
   }, []);
 
+  const onChangeTiposUnidades = (grupo: string) => {
+    form.change("grupo_unidade_escolar", grupo);
+    setGrupoSelecionado(
+      gruposUnidadesOpcoes.find((e) => e.uuid === grupo).nome,
+    );
+  };
+
+  const initialGrupoUnidade =
+    uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
+
+  useEffect(() => {
+    if (uuidParametrizacao && initialGrupoUnidade && !carregando)
+      onChangeTiposUnidades(initialGrupoUnidade);
+  }, [uuidParametrizacao, carregando]);
+
   return {
     carregando,
     editais,
     lotes,
     gruposUnidadesOpcoes,
+    onChangeTiposUnidades,
   };
 };
