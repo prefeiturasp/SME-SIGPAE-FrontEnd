@@ -120,8 +120,22 @@ export const ModalAdicionarUnidadeEducacional = ({
     const response = await getVinculosTipoAlimentacaoPorTipoUnidadeEscolar(
       tipoUnidadeUuid
     );
-    const tipos = response.results[0]?.tipos_alimentacao || [];
-    setter(tipos.map((t: any) => ({ value: t.uuid, label: t.nome })));
+
+    const results = Array.isArray(response?.results) ? response.results : [];
+    const allTipos = results.flatMap((r: any) => r?.tipos_alimentacao ?? []);
+
+    const seen = new Set<string>();
+    const uniqueTipos = [];
+    for (const t of allTipos) {
+      const nome = t?.nome;
+      if (!nome) continue;
+      if (!seen.has(nome)) {
+        seen.add(nome);
+        uniqueTipos.push(t);
+      }
+    }
+
+    setter(uniqueTipos.map((t: any) => ({ value: t.uuid, label: t.nome })));
   };
 
   const handleAdicionarUnidade = (values: any) => {
