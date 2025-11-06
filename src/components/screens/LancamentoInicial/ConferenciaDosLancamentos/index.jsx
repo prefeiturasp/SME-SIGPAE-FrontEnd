@@ -287,7 +287,10 @@ export const ConferenciaDosLancamentos = () => {
       setHistorico(response.data.ocorrencia && response.data.ocorrencia.logs);
       setMesSolicitacao(mes);
       setAnoSolicitacao(ano);
-      if (response.data.com_ocorrencias) {
+      if (
+        response.data.com_ocorrencias ||
+        response.data.ocorrencia?.status === "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
+      ) {
         const arquivoPdfOcorrencia = response.data.ocorrencia;
         const logOcorrencia = arquivoPdfOcorrencia.logs.find((log) =>
           ["Correção solicitada", "Aprovado pela DRE"].includes(
@@ -742,29 +745,42 @@ export const ConferenciaDosLancamentos = () => {
                                 </b>
                               </p>
                             </div>
-                            {solicitacao.com_ocorrencias ? (
+                            {solicitacao.com_ocorrencias ||
+                            solicitacao.ocorrencia?.status ===
+                              "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" ? (
                               <Fragment>
                                 <div className="col-6 text-end">
-                                  <span className="status-ocorrencia text-center me-3">
+                                  <span
+                                    className={`status-ocorrencia text-center ${
+                                      solicitacao.ocorrencia?.status ===
+                                        "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" &&
+                                      "me-3"
+                                    }`}
+                                  >
                                     <b
                                       className={
                                         [
                                           "MEDICAO_CORRECAO_SOLICITADA",
                                           "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-                                        ].includes(ocorrencia.status)
+                                        ].includes(
+                                          solicitacao.ocorrencia.status,
+                                        )
                                           ? "red"
                                           : ""
                                       }
                                     >
                                       {OCORRENCIA_STATUS_DE_PROGRESSO[
-                                        ocorrencia.status
+                                        solicitacao.ocorrencia.status
                                       ] &&
                                         OCORRENCIA_STATUS_DE_PROGRESSO[
-                                          ocorrencia.status
+                                          solicitacao.ocorrencia.status
                                         ].nome}
                                     </b>
                                   </span>
-                                  {ocorrencia && ocorrenciaExpandida ? (
+                                  {ocorrencia &&
+                                  ocorrenciaExpandida &&
+                                  solicitacao.ocorrencia?.status !==
+                                    "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" ? (
                                     <span
                                       className="download-ocorrencias me-0"
                                       onClick={() => {
@@ -784,14 +800,17 @@ export const ConferenciaDosLancamentos = () => {
                                       Download de Ocorrências
                                     </span>
                                   ) : (
-                                    <label
-                                      className="green visualizar-ocorrencias"
-                                      onClick={() =>
-                                        setOcorrenciaExpandida(true)
-                                      }
-                                    >
-                                      <b>VISUALIZAR</b>
-                                    </label>
+                                    solicitacao.ocorrencia?.status !==
+                                      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" && (
+                                      <label
+                                        className="green visualizar-ocorrencias"
+                                        onClick={() =>
+                                          setOcorrenciaExpandida(true)
+                                        }
+                                      >
+                                        <b>VISUALIZAR</b>
+                                      </label>
+                                    )
                                   )}
                                 </div>
                               </Fragment>

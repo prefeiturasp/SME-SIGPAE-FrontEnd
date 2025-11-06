@@ -1,13 +1,13 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import ModalHistorico from "src/components/Shareable/ModalHistorico";
 import { OCORRENCIA_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
 import { medicaoInicialExportarOcorrenciasPDF } from "src/services/relatorios";
-import Botao from "src/components/Shareable/Botao";
-import ModalHistorico from "src/components/Shareable/ModalHistorico";
 import { ModalAtualizarOcorrencia } from "../ModalAtualizarOcorrencia";
 
 export default ({
@@ -53,7 +53,9 @@ export default ({
                 </div>
                 {solicitacaoMedicaoInicial.ocorrencia ? (
                   <div className="col-8 text-end">
-                    <span className="status-ocorrencia text-center me-3">
+                    <span
+                      className={`status-ocorrencia text-center ${solicitacaoMedicaoInicial.ocorrencia.status !== "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" && "me-3"}`}
+                    >
                       <b
                         className={
                           [
@@ -74,17 +76,20 @@ export default ({
                           ].nome}
                       </b>
                     </span>
-                    <span
-                      className="download-ocorrencias me-0"
-                      onClick={() =>
-                        medicaoInicialExportarOcorrenciasPDF(
-                          solicitacaoMedicaoInicial.ocorrencia.ultimo_arquivo,
-                        )
-                      }
-                    >
-                      <i className={`${BUTTON_ICON.DOWNLOAD} me-2`} />
-                      Formulário de Ocorrências
-                    </span>
+                    {solicitacaoMedicaoInicial.ocorrencia?.status !==
+                      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" && (
+                      <span
+                        className="download-ocorrencias me-0"
+                        onClick={() =>
+                          medicaoInicialExportarOcorrenciasPDF(
+                            solicitacaoMedicaoInicial.ocorrencia.ultimo_arquivo,
+                          )
+                        }
+                      >
+                        <i className={`${BUTTON_ICON.DOWNLOAD} me-2`} />
+                        Formulário de Ocorrências
+                      </span>
+                    )}
                   </div>
                 ) : (
                   <div className="col-6" />
