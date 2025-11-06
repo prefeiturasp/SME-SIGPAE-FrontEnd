@@ -1,28 +1,26 @@
-import React, { useEffect, useReducer, useState } from "react";
-import { Form, Field } from "react-final-form";
-import { connect } from "react-redux";
 import { Spin } from "antd";
-
+import { useEffect, useReducer, useRef, useState } from "react";
+import { Field, Form } from "react-final-form";
+import { connect } from "react-redux";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import AutoCompleteFieldUnaccent from "src/components/Shareable/AutoCompleteField/unaccent";
 import Botao from "src/components/Shareable/Botao";
 import {
-  BUTTON_TYPE,
   BUTTON_STYLE,
+  BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
 import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
-import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
-import { required } from "src/helpers/fieldValidators";
-import { TIPO_PERFIL } from "src/constants/shared";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
-
+import { TIPO_PERFIL } from "src/constants/shared";
+import { required } from "src/helpers/fieldValidators";
 import {
-  getAvaliarReclamacaoNomesProdutos,
-  getAvaliarReclamacaoNomesMarcas,
   getAvaliarReclamacaoNomesFabricantes,
-  getNovaReclamacaoNomesProdutos,
-  getNovaReclamacaoNomesMarcas,
-  getNovaReclamacaoNomesFabricantes,
+  getAvaliarReclamacaoNomesMarcas,
+  getAvaliarReclamacaoNomesProdutos,
   getNomesUnicosEditais,
+  getNovaReclamacaoNomesFabricantes,
+  getNovaReclamacaoNomesMarcas,
+  getNovaReclamacaoNomesProdutos,
 } from "src/services/produto.service";
 
 const initialState = {
@@ -53,6 +51,7 @@ const FormBuscaProduto = ({
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loading, setLoading] = useState(true);
+  const typingTimeout = useRef(null);
 
   const tipoPerfil = localStorage.getItem("tipo_perfil");
   const ehEscola = tipoPerfil === TIPO_PERFIL.ESCOLA;
@@ -71,7 +70,7 @@ const FormBuscaProduto = ({
           });
           ehEscola && setEdital(response.data.results[0]);
         }
-      } catch (error) {
+      } catch {
         toastError("Houve um erro ao buscar os dados de editais");
       } finally {
         setLoading(false);
@@ -111,9 +110,9 @@ const FormBuscaProduto = ({
           fabricantes: fabricantes.data.results.map((el) => el.nome),
         },
       });
-    } catch (error) {
+    } catch {
       toastError(
-        "Houve um erro ao buscar os dados de produtos, marcas ou fabricantes"
+        "Houve um erro ao buscar os dados de produtos, marcas ou fabricantes",
       );
     } finally {
       setLoading(false);
@@ -150,8 +149,14 @@ const FormBuscaProduto = ({
                     validate={required}
                     disabled={ehEscola}
                     inputOnChange={(value) => {
-                      setEdital(value);
-                      handleEditalChange(value);
+                      if (typingTimeout.current) {
+                        clearTimeout(typingTimeout.current);
+                      }
+
+                      typingTimeout.current = setTimeout(() => {
+                        setEdital(value);
+                        handleEditalChange(value);
+                      }, 1000);
                     }}
                   />
                 </div>
