@@ -159,6 +159,7 @@ export const EMPRESAS_CADASTRADAS = "empresas-cadastradas";
 export const FAIXAS_ETARIAS = "faixas-etarias";
 export const SOBREMESA_DOCE = "sobremesa-doce";
 export const SUSPENSAO_ATIVIDADES = "suspensao-atividades";
+export const RECREIO_NAS_FERIAS = "recreio-nas-ferias";
 export const CONSULTA_KITS = "consulta-kits";
 export const KITS = "kits";
 export const LOTE = "lote";
