@@ -1,4 +1,3 @@
-import React from "react";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import Page from "src/components/Shareable/Page/Page";
 import {

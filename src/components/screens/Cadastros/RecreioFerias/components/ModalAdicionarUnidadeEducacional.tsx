@@ -183,6 +183,7 @@ export const ModalAdicionarUnidadeEducacional = ({
       dialogClassName="modal-adicionar-unidades-educacionais"
       show={showModal}
       onHide={closeModal}
+      data-testid="modal-adicionar-unidade"
     >
       <Modal.Header closeButton>
         <Modal.Title className="modal-cadastro-edital">
@@ -253,6 +254,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                   <div className="w-50">
                     <Field
                       component={Select}
+                      dataTestId="select-dres-lote"
                       label="DREs/LOTE"
                       name="dres_lote"
                       options={lotesOpts}
@@ -263,6 +265,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                   <div className="w-50">
                     <Field
                       component={Select}
+                      dataTestId="select-tipos-unidades"
                       label="Tipos de Unidades"
                       name="tipos_unidades"
                       options={tiposUnidadesOpts}
@@ -275,6 +278,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                 <div className="row">
                   <Field
                     component={MultiselectRaw}
+                    dataTestId="multiselect-unidades-educacionais"
                     label="Unidades Educacionais"
                     name="unidades_educacionais"
                     placeholder="Selecione as Unidades Educacionais"
@@ -335,6 +339,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                     <div className="w-50">
                       <Field
                         component={MultiselectRaw}
+                        dataTestId="multiselect-tipos-alimentacao-inscritos-infantil"
                         label="Tipos de Alimentações para Inscritos - INFANTIL"
                         name="tipos_alimentacao_inscritos_infantil"
                         options={tiposAlimentacaoInscritosInfantil}
@@ -365,6 +370,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                   />
                   <Botao
                     texto="Adicionar"
+                    dataTestId="modal-adicionar-botao"
                     type={BUTTON_TYPE.BUTTON}
                     disabled={addDisabled}
                     onClick={() => handleAdicionarUnidade(values)}
