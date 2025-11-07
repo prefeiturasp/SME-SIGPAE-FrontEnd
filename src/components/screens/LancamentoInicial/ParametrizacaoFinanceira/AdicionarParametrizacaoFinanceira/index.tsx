@@ -146,6 +146,7 @@ export default () => {
                 ) : null}
                 <div className="d-flex justify-content-end gap-3 mt-5">
                   <Botao
+                    dataTestId="botao-cancelar"
                     texto="Cancelar"
                     onClick={() => {
                       uuidParametrizacao
@@ -156,6 +157,7 @@ export default () => {
                     type={BUTTON_TYPE.BUTTON}
                   />
                   <Botao
+                    dataTestId="botao-salvar"
                     texto="Salvar"
                     style={BUTTON_STYLE.GREEN}
                     type={BUTTON_TYPE.SUBMIT}
