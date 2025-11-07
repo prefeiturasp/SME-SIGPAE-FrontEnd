@@ -1,73 +1,73 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
-import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import { Select as SelectAntd, Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import {
-  getDashboardMedicaoInicial,
-  getMesesAnosSolicitacoesMedicaoinicial,
-} from "src/services/medicaoInicial/dashboard.service";
-import {
-  toastError,
-  toastSuccess,
-} from "src/components/Shareable/Toast/dialogs";
-import { CardMedicaoPorStatus } from "./components/CardMedicaoPorStatus";
-import "./style.scss";
-import {
-  MEDICAO_CARD_NOME_POR_STATUS_DRE,
-  STATUS_RELACAO_DRE_UE,
-} from "./constants";
-import { Spin } from "antd";
+import { useContext, useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { MEDICAO_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { Paginacao } from "src/components/Shareable/Paginacao";
-import { Field, Form } from "react-final-form";
-import Select from "src/components/Shareable/Select";
-import { MESES, TIPO_PERFIL } from "src/constants/shared";
-import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
-import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { getLotesSimples } from "src/services/lote.service";
-import { getEscolasTercTotal } from "src/services/escola.service";
-import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
-import {
-  formatarOpcoesDRE,
-  getError,
-  getISOLocalDatetimeString,
-  usuarioEhDRE,
-  usuarioEhMedicao,
-  usuarioEhCODAEGabinete,
-  usuarioEhCODAENutriManifestacao,
-  usuarioEhQualquerCODAE,
-  usuarioEhEscolaTerceirizadaQualquerPerfil,
-  usuarioEhEscolaTerceirizada,
-  usuarioEhEscolaTerceirizadaDiretor,
-  usuarioEhDinutreDiretoria,
-  usuarioEhEmpresaTerceirizada,
-  usuarioEhCoordenadorNutriSupervisao,
-  usuarioEhAdministradorNutriSupervisao,
-  acessoModuloMedicaoRelatorioConsolidado,
-} from "src/helpers/utilities";
 import { ASelect } from "src/components/Shareable/MakeField";
-import { Select as SelectAntd } from "antd";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { Paginacao } from "src/components/Shareable/Paginacao";
+import Select from "src/components/Shareable/Select";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   CONFERENCIA_DOS_LANCAMENTOS,
   DETALHAMENTO_DO_LANCAMENTO,
   MEDICAO_INICIAL,
 } from "src/configs/constants";
+import { MESES, TIPO_PERFIL } from "src/constants/shared";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { required } from "src/helpers/fieldValidators";
-import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import {
-  relatorioMedicaoInicialPDF,
+  acessoModuloMedicaoRelatorioConsolidado,
+  formatarOpcoesDRE,
+  getError,
+  getISOLocalDatetimeString,
+  usuarioEhAdministradorNutriSupervisao,
+  usuarioEhCODAEGabinete,
+  usuarioEhCODAENutriManifestacao,
+  usuarioEhCoordenadorNutriSupervisao,
+  usuarioEhDinutreDiretoria,
+  usuarioEhDRE,
+  usuarioEhEmpresaTerceirizada,
+  usuarioEhEscolaTerceirizada,
+  usuarioEhEscolaTerceirizadaDiretor,
+  usuarioEhEscolaTerceirizadaQualquerPerfil,
+  usuarioEhMedicao,
+  usuarioEhQualquerCODAE,
+} from "src/helpers/utilities";
+import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
+import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
+import { getEscolasTercTotal } from "src/services/escola.service";
+import { getLotesSimples } from "src/services/lote.service";
+import {
+  getDashboardMedicaoInicialResultados,
+  getDashboardMedicaoInicialTotalizadores,
+  getMesesAnosSolicitacoesMedicaoinicial,
+} from "src/services/medicaoInicial/dashboard.service";
+import { updateSolicitacaoMedicaoInicial } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
+import {
   relatorioConsolidadoMedicaoInicialXLSX,
+  relatorioMedicaoInicialPDF,
   relatorioUnificadoMedicaoInicialPDF,
 } from "src/services/relatorios";
-import { MEDICAO_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
-import { updateSolicitacaoMedicaoInicial } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
+import { CardMedicaoPorStatus } from "./components/CardMedicaoPorStatus";
 import ModalRelatorio from "./components/ModalRelatorio";
+import {
+  MEDICAO_CARD_NOME_POR_STATUS_DRE,
+  STATUS_RELACAO_DRE_UE,
+} from "./constants";
+import "./style.scss";
 
 export const AcompanhamentoDeLancamentos = () => {
   const navigate = useNavigate();
@@ -129,52 +129,57 @@ export const AcompanhamentoDeLancamentos = () => {
     if (!["true", "false"].includes(params.ocorrencias))
       delete params.ocorrencias;
 
-    const [responseDre, response] = await Promise.all([
-      getDashboardMedicaoInicial({ dre: diretoriaRegional }),
-      getDashboardMedicaoInicial(params),
-    ]);
-    if (response.status === HTTP_STATUS.OK) {
-      const dashboardResults = responseDre.data.results;
-      if (
-        (!usuarioEhMedicao() &&
-          !usuarioEhCODAENutriManifestacao() &&
-          !usuarioEhQualquerCODAE() &&
-          !usuarioEhDinutreDiretoria() &&
-          !usuarioEhCODAEGabinete()) ||
-        diretoriaRegional
-      ) {
-        let NovoDashboardResults = [...dashboardResults];
-
+    if (
+      !dadosDashboard ||
+      mudancaDre ||
+      (diretoriaRegional && !params.mes_ano)
+    ) {
+      const responseDre = await getDashboardMedicaoInicialTotalizadores({
+        dre: diretoriaRegional,
+      });
+      if (responseDre.status !== HTTP_STATUS.OK) {
+        setErroAPI(
+          "Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde.",
+        );
+      } else {
+        const dashboardResults = responseDre.data.results;
         if (
-          usuarioEhMedicao() ||
-          usuarioEhCODAENutriManifestacao() ||
-          usuarioEhQualquerCODAE() ||
-          usuarioEhDinutreDiretoria() ||
-          usuarioEhCODAEGabinete()
+          (!usuarioEhMedicao() &&
+            !usuarioEhCODAENutriManifestacao() &&
+            !usuarioEhQualquerCODAE() &&
+            !usuarioEhDinutreDiretoria() &&
+            !usuarioEhCODAEGabinete()) ||
+          diretoriaRegional
         ) {
-          NovoDashboardResults = NovoDashboardResults.filter(
-            (medicoes) => !STATUS_RELACAO_DRE_UE.includes(medicoes.status),
-          );
-        }
+          let NovoDashboardResults = [...dashboardResults];
 
-        if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-          NovoDashboardResults = NovoDashboardResults.filter(
-            (medicoes) => medicoes.status !== "TODOS_OS_LANCAMENTOS",
-          );
-        }
+          if (
+            usuarioEhMedicao() ||
+            usuarioEhCODAENutriManifestacao() ||
+            usuarioEhQualquerCODAE() ||
+            usuarioEhDinutreDiretoria() ||
+            usuarioEhCODAEGabinete()
+          ) {
+            NovoDashboardResults = NovoDashboardResults.filter(
+              (medicoes) => !STATUS_RELACAO_DRE_UE.includes(medicoes.status),
+            );
+          }
 
-        if (
-          mudancaDre ||
-          !dadosDashboard ||
-          (diretoriaRegional && !params.mes_ano)
-        ) {
+          if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
+            NovoDashboardResults = NovoDashboardResults.filter(
+              (medicoes) => medicoes.status !== "TODOS_OS_LANCAMENTOS",
+            );
+          }
+
           setDadosDashboard(NovoDashboardResults);
         }
       }
-      if (statusSelecionado) {
-        setResultados(
-          response.data.results.find((res) => res.status === statusSelecionado),
-        );
+    }
+
+    const response = await getDashboardMedicaoInicialResultados(params);
+    if (response.status === HTTP_STATUS.OK) {
+      if (statusSelecionado || usuarioEhEscolaTerceirizadaQualquerPerfil()) {
+        setResultados(response.data.results);
       }
     } else {
       setErroAPI(
@@ -589,6 +594,9 @@ export const AcompanhamentoDeLancamentos = () => {
                                     }`
                               }
                               dataTestId={dadosPorStatus.status}
+                              getDashboardMedicaoInicialAsync={
+                                getDashboardMedicaoInicialAsync
+                              }
                             >
                               {
                                 MEDICAO_CARD_NOME_POR_STATUS_DRE[
@@ -761,10 +769,10 @@ export const AcompanhamentoDeLancamentos = () => {
                       {resultados && (
                         <>
                           <div className="titulo-tabela m-3">Resultados</div>
-                          {resultados.dados.length === 0 && (
+                          {resultados.dados?.length === 0 && (
                             <div>Nenhum resultado encontrado.</div>
                           )}
-                          {resultados.dados.length > 0 && (
+                          {resultados.dados?.length > 0 && (
                             <>
                               <table className="resultados">
                                 <thead>
