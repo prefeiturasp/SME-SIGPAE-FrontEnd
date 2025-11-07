@@ -141,9 +141,9 @@ export const RecreioFerias = () => {
                   <table className="tabela-unidades-participantes">
                     <thead>
                       <tr className="row">
-                        <th className="col-2 text-center">DRE/LOTE</th>
+                        <th className="col-1 text-center">DRE/LOTE</th>
 
-                        <th className="col-2 text-center">
+                        <th className="col-3 text-center">
                           Unidade Educacional
                         </th>
                         <th className="col-2 text-center">Nº de Inscritos</th>
@@ -164,14 +164,14 @@ export const RecreioFerias = () => {
                             key={`${participante.unidadeEducacional}-${participante.id}`}
                           >
                             <tr className="row">
-                              <td className="col-2">{participante.dreLote}</td>
-                              <td className="col-2">
+                              <td className="col-1">{participante.dreLote}</td>
+                              <td className="col-3">
                                 <Tooltip
                                   title={participante.unidadeEducacional}
                                 >
                                   {truncarString(
                                     participante.unidadeEducacional,
-                                    20
+                                    35
                                   )}
                                 </Tooltip>
                               </td>
