@@ -1,58 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React from "react";
 import { RecreioFerias } from "../index";
-
-jest.mock("src/components/Shareable/Botao", () => {
-  return ({ texto, onClick, type, className }) => (
-    <button
-      type={type === "submit" ? "submit" : "button"}
-      className={className}
-      onClick={onClick}
-    >
-      {texto}
-    </button>
-  );
-});
-
-jest.mock("src/components/Shareable/Botao/constants", () => ({
-  BUTTON_STYLE: { GREEN: "GREEN", GREEN_OUTLINE: "GREEN_OUTLINE" },
-  BUTTON_TYPE: { BUTTON: "button", SUBMIT: "submit" },
-}));
-
-jest.mock("src/components/Shareable/Input/InputText", () => {
-  return ({ input, ...rest }) => (
-    <input
-      {...input}
-      placeholder={rest.placeholder || rest.label}
-      aria-label={rest.name || rest.label}
-      data-testid={rest.name}
-    />
-  );
-});
-
-jest.mock("src/components/Shareable/DatePicker", () => ({
-  InputComData: ({ input, ...rest }) => (
-    <input
-      {...input}
-      placeholder={rest.placeholder || rest.label}
-      aria-label={rest.name || rest.label}
-      data-testid={rest.name}
-    />
-  ),
-}));
-
-jest.mock("src/components/Shareable/ToggleExpandir", () => ({
-  ToggleExpandir: ({ ativo, onClick, dataTestId }) => (
-    <button data-testid={dataTestId} aria-pressed={!!ativo} onClick={onClick}>
-      {ativo ? "▲" : "▼"}
-    </button>
-  ),
-}));
-
-jest.mock("src/components/Shareable/Paginacao", () => ({
-  Paginacao: () => <div data-testid="paginacao">Paginacao</div>,
-}));
 
 jest.mock("../components/ModalAdicionarUnidadeEducacional", () => ({
   ModalAdicionarUnidadeEducacional: ({
