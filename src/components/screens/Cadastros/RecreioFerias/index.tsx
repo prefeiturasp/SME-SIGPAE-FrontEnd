@@ -13,6 +13,7 @@ import InputText from "src/components/Shareable/Input/InputText";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { required } from "src/helpers/fieldValidators";
+import { truncarString } from "src/helpers/utilities";
 import { ModalAdicionarUnidadeEducacional } from "./components/ModalAdicionarUnidadeEducacional";
 import { ModalRemoverUnidadeEducacional } from "./components/ModalRemoverUnidadeEducacional";
 import "./style.scss";
@@ -165,7 +166,14 @@ export const RecreioFerias = () => {
                             <tr className="row">
                               <td className="col-2">{participante.dreLote}</td>
                               <td className="col-2">
-                                {participante.unidadeEducacional}
+                                <Tooltip
+                                  title={participante.unidadeEducacional}
+                                >
+                                  {truncarString(
+                                    participante.unidadeEducacional,
+                                    20
+                                  )}
+                                </Tooltip>
                               </td>
                               <td className="col-2">
                                 <Field

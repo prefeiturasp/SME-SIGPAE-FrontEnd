@@ -137,7 +137,7 @@ export const getLotesAsync = async (
     const lotes = lotesOrdenados.map((lote) => {
       return {
         [valueField]: lote.uuid,
-        [labelField]: `${lote.nome} - ${lote.diretoria_regional.nome}`,
+        [labelField]: `${lote.nome} - ${lote.diretoria_regional.iniciais}`,
         dreUuid: lote.diretoria_regional.uuid,
       };
     });
