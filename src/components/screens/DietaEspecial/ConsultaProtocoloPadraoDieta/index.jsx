@@ -55,7 +55,7 @@ export default () => {
         setResultado(response.data);
         setTotal(response.data.count);
       }
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao tentar trocar página");
     }
     setCarregando(false);
@@ -87,6 +87,7 @@ export default () => {
           <>
             <Tabela resultado={resultado} />
             <Paginacao
+              showQuickJumper
               className="mt-3 mb-3"
               current={page || 1}
               total={total}
