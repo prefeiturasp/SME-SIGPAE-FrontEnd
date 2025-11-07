@@ -45,7 +45,6 @@ const mockTiposAlimentacao = {
   ],
 };
 
-// Helper alternativo usando o elemento select diretamente
 const changeSelectValue = (testId: string, value: string) => {
   const container = screen.getByTestId(testId);
   const selectElement = container.querySelector("select");
@@ -63,7 +62,6 @@ describe("RecreioFerias - Fluxo de Interação do Usuário", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Mock das requisições
     (
       cadastroTipoAlimentacaoService.getTiposUnidadeEscolar as jest.Mock
     ).mockResolvedValue(mockTiposUnidadeEscolar);

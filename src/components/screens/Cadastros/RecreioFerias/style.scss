@@ -41,6 +41,11 @@
     }
   }
 
+  .calendario {
+    width: 25%;
+    max-width: 240px;
+  }
+
   .verde {
     cursor: pointer;
     color: $green !important;

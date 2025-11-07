@@ -87,32 +87,37 @@ export const RecreioFerias = () => {
               </div>
 
               <div className="row mt-2">
-                <div className="col-2">
-                  <Field
-                    component={InputComData}
-                    label="Período de Realização"
-                    name="periodo_realizacao_de"
-                    placeholder="De"
-                    writable={false}
-                    minDate={null}
-                    maxDate={moment(
-                      values.periodo_realizacao_ate,
-                      "DD/MM/YYYY"
-                    )}
-                    required
-                    validate={required}
-                  />
-                </div>
-                <div className="col-2">
-                  <Field
-                    component={InputComData}
-                    label="&nbsp;"
-                    name="periodo_realizacao_ate"
-                    placeholder="Até"
-                    writable={false}
-                    minDate={moment(values.periodo_realizacao_de, "DD/MM/YYYY")}
-                    maxDate={null}
-                  />
+                <div className="row">
+                  <div className="calendario">
+                    <Field
+                      component={InputComData}
+                      label="Período de Realização"
+                      name="periodo_realizacao_de"
+                      placeholder="De"
+                      writable={false}
+                      minDate={null}
+                      maxDate={moment(
+                        values.periodo_realizacao_ate,
+                        "DD/MM/YYYY"
+                      )}
+                      required
+                      validate={required}
+                    />
+                  </div>
+                  <div className="calendario">
+                    <Field
+                      component={InputComData}
+                      label="&nbsp;"
+                      name="periodo_realizacao_ate"
+                      placeholder="Até"
+                      writable={false}
+                      minDate={moment(
+                        values.periodo_realizacao_de,
+                        "DD/MM/YYYY"
+                      )}
+                      maxDate={null}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-between mb-2 mt-4">
