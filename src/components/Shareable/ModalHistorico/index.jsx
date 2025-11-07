@@ -175,6 +175,7 @@ const ModalHistorico = ({
                 <div
                   key={index}
                   className={`${ativo && "ativo-item"} grid-item-log`}
+                  data-testid={`log-item-${index}`}
                   onClick={() => {
                     itemLogAtivo(index, ativo);
                   }}
