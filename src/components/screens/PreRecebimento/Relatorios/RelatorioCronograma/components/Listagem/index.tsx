@@ -1,6 +1,15 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useRef,
+  useLayoutEffect,
+  useState,
+} from "react";
 import "./styles.scss";
 import { CronogramaRelatorio } from "../../interfaces";
+import { imprimirFichaRecebimento } from "src/services/fichaRecebimento.service";
+import { Tooltip } from "antd";
+import { formataNome } from "../../helpers";
 
 interface Props {
   objetos: CronogramaRelatorio[];
@@ -8,7 +17,37 @@ interface Props {
   setAtivos: Dispatch<SetStateAction<string[]>>;
 }
 
+const imprimirFicha = async (uuid: string, numero: string) => {
+  await imprimirFichaRecebimento(uuid, numero);
+};
+
 const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
+  const etapaColRef = useRef<HTMLDivElement>(null);
+  const [colunaWidth, setColunaWidth] = useState(400);
+
+  useLayoutEffect(() => {
+    const handleResize = () => {
+      if (etapaColRef.current) {
+        const width = etapaColRef.current.offsetWidth;
+        setColunaWidth(width - 16);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [objetos]);
+
+  useLayoutEffect(() => {
+    if (ativos.length > 0 && etapaColRef.current) {
+      const width = etapaColRef.current.offsetWidth;
+      setColunaWidth(width - 16);
+    }
+  }, [ativos]);
+
   return (
     <div className="listagem-relatorio-cronograma">
       <div className="titulo-verde mt-4 mb-3">Resultado da Pesquisa</div>
@@ -46,13 +85,13 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                       ativos && ativos.includes(cronograma.uuid)
                         ? setAtivos(
                             ativos.filter(
-                              (el: string) => el !== cronograma.uuid
-                            )
+                              (el: string) => el !== cronograma.uuid,
+                            ),
                           )
                         : setAtivos(
                             ativos
                               ? [...ativos, cronograma.uuid]
-                              : [cronograma.uuid]
+                              : [cronograma.uuid],
                           );
                     }}
                   />
@@ -72,7 +111,7 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                   </div>
                   <article className="mt-3">
                     <div className="grid-table header-table">
-                      <div>Etapa</div>
+                      <div ref={etapaColRef}>Etapa</div>
                       <div>Parte</div>
                       <div>Data programada</div>
                       <div>Quantidade</div>
@@ -81,10 +120,78 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                     </div>
 
                     {cronograma.etapas.map((etapa) => {
-                      return (
-                        <>
+                      const linhas = [];
+                      const textoEtapaReposicao = `${etapa.etapa} - ${etapa.parte} - Reposição / Pagamento de Notificação`;
+
+                      if (
+                        etapa.fichas_recebimento &&
+                        etapa.fichas_recebimento.length > 0
+                      ) {
+                        etapa.fichas_recebimento.forEach((ficha, index) => {
+                          linhas.push(
+                            <div
+                              key={`${etapa.uuid}-${index}`}
+                              className="grid-table body-table"
+                            >
+                              <div>
+                                {ficha.houve_reposicao ? (
+                                  <Tooltip
+                                    color="#42474a"
+                                    overlayStyle={{
+                                      maxWidth: "360px",
+                                      fontSize: "12px",
+                                      fontWeight: "700",
+                                    }}
+                                    title={textoEtapaReposicao}
+                                  >
+                                    {formataNome(
+                                      textoEtapaReposicao,
+                                      colunaWidth,
+                                    )}
+                                  </Tooltip>
+                                ) : (
+                                  etapa.etapa
+                                )}
+                              </div>
+                              <div>
+                                {ficha.houve_reposicao ? "" : etapa.parte}
+                              </div>
+                              <div>{etapa.data_programada}</div>
+                              <div>{etapa.quantidade}</div>
+                              <div>{etapa.total_embalagens}</div>
+                              <div>
+                                {ficha.situacao === "Ocorrência" ? (
+                                  <a
+                                    href="#"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      imprimirFicha(
+                                        ficha.uuid,
+                                        cronograma.numero,
+                                      );
+                                    }}
+                                    className="link-ocorrencia"
+                                  >
+                                    {ficha.situacao}
+                                  </a>
+                                ) : (
+                                  ficha.situacao
+                                )}
+                              </div>
+                            </div>,
+                          );
+                        });
+                      }
+
+                      if (
+                        !etapa.fichas_recebimento?.length ||
+                        etapa.fichas_recebimento.every(
+                          (ficha) => ficha.situacao === "Ocorrência",
+                        )
+                      ) {
+                        linhas.push(
                           <div
-                            key={etapa.uuid}
+                            key={`${etapa.uuid}-areceber`}
                             className="grid-table body-table"
                           >
                             <div>{etapa.etapa}</div>
@@ -92,10 +199,12 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                             <div>{etapa.data_programada}</div>
                             <div>{etapa.quantidade}</div>
                             <div>{etapa.total_embalagens}</div>
-                            <div></div>
-                          </div>
-                        </>
-                      );
+                            <div>A receber</div>
+                          </div>,
+                        );
+                      }
+
+                      return linhas;
                     })}
                   </article>
                 </div>
