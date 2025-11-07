@@ -204,7 +204,6 @@ export const ModalAdicionarUnidadeEducacional = ({
             const hasDreLote = Boolean(values?.dres_lote);
             const hasTipoUnidade = Boolean(values?.tipos_unidades);
             const enableSeletores = hasDreLote && hasTipoUnidade;
-            const addDisabled = submitting || formSubmitting;
 
             const tipoUnidadeSelecionado = tiposUnidadesEscolares.find(
               (t: any) => t.uuid === values?.tipos_unidades
@@ -212,6 +211,29 @@ export const ModalAdicionarUnidadeEducacional = ({
             const mostrarSeletorInfantil =
               tipoUnidadeSelecionado?.nome === "CEMEI" ||
               tipoUnidadeSelecionado?.nome === "CEU CEMEI";
+
+            // Validação dos campos obrigatórios
+            const hasUnidadesEducacionais =
+              values?.unidades_educacionais &&
+              values.unidades_educacionais.length > 0;
+
+            const hasTiposAlimentacaoInscritos =
+              values?.tipos_alimentacao_inscritos &&
+              values.tipos_alimentacao_inscritos.length > 0;
+
+            const hasTiposAlimentacaoInscritosInfantil =
+              !mostrarSeletorInfantil ||
+              (values?.tipos_alimentacao_inscritos_infantil &&
+                values.tipos_alimentacao_inscritos_infantil.length > 0);
+
+            const addDisabled =
+              submitting ||
+              formSubmitting ||
+              !hasDreLote ||
+              !hasTipoUnidade ||
+              !hasUnidadesEducacionais ||
+              !hasTiposAlimentacaoInscritos ||
+              !hasTiposAlimentacaoInscritosInfantil;
 
             useEffect(() => {
               if (hasDreLote && hasTipoUnidade) {
