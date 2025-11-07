@@ -19,6 +19,13 @@ export default ({
   const [showModal, setShowModal] = useState(false);
   const [showModalHistorico, setShowModalHistorico] = useState(false);
 
+  const ocorrenciaExcluida = () => {
+    return (
+      solicitacaoMedicaoInicial?.ocorrencia?.status ===
+      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
+    );
+  };
+
   const visualizarModalHistorico = () => {
     setShowModalHistorico(true);
   };
@@ -54,7 +61,7 @@ export default ({
                 {solicitacaoMedicaoInicial.ocorrencia ? (
                   <div className="col-8 text-end">
                     <span
-                      className={`status-ocorrencia text-center ${solicitacaoMedicaoInicial.ocorrencia.status !== "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" && "me-3"}`}
+                      className={`status-ocorrencia text-center ${!ocorrenciaExcluida() && "me-3"}`}
                     >
                       <b
                         className={
@@ -76,8 +83,7 @@ export default ({
                           ].nome}
                       </b>
                     </span>
-                    {solicitacaoMedicaoInicial.ocorrencia?.status !==
-                      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" && (
+                    {!ocorrenciaExcluida() && (
                       <span
                         className="download-ocorrencias me-0"
                         onClick={() =>

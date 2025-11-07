@@ -113,6 +113,12 @@ export const ConferenciaDosLancamentos = () => {
     setShowModal(true);
   };
 
+  const ocorrenciaExcluida = () => {
+    return (
+      solicitacao?.ocorrencia?.status === "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
+    );
+  };
+
   const getFeriadosNoMesAsync = async (mes, ano) => {
     const params_feriados_no_mes = {
       mes: mes,
@@ -746,15 +752,12 @@ export const ConferenciaDosLancamentos = () => {
                               </p>
                             </div>
                             {solicitacao.com_ocorrencias ||
-                            solicitacao.ocorrencia?.status ===
-                              "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" ? (
+                            ocorrenciaExcluida() ? (
                               <Fragment>
                                 <div className="col-6 text-end">
                                   <span
                                     className={`status-ocorrencia text-center ${
-                                      solicitacao.ocorrencia?.status ===
-                                        "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" &&
-                                      "me-3"
+                                      !ocorrenciaExcluida() && "me-3"
                                     }`}
                                   >
                                     <b
@@ -779,8 +782,7 @@ export const ConferenciaDosLancamentos = () => {
                                   </span>
                                   {ocorrencia &&
                                   ocorrenciaExpandida &&
-                                  solicitacao.ocorrencia?.status !==
-                                    "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" ? (
+                                  !ocorrenciaExcluida() ? (
                                     <span
                                       className="download-ocorrencias me-0"
                                       onClick={() => {
@@ -800,8 +802,7 @@ export const ConferenciaDosLancamentos = () => {
                                       Download de Ocorrências
                                     </span>
                                   ) : (
-                                    solicitacao.ocorrencia?.status !==
-                                      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" && (
+                                    !ocorrenciaExcluida() && (
                                       <label
                                         className="green visualizar-ocorrencias"
                                         onClick={() =>
@@ -819,13 +820,16 @@ export const ConferenciaDosLancamentos = () => {
                             )}
                           </div>
                           <div className="row">
-                            {ocorrenciaExpandida && ocorrencia && (
+                            {((ocorrenciaExpandida && ocorrencia) ||
+                              ocorrenciaExcluida()) && (
                               <Fragment>
                                 <div className="col-5 mt-3">
                                   {usuarioEhDRE() &&
+                                    !ocorrenciaExcluida() &&
                                     logCorrecaoOcorrencia &&
                                     `${textoOcorrencia} ${logCorrecaoOcorrencia.criado_em}`}
                                   {usuarioEhMedicao() &&
+                                    !ocorrenciaExcluida() &&
                                     logCorrecaoOcorrenciaCODAE &&
                                     `${textoOcorrencia} ${logCorrecaoOcorrenciaCODAE.criado_em}`}
                                 </div>
