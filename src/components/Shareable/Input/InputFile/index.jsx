@@ -43,7 +43,9 @@ const InputFile = forwardRef((props, ref) => {
     } else {
       let pdfWindow = window.open("");
       pdfWindow.document.write(
-        "<iframe width='100%' height='100%' src='" + file.base64 + "'></iframe>"
+        "<iframe width='100%' height='100%' src='" +
+          file.base64 +
+          "'></iframe>",
       );
     }
   };
@@ -91,7 +93,7 @@ const InputFile = forwardRef((props, ref) => {
     const hasXLS = files.some(
       (file) =>
         file.base64.includes("spreadsheetml") ||
-        file.base64.includes("application/vnd.ms-excel.sheet.macroEnabled.12")
+        file.base64.includes("application/vnd.ms-excel.sheet.macroEnabled.12"),
     );
 
     Array.from(event.target.files).forEach((file) => {
@@ -122,19 +124,19 @@ const InputFile = forwardRef((props, ref) => {
       } else {
         if (!lista_extensoes.includes(extensao)) {
           toastError(
-            `Extensão do arquivo não suportada: ${extensao.toUpperCase()}`
+            `Extensão do arquivo não suportada: ${extensao.toUpperCase()}`,
           );
           valido = false;
         } else if (props.limiteTamanho && file.size > props.limiteTamanho) {
           toastError(
             `Arquivo superior a ${Math.floor(
-              props.limiteTamanho / 10 ** 6
-            )}MB, não é possível fazer o upload`
+              props.limiteTamanho / 10 ** 6,
+            )}MB, não é possível fazer o upload`,
           );
           valido = false;
         } else if (extensao === "pdf" && file.size > DEZ_MB) {
           toastError(
-            `Arquivo PDF superior a 10MB, não é possível fazer o upload`
+            `Arquivo PDF superior a 10MB, não é possível fazer o upload`,
           );
           valido = false;
         } else if (
@@ -142,7 +144,7 @@ const InputFile = forwardRef((props, ref) => {
           file.size > VINTE_CINCO_MB
         ) {
           toastError(
-            `Arquivo de planilha superior a 25MB, não é possível fazer o upload`
+            `Arquivo de planilha superior a 25MB, não é possível fazer o upload`,
           );
           valido = false;
         }
@@ -162,7 +164,7 @@ const InputFile = forwardRef((props, ref) => {
           .then(() => {
             if (localFiles.length === QUANTIDADE_ARQUIVOS) {
               toastSuccess(
-                props.toastSuccess || "Laudo(s) incluso(s) com sucesso"
+                props.toastSuccess || "Laudo(s) incluso(s) com sucesso",
               );
               if (props.concatenarNovosArquivos) {
                 const allFiles = [...files, ...localFiles];
@@ -201,7 +203,7 @@ const InputFile = forwardRef((props, ref) => {
     <>
       <div
         className={`${
-          ehPlanilhaMedicaoInicial ? "col-4" : "col-12"
+          ehPlanilhaMedicaoInicial ? "mt-3 ms-3 col-4" : "col-12"
         } input input-file ${alignLeft && "align-left"} ${icone && "icon"}`}
       >
         <Botao
@@ -242,7 +244,7 @@ const InputFile = forwardRef((props, ref) => {
       </div>
       <div
         className={`${
-          ehPlanilhaMedicaoInicial ? "col-8" : "col-12"
+          ehPlanilhaMedicaoInicial ? "mt-3 col-7" : "col-12"
         } input input-file ${alignLeft && "align-left"} ${icone && "icon"}`}
       >
         <HelpText
@@ -265,6 +267,7 @@ const InputFile = forwardRef((props, ref) => {
                 </span>
                 <i
                   onClick={() => deleteFile(key)}
+                  data-testid={`delete-file-${key}`}
                   className={`fas ${
                     ehPlanilhaMedicaoInicial ? "fa-times" : "fa-trash-alt"
                   } exclude-icon`}

@@ -265,7 +265,7 @@ export const mockGetEscolaSimplesCEUGESTAO = {
             processo: "6016.2023/0069202-4",
             objeto:
               "Contratação de empresa especializada para a prestação de serviço de nutrição e alimentação escolar, visando ao preparo e à distribuição de alimentação balanceada e em condições higiênico-sanitárias adequadas, que atendam aos padrões nutricionais e dispositivos legais vigentes, aos alunos regularmente matriculados e demais beneficiários de programas/projetos da Secretaria Municipal de Educação, em unidades educacionais da rede municipal de ensino, mediante o fornecimento de todos os gêneros alimentícios e demais insumos necessários, dos serviços de logística, supervisão e manutenção preventiva e corretiva dos equipamentos utilizados, fornecimento de mão de obra treinada para a preparação dos alimentos, distribuição, controle, limpeza e higienização de cozinhas, despensas e lactários das unidades educacionais, em conformidade com os Seçãos do presente edital e com as normas técnicas fixadas pela CODAE e demais órgãos sanitários. O objeto desta licitação se refere à DRE CL (lotes 02 e 03).",
-            eh_imr: true,
+            eh_imr: false,
           },
           vigencias: [
             {
@@ -294,7 +294,7 @@ export const mockGetEscolaSimplesCEUGESTAO = {
             processo: "6016.2023/0069163-0",
             objeto:
               "Contratação de empresa especializada para a prestação de serviço de nutrição e alimentação escolar, visando o preparo e distribuição de alimentação balanceada e em condições higiênico-sanitárias adequadas, que atendam aos padrões nutricionais e dispositivos legais vigentes, aos alunos regularmente matriculados e demais beneficiários de programas/projetos da Secretaria Municipal de Educação, em unidades educacionais da Rede Municipal de Ensino, mediante o fornecimento de todos os gêneros alimentícios e demais insumos necessários, dos serviços de logística, supervisão e manutenção preventiva e corretiva dos equipamentos utilizados, fornecimento de mão de obra com dedicação exclusiva, treinada para a preparação e distribuição das refeições, controle dos alimentos, reparos, manutenções, limpeza e higienização de cozinhas, despensas e lactários das unidades educacionais, em conformidade com as normas técnicas emitidas pelos órgãos sanitários",
-            eh_imr: true,
+            eh_imr: false,
           },
           vigencias: [
             {
@@ -343,7 +343,7 @@ export const mockGetEscolaSimplesCEUGESTAO = {
         uuid: "e7e76d16-4c31-43b5-9969-c7db974543c3",
         edital: "d136caaa-db23-418a-81ec-c679e97c1197",
         edital_numero: "30/SME/CODAE/2023",
-        eh_imr: true,
+        eh_imr: false,
         encerrado: false,
       },
       {
@@ -378,7 +378,7 @@ export const mockGetEscolaSimplesCEUGESTAO = {
         uuid: "dcb9c750-c046-4d59-9a3a-ed48d997a734",
         edital: "fbe7a546-fba5-497b-b12e-160311f46222",
         edital_numero: "202020",
-        eh_imr: true,
+        eh_imr: false,
         encerrado: true,
       },
     ],

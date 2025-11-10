@@ -1,13 +1,13 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import ModalHistorico from "src/components/Shareable/ModalHistorico";
 import { OCORRENCIA_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
 import { medicaoInicialExportarOcorrenciasPDF } from "src/services/relatorios";
-import Botao from "src/components/Shareable/Botao";
-import ModalHistorico from "src/components/Shareable/ModalHistorico";
 import { ModalAtualizarOcorrencia } from "../ModalAtualizarOcorrencia";
 
 export default ({
@@ -18,6 +18,13 @@ export default ({
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [showModalHistorico, setShowModalHistorico] = useState(false);
+
+  const ocorrenciaExcluida = () => {
+    return (
+      solicitacaoMedicaoInicial?.ocorrencia?.status ===
+      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
+    );
+  };
 
   const visualizarModalHistorico = () => {
     setShowModalHistorico(true);
@@ -53,14 +60,16 @@ export default ({
                 </div>
                 {solicitacaoMedicaoInicial.ocorrencia ? (
                   <div className="col-8 text-end">
-                    <span className="status-ocorrencia text-center me-3">
+                    <span
+                      className={`status-ocorrencia text-center ${!ocorrenciaExcluida() && "me-3"}`}
+                    >
                       <b
                         className={
                           [
                             "MEDICAO_CORRECAO_SOLICITADA",
                             "MEDICAO_CORRECAO_SOLICITADA_CODAE",
                           ].includes(
-                            solicitacaoMedicaoInicial.ocorrencia.status
+                            solicitacaoMedicaoInicial.ocorrencia.status,
                           )
                             ? "red"
                             : ""
@@ -74,17 +83,19 @@ export default ({
                           ].nome}
                       </b>
                     </span>
-                    <span
-                      className="download-ocorrencias me-0"
-                      onClick={() =>
-                        medicaoInicialExportarOcorrenciasPDF(
-                          solicitacaoMedicaoInicial.ocorrencia.ultimo_arquivo
-                        )
-                      }
-                    >
-                      <i className={`${BUTTON_ICON.DOWNLOAD} me-2`} />
-                      Formulário de Ocorrências
-                    </span>
+                    {!ocorrenciaExcluida() && (
+                      <span
+                        className="download-ocorrencias me-0"
+                        onClick={() =>
+                          medicaoInicialExportarOcorrenciasPDF(
+                            solicitacaoMedicaoInicial.ocorrencia.ultimo_arquivo,
+                          )
+                        }
+                      >
+                        <i className={`${BUTTON_ICON.DOWNLOAD} me-2`} />
+                        Formulário de Ocorrências
+                      </span>
+                    )}
                   </div>
                 ) : (
                   <div className="col-6" />
@@ -102,7 +113,7 @@ export default ({
                                 solicitacaoMedicaoInicial.ocorrencia.logs.find(
                                   (log) =>
                                     log.status_evento_explicacao ===
-                                    "Correção solicitada"
+                                    "Correção solicitada",
                                 ).justificativa,
                             }}
                           />
@@ -124,7 +135,7 @@ export default ({
                           "MEDICAO_CORRECAO_SOLICITADA_CODAE",
                           "MEDICAO_CORRIGIDA_PARA_CODAE",
                         ].includes(
-                          solicitacaoMedicaoInicial.ocorrencia.status
+                          solicitacaoMedicaoInicial.ocorrencia.status,
                         ) && (
                           <Botao
                             className="float-end ms-3"
