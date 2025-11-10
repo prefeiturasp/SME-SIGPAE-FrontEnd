@@ -1,11 +1,7 @@
 import React from "react";
-
 import { Table } from "antd";
-
 import { Field } from "react-final-form";
-
 import { AInputNumber } from "src/components/Shareable/MakeField";
-
 import {
   formataValorDecimal,
   parserValorDecimal,
@@ -116,11 +112,11 @@ export default ({
                     `tabelas[${labelTabela}].${record.nome}_${record.grupo}.valor_unitario_total`,
                     valorUnitarioTotal
                       ? Number(valorUnitarioTotal.toFixed(2))
-                      : undefined
+                      : undefined,
                   );
                   form.change(
                     `tabelas[${labelTabela}].${record.nome}_${record.grupo}.valor_unitario`,
-                    value
+                    value,
                   );
                 }}
               />
@@ -150,11 +146,11 @@ export default ({
                     `tabelas[${labelTabela}].${record.nome}_${record.grupo}.valor_unitario_total`,
                     valorUnitarioTotal
                       ? Number(valorUnitarioTotal.toFixed(2))
-                      : undefined
+                      : undefined,
                   );
                   form.change(
                     `tabelas[${labelTabela}].${record.nome}_${record.grupo}.percentual_acrescimo`,
-                    value
+                    value,
                   );
                 }}
               />
