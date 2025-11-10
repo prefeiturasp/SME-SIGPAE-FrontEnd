@@ -199,7 +199,6 @@ export const campoRefeicaoComRPLAutorizadaESemObservacao = (
 ) => {
   let erro = false;
   if (
-    categoria.nome === "ALIMENTAÇÃO" &&
     alteracoesAlimentacaoAutorizadas &&
     alteracoesAlimentacaoAutorizadas.filter(
       (alteracao) =>

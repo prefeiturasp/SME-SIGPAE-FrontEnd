@@ -1541,87 +1541,87 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     }
 
     if (
-      ((categoria.nome.includes("ALIMENTAÇÃO") &&
-        (exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI(
-          inclusoesAutorizadas,
-          row,
-          column,
-          categoria,
-          formValuesAtualizados,
-        ) ||
-          (!ehEmeiDaCemeiLocation &&
-            frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao(
-              formValuesAtualizados,
-              column,
-              categoria,
-              suspensoesAutorizadas,
-              categoriasDeMedicao,
-            )) ||
-          campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao(
+      (exibirTooltipRPLAutorizadas(
+        formValuesAtualizados,
+        row,
+        column,
+        categoria,
+        alteracoesAlimentacaoAutorizadas,
+      ) ||
+        (categoria.nome.includes("ALIMENTAÇÃO") &&
+          (exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI(
             inclusoesAutorizadas,
-            column,
-            categoria,
-            formValuesAtualizados,
-          ) ||
-          exibirTooltipRPLAutorizadas(
-            formValuesAtualizados,
             row,
             column,
             categoria,
-            alteracoesAlimentacaoAutorizadas,
-          ) ||
-          exibirTooltipLPRAutorizadas(
             formValuesAtualizados,
-            row,
-            column,
-            categoria,
-            alteracoesAlimentacaoAutorizadas,
           ) ||
-          exibeTooltipInclusoesAutorizadasComZero(
-            formValuesAtualizados,
-            row,
-            column,
-            categoria,
-            inclusoesAutorizadas,
-            ehProgramasEProjetosLocation,
-          ) ||
-          (ehEmeiDaCemeiLocation &&
-            exibirTooltipSuspensoesAutorizadas(
-              formValuesAtualizados,
-              row,
+            (!ehEmeiDaCemeiLocation &&
+              frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao(
+                formValuesAtualizados,
+                column,
+                categoria,
+                suspensoesAutorizadas,
+                categoriasDeMedicao,
+              )) ||
+            campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao(
+              inclusoesAutorizadas,
               column,
               categoria,
-              suspensoesAutorizadas,
-            )) ||
-          (categoria.nome.includes("SOLICITAÇÕES") &&
-            (exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
               formValuesAtualizados,
-              row,
-              column,
-              categoria,
-              kitLanchesAutorizadas,
             ) ||
-              exibirTooltipKitLancheSolAlimentacoes(
+            exibirTooltipLPRAutorizadas(
+              formValuesAtualizados,
+              row,
+              column,
+              categoria,
+              alteracoesAlimentacaoAutorizadas,
+            ) ||
+            exibeTooltipInclusoesAutorizadasComZero(
+              formValuesAtualizados,
+              row,
+              column,
+              categoria,
+              inclusoesAutorizadas,
+              ehProgramasEProjetosLocation,
+            ) ||
+            (ehEmeiDaCemeiLocation &&
+              exibirTooltipSuspensoesAutorizadas(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                suspensoesAutorizadas,
+              )) ||
+            (categoria.nome.includes("SOLICITAÇÕES") &&
+              (exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
                 formValuesAtualizados,
                 row,
                 column,
                 categoria,
                 kitLanchesAutorizadas,
               ) ||
-              exibirTooltipLancheEmergencialAutorizado(
-                formValuesAtualizados,
-                row,
-                column,
-                categoria,
-                alteracoesAlimentacaoAutorizadas,
-              ) ||
-              exibirTooltipLancheEmergencialNaoAutorizado(
-                formValuesAtualizados,
-                row,
-                column,
-                categoria,
-                alteracoesAlimentacaoAutorizadas,
-              ))))) ||
+                exibirTooltipKitLancheSolAlimentacoes(
+                  formValuesAtualizados,
+                  row,
+                  column,
+                  categoria,
+                  kitLanchesAutorizadas,
+                ) ||
+                exibirTooltipLancheEmergencialAutorizado(
+                  formValuesAtualizados,
+                  row,
+                  column,
+                  categoria,
+                  alteracoesAlimentacaoAutorizadas,
+                ) ||
+                exibirTooltipLancheEmergencialNaoAutorizado(
+                  formValuesAtualizados,
+                  row,
+                  column,
+                  categoria,
+                  alteracoesAlimentacaoAutorizadas,
+                ))))) ||
         ((ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) &&
           campoFrequenciaValor0ESemObservacao(
             column.dia,
