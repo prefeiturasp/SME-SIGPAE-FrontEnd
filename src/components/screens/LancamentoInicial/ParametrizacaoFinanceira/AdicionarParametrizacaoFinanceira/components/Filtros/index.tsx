@@ -89,47 +89,45 @@ export default (props: Props) => {
         />
       </div>
       <FormSpy subscription={{ values: true }}>
-        {({ values }) => {
-          return (
-            <>
-              <div className="col-3">
-                <Field
-                  dataTestId="data-inicial-input"
-                  component={InputComData}
-                  label="Período de Vigência"
-                  name="data_inicial"
-                  className="data-inicio"
-                  placeholder="De"
-                  validate={ehCadastro && required}
-                  required={ehCadastro}
-                  minDate={false}
-                  maxDate={
-                    values.data_final
-                      ? moment(values.data_final, "DD/MM/YYYY").toDate()
-                      : null
-                  }
-                />
-              </div>
+        {({ values }) => (
+          <>
+            <div className="col-3">
+              <Field
+                dataTestId="data-inicial-input"
+                component={InputComData}
+                label="Período de Vigência"
+                name="data_inicial"
+                className="data-inicio"
+                placeholder="De"
+                validate={ehCadastro && required}
+                required={ehCadastro}
+                minDate={false}
+                maxDate={
+                  values.data_final
+                    ? moment(values.data_final, "DD/MM/YYYY").toDate()
+                    : null
+                }
+              />
+            </div>
 
-              <div className="col-3">
-                <Field
-                  dataTestId="data-final-input"
-                  component={InputComData}
-                  label="&nbsp;"
-                  name="data_final"
-                  className="data-final"
-                  popperPlacement="bottom-end"
-                  placeholder="Até"
-                  minDate={
-                    values.data_inicial
-                      ? moment(values.data_inicial, "DD/MM/YYYY").toDate()
-                      : null
-                  }
-                />
-              </div>
-            </>
-          );
-        }}
+            <div className="col-3">
+              <Field
+                dataTestId="data-final-input"
+                component={InputComData}
+                label="&nbsp;"
+                name="data_final"
+                className="data-final"
+                popperPlacement="bottom-end"
+                placeholder="Até"
+                minDate={
+                  values.data_inicial
+                    ? moment(values.data_inicial, "DD/MM/YYYY").toDate()
+                    : null
+                }
+              />
+            </div>
+          </>
+        )}
       </FormSpy>
       {ehCadastro && (
         <div className="col-2 mt-1">
