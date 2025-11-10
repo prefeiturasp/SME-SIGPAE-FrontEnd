@@ -77,7 +77,13 @@
 
     .grid-table {
       height: 36px;
-      grid-template-columns: 15fr 15fr 20fr 15fr 20fr 15fr;
+      grid-template-columns: 30fr 10fr 15fr 15fr 15fr 15fr;
     }
+  }
+
+  .link-ocorrencia {
+    text-decoration: underline;
+    color: #198459;
+    cursor: pointer;
   }
 }
