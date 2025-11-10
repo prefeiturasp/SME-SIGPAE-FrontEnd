@@ -14,7 +14,7 @@ const ALIMENTACOES_ENTERAL = ["Refeição", "Lanche", "Lanche 4h"];
 type Props = {
   form: FormApi<any, any>;
   tiposAlimentacao: Array<any>;
-  grupoSelecionado?: string;
+  grupoSelecionado: string;
   nomeTabela: string;
   tipoTurma?: string;
 };
