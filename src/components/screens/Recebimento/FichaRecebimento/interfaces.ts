@@ -80,6 +80,13 @@ export interface FichaRecebimentoDetalhada {
   reposicao_cronograma: ReposicaoCronograma;
 }
 
+export interface FichaRecebimentoEtapaSimplificada {
+  uuid: string;
+  houve_ocorrencia: boolean | string;
+  houve_reposicao: boolean | string;
+  situacao: string;
+}
+
 export interface QuestaoInitialValue {
   questao_conferencia: QuestaoConferencia;
   resposta: boolean;
@@ -135,6 +142,7 @@ export interface EtapaFicha {
   uuid: string;
   houve_ocorrencia: boolean;
   houve_reposicao: boolean;
+  fichas_recebimento?: FichaRecebimentoEtapaSimplificada[];
 }
 
 export interface CronogramaFicha {

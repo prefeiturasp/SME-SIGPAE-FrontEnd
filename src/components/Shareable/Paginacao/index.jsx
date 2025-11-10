@@ -1,9 +1,17 @@
 import React from "react";
 import "./style.scss";
-import { Pagination } from "antd";
+import { ConfigProvider, Pagination } from "antd";
+import ptBR from "antd/es/locale/pt_BR";
 
 export const Paginacao = (props) => {
-  const { pageSize, showTitle, showSizeChanger, total, ...rest } = props;
+  const {
+    pageSize,
+    showTitle,
+    showSizeChanger,
+    total,
+    showQuickJumper,
+    ...rest
+  } = props;
 
   const getItemText = (page, type, originalElement) => {
     if (type === "page") {
@@ -21,15 +29,18 @@ export const Paginacao = (props) => {
 
   return (
     <section className="pagination-container mt-3">
-      <Pagination
-        defaultPageSize={pageSize || 10}
-        showTitle={showTitle || false}
-        showSizeChanger={showSizeChanger || false}
-        total={total}
-        itemRender={getItemText}
-        size={getPaginationSize()}
-        {...rest}
-      />
+      <ConfigProvider locale={ptBR}>
+        <Pagination
+          showQuickJumper={showQuickJumper}
+          defaultPageSize={pageSize || 10}
+          showTitle={showTitle || false}
+          showSizeChanger={showSizeChanger || false}
+          total={total}
+          itemRender={getItemText}
+          size={getPaginationSize()}
+          {...rest}
+        />
+      </ConfigProvider>
     </section>
   );
 };

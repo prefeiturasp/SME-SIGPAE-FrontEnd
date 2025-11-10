@@ -149,6 +149,8 @@ export const mockGetTerceirizada = {
           ata: "12365",
           numero_pregao: "123655",
           numero_chamada_publica: "",
+          programa: "LEVE_LEITE",
+          programa_display: "Leve Leite",
         },
       ],
       lotes: [],
@@ -8704,6 +8706,8 @@ export const mockGetTerceirizada = {
           ata: "",
           numero_pregao: "",
           numero_chamada_publica: "0008/SME/CODAE/2023",
+          programa: "ALIMENTACAO_ESCOLAR",
+          programa_display: "Alimentação Escolar",
         },
         {
           edital: {
