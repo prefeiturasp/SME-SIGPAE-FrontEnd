@@ -49,7 +49,10 @@ export const ModalAtualizarOcorrencia = ({ ...props }) => {
           pdf: true,
         };
       }
-      if (base64Ext.includes("spreadsheetml")) {
+      if (
+        base64Ext.includes("spreadsheetml") ||
+        base64Ext.includes("application/vnd.ms-excel.sheet.macroEnabled.12")
+      ) {
         validation = {
           ...validation,
           xls: true,
@@ -95,10 +98,11 @@ export const ModalAtualizarOcorrencia = ({ ...props }) => {
     setOpcaoSelecionada(event.target.value);
   };
 
-  const removeFile = () => {
-    let arquivos = arquivo;
-    isValidFiles(arquivos);
-    setArquivo(arquivos);
+  const removeFile = (index) => {
+    let newFiles = [...arquivo];
+    newFiles.splice(index, 1);
+    isValidFiles(newFiles);
+    setArquivo(newFiles);
   };
 
   const setFiles = (files) => {
@@ -133,7 +137,7 @@ export const ModalAtualizarOcorrencia = ({ ...props }) => {
     }
     const response = await updateOcorrenciaSolicitacaoMedicaoInicial(
       solicitacaoMedicaoInicial.uuid,
-      data
+      data,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Formulário de Ocorrências atualizado com sucesso!");
@@ -198,7 +202,7 @@ export const ModalAtualizarOcorrencia = ({ ...props }) => {
                     required
                     validate={composeValidators(
                       textAreaRequired,
-                      peloMenosUmCaractere
+                      peloMenosUmCaractere,
                     )}
                     onChange={async (_, editor) => {
                       const value_ = editor.getData();
@@ -239,7 +243,7 @@ export const ModalAtualizarOcorrencia = ({ ...props }) => {
                       alignLeft={true}
                       texto="Anexar arquivos"
                       name="files"
-                      accept=".xls, .xlsx, .pdf"
+                      accept=".xls, .xlsm, .xlsx, .pdf"
                       setFiles={setFiles}
                       removeFile={removeFile}
                       toastSuccess={"Arquivos anexados com sucesso!"}
