@@ -1116,8 +1116,10 @@ export const exibirTooltipRPLAutorizadas = (
   column,
   categoria,
   alteracoesAlimentacaoAutorizadas,
+  value_,
 ) => {
   const value =
+    value_ ??
     formValuesAtualizados[
       `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
     ];

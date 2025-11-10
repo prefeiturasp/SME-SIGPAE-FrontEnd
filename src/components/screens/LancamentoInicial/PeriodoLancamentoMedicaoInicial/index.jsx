@@ -88,7 +88,6 @@ import {
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
   campoLancheComLPRAutorizadaESemObservacao,
-  campoRefeicaoComRPLAutorizadaESemObservacao,
   exibirTooltipErroQtdMaiorQueAutorizado,
   exibirTooltipFrequenciaZeroTabelaEtec,
   exibirTooltipKitLancheSolAlimentacoes,
@@ -2072,7 +2071,6 @@ export default () => {
     desabilitaTooltip(values);
 
     const ehChangeInput = true;
-
     if (
       (ehZeroFrequencia &&
         !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]) ||
@@ -2084,21 +2082,16 @@ export default () => {
         suspensoesAutorizadas,
         row,
       ) ||
-      campoRefeicaoComRPLAutorizadaESemObservacao(
-        formValuesAtualizados,
-        column,
-        categoria,
-        alteracoesAlimentacaoAutorizadas,
-      ) ||
-      campoLancheComLPRAutorizadaESemObservacao(
-        formValuesAtualizados,
-        column,
-        categoria,
-        alteracoesAlimentacaoAutorizadas,
-      ) ||
       exibirTooltipRPLAutorizadas(
         formValuesAtualizados,
         row,
+        column,
+        categoria,
+        alteracoesAlimentacaoAutorizadas,
+        value,
+      ) ||
+      campoLancheComLPRAutorizadaESemObservacao(
+        formValuesAtualizados,
         column,
         categoria,
         alteracoesAlimentacaoAutorizadas,
