@@ -13,6 +13,7 @@ import InputText from "src/components/Shareable/Input/InputText";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { required } from "src/helpers/fieldValidators";
+import { truncarString } from "src/helpers/utilities";
 import { ModalAdicionarUnidadeEducacional } from "./components/ModalAdicionarUnidadeEducacional";
 import { ModalRemoverUnidadeEducacional } from "./components/ModalRemoverUnidadeEducacional";
 import "./style.scss";
@@ -140,9 +141,9 @@ export const RecreioFerias = () => {
                   <table className="tabela-unidades-participantes">
                     <thead>
                       <tr className="row">
-                        <th className="col-2 text-center">DRE/LOTE</th>
+                        <th className="col-1 text-center">DRE/LOTE</th>
 
-                        <th className="col-2 text-center">
+                        <th className="col-3 text-center">
                           Unidade Educacional
                         </th>
                         <th className="col-2 text-center">Nº de Inscritos</th>
@@ -163,9 +164,16 @@ export const RecreioFerias = () => {
                             key={`${participante.unidadeEducacional}-${participante.id}`}
                           >
                             <tr className="row">
-                              <td className="col-2">{participante.dreLote}</td>
-                              <td className="col-2">
-                                {participante.unidadeEducacional}
+                              <td className="col-1">{participante.dreLote}</td>
+                              <td className="col-3">
+                                <Tooltip
+                                  title={participante.unidadeEducacional}
+                                >
+                                  {truncarString(
+                                    participante.unidadeEducacional,
+                                    35
+                                  )}
+                                </Tooltip>
                               </td>
                               <td className="col-2">
                                 <Field
