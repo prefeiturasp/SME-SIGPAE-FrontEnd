@@ -211,7 +211,10 @@ export const campoRefeicaoComRPLAutorizadaESemObservacao = (
       formValuesAtualizados[
         `refeicao__dia_${column.dia}__categoria_${categoria.id}`
       ],
-    ) !== 0
+    ) !== 0 &&
+    !formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ]
   ) {
     erro = true;
   }
@@ -1070,7 +1073,10 @@ export const exibirTooltipRPLAutorizadas = (
         alteracao.dia === column.dia && alteracao.motivo.includes("RPL"),
     ).length > 0 &&
     row.name.includes("refeicao") &&
-    !row.name.includes("repeticao")
+    !row.name.includes("repeticao") &&
+    !formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ]
   );
 };
 
