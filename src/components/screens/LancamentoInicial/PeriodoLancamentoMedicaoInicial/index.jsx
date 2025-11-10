@@ -2096,6 +2096,13 @@ export default () => {
         categoria,
         alteracoesAlimentacaoAutorizadas,
       ) ||
+      exibirTooltipRPLAutorizadas(
+        formValuesAtualizados,
+        row,
+        column,
+        categoria,
+        alteracoesAlimentacaoAutorizadas,
+      ) ||
       (categoria.nome.includes("ALIMENTAÇÃO") &&
         (exibirTooltipSuspensoesAutorizadas(
           values,
@@ -2104,13 +2111,6 @@ export default () => {
           categoria,
           suspensoesAutorizadas,
         ) ||
-          exibirTooltipRPLAutorizadas(
-            formValuesAtualizados,
-            row,
-            column,
-            categoria,
-            alteracoesAlimentacaoAutorizadas,
-          ) ||
           exibirTooltipLPRAutorizadas(
             formValuesAtualizados,
             row,
@@ -2601,13 +2601,12 @@ export default () => {
                                                         style={
                                                           botaoAdicionarObrigatorio(
                                                             formValuesAtualizados,
-                                                            column.dia,
+                                                            column,
                                                             categoria,
                                                             diasSobremesaDoce,
                                                             location,
                                                             row,
-                                                            column,
-                                                            dadosValoresInclusoesAutorizadasState,
+                                                            alteracoesAlimentacaoAutorizadas,
                                                           )
                                                             ? textoBotaoObservacao(
                                                                 formValuesAtualizados[
@@ -2659,6 +2658,13 @@ export default () => {
                                                         component={
                                                           InputValueMedicao
                                                         }
+                                                        exibeTooltipRPLAutorizadas={exibirTooltipRPLAutorizadas(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          alteracoesAlimentacaoAutorizadas,
+                                                        )}
                                                         classNameToNextInput={getClassNameToNextInput(
                                                           row,
                                                           column,
