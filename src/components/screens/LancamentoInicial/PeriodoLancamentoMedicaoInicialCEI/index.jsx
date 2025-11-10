@@ -2483,6 +2483,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           categoria,
                                                           formValuesAtualizados,
                                                         )}
+                                                        exibeTooltipRPLAutorizadas={exibirTooltipRPLAutorizadas(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          alteracoesAlimentacaoAutorizadas,
+                                                        )}
                                                         exibeTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI={exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI(
                                                           inclusoesAutorizadas,
                                                           row,

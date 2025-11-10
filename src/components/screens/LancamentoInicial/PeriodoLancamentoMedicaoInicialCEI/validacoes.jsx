@@ -490,12 +490,9 @@ export const validacoesTabelasDietasEmeidaCemei = (
     alteracoesAlimentacaoAutorizadas.filter(
       (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL"),
     ).length > 0;
-  let maxFrequenciaAlimentacao = Number(
+  const maxFrequenciaAlimentacao = Number(
     allValues[`frequencia__dia_${dia}__categoria_${idCategoriaAlimentacao}`],
   );
-  if (existeAlteracaoAlimentacaoRPL) {
-    maxFrequenciaAlimentacao = maxFrequenciaAlimentacao * 2;
-  }
   const maxDietasAutorizadas = Number(
     allValues[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
   );
@@ -506,10 +503,9 @@ export const validacoesTabelasDietasEmeidaCemei = (
 
   if (
     value &&
-    !existeAlteracaoAlimentacaoRPL &&
     Number(value) > maxFrequencia &&
-    (inputName.includes("lanche_4h") ||
-      inputName.includes("lanche") ||
+    (((inputName.includes("lanche_4h") || inputName.includes("lanche")) &&
+      !existeAlteracaoAlimentacaoRPL) ||
       inputName.includes("refeicao"))
   ) {
     return "A quantidade não pode ser maior do que a quantidade inserida em Frequência.";
@@ -521,6 +517,7 @@ export const validacoesTabelasDietasEmeidaCemei = (
   } else if (
     value &&
     Number(value) > 0 &&
+    !existeAlteracaoAlimentacaoRPL &&
     somaDosValoresPorCampo("refeicao") > maxFrequenciaAlimentacao &&
     inputName.includes("refeicao")
   ) {
@@ -528,9 +525,15 @@ export const validacoesTabelasDietasEmeidaCemei = (
   } else if (
     value &&
     Number(value) !== 0 &&
-    ((somaDosValoresPorCampo("lanche") > maxFrequenciaAlimentacao &&
+    ((somaDosValoresPorCampo("lanche") >
+      (existeAlteracaoAlimentacaoRPL
+        ? maxFrequenciaAlimentacao * 2
+        : maxFrequenciaAlimentacao) &&
       rowName === "lanche") ||
-      (somaDosValoresPorCampo("lanche_4h") > maxFrequenciaAlimentacao &&
+      (somaDosValoresPorCampo("lanche_4h") >
+        (existeAlteracaoAlimentacaoRPL
+          ? maxFrequenciaAlimentacao * 2
+          : maxFrequenciaAlimentacao) &&
         rowName === "lanche_4h"))
   ) {
     return "O número máximo de alimentações foi excedido. É preciso subtrair o aluno com Dieta Especial Autorizada do apontamento de Lanche na planilha de Alimentação.";
@@ -547,6 +550,16 @@ export const validacoesTabelasDietasEmeidaCemei = (
     } else {
       return undefined;
     }
+  } else if (
+    value &&
+    Number(value) > maxFrequencia &&
+    (inputName.includes("refeicao") ||
+      inputName.includes("sobremesa") ||
+      inputName.includes("lanche")) &&
+    !inputName.includes("repeticao") &&
+    !inputName.includes("emergencial")
+  ) {
+    return "Lançamento maior que a frequência de alunos no dia.";
   }
 
   return undefined;

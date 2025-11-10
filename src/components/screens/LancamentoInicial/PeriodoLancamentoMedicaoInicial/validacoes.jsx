@@ -1062,7 +1062,6 @@ export const exibirTooltipRPLAutorizadas = (
       `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
     ];
   return (
-    categoria.nome === "ALIMENTAÇÃO" &&
     value &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
     Number(value) > 0 &&
