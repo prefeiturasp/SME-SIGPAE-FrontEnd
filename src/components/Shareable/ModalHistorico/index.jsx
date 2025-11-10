@@ -6,8 +6,9 @@ import "./styles.scss";
 import {
   documentoAnaliseSensorial,
   medicaoInicialExportarOcorrenciasPDF,
+  medicaoInicialExportarOcorrenciasXLSX,
 } from "src/services/relatorios";
-import { BUTTON_STYLE } from "../Botao/constants";
+import { BUTTON_ICON, BUTTON_STYLE } from "../Botao/constants";
 import Botao from "../Botao";
 
 const ModalHistorico = ({
@@ -73,7 +74,7 @@ const ModalHistorico = ({
     return iniciais;
   };
 
-  const getArquivoUrl = (log) => {
+  const getAnexo = (log, ehExcel = false) => {
     let urlArquivo = "";
 
     if (statusValidosDownload.includes(log.status_evento_explicacao)) {
@@ -82,17 +83,17 @@ const ModalHistorico = ({
       switch (tipoSolicitacao) {
         case "Solicitação de medição inicial": {
           const anexoPDF = log.anexos.find((anexo) =>
-            anexo.nome.includes("pdf"),
+            anexo.nome.includes(ehExcel ? "xls" : "pdf"),
           );
           if (anexoPDF) {
-            urlArquivo = anexoPDF.arquivo_url;
+            return anexoPDF;
           }
           break;
         }
 
         case "Homologação de Produto":
           if (log.anexos.length > 0) {
-            urlArquivo = log.anexos[0].arquivo_url;
+            urlArquivo = log.anexos[0];
           }
           break;
 
@@ -174,6 +175,7 @@ const ModalHistorico = ({
                 <div
                   key={index}
                   className={`${ativo && "ativo-item"} grid-item-log`}
+                  data-testid={`log-item-${index}`}
                   onClick={() => {
                     itemLogAtivo(index, ativo);
                   }}
@@ -312,21 +314,43 @@ const ModalHistorico = ({
                         style={BUTTON_STYLE.GREEN}
                         texto="Download do documento de entrega"
                         onClick={() => {
-                          const urlArquivoPDF = getArquivoUrl(logSelecionado);
-                          documentoAnaliseSensorial(urlArquivoPDF);
+                          const anexo = getAnexo(logSelecionado);
+                          documentoAnaliseSensorial(anexo.arquivo_url);
                         }}
                       />
                     ) : (
-                      getArquivoUrl(logSelecionado) && (
-                        <Botao
-                          className="download-ocorrencias"
-                          style={BUTTON_STYLE.GREEN}
-                          texto="Download do formulário"
-                          onClick={() => {
-                            const urlArquivoPDF = getArquivoUrl(logSelecionado);
-                            medicaoInicialExportarOcorrenciasPDF(urlArquivoPDF);
-                          }}
-                        />
+                      getAnexo(logSelecionado) && (
+                        <div className="row">
+                          <div className="col-6">
+                            <Botao
+                              className="download-ocorrencias"
+                              style={BUTTON_STYLE.GREEN}
+                              icon={BUTTON_ICON.FILE_PDF}
+                              texto="Formulário PDF"
+                              onClick={() => {
+                                const anexo = getAnexo(logSelecionado);
+                                medicaoInicialExportarOcorrenciasPDF(
+                                  anexo.arquivo_url,
+                                );
+                              }}
+                            />
+                          </div>
+                          <div className="col-6">
+                            <Botao
+                              className="download-ocorrencias"
+                              style={BUTTON_STYLE.GREEN}
+                              icon={BUTTON_ICON.FILE_EXCEL}
+                              texto="Formulário Excel"
+                              onClick={() => {
+                                const anexo = getAnexo(logSelecionado, true);
+                                medicaoInicialExportarOcorrenciasXLSX(
+                                  anexo.arquivo_url,
+                                  anexo.nome,
+                                );
+                              }}
+                            />
+                          </div>
+                        </div>
                       )
                     )}
                   </article>

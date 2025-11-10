@@ -154,6 +154,7 @@ export const formataJsonParaEnvio = (valoresForm, valoresState) => {
           },
         ],
         encerrado: contrato.encerrado ? true : false,
+        programa: valoresForm[`programa_${index}`],
       };
 
       if (!contrato.uuid) {
@@ -186,7 +187,7 @@ export const formataJsonParaEnvio = (valoresForm, valoresState) => {
       responsavel_cpf: removeCaracteresEspeciais(valoresForm.responsavel_cpf),
       responsavel_nome: valoresForm.responsavel_nome,
       responsavel_telefone: removeCaracteresEspeciais(
-        valoresForm.responsavel_telefone
+        valoresForm.responsavel_telefone,
       ),
       responsavel_email: valoresForm.responsavel_email,
       ativo: valoresForm.situacao,
@@ -213,7 +214,7 @@ export const formataJsonParaEnvio = (valoresForm, valoresState) => {
           telefone: removeCaracteresEspeciais(item.telefone),
           email: item.email,
         };
-      }
+      },
     );
 
     const contatosEmpresa = [...contatosEmpresaFormatado, ...contatosNutri];

@@ -41,7 +41,7 @@
       "/src/mocks/"
     ],
     "transformIgnorePatterns": [
-      "/node_modules/(?!(axios|uuid|until-async|msw)/)"
+      "/node_modules/(?!(axios|uuid|until-async|msw|antd|rc-.+|@babel/runtime)/)"
     ],
     "transform": {
       "\\.js$": [

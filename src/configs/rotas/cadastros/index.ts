@@ -43,6 +43,7 @@ import PermissaoLancamentosEspeciaisPage from "src/pages/Cadastros/PermissaoLanc
 import ProdutosLogisticaPage from "src/pages/Cadastros/ProdutosLogisticaPage";
 import TiposEmbalagensCadastradosPage from "src/pages/Cadastros/TiposEmbalagensCadastradosPage";
 import UnidadesMedidaPage from "src/pages/Cadastros/UnidadesMedidaPage";
+import RecreioFeriasPage from "src/pages/Cadastros/RecreioFeriasPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
@@ -62,6 +63,11 @@ export const rotasCadastros: Array<RotaInterface> = [
     path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.SUSPENSAO_ATIVIDADES}`,
     component: CadastroSuspensaoDeAtividadesPage,
     tipoUsuario: usuarioEhCODAEGestaoAlimentacao() || usuarioEhMedicao(),
+  },
+  {
+    path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.RECREIO_NAS_FERIAS}`,
+    component: RecreioFeriasPage,
+    tipoUsuario: usuarioEhCODAEGestaoAlimentacao(),
   },
   {
     path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/lotes-cadastrados`,

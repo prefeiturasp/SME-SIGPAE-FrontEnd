@@ -27,6 +27,9 @@ export const MEDICAO_STATUS_DE_PROGRESSO = {
   MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE: {
     nome: "Em aberto para preenchimento pela UE",
   },
+  OCORRENCIA_EXCLUIDA_PELA_ESCOLA: {
+    nome: "Ocorrência excluída pela escola",
+  },
 };
 
 export const OCORRENCIA_STATUS_DE_PROGRESSO = {
@@ -53,6 +56,9 @@ export const OCORRENCIA_STATUS_DE_PROGRESSO = {
   },
   MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE: {
     nome: "Em aberto para preenchimento pela UE",
+  },
+  OCORRENCIA_EXCLUIDA_PELA_ESCOLA: {
+    nome: "Ocorrência excluída pela escola",
   },
 };
 
@@ -83,6 +89,9 @@ export const PERIODO_STATUS_DE_PROGRESSO = {
   },
   MEDICAO_SEM_LANCAMENTOS: {
     nome: "Sem Lançamentos",
+  },
+  OCORRENCIA_EXCLUIDA_PELA_ESCOLA: {
+    nome: "Ocorrência excluída pela escola",
   },
 };
 
