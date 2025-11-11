@@ -105,7 +105,7 @@ export default () => {
   const getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync = async (
     escola_uuid,
     mes,
-    ano
+    ano,
   ) => {
     const payload = {
       escola_uuid,
@@ -113,9 +113,8 @@ export default () => {
       ano,
     };
 
-    const response = await getPeriodosPermissoesLancamentosEspeciaisMesAno(
-      payload
-    );
+    const response =
+      await getPeriodosPermissoesLancamentosEspeciaisMesAno(payload);
     if (response.status === HTTP_STATUS.OK) {
       setPeriodosPermissoesLancamentosEspeciais(response.data.results);
     } else {
@@ -132,7 +131,7 @@ export default () => {
       setEscolaSimples(respostaEscolaSimples.data);
 
       setNomeTerceirizada(
-        respostaEscolaSimples.data.lote.terceirizada.nome_fantasia
+        respostaEscolaSimples.data.lote.terceirizada.nome_fantasia,
       );
 
       setPanoramaGeral(respostaPanorama.data);
@@ -140,8 +139,8 @@ export default () => {
       setLoteEscolaSimples(respostaEscolaSimples.data.lote.nome);
       setEhIMR(
         !!respostaEscolaSimples.data.lote.contratos_do_lote.find(
-          (contrato) => !contrato.encerrado && contrato.eh_imr
-        )
+          (contrato) => !contrato.encerrado && contrato.eh_imr,
+        ),
       );
 
       let solicitacoesLancadas = [];
@@ -161,7 +160,7 @@ export default () => {
           const temSolicitacaoLancada = solicitacoesLancadas.data.filter(
             (solicitacao) =>
               Number(solicitacao.mes) === getMonth(dataBRT) + 1 &&
-              Number(solicitacao.ano) === getYear(dataBRT)
+              Number(solicitacao.ano) === getYear(dataBRT),
           ).length;
           if (!temSolicitacaoLancada) {
             periodos.push({
@@ -181,7 +180,7 @@ export default () => {
                     .toString()
                     .padStart(2, "0")}&ano=${getYear(dataBRT).toString()}`,
                 },
-                { replace: true }
+                { replace: true },
               );
             }
           }
@@ -204,7 +203,7 @@ export default () => {
       setAno(ano);
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
         escola.uuid,
-        { ano }
+        { ano },
       );
       setPeriodosEscolaSimples(response_vinculos.data.results);
       if (location.search || (mes && ano)) {
@@ -245,7 +244,7 @@ export default () => {
       await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
         escola.uuid,
         mes,
-        ano
+        ano,
       );
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -290,12 +289,12 @@ export default () => {
     const response = await getDiasCalendario(payload);
     if (response.status === HTTP_STATUS.OK) {
       const listaDiasLetivos = response.data.filter(
-        (dia) => dia.dia_letivo === true
+        (dia) => dia.dia_letivo === true,
       );
       if (listaDiasLetivos.length) {
         const ultimoDiaLetivo = listaDiasLetivos[listaDiasLetivos.length - 1];
         const dataUltimoDia = new Date(
-          `${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`
+          `${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`,
         );
         dataUltimoDia.setHours(23, 59, 59, 999);
         const dataHoje = new Date();
@@ -309,7 +308,7 @@ export default () => {
       }
     } else {
       toastError(
-        "Erro ao carregar calendário do mês. Tente novamente mais tarde."
+        "Erro ao carregar calendário do mês. Tente novamente mais tarde.",
       );
     }
   };
@@ -328,24 +327,24 @@ export default () => {
     setAno(ano);
     const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
       escolaInstituicao.uuid,
-      { ano }
+      { ano },
     );
     setPeriodosEscolaSimples(response_vinculos.data.results);
     await getPeriodosEscolaCemeiComAlunosEmeiAsync(escolaInstituicao, mes, ano);
     await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
       escolaInstituicao.uuid,
       mes,
-      ano
+      ano,
     );
     setLoadingSolicitacaoMedicaoInicial(false);
     navigate(
       {
         pathname: location.pathname,
         search: `?mes=${format(new Date(value), "MM").toString()}&ano=${getYear(
-          new Date(value)
+          new Date(value),
         ).toString()}`,
       },
-      { replace: true }
+      { replace: true },
     );
   };
 
@@ -374,16 +373,16 @@ export default () => {
     if (solicitacaoMedicaoInicial.tipo_contagem_alimentacoes) {
       data.append(
         "tipo_contagem_alimentacoes",
-        String(solicitacaoMedicaoInicial.tipo_contagem_alimentacoes?.uuid)
+        String(solicitacaoMedicaoInicial.tipo_contagem_alimentacoes?.uuid),
       );
     }
     data.append(
       "responsaveis",
-      JSON.stringify(solicitacaoMedicaoInicial.responsaveis)
+      JSON.stringify(solicitacaoMedicaoInicial.responsaveis),
     );
     data.append(
       "com_ocorrencias",
-      ehIMR ? String(comOcorrencias) : String(!opcaoSelecionada)
+      ehIMR ? String(comOcorrencias) : String(!opcaoSelecionada),
     );
 
     if (justificativaSemLancamentos) {
@@ -404,7 +403,7 @@ export default () => {
     data.append("finaliza_medicao", true);
     const response = await updateSolicitacaoMedicaoInicial(
       solicitacaoMedicaoInicial.uuid,
-      data
+      data,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Medição Inicial finalizada com sucesso!");

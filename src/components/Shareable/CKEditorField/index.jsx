@@ -13,6 +13,10 @@ import {
   Paragraph,
   Strikethrough,
   Table,
+  TableCellProperties,
+  TableColumnResize,
+  TableProperties,
+  TableToolbar,
 } from "ckeditor5";
 import "ckeditor5/ckeditor5.css";
 import { useState } from "react";
@@ -50,7 +54,11 @@ export const CKEditorField = (props) => {
       Paragraph,
       List,
       Table,
+      TableToolbar,
+      TableProperties,
+      TableCellProperties,
       Alignment,
+      TableColumnResize,
     ],
     toolbar:
       toolbar === false
@@ -76,6 +84,15 @@ export const CKEditorField = (props) => {
             "undo",
             "redo",
           ],
+    table: {
+      contentToolbar: [
+        "tableColumn",
+        "tableRow",
+        "mergeTableCells",
+        "tableProperties",
+        "tableCellProperties",
+      ],
+    },
     placeholder: placeholder,
   };
 

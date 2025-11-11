@@ -88,7 +88,6 @@ import {
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
   campoLancheComLPRAutorizadaESemObservacao,
-  campoRefeicaoComRPLAutorizadaESemObservacao,
   exibirTooltipErroQtdMaiorQueAutorizado,
   exibirTooltipFrequenciaZeroTabelaEtec,
   exibirTooltipKitLancheSolAlimentacoes,
@@ -2072,7 +2071,6 @@ export default () => {
     desabilitaTooltip(values);
 
     const ehChangeInput = true;
-
     if (
       (ehZeroFrequencia &&
         !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]) ||
@@ -2084,11 +2082,13 @@ export default () => {
         suspensoesAutorizadas,
         row,
       ) ||
-      campoRefeicaoComRPLAutorizadaESemObservacao(
+      exibirTooltipRPLAutorizadas(
         formValuesAtualizados,
+        row,
         column,
         categoria,
         alteracoesAlimentacaoAutorizadas,
+        value,
       ) ||
       campoLancheComLPRAutorizadaESemObservacao(
         formValuesAtualizados,
@@ -2104,13 +2104,6 @@ export default () => {
           categoria,
           suspensoesAutorizadas,
         ) ||
-          exibirTooltipRPLAutorizadas(
-            formValuesAtualizados,
-            row,
-            column,
-            categoria,
-            alteracoesAlimentacaoAutorizadas,
-          ) ||
           exibirTooltipLPRAutorizadas(
             formValuesAtualizados,
             row,
@@ -2601,13 +2594,12 @@ export default () => {
                                                         style={
                                                           botaoAdicionarObrigatorio(
                                                             formValuesAtualizados,
-                                                            column.dia,
+                                                            column,
                                                             categoria,
                                                             diasSobremesaDoce,
                                                             location,
                                                             row,
-                                                            column,
-                                                            dadosValoresInclusoesAutorizadasState,
+                                                            alteracoesAlimentacaoAutorizadas,
                                                           )
                                                             ? textoBotaoObservacao(
                                                                 formValuesAtualizados[
@@ -2659,6 +2651,13 @@ export default () => {
                                                         component={
                                                           InputValueMedicao
                                                         }
+                                                        exibeTooltipRPLAutorizadas={exibirTooltipRPLAutorizadas(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          alteracoesAlimentacaoAutorizadas,
+                                                        )}
                                                         classNameToNextInput={getClassNameToNextInput(
                                                           row,
                                                           column,

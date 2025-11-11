@@ -127,6 +127,7 @@ class EmpresasCadastradas extends Component {
                       <ToggleExpandir
                         onClick={() => this.lidarComBurger(empresa)}
                         ativo={empresa.ativo}
+                        dataTestId={`botao-expandir-${key}`}
                       />
                       <div className="ms-4">
                         <Tooltip title="Editar">
@@ -171,7 +172,7 @@ class EmpresasCadastradas extends Component {
                               <span className="descricao">Criado em:</span>
                               <span className="valor-desc">
                                 {moment(empresa.criado_em, "DD/MM/YYYY").format(
-                                  "DD/MM/YYYY"
+                                  "DD/MM/YYYY",
                                 )}
                               </span>
                             </div>
@@ -380,8 +381,16 @@ class EmpresasCadastradas extends Component {
                                         <span className="valor-desc">
                                           {contrato.vigencias.map(
                                             (vigencia) =>
-                                              `${vigencia.data_inicial} até ${vigencia.data_final}`
+                                              `${vigencia.data_inicial} até ${vigencia.data_final}`,
                                           )}
+                                        </span>
+                                      </div>
+                                      <div className="mt-2 mb-3">
+                                        <span className="descricao">
+                                          Programa:
+                                        </span>
+                                        <span className="valor-desc">
+                                          {contrato.programa_display}
                                         </span>
                                       </div>
                                     </section>

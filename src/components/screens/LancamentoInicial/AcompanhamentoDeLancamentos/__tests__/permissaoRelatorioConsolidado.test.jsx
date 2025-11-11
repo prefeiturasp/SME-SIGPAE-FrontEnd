@@ -85,8 +85,35 @@ describe("Permissão Relatório Consolidado no módulo de Medição", () => {
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosSuperUsuarioMedicao);
     mock
-      .onGet("/medicao-inicial/solicitacao-medicao-inicial/dashboard/")
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/dashboard-totalizadores/",
+      )
       .reply(200, mockGetDashboardMedicaoInicialAprovadas);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/",
+      )
+      .reply(200, {
+        results: {
+          total: 1,
+          dados: [
+            {
+              uuid: "cc078b30-09e2-43ca-a3bc-657d5529897f",
+              escola: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+              escola_uuid: "3c32be8e-f191-468d-a4e2-3dd8751e5e7a",
+              mes: "09",
+              ano: "2023",
+              mes_ano: "Setembro 2023",
+              tipo_unidade: "EMEF",
+              status: "Aprovado pela DRE",
+              log_mais_recente: "14/12/2023 09:58",
+              dre_ciencia_correcao_data: null,
+              todas_medicoes_e_ocorrencia_aprovados_por_medicao: false,
+              escola_cei_com_inclusao_parcial_autorizada: false,
+            },
+          ],
+        },
+      });
     mock
       .onGet("/escolas-simplissima-com-dre-unpaginated/terc-total/")
       .reply(200, mockGetEscolaTercTotal);

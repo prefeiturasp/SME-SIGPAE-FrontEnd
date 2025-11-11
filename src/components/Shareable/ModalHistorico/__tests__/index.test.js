@@ -1,7 +1,6 @@
-import React from "react";
-import { act, fireEvent, screen, render } from "@testing-library/react";
-import ModalHistorico from "src/components/Shareable/ModalHistorico/index";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import ModalHistorico from "src/components/Shareable/ModalHistorico/index";
 import { dietaComHistorico } from "src/mocks/DietaEspecial/Relatorio/mockDietaComLogDeHistorico.jsx";
 
 describe("Testa componete <ModalHistorico>", () => {
@@ -22,7 +21,7 @@ describe("Testa componete <ModalHistorico>", () => {
             logs={dietaComHistorico.logs}
             getHistorico={() => dietaComHistorico.logs}
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -51,10 +50,10 @@ describe("Testa componete <ModalHistorico>", () => {
     fireEvent.click(solictacaoRealizada);
 
     const classeNomeFantasiaEmpresa = document.querySelector(
-      ".nome-fantasia-empresa"
+      ".nome-fantasia-empresa",
     );
     expect(classeNomeFantasiaEmpresa.textContent).toBe(
-      "SUPER USUARIO ESCOLA EMEF"
+      "SUPER USUARIO ESCOLA EMEF",
     );
     expect(screen.getAllByText("26/06/2025")).toHaveLength(3);
     expect(screen.getAllByText("11:52:55")).toHaveLength(2);
@@ -69,7 +68,7 @@ describe("Testa componete <ModalHistorico>", () => {
     fireEvent.click(solictacaoRealizada);
 
     const classeNomeFantasiaEmpresa = document.querySelector(
-      ".nome-fantasia-empresa"
+      ".nome-fantasia-empresa",
     );
     expect(classeNomeFantasiaEmpresa.textContent).toBe("Dieta Especial");
     expect(screen.getAllByText("11/08/2025")).toHaveLength(10);
@@ -85,7 +84,7 @@ describe("Testa componete <ModalHistorico>", () => {
     fireEvent.click(solictacaoRealizada);
 
     const classeNomeFantasiaEmpresa = document.querySelector(
-      ".nome-fantasia-empresa"
+      ".nome-fantasia-empresa",
     );
     expect(classeNomeFantasiaEmpresa.textContent).toBe("Dieta Especial");
     expect(screen.getAllByText("11/08/2025")).toHaveLength(10);
@@ -99,7 +98,7 @@ describe("Testa componete <ModalHistorico>", () => {
     expect(screen.getByText("Relação por Diagnóstico")).toBeInTheDocument();
     expect(screen.getByText("ARGININEMIA")).toBeInTheDocument();
     expect(
-      screen.getByText("ACIDOSE METABOLICA, ARGININEMIA")
+      screen.getByText("ACIDOSE METABOLICA, ARGININEMIA"),
     ).toBeInTheDocument();
   });
 
@@ -108,7 +107,7 @@ describe("Testa componete <ModalHistorico>", () => {
     fireEvent.click(solictacaoRealizada);
 
     const classeNomeFantasiaEmpresa = document.querySelector(
-      ".nome-fantasia-empresa"
+      ".nome-fantasia-empresa",
     );
     expect(classeNomeFantasiaEmpresa.textContent).toBe("Dieta Especial");
     expect(screen.getAllByText("11/08/2025")).toHaveLength(10);
@@ -121,10 +120,10 @@ describe("Testa componete <ModalHistorico>", () => {
     expect(screen.getByText("Edições realizadas")).toBeInTheDocument();
     expect(screen.getByText("Data de término")).toBeInTheDocument();
     expect(
-      screen.getByText("Com data de término 27/08/2025")
+      screen.getByText("Com data de término 27/08/2025"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Com data de término 29/08/2025")
+      screen.getByText("Com data de término 29/08/2025"),
     ).toBeInTheDocument();
   });
 
@@ -133,7 +132,7 @@ describe("Testa componete <ModalHistorico>", () => {
     fireEvent.click(solictacaoRealizada);
 
     const classeNomeFantasiaEmpresa = document.querySelector(
-      ".nome-fantasia-empresa"
+      ".nome-fantasia-empresa",
     );
     expect(classeNomeFantasiaEmpresa.textContent).toBe("Dieta Especial");
     expect(screen.getAllByText("11/08/2025")).toHaveLength(10);
@@ -183,7 +182,7 @@ describe("Testa o método getArquivoUrl no componente <ModalHistorico>", () => {
             logs={[mockLogComDownload]} // Usa apenas o log modificado
             getHistorico={() => [mockLogComDownload]}
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -191,7 +190,7 @@ describe("Testa o método getArquivoUrl no componente <ModalHistorico>", () => {
   it("Exibe botão de download quando há arquivo PDF para medição inicial", () => {
     const itemLog = document.querySelectorAll(".grid-item-log")[0];
     fireEvent.click(itemLog);
-    expect(screen.getByText("Download do formulário")).toBeInTheDocument();
+    expect(screen.getByText("Formulário PDF")).toBeInTheDocument();
   });
 
   it("Não exibe botão de download para status inválido", () => {
@@ -209,14 +208,12 @@ describe("Testa o método getArquivoUrl no componente <ModalHistorico>", () => {
           getHistorico={() => [mockLogSemDownload]}
         />
       </MemoryRouter>,
-      { container: document.body }
+      { container: document.body },
     );
 
     const itemLog = document.querySelectorAll(".grid-item-log")[0];
     fireEvent.click(itemLog);
 
-    expect(
-      screen.queryByText("Download do formulário")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Formulário PDF")).not.toBeInTheDocument();
   });
 });
