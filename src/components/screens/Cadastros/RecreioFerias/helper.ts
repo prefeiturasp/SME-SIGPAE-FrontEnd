@@ -49,3 +49,26 @@ export const resetFormState = (
   setUnidadesParticipantes([]);
   setExpandidos({});
 };
+
+export const validateForm = (values: any) => {
+  const unidades = values?.unidades_participantes || [];
+  if (unidades.length === 0) return {};
+
+  const unidadesErrors = unidades.map((u: any) => {
+    const errors: any = {};
+
+    if (!u?.num_inscritos || Number(u.num_inscritos) <= 0) {
+      errors.num_inscritos = "Informe o nº de inscritos (maior que 0)";
+    }
+
+    if (!u?.num_colaboradores || Number(u.num_colaboradores) <= 0) {
+      errors.num_colaboradores = "Informe o nº de colaboradores (maior que 0)";
+    }
+
+    return Object.keys(errors).length ? errors : undefined;
+  });
+
+  return unidadesErrors.some(Boolean)
+    ? { unidades_participantes: unidadesErrors }
+    : {};
+};
