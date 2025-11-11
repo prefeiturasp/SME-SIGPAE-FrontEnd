@@ -559,7 +559,6 @@ export const LancamentoPorPeriodo = ({
               errosAoSalvar={errosAoSalvar}
             />
           )}
-
           <div className="mt-4">
             {renderBotaoFinalizar() ? (
               <div className="row">

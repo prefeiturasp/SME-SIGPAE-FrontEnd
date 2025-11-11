@@ -17,6 +17,7 @@ import {
   UNIDADES_MEDIDA,
   MARCAS,
   FABRICANTES,
+  RECREIO_NAS_FERIAS,
 } from "src/configs/constants";
 import {
   usuarioEhAdministradorCONTRATOS,
@@ -93,6 +94,9 @@ const MenuCadastros = () => {
           </LeafItem>
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${FAIXAS_ETARIAS}`}>
             Faixas Etárias
+          </LeafItem>
+          <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`}>
+            Recreio nas Férias
           </LeafItem>
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`}>
             Sobremesa Doce

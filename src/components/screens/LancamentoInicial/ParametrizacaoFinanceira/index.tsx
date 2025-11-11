@@ -1,14 +1,12 @@
+import "./styles.scss";
 import React, { useEffect, useState } from "react";
-
 import { useNavigate, Link } from "react-router-dom";
-
 import {
   ADICIONAR_PARAMETRIZACAO_FINANCEIRA,
   MEDICAO_INICIAL,
   PARAMETRIZACAO_FINANCEIRA,
   EDITAR_PARAMETRIZACAO_FINANCEIRA,
 } from "src/configs/constants";
-
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -18,16 +16,14 @@ import { Spin } from "antd";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import Filtros from "./AdicionarParametrizacaoFinanceira/components/Filtros";
 import { Paginacao } from "src/components/Shareable/Paginacao";
-
 import {
+  GrupoUnidadeEscolar,
   ParametrizacaoFinanceiraInterface,
   ParametrizacaoFinanceiraParams,
   ParametrizacaoFinanceiraResponse,
   TipoUnidade,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
-
-import "./styles.scss";
 
 export default () => {
   const navigate = useNavigate();
@@ -43,34 +39,34 @@ export default () => {
   const [carregando, setCarregando] = useState(false);
 
   const getParametrizacoes = async (
-    page: number = null,
-    filtros: ParametrizacaoFinanceiraParams = null
+    page: number | null = null,
+    filtros: ParametrizacaoFinanceiraParams = null,
   ) => {
     setCarregando(true);
     try {
       const response =
         await ParametrizacaoFinanceiraService.getParametrizacoesFinanceiras(
           page,
-          filtros
+          filtros,
         );
       setResponseParametrizacoes(response);
       setParametrizacoes(response.results);
-    } catch (error) {
+    } catch {
       setErroAPI(
-        "Erro ao carregar parametrizações financeiras. Tente novamente mais tarde."
+        "Erro ao carregar parametrizações financeiras. Tente novamente mais tarde.",
       );
     } finally {
       setCarregando(false);
     }
   };
 
-  const formataTiposUnidades = (tiposUnidades: TipoUnidade[]) => {
-    return tiposUnidades.map((tipoUnidade) => tipoUnidade.iniciais).join(", ");
+  const formataTiposUnidades = (grupo: GrupoUnidadeEscolar) => {
+    return grupo.tipos_unidades.map((e: TipoUnidade) => e.iniciais).join(", ");
   };
 
   const onChangePage = async (
     page: number,
-    filtros: ParametrizacaoFinanceiraParams
+    filtros: ParametrizacaoFinanceiraParams,
   ) => {
     setPaginaAtual(page);
     await getParametrizacoes(page, filtros);
@@ -83,12 +79,11 @@ export default () => {
   return (
     <div className="parametrizacao-financeira">
       {erroAPI && <div>{erroAPI}</div>}
-
       <Spin tip="Carregando..." spinning={carregando}>
         <div className="card mt-4">
           <div className="card-body">
             <CollapseFiltros
-              onSubmit={async (values) => {
+              onSubmit={async (values: ParametrizacaoFinanceiraParams) => {
                 setFiltros(values);
                 onChangePage(1, values);
               }}
@@ -142,7 +137,7 @@ export default () => {
                           <td className="col-1">{parametrizacao.lote.nome}</td>
                           <td className="col-3">
                             {formataTiposUnidades(
-                              parametrizacao.tipos_unidades
+                              parametrizacao.grupo_unidade_escolar,
                             )}
                           </td>
                           <td className="col-1 d-flex justify-content-center align-item-center">

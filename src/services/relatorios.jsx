@@ -326,11 +326,11 @@ export const medicaoInicialExportarOcorrenciasPDF = async (url) => {
   saveAs(data, "ocorrencias_medicao_inicial.pdf");
 };
 
-export const medicaoInicialExportarOcorrenciasXLSX = async (url) => {
+export const medicaoInicialExportarOcorrenciasXLSX = async (url, nome) => {
   const { data } = await axios.get(`${url}`, {
     responseType: "blob",
   });
-  saveAs(data, "ocorrencias_medicao_inicial.xlsx");
+  saveAs(data, nome);
 };
 
 export const documentoAnaliseSensorial = async (url) => {
