@@ -1,4 +1,4 @@
-type FaixaEtaria = {
+export type FaixaEtaria = {
   __str__: string;
   uuid: string;
   inicio: number;

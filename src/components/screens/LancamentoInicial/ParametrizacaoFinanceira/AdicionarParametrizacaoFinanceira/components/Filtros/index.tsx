@@ -11,11 +11,14 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import {
+  ParametrizacaoFinanceiraPayload,
+  FaixaEtaria,
+} from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 
 type Cadastro = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
-  setFaixasEtarias: Dispatch<SetStateAction<Array<any>>>;
+  setFaixasEtarias: Dispatch<SetStateAction<Array<FaixaEtaria>>>;
   setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
   form: FormApi<any, any>;
   uuidParametrizacao: string | null;
