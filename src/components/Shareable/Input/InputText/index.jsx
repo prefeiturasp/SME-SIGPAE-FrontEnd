@@ -90,7 +90,7 @@ export const InputText = (props) => {
           {...inputProps}
           className={`form-control ${className} ${
             meta &&
-            meta.touched &&
+            (meta.touched || meta.submitFailed) &&
             (meta.error || meta.warning) &&
             "invalid-field"
           }`}
