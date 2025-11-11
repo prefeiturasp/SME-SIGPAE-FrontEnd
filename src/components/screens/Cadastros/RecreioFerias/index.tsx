@@ -22,6 +22,7 @@ import { truncarString } from "src/helpers/utilities";
 import { cadastrarRecreioNasFerias } from "../../../../services/recreioFerias.service";
 import { ModalAdicionarUnidadeEducacional } from "./components/ModalAdicionarUnidadeEducacional";
 import { ModalRemoverUnidadeEducacional } from "./components/ModalRemoverUnidadeEducacional";
+import { buildPayload, resetFormState } from "./helper";
 import "./style.scss";
 
 export const RecreioFerias = () => {
@@ -66,50 +67,11 @@ export const RecreioFerias = () => {
 
   const onSubmit = async (values: any, form: any) => {
     try {
-      const payload = {
-        titulo: values.titulo_cadastro,
-        data_inicio: moment(values.periodo_realizacao_de, "DD/MM/YYYY").format(
-          "YYYY-MM-DD"
-        ),
-        data_fim: moment(values.periodo_realizacao_ate, "DD/MM/YYYY").format(
-          "YYYY-MM-DD"
-        ),
-        unidades_participantes: values.unidades_participantes.map(
-          (unidade) => ({
-            lote: unidade.loteUuid,
-            unidade_educacional: unidade.unidadeEducacionalUuid,
-            num_inscritos: parseInt(unidade.num_inscritos) || 0,
-            num_colaboradores: parseInt(unidade.num_colaboradores) || 0,
-            liberar_medicao: unidade.liberarMedicao,
-            tipos_alimentacao_inscritos:
-              unidade.tiposAlimentacaoInscritosUuids || [],
-            tipos_alimentacao_colaboradores:
-              unidade.tiposAlimentacaoColaboradoresUuids || [],
-            tipos_alimentacao_infantil:
-              unidade.tiposAlimentacaoInfantilUuids || [],
-          })
-        ),
-      };
-
+      const payload = buildPayload(values);
       await cadastrarRecreioNasFerias(payload);
+
       toastSuccess("Recreio nas Férias cadastrado com sucesso!");
-
-      form.setConfig("keepDirtyOnReinitialize", false);
-
-      setUnidadesParticipantes([]);
-      setExpandidos({});
-
-      form.restart({
-        titulo_cadastro: undefined,
-        periodo_realizacao_de: undefined,
-        periodo_realizacao_ate: undefined,
-        unidades_participantes: [],
-      });
-
-      form.setConfig("keepDirtyOnReinitialize", true);
-
-      setUnidadesParticipantes([]);
-      setExpandidos({});
+      resetFormState(form, setUnidadesParticipantes, setExpandidos);
     } catch (error) {
       toastError("Erro ao criar:", error);
     }
