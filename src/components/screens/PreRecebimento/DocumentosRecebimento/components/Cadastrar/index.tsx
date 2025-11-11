@@ -112,7 +112,7 @@ export default () => {
             descricao_documento:
               valor === "OUTROS" ? values.descricao_documento : undefined,
           };
-        }
+        },
       ) ?? [];
 
     let documentosPayload: Array<TiposDocumentosPayload> = [
@@ -131,7 +131,7 @@ export default () => {
   };
 
   const salvarDocumentosRecebimiento = async (
-    values: Record<string, any>
+    values: Record<string, any>,
   ): Promise<void> => {
     setCarregando(true);
 
@@ -176,7 +176,7 @@ export default () => {
     getListaFiltradaAutoCompleteSelect(
       cronogramas.map(({ numero }) => numero),
       values.cronograma,
-      true
+      true,
     );
 
   const atualizarCamposDependentes = (value: string, form: FormApi) => {
@@ -259,6 +259,18 @@ export default () => {
                   />
                 </div>
 
+                <div className="row mt-3">
+                  <div className="col-12">
+                    <div className="alert alert-warning d-flex align-items-center aviso-documento">
+                      <i className="fas fa-exclamation-triangle me-2"></i>
+                      <span>
+                        Caso o laudo contiver múltiplas páginas, elas devem ser
+                        reunidas em um único documento.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
                 <hr />
 
                 <div className="subtitulo">Outros Documentos</div>
@@ -289,7 +301,7 @@ export default () => {
                       tipoDocumento={value}
                       key={idx}
                     />
-                  )
+                  ),
                 )}
 
                 <hr />
