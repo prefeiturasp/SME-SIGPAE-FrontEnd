@@ -64,7 +64,7 @@ export const RecreioFerias = () => {
     setShowModalRemover(false);
   };
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: any, form: any) => {
     try {
       const payload = {
         titulo: values.titulo_cadastro,
@@ -74,8 +74,8 @@ export const RecreioFerias = () => {
         data_fim: moment(values.periodo_realizacao_ate, "DD/MM/YYYY").format(
           "YYYY-MM-DD"
         ),
-        unidades_participantes: values.unidades_participantes.map((unidade) => {
-          return {
+        unidades_participantes: values.unidades_participantes.map(
+          (unidade) => ({
             lote: unidade.loteUuid,
             unidade_educacional: unidade.unidadeEducacionalUuid,
             num_inscritos: parseInt(unidade.num_inscritos) || 0,
@@ -87,12 +87,29 @@ export const RecreioFerias = () => {
               unidade.tiposAlimentacaoColaboradoresUuids || [],
             tipos_alimentacao_infantil:
               unidade.tiposAlimentacaoInfantilUuids || [],
-          };
-        }),
+          })
+        ),
       };
 
       await cadastrarRecreioNasFerias(payload);
       toastSuccess("Recreio nas Férias cadastrado com sucesso!");
+
+      form.setConfig("keepDirtyOnReinitialize", false);
+
+      setUnidadesParticipantes([]);
+      setExpandidos({});
+
+      form.restart({
+        titulo_cadastro: undefined,
+        periodo_realizacao_de: undefined,
+        periodo_realizacao_ate: undefined,
+        unidades_participantes: [],
+      });
+
+      form.setConfig("keepDirtyOnReinitialize", true);
+
+      setUnidadesParticipantes([]);
+      setExpandidos({});
     } catch (error) {
       toastError("Erro ao criar:", error);
     }
@@ -116,8 +133,8 @@ export const RecreioFerias = () => {
           initialValues={{
             unidades_participantes: unidadesParticipantes,
           }}
-          render={({ handleSubmit, values }) => (
-            <form onSubmit={handleSubmit}>
+          render={({ handleSubmit, form, values }) => (
+            <form onSubmit={(event) => handleSubmit(event, form)}>
               <div className="row">
                 <div className="">
                   <Field
