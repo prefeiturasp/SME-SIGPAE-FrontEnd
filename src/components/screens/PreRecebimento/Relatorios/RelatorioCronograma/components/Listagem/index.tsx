@@ -15,13 +15,28 @@ interface Props {
   objetos: CronogramaRelatorio[];
   ativos: string[];
   setAtivos: Dispatch<SetStateAction<string[]>>;
+  setCarregando: Dispatch<SetStateAction<boolean>>;
 }
 
-const imprimirFicha = async (uuid: string, numero: string) => {
-  await imprimirFichaRecebimento(uuid, numero);
+const imprimirFicha = async (
+  uuid: string,
+  numero: string,
+  setCarregando: Dispatch<SetStateAction<boolean>>,
+) => {
+  setCarregando(true);
+  try {
+    await imprimirFichaRecebimento(uuid, numero);
+  } finally {
+    setCarregando(false);
+  }
 };
 
-const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
+const Listagem: React.FC<Props> = ({
+  objetos,
+  ativos,
+  setAtivos,
+  setCarregando,
+}) => {
   const etapaColRef = useRef<HTMLDivElement>(null);
   const [colunaWidth, setColunaWidth] = useState(400);
 
@@ -168,6 +183,7 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                                       imprimirFicha(
                                         ficha.uuid,
                                         cronograma.numero,
+                                        setCarregando,
                                       );
                                     }}
                                     className="link-ocorrencia"
