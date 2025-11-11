@@ -140,6 +140,7 @@ export const ModalAdicionarUnidadeEducacional = ({
 
   const handleAdicionarUnidade = (values: any) => {
     const lote = lotes.find((l) => l.uuid === values.dres_lote);
+
     const alimentacoesInscritos = tiposAlimentacaoInscritos
       .filter((t: any) => values.tipos_alimentacao_inscritos?.includes(t.value))
       .map((t: any) => t.label);
@@ -156,23 +157,71 @@ export const ModalAdicionarUnidadeEducacional = ({
       )
       .map((t: any) => t.label);
 
-    const novasUnidades = values.unidades_educacionais.map((uuid: string) => {
-      const unidade = unidadesEducacionaisOpts.find(
-        (u: any) => u.value === uuid
-      );
-      return {
-        id: `${Date.now()}-${Math.random()}`,
-        dreLote: lote?.nome || "",
-        unidadeEducacional: unidade?.label || "",
-        unidadeEducacionalUuid: uuid,
-        numeroInscritos: 0,
-        numeroColaboradores: 0,
-        liberarMedicao: true,
-        alimentacaoInscritos: alimentacoesInscritos,
-        alimentacaoColaboradores: alimentacoesColaboradores,
-        alimentacaoInscritosInfantil: alimentacoesInfantil,
-      };
-    });
+    const tipoUnidadeSelecionado = tiposUnidadesEscolares.find(
+      (t: any) => t.uuid === values?.tipos_unidades
+    );
+    const mostrarSeletorInfantil =
+      tipoUnidadeSelecionado?.nome === "CEMEI" ||
+      tipoUnidadeSelecionado?.nome === "CEU CEMEI";
+
+    const novasUnidades = values.unidades_educacionais.flatMap(
+      (uuid: string) => {
+        const unidade = unidadesEducacionaisOpts.find(
+          (u: any) => u.value === uuid
+        );
+
+        const baseUnidade = {
+          dreLoteNome: lote.nome || "",
+          loteUuid: lote.uuid,
+          unidadeEducacionalUuid: uuid,
+          numeroInscritos: 0,
+          numeroColaboradores: 0,
+          liberarMedicao: true,
+          unidadeEducacional: unidade?.label || "",
+          alimentacaoColaboradores: alimentacoesColaboradores,
+          tiposAlimentacaoColaboradoresUuids:
+            values.tipos_alimentacao_colaboradores || [],
+        };
+
+        if (mostrarSeletorInfantil) {
+          return [
+            {
+              ...baseUnidade,
+              id: `${Date.now()}-${Math.random()}-CEI`,
+              ceiOuEmei: "CEI",
+              alimentacaoInscritos: alimentacoesInscritos,
+              alimentacaoInscritosInfantil: [],
+              tiposAlimentacaoInscritosUuids:
+                values.tipos_alimentacao_inscritos || [],
+              tiposAlimentacaoInfantilUuids: [],
+            },
+            {
+              ...baseUnidade,
+              id: `${Date.now()}-${Math.random()}-EMEI`,
+              ceiOuEmei: "EMEI",
+              alimentacaoInscritos: alimentacoesInfantil,
+              alimentacaoInscritosInfantil: alimentacoesInfantil,
+              tiposAlimentacaoInscritosUuids:
+                values.tipos_alimentacao_inscritos_infantil || [],
+              tiposAlimentacaoInfantilUuids:
+                values.tipos_alimentacao_inscritos_infantil || [],
+            },
+          ];
+        } else {
+          return [
+            {
+              ...baseUnidade,
+              id: `${Date.now()}-${Math.random()}`,
+              alimentacaoInscritos: alimentacoesInscritos,
+              alimentacaoInscritosInfantil: [],
+              tiposAlimentacaoInscritosUuids:
+                values.tipos_alimentacao_inscritos || [],
+              tiposAlimentacaoInfantilUuids: [],
+            },
+          ];
+        }
+      }
+    );
 
     setUnidadesParticipantes((prev) => [...novasUnidades, ...prev]);
     closeModal();
