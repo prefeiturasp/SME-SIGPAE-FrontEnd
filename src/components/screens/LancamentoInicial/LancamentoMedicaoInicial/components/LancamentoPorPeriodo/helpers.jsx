@@ -1,5 +1,9 @@
 import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
-import { capitalize, usuarioEhDiretorUE } from "src/helpers/utilities";
+import {
+  capitalize,
+  escolaNaoPossuiAlunosRegulares,
+  usuarioEhDiretorUE,
+} from "src/helpers/utilities";
 
 export const CORES = [
   "#198459",
@@ -196,7 +200,8 @@ export const renderBotaoEnviarCorrecao = (solicitacaoMedicaoInicial) => {
       "MEDICAO_CORRECAO_SOLICITADA",
       "MEDICAO_CORRECAO_SOLICITADA_CODAE",
     ].includes(solicitacaoMedicaoInicial.status) &&
-    usuarioEhDiretorUE()
+    (usuarioEhDiretorUE() ||
+      escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial))
   );
 };
 
