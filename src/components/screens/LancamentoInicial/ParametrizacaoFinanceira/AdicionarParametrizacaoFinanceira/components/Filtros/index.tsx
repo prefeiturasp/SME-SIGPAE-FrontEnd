@@ -110,9 +110,9 @@ export default (props: Props) => {
                     ? moment(values.data_final, "DD/MM/YYYY").toDate()
                     : null
                 }
+                disabled={uuidParametrizacao}
               />
             </div>
-
             <div className="col-3">
               <Field
                 dataTestId="data-final-input"
