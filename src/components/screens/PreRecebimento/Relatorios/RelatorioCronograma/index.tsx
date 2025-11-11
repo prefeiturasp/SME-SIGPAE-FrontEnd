@@ -30,7 +30,7 @@ export default () => {
   const [consultaRealizada, setConsultaRealizada] = useState<boolean>(false);
   const [ativos, setAtivos] = useState<string[]>([]);
   const [cronogramas, setCronogramas] = useState<Array<CronogramaRelatorio>>(
-    []
+    [],
   );
   const [totalizadores, setTotalizadores] = useState<Record<string, number>>();
   const [enviandoArquivo, setEnviandoArquivo] = useState(false);
@@ -127,6 +127,7 @@ export default () => {
                     objetos={cronogramas}
                     ativos={ativos}
                     setAtivos={setAtivos}
+                    setCarregando={setCarregando}
                   />
                   <div className="row">
                     <div className="col">

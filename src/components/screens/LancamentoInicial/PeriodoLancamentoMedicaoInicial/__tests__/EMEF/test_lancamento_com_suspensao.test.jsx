@@ -59,10 +59,10 @@ const awaitServices = async () => {
     expect(getMatriculadosPeriodo).toHaveBeenCalled();
     expect(getSolicitacoesSuspensoesAutorizadasEscola).toHaveBeenCalled();
     expect(
-      getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola
+      getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
     ).toHaveBeenCalled();
     expect(
-      getPermissoesLancamentosEspeciaisMesAnoPorPeriodo
+      getPermissoesLancamentosEspeciaisMesAnoPorPeriodo,
     ).toHaveBeenCalled();
     expect(getDiasCalendario).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
@@ -143,7 +143,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
           }}
         >
           <PeriodoLancamentoMedicaoInicial />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -169,7 +169,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
 
   it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
     expect(
-      screen.getByText("Semanas do Período para Lançamento da Medição Inicial")
+      screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
     ).toBeInTheDocument();
   });
 
@@ -192,11 +192,11 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
     await awaitServices();
     const categoriaAlimentacaoUuid = "6a183159-32bb-4a3b-a69b-f0601ee677c1";
     const myElement = screen.getByTestId(
-      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`
+      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
     );
     const allMatriculados = screen.getAllByText("Matriculados");
     const specificMatriculados = allMatriculados.find((element) =>
-      myElement.contains(element)
+      myElement.contains(element),
     );
     expect(specificMatriculados).toBeInTheDocument();
   });
@@ -205,13 +205,23 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
     await awaitServices();
     const categoriaAlimentacaoUuid = "6a183159-32bb-4a3b-a69b-f0601ee677c1";
     const myElement = screen.getByTestId(
-      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`
+      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
     );
     const allMatriculados = screen.getAllByText("Seg.");
     const specificMatriculados = allMatriculados.find((element) =>
-      myElement.contains(element)
+      myElement.contains(element),
     );
     expect(specificMatriculados).toBeInTheDocument();
+  });
+
+  it("ao carregar a página, NÃO exibe erro algum de suspensão", async () => {
+    await awaitServices();
+
+    const inputElementFrequenciaDia1 = screen.getByTestId(
+      "frequencia__dia_01__categoria_1",
+    );
+
+    expect(inputElementFrequenciaDia1).not.toHaveClass("invalid-field");
   });
 
   it("ao clicar na tab `Semana 5`, exibe, nos dias 30 e 31, o número de matriculados 306", async () => {
@@ -219,11 +229,11 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
     const semana5Element = screen.getByText("Semana 5");
     fireEvent.click(semana5Element);
     const inputElementMatriculadosDia30 = screen.getByTestId(
-      "matriculados__dia_30__categoria_1"
+      "matriculados__dia_30__categoria_1",
     );
     expect(inputElementMatriculadosDia30).toHaveAttribute("value", "306");
     const inputElementMatriculadosDia31 = screen.getByTestId(
-      "matriculados__dia_31__categoria_1"
+      "matriculados__dia_31__categoria_1",
     );
     expect(inputElementMatriculadosDia31).toHaveAttribute("value", "306");
   });
@@ -234,14 +244,14 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
     fireEvent.click(semana5Element);
 
     const inputElementFrequenciaDia30 = screen.getByTestId(
-      "frequencia__dia_30__categoria_1"
+      "frequencia__dia_30__categoria_1",
     );
     fireEvent.change(inputElementFrequenciaDia30, {
       target: { value: "10" },
     });
 
     const inputElementLancheDia30 = screen.getByTestId(
-      "lanche__dia_30__categoria_1"
+      "lanche__dia_30__categoria_1",
     );
     waitFor(() => {
       fireEvent.change(inputElementLancheDia30, {
@@ -258,14 +268,14 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
     fireEvent.click(semana5Element);
 
     const inputElementFrequenciaDia31 = screen.getByTestId(
-      "frequencia__dia_31__categoria_1"
+      "frequencia__dia_31__categoria_1",
     );
     fireEvent.change(inputElementFrequenciaDia31, {
       target: { value: "10" },
     });
 
     const inputElementLancheDia31 = screen.getByTestId(
-      "lanche__dia_31__categoria_1"
+      "lanche__dia_31__categoria_1",
     );
     waitFor(() => {
       fireEvent.change(inputElementLancheDia31, {
