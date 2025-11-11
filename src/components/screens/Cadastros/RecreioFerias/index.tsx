@@ -167,7 +167,7 @@ export const RecreioFerias = () => {
                       validate={required}
                     />
                   </div>
-                  <div className="calendario">
+                  <div className="calendario esconde-asterisco">
                     <Field
                       component={InputComData}
                       label="&nbsp;"
@@ -179,6 +179,8 @@ export const RecreioFerias = () => {
                         "DD/MM/YYYY"
                       )}
                       maxDate={null}
+                      required
+                      validate={required}
                     />
                   </div>
                 </div>

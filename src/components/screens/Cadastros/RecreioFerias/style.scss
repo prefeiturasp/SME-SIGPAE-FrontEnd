@@ -46,6 +46,10 @@
     max-width: 240px;
   }
 
+  .esconde-asterisco .required-asterisk {
+      display: none;
+  }
+
   .required-asterisk {
     color: #a50e05;
   }
