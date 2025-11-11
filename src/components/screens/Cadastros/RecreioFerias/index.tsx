@@ -1,8 +1,10 @@
 import { Spin, Switch, Tooltip } from "antd";
+import arrayMutators from "final-form-arrays";
 import moment from "moment";
 import React, { useState } from "react";
 import { Collapse } from "react-collapse";
 import { Field, Form } from "react-final-form";
+import { FieldArray } from "react-final-form-arrays";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -10,10 +12,11 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import InputText from "src/components/Shareable/Input/InputText";
-import { Paginacao } from "src/components/Shareable/Paginacao";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { required } from "src/helpers/fieldValidators";
 import { truncarString } from "src/helpers/utilities";
+import { cadastrarRecreioNasFerias } from "../../../../services/recreioFerias.service";
 import { ModalAdicionarUnidadeEducacional } from "./components/ModalAdicionarUnidadeEducacional";
 import { ModalRemoverUnidadeEducacional } from "./components/ModalRemoverUnidadeEducacional";
 import "./style.scss";
@@ -27,17 +30,21 @@ export const RecreioFerias = () => {
     null
   );
 
-  const handleRemoverUnidade = (id: string) => {
-    setUnidadesParticipantes((prev) => prev.filter((u) => u.id !== id));
-  };
-
   const toggleExpandir = (id: string) => {
     setExpandidos((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const confirmRemoverUnidade = () => {
+  const confirmRemoverUnidade = (fields) => {
     if (selectedUnidadeId) {
-      handleRemoverUnidade(selectedUnidadeId);
+      const indexToRemove = fields.value.findIndex(
+        (u) => u.id === selectedUnidadeId
+      );
+      if (indexToRemove > -1) {
+        fields.remove(indexToRemove);
+      }
+      setUnidadesParticipantes((prev) =>
+        prev.filter((u) => u.id !== selectedUnidadeId)
+      );
       setSelectedUnidadeId(null);
       setShowModalRemover(false);
     }
@@ -53,10 +60,39 @@ export const RecreioFerias = () => {
     setShowModalRemover(false);
   };
 
-  const toggleLiberarMedicao = (id: string, checked: boolean) => {
-    setUnidadesParticipantes((prev: any[]) =>
-      prev.map((u) => (u.id === id ? { ...u, liberarMedicao: checked } : u))
-    );
+  const onSubmit = async (values: any) => {
+    try {
+      const payload = {
+        titulo: values.titulo_cadastro,
+        data_inicio: moment(values.periodo_realizacao_de, "DD/MM/YYYY").format(
+          "YYYY-MM-DD"
+        ),
+        data_fim: moment(values.periodo_realizacao_ate, "DD/MM/YYYY").format(
+          "YYYY-MM-DD"
+        ),
+        unidades_participantes: values.unidades_participantes.map((unidade) => {
+          return {
+            lote: unidade.loteUuid,
+            unidade_educacional: unidade.unidadeEducacionalUuid,
+            num_inscritos: parseInt(unidade.num_inscritos) || 0,
+            num_colaboradores: parseInt(unidade.num_colaboradores) || 0,
+            liberar_medicao: unidade.liberarMedicao,
+            tipos_alimentacao_inscritos:
+              unidade.tiposAlimentacaoInscritosUuids || [],
+            tipos_alimentacao_colaboradores:
+              unidade.tiposAlimentacaoColaboradoresUuids || [],
+            tipos_alimentacao_infantil:
+              unidade.tiposAlimentacaoInfantilUuids || [],
+          };
+        }),
+      };
+
+      await cadastrarRecreioNasFerias(payload);
+      // toastSuccess()
+      // console.log("Criado com sucesso:", response);
+    } catch (error) {
+      toastError("Erro ao criar:", error);
+    }
   };
 
   return (
@@ -70,7 +106,13 @@ export const RecreioFerias = () => {
 
         <Form
           keepDirtyOnReinitialize
-          onSubmit={() => {}}
+          onSubmit={onSubmit}
+          mutators={{
+            ...arrayMutators,
+          }}
+          initialValues={{
+            unidades_participantes: unidadesParticipantes,
+          }}
           render={({ handleSubmit, values }) => (
             <form onSubmit={handleSubmit}>
               <div className="row">
@@ -137,174 +179,180 @@ export const RecreioFerias = () => {
               </div>
 
               <Spin tip="Carregando..." spinning={false}>
-                <>
-                  <table className="tabela-unidades-participantes">
-                    <thead>
-                      <tr className="row">
-                        <th className="col-1 text-center">DRE/LOTE</th>
+                <FieldArray name="unidades_participantes">
+                  {({ fields }) => (
+                    <table className="tabela-unidades-participantes">
+                      <thead>
+                        <tr className="row">
+                          <th className="col-1 text-center">DRE/LOTE</th>
 
-                        <th className="col-3 text-center">
-                          Unidade Educacional
-                        </th>
-                        <th className="col-2 text-center">Nº de Inscritos</th>
-                        <th className="col-2 text-center">
-                          Nº de Colaboradores
-                        </th>
-                        <th className="col-2 text-center">Liberar Medição?</th>
-                        <th className="action-column col-1 text-center"></th>
-                        <th className="action-column col-1 text-center"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {unidadesParticipantes.map((participante) => {
-                        const aberto = !!expandidos[participante.id];
+                          <th className="col-3 text-center">
+                            Unidade Educacional
+                          </th>
+                          <th className="col-2 text-center">Nº de Inscritos</th>
+                          <th className="col-2 text-center">
+                            Nº de Colaboradores
+                          </th>
+                          <th className="col-2 text-center">
+                            Liberar Medição?
+                          </th>
+                          <th className="action-column col-1 text-center"></th>
+                          <th className="action-column col-1 text-center"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {fields.map((name, index) => {
+                          const participante = fields.value[index];
+                          const aberto = !!expandidos[participante.id];
+                          let unidadeEducacionalNome =
+                            participante.unidadeEducacional;
 
-                        return (
-                          <React.Fragment
-                            key={`${participante.unidadeEducacional}-${participante.id}`}
-                          >
-                            <tr className="row">
-                              <td className="col-1">{participante.dreLote}</td>
-                              <td className="col-3">
-                                <Tooltip
-                                  title={participante.unidadeEducacional}
-                                >
-                                  {truncarString(
-                                    participante.unidadeEducacional,
-                                    35
-                                  )}
-                                </Tooltip>
-                              </td>
-                              <td className="col-2">
-                                <Field
-                                  component={InputText}
-                                  name={`numero_inscritos_${participante.id}`}
-                                  required
-                                  validate={required}
-                                />
-                              </td>
-                              <td className="col-2">
-                                <Field
-                                  component={InputText}
-                                  name={`numero_colaboradores_${participante.id}`}
-                                  required
-                                  validate={required}
-                                />
-                              </td>
-                              <td className="col-2">
-                                {participante.liberarMedicao}
-                                <label
-                                  className={`col-form-label ${
-                                    !participante.liberarMedicao && "preto"
-                                  }`}
-                                >
-                                  Não
-                                </label>
-                                <Switch
-                                  size="small"
-                                  className="mx-2"
-                                  checked={!!participante.liberarMedicao}
-                                  onChange={(checked) =>
-                                    toggleLiberarMedicao(
-                                      participante.id,
-                                      checked
-                                    )
-                                  }
-                                />
-                                <label
-                                  className={`col-form-label ${
-                                    participante.liberarMedicao ? "verde" : ""
-                                  }`}
-                                >
-                                  Sim
-                                </label>
-                              </td>
-                              <td className="action-column col-1">
-                                <Tooltip title="Remover Unidade">
-                                  <button
-                                    type="button"
-                                    className="excluir-botao verde"
-                                    data-testid="remover-unidade-botao"
-                                    onClick={() =>
-                                      openRemoverModal(participante.id)
-                                    }
+                          if (participante.ceiOuEmei === "EMEI") {
+                            unidadeEducacionalNome =
+                              unidadeEducacionalNome + " - INFANTIL";
+                          } else if (participante.ceiOuEmei === "CEI") {
+                            unidadeEducacionalNome =
+                              unidadeEducacionalNome + " - CEI";
+                          }
+
+                          return (
+                            <React.Fragment key={`${name}`}>
+                              <tr className="row">
+                                <td className="col-1">
+                                  {participante.dreLoteNome}
+                                </td>
+                                <td className="col-3">
+                                  <Tooltip title={unidadeEducacionalNome}>
+                                    {truncarString(unidadeEducacionalNome, 35)}
+                                  </Tooltip>
+                                </td>
+                                <td className="col-2">
+                                  <Field
+                                    component={InputText}
+                                    name={`${name}.num_inscritos`}
+                                    type="number"
+                                    required
+                                    validate={required}
+                                  />
+                                </td>
+                                <td className="col-2">
+                                  <Field
+                                    component={InputText}
+                                    name={`${name}.num_colaboradores`}
+                                    type="number"
+                                    required
+                                    validate={required}
+                                  />
+                                </td>
+                                <td className="col-2">
+                                  {participante.liberarMedicao}
+                                  <label
+                                    className={`col-form-label ${
+                                      !participante.liberarMedicao && "preto"
+                                    }`}
                                   >
-                                    <i className="fas fa-trash" />
-                                  </button>
-                                </Tooltip>
-                              </td>
-                              <td className="action-column col-1">
-                                <ToggleExpandir
-                                  ativo={aberto}
-                                  onClick={() =>
-                                    toggleExpandir(participante.id)
-                                  }
-                                  dataTestId={`toggle-${participante.id}`}
-                                />
-                              </td>
-                            </tr>
-                            <Collapse isOpened={aberto}>
-                              <div className="collapse-container">
-                                <div>
-                                  <strong>
-                                    Tipos de Alimentação Inscritos
-                                    {participante.alimentacaoInscritosInfantil
-                                      .length > 0 && " CEI"}
-                                    :{" "}
-                                  </strong>
-                                  <span>
-                                    {participante.alimentacaoInscritos?.join(
-                                      ", "
-                                    )}
-                                  </span>
-                                </div>
-
-                                {participante.alimentacaoInscritosInfantil
-                                  .length > 0 && (
+                                    Não
+                                  </label>
+                                  <Switch
+                                    size="small"
+                                    className="mx-2"
+                                    checked={!!participante.liberarMedicao}
+                                    onChange={(checked) => {
+                                      fields.update(index, {
+                                        ...participante,
+                                        liberarMedicao: checked,
+                                      });
+                                    }}
+                                  />
+                                  <label
+                                    className={`col-form-label ${
+                                      participante.liberarMedicao ? "verde" : ""
+                                    }`}
+                                  >
+                                    Sim
+                                  </label>
+                                </td>
+                                <td className="action-column col-1">
+                                  <Tooltip title="Remover Unidade">
+                                    <button
+                                      type="button"
+                                      className="excluir-botao verde"
+                                      data-testid="remover-unidade-botao"
+                                      onClick={() =>
+                                        openRemoverModal(participante.id)
+                                      }
+                                    >
+                                      <i className="fas fa-trash" />
+                                    </button>
+                                  </Tooltip>
+                                </td>
+                                <td className="action-column col-1">
+                                  <ToggleExpandir
+                                    ativo={aberto}
+                                    onClick={() =>
+                                      toggleExpandir(participante.id)
+                                    }
+                                    dataTestId={`toggle-${participante.id}`}
+                                  />
+                                </td>
+                              </tr>
+                              <Collapse isOpened={aberto}>
+                                <div className="collapse-container">
                                   <div>
                                     <strong>
-                                      Tipos de Alimentação Inscritos - INFANTIL:{" "}
+                                      Tipos de Alimentação Inscritos
+                                      {participante.alimentacaoInscritosInfantil
+                                        .length > 0 && " CEI"}
+                                      :{" "}
                                     </strong>
                                     <span>
-                                      {participante.alimentacaoInscritosInfantil?.join(
+                                      {participante.alimentacaoInscritos?.join(
                                         ", "
                                       )}
                                     </span>
                                   </div>
-                                )}
 
-                                <div>
-                                  <strong>
-                                    Tipos de Alimentação Colaboradores:{" "}
-                                  </strong>
-                                  <span>
-                                    {participante.alimentacaoColaboradores?.join(
-                                      ", "
-                                    )}
-                                  </span>
+                                  {participante.alimentacaoInscritosInfantil
+                                    .length > 0 && (
+                                    <div>
+                                      <strong>
+                                        Tipos de Alimentação Inscritos -
+                                        INFANTIL:{" "}
+                                      </strong>
+                                      <span>
+                                        {participante.alimentacaoInscritosInfantil?.join(
+                                          ", "
+                                        )}
+                                      </span>
+                                    </div>
+                                  )}
+
+                                  <div>
+                                    <strong>
+                                      Tipos de Alimentação Colaboradores:{" "}
+                                    </strong>
+                                    <span>
+                                      {participante.alimentacaoColaboradores?.join(
+                                        ", "
+                                      )}
+                                    </span>
+                                  </div>
                                 </div>
-                              </div>
-                            </Collapse>
-                          </React.Fragment>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                  {unidadesParticipantes.length > 10 && (
-                    <Paginacao
-                      onChange={() =>
-                        // onPageChanged(page, {
-                        //   status: statusSelecionado,
-                        //   ...values,
-                        // })
-                        {}
-                      }
-                      total={0}
-                      pageSize={1}
-                      current={1}
-                    />
+                              </Collapse>
+                            </React.Fragment>
+                          );
+                        })}
+                      </tbody>
+                      <ModalRemoverUnidadeEducacional
+                        showModal={showModalRemover}
+                        closeModal={closeRemoverModal}
+                        handleRemoverUnidade={() =>
+                          confirmRemoverUnidade(fields)
+                        }
+                      />
+                    </table>
                   )}
-                </>
+                </FieldArray>
               </Spin>
 
               <div className="row mt-4">
@@ -324,12 +372,6 @@ export const RecreioFerias = () => {
                 submitting={false}
                 setUnidadesParticipantes={setUnidadesParticipantes}
                 unidadesParticipantes={unidadesParticipantes}
-              />
-
-              <ModalRemoverUnidadeEducacional
-                showModal={showModalRemover}
-                closeModal={closeRemoverModal}
-                handleRemoverUnidade={confirmRemoverUnidade}
               />
             </form>
           )}
