@@ -15,8 +15,9 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
-import TabelasGrupoCEI from "./components/TabelasGrupoCEI";
+import TabelasGrupoCEI from "./components/Tabelas/TabelasGrupoCEI";
 import ModalCancelar from "./components/ModalCancelar";
+import { formataPayload } from "./helpers";
 
 const VALORES_INICIAIS: ParametrizacaoFinanceiraPayload = {
   edital: null,
@@ -41,8 +42,19 @@ export default () => {
 
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
-      await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(values);
-      toastSuccess("Parametrização Financeira salva com sucesso!");
+      const payload = formataPayload(values);
+      if (!uuidParametrizacao) {
+        await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(
+          payload,
+        );
+        toastSuccess("Parametrização Financeira salva com sucesso!");
+      } else {
+        await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
+          uuidParametrizacao,
+          payload,
+        );
+        toastSuccess("Parametrização Financeira editada com sucesso!");
+      }
       navigate(-1);
     } catch (err) {
       const data = err.response.data;
@@ -52,33 +64,6 @@ export default () => {
         } else {
           toastError(
             "Não foi possível finalizar a inclusão da parametrização. Verifique se todos os campos da tabela foram preenchidos",
-          );
-        }
-      } else {
-        toastError("Ocorreu um erro inesperado");
-      }
-    }
-  };
-
-  const editarParametrizacao = async (
-    uuid: string,
-    values: ParametrizacaoFinanceiraPayload,
-  ) => {
-    try {
-      await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
-        uuid,
-        values,
-      );
-      toastSuccess("Parametrização Financeira editada com sucesso!");
-      navigate(-1);
-    } catch (err) {
-      const data = err.response?.data;
-      if (data) {
-        if (data.non_field_errors) {
-          toastError(data.non_field_errors[0]);
-        } else {
-          toastError(
-            "Não foi possível finalizar a edição da parametrização. Verifique se todos os campos da tabela foram preenchidos",
           );
         }
       } else {
@@ -105,9 +90,7 @@ export default () => {
         <div className="card-body">
           <Form
             onSubmit={(values: ParametrizacaoFinanceiraPayload) =>
-              uuidParametrizacao
-                ? editarParametrizacao(uuidParametrizacao, values)
-                : onSubmit(values)
+              onSubmit(values)
             }
             initialValues={parametrizacao}
             destroyOnUnregister={true}
