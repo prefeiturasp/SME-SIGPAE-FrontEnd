@@ -125,6 +125,15 @@ export const RecreioFerias = () => {
           render={({ handleSubmit, form, values }) => {
             const attemptSave = (event) => {
               event && event.preventDefault();
+
+              const unidades = values?.unidades_participantes || [];
+              if (unidades.length === 0) {
+                toastError(
+                  "Não é possível salvar o Recreio nas Férias sem Unidades Participantes. Adicione pelo menos uma unidade."
+                );
+                return;
+              }
+
               const errors = validateForm(values);
               if (errors && errors.unidades_participantes) {
                 const firstInvalidIndex =
