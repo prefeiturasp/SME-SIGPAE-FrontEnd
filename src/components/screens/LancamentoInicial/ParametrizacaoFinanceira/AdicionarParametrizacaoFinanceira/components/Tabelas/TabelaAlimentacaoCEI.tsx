@@ -24,7 +24,6 @@ export function TabelaAlimentacaoCEI({
     grupoSelecionado === "grupo_2"
       ? `CEI - Período ${periodo}`
       : `Período ${periodo}`;
-
   const nomeTabela = "Preço das Alimentações";
 
   return (
@@ -72,11 +71,11 @@ export function TabelaAlimentacaoCEI({
                     form.getState().values.tabelas[
                       `${nomeTabela} - ${labelTabela}`
                     ]?.[record.__str__]?.valor_unitario_reajuste || 0;
-                  const valorTotal = value + valorReajuste;
+                  const valorTotal = value + Number(valorReajuste);
 
                   form.change(
                     `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
-                    valorTotal ? Number(valorTotal.toFixed(2)) : undefined,
+                    valorTotal ? valorTotal.toFixed(2) : undefined,
                   );
                   form.change(
                     `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario`,
@@ -104,11 +103,11 @@ export function TabelaAlimentacaoCEI({
                     form.getState().values.tabelas[
                       `${nomeTabela} - ${labelTabela}`
                     ]?.[record.__str__]?.valor_unitario || 0;
-                  const valorTotal = valorUnitario + value;
+                  const valorTotal = Number(valorUnitario) + value;
 
                   form.change(
                     `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
-                    valorTotal ? Number(valorTotal.toFixed(2)) : undefined,
+                    valorTotal ? valorTotal.toFixed(2) : undefined,
                   );
                   form.change(
                     `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_reajuste`,
