@@ -12,7 +12,10 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import InputText from "src/components/Shareable/Input/InputText";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { required } from "src/helpers/fieldValidators";
 import { truncarString } from "src/helpers/utilities";
@@ -47,6 +50,7 @@ export const RecreioFerias = () => {
       );
       setSelectedUnidadeId(null);
       setShowModalRemover(false);
+      toastSuccess("Unidade Educacional removida com sucesso!");
     }
   };
 
@@ -88,8 +92,7 @@ export const RecreioFerias = () => {
       };
 
       await cadastrarRecreioNasFerias(payload);
-      // toastSuccess()
-      // console.log("Criado com sucesso:", response);
+      toastSuccess("Recreio nas Férias cadastrado com sucesso!");
     } catch (error) {
       toastError("Erro ao criar:", error);
     }
@@ -189,9 +192,13 @@ export const RecreioFerias = () => {
                           <th className="col-3 text-center">
                             Unidade Educacional
                           </th>
-                          <th className="col-2 text-center">Nº de Inscritos</th>
                           <th className="col-2 text-center">
-                            Nº de Colaboradores
+                            <span className="required-asterisk">*</span> Nº de
+                            Inscritos
+                          </th>
+                          <th className="col-2 text-center">
+                            <span className="required-asterisk">*</span> Nº de
+                            Colaboradores
                           </th>
                           <th className="col-2 text-center">
                             Liberar Medição?
