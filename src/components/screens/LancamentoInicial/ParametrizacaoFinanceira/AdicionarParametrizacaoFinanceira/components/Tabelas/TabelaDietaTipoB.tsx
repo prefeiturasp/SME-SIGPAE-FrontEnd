@@ -12,7 +12,7 @@ const ALIMENTACOES = ["Lanche", "Lanche 4h"];
 type Props = {
   form: FormApi<any, any>;
   tiposAlimentacao: Array<any>;
-  grupoSelecionado?: string | null;
+  grupoSelecionado?: string;
   tipoTurma?: string;
 };
 
@@ -101,7 +101,7 @@ export default ({
                   form.change(
                     `tabelas[${nomeTabela}].${record.nome}_${record.grupo}.valor_unitario_total`,
                     valorUnitarioTotal
-                      ? Number(valorUnitarioTotal.toFixed(2))
+                      ? Number(valorUnitarioTotal).toFixed(2)
                       : undefined,
                   );
                   form.change(
@@ -135,7 +135,7 @@ export default ({
                   form.change(
                     `tabelas[${nomeTabela}].${record.nome}_${record.grupo}.valor_unitario_total`,
                     valorUnitarioTotal
-                      ? Number(valorUnitarioTotal.toFixed(2))
+                      ? Number(valorUnitarioTotal).toFixed(2)
                       : undefined,
                   );
                   form.change(

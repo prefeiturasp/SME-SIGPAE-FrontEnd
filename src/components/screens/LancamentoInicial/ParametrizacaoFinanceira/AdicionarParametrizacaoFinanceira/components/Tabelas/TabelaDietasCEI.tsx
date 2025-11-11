@@ -80,12 +80,12 @@ export default ({
                       `${nomeTabela} - ${labelTabela}`
                     ]?.[record.__str__]?.percentual_acrescimo || 0;
                   const valorUnitarioTotal =
-                    value * (1 + percentualAcrescimo / 100);
+                    value * (1 + Number(percentualAcrescimo) / 100);
 
                   form.change(
                     `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
                     valorUnitarioTotal
-                      ? Number(valorUnitarioTotal.toFixed(2))
+                      ? valorUnitarioTotal.toFixed(2)
                       : undefined,
                   );
                   form.change(
@@ -114,12 +114,13 @@ export default ({
                     form.getState().values.tabelas[
                       `${nomeTabela} - ${labelTabela}`
                     ]?.[record.__str__]?.valor_unitario || 0;
-                  const valorUnitarioTotal = valorUnitario * (1 + value / 100);
+                  const valorUnitarioTotal =
+                    Number(valorUnitario) * (1 + value / 100);
 
                   form.change(
                     `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
                     valorUnitarioTotal
-                      ? Number(valorUnitarioTotal.toFixed(2))
+                      ? valorUnitarioTotal.toFixed(2)
                       : undefined,
                   );
                   form.change(
