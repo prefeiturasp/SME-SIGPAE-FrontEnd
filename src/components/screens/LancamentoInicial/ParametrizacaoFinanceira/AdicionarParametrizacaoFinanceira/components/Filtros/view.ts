@@ -12,6 +12,7 @@ import {
 import { SelectOption } from "src/interfaces/option.interface";
 import { FormApi } from "final-form";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
+import { carregarValores } from "../../helpers";
 
 type Props = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
@@ -132,8 +133,10 @@ export default ({
   const getParametrizacao = async (uuid: string) => {
     try {
       const response =
-        await ParametrizacaoFinanceiraService.getParametrizacaoFinanceira(uuid);
-
+        await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
+          uuid,
+        );
+      const dadosTabelas = carregarValores(response.tabelas);
       const parametrizacao = {
         edital: response.edital.uuid,
         lote: response.lote.uuid,
@@ -141,6 +144,7 @@ export default ({
         data_inicial: response.data_inicial,
         data_final: response.data_final,
         legenda: response.legenda,
+        tabelas: dadosTabelas,
       };
 
       setParametrizacao(parametrizacao);
