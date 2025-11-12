@@ -22,11 +22,9 @@ const ModalCancelar = ({ showModal, setShowModal }: Props) => {
       }}
     >
       <Modal.Header closeButton>
-        <Modal.Title>Cancelar Adição de Parametrização Financeira</Modal.Title>
+        <Modal.Title>Cancelar Parametrização Financeira</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        Você deseja cancelar a Adição da Parametrização Financeira?
-      </Modal.Body>
+      <Modal.Body>Deseja cancelar o cadastro dessa parametrização?</Modal.Body>
       <Modal.Footer>
         <Botao
           texto="Não"
