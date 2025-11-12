@@ -15,8 +15,10 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
-import TabelasGrupoCEI from "./components/TabelasGrupoCEI";
+import TabelasGrupoCEI from "./components/Tabelas/TabelasGrupoCEI";
 import ModalCancelar from "./components/ModalCancelar";
+import ModalSalvar from "./components/ModalSalvar";
+import { formataPayload } from "./helpers";
 
 const VALORES_INICIAIS: ParametrizacaoFinanceiraPayload = {
   edital: null,
@@ -30,9 +32,13 @@ const VALORES_INICIAIS: ParametrizacaoFinanceiraPayload = {
 
 export default () => {
   const [grupoSelecionado, setGrupoSelecionado] = useState("");
+  const [editalSelecionado, setEditalSelecionado] = useState("");
+  const [loteSelecionado, setLoteSelecionado] = useState("");
   const [faixasEtarias, setFaixasEtarias] = useState([]);
   const [parametrizacao, setParametrizacao] = useState(VALORES_INICIAIS);
   const [showModalCancelar, setShowModalCancelar] = useState(false);
+  const [showModalSalvar, setShowModalSalvar] = useState(false);
+  const [carregarTabelas, setCarregarTabelas] = useState(false);
 
   const navigate = useNavigate();
 
@@ -41,8 +47,19 @@ export default () => {
 
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
-      await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(values);
-      toastSuccess("Parametrização Financeira salva com sucesso!");
+      const payload = formataPayload(values);
+      if (!uuidParametrizacao) {
+        await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(
+          payload,
+        );
+        toastSuccess("Parametrização Financeira salva com sucesso!");
+      } else {
+        await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
+          uuidParametrizacao,
+          payload,
+        );
+        toastSuccess("Parametrização Financeira editada com sucesso!");
+      }
       navigate(-1);
     } catch (err) {
       const data = err.response.data;
@@ -51,34 +68,7 @@ export default () => {
           toastError(data.non_field_errors[0]);
         } else {
           toastError(
-            "Não foi possível finalizar a inclusão da parametrização. Verifique se todos os campos da tabela foram preenchidos",
-          );
-        }
-      } else {
-        toastError("Ocorreu um erro inesperado");
-      }
-    }
-  };
-
-  const editarParametrizacao = async (
-    uuid: string,
-    values: ParametrizacaoFinanceiraPayload,
-  ) => {
-    try {
-      await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
-        uuid,
-        values,
-      );
-      toastSuccess("Parametrização Financeira editada com sucesso!");
-      navigate(-1);
-    } catch (err) {
-      const data = err.response?.data;
-      if (data) {
-        if (data.non_field_errors) {
-          toastError(data.non_field_errors[0]);
-        } else {
-          toastError(
-            "Não foi possível finalizar a edição da parametrização. Verifique se todos os campos da tabela foram preenchidos",
+            `Não foi possível finalizar a ${uuidParametrizacao ? "edição" : "inclusão"} da parametrização. Verifique se todos os campos da tabela foram preenchidos`,
           );
         }
       } else {
@@ -105,9 +95,7 @@ export default () => {
         <div className="card-body">
           <Form
             onSubmit={(values: ParametrizacaoFinanceiraPayload) =>
-              uuidParametrizacao
-                ? editarParametrizacao(uuidParametrizacao, values)
-                : onSubmit(values)
+              onSubmit(values)
             }
             initialValues={parametrizacao}
             destroyOnUnregister={true}
@@ -115,23 +103,27 @@ export default () => {
               <form onSubmit={handleSubmit}>
                 <Filtros
                   setGrupoSelecionado={setGrupoSelecionado}
+                  setEditalSelecionado={setEditalSelecionado}
+                  setLoteSelecionado={setLoteSelecionado}
                   setFaixasEtarias={setFaixasEtarias}
                   setParametrizacao={setParametrizacao}
+                  setCarregarTabelas={setCarregarTabelas}
                   form={form}
                   uuidParametrizacao={uuidParametrizacao}
                   ehCadastro
                 />
-                {exibeTabelasCEI && (
+                {exibeTabelasCEI && (carregarTabelas || uuidParametrizacao) ? (
                   <TabelasGrupoCEI
                     form={form}
                     faixasEtarias={faixasEtarias}
                     grupoSelecionado={grupoSelecionado}
                   />
-                )}
-                {exibeTabelasEMEFeEMEI ||
-                exibeTabelasCEI ||
-                exibeTabelasCEMEI ||
-                exibeTabelasEMEBS ? (
+                ) : null}
+                {(exibeTabelasEMEFeEMEI ||
+                  exibeTabelasCEI ||
+                  exibeTabelasCEMEI ||
+                  exibeTabelasEMEBS) &&
+                (carregarTabelas || uuidParametrizacao) ? (
                   <div className="row mt-5">
                     <div className="col">
                       <Field
@@ -160,10 +152,17 @@ export default () => {
                     dataTestId="botao-salvar"
                     texto="Salvar"
                     style={BUTTON_STYLE.GREEN}
-                    type={BUTTON_TYPE.SUBMIT}
+                    type={BUTTON_TYPE.BUTTON}
                     disabled={submitting}
+                    onClick={() => setShowModalSalvar(true)}
                   />
                 </div>
+                <ModalSalvar
+                  showModal={showModalSalvar}
+                  setShowModal={setShowModalSalvar}
+                  titulo={`${editalSelecionado} - ${loteSelecionado} - ${grupoSelecionado}`}
+                  onSubmit={() => handleSubmit()}
+                />
               </form>
             )}
           />

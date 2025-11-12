@@ -22,7 +22,7 @@ import CargasUsuariosServidoresPage from "src/pages/Configuracoes/CargasUsuarios
 import ConfigEmailPage from "src/pages/Configuracoes/ConfigEmailPage";
 import GerenciamentoEmailsPage from "src/pages/Configuracoes/GerenciamentoEmailsPage";
 import GestaoAcessoCodaeDilogPage from "src/pages/Configuracoes/GestaoAcessoCodaeDilogPage";
-import GestaoAcessoCogestorPage from "src/pages/Configuracoes/GestaoAcessoCogestorPage";
+import { GestaoAcessoCogestorPage } from "src/pages/Configuracoes/GestaoAcessoCogestorPage";
 import GestaoAcessoDiretorEscolaPage from "src/pages/Configuracoes/GestaoAcessoDiretorEscolaPage";
 import GestaoAcessoEmpresaPage from "src/pages/Configuracoes/GestaoAcessoEmpresaPage";
 import GestaoAcessoGeralPage from "src/pages/Configuracoes/GestaoAcessoGeralPage";

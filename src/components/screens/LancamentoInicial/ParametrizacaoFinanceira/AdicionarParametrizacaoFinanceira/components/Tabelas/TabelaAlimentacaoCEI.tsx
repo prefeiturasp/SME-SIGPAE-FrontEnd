@@ -1,11 +1,6 @@
-import React from "react";
-
 import { Table } from "antd";
-
 import { Field } from "react-final-form";
-
 import { AInputNumber } from "src/components/Shareable/MakeField";
-
 import {
   formataValorDecimal,
   parserValorDecimal,
@@ -15,28 +10,27 @@ import { FormApi } from "final-form";
 type Props = {
   form: FormApi<any, any>;
   faixasEtarias: Array<any>;
-  nomeTabela: string;
-  periodo: string;
   grupoSelecionado: string;
+  periodo: string;
 };
 
-export default ({
+export function TabelaAlimentacaoCEI({
   form,
   faixasEtarias,
-  nomeTabela,
-  periodo,
   grupoSelecionado,
-}: Props) => {
+  periodo,
+}: Props) {
   const labelTabela =
     grupoSelecionado === "grupo_2"
       ? `CEI - Período ${periodo}`
       : `Período ${periodo}`;
+  const nomeTabela = "Preço das Alimentações";
 
   return (
     <div className="row mt-5">
       <div className="col">
         <h2 className="text-start texto-simples-verde fw-bold mb-3">
-          Preço das {nomeTabela} -{" "}
+          {nomeTabela} -{" "}
           <span className={`titulo-tag periodo-${periodo.toLowerCase()}`}>
             {labelTabela}
           </span>
@@ -47,19 +41,17 @@ export default ({
             title="Faixas Etárias"
             dataIndex="__str__"
             key="__str__"
-            render={(value, record: any) => {
-              return (
-                <div>
-                  <p className="fw-bold mb-0">{value}</p>
-                  <Field
-                    component="input"
-                    name={`tabelas[${nomeTabela} - ${labelTabela}].${value}.faixa_etaria`}
-                    type="hidden"
-                    defaultValue={record.uuid}
-                  />
-                </div>
-              );
-            }}
+            render={(value, record: any) => (
+              <div>
+                <p className="fw-bold mb-0">{value}</p>
+                <Field
+                  component="input"
+                  name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.faixa_etaria`}
+                  type="hidden"
+                  defaultValue={record.uuid}
+                />
+              </div>
+            )}
           />
           <Table.Column
             title="Valor Unitário"
@@ -75,36 +67,33 @@ export default ({
                 parser={(value: string) => parserValorDecimal(value)}
                 defaultValue={null}
                 onChange={(value: number) => {
-                  const percentualAcrescimo =
+                  const valorReajuste =
                     form.getState().values.tabelas[
                       `${nomeTabela} - ${labelTabela}`
-                    ]?.[record.__str__]?.percentual_acrescimo || 0;
-                  const valorUnitarioTotal =
-                    value * (1 + percentualAcrescimo / 100);
+                    ]?.[record.__str__]?.valor_unitario_reajuste || 0;
+                  const valorTotal = value + Number(valorReajuste);
 
                   form.change(
                     `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
-                    valorUnitarioTotal
-                      ? Number(valorUnitarioTotal.toFixed(2))
-                      : undefined
+                    valorTotal ? valorTotal.toFixed(2) : undefined,
                   );
                   form.change(
                     `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario`,
-                    value
+                    value,
                   );
                 }}
               />
             )}
           />
           <Table.Column
-            title="% de acréscimo"
-            dataIndex="percentual_acrescimo"
-            key="percentual_acrescimo"
+            title="Valor Unitário Reajuste"
+            dataIndex="valor_unitario_reajuste"
+            key="valor_unitario_reajuste"
             render={(_, record: any) => (
               <Field
                 component={AInputNumber}
-                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.percentual_acrescimo`}
-                placeholder="%"
+                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_reajuste`}
+                placeholder="0,00"
                 min={0}
                 formatter={(value: string) => formataValorDecimal(value)}
                 parser={(value: string) => parserValorDecimal(value)}
@@ -114,24 +103,22 @@ export default ({
                     form.getState().values.tabelas[
                       `${nomeTabela} - ${labelTabela}`
                     ]?.[record.__str__]?.valor_unitario || 0;
-                  const valorUnitarioTotal = valorUnitario * (1 + value / 100);
+                  const valorTotal = Number(valorUnitario) + value;
 
                   form.change(
                     `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
-                    valorUnitarioTotal
-                      ? Number(valorUnitarioTotal.toFixed(2))
-                      : undefined
+                    valorTotal ? valorTotal.toFixed(2) : undefined,
                   );
                   form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.percentual_acrescimo`,
-                    value
+                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_reajuste`,
+                    value,
                   );
                 }}
               />
             )}
           />
           <Table.Column
-            title="Valor Unit. Total"
+            title="Valor Total"
             dataIndex="valor_unitario_total"
             key="valor_unitario_total"
             render={(_, record: any) => (
@@ -147,4 +134,4 @@ export default ({
       </div>
     </div>
   );
-};
+}
