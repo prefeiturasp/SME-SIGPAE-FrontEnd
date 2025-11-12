@@ -40,7 +40,10 @@ const ModalSalvar = ({ showModal, setShowModal, titulo, onSubmit }: Props) => {
         <Botao
           texto="Sim"
           type={BUTTON_TYPE.SUBMIT}
-          onClick={() => onSubmit()}
+          onClick={() => {
+            onSubmit();
+            setShowModal(false);
+          }}
           style={BUTTON_STYLE.GREEN}
           className="ms-3"
         />
