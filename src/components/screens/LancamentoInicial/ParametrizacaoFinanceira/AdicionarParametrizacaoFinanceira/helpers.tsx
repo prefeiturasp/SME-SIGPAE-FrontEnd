@@ -5,11 +5,19 @@ import {
   ValorTabela,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 
+type ValorLinha = {
+  faixa_etaria?: string;
+  tipo_alimentacao?: string;
+  valor_unitario_reajuste: string;
+  valor_unitario: string;
+  percentual_acrescimo: string;
+};
+
 const gerarValores = (valores: object, tabela: string) => {
   let lista_valores: object[] = [];
   const titulos = Object.keys(valores);
 
-  Object.values(valores).forEach((valor: any, index) => {
+  Object.values(valores).forEach((valor: ValorLinha, index) => {
     const { tipo_alimentacao, faixa_etaria, ...rest } = valor;
 
     const tiposValores = [
