@@ -59,12 +59,6 @@ export const ModalAdicionarUnidadeEducacional = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const tipos = await getTiposUnidadeEscolar();
-      const formatTipos = tipos.data.results.map((t) => ({
-        nome: t.iniciais,
-        uuid: t.uuid,
-      }));
-      setTiposUnidadesEscolares(formatTipos);
       getLotesAsync(setLotes, "uuid", "nome");
     };
     fetchData();
@@ -291,7 +285,6 @@ export const ModalAdicionarUnidadeEducacional = ({
               tipoUnidadeSelecionado?.nome === "CEMEI" ||
               tipoUnidadeSelecionado?.nome === "CEU CEMEI";
 
-            // Validação dos campos obrigatórios
             const hasUnidadesEducacionais =
               values?.unidades_educacionais &&
               values.unidades_educacionais.length > 0;
@@ -314,25 +307,65 @@ export const ModalAdicionarUnidadeEducacional = ({
               !hasTiposAlimentacaoInscritos ||
               !hasTiposAlimentacaoInscritosInfantil;
 
+            const resetarSeletores = (form) => {
+              setUnidadesEducacionaisOpts([]);
+              setTiposAlimentacaoInscritos([]);
+              setTiposAlimentacaoInscritosInfantil([]);
+              setTiposAlimentacaoColaboradores([]);
+              form.change("unidades_educacionais", []);
+              form.change("tipos_alimentacao_inscritos", []);
+              form.change("tipos_alimentacao_inscritos_infantil", []);
+              form.change("tipos_alimentacao_colaboradores", []);
+            };
+
+            useEffect(() => {
+              const dreLoteValue = values?.dres_lote;
+
+              setTiposUnidadesEscolares([]);
+              form.batch(() => {
+                form.change("tipos_unidades", undefined);
+                form.resetFieldState("tipos_unidades");
+              });
+              resetarSeletores(form);
+
+              if (!dreLoteValue) {
+                return;
+              }
+
+              const lote = lotes.find((l) => l.uuid === dreLoteValue);
+              const dreUuid =
+                lote?.dreUuid || lote?.dre_uuid || lote?.dre?.uuid || lote?.dre;
+
+              if (!dreUuid) {
+                return;
+              }
+
+              (async () => {
+                const tiposResp = await getTiposUnidadeEscolar({
+                  dre: dreUuid,
+                });
+                const formatTipos = (tiposResp?.data?.results || []).map(
+                  (t) => ({
+                    nome: t.iniciais,
+                    uuid: t.uuid,
+                  })
+                );
+                setTiposUnidadesEscolares(formatTipos);
+              })();
+            }, [values?.dres_lote, lotes]);
+
             useEffect(() => {
               const dreLoteValue = values?.dres_lote;
               const tipoUnidadeValue = values?.tipos_unidades;
 
               if (!dreLoteValue || !tipoUnidadeValue) {
-                setUnidadesEducacionaisOpts([]);
-                setTiposAlimentacaoInscritos([]);
-                setTiposAlimentacaoInscritosInfantil([]);
-                setTiposAlimentacaoColaboradores([]);
-
-                form.change("unidades_educacionais", []);
-                form.change("tipos_alimentacao_inscritos", []);
-                form.change("tipos_alimentacao_inscritos_infantil", []);
-                form.change("tipos_alimentacao_colaboradores", []);
+                resetarSeletores(form);
                 return;
               }
 
               const lote = lotes.find((l) => l.uuid === dreLoteValue);
-              const dreUuid = lote?.dreUuid;
+              const dreUuid =
+                lote?.dreUuid || lote?.dre_uuid || lote?.dre?.uuid || lote?.dre;
 
               if (!dreUuid) {
                 setUnidadesEducacionaisOpts([]);
