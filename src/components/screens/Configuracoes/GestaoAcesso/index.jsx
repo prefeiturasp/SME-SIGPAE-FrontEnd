@@ -76,7 +76,20 @@ export default ({
     } else if (empresa) {
       setPerfisVisao(lista_perfis, "EMPRESA");
     } else if (cogestor) {
-      setPerfisVisao(lista_perfis, "DRE");
+      setVisoes(
+        options_visoes.filter((visao) =>
+          ["Diretoria Regional", "Escola"].includes(visao.nome),
+        ),
+      );
+      setPerfis(
+        options_perfis.filter((perfil) =>
+          ["COGESTOR_DRE", "ADMINISTRADOR_UE", "DIRETOR_UE"].includes(
+            perfil.nome,
+          ),
+        ),
+      );
+      setFiltros({});
+      setVisaoUnica(false);
     } else if (codae) {
       setPerfisVisao(lista_perfis, "CODAE");
     } else if (geral) {
@@ -85,13 +98,13 @@ export default ({
         perfis_subordinados.data.map((perfil) => ({
           uuid: perfil,
           nome: perfil,
-        }))
+        })),
       );
 
       const resultado = perfis_subordinados.data
         .map((nome) => {
           const perfilEncontrado = lista_perfis.find(
-            (perfil) => perfil.nome === nome
+            (perfil) => perfil.nome === nome,
           );
           if (perfilEncontrado) {
             return {
@@ -118,8 +131,7 @@ export default ({
       setPerfis(options_perfis);
       setFiltros({});
     }
-
-    setVisoes(options_visoes);
+    if (!cogestor) setVisoes(options_visoes);
     setListaPerfis(lista_perfis);
   };
 
@@ -142,7 +154,12 @@ export default ({
     }
 
     if (cogestor) {
-      filtros.perfil = "COGESTOR_DRE";
+      filtros.perfil = filtros.perfil ?? [
+        "COGESTOR_DRE",
+        "ADMINISTRADOR_UE",
+        "DIRETOR_UE",
+      ];
+      filtros.visao = filtros.visao ?? ["DRE", "ESCOLA"];
     }
 
     if (codae) {
@@ -212,11 +229,11 @@ export default ({
         ehErroEmail(response.data[0])
       ) {
         toastError(
-          "Erro ao adicionar acesso ao usuário: já existe um usuário com este e-mail cadastrado!"
+          "Erro ao adicionar acesso ao usuário: já existe um usuário com este e-mail cadastrado!",
         );
       } else {
         toastError(
-          "Erro ao adicionar acesso ao usuário, procure o administrador do SIGPAE na sua Unidade!"
+          "Erro ao adicionar acesso ao usuário, procure o administrador do SIGPAE na sua Unidade!",
         );
       }
     }
@@ -274,7 +291,7 @@ export default ({
   useEffect(() => {
     buscaFiltros();
     setEhUEParceira(
-      [TIPO_GESTAO.PARCEIRA].includes(localStorage.getItem("tipo_gestao"))
+      [TIPO_GESTAO.PARCEIRA].includes(localStorage.getItem("tipo_gestao")),
     );
   }, []);
 
