@@ -28,6 +28,8 @@ describe("Testes comportamento componente de Filtros - Parametrização Financei
                 <Filtros
                   ehCadastro={props.ehCadastro}
                   setGrupoSelecionado={props.setGrupoSelecionado}
+                  setEditalSelecionado={props.setEditalSelecionado}
+                  setLoteSelecionado={props.setLoteSelecionado}
                   setFaixasEtarias={props.setFaixasEtarias}
                   setParametrizacao={props.setParametrizacao}
                   uuidParametrizacao={props.uuidParametrizacao}
@@ -45,6 +47,8 @@ describe("Testes comportamento componente de Filtros - Parametrização Financei
     await setup({
       ehCadastro: true,
       setGrupoSelecionado: jest.fn(),
+      setEditalSelecionado: jest.fn(),
+      setLoteSelecionado: jest.fn(),
       setFaixasEtarias: jest.fn(),
       setParametrizacao: jest.fn(),
       uuidParametrizacao: null,
