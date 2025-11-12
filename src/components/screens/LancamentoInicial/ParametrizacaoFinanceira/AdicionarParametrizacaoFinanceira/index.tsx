@@ -68,7 +68,7 @@ export default () => {
           toastError(data.non_field_errors[0]);
         } else {
           toastError(
-            "Não foi possível finalizar a inclusão da parametrização. Verifique se todos os campos da tabela foram preenchidos",
+            `Não foi possível finalizar a ${uuidParametrizacao ? "edição" : "inclusão"} da parametrização. Verifique se todos os campos da tabela foram preenchidos`,
           );
         }
       } else {
