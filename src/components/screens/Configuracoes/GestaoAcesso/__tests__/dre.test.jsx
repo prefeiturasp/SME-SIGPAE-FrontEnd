@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -52,5 +52,16 @@ describe("Teste de tela de Gestão de Acesso - DRE", () => {
     await waitFor(() => {
       expect(screen.queryAllByText("Gestão de Acesso")).toHaveLength(2);
     });
+  });
+
+  it("select Visão não está mais desabilitado e renderiza DRE e Escola", async () => {
+    const selectElement = screen
+      .getByTestId("input-visao")
+      .querySelector("select");
+    expect(selectElement).not.toBeDisabled();
+    expect(
+      within(selectElement).queryByText("Diretoria Regional"),
+    ).not.toBeNull();
+    expect(within(selectElement).queryByText("Escola")).not.toBeNull();
   });
 });
