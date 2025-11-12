@@ -16,6 +16,8 @@ import { carregarValores } from "../../helpers";
 
 type Props = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
+  setEditalSelecionado: Dispatch<SetStateAction<string>>;
+  setLoteSelecionado: Dispatch<SetStateAction<string>>;
   setFaixasEtarias: Dispatch<SetStateAction<Array<any>>>;
   setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
   uuidParametrizacao: string;
@@ -24,6 +26,8 @@ type Props = {
 
 export default ({
   setGrupoSelecionado,
+  setEditalSelecionado,
+  setLoteSelecionado,
   setFaixasEtarias,
   setParametrizacao,
   uuidParametrizacao,
@@ -159,6 +163,20 @@ export default ({
     requisicoesPreRender();
   }, []);
 
+  const initialEdital = uuidParametrizacao && form.getState().values?.edital;
+  const onChangeEdital = (edital: string) => {
+    form.change("edital", edital);
+    setEditalSelecionado(editais.find((e) => e.uuid === edital).nome);
+  };
+
+  const initialLote = uuidParametrizacao && form.getState().values?.lote;
+  const onChangeLote = (lote: string) => {
+    form.change("lote", lote);
+    setLoteSelecionado(lotes.find((e) => e.uuid === lote).nome);
+  };
+
+  const initialGrupoUnidade =
+    uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
   const onChangeTiposUnidades = (grupo: string) => {
     form.change("grupo_unidade_escolar", grupo);
     setGrupoSelecionado(
@@ -166,12 +184,12 @@ export default ({
     );
   };
 
-  const initialGrupoUnidade =
-    uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
-
   useEffect(() => {
-    if (uuidParametrizacao && initialGrupoUnidade && !carregando)
-      onChangeTiposUnidades(initialGrupoUnidade);
+    if (uuidParametrizacao && !carregando) {
+      if (initialGrupoUnidade) onChangeTiposUnidades(initialGrupoUnidade);
+      if (initialEdital) onChangeEdital(initialEdital);
+      if (initialLote) onChangeLote(initialLote);
+    }
   }, [uuidParametrizacao, carregando]);
 
   return {
@@ -180,5 +198,7 @@ export default ({
     lotes,
     gruposUnidadesOpcoes,
     onChangeTiposUnidades,
+    onChangeEdital,
+    onChangeLote,
   };
 };

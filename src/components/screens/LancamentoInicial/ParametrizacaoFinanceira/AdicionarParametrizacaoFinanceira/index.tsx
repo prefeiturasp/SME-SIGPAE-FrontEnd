@@ -17,6 +17,7 @@ import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import TabelasGrupoCEI from "./components/Tabelas/TabelasGrupoCEI";
 import ModalCancelar from "./components/ModalCancelar";
+import ModalSalvar from "./components/ModalSalvar";
 import { formataPayload } from "./helpers";
 
 const VALORES_INICIAIS: ParametrizacaoFinanceiraPayload = {
@@ -31,9 +32,13 @@ const VALORES_INICIAIS: ParametrizacaoFinanceiraPayload = {
 
 export default () => {
   const [grupoSelecionado, setGrupoSelecionado] = useState("");
+  const [editalSelecionado, setEditalSelecionado] = useState("");
+  const [loteSelecionado, setLoteSelecionado] = useState("");
   const [faixasEtarias, setFaixasEtarias] = useState([]);
   const [parametrizacao, setParametrizacao] = useState(VALORES_INICIAIS);
   const [showModalCancelar, setShowModalCancelar] = useState(false);
+  const [showModalSalvar, setShowModalSalvar] = useState(false);
+  const [carregarTabelas, setCarregarTabelas] = useState(false);
 
   const navigate = useNavigate();
 
@@ -98,23 +103,27 @@ export default () => {
               <form onSubmit={handleSubmit}>
                 <Filtros
                   setGrupoSelecionado={setGrupoSelecionado}
+                  setEditalSelecionado={setEditalSelecionado}
+                  setLoteSelecionado={setLoteSelecionado}
                   setFaixasEtarias={setFaixasEtarias}
                   setParametrizacao={setParametrizacao}
+                  setCarregarTabelas={setCarregarTabelas}
                   form={form}
                   uuidParametrizacao={uuidParametrizacao}
                   ehCadastro
                 />
-                {exibeTabelasCEI && (
+                {exibeTabelasCEI && (carregarTabelas || uuidParametrizacao) ? (
                   <TabelasGrupoCEI
                     form={form}
                     faixasEtarias={faixasEtarias}
                     grupoSelecionado={grupoSelecionado}
                   />
-                )}
-                {exibeTabelasEMEFeEMEI ||
-                exibeTabelasCEI ||
-                exibeTabelasCEMEI ||
-                exibeTabelasEMEBS ? (
+                ) : null}
+                {(exibeTabelasEMEFeEMEI ||
+                  exibeTabelasCEI ||
+                  exibeTabelasCEMEI ||
+                  exibeTabelasEMEBS) &&
+                (carregarTabelas || uuidParametrizacao) ? (
                   <div className="row mt-5">
                     <div className="col">
                       <Field
@@ -143,10 +152,17 @@ export default () => {
                     dataTestId="botao-salvar"
                     texto="Salvar"
                     style={BUTTON_STYLE.GREEN}
-                    type={BUTTON_TYPE.SUBMIT}
+                    type={BUTTON_TYPE.BUTTON}
                     disabled={submitting}
+                    onClick={() => setShowModalSalvar(true)}
                   />
                 </div>
+                <ModalSalvar
+                  showModal={showModalSalvar}
+                  setShowModal={setShowModalSalvar}
+                  titulo={`${editalSelecionado} - ${loteSelecionado} - ${grupoSelecionado}`}
+                  onSubmit={() => handleSubmit()}
+                />
               </form>
             )}
           />

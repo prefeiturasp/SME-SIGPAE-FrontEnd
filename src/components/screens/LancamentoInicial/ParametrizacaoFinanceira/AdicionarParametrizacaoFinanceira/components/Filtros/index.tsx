@@ -18,6 +18,8 @@ import {
 
 type Cadastro = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
+  setEditalSelecionado: Dispatch<SetStateAction<string>>;
+  setLoteSelecionado: Dispatch<SetStateAction<string>>;
   setFaixasEtarias: Dispatch<SetStateAction<Array<FaixaEtaria>>>;
   setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
   setCarregarTabelas: Dispatch<SetStateAction<boolean>>;
@@ -35,6 +37,8 @@ type Props = Cadastro | Filtro;
 export default (props: Props) => {
   const ehCadastro = props.ehCadastro;
   const setGrupoSelecionado = props.ehCadastro && props.setGrupoSelecionado;
+  const setEditalSelecionado = props.ehCadastro && props.setEditalSelecionado;
+  const setLoteSelecionado = props.ehCadastro && props.setLoteSelecionado;
   const setFaixasEtarias = props.ehCadastro && props.setFaixasEtarias;
   const setParametrizacao = props.ehCadastro && props.setParametrizacao;
   const setCarregarTabelas = props.ehCadastro && props.setCarregarTabelas;
@@ -43,6 +47,8 @@ export default (props: Props) => {
 
   const view = useView({
     setGrupoSelecionado,
+    setEditalSelecionado,
+    setLoteSelecionado,
     setFaixasEtarias,
     setParametrizacao,
     uuidParametrizacao,
@@ -65,6 +71,9 @@ export default (props: Props) => {
                 validate={ehCadastro && required}
                 required={ehCadastro}
                 disabled={uuidParametrizacao}
+                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
+                  view.onChangeEdital(e.target.value)
+                }
               />
             </div>
             <div className="col-8">
@@ -78,6 +87,9 @@ export default (props: Props) => {
                 validate={ehCadastro && required}
                 required={ehCadastro}
                 disabled={uuidParametrizacao}
+                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
+                  view.onChangeLote(e.target.value)
+                }
               />
             </div>
             <div className="col-4">
