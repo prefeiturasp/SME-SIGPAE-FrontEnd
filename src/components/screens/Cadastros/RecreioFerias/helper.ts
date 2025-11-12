@@ -30,11 +30,7 @@ export const buildPayload = (values: any) => {
   };
 };
 
-export const resetFormState = (
-  form,
-  setUnidadesParticipantes,
-  setExpandidos
-) => {
+export const resetFormState = (form, setExpandidos) => {
   form.setConfig("keepDirtyOnReinitialize", false);
 
   form.restart({
@@ -46,7 +42,6 @@ export const resetFormState = (
 
   form.setConfig("keepDirtyOnReinitialize", true);
 
-  setUnidadesParticipantes([]);
   setExpandidos({});
 };
 

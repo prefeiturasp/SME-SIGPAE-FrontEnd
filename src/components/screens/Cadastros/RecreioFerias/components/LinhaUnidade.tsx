@@ -127,8 +127,8 @@ export const LinhaUnidade: React.FC<LinhaUnidadeProps> = ({
           <div>
             <strong>
               Tipos de Alimentação Inscritos
-              {participante.alimentacaoInscritosInfantil.length > 0 &&
-                " CEI"}:{" "}
+              {participante.alimentacaoInscritosInfantil.length > 0 && " - CEI"}
+              :{" "}
             </strong>
             <span>{participante.alimentacaoInscritos?.join(", ")}</span>
           </div>

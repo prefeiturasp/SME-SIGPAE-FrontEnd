@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { FormApi } from "final-form";
+import { useEffect, useMemo, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
@@ -22,8 +23,7 @@ type ModalAdicionarUnidadeEducacionalInterface = {
   showModal: boolean;
   closeModal: () => void;
   submitting: boolean;
-  setUnidadesParticipantes: React.Dispatch<React.SetStateAction<any[]>>;
-  unidadesParticipantes: any[];
+  form: FormApi<any>;
 };
 
 type Option = { uuid: string; nome: string };
@@ -32,8 +32,7 @@ export const ModalAdicionarUnidadeEducacional = ({
   showModal,
   closeModal,
   submitting,
-  setUnidadesParticipantes,
-  unidadesParticipantes,
+  form,
 }: ModalAdicionarUnidadeEducacionalInterface) => {
   const [lotes, setLotes] = useState<Option[]>([]);
   const [tiposUnidadesEscolares, setTiposUnidadesEscolares] = useState<
@@ -84,13 +83,15 @@ export const ModalAdicionarUnidadeEducacional = ({
   );
 
   const unidadesEducacionaisFiltradas = useMemo(() => {
-    const uuidsJaAdicionados = unidadesParticipantes.map(
-      (u) => u.unidadeEducacionalUuid
+    const unidadesJaAdicionadas =
+      form.getState().values?.unidades_participantes || [];
+    const uuidsJaAdicionados = unidadesJaAdicionadas.map(
+      (u: any) => u.unidadeEducacionalUuid
     );
     return unidadesEducacionaisOpts.filter(
       (u: any) => !uuidsJaAdicionados.includes(u.value)
     );
-  }, [unidadesEducacionaisOpts, unidadesParticipantes]);
+  }, [unidadesEducacionaisOpts, form]);
 
   const handleBuscarUnidadesEducacionais = async (
     dreUuid: string,
@@ -190,16 +191,17 @@ export const ModalAdicionarUnidadeEducacional = ({
               id: `${Date.now()}-${Math.random()}-CEI`,
               ceiOuEmei: "CEI",
               alimentacaoInscritos: alimentacoesInscritos,
-              alimentacaoInscritosInfantil: [],
+              alimentacaoInscritosInfantil: alimentacoesInfantil,
               tiposAlimentacaoInscritosUuids:
-                values.tipos_alimentacao_inscritos || [],
-              tiposAlimentacaoInfantilUuids: [],
+                values.tipos_alimentacao_inscritos_infantil || [],
+              tiposAlimentacaoInfantilUuids:
+                values.tipos_alimentacao_inscritos_infantil || [],
             },
             {
               ...baseUnidade,
               id: `${Date.now()}-${Math.random()}-EMEI`,
               ceiOuEmei: "EMEI",
-              alimentacaoInscritos: alimentacoesInfantil,
+              alimentacaoInscritos: alimentacoesInscritos,
               alimentacaoInscritosInfantil: alimentacoesInfantil,
               tiposAlimentacaoInscritosUuids:
                 values.tipos_alimentacao_inscritos_infantil || [],
@@ -223,7 +225,10 @@ export const ModalAdicionarUnidadeEducacional = ({
       }
     );
 
-    setUnidadesParticipantes((prev) => [...novasUnidades, ...prev]);
+    novasUnidades.forEach((unidade) => {
+      form.mutators.push("unidades_participantes", unidade);
+    });
+
     closeModal();
   };
 

@@ -30,7 +30,6 @@ export const RecreioFerias = () => {
   const [showModalAdicionar, setShowModalAdicionar] = useState(false);
   const [showModalRemover, setShowModalRemover] = useState(false);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
-  const [unidadesParticipantes, setUnidadesParticipantes] = useState([]);
   const [selectedUnidadeId, setSelectedUnidadeId] = useState<string | null>(
     null
   );
@@ -49,9 +48,6 @@ export const RecreioFerias = () => {
 
     if (indexToRemove > -1) {
       fields.remove(indexToRemove);
-      setUnidadesParticipantes((prev) =>
-        prev.filter((u) => u.id !== selectedUnidadeId)
-      );
       toastSuccess("Unidade Educacional removida com sucesso!");
     }
 
@@ -74,7 +70,7 @@ export const RecreioFerias = () => {
       const payload = buildPayload(values);
       await cadastrarRecreioNasFerias(payload);
       toastSuccess("Recreio nas Férias cadastrado com sucesso!");
-      resetFormState(form, setUnidadesParticipantes, setExpandidos);
+      resetFormState(form, setExpandidos);
       setPage(1);
     } catch (error) {
       toastError("Erro ao criar:", error);
@@ -110,10 +106,10 @@ export const RecreioFerias = () => {
     handleSubmit(event);
   };
 
-  const getPaginatedIndices = () => {
+  const getPaginatedIndices = (totalCount: number) => {
     const currentPage = Math.min(
       Math.max(1, page),
-      Math.ceil(unidadesParticipantes.length / PAGE_SIZE) || 1
+      Math.ceil(totalCount / PAGE_SIZE) || 1
     );
     const startIndex = (currentPage - 1) * PAGE_SIZE;
     const endIndex = startIndex + PAGE_SIZE;
@@ -134,7 +130,7 @@ export const RecreioFerias = () => {
           onSubmit={onSubmit}
           validate={validateForm}
           mutators={{ ...arrayMutators }}
-          initialValues={{ unidades_participantes: unidadesParticipantes }}
+          initialValues={{ unidades_participantes: [] }}
           render={({ handleSubmit, form, values }) => (
             <form onSubmit={(e) => attemptSave(e, values, form, handleSubmit)}>
               <div className="row">
@@ -188,7 +184,8 @@ export const RecreioFerias = () => {
 
               <div className="space-between mb-2 mt-4">
                 <span className="title">
-                  Unidades Participantes: {unidadesParticipantes.length}
+                  Unidades Participantes:{" "}
+                  {values.unidades_participantes?.length ?? 0}
                 </span>
                 <Botao
                   className="text-end"
@@ -202,8 +199,8 @@ export const RecreioFerias = () => {
               <Spin tip="Carregando..." spinning={false}>
                 <FieldArray name="unidades_participantes">
                   {({ fields }) => {
-                    const { startIndex, endIndex } = getPaginatedIndices();
                     const total = fields.value?.length || 0;
+                    const { startIndex, endIndex } = getPaginatedIndices(total);
 
                     return (
                       <>
@@ -288,8 +285,7 @@ export const RecreioFerias = () => {
                 showModal={showModalAdicionar}
                 closeModal={() => setShowModalAdicionar(false)}
                 submitting={false}
-                setUnidadesParticipantes={setUnidadesParticipantes}
-                unidadesParticipantes={unidadesParticipantes}
+                form={form}
               />
             </form>
           )}
