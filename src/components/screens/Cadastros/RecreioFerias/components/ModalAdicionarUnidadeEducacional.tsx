@@ -139,89 +139,114 @@ export const ModalAdicionarUnidadeEducacional = ({
     setter(uniqueTipos.map((t: any) => ({ value: t.uuid, label: t.nome })));
   };
 
+  const handleBuscarTipoAlimentacaoColaboradores = async (
+    tipoUnidadeUuid: string
+  ) => {
+    if (!tipoUnidadeUuid) return;
+    const response = await getVinculosTipoAlimentacaoPorTipoUnidadeEscolar(
+      tipoUnidadeUuid
+    );
+
+    const results = Array.isArray(response?.results) ? response.results : [];
+
+    const periodoIntegral = results.find(
+      (r: any) => r?.periodo_escolar?.nome === "INTEGRAL"
+    );
+
+    const allTipos = periodoIntegral?.tipos_alimentacao ?? [];
+
+    const seen = new Set<string>();
+    const uniqueTipos = [];
+    for (const t of allTipos) {
+      const nome = t?.nome;
+      if (!nome) continue;
+      if (!seen.has(nome)) {
+        seen.add(nome);
+        uniqueTipos.push(t);
+      }
+    }
+
+    setTiposAlimentacaoColaboradores(
+      uniqueTipos.map((t: any) => ({ value: t.uuid, label: t.nome }))
+    );
+  };
+
   const handleAdicionarUnidade = (values: any) => {
     const lote = lotes.find((l) => l.uuid === values.dres_lote);
-
-    const alimentacoesInscritos = tiposAlimentacaoInscritos
-      .filter((t: any) => values.tipos_alimentacao_inscritos?.includes(t.value))
-      .map((t: any) => t.label);
-
-    const alimentacoesColaboradores = tiposAlimentacaoColaboradores
-      .filter((t: any) =>
-        values.tipos_alimentacao_colaboradores?.includes(t.value)
-      )
-      .map((t: any) => t.label);
-
-    const alimentacoesInfantil = tiposAlimentacaoInscritosInfantil
-      .filter((t: any) =>
-        values.tipos_alimentacao_inscritos_infantil?.includes(t.value)
-      )
-      .map((t: any) => t.label);
 
     const tipoUnidadeSelecionado = tiposUnidadesEscolares.find(
       (t: any) => t.uuid === values?.tipos_unidades
     );
-    const mostrarSeletorInfantil =
-      tipoUnidadeSelecionado?.nome === "CEMEI" ||
-      tipoUnidadeSelecionado?.nome === "CEU CEMEI";
+
+    const isCemei = ["CEMEI", "CEU CEMEI"].includes(
+      tipoUnidadeSelecionado?.nome
+    );
+
+    const mapearAlimentacoes = (tipos: any[], selecionados: string[] = []) =>
+      tipos.filter((t) => selecionados.includes(t.value)).map((t) => t.label);
+
+    const alimentacoes = {
+      inscritos: mapearAlimentacoes(
+        tiposAlimentacaoInscritos,
+        values.tipos_alimentacao_inscritos
+      ),
+      colaboradores: mapearAlimentacoes(
+        tiposAlimentacaoColaboradores,
+        values.tipos_alimentacao_colaboradores
+      ),
+      infantil: mapearAlimentacoes(
+        tiposAlimentacaoInscritosInfantil,
+        values.tipos_alimentacao_inscritos_infantil
+      ),
+    };
+
+    const criarBaseUnidade = (uuid: string) => {
+      const unidade = unidadesEducacionaisOpts.find(
+        (u: any) => u.value === uuid
+      );
+
+      return {
+        dreLoteNome: lote?.nome || "",
+        loteUuid: lote?.uuid,
+        unidadeEducacionalUuid: uuid,
+        numeroInscritos: 0,
+        numeroColaboradores: 0,
+        liberarMedicao: true,
+        unidadeEducacional: unidade?.label || "",
+        alimentacaoColaboradores: alimentacoes.colaboradores,
+        tiposAlimentacaoColaboradoresUuids:
+          values.tipos_alimentacao_colaboradores || [],
+      };
+    };
+
+    const criarUnidadeCemei = (base: any, tipo: "CEI" | "EMEI") => ({
+      ...base,
+      id: `${Date.now()}-${Math.random()}-${tipo}`,
+      ceiOuEmei: tipo,
+      alimentacaoInscritos: alimentacoes.inscritos,
+      alimentacaoInscritosInfantil: alimentacoes.infantil,
+      tiposAlimentacaoInscritosUuids:
+        values.tipos_alimentacao_inscritos_infantil || [],
+      tiposAlimentacaoInfantilUuids:
+        values.tipos_alimentacao_inscritos_infantil || [],
+    });
+
+    const criarUnidadeRegular = (base: any) => ({
+      ...base,
+      id: `${Date.now()}-${Math.random()}`,
+      alimentacaoInscritos: alimentacoes.inscritos,
+      alimentacaoInscritosInfantil: [],
+      tiposAlimentacaoInscritosUuids: values.tipos_alimentacao_inscritos || [],
+      tiposAlimentacaoInfantilUuids: [],
+    });
 
     const novasUnidades = values.unidades_educacionais.flatMap(
       (uuid: string) => {
-        const unidade = unidadesEducacionaisOpts.find(
-          (u: any) => u.value === uuid
-        );
+        const base = criarBaseUnidade(uuid);
 
-        const baseUnidade = {
-          dreLoteNome: lote.nome || "",
-          loteUuid: lote.uuid,
-          unidadeEducacionalUuid: uuid,
-          numeroInscritos: 0,
-          numeroColaboradores: 0,
-          liberarMedicao: true,
-          unidadeEducacional: unidade?.label || "",
-          alimentacaoColaboradores: alimentacoesColaboradores,
-          tiposAlimentacaoColaboradoresUuids:
-            values.tipos_alimentacao_colaboradores || [],
-        };
-
-        if (mostrarSeletorInfantil) {
-          return [
-            {
-              ...baseUnidade,
-              id: `${Date.now()}-${Math.random()}-CEI`,
-              ceiOuEmei: "CEI",
-              alimentacaoInscritos: alimentacoesInscritos,
-              alimentacaoInscritosInfantil: alimentacoesInfantil,
-              tiposAlimentacaoInscritosUuids:
-                values.tipos_alimentacao_inscritos_infantil || [],
-              tiposAlimentacaoInfantilUuids:
-                values.tipos_alimentacao_inscritos_infantil || [],
-            },
-            {
-              ...baseUnidade,
-              id: `${Date.now()}-${Math.random()}-EMEI`,
-              ceiOuEmei: "EMEI",
-              alimentacaoInscritos: alimentacoesInscritos,
-              alimentacaoInscritosInfantil: alimentacoesInfantil,
-              tiposAlimentacaoInscritosUuids:
-                values.tipos_alimentacao_inscritos_infantil || [],
-              tiposAlimentacaoInfantilUuids:
-                values.tipos_alimentacao_inscritos_infantil || [],
-            },
-          ];
-        } else {
-          return [
-            {
-              ...baseUnidade,
-              id: `${Date.now()}-${Math.random()}`,
-              alimentacaoInscritos: alimentacoesInscritos,
-              alimentacaoInscritosInfantil: [],
-              tiposAlimentacaoInscritosUuids:
-                values.tipos_alimentacao_inscritos || [],
-              tiposAlimentacaoInfantilUuids: [],
-            },
-          ];
-        }
+        return isCemei
+          ? [criarUnidadeCemei(base, "CEI"), criarUnidadeCemei(base, "EMEI")]
+          : [criarUnidadeRegular(base)];
       }
     );
 
@@ -319,10 +344,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                 tipoUnidadeValue,
                 setTiposAlimentacaoInscritos
               );
-              handleBuscarTipoAlimentacao(
-                tiposMap["EMEF"]?.uuid,
-                setTiposAlimentacaoColaboradores
-              );
+              handleBuscarTipoAlimentacaoColaboradores(tiposMap["EMEF"]?.uuid);
 
               if (mostrarSeletorInfantil) {
                 if (tiposMap["CEI DIRET"]?.uuid) {
