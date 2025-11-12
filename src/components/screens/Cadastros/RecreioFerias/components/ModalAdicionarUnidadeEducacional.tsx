@@ -290,39 +290,61 @@ export const ModalAdicionarUnidadeEducacional = ({
               !hasTiposAlimentacaoInscritosInfantil;
 
             useEffect(() => {
-              if (hasDreLote && hasTipoUnidade) {
-                const lote = lotes.find((l) => l.uuid === values.dres_lote);
-                const dreUuid = lote?.dreUuid;
+              const dreLoteValue = values?.dres_lote;
+              const tipoUnidadeValue = values?.tipos_unidades;
 
-                if (dreUuid) {
-                  handleBuscarUnidadesEducacionais(
-                    dreUuid,
-                    values.tipos_unidades
-                  );
+              if (!dreLoteValue || !tipoUnidadeValue) {
+                setUnidadesEducacionaisOpts([]);
+                setTiposAlimentacaoInscritos([]);
+                setTiposAlimentacaoInscritosInfantil([]);
+                setTiposAlimentacaoColaboradores([]);
+
+                form.change("unidades_educacionais", []);
+                form.change("tipos_alimentacao_inscritos", []);
+                form.change("tipos_alimentacao_inscritos_infantil", []);
+                form.change("tipos_alimentacao_colaboradores", []);
+                return;
+              }
+
+              const lote = lotes.find((l) => l.uuid === dreLoteValue);
+              const dreUuid = lote?.dreUuid;
+
+              if (!dreUuid) {
+                setUnidadesEducacionaisOpts([]);
+                return;
+              }
+
+              handleBuscarUnidadesEducacionais(dreUuid, tipoUnidadeValue);
+              handleBuscarTipoAlimentacao(
+                tipoUnidadeValue,
+                setTiposAlimentacaoInscritos
+              );
+              handleBuscarTipoAlimentacao(
+                tiposMap["EMEF"]?.uuid,
+                setTiposAlimentacaoColaboradores
+              );
+
+              if (mostrarSeletorInfantil) {
+                if (tiposMap["CEI DIRET"]?.uuid) {
                   handleBuscarTipoAlimentacao(
-                    values.tipos_unidades,
+                    tiposMap["CEI DIRET"]?.uuid,
                     setTiposAlimentacaoInscritos
                   );
-                  handleBuscarTipoAlimentacao(
-                    tiposMap["EMEF"]?.uuid,
-                    setTiposAlimentacaoColaboradores
-                  );
-
-                  if (mostrarSeletorInfantil) {
-                    handleBuscarTipoAlimentacao(
-                      tiposMap["CEI DIRET"]?.uuid,
-                      setTiposAlimentacaoInscritos
-                    );
-                    handleBuscarTipoAlimentacao(
-                      tiposMap["EMEI"]?.uuid,
-                      setTiposAlimentacaoInscritosInfantil
-                    );
-                  }
                 }
-              } else {
-                setUnidadesEducacionaisOpts([]);
+                if (tiposMap["EMEI"]?.uuid) {
+                  handleBuscarTipoAlimentacao(
+                    tiposMap["EMEI"]?.uuid,
+                    setTiposAlimentacaoInscritosInfantil
+                  );
+                }
               }
-            }, [values?.dres_lote, values?.tipos_unidades]);
+            }, [
+              values?.dres_lote,
+              values?.tipos_unidades,
+              lotes,
+              tiposMap,
+              mostrarSeletorInfantil,
+            ]);
 
             return (
               <form onSubmit={handleSubmit}>
@@ -336,6 +358,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                       options={lotesOpts}
                       required
                       validate={required}
+                      naoDesabilitarPrimeiraOpcao
                     />
                   </div>
                   <div className="w-50">
@@ -347,6 +370,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                       options={tiposUnidadesOpts}
                       required
                       validate={required}
+                      naoDesabilitarPrimeiraOpcao
                     />
                   </div>
                 </div>
