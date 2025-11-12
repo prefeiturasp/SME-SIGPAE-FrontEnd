@@ -1,11 +1,6 @@
-import React from "react";
-
 import { Table } from "antd";
-
 import { Field } from "react-final-form";
-
 import { AInputNumber } from "src/components/Shareable/MakeField";
-
 import {
   formataValorDecimal,
   parserValorDecimal,
@@ -28,7 +23,7 @@ export default ({
   tipoTurma = "",
 }: Props) => {
   const alimentacoes = tiposAlimentacao.filter((t) =>
-    ALIMENTACOES.includes(t.nome)
+    ALIMENTACOES.includes(t.nome),
   );
 
   const nomeTabela = tipoTurma
@@ -106,12 +101,12 @@ export default ({
                   form.change(
                     `tabelas[${nomeTabela}].${record.nome}_${record.grupo}.valor_unitario_total`,
                     valorUnitarioTotal
-                      ? Number(valorUnitarioTotal.toFixed(2))
-                      : undefined
+                      ? Number(valorUnitarioTotal).toFixed(2)
+                      : undefined,
                   );
                   form.change(
                     `tabelas[${nomeTabela}].${record.nome}_${record.grupo}.valor_unitario`,
-                    value
+                    value,
                   );
                 }}
               />
@@ -140,12 +135,12 @@ export default ({
                   form.change(
                     `tabelas[${nomeTabela}].${record.nome}_${record.grupo}.valor_unitario_total`,
                     valorUnitarioTotal
-                      ? Number(valorUnitarioTotal.toFixed(2))
-                      : undefined
+                      ? Number(valorUnitarioTotal).toFixed(2)
+                      : undefined,
                   );
                   form.change(
                     `tabelas[${nomeTabela}].${record.nome}_${record.grupo}.percentual_acrescimo`,
-                    value
+                    value,
                   );
                 }}
               />
