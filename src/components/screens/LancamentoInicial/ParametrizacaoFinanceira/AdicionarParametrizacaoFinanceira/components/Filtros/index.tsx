@@ -11,12 +11,18 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import {
+  ParametrizacaoFinanceiraPayload,
+  FaixaEtaria,
+} from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 
 type Cadastro = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
-  setFaixasEtarias: Dispatch<SetStateAction<Array<any>>>;
+  setEditalSelecionado: Dispatch<SetStateAction<string>>;
+  setLoteSelecionado: Dispatch<SetStateAction<string>>;
+  setFaixasEtarias: Dispatch<SetStateAction<Array<FaixaEtaria>>>;
   setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
+  setCarregarTabelas: Dispatch<SetStateAction<boolean>>;
   form: FormApi<any, any>;
   uuidParametrizacao: string | null;
   ehCadastro: true;
@@ -31,13 +37,18 @@ type Props = Cadastro | Filtro;
 export default (props: Props) => {
   const ehCadastro = props.ehCadastro;
   const setGrupoSelecionado = props.ehCadastro && props.setGrupoSelecionado;
+  const setEditalSelecionado = props.ehCadastro && props.setEditalSelecionado;
+  const setLoteSelecionado = props.ehCadastro && props.setLoteSelecionado;
   const setFaixasEtarias = props.ehCadastro && props.setFaixasEtarias;
   const setParametrizacao = props.ehCadastro && props.setParametrizacao;
+  const setCarregarTabelas = props.ehCadastro && props.setCarregarTabelas;
   const form = props.ehCadastro && props.form;
   const uuidParametrizacao = props.ehCadastro && props.uuidParametrizacao;
 
   const view = useView({
     setGrupoSelecionado,
+    setEditalSelecionado,
+    setLoteSelecionado,
     setFaixasEtarias,
     setParametrizacao,
     uuidParametrizacao,
@@ -46,51 +57,57 @@ export default (props: Props) => {
 
   return (
     <div className="row">
-      <div className="col-4">
-        <Field
-          dataTestId="edital-select"
-          component={Select}
-          name="edital"
-          label="Nº do Edital"
-          naoDesabilitarPrimeiraOpcao
-          options={view.editais}
-          validate={ehCadastro && required}
-          required={ehCadastro}
-          disabled={uuidParametrizacao}
-        />
-      </div>
-      <div className="col-8">
-        <Field
-          dataTestId="lote-select"
-          component={Select}
-          name="lote"
-          label="Lote e DRE"
-          naoDesabilitarPrimeiraOpcao
-          options={view.lotes}
-          validate={ehCadastro && required}
-          required={ehCadastro}
-          disabled={uuidParametrizacao}
-        />
-      </div>
-      <div className="col-4">
-        <Field
-          dataTestId="grupo-unidade-select"
-          component={Select}
-          name="grupo_unidade_escolar"
-          label="Tipo de Unidade"
-          naoDesabilitarPrimeiraOpcao
-          options={view.gruposUnidadesOpcoes}
-          validate={ehCadastro && required}
-          required={ehCadastro}
-          onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
-            view.onChangeTiposUnidades(e.target.value)
-          }
-          disabled={uuidParametrizacao}
-        />
-      </div>
       <FormSpy subscription={{ values: true }}>
         {({ values }) => (
           <>
+            <div className="col-4">
+              <Field
+                dataTestId="edital-select"
+                component={Select}
+                name="edital"
+                label="Nº do Edital"
+                naoDesabilitarPrimeiraOpcao
+                options={view.editais}
+                validate={ehCadastro && required}
+                required={ehCadastro}
+                disabled={uuidParametrizacao}
+                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
+                  view.onChangeEdital(e.target.value)
+                }
+              />
+            </div>
+            <div className="col-8">
+              <Field
+                dataTestId="lote-select"
+                component={Select}
+                name="lote"
+                label="Lote e DRE"
+                naoDesabilitarPrimeiraOpcao
+                options={view.lotes}
+                validate={ehCadastro && required}
+                required={ehCadastro}
+                disabled={uuidParametrizacao}
+                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
+                  view.onChangeLote(e.target.value)
+                }
+              />
+            </div>
+            <div className="col-4">
+              <Field
+                dataTestId="grupo-unidade-select"
+                component={Select}
+                name="grupo_unidade_escolar"
+                label="Tipo de Unidade"
+                naoDesabilitarPrimeiraOpcao
+                options={view.gruposUnidadesOpcoes}
+                validate={ehCadastro && required}
+                required={ehCadastro}
+                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
+                  view.onChangeTiposUnidades(e.target.value)
+                }
+                disabled={uuidParametrizacao}
+              />
+            </div>
             <div className="col-3">
               <Field
                 dataTestId="data-inicial-input"
@@ -126,21 +143,29 @@ export default (props: Props) => {
                 }
               />
             </div>
+            {ehCadastro && (
+              <div className="col-2 mt-1">
+                <br />
+                <Botao
+                  dataTestId="botao-carregar"
+                  texto="Carregar Tabelas"
+                  disabled={
+                    !(
+                      values.edital &&
+                      values.lote &&
+                      values.grupo_unidade_escolar &&
+                      values.data_inicial
+                    )
+                  }
+                  style={BUTTON_STYLE.ORANGE_OUTLINE}
+                  type={BUTTON_TYPE.BUTTON}
+                  onClick={() => setCarregarTabelas(true)}
+                />
+              </div>
+            )}
           </>
         )}
       </FormSpy>
-      {ehCadastro && (
-        <div className="col-2 mt-1">
-          <br />
-          <Botao
-            dataTestId="botao-carregar"
-            texto="Carregar Tabelas"
-            disabled
-            style={BUTTON_STYLE.ORANGE_OUTLINE}
-            type={BUTTON_TYPE.BUTTON}
-          />
-        </div>
-      )}
     </div>
   );
 };
