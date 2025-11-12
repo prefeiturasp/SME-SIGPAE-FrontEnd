@@ -1,8 +1,9 @@
-import { Spin, Switch, Tooltip } from "antd";
+import { Spin } from "antd";
+import arrayMutators from "final-form-arrays";
 import moment from "moment";
-import React, { useState } from "react";
-import { Collapse } from "react-collapse";
+import { useState } from "react";
 import { Field, Form } from "react-final-form";
+import { FieldArray } from "react-final-form-arrays";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -11,36 +12,47 @@ import {
 import { InputComData } from "src/components/Shareable/DatePicker";
 import InputText from "src/components/Shareable/Input/InputText";
 import { Paginacao } from "src/components/Shareable/Paginacao";
-import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { required } from "src/helpers/fieldValidators";
-import { truncarString } from "src/helpers/utilities";
+import { cadastrarRecreioNasFerias } from "../../../../services/recreioFerias.service";
+import { LinhaUnidade } from "./components/LinhaUnidade";
 import { ModalAdicionarUnidadeEducacional } from "./components/ModalAdicionarUnidadeEducacional";
 import { ModalRemoverUnidadeEducacional } from "./components/ModalRemoverUnidadeEducacional";
+import { buildPayload, resetFormState, validateForm } from "./helper";
 import "./style.scss";
 
+const PAGE_SIZE = 10;
+
 export const RecreioFerias = () => {
-  const [showModalAdicionar, setShowModalAdicionar] = useState<boolean>(false);
-  const [showModalRemover, setShowModalRemover] = useState<boolean>(false);
+  const [showModalAdicionar, setShowModalAdicionar] = useState(false);
+  const [showModalRemover, setShowModalRemover] = useState(false);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
-  const [unidadesParticipantes, setUnidadesParticipantes] = useState([]);
   const [selectedUnidadeId, setSelectedUnidadeId] = useState<string | null>(
     null
   );
-
-  const handleRemoverUnidade = (id: string) => {
-    setUnidadesParticipantes((prev) => prev.filter((u) => u.id !== id));
-  };
+  const [page, setPage] = useState(1);
 
   const toggleExpandir = (id: string) => {
     setExpandidos((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const confirmRemoverUnidade = () => {
-    if (selectedUnidadeId) {
-      handleRemoverUnidade(selectedUnidadeId);
-      setSelectedUnidadeId(null);
-      setShowModalRemover(false);
+  const confirmRemoverUnidade = (fields) => {
+    if (!selectedUnidadeId) return;
+
+    const indexToRemove = fields.value.findIndex(
+      (u) => u.id === selectedUnidadeId
+    );
+
+    if (indexToRemove > -1) {
+      fields.remove(indexToRemove);
+      toastSuccess("Unidade Educacional removida com sucesso!");
     }
+
+    setSelectedUnidadeId(null);
+    setShowModalRemover(false);
   };
 
   const openRemoverModal = (id: string) => {
@@ -53,10 +65,55 @@ export const RecreioFerias = () => {
     setShowModalRemover(false);
   };
 
-  const toggleLiberarMedicao = (id: string, checked: boolean) => {
-    setUnidadesParticipantes((prev: any[]) =>
-      prev.map((u) => (u.id === id ? { ...u, liberarMedicao: checked } : u))
+  const onSubmit = async (values: any, form: any) => {
+    try {
+      const payload = buildPayload(values);
+      await cadastrarRecreioNasFerias(payload);
+      toastSuccess("Recreio nas Férias cadastrado com sucesso!");
+      resetFormState(form, setExpandidos);
+      setPage(1);
+    } catch (error) {
+      toastError("Erro ao criar:", error);
+    }
+  };
+
+  const attemptSave = (event, values, form, handleSubmit) => {
+    event?.preventDefault();
+
+    const unidades = values?.unidades_participantes || [];
+
+    if (unidades.length === 0) {
+      toastError(
+        "Não é possível salvar o Recreio nas Férias sem Unidades Participantes. Adicione pelo menos uma unidade."
+      );
+      return;
+    }
+
+    const errors = validateForm(values);
+
+    if (errors?.unidades_participantes) {
+      const firstInvalidIndex =
+        errors.unidades_participantes.findIndex(Boolean);
+
+      if (firstInvalidIndex > -1) {
+        setPage(Math.floor(firstInvalidIndex / PAGE_SIZE) + 1);
+      }
+
+      form.submit();
+      return;
+    }
+
+    handleSubmit(event);
+  };
+
+  const getPaginatedIndices = (totalCount: number) => {
+    const currentPage = Math.min(
+      Math.max(1, page),
+      Math.ceil(totalCount / PAGE_SIZE) || 1
     );
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    return { startIndex, endIndex };
   };
 
   return (
@@ -70,21 +127,22 @@ export const RecreioFerias = () => {
 
         <Form
           keepDirtyOnReinitialize
-          onSubmit={() => {}}
-          render={({ handleSubmit, values }) => (
-            <form onSubmit={handleSubmit}>
+          onSubmit={onSubmit}
+          validate={validateForm}
+          mutators={{ ...arrayMutators }}
+          initialValues={{ unidades_participantes: [] }}
+          render={({ handleSubmit, form, values }) => (
+            <form onSubmit={(e) => attemptSave(e, values, form, handleSubmit)}>
               <div className="row">
-                <div className="">
-                  <Field
-                    component={InputText}
-                    label="Título"
-                    name="titulo_cadastro"
-                    placeholder="Título para o cadastro (ex. Recreio nas Férias - JAN 2026)"
-                    required
-                    validate={required}
-                    max={50}
-                  />
-                </div>
+                <Field
+                  component={InputText}
+                  label="Título"
+                  name="titulo_cadastro"
+                  placeholder="Título para o cadastro (ex. Recreio nas Férias - JAN 2026)"
+                  required
+                  validate={required}
+                  max={50}
+                />
               </div>
 
               <div className="row mt-2">
@@ -105,7 +163,7 @@ export const RecreioFerias = () => {
                       validate={required}
                     />
                   </div>
-                  <div className="calendario">
+                  <div className="calendario esconde-asterisco">
                     <Field
                       component={InputComData}
                       label="&nbsp;"
@@ -117,201 +175,106 @@ export const RecreioFerias = () => {
                         "DD/MM/YYYY"
                       )}
                       maxDate={null}
+                      required
+                      validate={required}
                     />
                   </div>
                 </div>
+              </div>
 
-                <div className="space-between mb-2 mt-4">
-                  <span className="title">
-                    Unidades Participantes: {unidadesParticipantes.length}
-                  </span>
-                  <Botao
-                    className="text-end"
-                    texto="+ Adicionar Unidades"
-                    // disabled={submitting}
-                    type={BUTTON_TYPE.BUTTON}
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                    onClick={() => setShowModalAdicionar(true)}
-                  />
-                </div>
+              <div className="space-between mb-2 mt-4">
+                <span className="title">
+                  Unidades Participantes:{" "}
+                  {values.unidades_participantes?.length ?? 0}
+                </span>
+                <Botao
+                  className="text-end"
+                  texto="+ Adicionar Unidades"
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                  onClick={() => setShowModalAdicionar(true)}
+                />
               </div>
 
               <Spin tip="Carregando..." spinning={false}>
-                <>
-                  <table className="tabela-unidades-participantes">
-                    <thead>
-                      <tr className="row">
-                        <th className="col-1 text-center">DRE/LOTE</th>
+                <FieldArray name="unidades_participantes">
+                  {({ fields }) => {
+                    const total = fields.value?.length || 0;
+                    const { startIndex, endIndex } = getPaginatedIndices(total);
 
-                        <th className="col-3 text-center">
-                          Unidade Educacional
-                        </th>
-                        <th className="col-2 text-center">Nº de Inscritos</th>
-                        <th className="col-2 text-center">
-                          Nº de Colaboradores
-                        </th>
-                        <th className="col-2 text-center">Liberar Medição?</th>
-                        <th className="action-column col-1 text-center"></th>
-                        <th className="action-column col-1 text-center"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {unidadesParticipantes.map((participante) => {
-                        const aberto = !!expandidos[participante.id];
-
-                        return (
-                          <React.Fragment
-                            key={`${participante.unidadeEducacional}-${participante.id}`}
-                          >
+                    return (
+                      <>
+                        <table className="tabela-unidades-participantes">
+                          <thead>
                             <tr className="row">
-                              <td className="col-1">{participante.dreLote}</td>
-                              <td className="col-3">
-                                <Tooltip
-                                  title={participante.unidadeEducacional}
-                                >
-                                  {truncarString(
-                                    participante.unidadeEducacional,
-                                    35
-                                  )}
-                                </Tooltip>
-                              </td>
-                              <td className="col-2">
-                                <Field
-                                  component={InputText}
-                                  name={`numero_inscritos_${participante.id}`}
-                                  required
-                                  validate={required}
-                                />
-                              </td>
-                              <td className="col-2">
-                                <Field
-                                  component={InputText}
-                                  name={`numero_colaboradores_${participante.id}`}
-                                  required
-                                  validate={required}
-                                />
-                              </td>
-                              <td className="col-2">
-                                {participante.liberarMedicao}
-                                <label
-                                  className={`col-form-label ${
-                                    !participante.liberarMedicao && "preto"
-                                  }`}
-                                >
-                                  Não
-                                </label>
-                                <Switch
-                                  size="small"
-                                  className="mx-2"
-                                  checked={!!participante.liberarMedicao}
-                                  onChange={(checked) =>
-                                    toggleLiberarMedicao(
-                                      participante.id,
-                                      checked
-                                    )
-                                  }
-                                />
-                                <label
-                                  className={`col-form-label ${
-                                    participante.liberarMedicao ? "verde" : ""
-                                  }`}
-                                >
-                                  Sim
-                                </label>
-                              </td>
-                              <td className="action-column col-1">
-                                <Tooltip title="Remover Unidade">
-                                  <button
-                                    type="button"
-                                    className="excluir-botao verde"
-                                    data-testid="remover-unidade-botao"
-                                    onClick={() =>
-                                      openRemoverModal(participante.id)
-                                    }
-                                  >
-                                    <i className="fas fa-trash" />
-                                  </button>
-                                </Tooltip>
-                              </td>
-                              <td className="action-column col-1">
-                                <ToggleExpandir
-                                  ativo={aberto}
-                                  onClick={() =>
-                                    toggleExpandir(participante.id)
-                                  }
-                                  dataTestId={`toggle-${participante.id}`}
-                                />
-                              </td>
+                              <th className="col-1 text-center">DRE/LOTE</th>
+                              <th className="col-3 text-center">
+                                Unidade Educacional
+                              </th>
+                              <th className="col-2 text-center">
+                                <span className="required-asterisk">*</span> Nº
+                                de Inscritos
+                              </th>
+                              <th className="col-2 text-center">
+                                <span className="required-asterisk">*</span> Nº
+                                de Colaboradores
+                              </th>
+                              <th className="col-2 text-center">
+                                Liberar Medição?
+                              </th>
+                              <th className="action-column col-1 text-center"></th>
+                              <th className="action-column col-1 text-center"></th>
                             </tr>
-                            <Collapse isOpened={aberto}>
-                              <div className="collapse-container">
-                                <div>
-                                  <strong>
-                                    Tipos de Alimentação Inscritos
-                                    {participante.alimentacaoInscritosInfantil
-                                      .length > 0 && " CEI"}
-                                    :{" "}
-                                  </strong>
-                                  <span>
-                                    {participante.alimentacaoInscritos?.join(
-                                      ", "
-                                    )}
-                                  </span>
-                                </div>
+                          </thead>
+                          <tbody>
+                            {fields.map((name, index) => {
+                              if (index < startIndex || index >= endIndex)
+                                return null;
 
-                                {participante.alimentacaoInscritosInfantil
-                                  .length > 0 && (
-                                  <div>
-                                    <strong>
-                                      Tipos de Alimentação Inscritos - INFANTIL:{" "}
-                                    </strong>
-                                    <span>
-                                      {participante.alimentacaoInscritosInfantil?.join(
-                                        ", "
-                                      )}
-                                    </span>
-                                  </div>
-                                )}
+                              const participante = fields.value[index];
 
-                                <div>
-                                  <strong>
-                                    Tipos de Alimentação Colaboradores:{" "}
-                                  </strong>
-                                  <span>
-                                    {participante.alimentacaoColaboradores?.join(
-                                      ", "
-                                    )}
-                                  </span>
-                                </div>
-                              </div>
-                            </Collapse>
-                          </React.Fragment>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                  {unidadesParticipantes.length > 10 && (
-                    <Paginacao
-                      onChange={() =>
-                        // onPageChanged(page, {
-                        //   status: statusSelecionado,
-                        //   ...values,
-                        // })
-                        {}
-                      }
-                      total={0}
-                      pageSize={1}
-                      current={1}
-                    />
-                  )}
-                </>
+                              return (
+                                <LinhaUnidade
+                                  key={name}
+                                  name={name}
+                                  index={index}
+                                  participante={participante}
+                                  aberto={!!expandidos[participante.id]}
+                                  toggleExpandir={toggleExpandir}
+                                  openRemoverModal={openRemoverModal}
+                                  fields={fields}
+                                />
+                              );
+                            })}
+                          </tbody>
+                        </table>
+
+                        <Paginacao
+                          className="mt-3 mb-3"
+                          current={page}
+                          total={total}
+                          showSizeChanger={false}
+                          onChange={setPage}
+                          pageSize={PAGE_SIZE}
+                        />
+
+                        <ModalRemoverUnidadeEducacional
+                          showModal={showModalRemover}
+                          closeModal={closeRemoverModal}
+                          handleRemoverUnidade={() =>
+                            confirmRemoverUnidade(fields)
+                          }
+                        />
+                      </>
+                    );
+                  }}
+                </FieldArray>
               </Spin>
 
               <div className="row mt-4">
                 <div className="col-12 text-end">
                   <Botao
                     texto="Salvar Recreio nas Férias"
-                    // disabled={submitting}
                     type={BUTTON_TYPE.SUBMIT}
                     style={BUTTON_STYLE.GREEN}
                   />
@@ -322,14 +285,7 @@ export const RecreioFerias = () => {
                 showModal={showModalAdicionar}
                 closeModal={() => setShowModalAdicionar(false)}
                 submitting={false}
-                setUnidadesParticipantes={setUnidadesParticipantes}
-                unidadesParticipantes={unidadesParticipantes}
-              />
-
-              <ModalRemoverUnidadeEducacional
-                showModal={showModalRemover}
-                closeModal={closeRemoverModal}
-                handleRemoverUnidade={confirmRemoverUnidade}
+                form={form}
               />
             </form>
           )}
