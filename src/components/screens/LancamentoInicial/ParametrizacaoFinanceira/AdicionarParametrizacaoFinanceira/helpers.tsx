@@ -13,7 +13,7 @@ type ValorLinha = {
   percentual_acrescimo: string;
 };
 
-const gerarValores = (valores: object, tabela: string) => {
+const gerarValores = (valores: object) => {
   let lista_valores: object[] = [];
   const titulos = Object.keys(valores);
 
@@ -39,7 +39,10 @@ const gerarValores = (valores: object, tabela: string) => {
       .map((e) => ({
         faixa_etaria,
         tipo_alimentacao,
-        nome_campo: `tabelas[${tabela}].${titulos[index]}.${e.campo}`,
+        nome_campo: titulos[index]
+          .toLowerCase()
+          .replace(/\s+/g, "_")
+          .normalize("NFD"),
         tipo_valor: e.tipo,
         valor: e.valor,
       }));
@@ -57,7 +60,7 @@ export const formataPayload = (values: ParametrizacaoFinanceiraPayload) => {
 
     return {
       nome,
-      valores: gerarValores(valores as object, tabela),
+      valores: gerarValores(valores as object),
       periodo_escolar,
     };
   });
