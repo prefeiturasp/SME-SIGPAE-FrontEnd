@@ -52,7 +52,7 @@ export default () => {
         await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(
           payload,
         );
-        toastSuccess("Parametrização Financeira salva com sucesso!");
+        toastSuccess("Parametrização Financeira cadastrada com sucesso!");
       } else {
         await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
           uuidParametrizacao,
