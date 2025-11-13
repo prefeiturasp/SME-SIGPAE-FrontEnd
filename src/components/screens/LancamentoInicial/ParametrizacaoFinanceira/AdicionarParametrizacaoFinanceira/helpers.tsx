@@ -5,6 +5,7 @@ import {
   ValorLinha,
   ValorTabela,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import { stringDecimalToNumber } from "src/helpers/parsers";
 
 const gerarValores = (valores: object) => {
   let lista_valores: object[] = [];
@@ -68,16 +69,26 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
 
     let total = 0;
 
-    if (valor_unitario && valor_unitario_reajuste)
-      total = valor_unitario + valor_unitario_reajuste;
-    else if (valor_unitario && percentual_acrescimo)
-      total = valor_unitario * (1 + percentual_acrescimo / 100);
-    else if (valor_unitario) total = valor_unitario;
+    const temValorUnitario =
+      valor_unitario !== null && valor_unitario !== undefined;
+    const temReajuste =
+      valor_unitario_reajuste !== null && valor_unitario_reajuste !== undefined;
+    const temAcrescimo =
+      percentual_acrescimo !== null && percentual_acrescimo !== undefined;
 
-    if (total) valores.valor_unitario_total = parseFloat(total.toFixed(2));
+    if (temValorUnitario && temReajuste)
+      total =
+        stringDecimalToNumber(valor_unitario) +
+        stringDecimalToNumber(valor_unitario_reajuste);
+    else if (temValorUnitario && temAcrescimo)
+      total =
+        stringDecimalToNumber(valor_unitario) *
+        (1 + stringDecimalToNumber(percentual_acrescimo) / 100);
+
+    if (!isNaN(total))
+      valores.valor_unitario_total = parseFloat(total.toFixed(2));
   });
 };
-
 export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
   const getCampo = (tipo: string): string => {
     const campos = {
@@ -102,9 +113,8 @@ export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
       if (faixaUuid)
         resultado[chavePrincipal][faixaNome].faixa_etaria = faixaUuid;
 
-      resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] = Number(
-        valor.valor,
-      );
+      resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] =
+        valor.valor;
     });
 
     calcularTotaisFaixa(resultado[chavePrincipal]);
