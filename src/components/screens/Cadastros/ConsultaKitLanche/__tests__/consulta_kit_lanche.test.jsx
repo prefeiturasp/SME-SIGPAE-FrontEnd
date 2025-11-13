@@ -114,4 +114,21 @@ describe("Teste Consulta de Kit Lanche", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("Deve editar um kit lanche", async () => {
+    const botaoConsultar = screen.getByText("Consultar").closest("button");
+    mock
+      .onGet("/kit-lanches/consulta-kits/")
+      .replyOnce(200, mockConsultaKitLanches);
+    fireEvent.click(botaoConsultar);
+
+    await waitFor(() => {
+      expect(screen.getByText("EDITAL MODELO IMR")).toBeInTheDocument();
+    });
+
+    const linkEditar = screen.getByTestId(
+      "editar-kit-bd19a5a0-6cab-4d42-88ea-48f396baaf61",
+    );
+    fireEvent.click(linkEditar);
+  });
 });
