@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
-import { getKitsLanche } from "../../../../services/kitLanche/shared.service";
-import ListagemKits from "./components/ListagemKits";
-import Filtros from "./components/Filtros";
-import "./style.scss";
-import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { useEffect, useState } from "react";
 import { Paginacao } from "src/components/Shareable/Paginacao";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { getKitsLanche } from "src/services/kitLanche/shared.service";
+import Filtros from "./components/Filtros";
+import ListagemKits from "./components/ListagemKits";
+import "./style.scss";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);
   const [kits, setKits] = useState();
   const [filtros, setFiltros] = useState();
-  const [ativos, setAtivos] = useState([]);
   const [total, setTotal] = useState();
   const [page, setPage] = useState();
 
@@ -19,14 +18,8 @@ export default () => {
     setCarregando(true);
     const params = gerarParametrosConsulta({ page: page, ...filtros });
     const response = await getKitsLanche(params);
-    if (response.data.count) {
-      setKits(response.data.results);
-      setTotal(response.data.count);
-    } else {
-      setTotal(response.data.count);
-      setKits();
-    }
-    setAtivos([]);
+    setKits(response.data.count ? response.data.results : undefined);
+    setTotal(response.data.count);
     setCarregando(false);
   };
 
@@ -42,10 +35,6 @@ export default () => {
     setPage(page);
   };
 
-  const updatePage = () => {
-    buscarKits(page);
-  };
-
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       <div className="card mt-3 card-consulta-kits">
@@ -53,13 +42,8 @@ export default () => {
           <Filtros setFiltros={setFiltros} setKits={setKits} />
           {kits && (
             <>
-              <br /> <hr /> <br />
-              <ListagemKits
-                kits={kits}
-                ativos={ativos}
-                setAtivos={setAtivos}
-                updatePage={updatePage}
-              />
+              <hr /> <br />
+              <ListagemKits kits={kits} />
               <div className="row">
                 <div className="col">
                   <Paginacao

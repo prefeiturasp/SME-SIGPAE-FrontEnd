@@ -24,7 +24,7 @@ import StatusSolicitacoesComQuestionamentosCODAEPage from "src/pages/CODAE/Solic
 import StatusSolicitacoesPendentesCODAEPage from "src/pages/CODAE/Solicitacoes/StatusSolicitacoesPendentesCODAEPage";
 import StatusSolicitacoesRecusadasCODAEPage from "src/pages/CODAE/Solicitacoes/StatusSolicitacoesRecusadasCODAEPage";
 import CadastroKitLanchePage from "src/pages/Cadastros/CadastroKitLanchePage";
-import ConsultaKitLanchePage from "src/pages/Cadastros/ConsultaKitLanchePage";
+import { ConsultaKitLanchePage } from "src/pages/Cadastros/ConsultaKitLanchePage";
 import PainelPedidosAlteracaoDeCardapioDREPage from "src/pages/DRE/AlteracaoDeCardapio/PainelPedidosPage";
 import PainelPedidosInclusaoDeAlimentacaoDREPage from "src/pages/DRE/InclusaoDeAlimentacao/PainelPedidosPage";
 import PainelPedidosInversaoDiaCardapioDREPage from "src/pages/DRE/InversaoDiaCardapio/PainelPedidosPage";
