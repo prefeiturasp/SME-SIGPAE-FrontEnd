@@ -108,7 +108,7 @@ export const ModalAdicionarUnidadeEducacional = ({
               values.tipos_alimentacao_inscritos_infantil
             ),
             tiposAlimentacaoInscritosUuids:
-              values.tipos_alimentacao_inscritos_infantil || [],
+              values.tipos_alimentacao_inscritos || [],
             tiposAlimentacaoInfantilUuids:
               values.tipos_alimentacao_inscritos_infantil || [],
           }));

@@ -8,8 +8,8 @@ export const mapUnidade = (u: any) => {
     num_colaboradores: parseInt(u.num_colaboradores ?? "0", 10) || 0,
     liberar_medicao: !!u.liberarMedicao,
     tipos_alimentacao_inscritos: u.tiposAlimentacaoInscritosUuids ?? [],
-    tipos_alimentacao_colaboradores: u.tiposAlimentacaoColaboradoresUuids ?? [],
     tipos_alimentacao_infantil: u.tiposAlimentacaoInfantilUuids ?? [],
+    tipos_alimentacao_colaboradores: u.tiposAlimentacaoColaboradoresUuids ?? [],
     cei_ou_emei: u?.ceiOuEmei,
   };
 };
