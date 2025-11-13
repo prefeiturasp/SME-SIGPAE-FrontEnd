@@ -1,30 +1,102 @@
 import { Table } from "antd";
 import { Field } from "react-final-form";
 import { AInputNumber } from "src/components/Shareable/MakeField";
-import {
-  formataValorDecimal,
-  parserValorDecimal,
-} from "src/components/screens/helper";
 import { FormApi } from "final-form";
+import { ValorLinha } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import { stringDecimalToNumber } from "src/helpers/parsers";
+import InputText from "src/components/Shareable/Input/InputText";
 
 type Props = {
   form: FormApi<any, any>;
   faixasEtarias: Array<any>;
   grupoSelecionado: string;
   periodo: string;
+  pendencias: string[];
 };
+
+interface RecordItem {
+  __str__: string;
+}
+
+type CampoValor = "valor_unitario" | "valor_unitario_reajuste";
 
 export function TabelaAlimentacaoCEI({
   form,
   faixasEtarias,
   grupoSelecionado,
   periodo,
+  pendencias,
 }: Props) {
   const labelTabela =
     grupoSelecionado === "grupo_2"
       ? `CEI - Período ${periodo}`
       : `Período ${periodo}`;
   const nomeTabela = "Preço das Alimentações";
+  const chaveTabela = `${nomeTabela} - ${labelTabela}`;
+
+  const retornaTotal = (
+    value: string,
+    campo: CampoValor,
+    registro: ValorLinha,
+  ) => {
+    const valorSoma = stringDecimalToNumber(
+      campo === "valor_unitario"
+        ? registro?.valor_unitario_reajuste
+        : registro?.valor_unitario,
+    );
+    const valorTotal = stringDecimalToNumber(value) + valorSoma;
+    return valorTotal ? String(valorTotal).replace(".", ",") : undefined;
+  };
+
+  const atualizaPendencias = (
+    tabelas: object[],
+    campo: CampoValor,
+    record: RecordItem,
+    valorFormatado: string,
+  ) => {
+    pendencias.forEach((e) => {
+      const chaveTabela = `${e} - ${labelTabela}`;
+
+      form.change(
+        `tabelas[${chaveTabela}].${record.__str__}.valor_unitario`,
+        valorFormatado,
+      );
+
+      const registro = tabelas?.[chaveTabela]?.[record.__str__];
+      const valorTotalPendencia = retornaTotal(
+        valorFormatado ?? "",
+        campo,
+        registro,
+      );
+      form.change(
+        `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
+        valorTotalPendencia
+          ? stringDecimalToNumber(valorTotalPendencia).toFixed(2)
+          : null,
+      );
+    });
+  };
+
+  const atualizarValoresTabela = (
+    form: FormApi<any, any>,
+    record: RecordItem,
+    value: string,
+    campo: CampoValor,
+  ) => {
+    const tabelas = form.getState().values.tabelas;
+    const registro = tabelas?.[chaveTabela]?.[record.__str__];
+    const valorFormatado = retornaTotal(value, campo, registro);
+
+    form.change(
+      `tabelas[${chaveTabela}].${record.__str__}.${campo}`,
+      value ?? null,
+    );
+    form.change(
+      `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
+      valorFormatado,
+    );
+    atualizaPendencias(tabelas, campo, record, valorFormatado);
+  };
 
   return (
     <div className="row mt-5">
@@ -46,7 +118,7 @@ export function TabelaAlimentacaoCEI({
                 <p className="fw-bold mb-0">{value}</p>
                 <Field
                   component="input"
-                  name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.faixa_etaria`}
+                  name={`tabelas[${chaveTabela}].${record.__str__}.faixa_etaria`}
                   type="hidden"
                   defaultValue={record.uuid}
                 />
@@ -59,29 +131,19 @@ export function TabelaAlimentacaoCEI({
             key="valor_unitario"
             render={(_, record: any) => (
               <Field
-                component={AInputNumber}
-                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario`}
+                component={InputText}
+                name={`tabelas[${chaveTabela}].${record.__str__}.valor_unitario`}
                 placeholder="0,00"
-                min={0}
-                formatter={(value: string) => formataValorDecimal(value)}
-                parser={(value: string) => parserValorDecimal(value)}
-                defaultValue={null}
-                onChange={(value: number) => {
-                  const valorReajuste =
-                    form.getState().values.tabelas[
-                      `${nomeTabela} - ${labelTabela}`
-                    ]?.[record.__str__]?.valor_unitario_reajuste || 0;
-                  const valorTotal = value + Number(valorReajuste);
-
-                  form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
-                    valorTotal ? valorTotal.toFixed(2) : undefined,
-                  );
-                  form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario`,
-                    value,
-                  );
-                }}
+                agrupadorMilharComDecimal
+                proibeLetras
+                inputOnChange={(e) =>
+                  atualizarValoresTabela(
+                    form,
+                    record,
+                    e.target.value,
+                    "valor_unitario",
+                  )
+                }
               />
             )}
           />
@@ -91,29 +153,19 @@ export function TabelaAlimentacaoCEI({
             key="valor_unitario_reajuste"
             render={(_, record: any) => (
               <Field
-                component={AInputNumber}
-                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_reajuste`}
+                component={InputText}
+                name={`tabelas[${chaveTabela}].${record.__str__}.valor_unitario_reajuste`}
                 placeholder="0,00"
-                min={0}
-                formatter={(value: string) => formataValorDecimal(value)}
-                parser={(value: string) => parserValorDecimal(value)}
-                defaultValue={null}
-                onChange={(value: number) => {
-                  const valorUnitario =
-                    form.getState().values.tabelas[
-                      `${nomeTabela} - ${labelTabela}`
-                    ]?.[record.__str__]?.valor_unitario || 0;
-                  const valorTotal = Number(valorUnitario) + value;
-
-                  form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
-                    valorTotal ? valorTotal.toFixed(2) : undefined,
-                  );
-                  form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_reajuste`,
-                    value,
-                  );
-                }}
+                agrupadorMilharComDecimal
+                proibeLetras
+                inputOnChange={(e) =>
+                  atualizarValoresTabela(
+                    form,
+                    record,
+                    e.target.value,
+                    "valor_unitario_reajuste",
+                  )
+                }
               />
             )}
           />
@@ -124,7 +176,7 @@ export function TabelaAlimentacaoCEI({
             render={(_, record: any) => (
               <Field
                 component={AInputNumber}
-                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`}
+                name={`tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`}
                 placeholder="0,00"
                 disabled
               />
