@@ -366,6 +366,7 @@ export const InputText = (props) => {
             exibeTooltipRPLAutorizadas ||
             exibeTooltipLPRAutorizadas ||
             exibeTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas ||
+            exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas ||
             exibeTooltipKitLancheSolAlimentacoes ||
             exibeTooltipQtdLancheEmergencialDiferenteSolAlimentacoesAutorizadas ||
             exibeTooltipLancheEmergencialNaoAutorizado ||
