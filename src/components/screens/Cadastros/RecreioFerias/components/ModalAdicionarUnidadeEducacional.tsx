@@ -168,13 +168,30 @@ export const ModalAdicionarUnidadeEducacional = ({
               (isCemei &&
                 !values?.tipos_alimentacao_inscritos_infantil?.length);
 
-            useEffect(() => {
-              setDreLote(values?.dres_lote || "");
-            }, [values?.dres_lote]);
+            const resetDependentFields = () => {
+              formApi.change("unidades_educacionais", []);
+              formApi.change("tipos_alimentacao_inscritos", []);
+              formApi.change("tipos_alimentacao_colaboradores", []);
+              formApi.change("tipos_alimentacao_inscritos_infantil", []);
+            };
 
             useEffect(() => {
-              setTipoUnidade(values?.tipos_unidades || "");
-            }, [values?.tipos_unidades]);
+              const novoDreLote = values?.dres_lote || "";
+              if (dreLote !== novoDreLote) {
+                setDreLote(novoDreLote);
+                formApi.change("tipos_unidades", undefined);
+                formApi.resetFieldState("tipos_unidades");
+                resetDependentFields();
+              }
+            }, [values?.dres_lote, dreLote]);
+
+            useEffect(() => {
+              const novoTipoUnidade = values?.tipos_unidades || "";
+              if (tipoUnidade !== novoTipoUnidade) {
+                setTipoUnidade(novoTipoUnidade);
+                resetDependentFields();
+              }
+            }, [values?.tipos_unidades, tipoUnidade]);
 
             return (
               <form>
