@@ -17,36 +17,6 @@ export const buscaPeriodosEscolares = async (params) => {
   }
 };
 
-export const getEscolas = () => {
-  const url = `${API_URL}/escolas/`;
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
-};
-
-export const getEscolasSimples = () => {
-  const url = `${API_URL}/escolas-simples/?limit=1034`;
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
-};
-
 export const getEscolasSimplissima = async (params = {}) => {
   const url = `${API_URL}/escolas-simplissima/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -164,9 +134,6 @@ export const getEscolaSimples = async (uuidEscola, params = null) => {
     return data;
   }
 };
-
-export const updateEscolaSimples = async (uuidEscola, valores) =>
-  axios.patch(`/escolas-simples/${uuidEscola}/`, valores);
 
 export const getGrupoUnidadeEscolar = async () => {
   const url = `${API_URL}/grupos-unidade-escolar/`;
