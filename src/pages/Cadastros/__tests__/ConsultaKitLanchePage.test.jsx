@@ -1,7 +1,6 @@
-import React from "react";
-import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import ConsultaKitLanchePage from "../ConsultaKitLanchePage";
+import { cleanup, render, screen } from "@testing-library/react";
+import { ConsultaKitLanchePage } from "../ConsultaKitLanchePage";
 
 jest.mock("../../../components/Shareable/Breadcrumb", () => () => (
   <nav data-testid="breadcrumb">
@@ -13,24 +12,22 @@ jest.mock("../../../components/Shareable/Breadcrumb", () => () => (
 jest.mock(
   "../../../components/Shareable/Page/Page",
   () =>
-    ({ children, ...props }) =>
-      (
-        <section data-testid="page">
-          <h1>{props.titulo}</h1>
-          {props.botaoVoltar && <button>Voltar</button>}
-          {children}
-        </section>
-      )
+    ({ children, ...props }) => (
+      <section data-testid="page">
+        <h1>{props.titulo}</h1>
+        {props.botaoVoltar && <button>Voltar</button>}
+        {children}
+      </section>
+    ),
 );
 
 jest.mock(
   "../../../components/screens/Cadastros/ConsultaKitLanche",
-  () => () =>
-    (
-      <div data-testid="consulta-kit-lanche">
-        Conteúdo da tela de Consulta de Kits
-      </div>
-    )
+  () => () => (
+    <div data-testid="consulta-kit-lanche">
+      Conteúdo da tela de Consulta de Kits
+    </div>
+  ),
 );
 
 afterEach(cleanup);
