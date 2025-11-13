@@ -29,15 +29,15 @@ export default ({
     faixasEtarias.forEach((faixa) => {
       form.change(
         `tabelas[${chaveTabela}].${faixa.__str__}.percentual_acrescimo`,
-        value,
+        String(value),
       );
 
       const valorUnitario =
         form.getState().values.tabelas[`${chaveTabela}`]?.[faixa.__str__]
-          ?.valor_unitario || 0;
+          ?.valor_unitario || "0";
       const valorUnitarioTotal =
         stringDecimalToNumber(valorUnitario) *
-        (1 + stringDecimalToNumber(value) / 100);
+        (1 + stringDecimalToNumber(String(value)) / 100);
 
       form.change(
         `tabelas[${chaveTabela}].${faixa.__str__}.valor_unitario_total`,
@@ -124,7 +124,8 @@ export default ({
                   const valorUnitario =
                     form.getState().values.tabelas[chaveTabela]?.[
                       record.__str__
-                    ]?.valor_unitario || 0;
+                    ]?.valor_unitario || "0";
+
                   const valorUnitarioTotal =
                     stringDecimalToNumber(valorUnitario) *
                     (1 + stringDecimalToNumber(value) / 100);
