@@ -1,6 +1,5 @@
 import {
   exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
-  exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
 } from "../validacoes";
 
@@ -99,81 +98,6 @@ describe("Funções de Tooltip Kit Lanche", () => {
     });
   });
 
-  describe("exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas", () => {
-    it("deve retornar true quando soma for MENOR que valor (operador <), mesmo com observações preenchidas", () => {
-      const params = {
-        ...baseParams,
-        kitLanchesAutorizadas: [
-          { dia: 1, numero_alunos: "2" },
-          { dia: 1, numero_alunos: "1" },
-        ], // soma = 3
-        formValuesAtualizados: {
-          kit_lanche__dia_1__categoria_1: "5",
-          observacoes__dia_1__categoria_1: "Observação preenchida",
-        },
-        value_: "5",
-      };
-
-      const result = exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
-        ...Object.values(params),
-      );
-
-      expect(result).toBe(true); // 3 < 5, e ignora observações
-    });
-
-    it("deve retornar false quando soma for MAIOR que valor (operador <)", () => {
-      const params = {
-        ...baseParams,
-        formValuesAtualizados: {
-          kit_lanche__dia_1__categoria_1: "5",
-          observacoes__dia_1__categoria_1: "",
-        },
-        value_: "5",
-      };
-
-      const result = exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
-        ...Object.values(params),
-      );
-
-      expect(result).toBe(false); // 8 < 5 é false
-    });
-
-    it("deve retornar true quando não há valor mas há kit lanches autorizadas", () => {
-      const params = {
-        ...baseParams,
-        formValuesAtualizados: {
-          kit_lanche__dia_1__categoria_1: "",
-          observacoes__dia_1__categoria_1: "",
-        },
-        value_: "",
-      };
-
-      const result = exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
-        ...Object.values(params),
-      );
-
-      expect(result).toBe(true); // soma = 8 > 0
-    });
-
-    it("deve retornar true mesmo com observações preenchidas quando soma for menor", () => {
-      const params = {
-        ...baseParams,
-        kitLanchesAutorizadas: [{ dia: 1, numero_alunos: "2" }], // soma = 2
-        formValuesAtualizados: {
-          kit_lanche__dia_1__categoria_1: "5",
-          observacoes__dia_1__categoria_1: "Observação preenchida",
-        },
-        value_: "5",
-      };
-
-      const result = exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
-        ...Object.values(params),
-      );
-
-      expect(result).toBe(true); // 2 < 5, ignora observações
-    });
-  });
-
   describe("exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas", () => {
     it("deve retornar true quando soma for MAIOR que valor (operador >) e observações vazias", () => {
       const params = {
@@ -246,31 +170,6 @@ describe("Funções de Tooltip Kit Lanche", () => {
 
   // Testes de casos edge
   describe("Casos especiais", () => {
-    it("deve retornar false para todas quando ehChangeInput é true e value_ é vazio", () => {
-      const params = {
-        ...baseParams,
-        value_: "",
-        ehChangeInput: true,
-      };
-
-      const resultDiferente =
-        exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
-          ...Object.values(params),
-        );
-      const resultMaior =
-        exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
-          ...Object.values(params),
-        );
-      const resultMenor =
-        exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
-          ...Object.values(params),
-        );
-
-      expect(resultDiferente).toBe(false);
-      expect(resultMaior).toBe(false);
-      expect(resultMenor).toBe(false);
-    });
-
     it('deve retornar false quando categoria não contém "SOLICITAÇÕES"', () => {
       const params = {
         ...baseParams,
@@ -285,17 +184,12 @@ describe("Funções de Tooltip Kit Lanche", () => {
         exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
           ...Object.values(params),
         );
-      const resultMaior =
-        exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
-          ...Object.values(params),
-        );
       const resultMenor =
         exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
           ...Object.values(params),
         );
 
       expect(resultDiferente).toBe(false);
-      expect(resultMaior).toBe(false);
       expect(resultMenor).toBe(false);
     });
 
@@ -313,17 +207,12 @@ describe("Funções de Tooltip Kit Lanche", () => {
         exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
           ...Object.values(params),
         );
-      const resultMaior =
-        exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
-          ...Object.values(params),
-        );
       const resultMenor =
         exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
           ...Object.values(params),
         );
 
       expect(resultDiferente).toBe(false);
-      expect(resultMaior).toBe(false);
       expect(resultMenor).toBe(false);
     });
 
@@ -344,17 +233,12 @@ describe("Funções de Tooltip Kit Lanche", () => {
           exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
             ...Object.values(params),
           );
-        const resultMaior =
-          exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
-            ...Object.values(params),
-          );
         const resultMenor =
           exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
             ...Object.values(params),
           );
 
         expect(resultDiferente).toBe(false);
-        expect(resultMaior).toBe(false);
         expect(resultMenor).toBe(false);
       });
     });

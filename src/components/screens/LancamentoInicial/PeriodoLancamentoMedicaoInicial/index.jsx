@@ -100,7 +100,6 @@ import {
   exibirTooltipLancheEmergTabelaEtec,
   exibirTooltipLPRAutorizadas,
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
-  exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
   exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
@@ -2123,7 +2122,7 @@ export default () => {
             alteracoesAlimentacaoAutorizadas,
           ))) ||
       (categoria.nome.includes("SOLICITAÇÕES") &&
-        (exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
+        (exibirTooltipKitLancheSolAlimentacoes(
           formValuesAtualizados,
           row,
           column,
@@ -2132,15 +2131,6 @@ export default () => {
           value,
           ehChangeInput,
         ) ||
-          exibirTooltipKitLancheSolAlimentacoes(
-            formValuesAtualizados,
-            row,
-            column,
-            categoria,
-            kitLanchesAutorizadas,
-            value,
-            ehChangeInput,
-          ) ||
           exibirTooltipLancheEmergencialZeroAutorizado(
             formValuesAtualizados,
             row,
@@ -2161,16 +2151,6 @@ export default () => {
         !formValuesAtualizados[
           `observacoes__dia_${dia}__categoria_${categoria.id}`
         ]) ||
-      (categoria.nome.includes("SOLICITAÇÕES") &&
-        exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
-          formValuesAtualizados,
-          row,
-          column,
-          categoria,
-          kitLanchesAutorizadas,
-          value,
-          ehChangeInput,
-        )) ||
       (ehGrupoETECUrlParam &&
         categoria.nome === "ALIMENTAÇÃO" &&
         exibirTooltipLancheEmergTabelaEtec(

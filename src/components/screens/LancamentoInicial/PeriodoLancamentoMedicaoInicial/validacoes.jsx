@@ -1243,27 +1243,6 @@ export const exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas = (
     false,
   );
 
-export const exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas = (
-  formValuesAtualizados,
-  row,
-  column,
-  categoria,
-  kitLanchesAutorizadas,
-  value_ = undefined,
-  ehChangeInput = false,
-) =>
-  exibirTooltipQtdKitLancheComOperador(
-    formValuesAtualizados,
-    row,
-    column,
-    categoria,
-    kitLanchesAutorizadas,
-    value_,
-    ehChangeInput,
-    (a, b) => a < b,
-    true,
-  );
-
 export const exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas = (
   formValuesAtualizados,
   row,
