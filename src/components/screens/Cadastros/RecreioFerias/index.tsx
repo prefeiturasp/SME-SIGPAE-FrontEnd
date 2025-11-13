@@ -141,7 +141,7 @@ export const RecreioFerias = () => {
                   placeholder="Título para o cadastro (ex. Recreio nas Férias - JAN 2026)"
                   required
                   validate={required}
-                  max={50}
+                  max={200}
                 />
               </div>
 
@@ -235,7 +235,7 @@ export const RecreioFerias = () => {
 
                               return (
                                 <LinhaUnidade
-                                  key={name}
+                                  key={participante.id}
                                   name={name}
                                   index={index}
                                   participante={participante}
