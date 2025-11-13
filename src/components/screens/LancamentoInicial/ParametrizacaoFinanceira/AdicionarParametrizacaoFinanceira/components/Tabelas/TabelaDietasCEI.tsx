@@ -1,11 +1,8 @@
 import { Table } from "antd";
 import { Field } from "react-final-form";
-import { AInputNumber } from "src/components/Shareable/MakeField";
-import {
-  formataValorDecimal,
-  parserValorDecimal,
-} from "src/components/screens/helper";
 import { FormApi } from "final-form";
+import { stringDecimalToNumber } from "src/helpers/parsers";
+import InputText from "src/components/Shareable/Input/InputText";
 
 type Props = {
   form: FormApi<any, any>;
@@ -26,6 +23,28 @@ export default ({
     grupoSelecionado === "grupo_2"
       ? `CEI - Período ${periodo}`
       : `Período ${periodo}`;
+  const chaveTabela = `${nomeTabela} - ${labelTabela}`;
+
+  const atualizarPercentuais = (value: string) => {
+    faixasEtarias.forEach((faixa) => {
+      form.change(
+        `tabelas[${chaveTabela}].${faixa.__str__}.percentual_acrescimo`,
+        value,
+      );
+
+      const valorUnitario =
+        form.getState().values.tabelas[`${chaveTabela}`]?.[faixa.__str__]
+          ?.valor_unitario || 0;
+      const valorUnitarioTotal =
+        stringDecimalToNumber(valorUnitario) *
+        (1 + stringDecimalToNumber(value) / 100);
+
+      form.change(
+        `tabelas[${chaveTabela}].${faixa.__str__}.valor_unitario_total`,
+        valorUnitarioTotal.toFixed(2),
+      );
+    });
+  };
 
   return (
     <div className="row mt-5">
@@ -48,7 +67,7 @@ export default ({
                   <p className="fw-bold mb-0">{value}</p>
                   <Field
                     component="input"
-                    name={`tabelas[${nomeTabela} - ${labelTabela}].${value}.faixa_etaria`}
+                    name={`tabelas[${chaveTabela}].${value}.faixa_etaria`}
                     type="hidden"
                     defaultValue={record.uuid}
                   />
@@ -62,29 +81,27 @@ export default ({
             key="valor_unitario"
             render={(_, record: any) => (
               <Field
-                component={AInputNumber}
-                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario`}
+                component={InputText}
+                name={`tabelas[${chaveTabela}].${record.__str__}.valor_unitario`}
                 placeholder="0,00"
-                min={0}
-                formatter={(value: string) => formataValorDecimal(value)}
-                parser={(value: string) => parserValorDecimal(value)}
-                defaultValue={null}
-                onChange={(value: number) => {
+                agrupadorMilharComDecimal
+                proibeLetras
+                inputOnChange={(e) => {
+                  const value = e.target.value;
                   const percentualAcrescimo =
-                    form.getState().values.tabelas[
-                      `${nomeTabela} - ${labelTabela}`
-                    ]?.[record.__str__]?.percentual_acrescimo || 0;
+                    form.getState().values.tabelas[chaveTabela]?.[
+                      record.__str__
+                    ]?.percentual_acrescimo || 0;
                   const valorUnitarioTotal =
-                    value * (1 + Number(percentualAcrescimo) / 100);
+                    stringDecimalToNumber(value) *
+                    (1 + stringDecimalToNumber(percentualAcrescimo) / 100);
 
                   form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
-                    valorUnitarioTotal
-                      ? valorUnitarioTotal.toFixed(2)
-                      : undefined,
+                    `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
+                    valorUnitarioTotal.toFixed(2),
                   );
                   form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario`,
+                    `tabelas[${chaveTabela}].${record.__str__}.valor_unitario`,
                     value,
                   );
                 }}
@@ -92,36 +109,37 @@ export default ({
             )}
           />
           <Table.Column
-            title="% de acréscimo"
+            title="% de Acréscimo"
             dataIndex="percentual_acrescimo"
             key="percentual_acrescimo"
             render={(_, record: any) => (
               <Field
-                component={AInputNumber}
-                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.percentual_acrescimo`}
+                component={InputText}
+                name={`tabelas[${chaveTabela}].${record.__str__}.percentual_acrescimo`}
                 placeholder="%"
-                min={0}
-                formatter={(value: string) => formataValorDecimal(value)}
-                parser={(value: string) => parserValorDecimal(value)}
-                defaultValue={null}
-                onChange={(value: number) => {
+                agrupadorMilharComDecimal
+                proibeLetras
+                inputOnChange={(e) => {
+                  const value = e.target.value;
                   const valorUnitario =
-                    form.getState().values.tabelas[
-                      `${nomeTabela} - ${labelTabela}`
-                    ]?.[record.__str__]?.valor_unitario || 0;
+                    form.getState().values.tabelas[chaveTabela]?.[
+                      record.__str__
+                    ]?.valor_unitario || 0;
                   const valorUnitarioTotal =
-                    Number(valorUnitario) * (1 + value / 100);
+                    stringDecimalToNumber(valorUnitario) *
+                    (1 + stringDecimalToNumber(value) / 100);
 
                   form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
-                    valorUnitarioTotal
-                      ? valorUnitarioTotal.toFixed(2)
-                      : undefined,
+                    `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
+                    valorUnitarioTotal.toFixed(2),
                   );
                   form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.percentual_acrescimo`,
+                    `tabelas[${chaveTabela}].${record.__str__}.percentual_acrescimo`,
                     value,
                   );
+
+                  if (record.__str__ === faixasEtarias[0].__str__)
+                    atualizarPercentuais(value);
                 }}
               />
             )}
@@ -132,9 +150,11 @@ export default ({
             key="valor_unitario_total"
             render={(_, record: any) => (
               <Field
-                component={AInputNumber}
-                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`}
+                component={InputText}
+                name={`tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`}
                 placeholder="0,00"
+                agrupadorMilharComDecimal
+                proibeLetras
                 disabled
               />
             )}

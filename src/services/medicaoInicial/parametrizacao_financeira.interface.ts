@@ -1,3 +1,11 @@
+export type ValorLinha = {
+  faixa_etaria?: string;
+  tipo_alimentacao?: string;
+  valor_unitario_reajuste: string;
+  valor_unitario: string;
+  percentual_acrescimo: string;
+};
+
 export type FaixaEtaria = {
   __str__: string;
   uuid: string;
