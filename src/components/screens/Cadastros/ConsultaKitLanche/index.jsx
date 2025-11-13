@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
-import { getKitsLanche } from "../../../../services/kitLanche/shared.service";
-import ListagemKits from "./components/ListagemKits";
-import Filtros from "./components/Filtros";
-import "./style.scss";
-import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { useEffect, useState } from "react";
 import { Paginacao } from "src/components/Shareable/Paginacao";
+import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { getKitsLanche } from "src/services/kitLanche/shared.service";
+import Filtros from "./components/Filtros";
+import ListagemKits from "./components/ListagemKits";
+import "./style.scss";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);
