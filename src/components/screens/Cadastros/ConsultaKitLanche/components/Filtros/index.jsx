@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Form, Field } from "react-final-form";
+import { useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
-import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
 import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
-import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import Botao from "src/components/Shareable/Botao";
 import {
-  BUTTON_TYPE,
   BUTTON_STYLE,
+  BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { getNumerosEditais } from "../../../../../../services/edital.service";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
+import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
+import { getNumerosEditais } from "src/services/edital.service";
 import "./style.scss";
 
 const FORM_NAME = "buscaKitsLanche";
@@ -38,7 +38,7 @@ export default ({ setFiltros, setKits }) => {
       const reg = new RegExp(numEdital, "i");
       return editais.filter((a) => reg.test(a));
     }
-    return [];
+    return editais;
   };
 
   return (
@@ -53,6 +53,7 @@ export default ({ setFiltros, setKits }) => {
               <div className="col-6">
                 <Field
                   component={AutoCompleteField}
+                  dataTestId="numero-edital-autocomplete"
                   dataSource={getEditaisFiltrado(values.numero_edital)}
                   label="Número do Edital"
                   name="numero_edital"
@@ -81,34 +82,37 @@ export default ({ setFiltros, setKits }) => {
                 />
               </div>
             </div>
+            <div className="row">
+              <div className="col-12">
+                <div className="mt-4 mb-4">
+                  <Botao
+                    texto="Adicionar Novo Modelo de KIT"
+                    type={BUTTON_TYPE.BUTTON}
+                    style={BUTTON_STYLE.GREEN}
+                    className="float-start"
+                    onClick={() => navigate("/codae/cadastros/kits")}
+                  />
 
-            <div className="mt-4 mb-4">
-              <Botao
-                texto="Adicionar Novo Modelo de KIT"
-                type={BUTTON_TYPE.BUTTON}
-                style={BUTTON_STYLE.GREEN}
-                className="float-start"
-                onClick={() => navigate("/codae/cadastros/kits")}
-              />
+                  <Botao
+                    texto="Consultar"
+                    type={BUTTON_TYPE.SUBMIT}
+                    style={BUTTON_STYLE.GREEN}
+                    className="float-end ms-3"
+                    disabled={submitting}
+                  />
 
-              <Botao
-                texto="Consultar"
-                type={BUTTON_TYPE.SUBMIT}
-                style={BUTTON_STYLE.GREEN}
-                className="float-end ms-3"
-                disabled={submitting}
-              />
-
-              <Botao
-                texto="Limpar Filtros"
-                type={BUTTON_TYPE.BUTTON}
-                style={BUTTON_STYLE.GREEN_OUTLINE}
-                className="float-end ms-3"
-                onClick={() => {
-                  form.reset(initialValues);
-                  setKits(undefined);
-                }}
-              />
+                  <Botao
+                    texto="Limpar Filtros"
+                    type={BUTTON_TYPE.BUTTON}
+                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                    className="float-end ms-3"
+                    onClick={() => {
+                      form.reset(initialValues);
+                      setKits(undefined);
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </form>
         )}
