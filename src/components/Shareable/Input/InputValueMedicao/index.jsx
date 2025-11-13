@@ -37,6 +37,8 @@ export const InputText = (props) => {
     exibeTooltipRPLAutorizadas,
     exibeTooltipLPRAutorizadas,
     exibeTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
+    exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
+    exibeTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas,
     exibeTooltipKitLancheSolAlimentacoes,
     exibeTooltipQtdLancheEmergencialDiferenteSolAlimentacoesAutorizadas,
     exibeTooltipLancheEmergencialNaoAutorizado,
@@ -193,6 +195,24 @@ export const InputText = (props) => {
           }
         >
           <i className="fas fa-info icone-info-warning" />
+        </Tooltip>
+      )}
+      {exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas && (
+        <Tooltip
+          title={
+            "Quantidade lançada diferente da autorizada. Justifique na Observação para análise de CODAE."
+          }
+        >
+          <i className="fas fa-info icone-info-warning" />
+        </Tooltip>
+      )}
+      {exibeTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas && (
+        <Tooltip
+          title={
+            "Não é possível aumentar a quantidade de kits. Corrija o apontamento"
+          }
+        >
+          <i className="fas fa-info icone-info-error" />
         </Tooltip>
       )}
       {exibeTooltipKitLancheSolAlimentacoes && (
@@ -356,7 +376,8 @@ export const InputText = (props) => {
             exibeTooltipRepeticaoDiasSobremesaDoceDiferenteZero ||
             exibeTooltipDietasInclusaoDiaNaoLetivoCEI ||
             exibeTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI ||
-            exibeTooltipSuspensoesAutorizadasCEI)
+            exibeTooltipSuspensoesAutorizadasCEI ||
+            exibeTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas)
             ? "border-warning"
             : ""
         }`}

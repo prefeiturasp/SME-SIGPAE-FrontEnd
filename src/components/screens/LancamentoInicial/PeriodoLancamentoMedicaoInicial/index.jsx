@@ -98,7 +98,8 @@ import {
   exibirTooltipLancheEmergTabelaEtec,
   exibirTooltipLPRAutorizadas,
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
-  exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
+  exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas,
+  exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
   exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
@@ -2112,7 +2113,7 @@ export default () => {
             alteracoesAlimentacaoAutorizadas,
           ))) ||
       (categoria.nome.includes("SOLICITAÇÕES") &&
-        (exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
+        (exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
           formValuesAtualizados,
           row,
           column,
@@ -2150,6 +2151,16 @@ export default () => {
         !formValuesAtualizados[
           `observacoes__dia_${dia}__categoria_${categoria.id}`
         ]) ||
+      (categoria.nome.includes("SOLICITAÇÕES") &&
+        exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
+          formValuesAtualizados,
+          row,
+          column,
+          categoria,
+          kitLanchesAutorizadas,
+          value,
+          ehChangeInput,
+        )) ||
       (ehGrupoETECUrlParam &&
         categoria.nome === "ALIMENTAÇÃO" &&
         exibirTooltipLancheEmergTabelaEtec(
@@ -2989,7 +3000,14 @@ export default () => {
                                                             categoria,
                                                             alteracoesAlimentacaoAutorizadas,
                                                           )}
-                                                          exibeTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
+                                                          exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
+                                                            formValuesAtualizados,
+                                                            row,
+                                                            column,
+                                                            categoria,
+                                                            kitLanchesAutorizadas,
+                                                          )}
+                                                          exibeTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas(
                                                             formValuesAtualizados,
                                                             row,
                                                             column,
