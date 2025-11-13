@@ -270,10 +270,18 @@ export const MSG_SENHA_INVALIDA = () => (
 
 export const formataValorDecimal = (value) => {
   if (value === null || value === undefined || value === "") return "";
-  const num =
-    typeof value === "number" ? value : parseFloat(value.replace(",", "."));
-  if (isNaN(num)) return "";
-  return String(num).replace(".", ",");
+
+  const str = `${value}`;
+  const parts = str.split(".");
+  let int = parts[0];
+  let decimal = parts.length > 1 ? parts[1] : "";
+
+  const n = Number(int);
+  const formatted = n.toLocaleString("pt-BR");
+
+  decimal = decimal.slice(0, 2);
+
+  return decimal ? `${formatted},${decimal}` : formatted;
 };
 
 export const parserValorDecimal = (value) => {
