@@ -12,6 +12,10 @@ type Props = {
 };
 
 export default ({ form, faixasEtarias, grupoSelecionado }: Props) => {
+  const tabelasPendentes = [
+    "Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos",
+    "Dietas Tipo B",
+  ];
   return (
     <div className="container-tabelas">
       <TabelaAlimentacaoCEI
@@ -19,12 +23,14 @@ export default ({ form, faixasEtarias, grupoSelecionado }: Props) => {
         faixasEtarias={faixasEtarias}
         grupoSelecionado={grupoSelecionado}
         periodo="Integral"
+        pendencias={tabelasPendentes}
       />
       <TabelaAlimentacaoCEI
         form={form}
         faixasEtarias={faixasEtarias}
         grupoSelecionado={grupoSelecionado}
         periodo="Parcial"
+        pendencias={tabelasPendentes}
       />
       <TabelaDietasCEI
         form={form}

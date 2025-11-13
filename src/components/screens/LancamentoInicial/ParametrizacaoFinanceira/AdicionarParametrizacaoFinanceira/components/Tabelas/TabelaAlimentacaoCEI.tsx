@@ -6,25 +6,91 @@ import {
   parserValorDecimal,
 } from "src/components/screens/helper";
 import { FormApi } from "final-form";
+import { ValorLinha } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 
 type Props = {
   form: FormApi<any, any>;
   faixasEtarias: Array<any>;
   grupoSelecionado: string;
   periodo: string;
+  pendencias: string[];
 };
+
+interface RecordItem {
+  __str__: string;
+}
+
+type CampoValor = "valor_unitario" | "valor_unitario_reajuste";
 
 export function TabelaAlimentacaoCEI({
   form,
   faixasEtarias,
   grupoSelecionado,
   periodo,
+  pendencias,
 }: Props) {
   const labelTabela =
     grupoSelecionado === "grupo_2"
       ? `CEI - Período ${periodo}`
       : `Período ${periodo}`;
   const nomeTabela = "Preço das Alimentações";
+
+  const retornaTotal = (
+    value: number,
+    campo: CampoValor,
+    registro: ValorLinha,
+  ) => {
+    const valorBase = Number(registro?.valor_unitario ?? 0);
+    const valorReajuste = Number(registro?.valor_unitario_reajuste ?? 0);
+    const valorTotal =
+      campo === "valor_unitario" ? value + valorReajuste : valorBase + value;
+
+    return valorTotal ? valorTotal.toFixed(2) : undefined;
+  };
+
+  const atualizaPendencias = (
+    tabelas: object[],
+    campo: CampoValor,
+    record: RecordItem,
+    valorFormatado: number,
+  ) => {
+    pendencias.forEach((e) => {
+      const chaveTabela = `${e} - ${labelTabela}`;
+
+      form.change(
+        `tabelas[${chaveTabela}].${record.__str__}.valor_unitario`,
+        valorFormatado,
+      );
+
+      const registro = tabelas?.[chaveTabela]?.[record.__str__];
+      const valorTotalPendencia = retornaTotal(valorFormatado, campo, registro);
+      form.change(
+        `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
+        valorTotalPendencia,
+      );
+    });
+  };
+
+  const atualizarValoresTabela = (
+    form: FormApi<any, any>,
+    labelTabela: string,
+    nomeTabela: string,
+    record: RecordItem,
+    value: number,
+    campo: CampoValor,
+  ) => {
+    const chaveTabela = `${nomeTabela} - ${labelTabela}`;
+    const tabelas = form.getState().values.tabelas;
+    const registro = tabelas?.[chaveTabela]?.[record.__str__];
+    const valorFormatado = retornaTotal(value, campo, registro);
+
+    form.change(`tabelas[${chaveTabela}].${record.__str__}.${campo}`, value);
+    form.change(
+      `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
+      valorFormatado,
+    );
+    atualizaPendencias(tabelas, campo, record, Number(valorFormatado));
+  };
 
   return (
     <div className="row mt-5">
@@ -66,22 +132,16 @@ export function TabelaAlimentacaoCEI({
                 formatter={(value: string) => formataValorDecimal(value)}
                 parser={(value: string) => parserValorDecimal(value)}
                 defaultValue={null}
-                onChange={(value: number) => {
-                  const valorReajuste =
-                    form.getState().values.tabelas[
-                      `${nomeTabela} - ${labelTabela}`
-                    ]?.[record.__str__]?.valor_unitario_reajuste || 0;
-                  const valorTotal = value + Number(valorReajuste);
-
-                  form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
-                    valorTotal ? valorTotal.toFixed(2) : undefined,
-                  );
-                  form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario`,
+                onChange={(value: number) =>
+                  atualizarValoresTabela(
+                    form,
+                    labelTabela,
+                    nomeTabela,
+                    record,
                     value,
-                  );
-                }}
+                    "valor_unitario",
+                  )
+                }
               />
             )}
           />
@@ -98,22 +158,16 @@ export function TabelaAlimentacaoCEI({
                 formatter={(value: string) => formataValorDecimal(value)}
                 parser={(value: string) => parserValorDecimal(value)}
                 defaultValue={null}
-                onChange={(value: number) => {
-                  const valorUnitario =
-                    form.getState().values.tabelas[
-                      `${nomeTabela} - ${labelTabela}`
-                    ]?.[record.__str__]?.valor_unitario || 0;
-                  const valorTotal = Number(valorUnitario) + value;
-
-                  form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`,
-                    valorTotal ? valorTotal.toFixed(2) : undefined,
-                  );
-                  form.change(
-                    `tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_reajuste`,
+                onChange={(value: number) =>
+                  atualizarValoresTabela(
+                    form,
+                    labelTabela,
+                    nomeTabela,
+                    record,
                     value,
-                  );
-                }}
+                    "valor_unitario_reajuste",
+                  )
+                }
               />
             )}
           />
