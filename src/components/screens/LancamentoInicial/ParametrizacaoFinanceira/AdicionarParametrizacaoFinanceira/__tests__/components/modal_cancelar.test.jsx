@@ -23,12 +23,10 @@ describe("Testes comportamento ModalCancelar - Parametrização Financeira", () 
     await setup({ showModal: true });
 
     expect(
-      screen.getByText("Cancelar Adição de Parametrização Financeira"),
+      screen.getByText("Cancelar Parametrização Financeira"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "Você deseja cancelar a Adição da Parametrização Financeira?",
-      ),
+      screen.getByText("Deseja cancelar o cadastro dessa parametrização?"),
     ).toBeInTheDocument();
     expect(screen.getByText("Não")).toBeInTheDocument();
     expect(screen.getByText("Sim")).toBeInTheDocument();
@@ -52,7 +50,7 @@ describe("Testes comportamento ModalCancelar - Parametrização Financeira", () 
     await setup({ showModal: false });
 
     expect(
-      screen.queryByText("Cancelar Adição de Parametrização Financeira"),
+      screen.queryByText("Cancelar Parametrização Financeira"),
     ).not.toBeInTheDocument();
   });
 });
