@@ -600,6 +600,20 @@ export const validacoesTabelaAlimentacao = (
   );
 
   if (
+    `${rowName}__dia_${dia}__categoria_${categoria}` ===
+      `frequencia__dia_${dia}__categoria_${categoria}` &&
+    Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
+      String(key).includes(`__dia_${dia}__categoria_${categoria}`),
+    ) &&
+    !(["Mês anterior", "Mês posterior"].includes(value) || Number(value) > 0) &&
+    location.state.grupo !== "Programas e Projetos"
+  ) {
+    if (validacaoDiaLetivo(dia) && (!value || (value && Number(value) !== 0))) {
+      return `Foi autorizada inclusão de alimentação ${
+        location.state && location.state.grupo ? "contínua" : ""
+      } nesta data. Informe a frequência de alunos.`;
+    }
+  } else if (
     value &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
     [NaN].includes(maxFrequencia) &&
@@ -821,6 +835,7 @@ export const validacoesTabelasDietas = (
   ) {
     if (
       !EH_INCLUSAO_SOMENTE_SOBREMESA &&
+      location.state.grupo !== "Programas e Projetos" &&
       validacaoDiaLetivo(dia) &&
       ((maxDietasAutorizadas !== 0 && !value) ||
         (value && Number(value) !== 0)) &&
