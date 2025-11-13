@@ -98,4 +98,20 @@ describe("Teste Consulta de Kit Lanche", () => {
       expect(inputElement.value).toBe("");
     });
   });
+
+  it("Exibe mensagem quando não há resultados na consulta", async () => {
+    const botaoConsultar = screen.getByText("Consultar").closest("button");
+    mock
+      .onGet("/kit-lanches/consulta-kits/")
+      .replyOnce(200, { count: 0, results: [] });
+    fireEvent.click(botaoConsultar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Não existe informação para os critérios de busca utilizados.",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
 });
