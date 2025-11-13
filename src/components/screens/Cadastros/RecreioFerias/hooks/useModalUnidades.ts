@@ -123,17 +123,28 @@ export const useAlimentacao = () => {
     tiposMap: Record<string, Option>,
     isCemei: boolean
   ) => {
-    const [inscritos, colaboradores, inscritosInfantil] = await Promise.all([
-      fetchTiposAlimentacao(tipoUnidadeUuid),
-      fetchTiposAlimentacao(tiposMap["EMEF"]?.uuid, PERIODO_INTEGRAL),
-      isCemei
-        ? fetchTiposAlimentacao(tiposMap["EMEI"]?.uuid)
-        : Promise.resolve([]),
-    ]);
+    const [inscritosBase, colaboradores, inscritosInfantil] = await Promise.all(
+      [
+        fetchTiposAlimentacao(tipoUnidadeUuid),
+        fetchTiposAlimentacao(tiposMap["EMEF"]?.uuid, PERIODO_INTEGRAL),
+        isCemei
+          ? fetchTiposAlimentacao(tiposMap["EMEI"]?.uuid)
+          : Promise.resolve([]),
+      ]
+    );
+
+    let inscritos = [...inscritosBase];
 
     if (isCemei && tiposMap["CEI DIRET"]?.uuid) {
       const ceiTipos = await fetchTiposAlimentacao(tiposMap["CEI DIRET"]?.uuid);
       inscritos.push(...ceiTipos);
+
+      const seen = new Set<string>();
+      inscritos = inscritos.filter((item) => {
+        if (seen.has(item.value)) return false;
+        seen.add(item.value);
+        return true;
+      });
     }
 
     setState({ inscritos, inscritosInfantil, colaboradores });
