@@ -1154,6 +1154,73 @@ export const exibirTooltipLPRAutorizadas = (
   );
 };
 
+const calcularSomaKitLanches = (kitLanchesAutorizadas, dia) => {
+  if (!kitLanchesAutorizadas) return 0;
+  return kitLanchesAutorizadas
+    .filter((kit) => kit.dia === dia)
+    .reduce((total, kitLanche) => total + parseInt(kitLanche.numero_alunos), 0);
+};
+
+const validarCondicoesBase = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  value,
+  ignorarObservacoes = false,
+) => {
+  const temObservacoes =
+    formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    value &&
+    categoria.nome.includes("SOLICITAÇÕES") &&
+    (ignorarObservacoes || !temObservacoes) &&
+    !["Mês anterior", "Mês posterior"].includes(value) &&
+    row.name.includes("kit_lanche")
+  );
+};
+
+const exibirTooltipQtdKitLancheComOperador = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  kitLanchesAutorizadas,
+  value_ = undefined,
+  ehChangeInput = false,
+  operador,
+  ignorarObservacoes = false,
+) => {
+  if (ehChangeInput && !value_) {
+    return false;
+  }
+
+  const value = ehChangeInput
+    ? value_
+    : formValuesAtualizados[
+        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+      ];
+
+  const soma = calcularSomaKitLanches(kitLanchesAutorizadas, column.dia);
+
+  const primeiraCondicao =
+    validarCondicoesBase(
+      formValuesAtualizados,
+      row,
+      column,
+      categoria,
+      value,
+      ignorarObservacoes,
+    ) && operador(soma, Number(value));
+
+  const segundaCondicao = !value && row.name.includes("kit_lanche") && soma > 0;
+
+  return primeiraCondicao || segundaCondicao;
+};
+
 export const exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas = (
   formValuesAtualizados,
   row,
@@ -1162,39 +1229,60 @@ export const exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas = (
   kitLanchesAutorizadas,
   value_ = undefined,
   ehChangeInput = false,
-) => {
-  if (ehChangeInput && !value_) {
-    return false;
-  }
-  const value = ehChangeInput
-    ? value_
-    : formValuesAtualizados[
-        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-      ];
+) =>
+  exibirTooltipQtdKitLancheComOperador(
+    formValuesAtualizados,
+    row,
+    column,
+    categoria,
+    kitLanchesAutorizadas,
+    value_,
+    ehChangeInput,
+    (a, b) => a !== b,
+    false,
+  );
 
-  const campoBloqueado =
-    (value &&
-      categoria.nome.includes("SOLICITAÇÕES") &&
-      !formValuesAtualizados[
-        `observacoes__dia_${column.dia}__categoria_${categoria.id}`
-      ] &&
-      !["Mês anterior", "Mês posterior"].includes(value) &&
-      kitLanchesAutorizadas &&
-      kitLanchesAutorizadas
-        .filter((kit) => kit.dia === column.dia)
-        .reduce(function (total, kitLanche) {
-          return total + parseInt(kitLanche.numero_alunos);
-        }, 0) !== Number(value) &&
-      row.name.includes("kit_lanche")) ||
-    (!value &&
-      row.name.includes("kit_lanche") &&
-      kitLanchesAutorizadas
-        .filter((kit) => kit.dia === column.dia)
-        .reduce(function (total, kitLanche) {
-          return total + parseInt(kitLanche.numero_alunos);
-        }, 0) > 0);
-  return campoBloqueado;
-};
+export const exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  kitLanchesAutorizadas,
+  value_ = undefined,
+  ehChangeInput = false,
+) =>
+  exibirTooltipQtdKitLancheComOperador(
+    formValuesAtualizados,
+    row,
+    column,
+    categoria,
+    kitLanchesAutorizadas,
+    value_,
+    ehChangeInput,
+    (a, b) => a < b,
+    true,
+  );
+
+export const exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  kitLanchesAutorizadas,
+  value_ = undefined,
+  ehChangeInput = false,
+) =>
+  exibirTooltipQtdKitLancheComOperador(
+    formValuesAtualizados,
+    row,
+    column,
+    categoria,
+    kitLanchesAutorizadas,
+    value_,
+    ehChangeInput,
+    (a, b) => a > b,
+    false,
+  );
 
 export const exibirTooltipKitLancheSolAlimentacoes = (
   formValuesAtualizados,

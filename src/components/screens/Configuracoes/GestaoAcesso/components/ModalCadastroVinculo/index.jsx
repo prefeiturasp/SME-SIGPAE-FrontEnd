@@ -22,6 +22,7 @@ import {
   composeValidators,
   formataCPFCensurado,
   formatarCPFouCNPJ,
+  getError,
 } from "src/helpers/utilities";
 import SelectSelecione from "src/components/Shareable/SelectSelecione";
 import { getDadosUsuarioEOLCompleto } from "src/services/permissoes.service";
@@ -98,7 +99,7 @@ const ModalCadastroVinculo = ({
 
     if (perfil in subdivisoes_restrita_por_perfil) {
       options_subs = options_subs.filter(
-        (option) => option.nome === subdivisoes_restrita_por_perfil[perfil]
+        (option) => option.nome === subdivisoes_restrita_por_perfil[perfil],
       );
     }
 
@@ -110,7 +111,7 @@ const ModalCadastroVinculo = ({
 
     if (response.status === 200) {
       const usuarioEOL = response.data;
-      if (diretor_escola || cogestor) {
+      if (diretor_escola) {
         const codigo_eol_unidade =
           meusDados.vinculo_atual.instituicao.codigo_eol;
         if (codigo_eol_unidade !== usuarioEOL.codigo_eol_unidade) {
@@ -119,20 +120,20 @@ const ModalCadastroVinculo = ({
       }
       form.change(
         "nome_servidor",
-        usuarioEOL.nome ? usuarioEOL.nome : undefined
+        usuarioEOL.nome ? usuarioEOL.nome : undefined,
       );
       form.change(
         "cargo_servidor",
-        usuarioEOL.cargo ? usuarioEOL.cargo : undefined
+        usuarioEOL.cargo ? usuarioEOL.cargo : undefined,
       );
       form.change(
         "email_servidor",
-        usuarioEOL.email ? usuarioEOL.email : setDesabilitaEmail(false)
+        usuarioEOL.email ? usuarioEOL.email : setDesabilitaEmail(false),
       );
       form.change("cpf", usuarioEOL.cpf);
       form.change(
         "cpf_servidor",
-        usuarioEOL.cpf ? formataCPFCensurado(usuarioEOL.cpf) : undefined
+        usuarioEOL.cpf ? formataCPFCensurado(usuarioEOL.cpf) : undefined,
       );
       form.change("codigo_eol_unidade", usuarioEOL.codigo_eol_unidade);
       form.change("nome_escola", usuarioEOL.nome_escola);
@@ -143,32 +144,30 @@ const ModalCadastroVinculo = ({
       setRfBuscado(true);
     } else {
       if (values.registro_funcional) {
-        toastError(
-          `API do EOL não retornou nada para o RF ${values.registro_funcional}`
-        );
+        toastError(getError(response.data));
       }
     }
   };
 
   const buscaEOLFuncionarioUnidadeParceira = async (values, form) => {
     let response = await getDadosUsuarioEOLCompleto(
-      values.cpf_pesquisado.replace(/[^\w\s]/gi, "")
+      values.cpf_pesquisado.replace(/[^\w\s]/gi, ""),
     );
 
     if (response.status === 200) {
       const usuarioEOL = response.data;
       form.change(
         "nome_parceira",
-        usuarioEOL.nome ? usuarioEOL.nome : undefined
+        usuarioEOL.nome ? usuarioEOL.nome : undefined,
       );
       form.change(
         "cargo_parceira",
-        usuarioEOL.cargo ? usuarioEOL.cargo : undefined
+        usuarioEOL.cargo ? usuarioEOL.cargo : undefined,
       );
       form.change("cpf", usuarioEOL.cpf);
       form.change(
         "cpf_parceira",
-        usuarioEOL.cpf ? formatarCPFouCNPJ(usuarioEOL.cpf) : undefined
+        usuarioEOL.cpf ? formatarCPFouCNPJ(usuarioEOL.cpf) : undefined,
       );
       form.change("codigo_eol_unidade", usuarioEOL.codigo_eol_unidade);
       form.change("nome_escola", usuarioEOL.nome_escola);
@@ -180,7 +179,7 @@ const ModalCadastroVinculo = ({
     } else {
       if (values.cpf_pesquisado) {
         toastError(
-          `API do EOL não retornou nada para o CPF ${values.cpf_pesquisado}`
+          `API do EOL não retornou nada para o CPF ${values.cpf_pesquisado}`,
         );
       }
     }
@@ -240,7 +239,7 @@ const ModalCadastroVinculo = ({
       setTipoUsuario("NAO_SERVIDOR");
     } else if (diretor_escola && ehUEParceira) {
       setTipoUsuario("UNIDADE_PARCEIRA");
-    } else if (diretor_escola || visaoUnica || codae) {
+    } else if (diretor_escola || visaoUnica || cogestor || codae) {
       setTipoUsuario("SERVIDOR");
     }
   }, [
@@ -416,9 +415,7 @@ const ModalCadastroVinculo = ({
                               visaoUnica || listaVisaoFiltrada[0].uuid
                             }
                             disabled={
-                              visaoUnica
-                                ? true
-                                : false || listaVisaoFiltrada.length === 1
+                              visaoUnica || listaVisaoFiltrada.length === 1
                             }
                           />
                         </div>
@@ -436,7 +433,7 @@ const ModalCadastroVinculo = ({
                                 ? listaPerfis
                                 : getPerfisPorVisao(
                                     values.visao_servidor,
-                                    listaPerfis
+                                    listaPerfis,
                                   )
                             }
                             validate={required}
@@ -679,7 +676,7 @@ const ModalCadastroVinculo = ({
                                 ? listaPerfis
                                 : getPerfisPorVisao(
                                     values.visao_parceira,
-                                    listaPerfis
+                                    listaPerfis,
                                   )
                             }
                             validate={required}

@@ -9,7 +9,7 @@ import { RecreioFerias } from "../../components/screens/Cadastros/RecreioFerias"
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`,
-  titulo: "Recreio nas Férias",
+  titulo: "Cadastrar Recreio nas Férias",
 };
 
 const anteriores = [
