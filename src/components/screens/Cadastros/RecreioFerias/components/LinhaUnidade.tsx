@@ -64,6 +64,7 @@ export const LinhaUnidade: React.FC<LinhaUnidadeProps> = ({
             type="number"
             required
             validate={required}
+            min={1}
           />
         </td>
 
@@ -74,6 +75,7 @@ export const LinhaUnidade: React.FC<LinhaUnidadeProps> = ({
             type="number"
             required
             validate={required}
+            min={1}
           />
         </td>
 
