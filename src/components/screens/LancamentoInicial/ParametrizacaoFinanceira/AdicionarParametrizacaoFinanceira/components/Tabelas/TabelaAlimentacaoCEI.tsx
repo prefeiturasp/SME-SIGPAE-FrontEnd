@@ -34,6 +34,7 @@ export function TabelaAlimentacaoCEI({
       ? `CEI - Período ${periodo}`
       : `Período ${periodo}`;
   const nomeTabela = "Preço das Alimentações";
+  const chaveTabela = `${nomeTabela} - ${labelTabela}`;
 
   const retornaTotal = (
     value: number,
@@ -73,13 +74,10 @@ export function TabelaAlimentacaoCEI({
 
   const atualizarValoresTabela = (
     form: FormApi<any, any>,
-    labelTabela: string,
-    nomeTabela: string,
     record: RecordItem,
     value: number,
     campo: CampoValor,
   ) => {
-    const chaveTabela = `${nomeTabela} - ${labelTabela}`;
     const tabelas = form.getState().values.tabelas;
     const registro = tabelas?.[chaveTabela]?.[record.__str__];
     const valorFormatado = retornaTotal(value, campo, registro);
@@ -112,7 +110,7 @@ export function TabelaAlimentacaoCEI({
                 <p className="fw-bold mb-0">{value}</p>
                 <Field
                   component="input"
-                  name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.faixa_etaria`}
+                  name={`tabelas[${chaveTabela}].${record.__str__}.faixa_etaria`}
                   type="hidden"
                   defaultValue={record.uuid}
                 />
@@ -126,21 +124,14 @@ export function TabelaAlimentacaoCEI({
             render={(_, record: any) => (
               <Field
                 component={AInputNumber}
-                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario`}
+                name={`tabelas[${chaveTabela}].${record.__str__}.valor_unitario`}
                 placeholder="0,00"
                 min={0}
                 formatter={(value: string) => formataValorDecimal(value)}
                 parser={(value: string) => parserValorDecimal(value)}
                 defaultValue={null}
                 onChange={(value: number) =>
-                  atualizarValoresTabela(
-                    form,
-                    labelTabela,
-                    nomeTabela,
-                    record,
-                    value,
-                    "valor_unitario",
-                  )
+                  atualizarValoresTabela(form, record, value, "valor_unitario")
                 }
               />
             )}
@@ -152,7 +143,7 @@ export function TabelaAlimentacaoCEI({
             render={(_, record: any) => (
               <Field
                 component={AInputNumber}
-                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_reajuste`}
+                name={`tabelas[${chaveTabela}].${record.__str__}.valor_unitario_reajuste`}
                 placeholder="0,00"
                 min={0}
                 formatter={(value: string) => formataValorDecimal(value)}
@@ -161,8 +152,6 @@ export function TabelaAlimentacaoCEI({
                 onChange={(value: number) =>
                   atualizarValoresTabela(
                     form,
-                    labelTabela,
-                    nomeTabela,
                     record,
                     value,
                     "valor_unitario_reajuste",
@@ -178,7 +167,7 @@ export function TabelaAlimentacaoCEI({
             render={(_, record: any) => (
               <Field
                 component={AInputNumber}
-                name={`tabelas[${nomeTabela} - ${labelTabela}].${record.__str__}.valor_unitario_total`}
+                name={`tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`}
                 placeholder="0,00"
                 disabled
               />
