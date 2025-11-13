@@ -85,8 +85,7 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
         stringDecimalToNumber(valor_unitario) *
         (1 + stringDecimalToNumber(percentual_acrescimo) / 100);
 
-    if (!isNaN(total))
-      valores.valor_unitario_total = parseFloat(total.toFixed(2));
+    if (!isNaN(total)) valores.valor_unitario_total = total.toFixed(2);
   });
 };
 export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
