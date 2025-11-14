@@ -25,7 +25,7 @@ export const ModalRemoverUnidadeEducacional = ({
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title className="modal-cadastro-edital">
+        <Modal.Title className="modal-remocao-recreio">
           Remover Unidade
         </Modal.Title>
       </Modal.Header>
