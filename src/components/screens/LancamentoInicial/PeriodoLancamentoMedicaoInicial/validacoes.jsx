@@ -1169,7 +1169,7 @@ export const exibirTooltipLPRAutorizadas = (
   );
 };
 
-const calcularSomaKitLanches = (kitLanchesAutorizadas, dia) => {
+export const calcularSomaKitLanches = (kitLanchesAutorizadas, dia) => {
   if (!kitLanchesAutorizadas) return 0;
   return kitLanchesAutorizadas
     .filter((kit) => kit.dia === dia)
@@ -1209,10 +1209,6 @@ const exibirTooltipQtdKitLancheComOperador = (
   operador,
   ignorarObservacoes = false,
 ) => {
-  if (ehChangeInput && !value_) {
-    return false;
-  }
-
   const value = ehChangeInput
     ? value_
     : formValuesAtualizados[
@@ -1232,8 +1228,13 @@ const exibirTooltipQtdKitLancheComOperador = (
     ) && operador(soma, Number(value));
 
   const segundaCondicao = !value && row.name.includes("kit_lanche") && soma > 0;
+  const menor = (a, b) => a < b;
 
-  return primeiraCondicao || segundaCondicao;
+  if (operador.toString() === menor.toString()) {
+    return value && (primeiraCondicao || segundaCondicao);
+  } else {
+    return primeiraCondicao || segundaCondicao;
+  }
 };
 
 export const exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas = (
@@ -1257,27 +1258,6 @@ export const exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas = (
     false,
   );
 
-export const exibirTooltipQtdKitLancheMaiorSolAlimentacoesAutorizadas = (
-  formValuesAtualizados,
-  row,
-  column,
-  categoria,
-  kitLanchesAutorizadas,
-  value_ = undefined,
-  ehChangeInput = false,
-) =>
-  exibirTooltipQtdKitLancheComOperador(
-    formValuesAtualizados,
-    row,
-    column,
-    categoria,
-    kitLanchesAutorizadas,
-    value_,
-    ehChangeInput,
-    (a, b) => a < b,
-    true,
-  );
-
 export const exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas = (
   formValuesAtualizados,
   row,
@@ -1298,6 +1278,44 @@ export const exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas = (
     (a, b) => a > b,
     false,
   );
+
+export const campoComKitLancheAutorizadoMenorQueSolicitadoESemObservacaoOuMaiorQueOSolicitado =
+  (
+    formValuesAtualizados,
+    kitLanchesAutorizadas,
+    diasDaSemanaSelecionada,
+    categoria,
+    column,
+    value,
+  ) => {
+    if (categoria.nome !== "SOLICITAÇÕES DE ALIMENTAÇÃO") return false;
+    let erro = false;
+
+    for (let dia of diasDaSemanaSelecionada) {
+      const soma = calcularSomaKitLanches(kitLanchesAutorizadas, dia);
+      if (soma) {
+        let valorCampoKitLanche =
+          column.dia === dia
+            ? value
+            : Number(
+                formValuesAtualizados[
+                  `kit_lanche__dia_${dia}__categoria_${categoria.id}`
+                ],
+              );
+        if (
+          (!formValuesAtualizados[
+            `observacoes__dia_${dia}__categoria_${categoria.id}`
+          ] &&
+            valorCampoKitLanche < soma) ||
+          valorCampoKitLanche > soma
+        ) {
+          erro = true;
+        }
+      }
+    }
+
+    return erro;
+  };
 
 export const exibirTooltipKitLancheSolAlimentacoes = (
   formValuesAtualizados,
