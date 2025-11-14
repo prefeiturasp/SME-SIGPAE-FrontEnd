@@ -24,11 +24,13 @@ export default ({
   return (
     <div className="container-tabelas">
       <TabelaAlimentacaoCEI
+        form={form}
         faixasEtarias={faixasEtarias}
         grupoSelecionado={grupoSelecionado}
         periodo="Integral"
       />
       <TabelaAlimentacaoCEI
+        form={form}
         faixasEtarias={faixasEtarias}
         grupoSelecionado={grupoSelecionado}
         periodo="Parcial"

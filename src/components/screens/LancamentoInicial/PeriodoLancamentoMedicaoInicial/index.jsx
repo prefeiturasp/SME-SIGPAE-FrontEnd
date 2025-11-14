@@ -85,6 +85,8 @@ import "./styles.scss";
 import {
   botaoAdicionarObrigatorio,
   botaoAdicionarObrigatorioTabelaAlimentacao,
+  calcularSomaKitLanches,
+  campoComKitLancheAutorizadoMenorQueSolicitadoESemObservacaoOuMaiorQueOSolicitado,
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
   campoLancheComLPRAutorizadaESemObservacao,
@@ -98,7 +100,7 @@ import {
   exibirTooltipLancheEmergTabelaEtec,
   exibirTooltipLPRAutorizadas,
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
-  exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
+  exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
   exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
@@ -2082,6 +2084,14 @@ export default () => {
         suspensoesAutorizadas,
         row,
       ) ||
+      campoComKitLancheAutorizadoMenorQueSolicitadoESemObservacaoOuMaiorQueOSolicitado(
+        formValuesAtualizados,
+        kitLanchesAutorizadas,
+        diasDaSemanaSelecionada,
+        categoria,
+        column,
+        value,
+      ) ||
       exibirTooltipRPLAutorizadas(
         formValuesAtualizados,
         row,
@@ -2112,7 +2122,7 @@ export default () => {
             alteracoesAlimentacaoAutorizadas,
           ))) ||
       (categoria.nome.includes("SOLICITAÇÕES") &&
-        (exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
+        (exibirTooltipKitLancheSolAlimentacoes(
           formValuesAtualizados,
           row,
           column,
@@ -2121,15 +2131,6 @@ export default () => {
           value,
           ehChangeInput,
         ) ||
-          exibirTooltipKitLancheSolAlimentacoes(
-            formValuesAtualizados,
-            row,
-            column,
-            categoria,
-            kitLanchesAutorizadas,
-            value,
-            ehChangeInput,
-          ) ||
           exibirTooltipLancheEmergencialZeroAutorizado(
             formValuesAtualizados,
             row,
@@ -2179,7 +2180,12 @@ export default () => {
   const fieldValidationsTabelaAlimentacao =
     (rowName, dia, idCategoria, nomeCategoria) => (value, allValues) => {
       if (nomeCategoria.includes("SOLICITAÇÕES")) {
-        return undefined;
+        if (
+          rowName === "kit_lanche" &&
+          Number(value) > calcularSomaKitLanches(kitLanchesAutorizadas, dia)
+        ) {
+          return "Não é possível aumentar a quantidade de kits. Corrija o apontamento.";
+        }
       } else if (ehGrupoETECUrlParam && nomeCategoria === "ALIMENTAÇÃO") {
         return validacoesTabelaEtecAlimentacao(
           rowName,
@@ -2989,7 +2995,7 @@ export default () => {
                                                             categoria,
                                                             alteracoesAlimentacaoAutorizadas,
                                                           )}
-                                                          exibeTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
+                                                          exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
                                                             formValuesAtualizados,
                                                             row,
                                                             column,

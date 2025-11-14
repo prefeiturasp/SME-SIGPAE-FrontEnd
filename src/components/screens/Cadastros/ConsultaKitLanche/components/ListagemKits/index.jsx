@@ -28,6 +28,7 @@ const ListagemKits = ({ kits }) => {
               <div>
                 <button
                   className="botaoEditar"
+                  data-testid={`editar-kit-${kit.uuid}`}
                   onClick={() =>
                     navigate(`/codae/cadastros/kits/${kit.uuid}/editar`)
                   }

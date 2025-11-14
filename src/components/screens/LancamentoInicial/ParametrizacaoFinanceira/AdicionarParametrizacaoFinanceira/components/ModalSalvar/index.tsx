@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import { Botao } from "src/components/Shareable/Botao";
 import {
@@ -9,11 +8,11 @@ import {
 type Props = {
   showModal: boolean;
   setShowModal: (_e: boolean) => void;
+  titulo: string;
+  onSubmit: () => void;
 };
 
-const ModalCancelar = ({ showModal, setShowModal }: Props) => {
-  const navigate = useNavigate();
-
+const ModalSalvar = ({ showModal, setShowModal, titulo, onSubmit }: Props) => {
   return (
     <Modal
       show={showModal}
@@ -22,9 +21,12 @@ const ModalCancelar = ({ showModal, setShowModal }: Props) => {
       }}
     >
       <Modal.Header closeButton>
-        <Modal.Title>Cancelar Parametrização Financeira</Modal.Title>
+        <Modal.Title>Salvar Parametrização Financeira</Modal.Title>
       </Modal.Header>
-      <Modal.Body>Deseja cancelar o cadastro dessa parametrização?</Modal.Body>
+      <Modal.Body>
+        Deseja salvar a parametrização financeira para o edital: <b>{titulo}</b>
+        ?
+      </Modal.Body>
       <Modal.Footer>
         <Botao
           texto="Não"
@@ -37,9 +39,10 @@ const ModalCancelar = ({ showModal, setShowModal }: Props) => {
         />
         <Botao
           texto="Sim"
-          type={BUTTON_TYPE.BUTTON}
+          type={BUTTON_TYPE.SUBMIT}
           onClick={() => {
-            navigate(-1);
+            onSubmit();
+            setShowModal(false);
           }}
           style={BUTTON_STYLE.GREEN}
           className="ms-3"
@@ -49,4 +52,4 @@ const ModalCancelar = ({ showModal, setShowModal }: Props) => {
   );
 };
 
-export default ModalCancelar;
+export default ModalSalvar;

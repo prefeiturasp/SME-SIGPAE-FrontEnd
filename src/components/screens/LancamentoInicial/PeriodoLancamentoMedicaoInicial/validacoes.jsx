@@ -600,6 +600,20 @@ export const validacoesTabelaAlimentacao = (
   );
 
   if (
+    `${rowName}__dia_${dia}__categoria_${categoria}` ===
+      `frequencia__dia_${dia}__categoria_${categoria}` &&
+    Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
+      String(key).includes(`__dia_${dia}__categoria_${categoria}`),
+    ) &&
+    !(["Mês anterior", "Mês posterior"].includes(value) || Number(value) > 0) &&
+    location.state.grupo !== "Programas e Projetos"
+  ) {
+    if (validacaoDiaLetivo(dia) && (!value || (value && Number(value) !== 0))) {
+      return `Foi autorizada inclusão de alimentação ${
+        location.state && location.state.grupo ? "contínua" : ""
+      } nesta data. Informe a frequência de alunos.`;
+    }
+  } else if (
     value &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
     [NaN].includes(maxFrequencia) &&
@@ -821,6 +835,7 @@ export const validacoesTabelasDietas = (
   ) {
     if (
       !EH_INCLUSAO_SOMENTE_SOBREMESA &&
+      location.state.grupo !== "Programas e Projetos" &&
       validacaoDiaLetivo(dia) &&
       ((maxDietasAutorizadas !== 0 && !value) ||
         (value && Number(value) !== 0)) &&
@@ -1154,6 +1169,74 @@ export const exibirTooltipLPRAutorizadas = (
   );
 };
 
+export const calcularSomaKitLanches = (kitLanchesAutorizadas, dia) => {
+  if (!kitLanchesAutorizadas) return 0;
+  return kitLanchesAutorizadas
+    .filter((kit) => kit.dia === dia)
+    .reduce((total, kitLanche) => total + parseInt(kitLanche.numero_alunos), 0);
+};
+
+const validarCondicoesBase = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  value,
+  ignorarObservacoes = false,
+) => {
+  const temObservacoes =
+    formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    value &&
+    categoria.nome.includes("SOLICITAÇÕES") &&
+    (ignorarObservacoes || !temObservacoes) &&
+    !["Mês anterior", "Mês posterior"].includes(value) &&
+    row.name.includes("kit_lanche")
+  );
+};
+
+const exibirTooltipQtdKitLancheComOperador = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  kitLanchesAutorizadas,
+  value_ = undefined,
+  ehChangeInput = false,
+  operador,
+  ignorarObservacoes = false,
+) => {
+  const value = ehChangeInput
+    ? value_
+    : formValuesAtualizados[
+        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+      ];
+
+  const soma = calcularSomaKitLanches(kitLanchesAutorizadas, column.dia);
+
+  const primeiraCondicao =
+    validarCondicoesBase(
+      formValuesAtualizados,
+      row,
+      column,
+      categoria,
+      value,
+      ignorarObservacoes,
+    ) && operador(soma, Number(value));
+
+  const segundaCondicao = !value && row.name.includes("kit_lanche") && soma > 0;
+  const menor = (a, b) => a < b;
+
+  if (operador.toString() === menor.toString()) {
+    return value && (primeiraCondicao || segundaCondicao);
+  } else {
+    return primeiraCondicao || segundaCondicao;
+  }
+};
+
 export const exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas = (
   formValuesAtualizados,
   row,
@@ -1162,39 +1245,77 @@ export const exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas = (
   kitLanchesAutorizadas,
   value_ = undefined,
   ehChangeInput = false,
-) => {
-  if (ehChangeInput && !value_) {
-    return false;
-  }
-  const value = ehChangeInput
-    ? value_
-    : formValuesAtualizados[
-        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-      ];
+) =>
+  exibirTooltipQtdKitLancheComOperador(
+    formValuesAtualizados,
+    row,
+    column,
+    categoria,
+    kitLanchesAutorizadas,
+    value_,
+    ehChangeInput,
+    (a, b) => a !== b,
+    false,
+  );
 
-  const campoBloqueado =
-    (value &&
-      categoria.nome.includes("SOLICITAÇÕES") &&
-      !formValuesAtualizados[
-        `observacoes__dia_${column.dia}__categoria_${categoria.id}`
-      ] &&
-      !["Mês anterior", "Mês posterior"].includes(value) &&
-      kitLanchesAutorizadas &&
-      kitLanchesAutorizadas
-        .filter((kit) => kit.dia === column.dia)
-        .reduce(function (total, kitLanche) {
-          return total + parseInt(kitLanche.numero_alunos);
-        }, 0) !== Number(value) &&
-      row.name.includes("kit_lanche")) ||
-    (!value &&
-      row.name.includes("kit_lanche") &&
-      kitLanchesAutorizadas
-        .filter((kit) => kit.dia === column.dia)
-        .reduce(function (total, kitLanche) {
-          return total + parseInt(kitLanche.numero_alunos);
-        }, 0) > 0);
-  return campoBloqueado;
-};
+export const exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  kitLanchesAutorizadas,
+  value_ = undefined,
+  ehChangeInput = false,
+) =>
+  exibirTooltipQtdKitLancheComOperador(
+    formValuesAtualizados,
+    row,
+    column,
+    categoria,
+    kitLanchesAutorizadas,
+    value_,
+    ehChangeInput,
+    (a, b) => a > b,
+    false,
+  );
+
+export const campoComKitLancheAutorizadoMenorQueSolicitadoESemObservacaoOuMaiorQueOSolicitado =
+  (
+    formValuesAtualizados,
+    kitLanchesAutorizadas,
+    diasDaSemanaSelecionada,
+    categoria,
+    column,
+    value,
+  ) => {
+    if (categoria.nome !== "SOLICITAÇÕES DE ALIMENTAÇÃO") return false;
+    let erro = false;
+
+    for (let dia of diasDaSemanaSelecionada) {
+      const soma = calcularSomaKitLanches(kitLanchesAutorizadas, dia);
+      if (soma) {
+        let valorCampoKitLanche =
+          column.dia === dia
+            ? value
+            : Number(
+                formValuesAtualizados[
+                  `kit_lanche__dia_${dia}__categoria_${categoria.id}`
+                ],
+              );
+        if (
+          (!formValuesAtualizados[
+            `observacoes__dia_${dia}__categoria_${categoria.id}`
+          ] &&
+            valorCampoKitLanche < soma) ||
+          valorCampoKitLanche > soma
+        ) {
+          erro = true;
+        }
+      }
+    }
+
+    return erro;
+  };
 
 export const exibirTooltipKitLancheSolAlimentacoes = (
   formValuesAtualizados,

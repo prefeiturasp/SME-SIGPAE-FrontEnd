@@ -55,7 +55,7 @@ export default () => {
   const [showModal, setShowModal] = useState<boolean>(false);
 
   const [objeto, setObjeto] = useState<DocumentosRecebimentoDetalhado>(
-    {} as DocumentosRecebimentoDetalhado
+    {} as DocumentosRecebimentoDetalhado,
   );
 
   const [arquivosLaudoForm, setArquivosLaudoForm] =
@@ -77,7 +77,7 @@ export default () => {
     const objeto = response.data;
 
     const laudoIndex = objeto.tipos_de_documentos.findIndex(
-      (tipo) => tipo.tipo_documento === "LAUDO"
+      (tipo) => tipo.tipo_documento === "LAUDO",
     );
     const laudo = objeto.tipos_de_documentos.splice(laudoIndex, 1)[0];
     const documentos = objeto.tipos_de_documentos;
@@ -96,7 +96,7 @@ export default () => {
           tipoDocumento: documento.tipo_documento,
           arquivosForm: await obterArquivosForm(documento.arquivos),
         } as ArquivosDocumentoForm;
-      })
+      }),
     );
     setArquivosDocumentosForm(arquivosDocumentosForm);
 
@@ -112,7 +112,7 @@ export default () => {
           nome: arquivo.nome,
           base64: await downloadAndConvertToBase64(arquivo.arquivo),
         } as ArquivoForm;
-      })
+      }),
     );
 
     return arquivosFormDocumento;
@@ -136,14 +136,14 @@ export default () => {
 
   const setFilesDocumentos = (
     files: ArquivoForm[],
-    tipoDocumento: TiposDocumentoChoices
+    tipoDocumento: TiposDocumentoChoices,
   ) => {
     const arquivosDocumentosFormAtualizado = [...arquivosDocumentosForm];
 
     try {
       arquivosDocumentosFormAtualizado.find(
         (arquivosDocumentoForm) =>
-          arquivosDocumentoForm.tipoDocumento === tipoDocumento
+          arquivosDocumentoForm.tipoDocumento === tipoDocumento,
       ).arquivosForm = files;
     } catch {
       arquivosDocumentosFormAtualizado.push({
@@ -157,13 +157,13 @@ export default () => {
 
   const removeFileDocumentos = (
     index: number,
-    tipoDocumento: TiposDocumentoChoices
+    tipoDocumento: TiposDocumentoChoices,
   ) => {
     const arquivosDocumentosFormAtualizado = [...arquivosDocumentosForm];
     arquivosDocumentosFormAtualizado
       .find(
         (arquivosDocumentoForm) =>
-          arquivosDocumentoForm.tipoDocumento === tipoDocumento
+          arquivosDocumentoForm.tipoDocumento === tipoDocumento,
       )
       ?.arquivosForm.splice(index, 1);
 
@@ -196,10 +196,10 @@ export default () => {
     const tiposDocumentos: TiposDocumentosPayload[] =
       values.tipos_de_documentos?.map(
         (
-          tipoDocumentoSelecionado: TiposDocumentoChoices
+          tipoDocumentoSelecionado: TiposDocumentoChoices,
         ): TiposDocumentosPayload => {
           const arquivosTipoDocumento = arquivosDocumentosForm?.find(
-            ({ tipoDocumento }) => tipoDocumento === tipoDocumentoSelecionado
+            ({ tipoDocumento }) => tipoDocumento === tipoDocumentoSelecionado,
           );
 
           return {
@@ -213,7 +213,7 @@ export default () => {
                 ? values.descricao_documento
                 : "",
           };
-        }
+        },
       );
 
     tiposDocumentos.push({
@@ -221,7 +221,7 @@ export default () => {
       arquivos_do_tipo_de_documento: arquivosLaudoForm.arquivosForm.map(
         ({ nome, base64 }) => {
           return { nome, arquivo: base64 };
-        }
+        },
       ),
     });
 
@@ -237,7 +237,7 @@ export default () => {
 
   const obterInitialValues = (documentos) => {
     const tiposDocumentos = documentos?.map(
-      ({ tipo_documento }) => tipo_documento
+      ({ tipo_documento }) => tipo_documento,
     );
 
     const descricaoDocumentoOutros = tiposDocumentos?.includes("OUTROS")
@@ -253,10 +253,10 @@ export default () => {
 
   const obterArquivosIniciaisDocumentos = (
     arquivosDocumentosForm: ArquivosDocumentoForm[],
-    tipoDocumento: TiposDocumentoChoices
+    tipoDocumento: TiposDocumentoChoices,
   ) => {
     return arquivosDocumentosForm?.find(
-      (arquivosDocumento) => arquivosDocumento.tipoDocumento === tipoDocumento
+      (arquivosDocumento) => arquivosDocumento.tipoDocumento === tipoDocumento,
     )?.arquivosForm;
   };
 
@@ -270,20 +270,21 @@ export default () => {
         return (
           arquivosDocumentosForm?.find(
             (arquivosDocumentoForm) =>
-              arquivosDocumentoForm.tipoDocumento === tipoDocumento
+              arquivosDocumentoForm.tipoDocumento === tipoDocumento,
           )?.arquivosForm.length > 0
         );
-      }
+      },
     );
 
     return laudoInvalido || nenhumDocumentoSelecionado || !documentosValidos;
   };
 
   const filtrarArquivosDocumentosForm = (
-    tiposDocumentosSelecionados: TiposDocumentoChoices[]
+    tiposDocumentosSelecionados: TiposDocumentoChoices[],
   ) => {
     const arquivosDocumentosFormAtualizado = arquivosDocumentosForm.filter(
-      ({ tipoDocumento }) => tiposDocumentosSelecionados.includes(tipoDocumento)
+      ({ tipoDocumento }) =>
+        tiposDocumentosSelecionados.includes(tipoDocumento),
     );
 
     if (!tiposDocumentosSelecionados.includes("OUTROS"))
@@ -395,6 +396,18 @@ export default () => {
                   </div>
                 )}
 
+                <div className="row mt-3">
+                  <div className="col-12">
+                    <div className="alert alert-warning d-flex align-items-center aviso-documento">
+                      <i className="fas fa-exclamation-triangle me-2"></i>
+                      <span>
+                        Caso o laudo contiver múltiplas páginas, elas devem ser
+                        reunidas em um único documento.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
                 <hr className="my-4" />
 
                 <div className="subtitulo">Outros Documentos</div>
@@ -431,10 +444,10 @@ export default () => {
                         tipoDocumento={tipoDocumento}
                         arquivosIniciais={obterArquivosIniciaisDocumentos(
                           arquivosDocumentosForm,
-                          tipoDocumento
+                          tipoDocumento,
                         )}
                       />
-                    )
+                    ),
                   )}
 
                 <div className="my-5">

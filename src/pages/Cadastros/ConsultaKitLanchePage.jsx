@@ -8,10 +8,20 @@ const atual = {
   href: `/${CODAE}/${CADASTROS}/${CONSULTA_KITS}`,
   titulo: "Consulta de Kits",
 };
+const anteriores = [
+  {
+    href: `#`,
+    titulo: "Gestão de Alimentação",
+  },
+  {
+    href: `#`,
+    titulo: "Cadastros",
+  },
+];
 
-export default () => (
+export const ConsultaKitLanchePage = () => (
   <Page titulo={atual.titulo} botaoVoltar voltarPara={`/`}>
-    <Breadcrumb home={"/"} atual={atual} />
+    <Breadcrumb home={"/"} atual={atual} anteriores={anteriores} />
     <ConsultaKitLanche />
   </Page>
 );

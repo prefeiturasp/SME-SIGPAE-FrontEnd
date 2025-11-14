@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { FormApi } from "final-form";
+import { useEffect, useMemo, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
@@ -9,172 +10,131 @@ import {
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import Select from "src/components/Shareable/Select";
 import { required } from "src/helpers/fieldValidators";
-import { ResponseGetEscolasTercTotalInterface } from "src/interfaces/responses.interface";
-import {
-  getTiposUnidadeEscolar,
-  getVinculosTipoAlimentacaoPorTipoUnidadeEscolar,
-} from "src/services/cadastroTipoAlimentacao.service";
-import { getEscolasTercTotal } from "src/services/escola.service";
-import { getLotesAsync } from "src/services/lote.service";
 import "../../style.scss";
+import {
+  extractDreUuid,
+  useAlimentacao,
+  useLotes,
+  useTiposUnidade,
+  useUnidadesEducacionais,
+} from "../hooks/useModalUnidades";
 
 type ModalAdicionarUnidadeEducacionalInterface = {
   showModal: boolean;
   closeModal: () => void;
   submitting: boolean;
-  setUnidadesParticipantes: React.Dispatch<React.SetStateAction<any[]>>;
-  unidadesParticipantes: any[];
+  form: FormApi<any>;
 };
 
-type Option = { uuid: string; nome: string };
+const TIPOS_CEMEI = ["CEMEI", "CEU CEMEI"];
 
 export const ModalAdicionarUnidadeEducacional = ({
   showModal,
   closeModal,
   submitting,
-  setUnidadesParticipantes,
-  unidadesParticipantes,
+  form,
 }: ModalAdicionarUnidadeEducacionalInterface) => {
-  const [lotes, setLotes] = useState<Option[]>([]);
-  const [tiposUnidadesEscolares, setTiposUnidadesEscolares] = useState<
-    Option[]
-  >([]);
-  const [tiposAlimentacaoInscritos, setTiposAlimentacaoInscritos] = useState(
-    []
-  );
-  const [
-    tiposAlimentacaoInscritosInfantil,
-    setTiposAlimentacaoInscritosInfantil,
-  ] = useState([]);
-  const [tiposAlimentacaoColaboradores, setTiposAlimentacaoColaboradores] =
-    useState([]);
-  const [unidadesEducacionaisOpts, setUnidadesEducacionaisOpts] = useState([]);
+  const { lotes, lotesOpts } = useLotes();
+  const [dreLote, setDreLote] = useState("");
+  const [tipoUnidade, setTipoUnidade] = useState("");
 
-  const tiposMap = useMemo(() => {
-    const map: Record<string, Option> = {};
-    tiposUnidadesEscolares.forEach((t) => {
-      map[t.nome] = t;
-    });
-    return map;
-  }, [tiposUnidadesEscolares]);
+  const { tipos, tiposOpts, tiposMap } = useTiposUnidade(dreLote, lotes);
+  const alimentacao = useAlimentacao();
+  const { unidadesFiltradas, fetchUnidades, resetUnidades } =
+    useUnidadesEducacionais(form);
+
+  const tipoSelecionado = useMemo(
+    () => tipos.find((t) => t.uuid === tipoUnidade),
+    [tipos, tipoUnidade]
+  );
+
+  const isCemei = useMemo(
+    () => TIPOS_CEMEI.includes(tipoSelecionado?.nome || ""),
+    [tipoSelecionado]
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
-      const tipos = await getTiposUnidadeEscolar();
-      const formatTipos = tipos.data.results.map((t) => ({
-        nome: t.iniciais,
-        uuid: t.uuid,
-      }));
-      setTiposUnidadesEscolares(formatTipos);
-      getLotesAsync(setLotes, "uuid", "nome");
-    };
-    fetchData();
-  }, []);
-
-  const lotesOpts = useMemo(
-    () => [{ uuid: "", nome: "Selecione a DRE/Lote" }, ...lotes],
-    [lotes]
-  );
-  const tiposUnidadesOpts = useMemo(
-    () => [
-      { uuid: "", nome: "Selecione o Tipo de Unidade" },
-      ...tiposUnidadesEscolares,
-    ],
-    [tiposUnidadesEscolares]
-  );
-
-  const unidadesEducacionaisFiltradas = useMemo(() => {
-    const uuidsJaAdicionados = unidadesParticipantes.map(
-      (u) => u.unidadeEducacionalUuid
-    );
-    return unidadesEducacionaisOpts.filter(
-      (u: any) => !uuidsJaAdicionados.includes(u.value)
-    );
-  }, [unidadesEducacionaisOpts, unidadesParticipantes]);
-
-  const handleBuscarUnidadesEducacionais = async (
-    dreUuid: string,
-    tipoUnidadeUuid: string
-  ) => {
-    if (!dreUuid || !tipoUnidadeUuid) return;
-    const response: ResponseGetEscolasTercTotalInterface =
-      await getEscolasTercTotal({
-        dre: dreUuid,
-        tipo_unidade: tipoUnidadeUuid,
-      });
-    if (response.status === 200) {
-      setUnidadesEducacionaisOpts(
-        response.data.map((escola) => ({
-          value: escola.uuid,
-          label: escola.nome,
-        }))
-      );
-    }
-  };
-
-  const handleBuscarTipoAlimentacao = async (
-    tipoUnidadeUuid: string,
-    setter: any
-  ) => {
-    if (!tipoUnidadeUuid) return;
-    const response = await getVinculosTipoAlimentacaoPorTipoUnidadeEscolar(
-      tipoUnidadeUuid
-    );
-
-    const results = Array.isArray(response?.results) ? response.results : [];
-    const allTipos = results.flatMap((r: any) => r?.tipos_alimentacao ?? []);
-
-    const seen = new Set<string>();
-    const uniqueTipos = [];
-    for (const t of allTipos) {
-      const nome = t?.nome;
-      if (!nome) continue;
-      if (!seen.has(nome)) {
-        seen.add(nome);
-        uniqueTipos.push(t);
-      }
+    if (!dreLote || !tipoUnidade) {
+      alimentacao.reset();
+      resetUnidades();
+      return;
     }
 
-    setter(uniqueTipos.map((t: any) => ({ value: t.uuid, label: t.nome })));
-  };
+    const lote = lotes.find((l) => l.uuid === dreLote);
+    const dreUuid = extractDreUuid(lote);
+
+    if (!dreUuid) return;
+
+    fetchUnidades(dreUuid, tipoUnidade);
+    alimentacao.loadAlimentacao(tipoUnidade, tiposMap, isCemei);
+  }, [dreLote, tipoUnidade, lotes, tiposMap, isCemei]);
 
   const handleAdicionarUnidade = (values: any) => {
     const lote = lotes.find((l) => l.uuid === values.dres_lote);
-    const alimentacoesInscritos = tiposAlimentacaoInscritos
-      .filter((t: any) => values.tipos_alimentacao_inscritos?.includes(t.value))
-      .map((t: any) => t.label);
 
-    const alimentacoesColaboradores = tiposAlimentacaoColaboradores
-      .filter((t: any) =>
-        values.tipos_alimentacao_colaboradores?.includes(t.value)
-      )
-      .map((t: any) => t.label);
+    const mapAlimentacoes = (opcoes: any[], selecionados: string[] = []) =>
+      opcoes.filter((o) => selecionados.includes(o.value)).map((o) => o.label);
 
-    const alimentacoesInfantil = tiposAlimentacaoInscritosInfantil
-      .filter((t: any) =>
-        values.tipos_alimentacao_inscritos_infantil?.includes(t.value)
-      )
-      .map((t: any) => t.label);
+    const novasUnidades = values.unidades_educacionais.flatMap(
+      (uuid: string) => {
+        const unidade = unidadesFiltradas.find((u: any) => u.value === uuid);
+        const base = {
+          dreLoteNome: lote?.nome || "",
+          loteUuid: lote?.uuid,
+          unidadeEducacionalUuid: uuid,
+          unidadeEducacional: unidade?.label || "",
+          numeroInscritos: 0,
+          numeroColaboradores: 0,
+          liberarMedicao: true,
+          alimentacaoColaboradores: mapAlimentacoes(
+            alimentacao.colaboradores,
+            values.tipos_alimentacao_colaboradores
+          ),
+          tiposAlimentacaoColaboradoresUuids:
+            values.tipos_alimentacao_colaboradores || [],
+        };
 
-    const novasUnidades = values.unidades_educacionais.map((uuid: string) => {
-      const unidade = unidadesEducacionaisOpts.find(
-        (u: any) => u.value === uuid
-      );
-      return {
-        id: `${Date.now()}-${Math.random()}`,
-        dreLote: lote?.nome || "",
-        unidadeEducacional: unidade?.label || "",
-        unidadeEducacionalUuid: uuid,
-        numeroInscritos: 0,
-        numeroColaboradores: 0,
-        liberarMedicao: true,
-        alimentacaoInscritos: alimentacoesInscritos,
-        alimentacaoColaboradores: alimentacoesColaboradores,
-        alimentacaoInscritosInfantil: alimentacoesInfantil,
-      };
+        if (isCemei) {
+          return ["CEI", "EMEI"].map((tipo) => ({
+            ...base,
+            id: `${Date.now()}-${Math.random()}-${tipo}`,
+            ceiOuEmei: tipo,
+            alimentacaoInscritos: mapAlimentacoes(
+              alimentacao.inscritos,
+              values.tipos_alimentacao_inscritos
+            ),
+            alimentacaoInscritosInfantil: mapAlimentacoes(
+              alimentacao.inscritosInfantil,
+              values.tipos_alimentacao_inscritos_infantil
+            ),
+            tiposAlimentacaoInscritosUuids:
+              values.tipos_alimentacao_inscritos || [],
+            tiposAlimentacaoInfantilUuids:
+              values.tipos_alimentacao_inscritos_infantil || [],
+          }));
+        }
+
+        return [
+          {
+            ...base,
+            id: `${Date.now()}-${Math.random()}`,
+            alimentacaoInscritos: mapAlimentacoes(
+              alimentacao.inscritos,
+              values.tipos_alimentacao_inscritos
+            ),
+            alimentacaoInscritosInfantil: [],
+            tiposAlimentacaoInscritosUuids:
+              values.tipos_alimentacao_inscritos || [],
+            tiposAlimentacaoInfantilUuids: [],
+          },
+        ];
+      }
+    );
+
+    novasUnidades.forEach((unidade) => {
+      form.mutators.push("unidades_participantes", unidade);
     });
 
-    setUnidadesParticipantes((prev) => [...novasUnidades, ...prev]);
     closeModal();
   };
 
@@ -186,92 +146,55 @@ export const ModalAdicionarUnidadeEducacional = ({
       data-testid="modal-adicionar-unidade"
     >
       <Modal.Header closeButton>
-        <Modal.Title className="modal-cadastro-edital">
-          Adicionar Unidades Educacionais
-        </Modal.Title>
+        <Modal.Title>Adicionar Unidades Educacionais</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Form
           keepDirtyOnReinitialize
           onSubmit={() => {}}
-          render={({
-            handleSubmit,
-            values,
-            form,
-            submitting: formSubmitting,
-          }) => {
-            const hasDreLote = Boolean(values?.dres_lote);
-            const hasTipoUnidade = Boolean(values?.tipos_unidades);
-            const enableSeletores = hasDreLote && hasTipoUnidade;
-
-            const tipoUnidadeSelecionado = tiposUnidadesEscolares.find(
-              (t: any) => t.uuid === values?.tipos_unidades
+          render={({ values, form: formApi, submitting: formSubmitting }) => {
+            const enableSelectors = Boolean(
+              values?.dres_lote && values?.tipos_unidades
             );
-            const mostrarSeletorInfantil =
-              tipoUnidadeSelecionado?.nome === "CEMEI" ||
-              tipoUnidadeSelecionado?.nome === "CEU CEMEI";
 
-            // Validação dos campos obrigatórios
-            const hasUnidadesEducacionais =
-              values?.unidades_educacionais &&
-              values.unidades_educacionais.length > 0;
-
-            const hasTiposAlimentacaoInscritos =
-              values?.tipos_alimentacao_inscritos &&
-              values.tipos_alimentacao_inscritos.length > 0;
-
-            const hasTiposAlimentacaoInscritosInfantil =
-              !mostrarSeletorInfantil ||
-              (values?.tipos_alimentacao_inscritos_infantil &&
-                values.tipos_alimentacao_inscritos_infantil.length > 0);
-
-            const addDisabled =
+            const isAddDisabled =
               submitting ||
               formSubmitting ||
-              !hasDreLote ||
-              !hasTipoUnidade ||
-              !hasUnidadesEducacionais ||
-              !hasTiposAlimentacaoInscritos ||
-              !hasTiposAlimentacaoInscritosInfantil;
+              !values?.dres_lote ||
+              !values?.tipos_unidades ||
+              !values?.unidades_educacionais?.length ||
+              !values?.tipos_alimentacao_inscritos?.length ||
+              (isCemei &&
+                !values?.tipos_alimentacao_inscritos_infantil?.length);
+
+            const resetDependentFields = () => {
+              formApi.change("unidades_educacionais", []);
+              formApi.change("tipos_alimentacao_inscritos", []);
+              formApi.change("tipos_alimentacao_colaboradores", []);
+              formApi.change("tipos_alimentacao_inscritos_infantil", []);
+            };
 
             useEffect(() => {
-              if (hasDreLote && hasTipoUnidade) {
-                const lote = lotes.find((l) => l.uuid === values.dres_lote);
-                const dreUuid = lote?.dreUuid;
-
-                if (dreUuid) {
-                  handleBuscarUnidadesEducacionais(
-                    dreUuid,
-                    values.tipos_unidades
-                  );
-                  handleBuscarTipoAlimentacao(
-                    values.tipos_unidades,
-                    setTiposAlimentacaoInscritos
-                  );
-                  handleBuscarTipoAlimentacao(
-                    tiposMap["EMEF"]?.uuid,
-                    setTiposAlimentacaoColaboradores
-                  );
-
-                  if (mostrarSeletorInfantil) {
-                    handleBuscarTipoAlimentacao(
-                      tiposMap["CEI DIRET"]?.uuid,
-                      setTiposAlimentacaoInscritos
-                    );
-                    handleBuscarTipoAlimentacao(
-                      tiposMap["EMEI"]?.uuid,
-                      setTiposAlimentacaoInscritosInfantil
-                    );
-                  }
-                }
-              } else {
-                setUnidadesEducacionaisOpts([]);
+              const novoDreLote = values?.dres_lote || "";
+              if (dreLote !== novoDreLote) {
+                setDreLote(novoDreLote);
+                formApi.change("tipos_unidades", undefined);
+                formApi.resetFieldState("tipos_unidades");
+                resetDependentFields();
               }
-            }, [values?.dres_lote, values?.tipos_unidades]);
+            }, [values?.dres_lote, dreLote]);
+
+            useEffect(() => {
+              const novoTipoUnidade = values?.tipos_unidades || "";
+              if (tipoUnidade !== novoTipoUnidade) {
+                setTipoUnidade(novoTipoUnidade);
+                resetDependentFields();
+              }
+            }, [values?.tipos_unidades, tipoUnidade]);
 
             return (
-              <form onSubmit={handleSubmit}>
+              <form>
                 <div className="row">
                   <div className="w-50">
                     <Field
@@ -282,6 +205,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                       options={lotesOpts}
                       required
                       validate={required}
+                      naoDesabilitarPrimeiraOpcao
                     />
                   </div>
                   <div className="w-50">
@@ -290,9 +214,10 @@ export const ModalAdicionarUnidadeEducacional = ({
                       dataTestId="select-tipos-unidades"
                       label="Tipos de Unidades"
                       name="tipos_unidades"
-                      options={tiposUnidadesOpts}
+                      options={tiposOpts}
                       required
                       validate={required}
+                      naoDesabilitarPrimeiraOpcao
                     />
                   </div>
                 </div>
@@ -304,17 +229,17 @@ export const ModalAdicionarUnidadeEducacional = ({
                     label="Unidades Educacionais"
                     name="unidades_educacionais"
                     placeholder="Selecione as Unidades Educacionais"
-                    options={unidadesEducacionaisFiltradas}
+                    options={unidadesFiltradas}
                     selected={values?.unidades_educacionais || []}
                     required
                     validate={required}
-                    disabled={!enableSeletores}
-                    onSelectedChanged={(values_) => {
-                      form.change(
+                    disabled={!enableSelectors}
+                    onSelectedChanged={(vals) =>
+                      formApi.change(
                         "unidades_educacionais",
-                        values_.map((v) => v.value)
-                      );
-                    }}
+                        vals.map((v) => v.value)
+                      )
+                    }
                   />
                 </div>
 
@@ -322,21 +247,21 @@ export const ModalAdicionarUnidadeEducacional = ({
                   <div className="w-50">
                     <Field
                       component={MultiselectRaw}
-                      label={`Tipos de Alimentações para Inscritos ${
-                        mostrarSeletorInfantil && "CEI"
+                      label={`Tipos de Alimentações para Inscritos${
+                        isCemei ? " - CEI" : ""
                       }`}
                       name="tipos_alimentacao_inscritos"
-                      options={tiposAlimentacaoInscritos}
+                      options={alimentacao.inscritos}
                       selected={values?.tipos_alimentacao_inscritos || []}
                       required
                       validate={required}
-                      disabled={!enableSeletores}
-                      onSelectedChanged={(values_) => {
-                        form.change(
+                      disabled={!enableSelectors}
+                      onSelectedChanged={(vals) =>
+                        formApi.change(
                           "tipos_alimentacao_inscritos",
-                          values_.map((v) => v.value)
-                        );
-                      }}
+                          vals.map((v) => v.value)
+                        )
+                      }
                     />
                   </div>
 
@@ -345,38 +270,38 @@ export const ModalAdicionarUnidadeEducacional = ({
                       component={MultiselectRaw}
                       label="Tipos de Alimentações para Colaboradores"
                       name="tipos_alimentacao_colaboradores"
-                      options={tiposAlimentacaoColaboradores}
+                      options={alimentacao.colaboradores}
                       selected={values?.tipos_alimentacao_colaboradores || []}
-                      disabled={!enableSeletores}
-                      onSelectedChanged={(values_) => {
-                        form.change(
+                      disabled={!enableSelectors}
+                      onSelectedChanged={(vals) =>
+                        formApi.change(
                           "tipos_alimentacao_colaboradores",
-                          values_.map((v) => v.value)
-                        );
-                      }}
+                          vals.map((v) => v.value)
+                        )
+                      }
                     />
                   </div>
 
-                  {mostrarSeletorInfantil && (
+                  {isCemei && (
                     <div className="w-50">
                       <Field
                         component={MultiselectRaw}
                         dataTestId="multiselect-tipos-alimentacao-inscritos-infantil"
                         label="Tipos de Alimentações para Inscritos - INFANTIL"
                         name="tipos_alimentacao_inscritos_infantil"
-                        options={tiposAlimentacaoInscritosInfantil}
+                        options={alimentacao.inscritosInfantil}
                         selected={
                           values?.tipos_alimentacao_inscritos_infantil || []
                         }
                         required
                         validate={required}
-                        disabled={!enableSeletores}
-                        onSelectedChanged={(values_) => {
-                          form.change(
+                        disabled={!enableSelectors}
+                        onSelectedChanged={(vals) =>
+                          formApi.change(
                             "tipos_alimentacao_inscritos_infantil",
-                            values_.map((v) => v.value)
-                          );
-                        }}
+                            vals.map((v) => v.value)
+                          )
+                        }
                       />
                     </div>
                   )}
@@ -394,7 +319,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                     texto="Adicionar"
                     dataTestId="modal-adicionar-botao"
                     type={BUTTON_TYPE.BUTTON}
-                    disabled={addDisabled}
+                    disabled={isAddDisabled}
                     onClick={() => handleAdicionarUnidade(values)}
                     style={BUTTON_STYLE.GREEN}
                     className="ms-2"

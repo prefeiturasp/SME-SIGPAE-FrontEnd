@@ -16,7 +16,7 @@
   .tabela-unidades-participantes {
     font-size: 12px;
     color: $blackInput;
-    width: 98%;
+    width: 100%;
     font-size: 14px;
 
     thead {
@@ -44,6 +44,14 @@
   .calendario {
     width: 25%;
     max-width: 240px;
+  }
+
+  .esconde-asterisco .required-asterisk {
+      display: none;
+  }
+
+  .required-asterisk {
+    color: #a50e05;
   }
 
   .verde {

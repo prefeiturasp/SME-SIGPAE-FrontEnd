@@ -37,6 +37,7 @@ export const InputText = (props) => {
     exibeTooltipRPLAutorizadas,
     exibeTooltipLPRAutorizadas,
     exibeTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
+    exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
     exibeTooltipKitLancheSolAlimentacoes,
     exibeTooltipQtdLancheEmergencialDiferenteSolAlimentacoesAutorizadas,
     exibeTooltipLancheEmergencialNaoAutorizado,
@@ -187,6 +188,15 @@ export const InputText = (props) => {
         </Tooltip>
       )}
       {exibeTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas && (
+        <Tooltip
+          title={
+            "Quantidade lançada diferente da autorizada. Justifique na Observação para análise de CODAE."
+          }
+        >
+          <i className="fas fa-info icone-info-warning" />
+        </Tooltip>
+      )}
+      {exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas && (
         <Tooltip
           title={
             "Quantidade lançada diferente da autorizada. Justifique na Observação para análise de CODAE."
@@ -346,6 +356,7 @@ export const InputText = (props) => {
             exibeTooltipRPLAutorizadas ||
             exibeTooltipLPRAutorizadas ||
             exibeTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas ||
+            exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas ||
             exibeTooltipKitLancheSolAlimentacoes ||
             exibeTooltipQtdLancheEmergencialDiferenteSolAlimentacoesAutorizadas ||
             exibeTooltipLancheEmergencialNaoAutorizado ||
