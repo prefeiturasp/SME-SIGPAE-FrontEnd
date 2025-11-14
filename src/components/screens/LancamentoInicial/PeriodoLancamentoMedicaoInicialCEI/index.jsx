@@ -57,6 +57,7 @@ import {
   getSolicitacoesInclusaoAutorizadasAsync,
 } from "../PeriodoLancamentoMedicaoInicial/helper";
 import {
+  calcularSomaKitLanches,
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
   campoLancheComLPRAutorizadaESemObservacao,
@@ -72,6 +73,7 @@ import {
   exibirTooltipLancheEmergencialZeroAutorizadoJustificado,
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
   exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
+  exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
   exibirTooltipRPLAutorizadas,
   exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
@@ -1694,6 +1696,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   const fieldValidationsTabelasEmeidaCemei =
     (rowName, dia, idCategoria, nomeCategoria) => (value, allValues) => {
+      if (nomeCategoria.includes("SOLICITAÇÕES")) {
+        if (
+          rowName === "kit_lanche" &&
+          Number(value) > calcularSomaKitLanches(kitLanchesAutorizadas, dia)
+        ) {
+          return "Não é possível aumentar a quantidade de kits. Corrija o apontamento.";
+        }
+        return undefined;
+      }
       if (nomeCategoria === "ALIMENTAÇÃO") {
         return validacoesTabelaAlimentacaoEmeidaCemei(
           rowName,
@@ -2348,7 +2359,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alteracoesAlimentacaoAutorizadas,
                                                           validacaoDiaLetivo,
                                                         )}
-                                                        exibeTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas(
+                                                        exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
                                                           formValuesAtualizados,
                                                           row,
                                                           column,
