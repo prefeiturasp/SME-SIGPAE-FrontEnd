@@ -34,6 +34,9 @@ export function TabelaAlimentacaoCEI({
   const nomeTabela = "Preço das Alimentações";
   const chaveTabela = `${nomeTabela} - ${labelTabela}`;
 
+  const formatarTotal = (value: number) =>
+    String(value.toFixed(2)).replace(".", ",");
+
   const retornaTotal = (
     value: string,
     campo: CampoValor,
@@ -45,7 +48,7 @@ export function TabelaAlimentacaoCEI({
         : registro?.valor_unitario,
     );
     const valorTotal = stringDecimalToNumber(value) + valorSoma;
-    return valorTotal ? String(valorTotal).replace(".", ",") : undefined;
+    return valorTotal ? formatarTotal(valorTotal) : undefined;
   };
 
   const atualizaPendencias = (record: RecordItem, valorFormatado: string) => {
@@ -66,7 +69,7 @@ export function TabelaAlimentacaoCEI({
 
       form.change(
         `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
-        valorUnitarioTotal.toFixed(2),
+        formatarTotal(valorUnitarioTotal),
       );
     });
   };
