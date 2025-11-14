@@ -48,12 +48,7 @@ export function TabelaAlimentacaoCEI({
     return valorTotal ? String(valorTotal).replace(".", ",") : undefined;
   };
 
-  const atualizaPendencias = (
-    tabelas: object[],
-    campo: CampoValor,
-    record: RecordItem,
-    valorFormatado: string,
-  ) => {
+  const atualizaPendencias = (record: RecordItem, valorFormatado: string) => {
     pendencias.forEach((e) => {
       const chaveTabela = `${e} - ${labelTabela}`;
 
@@ -62,17 +57,16 @@ export function TabelaAlimentacaoCEI({
         valorFormatado,
       );
 
-      const registro = tabelas?.[chaveTabela]?.[record.__str__];
-      const valorTotalPendencia = retornaTotal(
-        valorFormatado ?? "",
-        campo,
-        registro,
-      );
+      const percentualAcrescimo =
+        form.getState().values.tabelas[chaveTabela]?.[record.__str__]
+          ?.percentual_acrescimo || "0";
+      const valorUnitarioTotal =
+        stringDecimalToNumber(valorFormatado) *
+        (1 + stringDecimalToNumber(percentualAcrescimo) / 100);
+
       form.change(
         `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
-        valorTotalPendencia
-          ? stringDecimalToNumber(valorTotalPendencia).toFixed(2)
-          : null,
+        valorUnitarioTotal.toFixed(2),
       );
     });
   };
@@ -95,7 +89,7 @@ export function TabelaAlimentacaoCEI({
       `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
       valorFormatado,
     );
-    atualizaPendencias(tabelas, campo, record, valorFormatado);
+    atualizaPendencias(record, valorFormatado);
   };
 
   return (

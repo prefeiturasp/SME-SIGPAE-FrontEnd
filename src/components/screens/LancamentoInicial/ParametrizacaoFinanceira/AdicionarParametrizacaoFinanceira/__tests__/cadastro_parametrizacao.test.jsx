@@ -15,6 +15,7 @@ import { mockMeusDadosSuperUsuarioMedicao } from "src/mocks/meusDados/superUsuar
 import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockListaNumeros } from "src/mocks/LancamentoInicial/CadastroDeClausulas/listaDeNumeros";
+import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
 import AdicionarParametrizacaoFinanceira from "../index";
 import mock from "src/services/_mock";
 
@@ -43,6 +44,10 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosSuperUsuarioMedicao);
     mock.onPost("/medicao-inicial/parametrizacao-financeira/").reply(201, {});
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosSuperUsuarioMedicao);
+    mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
@@ -89,21 +94,40 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     fireEvent.change(input, { target: { value: valor } });
   };
 
-  it("deve preencher os campos obrigatórios do formulário e salvar", async () => {
+  it("deve preencher os campos obrigatórios do formulário e clica em salvar", async () => {
     setSelect("edital-select", "752c11a3-b4fe-4f1c-b9af-61d42f0a6b56");
     setSelect("lote-select", "e67daf61-810c-45f0-8eeb-a75dbe4be608");
-    setSelect("grupo-unidade-select", "550e8400-e29b-41d4-a716-446655440000");
+    setSelect("grupo-unidade-select", "3601dfe6-4dd5-4099-9607-00cbfd04f49e");
     setData("data_inicial", "01/09/2025");
 
-    /*const botao = screen.getByTestId("botao-salvar");
+    const botao = screen.getByTestId("botao-salvar");
     expect(botao).toBeInTheDocument();
     fireEvent.click(botao);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Parametrização Financeira salva com sucesso!"),
+        screen.getByText("Salvar Parametrização Financeira"),
       ).toBeInTheDocument();
-    });*/
+    });
+  });
+
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 1", async () => {
+    setSelect("edital-select", "752c11a3-b4fe-4f1c-b9af-61d42f0a6b56");
+    setSelect("lote-select", "e67daf61-810c-45f0-8eeb-a75dbe4be608");
+    setSelect("grupo-unidade-select", "550e8400-e29b-41d4-a716-446655440000");
+    setData("data_inicial", "01/09/2025");
+
+    const botao = screen.getByTestId("botao-carregar");
+    expect(botao).toBeInTheDocument();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(
+        screen.getAllByText(/Dietas Tipo A e Tipo A Enteral/i),
+      ).toHaveLength(2);
+      expect(screen.getAllByText(/Preço das Alimentações/i)).toHaveLength(2);
+      expect(screen.getAllByText(/Dietas Tipo B/i)).toHaveLength(2);
+    });
   });
 
   it("deve clicar em cancelar e exibir modal de cancelamento", async () => {
