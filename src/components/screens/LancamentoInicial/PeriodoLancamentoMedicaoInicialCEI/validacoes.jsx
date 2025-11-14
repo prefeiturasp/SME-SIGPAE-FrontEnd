@@ -370,13 +370,6 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
 
   if (ehProgramasEProjetosLocation) {
     if (
-      rowName === "frequencia" &&
-      !allValues[`frequencia__dia_${dia}__categoria_${categoria}`] &&
-      inclusoesAutorizadas.some((inclusao) => dia === String(inclusao.dia)) &&
-      ehProgramasEProjetosLocation
-    ) {
-      return "Foi autorizada inclusão de alimentação contínua nesta data. Informe a frequência de alunos.";
-    } else if (
       value &&
       Number(value) > maxNumeroDeAlunos &&
       inputName.includes("frequencia")
