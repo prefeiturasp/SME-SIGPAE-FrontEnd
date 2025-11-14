@@ -25,6 +25,9 @@ export default ({
       : `Período ${periodo}`;
   const chaveTabela = `${nomeTabela} - ${labelTabela}`;
 
+  const formatarTotal = (value: number) =>
+    String(value.toFixed(2)).replace(".", ",");
+
   const atualizarPercentuais = (value: string) => {
     faixasEtarias.forEach((faixa) => {
       form.change(
@@ -41,7 +44,7 @@ export default ({
 
       form.change(
         `tabelas[${chaveTabela}].${faixa.__str__}.valor_unitario_total`,
-        valorUnitarioTotal.toFixed(2),
+        formatarTotal(valorUnitarioTotal),
       );
     });
   };
@@ -98,7 +101,7 @@ export default ({
 
                   form.change(
                     `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
-                    valorUnitarioTotal.toFixed(2),
+                    formatarTotal(valorUnitarioTotal),
                   );
                   form.change(
                     `tabelas[${chaveTabela}].${record.__str__}.valor_unitario`,
@@ -132,7 +135,7 @@ export default ({
 
                   form.change(
                     `tabelas[${chaveTabela}].${record.__str__}.valor_unitario_total`,
-                    valorUnitarioTotal.toFixed(2),
+                    formatarTotal(valorUnitarioTotal),
                   );
                   form.change(
                     `tabelas[${chaveTabela}].${record.__str__}.percentual_acrescimo`,
