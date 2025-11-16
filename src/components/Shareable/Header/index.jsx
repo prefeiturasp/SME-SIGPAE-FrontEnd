@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import authService from "../../../services/auth";
 import "./style.scss";
@@ -14,6 +14,7 @@ import { temas, TemaContext } from "src/context/TemaContext";
 
 export const Header = ({ toggled }) => {
   const temaContext = useContext(TemaContext);
+  const [menuAberto, setMenuAberto] = useState(false);
 
   const getTema = () => (temaContext.tema === temas.dark ? "dark" : "light");
 
@@ -40,15 +41,19 @@ export const Header = ({ toggled }) => {
           </div>
           <button
             className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarResponsive"
-            aria-controls="navbarResponsive"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
+            onClick={() => setMenuAberto(!menuAberto)}
           >
             <span className="navbar-toggler-icon" />
           </button>
+
+          {menuAberto && (
+            <div id="navbarResponsive1" className="menu-simples-mobile">
+              <a href="/ajuda">Ajuda</a>
+              <a href="/central-de-downloads">Downloads</a>
+              <a href="/notificacoes">Notificações</a>
+              <a onClick={() => authService.logout()}>Sair</a>
+            </div>
+          )}
 
           <div className="collapse navbar-collapse" id="navbarResponsive">
             <ul className="navbar-nav ms-auto">

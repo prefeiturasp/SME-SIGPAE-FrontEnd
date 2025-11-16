@@ -24,7 +24,7 @@ export const Sidebar = ({ ...props }) => {
   }, [apiVersion]);
 
   return (
-    <div>
+    <div className="d-none d-sm-none d-md-none d-lg-block">
       <div className="mb-5" />
       <ul
         className={`navbar-nav bg-gradiente-sme sidebar sidebar-dark accordion ps-2 pt-5

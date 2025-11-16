@@ -68,3 +68,29 @@
     }
   }
 }
+
+.menu-simples-mobile {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 13.5em;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+
+  position: absolute;
+  right: 15px; // fica alinhado com o burger
+  z-index: 9999;
+
+  a {
+    padding: 8px 0;
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+
+    &:hover {
+      color: #00854d;
+    }
+  }
+}
