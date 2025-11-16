@@ -1,20 +1,20 @@
-import React, { useContext, useState } from "react";
+import { useContext } from "react";
+import { slide as Menu } from "react-burger-menu";
 import { Link } from "react-router-dom";
-import authService from "../../../services/auth";
-import "./style.scss";
-import { ENVIRONMENT } from "src/constants/config";
-import NotificacoesNavbar from "../NotificacoesNavbar";
-import DownloadsNavbar from "../DownloadsNavbar";
 import { CENTRAL_DOWNLOADS } from "src/configs/constants";
+import { ENVIRONMENT } from "src/constants/config";
+import { TemaContext, temas } from "src/context/TemaContext";
 import {
   usuarioEhEscolaAbastecimento,
   usuarioEhEscolaAbastecimentoDiretor,
 } from "src/helpers/utilities";
-import { temas, TemaContext } from "src/context/TemaContext";
+import authService from "../../../services/auth";
+import DownloadsNavbar from "../DownloadsNavbar";
+import NotificacoesNavbar from "../NotificacoesNavbar";
+import "./style.scss";
 
 export const Header = ({ toggled }) => {
   const temaContext = useContext(TemaContext);
-  const [menuAberto, setMenuAberto] = useState(false);
 
   const getTema = () => (temaContext.tema === temas.dark ? "dark" : "light");
 
@@ -39,21 +39,17 @@ export const Header = ({ toggled }) => {
             {ENVIRONMENT === "homolog" && retornaMarcaDagua("hom")}
             {ENVIRONMENT === "treinamento" && retornaMarcaDagua("tre")}
           </div>
-          <button
-            className="navbar-toggler"
-            onClick={() => setMenuAberto(!menuAberto)}
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
-
-          {menuAberto && (
-            <div id="navbarResponsive1" className="menu-simples-mobile">
-              <a href="/ajuda">Ajuda</a>
-              <a href="/central-de-downloads">Downloads</a>
-              <a href="/notificacoes">Notificações</a>
-              <a onClick={() => authService.logout()}>Sair</a>
-            </div>
-          )}
+          <Menu right>
+            <a id="home" className="menu-item" href="/">
+              Home
+            </a>
+            <a id="about" className="menu-item" href="/about">
+              About
+            </a>
+            <a id="contact" className="menu-item" href="/contact">
+              Contact
+            </a>
+          </Menu>
 
           <div className="collapse navbar-collapse" id="navbarResponsive">
             <ul className="navbar-nav ms-auto">
