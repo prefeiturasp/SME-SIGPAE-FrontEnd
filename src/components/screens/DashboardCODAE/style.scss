@@ -1,3 +1,17 @@
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+
+  .recreio-cadastrados-botao {
+    width: auto !important;
+  }
+}
+
+.input {
+  padding-right: 0px;
+}
+
 .dre-nome {
   display: flex;
   align-items: center;
