@@ -1,30 +1,8 @@
-import axios from "src/services/_base";
-import {
-  PEDIDOS,
-  FLUXO,
-  AUTH_TOKEN,
-  URL_KIT_LANCHES,
-} from "src/services/constants";
-import { getPath } from "./helper";
 import { TIPO_SOLICITACAO } from "src/constants/shared";
+import axios from "src/services/_base";
+import { AUTH_TOKEN, FLUXO, PEDIDOS } from "src/services/constants";
 import { ErrorHandlerFunction } from "src/services/service-helpers";
-
-export const atualizarKitLanche = async (values) => {
-  const OBJ_REQUEST = {
-    headers: AUTH_TOKEN,
-    method: "PUT",
-    body: JSON.stringify(values),
-  };
-
-  return await fetch(`${URL_KIT_LANCHES}/${values.id}/`, OBJ_REQUEST)
-    .then((response) => {
-      return response.json();
-    })
-    .catch((erro) => {
-      // eslint-disable-next-line
-      console.log("Atualizar Kit Lanche: ", erro);
-    });
-};
+import { getPath } from "./helper";
 
 export const removeKitLanche = async (uuid, tipoSolicitacao) => {
   //TODO: conferir params
@@ -81,21 +59,6 @@ export const getSolicitacoesKitLanche = async (tipoSolicitacao) => {
   return response.data;
 };
 
-export const getRefeicoes = async () => {
-  const OBJ_REQUEST = {
-    headers: AUTH_TOKEN,
-    method: "GET",
-  };
-
-  return await fetch(`${URL_KIT_LANCHES}`, OBJ_REQUEST)
-    .then((response) => {
-      return response.json();
-    })
-    .catch((erro) => {
-      return erro;
-    });
-};
-
 export const getKitLanches = async (params = null) => {
   const url = `/kit-lanches/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -123,5 +86,9 @@ export const getDetalheKitLancheAvulsa = (uuid, tipoSolicitacao) => {
 
 export const getKitsLanche = async (params) => {
   const url = `/kit-lanches/consulta-kits/`;
-  return await axios.get(url, { params });
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };

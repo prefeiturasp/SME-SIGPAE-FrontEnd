@@ -1,20 +1,40 @@
-interface ParametrizacaoFinanceiraTabelaValor {
-  tipo_alimentacao: string;
-  grupo: string;
-  valor_colunas: Record<string, any>;
-}
+export type ValorLinha = {
+  faixa_etaria?: string;
+  tipo_alimentacao?: string;
+  valor_unitario_reajuste: string;
+  valor_unitario: string;
+  percentual_acrescimo: string;
+};
 
-interface ParametrizacaoFinanceiraTabela {
+export type FaixaEtaria = {
+  __str__: string;
+  uuid: string;
+  inicio: number;
+  fim: number;
+};
+
+export type ValorTabela = {
+  nome_campo: string;
+  tipo_valor: string;
+  faixa_etaria?: FaixaEtaria;
+  tipo_alimentacao?: string;
+  valor?: string;
+};
+
+export type TabelaParametrizacao = {
   nome: string;
-  valores: Array<ParametrizacaoFinanceiraTabelaValor>;
-}
+  periodo_escolar: string;
+  valores: ValorTabela[];
+};
 
 export interface ParametrizacaoFinanceiraPayload {
   edital: string;
   lote: string;
-  tipos_unidades: Array<string>;
-  tabelas: Array<ParametrizacaoFinanceiraTabela>;
+  grupo_unidade_escolar: string;
+  data_inicial: string;
+  data_final?: string;
   legenda: string;
+  tabelas?: TabelaParametrizacao[] | object;
 }
 
 export interface ParametrizacaoFinanceiraParams {
@@ -36,15 +56,12 @@ export interface ParametrizacaoFinanceiraInterface {
   edital: Edital;
   dre: string;
   lote: Lote;
-  tipos_unidades: TipoUnidade[];
+  grupo_unidade_escolar: GrupoUnidadeEscolar;
+  data_inicial: string;
+  data_final: string;
   legenda: string;
-  tabelas: Tabela[];
+  tabelas?: TabelaParametrizacao[];
 }
-
-type Tabela = {
-  nome: string;
-  valores: [];
-};
 
 type Edital = {
   uuid: string;
@@ -59,4 +76,10 @@ type Lote = {
 export type TipoUnidade = {
   uuid: string;
   iniciais: string;
+};
+
+export type GrupoUnidadeEscolar = {
+  uuid: string;
+  nome: string;
+  tipos_unidades: TipoUnidade[];
 };

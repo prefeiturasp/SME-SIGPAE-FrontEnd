@@ -1,47 +1,33 @@
 import { useEffect, useState, Dispatch, SetStateAction } from "react";
-
 import { getNumerosEditais } from "src/services/edital.service";
 import { getLotesSimples } from "src/services/lote.service";
-import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
+import { getGrupoUnidadeEscolar } from "src/services/escola.service";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
-import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
-
 import { toastError } from "src/components/Shareable/Toast/dialogs";
-
-import { TIPOS_UNIDADES_GRUPOS } from "../../const";
-
+import {
+  ParametrizacaoFinanceiraPayload,
+  GrupoUnidadeEscolar,
+  TipoUnidade,
+} from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import { SelectOption } from "src/interfaces/option.interface";
 import { FormApi } from "final-form";
-
-type SelectOption = {
-  uuid: string;
-  nome: string;
-};
-
-type TipoUnidade = {
-  uuid: string;
-  iniciais: string;
-};
-
-type FormValues = {
-  edital: string;
-  lote: string;
-  tipos_unidades: string;
-  tabelas?: Record<string, any>;
-  legenda: string;
-};
+import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
+import { carregarValores } from "../../helpers";
 
 type Props = {
-  setTiposAlimentacao: Dispatch<SetStateAction<Array<any>>>;
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
+  setEditalSelecionado: Dispatch<SetStateAction<string>>;
+  setLoteSelecionado: Dispatch<SetStateAction<string>>;
   setFaixasEtarias: Dispatch<SetStateAction<Array<any>>>;
-  setParametrizacao: Dispatch<SetStateAction<FormValues>>;
+  setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
   uuidParametrizacao: string;
   form: FormApi<any, any>;
 };
 
 export default ({
-  setTiposAlimentacao,
   setGrupoSelecionado,
+  setEditalSelecionado,
+  setLoteSelecionado,
   setFaixasEtarias,
   setParametrizacao,
   uuidParametrizacao,
@@ -49,8 +35,7 @@ export default ({
 }: Props) => {
   const [editais, setEditais] = useState<SelectOption[]>([]);
   const [lotes, setLotes] = useState<SelectOption[]>([]);
-  const [tiposUnidades, setTiposUnidades] = useState([]);
-  const [tiposUnidadesOpcoes, setTiposUnidadesOpcoes] = useState<
+  const [gruposUnidadesOpcoes, setGruposUnidadesOpcoes] = useState<
     SelectOption[]
   >([]);
   const [carregando, setCarregando] = useState(true);
@@ -96,15 +81,25 @@ export default ({
     }
   };
 
-  const getTiposUnidadeEscolarAsync = async () => {
-    const response = await getTiposUnidadeEscolarTiposAlimentacao();
+  const getGruposTiposUnidades = (gruposUnidades: GrupoUnidadeEscolar[]) => {
+    return gruposUnidades.map((grupo: GrupoUnidadeEscolar) => {
+      const uuid = grupo.uuid;
+      const nome = `${grupo.nome} (${grupo.tipos_unidades.map((e: TipoUnidade) => e.iniciais).join(", ")})`;
+      return {
+        uuid,
+        nome,
+      };
+    });
+  };
+
+  const getGrupoUnidadeEscolarAsync = async () => {
+    const response = await getGrupoUnidadeEscolar();
     if (response.status === 200) {
-      setTiposUnidades(response.data.results);
-      setTiposUnidadesOpcoes(
+      setGruposUnidadesOpcoes(
         [
           {
             uuid: "",
-            nome: "Selecione o tipo de unidade",
+            nome: "Selecione os tipos de unidades",
           },
         ].concat(getGruposTiposUnidades(response.data.results)),
       );
@@ -131,7 +126,7 @@ export default ({
     Promise.all([
       getEditaisAsync(),
       getLotesAsync(),
-      getTiposUnidadeEscolarAsync(),
+      getGrupoUnidadeEscolarAsync(),
       setFaixasEtarias && getFaixasEtariasAsync(),
       uuidParametrizacao && getParametrizacao(uuidParametrizacao),
     ]).then(() => {
@@ -142,14 +137,18 @@ export default ({
   const getParametrizacao = async (uuid: string) => {
     try {
       const response =
-        await ParametrizacaoFinanceiraService.getParametrizacaoFinanceira(uuid);
-
+        await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
+          uuid,
+        );
+      const dadosTabelas = carregarValores(response.tabelas);
       const parametrizacao = {
         edital: response.edital.uuid,
         lote: response.lote.uuid,
-        tipos_unidades: formataGrupoUnidades(response.tipos_unidades),
+        grupo_unidade_escolar: response.grupo_unidade_escolar.uuid,
+        data_inicial: response.data_inicial,
+        data_final: response.data_final,
         legenda: response.legenda,
-        tabelas: formataTabelaValores(response.tabelas),
+        tabelas: dadosTabelas,
       };
 
       setParametrizacao(parametrizacao);
@@ -160,154 +159,46 @@ export default ({
     }
   };
 
-  const formataTabelaValores = (tabelas) => {
-    const tabelasValores = Object.fromEntries(
-      tabelas.map((tabela) => {
-        const values = tabela.valores.reduce((acc, item: any) => {
-          const key = item.faixa_etaria
-            ? item.faixa_etaria.__str__
-            : `${item.tipo_alimentacao?.nome}_${item.grupo}`;
-
-          return {
-            ...acc,
-            [key]: {
-              tipo_alimentacao: item.tipo_alimentacao?.uuid,
-              faixa_etaria: item.faixa_etaria?.uuid,
-              grupo: item.grupo,
-              valor_unitario: item.valor_colunas.valor_unitario,
-              valor_unitario_reajuste:
-                item.valor_colunas.valor_unitario_reajuste,
-              percentual_acrescimo: item.valor_colunas?.percentual_acrescimo,
-              valor_unitario_total: item.valor_colunas?.valor_unitario_total,
-            },
-          };
-        }, {});
-
-        return [tabela.nome, values];
-      }),
-    );
-    return tabelasValores;
-  };
-
   useEffect(() => {
     requisicoesPreRender();
   }, []);
 
-  const initialTiposUnidades =
-    uuidParametrizacao && form.getState().values?.tipos_unidades;
+  const initialEdital = uuidParametrizacao && form.getState().values?.edital;
+  const onChangeEdital = (edital: string) => {
+    form.change("edital", edital);
+    setEditalSelecionado(editais.find((e) => e.uuid === edital).nome);
+  };
+
+  const initialLote = uuidParametrizacao && form.getState().values?.lote;
+  const onChangeLote = (lote: string) => {
+    form.change("lote", lote);
+    setLoteSelecionado(lotes.find((e) => e.uuid === lote).nome);
+  };
+
+  const initialGrupoUnidade =
+    uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
+  const onChangeTiposUnidades = (grupo: string) => {
+    form.change("grupo_unidade_escolar", grupo);
+    setGrupoSelecionado(
+      gruposUnidadesOpcoes.find((e) => e.uuid === grupo).nome,
+    );
+  };
 
   useEffect(() => {
-    if (initialTiposUnidades && uuidParametrizacao && !carregando) {
-      onChangeTiposUnidades(initialTiposUnidades);
+    if (uuidParametrizacao && !carregando) {
+      if (initialGrupoUnidade) onChangeTiposUnidades(initialGrupoUnidade);
+      if (initialEdital) onChangeEdital(initialEdital);
+      if (initialLote) onChangeLote(initialLote);
     }
-  }, [initialTiposUnidades, uuidParametrizacao, carregando]);
-
-  const getGruposTiposUnidades = (tiposUnidades) => {
-    const getTipoUnidadeUUID = (tipoUnidade: string): string =>
-      tiposUnidades.find((t) => t.iniciais.toUpperCase() === tipoUnidade).uuid;
-
-    return TIPOS_UNIDADES_GRUPOS.map((grupo) => {
-      const uuid = grupo.map(getTipoUnidadeUUID).join(",");
-      const nome = grupo.join(", ");
-      return {
-        uuid,
-        nome,
-      };
-    });
-  };
-
-  const formataGrupoUnidades = (unidades: TipoUnidade[]) => {
-    let unidadesUuid = "";
-
-    TIPOS_UNIDADES_GRUPOS.forEach((grupo) => {
-      grupo.forEach((tipoUnidade) => {
-        const item = unidades.find((item) => item.iniciais === tipoUnidade);
-        if (item) {
-          unidadesUuid += item.uuid + ",";
-        }
-      });
-    });
-
-    return unidadesUuid.slice(0, -1);
-  };
-
-  const getGrupoSelecionado = (unidades: string) => {
-    let grupoSelecionado = "";
-
-    if (unidades) {
-      const unidadesArray = unidades ? unidades.split(",") : [];
-
-      for (let i = 0; i < TIPOS_UNIDADES_GRUPOS.length; i++) {
-        const grupo = TIPOS_UNIDADES_GRUPOS[i];
-        const todasUnidadesNoGrupo = unidadesArray
-          .map(
-            (unidade) => tiposUnidades.find((u) => u.uuid === unidade).iniciais,
-          )
-          .every((unidade) => grupo.includes(unidade));
-
-        if (todasUnidadesNoGrupo) {
-          grupoSelecionado = `grupo_${i + 1}`;
-          break;
-        }
-      }
-    }
-
-    setGrupoSelecionado(grupoSelecionado);
-    return grupoSelecionado;
-  };
-
-  const onChangeTiposUnidades = (unidades: string) => {
-    const tabelas = form.getState().values?.tabelas;
-    if (tabelas && !uuidParametrizacao) {
-      form.change("tabelas", {});
-    }
-
-    const grupoSelecionado = getGrupoSelecionado(unidades);
-
-    if (grupoSelecionado === "grupo_1") {
-      setTiposAlimentacao([]);
-      return;
-    }
-
-    const unidadesArray = unidades ? unidades.split(",") : [];
-
-    const tiposAlimentacaoUnidades: Array<{
-      uuid: string;
-      nome: string;
-    }> = unidadesArray.reduce((acc, tipoUnidade) => {
-      acc.push(
-        ...tiposUnidades
-          .find((t) => t.uuid === tipoUnidade)
-          .periodos_escolares.reduce((acc, periodoEscolar) => {
-            acc.push(...periodoEscolar.tipos_alimentacao);
-            return acc;
-          }, []),
-      );
-      return acc;
-    }, []);
-
-    const tiposAlimentacaoUnicos = {};
-
-    tiposAlimentacaoUnidades.forEach((tipoAlimentacao) => {
-      tiposAlimentacaoUnicos[tipoAlimentacao.uuid] = tipoAlimentacao.nome;
-    });
-
-    const tiposAlimentacao = Object.entries(tiposAlimentacaoUnicos).map(
-      ([uuid, nome]) => ({
-        uuid,
-        nome,
-        grupo: null,
-      }),
-    );
-
-    setTiposAlimentacao(tiposAlimentacao);
-  };
+  }, [uuidParametrizacao, carregando]);
 
   return {
     carregando,
     editais,
     lotes,
-    tiposUnidadesOpcoes,
+    gruposUnidadesOpcoes,
     onChangeTiposUnidades,
+    onChangeEdital,
+    onChangeLote,
   };
 };

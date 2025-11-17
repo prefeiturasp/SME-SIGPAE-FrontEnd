@@ -1,27 +1,27 @@
 import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
-import { mockDiasCalendarioCEUGESTAO_NOVEMBRO24 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/diasCalendarioCEUGESTAO_NOVEMBRO24";
-import { mockInclusoesAutorizadasCEUGESTAO_ProgramasProjetos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/inclusoesAutorizadasCEUGESTAO_ProgramasProjetos";
+import { mockDiasCalendarioFevereiro2025CEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/diasCalendario_Fevereiro2025";
+import { mockInclusoesETECAutorizadasCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/inclusoesETECAutorizadas";
 import { mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/logQuantidadeDietasAutorizadasCEUGESTAO";
-import { mockStateCEUGESTAO_ProgramasProjetos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockStateCEUGESTAO_ProgramasProjetos";
-import { mockValoresMedicaoCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/valoresMedicaoCEUGESTAO_TARDE";
+import { mockStateETECCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockStateETEC";
+import { mockValoresMedicaoCEUGESTAO_ETEC } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/valoresMedicaoCEUGESTAO_ETEC";
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
+import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
-import { mockTipoAlimentacao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockTipoAlimentacao";
 
-describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuário CEU GESTAO", () => {
+describe("Teste <PeriodoLancamentoMedicaoInicial> - ETEC - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaCEUGESTAO);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/b11a2964-c9e0-488a-bb7f-6e11df2c903b/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/b11a2964-c9e0-488a-bb7f-6e11df2c903b/",
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO);
     mock
@@ -32,31 +32,25 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
       .reply(200, []);
     mock
       .onGet("/escola-solicitacoes/inclusoes-autorizadas/")
-      .reply(200, mockInclusoesAutorizadasCEUGESTAO_ProgramasProjetos);
+      .reply(200, { results: [] });
     mock
       .onGet("/log-quantidade-dietas-autorizadas/")
       .reply(200, mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE);
     mock
       .onGet("/medicao-inicial/valores-medicao/")
-      .reply(200, mockValoresMedicaoCEUGESTAO_TARDE);
+      .reply(200, mockValoresMedicaoCEUGESTAO_ETEC);
+    mock
+      .onGet("/escola-solicitacoes/inclusoes-etec-autorizadas/")
+      .reply(200, mockInclusoesETECAutorizadasCEUGESTAO);
     mock.onGet("/medicao-inicial/dias-para-corrigir/").reply(200, []);
-    mock.onGet("/matriculados-no-mes/").reply(200, []);
-    mock
-      .onGet("/escolas-solicitacoes/suspensoes-autorizadas/")
-      .reply(200, { results: [] });
-    mock
-      .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-      .reply(200, { results: [] });
     mock
       .onGet("/dias-calendario/")
-      .reply(200, mockDiasCalendarioCEUGESTAO_NOVEMBRO24);
+      .reply(200, mockDiasCalendarioFevereiro2025CEUGESTAO);
     mock
       .onGet("/medicao-inicial/medicao/feriados-no-mes/")
-      .reply(200, { results: ["02", "15", "20"] });
+      .reply(200, { results: [] });
 
-    mock.onGet("/tipos-alimentacao/").reply(200, mockTipoAlimentacao);
-
-    const search = `?uuid=546505cb-eef1-4080-a8e8-7538faccf969&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
+    const search = `?uuid=1eb60064-a0e1-4778-a1ee-a64752ef6f1b&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=true&ehPeriodoEspecifico=false`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,
@@ -66,9 +60,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
     await act(async () => {
       render(
         <MemoryRouter
-          initialEntries={[
-            { pathname: "/", state: mockStateCEUGESTAO_ProgramasProjetos },
-          ]}
+          initialEntries={[{ pathname: "/", state: mockStateETECCEUGESTAO }]}
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true,
@@ -83,7 +75,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
           >
             <PeriodoLancamentoMedicaoInicialPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -96,23 +88,23 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
     expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
   });
 
-  it("renderiza valor `Novembro / 2024` no input `Mês do Lançamento`", () => {
+  it("renderiza valor `Fevereiro / 2025` no input `Mês do Lançamento`", () => {
     const inputElement = screen.getByTestId("input-mes-lancamento");
-    expect(inputElement).toHaveAttribute("value", "Novembro / 2024");
+    expect(inputElement).toHaveAttribute("value", "Fevereiro / 2025");
   });
 
   it("renderiza label `Período de Lançamento`", () => {
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("renderiza valor `Programas e Projetos` no input `Período de Lançamento`", () => {
+  it("renderiza valor `ETEC` no input `Período de Lançamento`", () => {
     const inputElement = screen.getByTestId("input-periodo-lancamento");
-    expect(inputElement).toHaveAttribute("value", "Programas e Projetos");
+    expect(inputElement).toHaveAttribute("value", "ETEC");
   });
 
   it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
     expect(
-      screen.getByText("Semanas do Período para Lançamento da Medição Inicial")
+      screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
     ).toBeInTheDocument();
   });
 

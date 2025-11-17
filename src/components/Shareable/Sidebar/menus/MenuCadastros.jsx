@@ -17,6 +17,7 @@ import {
   UNIDADES_MEDIDA,
   MARCAS,
   FABRICANTES,
+  RECREIO_NAS_FERIAS,
 } from "src/configs/constants";
 import {
   usuarioEhAdministradorCONTRATOS,
@@ -32,6 +33,7 @@ import {
   usuarioEhEmpresaFornecedor,
 } from "src/helpers/utilities";
 import { usuarioEhCODAEGestaoProduto } from "../../../../helpers/utilities";
+import { ENVIRONMENT } from "src/constants/config";
 
 const MenuCadastros = () => {
   return (
@@ -94,6 +96,13 @@ const MenuCadastros = () => {
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${FAIXAS_ETARIAS}`}>
             Faixas Etárias
           </LeafItem>
+          {!ENVIRONMENT.includes("production") && (
+            <LeafItem
+              to={`/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`}
+            >
+              Recreio nas Férias
+            </LeafItem>
+          )}
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`}>
             Sobremesa Doce
           </LeafItem>

@@ -1,7 +1,8 @@
-import axios from "./_base";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { API_URL } from "../constants/config";
 import authService from "./auth";
 import { ErrorHandlerFunction } from "./service-helpers";
+import axios from "./_base";
 
 const authToken = {
   Authorization: `JWT ${authService.getToken()}`,
@@ -120,5 +121,30 @@ export const getLotesSimples = async (params = null) => {
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;
+  }
+};
+
+export const getLotesAsync = async (
+  setLotes,
+  valueField = "value",
+  labelField = "label"
+) => {
+  try {
+    const { data } = await getLotesSimples();
+    const lotesOrdenados = data.results.sort((loteA, loteB) => {
+      return loteA.diretoria_regional.nome < loteB.diretoria_regional.nome;
+    });
+    const lotes = lotesOrdenados.map((lote) => {
+      return {
+        [valueField]: lote.uuid,
+        [labelField]: `${lote.nome} - ${lote.diretoria_regional.iniciais}`,
+        dreUuid: lote.diretoria_regional.uuid,
+      };
+    });
+    setLotes(lotes);
+  } catch (error) {
+    toastError(
+      "Erro ao carregar lotes. Tente novamente mais tarde." + error.toString()
+    );
   }
 };
