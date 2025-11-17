@@ -27,7 +27,7 @@ import "./style.scss";
 
 const PAGE_SIZE = 10;
 
-export const RecreioFerias = () => {
+export const CadastroRecreioFerias = () => {
   const [showModalAdicionar, setShowModalAdicionar] = useState(false);
   const [showModalRemover, setShowModalRemover] = useState(false);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
