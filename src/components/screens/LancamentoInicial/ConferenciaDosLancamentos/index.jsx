@@ -820,8 +820,7 @@ export const ConferenciaDosLancamentos = () => {
                             )}
                           </div>
                           <div className="row">
-                            {((ocorrenciaExpandida && ocorrencia) ||
-                              ocorrenciaExcluida()) && (
+                            {
                               <Fragment>
                                 <div className="col-5 mt-3">
                                   {usuarioEhDRE() &&
@@ -834,12 +833,18 @@ export const ConferenciaDosLancamentos = () => {
                                     `${textoOcorrencia} ${logCorrecaoOcorrenciaCODAE.criado_em}`}
                                 </div>
                                 <div className="col-7 text-end mt-3">
-                                  <Botao
-                                    texto="Histórico"
-                                    type={BUTTON_TYPE.BUTTON}
-                                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                                    onClick={visualizarModal}
-                                  />
+                                  {(ocorrenciaExpandida && ocorrencia) ||
+                                  ocorrenciaExcluida() ? (
+                                    <>
+                                      <Botao
+                                        texto="Histórico"
+                                        type={BUTTON_TYPE.BUTTON}
+                                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                                        onClick={visualizarModal}
+                                      />
+                                    </>
+                                  ) : null}
+
                                   {(exibirBotoesOcorrenciaDRE ||
                                     exibirBotoesOcorrenciaCODAE) && (
                                     <>
@@ -856,23 +861,31 @@ export const ConferenciaDosLancamentos = () => {
                                           setShowModalSalvarOcorrencia(true)
                                         }
                                       />
-                                      <Botao
-                                        texto="Aprovar formulário"
-                                        type={BUTTON_TYPE.BUTTON}
-                                        style={BUTTON_STYLE.GREEN}
-                                        disabled={
-                                          desabilitarAprovarOcorrenciaCODAE ||
-                                          desabilitarAprovarOcorrenciaDRE
-                                        }
-                                        onClick={() =>
-                                          setShowModalAprovarOcorrencia(true)
-                                        }
-                                      />
+
+                                      {(ocorrenciaExpandida && ocorrencia) ||
+                                      ocorrenciaExcluida() ? (
+                                        <>
+                                          <Botao
+                                            texto="Aprovar formulário"
+                                            type={BUTTON_TYPE.BUTTON}
+                                            style={BUTTON_STYLE.GREEN}
+                                            disabled={
+                                              desabilitarAprovarOcorrenciaCODAE ||
+                                              desabilitarAprovarOcorrenciaDRE
+                                            }
+                                            onClick={() =>
+                                              setShowModalAprovarOcorrencia(
+                                                true,
+                                              )
+                                            }
+                                          />
+                                        </>
+                                      ) : null}
                                     </>
                                   )}
                                 </div>
                               </Fragment>
-                            )}
+                            }
                           </div>
                         </div>
                       </div>
@@ -1042,6 +1055,7 @@ export const ConferenciaDosLancamentos = () => {
           temJustificativa={true}
           ehCorrecao={true}
           tituloBotoes={["Cancelar", "Salvar"]}
+          solicitacao={solicitacao}
         />
         <ModalOcorrencia
           showModal={showModalAprovarOcorrencia}
