@@ -48,10 +48,13 @@ export function TabelaAlimentacaoCEI({
         : registro?.valor_unitario,
     );
     const valorTotal = stringDecimalToNumber(value) + valorSoma;
-    return valorTotal ? formatarTotal(valorTotal) : undefined;
+    return valorTotal ? formatarTotal(valorTotal) : null;
   };
 
-  const atualizaPendencias = (record: RecordItem, valorFormatado: string) => {
+  const atualizaPendencias = (
+    record: RecordItem,
+    valorFormatado: string | null,
+  ) => {
     pendencias.forEach((e) => {
       const chaveTabela = `${e} - ${labelTabela}`;
 
@@ -64,7 +67,7 @@ export function TabelaAlimentacaoCEI({
         form.getState().values.tabelas[chaveTabela]?.[record.__str__]
           ?.percentual_acrescimo || "0";
       const valorUnitarioTotal =
-        stringDecimalToNumber(valorFormatado) *
+        stringDecimalToNumber(valorFormatado || "0") *
         (1 + stringDecimalToNumber(percentualAcrescimo) / 100);
 
       form.change(
