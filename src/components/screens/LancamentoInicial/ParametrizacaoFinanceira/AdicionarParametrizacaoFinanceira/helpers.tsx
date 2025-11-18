@@ -1,5 +1,6 @@
 import { capitalize } from "src/helpers/utilities";
 import {
+  CampoValor,
   ParametrizacaoFinanceiraPayload,
   TabelaParametrizacao,
   ValorLinha,
@@ -105,19 +106,38 @@ export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
     resultado[chavePrincipal] ||= {};
 
     item.valores.forEach((valor: ValorTabela) => {
-      const faixaNome = valor.faixa_etaria?.__str__;
-      const faixaUuid = valor.faixa_etaria?.uuid;
+      if (valor.faixa_etaria) {
+        const faixaNome = valor.faixa_etaria?.__str__;
+        const faixaUuid = valor.faixa_etaria?.uuid;
 
-      resultado[chavePrincipal][faixaNome] ||= {};
-      if (faixaUuid)
-        resultado[chavePrincipal][faixaNome].faixa_etaria = faixaUuid;
+        resultado[chavePrincipal][faixaNome] ||= {};
+        if (faixaUuid)
+          resultado[chavePrincipal][faixaNome].faixa_etaria = faixaUuid;
 
-      resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] =
-        valor.valor;
+        resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] =
+          valor.valor;
+      }
     });
 
     calcularTotaisFaixa(resultado[chavePrincipal]);
   });
 
   return resultado;
+};
+
+export const formatarTotal = (value: number) =>
+  String(value.toFixed(2)).replace(".", ",");
+
+export const retornaTotal = (
+  value: string,
+  campo: CampoValor,
+  registro: ValorLinha,
+) => {
+  const valorSoma = stringDecimalToNumber(
+    campo === "valor_unitario"
+      ? registro?.valor_unitario_reajuste
+      : registro?.valor_unitario,
+  );
+  const valorTotal = stringDecimalToNumber(value) + valorSoma;
+  return valorTotal ? formatarTotal(valorTotal) : null;
 };

@@ -83,3 +83,5 @@ export type GrupoUnidadeEscolar = {
   nome: string;
   tipos_unidades: TipoUnidade[];
 };
+
+export type CampoValor = "valor_unitario" | "valor_unitario_reajuste";

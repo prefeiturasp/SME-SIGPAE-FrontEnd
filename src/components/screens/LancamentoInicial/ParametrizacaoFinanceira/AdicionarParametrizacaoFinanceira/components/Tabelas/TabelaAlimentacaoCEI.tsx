@@ -2,9 +2,10 @@ import { Table } from "antd";
 import { Field } from "react-final-form";
 import { AInputNumber } from "src/components/Shareable/MakeField";
 import { FormApi } from "final-form";
-import { ValorLinha } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { stringDecimalToNumber } from "src/helpers/parsers";
 import InputText from "src/components/Shareable/Input/InputText";
+import { formatarTotal, retornaTotal } from "../../helpers";
+import { CampoValor } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 
 type Props = {
   form: FormApi<any, any>;
@@ -17,8 +18,6 @@ type Props = {
 interface RecordItem {
   __str__: string;
 }
-
-type CampoValor = "valor_unitario" | "valor_unitario_reajuste";
 
 export function TabelaAlimentacaoCEI({
   form,
@@ -33,23 +32,6 @@ export function TabelaAlimentacaoCEI({
       : `Período ${periodo}`;
   const nomeTabela = "Preço das Alimentações";
   const chaveTabela = `${nomeTabela} - ${labelTabela}`;
-
-  const formatarTotal = (value: number) =>
-    String(value.toFixed(2)).replace(".", ",");
-
-  const retornaTotal = (
-    value: string,
-    campo: CampoValor,
-    registro: ValorLinha,
-  ) => {
-    const valorSoma = stringDecimalToNumber(
-      campo === "valor_unitario"
-        ? registro?.valor_unitario_reajuste
-        : registro?.valor_unitario,
-    );
-    const valorTotal = stringDecimalToNumber(value) + valorSoma;
-    return valorTotal ? formatarTotal(valorTotal) : null;
-  };
 
   const atualizaPendencias = (
     record: RecordItem,
