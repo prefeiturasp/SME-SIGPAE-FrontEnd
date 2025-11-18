@@ -51,12 +51,11 @@ const gerarValores = (valores: object) => {
 export const formataPayload = (values: ParametrizacaoFinanceiraPayload) => {
   const tabelas = Object.entries(values.tabelas).map(([tabela, valores]) => {
     const [nome, periodo] = tabela.split(" - Período ");
-    const periodo_escolar = periodo?.toUpperCase();
 
     return {
-      nome,
+      nome: nome || tabela,
       valores: gerarValores(valores as object),
-      periodo_escolar,
+      periodo_escolar: periodo ? periodo?.toUpperCase() : null,
     };
   });
 
@@ -102,19 +101,25 @@ export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
   const resultado: object = {};
 
   tabelas.forEach((item) => {
-    const chavePrincipal = `${item.nome} - Período ${capitalize(item.periodo_escolar)}`;
+    const chavePrincipal = item.periodo_escolar
+      ? `${item.nome} - Período ${capitalize(item.periodo_escolar)}`
+      : item.nome;
     resultado[chavePrincipal] ||= {};
 
     item.valores.forEach((valor: ValorTabela) => {
       if (valor.faixa_etaria) {
         const faixaNome = valor.faixa_etaria?.__str__;
-        const faixaUuid = valor.faixa_etaria?.uuid;
-
         resultado[chavePrincipal][faixaNome] ||= {};
-        if (faixaUuid)
-          resultado[chavePrincipal][faixaNome].faixa_etaria = faixaUuid;
-
+        resultado[chavePrincipal][faixaNome].faixa_etaria =
+          valor.faixa_etaria?.uuid;
         resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] =
+          valor.valor;
+      } else {
+        const tipoNome = valor.tipo_alimentacao?.nome;
+        resultado[chavePrincipal][tipoNome] ||= {};
+        resultado[chavePrincipal][tipoNome].tipo_alimentacao =
+          valor.tipo_alimentacao?.uuid;
+        resultado[chavePrincipal][tipoNome][getCampo(valor.tipo_valor)] =
           valor.valor;
       }
     });
