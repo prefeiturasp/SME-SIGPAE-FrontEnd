@@ -229,6 +229,22 @@ export const verificaSeEnviarCorrecaoDisabled = (
   );
 };
 
+export const verificaSeEnviaCorrecaoSemOcorrenciaDisabled = (
+  solicitacaoMedicaoInicial,
+) => {
+  return (
+    !solicitacaoMedicaoInicial?.com_ocorrencias &&
+    [
+      "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+      "MEDICAO_CORRECAO_SOLICITADA",
+    ].includes(solicitacaoMedicaoInicial?.status) &&
+    [
+      "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+      "MEDICAO_CORRECAO_SOLICITADA",
+    ].includes(solicitacaoMedicaoInicial?.ocorrencia?.status)
+  );
+};
+
 export const formataPeriodosNormais = (periodo) => {
   switch (periodo) {
     case "MANHA":
