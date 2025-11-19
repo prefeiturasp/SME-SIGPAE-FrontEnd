@@ -1,32 +1,33 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Field } from "react-final-form";
-import { InputText } from "src/components/Shareable/Input/InputText";
-import {
-  deleteFotoAluno,
-  getFotoAluno,
-  updateFotoAluno,
-} from "src/services/aluno.service";
+import { Tag } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import "./styles.scss";
+import { useEffect, useRef, useState } from "react";
+import { Field } from "react-final-form";
+import { podeAtualizarFoto } from "src/components/screens/DietaEspecial/Escola/helper";
 import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import { InputText } from "src/components/Shareable/Input/InputText";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import {
   getError,
-  usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhEscolaTerceirizada,
+  usuarioEhEscolaTerceirizadaDiretor,
 } from "src/helpers/utilities";
 import {
-  BUTTON_STYLE,
-  BUTTON_TYPE,
-} from "src/components/Shareable/Botao/constants";
+  deleteFotoAluno,
+  getFotoAluno,
+  updateFotoAluno,
+} from "src/services/aluno.service";
 import {
-  solicitacaoEhDoCardAutorizadas,
   ehAlunoNaoMatriculado,
+  solicitacaoEhDoCardAutorizadas,
 } from "../../helpers";
-import { podeAtualizarFoto } from "src/components/screens/DietaEspecial/Escola/helper";
+import "./styles.scss";
 
 const InformacoesAluno = ({ aluno, statusSolicitacao, tipoSolicitacao }) => {
   const [fotoAlunoSrc, setFotoAlunoSrc] = useState(null);
@@ -40,7 +41,7 @@ const InformacoesAluno = ({ aluno, statusSolicitacao, tipoSolicitacao }) => {
     const responseFoto = await getFotoAluno(aluno.codigo_eol);
     if (responseFoto.status === HTTP_STATUS.OK) {
       setFotoAlunoSrc(
-        `data:${responseFoto.data.data.download.item2};base64,${responseFoto.data.data.download.item1}`
+        `data:${responseFoto.data.data.download.item2};base64,${responseFoto.data.data.download.item1}`,
       );
       setCriadoRf(responseFoto.data.data.criadoRf);
     } else {
@@ -64,7 +65,7 @@ const InformacoesAluno = ({ aluno, statusSolicitacao, tipoSolicitacao }) => {
         if (responseFoto) {
           if (responseFoto.status === HTTP_STATUS.OK) {
             setFotoAlunoSrc(
-              `data:${responseFoto.data.data.download.item2};base64,${responseFoto.data.data.download.item1}`
+              `data:${responseFoto.data.data.download.item2};base64,${responseFoto.data.data.download.item1}`,
             );
             setCriadoRf(responseFoto.data.data.criadoRf);
           } else {
@@ -100,68 +101,79 @@ const InformacoesAluno = ({ aluno, statusSolicitacao, tipoSolicitacao }) => {
   return (
     <>
       {ehAlunoNaoMatriculado(tipoSolicitacao) ? (
-        <div className="row mb-3">
-          <div className="col-12 mb-3">
-            <label className="sectionName">
-              Dieta Especial Destina-se à Aluno Não Matriculado na Rede
-              Municipal de Ensino
-            </label>
+        <>
+          <div className="row mb-3">
+            <div className="col-12 mb-3">
+              <label className="sectionName">
+                Dieta Especial Destina-se à Aluno Não Matriculado na Rede
+                Municipal de Ensino
+              </label>
+            </div>
           </div>
-          <hr />
-          <div className="col-12 mb-3">
-            <label className="sectionName">Dados do Aluno</label>
-          </div>
-          <div className="col-2">
-            <Field
-              component={InputText}
-              name="aluno.cpf"
-              label="CPF do Aluno"
-              disabled={true}
-            />
-          </div>
-          <div className="col-2">
-            <Field
-              component={InputText}
-              name="aluno.data_nascimento"
-              label="Data de Nascimento"
-              disabled={true}
-            />
-          </div>
-          <div className="col-8">
-            <Field
-              component={InputText}
-              name="aluno.nome"
-              label="Nome Completo do Aluno"
-              disabled={true}
-            />
-          </div>
-
-          <div className="col-12 mt-3 mb-3">
-            <label className="sectionName">Dados do Responsável</label>
-          </div>
-          {aluno.responsaveis.map((_, index) => {
-            return (
-              <div className="row p-0" key={index}>
-                <div className="col-2">
-                  <Field
-                    component={InputText}
-                    name={`aluno.responsaveis[${index}].cpf`}
-                    label="CPF do Responsável"
-                    disabled={true}
-                  />
-                </div>
-                <div className="col-10">
-                  <Field
-                    component={InputText}
-                    name={`aluno.responsaveis[${index}].nome`}
-                    label="Nome Completo do Responsável"
-                    disabled={true}
-                  />
-                </div>
+          <div className="row">
+            <hr />
+            <div className="row">
+              <div className="col-9 mb-3">
+                <label className="sectionName">Dados do Aluno</label>
               </div>
-            );
-          })}
-        </div>
+              <div className="col-3 text-end">
+                <Tag className="fw-bold fs-14" color="#198459">
+                  Dieta para Recreio nas Férias
+                </Tag>
+              </div>
+            </div>
+            <div className="col-2">
+              <Field
+                component={InputText}
+                name="aluno.cpf"
+                label="CPF do Aluno"
+                disabled={true}
+              />
+            </div>
+            <div className="col-2">
+              <Field
+                component={InputText}
+                name="aluno.data_nascimento"
+                label="Data de Nascimento"
+                disabled={true}
+              />
+            </div>
+            <div className="col-8">
+              <Field
+                component={InputText}
+                name="aluno.nome"
+                label="Nome Completo do Aluno"
+                disabled={true}
+              />
+            </div>
+
+            <div className="col-12 mt-3 mb-3">
+              <label className="sectionName">Dados do Responsável</label>
+            </div>
+            {aluno.responsaveis.map((_, index) => {
+              return (
+                <div className="row p-0" key={index}>
+                  <div className="col-2">
+                    <Field
+                      component={InputText}
+                      name={`aluno.responsaveis[${index}].cpf`}
+                      label="CPF do Responsável"
+                      disabled={true}
+                    />
+                  </div>
+                  <div className="col-10">
+                    <Field
+                      component={InputText}
+                      name={`aluno.responsaveis[${index}].nome`}
+                      label="Nome Completo do Responsável"
+                      disabled={true}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
       ) : (
         <div className="mb-3">
           <div className="col-12 mb-3 p-0">
