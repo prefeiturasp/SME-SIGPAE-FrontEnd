@@ -62,6 +62,9 @@ export const formataPayload = (values: ParametrizacaoFinanceiraPayload) => {
   return { ...values, tabelas };
 };
 
+export const formatarTotal = (value: number) =>
+  String(value.toFixed(2)).replace(".", ",");
+
 const calcularTotaisFaixa = (dados: Record<string, any>) => {
   Object.entries(dados).forEach(([_, valores]: [string, any]) => {
     const { valor_unitario, valor_unitario_reajuste, percentual_acrescimo } =
@@ -85,9 +88,10 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
         stringDecimalToNumber(valor_unitario) *
         (1 + stringDecimalToNumber(percentual_acrescimo) / 100);
 
-    if (!isNaN(total)) valores.valor_unitario_total = total.toFixed(2);
+    if (!isNaN(total)) valores.valor_unitario_total = formatarTotal(total);
   });
 };
+
 export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
   const getCampo = (tipo: string): string => {
     const campos = {
@@ -129,9 +133,6 @@ export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
 
   return resultado;
 };
-
-export const formatarTotal = (value: number) =>
-  String(value.toFixed(2)).replace(".", ",");
 
 export const retornaTotal = (
   value: string,
