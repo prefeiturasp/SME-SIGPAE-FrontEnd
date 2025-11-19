@@ -29,7 +29,12 @@ import {
 } from "../../helpers";
 import "./styles.scss";
 
-const InformacoesAluno = ({ aluno, statusSolicitacao, tipoSolicitacao }) => {
+const InformacoesAluno = ({
+  aluno,
+  statusSolicitacao,
+  tipoSolicitacao,
+  dietaEspecial,
+}) => {
   const [fotoAlunoSrc, setFotoAlunoSrc] = useState(null);
   const [criadoRf, setCriadoRf] = useState(null);
   const [deletandoImagem, setDeletandoImagem] = useState(false);
@@ -116,11 +121,13 @@ const InformacoesAluno = ({ aluno, statusSolicitacao, tipoSolicitacao }) => {
               <div className="col-9 mb-3">
                 <label className="sectionName">Dados do Aluno</label>
               </div>
-              <div className="col-3 text-end">
-                <Tag className="fw-bold fs-14" color="#198459">
-                  Dieta para Recreio nas Férias
-                </Tag>
-              </div>
+              {dietaEspecial.dieta_para_recreio_ferias && (
+                <div className="col-3 text-end">
+                  <Tag className="fw-bold fs-14" color="#198459">
+                    Dieta para Recreio nas Férias
+                  </Tag>
+                </div>
+              )}
             </div>
             <div className="col-2">
               <Field
