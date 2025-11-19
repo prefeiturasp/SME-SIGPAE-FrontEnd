@@ -21,22 +21,10 @@ const URL_DIETA_ESPECIAL = `${API_URL}/solicitacoes-dieta-especial`;
 
 export const criaDietaEspecial = async (payload) => {
   const url = `${URL_DIETA_ESPECIAL}/`;
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "POST",
-    body: JSON.stringify(payload),
-  };
-  try {
-    const response = await fetch(url, OBJ_REQUEST);
-    const status = await response.status;
-    const json = await response.json();
-    return { data: json, status: status };
-  } catch (error) {
-    if (error.status === 400) {
-      const json = await error.json();
-      return { data: json[0], status: error.status };
-    }
-    return { data: error.statusText, status: error.status };
+  const response = await axios.post(url, payload).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
   }
 };
 
@@ -58,7 +46,7 @@ export const getDietaEspecial = async (uuid) => {
 
 export const getDietasEspeciaisVigentesDeUmAluno = async (
   codigo_eol_aluno,
-  codigo_eol_escola = null
+  codigo_eol_escola = null,
 ) => {
   let url = `${URL_DIETA_ESPECIAL}/solicitacoes-aluno/${codigo_eol_aluno}/`;
 
@@ -227,7 +215,7 @@ export const terceirizadaTomaCienciaInativacaoDietaEspecial = async (uuid) => {
 export const getDietasAtivasInativasPorAluno = async (params = {}) => {
   const response = await axios.get(
     `${ENDPOINT.SOLICITACOES_DIETA_ESPECIAL_ATIVAS_INATIVAS}/`,
-    { params }
+    { params },
   );
   return response;
 };
@@ -259,7 +247,7 @@ export const getRelatorioQuantitativoSolicDietaEsp = async (filtros, page) => {
     filtros,
     {
       params: { page },
-    }
+    },
   );
 };
 
@@ -269,20 +257,20 @@ export const getRelatorioQuantitativoDiagDietaEsp = async (filtros, page) => {
     filtros,
     {
       params: { page },
-    }
+    },
   );
 };
 
 export const getRelatorioQuantitativoClassificacaoDietaEsp = async (
   filtros,
-  page
+  page,
 ) => {
   return axios.post(
     `/${SOLICITACOES_DIETA_ESPECIAL}/${RELATORIO_QUANTITATIVO_CLASSIFICACAO_DIETA_ESP}/`,
     filtros,
     {
       params: { page },
-    }
+    },
   );
 };
 
@@ -292,7 +280,7 @@ export const getSolicitacaoDietaEspecialListagem = async (filtros, params) => {
     filtros,
     {
       params: params,
-    }
+    },
   );
 };
 
@@ -333,7 +321,7 @@ export const getProtocoloPadrao = async (params) =>
 export const editaProtocoloPadraoDietaEspecial = async (payload) => {
   return await axios.put(
     `/protocolo-padrao-dieta-especial/${payload.uuid}/`,
-    payload
+    payload,
   );
 };
 
@@ -365,7 +353,7 @@ export const getSolicitacoesRelatorioHistoricoDietas = async (params) => {
 };
 
 export const exportarExcelAsyncSolicitacoesRelatorioHistoricoDietas = async (
-  params
+  params,
 ) => {
   const url = `/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/exportar-excel/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -376,7 +364,7 @@ export const exportarExcelAsyncSolicitacoesRelatorioHistoricoDietas = async (
 };
 
 export const exportarPDFAsyncSolicitacoesRelatorioHistoricoDietas = async (
-  params
+  params,
 ) => {
   const url = `/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/exportar-pdf/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -389,14 +377,14 @@ export const exportarPDFAsyncSolicitacoesRelatorioHistoricoDietas = async (
 export const getUnidadesEducacionaisComCodEol = async (parametros) => {
   return await axios.post(
     `/escolas-simplissima-com-eol/escolas-com-cod-eol/`,
-    parametros
+    parametros,
   );
 };
 
 export const getUnidadesEducacionaisTercTotal = async (parametros) => {
   return await axios.post(
     `/escolas-simplissima-com-eol/terc-total/`,
-    parametros
+    parametros,
   );
 };
 
@@ -454,19 +442,19 @@ export const getNomesProtocolosValidosPorEdital = async (payload) =>
     `/protocolo-padrao-dieta-especial/lista-protocolos-liberados-por-edital/`,
     {
       params: payload,
-    }
+    },
   );
 
 export const vincularProtocolosEditais = async (payload) => {
   return await axios.put(
     `/protocolo-padrao-dieta-especial/atualizar-editais/`,
-    payload
+    payload,
   );
 };
 
 export const getDadosAlunoNaoMatriculadoDetalhesDieta = async (
   codigo_eol_escola,
-  nome_aluno
+  nome_aluno,
 ) => {
   const url = `/alunos/dados-aluno-nao-matriculado-detalhes-dieta/`;
   const response = await axios
@@ -480,7 +468,7 @@ export const getDadosAlunoNaoMatriculadoDetalhesDieta = async (
 
 export const getDietasEspeciaisVigentesDeUmAlunoNaoMatriculado = async (
   codigo_eol_escola,
-  nome_aluno
+  nome_aluno,
 ) => {
   const url = `${URL_DIETA_ESPECIAL}/solicitacoes-aluno-nao-matriculado/`;
   const response = await axios
