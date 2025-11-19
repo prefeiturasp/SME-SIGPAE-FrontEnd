@@ -19,7 +19,6 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import withNavigationType from "src/components/Shareable/withNavigationType";
 import { DIETA_ESPECIAL, ESCOLA, RELATORIO } from "src/configs/constants";
-import { ENVIRONMENT } from "src/constants/config";
 import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import {
   length,
@@ -358,6 +357,7 @@ class solicitacaoDietaEspecial extends Component {
                 className="check-tipo-produto"
                 component={CheckboxField}
                 name="aluno_nao_matriculado"
+                dataTestId="checkbox-aluno-nao-matriculado"
                 type="checkbox"
                 onChange={(ehAlunoNaoMatriculado) => {
                   this.props.loadSolicitacoesVigentes(null);
@@ -371,7 +371,7 @@ class solicitacaoDietaEspecial extends Component {
                 }}
               />
               <div className="ms-3">
-                Dieta Especial Destina-se à Aluno Não Matriculado na Rede
+                Dieta Especial destina-se à aluno não matriculado na Rede
                 Municipal de Ensino
               </div>
             </div>
@@ -381,24 +381,24 @@ class solicitacaoDietaEspecial extends Component {
             <span className="ms-3 card-title fw-bold cinza-escuro">
               Descrição da Solicitação
             </span>
-            {!ENVIRONMENT.includes("production") &&
-              this.state.aluno_nao_matriculado && (
-                <div className="d-flex flex-row text-gray align-items-center">
-                  <Field
-                    className="check-tipo-produto"
-                    component={CheckboxField}
-                    name="dieta_para_recreio_ferias"
-                    type="checkbox"
-                    onChange={(event, newValue) => {
-                      if (!newValue) {
-                        this.props.change("data_inicio", null);
-                        this.props.change("data_termino", null);
-                      }
-                    }}
-                  />
-                  <span className="ms-3">Dieta para Recreio nas Férias</span>
-                </div>
-              )}
+            {this.state.aluno_nao_matriculado && (
+              <div className="d-flex flex-row text-gray align-items-center">
+                <Field
+                  className="check-tipo-produto"
+                  component={CheckboxField}
+                  dataTestId="checkbox-dieta-para-recreio-nas-ferias"
+                  name="dieta_para_recreio_ferias"
+                  type="checkbox"
+                  onChange={(event, newValue) => {
+                    if (!newValue) {
+                      this.props.change("data_inicio", null);
+                      this.props.change("data_termino", null);
+                    }
+                  }}
+                />
+                <span className="ms-3">Dieta para Recreio nas Férias</span>
+              </div>
+            )}
           </div>
           {!this.state.aluno_nao_matriculado && (
             <>
@@ -408,6 +408,7 @@ class solicitacaoDietaEspecial extends Component {
                     <Field
                       component={InputText}
                       name="codigo_eol"
+                      dataTestId="input-codigo-eol-aluno"
                       label="Cód. EOL do Aluno"
                       placeholder="Insira o Código"
                       className="form-control"
@@ -582,6 +583,7 @@ class solicitacaoDietaEspecial extends Component {
                     <Field
                       {...cpfMask}
                       component={InputText}
+                      dataTestId="input-cpf-aluno"
                       name="cpf"
                       label="CPF do Aluno"
                       className="form-control"
@@ -593,6 +595,7 @@ class solicitacaoDietaEspecial extends Component {
                       component={InputText}
                       name="nome"
                       label="Nome completo do Aluno"
+                      dataTestId="input-nome-completo-aluno"
                       className="form-control"
                       required
                       validate={[required, minLength6]}
@@ -602,6 +605,7 @@ class solicitacaoDietaEspecial extends Component {
                   <div className="col-md-3">
                     <Field
                       component={InputComData}
+                      dataTestId="div-data-nascimento-aluno"
                       name="data_nascimento"
                       label="Data de Nascimento"
                       className="form-control"
@@ -622,6 +626,7 @@ class solicitacaoDietaEspecial extends Component {
                         {...cpfMask}
                         component={InputText}
                         name="cpf"
+                        dataTestId="input-cpf-responsavel"
                         label="CPF do Responsável"
                         className="form-control"
                         required
@@ -633,6 +638,7 @@ class solicitacaoDietaEspecial extends Component {
                       <Field
                         component={InputText}
                         name="nome"
+                        dataTestId="input-nome-completo-responsavel"
                         label="Nome completo do Responsável"
                         className="form-control"
                         required
@@ -640,59 +646,59 @@ class solicitacaoDietaEspecial extends Component {
                       />
                     </div>
                   </div>
-                  {!ENVIRONMENT.includes("production") &&
-                    this.props.dieta_para_recreio_ferias && (
-                      <div className="row mt-2 align-items-end">
-                        <div className="col-md-3">
-                          <Field
-                            component={InputComData}
-                            name="data_inicio"
-                            label="Alteração válida pelo período:"
-                            placeholder="De"
-                            className="form-control"
-                            minDate={dateDelta(-360 * 99)}
-                            maxDate={
-                              this.props.data_termino
-                                ? moment(this.props.data_termino, "DD/MM/YYYY")
-                                    ._d
-                                : dateDelta(365)
-                            }
-                            validate={[required]}
-                            required
-                            inputOnChange={(value) => {
-                              this.props.change("data_inicio", value);
-                            }}
-                            showMonthDropdown
-                            showYearDropdown
-                          />
-                        </div>
-                        <div className="col-md-3">
-                          <Field
-                            component={InputComData}
-                            name="data_termino"
-                            label=""
-                            placeholder="Até"
-                            className="form-control"
-                            minDate={
-                              this.props.data_inicio
-                                ? moment(
-                                    this.props.data_inicio,
-                                    "DD/MM/YYYY",
-                                  ).toDate()
-                                : dateDelta(-360 * 99)
-                            }
-                            maxDate={dateDelta(365)}
-                            validate={[required]}
-                            inputOnChange={(value) => {
-                              this.props.change("data_termino", value);
-                            }}
-                            required
-                            showMonthDropdown
-                            showYearDropdown
-                          />
-                        </div>
+                  {this.props.dieta_para_recreio_ferias && (
+                    <div className="row mt-2 align-items-end">
+                      <div className="col-md-3">
+                        <Field
+                          component={InputComData}
+                          name="data_inicio"
+                          dataTestId="div-data-inicio"
+                          label="Alteração válida pelo período:"
+                          placeholder="De"
+                          className="form-control"
+                          minDate={dateDelta(-360 * 99)}
+                          maxDate={
+                            this.props.data_termino
+                              ? moment(this.props.data_termino, "DD/MM/YYYY")._d
+                              : dateDelta(365)
+                          }
+                          validate={[required]}
+                          required
+                          inputOnChange={(value) => {
+                            this.props.change("data_inicio", value);
+                          }}
+                          showMonthDropdown
+                          showYearDropdown
+                        />
                       </div>
-                    )}
+                      <div className="col-md-3">
+                        <Field
+                          component={InputComData}
+                          name="data_termino"
+                          dataTestId="div-data-termino"
+                          label=""
+                          placeholder="Até"
+                          className="form-control"
+                          minDate={
+                            this.props.data_inicio
+                              ? moment(
+                                  this.props.data_inicio,
+                                  "DD/MM/YYYY",
+                                ).toDate()
+                              : dateDelta(-360 * 99)
+                          }
+                          maxDate={dateDelta(365)}
+                          validate={[required]}
+                          inputOnChange={(value) => {
+                            this.props.change("data_termino", value);
+                          }}
+                          required
+                          showMonthDropdown
+                          showYearDropdown
+                        />
+                      </div>
+                    </div>
+                  )}
                 </FormSection>
               </FormSection>
               <hr />
