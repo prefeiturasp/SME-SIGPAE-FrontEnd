@@ -1,5 +1,5 @@
 import arrayMutators from "final-form-arrays";
-import { Form } from "react-final-form";
+import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
@@ -26,6 +26,7 @@ import JustificativaCancelamento from "./JustificativaCancelamento";
 import JustificativaNegacao from "./JustificativaNegacao";
 import MotivoNegacao from "./MotivoNegacao";
 import "./styles.scss";
+import InputText from "src/components/Shareable/Input/InputText";
 
 const CorpoRelatorio = ({
   dietaEspecial,
@@ -123,6 +124,18 @@ const CorpoRelatorio = ({
           key={4}
         />,
         <PeriodoVigencia key={5} />,
+        dietaEspecial.dieta_para_recreio_ferias && (
+          <div className="row">
+            <div className="col-12">
+              <Field
+                component={InputText}
+                name="motivo_alteracao"
+                label="Motivo da alteração"
+                disabled
+              />
+            </div>
+          </div>
+        ),
         <InformacoesAdicionaisLeitura
           informacoes_adicionais={dietaEspecial.informacoes_adicionais}
           key={6}

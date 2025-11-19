@@ -14,7 +14,8 @@ const DadosDietaEspecial = ({ values, dietaEspecial, card }) => {
   const dietaRecreioNasFeriasParaAlunoNaoMatriculado =
     dietaEspecial.dieta_para_recreio_ferias &&
     dietaEspecial.tipo_solicitacao ===
-      TIPO_SOLICITACAO_DIETA.ALUNO_NAO_MATRICULADO;
+      TIPO_SOLICITACAO_DIETA.ALUNO_NAO_MATRICULADO &&
+    dietaEspecial.status_solicitacao !== "CODAE_AUTORIZADO";
 
   const downloadAnexo = (url) => {
     const a = document.createElement("a");
