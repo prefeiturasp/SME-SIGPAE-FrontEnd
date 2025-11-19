@@ -351,6 +351,8 @@ const CorpoRelatorio = ({
     )
       ? ""
       : dietaEspecial.data_termino;
+    if (dietaEspecial.dieta_para_recreio_ferias)
+      dietaEspecial.motivo_alteracao = "Dieta Especial - Recreio nas Férias";
     return dietaEspecial;
   };
 

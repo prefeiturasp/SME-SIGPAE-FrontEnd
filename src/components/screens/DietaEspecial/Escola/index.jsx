@@ -651,7 +651,12 @@ class solicitacaoDietaEspecial extends Component {
                             placeholder="De"
                             className="form-control"
                             minDate={dateDelta(-360 * 99)}
-                            maxDate={dateDelta(365)}
+                            maxDate={
+                              this.props.data_termino
+                                ? moment(this.props.data_termino, "DD/MM/YYYY")
+                                    ._d
+                                : dateDelta(365)
+                            }
                             validate={[required]}
                             required
                             inputOnChange={(value) => {
@@ -677,21 +682,7 @@ class solicitacaoDietaEspecial extends Component {
                                 : dateDelta(-360 * 99)
                             }
                             maxDate={dateDelta(365)}
-                            validate={[
-                              required,
-                              (value, allValues) => {
-                                if (
-                                  value &&
-                                  allValues.data_inicio &&
-                                  moment(value, "YYYY-MM-DD").isBefore(
-                                    moment(allValues.data_inicio, "YYYY-MM-DD"),
-                                  )
-                                ) {
-                                  return "A data final não pode ser menor que a inicial.";
-                                }
-                                return undefined;
-                              },
-                            ]}
+                            validate={[required]}
                             inputOnChange={(value) => {
                               this.props.change("data_termino", value);
                             }}

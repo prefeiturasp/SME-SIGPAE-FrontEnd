@@ -7,8 +7,15 @@ import {
   BUTTON_STYLE,
   BUTTON_ICON,
 } from "src/components/Shareable/Botao/constants";
+import { TIPO_SOLICITACAO_DIETA } from "src/constants/shared";
+import { InputComData } from "src/components/Shareable/DatePicker";
 
 const DadosDietaEspecial = ({ values, dietaEspecial, card }) => {
+  const dietaRecreioNasFeriasParaAlunoNaoMatriculado =
+    dietaEspecial.dieta_para_recreio_ferias &&
+    dietaEspecial.tipo_solicitacao ===
+      TIPO_SOLICITACAO_DIETA.ALUNO_NAO_MATRICULADO;
+
   const downloadAnexo = (url) => {
     const a = document.createElement("a");
     a.href = url;
@@ -108,6 +115,44 @@ const DadosDietaEspecial = ({ values, dietaEspecial, card }) => {
                 />
               </div>
             )}
+            {dietaRecreioNasFeriasParaAlunoNaoMatriculado && (
+              <>
+                <div className="row mt-3">
+                  <div className="col-12">
+                    <p className="label mb-0">Período de Vigência</p>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-4">
+                    <Field
+                      component={InputComData}
+                      label="Início"
+                      name="data_inicio"
+                      disabled
+                    />
+                  </div>
+                  <div className="col-4">
+                    <Field
+                      component={InputComData}
+                      label="Fim"
+                      name="data_termino"
+                      disabled
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-12">
+                    <Field
+                      component={InputText}
+                      name="motivo_alteracao"
+                      label="Motivo da alteração"
+                      disabled
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
             <div className="col-12">
               <p className="mt-1">Anexos</p>
               <div className="row">{anexos}</div>
