@@ -349,7 +349,7 @@ class solicitacaoDietaEspecial extends Component {
       codigo_eol,
     } = this.props;
     return (
-      <form className="special-diet" onSubmit={handleSubmit}>
+      <form className="special-diet mt-3" onSubmit={handleSubmit}>
         <CardMatriculados numeroAlunos={quantidadeAlunos} />
         <div className="card mt-2 p-4">
           <div className="row">
