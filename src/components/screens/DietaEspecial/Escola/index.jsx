@@ -391,8 +391,8 @@ class solicitacaoDietaEspecial extends Component {
                     type="checkbox"
                     onChange={(event, newValue) => {
                       if (!newValue) {
-                        this.props.change("periodo_recreio_inicio", null);
-                        this.props.change("periodo_recreio_fim", null);
+                        this.props.change("data_inicio", null);
+                        this.props.change("data_termino", null);
                       }
                     }}
                   />
@@ -646,7 +646,7 @@ class solicitacaoDietaEspecial extends Component {
                         <div className="col-md-3">
                           <Field
                             component={InputComData}
-                            name="periodo_recreio_inicio"
+                            name="data_inicio"
                             label="Alteração válida pelo período:"
                             placeholder="De"
                             className="form-control"
@@ -655,10 +655,7 @@ class solicitacaoDietaEspecial extends Component {
                             validate={[required]}
                             required
                             inputOnChange={(value) => {
-                              this.props.change(
-                                "periodo_recreio_inicio",
-                                value,
-                              );
+                              this.props.change("data_inicio", value);
                             }}
                             showMonthDropdown
                             showYearDropdown
@@ -667,14 +664,14 @@ class solicitacaoDietaEspecial extends Component {
                         <div className="col-md-3">
                           <Field
                             component={InputComData}
-                            name="periodo_recreio_fim"
+                            name="data_termino"
                             label=""
                             placeholder="Até"
                             className="form-control"
                             minDate={
-                              this.props.periodo_recreio_inicio
+                              this.props.data_inicio
                                 ? moment(
-                                    this.props.periodo_recreio_inicio,
+                                    this.props.data_inicio,
                                     "DD/MM/YYYY",
                                   ).toDate()
                                 : dateDelta(-360 * 99)
@@ -685,12 +682,9 @@ class solicitacaoDietaEspecial extends Component {
                               (value, allValues) => {
                                 if (
                                   value &&
-                                  allValues.periodo_recreio_inicio &&
+                                  allValues.data_inicio &&
                                   moment(value, "YYYY-MM-DD").isBefore(
-                                    moment(
-                                      allValues.periodo_recreio_inicio,
-                                      "YYYY-MM-DD",
-                                    ),
+                                    moment(allValues.data_inicio, "YYYY-MM-DD"),
                                   )
                                 ) {
                                   return "A data final não pode ser menor que a inicial.";
@@ -699,7 +693,7 @@ class solicitacaoDietaEspecial extends Component {
                               },
                             ]}
                             inputOnChange={(value) => {
-                              this.props.change("periodo_recreio_fim", value);
+                              this.props.change("data_termino", value);
                             }}
                             required
                             showMonthDropdown
@@ -770,8 +764,8 @@ const mapStateToProps = (state) => {
     aluno_nao_matriculado: selector(state, "aluno_nao_matriculado_data"),
     solicitacoesVigentes: state.incluirDietaEspecial.solicitacoesVigentes,
     dieta_para_recreio_ferias: selector(state, "dieta_para_recreio_ferias"),
-    periodo_recreio_inicio: selector(state, "periodo_recreio_inicio"),
-    periodo_recreio_fim: selector(state, "periodo_recreio_fim"),
+    data_inicio: selector(state, "data_inicio"),
+    data_termino: selector(state, "data_termino"),
   };
 };
 const mapDispatchToProps = (dispatch) =>
