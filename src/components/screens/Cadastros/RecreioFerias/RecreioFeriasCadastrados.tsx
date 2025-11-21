@@ -9,6 +9,9 @@ import { TabelaUnidades } from "./components/TabelaUnidades";
 import "./style.scss";
 
 export const RecreioFeriasCadastrados = () => {
+  const [expandidosRecreios, setExpandidosRecreios] = useState<
+    Record<string, boolean>
+  >({});
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [recreioFerias, setRecreioFerias] = useState([]);
@@ -17,6 +20,10 @@ export const RecreioFeriasCadastrados = () => {
 
   const toggleExpandir = (id: string) => {
     setExpandidos((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const toggleExpandirRecreio = (id: string) => {
+    setExpandidosRecreios((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const filtrarRecreios = (termoPesquisa: string) => {
@@ -116,17 +123,17 @@ export const RecreioFeriasCadastrados = () => {
                       </Tooltip>
                       <ToggleExpandir
                         className="ms-4"
-                        ativo={!!expandidos[recreio.id]}
-                        onClick={() => toggleExpandir(recreio.id)}
+                        ativo={!!expandidosRecreios[recreio.id]}
+                        onClick={() => toggleExpandirRecreio(recreio.id)}
                         dataTestId={`toggle-${recreio.id}`}
                       />
                     </td>
                   </tr>
 
-                  {!!expandidos[recreio.id] && (
+                  {!!expandidosRecreios[recreio.id] && (
                     <tr>
                       <td colSpan={4}>
-                        <Collapse isOpened={!!expandidos[recreio.id]}>
+                        <Collapse isOpened={!!expandidosRecreios[recreio.id]}>
                           <div className="collapse-container">
                             <TabelaUnidades
                               editable={false}
