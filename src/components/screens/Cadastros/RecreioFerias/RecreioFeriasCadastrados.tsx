@@ -1,10 +1,11 @@
 import { Tooltip } from "antd";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Collapse } from "react-collapse";
 import { NavLink } from "react-router-dom";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { listarRecreioNasFerias } from "../../../../services/recreioFerias.service";
 import { toastError } from "../../../Shareable/Toast/dialogs";
+import { TabelaUnidades } from "./components/TabelaUnidades";
 import "./style.scss";
 
 export const RecreioFeriasCadastrados = () => {
@@ -92,38 +93,57 @@ export const RecreioFeriasCadastrados = () => {
             <div>Carregando...</div>
           ) : (
             recreioFeriasFiltrados.map((recreio) => {
-              return [
-                <tr key={recreio.id}>
-                  <td className="">{recreio.titulo}</td>
-                  <td className="">
-                    {recreio.data_inicio} até {recreio.data_fim}
-                  </td>
-                  <td className="">{recreio.unidades_participantes.length}</td>
+              return (
+                <React.Fragment key={recreio.id}>
+                  <tr>
+                    <td className="">{recreio.titulo}</td>
+                    <td className="">
+                      {recreio.data_inicio} até {recreio.data_fim}
+                    </td>
+                    <td className="ps-4">
+                      {recreio.unidades_participantes.length}
+                    </td>
+                    <td>
+                      <Tooltip title="Editar">
+                        <span>
+                          <NavLink
+                            className="float-start botao-editar"
+                            to={`/configuracoes/cadastros/editar-empresa?uuid=${recreio.uuid}`}
+                          >
+                            <i className="fas fa-edit" />
+                          </NavLink>
+                        </span>
+                      </Tooltip>
+                      <ToggleExpandir
+                        className="ms-4"
+                        ativo={!!expandidos[recreio.id]}
+                        onClick={() => toggleExpandir(recreio.id)}
+                        dataTestId={`toggle-${recreio.id}`}
+                      />
+                    </td>
+                  </tr>
 
-                  <td>
-                    <Tooltip title="Editar">
-                      <span>
-                        <NavLink
-                          className="float-start botao-editar"
-                          to={`/configuracoes/cadastros/editar-empresa?uuid=${recreio.uuid}`}
-                        >
-                          <i className="fas fa-edit" />
-                        </NavLink>
-                      </span>
-                    </Tooltip>
-                    <ToggleExpandir
-                      className="ms-4"
-                      ativo={!!expandidos[recreio.id]}
-                      onClick={() => toggleExpandir(recreio.id)}
-                      dataTestId={`toggle-${recreio.id}`}
-                    />
-                  </td>
-                </tr>,
-
-                <Collapse isOpened={!!expandidos[recreio.id]}>
-                  <div className="collapse-container"></div>
-                </Collapse>,
-              ];
+                  {!!expandidos[recreio.id] && (
+                    <tr>
+                      <td colSpan={4}>
+                        <Collapse isOpened={!!expandidos[recreio.id]}>
+                          <div className="collapse-container">
+                            <TabelaUnidades
+                              editable={false}
+                              participantes={recreio.unidades_participantes}
+                              page={1}
+                              setPage={() => {}}
+                              loading={false}
+                              expandidos={expandidos}
+                              toggleExpandir={toggleExpandir}
+                            />
+                          </div>
+                        </Collapse>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
             })
           )}
         </table>

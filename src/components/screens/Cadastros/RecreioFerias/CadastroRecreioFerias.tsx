@@ -12,16 +12,14 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import InputText from "src/components/Shareable/Input/InputText";
-import { Paginacao } from "src/components/Shareable/Paginacao";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { required } from "src/helpers/fieldValidators";
 import { cadastrarRecreioNasFerias } from "../../../../services/recreioFerias.service";
-import { LinhaUnidade } from "./components/LinhaUnidade";
 import { ModalAdicionarUnidadeEducacional } from "./components/ModalAdicionarUnidadeEducacional";
-import { ModalRemoverUnidadeEducacional } from "./components/ModalRemoverUnidadeEducacional";
+import { TabelaUnidades } from "./components/TabelaUnidades";
 import { buildPayload, resetFormState, validateForm } from "./helper";
 import "./style.scss";
 
@@ -106,16 +104,6 @@ export const CadastroRecreioFerias = () => {
     }
 
     handleSubmit(event);
-  };
-
-  const getPaginatedIndices = (totalCount: number) => {
-    const currentPage = Math.min(
-      Math.max(1, page),
-      Math.ceil(totalCount / PAGE_SIZE) || 1
-    );
-    const startIndex = (currentPage - 1) * PAGE_SIZE;
-    const endIndex = startIndex + PAGE_SIZE;
-    return { startIndex, endIndex };
   };
 
   return (
@@ -211,76 +199,24 @@ export const CadastroRecreioFerias = () => {
 
               <Spin tip="Carregando..." spinning={false}>
                 <FieldArray name="unidades_participantes">
-                  {({ fields }) => {
-                    const total = fields.value?.length || 0;
-                    const { startIndex, endIndex } = getPaginatedIndices(total);
-
-                    return (
-                      <>
-                        <table className="tabela-unidades-participantes">
-                          <thead>
-                            <tr className="row">
-                              <th className="col-1 text-center">DRE/LOTE</th>
-                              <th className="col-3 text-center">
-                                Unidade Educacional
-                              </th>
-                              <th className="col-2 text-center">
-                                <span className="required-asterisk">*</span> Nº
-                                de Inscritos
-                              </th>
-                              <th className="col-2 text-center">
-                                <span className="required-asterisk">*</span> Nº
-                                de Colaboradores
-                              </th>
-                              <th className="col-2 text-center">
-                                Liberar Medição?
-                              </th>
-                              <th className="action-column col-1 text-center"></th>
-                              <th className="action-column col-1 text-center"></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {fields.map((name, index) => {
-                              if (index < startIndex || index >= endIndex)
-                                return null;
-
-                              const participante = fields.value[index];
-
-                              return (
-                                <LinhaUnidade
-                                  key={participante.id}
-                                  name={name}
-                                  index={index}
-                                  participante={participante}
-                                  aberto={!!expandidos[participante.id]}
-                                  toggleExpandir={toggleExpandir}
-                                  openRemoverModal={openRemoverModal}
-                                  fields={fields}
-                                />
-                              );
-                            })}
-                          </tbody>
-                        </table>
-
-                        <Paginacao
-                          className="mt-3 mb-3"
-                          current={page}
-                          total={total}
-                          showSizeChanger={false}
-                          onChange={setPage}
-                          pageSize={PAGE_SIZE}
-                        />
-
-                        <ModalRemoverUnidadeEducacional
-                          showModal={showModalRemover}
-                          closeModal={closeRemoverModal}
-                          handleRemoverUnidade={() =>
-                            confirmRemoverUnidade(fields)
-                          }
-                        />
-                      </>
-                    );
-                  }}
+                  {({ fields }) => (
+                    <>
+                      <TabelaUnidades
+                        editable={true}
+                        fields={fields}
+                        form={form}
+                        page={page}
+                        setPage={setPage}
+                        pageSize={PAGE_SIZE}
+                        expandidos={expandidos}
+                        toggleExpandir={toggleExpandir}
+                        openRemoverModal={openRemoverModal}
+                        showModalRemover={showModalRemover}
+                        closeRemoverModal={closeRemoverModal}
+                        confirmRemover={() => confirmRemoverUnidade(fields)}
+                      />
+                    </>
+                  )}
                 </FieldArray>
               </Spin>
 

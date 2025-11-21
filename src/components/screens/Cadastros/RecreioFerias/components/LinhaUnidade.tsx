@@ -1,5 +1,4 @@
 import { Switch, Tooltip } from "antd";
-import React from "react";
 import { Collapse } from "react-collapse";
 import { Field } from "react-final-form";
 import InputText from "src/components/Shareable/Input/InputText";
@@ -7,24 +6,14 @@ import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { required } from "src/helpers/fieldValidators";
 import { truncarString } from "src/helpers/utilities";
 
-interface LinhaUnidadeProps {
-  name: string;
-  index: number;
-  participante: any;
-  aberto: boolean;
-  toggleExpandir: (_id: string) => void;
-  openRemoverModal: (_id: string) => void;
-  fields: any;
-}
-
-export const LinhaUnidade: React.FC<LinhaUnidadeProps> = ({
+export const LinhaUnidade = ({
   name,
-  index,
   participante,
   aberto,
   toggleExpandir,
   openRemoverModal,
-  fields,
+  readOnly = false,
+  form,
 }) => {
   const getNomeUnidade = () => {
     let nome = participante.unidadeEducacional;
@@ -40,11 +29,73 @@ export const LinhaUnidade: React.FC<LinhaUnidadeProps> = ({
     return nome;
   };
 
-  const handleLiberarMedicaoChange = (checked: boolean) => {
-    fields.update(index, { ...participante, liberarMedicao: checked });
+  const handleLiberarMedicaoChange = (checked) => {
+    form.change(`${name}.liberarMedicao`, checked);
   };
 
-  const unidadeEducacionalNome = getNomeUnidade();
+  if (readOnly) {
+    return (
+      <>
+        <tr className="row">
+          <td className="col-1 text-center">{participante.lote.nome}</td>
+          <td className="col-3 text-left">
+            {participante.unidade_educacional.nome}
+          </td>
+          <td className="col-2 text-center">{participante.num_inscritos}</td>
+          <td className="col-2 text-center">
+            {participante.num_colaboradores}
+          </td>
+          <td className="col-2 text-center">
+            {participante.liberar_medicao ? "Sim" : "Não"}
+          </td>
+          <td className="action-column col-1 text-center">
+            <ToggleExpandir
+              ativo={!!aberto}
+              onClick={() => toggleExpandir(participante?.id)}
+            />
+          </td>
+        </tr>
+        <Collapse isOpened={aberto}>
+          <div className="collapse-container">
+            {(() => {
+              const tipos = participante?.tipos_alimentacao || {};
+              const inscritos = (tipos.inscritos || []).map((t) => t.nome);
+              const infantil = (tipos.infantil || []).map((t) => t.nome);
+              const colaboradores = (tipos.colaboradores || []).map(
+                (t) => t.nome
+              );
+
+              return (
+                <>
+                  <div>
+                    <strong>
+                      Tipos de Alimentação Inscritos
+                      {infantil.length > 0 && " - CEI"}:{" "}
+                    </strong>
+                    <span>{inscritos.join(", ")}</span>
+                  </div>
+
+                  {infantil.length > 0 && (
+                    <div>
+                      <strong>
+                        Tipos de Alimentação Inscritos - INFANTIL:{" "}
+                      </strong>
+                      <span>{infantil.join(", ")}</span>
+                    </div>
+                  )}
+
+                  <div>
+                    <strong>Tipos de Alimentação Colaboradores: </strong>
+                    <span>{colaboradores.join(", ")}</span>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </Collapse>
+      </>
+    );
+  }
 
   return (
     <>
@@ -52,8 +103,8 @@ export const LinhaUnidade: React.FC<LinhaUnidadeProps> = ({
         <td className="col-1">{participante.dreLoteNome}</td>
 
         <td className="col-3">
-          <Tooltip title={unidadeEducacionalNome}>
-            {truncarString(unidadeEducacionalNome, 35)}
+          <Tooltip title={getNomeUnidade()}>
+            {truncarString(getNomeUnidade(), 35)}
           </Tooltip>
         </td>
 
@@ -129,13 +180,14 @@ export const LinhaUnidade: React.FC<LinhaUnidadeProps> = ({
           <div>
             <strong>
               Tipos de Alimentação Inscritos
-              {participante.alimentacaoInscritosInfantil.length > 0 && " - CEI"}
+              {participante.alimentacaoInscritosInfantil?.length > 0 &&
+                " - CEI"}
               :{" "}
             </strong>
             <span>{participante.alimentacaoInscritos?.join(", ")}</span>
           </div>
 
-          {participante.alimentacaoInscritosInfantil.length > 0 && (
+          {participante.alimentacaoInscritosInfantil?.length > 0 && (
             <div>
               <strong>Tipos de Alimentação Inscritos - INFANTIL: </strong>
               <span>
