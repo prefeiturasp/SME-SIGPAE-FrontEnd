@@ -6,6 +6,7 @@ import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { listarRecreioNasFerias } from "../../../../services/recreioFerias.service";
 import { toastError } from "../../../Shareable/Toast/dialogs";
 import { TabelaUnidades } from "./components/TabelaUnidades";
+import { isPeriodoEditavel } from "./helper";
 import "./style.scss";
 
 export const RecreioFeriasCadastrados = () => {
@@ -100,6 +101,11 @@ export const RecreioFeriasCadastrados = () => {
             <div>Carregando...</div>
           ) : (
             recreioFeriasFiltrados.map((recreio) => {
+              const periodoEditavel = isPeriodoEditavel(
+                recreio.data_inicio,
+                recreio.data_fim
+              );
+
               return (
                 <React.Fragment key={recreio.id}>
                   <tr>
@@ -111,16 +117,18 @@ export const RecreioFeriasCadastrados = () => {
                       {recreio.unidades_participantes.length}
                     </td>
                     <td>
-                      <Tooltip title="Editar">
-                        <span>
-                          <NavLink
-                            className="float-start botao-editar"
-                            to={`/configuracoes/cadastros/editar-empresa?uuid=${recreio.uuid}`}
-                          >
-                            <i className="fas fa-edit" />
-                          </NavLink>
-                        </span>
-                      </Tooltip>
+                      {periodoEditavel && (
+                        <Tooltip title="Editar">
+                          <span>
+                            <NavLink
+                              className="float-start botao-editar"
+                              to={`/configuracoes/cadastros/editar-empresa?uuid=${recreio.uuid}`}
+                            >
+                              <i className="fas fa-edit" />
+                            </NavLink>
+                          </span>
+                        </Tooltip>
+                      )}
                       <ToggleExpandir
                         className="ms-4"
                         ativo={!!expandidosRecreios[recreio.id]}

@@ -67,3 +67,24 @@ export const validateForm = (values: any) => {
     ? { unidades_participantes: unidadesErrors }
     : {};
 };
+
+export const isPeriodoEditavel = (
+  dataInicioStr: string,
+  dataFimStr: string
+) => {
+  const parseDate = (str: string) => {
+    if (!str) return null;
+    const [dia, mes, ano] = str.split("/").map(Number);
+    return new Date(ano, mes - 1, dia);
+  };
+
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const dataInicio = parseDate(dataInicioStr);
+  const dataFim = parseDate(dataFimStr);
+
+  if (!dataInicio || !dataFim) return false;
+
+  return hoje < dataFim;
+};
