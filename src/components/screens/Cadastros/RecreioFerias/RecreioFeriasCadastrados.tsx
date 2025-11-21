@@ -122,7 +122,7 @@ export const RecreioFeriasCadastrados = () => {
                           <span>
                             <NavLink
                               className="float-start botao-editar"
-                              to={`/configuracoes/cadastros/editar-empresa?uuid=${recreio.uuid}`}
+                              to={`/configuracoes/cadastros/recreio-nas-ferias/editar?uuid=${recreio.uuid}`}
                             >
                               <i className="fas fa-edit" />
                             </NavLink>

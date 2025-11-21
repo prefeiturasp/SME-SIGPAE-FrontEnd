@@ -45,6 +45,7 @@ import TiposEmbalagensCadastradosPage from "src/pages/Cadastros/TiposEmbalagensC
 import UnidadesMedidaPage from "src/pages/Cadastros/UnidadesMedidaPage";
 import RecreioFeriasPage from "src/pages/Cadastros/RecreioFeriasPage";
 import RecreioFeriasCadastradosPage from "src/pages/Cadastros/RecreioFeriasCadastradosPage";
+import EdicaoRecreioFeriasPage from "src/pages/Cadastros/EdicaoRecreioFeriasPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
@@ -68,6 +69,11 @@ export const rotasCadastros: Array<RotaInterface> = [
   {
     path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.RECREIO_NAS_FERIAS}`,
     component: RecreioFeriasPage,
+    tipoUsuario: usuarioEhCODAEGestaoAlimentacao(),
+  },
+  {
+    path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.RECREIO_NAS_FERIAS}/editar`,
+    component: EdicaoRecreioFeriasPage,
     tipoUsuario: usuarioEhCODAEGestaoAlimentacao(),
   },
   {
