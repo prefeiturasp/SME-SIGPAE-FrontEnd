@@ -134,17 +134,15 @@ export const RecreioFeriasCadastrados = () => {
                     <tr>
                       <td colSpan={4}>
                         <Collapse isOpened={!!expandidosRecreios[recreio.id]}>
-                          <div className="collapse-container">
-                            <TabelaUnidades
-                              editable={false}
-                              participantes={recreio.unidades_participantes}
-                              page={1}
-                              setPage={() => {}}
-                              loading={false}
-                              expandidos={expandidos}
-                              toggleExpandir={toggleExpandir}
-                            />
-                          </div>
+                          <TabelaUnidades
+                            editable={false}
+                            participantes={recreio.unidades_participantes}
+                            page={1}
+                            setPage={() => {}}
+                            loading={false}
+                            expandidos={expandidos}
+                            toggleExpandir={toggleExpandir}
+                          />
                         </Collapse>
                       </td>
                     </tr>

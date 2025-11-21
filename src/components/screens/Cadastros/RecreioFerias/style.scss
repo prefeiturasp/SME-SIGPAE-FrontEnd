@@ -83,18 +83,18 @@
         font-size: 18px;
       }
     }
+  }
+}
 
-    .collapse-container {
-      display: flex;
-      flex-direction: column;
-      padding: 8px;
-      border: 1px solid #e3e6f0;
+.collapse-container-unidades-participantes {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border: 1px solid #e3e6f0;
 
-      div {
-        margin-top: 4px;
-        margin-bottom: 4px;
-      }
-    }
+  div {
+    margin-top: 4px;
+    margin-bottom: 4px;
   }
 }
 

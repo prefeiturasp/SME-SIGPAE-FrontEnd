@@ -56,7 +56,7 @@ export const LinhaUnidade = ({
           </td>
         </tr>
         <Collapse isOpened={aberto}>
-          <div className="collapse-container">
+          <div className="collapse-container-unidades-participantes">
             {(() => {
               const tipos = participante?.tipos_alimentacao || {};
               const inscritos = (tipos.inscritos || []).map((t) => t.nome);
@@ -176,7 +176,7 @@ export const LinhaUnidade = ({
       </tr>
 
       <Collapse isOpened={aberto}>
-        <div className="collapse-container">
+        <div className="collapse-container-unidades-participantes">
           <div>
             <strong>
               Tipos de Alimentação Inscritos
