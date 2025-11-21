@@ -38,7 +38,7 @@ export const LinhaUnidade = ({
       <>
         <tr className="row">
           <td className="col-1 text-center">
-            {participante.lote.nome_exibicao ?? participante.lote.nome}
+            {participante.lote.nome_exibicao || participante.lote.nome}
           </td>
           <td className="col-3 text-left">
             {participante.unidade_educacional.nome}

@@ -88,3 +88,56 @@ export const isPeriodoEditavel = (
 
   return hoje < dataFim;
 };
+
+export const mapParticipanteApiToForm = (p: any) => {
+  const tipos = p.tipos_alimentacao || {};
+  const lote = p.lote || {};
+  const unidade = p.unidade_educacional || {};
+
+  const inscritos = (tipos.inscritos || []).map((t) => t.nome);
+  const infantil = (tipos.infantil || []).map((t) => t.nome);
+  const colaboradores = (tipos.colaboradores || []).map((t) => t.nome);
+
+  const inscritosUuids = (tipos.inscritos || []).map((t) => t.uuid);
+  const infantilUuids = (tipos.infantil || []).map((t) => t.uuid);
+  const colaboradoresUuids = (tipos.colaboradores || []).map((t) => t.uuid);
+
+  return {
+    id: p.id || p.uuid || Date.now() + Math.random(),
+    uuid: p.uuid,
+
+    loteUuid: lote.uuid,
+    dreLoteNome: lote.nome_exibicao || lote.nome || "",
+
+    unidadeEducacionalUuid: unidade.uuid,
+    unidadeEducacional: unidade.nome || "",
+    unidadeEducacionalCodigoEol: unidade.codigo_eol || "",
+
+    num_inscritos: p.num_inscritos,
+    num_colaboradores: p.num_colaboradores,
+    liberarMedicao: p.liberar_medicao,
+    ceiOuEmei: p.cei_ou_emei || "N/A",
+
+    alimentacaoInscritos: inscritos,
+    alimentacaoInscritosInfantil: infantil,
+    alimentacaoColaboradores: colaboradores,
+
+    tiposAlimentacaoInscritosUuids: inscritosUuids,
+    tiposAlimentacaoInfantilUuids: infantilUuids,
+    tiposAlimentacaoColaboradoresUuids: colaboradoresUuids,
+  };
+};
+
+export const mapParticipanteFormToApi = (p: any) => {
+  return {
+    lote: p.loteUuid,
+    unidade_educacional: p.unidadeEducacionalUuid,
+    num_inscritos: p.num_inscritos,
+    num_colaboradores: p.num_colaboradores,
+    liberar_medicao: p.liberarMedicao,
+    cei_ou_emei: p.ceiOuEmei,
+    tipos_alimentacao_inscritos: p.tiposAlimentacaoInscritosUuids || [],
+    tipos_alimentacao_infantil: p.tiposAlimentacaoInfantilUuids || [],
+    tipos_alimentacao_colaboradores: p.tiposAlimentacaoColaboradoresUuids || [],
+  };
+};

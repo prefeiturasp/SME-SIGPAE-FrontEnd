@@ -12,6 +12,7 @@ import {
   buscarRecreioNasFeriasPorUuid,
 } from "../../../../services/recreioFerias.service";
 import { RecreioFeriasForm } from "./components/RecreioFeriasForm";
+import { mapParticipanteApiToForm } from "./helper";
 import "./style.scss";
 
 export const EdicaoRecreioFerias = () => {
@@ -41,7 +42,9 @@ export const EdicaoRecreioFerias = () => {
           titulo_cadastro: data.titulo,
           periodo_realizacao_de: data.data_inicio,
           periodo_realizacao_ate: data.data_fim,
-          unidades_participantes: data.unidades_participantes || [],
+          unidades_participantes: (data.unidades_participantes || []).map(
+            mapParticipanteApiToForm
+          ),
         };
 
         setInitialValues(valoresIniciais);
