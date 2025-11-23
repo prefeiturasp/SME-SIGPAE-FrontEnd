@@ -14,6 +14,9 @@ export const RecreioFeriasCadastrados = () => {
     Record<string, boolean>
   >({});
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
+  const [paginasRecreios, setPaginasRecreios] = useState<
+    Record<string, number>
+  >({});
   const [loading, setLoading] = useState(false);
   const [recreioFerias, setRecreioFerias] = useState([]);
   const [recreioFeriasFiltrados, setRecreioFeriasFiltrados] = useState([]);
@@ -25,6 +28,10 @@ export const RecreioFeriasCadastrados = () => {
 
   const toggleExpandirRecreio = (id: string) => {
     setExpandidosRecreios((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const setPageForRecreio = (recreioId: string, page: number) => {
+    setPaginasRecreios((prev) => ({ ...prev, [recreioId]: page }));
   };
 
   const filtrarRecreios = (termoPesquisa: string) => {
@@ -145,8 +152,10 @@ export const RecreioFeriasCadastrados = () => {
                           <TabelaUnidades
                             editable={false}
                             participantes={recreio.unidades_participantes}
-                            page={1}
-                            setPage={() => {}}
+                            page={paginasRecreios[recreio.id] || 1}
+                            setPage={(page) =>
+                              setPageForRecreio(recreio.id, page)
+                            }
                             loading={false}
                             expandidos={expandidos}
                             toggleExpandir={toggleExpandir}
