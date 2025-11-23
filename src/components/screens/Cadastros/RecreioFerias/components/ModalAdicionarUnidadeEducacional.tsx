@@ -127,8 +127,6 @@ export const ModalAdicionarUnidadeEducacional = ({
         return [
           {
             ...base,
-            ceiOuEmei: tipoSelecionado?.nome || "N/A",
-
             alimentacaoInscritos: mapAlimentacoes(
               alimentacao.inscritos,
               values.tipos_alimentacao_inscritos
