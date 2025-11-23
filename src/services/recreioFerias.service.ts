@@ -17,4 +17,4 @@ export const buscarRecreioNasFeriasPorUuid = async (uuid: string) =>
   await axios.get(`/medicao-inicial/recreio-nas-ferias/${uuid}/`);
 
 export const atualizarRecreioNasFerias = (uuid: string, payload: any) =>
-  axios.put(`/recreio-nas-ferias/${uuid}/`, payload);
+  axios.put(`/medicao-inicial/recreio-nas-ferias/${uuid}/`, payload);

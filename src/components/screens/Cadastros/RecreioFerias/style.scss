@@ -63,25 +63,21 @@
   .preto {
     color: black !important;
   }
+}
 
-  table {
-    .action-column {
-      // max-width: 60px;
+.tabela-unidades-participantes {
+  td {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .excluir-botao {
+      border: none;
+      background-color: transparent;
     }
 
-    td {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      .excluir-botao {
-        border: none;
-        background-color: transparent;
-      }
-
-      button i {
-        font-size: 18px;
-      }
+    button i {
+      font-size: 18px;
     }
   }
 }
