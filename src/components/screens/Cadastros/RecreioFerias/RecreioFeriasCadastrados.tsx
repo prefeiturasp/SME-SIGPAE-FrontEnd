@@ -121,7 +121,7 @@ export const RecreioFeriasCadastrados = () => {
                       {recreio.data_inicio} até {recreio.data_fim}
                     </td>
                     <td className="ps-4">
-                      {recreio.unidades_participantes.length}
+                      {recreio.unidades_participantes.length} UEs
                     </td>
                     <td>
                       {periodoEditavel && (
