@@ -1,4 +1,4 @@
-import { Tooltip } from "antd";
+import { Spin, Tooltip } from "antd";
 import React, { useEffect, useState } from "react";
 import { Collapse } from "react-collapse";
 import { NavLink } from "react-router-dom";
@@ -84,30 +84,28 @@ export const RecreioFeriasCadastrados = () => {
   }, []);
 
   return (
-    <div className="card pt-3 mt-3">
-      <div className="card-body card-table-cadastro">
-        <table className="recreios-cadastrados">
-          <tr>
-            <th className="col">Título do Recreio Cadastrado</th>
-            <th className="col">Período de Realização</th>
-            <th className="col">Qtde. de Unidades</th>
-            <th className="col">
-              <div className="">
-                <input
-                  className="input-search"
-                  placeholder="Pesquisar"
-                  value={pesquisar}
-                  onChange={(e) => onPesquisaChanged(e.target.value)}
-                  autoFocus={true}
-                />
-                <i className="fas fa-search" />
-              </div>
-            </th>
-          </tr>
-          {loading ? (
-            <div>Carregando...</div>
-          ) : (
-            recreioFeriasFiltrados.map((recreio) => {
+    <Spin tip="Carregando..." spinning={loading}>
+      <div className="card pt-3 mt-3">
+        <div className="card-body card-table-cadastro">
+          <table className="recreios-cadastrados">
+            <tr>
+              <th className="col">Título do Recreio Cadastrado</th>
+              <th className="col">Período de Realização</th>
+              <th className="col">Qtde. de Unidades</th>
+              <th className="col">
+                <div className="">
+                  <input
+                    className="input-search"
+                    placeholder="Pesquisar"
+                    value={pesquisar}
+                    onChange={(e) => onPesquisaChanged(e.target.value)}
+                    autoFocus={true}
+                  />
+                  <i className="fas fa-search" />
+                </div>
+              </th>
+            </tr>
+            {recreioFeriasFiltrados.map((recreio) => {
               const periodoEditavel = isPeriodoEditavel(
                 recreio.data_inicio,
                 recreio.data_fim
@@ -166,10 +164,10 @@ export const RecreioFeriasCadastrados = () => {
                   )}
                 </React.Fragment>
               );
-            })
-          )}
-        </table>
+            })}
+          </table>
+        </div>
       </div>
-    </div>
+    </Spin>
   );
 };
