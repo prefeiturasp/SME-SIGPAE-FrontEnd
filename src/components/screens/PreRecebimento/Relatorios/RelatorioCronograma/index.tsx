@@ -128,6 +128,7 @@ export default () => {
                     ativos={ativos}
                     setAtivos={setAtivos}
                     setCarregando={setCarregando}
+                    filtros={filtros}
                   />
                   <div className="row">
                     <div className="col">
