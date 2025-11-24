@@ -169,6 +169,13 @@ describe("Testa Formulário de Solicitação de Dieta Especial com Aluno Não Ma
     });
 
     const botaoEnviar = screen.getByText("Enviar").closest("button");
+    mock.onPost("/solicitacoes-dieta-especial/").reply(201, {});
     fireEvent.click(botaoEnviar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitação realizada com sucesso."),
+      ).toBeInTheDocument();
+    });
   });
 });
