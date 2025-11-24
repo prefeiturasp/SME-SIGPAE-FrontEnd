@@ -84,7 +84,7 @@ export default ({
                     component="input"
                     name={`tabelas[${nomeTabela}].${value}.tipo_alimentacao`}
                     type="hidden"
-                    defaultValue={record.uuid}
+                    defaultValue={record.nome}
                   />
                 </div>
               );
