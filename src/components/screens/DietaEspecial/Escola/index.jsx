@@ -479,6 +479,7 @@ class solicitacaoDietaEspecial extends Component {
                     <span className="input-file">
                       <input
                         className="inputfile"
+                        data-testid="input-file-foto-aluno"
                         name="foto_aluno"
                         ref={(i) => (this.inputRef = i)}
                         accept=".png, .jpeg, .jpg"
