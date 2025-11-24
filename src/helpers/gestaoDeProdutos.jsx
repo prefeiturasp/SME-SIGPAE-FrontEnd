@@ -1,9 +1,12 @@
-import React from "react";
-import { TIPO_PERFIL } from "src/constants/shared";
-import { ROTAS_SOLICITACOES_HOMOLOGACAO_PRODUTO as ROTA } from "src/configs/constants";
-import { ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS } from "src/constants/shared";
-import { GESTAO_PRODUTO_CARDS as CARD_ID } from "src/configs/constants";
-import { usuarioEhCODAEGestaoProduto, ehUsuarioEmpresa } from "./utilities";
+import {
+  GESTAO_PRODUTO_CARDS as CARD_ID,
+  ROTAS_SOLICITACOES_HOMOLOGACAO_PRODUTO as ROTA,
+} from "src/configs/constants";
+import {
+  ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS,
+  TIPO_PERFIL,
+} from "src/constants/shared";
+import { ehUsuarioEmpresa, usuarioEhCODAEGestaoProduto } from "./utilities";
 const {
   CODAE_SUSPENDEU,
   CODAE_QUESTIONADO,
@@ -127,18 +130,18 @@ export const listarCardsPermitidos = () => {
   if (perfil === TIPO_PERFIL.GESTAO_PRODUTO) {
     const cardPendenteHomologacao = Object.assign(
       {},
-      CARD_PENDENTE_HOMOLOGACAO
+      CARD_PENDENTE_HOMOLOGACAO,
     );
     const cardAguardandoAnaliseReclamacao = Object.assign(
       {},
-      CARD_AGUARDANDO_ANALISE_RECLAMACAO
+      CARD_AGUARDANDO_ANALISE_RECLAMACAO,
     );
     cardAguardandoAnaliseReclamacao.incluir_status.push(
-      TERCEIRIZADA_RESPONDEU_RECLAMACAO
+      TERCEIRIZADA_RESPONDEU_RECLAMACAO,
     );
 
     cardAguardandoAnaliseReclamacao.incluir_status.push(
-      ESCOLA_OU_NUTRICIONISTA_RECLAMOU
+      ESCOLA_OU_NUTRICIONISTA_RECLAMOU,
     );
     return [
       cardPendenteHomologacao,
@@ -160,14 +163,14 @@ export const listarCardsPermitidos = () => {
   } else if ([TIPO_PERFIL.TERCEIRIZADA].includes(perfil)) {
     const cardAguardandoAnaliseReclamacao = Object.assign(
       {},
-      CARD_AGUARDANDO_ANALISE_RECLAMACAO
+      CARD_AGUARDANDO_ANALISE_RECLAMACAO,
     );
     cardAguardandoAnaliseReclamacao.incluir_status.push(
-      TERCEIRIZADA_RESPONDEU_RECLAMACAO
+      TERCEIRIZADA_RESPONDEU_RECLAMACAO,
     );
 
     cardAguardandoAnaliseReclamacao.incluir_status.push(
-      ESCOLA_OU_NUTRICIONISTA_RECLAMOU
+      ESCOLA_OU_NUTRICIONISTA_RECLAMOU,
     );
     return [
       CARD_PRODUTOS_SUSPENSOS,
@@ -184,15 +187,15 @@ export const listarCardsPermitidos = () => {
   ) {
     const cardAguardandoAnaliseReclamacao = Object.assign(
       {},
-      CARD_AGUARDANDO_ANALISE_RECLAMACAO
+      CARD_AGUARDANDO_ANALISE_RECLAMACAO,
     );
 
     cardAguardandoAnaliseReclamacao.incluir_status.push(
-      TERCEIRIZADA_RESPONDEU_RECLAMACAO
+      TERCEIRIZADA_RESPONDEU_RECLAMACAO,
     );
 
     cardAguardandoAnaliseReclamacao.incluir_status.push(
-      ESCOLA_OU_NUTRICIONISTA_RECLAMOU
+      ESCOLA_OU_NUTRICIONISTA_RECLAMOU,
     );
 
     cardAguardandoAnaliseReclamacao.incluir_status.push(CODAE_QUESTIONOU_UE);
@@ -217,11 +220,11 @@ export const listarCardsPermitidos = () => {
     const cardHomologados = Object.assign({}, CARD_HOMOLOGADOS);
     const cardAguardandoAnaliseReclamacao = Object.assign(
       {},
-      CARD_AGUARDANDO_ANALISE_RECLAMACAO
+      CARD_AGUARDANDO_ANALISE_RECLAMACAO,
     );
 
     cardAguardandoAnaliseReclamacao.incluir_status.push(
-      ESCOLA_OU_NUTRICIONISTA_RECLAMOU
+      ESCOLA_OU_NUTRICIONISTA_RECLAMOU,
     );
     const listaDeCards = [
       CARD_PRODUTOS_SUSPENSOS,
@@ -240,7 +243,7 @@ export const listarCardsPermitidos = () => {
   cardHomologados.incluir_status.push(
     ESCOLA_OU_NUTRICIONISTA_RECLAMOU,
     CODAE_PEDIU_ANALISE_RECLAMACAO,
-    TERCEIRIZADA_RESPONDEU_RECLAMACAO
+    TERCEIRIZADA_RESPONDEU_RECLAMACAO,
   );
   return [CARD_PRODUTOS_SUSPENSOS, CARD_NAO_HOMOLOGADOS, cardHomologados];
 };
