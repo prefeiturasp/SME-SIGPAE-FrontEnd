@@ -86,7 +86,7 @@ export const isPeriodoEditavel = (
 
   if (!dataInicio || !dataFim) return false;
 
-  return hoje < dataFim;
+  return hoje <= dataFim;
 };
 
 export const mapParticipanteApiToForm = (p: any) => {
