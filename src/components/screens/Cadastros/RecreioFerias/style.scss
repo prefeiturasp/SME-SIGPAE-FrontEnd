@@ -1,5 +1,15 @@
 @use "src/styles/variables.scss" as *;
 
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+
+  .recreio-cadastrados-botao {
+    width: auto !important;
+  }
+}
+
 .tabela-unidades-participantes {
   font-size: 12px;
   color: $blackInput;
