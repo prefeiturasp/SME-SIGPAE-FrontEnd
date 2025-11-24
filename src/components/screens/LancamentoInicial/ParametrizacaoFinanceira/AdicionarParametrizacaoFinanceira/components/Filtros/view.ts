@@ -193,6 +193,7 @@ export default ({
 
   const initialGrupoUnidade =
     uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
+
   const onChangeTiposUnidades = (grupo: string) => {
     form.change("grupo_unidade_escolar", grupo);
     const selecionado = gruposUnidadesOpcoes.find((e) => e.uuid === grupo).nome;
