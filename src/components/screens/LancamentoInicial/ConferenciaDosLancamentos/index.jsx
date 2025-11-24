@@ -235,6 +235,7 @@ export const ConferenciaDosLancamentos = () => {
       (usuarioEhDRE() || usuarioEhMedicao()) &&
       solicitacao &&
       solicitacao.status === "MEDICAO_CORRIGIDA_PARA_CODAE" &&
+      solicitacao?.ocorrencia.status !== "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" &&
       !solicitacao.dre_ciencia_correcao_data
     );
   };
@@ -335,7 +336,6 @@ export const ConferenciaDosLancamentos = () => {
     }
     dados_iniciais && setDadosIniciais(dados_iniciais);
 
-    /* Quando não há ocorrência e se deseja fazer o opontamento, habilita aqui o expansivel */
     if (!response.data.com_ocorrencias && !response.data.ocorrencia) {
       setOcorrenciaExpandida(true);
     }
@@ -558,7 +558,15 @@ export const ConferenciaDosLancamentos = () => {
 
       if (
         usuarioEhDRE() &&
-        solicitacao.status === "MEDICAO_CORRIGIDA_PELA_UE" &&
+        solicitacao?.status === "MEDICAO_CORRIGIDA_PELA_UE" &&
+        ocorrencia?.status === "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
+      ) {
+        setDesabilitarEnviarParaCodaeECodaeAprovar(false);
+      } else if (
+        usuarioEhMedicao() &&
+        ["MEDICAO_CORRIGIDA_PARA_CODAE", "MEDICAO_APROVADA_PELA_DRE"].includes(
+          solicitacao?.status,
+        ) &&
         ocorrencia?.status === "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
       ) {
         setDesabilitarEnviarParaCodaeECodaeAprovar(false);
@@ -764,14 +772,18 @@ export const ConferenciaDosLancamentos = () => {
                                 <b
                                   className={`${
                                     (!solicitacao.com_ocorrencias &&
-                                      ocorrencia) ||
+                                      ocorrencia &&
+                                      ocorrencia.status !==
+                                        "OCORRENCIA_EXCLUIDA_PELA_ESCOLA") ||
                                     solicitacao.com_ocorrencias
                                       ? "value-avaliacao-servico-red"
                                       : "value-avaliacao-servico-green"
                                   }`}
                                 >
                                   {(!solicitacao.com_ocorrencias &&
-                                    ocorrencia) ||
+                                    ocorrencia &&
+                                    ocorrencia.status !==
+                                      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA") ||
                                   solicitacao.com_ocorrencias
                                     ? "COM OCORRÊNCIAS"
                                     : "SEM OCORRÊNCIAS"}
@@ -879,26 +891,26 @@ export const ConferenciaDosLancamentos = () => {
                                   exibirBotoesOcorrenciaCODAE) && (
                                   <>
                                     {ocorrenciaExpandida ||
-                                      (ocorrenciaExcluida() && (
-                                        <Botao
-                                          className="mx-3"
-                                          texto="Solicitar correção no formulário"
-                                          type={BUTTON_TYPE.BUTTON}
-                                          style={
-                                            BUTTON_STYLE.GREEN_OUTLINE_WHITE
-                                          }
-                                          disabled={
-                                            (ocorrencia?.status ===
-                                              "MEDICAO_CORRECAO_SOLICITADA" &&
-                                              !solicitacao?.com_ocorrencias) ||
-                                            desabilitarSolicitarCorrecaoOcorrenciaDRE ||
-                                            desabilitarSolicitarCorrecaoOcorrenciaCODAE
-                                          }
-                                          onClick={() =>
-                                            setShowModalSalvarOcorrencia(true)
-                                          }
-                                        />
-                                      ))}
+                                    ocorrenciaExcluida() ? (
+                                      <Botao
+                                        className="mx-3"
+                                        texto="Solicitar correção no formulário"
+                                        type={BUTTON_TYPE.BUTTON}
+                                        style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
+                                        disabled={
+                                          (ocorrencia?.status ===
+                                            "MEDICAO_CORRECAO_SOLICITADA" &&
+                                            !solicitacao?.com_ocorrencias) ||
+                                          desabilitarSolicitarCorrecaoOcorrenciaDRE ||
+                                          desabilitarSolicitarCorrecaoOcorrenciaCODAE
+                                        }
+                                        onClick={() =>
+                                          setShowModalSalvarOcorrencia(true)
+                                        }
+                                      />
+                                    ) : (
+                                      <></>
+                                    )}
 
                                     {(ocorrenciaExpandida && ocorrencia) ||
                                     ocorrenciaExcluida() ? (
