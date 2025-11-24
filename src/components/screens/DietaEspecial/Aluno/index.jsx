@@ -29,7 +29,7 @@ class solicitacaoDietaEspecial extends Component {
     if (eh_aluno_nao_matriculado && codigo_eol_escola && nome_aluno) {
       getDadosAlunoNaoMatriculadoDetalhesDieta(
         codigo_eol_escola,
-        nome_aluno
+        nome_aluno,
       ).then((dadosAluno) => {
         const dados = dadosAluno.data;
         this.setState({
@@ -41,11 +41,11 @@ class solicitacaoDietaEspecial extends Component {
       });
       getDietasEspeciaisVigentesDeUmAlunoNaoMatriculado(
         codigo_eol_escola,
-        nome_aluno
+        nome_aluno,
       ).then((response) => {
         this.setState({
           solicitacoesVigentes: formatarSolicitacoesVigentes(
-            response.data.results
+            response.data.results,
           ),
         });
       });
@@ -63,14 +63,14 @@ class solicitacaoDietaEspecial extends Component {
         (response) => {
           this.setState({
             solicitacoesVigentes: formatarSolicitacoesVigentes(
-              response.data.results
+              response.data.results,
             ),
             escolaAtual: response.data.results[0]?.escola_destino?.nome || "",
             dreAtual:
               response.data.results[0]?.escola_destino?.diretoria_regional
                 ?.nome || "",
           });
-        }
+        },
       );
     }
   }

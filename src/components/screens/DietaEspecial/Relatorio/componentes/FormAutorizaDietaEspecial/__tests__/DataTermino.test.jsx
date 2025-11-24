@@ -10,10 +10,16 @@ const setup = (tipoSolicitacao, temData = true) => {
       onSubmit={jest.fn()}
       render={() => (
         <form>
-          <DataTermino tipoSolicitacao={tipoSolicitacao} temData={temData} />
+          <DataTermino
+            dietaEspecial={{
+              tipo_solicitacao: tipoSolicitacao,
+              dieta_para_recreio_ferias: false,
+            }}
+            temData={temData}
+          />
         </form>
       )}
-    />
+    />,
   );
 };
 
