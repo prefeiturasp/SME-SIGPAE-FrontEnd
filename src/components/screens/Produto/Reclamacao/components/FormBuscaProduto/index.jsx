@@ -1,5 +1,6 @@
 import { Spin } from "antd";
 import { useEffect, useReducer, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Field, Form } from "react-final-form";
 import { connect } from "react-redux";
 import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
@@ -52,6 +53,14 @@ const FormBuscaProduto = ({
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loading, setLoading] = useState(true);
   const typingTimeout = useRef(null);
+  const formRef = useRef(null);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const paramNomeProduto = searchParams.get("nome_produto");
+  const paramMarcaProduto = searchParams.get("marca_produto");
+  const paramFabricanteProduto = searchParams.get("fabricante_produto");
 
   const tipoPerfil = localStorage.getItem("tipo_perfil");
   const ehEscola = tipoPerfil === TIPO_PERFIL.ESCOLA;
@@ -133,6 +142,24 @@ const FormBuscaProduto = ({
     }
   }, [edital]);
 
+  useEffect(() => {
+    if (!loading) {
+      const hasParams =
+        paramNomeProduto || paramMarcaProduto || paramFabricanteProduto;
+
+      if (hasParams) {
+        formRef.current?.change("nome_produto", paramNomeProduto || undefined);
+        formRef.current?.change("nome_marca", paramMarcaProduto || undefined);
+        formRef.current?.change(
+          "nome_fabricante",
+          paramFabricanteProduto || undefined,
+        );
+
+        formRef.current?.submit();
+      }
+    }
+  }, [loading]);
+
   return (
     <Spin tip="Carregando..." spinning={loading}>
       {!loading && (
@@ -142,7 +169,13 @@ const FormBuscaProduto = ({
             nome_edital: edital,
           }}
           render={({ form, values, handleSubmit, submitting }) => (
-            <form onSubmit={handleSubmit} className="busca-produtos-formulario">
+            <form
+              onSubmit={handleSubmit}
+              className="busca-produtos-formulario"
+              ref={() => {
+                formRef.current = form;
+              }}
+            >
               <FinalFormToRedux form={formName} />
               {novaReclamacao && (
                 <div className="col-12 p-0">
