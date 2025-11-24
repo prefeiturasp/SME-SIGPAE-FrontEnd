@@ -16,6 +16,7 @@ import {
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import TabelasGrupoCEI from "./components/Tabelas/TabelasGrupoCEI";
+import TabelasGruposEMEI from "./components/Tabelas/TabelasGruposEMEI";
 import ModalCancelar from "./components/ModalCancelar";
 import ModalSalvar from "./components/ModalSalvar";
 import { formataPayload } from "./helpers";
@@ -35,6 +36,7 @@ export default () => {
   const [editalSelecionado, setEditalSelecionado] = useState("");
   const [loteSelecionado, setLoteSelecionado] = useState("");
   const [faixasEtarias, setFaixasEtarias] = useState([]);
+  const [tiposAlimentacao, setTiposAlimentacao] = useState([]);
   const [parametrizacao, setParametrizacao] = useState(VALORES_INICIAIS);
   const [showModalCancelar, setShowModalCancelar] = useState(false);
   const [showModalSalvar, setShowModalSalvar] = useState(false);
@@ -77,18 +79,6 @@ export default () => {
     }
   };
 
-  const exibeTabelasCEI =
-    faixasEtarias.length && grupoSelecionado.toLowerCase().includes("grupo 1");
-
-  const exibeTabelasEMEFeEMEI = ["grupo 3", "grupo 5"].some((palavra) =>
-    grupoSelecionado.toLowerCase().includes(palavra),
-  );
-
-  const exibeTabelasCEMEI =
-    faixasEtarias.length && grupoSelecionado.toLowerCase().includes("grupo 2");
-
-  const exibeTabelasEMEBS = grupoSelecionado.toLowerCase().includes("grupo 4");
-
   return (
     <>
       <div className="adicionar-parametrizacao card mt-4">
@@ -99,72 +89,100 @@ export default () => {
             }
             initialValues={parametrizacao}
             destroyOnUnregister={true}
-            render={({ form, handleSubmit, submitting }) => (
-              <form onSubmit={handleSubmit}>
-                <Filtros
-                  setGrupoSelecionado={setGrupoSelecionado}
-                  setEditalSelecionado={setEditalSelecionado}
-                  setLoteSelecionado={setLoteSelecionado}
-                  setFaixasEtarias={setFaixasEtarias}
-                  setParametrizacao={setParametrizacao}
-                  setCarregarTabelas={setCarregarTabelas}
-                  form={form}
-                  uuidParametrizacao={uuidParametrizacao}
-                  ehCadastro
-                />
-                {exibeTabelasCEI && (carregarTabelas || uuidParametrizacao) ? (
-                  <TabelasGrupoCEI
+            render={({ form, handleSubmit, submitting }) => {
+              const tabelasCarregadas = carregarTabelas || uuidParametrizacao;
+
+              const exibeTabelasCEI =
+                faixasEtarias.length &&
+                grupoSelecionado.toLowerCase().includes("grupo 1");
+
+              const exibeTabelasEMEI =
+                tiposAlimentacao.length &&
+                grupoSelecionado.toLowerCase().includes("grupo 3");
+
+              const exibeTabelasCEMEI =
+                faixasEtarias.length &&
+                grupoSelecionado.toLowerCase().includes("grupo 2");
+
+              const exibeTabelasEMEBS = grupoSelecionado
+                .toLowerCase()
+                .includes("grupo 4");
+
+              return (
+                <form onSubmit={handleSubmit}>
+                  <Filtros
+                    setGrupoSelecionado={setGrupoSelecionado}
+                    setEditalSelecionado={setEditalSelecionado}
+                    setLoteSelecionado={setLoteSelecionado}
+                    setFaixasEtarias={setFaixasEtarias}
+                    setTiposAlimentacao={setTiposAlimentacao}
+                    setParametrizacao={setParametrizacao}
+                    setCarregarTabelas={setCarregarTabelas}
                     form={form}
-                    faixasEtarias={faixasEtarias}
-                    grupoSelecionado={grupoSelecionado}
+                    uuidParametrizacao={uuidParametrizacao}
+                    ehCadastro
                   />
-                ) : null}
-                {(exibeTabelasEMEFeEMEI ||
-                  exibeTabelasCEI ||
-                  exibeTabelasCEMEI ||
-                  exibeTabelasEMEBS) &&
-                (carregarTabelas || uuidParametrizacao) ? (
-                  <div className="row mt-5">
-                    <div className="col">
-                      <Field
-                        component={TextArea}
-                        label="Legenda"
-                        name="legenda"
-                        maxLength={1500}
-                        height="150"
-                      />
+                  {exibeTabelasCEI && tabelasCarregadas ? (
+                    <TabelasGrupoCEI
+                      form={form}
+                      faixasEtarias={faixasEtarias}
+                      grupoSelecionado={grupoSelecionado}
+                    />
+                  ) : null}
+                  {exibeTabelasEMEI && tabelasCarregadas ? (
+                    <TabelasGruposEMEI
+                      form={form}
+                      tiposAlimentacao={tiposAlimentacao}
+                      grupoSelecionado={grupoSelecionado}
+                    />
+                  ) : null}
+                  {(exibeTabelasEMEI ||
+                    exibeTabelasCEI ||
+                    exibeTabelasCEMEI ||
+                    exibeTabelasEMEBS) &&
+                  tabelasCarregadas ? (
+                    <div className="row mt-5">
+                      <div className="col">
+                        <Field
+                          component={TextArea}
+                          label="Legenda"
+                          name="legenda"
+                          maxLength={1500}
+                          height="150"
+                        />
+                      </div>
                     </div>
+                  ) : null}
+                  <div className="d-flex justify-content-end gap-3 mt-5">
+                    <Botao
+                      dataTestId="botao-cancelar"
+                      texto="Cancelar"
+                      onClick={() => {
+                        uuidParametrizacao
+                          ? navigate(-1)
+                          : setShowModalCancelar(true);
+                      }}
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                      type={BUTTON_TYPE.BUTTON}
+                    />
+                    <Botao
+                      dataTestId="botao-salvar"
+                      texto="Salvar"
+                      style={BUTTON_STYLE.GREEN}
+                      type={BUTTON_TYPE.BUTTON}
+                      disabled={submitting}
+                      onClick={() => setShowModalSalvar(true)}
+                    />
                   </div>
-                ) : null}
-                <div className="d-flex justify-content-end gap-3 mt-5">
-                  <Botao
-                    dataTestId="botao-cancelar"
-                    texto="Cancelar"
-                    onClick={() => {
-                      uuidParametrizacao
-                        ? navigate(-1)
-                        : setShowModalCancelar(true);
-                    }}
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                    type={BUTTON_TYPE.BUTTON}
+                  <ModalSalvar
+                    showModal={showModalSalvar}
+                    setShowModal={setShowModalSalvar}
+                    titulo={`${editalSelecionado} - ${loteSelecionado} - ${grupoSelecionado}`}
+                    onSubmit={() => handleSubmit()}
                   />
-                  <Botao
-                    dataTestId="botao-salvar"
-                    texto="Salvar"
-                    style={BUTTON_STYLE.GREEN}
-                    type={BUTTON_TYPE.BUTTON}
-                    disabled={submitting}
-                    onClick={() => setShowModalSalvar(true)}
-                  />
-                </div>
-                <ModalSalvar
-                  showModal={showModalSalvar}
-                  setShowModal={setShowModalSalvar}
-                  titulo={`${editalSelecionado} - ${loteSelecionado} - ${grupoSelecionado}`}
-                  onSubmit={() => handleSubmit()}
-                />
-              </form>
-            )}
+                </form>
+              );
+            }}
           />
         </div>
       </div>

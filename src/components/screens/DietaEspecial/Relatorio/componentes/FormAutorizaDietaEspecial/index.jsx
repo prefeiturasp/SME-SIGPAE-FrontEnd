@@ -92,7 +92,7 @@ const FormAutorizaDietaEspecial = ({
             uuid: r.id.toString(),
             nome: r.descricao,
           };
-        })
+        }),
       );
     } else {
       toastError("Houve um erro ao carregar Alergias e Intolerâncias");
@@ -101,7 +101,7 @@ const FormAutorizaDietaEspecial = ({
     const respClassificacoes = await getClassificacoesDietaEspecial();
     if (respClassificacoes.status === HTTP_STATUS.OK) {
       setClassificacoesDieta(
-        formataOpcoesClassificacaoDieta(respClassificacoes.data)
+        formataOpcoesClassificacaoDieta(respClassificacoes.data),
       );
     } else {
       toastError("Houve um erro ao carregar Classificações da Dieta");
@@ -117,7 +117,7 @@ const FormAutorizaDietaEspecial = ({
         },
       ];
       optionsProtocolo = optionsProtocolo.concat(
-        respNomesProtocolos.data.results
+        respNomesProtocolos.data.results,
       );
       setProtocolos(optionsProtocolo);
     } else {
@@ -144,7 +144,7 @@ const FormAutorizaDietaEspecial = ({
           nome: alimento.marca
             ? `${alimento.nome} (${alimento.marca.nome})`
             : `${alimento.nome}`,
-        })
+        }),
       );
       setProdutos(substitutos);
     }
@@ -157,8 +157,9 @@ const FormAutorizaDietaEspecial = ({
     if (respSolicitacoesVigentes.status === HTTP_STATUS.OK) {
       const resultado = formatarSolicitacoesVigentes(
         respSolicitacoesVigentes.data.results.filter(
-          (solicitacaoVigente) => solicitacaoVigente.uuid !== dietaEspecial.uuid
-        )
+          (solicitacaoVigente) =>
+            solicitacaoVigente.uuid !== dietaEspecial.uuid,
+        ),
       );
       setSolicitacoesVigentes(resultado);
     } else {
@@ -199,7 +200,7 @@ const FormAutorizaDietaEspecial = ({
     const values = deepCopy(values_);
     if (!values.substituicoes || values.substituicoes.length === 0) {
       toastError(
-        "É necessário ao menos um alimento na lista de substituições!"
+        "É necessário ao menos um alimento na lista de substituições!",
       );
       return;
     }
@@ -289,6 +290,7 @@ const FormAutorizaDietaEspecial = ({
       substituicoes: substituicoes,
       data_termino:
         data_termino_formatada || dietaEspecial.data_termino || undefined,
+      data_inicio: dietaEspecial.data_inicio,
       informacoes_adicionais: dietaEspecial.informacoes_adicionais,
       registro_funcional_nutricionista: obtemIdentificacaoNutricionista(),
     };
@@ -297,7 +299,7 @@ const FormAutorizaDietaEspecial = ({
   const setProtocoloDaDieta = async () => {
     if (dietaEspecial.protocolo_padrao) {
       const respProtocoloPadrao = await getProtocoloPadrao(
-        dietaEspecial.protocolo_padrao
+        dietaEspecial.protocolo_padrao,
       );
       if (respProtocoloPadrao.status === HTTP_STATUS.OK) {
         setProtocoloPadrao(respProtocoloPadrao.data);
@@ -311,7 +313,7 @@ const FormAutorizaDietaEspecial = ({
     const diagnosticosDieta = dietaEspecial.alergias_intolerancias.map(
       (alergia) => {
         return alergia.id.toString();
-      }
+      },
     );
     setDiagnosticosSelecionados(diagnosticosDieta);
   };
@@ -394,7 +396,7 @@ const FormAutorizaDietaEspecial = ({
                   </>
                 )}
                 <DataTermino
-                  tipoSolicitacao={dietaEspecial.tipo_solicitacao}
+                  dietaEspecial={dietaEspecial}
                   temData={dietaEspecial.data_termino ? true : false}
                 />
                 <InformacoesAdicionais />
