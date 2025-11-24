@@ -19,20 +19,13 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import withNavigationType from "src/components/Shareable/withNavigationType";
 import { DIETA_ESPECIAL, ESCOLA, RELATORIO } from "src/configs/constants";
-import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import {
   length,
   minLength,
   required,
   validaCPF,
 } from "src/helpers/fieldValidators";
-import {
-  cpfMask,
-  dateDelta,
-  deepCopy,
-  gerarParametrosConsulta,
-  getError,
-} from "src/helpers/utilities";
+import { cpfMask, dateDelta, deepCopy, getError } from "src/helpers/utilities";
 import { loadSolicitacoesVigentes } from "src/reducers/incluirDietaEspecialReducer";
 import {
   deleteFotoAluno,
@@ -43,9 +36,7 @@ import {
 import {
   criaDietaEspecial,
   getDietasEspeciaisVigentesDeUmAluno,
-  getSolicitacoesDietaEspecial,
 } from "src/services/dietaEspecial.service";
-import { getEscolasSimplissima } from "src/services/escola.service";
 import { meusDados, obtemDadosAlunoPeloEOL } from "src/services/perfil.service";
 import Laudo from "./componentes/Laudo";
 import Prescritor from "./componentes/Prescritor";
@@ -202,73 +193,6 @@ class solicitacaoDietaEspecial extends Component {
           });
         }
       },
-    );
-  };
-
-  getEscolaPorEOL = async () => {
-    const { change, aluno_nao_matriculado } = this.props;
-
-    if (!aluno_nao_matriculado) {
-      change("aluno_nao_matriculado_data.nome_escola", "");
-      return;
-    }
-
-    if (!aluno_nao_matriculado.codigo_eol_escola) {
-      change("aluno_nao_matriculado_data.nome_escola", "");
-      return;
-    }
-
-    const codigo_eol_escola = aluno_nao_matriculado.codigo_eol_escola;
-
-    if (!codigo_eol_escola || codigo_eol_escola.length !== 6) {
-      change("aluno_nao_matriculado_data.nome_escola", "");
-      return;
-    }
-
-    const params = { codigo_eol: codigo_eol_escola };
-    const resposta = await getEscolasSimplissima(params);
-
-    if (!resposta) return;
-
-    if (resposta && resposta.data.results.length) {
-      const escola = resposta.data.results[0];
-      change("aluno_nao_matriculado_data.nome_escola", escola.nome);
-    } else {
-      change("aluno_nao_matriculado_data.nome_escola", "");
-      toastError("Código EOL informado inválido");
-    }
-  };
-
-  getSolicitacoesVigentesResponsavel = async () => {
-    const { aluno_nao_matriculado } = this.props;
-    if (!aluno_nao_matriculado) {
-      this.props.loadSolicitacoesVigentes(null);
-      return;
-    }
-
-    if (!aluno_nao_matriculado.responsavel) {
-      this.props.loadSolicitacoesVigentes(null);
-      return;
-    }
-
-    if (!aluno_nao_matriculado.responsavel.cpf || !aluno_nao_matriculado.nome) {
-      this.props.loadSolicitacoesVigentes(null);
-      return;
-    }
-
-    const { cpf } = aluno_nao_matriculado.responsavel;
-    const { nome } = aluno_nao_matriculado;
-
-    if (validaCPF(cpf)) return;
-
-    const params = gerarParametrosConsulta({
-      cpf_responsavel: cpf,
-      nome_completo_aluno: nome,
-      status: getStatusSolicitacoesVigentes(),
-    });
-    const resposta = await getSolicitacoesDietaEspecial(params);
-    this.props.loadSolicitacoesVigentes(
-      formatarSolicitacoesVigentes(resposta.data.results),
     );
   };
 
@@ -553,7 +477,6 @@ class solicitacaoDietaEspecial extends Component {
                       required
                       disabled
                       validate={[required, length(6)]}
-                      onBlur={this.getEscolaPorEOL}
                     />
                   </div>
                   <div className="col-md-9">
@@ -588,7 +511,6 @@ class solicitacaoDietaEspecial extends Component {
                       className="form-control"
                       required
                       validate={[required, minLength6]}
-                      onBlur={this.getSolicitacoesVigentesResponsavel}
                     />
                   </div>
                   <div className="col-md-3">
@@ -619,7 +541,6 @@ class solicitacaoDietaEspecial extends Component {
                         label="CPF do Responsável"
                         className="form-control"
                         required
-                        onBlur={this.getSolicitacoesVigentesResponsavel}
                         validate={[required, validaCPF]}
                       />
                     </div>
