@@ -52,7 +52,7 @@ describe("Testes de Tabela Dietas Tipo A - Parametrização Financeira", () => {
     return input;
   };
 
-  it("altera campos de Lanche, verifica se valores foram alterados e total calculado", async () => {
+  it("altera campos de Lanche 4h, verifica se valores foram alterados e total calculado", async () => {
     await setup({ grupo: "Grupo 3" });
 
     const valorUnitario = setInput(
