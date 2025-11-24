@@ -35,17 +35,39 @@ export const TabelaUnidades = ({
     <Spin spinning={loading} tip="Carregando...">
       <table className="tabela-unidades-participantes">
         <thead>
-          <tr className="row">
-            <th className="col-1 text-center">DRE/LOTE</th>
-            <th className="col-3 text-center">Unidade Educacional</th>
-            <th className="col-2 text-center">
+          <tr className={editable ? "row" : ""}>
+            <th className={`${editable ? "col-1" : "dre-lote"} text-center`}>
+              DRE/LOTE
+            </th>
+            <th
+              className={`${
+                editable ? "col-3" : "unidade-educacional"
+              } text-center`}
+            >
+              Unidade Educacional
+            </th>
+            <th
+              className={`${editable ? "col-2" : "num-inscritos"} text-center`}
+            >
               <span className="required-asterisk">*</span> Nº de Inscritos
             </th>
-            <th className="col-2 text-center">
+            <th
+              className={`${
+                editable ? "col-2" : "num-colaboradores"
+              } text-center`}
+            >
               <span className="required-asterisk">*</span> Nº de Colaboradores
             </th>
-            <th className="col-2 text-center">Liberar Medição?</th>
-            <th className="action-column col-1 text-center"></th>
+            <th
+              className={`${
+                editable ? "col-2" : "liberar-medicao"
+              } text-center`}
+            >
+              Liberar Medição?
+            </th>
+            <th
+              className={`${editable ? "col-1" : ""} action-column text-center`}
+            ></th>
             {editable && <th className="action-column col-1 text-center"></th>}
           </tr>
         </thead>

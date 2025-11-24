@@ -36,65 +36,75 @@ export const LinhaUnidade = ({
   if (readOnly) {
     return (
       <>
-        <tr className="row">
-          <td className="col-1 text-center">
+        <tr>
+          <td className="dre-lote text-center">
             {participante.lote.nome_exibicao || participante.lote.nome}
           </td>
-          <td className="col-3 text-left">
+          <td className="unidade-educacional text-left">
             {participante.unidade_educacional.nome}
           </td>
-          <td className="col-2 text-center">{participante.num_inscritos}</td>
-          <td className="col-2 text-center">
+          <td className="num-inscritos text-center">
+            {participante.num_inscritos}
+          </td>
+          <td className="num-colaboradores text-center">
             {participante.num_colaboradores}
           </td>
-          <td className="col-2 text-center">
+          <td
+            className={`liberar-medicao text-center ${
+              participante.liberar_medicao ? "verde" : ""
+            }`}
+          >
             {participante.liberar_medicao ? "Sim" : "Não"}
           </td>
-          <td className="action-column col-1 text-center">
+          <td className="action-column text-center">
             <ToggleExpandir
               ativo={!!aberto}
               onClick={() => toggleExpandir(participante?.id)}
             />
           </td>
         </tr>
-        <Collapse isOpened={aberto}>
-          <div className="collapse-container-unidades-participantes">
-            {(() => {
-              const tipos = participante?.tipos_alimentacao || {};
-              const inscritos = (tipos.inscritos || []).map((t) => t.nome);
-              const infantil = (tipos.infantil || []).map((t) => t.nome);
-              const colaboradores = (tipos.colaboradores || []).map(
-                (t) => t.nome
-              );
+        <tr className="linha-detalhe">
+          <td colSpan={6} className="p-0">
+            <Collapse isOpened={aberto}>
+              <div className="collapse-container-unidades-participantes">
+                {(() => {
+                  const tipos = participante?.tipos_alimentacao || {};
+                  const inscritos = (tipos.inscritos || []).map((t) => t.nome);
+                  const infantil = (tipos.infantil || []).map((t) => t.nome);
+                  const colaboradores = (tipos.colaboradores || []).map(
+                    (t) => t.nome
+                  );
 
-              return (
-                <>
-                  <div>
-                    <strong>
-                      Tipos de Alimentação Inscritos
-                      {infantil.length > 0 && " - CEI"}:{" "}
-                    </strong>
-                    <span>{inscritos.join(", ")}</span>
-                  </div>
+                  return (
+                    <>
+                      <div>
+                        <strong>
+                          Tipos de Alimentação Inscritos
+                          {infantil.length > 0 && " - CEI"}:{" "}
+                        </strong>
+                        <span>{inscritos.join(", ")}</span>
+                      </div>
 
-                  {infantil.length > 0 && (
-                    <div>
-                      <strong>
-                        Tipos de Alimentação Inscritos - INFANTIL:{" "}
-                      </strong>
-                      <span>{infantil.join(", ")}</span>
-                    </div>
-                  )}
+                      {infantil.length > 0 && (
+                        <div>
+                          <strong>
+                            Tipos de Alimentação Inscritos - INFANTIL:{" "}
+                          </strong>
+                          <span>{infantil.join(", ")}</span>
+                        </div>
+                      )}
 
-                  <div>
-                    <strong>Tipos de Alimentação Colaboradores: </strong>
-                    <span>{colaboradores.join(", ")}</span>
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-        </Collapse>
+                      <div>
+                        <strong>Tipos de Alimentação Colaboradores: </strong>
+                        <span>{colaboradores.join(", ")}</span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </Collapse>
+          </td>
+        </tr>
       </>
     );
   }
