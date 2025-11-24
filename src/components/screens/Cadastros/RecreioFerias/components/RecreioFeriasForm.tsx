@@ -4,6 +4,7 @@ import moment from "moment";
 import { useState } from "react";
 import { Field, Form } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
+import { useNavigate } from "react-router-dom";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -36,6 +37,7 @@ export const RecreioFeriasForm = ({
   onSubmitApi,
   onAfterSuccess,
 }: RecreioFeriasFormProps) => {
+  const navigate = useNavigate();
   const [showModalAdicionar, setShowModalAdicionar] = useState(false);
   const [showModalRemover, setShowModalRemover] = useState(false);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
@@ -124,9 +126,6 @@ export const RecreioFeriasForm = ({
     handleSubmit(event);
   };
 
-  const tituloBotao =
-    mode === "create" ? "Salvar Recreio nas Férias" : "Salvar Alterações";
-
   return (
     <Form
       keepDirtyOnReinitialize
@@ -198,7 +197,7 @@ export const RecreioFeriasForm = ({
               {({ fields }) => (
                 <>
                   <TabelaUnidades
-                    editable={true} // aqui edição/liberação da lixeira
+                    editable={true}
                     fields={fields}
                     form={form}
                     page={page}
@@ -218,8 +217,21 @@ export const RecreioFeriasForm = ({
 
           <div className="row mt-4">
             <div className="col-12 text-end">
+              {mode !== "create" && (
+                <Botao
+                  texto="Cancelar"
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                  className="me-2"
+                  onClick={() =>
+                    navigate(
+                      "/configuracoes/cadastros/recreio-nas-ferias-cadastrados"
+                    )
+                  }
+                />
+              )}
               <Botao
-                texto={tituloBotao}
+                texto={"Salvar Recreio nas Férias"}
                 type={BUTTON_TYPE.SUBMIT}
                 style={BUTTON_STYLE.GREEN}
               />
