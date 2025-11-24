@@ -7,9 +7,9 @@ import {
 } from "@testing-library/react";
 import { Form } from "react-final-form";
 import { mockGetVinculosTipoAlimentacaoPorEscola } from "src/mocks/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoPorEscola";
-import TabelaDietaTipoB from "../../../components/Tabelas/TabelaDietaTipoB";
+import TabelaDietaTipoA from "../../../components/Tabelas/TabelaDietaTipoA";
 
-describe("Testes de Tabela Dietas Tipo B - Parametrização Financeira", () => {
+describe("Testes de Tabela Dietas Tipo A - Parametrização Financeira", () => {
   const tiposAlimentacao = mockGetVinculosTipoAlimentacaoPorEscola.results.find(
     (e) =>
       e.tipo_unidade_escolar.iniciais === "EMEI" &&
@@ -22,7 +22,7 @@ describe("Testes de Tabela Dietas Tipo B - Parametrização Financeira", () => {
         <Form
           onSubmit={jest.fn()}
           render={({ form }) => (
-            <TabelaDietaTipoB
+            <TabelaDietaTipoA
               form={form}
               tiposAlimentacao={tiposAlimentacao}
               grupoSelecionado={grupo}
@@ -36,9 +36,14 @@ describe("Testes de Tabela Dietas Tipo B - Parametrização Financeira", () => {
 
   it("verifica se tabela foi renderizada corretamente", async () => {
     await setup({ grupo: "Grupo 3" });
-    expect(screen.getByText("Preço das Dietas Tipo B")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText("Lanche")).toBeInTheDocument();
     expect(screen.getByText("Lanche 4h")).toBeInTheDocument();
+    expect(screen.getByText("Refeição - Dieta Enteral")).toBeInTheDocument();
   });
 
   const setInput = (testId, value) => {
@@ -51,15 +56,15 @@ describe("Testes de Tabela Dietas Tipo B - Parametrização Financeira", () => {
     await setup({ grupo: "Grupo 3" });
 
     const valorUnitario = setInput(
-      "tabelas[Dietas Tipo B].Lanche 4h.valor_unitario",
+      "tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.valor_unitario",
       "5,00",
     );
     const valorReajuste = setInput(
-      "tabelas[Dietas Tipo B].Lanche 4h.percentual_acrescimo",
+      "tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.percentual_acrescimo",
       "100,00",
     );
     const valorTotal = screen.getByTestId(
-      "tabelas[Dietas Tipo B].Lanche 4h.valor_unitario_total",
+      "tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.valor_unitario_total",
     );
 
     await waitFor(() => {
