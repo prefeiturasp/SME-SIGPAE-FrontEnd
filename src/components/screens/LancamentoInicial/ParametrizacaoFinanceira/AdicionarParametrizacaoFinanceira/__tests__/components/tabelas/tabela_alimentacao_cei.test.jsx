@@ -9,7 +9,7 @@ import { Form } from "react-final-form";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
 import { TabelaAlimentacaoCEI } from "../../../components/Tabelas/TabelaAlimentacaoCEI";
 
-describe("Testes de Tabela Alimentacao - CEI", () => {
+describe("Testes de Tabela Alimentacao CEI - Parametrização Financeira", () => {
   const faixasEtarias = mockFaixasEtarias.results;
 
   beforeEach(async () => {
