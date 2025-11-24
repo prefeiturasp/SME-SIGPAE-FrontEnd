@@ -1,11 +1,6 @@
 import { Spin } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Botao from "src/components/Shareable/Botao";
-import {
-  BUTTON_STYLE,
-  BUTTON_TYPE,
-} from "src/components/Shareable/Botao/constants";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
   atualizarRecreioNasFerias,
@@ -84,17 +79,6 @@ export const EdicaoRecreioFerias = () => {
           <div className="col-4">
             <div className="title">Editar Recreio nas Férias</div>
           </div>
-          <Botao
-            className="text-end recreio-cadastrados-botao"
-            texto="Voltar para Recreios Cadastrados"
-            type={BUTTON_TYPE.BUTTON}
-            style={BUTTON_STYLE.GREEN_OUTLINE}
-            onClick={() =>
-              navigate(
-                "/configuracoes/cadastros/recreio-nas-ferias-cadastrados"
-              )
-            }
-          />
         </div>
 
         <RecreioFeriasForm
