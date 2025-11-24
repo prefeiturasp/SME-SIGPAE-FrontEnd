@@ -13,11 +13,16 @@ export type FaixaEtaria = {
   fim: number;
 };
 
+export type TipoAlimentacao = {
+  uuid: string;
+  nome: string;
+};
+
 export type ValorTabela = {
   nome_campo: string;
   tipo_valor: string;
   faixa_etaria?: FaixaEtaria;
-  tipo_alimentacao?: string;
+  tipo_alimentacao?: TipoAlimentacao;
   valor?: string;
 };
 
@@ -83,3 +88,5 @@ export type GrupoUnidadeEscolar = {
   nome: string;
   tipos_unidades: TipoUnidade[];
 };
+
+export type CampoValor = "valor_unitario" | "valor_unitario_reajuste";

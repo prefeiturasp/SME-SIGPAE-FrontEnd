@@ -5,11 +5,11 @@ import {
   CONFIGURACOES,
   RECREIO_NAS_FERIAS,
 } from "src/configs/constants";
-import { CadastroRecreioFerias } from "../../components/screens/Cadastros/RecreioFerias/CadastroRecreioFerias";
+import { EdicaoRecreioFerias } from "../../components/screens/Cadastros/RecreioFerias/EdicaoRecreioFerias";
 
 const atual = {
-  href: `/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`,
-  titulo: "Cadastrar Recreio nas Férias",
+  href: `/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}/editar`,
+  titulo: "Editar Cadastro Recreio nas Férias",
 };
 
 const anteriores = [
@@ -23,7 +23,7 @@ export const RecreioFeriasPage = () => {
   return (
     <Page titulo={atual.titulo} botaoVoltar>
       <Breadcrumb home={"/"} anteriores={anteriores} atual={atual} />
-      <CadastroRecreioFerias />
+      <EdicaoRecreioFerias />
     </Page>
   );
 };

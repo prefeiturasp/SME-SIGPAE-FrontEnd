@@ -16,6 +16,7 @@ import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockListaNumeros } from "src/mocks/LancamentoInicial/CadastroDeClausulas/listaDeNumeros";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
+import { mockGetTiposUnidadeEscolarTiposAlimentacao } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolarTiposAlimentacao";
 import AdicionarParametrizacaoFinanceira from "../index";
 import mock from "src/services/_mock";
 
@@ -48,6 +49,9 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosSuperUsuarioMedicao);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
+    mock
+      .onGet("/tipos-unidade-escolar-agrupados/")
+      .reply(200, mockGetTiposUnidadeEscolarTiposAlimentacao);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
