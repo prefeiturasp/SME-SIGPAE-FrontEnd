@@ -68,4 +68,22 @@ describe("Testes de Tabela Dietas Tipo B - Parametrização Financeira", () => {
       expect(valorTotal.value).toBe("10,00");
     });
   });
+
+  it("verifica comportamento de atualização de percentuais", async () => {
+    await setup({ grupo: "Grupo 3" });
+
+    const percentualLanche = setInput(
+      "tabelas[Dietas Tipo B].Lanche.percentual_acrescimo",
+      "10,00",
+    );
+
+    await waitFor(() => {
+      expect(percentualLanche.value).toBe("10,00");
+      expect(
+        screen.getByTestId(
+          `tabelas[Dietas Tipo B].Lanche 4h.percentual_acrescimo`,
+        ).value,
+      ).toBe("10,00");
+    });
+  });
 });

@@ -73,4 +73,27 @@ describe("Testes de Tabela Dietas Tipo A - Parametrização Financeira", () => {
       expect(valorTotal.value).toBe("10,00");
     });
   });
+
+  it("verifica comportamento de atualização de percentuais", async () => {
+    await setup({ grupo: "Grupo 3" });
+
+    const percentualRefeicao = setInput(
+      "tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Refeição.percentual_acrescimo",
+      "10,00",
+    );
+
+    await waitFor(() => {
+      expect(percentualRefeicao.value).toBe("10,00");
+      expect(
+        screen.getByTestId(
+          `tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche.percentual_acrescimo`,
+        ).value,
+      ).toBe("10,00");
+      expect(
+        screen.getByTestId(
+          `tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.percentual_acrescimo`,
+        ).value,
+      ).toBe("10,00");
+    });
+  });
 });

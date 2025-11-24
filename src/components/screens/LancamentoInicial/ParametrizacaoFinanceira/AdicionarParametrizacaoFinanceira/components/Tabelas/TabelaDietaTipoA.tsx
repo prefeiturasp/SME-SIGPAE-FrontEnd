@@ -35,7 +35,8 @@ export default ({
     .map((ta) => ({
       ...ta,
       grupo: ta.nome === "Refeição" ? "Dieta Enteral" : null,
-    }));
+    }))
+    .reverse();
 
   const labelTabela = tipoTurma ? `${nomeTabela} - ${tipoTurma}` : nomeTabela;
 
@@ -151,7 +152,7 @@ export default ({
                     value,
                   );
 
-                  if (record.nome === tiposAlimentacao[0].nome)
+                  if (record.nome === alimentacoes[0].nome)
                     atualizarPercentuais(value);
                 }}
               />

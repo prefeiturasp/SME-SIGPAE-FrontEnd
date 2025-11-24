@@ -20,9 +20,9 @@ export default ({
   grupoSelecionado,
   tipoTurma = "",
 }: Props) => {
-  const alimentacoes = tiposAlimentacao.filter((t) =>
-    ALIMENTACOES.includes(t.nome),
-  );
+  const alimentacoes = tiposAlimentacao
+    .filter((t) => ALIMENTACOES.includes(t.nome))
+    .reverse();
 
   const nomeTabela = tipoTurma
     ? `Dietas Tipo B - ${tipoTurma}`
@@ -154,7 +154,7 @@ export default ({
                     value,
                   );
 
-                  if (record.nome === tiposAlimentacao[0].nome)
+                  if (record.nome === alimentacoes[0].nome)
                     atualizarPercentuais(value);
                 }}
               />
