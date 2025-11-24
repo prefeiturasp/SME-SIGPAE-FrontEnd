@@ -4,12 +4,13 @@ import {
   CADASTROS,
   CONFIGURACOES,
   RECREIO_NAS_FERIAS,
+  RECREIO_NAS_FERIAS_CADASTRADOS,
 } from "src/configs/constants";
-import { CadastroRecreioFerias } from "../../components/screens/Cadastros/RecreioFerias/CadastroRecreioFerias";
+import { RecreioFeriasCadastrados } from "../../components/screens/Cadastros/RecreioFerias/RecreioFeriasCadastrados";
 
 const atual = {
-  href: `/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`,
-  titulo: "Cadastrar Recreio nas Férias",
+  href: `/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS_CADASTRADOS}`,
+  titulo: "Recreios Cadastrados",
 };
 
 const anteriores = [
@@ -17,13 +18,17 @@ const anteriores = [
     href: `/${CONFIGURACOES}/${CADASTROS}`,
     titulo: "Cadastros",
   },
+  {
+    href: `/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`,
+    titulo: "Cadastrar Recreio nas Férias",
+  },
 ];
 
 export const RecreioFeriasPage = () => {
   return (
     <Page titulo={atual.titulo} botaoVoltar>
       <Breadcrumb home={"/"} anteriores={anteriores} atual={atual} />
-      <CadastroRecreioFerias />
+      <RecreioFeriasCadastrados />
     </Page>
   );
 };
