@@ -97,6 +97,7 @@ export default ({
             render={(_, record: any) => (
               <Field
                 component={InputText}
+                dataTestId={`tabelas[${nomeTabela}].${record.nome}.valor_unitario`}
                 name={`tabelas[${nomeTabela}].${record.nome}.valor_unitario`}
                 placeholder="0,00"
                 agrupadorMilharComDecimal
@@ -129,6 +130,7 @@ export default ({
             render={(_, record: any) => (
               <Field
                 component={InputText}
+                dataTestId={`tabelas[${nomeTabela}].${record.nome}.percentual_acrescimo`}
                 name={`tabelas[${nomeTabela}].${record.nome}.percentual_acrescimo`}
                 placeholder="%"
                 agrupadorMilharComDecimal
@@ -165,6 +167,7 @@ export default ({
             render={(_, record: any) => (
               <Field
                 component={InputText}
+                dataTestId={`tabelas[${nomeTabela}].${record.nome}.valor_unitario_total`}
                 name={`tabelas[${nomeTabela}].${record.nome}.valor_unitario_total`}
                 placeholder="0,00"
                 agrupadorMilharComDecimal
