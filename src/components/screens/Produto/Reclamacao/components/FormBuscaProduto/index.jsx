@@ -52,6 +52,13 @@ const FormBuscaProduto = ({
   const [state, dispatch] = useReducer(reducer, initialState);
   const [loading, setLoading] = useState(true);
   const typingTimeout = useRef(null);
+  const formRef = useRef(null);
+
+  const searchParams = new URLSearchParams(window.location.search);
+
+  const paramNomeProduto = searchParams.get("nome_produto");
+  const paramMarcaProduto = searchParams.get("marca_produto");
+  const paramFabricanteProduto = searchParams.get("fabricante_produto");
 
   const tipoPerfil = localStorage.getItem("tipo_perfil");
   const ehEscola = tipoPerfil === TIPO_PERFIL.ESCOLA;
@@ -133,6 +140,24 @@ const FormBuscaProduto = ({
     }
   }, [edital]);
 
+  useEffect(() => {
+    if (!loading) {
+      const hasParams =
+        paramNomeProduto || paramMarcaProduto || paramFabricanteProduto;
+
+      if (hasParams) {
+        formRef.current?.change("nome_produto", paramNomeProduto || undefined);
+        formRef.current?.change("nome_marca", paramMarcaProduto || undefined);
+        formRef.current?.change(
+          "nome_fabricante",
+          paramFabricanteProduto || undefined,
+        );
+
+        formRef.current?.submit();
+      }
+    }
+  }, [loading]);
+
   return (
     <Spin tip="Carregando..." spinning={loading}>
       {!loading && (
@@ -142,7 +167,13 @@ const FormBuscaProduto = ({
             nome_edital: edital,
           }}
           render={({ form, values, handleSubmit, submitting }) => (
-            <form onSubmit={handleSubmit} className="busca-produtos-formulario">
+            <form
+              onSubmit={handleSubmit}
+              className="busca-produtos-formulario"
+              ref={() => {
+                formRef.current = form;
+              }}
+            >
               <FinalFormToRedux form={formName} />
               {novaReclamacao && (
                 <div className="col-12 p-0">
@@ -182,6 +213,7 @@ const FormBuscaProduto = ({
                 <Field
                   component={AutoCompleteFieldUnaccent}
                   dataSource={state.dados.marcas}
+                  data-testid="marca"
                   label="Marca do Produto"
                   name="nome_marca"
                   disabled={
@@ -191,6 +223,7 @@ const FormBuscaProduto = ({
                 <Field
                   component={AutoCompleteFieldUnaccent}
                   dataSource={state.dados.fabricantes}
+                  data-testid="fabricante"
                   label="Fabricante do Produto"
                   name="nome_fabricante"
                   disabled={

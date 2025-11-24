@@ -1,28 +1,24 @@
-import React from "react";
-import { act, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { TIPO_PERFIL } from "src/constants/shared";
-import ReclamacaoProduto from "../index";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
+import { mockMeusDadosNutriSupervisao } from "src/mocks/meusDados/nutri-supervisao";
+import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
+import { mockGetNotificacoes } from "src/mocks/services/notificacoes.service/mockGetNotificacoes";
+import { mockGetQtdNaoLidas } from "src/mocks/services/notificacoes.service/mockGetQtdNaoLidas";
+import { mockGetNomesUnicosEditais } from "src/mocks/services/produto.service/mockGetNomesUnicosEditais";
+import { mockGetNovaReclamacaoNomesFabricantes } from "src/mocks/services/produto.service/mockGetNovaReclamacaoNomesFabricantes";
+import { mockGetNovaReclamacaoNomesMarcas } from "src/mocks/services/produto.service/mockGetNovaReclamacaoNomesMarcas";
+import { mockGetNovaReclamacaoNomesProdutos } from "src/mocks/services/produto.service/mockGetNovaReclamacaoNomesProdutos";
+import { mockGetProdutosPorParametros } from "src/mocks/services/produto.service/mockGetProdutosPorParametros";
 import mock from "src/services/_mock";
-import { renderWithProvider } from "src/utils/test-utils";
-
 import {
   getNotificacoes,
   getQtdNaoLidas,
 } from "src/services/notificacoes.service";
-
-import { mockGetNotificacoes } from "src/mocks/services/notificacoes.service/mockGetNotificacoes";
-import { mockGetQtdNaoLidas } from "src/mocks/services/notificacoes.service/mockGetQtdNaoLidas";
-
-import { mockGetProdutosPorParametros } from "src/mocks/services/produto.service/mockGetProdutosPorParametros";
-import { mockGetNomesUnicosEditais } from "src/mocks/services/produto.service/mockGetNomesUnicosEditais";
-import { mockGetNovaReclamacaoNomesProdutos } from "src/mocks/services/produto.service/mockGetNovaReclamacaoNomesProdutos";
-import { mockGetNovaReclamacaoNomesMarcas } from "src/mocks/services/produto.service/mockGetNovaReclamacaoNomesMarcas";
-import { mockGetNovaReclamacaoNomesFabricantes } from "src/mocks/services/produto.service/mockGetNovaReclamacaoNomesFabricantes";
-import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
-import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
-import { mockMeusDadosNutriSupervisao } from "src/mocks/meusDados/nutri-supervisao";
+import { renderWithProvider } from "src/utils/test-utils";
+import ReclamacaoProduto from "../index";
 
 jest.mock("src/services/notificacoes.service");
 
@@ -75,7 +71,7 @@ describe("Teste <ReclamacaoProduto>", () => {
         {
           reclamacaoProduto: {},
           finalForm: {},
-        }
+        },
       );
     });
   });
@@ -170,7 +166,7 @@ describe("Teste <ReclamacaoProduto> - Perfil Nutri Supervisão", () => {
         {
           reclamacaoProduto: {},
           finalForm: {},
-        }
+        },
       );
     });
   });
