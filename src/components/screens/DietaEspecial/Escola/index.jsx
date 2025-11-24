@@ -75,8 +75,6 @@ class solicitacaoDietaEspecial extends Component {
       atualizandoImagem: false,
       nome_escola: "",
     };
-    this.setFiles = this.setFiles.bind(this);
-    this.removeFile = this.removeFile.bind(this);
     this.resetForm = this.resetForm.bind(this);
     this.onEolBlur = this.onEolBlur.bind(this);
   }
@@ -95,16 +93,6 @@ class solicitacaoDietaEspecial extends Component {
       loadSolicitacoesVigentes(null);
       reset();
     }
-  }
-
-  removeFile(index) {
-    let files = this.state.files;
-    files.splice(index, 1);
-    this.setState({ files });
-  }
-
-  setFiles(files) {
-    this.setState({ files });
   }
 
   atualizarFoto = async (codigo_eol, files) => {
@@ -316,7 +304,7 @@ class solicitacaoDietaEspecial extends Component {
     } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
       toastError(response.data);
     } else {
-      toastError(`Erro ao solicitar dieta especial: ${response.data}`);
+      toastError(getError(response.data));
     }
   }
 
