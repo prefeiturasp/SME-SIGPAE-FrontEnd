@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { act, screen } from "@testing-library/react";
-import { debug } from "jest-preview";
 import { MemoryRouter } from "react-router-dom";
 import ReclamacaoProduto from "src/components/screens/Produto/Reclamacao";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -79,7 +78,6 @@ describe("Teste <FormBuscaProduto> - Perfil Escola", () => {
   });
 
   it("deve preencher os campos do formulário com os parâmetros da URL e realizar a busca automaticamente", async () => {
-    debug();
     const inputEdital = screen.getByTestId("edital").querySelector("input");
     expect(inputEdital).toBeInTheDocument();
     expect(inputEdital).toBeDisabled();
