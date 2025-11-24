@@ -4,6 +4,7 @@ import { Collapse } from "react-collapse";
 import { NavLink } from "react-router-dom";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { listarRecreioNasFerias } from "../../../../services/recreioFerias.service";
+import { InputPesquisa } from "../../../Shareable/Input/InputPesquisa/index";
 import { toastError } from "../../../Shareable/Toast/dialogs";
 import { TabelaUnidades } from "./components/TabelaUnidades";
 import { isPeriodoEditavel } from "./helper";
@@ -93,16 +94,11 @@ export const RecreioFeriasCadastrados = () => {
               <th className="col">Período de Realização</th>
               <th className="col">Qtde. de Unidades</th>
               <th className="col">
-                <div className="">
-                  <input
-                    className="input-search"
-                    placeholder="Pesquisar"
-                    value={pesquisar}
-                    onChange={(e) => onPesquisaChanged(e.target.value)}
-                    autoFocus={true}
-                  />
-                  <i className="fas fa-search" />
-                </div>
+                <InputPesquisa
+                  valor={pesquisar}
+                  onChange={onPesquisaChanged}
+                  placeholder="Pesquisar"
+                />
               </th>
             </tr>
             {recreioFeriasFiltrados.map((recreio) => {
