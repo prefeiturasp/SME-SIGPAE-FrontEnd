@@ -1,5 +1,6 @@
 import { capitalize } from "src/helpers/utilities";
 import {
+  CampoValor,
   ParametrizacaoFinanceiraPayload,
   TabelaParametrizacao,
   ValorLinha,
@@ -50,17 +51,19 @@ const gerarValores = (valores: object) => {
 export const formataPayload = (values: ParametrizacaoFinanceiraPayload) => {
   const tabelas = Object.entries(values.tabelas).map(([tabela, valores]) => {
     const [nome, periodo] = tabela.split(" - Período ");
-    const periodo_escolar = periodo?.toUpperCase();
 
     return {
-      nome,
+      nome: nome || tabela,
       valores: gerarValores(valores as object),
-      periodo_escolar,
+      periodo_escolar: periodo ? periodo?.toUpperCase() : null,
     };
   });
 
   return { ...values, tabelas };
 };
+
+export const formatarTotal = (value: number) =>
+  String(value.toFixed(2)).replace(".", ",");
 
 const calcularTotaisFaixa = (dados: Record<string, any>) => {
   Object.entries(dados).forEach(([_, valores]: [string, any]) => {
@@ -85,9 +88,10 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
         stringDecimalToNumber(valor_unitario) *
         (1 + stringDecimalToNumber(percentual_acrescimo) / 100);
 
-    if (!isNaN(total)) valores.valor_unitario_total = total.toFixed(2);
+    if (!isNaN(total)) valores.valor_unitario_total = formatarTotal(total);
   });
 };
+
 export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
   const getCampo = (tipo: string): string => {
     const campos = {
@@ -101,23 +105,45 @@ export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
   const resultado: object = {};
 
   tabelas.forEach((item) => {
-    const chavePrincipal = `${item.nome} - Período ${capitalize(item.periodo_escolar)}`;
+    const chavePrincipal = item.periodo_escolar
+      ? `${item.nome} - Período ${capitalize(item.periodo_escolar)}`
+      : item.nome;
     resultado[chavePrincipal] ||= {};
 
     item.valores.forEach((valor: ValorTabela) => {
-      const faixaNome = valor.faixa_etaria?.__str__;
-      const faixaUuid = valor.faixa_etaria?.uuid;
-
-      resultado[chavePrincipal][faixaNome] ||= {};
-      if (faixaUuid)
-        resultado[chavePrincipal][faixaNome].faixa_etaria = faixaUuid;
-
-      resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] =
-        valor.valor;
+      if (valor.faixa_etaria) {
+        const faixaNome = valor.faixa_etaria?.__str__;
+        resultado[chavePrincipal][faixaNome] ||= {};
+        resultado[chavePrincipal][faixaNome].faixa_etaria =
+          valor.faixa_etaria?.uuid;
+        resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] =
+          valor.valor;
+      } else {
+        const tipoNome = valor.tipo_alimentacao?.nome;
+        resultado[chavePrincipal][tipoNome] ||= {};
+        resultado[chavePrincipal][tipoNome].tipo_alimentacao =
+          valor.tipo_alimentacao?.uuid;
+        resultado[chavePrincipal][tipoNome][getCampo(valor.tipo_valor)] =
+          valor.valor;
+      }
     });
 
     calcularTotaisFaixa(resultado[chavePrincipal]);
   });
 
   return resultado;
+};
+
+export const retornaTotal = (
+  value: string,
+  campo: CampoValor,
+  registro: ValorLinha,
+) => {
+  const valorSoma = stringDecimalToNumber(
+    campo === "valor_unitario"
+      ? registro?.valor_unitario_reajuste
+      : registro?.valor_unitario,
+  );
+  const valorTotal = stringDecimalToNumber(value) + valorSoma;
+  return valorTotal ? formatarTotal(valorTotal) : null;
 };
