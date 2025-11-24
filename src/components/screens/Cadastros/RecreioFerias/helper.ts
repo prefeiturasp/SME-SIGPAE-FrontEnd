@@ -141,3 +141,15 @@ export const mapParticipanteFormToApi = (p: any) => {
     tipos_alimentacao_colaboradores: p.tiposAlimentacaoColaboradoresUuids || [],
   };
 };
+
+export const formatarNomeUnidadeEducacional = (nome, ceiOuEmei) => {
+  if (ceiOuEmei === "EMEI") {
+    return `${nome} - INFANTIL`;
+  }
+
+  if (ceiOuEmei === "CEI") {
+    return `${nome} - CEI`;
+  }
+
+  return nome;
+};

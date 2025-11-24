@@ -5,6 +5,7 @@ import InputText from "src/components/Shareable/Input/InputText";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { required } from "src/helpers/fieldValidators";
 import { truncarString } from "src/helpers/utilities";
+import { formatarNomeUnidadeEducacional } from "../helper";
 
 export const LinhaUnidade = ({
   name,
@@ -15,20 +16,6 @@ export const LinhaUnidade = ({
   readOnly = false,
   form,
 }) => {
-  const getNomeUnidade = () => {
-    let nome = participante.unidadeEducacional;
-
-    if (participante.ceiOuEmei === "EMEI") {
-      return `${nome} - INFANTIL`;
-    }
-
-    if (participante.ceiOuEmei === "CEI") {
-      return `${nome} - CEI`;
-    }
-
-    return nome;
-  };
-
   const handleLiberarMedicaoChange = (checked) => {
     form.change(`${name}.liberarMedicao`, checked);
   };
@@ -41,7 +28,20 @@ export const LinhaUnidade = ({
             {participante.lote.nome_exibicao || participante.lote.nome}
           </td>
           <td className="unidade-educacional text-left">
-            {participante.unidade_educacional.nome}
+            <Tooltip
+              title={formatarNomeUnidadeEducacional(
+                participante.unidade_educacional.nome,
+                participante.cei_ou_emei
+              )}
+            >
+              {truncarString(
+                formatarNomeUnidadeEducacional(
+                  participante.unidade_educacional.nome,
+                  participante.cei_ou_emei
+                ),
+                35
+              )}
+            </Tooltip>
           </td>
           <td className="num-inscritos text-center">
             {participante.num_inscritos}
@@ -115,8 +115,19 @@ export const LinhaUnidade = ({
         <td className="col-1">{participante.dreLoteNome}</td>
 
         <td className="col-3">
-          <Tooltip title={getNomeUnidade()}>
-            {truncarString(getNomeUnidade(), 35)}
+          <Tooltip
+            title={formatarNomeUnidadeEducacional(
+              participante.unidadeEducacional,
+              participante.ceiOuEmei
+            )}
+          >
+            {truncarString(
+              formatarNomeUnidadeEducacional(
+                participante.unidadeEducacional,
+                participante.ceiOuEmei
+              ),
+              35
+            )}
           </Tooltip>
         </td>
 
