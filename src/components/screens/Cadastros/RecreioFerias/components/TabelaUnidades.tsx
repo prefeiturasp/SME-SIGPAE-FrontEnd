@@ -1,7 +1,7 @@
 import { Spin } from "antd";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import "../style.scss";
-import { LinhaUnidade } from "./LinhaUnidade"; // adaptado para readOnly
+import { LinhaUnidade } from "./LinhaUnidade";
 import { ModalRemoverUnidadeEducacional } from "./ModalRemoverUnidadeEducacional";
 
 const defaultPageSize = 10;
