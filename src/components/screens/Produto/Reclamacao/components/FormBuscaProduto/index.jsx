@@ -1,6 +1,5 @@
 import { Spin } from "antd";
 import { useEffect, useReducer, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { Field, Form } from "react-final-form";
 import { connect } from "react-redux";
 import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
@@ -55,8 +54,7 @@ const FormBuscaProduto = ({
   const typingTimeout = useRef(null);
   const formRef = useRef(null);
 
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+  const searchParams = new URLSearchParams(window.location.search);
 
   const paramNomeProduto = searchParams.get("nome_produto");
   const paramMarcaProduto = searchParams.get("marca_produto");
@@ -215,6 +213,7 @@ const FormBuscaProduto = ({
                 <Field
                   component={AutoCompleteFieldUnaccent}
                   dataSource={state.dados.marcas}
+                  data-testid="marca"
                   label="Marca do Produto"
                   name="nome_marca"
                   disabled={
@@ -224,6 +223,7 @@ const FormBuscaProduto = ({
                 <Field
                   component={AutoCompleteFieldUnaccent}
                   dataSource={state.dados.fabricantes}
+                  data-testid="fabricante"
                   label="Fabricante do Produto"
                   name="nome_fabricante"
                   disabled={
