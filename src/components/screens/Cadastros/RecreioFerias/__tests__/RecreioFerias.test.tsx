@@ -1,10 +1,18 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { mockMeusDadosCODAEADMIN } from "src/mocks/meusDados/CODAE/admin";
 import * as cadastroTipoAlimentacaoService from "src/services/cadastroTipoAlimentacao.service";
 import * as escolaService from "src/services/escola.service";
 import * as loteService from "src/services/lote.service";
-import { RecreioFerias } from "../index";
+import { CadastroRecreioFerias } from "../CadastroRecreioFerias";
 
-// Mocks dos serviços
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/escola.service");
 jest.mock("src/services/lote.service");
@@ -58,7 +66,29 @@ const changeSelectValue = (testId: string, value: string) => {
   }
 };
 
-describe("RecreioFerias - Fluxo de Interação do Usuário", () => {
+describe("CadastroRecreioFerias - Fluxo de Interação do Usuário", () => {
+  beforeEach(async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosCODAEADMIN,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <CadastroRecreioFerias />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>
+      );
+    });
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -82,8 +112,6 @@ describe("RecreioFerias - Fluxo de Interação do Usuário", () => {
   });
 
   it("deve renderizar o componente corretamente", () => {
-    render(<RecreioFerias />);
-
     expect(
       screen.getByText("Informe o Período do Recreio nas Férias")
     ).toBeInTheDocument();
@@ -94,8 +122,6 @@ describe("RecreioFerias - Fluxo de Interação do Usuário", () => {
   });
 
   it("deve preencher o título e período de realização", () => {
-    render(<RecreioFerias />);
-
     const inputTitulo = screen.getByPlaceholderText(/Título para o cadastro/i);
     fireEvent.change(inputTitulo, {
       target: { value: "Recreio nas Férias - JAN 2026" },
@@ -105,8 +131,6 @@ describe("RecreioFerias - Fluxo de Interação do Usuário", () => {
   });
 
   it("deve abrir o modal de adicionar unidades ao clicar no botão", async () => {
-    render(<RecreioFerias />);
-
     const botaoAdicionar = screen.getByText("+ Adicionar Unidades");
     fireEvent.click(botaoAdicionar);
 
@@ -118,8 +142,6 @@ describe("RecreioFerias - Fluxo de Interação do Usuário", () => {
   });
 
   it("deve mostrar seletor infantil para CEMEI e CEU CEMEI", async () => {
-    render(<RecreioFerias />);
-
     const botaoAdicionar = screen.getByText("+ Adicionar Unidades");
     fireEvent.click(botaoAdicionar);
 
@@ -140,8 +162,6 @@ describe("RecreioFerias - Fluxo de Interação do Usuário", () => {
   });
 
   it("deve cancelar a adição de unidade ao clicar em cancelar no modal", async () => {
-    render(<RecreioFerias />);
-
     const botaoAdicionar = screen.getByText("+ Adicionar Unidades");
     fireEvent.click(botaoAdicionar);
 
