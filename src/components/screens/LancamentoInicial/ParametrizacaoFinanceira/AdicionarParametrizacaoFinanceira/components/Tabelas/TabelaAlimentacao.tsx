@@ -1,52 +1,86 @@
-import React from "react";
-
 import { Table } from "antd";
-
 import { Field } from "react-final-form";
-
-import { AInputNumber } from "src/components/Shareable/MakeField";
-
-import {
-  formataValorDecimal,
-  parserValorDecimal,
-} from "src/components/screens/helper";
+import { FormApi } from "final-form";
+import InputText from "src/components/Shareable/Input/InputText";
+import { CampoValor } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import { formatarTotal, retornaTotal } from "../../helpers";
+import { stringDecimalToNumber } from "src/helpers/parsers";
 
 type Props = {
+  form: FormApi<any, any>;
   tiposAlimentacao: Array<any>;
   grupoSelecionado: string;
   tipoTurma?: string;
+  pendencias: string[];
 };
 
-export default ({ tiposAlimentacao, grupoSelecionado, tipoTurma }: Props) => {
+interface RecordItem {
+  nome: string;
+}
+
+export default ({
+  form,
+  tiposAlimentacao,
+  grupoSelecionado,
+  tipoTurma,
+  pendencias,
+}: Props) => {
   const alimentacoes = tiposAlimentacao.map((t) => ({ ...t }));
-
-  if (grupoSelecionado === "grupo_3") {
-    const refeicaoIndex = alimentacoes.findIndex((t) => t.nome === "Refeição");
-    if (refeicaoIndex !== -1) {
-      alimentacoes[refeicaoIndex] = {
-        ...alimentacoes[refeicaoIndex],
-        grupo: "EMEF / CEUEMEF / EMEFM",
-      };
-
-      alimentacoes.splice(refeicaoIndex + 1, 0, {
-        ...alimentacoes[refeicaoIndex],
-        grupo: "CIEJA / EJA",
-      });
-    }
-  }
 
   const nomeTabela = tipoTurma
     ? `Preço das Alimentações - ${tipoTurma}`
     : "Preço das Alimentações";
 
+  const atualizaPendencias = (
+    record: RecordItem,
+    valorFormatado: string | null,
+  ) => {
+    pendencias.forEach((e) => {
+      form.change(
+        `tabelas[${e}].${record.nome}.valor_unitario`,
+        valorFormatado,
+      );
+
+      const percentualAcrescimo =
+        form.getState().values.tabelas[e]?.[record.nome]
+          ?.percentual_acrescimo || "0";
+      const valorUnitarioTotal =
+        stringDecimalToNumber(valorFormatado || "0") *
+        (1 + stringDecimalToNumber(percentualAcrescimo) / 100);
+
+      form.change(
+        `tabelas[${e}].${record.nome}.valor_unitario_total`,
+        formatarTotal(valorUnitarioTotal),
+      );
+    });
+  };
+
+  const atualizarValoresTabela = (
+    form: FormApi<any, any>,
+    record: RecordItem,
+    value: string,
+    campo: CampoValor,
+  ) => {
+    const tabelas = form.getState().values.tabelas;
+    const registro = tabelas?.[nomeTabela]?.[record.nome];
+    const valorFormatado = retornaTotal(value, campo, registro);
+
+    form.change(
+      `tabelas[${nomeTabela}].${record.nome}.${campo}`,
+      value ?? null,
+    );
+    form.change(
+      `tabelas[${nomeTabela}].${record.nome}.valor_unitario_total`,
+      valorFormatado,
+    );
+    atualizaPendencias(record, valorFormatado);
+  };
+
   return (
     <div className="row mt-5">
-      <div
-        className={`col${
-          !["grupo_2", "grupo_4"].includes(grupoSelecionado) ? "-4" : ""
-        }`}
-      >
-        {["grupo_2", "grupo_4"].includes(grupoSelecionado) ? (
+      <div className="col">
+        {["grupo 2", "grupo 4"].includes(grupoSelecionado.toLowerCase()) &&
+        tipoTurma ? (
           <h2 className="text-start texto-simples-verde fw-bold mb-3">
             Preço das Alimentações -{" "}
             <span
@@ -76,15 +110,9 @@ export default ({ tiposAlimentacao, grupoSelecionado, tipoTurma }: Props) => {
                   </p>
                   <Field
                     component="input"
-                    name={`tabelas[${nomeTabela}].${value}_${record.grupo}.tipo_alimentacao`}
+                    name={`tabelas[${nomeTabela}].${value}.tipo_alimentacao`}
                     type="hidden"
                     defaultValue={record.uuid}
-                  />
-                  <Field
-                    component="input"
-                    name={`tabelas[${nomeTabela}].${value}_${record.grupo}.grupo`}
-                    type="hidden"
-                    defaultValue={record.grupo}
                   />
                 </div>
               );
@@ -96,13 +124,19 @@ export default ({ tiposAlimentacao, grupoSelecionado, tipoTurma }: Props) => {
             key="valor_unitario"
             render={(_, record: any) => (
               <Field
-                component={AInputNumber}
-                name={`tabelas[${nomeTabela}].${record.nome}_${record.grupo}.valor_unitario`}
+                component={InputText}
+                name={`tabelas[${nomeTabela}].${record.nome}.valor_unitario`}
                 placeholder="0,00"
-                min={0}
-                formatter={(value: string) => formataValorDecimal(value)}
-                parser={(value: string) => parserValorDecimal(value)}
-                defaultValue={null}
+                agrupadorMilharComDecimal
+                proibeLetras
+                inputOnChange={(e) =>
+                  atualizarValoresTabela(
+                    form,
+                    record,
+                    e.target.value,
+                    "valor_unitario",
+                  )
+                }
               />
             )}
           />
@@ -112,13 +146,35 @@ export default ({ tiposAlimentacao, grupoSelecionado, tipoTurma }: Props) => {
             key="valor_unitario_reajuste"
             render={(_, record: any) => (
               <Field
-                component={AInputNumber}
-                name={`tabelas[${nomeTabela}].${record.nome}_${record.grupo}.valor_unitario_reajuste`}
+                component={InputText}
+                name={`tabelas[${nomeTabela}].${record.nome}.valor_unitario_reajuste`}
                 placeholder="0,00"
-                min={0}
-                formatter={(value: string) => formataValorDecimal(value)}
-                parser={(value: string) => parserValorDecimal(value)}
-                defaultValue={null}
+                agrupadorMilharComDecimal
+                proibeLetras
+                inputOnChange={(e) =>
+                  atualizarValoresTabela(
+                    form,
+                    record,
+                    e.target.value,
+                    "valor_unitario_reajuste",
+                  )
+                }
+              />
+            )}
+          />
+          <Table.Column
+            title="Valor Total"
+            dataIndex="valor_unitario_total"
+            key="valor_unitario_total"
+            render={(_, record: any) => (
+              <Field
+                component={InputText}
+                name={`tabelas[${nomeTabela}].${record.nome}.valor_unitario_total`}
+                placeholder="0,00"
+                agrupadorMilharComDecimal
+                proibeLetras
+                disabled
+                readOnly
               />
             )}
           />
