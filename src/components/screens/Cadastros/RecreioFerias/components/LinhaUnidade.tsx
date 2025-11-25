@@ -1,50 +1,113 @@
 import { Switch, Tooltip } from "antd";
-import React from "react";
 import { Collapse } from "react-collapse";
 import { Field } from "react-final-form";
 import InputText from "src/components/Shareable/Input/InputText";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { required } from "src/helpers/fieldValidators";
 import { truncarString } from "src/helpers/utilities";
+import { formatarNomeUnidadeEducacional } from "../helper";
 
-interface LinhaUnidadeProps {
-  name: string;
-  index: number;
-  participante: any;
-  aberto: boolean;
-  toggleExpandir: (_id: string) => void;
-  openRemoverModal: (_id: string) => void;
-  fields: any;
-}
-
-export const LinhaUnidade: React.FC<LinhaUnidadeProps> = ({
+export const LinhaUnidade = ({
   name,
-  index,
   participante,
   aberto,
   toggleExpandir,
   openRemoverModal,
-  fields,
+  readOnly = false,
+  form,
 }) => {
-  const getNomeUnidade = () => {
-    let nome = participante.unidadeEducacional;
-
-    if (participante.ceiOuEmei === "EMEI") {
-      return `${nome} - INFANTIL`;
-    }
-
-    if (participante.ceiOuEmei === "CEI") {
-      return `${nome} - CEI`;
-    }
-
-    return nome;
+  const handleLiberarMedicaoChange = (checked) => {
+    form.change(`${name}.liberarMedicao`, checked);
   };
 
-  const handleLiberarMedicaoChange = (checked: boolean) => {
-    fields.update(index, { ...participante, liberarMedicao: checked });
-  };
+  if (readOnly) {
+    return (
+      <>
+        <tr>
+          <td className="dre-lote text-center">
+            {participante.lote.nome_exibicao || participante.lote.nome}
+          </td>
+          <td className="unidade-educacional text-left">
+            <Tooltip
+              title={formatarNomeUnidadeEducacional(
+                participante.unidade_educacional.nome,
+                participante.cei_ou_emei
+              )}
+            >
+              {truncarString(
+                formatarNomeUnidadeEducacional(
+                  participante.unidade_educacional.nome,
+                  participante.cei_ou_emei
+                ),
+                35
+              )}
+            </Tooltip>
+          </td>
+          <td className="num-inscritos text-center">
+            {participante.num_inscritos}
+          </td>
+          <td className="num-colaboradores text-center">
+            {participante.num_colaboradores}
+          </td>
+          <td
+            className={`liberar-medicao text-center ${
+              participante.liberar_medicao ? "verde" : ""
+            }`}
+          >
+            {participante.liberar_medicao ? "Sim" : "Não"}
+          </td>
+          <td className="action-column text-center">
+            <ToggleExpandir
+              ativo={!!aberto}
+              onClick={() => toggleExpandir(participante?.id)}
+            />
+          </td>
+        </tr>
+        <tr className="linha-detalhe">
+          <td colSpan={6} className="p-0">
+            <Collapse isOpened={aberto}>
+              <div className="collapse-container-unidades-participantes">
+                {(() => {
+                  const tipos = participante?.tipos_alimentacao || {};
+                  const inscritos = (tipos.inscritos || []).map((t) => t.nome);
+                  const infantil = (tipos.infantil || []).map((t) => t.nome);
+                  const colaboradores = (tipos.colaboradores || []).map(
+                    (t) => t.nome
+                  );
 
-  const unidadeEducacionalNome = getNomeUnidade();
+                  return (
+                    <>
+                      <div>
+                        <strong>
+                          Tipos de Alimentação Inscritos
+                          {infantil.length > 0 && " - CEI"}:{" "}
+                        </strong>
+                        <span>{inscritos.join(", ")}</span>
+                      </div>
+
+                      {infantil.length > 0 && (
+                        <div>
+                          <strong>
+                            Tipos de Alimentação Inscritos - INFANTIL:{" "}
+                          </strong>
+                          <span>{infantil.join(", ")}</span>
+                        </div>
+                      )}
+
+                      <div>
+                        <strong>Tipos de Alimentação Colaboradores: </strong>
+                        <span>{colaboradores.join(", ")}</span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </Collapse>
+          </td>
+        </tr>
+      </>
+    );
+  }
 
   return (
     <>
@@ -52,8 +115,19 @@ export const LinhaUnidade: React.FC<LinhaUnidadeProps> = ({
         <td className="col-1">{participante.dreLoteNome}</td>
 
         <td className="col-3">
-          <Tooltip title={unidadeEducacionalNome}>
-            {truncarString(unidadeEducacionalNome, 35)}
+          <Tooltip
+            title={formatarNomeUnidadeEducacional(
+              participante.unidadeEducacional,
+              participante.ceiOuEmei
+            )}
+          >
+            {truncarString(
+              formatarNomeUnidadeEducacional(
+                participante.unidadeEducacional,
+                participante.ceiOuEmei
+              ),
+              35
+            )}
           </Tooltip>
         </td>
 
@@ -125,17 +199,18 @@ export const LinhaUnidade: React.FC<LinhaUnidadeProps> = ({
       </tr>
 
       <Collapse isOpened={aberto}>
-        <div className="collapse-container">
+        <div className="collapse-container-unidades-participantes">
           <div>
             <strong>
               Tipos de Alimentação Inscritos
-              {participante.alimentacaoInscritosInfantil.length > 0 && " - CEI"}
+              {participante.alimentacaoInscritosInfantil?.length > 0 &&
+                " - CEI"}
               :{" "}
             </strong>
             <span>{participante.alimentacaoInscritos?.join(", ")}</span>
           </div>
 
-          {participante.alimentacaoInscritosInfantil.length > 0 && (
+          {participante.alimentacaoInscritosInfantil?.length > 0 && (
             <div>
               <strong>Tipos de Alimentação Inscritos - INFANTIL: </strong>
               <span>

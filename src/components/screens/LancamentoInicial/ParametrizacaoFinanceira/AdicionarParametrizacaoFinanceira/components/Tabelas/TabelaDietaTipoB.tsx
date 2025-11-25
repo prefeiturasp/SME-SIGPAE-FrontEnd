@@ -20,9 +20,9 @@ export default ({
   grupoSelecionado,
   tipoTurma = "",
 }: Props) => {
-  const alimentacoes = tiposAlimentacao.filter((t) =>
-    ALIMENTACOES.includes(t.nome),
-  );
+  const alimentacoes = tiposAlimentacao
+    .filter((t) => ALIMENTACOES.includes(t.nome))
+    .reverse();
 
   const nomeTabela = tipoTurma
     ? `Dietas Tipo B - ${tipoTurma}`
@@ -97,6 +97,7 @@ export default ({
             render={(_, record: any) => (
               <Field
                 component={InputText}
+                dataTestId={`tabelas[${nomeTabela}].${record.nome}.valor_unitario`}
                 name={`tabelas[${nomeTabela}].${record.nome}.valor_unitario`}
                 placeholder="0,00"
                 agrupadorMilharComDecimal
@@ -129,6 +130,7 @@ export default ({
             render={(_, record: any) => (
               <Field
                 component={InputText}
+                dataTestId={`tabelas[${nomeTabela}].${record.nome}.percentual_acrescimo`}
                 name={`tabelas[${nomeTabela}].${record.nome}.percentual_acrescimo`}
                 placeholder="%"
                 agrupadorMilharComDecimal
@@ -152,7 +154,7 @@ export default ({
                     value,
                   );
 
-                  if (record.nome === tiposAlimentacao[0].nome)
+                  if (record.nome === alimentacoes[0].nome)
                     atualizarPercentuais(value);
                 }}
               />
@@ -165,6 +167,7 @@ export default ({
             render={(_, record: any) => (
               <Field
                 component={InputText}
+                dataTestId={`tabelas[${nomeTabela}].${record.nome}.valor_unitario_total`}
                 name={`tabelas[${nomeTabela}].${record.nome}.valor_unitario_total`}
                 placeholder="0,00"
                 agrupadorMilharComDecimal
