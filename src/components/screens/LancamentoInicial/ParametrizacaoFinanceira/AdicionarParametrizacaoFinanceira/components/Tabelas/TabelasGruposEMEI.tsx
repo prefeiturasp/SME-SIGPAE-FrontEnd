@@ -15,7 +15,7 @@ export default ({ form, tiposAlimentacao, grupoSelecionado }: Props) => {
     (e: TipoAlimentacao) => e.nome === "Kit Lanche",
   )
     ? tiposAlimentacao
-    : [...tiposAlimentacao, { nome: "Kit Lanche" }];
+    : [...tiposAlimentacao, { uuid: "Kit Lanche", nome: "Kit Lanche" }];
 
   return (
     <div className="container-tabelas">
