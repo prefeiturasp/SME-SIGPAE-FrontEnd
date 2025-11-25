@@ -6,7 +6,10 @@ import React, {
   useState,
 } from "react";
 import "./styles.scss";
-import { CronogramaRelatorio } from "../../interfaces";
+import {
+  CronogramaRelatorio,
+  FiltrosRelatorioCronograma,
+} from "../../interfaces";
 import { imprimirFichaRecebimento } from "src/services/fichaRecebimento.service";
 import { Tooltip } from "antd";
 import { formataNome } from "../../helpers";
@@ -16,6 +19,7 @@ interface Props {
   ativos: string[];
   setAtivos: Dispatch<SetStateAction<string[]>>;
   setCarregando: Dispatch<SetStateAction<boolean>>;
+  filtros?: FiltrosRelatorioCronograma;
 }
 
 const imprimirFicha = async (
@@ -36,6 +40,7 @@ const Listagem: React.FC<Props> = ({
   ativos,
   setAtivos,
   setCarregando,
+  filtros,
 }) => {
   const etapaColRef = useRef<HTMLDivElement>(null);
   const [colunaWidth, setColunaWidth] = useState(400);
@@ -200,10 +205,10 @@ const Listagem: React.FC<Props> = ({
                       }
 
                       if (
-                        !etapa.fichas_recebimento?.length ||
-                        etapa.fichas_recebimento.every(
-                          (ficha) => ficha.situacao === "Ocorrência",
-                        )
+                        (!etapa.fichas_recebimento?.length ||
+                          !etapa.foi_recebida) &&
+                        (!filtros?.situacao?.length ||
+                          filtros?.situacao?.includes("A Receber"))
                       ) {
                         linhas.push(
                           <div

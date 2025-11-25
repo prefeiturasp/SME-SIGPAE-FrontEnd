@@ -130,14 +130,23 @@
           font-size: 11px !important;
           height: 35px;
         }
+        
       }
-
       .input-habilitado {
         border: 0 !important;
         border-right: 1px solid #e9eaea !important;
         border-bottom: 1px solid #e9eaea !important;
         display: flex;
         justify-content: center;
+      }
+
+      .linha-cei-frequencia {
+        border-bottom: 3px solid #a6a7a7 !important;
+        background-color: white;
+      }
+
+      .linha-cei-matriculado {
+        background-color: #f0f0f0;
       }
 
       .tooltip-input {

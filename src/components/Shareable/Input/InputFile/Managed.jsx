@@ -20,7 +20,9 @@ export class InputFileManaged extends Component {
     } else {
       let pdfWindow = window.open("");
       pdfWindow.document.write(
-        "<iframe width='100%' height='100%' src='" + file.base64 + "'></iframe>"
+        "<iframe width='100%' height='100%' src='" +
+          file.base64 +
+          "'></iframe>",
       );
     }
   }
@@ -45,7 +47,7 @@ export class InputFileManaged extends Component {
       const extensao = file.name.split(".")[file.name.split(".").length - 1];
       if (
         !["doc", "docx", "png", "pdf", "jpg", "jpeg"].includes(
-          extensao.toLowerCase()
+          extensao.toLowerCase(),
         )
       ) {
         toastError(`Extensão do arquivo não suportada: ${extensao}`);
@@ -68,12 +70,12 @@ export class InputFileManaged extends Component {
           .then(() => {
             if (filesBase64.length === QUANTIDADE_ARQUIVOS) {
               toastSuccess(
-                toastSuccessMessage || "Protocolo incluso com sucesso"
+                toastSuccessMessage || "Protocolo incluso com sucesso",
               );
               onChange(
                 !concatenarNovosArquivos || value === ""
                   ? filesBase64
-                  : value.concat(filesBase64)
+                  : value.concat(filesBase64),
               );
             }
           });
@@ -83,8 +85,16 @@ export class InputFileManaged extends Component {
   }
 
   render() {
-    const { accept, disabled, icone, multiple, title, texto, value } =
-      this.props;
+    const {
+      accept,
+      disabled,
+      icone,
+      multiple,
+      title,
+      texto,
+      value,
+      dataTestId,
+    } = this.props;
     const files = value === "" ? [] : value;
     return (
       <div className={`input input-file`}>
@@ -97,6 +107,7 @@ export class InputFileManaged extends Component {
           type="file"
           multiple={multiple}
           title={title}
+          data-testid={dataTestId}
         />
         <Botao
           onClick={() => this.inputRef.click()}
