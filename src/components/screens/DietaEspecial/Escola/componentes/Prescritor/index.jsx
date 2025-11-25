@@ -1,12 +1,10 @@
-import React from "react";
 import { Field } from "redux-form";
-import InputText from "../../../../../Shareable/Input/InputText";
-
+import InputText from "src/components/Shareable/Input/InputText";
 import {
-  minLength,
-  required,
-  numericInteger,
   maxLength,
+  minLength,
+  numericInteger,
+  required,
 } from "src/helpers/fieldValidators";
 
 const minLength6 = minLength(6);
@@ -18,6 +16,7 @@ export default ({ pertence_a_escola }) => {
           component={InputText}
           label="Nome do Prescritor do laudo (médico, nutricionista, fonoaudiólogo)"
           name="nome_completo_pescritor"
+          dataTestId="input-nome-prescritor"
           placeholder="Insira o Nome do Prescritor"
           className="form-control"
           required
@@ -32,6 +31,7 @@ export default ({ pertence_a_escola }) => {
           component={InputText}
           label="CRM/CRN/CRFa/RMS"
           name="registro_funcional_pescritor"
+          dataTestId="input-registro-funcional-prescritor"
           required
           className="form-control"
           helpText={"Tamanho: 4 a 7 caracteres"}
