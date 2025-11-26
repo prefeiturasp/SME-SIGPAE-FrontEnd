@@ -44,6 +44,7 @@ import {
   removeObjetosDuplicados,
   renderBotaoEnviarCorrecao,
   verificaSeEnviarCorrecaoDisabled,
+  verificaSeEnviaCorrecaoSemOcorrenciaDisabled,
 } from "./helpers";
 
 export const LancamentoPorPeriodo = ({
@@ -623,10 +624,15 @@ export const LancamentoPorPeriodo = ({
                       style={BUTTON_STYLE.GREEN}
                       className="ms-3"
                       onClick={() => setShowModalEnviarCorrecao(true)}
-                      disabled={verificaSeEnviarCorrecaoDisabled(
-                        quantidadeAlimentacoesLancadas,
-                        solicitacaoMedicaoInicial,
-                      )}
+                      disabled={
+                        verificaSeEnviaCorrecaoSemOcorrenciaDisabled(
+                          solicitacaoMedicaoInicial,
+                        ) ||
+                        verificaSeEnviarCorrecaoDisabled(
+                          quantidadeAlimentacoesLancadas,
+                          solicitacaoMedicaoInicial,
+                        )
+                      }
                     />
                   )}
                 </div>
