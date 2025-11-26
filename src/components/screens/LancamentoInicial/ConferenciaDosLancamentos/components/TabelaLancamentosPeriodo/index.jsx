@@ -1136,6 +1136,19 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     }
   };
 
+  const linhaCeiFrequencia = (rowName) => {
+    const ehCEIFrequencia =
+      ehEscolaTipoCEI({ nome: solicitacao.escola }) && rowName === "frequencia";
+    return `${ehCEIFrequencia ? "linha-cei-frequencia" : ""}`;
+  };
+
+  const linhaCeiMatriculados = (rowName) => {
+    const ehCEIMatriculados =
+      ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
+      (rowName === "matriculados" || rowName === "dietas_autorizadas");
+    return `${ehCEIMatriculados ? "linha-cei-matriculado" : ""}`;
+  };
+
   return (
     <div key={key}>
       <Spin spinning={exibirSpin}>
@@ -1226,7 +1239,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 categoriasDeMedicao.map((categoria, idx) => [
                   <div key={categoria.id}>
                     <b
-                      className="pb-2 section-title"
+                      className={`pb-2 section-title ${ehEscolaTipoCEI({ nome: solicitacao.escola }) ? "com-linha" : ""}`}
                       data-testid={`categoria-${categoria.nome}`}
                     >
                       {categoria.nome}
@@ -1334,7 +1347,9 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                                   ["INTEGRAL", "PARCIAL"].includes(
                                     periodoGrupo.nome_periodo_grupo,
                                   )) ? (
-                                  <div className="linha-cei">
+                                  <div
+                                    className={`linha-cei ${linhaCeiFrequencia(row.name)} ${linhaCeiMatriculados(row.name)}`}
+                                  >
                                     <b
                                       className={`nome-linha-cei ps-2 ${
                                         row.name === "observacoes" && "mt-2"
@@ -1364,22 +1379,24 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                                 {weekColumns.map((column) => (
                                   <div
                                     key={column.dia}
-                                    className={`${
-                                      validacaoSemana(
-                                        column.dia,
-                                        semanaSelecionada,
-                                      )
-                                        ? "input-desabilitado"
-                                        : row.name === "observacoes"
-                                          ? "input-habilitado-observacoes"
-                                          : "input-habilitado"
-                                    }${
-                                      alimentacoesLancamentosEspeciais?.includes(
-                                        row.name,
-                                      )
-                                        ? " input-alimentacao-permissao-lancamento-especial"
-                                        : ""
-                                    }`}
+                                    className={`
+                                      ${linhaCeiFrequencia(row.name)}
+                                      ${
+                                        validacaoSemana(
+                                          column.dia,
+                                          semanaSelecionada,
+                                        )
+                                          ? `input-desabilitado ${linhaCeiMatriculados(row.name)}`
+                                          : row.name === "observacoes"
+                                            ? "input-habilitado-observacoes"
+                                            : `input-habilitado ${linhaCeiMatriculados(row.name)}`
+                                      }${
+                                        alimentacoesLancamentosEspeciais?.includes(
+                                          row.name,
+                                        )
+                                          ? " input-alimentacao-permissao-lancamento-especial"
+                                          : ""
+                                      }`}
                                   >
                                     {row.name === "observacoes" ? (
                                       !validacaoSemana(
