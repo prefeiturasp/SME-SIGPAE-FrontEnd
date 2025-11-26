@@ -85,6 +85,17 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT
       .onGet("/medicao-inicial/categorias-medicao/")
       .reply(200, mockCategoriasMedicao);
 
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
+    localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
+
+    const search = `?uuid=${solicitacaoUuid}`;
+    Object.defineProperty(window, "location", {
+      value: {
+        search: search,
+      },
+    });
+
     await act(async () => {
       render(
         <MemoryRouter
@@ -107,17 +118,6 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT
           <ConferenciaDosLancamentosPage />
         </MemoryRouter>,
       );
-    });
-
-    Object.defineProperty(global, "localStorage", { value: localStorageMock });
-    localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
-    localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
-
-    const search = `?uuid=${solicitacaoUuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
     });
   });
 
