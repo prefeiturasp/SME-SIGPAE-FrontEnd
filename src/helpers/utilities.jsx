@@ -245,24 +245,6 @@ export const formataMilharDecimal = (value) => {
   });
 };
 
-export const desformatarMilharDecimal = (valorFormatado) => {
-  if (
-    valorFormatado === null ||
-    valorFormatado === undefined ||
-    valorFormatado === ""
-  ) {
-    return null;
-  }
-
-  const valorNumerico = valorFormatado
-    .toString()
-    .replace(/\./g, "")
-    .replace(",", ".");
-  const numero = Number(valorNumerico);
-
-  return isNaN(numero) ? null : numero;
-};
-
 export const truncarString = (str, numeroMaximoChars) => {
   if (!str) return "";
 

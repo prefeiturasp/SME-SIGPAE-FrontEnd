@@ -1221,7 +1221,6 @@ export default () => {
                                                   "Não pode ser maior que o saldo do laudo",
                                                 ),
                                               )}
-                                              // TODO: MAX VALUE FUNCIONAR COM AGRUPADOR
                                               inputOnChange={(
                                                 e: React.ChangeEvent<HTMLInputElement>,
                                               ) =>
