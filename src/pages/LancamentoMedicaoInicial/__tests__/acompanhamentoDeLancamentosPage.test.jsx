@@ -232,11 +232,11 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
       ).toBeInTheDocument();
     });
 
-    // Verifica se Grupo 1 está desabilitado
+    // Verifica se Grupo 1 está habilitado
     const grupo1Wrapper = screen
       .getByText("Grupo 1 (CCI, CEI, CEI CEU)")
       .closest("label");
-    expect(grupo1Wrapper).toHaveClass("ant-radio-wrapper-disabled");
+    expect(grupo1Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
 
     // Verifica se Grupo 2 está desabilitado
     const grupo2Wrapper = screen
