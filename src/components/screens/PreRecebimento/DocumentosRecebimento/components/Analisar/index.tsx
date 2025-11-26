@@ -37,7 +37,7 @@ import ModalGenerico from "../../../../../Shareable/ModalGenerico";
 import ModalCorrecao from "./components/ModalCorrecao";
 import { AnaliseDocumentoPayload } from "../../interfaces";
 import createDecorator from "final-form-calculate";
-import { exibeError } from "src/helpers/utilities";
+import { exibeError, formataMilharDecimal } from "src/helpers/utilities";
 import {
   toastError,
   toastSuccess,
@@ -171,7 +171,9 @@ export default () => {
   ): AnaliseDocumentoPayload => {
     let payload: AnaliseDocumentoPayload = {
       laboratorio: values.laboratorio,
-      quantidade_laudo: values.quantidade_laudo?.split(".").join(""),
+      quantidade_laudo: values.quantidade_laudo
+        ?.replaceAll(".", "")
+        .replace(",", "."),
       unidade_medida: values.unidade_medida,
       data_final_lote: values.data_final_lote,
       numero_lote_laudo: values.numero_lote_laudo,
@@ -239,7 +241,7 @@ export default () => {
     let newPrazos = [];
     let iniciais = {
       laboratorio: doc.laboratorio?.uuid,
-      quantidade_laudo: doc.quantidade_laudo?.toString(),
+      quantidade_laudo: formataMilharDecimal(doc.quantidade_laudo),
       unidade_medida: doc.unidade_medida?.uuid,
       data_final_lote: doc.data_final_lote ? doc.data_final_lote : undefined,
       numero_lote_laudo: doc.numero_lote_laudo
@@ -454,7 +456,7 @@ export default () => {
                       placeholder="Digite a Quantidade"
                       required
                       validate={required}
-                      agrupadorMilhar
+                      agrupadorMilharComDecimal
                       disabled={documentoRecebimentoPassouPorAprovacao}
                     />
                   </div>
@@ -480,6 +482,7 @@ export default () => {
                       placeholder="Digite o Saldo do Lote"
                       required
                       disabled={true}
+                      agrupadorMilharComDecimal
                     />
                   </div>
                   <div className="col-4">
