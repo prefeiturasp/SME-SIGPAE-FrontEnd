@@ -115,23 +115,30 @@ export const RecreioFeriasCadastrados = () => {
                       {recreio.data_inicio} até {recreio.data_fim}
                     </td>
                     <td className="ps-4">
-                      {recreio.unidades_participantes.length} UEs
+                      {recreio.unidades_participantes.length}{" "}
+                      {recreio.unidades_participantes.length === 1
+                        ? "UE"
+                        : "UEs"}
                     </td>
                     <td>
-                      {periodoEditavel && (
+                      {periodoEditavel ? (
                         <Tooltip title="Editar">
                           <span>
                             <NavLink
                               className="float-start botao-editar"
                               to={`/configuracoes/cadastros/recreio-nas-ferias/editar?uuid=${recreio.uuid}`}
                             >
-                              <i className="fas fa-edit" />
+                              <i className="fas fa-edit icone-edicao" />
                             </NavLink>
                           </span>
                         </Tooltip>
+                      ) : (
+                        <span className="esconder-icone">
+                          <i className="fas fa-edit icone-edicao" />
+                        </span>
                       )}
                       <ToggleExpandir
-                        className="ms-4"
+                        className="ms-5"
                         ativo={!!expandidosRecreios[recreio.id]}
                         onClick={() => toggleExpandirRecreio(recreio.id)}
                         dataTestId={`toggle-${recreio.id}`}
