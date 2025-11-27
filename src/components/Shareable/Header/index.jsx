@@ -12,6 +12,7 @@ import authService from "../../../services/auth";
 import DownloadsNavbar from "../DownloadsNavbar";
 import NotificacoesNavbar from "../NotificacoesNavbar";
 import "./style.scss";
+import { SidebarContent } from "../Sidebar/SidebarContent";
 
 export const Header = ({ toggled }) => {
   const temaContext = useContext(TemaContext);
@@ -39,18 +40,13 @@ export const Header = ({ toggled }) => {
             {ENVIRONMENT === "homolog" && retornaMarcaDagua("hom")}
             {ENVIRONMENT === "treinamento" && retornaMarcaDagua("tre")}
           </div>
-          <Menu right>
-            <a id="home" className="menu-item" href="/">
-              Home
-            </a>
-            <a id="about" className="menu-item" href="/about">
-              About
-            </a>
-            <a id="contact" className="menu-item" href="/contact">
-              Contact
-            </a>
-          </Menu>
-
+          <div className="d-lg-none">
+            <Menu right>
+              <div className="sidebar-wrapper div-submenu">
+                <SidebarContent />
+              </div>
+            </Menu>
+          </div>
           <div className="collapse navbar-collapse" id="navbarResponsive">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
