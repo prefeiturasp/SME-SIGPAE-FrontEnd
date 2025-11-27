@@ -5,7 +5,7 @@ import {
   CONFIGURACOES,
   RECREIO_NAS_FERIAS,
 } from "src/configs/constants";
-import { RecreioFerias } from "../../components/screens/Cadastros/RecreioFerias";
+import { CadastroRecreioFerias } from "../../components/screens/Cadastros/RecreioFerias/CadastroRecreioFerias";
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`,
@@ -23,7 +23,7 @@ export const RecreioFeriasPage = () => {
   return (
     <Page titulo={atual.titulo} botaoVoltar>
       <Breadcrumb home={"/"} anteriores={anteriores} atual={atual} />
-      <RecreioFerias />
+      <CadastroRecreioFerias />
     </Page>
   );
 };

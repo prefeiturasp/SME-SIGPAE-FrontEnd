@@ -33,7 +33,7 @@ export const extractDreUuid = (lote: any) =>
   lote?.dreUuid || lote?.dre_uuid || lote?.dre?.uuid || lote?.dre;
 
 export const useLotes = () => {
-  const [lotes, setLotes] = useState<Option[]>([]);
+  const [lotes, setLotes] = useState<any[]>([]);
 
   useEffect(() => {
     getLotesAsync(setLotes, "uuid", "nome");

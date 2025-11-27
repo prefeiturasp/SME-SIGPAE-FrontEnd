@@ -118,12 +118,16 @@ export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
           valor.faixa_etaria?.uuid;
         resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] =
           valor.valor;
-      } else {
+      } else if (valor.tipo_alimentacao) {
         const tipoNome = valor.tipo_alimentacao?.nome;
         resultado[chavePrincipal][tipoNome] ||= {};
         resultado[chavePrincipal][tipoNome].tipo_alimentacao =
           valor.tipo_alimentacao?.uuid;
         resultado[chavePrincipal][tipoNome][getCampo(valor.tipo_valor)] =
+          valor.valor;
+      } else if (valor.nome_campo === "kit_lanche") {
+        resultado[chavePrincipal]["Kit Lanche"] ||= {};
+        resultado[chavePrincipal]["Kit Lanche"][getCampo(valor.tipo_valor)] =
           valor.valor;
       }
     });

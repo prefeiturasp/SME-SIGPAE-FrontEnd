@@ -78,14 +78,22 @@ export const ModalAdicionarUnidadeEducacional = ({
     const novasUnidades = values.unidades_educacionais.flatMap(
       (uuid: string) => {
         const unidade = unidadesFiltradas.find((u: any) => u.value === uuid);
+
         const base = {
-          dreLoteNome: lote?.nome || "",
+          id: `${Date.now()}-${Math.random()}`,
+          uuid: null,
+
           loteUuid: lote?.uuid,
+          dreLoteNome: lote?.nome_exibicao || lote?.nome || "",
+
           unidadeEducacionalUuid: uuid,
           unidadeEducacional: unidade?.label || "",
-          numeroInscritos: 0,
-          numeroColaboradores: 0,
+          unidadeEducacionalCodigoEol: unidade?.codigo_eol || "",
+
+          num_inscritos: 0,
+          num_colaboradores: 0,
           liberarMedicao: true,
+
           alimentacaoColaboradores: mapAlimentacoes(
             alimentacao.colaboradores,
             values.tipos_alimentacao_colaboradores
@@ -99,16 +107,18 @@ export const ModalAdicionarUnidadeEducacional = ({
             ...base,
             id: `${Date.now()}-${Math.random()}-${tipo}`,
             ceiOuEmei: tipo,
+
             alimentacaoInscritos: mapAlimentacoes(
               alimentacao.inscritos,
               values.tipos_alimentacao_inscritos
             ),
+            tiposAlimentacaoInscritosUuids:
+              values.tipos_alimentacao_inscritos || [],
+
             alimentacaoInscritosInfantil: mapAlimentacoes(
               alimentacao.inscritosInfantil,
               values.tipos_alimentacao_inscritos_infantil
             ),
-            tiposAlimentacaoInscritosUuids:
-              values.tipos_alimentacao_inscritos || [],
             tiposAlimentacaoInfantilUuids:
               values.tipos_alimentacao_inscritos_infantil || [],
           }));
@@ -117,14 +127,14 @@ export const ModalAdicionarUnidadeEducacional = ({
         return [
           {
             ...base,
-            id: `${Date.now()}-${Math.random()}`,
             alimentacaoInscritos: mapAlimentacoes(
               alimentacao.inscritos,
               values.tipos_alimentacao_inscritos
             ),
-            alimentacaoInscritosInfantil: [],
             tiposAlimentacaoInscritosUuids:
               values.tipos_alimentacao_inscritos || [],
+
+            alimentacaoInscritosInfantil: [],
             tiposAlimentacaoInfantilUuids: [],
           },
         ];

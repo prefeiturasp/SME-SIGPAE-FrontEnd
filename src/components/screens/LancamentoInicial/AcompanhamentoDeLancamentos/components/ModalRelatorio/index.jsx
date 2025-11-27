@@ -24,7 +24,6 @@ const ModalRelatorio = ({ show, onClose, onSubmit, nomeRelatorio }) => {
     const gruposDesabilitados = [];
 
     if (nomeRelatorio === "Relatório Unificado") {
-      gruposDesabilitados.push("Grupo 1");
       gruposDesabilitados.push("Grupo 2");
       gruposDesabilitados.push("Grupo 5");
       gruposDesabilitados.push("Grupo 6");

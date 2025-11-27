@@ -109,7 +109,7 @@ export default ({
         });
       } else {
         toastError(
-          "Escola não possui gestão Terceirizada Total, Direta ou Parceira."
+          "Escola não possui gestão Terceirizada Total, Direta ou Parceira.",
         );
       }
     } else {
@@ -147,7 +147,7 @@ export default ({
       if (response.status === HTTP_STATUS.OK) {
         if (response.data.count) {
           setSolicitacoesVigentes(
-            formatarSolicitacoesVigentes([response.data.results[0]])
+            formatarSolicitacoesVigentes([response.data.results[0]]),
           );
           setDadosIniciais({
             ...values,
@@ -165,8 +165,8 @@ export default ({
           setDadosIniciais({ ...values, nome_aluno: undefined });
           toastError(
             `Houve um erro ao realizar a solicitação: ${getError(
-              response.data
-            )}`
+              response.data,
+            )}`,
           );
         } else {
           setDadosIniciais({ ...values, nome_aluno: undefined });
@@ -255,7 +255,7 @@ export default ({
                   options={
                     motivosAlteracaoUE
                       ? [{ nome: "Selecione...", uuid: "" }].concat(
-                          motivosAlteracaoUE
+                          motivosAlteracaoUE,
                         )
                       : []
                   }

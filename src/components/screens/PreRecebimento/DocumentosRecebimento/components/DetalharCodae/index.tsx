@@ -17,13 +17,14 @@ import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { DocumentosRecebimentoParaAnalise } from "src/interfaces/pre_recebimento.interface";
 import OutrosDocumentos from "../OutrosDocumentos";
 import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
+import { formataMilharDecimal } from "src/helpers/utilities";
 
 export default () => {
   const navigate = useNavigate();
 
   const [carregando, setCarregando] = useState(true);
   const [objeto, setObjeto] = useState<DocumentosRecebimentoParaAnalise>(
-    {} as DocumentosRecebimentoParaAnalise
+    {} as DocumentosRecebimentoParaAnalise,
   );
   const [aprovado, setAprovado] = useState(true);
 
@@ -38,7 +39,7 @@ export default () => {
     const objeto = response.data;
 
     const laudoIndex = objeto.tipos_de_documentos.findIndex(
-      (tipo) => tipo.tipo_documento === "LAUDO"
+      (tipo) => tipo.tipo_documento === "LAUDO",
     );
     objeto.tipos_de_documentos.splice(laudoIndex, 1)[0];
 
@@ -55,7 +56,7 @@ export default () => {
   }, []);
 
   const baixarArquivoLaudo = async (
-    objeto: DocumentosRecebimentoParaAnalise
+    objeto: DocumentosRecebimentoParaAnalise,
   ) => {
     setCarregando(true);
     try {
@@ -193,7 +194,12 @@ export default () => {
             <div className="col-4">
               <InputText
                 label="Quantidade do Laudo"
-                valorInicial={objeto.quantidade_laudo}
+                valorInicial={
+                  objeto.quantidade_laudo !== null &&
+                  objeto.quantidade_laudo !== undefined
+                    ? formataMilharDecimal(objeto.quantidade_laudo.toString())
+                    : ""
+                }
                 disabled={true}
               />
             </div>
@@ -207,7 +213,12 @@ export default () => {
             <div className="col-4">
               <InputText
                 label="Saldo do Laudo"
-                valorInicial={objeto.saldo_laudo}
+                valorInicial={
+                  objeto.saldo_laudo !== null &&
+                  objeto.saldo_laudo !== undefined
+                    ? formataMilharDecimal(objeto.saldo_laudo.toString())
+                    : ""
+                }
                 disabled={true}
               />
             </div>

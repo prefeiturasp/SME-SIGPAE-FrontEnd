@@ -91,6 +91,18 @@
   font-size: 16px;
 }
 
+.com-linha {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px; 
+}
+
+.com-linha::after {
+  content: "";
+  flex: 1;  
+  border-bottom: 2px solid currentColor;
+}
+
 .ultimo-salvamento {
   font-size: 12px;
   color: $gray;
