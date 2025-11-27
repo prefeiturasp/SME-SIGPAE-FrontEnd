@@ -1,33 +1,32 @@
-import React from "react";
-import { Form } from "react-final-form";
 import arrayMutators from "final-form-arrays";
-import JustificativaCancelamento from "./JustificativaCancelamento";
-import InformacoesAluno from "./InformacoesAluno";
-import FluxoDeStatusDieta from "./FluxoDeStatusDieta";
-import DadosEscolaSolicitante from "./DadosEscolaSolicitante";
-import DadosEscolaDestino from "./DadosEscoladestino";
-import DadosDietaEspecial from "./DadosDietaEspecial";
-import MotivoNegacao from "./MotivoNegacao";
-import SolicitacaoVigente from "../../../Escola/componentes/SolicitacaoVigente";
-
-import DiagnosticosLeitura from "../FormAutorizaDietaEspecial/componentes/Diagnosticos/DiagnosticosLeitura";
-import ClassificacaoDaDietaLeitura from "../FormAutorizaDietaEspecial/componentes/ClassificacaoDaDieta/ClassificacaoDietaLeitura";
-import ProtocoloLeitura from "../FormAutorizaDietaEspecial/componentes/Protocolos/ProtocoloLeitura";
-import OrientacoesLeitura from "../FormAutorizaDietaEspecial/componentes/Orientacoes/OrientacoesLeitura";
-import SubstituicoesTable from "../FormAutorizaDietaEspecial/componentes/SubstituicoesField/SubstituicoesTable";
-import InformacoesAdicionaisLeitura from "../FormAutorizaDietaEspecial/componentes/InformacoesAdicionais/InformacoesAdicionaisLeitura";
-import IdentificacaoNutricionista from "../FormAutorizaDietaEspecial/componentes/IdentificacaoNutricionista";
-import PeriodoVigencia from "../FormAutorizaDietaEspecial/componentes/PeriodoVigencia";
-import { formataAlergias } from "../FormAutorizaDietaEspecial/helper";
-import { ehCanceladaSegundoStep } from "../../helpers";
-import "./styles.scss";
-import JustificativaNegacao from "./JustificativaNegacao";
+import { Field, Form } from "react-final-form";
+import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import Botao from "src/components/Shareable/Botao";
+import SolicitacaoVigente from "../../../Escola/componentes/SolicitacaoVigente";
+import { ehCanceladaSegundoStep } from "../../helpers";
+import ClassificacaoDaDietaLeitura from "../FormAutorizaDietaEspecial/componentes/ClassificacaoDaDieta/ClassificacaoDietaLeitura";
+import DiagnosticosLeitura from "../FormAutorizaDietaEspecial/componentes/Diagnosticos/DiagnosticosLeitura";
+import IdentificacaoNutricionista from "../FormAutorizaDietaEspecial/componentes/IdentificacaoNutricionista";
+import InformacoesAdicionaisLeitura from "../FormAutorizaDietaEspecial/componentes/InformacoesAdicionais/InformacoesAdicionaisLeitura";
+import OrientacoesLeitura from "../FormAutorizaDietaEspecial/componentes/Orientacoes/OrientacoesLeitura";
+import PeriodoVigencia from "../FormAutorizaDietaEspecial/componentes/PeriodoVigencia";
+import ProtocoloLeitura from "../FormAutorizaDietaEspecial/componentes/Protocolos/ProtocoloLeitura";
+import SubstituicoesTable from "../FormAutorizaDietaEspecial/componentes/SubstituicoesField/SubstituicoesTable";
+import { formataAlergias } from "../FormAutorizaDietaEspecial/helper";
+import DadosDietaEspecial from "./DadosDietaEspecial";
+import DadosEscolaSolicitante from "./DadosEscolaSolicitante";
+import DadosEscolaDestino from "./DadosEscoladestino";
+import FluxoDeStatusDieta from "./FluxoDeStatusDieta";
+import InformacoesAluno from "./InformacoesAluno";
+import JustificativaCancelamento from "./JustificativaCancelamento";
+import JustificativaNegacao from "./JustificativaNegacao";
+import MotivoNegacao from "./MotivoNegacao";
+import "./styles.scss";
+import InputText from "src/components/Shareable/Input/InputText";
 
 const CorpoRelatorio = ({
   dietaEspecial,
@@ -108,7 +107,7 @@ const CorpoRelatorio = ({
       dietaEspecial.eh_importado === false &&
       !editar &&
       (["TERMINADA_AUTOMATICAMENTE_SISTEMA", "CODAE_AUTORIZADO"].includes(
-        dietaEspecial.status_solicitacao
+        dietaEspecial.status_solicitacao,
       ) ||
         (card && ["autorizadas", "autorizadas-temp"].includes(card)))
     ) {
@@ -125,6 +124,18 @@ const CorpoRelatorio = ({
           key={4}
         />,
         <PeriodoVigencia key={5} />,
+        dietaEspecial.dieta_para_recreio_ferias && (
+          <div className="row">
+            <div className="col-12">
+              <Field
+                component={InputText}
+                name="motivo_alteracao"
+                label="Motivo da alteração"
+                disabled
+              />
+            </div>
+          </div>
+        ),
         <InformacoesAdicionaisLeitura
           informacoes_adicionais={dietaEspecial.informacoes_adicionais}
           key={6}
@@ -270,7 +281,7 @@ const CorpoRelatorio = ({
       dietaEspecial.eh_importado === false &&
       dietaEspecial.tipo_solicitacao === "ALTERACAO_UE" &&
       ["CODAE_A_AUTORIZAR", "CODAE_AUTORIZADO"].includes(
-        dietaEspecial.status_solicitacao
+        dietaEspecial.status_solicitacao,
       )
     ) {
       return [
@@ -295,10 +306,10 @@ const CorpoRelatorio = ({
     } else if (
       dietaEspecial.eh_importado === false &&
       ["COMUM", "CANCELAMENTO_DIETA"].includes(
-        dietaEspecial.tipo_solicitacao
+        dietaEspecial.tipo_solicitacao,
       ) &&
       ["ESCOLA_SOLICITOU_INATIVACAO", "CODAE_NEGOU_CANCELAMENTO"].includes(
-        dietaEspecial.status_solicitacao
+        dietaEspecial.status_solicitacao,
       )
     ) {
       return [
@@ -334,25 +345,27 @@ const CorpoRelatorio = ({
       dietaEspecial.relacao_diagnosticos = "";
     }
     dietaEspecial.classificacao_nome = [undefined, null].includes(
-      dietaEspecial.classificacao
+      dietaEspecial.classificacao,
     )
       ? ""
       : dietaEspecial.classificacao.nome;
     dietaEspecial.nome_protocolo_padrao = [undefined, null].includes(
-      dietaEspecial.nome_protocolo
+      dietaEspecial.nome_protocolo,
     )
       ? ""
       : dietaEspecial.nome_protocolo;
     dietaEspecial.data_inicio = [undefined, null].includes(
-      dietaEspecial.data_inicio
+      dietaEspecial.data_inicio,
     )
       ? ""
       : dietaEspecial.data_inicio;
     dietaEspecial.data_fim = [undefined, null].includes(
-      dietaEspecial.data_termino
+      dietaEspecial.data_termino,
     )
       ? ""
       : dietaEspecial.data_termino;
+    if (dietaEspecial.dieta_para_recreio_ferias)
+      dietaEspecial.motivo_alteracao = "Dieta Especial - Recreio nas Férias";
     return dietaEspecial;
   };
 
@@ -364,7 +377,7 @@ const CorpoRelatorio = ({
       render={({ values }) => (
         <form>
           {["CODAE_NEGOU_PEDIDO", "CODAE_NEGOU_CANCELAMENTO"].includes(
-            dietaEspecial.status_solicitacao
+            dietaEspecial.status_solicitacao,
           ) && [
             <MotivoNegacao
               key={0}
@@ -396,6 +409,7 @@ const CorpoRelatorio = ({
             aluno={dietaEspecial.aluno}
             statusSolicitacao={dietaEspecial.status_solicitacao}
             tipoSolicitacao={dietaEspecial.tipo_solicitacao}
+            dietaEspecial={dietaEspecial}
           />
           {solicitacaoVigenteAtiva &&
             ["pendentes-aut"].includes(card) &&

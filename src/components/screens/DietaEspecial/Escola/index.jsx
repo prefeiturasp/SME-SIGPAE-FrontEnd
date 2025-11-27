@@ -19,21 +19,13 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import withNavigationType from "src/components/Shareable/withNavigationType";
 import { DIETA_ESPECIAL, ESCOLA, RELATORIO } from "src/configs/constants";
-import { ENVIRONMENT } from "src/constants/config";
-import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import {
   length,
   minLength,
   required,
   validaCPF,
 } from "src/helpers/fieldValidators";
-import {
-  cpfMask,
-  dateDelta,
-  deepCopy,
-  gerarParametrosConsulta,
-  getError,
-} from "src/helpers/utilities";
+import { cpfMask, dateDelta, deepCopy, getError } from "src/helpers/utilities";
 import { loadSolicitacoesVigentes } from "src/reducers/incluirDietaEspecialReducer";
 import {
   deleteFotoAluno,
@@ -44,9 +36,7 @@ import {
 import {
   criaDietaEspecial,
   getDietasEspeciaisVigentesDeUmAluno,
-  getSolicitacoesDietaEspecial,
 } from "src/services/dietaEspecial.service";
-import { getEscolasSimplissima } from "src/services/escola.service";
 import { meusDados, obtemDadosAlunoPeloEOL } from "src/services/perfil.service";
 import Laudo from "./componentes/Laudo";
 import Prescritor from "./componentes/Prescritor";
@@ -76,8 +66,6 @@ class solicitacaoDietaEspecial extends Component {
       atualizandoImagem: false,
       nome_escola: "",
     };
-    this.setFiles = this.setFiles.bind(this);
-    this.removeFile = this.removeFile.bind(this);
     this.resetForm = this.resetForm.bind(this);
     this.onEolBlur = this.onEolBlur.bind(this);
   }
@@ -96,16 +84,6 @@ class solicitacaoDietaEspecial extends Component {
       loadSolicitacoesVigentes(null);
       reset();
     }
-  }
-
-  removeFile(index) {
-    let files = this.state.files;
-    files.splice(index, 1);
-    this.setState({ files });
-  }
-
-  setFiles(files) {
-    this.setState({ files });
   }
 
   atualizarFoto = async (codigo_eol, files) => {
@@ -218,73 +196,6 @@ class solicitacaoDietaEspecial extends Component {
     );
   };
 
-  getEscolaPorEOL = async () => {
-    const { change, aluno_nao_matriculado } = this.props;
-
-    if (!aluno_nao_matriculado) {
-      change("aluno_nao_matriculado_data.nome_escola", "");
-      return;
-    }
-
-    if (!aluno_nao_matriculado.codigo_eol_escola) {
-      change("aluno_nao_matriculado_data.nome_escola", "");
-      return;
-    }
-
-    const codigo_eol_escola = aluno_nao_matriculado.codigo_eol_escola;
-
-    if (!codigo_eol_escola || codigo_eol_escola.length !== 6) {
-      change("aluno_nao_matriculado_data.nome_escola", "");
-      return;
-    }
-
-    const params = { codigo_eol: codigo_eol_escola };
-    const resposta = await getEscolasSimplissima(params);
-
-    if (!resposta) return;
-
-    if (resposta && resposta.data.results.length) {
-      const escola = resposta.data.results[0];
-      change("aluno_nao_matriculado_data.nome_escola", escola.nome);
-    } else {
-      change("aluno_nao_matriculado_data.nome_escola", "");
-      toastError("Código EOL informado inválido");
-    }
-  };
-
-  getSolicitacoesVigentesResponsavel = async () => {
-    const { aluno_nao_matriculado } = this.props;
-    if (!aluno_nao_matriculado) {
-      this.props.loadSolicitacoesVigentes(null);
-      return;
-    }
-
-    if (!aluno_nao_matriculado.responsavel) {
-      this.props.loadSolicitacoesVigentes(null);
-      return;
-    }
-
-    if (!aluno_nao_matriculado.responsavel.cpf || !aluno_nao_matriculado.nome) {
-      this.props.loadSolicitacoesVigentes(null);
-      return;
-    }
-
-    const { cpf } = aluno_nao_matriculado.responsavel;
-    const { nome } = aluno_nao_matriculado;
-
-    if (validaCPF(cpf)) return;
-
-    const params = gerarParametrosConsulta({
-      cpf_responsavel: cpf,
-      nome_completo_aluno: nome,
-      status: getStatusSolicitacoesVigentes(),
-    });
-    const resposta = await getSolicitacoesDietaEspecial(params);
-    this.props.loadSolicitacoesVigentes(
-      formatarSolicitacoesVigentes(resposta.data.results),
-    );
-  };
-
   async onSubmit(payload) {
     const payload_ = deepCopy(payload);
     payload_.anexos = payload_.anexos.map((anexo) => {
@@ -317,7 +228,7 @@ class solicitacaoDietaEspecial extends Component {
     } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
       toastError(response.data);
     } else {
-      toastError(`Erro ao solicitar dieta especial: ${response.data}`);
+      toastError(getError(response.data));
     }
   }
 
@@ -349,7 +260,7 @@ class solicitacaoDietaEspecial extends Component {
       codigo_eol,
     } = this.props;
     return (
-      <form className="special-diet" onSubmit={handleSubmit}>
+      <form className="special-diet mt-3" onSubmit={handleSubmit}>
         <CardMatriculados numeroAlunos={quantidadeAlunos} />
         <div className="card mt-2 p-4">
           <div className="row">
@@ -358,6 +269,7 @@ class solicitacaoDietaEspecial extends Component {
                 className="check-tipo-produto"
                 component={CheckboxField}
                 name="aluno_nao_matriculado"
+                dataTestId="checkbox-aluno-nao-matriculado"
                 type="checkbox"
                 onChange={(ehAlunoNaoMatriculado) => {
                   this.props.loadSolicitacoesVigentes(null);
@@ -371,7 +283,7 @@ class solicitacaoDietaEspecial extends Component {
                 }}
               />
               <div className="ms-3">
-                Dieta Especial Destina-se à Aluno Não Matriculado na Rede
+                Dieta Especial destina-se à aluno não matriculado na Rede
                 Municipal de Ensino
               </div>
             </div>
@@ -381,24 +293,24 @@ class solicitacaoDietaEspecial extends Component {
             <span className="ms-3 card-title fw-bold cinza-escuro">
               Descrição da Solicitação
             </span>
-            {!ENVIRONMENT.includes("production") &&
-              this.state.aluno_nao_matriculado && (
-                <div className="d-flex flex-row text-gray align-items-center">
-                  <Field
-                    className="check-tipo-produto"
-                    component={CheckboxField}
-                    name="dieta_para_recreio_ferias"
-                    type="checkbox"
-                    onChange={(event, newValue) => {
-                      if (!newValue) {
-                        this.props.change("periodo_recreio_inicio", null);
-                        this.props.change("periodo_recreio_fim", null);
-                      }
-                    }}
-                  />
-                  <span className="ms-3">Dieta para Recreio nas Férias</span>
-                </div>
-              )}
+            {this.state.aluno_nao_matriculado && (
+              <div className="d-flex flex-row text-gray align-items-center">
+                <Field
+                  className="check-tipo-produto"
+                  component={CheckboxField}
+                  dataTestId="checkbox-dieta-para-recreio-nas-ferias"
+                  name="dieta_para_recreio_ferias"
+                  type="checkbox"
+                  onChange={(event, newValue) => {
+                    if (!newValue) {
+                      this.props.change("data_inicio", null);
+                      this.props.change("data_termino", null);
+                    }
+                  }}
+                />
+                <span className="ms-3">Dieta para Recreio nas Férias</span>
+              </div>
+            )}
           </div>
           {!this.state.aluno_nao_matriculado && (
             <>
@@ -408,6 +320,7 @@ class solicitacaoDietaEspecial extends Component {
                     <Field
                       component={InputText}
                       name="codigo_eol"
+                      dataTestId="input-codigo-eol-aluno"
                       label="Cód. EOL do Aluno"
                       placeholder="Insira o Código"
                       className="form-control"
@@ -490,6 +403,7 @@ class solicitacaoDietaEspecial extends Component {
                     <span className="input-file">
                       <input
                         className="inputfile"
+                        data-testid="input-file-foto-aluno"
                         name="foto_aluno"
                         ref={(i) => (this.inputRef = i)}
                         accept=".png, .jpeg, .jpg"
@@ -563,7 +477,6 @@ class solicitacaoDietaEspecial extends Component {
                       required
                       disabled
                       validate={[required, length(6)]}
-                      onBlur={this.getEscolaPorEOL}
                     />
                   </div>
                   <div className="col-md-9">
@@ -582,6 +495,7 @@ class solicitacaoDietaEspecial extends Component {
                     <Field
                       {...cpfMask}
                       component={InputText}
+                      dataTestId="input-cpf-aluno"
                       name="cpf"
                       label="CPF do Aluno"
                       className="form-control"
@@ -593,15 +507,16 @@ class solicitacaoDietaEspecial extends Component {
                       component={InputText}
                       name="nome"
                       label="Nome completo do Aluno"
+                      dataTestId="input-nome-completo-aluno"
                       className="form-control"
                       required
                       validate={[required, minLength6]}
-                      onBlur={this.getSolicitacoesVigentesResponsavel}
                     />
                   </div>
                   <div className="col-md-3">
                     <Field
                       component={InputComData}
+                      dataTestId="div-data-nascimento-aluno"
                       name="data_nascimento"
                       label="Data de Nascimento"
                       className="form-control"
@@ -622,10 +537,10 @@ class solicitacaoDietaEspecial extends Component {
                         {...cpfMask}
                         component={InputText}
                         name="cpf"
+                        dataTestId="input-cpf-responsavel"
                         label="CPF do Responsável"
                         className="form-control"
                         required
-                        onBlur={this.getSolicitacoesVigentesResponsavel}
                         validate={[required, validaCPF]}
                       />
                     </div>
@@ -633,6 +548,7 @@ class solicitacaoDietaEspecial extends Component {
                       <Field
                         component={InputText}
                         name="nome"
+                        dataTestId="input-nome-completo-responsavel"
                         label="Nome completo do Responsável"
                         className="form-control"
                         required
@@ -640,74 +556,59 @@ class solicitacaoDietaEspecial extends Component {
                       />
                     </div>
                   </div>
-                  {!ENVIRONMENT.includes("production") &&
-                    this.props.dieta_para_recreio_ferias && (
-                      <div className="row mt-2 align-items-end">
-                        <div className="col-md-3">
-                          <Field
-                            component={InputComData}
-                            name="periodo_recreio_inicio"
-                            label="Alteração válida pelo período:"
-                            placeholder="De"
-                            className="form-control"
-                            minDate={dateDelta(-360 * 99)}
-                            maxDate={dateDelta(365)}
-                            validate={[required]}
-                            required
-                            inputOnChange={(value) => {
-                              this.props.change(
-                                "periodo_recreio_inicio",
-                                value,
-                              );
-                            }}
-                            showMonthDropdown
-                            showYearDropdown
-                          />
-                        </div>
-                        <div className="col-md-3">
-                          <Field
-                            component={InputComData}
-                            name="periodo_recreio_fim"
-                            label=""
-                            placeholder="Até"
-                            className="form-control"
-                            minDate={
-                              this.props.periodo_recreio_inicio
-                                ? moment(
-                                    this.props.periodo_recreio_inicio,
-                                    "DD/MM/YYYY",
-                                  ).toDate()
-                                : dateDelta(-360 * 99)
-                            }
-                            maxDate={dateDelta(365)}
-                            validate={[
-                              required,
-                              (value, allValues) => {
-                                if (
-                                  value &&
-                                  allValues.periodo_recreio_inicio &&
-                                  moment(value, "YYYY-MM-DD").isBefore(
-                                    moment(
-                                      allValues.periodo_recreio_inicio,
-                                      "YYYY-MM-DD",
-                                    ),
-                                  )
-                                ) {
-                                  return "A data final não pode ser menor que a inicial.";
-                                }
-                                return undefined;
-                              },
-                            ]}
-                            inputOnChange={(value) => {
-                              this.props.change("periodo_recreio_fim", value);
-                            }}
-                            required
-                            showMonthDropdown
-                            showYearDropdown
-                          />
-                        </div>
+                  {this.props.dieta_para_recreio_ferias && (
+                    <div className="row mt-2 align-items-end">
+                      <div className="col-md-3">
+                        <Field
+                          component={InputComData}
+                          name="data_inicio"
+                          dataTestId="div-data-inicio"
+                          label="Alteração válida pelo período:"
+                          placeholder="De"
+                          className="form-control"
+                          minDate={dateDelta(-360 * 99)}
+                          maxDate={
+                            this.props.data_termino
+                              ? moment(this.props.data_termino, "DD/MM/YYYY")._d
+                              : dateDelta(365)
+                          }
+                          validate={[required]}
+                          required
+                          inputOnChange={(value) => {
+                            this.props.change("data_inicio", value);
+                          }}
+                          showMonthDropdown
+                          showYearDropdown
+                        />
                       </div>
-                    )}
+                      <div className="col-md-3">
+                        <Field
+                          component={InputComData}
+                          name="data_termino"
+                          dataTestId="div-data-termino"
+                          label=""
+                          placeholder="Até"
+                          className="form-control"
+                          minDate={
+                            this.props.data_inicio
+                              ? moment(
+                                  this.props.data_inicio,
+                                  "DD/MM/YYYY",
+                                ).toDate()
+                              : dateDelta(-360 * 99)
+                          }
+                          maxDate={dateDelta(365)}
+                          validate={[required]}
+                          inputOnChange={(value) => {
+                            this.props.change("data_termino", value);
+                          }}
+                          required
+                          showMonthDropdown
+                          showYearDropdown
+                        />
+                      </div>
+                    </div>
+                  )}
                 </FormSection>
               </FormSection>
               <hr />
@@ -770,8 +671,8 @@ const mapStateToProps = (state) => {
     aluno_nao_matriculado: selector(state, "aluno_nao_matriculado_data"),
     solicitacoesVigentes: state.incluirDietaEspecial.solicitacoesVigentes,
     dieta_para_recreio_ferias: selector(state, "dieta_para_recreio_ferias"),
-    periodo_recreio_inicio: selector(state, "periodo_recreio_inicio"),
-    periodo_recreio_fim: selector(state, "periodo_recreio_fim"),
+    data_inicio: selector(state, "data_inicio"),
+    data_termino: selector(state, "data_termino"),
   };
 };
 const mapDispatchToProps = (dispatch) =>

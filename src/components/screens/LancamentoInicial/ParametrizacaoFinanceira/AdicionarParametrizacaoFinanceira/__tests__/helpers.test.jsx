@@ -98,7 +98,7 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
       const resultado = carregarValores(tabelas);
       const faixa =
         resultado["Preço das Alimentações - Período Integral"]["01 a 03 meses"];
-      expect(faixa.valor_unitario_total).toBe("12.00");
+      expect(faixa.valor_unitario_total).toBe("12,00");
     });
 
     it("deve calcular valor total com percentual de acréscimo", () => {
@@ -134,7 +134,7 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
         result["Preço das Alimentações - Período Parcial"][
           "01 ano a 03 anos e 11 meses"
         ];
-      expect(faixa.valor_unitario_total).toBe("22.00");
+      expect(faixa.valor_unitario_total).toBe("22,00");
     });
 
     it("não deve quebrar se todos os valores forem nulos", () => {

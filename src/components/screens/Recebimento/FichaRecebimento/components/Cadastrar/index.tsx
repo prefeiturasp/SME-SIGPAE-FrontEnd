@@ -50,16 +50,17 @@ import InputFileField from "src/components/Shareable/InputFileField";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
 import {
   composeValidators,
-  maxValue,
+  maxValueDecimal,
   required,
 } from "src/helpers/fieldValidators";
 import {
   converterDDMMYYYYparaYYYYMMDD,
   dataParaUTC,
   exibeError,
+  formataMilharDecimal,
 } from "src/helpers/utilities";
 import { deletaValues } from "src/helpers/formHelper";
-import { stringToBoolean } from "src/helpers/parsers";
+import { stringDecimalToNumber, stringToBoolean } from "src/helpers/parsers";
 import {
   ArquivoForm,
   CronogramaSimples,
@@ -317,7 +318,9 @@ export default () => {
         (x: DocumentoFicha, key: number) =>
           ({
             documento_recebimento: x.uuid,
-            quantidade_recebida: values[`qtd_recebida_laudo_${key}`],
+            quantidade_recebida: values[`qtd_recebida_laudo_${key}`]
+              .replaceAll(".", "")
+              .replace(",", "."),
           }) as DocumentoFichaPayload,
       ),
       observacao: values.observacao,
@@ -671,7 +674,7 @@ export default () => {
     const quantidades =
       values.documentos_recebimento?.map(
         (_: DocumentoFicha, index: number) =>
-          parseInt(values[`qtd_recebida_laudo_${index}`]) || 0,
+          stringDecimalToNumber(values[`qtd_recebida_laudo_${index}`]) || 0,
       ) || [];
 
     const saldoTotalZero: boolean =
@@ -1199,7 +1202,9 @@ export default () => {
                                             {doc.datas_validade}
                                           </td>
                                           <td className="borda-crono">
-                                            {doc.saldo_laudo}
+                                            {formataMilharDecimal(
+                                              doc.saldo_laudo,
+                                            )}
                                           </td>
                                           <td className="borda-crono">
                                             <Field
@@ -1211,7 +1216,7 @@ export default () => {
                                               apenasNumeros
                                               validate={composeValidators(
                                                 required,
-                                                maxValue(
+                                                maxValueDecimal(
                                                   doc.saldo_laudo,
                                                   "Não pode ser maior que o saldo do laudo",
                                                 ),
@@ -1226,6 +1231,7 @@ export default () => {
                                                   form,
                                                 )
                                               }
+                                              agrupadorMilharComDecimal
                                             />
                                           </td>
                                         </tr>

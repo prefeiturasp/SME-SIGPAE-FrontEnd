@@ -26,6 +26,7 @@ export default ({ pertence_a_escola }) => {
         <div className="col-3 btn">
           <Field
             component={ManagedInputFileField}
+            dataTestId="input-laudo-anexo"
             className="inputfile"
             texto="Anexar"
             name="anexos"

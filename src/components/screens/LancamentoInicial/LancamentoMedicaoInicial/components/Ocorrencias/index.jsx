@@ -85,7 +85,7 @@ export default ({
                     </span>
                     {!ocorrenciaExcluida() && (
                       <span
-                        className="download-ocorrencias me-0"
+                        className={`download-ocorrencias me-0 ${!solicitacaoMedicaoInicial?.ocorrencia?.ultimo_arquivo ? "disabled" : ""}`}
                         onClick={() =>
                           medicaoInicialExportarOcorrenciasPDF(
                             solicitacaoMedicaoInicial.ocorrencia.ultimo_arquivo,

@@ -11,19 +11,19 @@ import {
   CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE,
 } from "src/helpers/gestaoDeProdutos";
 import {
+  ehUsuarioEmpresa,
   truncarString,
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAEGestaoProduto,
   usuarioEhCODAENutriManifestacao,
   usuarioEhCogestorDRE,
-  usuarioEhCoordenadorNutriSupervisao,
   usuarioEhDinutreDiretoria,
   usuarioEhEmpresa,
   usuarioEhEmpresaTerceirizada,
-  ehUsuarioEmpresa,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
+  usuarioEhNutricionistaSupervisao,
   usuarioEhOrgaoFiscalizador,
 } from "src/helpers/utilities";
 const {
@@ -48,7 +48,7 @@ const gerarLinkDoItem = (item, apontaParaEdicao, titulo) => {
       usuarioEhOrgaoFiscalizador() ||
       usuarioEhCODAEGabinete() ||
       usuarioEhEmpresaTerceirizada() ||
-      usuarioEhCoordenadorNutriSupervisao() ||
+      usuarioEhNutricionistaSupervisao() ||
       usuarioEhDinutreDiretoria()) &&
     [
       CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE.titulo,
@@ -125,7 +125,7 @@ const gerarLinkDoItem = (item, apontaParaEdicao, titulo) => {
   ) {
     return `/${GESTAO_PRODUTO}/nova-reclamacao-de-produto?nome_produto=${item.nome_produto}&marca_produto=${item.marca_produto}&fabricante_produto=${item.fabricante_produto}`;
   } else if (
-    usuarioEhCoordenadorNutriSupervisao() &&
+    usuarioEhNutricionistaSupervisao() &&
     CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE.titulo === titulo
   ) {
     return `/${GESTAO_PRODUTO}/responder-questionamento-nutrisupervisor/?nome_produto=${item.nome_produto}`;

@@ -143,6 +143,7 @@ export interface EtapaFicha {
   houve_ocorrencia: boolean;
   houve_reposicao: boolean;
   fichas_recebimento?: FichaRecebimentoEtapaSimplificada[];
+  foi_recebida: boolean;
 }
 
 export interface CronogramaFicha {

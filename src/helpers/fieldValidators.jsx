@@ -155,6 +155,13 @@ export const maxValue = (max, mensagem) => (value) =>
     ? mensagem || `Não pode ser maior que ${max}`
     : undefined;
 
+export const maxValueDecimal = (max, mensagem) => (value) => {
+  const valueDecimal = value.replaceAll(".", "").replaceAll(",", ".");
+  return valueDecimal && valueDecimal > max
+    ? mensagem || `Não pode ser maior que ${max}`
+    : undefined;
+};
+
 export const maxValueMaiorFrequenciaNoPeriodoIMR = (max) => (value) => {
   return value && value > max
     ? "Não pode ser maior que o Nº de matriculados"

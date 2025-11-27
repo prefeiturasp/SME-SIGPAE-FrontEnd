@@ -78,7 +78,7 @@ export class SolicitacaoVigente extends Component {
         this.setState({ submitted: false });
       } else {
         toastError(
-          `Erro ao solicitar dieta especial: ${getError(response.data)}`
+          `Erro ao solicitar dieta especial: ${getError(response.data)}`,
         );
         this.setState({ submitted: false });
       }
@@ -104,13 +104,16 @@ export class SolicitacaoVigente extends Component {
               let texto = "";
               let iconClassName = "";
               let corIcone = "";
-              solicitacaoVigente.ativo
+              solicitacaoVigente.ativo &&
+              solicitacaoVigente.status_solicitacao === "CODAE_AUTORIZADO"
                 ? (texto = "Dieta ativa")
                 : (texto = "Dieta inativa");
-              solicitacaoVigente.ativo
+              solicitacaoVigente.ativo &&
+              solicitacaoVigente.status_solicitacao === "CODAE_AUTORIZADO"
                 ? (iconClassName = "fas fa-check-circle")
                 : (iconClassName = "fas fa-ban");
-              solicitacaoVigente.ativo
+              solicitacaoVigente.ativo &&
+              solicitacaoVigente.status_solicitacao === "CODAE_AUTORIZADO"
                 ? (corIcone = "green")
                 : (corIcone = "red");
               return (
@@ -149,7 +152,7 @@ export class SolicitacaoVigente extends Component {
                                 <div className="value mx-1" key={key}>
                                   {alergia.descricao}
                                 </div>
-                              )
+                              ),
                             )}
                           </div>
                           <div className="flex-row report-label-value mb-3">
@@ -166,7 +169,7 @@ export class SolicitacaoVigente extends Component {
                                 tabindex="-1"
                                 onClick={() =>
                                   this.props.navigate(
-                                    `/dieta-especial/relatorio?uuid=${solicitacaoVigente.uuid}`
+                                    `/dieta-especial/relatorio?uuid=${solicitacaoVigente.uuid}`,
                                   )
                                 }
                                 texto="Visualizar Solicitação"
