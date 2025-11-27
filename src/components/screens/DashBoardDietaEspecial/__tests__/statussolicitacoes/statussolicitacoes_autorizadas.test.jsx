@@ -7,6 +7,7 @@ import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockDietasAutorizadas } from "src/mocks/DietaEspecial/StatusSolicitacoes/dietasAutorizadas";
 import { mockDietasAutorizadasFiltroPyetro } from "src/mocks/DietaEspecial/StatusSolicitacoes/dietasAutorizadasFiltroPyetro";
+import { mockDietasAutorizadasPagina2 } from "src/mocks/DietaEspecial/StatusSolicitacoes/dietasAutorizadasPagina2";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import * as StatusSolicitacoesDietaEspecialPage from "src/pages/DietaEspecial/StatusSolicitacoesPage";
@@ -71,7 +72,9 @@ describe("Teste StatusSolicitacoes - Autorizados", () => {
     ).toHaveLength(3);
   });
 
-  it("Deve pesquisar uma solicitação de dieta especial", async () => {
+  it("Deve pesquisar uma solicitação de dieta especial (3+ caracteres)", async () => {
+    jest.useFakeTimers();
+
     const divInputPesquisar = screen.getByTestId("div-input-pesquisar");
     const inputPesquisar = divInputPesquisar.querySelector("input");
 
@@ -83,12 +86,59 @@ describe("Teste StatusSolicitacoes - Autorizados", () => {
       target: { value: "PYETRO" },
     });
 
+    jest.runAllTimers();
+
     await waitFor(() => {
       expect(
         screen.queryByText(
           "2339899 - SANDRA APARECIDA DE SOUZA / EMEF LEAO MACHADO, PROF.",
         ),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  it("Deve pesquisar uma solicitação de dieta especial (menos de 2 caracteres)", async () => {
+    jest.useFakeTimers();
+
+    const divInputPesquisar = screen.getByTestId("div-input-pesquisar");
+    const inputPesquisar = divInputPesquisar.querySelector("input");
+
+    mock
+      .onGet("/codae-solicitacoes/autorizados-dieta/")
+      .reply(200, mockDietasAutorizadas);
+
+    fireEvent.change(inputPesquisar, {
+      target: { value: "PY" },
+    });
+
+    jest.runAllTimers();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          "2339899 - SANDRA APARECIDA DE SOUZA / EMEF LEAO MACHADO, PROF.",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve ir para a segunda página", async () => {
+    const paginaDois = document.querySelector(
+      ".ant-pagination .ant-pagination-item-2",
+    );
+
+    mock
+      .onGet("/codae-solicitacoes/autorizados-dieta/")
+      .reply(200, mockDietasAutorizadasPagina2);
+
+    fireEvent.click(paginaDois);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "8075449 - NAGILLA THAIS ROSENDO DE FREITAS / EMEF PERICLES EUGENIO DA SILVA RAMOS",
+        ),
+      ).toBeInTheDocument();
     });
   });
 });
