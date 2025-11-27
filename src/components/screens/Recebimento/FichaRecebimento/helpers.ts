@@ -210,8 +210,9 @@ export const geraInitialValuesCadastrar = (
   if (ficha.documentos_recebimento && ficha.documentos_recebimento.length > 0) {
     ficha.documentos_recebimento.forEach(
       (documento: DocumentoFicha, index: number) => {
-        initialValues[`qtd_recebida_laudo_${index}`] =
-          documento.quantidade_recebida;
+        initialValues[`qtd_recebida_laudo_${index}`] = formataMilharDecimal(
+          documento.quantidade_recebida,
+        );
       },
     );
   }

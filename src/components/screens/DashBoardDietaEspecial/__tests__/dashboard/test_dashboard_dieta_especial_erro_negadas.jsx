@@ -16,8 +16,7 @@ import {
   getDietaEspecialPendenteAutorizacaoCODAE,
 } from "src/services/dashBoardDietaEspecial.service";
 import { renderWithProvider } from "src/utils/test-utils";
-import DashboardDietaEspecial from "..";
-import { getNomesUnicosEditais } from "src/services/produto.service";
+import DashboardDietaEspecial from "../..";
 
 jest.mock("src/services/dashBoardDietaEspecial.service");
 jest.mock("src/services/produto.service");
@@ -34,20 +33,21 @@ const awaitServices = async () => {
   });
 };
 
-describe("Test <DashboardDietaEpecial>", () => {
+describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialNegadas", () => {
   beforeEach(async () => {
     getDietaEspecialPendenteAutorizacaoCODAE.mockResolvedValue({
       data: mockDietasPendentesAutorizacao,
       status: 200,
     });
+    getDietaEspecialNegadasCODAE.mockResolvedValue({
+      data: [],
+      status: 400,
+    });
     getDietaEspecialAutorizadasTemporariamenteCODAE.mockResolvedValue({
       data: mockDietasPendentesAutorizacao,
       status: 200,
     });
-    getDietaEspecialAutorizadasCODAE.mockResolvedValue({
-      data: mockDietasPendentesAutorizacao,
-      status: 200,
-    });
+
     getDietaEspecialCanceladasCODAE.mockResolvedValue({
       data: mockDietasPendentesAutorizacao,
       status: 200,
@@ -60,13 +60,8 @@ describe("Test <DashboardDietaEpecial>", () => {
       data: mockDietasPendentesAutorizacao,
       status: 200,
     });
-    getDietaEspecialNegadasCODAE.mockResolvedValue({
+    getDietaEspecialAutorizadasCODAE.mockResolvedValue({
       data: mockDietasPendentesAutorizacao,
-      status: 200,
-    });
-
-    getNomesUnicosEditais.mockResolvedValue({
-      data: { results: [] },
       status: 200,
     });
 
@@ -99,47 +94,15 @@ describe("Test <DashboardDietaEpecial>", () => {
               getDietaEspecialInativas={getDietaEspecialInativasCODAE}
             />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
-  it("renderiza label `Nº de Matriculados`", async () => {
-    await awaitServices();
-    expect(screen.getByText("Nº de Matriculados")).toBeInTheDocument();
-  });
-
-  it("renderiza texto `Informação automática...`", async () => {
+  it("renderiza label `Erro ao carregar solicitações negadas.`", async () => {
     await awaitServices();
     expect(
-      screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+      screen.getByText("Erro ao carregar solicitações negadas."),
     ).toBeInTheDocument();
-  });
-
-  it("renderiza texto `Acompanhamento de solicitações dieta especial`", async () => {
-    await awaitServices();
-    expect(
-      screen.getByText("Acompanhamento de solicitações dieta especial")
-    ).toBeInTheDocument();
-  });
-
-  it("renderiza label `Aguardando Autorização`", async () => {
-    await awaitServices();
-    expect(screen.getByText("Aguardando Autorização")).toBeInTheDocument();
-  });
-
-  it("renderiza alunos em `Aguardando Autorização`", async () => {
-    await awaitServices();
-    const cardAguardandoAutorizacao = screen.getByTestId(
-      `card-aguardando-autorizacao`
-    );
-    expect(cardAguardandoAutorizacao).toHaveTextContent(
-      "9999999 - JOAO BATISTA / EMEI EMIR MACEDO NOGUEIRA"
-    );
-    expect(cardAguardandoAutorizacao).toHaveTextContent(
-      "9999998 - MARIA DA SILVA / CEU EMEI PERA MARMELO"
-    );
   });
 });
