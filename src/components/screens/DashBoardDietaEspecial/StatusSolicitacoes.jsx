@@ -250,9 +250,7 @@ function StatusSolicitacoes(props) {
 
   const getSolicitacoesAsync = async (offset = 0) => {
     const handler = solicitacaoHandlers[tipoSolicitacao];
-    if (handler) {
-      handler(offset);
-    }
+    handler(offset);
   };
 
   useEffect(() => {
