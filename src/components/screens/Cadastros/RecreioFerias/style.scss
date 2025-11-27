@@ -104,6 +104,14 @@
 .recreios-cadastrados {
   width: 100%;
 
+  .esconder-icone {
+    opacity: 0;
+  }
+
+  .icone-edicao {
+    font-size: 20px;
+  }
+
   .input-search {
     width: 50%;
     padding-right: 10px;
