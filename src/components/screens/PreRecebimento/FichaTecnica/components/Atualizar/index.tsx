@@ -62,11 +62,11 @@ export default () => {
   >([]);
   const [collapse, setCollapse] = useState<CollapseControl>({});
   const [ficha, setFicha] = useState<FichaTecnicaDetalhadaComAnalise>(
-    {} as FichaTecnicaDetalhadaComAnalise
+    {} as FichaTecnicaDetalhadaComAnalise,
   );
   const [initialValues, setInitialValues] = useState<Record<string, any>>({});
   const listaCompletaInformacoesNutricionais = useRef<InformacaoNutricional[]>(
-    []
+    [],
   );
   const listaInformacoesNutricionaisFichaTecnica = useRef<
     InformacaoNutricional[]
@@ -77,7 +77,7 @@ export default () => {
   ]);
   const [proponente, setProponente] =
     useState<TerceirizadaComEnderecoInterface>(
-      {} as TerceirizadaComEnderecoInterface
+      {} as TerceirizadaComEnderecoInterface,
     );
   const [fabricantesOptions, setFabricantesOptions] = useState<
     OptionsGenerico[]
@@ -89,7 +89,7 @@ export default () => {
     (async () => {
       await carregarUnidadesMedida(setUnidadesMedidaOptions);
       await carregaListaCompletaInformacoesNutricionais(
-        listaCompletaInformacoesNutricionais
+        listaCompletaInformacoesNutricionais,
       );
       await carregarFabricantes(setFabricantesOptions);
       await carregarDadosAtualizar(
@@ -99,7 +99,7 @@ export default () => {
         setArquivo,
         setProponente,
         setFabricantesCount,
-        setCarregando
+        setCarregando,
       );
     })();
   }, []);
@@ -381,7 +381,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalPositivoOuNegativo
+                                inteiroOuDecimalPositivoOuNegativo,
                               )}
                               disabled={true}
                             />
@@ -399,7 +399,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalPositivoOuNegativo
+                                inteiroOuDecimalPositivoOuNegativo,
                               )}
                               disabled={true}
                             />
@@ -546,7 +546,7 @@ export default () => {
                                     required
                                     validate={composeValidators(
                                       required,
-                                      inteiroOuDecimalComVirgula
+                                      inteiroOuDecimalComVirgula,
                                     )}
                                     disabled={true}
                                   />
@@ -594,7 +594,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalComVirgula
+                                inteiroOuDecimalComVirgula,
                               )}
                               disabled={true}
                             />
@@ -625,7 +625,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalComVirgula
+                                inteiroOuDecimalComVirgula,
                               )}
                               disabled={true}
                             />
@@ -670,7 +670,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalComVirgula
+                                inteiroOuDecimalComVirgula,
                               )}
                               disabled={true}
                             />
@@ -701,7 +701,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalComVirgula
+                                inteiroOuDecimalComVirgula,
                               )}
                               disabled={true}
                             />
@@ -746,7 +746,7 @@ export default () => {
                                 required
                                 validate={composeValidators(
                                   required,
-                                  inteiroOuDecimalComVirgula
+                                  inteiroOuDecimalComVirgula,
                                 )}
                                 disabled={true}
                               />
@@ -832,7 +832,6 @@ export default () => {
                           />
                         </div>
                       </div>
-                      {/* TODO: fazer o arquivo carregar */}
                       <div className="row mt-3">
                         <Field
                           component={InputFile}
@@ -911,14 +910,14 @@ export default () => {
                         fabricantesOptions,
                         fabricantesCount,
                         arquivo,
-                        password
+                        password,
                       );
 
                       atualizarAssinarFichaTecnica(
                         payload,
                         ficha,
                         setCarregando,
-                        navigate
+                        navigate,
                       );
                     }}
                     loading={carregando}

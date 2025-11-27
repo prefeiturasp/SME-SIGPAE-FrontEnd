@@ -20,12 +20,12 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação sem 
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/periodos-grupos-medicao/"
+        "/medicao-inicial/solicitacao-medicao-inicial/periodos-grupos-medicao/",
       )
       .reply(200, mockPeriodosGruposMedicaoSemLancamentoEMEFJunho2025);
     mock
       .onGet(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialSemLancamentoEMEFJunho2025.uuid}/`
+        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialSemLancamentoEMEFJunho2025.uuid}/`,
       )
       .reply(200, mockSolicitacaoMedicaoInicialSemLancamentoEMEFJunho2025);
     mock
@@ -44,14 +44,25 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação sem 
       .reply(200, []);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
       )
       .reply(200, []);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
+    localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
+
+    const search = `?uuid=${mockSolicitacaoMedicaoInicialSemLancamentoEMEFJunho2025.uuid}`;
+    Object.defineProperty(window, "location", {
+      value: {
+        search: search,
+      },
+    });
 
     await act(async () => {
       render(
@@ -68,19 +79,8 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação sem 
           }}
         >
           <ConferenciaDosLancamentosPage />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
-    });
-
-    Object.defineProperty(global, "localStorage", { value: localStorageMock });
-    localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
-    localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
-
-    const search = `?uuid=${mockSolicitacaoMedicaoInicialSemLancamentoEMEFJunho2025.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
     });
   });
 
@@ -94,17 +94,17 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação sem 
 
   it("Renderiza bloco da justificativa sem lançamentos", () => {
     expect(
-      screen.getByText("Unidade sem lançamentos no mês")
+      screen.getByText("Unidade sem lançamentos no mês"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Justificativa do envio da medição sem lançamentos:")
+      screen.getByText("Justificativa do envio da medição sem lançamentos:"),
     ).toBeInTheDocument();
     expect(screen.getByText("teste")).toBeInTheDocument();
   });
 
   it("Renderiza períodos sem lançamentos", () => {
     expect(
-      screen.getByText("Acompanhamento do lançamento")
+      screen.getByText("Acompanhamento do lançamento"),
     ).toBeInTheDocument();
 
     expect(screen.getByText("MANHA")).toBeInTheDocument();

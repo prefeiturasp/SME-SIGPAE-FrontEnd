@@ -183,6 +183,7 @@ export const ConferenciaDosLancamentos = () => {
     solicitacao &&
     solicitacao.ocorrencia &&
     ![
+      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
       "MEDICAO_ENVIADA_PELA_UE",
       "MEDICAO_CORRECAO_SOLICITADA",
       "MEDICAO_APROVADA_PELA_DRE",
@@ -194,6 +195,7 @@ export const ConferenciaDosLancamentos = () => {
     solicitacao &&
     solicitacao.ocorrencia &&
     ![
+      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
       "MEDICAO_APROVADA_PELA_DRE",
       "MEDICAO_CORRECAO_SOLICITADA_CODAE",
       "MEDICAO_APROVADA_PELA_CODAE",
@@ -233,6 +235,7 @@ export const ConferenciaDosLancamentos = () => {
       (usuarioEhDRE() || usuarioEhMedicao()) &&
       solicitacao &&
       solicitacao.status === "MEDICAO_CORRIGIDA_PARA_CODAE" &&
+      solicitacao?.ocorrencia.status !== "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" &&
       !solicitacao.dre_ciencia_correcao_data
     );
   };
@@ -295,7 +298,9 @@ export const ConferenciaDosLancamentos = () => {
       setAnoSolicitacao(ano);
       if (
         response.data.com_ocorrencias ||
-        response.data.ocorrencia?.status === "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
+        response.data.ocorrencia?.status ===
+          "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" ||
+        (!response.data.com_ocorrencias && response.data.ocorrencia !== null)
       ) {
         const arquivoPdfOcorrencia = response.data.ocorrencia;
         const logOcorrencia = arquivoPdfOcorrencia.logs.find((log) =>
@@ -330,6 +335,10 @@ export const ConferenciaDosLancamentos = () => {
       setErroAPI("Erro ao carregar Medição Inicial.");
     }
     dados_iniciais && setDadosIniciais(dados_iniciais);
+
+    if (!response.data.com_ocorrencias && !response.data.ocorrencia) {
+      setOcorrenciaExpandida(true);
+    }
   };
 
   const getListaDiasSobremesaDoceAsync = async () => {
@@ -439,7 +448,10 @@ export const ConferenciaDosLancamentos = () => {
       ) {
         setDesabilitarEnviarParaCodaeECodaeAprovar(true);
       } else {
-        if (solicitacao.com_ocorrencias) {
+        if (
+          solicitacao.com_ocorrencias ||
+          (!solicitacao.com_ocorrencias && ocorrencia)
+        ) {
           if (
             ocorrencia &&
             ((usuarioEhDRE() &&
@@ -505,7 +517,10 @@ export const ConferenciaDosLancamentos = () => {
             solicitacao.status,
           ))
       ) {
-        if (solicitacao.com_ocorrencias) {
+        if (
+          solicitacao.com_ocorrencias ||
+          (!solicitacao.com_ocorrencias && ocorrencia)
+        ) {
           if (
             ocorrencia &&
             ((usuarioEhDRE() &&
@@ -539,6 +554,22 @@ export const ConferenciaDosLancamentos = () => {
         }
       } else {
         setDesabilitarSolicitarCorrecao(true);
+      }
+
+      if (
+        usuarioEhDRE() &&
+        solicitacao?.status === "MEDICAO_CORRIGIDA_PELA_UE" &&
+        ocorrencia?.status === "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
+      ) {
+        setDesabilitarEnviarParaCodaeECodaeAprovar(false);
+      } else if (
+        usuarioEhMedicao() &&
+        ["MEDICAO_CORRIGIDA_PARA_CODAE", "MEDICAO_APROVADA_PELA_DRE"].includes(
+          solicitacao?.status,
+        ) &&
+        ocorrencia?.status === "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
+      ) {
+        setDesabilitarEnviarParaCodaeECodaeAprovar(false);
       }
     }
   }, [ocorrencia, solicitacao, periodosGruposMedicao]);
@@ -740,12 +771,20 @@ export const ConferenciaDosLancamentos = () => {
                                 Avaliação do Serviço:{" "}
                                 <b
                                   className={`${
+                                    (!solicitacao.com_ocorrencias &&
+                                      ocorrencia &&
+                                      ocorrencia.status !==
+                                        "OCORRENCIA_EXCLUIDA_PELA_ESCOLA") ||
                                     solicitacao.com_ocorrencias
                                       ? "value-avaliacao-servico-red"
                                       : "value-avaliacao-servico-green"
                                   }`}
                                 >
-                                  {solicitacao.com_ocorrencias
+                                  {(!solicitacao.com_ocorrencias &&
+                                    ocorrencia &&
+                                    ocorrencia.status !==
+                                      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA") ||
+                                  solicitacao.com_ocorrencias
                                     ? "COM OCORRÊNCIAS"
                                     : "SEM OCORRÊNCIAS"}
                                 </b>
@@ -780,14 +819,15 @@ export const ConferenciaDosLancamentos = () => {
                                         ].nome}
                                     </b>
                                   </span>
+
                                   {ocorrencia &&
                                   ocorrenciaExpandida &&
                                   !ocorrenciaExcluida() ? (
                                     <span
-                                      className="download-ocorrencias me-0"
+                                      className={`download-ocorrencias me-0 ${!ocorrencia?.ultimo_arquivo ? "disabled" : ""}`}
                                       onClick={() => {
                                         medicaoInicialExportarOcorrenciasPDF(
-                                          ocorrencia.ultimo_arquivo,
+                                          ocorrencia?.ultimo_arquivo,
                                         );
                                         usuarioEhMedicao() &&
                                           medicaoInicialExportarOcorrenciasXLSX(
@@ -820,35 +860,47 @@ export const ConferenciaDosLancamentos = () => {
                             )}
                           </div>
                           <div className="row">
-                            {((ocorrenciaExpandida && ocorrencia) ||
-                              ocorrenciaExcluida()) && (
-                              <Fragment>
-                                <div className="col-5 mt-3">
-                                  {usuarioEhDRE() &&
-                                    !ocorrenciaExcluida() &&
-                                    logCorrecaoOcorrencia &&
-                                    `${textoOcorrencia} ${logCorrecaoOcorrencia.criado_em}`}
-                                  {usuarioEhMedicao() &&
-                                    !ocorrenciaExcluida() &&
-                                    logCorrecaoOcorrenciaCODAE &&
-                                    `${textoOcorrencia} ${logCorrecaoOcorrenciaCODAE.criado_em}`}
-                                </div>
-                                <div className="col-7 text-end mt-3">
-                                  <Botao
-                                    texto="Histórico"
-                                    type={BUTTON_TYPE.BUTTON}
-                                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                                    onClick={visualizarModal}
-                                  />
-                                  {(exibirBotoesOcorrenciaDRE ||
-                                    exibirBotoesOcorrenciaCODAE) && (
-                                    <>
+                            <Fragment>
+                              <div className="col-5 mt-3">
+                                {usuarioEhDRE() &&
+                                  !ocorrenciaExcluida() &&
+                                  logCorrecaoOcorrencia &&
+                                  `${textoOcorrencia} ${logCorrecaoOcorrencia.criado_em}`}
+
+                                {usuarioEhMedicao() &&
+                                  !ocorrenciaExcluida() &&
+                                  logCorrecaoOcorrenciaCODAE &&
+                                  `${textoOcorrencia} ${logCorrecaoOcorrenciaCODAE.criado_em}`}
+                              </div>
+
+                              <div className="col-7 text-end mt-3">
+                                {(!solicitacao.com_ocorrencias && ocorrencia) ||
+                                (ocorrenciaExpandida && ocorrencia) ||
+                                ocorrenciaExcluida() ? (
+                                  <>
+                                    <Botao
+                                      texto="Histórico"
+                                      type={BUTTON_TYPE.BUTTON}
+                                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                                      onClick={visualizarModal}
+                                    />
+                                  </>
+                                ) : null}
+
+                                {(exibirBotoesOcorrenciaDRE ||
+                                  exibirBotoesOcorrenciaCODAE) && (
+                                  <>
+                                    {ocorrenciaExpandida ||
+                                    ocorrenciaExcluida() ? (
                                       <Botao
                                         className="mx-3"
                                         texto="Solicitar correção no formulário"
                                         type={BUTTON_TYPE.BUTTON}
                                         style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
                                         disabled={
+                                          (ocorrencia?.status ===
+                                            "MEDICAO_CORRECAO_SOLICITADA" &&
+                                            !solicitacao?.com_ocorrencias) ||
                                           desabilitarSolicitarCorrecaoOcorrenciaDRE ||
                                           desabilitarSolicitarCorrecaoOcorrenciaCODAE
                                         }
@@ -856,23 +908,31 @@ export const ConferenciaDosLancamentos = () => {
                                           setShowModalSalvarOcorrencia(true)
                                         }
                                       />
-                                      <Botao
-                                        texto="Aprovar formulário"
-                                        type={BUTTON_TYPE.BUTTON}
-                                        style={BUTTON_STYLE.GREEN}
-                                        disabled={
-                                          desabilitarAprovarOcorrenciaCODAE ||
-                                          desabilitarAprovarOcorrenciaDRE
-                                        }
-                                        onClick={() =>
-                                          setShowModalAprovarOcorrencia(true)
-                                        }
-                                      />
-                                    </>
-                                  )}
-                                </div>
-                              </Fragment>
-                            )}
+                                    ) : (
+                                      <></>
+                                    )}
+
+                                    {(ocorrenciaExpandida && ocorrencia) ||
+                                    ocorrenciaExcluida() ? (
+                                      <>
+                                        <Botao
+                                          texto="Aprovar formulário"
+                                          type={BUTTON_TYPE.BUTTON}
+                                          style={BUTTON_STYLE.GREEN}
+                                          disabled={
+                                            desabilitarAprovarOcorrenciaCODAE ||
+                                            desabilitarAprovarOcorrenciaDRE
+                                          }
+                                          onClick={() =>
+                                            setShowModalAprovarOcorrencia(true)
+                                          }
+                                        />
+                                      </>
+                                    ) : null}
+                                  </>
+                                )}
+                              </div>
+                            </Fragment>
                           </div>
                         </div>
                       </div>
@@ -1042,6 +1102,7 @@ export const ConferenciaDosLancamentos = () => {
           temJustificativa={true}
           ehCorrecao={true}
           tituloBotoes={["Cancelar", "Salvar"]}
+          solicitacao={solicitacao}
         />
         <ModalOcorrencia
           showModal={showModalAprovarOcorrencia}
