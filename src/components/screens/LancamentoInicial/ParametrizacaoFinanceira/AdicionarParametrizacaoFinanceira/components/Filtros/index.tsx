@@ -21,6 +21,7 @@ type Cadastro = {
   setEditalSelecionado: Dispatch<SetStateAction<string>>;
   setLoteSelecionado: Dispatch<SetStateAction<string>>;
   setFaixasEtarias: Dispatch<SetStateAction<Array<FaixaEtaria>>>;
+  setTiposAlimentacao: Dispatch<SetStateAction<Array<any>>>;
   setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
   setCarregarTabelas: Dispatch<SetStateAction<boolean>>;
   form: FormApi<any, any>;
@@ -40,6 +41,7 @@ export default (props: Props) => {
   const setEditalSelecionado = props.ehCadastro && props.setEditalSelecionado;
   const setLoteSelecionado = props.ehCadastro && props.setLoteSelecionado;
   const setFaixasEtarias = props.ehCadastro && props.setFaixasEtarias;
+  const setTiposAlimentacao = props.ehCadastro && props.setTiposAlimentacao;
   const setParametrizacao = props.ehCadastro && props.setParametrizacao;
   const setCarregarTabelas = props.ehCadastro && props.setCarregarTabelas;
   const form = props.ehCadastro && props.form;
@@ -50,6 +52,7 @@ export default (props: Props) => {
     setEditalSelecionado,
     setLoteSelecionado,
     setFaixasEtarias,
+    setTiposAlimentacao,
     setParametrizacao,
     uuidParametrizacao,
     form,

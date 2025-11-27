@@ -1,39 +1,37 @@
-import React from "react";
-import { Menu, LeafItem } from "./shared";
 import {
-  CONFIGURACOES,
   CADASTROS,
-  LOTE,
-  EMPRESA,
+  CONFIGURACOES,
   EDITAIS_CONTRATOS,
-  TIPOS_ALIMENTACAO,
+  EMPRESA,
+  FABRICANTES,
   FAIXAS_ETARIAS,
   HORARIO_COMBOS_ALIMENTACAO,
+  LABORATORIOS_CADASTRADOS,
+  LOTE,
+  MARCAS,
+  PRODUTOS,
+  RECREIO_NAS_FERIAS,
   SOBREMESA_DOCE,
   SUSPENSAO_ATIVIDADES,
-  LABORATORIOS_CADASTRADOS,
-  PRODUTOS,
+  TIPOS_ALIMENTACAO,
   TIPOS_EMBALAGENS,
   UNIDADES_MEDIDA,
-  MARCAS,
-  FABRICANTES,
-  RECREIO_NAS_FERIAS,
 } from "src/configs/constants";
 import {
   usuarioEhAdministradorCONTRATOS,
+  usuarioEhCodaeDilog,
   usuarioEhCODAEGestaoAlimentacao,
+  usuarioEhCODAEGestaoProduto,
   usuarioEhCronograma,
   usuarioEhDilogQualidade,
   usuarioEhDilogQualidadeOuCronograma,
-  usuarioEhEscolaTerceirizadaDiretor,
+  usuarioEhEmpresaFornecedor,
   usuarioEhEscolaTerceirizada,
+  usuarioEhEscolaTerceirizadaDiretor,
   usuarioEhLogistica,
   usuarioEhMedicao,
-  usuarioEhCodaeDilog,
-  usuarioEhEmpresaFornecedor,
 } from "src/helpers/utilities";
-import { usuarioEhCODAEGestaoProduto } from "../../../../helpers/utilities";
-import { ENVIRONMENT } from "src/constants/config";
+import { LeafItem, Menu } from "./shared";
 
 const MenuCadastros = () => {
   return (
@@ -96,13 +94,9 @@ const MenuCadastros = () => {
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${FAIXAS_ETARIAS}`}>
             Faixas Etárias
           </LeafItem>
-          {!ENVIRONMENT.includes("production") && (
-            <LeafItem
-              to={`/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`}
-            >
-              Recreio nas Férias
-            </LeafItem>
-          )}
+          <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${RECREIO_NAS_FERIAS}`}>
+            Recreio nas Férias
+          </LeafItem>
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`}>
             Sobremesa Doce
           </LeafItem>

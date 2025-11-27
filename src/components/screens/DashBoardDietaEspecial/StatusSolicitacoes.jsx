@@ -1,32 +1,31 @@
-import React from "react";
+import { Spin } from "antd";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { formValueSelector, reduxForm } from "redux-form";
-import { meusDados } from "../../../services/perfil.service";
-import { extrairStatusDaSolicitacaoURL } from "./helpers";
-import {
-  SOLICITACOES_PENDENTES,
-  SOLICITACOES_NEGADAS,
-  SOLICITACOES_AUTORIZADAS,
-  SOLICITACOES_CANCELADAS,
-  SOLICITACOES_AUTORIZADAS_TEMPORARIAMENTE,
-  SOLICITACOES_INATIVAS_TEMPORARIAMENTE,
-  SOLICITACOES_AGUARDANDO_INICIO_VIGENCIA,
-  SOLICITACOES_INATIVAS,
-} from "../../../configs/constants";
+import { reduxForm } from "redux-form";
+import CardListarSolicitacoes from "src/components/Shareable/CardListarSolicitacoes";
 import {
   CARD_TYPE_ENUM,
   ICON_CARD_TYPE_ENUM,
-} from "../../Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
-import { ajustarFormatoLog } from "../helper";
-import { InputSearchPendencias } from "../../Shareable/InputSearchPendencias";
-import CardListarSolicitacoes from "../../Shareable/CardListarSolicitacoes";
-import { Paginacao } from "../../Shareable/Paginacao";
+} from "src/components/Shareable/CardStatusDeSolicitacao/CardStatusDeSolicitacao";
+import { InputSearchPendencias } from "src/components/Shareable/InputSearchPendencias";
+import { Paginacao } from "src/components/Shareable/Paginacao";
+import {
+  SOLICITACOES_AGUARDANDO_INICIO_VIGENCIA,
+  SOLICITACOES_AUTORIZADAS,
+  SOLICITACOES_AUTORIZADAS_TEMPORARIAMENTE,
+  SOLICITACOES_CANCELADAS,
+  SOLICITACOES_INATIVAS,
+  SOLICITACOES_INATIVAS_TEMPORARIAMENTE,
+  SOLICITACOES_NEGADAS,
+  SOLICITACOES_PENDENTES,
+} from "src/configs/constants";
 import { getNomeCardAguardandoAutorizacao } from "src/helpers/dietaEspecial";
-import { getMeusLotes } from "src/services/lote.service";
 import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
-import { Spin } from "antd";
-import { resetCamposDieta } from "../../../reducers/filtersDietaReducer";
+import { resetCamposDieta } from "src/reducers/filtersDietaReducer";
+import { getMeusLotes } from "src/services/lote.service";
+import { meusDados } from "src/services/perfil.service";
+import { ajustarFormatoLog } from "../helper";
+import { extrairStatusDaSolicitacaoURL } from "./helpers";
 
 function StatusSolicitacoes(props) {
   const [instituicao, setInstituicao] = useState(null);
@@ -39,28 +38,14 @@ function StatusSolicitacoes(props) {
   const [icone, setIcone] = useState(null);
   const [titulo, setTitulo] = useState(null);
   const [solicitacoesFiltrados, setSolicitacoesFiltrados] = useState(null);
-  const [selecionarTodos, setSelecionarTodos] = useState(false);
   const [listaLotes, setListaLotes] = useState(null);
   const [filtrouInicial, setFiltroInicial] = useState(false);
   const [busca, setBusca] = useState({ offset: 0, limit: 10 });
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [propsDietaRedux, setPropsDietaRedux] = useState({});
-  let typingTimeout = null;
 
-  const selectTodos = (solicitacoes) => {
-    const novoEstadoSelecionarTodos = !selecionarTodos;
-    solicitacoes.forEach((_, key) => {
-      props.change(`check_${key}`, novoEstadoSelecionarTodos);
-    });
-    props.change("selecionar_todos", novoEstadoSelecionarTodos);
-    setSelecionarTodos(novoEstadoSelecionarTodos);
-    return novoEstadoSelecionarTodos;
-  };
-  const onCheckClicked = (solicitacoes, key, props) => {
-    solicitacoes[key].checked = !solicitacoes[key].checked;
-    props.change(`check_${key}`, solicitacoes[key].checked);
-  };
+  let typingTimeout = null;
 
   const onPesquisarChanged = (values) => {
     let params = busca;
@@ -132,8 +117,8 @@ function StatusSolicitacoes(props) {
         const response = await getMeusLotes();
         setListaLotes(
           [{ nome: "Selecione um lote", uuid: "" }].concat(
-            response.data.results
-          )
+            response.data.results,
+          ),
         );
       }
     };
@@ -150,7 +135,7 @@ function StatusSolicitacoes(props) {
 
   const updateSolicitacoesSemFiltro = (response, tipo) => {
     setListaSolicitacoesSemFiltro(
-      ajustarFormatoLog(response.data.results, tipo)
+      ajustarFormatoLog(response.data.results, tipo),
     );
   };
 
@@ -159,7 +144,7 @@ function StatusSolicitacoes(props) {
     params["offset"] = offset;
     const response = await getDietaEspecialAutorizadas(
       instituicao.uuid,
-      params
+      params,
     );
     updateSolicitacoesState(response, "autorizado", "Autorizadas");
     updateSolicitacoesSemFiltro(response, "autorizadas");
@@ -178,12 +163,12 @@ function StatusSolicitacoes(props) {
     params["offset"] = offset;
     const response = await getDietaEspecialPendenteAutorizacao(
       instituicao.uuid,
-      params
+      params,
     );
     updateSolicitacoesState(
       response,
       "pendente",
-      getNomeCardAguardandoAutorizacao()
+      getNomeCardAguardandoAutorizacao(),
     );
     updateSolicitacoesSemFiltro(response, "pendentes-aut");
   };
@@ -201,12 +186,12 @@ function StatusSolicitacoes(props) {
     params["offset"] = offset;
     const response = await getDietaEspecialAutorizadasTemporariamente(
       instituicao.uuid,
-      params
+      params,
     );
     updateSolicitacoesState(
       response,
       "autorizado",
-      "Autorizadas Temporariamente"
+      "Autorizadas Temporariamente",
     );
     updateSolicitacoesSemFiltro(response, "autorizadas-temp");
   };
@@ -216,12 +201,12 @@ function StatusSolicitacoes(props) {
     params["offset"] = offset;
     const response = await getDietaEspecialAguardandoVigencia(
       instituicao.uuid,
-      params
+      params,
     );
     updateSolicitacoesState(
       response,
       "aguardando_analise_reclamacao",
-      "Aguardando início da vigência"
+      "Aguardando início da vigência",
     );
     updateSolicitacoesSemFiltro(response, "aguardando-inicio-vigencia");
   };
@@ -231,12 +216,12 @@ function StatusSolicitacoes(props) {
     params["offset"] = offset;
     const response = await getDietaEspecialInativasTemporariamente(
       instituicao.uuid,
-      params
+      params,
     );
     updateSolicitacoesState(
       response,
       "aguardando_analise_reclamacao",
-      "Inativas Temporariamente"
+      "Inativas Temporariamente",
     );
     updateSolicitacoesSemFiltro(response, "inativas-temp");
   };
@@ -265,9 +250,7 @@ function StatusSolicitacoes(props) {
 
   const getSolicitacoesAsync = async (offset = 0) => {
     const handler = solicitacaoHandlers[tipoSolicitacao];
-    if (handler) {
-      handler(offset);
-    }
+    handler(offset);
   };
 
   useEffect(() => {
@@ -289,7 +272,7 @@ function StatusSolicitacoes(props) {
     }
   }, [solicitacoesFiltrados, filtrouInicial]);
 
-  const navegacaoPage = (multiploQuantidade, quantidadePorPagina) => {
+  const onPageChanged = (multiploQuantidade, quantidadePorPagina) => {
     setLoading(true);
     const offSet = quantidadePorPagina * (multiploQuantidade - 1);
     getSolicitacoesAsync(offSet);
@@ -317,14 +300,12 @@ function StatusSolicitacoes(props) {
               solicitacoes={solicitacoesFiltrados}
               tipo={tipoCard}
               icone={icone}
-              selecionarTodos={selectTodos}
-              onCheckClicked={onCheckClicked}
             />
           )}
           <Paginacao
             current={page}
             total={count}
-            onChange={(page) => navegacaoPage(page, 10)}
+            onChange={(page) => onPageChanged(page, 10)}
           />
         </Spin>
       </div>
@@ -337,13 +318,11 @@ const StatusSolicitacoesDietaEspecialForm = reduxForm({
   enableReinitialize: true,
 })(StatusSolicitacoes);
 
-const selector = formValueSelector("statusSolicitacoesDietaEspecialForm");
 const mapStateToProps = (state) => {
   const statusDieta = state.filtersDieta.statusDieta;
   const loteDieta = state.filtersDieta.loteDieta;
   const tituloDieta = state.filtersDieta.tituloDieta;
   return {
-    selecionar_todos: selector(state, "selecionar_todos"),
     statusDieta: statusDieta,
     loteDieta: loteDieta,
     tituloDieta: tituloDieta,
@@ -356,5 +335,5 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(StatusSolicitacoesDietaEspecialForm);

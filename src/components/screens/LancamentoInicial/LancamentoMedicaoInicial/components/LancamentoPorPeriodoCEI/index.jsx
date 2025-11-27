@@ -98,7 +98,7 @@ export const LancamentoPorPeriodoCEI = ({
 
   const gerarPDFMedicaoInicial = async () => {
     const response = await relatorioMedicaoInicialPDF(
-      solicitacaoMedicaoInicial.uuid
+      solicitacaoMedicaoInicial.uuid,
     );
     if (response.status === HTTP_STATUS.OK) {
       setExibirModalCentralDownloads(true);
@@ -110,7 +110,7 @@ export const LancamentoPorPeriodoCEI = ({
   useEffect(() => {
     let periodos = [
       ...new Set(
-        periodosEscolaSimples.map((periodo) => periodo.periodo_escolar.nome)
+        periodosEscolaSimples.map((periodo) => periodo.periodo_escolar.nome),
       ),
     ];
     if (
@@ -178,14 +178,13 @@ export const LancamentoPorPeriodoCEI = ({
 
   const getQuantidadeAlimentacoesLancadasPeriodoGrupoAsync = async () => {
     const params = { uuid_solicitacao: solicitacaoMedicaoInicial.uuid };
-    const response = await getQuantidadeAlimentacoesLancadasPeriodoGrupo(
-      params
-    );
+    const response =
+      await getQuantidadeAlimentacoesLancadasPeriodoGrupo(params);
     if (response.status === HTTP_STATUS.OK) {
       setQuantidadeAlimentacoesLancadas(response.data.results);
     } else {
       toastError(
-        "Erro ao carregar quantidades de alimentações lançadas. Tente novamente mais tarde."
+        "Erro ao carregar quantidades de alimentações lançadas. Tente novamente mais tarde.",
       );
     }
   };
@@ -199,7 +198,7 @@ export const LancamentoPorPeriodoCEI = ({
       setPeriodosInclusaoContinua(response.data.periodos);
     } else {
       setErroAPI(
-        "Erro ao carregar períodos de inclusão contínua. Tente novamente mais tarde."
+        "Erro ao carregar períodos de inclusão contínua. Tente novamente mais tarde.",
       );
     }
   };
@@ -218,7 +217,7 @@ export const LancamentoPorPeriodoCEI = ({
         setSolicitacoesKitLanchesAutorizadas(response.data.results);
       } else {
         setErroAPI(
-          "Erro ao carregar Kit Lanches CEMEI Autorizadas. Tente novamente mais tarde."
+          "Erro ao carregar Kit Lanches CEMEI Autorizadas. Tente novamente mais tarde.",
         );
       }
     }
@@ -237,11 +236,11 @@ export const LancamentoPorPeriodoCEI = ({
           await getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola(params);
         if (response.status === HTTP_STATUS.OK) {
           setSolicitacoesAlteracaoLancheEmergencialAutorizadas(
-            response.data.results
+            response.data.results,
           );
         } else {
           setErroAPI(
-            "Erro ao carregar Alteração de Lanche Emergencial CEMEI Autorizadas. Tente novamente mais tarde."
+            "Erro ao carregar Alteração de Lanche Emergencial CEMEI Autorizadas. Tente novamente mais tarde.",
           );
         }
       }
@@ -264,16 +263,16 @@ export const LancamentoPorPeriodoCEI = ({
       ehEmeiDaCemei(
         escolaInstituicao,
         periodosEscolaCemeiComAlunosEmei,
-        nomePeriodo
+        nomePeriodo,
       )
     ) {
       const periodo = periodosEscolaSimples.find(
         (p) =>
           `Infantil ${p.periodo_escolar.nome}` === nomePeriodo &&
-          p.tipo_unidade_escolar.iniciais === "EMEI"
+          p.tipo_unidade_escolar.iniciais === "EMEI",
       );
       tiposAlimentacao = periodo?.tipos_alimentacao.filter(
-        (alimentacao) => alimentacao.nome !== "Lanche Emergencial"
+        (alimentacao) => alimentacao.nome !== "Lanche Emergencial",
       );
     }
 
@@ -286,13 +285,13 @@ export const LancamentoPorPeriodoCEI = ({
       ehEmeiDaCemei(
         escolaInstituicao,
         periodosEscolaCemeiComAlunosEmei,
-        nomePeriodo
+        nomePeriodo,
       )
     ) {
       const periodo = periodosEscolaSimples.find(
         (p) =>
           `Infantil ${p.periodo_escolar.nome}` === nomePeriodo &&
-          p.tipo_unidade_escolar.iniciais === "EMEI"
+          p.tipo_unidade_escolar.iniciais === "EMEI",
       );
       uuidPeriodo = periodo?.periodo_escolar?.uuid;
     }
@@ -306,7 +305,7 @@ export const LancamentoPorPeriodoCEI = ({
       const periodoProgramasEProjetos = periodosEscolaSimples.find(
         (p) =>
           p.periodo_escolar.nome === periodo &&
-          p.tipo_unidade_escolar.iniciais === "EMEI"
+          p.tipo_unidade_escolar.iniciais === "EMEI",
       );
       if (periodoProgramasEProjetos) {
         const tipos = periodoProgramasEProjetos.tipos_alimentacao;
@@ -315,7 +314,7 @@ export const LancamentoPorPeriodoCEI = ({
     });
 
     return removeObjetosDuplicados(tiposAlimentacao, "nome").filter(
-      (alimentacao) => alimentacao.nome !== "Lanche Emergencial"
+      (alimentacao) => alimentacao.nome !== "Lanche Emergencial",
     );
   };
 
@@ -484,7 +483,7 @@ export const LancamentoPorPeriodoCEI = ({
                         onClick={() => setShowModalEnviarCorrecao(true)}
                         disabled={verificaSeEnviarCorrecaoDisabled(
                           quantidadeAlimentacoesLancadas,
-                          solicitacaoMedicaoInicial
+                          solicitacaoMedicaoInicial,
                         )}
                       />
                     )}

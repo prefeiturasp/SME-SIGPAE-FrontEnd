@@ -78,7 +78,7 @@ const FormFiltros = ({
         setNomeEscolas,
         setEscolas,
         setDiretoriasRegionais,
-        dadosUsuario
+        dadosUsuario,
       );
       const dadosIniciais = await getDadosIniciais(dadosUsuario);
       getAlunos(dadosIniciais);
@@ -114,6 +114,9 @@ const FormFiltros = ({
     }
     setCarregandoAluno(true);
     const resposta = await dadosDoAluno(codigoEol);
+    const uuidEscola = escolas.find(
+      (esc) => esc.codigo_eol === values.escola[0].split(" - ")[0],
+    );
     if (resposta.status !== 200) {
       setDesabilitarAluno(false);
       setDadosIniciais({ ...values, nome_aluno: "" });
@@ -121,7 +124,7 @@ const FormFiltros = ({
     } else if (resposta.status === 200) {
       if (
         tipoUsuario === TIPO_PERFIL.ESCOLA &&
-        resposta.data.escola.uuid !== values.escola[0]
+        resposta.data.escola.uuid !== uuidEscola.value
       ) {
         toastError("Código EOL do aluno não pertence a esta unidade escolar.");
         setDesabilitarAluno(false);
@@ -209,7 +212,7 @@ const FormFiltros = ({
                   ].concat(
                     diretoriasRegionais.map((dre) => {
                       return { uuid: dre.value, nome: dre.label };
-                    })
+                    }),
                   )}
                   disabled={
                     tipoUsuario === TIPO_PERFIL.DIRETORIA_REGIONAL ||

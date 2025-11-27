@@ -17,12 +17,17 @@ export default class CheckboxField extends Component {
       input: { checked },
       check,
       nomeInput,
+      dataTestId,
     } = this.props;
     return (
       <div className="checkbox-field-component">
         <label htmlFor="check" className="checkbox-label">
           <input type="checkbox" name={name} checked={check || checked} />
-          <span onClick={this.onClick} className="checkbox-field-span" />{" "}
+          <span
+            onClick={() => this.onClick()}
+            data-testid={dataTestId}
+            className="checkbox-field-span"
+          />{" "}
           {nomeInput ? <div>{nomeInput}</div> : texto || children}
         </label>
       </div>

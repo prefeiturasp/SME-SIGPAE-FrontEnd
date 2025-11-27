@@ -13,12 +13,14 @@ import { SelectOption } from "src/interfaces/option.interface";
 import { FormApi } from "final-form";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
 import { carregarValores } from "../../helpers";
+import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 
 type Props = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
   setEditalSelecionado: Dispatch<SetStateAction<string>>;
   setLoteSelecionado: Dispatch<SetStateAction<string>>;
   setFaixasEtarias: Dispatch<SetStateAction<Array<any>>>;
+  setTiposAlimentacao: Dispatch<SetStateAction<Array<any>>>;
   setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
   uuidParametrizacao: string;
   form: FormApi<any, any>;
@@ -29,6 +31,7 @@ export default ({
   setEditalSelecionado,
   setLoteSelecionado,
   setFaixasEtarias,
+  setTiposAlimentacao,
   setParametrizacao,
   uuidParametrizacao,
   form,
@@ -38,6 +41,7 @@ export default ({
   const [gruposUnidadesOpcoes, setGruposUnidadesOpcoes] = useState<
     SelectOption[]
   >([]);
+  const [tiposUnidades, setTiposUnidades] = useState<any[]>([]);
   const [carregando, setCarregando] = useState(true);
 
   const getEditaisAsync = async () => {
@@ -105,7 +109,7 @@ export default ({
       );
     } else {
       toastError(
-        "Erro ao carregar tipos de unidades. Tente novamente mais tarde.",
+        "Erro ao carregar grupos de unidade escolar. Tente novamente mais tarde.",
       );
     }
   };
@@ -121,6 +125,17 @@ export default ({
     }
   };
 
+  const getTiposUnidadeEscolarAsync = async () => {
+    try {
+      const { data } = await getTiposUnidadeEscolarTiposAlimentacao();
+      setTiposUnidades(data.results);
+    } catch {
+      toastError(
+        "Erro ao carregar tipos unidade escolar. Tente novamente mais tarde.",
+      );
+    }
+  };
+
   const requisicoesPreRender = async (): Promise<void> => {
     setCarregando(true);
     Promise.all([
@@ -128,6 +143,7 @@ export default ({
       getLotesAsync(),
       getGrupoUnidadeEscolarAsync(),
       setFaixasEtarias && getFaixasEtariasAsync(),
+      setTiposAlimentacao && getTiposUnidadeEscolarAsync(),
       uuidParametrizacao && getParametrizacao(uuidParametrizacao),
     ]).then(() => {
       setCarregando(false);
@@ -177,11 +193,48 @@ export default ({
 
   const initialGrupoUnidade =
     uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
+
   const onChangeTiposUnidades = (grupo: string) => {
     form.change("grupo_unidade_escolar", grupo);
-    setGrupoSelecionado(
-      gruposUnidadesOpcoes.find((e) => e.uuid === grupo).nome,
+    const selecionado = gruposUnidadesOpcoes.find((e) => e.uuid === grupo).nome;
+    setGrupoSelecionado(selecionado);
+
+    const match = selecionado.match(/\((.*?)\)/);
+    let unidades: string[] = [];
+    if (match && match[1]) {
+      const tipos = match[1].split(",");
+      unidades = tipos.map((item) => item.trim());
+    }
+
+    const tiposAlimentacaoUnidades: Array<SelectOption> = unidades.reduce(
+      (acc, tipoUnidade) => {
+        acc.push(
+          ...tiposUnidades
+            .find((t) => t.iniciais === tipoUnidade)
+            .periodos_escolares.reduce((acc, periodo) => {
+              acc.push(...periodo.tipos_alimentacao);
+              return acc;
+            }, []),
+        );
+        return acc;
+      },
+      [],
     );
+
+    const tiposAlimentacaoUnicos = {};
+
+    tiposAlimentacaoUnidades.forEach((tipoAlimentacao) => {
+      tiposAlimentacaoUnicos[tipoAlimentacao.uuid] = tipoAlimentacao.nome;
+    });
+
+    const tiposAlimentacao = Object.entries(tiposAlimentacaoUnicos).map(
+      ([uuid, nome]) => ({
+        uuid,
+        nome,
+      }),
+    );
+
+    setTiposAlimentacao(tiposAlimentacao);
   };
 
   useEffect(() => {
