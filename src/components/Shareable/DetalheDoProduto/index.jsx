@@ -115,7 +115,7 @@ const DetalheDoProduto = ({
             .filter((vinculo) =>
               status === "suspenso" || suspenso
                 ? vinculo.suspenso
-                : !vinculo.suspenso
+                : !vinculo.suspenso,
             )
             .map((vinculo) => vinculo.edital.numero)
             .join(", ")}
@@ -130,7 +130,7 @@ const DetalheDoProduto = ({
           <p>
             O produto se destina a alimentação de alunos com dieta especial?
           </p>
-          <p className="value">
+          <p className="value" data-testid="produto-dieta-especial">
             {produto.eh_para_alunos_com_dieta ? "SIM" : "NÃO"}
           </p>
         </div>
@@ -138,13 +138,13 @@ const DetalheDoProduto = ({
       <div className="row">
         <div className="col-6 report-label-value">
           <p>Marca</p>
-          <p className="value">
+          <p className="value" data-testid="produto-marca">
             {produto.marca ? produto.marca.nome : "Não possui marca"}
           </p>
         </div>
         <div className="col-6 report-label-value">
           <p>Fabricante</p>
-          <p className="value">
+          <p className="value" data-testid="produto-fabricante">
             {produto.fabricante
               ? produto.fabricante.nome
               : "Não possui fabricante"}
@@ -154,7 +154,7 @@ const DetalheDoProduto = ({
       <div className="row">
         <div className="col-12 report-label-value">
           <p>Componentes do produto</p>
-          <p className="value">
+          <p className="value" data-testid="produto-componentes">
             {produto.componentes || "Não possui componentes"}
           </p>
         </div>
@@ -164,7 +164,7 @@ const DetalheDoProduto = ({
           <p>
             O produto contém ou pode conter ingredientes/aditivos alergênicos?
           </p>
-          <p className="value">
+          <p className="value" data-testid="produto-com-aditivos">
             {produto.tem_aditivos_alergenicos ? "SIM" : "NÃO"}
           </p>
         </div>
@@ -188,7 +188,9 @@ const DetalheDoProduto = ({
       <div className="row">
         <div className="col-12 report-label-value">
           <p>O produto contém glúten?</p>
-          <p className="value">{produto.tem_gluten ? "SIM" : "NÃO"}</p>
+          <p className="value" data-testid="produto-com-gluten">
+            {produto.tem_gluten ? "SIM" : "NÃO"}
+          </p>
         </div>
       </div>
       <div className="mb-4 mt-4">
@@ -302,7 +304,7 @@ const DetalheDoProduto = ({
         </div>
       </div>
       {produto.embalagem ? (
-        <div className="row">
+        <div className="row" data-testid="produto-com-embalagem">
           <div className="col-6 report-label-value">
             <p>Embalagem primária</p>
             <p className="value">{produto.embalagem || "Sem embalagem"}</p>
