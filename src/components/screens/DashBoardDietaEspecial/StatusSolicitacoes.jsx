@@ -132,8 +132,8 @@ function StatusSolicitacoes(props) {
         const response = await getMeusLotes();
         setListaLotes(
           [{ nome: "Selecione um lote", uuid: "" }].concat(
-            response.data.results
-          )
+            response.data.results,
+          ),
         );
       }
     };
@@ -150,7 +150,7 @@ function StatusSolicitacoes(props) {
 
   const updateSolicitacoesSemFiltro = (response, tipo) => {
     setListaSolicitacoesSemFiltro(
-      ajustarFormatoLog(response.data.results, tipo)
+      ajustarFormatoLog(response.data.results, tipo),
     );
   };
 
@@ -159,7 +159,7 @@ function StatusSolicitacoes(props) {
     params["offset"] = offset;
     const response = await getDietaEspecialAutorizadas(
       instituicao.uuid,
-      params
+      params,
     );
     updateSolicitacoesState(response, "autorizado", "Autorizadas");
     updateSolicitacoesSemFiltro(response, "autorizadas");
@@ -178,12 +178,12 @@ function StatusSolicitacoes(props) {
     params["offset"] = offset;
     const response = await getDietaEspecialPendenteAutorizacao(
       instituicao.uuid,
-      params
+      params,
     );
     updateSolicitacoesState(
       response,
       "pendente",
-      getNomeCardAguardandoAutorizacao()
+      getNomeCardAguardandoAutorizacao(),
     );
     updateSolicitacoesSemFiltro(response, "pendentes-aut");
   };
@@ -201,12 +201,12 @@ function StatusSolicitacoes(props) {
     params["offset"] = offset;
     const response = await getDietaEspecialAutorizadasTemporariamente(
       instituicao.uuid,
-      params
+      params,
     );
     updateSolicitacoesState(
       response,
       "autorizado",
-      "Autorizadas Temporariamente"
+      "Autorizadas Temporariamente",
     );
     updateSolicitacoesSemFiltro(response, "autorizadas-temp");
   };
@@ -216,12 +216,12 @@ function StatusSolicitacoes(props) {
     params["offset"] = offset;
     const response = await getDietaEspecialAguardandoVigencia(
       instituicao.uuid,
-      params
+      params,
     );
     updateSolicitacoesState(
       response,
       "aguardando_analise_reclamacao",
-      "Aguardando início da vigência"
+      "Aguardando início da vigência",
     );
     updateSolicitacoesSemFiltro(response, "aguardando-inicio-vigencia");
   };
@@ -231,12 +231,12 @@ function StatusSolicitacoes(props) {
     params["offset"] = offset;
     const response = await getDietaEspecialInativasTemporariamente(
       instituicao.uuid,
-      params
+      params,
     );
     updateSolicitacoesState(
       response,
       "aguardando_analise_reclamacao",
-      "Inativas Temporariamente"
+      "Inativas Temporariamente",
     );
     updateSolicitacoesSemFiltro(response, "inativas-temp");
   };
@@ -356,5 +356,5 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(StatusSolicitacoesDietaEspecialForm);
