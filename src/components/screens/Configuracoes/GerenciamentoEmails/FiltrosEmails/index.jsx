@@ -87,6 +87,7 @@ export default (props) => {
 
                 <div className="emails-terceirizadas col-8">
                   <Field
+                    dataTestId="input-busca"
                     component={InputText}
                     name="buscar"
                     placeholder="Buscar Empresa ou E-mail cadastrado"

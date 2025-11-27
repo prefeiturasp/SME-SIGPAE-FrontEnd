@@ -50,6 +50,17 @@ describe("Testes do componente de Filtros de Emails - Gerenciamento Emails", () 
     });
   });
 
+  it("deve preencher o campo busca com um e-mail e onChange ser acionado", async () => {
+    const inputEmail = screen.getByTestId("input-busca");
+    fireEvent.change(inputEmail, {
+      target: { value: "teste@gmail.com" },
+    });
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalled();
+    });
+  });
+
   it("deve abrir o modal de inserção, preencher dados e salvar", async () => {
     mock.onPost("/emails-terceirizadas-modulos/").reply(201, {});
 
