@@ -14,7 +14,7 @@ import * as StatusSolicitacoesDietaEspecialPage from "src/pages/DietaEspecial/St
 import mock from "src/services/_mock";
 import { renderWithProvider } from "src/utils/test-utils";
 
-describe("Teste StatusSolicitacoes - Autorizados", () => {
+describe("Teste StatusSolicitacoes - Autorizados - CODAE", () => {
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
     mock
