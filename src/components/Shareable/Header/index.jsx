@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
 import { Link } from "react-router-dom";
 import { CENTRAL_DOWNLOADS } from "src/configs/constants";
@@ -11,11 +11,20 @@ import {
 import authService from "../../../services/auth";
 import DownloadsNavbar from "../DownloadsNavbar";
 import NotificacoesNavbar from "../NotificacoesNavbar";
+import { SidebarContent } from "src/components/Shareable/Sidebar/SidebarContent";
 import "./style.scss";
-import { SidebarContent } from "../Sidebar/SidebarContent";
 
 export const Header = ({ toggled }) => {
   const temaContext = useContext(TemaContext);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 992);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const sidebarContent = <SidebarContent />;
 
   const getTema = () => (temaContext.tema === temas.dark ? "dark" : "light");
 
@@ -40,13 +49,13 @@ export const Header = ({ toggled }) => {
             {ENVIRONMENT === "homolog" && retornaMarcaDagua("hom")}
             {ENVIRONMENT === "treinamento" && retornaMarcaDagua("tre")}
           </div>
-          <div className="d-lg-none">
+          {isMobile && (
             <Menu right>
               <div className="sidebar-wrapper div-submenu">
-                <SidebarContent />
+                {sidebarContent}
               </div>
             </Menu>
-          </div>
+          )}
           <div className="collapse navbar-collapse" id="navbarResponsive">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
