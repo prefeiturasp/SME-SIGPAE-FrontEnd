@@ -219,12 +219,13 @@ export const verificaSeEnviarCorrecaoDisabled = (
           "MEDICAO_CORRIGIDA_PARA_CODAE",
         ].includes(periodo.status),
     ) ||
-    (solicitacaoMedicaoInicial.com_ocorrencias &&
+    (solicitacaoMedicaoInicial.ocorrencia &&
       ![
         "MEDICAO_APROVADA_PELA_DRE",
         "MEDICAO_APROVADA_PELA_CODAE",
         "MEDICAO_CORRIGIDA_PELA_UE",
         "MEDICAO_CORRIGIDA_PARA_CODAE",
+        "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
       ].includes(solicitacaoMedicaoInicial.ocorrencia.status))
   );
 };
