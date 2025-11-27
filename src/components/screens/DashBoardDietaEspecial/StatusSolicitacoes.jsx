@@ -1,7 +1,7 @@
 import { Spin } from "antd";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { formValueSelector, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import CardListarSolicitacoes from "src/components/Shareable/CardListarSolicitacoes";
 import {
   CARD_TYPE_ENUM,
@@ -274,7 +274,7 @@ function StatusSolicitacoes(props) {
     }
   }, [solicitacoesFiltrados, filtrouInicial]);
 
-  const navegacaoPage = (multiploQuantidade, quantidadePorPagina) => {
+  const onPageChanged = (multiploQuantidade, quantidadePorPagina) => {
     setLoading(true);
     const offSet = quantidadePorPagina * (multiploQuantidade - 1);
     getSolicitacoesAsync(offSet);
@@ -307,7 +307,7 @@ function StatusSolicitacoes(props) {
           <Paginacao
             current={page}
             total={count}
-            onChange={(page) => navegacaoPage(page, 10)}
+            onChange={(page) => onPageChanged(page, 10)}
           />
         </Spin>
       </div>
@@ -320,13 +320,11 @@ const StatusSolicitacoesDietaEspecialForm = reduxForm({
   enableReinitialize: true,
 })(StatusSolicitacoes);
 
-const selector = formValueSelector("statusSolicitacoesDietaEspecialForm");
 const mapStateToProps = (state) => {
   const statusDieta = state.filtersDieta.statusDieta;
   const loteDieta = state.filtersDieta.loteDieta;
   const tituloDieta = state.filtersDieta.tituloDieta;
   return {
-    selecionar_todos: selector(state, "selecionar_todos"),
     statusDieta: statusDieta,
     loteDieta: loteDieta,
     tituloDieta: tituloDieta,
