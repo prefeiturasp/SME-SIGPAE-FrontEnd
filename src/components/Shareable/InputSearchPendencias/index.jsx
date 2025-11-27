@@ -112,6 +112,7 @@ export const InputSearchPendencias = (props) => {
                     <Field
                       component={Select}
                       options={listaStatus}
+                      dataTestId="div-select-conferencia-status"
                       name="status"
                       placeholder="Conferência Status"
                       naoDesabilitarPrimeiraOpcao
@@ -130,6 +131,7 @@ export const InputSearchPendencias = (props) => {
                       component={Select}
                       options={props.listaLotes}
                       name="lote"
+                      dataTestId="div-select-lote"
                       placeholder="Selecione um Lote"
                       naoDesabilitarPrimeiraOpcao
                       initialValue={
