@@ -100,8 +100,8 @@ export const DashboardDietaEspecial = ({ ...props }) => {
       setAguardandoAutorizacao(
         ajustarFormatoLog(
           responsePendenteAutorizacao.data.results,
-          "pendentes-aut"
-        )
+          "pendentes-aut",
+        ),
       );
       setCountRecebidas(responsePendenteAutorizacao.data.count);
     } else {
@@ -110,7 +110,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
 
     if (responseAutorizadas.status === HTTP_STATUS.OK) {
       setAutorizadas(
-        ajustarFormatoLog(responseAutorizadas.data.results, "autorizadas")
+        ajustarFormatoLog(responseAutorizadas.data.results, "autorizadas"),
       );
       setCountAutorizadas(responseAutorizadas.data.count);
     } else {
@@ -125,7 +125,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
 
     if (responseCanceladas.status === HTTP_STATUS.OK) {
       setCanceladas(
-        ajustarFormatoLog(responseCanceladas.data.results, "canceladas")
+        ajustarFormatoLog(responseCanceladas.data.results, "canceladas"),
       );
     } else {
       setErro("Erro ao carregar solicitações canceladas.");
@@ -141,8 +141,8 @@ export const DashboardDietaEspecial = ({ ...props }) => {
       setInativasTemporariamente(
         ajustarFormatoLog(
           responseInativasTemporariamente.data.results,
-          "inativas-temp"
-        )
+          "inativas-temp",
+        ),
       );
     } else {
       setErro("Erro ao carregar solicitações inativas temporariamente.");
@@ -152,8 +152,8 @@ export const DashboardDietaEspecial = ({ ...props }) => {
       setAutorizadasTemporariamente(
         ajustarFormatoLog(
           responseAutorizadasTemporariamente.data.results,
-          "autorizadas-temp"
-        )
+          "autorizadas-temp",
+        ),
       );
     } else {
       setErro("Erro ao carregar solicitações autorizadas temporariamente.");
@@ -170,8 +170,8 @@ export const DashboardDietaEspecial = ({ ...props }) => {
         setAguardandoVigencia(
           ajustarFormatoLog(
             responseAguardandoVigencia.data.results,
-            "aguardando-inicio-vigencia"
-          )
+            "aguardando-inicio-vigencia",
+          ),
         );
       } else {
         setErro("Erro ao carregar solicitações aguardando início de vigência.");
@@ -190,8 +190,8 @@ export const DashboardDietaEspecial = ({ ...props }) => {
       if (response.status === HTTP_STATUS.OK) {
         setListaLotes(
           [{ nome: "Selecione um lote", uuid: "" }].concat(
-            response.data.results
-          )
+            response.data.results,
+          ),
         );
       }
     }
@@ -260,7 +260,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
                     <CardStatusDeSolicitacao
                       cardTitle={`${contadorDietas(
                         getNomeCardAguardandoAutorizacao(),
-                        aguardandoAutorizacao
+                        aguardandoAutorizacao,
                       )}`}
                       cardType={CARD_TYPE_ENUM.PENDENTE}
                       solicitations={aguardandoAutorizacao}
@@ -273,7 +273,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
                     <CardStatusDeSolicitacao
                       cardTitle={`${contadorDietas(
                         "Autorizadas",
-                        autorizadas
+                        autorizadas,
                       )}`}
                       cardType={CARD_TYPE_ENUM.AUTORIZADO}
                       solicitations={autorizadas}

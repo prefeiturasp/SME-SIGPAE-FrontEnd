@@ -455,10 +455,16 @@ export const ConferenciaDosLancamentos = () => {
           if (
             ocorrencia &&
             ((usuarioEhDRE() &&
-              ocorrencia.status === "MEDICAO_APROVADA_PELA_DRE" &&
+              [
+                "MEDICAO_APROVADA_PELA_DRE",
+                "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
+              ].includes(ocorrencia.status) &&
               todosPeriodosGruposAprovadosDRE) ||
               (usuarioEhMedicao() &&
-                ocorrencia.status === "MEDICAO_APROVADA_PELA_CODAE" &&
+                [
+                  "MEDICAO_APROVADA_PELA_CODAE",
+                  "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
+                ].includes(ocorrencia.status) &&
                 todosPeriodosGruposAprovadosCODAE))
           ) {
             setDesabilitarEnviarParaCodaeECodaeAprovar(false);
@@ -554,22 +560,6 @@ export const ConferenciaDosLancamentos = () => {
         }
       } else {
         setDesabilitarSolicitarCorrecao(true);
-      }
-
-      if (
-        usuarioEhDRE() &&
-        solicitacao?.status === "MEDICAO_CORRIGIDA_PELA_UE" &&
-        ocorrencia?.status === "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
-      ) {
-        setDesabilitarEnviarParaCodaeECodaeAprovar(false);
-      } else if (
-        usuarioEhMedicao() &&
-        ["MEDICAO_CORRIGIDA_PARA_CODAE", "MEDICAO_APROVADA_PELA_DRE"].includes(
-          solicitacao?.status,
-        ) &&
-        ocorrencia?.status === "OCORRENCIA_EXCLUIDA_PELA_ESCOLA"
-      ) {
-        setDesabilitarEnviarParaCodaeECodaeAprovar(false);
       }
     }
   }, [ocorrencia, solicitacao, periodosGruposMedicao]);
@@ -981,9 +971,16 @@ export const ConferenciaDosLancamentos = () => {
                                 getPeriodosGruposMedicaoAsync()
                               }
                               periodosGruposMedicao={periodosGruposMedicao}
-                              setOcorrenciaExpandida={() =>
-                                setOcorrenciaExpandida(false)
-                              }
+                              setOcorrenciaExpandida={() => {
+                                if (
+                                  !solicitacao.com_ocorrencias &&
+                                  !solicitacao.ocorrencia
+                                ) {
+                                  setOcorrenciaExpandida(true);
+                                } else {
+                                  setOcorrenciaExpandida(false);
+                                }
+                              }}
                               solicitacao={solicitacao}
                               feriadosNoMes={feriadosNoMes}
                               diasCalendario={diasCalendario}
