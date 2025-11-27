@@ -971,9 +971,16 @@ export const ConferenciaDosLancamentos = () => {
                                 getPeriodosGruposMedicaoAsync()
                               }
                               periodosGruposMedicao={periodosGruposMedicao}
-                              setOcorrenciaExpandida={() =>
-                                setOcorrenciaExpandida(false)
-                              }
+                              setOcorrenciaExpandida={() => {
+                                if (
+                                  !solicitacao.com_ocorrencias &&
+                                  !solicitacao.ocorrencia
+                                ) {
+                                  setOcorrenciaExpandida(true);
+                                } else {
+                                  setOcorrenciaExpandida(false);
+                                }
+                              }}
                               solicitacao={solicitacao}
                               feriadosNoMes={feriadosNoMes}
                               diasCalendario={diasCalendario}
