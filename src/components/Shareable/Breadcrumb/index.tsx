@@ -33,7 +33,7 @@ export default function Breadcrumb({
 
   return (
     <div className="breadcrumb-row row g-0">
-      <div className="col-10">
+      <div className="col-xs-9 col-sm-10">
         <ul className="br-breadcrumb">
           <li>
             <Link className={`home ${!atual && "is-active"}`} to={home}>
@@ -65,7 +65,7 @@ export default function Breadcrumb({
         </ul>
       </div>
       <div
-        className="col-2 text-end contrast"
+        className="col-xs-3 col-sm-2 text-end contrast"
         onClick={() => {
           temaContext.mudarTema();
         }}

@@ -144,6 +144,7 @@ export interface EtapaFicha {
   houve_reposicao: boolean;
   fichas_recebimento?: FichaRecebimentoEtapaSimplificada[];
   foi_recebida: boolean;
+  unidade_medida: string;
 }
 
 export interface CronogramaFicha {

@@ -1,19 +1,44 @@
-import React, { useContext } from "react";
+import HTTP_STATUS from "http-status-codes";
+import { useContext, useEffect, useState } from "react";
+import { slide as Menu } from "react-burger-menu";
 import { Link } from "react-router-dom";
-import authService from "../../../services/auth";
-import "./style.scss";
-import { ENVIRONMENT } from "src/constants/config";
-import NotificacoesNavbar from "../NotificacoesNavbar";
-import DownloadsNavbar from "../DownloadsNavbar";
+import { SidebarContent } from "src/components/Shareable/Sidebar/SidebarContent";
 import { CENTRAL_DOWNLOADS } from "src/configs/constants";
+import { ENVIRONMENT } from "src/constants/config";
+import { TemaContext, temas } from "src/context/TemaContext";
 import {
   usuarioEhEscolaAbastecimento,
   usuarioEhEscolaAbastecimentoDiretor,
 } from "src/helpers/utilities";
-import { temas, TemaContext } from "src/context/TemaContext";
+import { getAPIVersion } from "src/services/api.service";
+import authService from "../../../services/auth";
+import DownloadsNavbar from "../DownloadsNavbar";
+import NotificacoesNavbar from "../NotificacoesNavbar";
+import "./style.scss";
 
 export const Header = ({ toggled }) => {
   const temaContext = useContext(TemaContext);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+  const [apiVersion, setApiVersion] = useState("");
+
+  const getAPIVersionAsync = async () => {
+    const response = await getAPIVersion();
+    if (response.status === HTTP_STATUS.OK) {
+      setApiVersion(response.data.API_Version);
+    }
+  };
+
+  useEffect(() => {
+    getAPIVersionAsync();
+  }, [apiVersion]);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 992);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const sidebarContent = <SidebarContent />;
 
   const getTema = () => (temaContext.tema === temas.dark ? "dark" : "light");
 
@@ -38,18 +63,47 @@ export const Header = ({ toggled }) => {
             {ENVIRONMENT === "homolog" && retornaMarcaDagua("hom")}
             {ENVIRONMENT === "treinamento" && retornaMarcaDagua("tre")}
           </div>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarResponsive"
-            aria-controls="navbarResponsive"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
+          {isMobile && (
+            <Menu right>
+              <div className="sidebar-wrapper div-submenu">
+                {sidebarContent}
+              </div>
+              <div className="row">
+                <div className="col-12 pe-4 text-end">
+                  <ul className="links-header mt-4">
+                    {!usuarioEhEscolaAbastecimento() &&
+                      !usuarioEhEscolaAbastecimentoDiretor() && (
+                        <li>
+                          <Link to={`/${CENTRAL_DOWNLOADS}`}>
+                            <p className="title">Downloads</p>
+                          </Link>
+                        </li>
+                      )}
+                    <li onClick={() => authService.logout()}>
+                      <p className="title">Sair</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
 
+              <div className="text-center page-footer mx-auto justify-content-center mb-1 pb-2">
+                <img
+                  src="/assets/image/logo-sme-branco.svg"
+                  className="rounded logo-sme"
+                  alt="SME Educação"
+                />
+                {apiVersion && (
+                  <div className="sidebar-wrapper">
+                    <div className="text-center mx-auto justify-content-center p-2 conteudo-detalhes">
+                      <span className="text-white small">
+                        Licença AGPL V3 (API: {apiVersion})
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Menu>
+          )}
           <div className="collapse navbar-collapse" id="navbarResponsive">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">

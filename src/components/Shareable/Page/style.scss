@@ -52,3 +52,11 @@
     max-width: 600px !important;
   }
 }
+
+@media screen and (max-width: 991px) {
+  #content-wrapper {
+    div.content-wrapper-div {
+      margin-left: 0;
+    }
+  }
+}
