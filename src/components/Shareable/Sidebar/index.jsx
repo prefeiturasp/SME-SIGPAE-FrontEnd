@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import retornaAvatar from "src/helpers/retornaAvatar";
+import { getAPIVersion } from "src/services/api.service";
+import { labelSidebar } from "./helpers";
 import { SidebarContent } from "./SidebarContent";
 import "./style.scss";
-import { getAPIVersion } from "src/services/api.service";
-import retornaAvatar from "src/helpers/retornaAvatar";
-import { labelSidebar } from "./helpers";
 
 export const Sidebar = ({ ...props }) => {
   const [apiVersion, setApiVersion] = useState("");
@@ -24,7 +24,7 @@ export const Sidebar = ({ ...props }) => {
   }, [apiVersion]);
 
   return (
-    <div>
+    <div className="d-none d-sm-none d-md-none d-lg-block">
       <div className="mb-5" />
       <ul
         className={`navbar-nav bg-gradiente-sme sidebar sidebar-dark accordion ps-2 pt-5
