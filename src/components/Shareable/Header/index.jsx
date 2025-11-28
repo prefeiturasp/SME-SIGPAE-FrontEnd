@@ -68,6 +68,34 @@ export const Header = ({ toggled }) => {
               <div className="sidebar-wrapper div-submenu">
                 {sidebarContent}
               </div>
+              <div className="row">
+                <div className="col-12 pe-4 text-end">
+                  <ul className="links-header mt-4">
+                    <li>
+                      <Link
+                        to="/ajuda"
+                        state={{
+                          prevPath: window.location.pathname,
+                        }}
+                      >
+                        <p className="title">Ajuda</p>
+                      </Link>
+                    </li>
+                    {!usuarioEhEscolaAbastecimento() &&
+                      !usuarioEhEscolaAbastecimentoDiretor() && (
+                        <li>
+                          <Link to={`/${CENTRAL_DOWNLOADS}`}>
+                            <p className="title">Downloads</p>
+                          </Link>
+                        </li>
+                      )}
+                    <li onClick={() => authService.logout()}>
+                      <p className="title">Sair</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
               <div className="text-center page-footer mx-auto justify-content-center mb-1 pb-2">
                 <img
                   src="/assets/image/logo-sme-branco.svg"

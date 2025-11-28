@@ -222,5 +222,21 @@ nav.navbar {
       width: 100%;
       margin-bottom: 5em !important;
     }
+
+    ul.links-header {
+      li {
+        list-style: none;
+        p {
+          font-size: 12px;
+          font-family: Roboto !important;
+          color: $white;
+          font-weight: bold;
+        }
+
+        img {
+          width: 28px;
+        }
+      }
+    }
   }
 }
