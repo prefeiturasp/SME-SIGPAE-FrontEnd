@@ -72,6 +72,7 @@ import {
   CronogramaFicha,
   DocumentoFicha,
   DocumentoFichaPayload,
+  EtapaFicha,
   FichaRecebimentoPayload,
   OcorrenciaFichaRecebimento,
   QuestoesPayload,
@@ -167,10 +168,10 @@ export default () => {
     }
   };
 
-  const getOpcoesEtapas = () => {
+  const getOpcoesEtapas = () : EtapaFicha[] => {
     let options = [];
 
-    cronograma.etapas?.forEach((etapa) => {
+    cronograma.etapas?.forEach((etapa : EtapaFicha) => {
       if (
         etapa.desvinculada_recebimento ||
         (!initialValues.etapa &&
@@ -188,6 +189,7 @@ export default () => {
           }`,
           data_programada: etapa.data_programada,
           houve_ocorrencia: etapa.houve_ocorrencia,
+          unidade_medida: etapa.unidade_medida,
         });
       }
     });
@@ -206,6 +208,7 @@ export default () => {
         }`,
         data_programada: initialValues.etapa.data_programada,
         houve_ocorrencia: false,
+        unidade_medida: initialValues.etapa.unidade_medida,
       };
       if (initialValues.reposicao_cronograma) obj["houve_ocorrencia"] = true;
       options.push(obj);
@@ -1204,7 +1207,7 @@ export default () => {
                                           <td className="borda-crono">
                                             {formataMilharDecimal(
                                               doc.saldo_laudo,
-                                            )}
+                                            )} {etapaSelecionada?.unidade_medida}
                                           </td>
                                           <td className="borda-crono">
                                             <Field
