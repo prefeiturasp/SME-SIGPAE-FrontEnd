@@ -2,8 +2,6 @@
 
 .card-body {
   &.card-enrolled {
-    padding: 15px 35px !important;
-
     .title {
       display: block;
       font-size: 12px;
@@ -40,6 +38,17 @@
       color: #a8a8a8;
       span {
         color: #853cb6;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .card-body {
+    &.card-enrolled {
+      .beside-text {
+        padding-top: 0.5rem;
+        padding-left: 0;
       }
     }
   }
