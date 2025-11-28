@@ -14,7 +14,11 @@ export const Checkbox = (props) => {
           name={input.name}
           data-cy={input.name}
         />
-        <span onClick={onClick} className={`checkbox-custom ${className}`} />{" "}
+        <span
+          onClick={onClick}
+          className={`checkbox-custom ${className}`}
+          data-testid="checkbox-custom"
+        />{" "}
         {texto ? (
           <span className={classNameTexto}>{texto}</span>
         ) : (

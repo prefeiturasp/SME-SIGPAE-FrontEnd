@@ -16,7 +16,7 @@ import {
   getDietaEspecialPendenteAutorizacaoCODAE,
 } from "src/services/dashBoardDietaEspecial.service";
 import { renderWithProvider } from "src/utils/test-utils";
-import DashboardDietaEspecial from "..";
+import DashboardDietaEspecial from "../..";
 
 jest.mock("src/services/dashBoardDietaEspecial.service");
 jest.mock("src/services/produto.service");
@@ -94,7 +94,7 @@ describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialCancel
               getDietaEspecialInativas={getDietaEspecialInativasCODAE}
             />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -102,7 +102,7 @@ describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialCancel
   it("renderiza label `Erro ao carregar solicitações canceladas.`", async () => {
     await awaitServices();
     expect(
-      screen.getByText("Erro ao carregar solicitações canceladas.")
+      screen.getByText("Erro ao carregar solicitações canceladas."),
     ).toBeInTheDocument();
   });
 });

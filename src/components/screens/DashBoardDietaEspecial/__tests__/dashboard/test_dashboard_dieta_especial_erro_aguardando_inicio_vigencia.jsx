@@ -19,7 +19,7 @@ import {
 } from "src/services/dashBoardDietaEspecial.service";
 import { getNomesUnicosEditais } from "src/services/produto.service";
 import { renderWithProvider } from "src/utils/test-utils";
-import DashboardDietaEspecial from "..";
+import DashboardDietaEspecial from "../..";
 
 jest.mock("src/services/dashBoardDietaEspecial.service");
 jest.mock("src/services/produto.service");
@@ -113,7 +113,7 @@ describe("Test <DashboardDietaEpecial> - Visão Escola", () => {
               getDietaEspecialInativas={getDietaEspecialInativasEscola}
             />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -122,8 +122,8 @@ describe("Test <DashboardDietaEpecial> - Visão Escola", () => {
     await awaitServices();
     expect(
       screen.getByText(
-        "Erro ao carregar solicitações aguardando início de vigência."
-      )
+        "Erro ao carregar solicitações aguardando início de vigência.",
+      ),
     ).toBeInTheDocument();
   });
 });

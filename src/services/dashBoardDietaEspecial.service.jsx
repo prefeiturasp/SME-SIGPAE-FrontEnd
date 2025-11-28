@@ -11,7 +11,7 @@ const authToken = {
 // ESCOLA
 export const getDietaEspecialPendenteAutorizacaoEscola = async (
   uuid,
-  params
+  params,
 ) => {
   let url = `${API_URL}/escola-solicitacoes/pendentes-autorizacao-dieta/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -50,7 +50,7 @@ export const getDietaEspecialCanceladasEscola = async (uuid, params) => {
 
 export const getDietaEspecialAutorizadasTemporariamenteEscola = async (
   uuid,
-  params
+  params,
 ) => {
   const url = `${API_URL}/escola-solicitacoes/autorizadas-temporariamente-dieta/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -62,7 +62,7 @@ export const getDietaEspecialAutorizadasTemporariamenteEscola = async (
 
 export const getDietaEspecialAguardandoVigenciaEscola = async (
   uuid,
-  params
+  params,
 ) => {
   const url = `${API_URL}/escola-solicitacoes/aguardando-vigencia-dieta/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -74,7 +74,7 @@ export const getDietaEspecialAguardandoVigenciaEscola = async (
 
 export const getDietaEspecialInativasTemporariamenteEscola = async (
   uuid,
-  params
+  params,
 ) => {
   const url = `${API_URL}/escola-solicitacoes/inativas-temporariamente-dieta/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -132,7 +132,7 @@ export const getDietaEspecialCanceladasDRE = async (uuid, params) => {
 
 export const getDietaEspecialAutorizadasTemporariamenteDRE = async (
   uuid,
-  params
+  params,
 ) => {
   const url = `${API_URL}/diretoria-regional-solicitacoes/autorizadas-temporariamente-dieta/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -144,7 +144,7 @@ export const getDietaEspecialAutorizadasTemporariamenteDRE = async (
 
 export const getDietaEspecialInativasTemporariamenteDRE = async (
   uuid,
-  params
+  params,
 ) => {
   const url = `${API_URL}/diretoria-regional-solicitacoes/inativas-temporariamente-dieta/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -202,7 +202,7 @@ export const getDietaEspecialCanceladasCODAE = async (_, params) => {
 
 export const getDietaEspecialAutorizadasTemporariamenteCODAE = async (
   _,
-  params
+  params,
 ) => {
   const url = `${API_URL}/codae-solicitacoes/autorizadas-temporariamente-dieta/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -214,7 +214,7 @@ export const getDietaEspecialAutorizadasTemporariamenteCODAE = async (
 
 export const getDietaEspecialInativasTemporariamenteCODAE = async (
   _,
-  params
+  params,
 ) => {
   const url = `${API_URL}/codae-solicitacoes/inativas-temporariamente-dieta/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -236,7 +236,7 @@ export const getDietaEspecialInativasCODAE = async (_, params) => {
 // TERCEIRIZADA
 export const getDietaEspecialPendenteAutorizacaoTerceirizada = async (
   uuid,
-  params
+  params,
 ) => {
   const url = `${API_URL}/terceirizada-solicitacoes/pendentes-autorizacao-dieta/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -275,7 +275,7 @@ export const getDietaEspecialCanceladasTerceirizada = async (uuid, params) => {
 
 export const getDietaEspecialAutorizadasTemporariamenteTerceirizada = async (
   uuid,
-  params
+  params,
 ) => {
   const url = `${API_URL}/terceirizada-solicitacoes/autorizadas-temporariamente-dieta/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -287,7 +287,7 @@ export const getDietaEspecialAutorizadasTemporariamenteTerceirizada = async (
 
 export const getDietaEspecialInativasTemporariamenteTerceirizada = async (
   uuid,
-  params
+  params,
 ) => {
   const url = `${API_URL}/terceirizada-solicitacoes/inativas-temporariamente-dieta/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -308,7 +308,7 @@ export const getDietaEspecialInativasTerceirizada = async (uuid, params) => {
 
 export const getDietaEspecialAguardandoVigenciaTerceirizada = async (
   uuid,
-  params
+  params,
 ) => {
   const url = `${API_URL}/terceirizada-solicitacoes/aguardando-vigencia-dieta/${uuid}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -321,7 +321,7 @@ export const getDietaEspecialAguardandoVigenciaTerceirizada = async (
 export const getPaginacaoSolicitacoesDietaEspecial = (
   urlPaginacao,
   uuidInstituicao,
-  offSet
+  offSet,
 ) => {
   const url = `${API_URL}/${urlPaginacao}/${uuidInstituicao}/?limit=10${
     offSet > 0 ? `&offset=${offSet}` : "/"
@@ -336,13 +336,13 @@ export const getPaginacaoSolicitacoesDietaEspecial = (
       return result.json();
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
 };
 
 export const getPaginacaoSolicitacoesDietaEspecialCODAE = (
   urlPaginacao,
-  offSet
+  offSet,
 ) => {
   const url = `${API_URL}/${urlPaginacao}/?limit=10${
     offSet > 0 ? `&offset=${offSet}` : ""
@@ -357,6 +357,6 @@ export const getPaginacaoSolicitacoesDietaEspecialCODAE = (
       return result.json();
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
 };
