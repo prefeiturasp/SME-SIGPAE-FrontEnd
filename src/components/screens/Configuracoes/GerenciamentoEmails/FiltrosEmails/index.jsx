@@ -74,6 +74,7 @@ export default (props) => {
               <div className="row">
                 <div className="btn-add-emails col-4">
                   <Botao
+                    dataTestId="botao-adicionar"
                     texto="Adicionar E-mails"
                     type={BUTTON_TYPE.BUTTON}
                     style={BUTTON_STYLE.GREEN}
@@ -86,6 +87,7 @@ export default (props) => {
 
                 <div className="emails-terceirizadas col-8">
                   <Field
+                    dataTestId="input-busca"
                     component={InputText}
                     name="buscar"
                     placeholder="Buscar Empresa ou E-mail cadastrado"
@@ -112,8 +114,11 @@ export default (props) => {
                     <form>
                       <div>
                         <div>
-                          <label className="mb-1">Empresa</label>
+                          <label className="mb-1" htmlFor="select-empresa">
+                            Empresa
+                          </label>
                           <Field
+                            id="select-empresa"
                             component={Select}
                             placeholder="Selecione uma empresa cadastrada"
                             name="empresa"
@@ -127,6 +132,7 @@ export default (props) => {
                         <div className="mt-4">
                           <label className="mb-1">E-mail</label>
                           <Field
+                            dataTestId="input-email"
                             component={InputText}
                             name="email"
                             placeholder="Digite o e-mail de contato"
@@ -139,6 +145,7 @@ export default (props) => {
                   </Modal.Body>
                   <Modal.Footer>
                     <Botao
+                      dataTestId="botao-cancelar"
                       texto="Cancelar"
                       type={BUTTON_TYPE.BUTTON}
                       onClick={() => {
@@ -150,6 +157,7 @@ export default (props) => {
                       className="ms-3"
                     />
                     <Botao
+                      dataTestId="botao-salvar"
                       texto="Adicionar"
                       type={BUTTON_TYPE.SUBMIT}
                       onClick={() => {
