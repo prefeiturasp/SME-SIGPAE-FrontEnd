@@ -19,17 +19,9 @@ import {
   BUTTON_STYLE,
 } from "src/components/Shareable/Botao/constants";
 import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
-import {
-  toastError,
-  toastSuccess,
-} from "src/components/Shareable/Toast/dialogs";
-import {
-  analiseCodaeLayoutEmbalagem,
-  detalharLayoutEmbalagem,
-} from "src/services/layoutEmbalagem.service";
+import { detalharLayoutEmbalagem } from "src/services/layoutEmbalagem.service";
 
 import ModalCancelarAnalise from "./components/ModalCancelarAnalise";
-import ModalEnviarAnalise from "./components/ModalEnviarAnalise";
 import ModalCancelarCorrecao from "./components/ModalCancelarCorrecao";
 import "./styles.scss";
 
@@ -44,7 +36,6 @@ export default () => {
   const [aprovacoes, setAprovacoes] = useState([]);
   const [modais, setModais] = useState([]);
   const [modalCancelar, setModalCancelar] = useState(false);
-  const [modalEnviar, setModalEnviar] = useState(false);
   const [initialValues, setInitialValues] = useState({});
 
   const visaoCODAE = usuarioComAcessoAoPainelEmbalagens();
@@ -224,64 +215,6 @@ export default () => {
       </div>
     ));
 
-  const onSubmit = () => {
-    setModalEnviar(true);
-  };
-
-  const getAprovacao = (index) => {
-    if (aprovacoes[index] === true) {
-      return "APROVADO";
-    } else if (aprovacoes[index] === false) {
-      return "REPROVADO";
-    }
-  };
-
-  const formataPayload = (values) => {
-    let payload = {};
-
-    payload.tipos_de_embalagens = [];
-
-    payload.tipos_de_embalagens.push({
-      tipo_embalagem: "PRIMARIA",
-      status: getAprovacao(0),
-      complemento_do_status: values[`justificativa_${0}`],
-    });
-    if (embalagemSecundaria.length > 0) {
-      payload.tipos_de_embalagens.push({
-        tipo_embalagem: "SECUNDARIA",
-        status: getAprovacao(1),
-        complemento_do_status: values[`justificativa_${1}`],
-      });
-    }
-    if (embalagemTerciaria.length > 0) {
-      payload.tipos_de_embalagens.push({
-        tipo_embalagem: "TERCIARIA",
-        status: getAprovacao(2),
-        complemento_do_status: values[`justificativa_${2}`],
-      });
-    }
-
-    return payload;
-  };
-
-  const enviarAnalise = async (values) => {
-    setCarregando(true);
-    let payload = formataPayload(values);
-    try {
-      let response = await analiseCodaeLayoutEmbalagem(objeto.uuid, payload);
-      if (response.status === 201 || response.status === 200) {
-        setCarregando(false);
-        toastSuccess("Sua avaliação foi enviada com sucesso!");
-        voltarPaginaPainel();
-      } else {
-        toastError("Ocorreu um erro ao analisar o Layout da Embalagem");
-        setCarregando(false);
-      }
-    } catch (error) {
-      toastError(error, "Ocorreu um erro ao analisar o Layout da Embalagem");
-    }
-  };
-
   useEffect(() => {
     carregarDados();
   }, []);
@@ -358,7 +291,7 @@ export default () => {
 
           {!carregando && (
             <Form
-              onSubmit={onSubmit}
+              onSubmit={() => {}}
               initialValues={initialValues}
               render={({ handleSubmit, values }) => (
                 <form onSubmit={handleSubmit}>
@@ -366,11 +299,6 @@ export default () => {
                     show={modalCancelar}
                     handleClose={() => setModalCancelar(false)}
                     cancelar={voltarPaginaPainel}
-                  />
-                  <ModalEnviarAnalise
-                    show={modalEnviar}
-                    handleClose={() => setModalEnviar(false)}
-                    enviar={() => enviarAnalise(values)}
                   />
 
                   {renderizarTipoEmbalagem(

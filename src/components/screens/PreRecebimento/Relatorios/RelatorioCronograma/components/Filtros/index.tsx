@@ -164,10 +164,10 @@ const Filtros: React.FC<Props> = ({
               />
             </div>
 
-            <div className="col-4 mt-2">
+            <div className="col-3 mt-2">
               <Field
                 component={InputComData}
-                label="Filtrar por Período"
+                label="Filtrar por Período de Entrega"
                 name="data_inicial"
                 className="data-field-cronograma"
                 placeholder="DE"
@@ -176,6 +176,9 @@ const Filtros: React.FC<Props> = ({
                   values.data_final
                     ? moment(values.data_final, "DD/MM/YYYY").toDate()
                     : null
+                }
+                tooltipText={
+                  "Ao selecionar as datas serão exibidas apenas as etapas de entrega correspondentes ao período selecionado."
                 }
               />
             </div>
