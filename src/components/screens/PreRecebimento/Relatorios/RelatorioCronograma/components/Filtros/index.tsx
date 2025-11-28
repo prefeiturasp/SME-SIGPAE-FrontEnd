@@ -164,7 +164,7 @@ const Filtros: React.FC<Props> = ({
               />
             </div>
 
-            <div className="col-4 mt-2">
+            <div className="col-3 mt-2">
               <Field
                 component={InputComData}
                 label="Filtrar por Período de Entrega"
