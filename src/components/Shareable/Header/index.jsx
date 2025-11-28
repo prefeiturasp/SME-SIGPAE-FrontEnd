@@ -71,16 +71,6 @@ export const Header = ({ toggled }) => {
               <div className="row">
                 <div className="col-12 pe-4 text-end">
                   <ul className="links-header mt-4">
-                    <li>
-                      <Link
-                        to="/ajuda"
-                        state={{
-                          prevPath: window.location.pathname,
-                        }}
-                      >
-                        <p className="title">Ajuda</p>
-                      </Link>
-                    </li>
                     {!usuarioEhEscolaAbastecimento() &&
                       !usuarioEhEscolaAbastecimentoDiretor() && (
                         <li>
