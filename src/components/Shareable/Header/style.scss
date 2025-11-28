@@ -169,6 +169,10 @@ Note: Beware of modifying this element as it can break the animations - you shou
 
 nav.navbar {
   div.bm-menu-wrap {
+    .page-footer {
+      margin-top: 40%;
+    }
+
     li.nav-item {
       font-weight: bold;
       .collapse-item {

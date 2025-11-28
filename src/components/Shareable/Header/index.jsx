@@ -1,6 +1,8 @@
+import HTTP_STATUS from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
 import { Link } from "react-router-dom";
+import { SidebarContent } from "src/components/Shareable/Sidebar/SidebarContent";
 import { CENTRAL_DOWNLOADS } from "src/configs/constants";
 import { ENVIRONMENT } from "src/constants/config";
 import { TemaContext, temas } from "src/context/TemaContext";
@@ -8,15 +10,27 @@ import {
   usuarioEhEscolaAbastecimento,
   usuarioEhEscolaAbastecimentoDiretor,
 } from "src/helpers/utilities";
+import { getAPIVersion } from "src/services/api.service";
 import authService from "../../../services/auth";
 import DownloadsNavbar from "../DownloadsNavbar";
 import NotificacoesNavbar from "../NotificacoesNavbar";
-import { SidebarContent } from "src/components/Shareable/Sidebar/SidebarContent";
 import "./style.scss";
 
 export const Header = ({ toggled }) => {
   const temaContext = useContext(TemaContext);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+  const [apiVersion, setApiVersion] = useState("");
+
+  const getAPIVersionAsync = async () => {
+    const response = await getAPIVersion();
+    if (response.status === HTTP_STATUS.OK) {
+      setApiVersion(response.data.API_Version);
+    }
+  };
+
+  useEffect(() => {
+    getAPIVersionAsync();
+  }, [apiVersion]);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 992);
@@ -53,6 +67,22 @@ export const Header = ({ toggled }) => {
             <Menu right>
               <div className="sidebar-wrapper div-submenu">
                 {sidebarContent}
+              </div>
+              <div className="text-center page-footer mx-auto justify-content-center mb-1 pb-2">
+                <img
+                  src="/assets/image/logo-sme-branco.svg"
+                  className="rounded logo-sme"
+                  alt="SME Educação"
+                />
+                {apiVersion && (
+                  <div className="sidebar-wrapper">
+                    <div className="text-center mx-auto justify-content-center p-2 conteudo-detalhes">
+                      <span className="text-white small">
+                        Licença AGPL V3 (API: {apiVersion})
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
             </Menu>
           )}
