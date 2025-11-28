@@ -135,7 +135,6 @@ Note: Beware of modifying this element as it can break the animations - you shou
   height: 100%;
   margin-top: 1.5em;
   font-size: 12px;
-  font-weight: bold !important;
   font-family: Roboto !important;
   list-style: none;
 }
@@ -171,6 +170,10 @@ Note: Beware of modifying this element as it can break the animations - you shou
 nav.navbar {
   div.bm-menu-wrap {
     li.nav-item {
+      font-weight: bold;
+      .collapse-item {
+        font-weight: normal;
+      }
       i {
         padding-right: 1em;
       }
@@ -185,6 +188,42 @@ nav.navbar {
       content: "\f078";
       font-family: "Font Awesome 5 Free";
       float: right;
+    }
+
+    .sidebar-wrapper
+      .nav-item
+      .bg-white.collapse-inner.rounded
+      .collapse-item:not(:hover):not(:last-child) {
+      border-bottom: 1px solid #00c855;
+    }
+
+    .sidebar-wrapper .nav-item .bg-white.collapse-inner.rounded .collapse-item {
+      color: #686868;
+      text-align: left;
+      word-break: break-all;
+      margin-left: 0;
+      margin-right: 0;
+      border-radius: 0;
+    }
+
+    .nav-item .collapse .collapse-inner .collapse-item,
+    .nav-item .collapsing .collapse-inner .collapse-item {
+      padding: 0.5rem 1rem;
+      margin: 0 0.5rem;
+      display: block;
+      color: #3a3b45;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .collapse.show {
+      padding: 0.5rem;
+    }
+
+    .collapse-item {
+      i {
+        float: right;
+      }
     }
   }
 }
