@@ -242,4 +242,34 @@ describe("Relatório Cronograma - Integração", () => {
       expect(recebidos.length).toBe(3);
     });
   });
+
+  it("Deve renderizar filtro de situação com as 3 opções corretas", async () => {
+    await waitFor(() => {
+      expect(screen.getByText("Filtrar por Situação")).toBeInTheDocument();
+    });
+
+    const filtroSituacao = screen.getByText("Selecione as situações");
+    await act(async () => {
+      fireEvent.click(filtroSituacao);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Recebido")).toBeInTheDocument();
+      expect(screen.getByText("Ocorrência")).toBeInTheDocument();
+      expect(screen.getByText("A Receber")).toBeInTheDocument();
+    });
+
+    const opcaoRecebido = screen.getByText("Recebido");
+    await act(async () => {
+      fireEvent.click(opcaoRecebido);
+    });
+
+    await clicarBotaoFiltrar();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Total de Cronogramas Criados"),
+      ).toBeInTheDocument();
+    });
+  });
 });
