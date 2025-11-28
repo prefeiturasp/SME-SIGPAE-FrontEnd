@@ -16,7 +16,7 @@ import {
   getDietaEspecialPendenteAutorizacaoCODAE,
 } from "src/services/dashBoardDietaEspecial.service";
 import { renderWithProvider } from "src/utils/test-utils";
-import DashboardDietaEspecial from "..";
+import DashboardDietaEspecial from "../..";
 
 jest.mock("src/services/dashBoardDietaEspecial.service");
 jest.mock("src/services/produto.service");
@@ -33,9 +33,13 @@ const awaitServices = async () => {
   });
 };
 
-describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialInativasTemporariamente", () => {
+describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialInativas", () => {
   beforeEach(async () => {
-    getDietaEspecialInativasTemporariamenteCODAE.mockResolvedValue({
+    getDietaEspecialPendenteAutorizacaoCODAE.mockResolvedValue({
+      data: mockDietasPendentesAutorizacao,
+      status: 200,
+    });
+    getDietaEspecialInativasCODAE.mockResolvedValue({
       data: [],
       status: 400,
     });
@@ -43,7 +47,8 @@ describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialInativ
       data: mockDietasPendentesAutorizacao,
       status: 200,
     });
-    getDietaEspecialAutorizadasCODAE.mockResolvedValue({
+
+    getDietaEspecialNegadasCODAE.mockResolvedValue({
       data: mockDietasPendentesAutorizacao,
       status: 200,
     });
@@ -51,15 +56,11 @@ describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialInativ
       data: mockDietasPendentesAutorizacao,
       status: 200,
     });
-    getDietaEspecialInativasCODAE.mockResolvedValue({
+    getDietaEspecialInativasTemporariamenteCODAE.mockResolvedValue({
       data: mockDietasPendentesAutorizacao,
       status: 200,
     });
-    getDietaEspecialPendenteAutorizacaoCODAE.mockResolvedValue({
-      data: mockDietasPendentesAutorizacao,
-      status: 200,
-    });
-    getDietaEspecialNegadasCODAE.mockResolvedValue({
+    getDietaEspecialAutorizadasCODAE.mockResolvedValue({
       data: mockDietasPendentesAutorizacao,
       status: 200,
     });
@@ -93,17 +94,15 @@ describe("Test <DashboardDietaEpecial> - erro no endpoint getDietaEspecialInativ
               getDietaEspecialInativas={getDietaEspecialInativasCODAE}
             />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
-  it("renderiza label `Erro ao carregar solicitações inativas temporariamente.`", async () => {
+  it("renderiza label `Erro ao carregar solicitações inativas.`", async () => {
     await awaitServices();
     expect(
-      screen.getByText(
-        "Erro ao carregar solicitações inativas temporariamente."
-      )
+      screen.getByText("Erro ao carregar solicitações inativas."),
     ).toBeInTheDocument();
   });
 });

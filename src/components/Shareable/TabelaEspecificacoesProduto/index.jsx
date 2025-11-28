@@ -16,7 +16,7 @@ export const TabelaEspecificacoesProduto = (props) => {
   return (
     props.especificacoes &&
     props.especificacoes.length > 0 && (
-      <div className="row">
+      <div className="row" data-testid="produto-tabela">
         <div className="col-12">
           {renderLabel ? (
             <label>Informações referentes ao volume e unidade de medida</label>

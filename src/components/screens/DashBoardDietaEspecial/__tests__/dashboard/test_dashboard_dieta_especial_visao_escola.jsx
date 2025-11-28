@@ -19,7 +19,7 @@ import {
 } from "src/services/dashBoardDietaEspecial.service";
 import { getNomesUnicosEditais } from "src/services/produto.service";
 import { renderWithProvider } from "src/utils/test-utils";
-import DashboardDietaEspecial from "..";
+import DashboardDietaEspecial from "../..";
 
 jest.mock("src/services/dashBoardDietaEspecial.service");
 jest.mock("src/services/produto.service");
@@ -113,7 +113,7 @@ describe("Test <DashboardDietaEpecial> - Visão Escola", () => {
               getDietaEspecialInativas={getDietaEspecialInativasEscola}
             />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -127,15 +127,15 @@ describe("Test <DashboardDietaEpecial> - Visão Escola", () => {
     await awaitServices();
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
   it("renderiza texto `Acompanhamento de solicitações dieta especial`", async () => {
     await awaitServices();
     expect(
-      screen.getByText("Acompanhamento de solicitações dieta especial")
+      screen.getByText("Acompanhamento de solicitações dieta especial"),
     ).toBeInTheDocument();
   });
 
@@ -147,33 +147,33 @@ describe("Test <DashboardDietaEpecial> - Visão Escola", () => {
   it("renderiza alunos em `Aguardando Autorização`", async () => {
     await awaitServices();
     const cardAguardandoAutorizacao = screen.getByTestId(
-      `card-aguardando-autorizacao`
+      `card-aguardando-autorizacao`,
     );
     expect(cardAguardandoAutorizacao).toHaveTextContent(
-      "9999999 - JOAO BATISTA - 7H"
+      "9999999 - JOAO BATISTA - 7H",
     );
     expect(cardAguardandoAutorizacao).toHaveTextContent(
-      "9999998 - MARIA DA SILVA - 7G"
+      "9999998 - MARIA DA SILVA - 7G",
     );
   });
 
   it("renderiza label `Aguardando início da vigência`", async () => {
     await awaitServices();
     expect(
-      screen.getByText("Aguardando início da vigência")
+      screen.getByText("Aguardando início da vigência"),
     ).toBeInTheDocument();
   });
 
   it("renderiza alunos em `Aguardando início da vigência`", async () => {
     await awaitServices();
     const cardAguardandoInicioDeVigencia = screen.getByTestId(
-      `card-aguardando-inicio-vigencia`
+      `card-aguardando-inicio-vigencia`,
     );
     expect(cardAguardandoInicioDeVigencia).toHaveTextContent(
-      "9999999 - JOAO BATISTA - 7H"
+      "9999999 - JOAO BATISTA - 7H",
     );
     expect(cardAguardandoInicioDeVigencia).toHaveTextContent(
-      "9999998 - MARIA DA SILVA - 7G"
+      "9999998 - MARIA DA SILVA - 7G",
     );
   });
 
@@ -183,7 +183,7 @@ describe("Test <DashboardDietaEpecial> - Visão Escola", () => {
 
     expect(cardsAtalhosEscola).toHaveTextContent("Inclusão de Dieta Especial");
     expect(cardsAtalhosEscola).toHaveTextContent(
-      "Quando houver necessidade de incluir Dieta Especial para os alunos matriculados na unidade."
+      "Quando houver necessidade de incluir Dieta Especial para os alunos matriculados na unidade.",
     );
   });
 
@@ -192,10 +192,10 @@ describe("Test <DashboardDietaEpecial> - Visão Escola", () => {
     const cardsAtalhosEscola = screen.getByTestId(`cards-atalhos-escola`);
 
     expect(cardsAtalhosEscola).toHaveTextContent(
-      "Alterar U.E da Dieta Especial"
+      "Alterar U.E da Dieta Especial",
     );
     expect(cardsAtalhosEscola).toHaveTextContent(
-      "Quando houver necessidade de alteração de unidade escolar do aluno para os programas Polo e Recreio nas Férias."
+      "Quando houver necessidade de alteração de unidade escolar do aluno para os programas Polo e Recreio nas Férias.",
     );
   });
 
@@ -205,7 +205,7 @@ describe("Test <DashboardDietaEpecial> - Visão Escola", () => {
 
     expect(cardsAtalhosEscola).toHaveTextContent("Cancelar Dieta Especial");
     expect(cardsAtalhosEscola).toHaveTextContent(
-      "Quando houver necessidade de cancelamento de dieta devido a existência de laudo de alta."
+      "Quando houver necessidade de cancelamento de dieta devido a existência de laudo de alta.",
     );
   });
 });
