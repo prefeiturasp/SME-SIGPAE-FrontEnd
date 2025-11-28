@@ -45,3 +45,10 @@ input:-moz-placeholder {
     }
   }
 }
+
+@media only screen and (max-width: 767px) {
+  .div-card-status-solicitacao {
+    padding-left: 0;
+    padding-top: 1rem;
+  }
+}
