@@ -175,7 +175,7 @@ export const DashboardEscola = () => {
             </>
           )}
           <div className="row row-shortcuts">
-            <div className="col-md-3 col-sm-6 col-12">
+            <div className="col-md-3 col-sm-6 col-12 card-atalho">
               <CardAtalho
                 titulo={"Inclusão de Alimentação"}
                 nome="card-inclusao"
@@ -188,7 +188,7 @@ export const DashboardEscola = () => {
                 href={"/escola/inclusao-de-alimentacao"}
               />
             </div>
-            <div className="col-md-3 col-sm-6 col-12">
+            <div className="col-md-3 col-sm-6 col-12 card-atalho">
               <CardAtalho
                 titulo={"Alteração do Tipo de Alimentação"}
                 nome="card-alteracao"
@@ -201,7 +201,7 @@ export const DashboardEscola = () => {
                 href={"/escola/alteracao-do-tipo-de-alimentacao"}
               />
             </div>
-            <div className="col-md-3 col-sm-6 col-12">
+            <div className="col-md-3 col-sm-6 col-12 card-atalho">
               <CardAtalho
                 titulo={"Kit Lanche Passeio"}
                 nome="card-kit-lanche"
@@ -215,7 +215,7 @@ export const DashboardEscola = () => {
                 href="/escola/solicitacao-de-kit-lanche"
               />
             </div>
-            <div className="col-md-3 col-sm-6 col-12">
+            <div className="col-md-3 col-sm-6 col-12 card-atalho">
               <CardAtalho
                 titulo={"Inversão de dia de Cardápio"}
                 nome="card-inversao"
@@ -229,7 +229,7 @@ export const DashboardEscola = () => {
             </div>
           </div>
           <div className="row">
-            <div className="col-md-3 col-sm-6 col-12">
+            <div className="col-md-3 col-sm-6 col-12 card-atalho">
               <CardAtalho
                 titulo={"Suspensão de Alimentação"}
                 nome="card-suspensao"
