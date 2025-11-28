@@ -76,7 +76,7 @@ export const InputSearchPendencias = (props) => {
                       props.propsProduto && props.propsProduto.editalProduto
                     }
                     options={[{ label: "Número do Edital", value: "" }].concat(
-                      props.editais
+                      props.editais,
                     )}
                     onChange={(value) => {
                       form.change("edital", value);
@@ -91,6 +91,7 @@ export const InputSearchPendencias = (props) => {
                 component={InputText}
                 name="titulo"
                 placeholder="Pesquisar"
+                dataTestIdDiv="div-input-pesquisar"
                 disabled={props.disabled}
                 initialValue={
                   (props.propsDieta && props.propsDieta.tituloDieta) ||
@@ -111,6 +112,7 @@ export const InputSearchPendencias = (props) => {
                     <Field
                       component={Select}
                       options={listaStatus}
+                      dataTestId="div-select-conferencia-status"
                       name="status"
                       placeholder="Conferência Status"
                       naoDesabilitarPrimeiraOpcao
@@ -129,6 +131,7 @@ export const InputSearchPendencias = (props) => {
                       component={Select}
                       options={props.listaLotes}
                       name="lote"
+                      dataTestId="div-select-lote"
                       placeholder="Selecione um Lote"
                       naoDesabilitarPrimeiraOpcao
                       initialValue={
