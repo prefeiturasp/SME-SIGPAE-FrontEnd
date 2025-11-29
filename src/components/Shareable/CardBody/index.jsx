@@ -1,24 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { Form, Field } from "react-final-form";
-import { Select } from "src/components/Shareable/Select";
-import InputText from "src/components/Shareable/Input/InputText";
-import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 import { Spin } from "antd";
+import { useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
+import { connect } from "react-redux";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import InputText from "src/components/Shareable/Input/InputText";
+import { ASelect } from "src/components/Shareable/MakeField";
+import { Select } from "src/components/Shareable/Select";
 import { TIPOS_SOLICITACOES_OPTIONS } from "src/constants/shared";
-import { InputComData } from "./DatePicker";
-import { ASelect } from "./MakeField";
-import { getNomesUnicosEditais } from "src/services/produto.service";
-import {
-  updateStatusDieta,
-  updateTituloDieta,
-  updateLoteDieta,
-} from "src/reducers/filtersDietaReducer";
-import {
-  updateMarcaProduto,
-  updateNomeProduto,
-  updateEditalProduto,
-} from "src/reducers/filtersProdutoReducer";
+import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 import {
   updateDataEventoAlimentacao,
   updateLoteAlimentacao,
@@ -26,6 +15,18 @@ import {
   updateTipoSolicitacaoAlimentacao,
   updateTituloAlimentacao,
 } from "src/reducers/filtersAlimentacaoReducer";
+import {
+  updateLoteDieta,
+  updateStatusDieta,
+  updateTituloDieta,
+} from "src/reducers/filtersDietaReducer";
+import {
+  updateEditalProduto,
+  updateMarcaProduto,
+  updateNomeProduto,
+} from "src/reducers/filtersProdutoReducer";
+import { getNomesUnicosEditais } from "src/services/produto.service";
+import "./style.scss";
 
 const CardBody = (props) => {
   const [editais, setEditais] = useState([]);
@@ -61,10 +62,10 @@ const CardBody = (props) => {
                       ehTerceirizada && props.listaStatus && props.listaLotes
                         ? "col-3"
                         : ehDashboardGestaoProduto
-                        ? "col-12 text-end"
-                        : exibirFiltrosDataEventoETipoSolicitacao
-                        ? "col-3 px-0"
-                        : "col-6"
+                          ? "col-12 text-end"
+                          : exibirFiltrosDataEventoETipoSolicitacao
+                            ? "col-12 col-sm-6 col-md-6 col-lg-3 px-0"
+                            : "col-12 col-sm-6"
                     }`}
                   >
                     <span>{props.titulo}</span>
@@ -74,7 +75,7 @@ const CardBody = (props) => {
                   </div>
 
                   {ehDashboardGestaoProduto && (
-                    <div className="col-4 produtos-edital">
+                    <div className="col-12 col-md-4 produtos-edital">
                       {loadingDietas && (
                         <div>
                           <Spin
@@ -92,7 +93,7 @@ const CardBody = (props) => {
                         options={
                           editais
                             ? [{ label: "Número do Edital", value: "" }].concat(
-                                editais
+                                editais,
                               )
                             : []
                         }
@@ -110,11 +111,11 @@ const CardBody = (props) => {
                       ehTerceirizada && props.listaStatus && props.listaLotes
                         ? "offset-3 col-6"
                         : exibirFiltrosDataEventoETipoSolicitacao
-                        ? "col-3"
-                        : ehDashboardGestaoProduto
-                        ? "col-4"
-                        : "offset-3 col-3"
-                    }`}
+                          ? "col-12 col-sm-6 col-md-3"
+                          : ehDashboardGestaoProduto
+                            ? "col-4"
+                            : "offset-3 col-3"
+                    } div-input-pesquisar`}
                   >
                     {loadingDietas && (
                       <div>
@@ -153,7 +154,7 @@ const CardBody = (props) => {
                   </div>
                   {exibirFiltrosDataEventoETipoSolicitacao && (
                     <>
-                      <div className={"col-3 ps-0"}>
+                      <div className="col-12 col-sm-6 col-md-3 ps-0 div-select-tipo-solicitacao">
                         <Field
                           component={Select}
                           name="tipo_solicitacao"
@@ -170,7 +171,7 @@ const CardBody = (props) => {
                           }}
                         />
                       </div>
-                      <div className="col-3 ps-0">
+                      <div className="col-12 col-sm-6 col-md-3 ps-0 div-input-data-evento">
                         <Field
                           name="data_evento"
                           minDate={null}
