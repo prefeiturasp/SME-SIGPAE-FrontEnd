@@ -13,7 +13,8 @@
   flex-direction: row;
 
   .ckbox-motivo-alteracao-ue,
-  .ckbox-recreio-nas-ferias {
+  .ckbox-recreio-nas-ferias,
+  .ckbox-outro {
     margin-right: 12px;
 
     &:hover {
@@ -21,7 +22,8 @@
     }
   }
 
-  .ckbox-recreio-nas-ferias {
+  .ckbox-recreio-nas-ferias,
+  .ckbox-outro {
     margin-left: 48px;
   }
 
