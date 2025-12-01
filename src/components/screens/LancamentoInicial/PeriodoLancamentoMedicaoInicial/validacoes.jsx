@@ -764,6 +764,19 @@ const validaFrequenciaDietasEscolaSemAlunosRegulares = (
   return false;
 };
 
+const somarAlunosPorAlimentacao = (inclusoes, dia, alimentacao) => {
+  return inclusoes
+    .filter(
+      (i) =>
+        i.dia === dia &&
+        i.alimentacoes
+          .split(",")
+          .map((s) => s.trim())
+          .includes(alimentacao),
+    )
+    .reduce((acc, item) => acc + (item.numero_alunos || 0), 0);
+};
+
 export const validacoesTabelasDietas = (
   categoriasDeMedicao,
   rowName,
@@ -791,6 +804,17 @@ export const validacoesTabelasDietas = (
   const maxFrequenciaAlimentacao = Number(
     allValues[`frequencia__dia_${dia}__categoria_${idCategoriaAlimentacao}`],
   );
+  const quantidadeLancheInclusaoAutorizadoNoDia = somarAlunosPorAlimentacao(
+    inclusoesAutorizadas,
+    dia,
+    "lanche",
+  );
+  const quantidadeLanche4hInclusaoAutorizadoNoDia = somarAlunosPorAlimentacao(
+    inclusoesAutorizadas,
+    dia,
+    "lanche_4h",
+  );
+
   const lanche_4h_value = Number(
     allValues[`lanche_4h__dia_${dia}__categoria_${categoria}`],
   );
@@ -879,7 +903,8 @@ export const validacoesTabelasDietas = (
   } else if (
     value &&
     Number(value) !== 0 &&
-    somaDosValoresPorCampo("lanche") > maxFrequenciaAlimentacao &&
+    somaDosValoresPorCampo("lanche") >
+      maxFrequenciaAlimentacao + quantidadeLancheInclusaoAutorizadoNoDia &&
     inputName.includes("lanche") &&
     !inputName.includes("_4h") &&
     (!alteracoesAlimentacaoAutorizadas ||
@@ -893,7 +918,8 @@ export const validacoesTabelasDietas = (
   } else if (
     value &&
     Number(value) !== 0 &&
-    somaDosValoresPorCampo("lanche_4h") > maxFrequenciaAlimentacao &&
+    somaDosValoresPorCampo("lanche_4h") >
+      maxFrequenciaAlimentacao + quantidadeLanche4hInclusaoAutorizadoNoDia &&
     inputName.includes("lanche_4h") &&
     (!alteracoesAlimentacaoAutorizadas ||
       alteracoesAlimentacaoAutorizadas.length === 0 ||
@@ -927,12 +953,13 @@ export const validacoesTabelasDietas = (
     ((somaDosValoresPorCampo("lanche") >
       (existeAlteracaoAlimentacaoRPL
         ? maxFrequenciaAlimentacao * 2
-        : maxFrequenciaAlimentacao) &&
+        : maxFrequenciaAlimentacao + quantidadeLancheInclusaoAutorizadoNoDia) &&
       rowName === "lanche") ||
       (somaDosValoresPorCampo("lanche_4h") >
         (existeAlteracaoAlimentacaoRPL
           ? maxFrequenciaAlimentacao * 2
-          : maxFrequenciaAlimentacao) &&
+          : maxFrequenciaAlimentacao +
+            quantidadeLanche4hInclusaoAutorizadoNoDia) &&
         rowName === "lanche_4h"))
   ) {
     return "O número máximo de alimentações foi excedido. É preciso subtrair o aluno com Dieta Especial Autorizada do apontamento de Lanche na planilha de Alimentação.";
