@@ -134,6 +134,32 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       expect(screen.getAllByText(/Período Integral/i)).toHaveLength(3);
       expect(screen.getAllByText(/Período Parcial/i)).toHaveLength(3);
     });
+
+    const faixasEtarias = mockFaixasEtarias.results;
+
+    setInput(
+      `tabelas[Preço das Alimentações - Período Integral].${faixasEtarias[0].__str__}.valor_unitario`,
+      "3,00",
+    );
+    setInput(
+      `tabelas[Preço das Alimentações - Período Integral].${faixasEtarias[0].__str__}.valor_unitario_reajuste`,
+      "3,00",
+    );
+    const totalAlimentacoesIntegral = screen.getByTestId(
+      `tabelas[Preço das Alimentações - Período Integral].${faixasEtarias[0].__str__}.valor_unitario_total`,
+    );
+    const totalDietasTipoA = screen.getByTestId(
+      `tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos - Período Integral].${faixasEtarias[0].__str__}.valor_unitario_total`,
+    );
+    const totalDietasTipoB = screen.getByTestId(
+      `tabelas[Dietas Tipo B - Período Integral].${faixasEtarias[0].__str__}.valor_unitario_total`,
+    );
+
+    await waitFor(() => {
+      expect(totalAlimentacoesIntegral.value).toBe("6,00");
+      expect(totalDietasTipoA.value).toBe("6,00");
+      expect(totalDietasTipoB.value).toBe("6,00");
+    });
   });
 
   it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 3 - EMEI", async () => {
