@@ -44,6 +44,7 @@ export const ModalExcluirEmail = ({ ...props }) => {
       </Modal.Body>
       <Modal.Footer>
         <Botao
+          dataTestId="botao-cancelar"
           className="ms-3"
           texto="Não"
           type={BUTTON_TYPE.BUTTON}
@@ -51,6 +52,7 @@ export const ModalExcluirEmail = ({ ...props }) => {
           style={BUTTON_STYLE.GREEN_OUTLINE}
         />
         <Botao
+          dataTestId="botao-confirmar"
           className="ms-3 me-3"
           texto="Sim"
           type={BUTTON_TYPE.BUTTON}

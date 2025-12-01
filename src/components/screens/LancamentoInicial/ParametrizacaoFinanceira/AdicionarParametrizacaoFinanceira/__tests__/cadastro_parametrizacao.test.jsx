@@ -16,6 +16,7 @@ import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockListaNumeros } from "src/mocks/LancamentoInicial/CadastroDeClausulas/listaDeNumeros";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
+import { mockGetTiposUnidadeEscolarTiposAlimentacao } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolarTiposAlimentacao";
 import AdicionarParametrizacaoFinanceira from "../index";
 import mock from "src/services/_mock";
 
@@ -40,14 +41,11 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosSuperUsuarioMedicao);
-    mock
-      .onGet("/usuarios/meus-dados/")
-      .reply(200, mockMeusDadosSuperUsuarioMedicao);
     mock.onPost("/medicao-inicial/parametrizacao-financeira/").reply(201, {});
-    mock
-      .onGet("/usuarios/meus-dados/")
-      .reply(200, mockMeusDadosSuperUsuarioMedicao);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
+    mock
+      .onGet("/tipos-unidade-escolar-agrupados/")
+      .reply(200, mockGetTiposUnidadeEscolarTiposAlimentacao);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
@@ -127,6 +125,28 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       ).toHaveLength(2);
       expect(screen.getAllByText(/Preço das Alimentações/i)).toHaveLength(2);
       expect(screen.getAllByText(/Dietas Tipo B/i)).toHaveLength(2);
+      expect(screen.getAllByText(/Período Integral/i)).toHaveLength(3);
+      expect(screen.getAllByText(/Período Parcial/i)).toHaveLength(3);
+    });
+  });
+
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 3", async () => {
+    setSelect("edital-select", "3dea0d3c-eea2-4f32-90a6-ebae3597374b");
+    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
+    setSelect("grupo-unidade-select", "743ed59c-9861-4230-860e-e01e2e080327");
+    setData("data_inicial", "01/09/2025");
+    setData("data_final", "30/09/2025");
+
+    const botao = screen.getByTestId("botao-carregar");
+    expect(botao).toBeInTheDocument();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument(2);
     });
   });
 

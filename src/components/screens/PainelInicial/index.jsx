@@ -62,7 +62,7 @@ const PainelInicial = () => {
           usuarioEhEscolaTerceirizada() ||
           usuarioEhCODAEGabinete() ||
           usuarioEhDinutreDiretoria()) && (
-          <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
             <CardLogo
               titulo={"Gestão de Alimentação"}
               onClick={() => navigate("/painel-gestao-alimentacao")}
@@ -83,7 +83,7 @@ const PainelInicial = () => {
         usuarioEhCODAEGabinete() ||
         usuarioEscolaEhGestaoDiretaParceira ||
         usuarioEhDinutreDiretoria()) && (
-        <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+        <Col xs={24} sm={24} md={12} lg={8} xl={8}>
           <CardLogo
             titulo={"Dieta Especial"}
             onClick={() => navigate("/painel-dieta-especial")}
@@ -102,7 +102,7 @@ const PainelInicial = () => {
         usuarioEhOrgaoFiscalizador() ||
         usuarioEhCODAEGabinete() ||
         usuarioEhDinutreDiretoria()) && (
-        <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+        <Col xs={24} sm={24} md={12} lg={8} xl={8}>
           <CardLogo
             titulo={"Gestão de Produto"}
             onClick={() => navigate("/painel-gestao-produto")}
@@ -112,7 +112,7 @@ const PainelInicial = () => {
         </Col>
       )}
       {exibirModuloMedicaoInicial() && (
-        <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+        <Col xs={24} sm={24} md={12} lg={8} xl={8}>
           <CardLogo
             titulo={"Medição Inicial"}
             onClick={() => {
@@ -136,7 +136,7 @@ const PainelInicial = () => {
         </Col>
       )}
       {usuarioEhDRE() && (
-        <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+        <Col xs={24} sm={24} md={12} lg={8} xl={8}>
           <CardLogo
             titulo={"Abastecimento"}
             onClick={() => navigate("/logistica/entregas-dre")}
@@ -147,7 +147,7 @@ const PainelInicial = () => {
       )}
       {(usuarioEhEscolaAbastecimento() ||
         usuarioEhEscolaAbastecimentoDiretor()) && (
-        <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+        <Col xs={24} sm={24} md={12} lg={8} xl={8}>
           <CardLogo
             titulo={"Abastecimento"}
             onClick={() => navigate("/logistica/conferir-entrega")}
@@ -161,12 +161,12 @@ const PainelInicial = () => {
         usuarioEhMedicao() ||
         usuarioEhCODAENutriManifestacao()) &&
         !ENVIRONMENT.includes("production") && (
-          <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
             <CardLogo
               titulo={"Supervisão Terceirizadas"}
               onClick={() =>
                 navigate(
-                  `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`
+                  `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`,
                 )
               }
             >

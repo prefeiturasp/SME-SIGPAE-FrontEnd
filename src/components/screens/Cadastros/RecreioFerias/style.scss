@@ -1,5 +1,41 @@
 @use "src/styles/variables.scss" as *;
 
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+
+  .recreio-cadastrados-botao {
+    width: auto !important;
+  }
+}
+
+.tabela-unidades-participantes {
+  width: 100%;
+  font-size: 14px;
+  color: $blackInput;
+
+  thead tr {
+    font-weight: 700;
+  }
+
+  th {
+    border: 1px solid $grayDisabled;
+    background-color: $grayLightHeader;
+    padding: 0.5em;
+  }
+
+  tbody tr td {
+    border: 1px solid $grayDisabled;
+    padding: 0.5em;
+  }
+}
+
+.verde {
+  color: $green !important;
+  font-weight: bold;
+}
+
 .recreio-nas-ferias-container {
   .title {
     color: $green;
@@ -13,62 +49,24 @@
     justify-content: space-between;
   }
 
-  .tabela-unidades-participantes {
-    font-size: 12px;
-    color: $blackInput;
-    width: 100%;
-    font-size: 14px;
-
-    thead {
-      tr {
-        background-color: $grayLightHeader;
-        font-weight: 700;
-
-        th {
-          border: 1px solid $grayDisabled;
-          padding: 0.5em;
-        }
-      }
-    }
-
-    tbody {
-      tr {
-        td {
-          border: 1px solid $grayDisabled;
-          padding: 0.5em;
-        }
-      }
-    }
-  }
-
   .calendario {
     width: 25%;
     max-width: 240px;
   }
 
   .esconde-asterisco .required-asterisk {
-      display: none;
+    display: none;
   }
 
   .required-asterisk {
     color: #a50e05;
   }
 
-  .verde {
-    cursor: pointer;
-    color: $green !important;
-    font-weight: bold;
-  }
-
   .preto {
     color: black !important;
   }
 
-  table {
-    .action-column {
-      // max-width: 60px;
-    }
-
+  .tabela-unidades-participantes {
     td {
       display: flex;
       align-items: center;
@@ -83,22 +81,137 @@
         font-size: 18px;
       }
     }
+  }
+}
 
-    .collapse-container {
-      display: flex;
-      flex-direction: column;
-      padding: 8px;
-      border: 1px solid #e3e6f0;
+.collapse-container-unidades-participantes {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border: 1px solid #e3e6f0;
 
-      div {
-        margin-top: 4px;
-        margin-bottom: 4px;
-      }
-    }
+  div {
+    margin-top: 4px;
+    margin-bottom: 4px;
   }
 }
 
 .modal-adicionar-unidades-educacionais {
   width: 44vw !important;
   max-width: unset !important;
+}
+
+.recreios-cadastrados {
+  width: 100%;
+
+  .esconder-icone {
+    opacity: 0;
+  }
+
+  .icone-edicao {
+    font-size: 20px;
+  }
+
+  .input-search {
+    width: 50%;
+    padding-right: 10px;
+    border: none;
+
+    &::placeholder {
+      padding-right: 10px;
+      text-align: right;
+    }
+  }
+
+  th,
+  td {
+    &:first-child {
+      padding-left: 20px;
+    }
+  }
+
+  th {
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    color: $gray;
+    border-bottom: 2px solid #a8a8a8;
+    padding-bottom: 10px;
+    width: auto;
+
+    &:last-child {
+      max-width: 150px;
+
+      input {
+        width: 80%;
+      }
+    }
+  }
+
+  td {
+    font-size: 14px;
+    padding: 15px 0;
+    border-bottom: 1px solid #ebeff2;
+
+    &:first-child {
+      padding-right: 20px;
+    }
+
+    &:nth-child(2) {
+      padding-left: 15px;
+    }
+
+    &:nth-child(5) {
+      text-align: center;
+    }
+
+    &:nth-child(6) {
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  .tabela-unidades-participantes {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 10px 8px;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .colspan-padding {
+      padding-right: 8px;
+    }
+
+    th,
+    td {
+      &.dre-lote {
+        width: 12%;
+      }
+
+      &.unidade-educacional {
+        width: 28%;
+      }
+
+      &.num-inscritos,
+      &.num-colaboradores {
+        width: 15%;
+      }
+
+      &.liberar-medicao {
+        width: 20%;
+      }
+
+      &.action-column {
+        width: 5%;
+      }
+    }
+  }
 }

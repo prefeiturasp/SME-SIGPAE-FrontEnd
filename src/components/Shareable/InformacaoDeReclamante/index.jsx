@@ -3,7 +3,10 @@ import "./styles.scss";
 
 const InformacaoDeReclamante = ({ reclamacao, questionamento, showTitle }) => {
   return (
-    <div className="componente-informacao-de-reclamante">
+    <div
+      className="componente-informacao-de-reclamante"
+      data-testid="informacao-reclamante"
+    >
       <hr />
       {!!showTitle && <div className="title">Informação de reclamante</div>}
       <div className="grid-detalhe">

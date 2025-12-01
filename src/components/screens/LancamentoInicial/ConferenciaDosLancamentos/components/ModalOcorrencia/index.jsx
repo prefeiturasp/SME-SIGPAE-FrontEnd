@@ -16,6 +16,7 @@ import {
 import {
   drePedeCorrecaoOcorrencia,
   drePedeAprovacaoOcorrencia,
+  geraOcorrenciaParaCorrecao,
   codaePedeCorrecaoOcorrencia,
   codaePedeAprovacaoOcorrencia,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
@@ -32,21 +33,42 @@ export const ModalOcorrencia = ({ ...props }) => {
     temJustificativa,
     ehCorrecao,
     tituloBotoes,
+    solicitacao,
   } = props;
 
   const solicitarCorrecao = async (values) => {
+    if (!ocorrencia && solicitacao) {
+      const response = await geraOcorrenciaParaCorrecao({
+        solicitacao_medicao_uuid: solicitacao?.uuid,
+        ...values,
+      });
+
+      if (response.status === HTTP_STATUS.OK) {
+        toastSuccess(
+          `Solicitação de correção no Formulário de Ocorrências salva com sucesso!`,
+        );
+        atualizarDados();
+      } else {
+        toastError(
+          `Houve um erro ao salvar correção no Formulário de Ocorrências!`,
+        );
+      }
+      setShowModal(false);
+      return;
+    }
+
     const response = usuarioEhDRE()
-      ? await drePedeCorrecaoOcorrencia(ocorrencia.uuid, values)
-      : await codaePedeCorrecaoOcorrencia(ocorrencia.uuid, values);
+      ? await drePedeCorrecaoOcorrencia(ocorrencia?.uuid, values)
+      : await codaePedeCorrecaoOcorrencia(ocorrencia?.uuid, values);
     if (response.status === HTTP_STATUS.OK) {
       setShowModal(false);
       toastSuccess(
-        `Solicitação de correção no Formulário de Ocorrências salva com sucesso!`
+        `Solicitação de correção no Formulário de Ocorrências salva com sucesso!`,
       );
       atualizarDados();
     } else {
       toastError(
-        `Houve um erro ao salvar correção no Formulário de Ocorrências!`
+        `Houve um erro ao salvar correção no Formulário de Ocorrências!`,
       );
     }
     setShowModal(false);
@@ -59,12 +81,12 @@ export const ModalOcorrencia = ({ ...props }) => {
     if (response.status === HTTP_STATUS.OK) {
       setShowModal(false);
       toastSuccess(
-        `Solicitação de aprovação no Formulário de Ocorrências salva com sucesso!`
+        `Solicitação de aprovação no Formulário de Ocorrências salva com sucesso!`,
       );
       atualizarDados();
     } else {
       toastError(
-        `Houve um erro ao salvar aprovação no Formulário de Ocorrências!`
+        `Houve um erro ao salvar aprovação no Formulário de Ocorrências!`,
       );
     }
     setShowModal(false);

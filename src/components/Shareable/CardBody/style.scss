@@ -1,0 +1,12 @@
+@media only screen and (max-width: 767px) {
+  div.dashboard-card-title {
+    div.div-input-pesquisar {
+      padding-left: 0;
+    }
+
+    div.div-select-tipo-solicitacao,
+    div.div-input-data-evento {
+      padding-top: 0.5rem;
+    }
+  }
+}

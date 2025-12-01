@@ -49,14 +49,17 @@ export const getDietasEspeciaisVigentesDeUmAluno = async (
   codigo_eol_escola = null,
 ) => {
   let url = `${URL_DIETA_ESPECIAL}/solicitacoes-aluno/${codigo_eol_aluno}/`;
+
+  const params = {};
   if (codigo_eol_escola) {
-    url += `?codigo_eol_escola=${codigo_eol_escola}`;
+    params.codigo_eol_escola = codigo_eol_escola;
   }
 
-  const response = await axios.get(url).catch(ErrorHandlerFunction);
-  if (response) {
-    const data = { data: response.data, status: response.status };
-    return data;
+  try {
+    const response = await axios.get(url, { params });
+    return { data: response.data, status: response.status };
+  } catch (err) {
+    ErrorHandlerFunction(err);
   }
 };
 

@@ -34,7 +34,7 @@ const Filtros: React.FC<Props> = ({
 }) => {
   const [fornecedores, setFornecedores] = useState<Array<EmpresaFiltros>>([]);
   const [listaProdutos, setListaProdutos] = useState<Array<ProdutoLogistica>>(
-    []
+    [],
   );
   const [dadosCronogramas, setDadosCronogramas] = useState<
     Array<CronogramaSimples>
@@ -46,7 +46,7 @@ const Filtros: React.FC<Props> = ({
       response.data.results.map((fornecedor: EmpresaFiltros) => ({
         value: fornecedor.uuid,
         label: fornecedor.nome_fantasia,
-      }))
+      })),
     );
   };
 
@@ -65,7 +65,7 @@ const Filtros: React.FC<Props> = ({
     if (values.data_criacao) {
       delete filtros.data_criacao;
       filtros.data_cadastro = moment(values.data_criacao, "DD/MM/YYYY").format(
-        "YYYY-MM-DD"
+        "YYYY-MM-DD",
       );
     }
     setFiltros(filtros);
@@ -103,6 +103,7 @@ const Filtros: React.FC<Props> = ({
                 nomeDoItemNoPlural="empresas"
                 options={fornecedores}
                 placeholder="Selecione uma ou mais Empresas"
+                pluralFeminino={true}
               />
             </div>
 
@@ -112,7 +113,7 @@ const Filtros: React.FC<Props> = ({
                 options={getListaFiltradaAutoCompleteSelect(
                   listaProdutos.map((e) => e.nome),
                   values.nome_produto,
-                  true
+                  true,
                 )}
                 label="Filtrar por Produto"
                 name="nome_produto"
@@ -120,13 +121,13 @@ const Filtros: React.FC<Props> = ({
               />
             </div>
 
-            <div className="col-3 mt-2">
+            <div className="col-4 mt-2">
               <Field
                 component={AutoCompleteSelectField}
                 options={getListaFiltradaAutoCompleteSelect(
                   dadosCronogramas.map((e) => e.numero),
                   values.numero,
-                  true
+                  true,
                 )}
                 label="Filtrar por Nº do Cronograma"
                 name="numero"
@@ -134,7 +135,7 @@ const Filtros: React.FC<Props> = ({
               />
             </div>
 
-            <div className="col-3 mt-2">
+            <div className="col-4 mt-2">
               <Field
                 component={MultiSelect}
                 disableSearch
@@ -146,10 +147,27 @@ const Filtros: React.FC<Props> = ({
               />
             </div>
 
+            <div className="col-4 mt-2">
+              <Field
+                component={MultiSelect}
+                disableSearch
+                options={[
+                  { label: "Recebido", value: "Recebido" },
+                  { label: "Ocorrência", value: "Ocorrência" },
+                  { label: "A Receber", value: "A Receber" },
+                ]}
+                label="Filtrar por Situação"
+                name="situacao"
+                nomeDoItemNoPlural="Situações"
+                placeholder="Selecione as situações"
+                pluralFeminino={true}
+              />
+            </div>
+
             <div className="col-3 mt-2">
               <Field
                 component={InputComData}
-                label="Filtrar por Período"
+                label="Filtrar por Período de Entrega"
                 name="data_inicial"
                 className="data-field-cronograma"
                 placeholder="DE"
@@ -158,6 +176,9 @@ const Filtros: React.FC<Props> = ({
                   values.data_final
                     ? moment(values.data_final, "DD/MM/YYYY").toDate()
                     : null
+                }
+                tooltipText={
+                  "Ao selecionar as datas serão exibidas apenas as etapas de entrega correspondentes ao período selecionado."
                 }
               />
             </div>

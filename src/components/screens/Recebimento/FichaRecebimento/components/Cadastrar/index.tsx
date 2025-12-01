@@ -50,16 +50,17 @@ import InputFileField from "src/components/Shareable/InputFileField";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
 import {
   composeValidators,
-  maxValue,
+  maxValueDecimal,
   required,
 } from "src/helpers/fieldValidators";
 import {
   converterDDMMYYYYparaYYYYMMDD,
   dataParaUTC,
   exibeError,
+  formataMilharDecimal,
 } from "src/helpers/utilities";
 import { deletaValues } from "src/helpers/formHelper";
-import { stringToBoolean } from "src/helpers/parsers";
+import { stringDecimalToNumber, stringToBoolean } from "src/helpers/parsers";
 import {
   ArquivoForm,
   CronogramaSimples,
@@ -71,6 +72,7 @@ import {
   CronogramaFicha,
   DocumentoFicha,
   DocumentoFichaPayload,
+  EtapaFicha,
   FichaRecebimentoPayload,
   OcorrenciaFichaRecebimento,
   QuestoesPayload,
@@ -166,10 +168,10 @@ export default () => {
     }
   };
 
-  const getOpcoesEtapas = () => {
+  const getOpcoesEtapas = () : EtapaFicha[] => {
     let options = [];
 
-    cronograma.etapas?.forEach((etapa) => {
+    cronograma.etapas?.forEach((etapa : EtapaFicha) => {
       if (
         etapa.desvinculada_recebimento ||
         (!initialValues.etapa &&
@@ -187,6 +189,7 @@ export default () => {
           }`,
           data_programada: etapa.data_programada,
           houve_ocorrencia: etapa.houve_ocorrencia,
+          unidade_medida: etapa.unidade_medida,
         });
       }
     });
@@ -205,6 +208,7 @@ export default () => {
         }`,
         data_programada: initialValues.etapa.data_programada,
         houve_ocorrencia: false,
+        unidade_medida: initialValues.etapa.unidade_medida,
       };
       if (initialValues.reposicao_cronograma) obj["houve_ocorrencia"] = true;
       options.push(obj);
@@ -317,7 +321,9 @@ export default () => {
         (x: DocumentoFicha, key: number) =>
           ({
             documento_recebimento: x.uuid,
-            quantidade_recebida: values[`qtd_recebida_laudo_${key}`],
+            quantidade_recebida: values[`qtd_recebida_laudo_${key}`]
+              .replaceAll(".", "")
+              .replace(",", "."),
           }) as DocumentoFichaPayload,
       ),
       observacao: values.observacao,
@@ -671,7 +677,7 @@ export default () => {
     const quantidades =
       values.documentos_recebimento?.map(
         (_: DocumentoFicha, index: number) =>
-          parseInt(values[`qtd_recebida_laudo_${index}`]) || 0,
+          stringDecimalToNumber(values[`qtd_recebida_laudo_${index}`]) || 0,
       ) || [];
 
     const saldoTotalZero: boolean =
@@ -1199,7 +1205,9 @@ export default () => {
                                             {doc.datas_validade}
                                           </td>
                                           <td className="borda-crono">
-                                            {doc.saldo_laudo}
+                                            {formataMilharDecimal(
+                                              doc.saldo_laudo,
+                                            )} {etapaSelecionada?.unidade_medida}
                                           </td>
                                           <td className="borda-crono">
                                             <Field
@@ -1211,7 +1219,7 @@ export default () => {
                                               apenasNumeros
                                               validate={composeValidators(
                                                 required,
-                                                maxValue(
+                                                maxValueDecimal(
                                                   doc.saldo_laudo,
                                                   "Não pode ser maior que o saldo do laudo",
                                                 ),
@@ -1226,6 +1234,7 @@ export default () => {
                                                   form,
                                                 )
                                               }
+                                              agrupadorMilharComDecimal
                                             />
                                           </td>
                                         </tr>

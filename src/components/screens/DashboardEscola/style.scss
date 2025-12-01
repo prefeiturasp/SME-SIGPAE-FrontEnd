@@ -45,3 +45,17 @@ input:-moz-placeholder {
     }
   }
 }
+
+@media only screen and (max-width: 767px) {
+  .div-card-status-solicitacao {
+    padding-left: 0 !important;
+    padding-top: 1rem;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  .card-atalho {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
