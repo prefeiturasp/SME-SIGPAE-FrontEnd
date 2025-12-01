@@ -179,6 +179,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       ).toBeInTheDocument();
       expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
       expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
+      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
     });
   });
 
@@ -202,6 +203,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       expect(screen.queryAllByText(/Turmas Infantil - EMEI/i)).toHaveLength(3);
       expect(screen.queryAllByText(/CEI - Período Parcial/i)).toHaveLength(3);
       expect(screen.queryAllByText(/CEI - Período Integral/i)).toHaveLength(3);
+      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
     });
 
     setInput(
