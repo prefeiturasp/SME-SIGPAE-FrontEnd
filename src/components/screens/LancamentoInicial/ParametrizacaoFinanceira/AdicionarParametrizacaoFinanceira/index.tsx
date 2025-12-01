@@ -17,6 +17,7 @@ import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import TabelasGrupoCEI from "./components/Tabelas/TabelasGrupoCEI";
 import TabelasGruposEMEI from "./components/Tabelas/TabelasGruposEMEI";
+import TabelasGrupoCEMEI from "./components/Tabelas/TabelasGrupoCEMEI";
 import ModalCancelar from "./components/ModalCancelar";
 import ModalSalvar from "./components/ModalSalvar";
 import { formataPayload } from "./helpers";
@@ -133,6 +134,14 @@ export default () => {
                     <TabelasGruposEMEI
                       form={form}
                       tiposAlimentacao={tiposAlimentacao}
+                      grupoSelecionado={grupoSelecionado}
+                    />
+                  ) : null}
+                  {exibeTabelasCEMEI && tabelasCarregadas ? (
+                    <TabelasGrupoCEMEI
+                      form={form}
+                      tiposAlimentacao={tiposAlimentacao}
+                      faixasEtarias={faixasEtarias}
                       grupoSelecionado={grupoSelecionado}
                     />
                   ) : null}

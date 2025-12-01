@@ -19,10 +19,9 @@ export default ({
   periodo,
   grupoSelecionado,
 }: Props) => {
-  const labelTabela =
-    grupoSelecionado === "grupo_2"
-      ? `CEI - Período ${periodo}`
-      : `Período ${periodo}`;
+  const labelTabela = grupoSelecionado?.toLowerCase().includes("grupo 2")
+    ? `CEI - Período ${periodo}`
+    : `Período ${periodo}`;
   const chaveTabela = `${nomeTabela} - ${labelTabela}`;
 
   const formatarTotal = (value: number) =>
