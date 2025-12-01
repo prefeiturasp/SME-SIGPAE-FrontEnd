@@ -50,12 +50,13 @@ const gerarValores = (valores: object) => {
 
 export const formataPayload = (values: ParametrizacaoFinanceiraPayload) => {
   const tabelas = Object.entries(values.tabelas).map(([tabela, valores]) => {
-    const [nome, periodo] = tabela.split(" - Período ");
+    let tabelaLimpa = tabela.replace(" - CEI ", " ");
+    const [nome, periodo] = tabelaLimpa.split(" - Período ");
 
     return {
-      nome: nome || tabela,
+      nome: nome.trim(),
       valores: gerarValores(valores as object),
-      periodo_escolar: periodo ? periodo?.toUpperCase() : null,
+      periodo_escolar: periodo ? periodo.toUpperCase() : null,
     };
   });
 
@@ -92,7 +93,10 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
   });
 };
 
-export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
+export const carregarValores = (
+  tabelas: TabelaParametrizacao[],
+  grupo: string,
+) => {
   const getCampo = (tipo: string): string => {
     const campos = {
       UNITARIO: "valor_unitario",
@@ -106,7 +110,7 @@ export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
 
   tabelas.forEach((item) => {
     const chavePrincipal = item.periodo_escolar
-      ? `${item.nome} - Período ${capitalize(item.periodo_escolar)}`
+      ? `${item.nome} - ${grupo?.toLowerCase().includes("grupo 2") ? "CEI - " : ""}Período ${capitalize(item.periodo_escolar)}`
       : item.nome;
     resultado[chavePrincipal] ||= {};
 

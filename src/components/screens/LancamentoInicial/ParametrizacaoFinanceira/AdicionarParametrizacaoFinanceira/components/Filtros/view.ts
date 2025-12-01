@@ -156,7 +156,10 @@ export default ({
         await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
           uuid,
         );
-      const dadosTabelas = carregarValores(response.tabelas);
+      const dadosTabelas = carregarValores(
+        response.tabelas,
+        response.grupo_unidade_escolar.nome,
+      );
       const parametrizacao = {
         edital: response.edital.uuid,
         lote: response.lote.uuid,
