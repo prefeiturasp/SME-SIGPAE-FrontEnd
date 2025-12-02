@@ -465,6 +465,7 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
   const initialValues = {
     produto: ficha.produto?.nome,
     categoria: ficha.categoria as CategoriaFichaTecnicaChoices,
+    programa: ficha.programa,
     marca: ficha.marca?.uuid,
     pregao_chamada_publica: ficha.pregao_chamada_publica,
     ...valuesFabricante,
@@ -621,6 +622,7 @@ export const formataPayloadCadastroFichaTecnica = (
 
   let payload: FichaTecnicaPayload = {
     ...gerarCamposObrigatoriosRascunho(values, produtosOptions),
+    programa: values.programa,
     ...gerarCamposProponenteFabricante(
       values,
       proponente,

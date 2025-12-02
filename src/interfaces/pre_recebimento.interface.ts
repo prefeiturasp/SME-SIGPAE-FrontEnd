@@ -3,6 +3,8 @@ import { LogSolicitacoesUsuarioSimples } from "./dados_comuns.interface";
 import { InformacaoNutricional } from "./produto.interface";
 import { TerceirizadaSimplesInterface } from "./terceirizada.interface";
 
+export type ProgramaChoices = "LEVE_LEITE" | "ALIMENTACAO_ESCOLAR";
+
 export interface DocumentosRecebimento {
   criado_em: string;
   nome_produto: string;
@@ -177,6 +179,7 @@ export interface FichaTecnicaDetalhada {
   pregao_chamada_publica: string;
   marca: MarcaSimples;
   categoria: CategoriaFichaTecnicaChoices;
+  programa: ProgramaChoices;
   status: string;
   criado_em: string;
   empresa: TerceirizadaSimplesInterface;

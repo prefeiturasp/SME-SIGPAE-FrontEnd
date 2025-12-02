@@ -5,7 +5,7 @@ import Label from "src/components/Shareable/Label";
 
 import { required } from "src/helpers/fieldValidators";
 import { Spin, Tooltip } from "antd";
-import { CATEGORIA_OPTIONS } from "../../constants";
+import { CATEGORIA_OPTIONS, PROGRAMA_OPTIONS } from "../../constants";
 import InputText from "src/components/Shareable/Input/InputText";
 
 import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
@@ -83,7 +83,7 @@ export default () => {
   >([]);
   const [proponente, setProponente] =
     useState<TerceirizadaComEnderecoInterface>(
-      {} as TerceirizadaComEnderecoInterface
+      {} as TerceirizadaComEnderecoInterface,
     );
   const [desabilitaEndereco, setDesabilitaEndereco] = useState<Array<boolean>>([
     true,
@@ -91,12 +91,12 @@ export default () => {
   ]);
   const [collapse, setCollapse] = useState<CollapseControl>({});
   const [ficha, setFicha] = useState<FichaTecnicaDetalhada>(
-    {} as FichaTecnicaDetalhada
+    {} as FichaTecnicaDetalhada,
   );
   const [initialValues, setInitialValues] = useState<Record<string, any>>({});
   const [stepAtual, setStepAtual] = useState(0);
   const listaCompletaInformacoesNutricionais = useRef<InformacaoNutricional[]>(
-    []
+    [],
   );
   const listaInformacoesNutricionaisFichaTecnica = useRef<
     InformacaoNutricional[]
@@ -123,7 +123,7 @@ export default () => {
       await carregarFabricantes(setFabricantesOptions);
       await carregarUnidadesMedida(setUnidadesMedidaOptions);
       await carregaListaCompletaInformacoesNutricionais(
-        listaCompletaInformacoesNutricionais
+        listaCompletaInformacoesNutricionais,
       );
       await carregarDadosCadastrar(
         listaInformacoesNutricionaisFichaTecnica,
@@ -133,7 +133,7 @@ export default () => {
         setArquivo,
         setProponente,
         setFabricantesCount,
-        setCarregando
+        setCarregando,
       );
     })();
   }, []);
@@ -164,7 +164,7 @@ export default () => {
                           options={getListaFiltradaAutoCompleteSelect(
                             produtosOptions.map((e) => e.nome),
                             values["produto"],
-                            true
+                            true,
                           )}
                           label="Produto"
                           name={`produto`}
@@ -193,7 +193,7 @@ export default () => {
                             gerenciaModalCadastroExterno(
                               "PRODUTO",
                               setTipoCadastro,
-                              setShowModalCadastro
+                              setShowModalCadastro,
                             )
                           }
                         />
@@ -243,7 +243,7 @@ export default () => {
                             gerenciaModalCadastroExterno(
                               "MARCA",
                               setTipoCadastro,
-                              setShowModalCadastro
+                              setShowModalCadastro,
                             )
                           }
                         />
@@ -261,6 +261,22 @@ export default () => {
                           tooltipText={
                             "Deve ser informado o número do Edital do Pregão Eletrônico ou Chamada Pública referente ao Produto."
                           }
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          component={Select}
+                          dataTestId={"programa"}
+                          naoDesabilitarPrimeiraOpcao
+                          options={[
+                            { nome: "Selecione um Programa", uuid: "" },
+                            ...PROGRAMA_OPTIONS,
+                          ]}
+                          label="Para qual Programa o produto é destinado"
+                          name={`programa`}
+                          className="input-ficha-tecnica"
+                          required
+                          validate={required}
                         />
                       </div>
                     </div>
@@ -302,7 +318,7 @@ export default () => {
                             gerenciaModalCadastroExterno(
                               "FABRICANTE",
                               setTipoCadastro,
-                              setShowModalCadastro
+                              setShowModalCadastro,
                             );
                           }}
                         />
@@ -444,7 +460,7 @@ export default () => {
                         validaAssinarEnviar(
                           values as FichaTecnicaPayload,
                           errors,
-                          arquivo
+                          arquivo,
                         )
                           ? "Há campos de preenchimento obrigatório sem informação."
                           : undefined
@@ -460,7 +476,7 @@ export default () => {
                           disabled={validaAssinarEnviar(
                             values as FichaTecnicaPayload,
                             errors,
-                            arquivo
+                            arquivo,
                           )}
                         />
                       </div>
@@ -476,7 +492,7 @@ export default () => {
                         validaProximo(
                           values as FichaTecnicaPayload,
                           errors,
-                          stepAtual
+                          stepAtual,
                         )
                           ? "Há campos de preenchimento obrigatório sem informação."
                           : undefined
@@ -495,7 +511,7 @@ export default () => {
                           disabled={validaProximo(
                             values as FichaTecnicaPayload,
                             errors,
-                            stepAtual
+                            stepAtual,
                           )}
                         />
                       </div>
@@ -525,14 +541,14 @@ export default () => {
                             produtosOptions,
                             fabricantesOptions,
                             arquivo,
-                            fabricantesCount
+                            fabricantesCount,
                           );
 
                           salvarRascunho(
                             payload,
                             ficha,
                             setFicha,
-                            setCarregando
+                            setCarregando,
                           );
                         }}
                         disabled={validaRascunho(values as FichaTecnicaPayload)}
@@ -576,14 +592,14 @@ export default () => {
                       fabricantesOptions,
                       arquivo,
                       fabricantesCount,
-                      password
+                      password,
                     );
 
                     assinarEnviarFichaTecnica(
                       payload,
                       ficha,
                       setCarregando,
-                      navigate
+                      navigate,
                     );
                   }}
                   loading={carregando}
