@@ -75,8 +75,7 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
     expect(screen.getByText("Grupo 6 (CIEJA, CMCT)")).toBeInTheDocument();
   });
 
-  it("desabilita grupos 2 e 5 conforme a regra do Relatório Unificado", () => {
-    expect(screen.getByLabelText("Grupo 2 (CEMEI, CEU CEMEI)")).toBeDisabled();
+  it("desabilita grupo 5 conforme a regra do Relatório Unificado", () => {
     expect(screen.getByLabelText("Grupo 5 (EMEBS)")).toBeDisabled();
   });
 
@@ -94,6 +93,14 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
 
     const botaoGerar = screen.getByRole("button", { name: "Gerar Relatório" });
     expect(botaoGerar).toBeDisabled();
+  });
+
+  it("permite selecionar um grupo 2 habilita o botão de gerar relatório", () => {
+    const radio = screen.getByLabelText("Grupo 2 (CEMEI, CEU CEMEI)");
+    fireEvent.click(radio);
+
+    const botaoGerar = screen.getByRole("button", { name: "Gerar Relatório" });
+    expect(botaoGerar).not.toBeDisabled();
   });
 
   it("chama onSubmit com o grupo selecionado ao gerar relatório", () => {
