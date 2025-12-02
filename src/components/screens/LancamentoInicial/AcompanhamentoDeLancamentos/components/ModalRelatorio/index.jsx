@@ -11,7 +11,13 @@ import { Modal } from "react-bootstrap";
 import { getGrupoUnidadeEscolar } from "src/services/escola.service";
 import "./styles.scss";
 
-const ModalRelatorio = ({ show, onClose, onSubmit, nomeRelatorio }) => {
+const ModalRelatorio = ({
+  show,
+  onClose,
+  onSubmit,
+  nomeRelatorio,
+  gruposHabilitadosPorDre,
+}) => {
   const [gruposUnidadeEscolar, setGruposUnidadeEscolar] = useState([]);
   const [grupoSelecionado, setGrupoSelecionado] = useState(null);
 
@@ -21,15 +27,13 @@ const ModalRelatorio = ({ show, onClose, onSubmit, nomeRelatorio }) => {
   }
 
   function desabilitaRadioButton(grupo) {
-    const gruposDesabilitados = [];
-
-    if (nomeRelatorio === "Relatório Unificado") {
-      gruposDesabilitados.push("Grupo 2");
-      gruposDesabilitados.push("Grupo 5");
-      gruposDesabilitados.push("Grupo 6");
+    if (nomeRelatorio === "Relatório Consolidado") {
+      return false;
     }
-
-    return gruposDesabilitados.includes(grupo);
+    const gruposDesabilitados = ["Grupo 5", "Grupo 6"];
+    const desabilitadoPorDre =
+      gruposHabilitadosPorDre && gruposHabilitadosPorDre[grupo] === false;
+    return gruposDesabilitados.includes(grupo) || desabilitadoPorDre;
   }
 
   const getGruposUnidades = async () => {

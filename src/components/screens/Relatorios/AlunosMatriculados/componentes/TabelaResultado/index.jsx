@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { DetalhesCEIouCEMEI } from "../DetalhesCEIouCEMEI";
 import { deepCopy, usuarioEhDRE } from "src/helpers/utilities";
-import { formataNome } from "../../helpers";
+import { formataNome, formataPeriodoEscolar } from "../../helpers";
 import { Tooltip } from "antd";
 
 export const TabelaResultado = ({ ...props }) => {
@@ -93,7 +93,10 @@ export const TabelaResultado = ({ ...props }) => {
                       </td>
                       <td className="text-center">{item.tipo_turma}</td>
                       <td className="text-center">
-                        {item.periodo_escolar.nome}
+                        {formataPeriodoEscolar(
+                          item.escola,
+                          item.periodo_escolar.nome,
+                        )}
                       </td>
                       <td className="text-center">{totalMatriculados}</td>
                       <td className="text-center">
