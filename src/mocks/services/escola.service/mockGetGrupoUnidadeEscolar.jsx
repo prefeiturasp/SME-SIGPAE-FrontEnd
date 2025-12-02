@@ -97,3 +97,32 @@ export const mockGetGrupoUnidadeEscolar = {
     },
   ],
 };
+
+export const mockGetGrupoUnidadeEscolarPorDRE = {
+  grupos: [
+    {
+      nome: "Grupo 1",
+      habilitado: false,
+    },
+    {
+      nome: "Grupo 2",
+      habilitado: true,
+    },
+    {
+      nome: "Grupo 3",
+      habilitado: true,
+    },
+    {
+      nome: "Grupo 4",
+      habilitado: true,
+    },
+    {
+      nome: "Grupo 5",
+      habilitado: true,
+    },
+    {
+      nome: "Grupo 6",
+      habilitado: true,
+    },
+  ],
+};
