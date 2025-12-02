@@ -21,12 +21,11 @@ export default ({
   grupoSelecionado,
   tipoTurma = "",
 }: Props) => {
-  const nomeTabela =
-    "Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos";
+  const grupoTipo2 = grupoSelecionado.toLowerCase().includes("grupo 2");
+  const nomeTabela = `Dietas Tipo A e Tipo A Enteral${grupoTipo2 ? "" : "/Restrição de Aminoácidos"}`;
 
   const ListaDeAlimentacoes =
-    grupoSelecionado.toLowerCase().includes("grupo 2") &&
-    !nomeTabela.includes("Enteral")
+    grupoTipo2 && !nomeTabela.includes("Enteral")
       ? ALIMENTACOES_TIPO_A
       : ALIMENTACOES_ENTERAL;
 
@@ -43,19 +42,19 @@ export default ({
   const atualizarPercentuais = (value: string) => {
     tiposAlimentacao.forEach((tipo) => {
       form.change(
-        `tabelas[${nomeTabela}].${tipo.nome}.percentual_acrescimo`,
+        `tabelas[${labelTabela}].${tipo.nome}.percentual_acrescimo`,
         String(value),
       );
 
       const valorUnitario =
-        form.getState().values.tabelas[`${nomeTabela}`]?.[tipo.nome]
+        form.getState().values.tabelas[`${labelTabela}`]?.[tipo.nome]
           ?.valor_unitario || "0";
       const valorUnitarioTotal =
         stringDecimalToNumber(valorUnitario) *
         (1 + stringDecimalToNumber(String(value)) / 100);
 
       form.change(
-        `tabelas[${nomeTabela}].${tipo.nome}.valor_unitario_total`,
+        `tabelas[${labelTabela}].${tipo.nome}.valor_unitario_total`,
         formatarTotal(valorUnitarioTotal),
       );
     });
@@ -64,9 +63,24 @@ export default ({
   return (
     <div className="row mt-5">
       <div className="col">
-        <h2 className="text-start texto-simples-verde fw-bold">
-          Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos
-        </h2>
+        {grupoTipo2 && tipoTurma ? (
+          <h2 className="text-start texto-simples-verde fw-bold mb-3">
+            Preço das Dietas Tipo A e Tipo A Enteral -{" "}
+            <span
+              className={`titulo-tag turma-${tipoTurma
+                .split("-")[1]
+                ?.trim()
+                .replace(/\s/g, "-")
+                .toLowerCase()}`}
+            >
+              {tipoTurma}
+            </span>
+          </h2>
+        ) : (
+          <h2 className="text-start texto-simples-verde fw-bold">
+            Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos
+          </h2>
+        )}
         <Table pagination={false} bordered dataSource={alimentacoes}>
           <Table.Column
             title="Tipo de Alimentação"
@@ -151,7 +165,6 @@ export default ({
                     `tabelas[${labelTabela}].${record.nome}.percentual_acrescimo`,
                     value,
                   );
-
                   if (record.nome === alimentacoes[0].nome)
                     atualizarPercentuais(value);
                 }}

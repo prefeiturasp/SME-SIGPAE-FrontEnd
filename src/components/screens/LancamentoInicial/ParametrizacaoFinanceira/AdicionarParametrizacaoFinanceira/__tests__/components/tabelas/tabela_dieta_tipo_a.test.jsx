@@ -16,7 +16,7 @@ describe("Testes de Tabela Dietas Tipo A - Parametrização Financeira", () => {
       e.periodo_escolar.nome === "MANHA",
   ).tipos_alimentacao;
 
-  const setup = async ({ grupo, tipoTurma = "" }) => {
+  const setup = async ({ grupo, tipoTurma = null }) => {
     await act(async () => {
       render(
         <Form
@@ -56,15 +56,15 @@ describe("Testes de Tabela Dietas Tipo A - Parametrização Financeira", () => {
     await setup({ grupo: "Grupo 3" });
 
     const valorUnitario = setInput(
-      "tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.valor_unitario",
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.valor_unitario",
       "5,00",
     );
     const valorReajuste = setInput(
-      "tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.percentual_acrescimo",
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.percentual_acrescimo",
       "100,00",
     );
     const valorTotal = screen.getByTestId(
-      "tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.valor_unitario_total",
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.valor_unitario_total",
     );
 
     await waitFor(() => {
@@ -78,7 +78,7 @@ describe("Testes de Tabela Dietas Tipo A - Parametrização Financeira", () => {
     await setup({ grupo: "Grupo 3" });
 
     const percentualRefeicao = setInput(
-      "tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Refeição.percentual_acrescimo",
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Refeição.percentual_acrescimo",
       "10,00",
     );
 
@@ -86,12 +86,12 @@ describe("Testes de Tabela Dietas Tipo A - Parametrização Financeira", () => {
       expect(percentualRefeicao.value).toBe("10,00");
       expect(
         screen.getByTestId(
-          `tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche.percentual_acrescimo`,
+          `tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche.percentual_acrescimo`,
         ).value,
       ).toBe("10,00");
       expect(
         screen.getByTestId(
-          `tabelas[Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.percentual_acrescimo`,
+          `tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche 4h.percentual_acrescimo`,
         ).value,
       ).toBe("10,00");
     });
