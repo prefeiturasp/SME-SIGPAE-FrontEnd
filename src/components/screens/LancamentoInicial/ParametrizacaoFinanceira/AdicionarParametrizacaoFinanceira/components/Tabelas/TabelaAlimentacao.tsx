@@ -79,14 +79,15 @@ export default ({
   return (
     <div className="row mt-5">
       <div className="col">
-        {["grupo 2", "grupo 4"].includes(grupoSelecionado.toLowerCase()) &&
-        tipoTurma ? (
+        {grupoSelecionado.toLowerCase().includes("grupo 2") && tipoTurma ? (
           <h2 className="text-start texto-simples-verde fw-bold mb-3">
             Preço das Alimentações -{" "}
             <span
               className={`titulo-tag turma-${tipoTurma
+                .split("-")[1]
+                ?.trim()
                 .replace(/\s/g, "-")
-                .toLocaleLowerCase()}`}
+                .toLowerCase()}`}
             >
               {tipoTurma}
             </span>

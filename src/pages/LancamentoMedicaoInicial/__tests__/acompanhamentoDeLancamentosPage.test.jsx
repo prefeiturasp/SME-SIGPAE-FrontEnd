@@ -266,9 +266,9 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
       .closest("label");
     expect(grupo4Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
 
-    // Verifica se Grupo 5 está desabilitado
+    // Verifica se Grupo 5 está habilitado
     const grupo5Wrapper = screen.getByText("Grupo 5 (EMEBS)").closest("label");
-    expect(grupo5Wrapper).toHaveClass("ant-radio-wrapper-disabled");
+    expect(grupo5Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
 
     // Verifica se Grupo 6 está desabilitado
     const grupo6Wrapper = screen

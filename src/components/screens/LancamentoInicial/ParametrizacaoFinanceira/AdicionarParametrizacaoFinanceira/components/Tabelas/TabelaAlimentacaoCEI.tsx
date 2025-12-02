@@ -25,10 +25,9 @@ export function TabelaAlimentacaoCEI({
   periodo,
   pendencias,
 }: Props) {
-  const labelTabela =
-    grupoSelecionado === "grupo_2"
-      ? `CEI - Período ${periodo}`
-      : `Período ${periodo}`;
+  const labelTabela = grupoSelecionado?.toLowerCase().includes("grupo 2")
+    ? `CEI - Período ${periodo}`
+    : `Período ${periodo}`;
   const nomeTabela = "Preço das Alimentações";
   const chaveTabela = `${nomeTabela} - ${labelTabela}`;
 
