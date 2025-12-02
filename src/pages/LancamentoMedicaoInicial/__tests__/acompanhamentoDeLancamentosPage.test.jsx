@@ -6,7 +6,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { TIPO_PERFIL } from "src/constants/shared";
+import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { AcompanhamentoDeLancamentosPage } from "src/pages/LancamentoMedicaoInicial/AcompanhamentoDeLancamentosPage";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
@@ -18,7 +18,11 @@ import { mockGetDashboardMedicaoInicial } from "src/mocks/services/dashboard.ser
 import { mockGetMesesAnosMedicaoInicial } from "src/mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
 import { mockGetDiretoriaRegionalSimplissima } from "src/mocks/services/diretoriaRegional.service/mockGetDiretoriaRegionalSimplissima";
 import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
-import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
+import {
+  mockGetGrupoUnidadeEscolar,
+  mockGetGrupoUnidadeEscolarPorDRE,
+} from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
+import { localStorageMock } from "src/mocks/localStorageMock";
 
 describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => {
   beforeEach(async () => {
@@ -73,7 +77,13 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
       .onGet("/grupos-unidade-escolar/")
       .reply(200, mockGetGrupoUnidadeEscolar);
 
+    mock
+      .onGet(`/grupos-unidade-escolar/por-dre/`)
+      .reply(200, mockGetGrupoUnidadeEscolarPorDRE);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.MEDICAO);
+    localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
 
     await act(async () => {
       render(
@@ -232,17 +242,17 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
       ).toBeInTheDocument();
     });
 
-    // Verifica se Grupo 1 está habilitado
+    // Verifica se Grupo 1 está desabilitado
     const grupo1Wrapper = screen
       .getByText("Grupo 1 (CCI, CEI, CEI CEU)")
       .closest("label");
-    expect(grupo1Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
+    expect(grupo1Wrapper).toHaveClass("ant-radio-wrapper-disabled");
 
-    // Verifica se Grupo 2 está desabilitado
+    // Verifica se Grupo 2 está habilitado
     const grupo2Wrapper = screen
       .getByText("Grupo 2 (CEMEI, CEU CEMEI)")
       .closest("label");
-    expect(grupo2Wrapper).toHaveClass("ant-radio-wrapper-disabled");
+    expect(grupo2Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
 
     // Verifica se Grupo 3 está habilitado
     const grupo3Wrapper = screen
