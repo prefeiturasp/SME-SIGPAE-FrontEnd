@@ -21,6 +21,7 @@ import { mockFichaTecnica } from "src/mocks/services/fichaTecnica.service/mockGe
 import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
 import CadastroFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
 import mock from "src/services/_mock";
+import { PROGRAMA_OPTIONS } from "../constants";
 
 beforeEach(() => {
   mock
@@ -73,7 +74,7 @@ const setup = async () => {
         >
           <CadastroFichaTecnicaPage />
         </MeusDadosContext.Provider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -107,8 +108,10 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     expect(mock.history.get.length).toBeGreaterThanOrEqual(1);
     expect(
       mock.history.get.some((call) =>
-        call.url.includes("/cadastro-produtos-edital/lista-completa-logistica/")
-      )
+        call.url.includes(
+          "/cadastro-produtos-edital/lista-completa-logistica/",
+        ),
+      ),
     ).toBe(true);
 
     preencheInput("produto", mockListaProdutosLogistica.results[0].uuid);
@@ -118,6 +121,11 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       .querySelector("select");
     fireEvent.change(selectCategoria, {
       target: { value: CATEGORIA_OPTIONS[0].uuid },
+    });
+
+    let selectPrograma = screen.getByTestId("programa").querySelector("select");
+    fireEvent.change(selectPrograma, {
+      target: { value: PROGRAMA_OPTIONS[0].uuid },
     });
 
     let selectMarca = screen.getByTestId("marca").querySelector("select");
@@ -140,8 +148,10 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     expect(
       mock.history.get.some((call) =>
-        call.url.includes("/cadastro-produtos-edital/lista-completa-logistica/")
-      )
+        call.url.includes(
+          "/cadastro-produtos-edital/lista-completa-logistica/",
+        ),
+      ),
     ).toBe(true);
 
     preencheInput("produto", mockListaProdutosLogistica.results[0].uuid);
@@ -151,6 +161,11 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       .querySelector("select");
     fireEvent.change(selectCategoria, {
       target: { value: CATEGORIA_OPTIONS[0].uuid },
+    });
+
+    let selectPrograma = screen.getByTestId("programa").querySelector("select");
+    fireEvent.change(selectPrograma, {
+      target: { value: PROGRAMA_OPTIONS[0].uuid },
     });
 
     let selectMarca = screen.getByTestId("marca").querySelector("select");
@@ -194,7 +209,7 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     fireEvent.click(btnProximo);
 
     expect(
-      screen.getByText(/Quantidade por 100g ou 100 ml/i)
+      screen.getByText(/Quantidade por 100g ou 100 ml/i),
     ).toBeInTheDocument();
 
     const inputsStep2 = screen.getAllByRole("textbox");
@@ -255,7 +270,7 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     fireEvent.click(btnEnviar);
 
     expect(
-      screen.getByText(/Confirme sua senha de acesso ao/i)
+      screen.getByText(/Confirme sua senha de acesso ao/i),
     ).toBeInTheDocument();
 
     preencheInput("password", "123456");
@@ -265,7 +280,7 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     await waitFor(() => {
       expect(
-        mock.history.post.some((call) => call.url.includes("/ficha-tecnica/"))
+        mock.history.post.some((call) => call.url.includes("/ficha-tecnica/")),
       ).toBe(true);
     });
   });
@@ -288,8 +303,8 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     expect(
       mock.history.post.some((call) =>
-        call.url.includes("/cadastro-produtos-edital/")
-      )
+        call.url.includes("/cadastro-produtos-edital/"),
+      ),
     ).toBe(true);
   });
 
@@ -342,8 +357,8 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     expect(
       mock.history.get.some((call) =>
-        call.url.includes(`/ficha-tecnica/${mockFichaTecnica.uuid}/`)
-      )
+        call.url.includes(`/ficha-tecnica/${mockFichaTecnica.uuid}/`),
+      ),
     ).toBe(true);
   });
 });
