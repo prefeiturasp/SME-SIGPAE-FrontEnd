@@ -50,12 +50,13 @@ const gerarValores = (valores: object) => {
 
 export const formataPayload = (values: ParametrizacaoFinanceiraPayload) => {
   const tabelas = Object.entries(values.tabelas).map(([tabela, valores]) => {
-    const [nome, periodo] = tabela.split(" - Período ");
+    let tabelaLimpa = tabela.replace(" - CEI ", " ");
+    const [nome, periodo] = tabelaLimpa.split(" - Período ");
 
     return {
-      nome: nome || tabela,
+      nome: nome.trim(),
       valores: gerarValores(valores as object),
-      periodo_escolar: periodo ? periodo?.toUpperCase() : null,
+      periodo_escolar: periodo ? periodo.toUpperCase() : null,
     };
   });
 
@@ -92,7 +93,11 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
   });
 };
 
-export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
+export const carregarValores = (
+  tabelas: TabelaParametrizacao[],
+  grupo: string,
+  pendencia: boolean = false,
+) => {
   const getCampo = (tipo: string): string => {
     const campos = {
       UNITARIO: "valor_unitario",
@@ -103,11 +108,18 @@ export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
   };
 
   const resultado: object = {};
-
+  const ehGrupo2 = grupo.toLowerCase().includes("grupo 2");
   tabelas.forEach((item) => {
-    const chavePrincipal = item.periodo_escolar
-      ? `${item.nome} - Período ${capitalize(item.periodo_escolar)}`
-      : item.nome;
+    let chavePrincipal: string;
+    if (ehGrupo2 && item.periodo_escolar) {
+      chavePrincipal = `${item.nome} - CEI - Período ${capitalize(item.periodo_escolar)}`;
+    } else if (item.periodo_escolar) {
+      chavePrincipal = `${item.nome} - Período ${capitalize(item.periodo_escolar)}`;
+    } else if (ehGrupo2 && pendencia) {
+      chavePrincipal = `${item.nome.replace("/Restrição de Aminoácidos", "")} - Turmas Infantil - EMEI`;
+    } else {
+      chavePrincipal = item.nome;
+    }
     resultado[chavePrincipal] ||= {};
 
     item.valores.forEach((valor: ValorTabela) => {
