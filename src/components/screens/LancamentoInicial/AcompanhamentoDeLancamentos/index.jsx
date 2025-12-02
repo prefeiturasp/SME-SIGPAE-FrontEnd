@@ -530,7 +530,7 @@ export const AcompanhamentoDeLancamentos = () => {
   const buscarGruposPorDre = async (dreUUID) => {
     const response = await getGruposExistentesPorDre({ dre: dreUUID });
     if (response.status === HTTP_STATUS.OK) {
-      setGruposHabilitadosPorDre(formatarGrupos(response.grupos));
+      setGruposHabilitadosPorDre(formatarGrupos(response.data.grupos));
     } else {
       toastError(getError(response));
     }
