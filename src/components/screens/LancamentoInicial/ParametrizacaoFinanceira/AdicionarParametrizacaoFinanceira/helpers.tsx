@@ -96,6 +96,7 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
 export const carregarValores = (
   tabelas: TabelaParametrizacao[],
   grupo: string,
+  pendencia: boolean = false,
 ) => {
   const getCampo = (tipo: string): string => {
     const campos = {
@@ -107,11 +108,18 @@ export const carregarValores = (
   };
 
   const resultado: object = {};
-
+  const ehGrupo2 = grupo.toLowerCase().includes("grupo 2");
   tabelas.forEach((item) => {
-    const chavePrincipal = item.periodo_escolar
-      ? `${item.nome} - ${grupo?.toLowerCase().includes("grupo 2") ? "CEI - " : ""}Período ${capitalize(item.periodo_escolar)}`
-      : item.nome;
+    let chavePrincipal: string;
+    if (ehGrupo2 && item.periodo_escolar) {
+      chavePrincipal = `${item.nome} - CEI - Período ${capitalize(item.periodo_escolar)}`;
+    } else if (item.periodo_escolar) {
+      chavePrincipal = `${item.nome} - Período ${capitalize(item.periodo_escolar)}`;
+    } else if (ehGrupo2 && pendencia) {
+      chavePrincipal = `${item.nome.replace("/Restrição de Aminoácidos", "")} - Turmas Infantil - EMEI`;
+    } else {
+      chavePrincipal = item.nome;
+    }
     resultado[chavePrincipal] ||= {};
 
     item.valores.forEach((valor: ValorTabela) => {
