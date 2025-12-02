@@ -1,25 +1,25 @@
-import React, { useContext, useEffect, useState } from "react";
-import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
-import { Filtros } from "./components/Filtros";
-import { ListagemDietas } from "./components/ListagemDietas";
+import HTTP_STATUS from "http-status-codes";
+import { useContext, useEffect, useState } from "react";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
-  BUTTON_TYPE,
   BUTTON_STYLE,
+  BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 import {
   gerarExcelRelatorioDietaEspecial,
-  getFiltrosRelatorioDietasEspeciais,
   gerarPdfRelatorioDietaEspecial,
+  getFiltrosRelatorioDietasEspeciais,
 } from "src/services/dietaEspecial.service";
-import "./styles.scss";
+import { Filtros } from "./components/Filtros";
 import { Graficos } from "./components/Graficos";
-import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
+import { ListagemDietas } from "./components/ListagemDietas";
+import "./styles.scss";
 
 export const RelatorioDietasAutorizadas = () => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -69,7 +69,7 @@ export const RelatorioDietasAutorizadas = () => {
   const exportarXLSX = async (values) => {
     setImprimindoExcel(true);
     const response = await gerarExcelRelatorioDietaEspecial(
-      ajustaParams(values)
+      ajustaParams(values),
     );
     if (response.status === HTTP_STATUS.OK) {
       setExibirModalCentralDownloads(true);
@@ -163,7 +163,7 @@ export const RelatorioDietasAutorizadas = () => {
                             setRenderGraficosOuTabela(
                               renderGraficosOuTabela === "Tabela"
                                 ? "Gráficos"
-                                : "Tabela"
+                                : "Tabela",
                             )
                           }
                         />
@@ -207,7 +207,7 @@ export const RelatorioDietasAutorizadas = () => {
                     setLoadingDietas={setLoadingDietas}
                     values={valuesForm}
                   />
-                  {dietasEspeciais && dietasEspeciais.length === 0 && (
+                  {dietasEspeciais && dietasEspeciais.results?.length === 0 && (
                     <div className="text-center mt-5">
                       Nenhum resultado encontrado.
                     </div>
