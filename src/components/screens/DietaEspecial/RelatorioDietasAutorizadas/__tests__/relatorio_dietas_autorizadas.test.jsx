@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -11,6 +12,7 @@ import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import { mockFiltrosRelatorioDietasEspeciais } from "src/mocks/services/dietaEspecial.service/mockGetFiltrosRelatorioDietasEspeciais";
+import { mockGetUnidadeEducacional } from "src/mocks/services/dietaEspecial.service/mockGetUnidadeEducacional";
 import { mockRelatorioDietasEpeciais } from "src/mocks/services/dietaEspecial.service/relatorioDietasEspeciaisTerceirizada";
 import { RelatorioDietasAutorizadasPage } from "src/pages/DietaEspecial/RelatorioDietasAutorizadas";
 import mock from "src/services/_mock";
@@ -26,6 +28,9 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
         "/solicitacoes-genericas/filtrar-solicitacoes-cards-totalizadores/",
       )
       .reply(200, { results: [{ "Rede Municipal de Educação": 28 }] });
+    mock
+      .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
+      .reply(200, mockGetUnidadeEducacional);
 
     localStorage.setItem(
       "tipo_perfil",
@@ -84,11 +89,13 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
     setSelect("tipo-gestao-select", TIPO_GESTAO);
 
     await waitFor(() => {
-      const tipoUnidade = screen.getByText("Selecione o tipo de unidade");
-      fireEvent.click(tipoUnidade);
-      fireEvent.click(screen.getByText("EMEF"));
+      const selectTipoUnidade = screen.getByTestId("select-tipo-unidade");
+      const selectControl = within(selectTipoUnidade).getByRole("combobox");
+      fireEvent.mouseDown(selectControl);
+      const optionEMEF = screen.getByText("EMEF");
+      fireEvent.click(optionEMEF);
     });
-    expect(screen.getAllByText("EMEF").length).toBe(2);
+    expect(screen.getAllByText("EMEF").length).toBe(1);
 
     const botaoLimpar = screen.getByText("Limpar Filtros").closest("button");
     fireEvent.click(botaoLimpar);
@@ -119,6 +126,21 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
     fireEvent.click(botao);
   };
 
+  const preencheFiltros = () => {
+    const selectDRELote = screen
+      .getByTestId("div-select-dre-lote")
+      .querySelector("select");
+    const uuid35673IPIRANGA = mockFiltrosRelatorioDietasEspeciais.lotes.find(
+      (l) => l.nome === "3567-3 - DIRETORIA REGIONAL DE EDUCACAO IPIRANGA",
+    );
+    fireEvent.change(selectDRELote, {
+      target: { value: uuid35673IPIRANGA },
+    });
+
+    const checkboxOutro = screen.getByTestId("checkbox-outro");
+    fireEvent.click(checkboxOutro);
+  };
+
   it("Preenche campo no formulário, clica em filtrar e verifica registros", async () => {
     setSelect("tipo-gestao-select", TIPO_GESTAO);
     filtrar();
@@ -133,6 +155,7 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
   });
 
   it("Filtra, clica para visualizar em gráfico e verifica se foi alterado", async () => {
+    preencheFiltros();
     filtrar();
 
     await waitFor(() => {

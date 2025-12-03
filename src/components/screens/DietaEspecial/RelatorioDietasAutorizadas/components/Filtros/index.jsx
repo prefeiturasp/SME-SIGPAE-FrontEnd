@@ -4,6 +4,7 @@ import HTTP_STATUS from "http-status-codes";
 import { useEffect } from "react";
 import { Field } from "react-final-form";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import Select from "src/components/Shareable/Select";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { usuarioEhDRE } from "src/helpers/utilities";
@@ -153,29 +154,30 @@ export const Filtros = ({ ...props }) => {
                     Tipo de Unidade
                   </label>
                   <Field
-                    component={StatefulMultiSelect}
+                    component={MultiselectRaw}
+                    placeholder="Selecione o tipo de unidade"
                     name="tipo_unidade"
+                    dataTestId="select-tipo-unidade"
                     options={filtros.tipos_unidades.map((tipo_unidade) => ({
                       label: tipo_unidade.nome,
                       value: tipo_unidade.uuid,
                     }))}
                     selected={values.tipos_unidades_selecionadas || []}
-                    onSelectedChanged={async (value) => {
-                      form.change("tipos_unidades_selecionadas", value);
-                      const { lote } = form.getState().values;
-                      if (lote) {
-                        await getUnidadesEducacionaisAsync({
-                          lote,
-                          tipos_unidades_selecionadas: value,
-                        });
+                    onSelectedChanged={async (values_) => {
+                      form.change(
+                        `tipos_unidades_selecionadas`,
+                        values_.map((value_) => value_.value),
+                      );
+                      let { lote } = form.getState().values;
+                      if (filtros?.lotes.length === 1) {
+                        lote = filtros.lotes[0].uuid;
                       }
-                    }}
-                    overrideStrings={{
-                      search: "Busca",
-                      selectSomeItems: "Selecione o tipo de unidade",
-                      allItemsAreSelected:
-                        "Todos os tipos de unidades estão selecionadas",
-                      selectAll: "Todos",
+                      await getUnidadesEducacionaisAsync({
+                        lote,
+                        tipos_unidades_selecionadas: values_.map(
+                          (value_) => value_.value,
+                        ),
+                      });
                     }}
                   />
                 </div>
@@ -186,6 +188,7 @@ export const Filtros = ({ ...props }) => {
                   <Field
                     component={Select}
                     name="lote"
+                    dataTestId="div-select-dre-lote"
                     placeholder="Selecione a DRE/Lote"
                     options={
                       filtros.lotes.length === 1
@@ -339,6 +342,7 @@ export const Filtros = ({ ...props }) => {
                   <span>
                     <Field
                       component="input"
+                      data-testid="checkbox-outro"
                       type="checkbox"
                       name="outro"
                       className="ckbox-outro"

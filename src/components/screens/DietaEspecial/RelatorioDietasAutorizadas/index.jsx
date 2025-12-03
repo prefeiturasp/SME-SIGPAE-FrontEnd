@@ -41,25 +41,22 @@ export const RelatorioDietasAutorizadas = () => {
 
   const ajustaParams = (params) => {
     if (
-      params.classificacoes_selecionadas &&
-      params.classificacoes_selecionadas.length ===
-        filtros.classificacoes.length
+      params.classificacoes_selecionadas?.length ===
+      filtros.classificacoes.length
     ) {
       params.classificacoes_selecionadas = null;
     }
 
     if (
-      params.protocolos_padrao_selecionados &&
-      params.protocolos_padrao_selecionados.length ===
-        filtros.protocolos_padrao.length
+      params.protocolos_padrao_selecionados?.length ===
+      filtros.protocolos_padrao.length
     ) {
       params.protocolos_padrao_selecionados = null;
     }
 
     if (
-      params.unidades_educacionais_selecionadas &&
-      params.unidades_educacionais_selecionadas.length ===
-        unidadesEducacionais.length
+      params.unidades_educacionais_selecionadas?.length ===
+      unidadesEducacionais.length
     ) {
       params.unidades_educacionais_selecionadas = null;
     }
