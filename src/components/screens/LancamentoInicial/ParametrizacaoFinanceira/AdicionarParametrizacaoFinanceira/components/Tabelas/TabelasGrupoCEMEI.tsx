@@ -90,6 +90,7 @@ export default ({
           grupoSelecionado={grupoSelecionado}
           tipoTurma="Turmas Infantil - EMEI"
           pendencias={GRUPO_TABELAS_EMEI}
+          temaTag="turma-emei"
         />
       </div>
       <div>
@@ -98,12 +99,14 @@ export default ({
           tiposAlimentacao={tiposAlimentacao}
           grupoSelecionado={grupoSelecionado}
           tipoTurma="Turmas Infantil - EMEI"
+          temaTag="turma-emei"
         />
         <TabelaDietaTipoB
           form={form}
           tiposAlimentacao={tiposAlimentacao}
           grupoSelecionado={grupoSelecionado}
           tipoTurma="Turmas Infantil - EMEI"
+          temaTag="turma-emei"
         />
       </div>
     </div>
