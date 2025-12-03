@@ -1,15 +1,16 @@
-import React, { useEffect } from "react";
-import { Field } from "react-final-form";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import Select from "src/components/Shareable/Select";
+import { useEffect } from "react";
+import { Field } from "react-final-form";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import Select from "src/components/Shareable/Select";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { usuarioEhDRE } from "src/helpers/utilities";
 import {
-  getUnidadesEducacionaisComCodEol,
   getSolicitacoesRelatorioDietasEspeciais,
+  getUnidadesEducacionaisComCodEol,
 } from "src/services/dietaEspecial.service";
 import { getTotalizadoresRelatorioSolicitacoes } from "src/services/relatorios.service";
 import "./styles.scss";
@@ -50,7 +51,7 @@ export const Filtros = ({ ...props }) => {
         response.data.map((unidade) => ({
           label: `${unidade.codigo_eol_escola}`,
           value: unidade.uuid,
-        }))
+        })),
       );
     } else {
       toastError("Erro ao buscar unidades educacionais");
@@ -99,7 +100,7 @@ export const Filtros = ({ ...props }) => {
       setDietasEspeciais(response.data);
     } else {
       toastError(
-        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde."
+        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde.",
       );
     }
     setLoadingDietas(false);
@@ -132,7 +133,7 @@ export const Filtros = ({ ...props }) => {
                       filtros.tipos_gestao.map((tipo_gestao) => ({
                         nome: tipo_gestao.nome,
                         uuid: tipo_gestao.uuid,
-                      }))
+                      })),
                     )}
                     naoDesabilitarPrimeiraOpcao
                     onChangeEffect={async (e) => {
@@ -153,29 +154,30 @@ export const Filtros = ({ ...props }) => {
                     Tipo de Unidade
                   </label>
                   <Field
-                    component={StatefulMultiSelect}
+                    component={MultiselectRaw}
+                    placeholder="Selecione o tipo de unidade"
                     name="tipo_unidade"
+                    dataTestId="select-tipo-unidade"
                     options={filtros.tipos_unidades.map((tipo_unidade) => ({
                       label: tipo_unidade.nome,
                       value: tipo_unidade.uuid,
                     }))}
                     selected={values.tipos_unidades_selecionadas || []}
-                    onSelectedChanged={async (value) => {
-                      form.change("tipos_unidades_selecionadas", value);
-                      const { lote } = form.getState().values;
-                      if (lote) {
-                        await getUnidadesEducacionaisAsync({
-                          lote,
-                          tipos_unidades_selecionadas: value,
-                        });
+                    onSelectedChanged={async (values_) => {
+                      form.change(
+                        `tipos_unidades_selecionadas`,
+                        values_.map((value_) => value_.value),
+                      );
+                      let { lote } = form.getState().values;
+                      if (filtros?.lotes.length === 1) {
+                        lote = filtros.lotes[0].uuid;
                       }
-                    }}
-                    overrideStrings={{
-                      search: "Busca",
-                      selectSomeItems: "Selecione o tipo de unidade",
-                      allItemsAreSelected:
-                        "Todos os tipos de unidades estão selecionadas",
-                      selectAll: "Todos",
+                      await getUnidadesEducacionaisAsync({
+                        lote,
+                        tipos_unidades_selecionadas: values_.map(
+                          (value_) => value_.value,
+                        ),
+                      });
                     }}
                   />
                 </div>
@@ -186,6 +188,7 @@ export const Filtros = ({ ...props }) => {
                   <Field
                     component={Select}
                     name="lote"
+                    dataTestId="div-select-dre-lote"
                     placeholder="Selecione a DRE/Lote"
                     options={
                       filtros.lotes.length === 1
@@ -199,7 +202,7 @@ export const Filtros = ({ ...props }) => {
                             filtros.lotes.map((lote) => ({
                               nome: lote.nome,
                               uuid: lote.uuid,
-                            }))
+                            })),
                           )
                     }
                     naoDesabilitarPrimeiraOpcao
@@ -209,7 +212,7 @@ export const Filtros = ({ ...props }) => {
                         setUnidadesEducacionais([]);
                         form.change(
                           "unidades_educacionais_selecionadas",
-                          undefined
+                          undefined,
                         );
                       } else {
                         getUnidadesEducacionaisAsync(form.getState().values);
@@ -239,7 +242,7 @@ export const Filtros = ({ ...props }) => {
                       onSelectedChanged={(value) => {
                         form.change(
                           "unidades_educacionais_selecionadas",
-                          value
+                          value,
                         );
                       }}
                       overrideStrings={{
@@ -294,7 +297,7 @@ export const Filtros = ({ ...props }) => {
                       (alergia_intolerancia) => ({
                         label: alergia_intolerancia.nome,
                         value: alergia_intolerancia.id,
-                      })
+                      }),
                     )}
                     selected={values.alergias_intolerancias_selecionadas || []}
                     onSelectedChanged={(value) =>
@@ -314,7 +317,7 @@ export const Filtros = ({ ...props }) => {
                 <div>
                   <span>
                     <Field
-                      component={"input"}
+                      component="input"
                       type="checkbox"
                       name="cei_polo"
                       className="ckbox-motivo-alteracao-ue"
@@ -325,7 +328,7 @@ export const Filtros = ({ ...props }) => {
                 <div>
                   <span>
                     <Field
-                      component={"input"}
+                      component="input"
                       type="checkbox"
                       name="recreio_nas_ferias"
                       className="ckbox-recreio-nas-ferias"
@@ -334,6 +337,18 @@ export const Filtros = ({ ...props }) => {
                   <span className="label-motivo-alteracao-ue">
                     RECREIO NAS FÉRIAS
                   </span>
+                </div>
+                <div>
+                  <span>
+                    <Field
+                      component="input"
+                      data-testid="checkbox-outro"
+                      type="checkbox"
+                      name="outro"
+                      className="ckbox-outro"
+                    />
+                  </span>
+                  <span className="label-motivo-alteracao-ue">OUTRO</span>
                 </div>
               </div>
             </>
