@@ -235,7 +235,7 @@ export const ConferenciaDosLancamentos = () => {
       (usuarioEhDRE() || usuarioEhMedicao()) &&
       solicitacao &&
       solicitacao.status === "MEDICAO_CORRIGIDA_PARA_CODAE" &&
-      solicitacao?.ocorrencia.status !== "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" &&
+      solicitacao?.ocorrencia?.status !== "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" &&
       !solicitacao.dre_ciencia_correcao_data
     );
   };
@@ -251,7 +251,7 @@ export const ConferenciaDosLancamentos = () => {
       !solicitacao.dre_ciencia_correcao_data &&
       todosPeriodosGruposAprovadosCODAE &&
       (!solicitacao.ocorrencia ||
-        solicitacao.ocorrencia.status === "MEDICAO_APROVADA_PELA_CODAE")
+        solicitacao.ocorrencia?.status === "MEDICAO_APROVADA_PELA_CODAE")
     );
   };
 

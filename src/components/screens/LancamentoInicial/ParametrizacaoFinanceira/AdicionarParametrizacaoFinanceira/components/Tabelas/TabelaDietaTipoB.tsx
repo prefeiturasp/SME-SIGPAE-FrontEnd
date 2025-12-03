@@ -52,13 +52,15 @@ export default ({
   return (
     <div className="row mt-5">
       <div className="col">
-        {["grupo 2", "grupo 4"].includes(grupoSelecionado.toLowerCase()) ? (
+        {grupoSelecionado.toLowerCase().includes("grupo 2") ? (
           <h2 className="text-start texto-simples-verde fw-bold mb-3">
             Preço das Dietas Tipo B -{" "}
             <span
               className={`titulo-tag turma-${tipoTurma
+                .split("-")[1]
+                ?.trim()
                 .replace(/\s/g, "-")
-                .toLocaleLowerCase()}`}
+                .toLowerCase()}`}
             >
               {tipoTurma}
             </span>
@@ -68,7 +70,6 @@ export default ({
             Preço das Dietas Tipo B
           </h2>
         )}
-
         <Table pagination={false} bordered dataSource={alimentacoes}>
           <Table.Column
             title="Tipo de Alimentação"

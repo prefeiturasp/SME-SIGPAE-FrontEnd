@@ -162,7 +162,10 @@ export default (props: Props) => {
                   }
                   style={BUTTON_STYLE.ORANGE_OUTLINE}
                   type={BUTTON_TYPE.BUTTON}
-                  onClick={() => setCarregarTabelas(true)}
+                  onClick={() => {
+                    if (!uuidParametrizacao) view.getGruposPendentes();
+                    setCarregarTabelas(true);
+                  }}
                 />
               </div>
             )}
