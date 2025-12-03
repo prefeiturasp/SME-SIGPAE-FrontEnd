@@ -118,7 +118,7 @@ export const carregarValores = (
       chavePrincipal = `${item.nome} - Período ${capitalize(item.periodo_escolar)}`;
     } else if (ehGrupo2 && grupoPendencia) {
       chavePrincipal = `${item.nome.replace("/Restrição de Aminoácidos", "")} - Turmas Infantil - EMEI`;
-    } else if (ehGrupo5) {
+    } else if (ehGrupo5 && grupoPendencia) {
       if (grupoPendencia === "grupo 3")
         chavePrincipal = `${item.nome} - EMEBS Fundamental`;
       else if (grupoPendencia === "grupo 4")
