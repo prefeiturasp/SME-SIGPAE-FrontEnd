@@ -252,6 +252,30 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       expect(screen.queryAllByText(/EMEBS Infantil/i)).toHaveLength(3);
       expect(screen.queryAllByText(/EMEBS Fundamental/i)).toHaveLength(3);
     });
+
+    setInput(
+      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario",
+      "10,00",
+    );
+    setInput(
+      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario_reajuste",
+      "10,00",
+    );
+    const totalAlimentacoesFundamental = screen.getByTestId(
+      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario_total",
+    );
+    const totalDietasTipoAFundamental = screen.getByTestId(
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos - EMEBS Fundamental].Lanche.valor_unitario_total",
+    );
+    const totalDietasTipoBFundamental = screen.getByTestId(
+      "tabelas[Dietas Tipo B - EMEBS Fundamental].Lanche.valor_unitario_total",
+    );
+
+    await waitFor(() => {
+      expect(totalAlimentacoesFundamental.value).toBe("20,00");
+      expect(totalDietasTipoAFundamental.value).toBe("20,00");
+      expect(totalDietasTipoBFundamental.value).toBe("20,00");
+    });
   });
 
   it("deve clicar em cancelar e exibir modal de cancelamento", async () => {
