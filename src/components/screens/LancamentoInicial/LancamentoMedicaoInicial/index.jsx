@@ -1,6 +1,6 @@
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Select, Skeleton, Spin } from "antd";
-import { addMonths, format, getMonth, getYear } from "date-fns";
+import { addMonths, format, getMonth, getYear, parse } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
@@ -37,12 +37,14 @@ import {
   getSolicitacoesLancadas,
   updateSolicitacaoMedicaoInicial,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
+import { listarRecreioNasFerias } from "src/services/recreioFerias.service";
 import "./styles.scss";
 
 export default () => {
   const { meusDados } = useContext(MeusDadosContext);
   const [ano, setAno] = useState(null);
   const [mes, setMes] = useState(null);
+  const [cadastrosRecreioNasFerias, setCadastrosRecreioNasFerias] = useState();
   const [panoramaGeral, setPanoramaGeral] = useState();
   const [nomeTerceirizada, setNomeTerceirizada] = useState();
   const [objectoPeriodos, setObjectoPeriodos] = useState([]);
@@ -122,6 +124,16 @@ export default () => {
     }
   };
 
+  const getCadastrosRecreioNasFerias = async () => {
+    const response = await listarRecreioNasFerias();
+    if (response.status === HTTP_STATUS.OK) {
+      setCadastrosRecreioNasFerias(response.data.results);
+      return response.data.results;
+    } else {
+      toastError("Erro ao carregar cadastros de Recreio nas Férias.");
+    }
+  };
+
   useEffect(() => {
     async function fetch() {
       const escola =
@@ -143,6 +155,8 @@ export default () => {
         ),
       );
 
+      const cadastrosRecreioNasFerias_ = await getCadastrosRecreioNasFerias();
+
       let solicitacoesLancadas = [];
 
       if (location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL)) {
@@ -153,32 +167,49 @@ export default () => {
         solicitacoesLancadas = await getSolicitacoesLancadas(payload);
       }
 
+      const cadastrosRecreioPreparados = (
+        cadastrosRecreioNasFerias || cadastrosRecreioNasFerias_
+      ).map((cadastro) => {
+        const dataInicio = parse(
+          cadastro.data_inicio,
+          "dd/MM/yyyy",
+          new Date(),
+        );
+        return {
+          ...cadastro,
+          dataInicio,
+          mesInicio: getMonth(dataInicio) + 1,
+          anoInicio: getYear(dataInicio),
+        };
+      });
+
       for (let mes_ = 0; mes_ <= proximosDozeMeses; mes_++) {
         const dataBRT = addMonths(new Date(), -mes_);
-        const mesString = format(dataBRT, "LLLL", { locale: ptBR }).toString();
+        const mes = getMonth(dataBRT) + 1;
+        const ano = getYear(dataBRT);
+        const mesString = format(dataBRT, "LLLL", { locale: ptBR });
+
+        const periodoFormatado =
+          mesString.charAt(0).toUpperCase() + mesString.slice(1) + " / " + ano;
+
         if (location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL)) {
           const temSolicitacaoLancada = solicitacoesLancadas.data.filter(
             (solicitacao) =>
-              Number(solicitacao.mes) === getMonth(dataBRT) + 1 &&
-              Number(solicitacao.ano) === getYear(dataBRT),
+              Number(solicitacao.mes) === mes &&
+              Number(solicitacao.ano) === ano,
           ).length;
+
           if (!temSolicitacaoLancada) {
             periodos.push({
-              dataBRT: dataBRT,
-              periodo:
-                mesString.charAt(0).toUpperCase() +
-                mesString.slice(1) +
-                " / " +
-                getYear(dataBRT).toString(),
+              dataBRT,
+              periodo: periodoFormatado,
             });
 
             if (!location.search && periodos.length === 1) {
               navigate(
                 {
                   pathname: location.pathname,
-                  search: `mes=${(getMonth(dataBRT) + 1)
-                    .toString()
-                    .padStart(2, "0")}&ano=${getYear(dataBRT).toString()}`,
+                  search: `mes=${String(mes).padStart(2, "0")}&ano=${ano}`,
                 },
                 { replace: true },
               );
@@ -186,14 +217,20 @@ export default () => {
           }
         } else {
           periodos.push({
-            dataBRT: dataBRT,
-            periodo:
-              mesString.charAt(0).toUpperCase() +
-              mesString.slice(1) +
-              " / " +
-              getYear(dataBRT).toString(),
+            dataBRT,
+            periodo: periodoFormatado,
           });
         }
+
+        cadastrosRecreioPreparados.forEach((cad) => {
+          if (cad.mesInicio === mes && cad.anoInicio === ano) {
+            periodos.push({
+              dataBRT: cad.dataInicio,
+              periodo: cad.titulo,
+              tipo: "recreio",
+            });
+          }
+        });
       }
 
       const params = new URLSearchParams(window.location.search);
