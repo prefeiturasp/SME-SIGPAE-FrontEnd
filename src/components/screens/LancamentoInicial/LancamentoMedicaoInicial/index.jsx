@@ -436,11 +436,13 @@ export default () => {
     const params = new URLSearchParams(search);
     const mes = params.get("mes");
     const ano = params.get("ano");
+    const recreio_nas_ferias = params.get("recreio_nas_ferias");
 
     const payload = {
       escola: escolaInstituicao.uuid,
       mes: mes.toString(),
       ano: ano.toString(),
+      recreio_nas_ferias,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
