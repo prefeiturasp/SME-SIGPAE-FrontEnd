@@ -26,6 +26,7 @@ export default ({
   nomeTerceirizada,
   solicitacaoMedicaoInicial,
   onClickInfoBasicas,
+  objectoPeriodos,
 }) => {
   const [tiposDeContagem, setTiposDeContagem] = useState([]);
   const [tipoDeContagemSelecionada, setTipoDeContagemSelecionada] = useState(
@@ -213,12 +214,17 @@ export default ({
   const criarPayloadNovaSolicitacao = () => {
     const dataPeriodo = new Date(periodoSelecionado);
 
+    const recreio_nas_ferias_uuid =
+      objectoPeriodos.find((o) => o.dataBRT.getTime() === dataPeriodo.getTime())
+        ?.recreio_nas_ferias || null;
+
     return {
       escola: escolaInstituicao.uuid,
       tipos_contagem_alimentacao: tipoDeContagemSelecionada,
       responsaveis: getResponsaveisPayload(),
       mes: format(dataPeriodo, "MM").toString(),
       ano: getYear(dataPeriodo).toString(),
+      recreio_nas_ferias: recreio_nas_ferias_uuid,
     };
   };
 

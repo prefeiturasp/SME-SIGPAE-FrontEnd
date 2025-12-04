@@ -114,7 +114,6 @@ export default () => {
       mes,
       ano,
     };
-
     const response =
       await getPeriodosPermissoesLancamentosEspeciaisMesAno(payload);
     if (response.status === HTTP_STATUS.OK) {
@@ -227,7 +226,7 @@ export default () => {
             periodos.push({
               dataBRT: cad.dataInicio,
               periodo: cad.titulo,
-              tipo: "recreio",
+              recreio_nas_ferias: cad.uuid,
             });
           }
         });
@@ -236,6 +235,8 @@ export default () => {
       const params = new URLSearchParams(window.location.search);
       let mes = params.get("mes");
       let ano = params.get("ano");
+      const recreioNasFeriasParam = params.get("recreio_nas_ferias");
+
       setMes(mes);
       setAno(ano);
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
@@ -269,11 +270,14 @@ export default () => {
         const mesStringFromSearch = format(dataFromSearch, "LLLL", {
           locale: ptBR,
         }).toString();
-        const periodoFromSearch =
-          mesStringFromSearch.charAt(0).toUpperCase() +
-          mesStringFromSearch.slice(1) +
-          " / " +
-          getYear(dataFromSearch).toString();
+        const periodoFromSearch = recreioNasFeriasParam
+          ? cadastrosRecreioPreparados.find(
+              (c) => c.uuid === recreioNasFeriasParam,
+            )?.titulo
+          : mesStringFromSearch.charAt(0).toUpperCase() +
+            mesStringFromSearch.slice(1) +
+            " / " +
+            getYear(dataFromSearch).toString();
         setPeriodoFromSearchParam(periodoFromSearch);
       }
 
@@ -288,23 +292,50 @@ export default () => {
       const mesParam = urlParams.get("mes");
       const anoParam = urlParams.get("ano");
 
-      const periodoInicialSelecionado =
-        !mesParam || !anoParam
-          ? periodos[0].dataBRT.toString()
-          : new Date(anoParam, mesParam - 1, 1);
+      function getPeriodoInicialSelecionado() {
+        const semMesAno = !mesParam || !anoParam;
+        const comRecreio = !!recreioNasFeriasParam;
+
+        if (semMesAno) {
+          return periodos[0].dataBRT.toString();
+        }
+
+        if (comRecreio) {
+          const cadastro = cadastrosRecreioPreparados.find(
+            (c) =>
+              c.anoInicio === Number(anoParam) &&
+              c.mesInicio === Number(mesParam),
+          );
+          return cadastro.dataInicio.toString();
+        }
+
+        return new Date(Number(anoParam), Number(mesParam) - 1, 1);
+      }
+
+      const periodoInicialSelecionado = getPeriodoInicialSelecionado();
+
       setObjectoPeriodos(periodos);
       setPeriodoSelecionado(periodoInicialSelecionado);
-      await getSolicitacaoMedInicial(periodoInicialSelecionado, escola.uuid);
+      await getSolicitacaoMedInicial(
+        periodoInicialSelecionado,
+        escola.uuid,
+        recreioNasFeriasParam,
+      );
       setLoadingSolicitacaoMedicaoInicial(false);
     }
     if (meusDados) fetch();
   }, [meusDados]);
 
-  const getSolicitacaoMedInicial = async (periodo, escolaUuid) => {
+  const getSolicitacaoMedInicial = async (
+    periodo,
+    escolaUuid,
+    recreio_nas_ferias,
+  ) => {
     const payload = {
       escola: escolaUuid,
       mes: format(new Date(periodo), "MM").toString(),
       ano: getYear(new Date(periodo)).toString(),
+      recreio_nas_ferias,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
@@ -357,7 +388,16 @@ export default () => {
     setErrosAoSalvar([]);
     setLoadingSolicitacaoMedicaoInicial(true);
     setPeriodoSelecionado(value);
-    await getSolicitacaoMedInicial(value, escolaInstituicao.uuid);
+    const dataPeriodo = new Date(value);
+    const recreio_nas_ferias = objectoPeriodos.find(
+      (o) => o.dataBRT.getTime() === dataPeriodo.getTime(),
+    )?.recreio_nas_ferias;
+
+    await getSolicitacaoMedInicial(
+      value,
+      escolaInstituicao.uuid,
+      recreio_nas_ferias,
+    );
     const mes = format(new Date(value), "MM").toString();
     const ano = getYear(new Date(value)).toString();
     setMes(mes);
@@ -379,7 +419,7 @@ export default () => {
         pathname: location.pathname,
         search: `?mes=${format(new Date(value), "MM").toString()}&ano=${getYear(
           new Date(value),
-        ).toString()}`,
+        ).toString()}${recreio_nas_ferias ? `&recreio_nas_ferias=${recreio_nas_ferias}` : ""}`,
       },
       { replace: true },
     );
@@ -517,6 +557,7 @@ export default () => {
             nomeTerceirizada={nomeTerceirizada}
             solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
             onClickInfoBasicas={onClickInfoBasicas}
+            objectoPeriodos={objectoPeriodos}
           />
         )}
         <hr className="linha-form mt-4 mb-4" />
