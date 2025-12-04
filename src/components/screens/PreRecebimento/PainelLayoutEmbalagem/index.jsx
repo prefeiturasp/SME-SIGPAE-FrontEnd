@@ -41,7 +41,7 @@ export default () => {
 
     return `${item.numero_ficha_tecnica} / ${truncarString(
       item.nome_produto,
-      TAMANHO_MAXIMO
+      TAMANHO_MAXIMO,
     )} / ${truncarString(item.nome_empresa, TAMANHO_MAXIMO)}`;
   };
 
@@ -67,6 +67,7 @@ export default () => {
       date: item.log_mais_recente.slice(0, 10),
       link: gerarLinkLayout(item),
       status: item.status,
+      programa_leve_leite: item.programa_leve_leite,
     }));
   };
 
@@ -90,17 +91,17 @@ export default () => {
     setCarregando(true);
 
     let dadosDashboard = await getDashboardLayoutEmbalagem(
-      filtros ? filtros : {}
+      filtros ? filtros : {},
     );
 
     let cardsAprovacao = agruparCardsPorStatus(
       cardsAprovacaoLayout,
-      dadosDashboard
+      dadosDashboard,
     );
 
     let cardsAlteracao = agruparCardsPorStatus(
       cardsAlteracaoLayout,
-      dadosDashboard
+      dadosDashboard,
     );
 
     setCardsAprovacaoLayout(cardsAprovacao);
@@ -112,7 +113,7 @@ export default () => {
     const { nome_produto, numero_cronograma, nome_fornecedor } = values;
 
     const podeFiltrar = [nome_produto, numero_cronograma, nome_fornecedor].some(
-      (value) => value && value.length > 2
+      (value) => value && value.length > 2,
     );
 
     if (podeFiltrar) {
@@ -193,7 +194,7 @@ export default () => {
                   cardTitle={card.titulo}
                   cardType={card.style}
                   solicitations={formatarCardsLayout(
-                    card.items ? card.items : []
+                    card.items ? card.items : [],
                   )}
                   icon={card.icon}
                   href={card.href}
@@ -211,7 +212,7 @@ export default () => {
                   cardTitle={card.titulo}
                   cardType={card.style}
                   solicitations={formatarCardsLayout(
-                    card.items ? card.items : []
+                    card.items ? card.items : [],
                   )}
                   icon={card.icon}
                   href={card.href}

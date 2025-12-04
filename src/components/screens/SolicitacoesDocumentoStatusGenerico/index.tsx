@@ -19,7 +19,7 @@ import { ResponseDocumentosPorStatusDashboard } from "src/interfaces/responses.i
 
 interface Props {
   getSolicitacoes: (
-    _params?: URLSearchParams
+    _params?: URLSearchParams,
   ) => Promise<ResponseDocumentosPorStatusDashboard>;
   params: FiltrosDashboardDocumentos;
   limit: number;
@@ -48,17 +48,18 @@ export const SolicitacoesDocumentoStatusGenerico: React.FC<Props> = ({
   const PAGE_SIZE = limit || 10;
 
   const formataCardDocumento = (
-    itens: DocumentosRecebimentoDashboard[]
+    itens: DocumentosRecebimentoDashboard[],
   ): VerMaisItem[] => {
     return itens.map((item) => ({
       texto: `${item.numero_cronograma} - ${item.nome_produto} - ${item.nome_empresa}`,
       data: item.log_mais_recente.slice(0, 10),
       link: `${urlBaseItem}?uuid=${item.uuid}`,
+      programa_leve_leite: item.programa_leve_leite,
     }));
   };
 
   const getSolicitacoesAsync = async (
-    params: FiltrosDashboardDocumentos
+    params: FiltrosDashboardDocumentos,
   ): Promise<void> => {
     let parametros = gerarParametrosConsulta(params);
     let response = await getSolicitacoes(parametros);
@@ -76,7 +77,7 @@ export const SolicitacoesDocumentoStatusGenerico: React.FC<Props> = ({
   const filtrarRequisicao = debounce((values: FiltrosDashboardDocumentos) => {
     const { nome_fornecedor, nome_produto, numero_cronograma } = values;
     const podeFiltrar = [nome_fornecedor, nome_produto, numero_cronograma].some(
-      (value) => value && value.length > 2
+      (value) => value && value.length > 2,
     );
     if (podeFiltrar) {
       setLoading(true);
