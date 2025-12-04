@@ -12,6 +12,7 @@ type Props = {
   grupoSelecionado: string;
   tipoTurma?: string;
   pendencias: string[];
+  temaTag?: string;
 };
 
 interface RecordItem {
@@ -24,6 +25,7 @@ export default ({
   grupoSelecionado,
   tipoTurma,
   pendencias,
+  temaTag = "",
 }: Props) => {
   const alimentacoes = tiposAlimentacao.map((t) => ({ ...t }));
 
@@ -79,25 +81,18 @@ export default ({
   return (
     <div className="row mt-5">
       <div className="col">
-        {grupoSelecionado.toLowerCase().includes("grupo 2") && tipoTurma ? (
+        {["grupo 2", "grupo 5"].some((grupo) =>
+          grupoSelecionado.toLowerCase().includes(grupo),
+        ) && tipoTurma ? (
           <h2 className="text-start texto-simples-verde fw-bold mb-3">
             Preço das Alimentações -{" "}
-            <span
-              className={`titulo-tag turma-${tipoTurma
-                .split("-")[1]
-                ?.trim()
-                .replace(/\s/g, "-")
-                .toLowerCase()}`}
-            >
-              {tipoTurma}
-            </span>
+            <span className={`titulo-tag ${temaTag}`}>{tipoTurma}</span>
           </h2>
         ) : (
           <h2 className="text-start texto-simples-verde fw-bold">
             Preço das Alimentações
           </h2>
         )}
-
         <Table pagination={false} bordered dataSource={alimentacoes}>
           <Table.Column
             title="Tipo de Alimentação"
