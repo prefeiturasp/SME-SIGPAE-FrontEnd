@@ -12,6 +12,7 @@ type Props = {
   tiposAlimentacao: Array<any>;
   grupoSelecionado?: string;
   tipoTurma?: string;
+  temaTag?: string;
 };
 
 export default ({
@@ -19,6 +20,7 @@ export default ({
   tiposAlimentacao,
   grupoSelecionado,
   tipoTurma = "",
+  temaTag = "",
 }: Props) => {
   const alimentacoes = tiposAlimentacao
     .filter((t) => ALIMENTACOES.includes(t.nome))
@@ -52,18 +54,12 @@ export default ({
   return (
     <div className="row mt-5">
       <div className="col">
-        {grupoSelecionado.toLowerCase().includes("grupo 2") ? (
+        {["grupo 2", "grupo 5"].some((grupo) =>
+          grupoSelecionado.toLowerCase().includes(grupo),
+        ) ? (
           <h2 className="text-start texto-simples-verde fw-bold mb-3">
-            Preço das Dietas Tipo B -{" "}
-            <span
-              className={`titulo-tag turma-${tipoTurma
-                .split("-")[1]
-                ?.trim()
-                .replace(/\s/g, "-")
-                .toLowerCase()}`}
-            >
-              {tipoTurma}
-            </span>
+            Preço das Dietas Tipo B{" - "}
+            <span className={`titulo-tag ${temaTag}`}>{tipoTurma}</span>
           </h2>
         ) : (
           <h2 className="text-start texto-simples-verde fw-bold">
