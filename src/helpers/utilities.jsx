@@ -972,6 +972,10 @@ export const escolaNaoPossuiAlunosRegulares = (solicitacaoMedicaoInicial) => {
   return solicitacaoMedicaoInicial.escola_possui_alunos_regulares === false;
 };
 
+export const recreioNasFeriasDaMedicao = (solicitacaoMedicaoInicial) => {
+  return solicitacaoMedicaoInicial.recreio_nas_ferias;
+};
+
 export const tipoSolicitacaoComoQuery = (obj) => {
   return `tipoSolicitacao=${comoTipo(obj)}`;
 };

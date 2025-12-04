@@ -126,8 +126,14 @@ export default () => {
   const getCadastrosRecreioNasFerias = async () => {
     const response = await listarRecreioNasFerias();
     if (response.status === HTTP_STATUS.OK) {
-      setCadastrosRecreioNasFerias(response.data.results);
-      return response.data.results;
+      setCadastrosRecreioNasFerias(
+        response.data.results.filter(
+          (recreio) => recreio.unidades_participantes.length > 0,
+        ),
+      );
+      return response.data.results.filter(
+        (recreio) => recreio.unidades_participantes.length > 0,
+      );
     } else {
       toastError("Erro ao carregar cadastros de Recreio nas Férias.");
     }
