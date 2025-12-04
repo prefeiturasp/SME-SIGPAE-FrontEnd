@@ -24,6 +24,7 @@ import {
   usuarioEhDilogDiretoria,
   usuarioEhDilogAbastecimento,
 } from "../../../../../../helpers/utilities";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
   const statusValue = (status) => {
@@ -43,7 +44,7 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
     let numero = cronograma.numero;
     imprimirCronograma(uuid, numero)
       .catch((error) =>
-        error.response.data.text().then((text) => toastError(text))
+        error.response.data.text().then((text) => toastError(text)),
       )
       .finally(() => {
         setCarregando(false);
@@ -109,7 +110,13 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                       title={cronograma.ficha_tecnica?.produto?.nome}
                     >
                       {cronograma.ficha_tecnica?.produto?.nome &&
-                        formataNome(cronograma.ficha_tecnica?.produto?.nome)}
+                        formataNome("cronograma.ficha_tecnica?.produto?.nome")}
+                      {cronograma.contrato.programa !== "LEVE_LEITE" && (
+                        <>
+                          {"   "}
+                          <TagLeveLeite />
+                        </>
+                      )}
                     </Tooltip>
                   </div>
                   <div className={`${bordas}`}>
