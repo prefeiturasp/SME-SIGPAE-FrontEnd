@@ -110,8 +110,8 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                       title={cronograma.ficha_tecnica?.produto?.nome}
                     >
                       {cronograma.ficha_tecnica?.produto?.nome &&
-                        formataNome("cronograma.ficha_tecnica?.produto?.nome")}
-                      {cronograma.contrato.programa !== "LEVE_LEITE" && (
+                        formataNome(cronograma.ficha_tecnica?.produto?.nome)}
+                      {cronograma.contrato.programa === "LEVE_LEITE" && (
                         <>
                           {"   "}
                           <TagLeveLeite />
