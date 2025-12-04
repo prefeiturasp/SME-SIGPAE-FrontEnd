@@ -1,39 +1,43 @@
-import React, { useState, useEffect } from "react";
+import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
+import { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
-import CKEditorField from "src/components/Shareable/CKEditorField";
-import SSelect from "src/components/Shareable/Select";
-import { InputComData } from "src/components/Shareable/DatePicker";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import {
-  dateDelta,
-  getError,
-  composeValidators,
-  gerarParametrosConsulta,
-} from "src/helpers/utilities";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import { InputComData } from "src/components/Shareable/DatePicker";
 import InputText from "src/components/Shareable/Input/InputText";
-import { length, required } from "src/helpers/fieldValidators";
+import SSelect from "src/components/Shareable/Select";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import {
-  getSolicitacoesDietaEspecial,
+  length,
+  required,
+  textAreaRequired,
+} from "src/helpers/fieldValidators";
+import {
+  composeValidators,
+  dateDelta,
+  gerarParametrosConsulta,
+  getError,
+} from "src/helpers/utilities";
+import {
   getMotivosAlteracaoUE,
+  getSolicitacoesDietaEspecial,
 } from "src/services/dietaEspecial.service";
 import { getEscolasSimplissima } from "src/services/escola.service";
-import { getStatusSolicitacoesVigentes } from "src/helpers/dietaEspecial";
 import { obtemDadosAlunoPeloEOL } from "src/services/perfil.service";
-import HTTP_STATUS from "http-status-codes";
 
 import SolicitacaoVigente from "src/components/screens/DietaEspecial/Escola/componentes/SolicitacaoVigente";
 import { formatarSolicitacoesVigentes } from "src/components/screens/DietaEspecial/Escola/helper";
 
 import "./styles.scss";
 
-import { createSolicitacaoAlteracaoUE } from "src/services/dietaEspecial.service";
 import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
+import { createSolicitacaoAlteracaoUE } from "src/services/dietaEspecial.service";
 
 export default ({
   solicitacoesVigentes,
@@ -176,6 +180,15 @@ export default ({
       }
     }
     setCarregandoAluno(false);
+  };
+
+  const ehMotivoOutro = (values) => {
+    return (
+      values?.motivo_alteracao &&
+      motivosAlteracaoUE
+        .find((m) => m.uuid === values.motivo_alteracao)
+        ?.nome.includes("Outro")
+    );
   };
 
   return (
@@ -354,6 +367,12 @@ export default ({
                   label="Observações"
                   name="observacoes_alteracao"
                   className="form-control"
+                  required={!process.env.IS_TEST && ehMotivoOutro(values)}
+                  validate={
+                    !process.env.IS_TEST &&
+                    ehMotivoOutro(values) &&
+                    composeValidators(textAreaRequired)
+                  }
                 />
               </div>
             </div>

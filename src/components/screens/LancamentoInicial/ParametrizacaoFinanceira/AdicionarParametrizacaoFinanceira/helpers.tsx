@@ -95,8 +95,8 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
 
 export const carregarValores = (
   tabelas: TabelaParametrizacao[],
-  grupo: string,
-  pendencia: boolean = false,
+  grupoSelecionado: string,
+  grupoPendencia?: string,
 ) => {
   const getCampo = (tipo: string): string => {
     const campos = {
@@ -108,15 +108,21 @@ export const carregarValores = (
   };
 
   const resultado: object = {};
-  const ehGrupo2 = grupo.toLowerCase().includes("grupo 2");
+  const ehGrupo2 = grupoSelecionado.toLowerCase().includes("grupo 2");
+  const ehGrupo5 = grupoSelecionado.toLowerCase().includes("grupo 5");
   tabelas.forEach((item) => {
     let chavePrincipal: string;
     if (ehGrupo2 && item.periodo_escolar) {
       chavePrincipal = `${item.nome} - CEI - Período ${capitalize(item.periodo_escolar)}`;
     } else if (item.periodo_escolar) {
       chavePrincipal = `${item.nome} - Período ${capitalize(item.periodo_escolar)}`;
-    } else if (ehGrupo2 && pendencia) {
+    } else if (ehGrupo2 && grupoPendencia) {
       chavePrincipal = `${item.nome.replace("/Restrição de Aminoácidos", "")} - Turmas Infantil - EMEI`;
+    } else if (ehGrupo5 && grupoPendencia) {
+      if (grupoPendencia === "grupo 3")
+        chavePrincipal = `${item.nome} - EMEBS Fundamental`;
+      else if (grupoPendencia === "grupo 4")
+        chavePrincipal = `${item.nome} - EMEBS Infantil`;
     } else {
       chavePrincipal = item.nome;
     }
