@@ -41,9 +41,9 @@ export const meusDados = async () => {
   }
 };
 
-export const getMeusDados = async () => {
+export const getMeusDados = async (params = {}) => {
   const url = `${API_URL}/usuarios/meus-dados/`;
-  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;
@@ -118,7 +118,7 @@ export const getPerfisSubordinados = async (params) => {
       `/perfis-vinculados/${perfil}/perfis-subordinados/`,
       {
         params,
-      }
+      },
     );
   } catch (error) {
     toastError(getMensagemDeErro(error.response.status));
