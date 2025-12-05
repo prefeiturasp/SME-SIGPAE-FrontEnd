@@ -172,9 +172,11 @@ export default () => {
         solicitacoesLancadas = await getSolicitacoesLancadas(payload);
       }
 
-      const cadastrosRecreioPreparados = (
+      let cadastrosRecreioPreparados = [];
+
+      cadastrosRecreioPreparados = (
         cadastrosRecreioNasFerias || cadastrosRecreioNasFerias_
-      ).map((cadastro) => {
+      )?.map((cadastro) => {
         const dataInicio = parse(
           cadastro.data_inicio,
           "dd/MM/yyyy",
@@ -227,7 +229,7 @@ export default () => {
           });
         }
 
-        cadastrosRecreioPreparados.forEach((cad) => {
+        cadastrosRecreioPreparados?.forEach((cad) => {
           if (cad.mesInicio === mes && cad.anoInicio === ano) {
             periodos.push({
               dataBRT: cad.dataInicio,

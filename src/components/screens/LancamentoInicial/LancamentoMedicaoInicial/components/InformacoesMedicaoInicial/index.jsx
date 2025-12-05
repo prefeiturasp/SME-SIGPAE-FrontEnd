@@ -215,8 +215,9 @@ export default ({
     const dataPeriodo = new Date(periodoSelecionado);
 
     const recreio_nas_ferias_uuid =
-      objectoPeriodos.find((o) => o.dataBRT.getTime() === dataPeriodo.getTime())
-        ?.recreio_nas_ferias || null;
+      objectoPeriodos?.find(
+        (o) => o.dataBRT.getTime() === dataPeriodo.getTime(),
+      )?.recreio_nas_ferias || null;
 
     return {
       escola: escolaInstituicao.uuid,
