@@ -976,6 +976,13 @@ export const recreioNasFeriasDaMedicao = (solicitacaoMedicaoInicial) => {
   return solicitacaoMedicaoInicial.recreio_nas_ferias;
 };
 
+export const recreioNasFeriasComColaboradores = (solicitacaoMedicaoInicial) => {
+  return (
+    solicitacaoMedicaoInicial.recreio_nas_ferias?.unidades_participantes[0]
+      ?.tipos_alimentacao.colaboradores?.length > 0
+  );
+};
+
 export const tipoSolicitacaoComoQuery = (obj) => {
   return `tipoSolicitacao=${comoTipo(obj)}`;
 };

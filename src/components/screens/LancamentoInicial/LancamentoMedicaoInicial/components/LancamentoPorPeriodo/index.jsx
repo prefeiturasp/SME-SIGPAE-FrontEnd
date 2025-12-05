@@ -15,6 +15,7 @@ import {
   deepCopy,
   escolaNaoPossuiAlunosRegulares,
   getError,
+  recreioNasFeriasComColaboradores,
   recreioNasFeriasDaMedicao,
   tiposAlimentacaoETEC,
   usuarioEhEscolaTerceirizadaDiretor,
@@ -44,8 +45,8 @@ import {
   CORES,
   removeObjetosDuplicados,
   renderBotaoEnviarCorrecao,
-  verificaSeEnviarCorrecaoDisabled,
   verificaSeEnviaCorrecaoSemOcorrenciaDisabled,
+  verificaSeEnviarCorrecaoDisabled,
 } from "./helpers";
 
 export const LancamentoPorPeriodo = ({
@@ -600,21 +601,25 @@ export const LancamentoPorPeriodo = ({
                 quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
                 errosAoSalvar={errosAoSalvar}
               />
-              <CardLancamento
-                grupo="Colaboradores"
-                cor={CORES[11]}
-                tipos_alimentacao={recreioNasFeriasDaMedicao(
-                  solicitacaoMedicaoInicial,
-                ).unidades_participantes[0].tipos_alimentacao.colaboradores.map(
-                  (tpi) => tpi.nome,
-                )}
-                periodoSelecionado={periodoSelecionado}
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                ehGrupoSolicitacoesDeAlimentacao={true}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                errosAoSalvar={errosAoSalvar}
-              />
+              {recreioNasFeriasComColaboradores(solicitacaoMedicaoInicial) && (
+                <CardLancamento
+                  grupo="Colaboradores"
+                  cor={CORES[11]}
+                  tipos_alimentacao={recreioNasFeriasDaMedicao(
+                    solicitacaoMedicaoInicial,
+                  ).unidades_participantes[0].tipos_alimentacao.colaboradores.map(
+                    (tpi) => tpi.nome,
+                  )}
+                  periodoSelecionado={periodoSelecionado}
+                  solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                  objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                  ehGrupoSolicitacoesDeAlimentacao={true}
+                  quantidadeAlimentacoesLancadas={
+                    quantidadeAlimentacoesLancadas
+                  }
+                  errosAoSalvar={errosAoSalvar}
+                />
+              )}
             </>
           )}
 
