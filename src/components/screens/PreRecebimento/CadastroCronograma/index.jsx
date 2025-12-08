@@ -436,7 +436,7 @@ export default () => {
                   <div className="row">
                     <div className="col-8">
                       <Field
-                        data-testid="input-empresa"
+                        dataTestId="input-empresa"
                         className="input-cronograma"
                         component={AutoCompleteField}
                         options={getEmpresaFiltrado(
