@@ -27,6 +27,13 @@ type ModalAdicionarUnidadeEducacionalInterface = {
 };
 
 const TIPOS_CEMEI = ["CEMEI", "CEU CEMEI"];
+const TIPOS_COM_ALIMENTACAO_FIXA_INSCRITOS = [
+  "CEI",
+  "CEU CEI",
+  "CCI",
+  "CEMEI",
+  "CEU CEMEI",
+];
 
 export const ModalAdicionarUnidadeEducacional = ({
   showModal,
@@ -37,6 +44,7 @@ export const ModalAdicionarUnidadeEducacional = ({
   const { lotes, lotesOpts } = useLotes();
   const [dreLote, setDreLote] = useState("");
   const [tipoUnidade, setTipoUnidade] = useState("");
+  const [formApiRef, setFormApiRef] = useState<any>(null);
 
   const { tipos, tiposOpts, tiposMap } = useTiposUnidade(dreLote, lotes);
   const alimentacao = useAlimentacao();
@@ -45,12 +53,20 @@ export const ModalAdicionarUnidadeEducacional = ({
 
   const tipoSelecionado = useMemo(
     () => tipos.find((t) => t.uuid === tipoUnidade),
-    [tipos, tipoUnidade]
+    [tipos, tipoUnidade],
   );
 
   const isCemei = useMemo(
     () => TIPOS_CEMEI.includes(tipoSelecionado?.nome || ""),
-    [tipoSelecionado]
+    [tipoSelecionado],
+  );
+
+  const isTipoComAlimentacaoFixaParaInscritos = useMemo(
+    () =>
+      TIPOS_COM_ALIMENTACAO_FIXA_INSCRITOS.includes(
+        tipoSelecionado?.nome || "",
+      ),
+    [tipoSelecionado],
   );
 
   useEffect(() => {
@@ -68,6 +84,21 @@ export const ModalAdicionarUnidadeEducacional = ({
     fetchUnidades(dreUuid, tipoUnidade);
     alimentacao.loadAlimentacao(tipoUnidade, tiposMap, isCemei);
   }, [dreLote, tipoUnidade, lotes, tiposMap, isCemei]);
+
+  useEffect(() => {
+    if (
+      formApiRef &&
+      isTipoComAlimentacaoFixaParaInscritos &&
+      alimentacao.inscritos?.length > 0
+    ) {
+      const todosValores = alimentacao.inscritos.map((opt: any) => opt.value);
+      formApiRef.change("tipos_alimentacao_inscritos", todosValores);
+    }
+  }, [
+    formApiRef,
+    isTipoComAlimentacaoFixaParaInscritos,
+    alimentacao.inscritos,
+  ]);
 
   const handleAdicionarUnidade = (values: any) => {
     const lote = lotes.find((l) => l.uuid === values.dres_lote);
@@ -96,7 +127,7 @@ export const ModalAdicionarUnidadeEducacional = ({
 
           alimentacaoColaboradores: mapAlimentacoes(
             alimentacao.colaboradores,
-            values.tipos_alimentacao_colaboradores
+            values.tipos_alimentacao_colaboradores,
           ),
           tiposAlimentacaoColaboradoresUuids:
             values.tipos_alimentacao_colaboradores || [],
@@ -110,14 +141,14 @@ export const ModalAdicionarUnidadeEducacional = ({
 
             alimentacaoInscritos: mapAlimentacoes(
               alimentacao.inscritos,
-              values.tipos_alimentacao_inscritos
+              values.tipos_alimentacao_inscritos,
             ),
             tiposAlimentacaoInscritosUuids:
               values.tipos_alimentacao_inscritos || [],
 
             alimentacaoInscritosInfantil: mapAlimentacoes(
               alimentacao.inscritosInfantil,
-              values.tipos_alimentacao_inscritos_infantil
+              values.tipos_alimentacao_inscritos_infantil,
             ),
             tiposAlimentacaoInfantilUuids:
               values.tipos_alimentacao_inscritos_infantil || [],
@@ -129,7 +160,7 @@ export const ModalAdicionarUnidadeEducacional = ({
             ...base,
             alimentacaoInscritos: mapAlimentacoes(
               alimentacao.inscritos,
-              values.tipos_alimentacao_inscritos
+              values.tipos_alimentacao_inscritos,
             ),
             tiposAlimentacaoInscritosUuids:
               values.tipos_alimentacao_inscritos || [],
@@ -138,7 +169,7 @@ export const ModalAdicionarUnidadeEducacional = ({
             tiposAlimentacaoInfantilUuids: [],
           },
         ];
-      }
+      },
     );
 
     novasUnidades.forEach((unidade) => {
@@ -164,8 +195,12 @@ export const ModalAdicionarUnidadeEducacional = ({
           keepDirtyOnReinitialize
           onSubmit={() => {}}
           render={({ values, form: formApi, submitting: formSubmitting }) => {
+            useEffect(() => {
+              setFormApiRef(formApi);
+            }, [formApi]);
+
             const enableSelectors = Boolean(
-              values?.dres_lote && values?.tipos_unidades
+              values?.dres_lote && values?.tipos_unidades,
             );
 
             const isAddDisabled =
@@ -247,7 +282,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                     onSelectedChanged={(vals) =>
                       formApi.change(
                         "unidades_educacionais",
-                        vals.map((v) => v.value)
+                        vals.map((v) => v.value),
                       )
                     }
                   />
@@ -265,13 +300,17 @@ export const ModalAdicionarUnidadeEducacional = ({
                       selected={values?.tipos_alimentacao_inscritos || []}
                       required
                       validate={required}
-                      disabled={!enableSelectors}
-                      onSelectedChanged={(vals) =>
+                      disabled={
+                        !enableSelectors ||
+                        isTipoComAlimentacaoFixaParaInscritos
+                      }
+                      onSelectedChanged={(vals) => {
+                        if (isTipoComAlimentacaoFixaParaInscritos) return;
                         formApi.change(
                           "tipos_alimentacao_inscritos",
-                          vals.map((v) => v.value)
-                        )
-                      }
+                          vals.map((v) => v.value),
+                        );
+                      }}
                     />
                   </div>
 
@@ -286,7 +325,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                       onSelectedChanged={(vals) =>
                         formApi.change(
                           "tipos_alimentacao_colaboradores",
-                          vals.map((v) => v.value)
+                          vals.map((v) => v.value),
                         )
                       }
                     />
@@ -309,7 +348,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                         onSelectedChanged={(vals) =>
                           formApi.change(
                             "tipos_alimentacao_inscritos_infantil",
-                            vals.map((v) => v.value)
+                            vals.map((v) => v.value),
                           )
                         }
                       />
