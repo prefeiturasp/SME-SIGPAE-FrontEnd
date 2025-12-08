@@ -1,5 +1,9 @@
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Checkbox, Collapse, Modal, Spin } from "antd";
+import { format, getYear } from "date-fns";
+import HTTP_STATUS from "http-status-codes";
+import { useCallback, useEffect, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
@@ -11,11 +15,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { DETALHAMENTO_DO_LANCAMENTO } from "src/configs/constants";
-import { format, getYear } from "date-fns";
 import { ehEscolaTipoCEMEI } from "src/helpers/utilities";
-import HTTP_STATUS from "http-status-codes";
-import React, { useCallback, useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
 import {
   getTiposDeContagemAlimentacao,
   setSolicitacaoMedicaoInicial,
@@ -51,6 +51,7 @@ export const InformacoesMedicaoInicialCEI = ({
   nomeTerceirizada,
   solicitacaoMedicaoInicial,
   onClickInfoBasicas,
+  objectoPeriodos,
 }) => {
   const { responsaveis, setaResponsavel } = useResponsaveis(
     RESPONSABLES_INITIAL_STATE,
@@ -280,6 +281,11 @@ export const InformacoesMedicaoInicialCEI = ({
     const dataPeriodo = new Date(periodoSelecionado);
     const alunosParciais = criarPayloadAlunosParciais();
 
+    const recreio_nas_ferias_uuid =
+      objectoPeriodos?.find(
+        (o) => o.dataBRT.getTime() === dataPeriodo.getTime(),
+      )?.recreio_nas_ferias || null;
+
     const payload = {
       escola: escolaInstituicao.uuid,
       tipos_contagem_alimentacao: tipoDeContagemSelecionada,
@@ -291,6 +297,10 @@ export const InformacoesMedicaoInicialCEI = ({
 
     if (alunosParciais) {
       payload.alunos_periodo_parcial = alunosParciais;
+    }
+
+    if (recreio_nas_ferias_uuid) {
+      payload.recreio_nas_ferias = recreio_nas_ferias_uuid;
     }
 
     return payload;
