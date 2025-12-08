@@ -3,6 +3,7 @@ import {
   escolaNaoPossuiAlunosRegulares,
 } from "src/helpers/utilities";
 import { ALUNOS_EMEBS } from "../constants";
+import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
@@ -1818,3 +1819,29 @@ export const exibirTooltipSuspensaoAutorizadaAlimentacaoDreCodae = (
     !todasAlimentacoesSuspensas(periodo, suspensoesAutorizadas, column)
   );
 };
+
+export async function carregarDiasCalendario({
+  escola,
+  mes,
+  ano,
+  periodoUuid,
+}) {
+  const paramsBase = {
+    escola_uuid: escola.uuid,
+    mes,
+    ano,
+    periodo_escolar_uuid: periodoUuid,
+  };
+
+  let response = await getDiasCalendario(paramsBase);
+
+  if (response.data.length === 0 && periodoUuid) {
+    const paramsAjustado = {
+      ...paramsBase,
+      periodo_escolar_uuid: null,
+    };
+    response = await getDiasCalendario(paramsAjustado);
+  }
+
+  return response.data;
+}
