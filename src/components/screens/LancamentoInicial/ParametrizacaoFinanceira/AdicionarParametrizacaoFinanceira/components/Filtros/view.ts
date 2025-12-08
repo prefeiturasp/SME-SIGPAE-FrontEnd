@@ -220,20 +220,23 @@ export default ({
 
       let dadosTabelas = {};
       const pendencias = grupoPendencias[numeroGrupo] ?? [];
-      for (const g of pendencias) {
+      for (const grupoPendencia of pendencias) {
         const pendencia = results.find(
           (parametrizacao) =>
-            parametrizacao.grupo_unidade_escolar.nome.toLowerCase() === g,
+            parametrizacao.grupo_unidade_escolar.nome.toLowerCase() ===
+            grupoPendencia,
         );
-
         if (!pendencia) continue;
 
         const response =
           await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
             pendencia.uuid,
           );
-
-        const dados = carregarValores(response.tabelas, grupoNome, true);
+        const dados = carregarValores(
+          response.tabelas,
+          grupoNome,
+          grupoPendencia,
+        );
         dadosTabelas = {
           ...dadosTabelas,
           ...dados,

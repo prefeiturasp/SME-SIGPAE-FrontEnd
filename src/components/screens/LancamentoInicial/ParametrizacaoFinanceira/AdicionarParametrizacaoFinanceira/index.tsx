@@ -18,6 +18,7 @@ import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/par
 import TabelasGrupoCEI from "./components/Tabelas/TabelasGrupoCEI";
 import TabelasGruposEMEI from "./components/Tabelas/TabelasGruposEMEI";
 import TabelasGrupoCEMEI from "./components/Tabelas/TabelasGrupoCEMEI";
+import TabelasGrupoEMEBS from "./components/Tabelas/TabelasGrupoEMEBS";
 import ModalCancelar from "./components/ModalCancelar";
 import ModalSalvar from "./components/ModalSalvar";
 import { formataPayload } from "./helpers";
@@ -107,7 +108,7 @@ export default () => {
 
               const exibeTabelasEMEBS = grupoSelecionado
                 .toLowerCase()
-                .includes("grupo 4");
+                .includes("grupo 5");
 
               return (
                 <form onSubmit={handleSubmit}>
@@ -142,6 +143,13 @@ export default () => {
                       form={form}
                       tiposAlimentacao={tiposAlimentacao}
                       faixasEtarias={faixasEtarias}
+                      grupoSelecionado={grupoSelecionado}
+                    />
+                  ) : null}
+                  {exibeTabelasEMEBS && tabelasCarregadas ? (
+                    <TabelasGrupoEMEBS
+                      form={form}
+                      tiposAlimentacao={tiposAlimentacao}
                       grupoSelecionado={grupoSelecionado}
                     />
                   ) : null}

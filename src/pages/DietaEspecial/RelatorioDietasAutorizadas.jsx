@@ -1,5 +1,3 @@
-import React from "react";
-
 import { HOME } from "src/constants/config";
 
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
@@ -27,7 +25,7 @@ const anteriores = [
   },
 ];
 
-export default () => (
+export const RelatorioDietasAutorizadasPage = () => (
   <Page botaoVoltar voltarPara="/" titulo={atual.titulo}>
     <Breadcrumb home={HOME} anteriores={anteriores} atual={atual} />
     <RelatorioDietasAutorizadas />

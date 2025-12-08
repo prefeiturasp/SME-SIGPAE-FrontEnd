@@ -364,8 +364,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
                     <CardAtalho
                       titulo={"Alterar U.E da Dieta Especial"}
                       nome="card-inclusao"
-                      texto={`Quando houver necessidade de alteração de unidade escolar
-                        do aluno para os programas Polo e Recreio nas Férias.`}
+                      texto={`Quando houver necessidade de alteração de Unidade Educacional do aluno para Programa de Recreio nas Férias ou outro.`}
                       textoLink={"Alterar U.E"}
                       href={"/escola/dieta-especial-alteracao-ue"}
                     />
