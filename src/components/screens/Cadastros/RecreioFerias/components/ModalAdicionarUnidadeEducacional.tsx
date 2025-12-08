@@ -319,7 +319,12 @@ export const ModalAdicionarUnidadeEducacional = ({
                       component={MultiselectRaw}
                       label="Tipos de Alimentações para Colaboradores"
                       name="tipos_alimentacao_colaboradores"
-                      options={alimentacao.colaboradores}
+                      options={alimentacao.colaboradores.filter(
+                        (opt) =>
+                          !opt.label
+                            ?.toLowerCase()
+                            .includes("lanche emergencial"),
+                      )}
                       selected={values?.tipos_alimentacao_colaboradores || []}
                       disabled={!enableSelectors}
                       onSelectedChanged={(vals) =>
