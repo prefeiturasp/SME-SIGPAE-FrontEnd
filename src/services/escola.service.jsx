@@ -152,3 +152,12 @@ export const getQuantidadeAlunosMatriculadosPorData = async (params) => {
     return data;
   }
 };
+
+export const getGruposExistentesPorDre = async (params) => {
+  let url = `${API_URL}/grupos-unidade-escolar/por-dre/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};

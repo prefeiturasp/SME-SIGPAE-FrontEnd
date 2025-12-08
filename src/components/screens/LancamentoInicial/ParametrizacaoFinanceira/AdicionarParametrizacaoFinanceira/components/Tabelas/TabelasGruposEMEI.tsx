@@ -25,7 +25,7 @@ export default ({ form, tiposAlimentacao, grupoSelecionado }: Props) => {
           tiposAlimentacao={_TIPOS_ALIMENTACAO}
           grupoSelecionado={grupoSelecionado}
           pendencias={[
-            "Preço das Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos",
+            "Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos",
             "Dietas Tipo B",
           ]}
         />

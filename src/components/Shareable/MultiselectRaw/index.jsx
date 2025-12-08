@@ -68,7 +68,7 @@ export const MultiselectRaw = (props) => {
         ),
         <label
           key={1}
-          htmlFor={input.name}
+          htmlFor={input?.name}
           className={`${labelClassName || "col-form-label"}`}
         >
           {label}

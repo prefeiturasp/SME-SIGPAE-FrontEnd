@@ -156,7 +156,10 @@ export default ({
         await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
           uuid,
         );
-      const dadosTabelas = carregarValores(response.tabelas);
+      const dadosTabelas = carregarValores(
+        response.tabelas,
+        response.grupo_unidade_escolar.nome,
+      );
       const parametrizacao = {
         edital: response.edital.uuid,
         lote: response.lote.uuid,
@@ -193,6 +196,59 @@ export default ({
 
   const initialGrupoUnidade =
     uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
+
+  const getGruposPendentes = async () => {
+    try {
+      const { edital, lote, grupo_unidade_escolar } = form.getState().values;
+
+      const { results } =
+        await ParametrizacaoFinanceiraService.getParametrizacoesFinanceiras(1, {
+          edital,
+          lote,
+        });
+
+      const grupoNome = gruposUnidadesOpcoes.find(
+        (e) => e.uuid === grupo_unidade_escolar,
+      ).nome;
+
+      const numeroGrupo = grupoNome.match(/\d+/)?.[0];
+
+      const grupoPendencias = {
+        "2": ["grupo 1", "grupo 3"],
+        "5": ["grupo 3", "grupo 4"],
+      };
+
+      let dadosTabelas = {};
+      const pendencias = grupoPendencias[numeroGrupo] ?? [];
+      for (const grupoPendencia of pendencias) {
+        const pendencia = results.find(
+          (parametrizacao) =>
+            parametrizacao.grupo_unidade_escolar.nome.toLowerCase() ===
+            grupoPendencia,
+        );
+        if (!pendencia) continue;
+
+        const response =
+          await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
+            pendencia.uuid,
+          );
+        const dados = carregarValores(
+          response.tabelas,
+          grupoNome,
+          grupoPendencia,
+        );
+        dadosTabelas = {
+          ...dadosTabelas,
+          ...dados,
+        };
+      }
+
+      if (Object.keys(dadosTabelas).length > 0)
+        form.change("tabelas", dadosTabelas);
+    } catch {
+      toastError("Erro ao carregar valores do grupo selecionado.");
+    }
+  };
 
   const onChangeTiposUnidades = (grupo: string) => {
     form.change("grupo_unidade_escolar", grupo);
@@ -253,5 +309,6 @@ export default ({
     onChangeTiposUnidades,
     onChangeEdital,
     onChangeLote,
+    getGruposPendentes,
   };
 };

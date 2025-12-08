@@ -13,6 +13,14 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
   const mockOnSubmit = jest.fn();
 
   beforeEach(async () => {
+    const gruposHabilitadosDRE = {
+      "Grupo 1": false,
+      "Grupo 2": true,
+      "Grupo 3": true,
+      "Grupo 4": true,
+      "Grupo 5": true,
+      "Grupo 6": true,
+    };
     mock
       .onGet("/grupos-unidade-escolar/")
       .reply(200, mockGetGrupoUnidadeEscolar);
@@ -36,6 +44,7 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
               onClose={mockOnClose}
               onSubmit={mockOnSubmit}
               nomeRelatorio="Relatório Unificado"
+              gruposHabilitadosPorDre={gruposHabilitadosDRE}
             />
             <ToastContainer />
           </MeusDadosContext.Provider>
@@ -66,9 +75,8 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
     expect(screen.getByText("Grupo 6 (CIEJA, CMCT)")).toBeInTheDocument();
   });
 
-  it("desabilita grupos 2 e 5 conforme a regra do Relatório Unificado", () => {
-    expect(screen.getByLabelText("Grupo 2 (CEMEI, CEU CEMEI)")).toBeDisabled();
-    expect(screen.getByLabelText("Grupo 5 (EMEBS)")).toBeDisabled();
+  it("desabilita grupo 6 conforme a regra do Relatório Unificado", () => {
+    expect(screen.getByLabelText("Grupo 6 (CIEJA, CMCT)")).toBeDisabled();
   });
 
   it("permite selecionar um grupo habilitado 3 e habilita o botão de gerar relatório", () => {
@@ -79,11 +87,27 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
     expect(botaoGerar).not.toBeDisabled();
   });
 
-  it("permite selecionar um grupo 1 e habilita o botão de gerar relatório", () => {
+  it("não permite selecionar um grupo 1 e não habilita o botão de gerar relatório", () => {
     const radio = screen.getByLabelText("Grupo 1 (CCI, CEI, CEI CEU)");
+    expect(radio).toBeDisabled();
+
+    const botaoGerar = screen.getByRole("button", { name: "Gerar Relatório" });
+    expect(botaoGerar).toBeDisabled();
+  });
+
+  it("permite selecionar um grupo 2 habilita o botão de gerar relatório", () => {
+    const radio = screen.getByLabelText("Grupo 2 (CEMEI, CEU CEMEI)");
     fireEvent.click(radio);
 
-    const botaoGerar = screen.getByText("Gerar Relatório");
+    const botaoGerar = screen.getByRole("button", { name: "Gerar Relatório" });
+    expect(botaoGerar).not.toBeDisabled();
+  });
+
+  it("permite selecionar um grupo 5 habilita o botão de gerar relatório", () => {
+    const radio = screen.getByLabelText("Grupo 5 (EMEBS)");
+    fireEvent.click(radio);
+
+    const botaoGerar = screen.getByRole("button", { name: "Gerar Relatório" });
     expect(botaoGerar).not.toBeDisabled();
   });
 

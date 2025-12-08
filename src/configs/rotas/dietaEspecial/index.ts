@@ -34,7 +34,7 @@ import { DietaEspecialAluno } from "src/pages/DietaEspecial/DashboardDietaEspeci
 import EditaProtocoloPadraoDieta from "src/pages/DietaEspecial/EditaProtocoloPadraoDieta";
 import ProtocoloPadraoDietaEspecialPage from "src/pages/DietaEspecial/ProtocoloPadraoDietaEspecialPage.jsx";
 import RelatorioAlunosDietasAtivasInativasPage from "src/pages/DietaEspecial/RelatorioAlunosDietasAtivasInativasPage.jsx";
-import RelatorioDietasAutorizadas from "src/pages/DietaEspecial/RelatorioDietasAutorizadas";
+import { RelatorioDietasAutorizadasPage } from "src/pages/DietaEspecial/RelatorioDietasAutorizadas";
 import RelatorioDietasCanceladas from "src/pages/DietaEspecial/RelatorioDietasCanceladas";
 import RelatorioGerencialDietas from "src/pages/DietaEspecial/RelatorioGerencialDietas.jsx";
 import RelatorioGestaoDietaEspecial from "src/pages/DietaEspecial/RelatorioGestaoDietaEspecial";
@@ -209,7 +209,7 @@ export const rotasDietaEspecial: Array<RotaInterface> = [
   },
   {
     path: `/${constants.DIETA_ESPECIAL}/${constants.RELATORIO_DIETAS_AUTORIZADAS}`,
-    component: RelatorioDietasAutorizadas,
+    component: RelatorioDietasAutorizadasPage,
     tipoUsuario:
       usuarioEhNutricionistaSupervisao() ||
       usuarioEhDRE() ||

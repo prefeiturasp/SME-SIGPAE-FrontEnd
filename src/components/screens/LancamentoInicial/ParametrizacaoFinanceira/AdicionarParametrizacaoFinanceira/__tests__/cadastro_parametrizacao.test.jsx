@@ -92,6 +92,12 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     fireEvent.change(input, { target: { value: valor } });
   };
 
+  const setInput = (testId, value) => {
+    const input = screen.getByTestId(testId);
+    fireEvent.change(input, { target: { value } });
+    return input;
+  };
+
   it("deve preencher os campos obrigatórios do formulário e clica em salvar", async () => {
     setSelect("edital-select", "752c11a3-b4fe-4f1c-b9af-61d42f0a6b56");
     setSelect("lote-select", "e67daf61-810c-45f0-8eeb-a75dbe4be608");
@@ -109,7 +115,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     });
   });
 
-  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 1", async () => {
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 1 - CEI", async () => {
     setSelect("edital-select", "752c11a3-b4fe-4f1c-b9af-61d42f0a6b56");
     setSelect("lote-select", "e67daf61-810c-45f0-8eeb-a75dbe4be608");
     setSelect("grupo-unidade-select", "550e8400-e29b-41d4-a716-446655440000");
@@ -128,9 +134,35 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       expect(screen.getAllByText(/Período Integral/i)).toHaveLength(3);
       expect(screen.getAllByText(/Período Parcial/i)).toHaveLength(3);
     });
+
+    const faixasEtarias = mockFaixasEtarias.results;
+
+    setInput(
+      `tabelas[Preço das Alimentações - Período Integral].${faixasEtarias[0].__str__}.valor_unitario`,
+      "3,00",
+    );
+    setInput(
+      `tabelas[Preço das Alimentações - Período Integral].${faixasEtarias[0].__str__}.valor_unitario_reajuste`,
+      "3,00",
+    );
+    const totalAlimentacoesIntegral = screen.getByTestId(
+      `tabelas[Preço das Alimentações - Período Integral].${faixasEtarias[0].__str__}.valor_unitario_total`,
+    );
+    const totalDietasTipoA = screen.getByTestId(
+      `tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos - Período Integral].${faixasEtarias[0].__str__}.valor_unitario_total`,
+    );
+    const totalDietasTipoB = screen.getByTestId(
+      `tabelas[Dietas Tipo B - Período Integral].${faixasEtarias[0].__str__}.valor_unitario_total`,
+    );
+
+    await waitFor(() => {
+      expect(totalAlimentacoesIntegral.value).toBe("6,00");
+      expect(totalDietasTipoA.value).toBe("6,00");
+      expect(totalDietasTipoB.value).toBe("6,00");
+    });
   });
 
-  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 3", async () => {
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 3 - EMEI", async () => {
     setSelect("edital-select", "3dea0d3c-eea2-4f32-90a6-ebae3597374b");
     setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
     setSelect("grupo-unidade-select", "743ed59c-9861-4230-860e-e01e2e080327");
@@ -146,7 +178,103 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
         screen.getByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
-      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument(2);
+      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
+      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
+    });
+  });
+
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 2 - CEMEI", async () => {
+    setSelect("edital-select", "557d1c87-ea6c-4911-8876-2a133f754ea1");
+    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
+    setSelect("grupo-unidade-select", "3601dfe6-4dd5-4099-9607-00cbfd04f49e");
+    setData("data_inicial", "01/11/2025");
+    setData("data_final", "30/11/2025");
+
+    const botao = screen.getByTestId("botao-carregar");
+    expect(botao).toBeInTheDocument();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(
+        screen.queryAllByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
+      ).toHaveLength(3);
+      expect(screen.queryAllByText(/Preço das Alimentações/i)).toHaveLength(3);
+      expect(screen.queryAllByText(/Preço das Dietas Tipo B/i)).toHaveLength(3);
+      expect(screen.queryAllByText(/Turmas Infantil - EMEI/i)).toHaveLength(3);
+      expect(screen.queryAllByText(/CEI - Período Parcial/i)).toHaveLength(3);
+      expect(screen.queryAllByText(/CEI - Período Integral/i)).toHaveLength(3);
+      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
+    });
+
+    setInput(
+      "tabelas[Preço das Alimentações - Turmas Infantil - EMEI].Lanche.valor_unitario",
+      "5,00",
+    );
+    setInput(
+      "tabelas[Preço das Alimentações - Turmas Infantil - EMEI].Lanche.valor_unitario_reajuste",
+      "5,00",
+    );
+    const totalAlimentacoesEMEI = screen.getByTestId(
+      "tabelas[Preço das Alimentações - Turmas Infantil - EMEI].Lanche.valor_unitario_total",
+    );
+    const totalDietasTipoAEMEI = screen.getByTestId(
+      "tabelas[Dietas Tipo A e Tipo A Enteral - Turmas Infantil - EMEI].Lanche.valor_unitario_total",
+    );
+    const totalDietasTipoBEMEI = screen.getByTestId(
+      "tabelas[Dietas Tipo B - Turmas Infantil - EMEI].Lanche.valor_unitario_total",
+    );
+
+    await waitFor(() => {
+      expect(totalAlimentacoesEMEI.value).toBe("10,00");
+      expect(totalDietasTipoAEMEI.value).toBe("10,00");
+      expect(totalDietasTipoBEMEI.value).toBe("10,00");
+    });
+  });
+
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 5 - EMEBS", async () => {
+    setSelect("edital-select", "ff94d604-4468-4553-9b54-6b428ce3be75");
+    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
+    setSelect("grupo-unidade-select", "fd9907bf-b64e-4e35-8e8d-4909d4daa778");
+    setData("data_inicial", "01/12/2025");
+    setData("data_final", "31/12/2025");
+
+    const botao = screen.getByTestId("botao-carregar");
+    expect(botao).toBeInTheDocument();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(screen.queryAllByText(/Preço das Alimentações/i)).toHaveLength(2);
+      expect(
+        screen.queryAllByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
+      ).toHaveLength(2);
+      expect(screen.queryAllByText(/Preço das Dietas Tipo B/i)).toHaveLength(2);
+      expect(screen.queryAllByText(/Kit Lanche/i)).toHaveLength(2);
+      expect(screen.queryAllByText(/EMEBS Infantil/i)).toHaveLength(3);
+      expect(screen.queryAllByText(/EMEBS Fundamental/i)).toHaveLength(3);
+    });
+
+    setInput(
+      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario",
+      "10,00",
+    );
+    setInput(
+      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario_reajuste",
+      "10,00",
+    );
+    const totalAlimentacoesFundamental = screen.getByTestId(
+      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario_total",
+    );
+    const totalDietasTipoAFundamental = screen.getByTestId(
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos - EMEBS Fundamental].Lanche.valor_unitario_total",
+    );
+    const totalDietasTipoBFundamental = screen.getByTestId(
+      "tabelas[Dietas Tipo B - EMEBS Fundamental].Lanche.valor_unitario_total",
+    );
+
+    await waitFor(() => {
+      expect(totalAlimentacoesFundamental.value).toBe("20,00");
+      expect(totalDietasTipoAFundamental.value).toBe("20,00");
+      expect(totalDietasTipoBFundamental.value).toBe("20,00");
     });
   });
 

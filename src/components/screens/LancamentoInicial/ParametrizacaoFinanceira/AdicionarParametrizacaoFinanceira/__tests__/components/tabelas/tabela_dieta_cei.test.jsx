@@ -62,6 +62,14 @@ describe("Testes de Tabela Dietas CEI - Parametrização Financeira", () => {
       expect(valorUnitario.value).toBe("2,00");
       expect(valorReajuste.value).toBe("100,00");
       expect(valorTotal.value).toBe("4,00");
+
+      faixasEtarias.forEach((faixa, index) => {
+        if (index === 0) return;
+        const percentualFaixa = screen.getByTestId(
+          `tabelas[Preço das Dietas CEI - Período Integral].${faixa.__str__}.percentual_acrescimo`,
+        );
+        expect(percentualFaixa.value).toBe("100,00");
+      });
     });
   });
 });

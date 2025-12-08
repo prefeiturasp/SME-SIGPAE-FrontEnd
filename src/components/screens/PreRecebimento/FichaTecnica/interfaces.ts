@@ -1,10 +1,16 @@
 import {
   CategoriaFichaTecnicaChoices,
   MecanismoControleChoices,
+  ProgramaChoices,
 } from "src/interfaces/pre_recebimento.interface";
 
 export interface OptionsCategoria {
   uuid: CategoriaFichaTecnicaChoices;
+  nome: string;
+}
+
+export interface OptionsPrograma {
+  uuid: ProgramaChoices;
   nome: string;
 }
 
@@ -21,6 +27,7 @@ export interface FichaTecnicaPayload {
   produto?: string;
   marca?: string;
   categoria?: CategoriaFichaTecnicaChoices;
+  programa?: ProgramaChoices;
   empresa?: string;
   pregao_chamada_publica?: string;
   fabricante?: FabricanteFichaPayload;
