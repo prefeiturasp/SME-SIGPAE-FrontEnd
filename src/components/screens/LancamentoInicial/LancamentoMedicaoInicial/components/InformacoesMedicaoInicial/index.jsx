@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import HTTP_STATUS from "http-status-codes";
-import { getYear, format } from "date-fns";
 import { Collapse, Input } from "antd";
+import { format, getYear } from "date-fns";
+import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Botao from "src/components/Shareable/Botao";
-import {
-  toastError,
-  toastSuccess,
-} from "src/components/Shareable/Toast/dialogs";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
 } from "src/components/Shareable/Botao/constants";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { DETALHAMENTO_DO_LANCAMENTO } from "src/configs/constants";
 import {
   getTiposDeContagemAlimentacao,
   setSolicitacaoMedicaoInicial,
   updateInformacoesBasicas,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
 
 export default ({
   periodoSelecionado,
@@ -105,6 +105,7 @@ export default ({
             <Input
               className="mt-2"
               name={`responsavel_nome_${responsavel}`}
+              data-testid={`input-responsavel-nome-${responsavel}`}
               defaultValue={responsaveis[responsavel]["nome"]}
               onChange={(event) =>
                 setaResponsavel("nome", event.target.value, responsavel)
@@ -117,6 +118,7 @@ export default ({
               maxLength={7}
               className="mt-2"
               name={`responsavel_rf_${responsavel}`}
+              data-testid={`input-responsavel-rf-${responsavel}`}
               onKeyPress={(event) => verificarInput(event, responsavel)}
               onChange={(event) => verificarInput(event, responsavel)}
               defaultValue={responsaveis[responsavel]["rf"]}
@@ -131,7 +133,7 @@ export default ({
   };
 
   const handleChangeTipoContagem = (values) => {
-    setTipoDeContagemSelecionada(values);
+    setTipoDeContagemSelecionada(values.map((value_) => value_.value));
   };
 
   const handleClickEditar = () => {
@@ -295,12 +297,11 @@ export default ({
             <Panel header="Informações Básicas da Medição Inicial" key="1">
               <div className="row">
                 <div className="col-5 info-label select-medicao-inicial">
-                  <b className="mb-2">
-                    Método de Contagem das Alimentações Servidas
-                  </b>
                   {opcoesContagem.length > 0 && (
-                    <StatefulMultiSelect
+                    <MultiselectRaw
+                      label="Método de Contagem das Alimentações Servidas"
                       name="contagem_refeicoes"
+                      dataTestId="multiselect-contagem-refeicoes"
                       selected={tipoDeContagemSelecionada}
                       options={opcoesContagem || []}
                       onSelectedChanged={(values) =>
@@ -311,6 +312,7 @@ export default ({
                         selectSomeItems: "Selecione os métodos de contagem",
                         allItemsAreSelected: "Todos os métodos selecionados",
                       }}
+                      required
                       disabled={!emEdicao}
                     />
                   )}

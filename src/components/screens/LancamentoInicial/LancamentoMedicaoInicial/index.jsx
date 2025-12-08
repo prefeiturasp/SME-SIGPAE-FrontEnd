@@ -529,6 +529,7 @@ export default () => {
                     location.pathname.includes(DETALHAMENTO_DO_LANCAMENTO)
                   }
                   open={open}
+                  data-testid="select-periodo-lancamento"
                   onClick={() => setOpen(!open)}
                   onBlur={() => setOpen(false)}
                   name="periodo_lancamento"
