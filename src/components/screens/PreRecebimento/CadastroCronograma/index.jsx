@@ -463,7 +463,7 @@ export default () => {
                         required
                         validate={required}
                         disabled={!values.empresa}
-                        dataTestId="select-div"
+                        dataTestId="select-contrato"
                       >
                         <Option value="" key={0}>
                           <label>Selecione um Contrato</label>
