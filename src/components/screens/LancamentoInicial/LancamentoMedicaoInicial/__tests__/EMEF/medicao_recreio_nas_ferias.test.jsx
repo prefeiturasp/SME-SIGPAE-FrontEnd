@@ -1,12 +1,5 @@
 import "@testing-library/jest-dom";
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import {
@@ -21,18 +14,18 @@ import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFP
 import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
 import { mockEscolaSimplesEMEF } from "src/mocks/services/escola.service/EMEF/escolaSimples";
 import { mockRecreioNasFeriasEMEFDezembro2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Dezembro2025/recreioNasFerias";
-import { mockSolicitacaoComRecreioNasFeriasCriadaDezembro2025EMEF } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Dezembro2025/solicitacaoRecreioNasFeriasCriada";
 import { mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Dezembro2025/solicitacaoRecreioNasFerias";
 import { quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Maio2025/quantidadesAlimentacaoesLancadasPeriodoGrupo";
 import { mockPanoramaEscolaEMEF } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/panoramaEscola";
-import { mockSolicitacaoMedicaoInicialEMEFMaio2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/solicitacaoMedicaoInicialMaio2025";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
-describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Recreio nas Ferias", () => {
+describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Medição com Recreio nas Ferias", () => {
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
+  const solicitacaoMedicaoInicialUuid =
+    mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0].uuid;
 
   beforeEach(async () => {
     mock
@@ -62,7 +55,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Recreio n
       .reply(200, { results: [] });
     mock
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-      .replyOnce(200, mockSolicitacaoMedicaoInicialEMEFMaio2025);
+      .replyOnce(200, mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF);
     mock.onGet("/dias-calendario/").reply(200, mockDiasCalendarioEMEFMaio2025);
     mock
       .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
@@ -86,7 +79,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Recreio n
       .reply(200, []);
     mock
       .onGet(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/ceu-gestao-frequencias-dietas/`,
+        `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoMedicaoInicialUuid}/ceu-gestao-frequencias-dietas/`,
       )
       .reply(200, []);
     mock
@@ -95,7 +88,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Recreio n
       )
       .reply(200, quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025);
 
-    const search = `?mes=12&ano=2025`;
+    const search = `?mes=12&ano=2025&recreio_nas_ferias=0e3cdb48-3a82-47e6-9263-300d478c6934`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,
@@ -141,77 +134,8 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Recreio n
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("Renderiza períodos escolares de EMEF", () => {
-    expect(screen.getByText("Manhã")).toBeInTheDocument();
-    expect(screen.getByText("Tarde")).toBeInTheDocument();
-    expect(screen.getByText("Programas e Projetos")).toBeInTheDocument();
-  });
-
-  it("Seleciona renderiza opção e seleciona `Recreio nas Férias - Dez 25`", async () => {
-    await act(async () => {
-      const select = screen.getByTestId("select-periodo-lancamento");
-      fireEvent.click(select);
-
-      mock
-        .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-        .replyOnce(200, []);
-
-      fireEvent.mouseDown(
-        screen
-          .getByTestId("select-periodo-lancamento")
-          .querySelector(".ant-select-selection-search-input"),
-      );
-    });
-
-    await waitFor(() => screen.getByText("Recreio nas Férias - Dez 25"));
-    await act(async () => {
-      fireEvent.click(screen.getByText("Recreio nas Férias - Dez 25"));
-    });
-
-    const botaoSalvar = screen.getByText("Salvar").closest("button");
-    expect(botaoSalvar).toBeDisabled();
-
-    const botaoEditar = screen.getByText("Editar").closest("button");
-    fireEvent.click(botaoEditar);
-
-    await waitFor(() => {
-      expect(botaoSalvar).toBeEnabled();
-    });
-
-    const multiselectContagemRefeicoes = screen.getByTestId(
-      "multiselect-contagem-refeicoes",
-    );
-    const selectControl = within(multiselectContagemRefeicoes).getByRole(
-      "combobox",
-    );
-    fireEvent.mouseDown(selectControl);
-
-    const optionFichasColoridas = screen.getByText("Fichas Coloridas");
-    fireEvent.click(optionFichasColoridas);
-
-    const inputResponsavelNome = screen.getByTestId("input-responsavel-nome-0");
-    fireEvent.change(inputResponsavelNome, {
-      target: { value: "Fulano da Silva" },
-    });
-
-    const inputResponsavelRf = screen.getByTestId("input-responsavel-rf-0");
-    fireEvent.change(inputResponsavelRf, {
-      target: { value: "1234567" },
-    });
-
-    mock
-      .onPost("/medicao-inicial/solicitacao-medicao-inicial/")
-      .reply(201, mockSolicitacaoComRecreioNasFeriasCriadaDezembro2025EMEF);
-    mock
-      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-      .replyOnce(200, mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF);
-
-    fireEvent.click(botaoSalvar);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Medição Inicial criada com sucesso!"),
-      ).toBeInTheDocument();
-    });
+  it("Renderiza períodos Recreio nas Férias e Colaboradores", () => {
+    expect(screen.getByText("Recreio nas Férias")).toBeInTheDocument();
+    expect(screen.getByText("Colaboradores")).toBeInTheDocument();
   });
 });

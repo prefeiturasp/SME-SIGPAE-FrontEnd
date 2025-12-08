@@ -75,6 +75,12 @@ export const mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF = [
                 nome: "Sobremesa",
               },
             ],
+            colaboradores: [
+              {
+                uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+                nome: "Lanche",
+              },
+            ],
           },
           unidade_educacional: {
             uuid: "3c32be8e-f191-468d-a4e2-3dd8751e5e7a",
