@@ -15,6 +15,7 @@ export const LinhaUnidade = ({
   openRemoverModal,
   readOnly = false,
   form,
+  temTiposAlimentacaoColaboradores = true,
 }) => {
   const handleLiberarMedicaoChange = (checked) => {
     form.change(`${name}.liberarMedicao`, checked);
@@ -31,15 +32,15 @@ export const LinhaUnidade = ({
             <Tooltip
               title={formatarNomeUnidadeEducacional(
                 participante.unidade_educacional.nome,
-                participante.cei_ou_emei
+                participante.cei_ou_emei,
               )}
             >
               {truncarString(
                 formatarNomeUnidadeEducacional(
                   participante.unidade_educacional.nome,
-                  participante.cei_ou_emei
+                  participante.cei_ou_emei,
                 ),
-                35
+                35,
               )}
             </Tooltip>
           </td>
@@ -72,7 +73,7 @@ export const LinhaUnidade = ({
                   const inscritos = (tipos.inscritos || []).map((t) => t.nome);
                   const infantil = (tipos.infantil || []).map((t) => t.nome);
                   const colaboradores = (tipos.colaboradores || []).map(
-                    (t) => t.nome
+                    (t) => t.nome,
                   );
 
                   return (
@@ -118,15 +119,15 @@ export const LinhaUnidade = ({
           <Tooltip
             title={formatarNomeUnidadeEducacional(
               participante.unidadeEducacional,
-              participante.ceiOuEmei
+              participante.ceiOuEmei,
             )}
           >
             {truncarString(
               formatarNomeUnidadeEducacional(
                 participante.unidadeEducacional,
-                participante.ceiOuEmei
+                participante.ceiOuEmei,
               ),
-              35
+              35,
             )}
           </Tooltip>
         </td>
@@ -147,9 +148,10 @@ export const LinhaUnidade = ({
             component={InputText}
             name={`${name}.num_colaboradores`}
             type="number"
-            required
-            validate={required}
+            required={temTiposAlimentacaoColaboradores}
+            validate={temTiposAlimentacaoColaboradores ? required : undefined}
             min={1}
+            disabled={!temTiposAlimentacaoColaboradores}
           />
         </td>
 

@@ -26,7 +26,7 @@ export const TabelaUnidades = ({
   const total = list.length;
   const currentPage = Math.min(
     Math.max(1, page),
-    Math.ceil(total / pageSize) || 1
+    Math.ceil(total / pageSize) || 1,
   );
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
@@ -56,7 +56,7 @@ export const TabelaUnidades = ({
                 editable ? "col-2" : "num-colaboradores"
               } text-center`}
             >
-              <span className="required-asterisk">*</span> Nº de Colaboradores
+              Nº de Colaboradores
             </th>
             <th
               className={`${
@@ -81,6 +81,11 @@ export const TabelaUnidades = ({
                 ? `${fields.name}[${index}]`
                 : `unidades_participantes[${index}]`;
               const participante = fields.value[index];
+
+              const temTiposAlimentacaoColaboradores =
+                (participante?.tiposAlimentacaoColaboradoresUuids || [])
+                  .length > 0;
+
               return (
                 <LinhaUnidade
                   key={participante?.id}
@@ -93,6 +98,9 @@ export const TabelaUnidades = ({
                   fields={fields}
                   readOnly={false}
                   form={form}
+                  temTiposAlimentacaoColaboradores={
+                    temTiposAlimentacaoColaboradores
+                  } // NOVO
                 />
               );
             } else {
