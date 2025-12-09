@@ -17,6 +17,8 @@ import {
   getError,
   recreioNasFeriasComColaboradores,
   recreioNasFeriasDaMedicao,
+  recreioNasFeriasDaMedicaoCEIdaCEMEI,
+  recreioNasFeriasDaMedicaoEMEIdaCEMEI,
   usuarioEhEscolaTerceirizadaDiretor,
 } from "src/helpers/utilities";
 import {
@@ -451,32 +453,61 @@ export const LancamentoPorPeriodoCEI = ({
             )}
             {recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial) && (
               <>
-                <CardLancamentoCEI
-                  textoCabecalho="Recreio nas Férias"
-                  cor={CORES[10]}
-                  tipos_alimentacao={recreioNasFeriasDaMedicao(
+                {(!ehEscolaTipoCEMEI(escolaInstituicao) ||
+                  recreioNasFeriasDaMedicaoCEIdaCEMEI(
                     solicitacaoMedicaoInicial,
-                  ).unidades_participantes[0].tipos_alimentacao.inscritos.map(
-                    (tpi) => tpi.nome,
-                  )}
-                  periodoSelecionado={periodoSelecionado}
-                  solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                  ehGrupoSolicitacoesDeAlimentacao={true}
-                  quantidadeAlimentacoesLancadas={
-                    quantidadeAlimentacoesLancadas
-                  }
-                  errosAoSalvar={errosAoSalvar}
-                />
+                  )) && (
+                  <CardLancamentoCEI
+                    textoCabecalho={`Recreio nas Férias${ehEscolaTipoCEMEI(escolaInstituicao) ? " - de 0 a 3 anos e 11 meses" : ""}`}
+                    cor={CORES[10]}
+                    tipos_alimentacao={recreioNasFeriasDaMedicao(
+                      solicitacaoMedicaoInicial,
+                    ).unidades_participantes[0].tipos_alimentacao.inscritos.map(
+                      (tpi) => tpi.nome,
+                    )}
+                    periodoSelecionado={periodoSelecionado}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    ehGrupoSolicitacoesDeAlimentacao={true}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    errosAoSalvar={errosAoSalvar}
+                  />
+                )}
+                {recreioNasFeriasDaMedicaoEMEIdaCEMEI(
+                  solicitacaoMedicaoInicial,
+                ) && (
+                  <CardLancamentoCEI
+                    textoCabecalho="Recreio nas Férias - 4 a 14 anos"
+                    cor={CORES[12]}
+                    tiposAlimentacao={recreioNasFeriasDaMedicao(
+                      solicitacaoMedicaoInicial,
+                    )
+                      .unidades_participantes.find(
+                        (up) => up.cei_ou_emei === "EMEI",
+                      )
+                      ?.tipos_alimentacao.inscritos.map((tpi) => ({
+                        nome: tpi.nome,
+                      }))}
+                    periodoSelecionado={periodoSelecionado}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    ehGrupoSolicitacoesDeAlimentacao={true}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    errosAoSalvar={errosAoSalvar}
+                  />
+                )}
                 {recreioNasFeriasComColaboradores(
                   solicitacaoMedicaoInicial,
                 ) && (
                   <CardLancamentoCEI
                     textoCabecalho="Colaboradores"
                     cor={CORES[11]}
-                    tipos_alimentacao={recreioNasFeriasDaMedicao(
+                    tiposAlimentacao={recreioNasFeriasDaMedicao(
                       solicitacaoMedicaoInicial,
                     ).unidades_participantes[0].tipos_alimentacao.colaboradores.map(
-                      (tpi) => tpi.nome,
+                      (tpi) => ({ nome: tpi.nome }),
                     )}
                     periodoSelecionado={periodoSelecionado}
                     solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
