@@ -34,9 +34,15 @@ const setup = async () => {
         }}
       >
         <CronogramaEntregaPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
+};
+
+const filtrar = () => {
+  const btnFiltrar = screen.getByText("Filtrar").closest("button");
+  expect(btnFiltrar).not.toBeDisabled();
+  fireEvent.click(btnFiltrar);
 };
 
 describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
@@ -47,7 +53,7 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
   it("exibe botao Cadastrar Cronograma", async () => {
     await setup();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument()
+      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
     );
 
     const btnFiltrar = screen
@@ -60,14 +66,12 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
   it("carrega a página com requisições", async () => {
     await setup();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument()
+      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
     );
 
-    const btnFiltrar = screen.getByText("Filtrar").closest("button");
-    expect(btnFiltrar).not.toBeDisabled();
-    fireEvent.click(btnFiltrar);
+    filtrar();
     await waitFor(() =>
-      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument()
+      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
     );
   });
 
@@ -75,8 +79,8 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
     await setup();
     await waitFor(() =>
       expect(
-        screen.getByText(`Filtrar por Nome do Produto`)
-      ).toBeInTheDocument()
+        screen.getByText(`Filtrar por Nome do Produto`),
+      ).toBeInTheDocument(),
     );
 
     let inputNumeroFicha = screen.getByTestId("nome_produto");
@@ -96,22 +100,20 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
   it("carrega a próxima página de requisições", async () => {
     await setup();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument()
+      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
     );
 
-    const btnFiltrar = screen.getByText("Filtrar").closest("button");
-    expect(btnFiltrar).not.toBeDisabled();
-    fireEvent.click(btnFiltrar);
+    filtrar();
 
     await waitFor(() =>
-      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument()
+      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
     );
 
     const nextButton = screen.getByLabelText("right");
     fireEvent.click(nextButton);
 
     await waitFor(() =>
-      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument()
+      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
     );
   });
 
@@ -120,19 +122,17 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
     window.URL.createObjectURL = createObjectURL;
     await setup();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument()
+      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
     );
 
-    const btnFiltrar = screen.getByText("Filtrar").closest("button");
-    expect(btnFiltrar).not.toBeDisabled();
-    fireEvent.click(btnFiltrar);
+    filtrar();
     await waitFor(() =>
-      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument()
+      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
     );
 
     mock
       .onGet(
-        `/cronogramas/${mockListaCronogramas.results[3].uuid}/gerar-pdf-cronograma/`
+        `/cronogramas/${mockListaCronogramas.results[3].uuid}/gerar-pdf-cronograma/`,
       )
       .reply(200, new Blob());
 
@@ -145,7 +145,7 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
   it("exibe mensagem pra resultado de busca vazio", async () => {
     await setup();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument()
+      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
     );
 
     const btnFiltrar = screen.getByText("Filtrar").closest("button");
@@ -158,9 +158,9 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
     await waitFor(() =>
       expect(
         screen.getByText(
-          `Não existe informação para os critérios de busca utilizados.`
-        )
-      ).toBeInTheDocument()
+          `Não existe informação para os critérios de busca utilizados.`,
+        ),
+      ).toBeInTheDocument(),
     );
   });
 });
@@ -170,21 +170,28 @@ describe("Testa página de Consulta de Cronogramas (Perfil Fornecedor)", () => {
     localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
     localStorage.setItem(
       "tipo_servico",
-      TIPO_SERVICO.FORNECEDOR_E_DISTRIBUIDOR
+      TIPO_SERVICO.FORNECEDOR_E_DISTRIBUIDOR,
     );
   });
 
   it("carrega a página com requisições", async () => {
     await setup();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument()
+      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
     );
 
-    const btnFiltrar = screen.getByText("Filtrar").closest("button");
-    expect(btnFiltrar).not.toBeDisabled();
-    fireEvent.click(btnFiltrar);
+    filtrar();
     await waitFor(() =>
-      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument()
+      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
+    );
+  });
+
+  it("verifica exibição de tag PLL nos resultados", async () => {
+    await setup();
+
+    filtrar();
+    await waitFor(() =>
+      expect(screen.getByText(/LEVE LEITE - PLL/i)).toBeInTheDocument(),
     );
   });
 });

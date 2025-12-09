@@ -23,6 +23,7 @@ export const mockListaCronogramas = {
           nome: "Pregão Eletrônico",
           uuid: "af1db044-4bc4-4e42-beed-a85a06ea7a26",
         },
+        programa_display: "Leve Leite",
         uuid: "387121e0-f887-4ecf-9521-00c519e9830d",
         numero: "837834",
         processo: "834783478",
@@ -32,6 +33,7 @@ export const mockListaCronogramas = {
         ata: "54321",
         numero_pregao: "12345",
         numero_chamada_publica: "",
+        programa: "LEVE_LEITE",
       },
       empresa: {
         uuid: "d0630b2b-8e45-472c-b9c6-90451b60b081",

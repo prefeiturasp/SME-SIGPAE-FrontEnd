@@ -200,28 +200,28 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       ).toHaveLength(3);
       expect(screen.queryAllByText(/Preço das Alimentações/i)).toHaveLength(3);
       expect(screen.queryAllByText(/Preço das Dietas Tipo B/i)).toHaveLength(3);
-      expect(screen.queryAllByText(/Turmas Infantil - EMEI/i)).toHaveLength(3);
+      expect(screen.queryAllByText(/Turma Infantil - EMEI/i)).toHaveLength(3);
       expect(screen.queryAllByText(/CEI - Período Parcial/i)).toHaveLength(3);
       expect(screen.queryAllByText(/CEI - Período Integral/i)).toHaveLength(3);
       expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
     });
 
     setInput(
-      "tabelas[Preço das Alimentações - Turmas Infantil - EMEI].Lanche.valor_unitario",
+      "tabelas[Preço das Alimentações - Turma Infantil - EMEI].Lanche.valor_unitario",
       "5,00",
     );
     setInput(
-      "tabelas[Preço das Alimentações - Turmas Infantil - EMEI].Lanche.valor_unitario_reajuste",
+      "tabelas[Preço das Alimentações - Turma Infantil - EMEI].Lanche.valor_unitario_reajuste",
       "5,00",
     );
     const totalAlimentacoesEMEI = screen.getByTestId(
-      "tabelas[Preço das Alimentações - Turmas Infantil - EMEI].Lanche.valor_unitario_total",
+      "tabelas[Preço das Alimentações - Turma Infantil - EMEI].Lanche.valor_unitario_total",
     );
     const totalDietasTipoAEMEI = screen.getByTestId(
-      "tabelas[Dietas Tipo A e Tipo A Enteral - Turmas Infantil - EMEI].Lanche.valor_unitario_total",
+      "tabelas[Dietas Tipo A e Tipo A Enteral - Turma Infantil - EMEI].Lanche.valor_unitario_total",
     );
     const totalDietasTipoBEMEI = screen.getByTestId(
-      "tabelas[Dietas Tipo B - Turmas Infantil - EMEI].Lanche.valor_unitario_total",
+      "tabelas[Dietas Tipo B - Turma Infantil - EMEI].Lanche.valor_unitario_total",
     );
 
     await waitFor(() => {
