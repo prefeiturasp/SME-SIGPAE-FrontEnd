@@ -15,6 +15,8 @@ import {
   deepCopy,
   escolaNaoPossuiAlunosRegulares,
   getError,
+  recreioNasFeriasComColaboradores,
+  recreioNasFeriasDaMedicao,
   tiposAlimentacaoETEC,
   usuarioEhEscolaTerceirizadaDiretor,
 } from "src/helpers/utilities";
@@ -43,8 +45,8 @@ import {
   CORES,
   removeObjetosDuplicados,
   renderBotaoEnviarCorrecao,
-  verificaSeEnviarCorrecaoDisabled,
   verificaSeEnviaCorrecaoSemOcorrenciaDisabled,
+  verificaSeEnviarCorrecaoDisabled,
 } from "./helpers";
 
 export const LancamentoPorPeriodo = ({
@@ -435,131 +437,192 @@ export const LancamentoPorPeriodo = ({
           <div className="pb-2">
             <b className="section-title">Períodos</b>
           </div>
-          {!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
-            frequenciasDietasPeriodosEspeciais &&
-            periodosEspecificos.length &&
-            periodosEspecificos.map((periodo, index) => (
-              <CardLancamento
-                key={index}
-                textoCabecalho={periodo.periodo_escolar.nome}
-                cor={CORES[index]}
-                tipos_alimentacao={periodo.tipos_alimentacao}
-                periodoSelecionado={periodoSelecionado}
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                ehPeriodoEspecifico={
-                  periodo.periodo_escolar.eh_periodo_especifico
-                }
-                periodoEspecifico={
-                  periodo.periodo_escolar.eh_periodo_especifico ? periodo : null
-                }
-                frequenciasDietasEscolaSemAlunoRegular={
-                  frequenciasDietasPeriodosEspeciais
-                }
-                errosAoSalvar={errosAoSalvar}
-                periodosPermissoesLancamentosEspeciais={
-                  periodosPermissoesLancamentosEspeciais
-                }
-              />
-            ))}
-          {!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
-            frequenciasDietasPeriodosEspeciais &&
-            !periodosEspecificos.length &&
-            periodosEscolaSimples.map((periodo, index) => (
-              <CardLancamento
-                key={index}
-                textoCabecalho={periodo.periodo_escolar.nome}
-                cor={CORES[index]}
-                tipos_alimentacao={periodo.tipos_alimentacao}
-                periodoSelecionado={periodoSelecionado}
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                ehPeriodoEspecifico={
-                  periodo.periodo_escolar.eh_periodo_especifico
-                }
-                periodoEspecifico={
-                  periodo.periodo_escolar.eh_periodo_especifico ? periodo : null
-                }
-                frequenciasDietasEscolaSemAlunoRegular={
-                  frequenciasDietasPeriodosEspeciais
-                }
-                errosAoSalvar={errosAoSalvar}
-                periodosPermissoesLancamentosEspeciais={
-                  periodosPermissoesLancamentosEspeciais
-                }
-              />
-            ))}
-          {escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
-            periodosEscolaSemAlunosRegulares &&
-            frequenciasDietasEscolaSemAlunoRegular &&
-            periodosEscolaSemAlunosRegulares.map((periodo, index) => (
-              <CardLancamento
-                key={index}
-                textoCabecalho={periodo.periodo_escolar?.nome || periodo.nome}
-                cor={CORES[index]}
-                tipos_alimentacao={periodo.tipos_alimentacao}
-                periodoSelecionado={periodoSelecionado}
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                frequenciasDietasEscolaSemAlunoRegular={
-                  frequenciasDietasEscolaSemAlunoRegular
-                }
-                errosAoSalvar={errosAoSalvar}
-                ehPeriodoEspecifico={true}
-              />
-            ))}
-          {solicitacoesInclusoesEtecAutorizadas &&
-            solicitacoesInclusoesEtecAutorizadas.length > 0 && (
-              <CardLancamento
-                grupo="ETEC"
-                cor={CORES[6]}
-                tipos_alimentacao={tiposAlimentacaoETEC()}
-                periodoSelecionado={periodoSelecionado}
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                ehGrupoETEC={true}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                errosAoSalvar={errosAoSalvar}
-              />
-            )}
-          {periodosInclusaoContinua &&
-            (!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) ||
-              frequenciasDietasEscolaSemAlunoRegular) && (
-              <CardLancamento
-                grupo="Programas e Projetos"
-                cor={CORES[9]}
-                tipos_alimentacao={tiposAlimentacaoProgramasEProjetos()}
-                periodoSelecionado={periodoSelecionado}
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                periodosInclusaoContinua={periodosInclusaoContinua}
-                frequenciasDietasEscolaSemAlunoRegular={
-                  frequenciasDietasEscolaSemAlunoRegular
-                }
-                errosAoSalvar={errosAoSalvar}
-              />
-            )}
-          {((solicitacoesKitLanchesAutorizadas &&
-            solicitacoesKitLanchesAutorizadas.length > 0) ||
-            (solicitacoesAlteracaoLancheEmergencialAutorizadas &&
-              solicitacoesAlteracaoLancheEmergencialAutorizadas.length >
-                0)) && (
-            <CardLancamento
-              grupo="Solicitações de Alimentação"
-              cor={CORES[5]}
-              tipos_alimentacao={["Kit Lanche", "Lanche Emergencial"]}
-              periodoSelecionado={periodoSelecionado}
-              solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-              objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-              ehGrupoSolicitacoesDeAlimentacao={true}
-              quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-              errosAoSalvar={errosAoSalvar}
-            />
+          {!recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial) && (
+            <>
+              {!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
+                frequenciasDietasPeriodosEspeciais &&
+                periodosEspecificos.length &&
+                periodosEspecificos.map((periodo, index) => (
+                  <CardLancamento
+                    key={index}
+                    textoCabecalho={periodo.periodo_escolar.nome}
+                    cor={CORES[index]}
+                    tipos_alimentacao={periodo.tipos_alimentacao}
+                    periodoSelecionado={periodoSelecionado}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    ehPeriodoEspecifico={
+                      periodo.periodo_escolar.eh_periodo_especifico
+                    }
+                    periodoEspecifico={
+                      periodo.periodo_escolar.eh_periodo_especifico
+                        ? periodo
+                        : null
+                    }
+                    frequenciasDietasEscolaSemAlunoRegular={
+                      frequenciasDietasPeriodosEspeciais
+                    }
+                    errosAoSalvar={errosAoSalvar}
+                    periodosPermissoesLancamentosEspeciais={
+                      periodosPermissoesLancamentosEspeciais
+                    }
+                  />
+                ))}
+              {!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
+                frequenciasDietasPeriodosEspeciais &&
+                !periodosEspecificos.length &&
+                periodosEscolaSimples.map((periodo, index) => (
+                  <CardLancamento
+                    key={index}
+                    textoCabecalho={periodo.periodo_escolar.nome}
+                    cor={CORES[index]}
+                    tipos_alimentacao={periodo.tipos_alimentacao}
+                    periodoSelecionado={periodoSelecionado}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    ehPeriodoEspecifico={
+                      periodo.periodo_escolar.eh_periodo_especifico
+                    }
+                    periodoEspecifico={
+                      periodo.periodo_escolar.eh_periodo_especifico
+                        ? periodo
+                        : null
+                    }
+                    frequenciasDietasEscolaSemAlunoRegular={
+                      frequenciasDietasPeriodosEspeciais
+                    }
+                    errosAoSalvar={errosAoSalvar}
+                    periodosPermissoesLancamentosEspeciais={
+                      periodosPermissoesLancamentosEspeciais
+                    }
+                  />
+                ))}
+              {escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
+                periodosEscolaSemAlunosRegulares &&
+                frequenciasDietasEscolaSemAlunoRegular &&
+                periodosEscolaSemAlunosRegulares.map((periodo, index) => (
+                  <CardLancamento
+                    key={index}
+                    textoCabecalho={
+                      periodo.periodo_escolar?.nome || periodo.nome
+                    }
+                    cor={CORES[index]}
+                    tipos_alimentacao={periodo.tipos_alimentacao}
+                    periodoSelecionado={periodoSelecionado}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    frequenciasDietasEscolaSemAlunoRegular={
+                      frequenciasDietasEscolaSemAlunoRegular
+                    }
+                    errosAoSalvar={errosAoSalvar}
+                    ehPeriodoEspecifico={true}
+                  />
+                ))}
+              {solicitacoesInclusoesEtecAutorizadas &&
+                solicitacoesInclusoesEtecAutorizadas.length > 0 && (
+                  <CardLancamento
+                    grupo="ETEC"
+                    cor={CORES[6]}
+                    tipos_alimentacao={tiposAlimentacaoETEC()}
+                    periodoSelecionado={periodoSelecionado}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                    ehGrupoETEC={true}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    errosAoSalvar={errosAoSalvar}
+                  />
+                )}
+              {periodosInclusaoContinua &&
+                (!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) ||
+                  frequenciasDietasEscolaSemAlunoRegular) && (
+                  <CardLancamento
+                    grupo="Programas e Projetos"
+                    cor={CORES[9]}
+                    tipos_alimentacao={tiposAlimentacaoProgramasEProjetos()}
+                    periodoSelecionado={periodoSelecionado}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    periodosInclusaoContinua={periodosInclusaoContinua}
+                    frequenciasDietasEscolaSemAlunoRegular={
+                      frequenciasDietasEscolaSemAlunoRegular
+                    }
+                    errosAoSalvar={errosAoSalvar}
+                  />
+                )}
+              {((solicitacoesKitLanchesAutorizadas &&
+                solicitacoesKitLanchesAutorizadas.length > 0) ||
+                (solicitacoesAlteracaoLancheEmergencialAutorizadas &&
+                  solicitacoesAlteracaoLancheEmergencialAutorizadas.length >
+                    0)) && (
+                <CardLancamento
+                  grupo="Solicitações de Alimentação"
+                  cor={CORES[5]}
+                  tipos_alimentacao={["Kit Lanche", "Lanche Emergencial"]}
+                  periodoSelecionado={periodoSelecionado}
+                  solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                  objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                  ehGrupoSolicitacoesDeAlimentacao={true}
+                  quantidadeAlimentacoesLancadas={
+                    quantidadeAlimentacoesLancadas
+                  }
+                  errosAoSalvar={errosAoSalvar}
+                />
+              )}
+            </>
           )}
+          {recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial) && (
+            <>
+              <CardLancamento
+                grupo="Recreio nas Férias"
+                cor={CORES[10]}
+                tipos_alimentacao={recreioNasFeriasDaMedicao(
+                  solicitacaoMedicaoInicial,
+                ).unidades_participantes[0].tipos_alimentacao.inscritos.map(
+                  (tpi) => tpi.nome,
+                )}
+                periodoSelecionado={periodoSelecionado}
+                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                ehGrupoSolicitacoesDeAlimentacao={true}
+                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
+                errosAoSalvar={errosAoSalvar}
+              />
+              {recreioNasFeriasComColaboradores(solicitacaoMedicaoInicial) && (
+                <CardLancamento
+                  grupo="Colaboradores"
+                  cor={CORES[11]}
+                  tipos_alimentacao={recreioNasFeriasDaMedicao(
+                    solicitacaoMedicaoInicial,
+                  ).unidades_participantes[0].tipos_alimentacao.colaboradores.map(
+                    (tpi) => tpi.nome,
+                  )}
+                  periodoSelecionado={periodoSelecionado}
+                  solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                  objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                  ehGrupoSolicitacoesDeAlimentacao={true}
+                  quantidadeAlimentacoesLancadas={
+                    quantidadeAlimentacoesLancadas
+                  }
+                  errosAoSalvar={errosAoSalvar}
+                />
+              )}
+            </>
+          )}
+
           <div className="mt-4">
             {renderBotaoFinalizar() ? (
               <div className="row">

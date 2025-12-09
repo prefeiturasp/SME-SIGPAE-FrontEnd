@@ -22,11 +22,12 @@ export const formatarCards = (items: FichaTecnicaDashboard[]): CardItem[] => {
     link: `${gerarLinkItemFichaTecnica(item)}?uuid=${item.uuid}`,
     status: item.status,
     fullText: gerarTextoCompleto(item),
+    programa_leve_leite: item.programa_leve_leite,
   }));
 };
 
 export const gerarLinkItemFichaTecnica = (
-  item: FichaTecnicaDashboard
+  item: FichaTecnicaDashboard,
 ): string => {
   const urlDetalhar = `/${PRE_RECEBIMENTO}/${DETALHAR_FICHA_TECNICA}`;
   const urlAnalisar = `/${PRE_RECEBIMENTO}/${ANALISAR_FICHA_TECNICA}`;
@@ -47,23 +48,24 @@ export const gerarLinkItemFichaTecnica = (
 
 export const formataItensVerMais = (
   itens: FichaTecnicaDashboard[],
-  urlBaseItem: string
+  urlBaseItem: string,
 ): VerMaisItem[] => {
   return itens.sort(ordenarPorLogMaisRecente).map((item) => ({
     texto: gerarTextoTruncado(item, 50),
     textoCompleto: gerarTextoCompleto(item),
     data: item.log_mais_recente.slice(0, 10),
     link: `${urlBaseItem}?uuid=${item.uuid}`,
+    programa_leve_leite: item.programa_leve_leite,
   }));
 };
 
 export const gerarTextoTruncado = (
   item: FichaTecnicaDashboard,
-  tamanhoMaximo: number
+  tamanhoMaximo: number,
 ) => {
   return `${item.numero_ficha} - ${truncarString(
     item.nome_produto,
-    tamanhoMaximo
+    tamanhoMaximo,
   )} - ${truncarString(item.nome_empresa, tamanhoMaximo)}`;
 };
 
