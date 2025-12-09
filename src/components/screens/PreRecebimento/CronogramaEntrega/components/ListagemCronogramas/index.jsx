@@ -113,9 +113,8 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                         {cronograma.ficha_tecnica?.produto?.nome &&
                           formataNome(cronograma.ficha_tecnica?.produto?.nome)}
 
-                        {cronograma.contrato.programa === "LEVE_LEITE" && (
-                          <TagLeveLeite />
-                        )}
+                        {cronograma.ficha_tecnica?.programa ===
+                          "LEVE_LEITE" && <TagLeveLeite />}
                       </div>
                     </Tooltip>
                   </div>

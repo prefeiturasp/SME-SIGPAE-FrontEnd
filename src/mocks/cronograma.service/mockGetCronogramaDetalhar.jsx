@@ -408,6 +408,8 @@ export const mockCronogramaEnviadoFornecedor = {
       nome: "GRAMA",
       abreviacao: "g",
     },
+    programa_display: "Leve Leite",
+    programa: "LEVE_LEITE",
   },
   tipo_embalagem_secundaria: {
     uuid: "48f9dfe4-e244-4c8d-84ce-eb18b1b686be",
