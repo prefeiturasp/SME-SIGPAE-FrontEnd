@@ -53,12 +53,16 @@ export const InformacoesMedicaoInicialCEI = ({
   onClickInfoBasicas,
   objectoPeriodos,
 }) => {
+  const recreioNasFeriasUuid = objectoPeriodos?.find(
+    (o) => o.dataBRT.getTime() === new Date(periodoSelecionado).getTime(),
+  )?.recreio_nas_ferias;
+
   const { responsaveis, setaResponsavel } = useResponsaveis(
     RESPONSABLES_INITIAL_STATE,
   );
 
   const [uePossuiAlunosPeriodoParcial, setUePossuiAlunosPeriodoParcial] =
-    useState(undefined);
+    useState(recreioNasFeriasUuid ? "false" : undefined);
   const [emEdicao, setEmEdicao] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showPesquisaAluno, setShowPesquisaAluno] = useState(false);
@@ -281,11 +285,6 @@ export const InformacoesMedicaoInicialCEI = ({
     const dataPeriodo = new Date(periodoSelecionado);
     const alunosParciais = criarPayloadAlunosParciais();
 
-    const recreio_nas_ferias_uuid =
-      objectoPeriodos?.find(
-        (o) => o.dataBRT.getTime() === dataPeriodo.getTime(),
-      )?.recreio_nas_ferias || null;
-
     const payload = {
       escola: escolaInstituicao.uuid,
       tipos_contagem_alimentacao: tipoDeContagemSelecionada,
@@ -299,8 +298,8 @@ export const InformacoesMedicaoInicialCEI = ({
       payload.alunos_periodo_parcial = alunosParciais;
     }
 
-    if (recreio_nas_ferias_uuid) {
-      payload.recreio_nas_ferias = recreio_nas_ferias_uuid;
+    if (recreioNasFeriasUuid) {
+      payload.recreio_nas_ferias = recreioNasFeriasUuid;
     }
 
     return payload;
@@ -502,7 +501,7 @@ export const InformacoesMedicaoInicialCEI = ({
                         value={option.value}
                         checked={uePossuiAlunosPeriodoParcial === option.value}
                         onChange={onChange}
-                        disabled={!emEdicao}
+                        disabled={!emEdicao || recreioNasFeriasUuid}
                       >
                         {option.label}
                       </Checkbox>
