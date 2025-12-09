@@ -1,5 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
+import { ModalAdicionarUnidadeEducacional } from "../components/ModalAdicionarUnidadeEducacional";
+import * as hooks from "../hooks/useModalUnidades";
 
 const mockFormFromFinalForm = {
   change: jest.fn(),
@@ -34,9 +36,6 @@ jest.mock("react-final-form", () => {
     },
   };
 });
-
-import { ModalAdicionarUnidadeEducacional } from "../components/ModalAdicionarUnidadeEducacional";
-import * as hooks from "../hooks/useModalUnidades";
 
 jest.mock("src/components/Shareable/Toast/dialogs", () => ({
   toastSuccess: jest.fn(),
