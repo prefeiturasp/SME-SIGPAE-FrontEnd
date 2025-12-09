@@ -136,6 +136,7 @@ export const LinhaUnidade = ({
           <Field
             component={InputText}
             name={`${name}.num_inscritos`}
+            dataTestId="num_inscritos_input"
             type="number"
             required
             validate={required}
@@ -147,6 +148,7 @@ export const LinhaUnidade = ({
           <Field
             component={InputText}
             name={`${name}.num_colaboradores`}
+            dataTestId="num_colaboradores_input"
             type="number"
             required={temTiposAlimentacaoColaboradores}
             validate={temTiposAlimentacaoColaboradores ? required : undefined}
