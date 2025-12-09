@@ -12,6 +12,7 @@ export const mockEtapasCalendario = [
     status: "Assinado CODAE",
     unidade_medida: "kg",
     uuid_cronograma: "a11ded5a-e3b3-480f-8132-f412b9c9b5be",
+    programa_leve_leite: true,
   },
   {
     nome_produto: "Produto B",
@@ -26,5 +27,6 @@ export const mockEtapasCalendario = [
     status: "Assinado CODAE",
     unidade_medida: "L",
     uuid_cronograma: "a11ded5a-e3b3-480f-8132-f412b9c9b55a",
+    programa_leve_leite: false,
   },
 ];
