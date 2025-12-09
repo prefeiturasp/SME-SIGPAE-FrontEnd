@@ -246,19 +246,12 @@ export const CardLancamentoCEI = ({
                             : 0}
                         </b>
                       </span>
-                      {!textoCabecalho.includes("Recreio") && (
-                        <span className="ms-1">
-                          - alunos atendidos com{" "}
-                          {numeroRefeicoesDiarias(textoCabecalho)} refeições
-                          diárias
-                        </span>
-                      )}
-                      {textoCabecalho.includes("Recreio") && (
-                        <span className="ms-1">
-                          - alunos atendidos com alimentações de Recreio nas
-                          Férias
-                        </span>
-                      )}
+                      <span className="ms-1">
+                        - alunos atendidos com{" "}
+                        {textoCabecalho.includes("Recreio")
+                          ? "alimentações de Recreio nas Férias"
+                          : `${numeroRefeicoesDiarias(textoCabecalho)} refeições diárias`}
+                      </span>
                       <br />
                     </div>
                   </div>
