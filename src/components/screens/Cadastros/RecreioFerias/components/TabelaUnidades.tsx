@@ -100,7 +100,7 @@ export const TabelaUnidades = ({
                   form={form}
                   temTiposAlimentacaoColaboradores={
                     temTiposAlimentacaoColaboradores
-                  } // NOVO
+                  }
                 />
               );
             } else {
