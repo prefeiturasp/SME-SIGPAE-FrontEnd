@@ -35,6 +35,7 @@ export const SolicitacoesLayoutStatusGenerico = ({ ...props }) => {
       texto: `${item.numero_ficha_tecnica} - ${item.nome_produto} - ${item.nome_empresa}`,
       data: item.log_mais_recente.slice(0, 10),
       link: `${urlBaseItem}?uuid=${item.uuid}`,
+      programa_leve_leite: item.programa_leve_leite,
     }));
   };
 
@@ -56,7 +57,7 @@ export const SolicitacoesLayoutStatusGenerico = ({ ...props }) => {
   const filtrarRequisicao = debounce((value, values) => {
     const { nome_fornecedor, nome_produto, numero_cronograma } = values;
     const podeFiltrar = [nome_fornecedor, nome_produto, numero_cronograma].some(
-      (value) => value && value.length > 2
+      (value) => value && value.length > 2,
     );
     if (podeFiltrar) {
       setLoading(true);
@@ -73,7 +74,6 @@ export const SolicitacoesLayoutStatusGenerico = ({ ...props }) => {
   useEffect(() => {
     setCurrentPage(1);
     getSolicitacoesAsync(params);
-    // eslint-disable-next-line
   }, []);
 
   const onPageChanged = async (page) => {
@@ -107,7 +107,7 @@ export const SolicitacoesLayoutStatusGenerico = ({ ...props }) => {
                       inputOnChange={(e) =>
                         filtrarRequisicao(
                           e.target.value,
-                          form.getState().values
+                          form.getState().values,
                         )
                       }
                     />
@@ -120,7 +120,7 @@ export const SolicitacoesLayoutStatusGenerico = ({ ...props }) => {
                       inputOnChange={(e) =>
                         filtrarRequisicao(
                           e.target.value,
-                          form.getState().values
+                          form.getState().values,
                         )
                       }
                     />
@@ -133,7 +133,7 @@ export const SolicitacoesLayoutStatusGenerico = ({ ...props }) => {
                       inputOnChange={(e) =>
                         filtrarRequisicao(
                           e.target.value,
-                          form.getState().values
+                          form.getState().values,
                         )
                       }
                     />

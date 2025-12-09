@@ -96,6 +96,7 @@ export interface CronogramaSimples {
 }
 
 export interface DocumentosRecebimentoDashboard {
+  programa_leve_leite: boolean;
   log_mais_recente: string;
   nome_empresa: string;
   nome_produto: string;
@@ -114,6 +115,7 @@ export interface FiltrosDashboardDocumentos {
 }
 
 export interface FichaTecnicaDashboard {
+  programa_leve_leite: boolean;
   log_mais_recente: string;
   nome_empresa: string;
   nome_produto: string;

@@ -1,7 +1,7 @@
+import HTTP_STATUS from "http-status-codes";
+import { useContext, useEffect, useState } from "react";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { agregarDefault, dataParaUTC, deepCopy } from "src/helpers/utilities";
-import HTTP_STATUS from "http-status-codes";
-import React, { useContext, useEffect, useState } from "react";
 import { getMotivosAlteracaoCardapio } from "src/services/alteracaoDeCardapio";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { getDiasUteis } from "src/services/diasUteis.service";
@@ -23,18 +23,20 @@ export const Container = () => {
     const periodosEscolares =
       meusDados.vinculo_atual.instituicao.periodos_escolares;
 
-    const response = await getVinculosTipoAlimentacaoPorEscola(escolaUuid);
+    const response = await getVinculosTipoAlimentacaoPorEscola(escolaUuid, {
+      pega_atualmente: true,
+    });
     if (response.status === HTTP_STATUS.OK) {
       for (const vinculo of response.data.results) {
         let periodo = periodosEscolares.find(
-          (periodo) => periodo.uuid === vinculo.periodo_escolar.uuid
+          (periodo) => periodo.uuid === vinculo.periodo_escolar.uuid,
         );
         periodo.tipos_alimentacao = vinculo.tipos_alimentacao;
       }
       setPeriodos(periodosEscolares);
     } else {
       setErro(
-        "Erro ao carregar vinculos dos períodos escolares da escola. Tente novamente mais tarde."
+        "Erro ao carregar vinculos dos períodos escolares da escola. Tente novamente mais tarde.",
       );
     }
   };
@@ -48,13 +50,13 @@ export const Container = () => {
 
       for (const periodo of periodosEscolares_) {
         periodo.maximo_alunos = response.data.results.find(
-          (result) => result.periodo_escolar.uuid === periodo.uuid
+          (result) => result.periodo_escolar.uuid === periodo.uuid,
         ).quantidade_alunos;
       }
       setPeriodos(periodosEscolares_);
     } else {
       setErro(
-        "Erro ao carregar quantidades de alunos por período escolar. Tente novamente mais tarde."
+        "Erro ao carregar quantidades de alunos por período escolar. Tente novamente mais tarde.",
       );
     }
   };
@@ -65,7 +67,7 @@ export const Container = () => {
       setMotivos(agregarDefault(response.data.results));
     } else {
       setErro(
-        "Erro ao carregar motivos de alteração de cardápio. Tente novamente mais tarde."
+        "Erro ao carregar motivos de alteração de cardápio. Tente novamente mais tarde.",
       );
     }
   };
@@ -76,14 +78,14 @@ export const Container = () => {
     });
     if (response.status === HTTP_STATUS.OK) {
       setProximosDoisDiasUteis(
-        dataParaUTC(new Date(response.data.proximos_dois_dias_uteis))
+        dataParaUTC(new Date(response.data.proximos_dois_dias_uteis)),
       );
       setProximosCincoDiasUteis(
-        dataParaUTC(new Date(response.data.proximos_cinco_dias_uteis))
+        dataParaUTC(new Date(response.data.proximos_cinco_dias_uteis)),
       );
     } else {
       setErro(
-        "Erro ao carregar quais são os dias úteis deste tipo de unidade. Tente novamente mais tarde."
+        "Erro ao carregar quais são os dias úteis deste tipo de unidade. Tente novamente mais tarde.",
       );
     }
   };
