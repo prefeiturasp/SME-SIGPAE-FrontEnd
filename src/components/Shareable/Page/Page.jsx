@@ -27,6 +27,7 @@ export const Page = ({ ...props }) => {
     voltarPara,
     temModalVoltar,
     textoModalVoltar,
+    pegaAtualmente = false,
   } = props;
 
   const [nome, setNome] = useState(null);
@@ -40,7 +41,8 @@ export const Page = ({ ...props }) => {
 
   useEffect(() => {
     if (!localStorage.getItem("meusDados")) {
-      getMeusDados().then((response) => {
+      const params = pegaAtualmente ? { pega_atualmente: true } : {};
+      getMeusDados(params).then((response) => {
         const meusDados = response.data;
         setMeusDados(meusDados);
         localStorage.setItem("nome", JSON.stringify(meusDados.nome));
@@ -68,7 +70,7 @@ export const Page = ({ ...props }) => {
     } else {
       setNome(localStorage.getItem("nome"));
     }
-  }, []);
+  }, [pegaAtualmente]);
 
   const handleBack = () => {
     if (temModalVoltar) {

@@ -17,7 +17,10 @@ export const CardCronograma = ({
       ? solicitations.slice(0, 5).map((solicitation, key) => (
           <Tooltip placement="topLeft" key={key} title={solicitation.fullText}>
             <NavLink key={key} to={solicitation.link}>
-              <p key={key} className={`data`}>
+              <p
+                key={key}
+                className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""}`}
+              >
                 {solicitation.text}
                 <span className="float-end">{solicitation.date}</span>
               </p>
@@ -26,7 +29,10 @@ export const CardCronograma = ({
         ))
       : solicitations.slice(0, 5).map((solicitation, key) => (
           <NavLink key={key} to={solicitation.link}>
-            <p key={key} className={`data`}>
+            <p
+              key={key}
+              className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""}`}
+            >
               {solicitation.text}
               <span className="float-end">{solicitation.date}</span>
             </p>
