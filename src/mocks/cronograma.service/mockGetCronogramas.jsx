@@ -148,6 +148,8 @@ export const mockListaCronogramas = {
           nome: "LITRO",
           abreviacao: "l",
         },
+        programa_display: "Leve Leite",
+        programa: "LEVE_LEITE",
       },
       tipo_embalagem_secundaria: null,
       custo_unitario_produto: 11.0,

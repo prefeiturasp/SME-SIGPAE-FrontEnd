@@ -126,7 +126,7 @@ export default ({
             <p>Produto:</p>
             <div className="d-flex align-items-center gap-3">
               <b>{cronograma.ficha_tecnica?.produto.nome}</b>
-              {cronograma.contrato.programa === "LEVE_LEITE" && (
+              {cronograma.ficha_tecnica?.programa === "LEVE_LEITE" && (
                 <TagLeveLeite />
               )}
             </div>
