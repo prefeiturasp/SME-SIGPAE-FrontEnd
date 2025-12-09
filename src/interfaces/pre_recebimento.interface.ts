@@ -291,6 +291,7 @@ export interface EtapaCalendario {
   uuid_cronograma: string;
   status: string;
   unidade_medida: string;
+  programa_leve_leite: boolean;
 }
 
 export interface CardItem {
