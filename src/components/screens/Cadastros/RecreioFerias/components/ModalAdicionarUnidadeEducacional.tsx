@@ -91,7 +91,8 @@ export const ModalAdicionarUnidadeEducacional = ({
       isTipoComAlimentacaoFixaParaInscritos &&
       alimentacao.inscritos?.length > 0
     ) {
-      const todosValores = alimentacao.inscritos.map((opt: any) => opt.value);
+      const opcoesFiltradas = filtrarLancheEmergencial(alimentacao.inscritos);
+      const todosValores = opcoesFiltradas.map((opt: any) => opt.value);
       formApiRef.change("tipos_alimentacao_inscritos", todosValores);
     }
   }, [
@@ -178,6 +179,11 @@ export const ModalAdicionarUnidadeEducacional = ({
 
     closeModal();
   };
+
+  const filtrarLancheEmergencial = (options: any[] = []) =>
+    options.filter(
+      (opt) => !opt.label?.toLowerCase().includes("lanche emergencial"),
+    );
 
   return (
     <Modal
@@ -296,7 +302,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                         isCemei ? " - CEI" : ""
                       }`}
                       name="tipos_alimentacao_inscritos"
-                      options={alimentacao.inscritos}
+                      options={filtrarLancheEmergencial(alimentacao.inscritos)}
                       selected={values?.tipos_alimentacao_inscritos || []}
                       required
                       validate={required}
@@ -319,11 +325,8 @@ export const ModalAdicionarUnidadeEducacional = ({
                       component={MultiselectRaw}
                       label="Tipos de Alimentações para Colaboradores"
                       name="tipos_alimentacao_colaboradores"
-                      options={alimentacao.colaboradores.filter(
-                        (opt) =>
-                          !opt.label
-                            ?.toLowerCase()
-                            .includes("lanche emergencial"),
+                      options={filtrarLancheEmergencial(
+                        alimentacao.colaboradores,
                       )}
                       selected={values?.tipos_alimentacao_colaboradores || []}
                       disabled={!enableSelectors}
@@ -343,7 +346,9 @@ export const ModalAdicionarUnidadeEducacional = ({
                         dataTestId="multiselect-tipos-alimentacao-inscritos-infantil"
                         label="Tipos de Alimentações para Inscritos - INFANTIL"
                         name="tipos_alimentacao_inscritos_infantil"
-                        options={alimentacao.inscritosInfantil}
+                        options={filtrarLancheEmergencial(
+                          alimentacao.inscritosInfantil,
+                        )}
                         selected={
                           values?.tipos_alimentacao_inscritos_infantil || []
                         }
