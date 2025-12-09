@@ -5,6 +5,7 @@ import {
 } from "src/helpers/utilities";
 import React from "react";
 import "./styles.scss";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 export default ({
   cronograma,
@@ -53,7 +54,7 @@ export default ({
             <p className="head-green">
               {usuarioEhEmpresaFornecedor()
                 ? deParaStatusAltCronograma(
-                    solicitacaoAlteracaoCronograma.status
+                    solicitacaoAlteracaoCronograma.status,
                   )
                 : solicitacaoAlteracaoCronograma.status}
             </p>
@@ -123,9 +124,12 @@ export default ({
 
           <div className="row my-3">
             <p>Produto:</p>
-            <p>
+            <div className="d-flex align-items-center gap-3">
               <b>{cronograma.ficha_tecnica?.produto.nome}</b>
-            </p>
+              {cronograma.contrato.programa === "LEVE_LEITE" && (
+                <TagLeveLeite />
+              )}
+            </div>
           </div>
 
           <hr />

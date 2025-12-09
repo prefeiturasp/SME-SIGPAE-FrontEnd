@@ -1,5 +1,4 @@
 import moment from "moment";
-
 import { stringDecimalToNumber } from "src/helpers/parsers";
 import { formatarNumeroEProdutoFichaTecnica } from "src/helpers/preRecebimento";
 
@@ -8,19 +7,22 @@ export const getOpcoesContrato = (empresaSelecionada) => {
   return empresaSelecionada.contratos.map((contrato) => ({
     nome: contrato.numero,
     uuid: contrato.uuid,
+    programa: contrato.programa,
   }));
 };
 
 export const geraOptionsFichasTecnicas = (
   fichasTecnicas,
-  empresaSelecionada
+  empresaSelecionada,
 ) => {
   const options = fichasTecnicas
     .filter((ficha) => ficha.uuid_empresa === empresaSelecionada?.uuid)
     .map((ficha) => {
+      const nomeFormatado = formatarNumeroEProdutoFichaTecnica(ficha);
       return {
-        value: formatarNumeroEProdutoFichaTecnica(ficha),
         uuid: ficha.uuid,
+        nome: nomeFormatado,
+        programa: ficha.programa,
       };
     });
 
@@ -45,7 +47,7 @@ export const formataPayload = (
   empresaSelecionada,
   fichaTecnicaSelecionada,
   etapas,
-  recebimentos
+  recebimentos,
 ) => {
   let payload = {};
   payload.cadastro_finalizado = !rascunho;
@@ -73,7 +75,7 @@ export const formataPayload = (
       undefined,
     data_programada: values[`data_programada_${index}`]
       ? moment(values[`data_programada_${index}`], "DD/MM/YYYY").format(
-          "YYYY-MM-DD"
+          "YYYY-MM-DD",
         )
       : undefined,
     quantidade: values[`quantidade_${index}`]
