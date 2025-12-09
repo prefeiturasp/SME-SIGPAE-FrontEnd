@@ -33,12 +33,12 @@ beforeEach(() => {
     .reply(200, mockListaInformacoesNutricionais);
   mock
     .onGet(
-      `/cadastro-produtos-edital/lista-completa-logistica/d15c948-146c-41a0-aa1e-d39670858e2e.pdf`
+      `/cadastro-produtos-edital/lista-completa-logistica/d15c948-146c-41a0-aa1e-d39670858e2e.pdf`,
     )
     .reply(200, mockListaProdutosLogistica);
   mock
     .onGet(
-      `/ficha-tecnica/${mockFichaTecnicaComDetalhe2.uuid}/detalhar-com-analise/`
+      `/ficha-tecnica/${mockFichaTecnicaComDetalhe2.uuid}/detalhar-com-analise/`,
     )
     .reply(200, mockFichaTecnicaComDetalhe2);
   mock.onGet(`/fabricantes/lista-nomes/`).reply(200, mockListaFabricantes);
@@ -74,7 +74,7 @@ const setup = async () => {
         >
           <AlterarFichaTecnicaPage />
         </MeusDadosContext.Provider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -85,7 +85,7 @@ describe("Teste - Alterar Ficha técnica", () => {
 
     expect(screen.getByText("Ficha Técnica FT024")).toBeInTheDocument();
     await waitFor(() =>
-      expect(screen.queryByText("Carregando...")).not.toBeInTheDocument()
+      expect(screen.queryByText("Carregando...")).not.toBeInTheDocument(),
     );
 
     const correcoes = screen.getAllByTestId("textarea-div");
@@ -105,7 +105,7 @@ describe("Teste - Alterar Ficha técnica", () => {
 
     // Collapse 'Conferido' deveria estar com campo desabilitado
     const embalagemInput = screen.getByPlaceholderText(
-      "Digite as informações de armazenamento para embalagem primária"
+      "Digite as informações de armazenamento para embalagem primária",
     );
     expect(embalagemInput).toBeDisabled();
   });
@@ -116,7 +116,7 @@ describe("Teste - Alterar Ficha técnica", () => {
     expect(screen.getByText("Ficha Técnica FT024")).toBeInTheDocument();
 
     const botaoAdicionar = screen.getByText(
-      "+ Adicionar Envasador/Distribuidor"
+      "+ Adicionar Envasador/Distribuidor",
     );
     expect(botaoAdicionar).toBeInTheDocument();
     fireEvent.click(botaoAdicionar);
@@ -130,5 +130,15 @@ describe("Teste - Alterar Ficha técnica", () => {
 
     const botaoExcluir = screen.getByTestId("excluir-envasador");
     fireEvent.click(botaoExcluir);
+  });
+
+  it("renderiza tag Leve Leite quando programa é LEVE_LEITE", async () => {
+    await setup();
+
+    await waitFor(() =>
+      expect(screen.queryByText("Carregando...")).not.toBeInTheDocument(),
+    );
+
+    expect(screen.getByText("LEVE LEITE - PLL")).toBeInTheDocument();
   });
 });
