@@ -13,6 +13,7 @@ export const mockFichaTecnicaComDetalhe: FichaTecnicaDetalhadaComAnalise = {
     nome: "Agrolaf",
   },
   categoria: "PERECIVEIS",
+  programa: "ALIMENTACAO_ESCOLAR",
   status: "Enviada para Correção",
   criado_em: "31/01/2024",
   empresa: {
@@ -174,6 +175,7 @@ export const mockFichaTecnicaComDetalheSemAnalise: FichaTecnicaDetalhadaComAnali
       nome: "Agrolaf",
     },
     categoria: "PERECIVEIS",
+    programa: "LEVE_LEITE",
     status: "Enviada para Análise",
     criado_em: "31/01/2024",
     empresa: {
@@ -314,6 +316,7 @@ export const mockFichaTecnicaComDetalhe2 = {
     nome: "ALIBABA",
   },
   categoria: "PERECIVEIS",
+  programa: "LEVE_LEITE",
   status: "Enviada para Correção",
   criado_em: "01/07/2025",
   empresa: {

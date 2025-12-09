@@ -93,7 +93,7 @@ const InputFile = forwardRef((props, ref) => {
     const hasXLS = files.some(
       (file) =>
         file.base64.includes("spreadsheetml") ||
-        file.base64.includes("application/vnd.ms-excel.sheet.macroEnabled.12"),
+        file.base64.includes("application/vnd.ms-excel"),
     );
 
     Array.from(event.target.files).forEach((file) => {
