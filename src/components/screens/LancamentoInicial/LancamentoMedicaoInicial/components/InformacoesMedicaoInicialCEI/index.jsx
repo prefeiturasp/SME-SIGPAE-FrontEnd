@@ -1,4 +1,3 @@
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Checkbox, Collapse, Modal, Spin } from "antd";
 import { format, getYear } from "date-fns";
 import HTTP_STATUS from "http-status-codes";
@@ -10,6 +9,7 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import {
   toastError,
   toastSuccess,
@@ -394,7 +394,7 @@ export const InformacoesMedicaoInicialCEI = ({
     : [];
 
   const handleChangeTipoContagem = (values) => {
-    setTipoDeContagemSelecionada(values);
+    setTipoDeContagemSelecionada(values.map((value_) => value_.value));
   };
 
   const getDefaultValueSelectTipoContagem = () => {
@@ -462,19 +462,16 @@ export const InformacoesMedicaoInicialCEI = ({
                         Método de Contagem das Alimentações Servidas
                       </b>
                       {opcoesContagem.length > 0 && (
-                        <StatefulMultiSelect
+                        <MultiselectRaw
                           name="contagem_refeicoes"
+                          dataTestId="multiselect-contagem-refeicoes"
                           selected={tipoDeContagemSelecionada}
                           options={opcoesContagem || []}
                           onSelectedChanged={(values) =>
                             handleChangeTipoContagem(values)
                           }
+                          placeholder="Selecione os métodos de contagem"
                           hasSelectAll={false}
-                          overrideStrings={{
-                            selectSomeItems: "Selecione os métodos de contagem",
-                            allItemsAreSelected:
-                              "Todos os métodos selecionados",
-                          }}
                           disabled={!emEdicao}
                         />
                       )}

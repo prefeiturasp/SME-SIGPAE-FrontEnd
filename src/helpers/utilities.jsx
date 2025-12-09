@@ -976,21 +976,17 @@ export const recreioNasFeriasDaMedicao = (solicitacaoMedicaoInicial) => {
   return solicitacaoMedicaoInicial.recreio_nas_ferias;
 };
 
-export const recreioNasFeriasDaMedicaoCEIdaCEMEI = (
-  solicitacaoMedicaoInicial,
-) => {
-  return solicitacaoMedicaoInicial.recreio_nas_ferias?.unidades_participantes.find(
-    (up) => up.cei_ou_emei === "CEI",
+const liberarMedicaoPorTipo = (solicitacao, tipo) => {
+  return solicitacao.recreio_nas_ferias?.unidades_participantes.find(
+    (up) => up.cei_ou_emei === tipo,
   )?.liberar_medicao;
 };
 
-export const recreioNasFeriasDaMedicaoEMEIdaCEMEI = (
-  solicitacaoMedicaoInicial,
-) => {
-  return solicitacaoMedicaoInicial.recreio_nas_ferias?.unidades_participantes.find(
-    (up) => up.cei_ou_emei === "EMEI",
-  )?.liberar_medicao;
-};
+export const recreioNasFeriasDaMedicaoCEIdaCEMEI = (solicitacao) =>
+  liberarMedicaoPorTipo(solicitacao, "CEI");
+
+export const recreioNasFeriasDaMedicaoEMEIdaCEMEI = (solicitacao) =>
+  liberarMedicaoPorTipo(solicitacao, "EMEI");
 
 export const recreioNasFeriasComColaboradores = (solicitacaoMedicaoInicial) => {
   return (
