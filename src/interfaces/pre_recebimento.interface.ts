@@ -164,6 +164,7 @@ export interface FichaTecnica {
   pregao_chamada_publica: string;
   criado_em: string;
   status: string;
+  programa: ProgramaChoices;
 }
 
 export interface InformacoesNutricionaisFichaTecnica {
