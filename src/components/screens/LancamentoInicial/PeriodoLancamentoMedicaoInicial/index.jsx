@@ -1029,13 +1029,12 @@ export default () => {
         periodo?.periodo_escolar?.nome === "NOITE"
           ? periodo.periodo_escolar.uuid
           : null;
-
-      const data = await carregarDiasCalendario({
-        escola,
+      const data = await carregarDiasCalendario(
+        escola.uuid,
         mes,
         ano,
         periodoNoiteUuid,
-      });
+      );
 
       setCalendarioMesConsiderado(data);
 
