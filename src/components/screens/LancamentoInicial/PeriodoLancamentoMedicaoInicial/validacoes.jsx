@@ -1820,21 +1820,19 @@ export const exibirTooltipSuspensaoAutorizadaAlimentacaoDreCodae = (
   );
 };
 
-export async function carregarDiasCalendario({
-  escola,
+export async function carregarDiasCalendario(
+  escolaUuid,
   mes,
   ano,
   periodoUuid,
-}) {
+) {
   const paramsBase = {
-    escola_uuid: escola.uuid,
+    escola_uuid: escolaUuid,
     mes,
     ano,
     periodo_escolar_uuid: periodoUuid,
   };
-
   let response = await getDiasCalendario(paramsBase);
-
   if (response.data.length === 0 && periodoUuid) {
     const paramsAjustado = {
       ...paramsBase,
