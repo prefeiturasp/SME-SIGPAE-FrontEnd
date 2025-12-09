@@ -2,35 +2,37 @@ import { render, screen } from "@testing-library/react";
 import { Form } from "react-final-form";
 import { LinhaUnidade } from "../components/LinhaUnidade";
 
+const participanteBase = {
+  id: "ue1",
+  dreLoteNome: "DRE Teste",
+  unidadeEducacional: "EMEF Teste",
+  ceiOuEmei: null,
+  num_inscritos: 10,
+  num_colaboradores: 5,
+  liberarMedicao: true,
+  alimentacaoInscritos: ["Lanche"],
+  alimentacaoColaboradores: ["Café"],
+  alimentacaoInscritosInfantil: [],
+  lote: {
+    nome_exibicao: "DRE Teste",
+    nome: "DRE Teste",
+  },
+  unidade_educacional: {
+    nome: "EMEF Teste",
+  },
+  cei_ou_emei: null,
+  liberar_medicao: true,
+  tipos_alimentacao: {
+    inscritos: [],
+    infantil: [],
+    colaboradores: [],
+  },
+};
+
 const renderLinhaUnidade = (props: any = {}) => {
   const defaultProps = {
     name: "unidades_participantes[0]",
-    participante: {
-      id: "ue1",
-      dreLoteNome: "DRE Teste",
-      unidadeEducacional: "EMEF Teste",
-      ceiOuEmei: null,
-      num_inscritos: 10,
-      num_colaboradores: 5,
-      liberarMedicao: true,
-      alimentacaoInscritos: ["Lanche"],
-      alimentacaoColaboradores: ["Café"],
-      alimentacaoInscritosInfantil: [],
-      lote: {
-        nome_exibicao: "DRE Teste",
-        nome: "DRE Teste",
-      },
-      unidade_educacional: {
-        nome: "EMEF Teste",
-      },
-      cei_ou_emei: null,
-      liberar_medicao: true,
-      tipos_alimentacao: {
-        inscritos: [],
-        infantil: [],
-        colaboradores: [],
-      },
-    },
+    participante: participanteBase,
     aberto: false,
     toggleExpandir: jest.fn(),
     openRemoverModal: jest.fn(),
@@ -75,30 +77,9 @@ describe("LinhaUnidade - Regra de num_colaboradores", () => {
     renderLinhaUnidade({
       temTiposAlimentacaoColaboradores: false,
       participante: {
-        id: "ue1",
-        dreLoteNome: "DRE Teste",
-        unidadeEducacional: "EMEF Teste",
-        ceiOuEmei: null,
-        num_inscritos: 10,
+        ...participanteBase,
         num_colaboradores: 0,
-        liberarMedicao: true,
-        alimentacaoInscritos: ["Lanche"],
         alimentacaoColaboradores: [],
-        alimentacaoInscritosInfantil: [],
-        lote: {
-          nome_exibicao: "DRE Teste",
-          nome: "DRE Teste",
-        },
-        unidade_educacional: {
-          nome: "EMEF Teste",
-        },
-        cei_ou_emei: null,
-        liberar_medicao: true,
-        tipos_alimentacao: {
-          inscritos: [],
-          infantil: [],
-          colaboradores: [],
-        },
       },
     });
 
