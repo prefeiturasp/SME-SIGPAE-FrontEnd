@@ -17,6 +17,7 @@ import {
 } from "../../../../../helpers/utilities";
 import { ItemCalendario } from "../../interfaces";
 import { EtapaCalendario } from "src/interfaces/pre_recebimento.interface";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 interface Props {
   event: ItemCalendario<EtapaCalendario>;
@@ -53,6 +54,9 @@ export const ModalCronograma: React.FC<Props> = ({
           <div className="col-12">
             <span className="fw-bold">Nome do Produto: </span>
             <span>{event.objeto.nome_produto}</span>
+            {event.programa_leve_leite && (
+              <TagLeveLeite className="ms-3 absolute" />
+            )}
           </div>
         </div>
         <div className="row">
@@ -96,7 +100,7 @@ export const ModalCronograma: React.FC<Props> = ({
               type={BUTTON_TYPE.BUTTON}
               onClick={() => {
                 navigate(
-                  `/${PRE_RECEBIMENTO}/${ALTERACAO_CRONOGRAMA}?uuid=${event.objeto.uuid_cronograma}`
+                  `/${PRE_RECEBIMENTO}/${ALTERACAO_CRONOGRAMA}?uuid=${event.objeto.uuid_cronograma}`,
                 );
               }}
               style={BUTTON_STYLE.GREEN_OUTLINE}
