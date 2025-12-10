@@ -1,6 +1,6 @@
 import { CaretDownOutlined } from "@ant-design/icons";
 import { Select, Skeleton, Spin } from "antd";
-import { addMonths, format, getMonth, getYear } from "date-fns";
+import { addMonths, format, getMonth, getYear, parse } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
@@ -37,12 +37,14 @@ import {
   getSolicitacoesLancadas,
   updateSolicitacaoMedicaoInicial,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
+import { listarRecreioNasFerias } from "src/services/recreioFerias.service";
 import "./styles.scss";
 
 export default () => {
   const { meusDados } = useContext(MeusDadosContext);
   const [ano, setAno] = useState(null);
   const [mes, setMes] = useState(null);
+  const [cadastrosRecreioNasFerias, setCadastrosRecreioNasFerias] = useState();
   const [panoramaGeral, setPanoramaGeral] = useState();
   const [nomeTerceirizada, setNomeTerceirizada] = useState();
   const [objectoPeriodos, setObjectoPeriodos] = useState([]);
@@ -112,13 +114,28 @@ export default () => {
       mes,
       ano,
     };
-
     const response =
       await getPeriodosPermissoesLancamentosEspeciaisMesAno(payload);
     if (response.status === HTTP_STATUS.OK) {
       setPeriodosPermissoesLancamentosEspeciais(response.data.results);
     } else {
       toastError("Erro ao obter períodos com Permissões de Lançamentos");
+    }
+  };
+
+  const getCadastrosRecreioNasFerias = async () => {
+    const response = await listarRecreioNasFerias();
+    if (response.status === HTTP_STATUS.OK) {
+      setCadastrosRecreioNasFerias(
+        response.data.results.filter(
+          (recreio) => recreio.unidades_participantes.length > 0,
+        ),
+      );
+      return response.data.results.filter(
+        (recreio) => recreio.unidades_participantes.length > 0,
+      );
+    } else {
+      toastError("Erro ao carregar cadastros de Recreio nas Férias.");
     }
   };
 
@@ -143,6 +160,8 @@ export default () => {
         ),
       );
 
+      const cadastrosRecreioNasFerias_ = await getCadastrosRecreioNasFerias();
+
       let solicitacoesLancadas = [];
 
       if (location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL)) {
@@ -153,32 +172,51 @@ export default () => {
         solicitacoesLancadas = await getSolicitacoesLancadas(payload);
       }
 
+      let cadastrosRecreioPreparados = [];
+
+      cadastrosRecreioPreparados = (
+        cadastrosRecreioNasFerias || cadastrosRecreioNasFerias_
+      )?.map((cadastro) => {
+        const dataInicio = parse(
+          cadastro.data_inicio,
+          "dd/MM/yyyy",
+          new Date(),
+        );
+        return {
+          ...cadastro,
+          dataInicio,
+          mesInicio: getMonth(dataInicio) + 1,
+          anoInicio: getYear(dataInicio),
+        };
+      });
+
       for (let mes_ = 0; mes_ <= proximosDozeMeses; mes_++) {
         const dataBRT = addMonths(new Date(), -mes_);
-        const mesString = format(dataBRT, "LLLL", { locale: ptBR }).toString();
+        const mes = getMonth(dataBRT) + 1;
+        const ano = getYear(dataBRT);
+        const mesString = format(dataBRT, "LLLL", { locale: ptBR });
+
+        const periodoFormatado =
+          mesString.charAt(0).toUpperCase() + mesString.slice(1) + " / " + ano;
+
         if (location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL)) {
           const temSolicitacaoLancada = solicitacoesLancadas.data.filter(
             (solicitacao) =>
-              Number(solicitacao.mes) === getMonth(dataBRT) + 1 &&
-              Number(solicitacao.ano) === getYear(dataBRT),
+              Number(solicitacao.mes) === mes &&
+              Number(solicitacao.ano) === ano,
           ).length;
+
           if (!temSolicitacaoLancada) {
             periodos.push({
-              dataBRT: dataBRT,
-              periodo:
-                mesString.charAt(0).toUpperCase() +
-                mesString.slice(1) +
-                " / " +
-                getYear(dataBRT).toString(),
+              dataBRT,
+              periodo: periodoFormatado,
             });
 
             if (!location.search && periodos.length === 1) {
               navigate(
                 {
                   pathname: location.pathname,
-                  search: `mes=${(getMonth(dataBRT) + 1)
-                    .toString()
-                    .padStart(2, "0")}&ano=${getYear(dataBRT).toString()}`,
+                  search: `mes=${String(mes).padStart(2, "0")}&ano=${ano}`,
                 },
                 { replace: true },
               );
@@ -186,19 +224,27 @@ export default () => {
           }
         } else {
           periodos.push({
-            dataBRT: dataBRT,
-            periodo:
-              mesString.charAt(0).toUpperCase() +
-              mesString.slice(1) +
-              " / " +
-              getYear(dataBRT).toString(),
+            dataBRT,
+            periodo: periodoFormatado,
           });
         }
+
+        cadastrosRecreioPreparados?.forEach((cad) => {
+          if (cad.mesInicio === mes && cad.anoInicio === ano) {
+            periodos.push({
+              dataBRT: cad.dataInicio,
+              periodo: cad.titulo,
+              recreio_nas_ferias: cad.uuid,
+            });
+          }
+        });
       }
 
       const params = new URLSearchParams(window.location.search);
       let mes = params.get("mes");
       let ano = params.get("ano");
+      const recreioNasFeriasParam = params.get("recreio_nas_ferias");
+
       setMes(mes);
       setAno(ano);
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
@@ -232,11 +278,14 @@ export default () => {
         const mesStringFromSearch = format(dataFromSearch, "LLLL", {
           locale: ptBR,
         }).toString();
-        const periodoFromSearch =
-          mesStringFromSearch.charAt(0).toUpperCase() +
-          mesStringFromSearch.slice(1) +
-          " / " +
-          getYear(dataFromSearch).toString();
+        const periodoFromSearch = recreioNasFeriasParam
+          ? cadastrosRecreioPreparados.find(
+              (c) => c.uuid === recreioNasFeriasParam,
+            )?.titulo
+          : mesStringFromSearch.charAt(0).toUpperCase() +
+            mesStringFromSearch.slice(1) +
+            " / " +
+            getYear(dataFromSearch).toString();
         setPeriodoFromSearchParam(periodoFromSearch);
       }
 
@@ -251,23 +300,50 @@ export default () => {
       const mesParam = urlParams.get("mes");
       const anoParam = urlParams.get("ano");
 
-      const periodoInicialSelecionado =
-        !mesParam || !anoParam
-          ? periodos[0].dataBRT.toString()
-          : new Date(anoParam, mesParam - 1, 1);
+      function getPeriodoInicialSelecionado() {
+        const semMesAno = !mesParam || !anoParam;
+        const comRecreio = !!recreioNasFeriasParam;
+
+        if (semMesAno) {
+          return periodos[0].dataBRT.toString();
+        }
+
+        if (comRecreio) {
+          const cadastro = cadastrosRecreioPreparados.find(
+            (c) =>
+              c.anoInicio === Number(anoParam) &&
+              c.mesInicio === Number(mesParam),
+          );
+          return cadastro.dataInicio.toString();
+        }
+
+        return new Date(Number(anoParam), Number(mesParam) - 1, 1);
+      }
+
+      const periodoInicialSelecionado = getPeriodoInicialSelecionado();
+
       setObjectoPeriodos(periodos);
       setPeriodoSelecionado(periodoInicialSelecionado);
-      await getSolicitacaoMedInicial(periodoInicialSelecionado, escola.uuid);
+      await getSolicitacaoMedInicial(
+        periodoInicialSelecionado,
+        escola.uuid,
+        recreioNasFeriasParam,
+      );
       setLoadingSolicitacaoMedicaoInicial(false);
     }
     if (meusDados) fetch();
   }, [meusDados]);
 
-  const getSolicitacaoMedInicial = async (periodo, escolaUuid) => {
+  const getSolicitacaoMedInicial = async (
+    periodo,
+    escolaUuid,
+    recreio_nas_ferias,
+  ) => {
     const payload = {
       escola: escolaUuid,
       mes: format(new Date(periodo), "MM").toString(),
       ano: getYear(new Date(periodo)).toString(),
+      recreio_nas_ferias,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
@@ -320,7 +396,16 @@ export default () => {
     setErrosAoSalvar([]);
     setLoadingSolicitacaoMedicaoInicial(true);
     setPeriodoSelecionado(value);
-    await getSolicitacaoMedInicial(value, escolaInstituicao.uuid);
+    const dataPeriodo = new Date(value);
+    const recreio_nas_ferias = objectoPeriodos.find(
+      (o) => o.dataBRT.getTime() === dataPeriodo.getTime(),
+    )?.recreio_nas_ferias;
+
+    await getSolicitacaoMedInicial(
+      value,
+      escolaInstituicao.uuid,
+      recreio_nas_ferias,
+    );
     const mes = format(new Date(value), "MM").toString();
     const ano = getYear(new Date(value)).toString();
     setMes(mes);
@@ -342,7 +427,7 @@ export default () => {
         pathname: location.pathname,
         search: `?mes=${format(new Date(value), "MM").toString()}&ano=${getYear(
           new Date(value),
-        ).toString()}`,
+        ).toString()}${recreio_nas_ferias ? `&recreio_nas_ferias=${recreio_nas_ferias}` : ""}`,
       },
       { replace: true },
     );
@@ -353,11 +438,13 @@ export default () => {
     const params = new URLSearchParams(search);
     const mes = params.get("mes");
     const ano = params.get("ano");
+    const recreio_nas_ferias = params.get("recreio_nas_ferias");
 
     const payload = {
       escola: escolaInstituicao.uuid,
       mes: mes.toString(),
       ano: ano.toString(),
+      recreio_nas_ferias,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
@@ -442,6 +529,7 @@ export default () => {
                     location.pathname.includes(DETALHAMENTO_DO_LANCAMENTO)
                   }
                   open={open}
+                  data-testid="select-periodo-lancamento"
                   onClick={() => setOpen(!open)}
                   onBlur={() => setOpen(false)}
                   name="periodo_lancamento"
@@ -480,6 +568,7 @@ export default () => {
             nomeTerceirizada={nomeTerceirizada}
             solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
             onClickInfoBasicas={onClickInfoBasicas}
+            objectoPeriodos={objectoPeriodos}
           />
         )}
         <hr className="linha-form mt-4 mb-4" />

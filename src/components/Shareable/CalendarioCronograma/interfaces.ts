@@ -4,6 +4,7 @@ export interface ItemCalendario<T> {
   start: Date;
   end: Date;
   allDay: boolean;
+  programa_leve_leite?: boolean;
   objeto: T;
 }
 

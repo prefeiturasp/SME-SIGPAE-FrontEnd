@@ -71,7 +71,7 @@ export const ModalFinalizarMedicao = ({ ...props }) => {
       }
       if (
         base64Ext.includes("spreadsheetml") ||
-        base64Ext.includes("application/vnd.ms-excel.sheet.macroEnabled.12")
+        base64Ext.includes("application/vnd.ms-excel")
       ) {
         xlsCount++;
         if (element.size > 25 * 1024 * 1024) {

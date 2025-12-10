@@ -51,7 +51,7 @@ export const ModalAtualizarOcorrencia = ({ ...props }) => {
       }
       if (
         base64Ext.includes("spreadsheetml") ||
-        base64Ext.includes("application/vnd.ms-excel.sheet.macroEnabled.12")
+        base64Ext.includes("application/vnd.ms-excel")
       ) {
         validation = {
           ...validation,
