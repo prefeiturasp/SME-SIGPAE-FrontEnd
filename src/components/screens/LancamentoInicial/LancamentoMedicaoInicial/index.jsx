@@ -560,6 +560,7 @@ export default () => {
             nomeTerceirizada={nomeTerceirizada}
             solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
             onClickInfoBasicas={onClickInfoBasicas}
+            objectoPeriodos={objectoPeriodos}
           />
         ) : (
           <InformacoesMedicaoInicial

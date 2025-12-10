@@ -12,8 +12,13 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import {
+  deepCopy,
   ehEscolaTipoCEMEI,
   getError,
+  recreioNasFeriasComColaboradores,
+  recreioNasFeriasDaMedicao,
+  recreioNasFeriasDaMedicaoCEIdaCEMEI,
+  recreioNasFeriasDaMedicaoEMEIdaCEMEI,
   usuarioEhEscolaTerceirizadaDiretor,
 } from "src/helpers/utilities";
 import {
@@ -28,7 +33,6 @@ import {
   getSolicitacaoMedicaoInicial,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { relatorioMedicaoInicialPDF } from "src/services/relatorios";
-import { deepCopy } from "../../../../../../helpers/utilities";
 import { BlocoOcorrencias } from "../BlocoOcorrencias";
 import {
   CORES,
@@ -367,75 +371,154 @@ export const LancamentoPorPeriodoCEI = ({
                 <b className="section-title">Períodos</b>
               </div>
             </div>
-            {periodosComAlunos.map((nomePeriodo, index) => (
-              <CardLancamentoCEI
-                key={index}
-                textoCabecalho={nomePeriodo}
-                cor={CORES[index % CORES.length]}
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                escolaInstituicao={escolaInstituicao}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                periodoSelecionado={periodoSelecionado}
-                periodosEscolaCemeiComAlunosEmei={
-                  periodosEscolaCemeiComAlunosEmei
-                }
-                tiposAlimentacao={tiposAlimentacaoPeriodosEmei(nomePeriodo)}
-                uuidPeriodoEscolar={uuidPeriodoEscolar(nomePeriodo)}
-                errosAoSalvar={errosAoSalvar}
-                periodosPermissoesLancamentosEspeciais={
-                  periodosPermissoesLancamentosEspeciais
-                }
-              />
-            ))}
-            {periodosInclusaoContinua && (
-              <CardLancamentoCEI
-                key={periodosComAlunos.length + 1}
-                textoCabecalho={"Programas e Projetos"}
-                cor={CORES[9]}
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                escolaInstituicao={escolaInstituicao}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                periodoSelecionado={periodoSelecionado}
-                periodosEscolaCemeiComAlunosEmei={
-                  periodosEscolaCemeiComAlunosEmei
-                }
-                tiposAlimentacao={tiposAlimentacaoProgramasEProjetos()}
-                errosAoSalvar={errosAoSalvar}
-                periodosInclusaoContinua={periodosInclusaoContinua}
-              />
-            )}
-            {((solicitacoesKitLanchesAutorizadas &&
-              solicitacoesKitLanchesAutorizadas.length > 0) ||
-              (solicitacoesAlteracaoLancheEmergencialAutorizadas &&
-                solicitacoesAlteracaoLancheEmergencialAutorizadas.length >
-                  0)) && (
-              <CardLancamentoCEI
-                key={
-                  periodosComAlunos.length +
-                  1 +
-                  (periodosInclusaoContinua ? 1 : 0)
-                }
-                textoCabecalho={"Solicitações de Alimentação"}
-                cor={
-                  CORES[
-                    periodosComAlunos.length +
+            {!recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial) && (
+              <>
+                {periodosComAlunos.map((nomePeriodo, index) => (
+                  <CardLancamentoCEI
+                    key={index}
+                    textoCabecalho={nomePeriodo}
+                    cor={CORES[index % CORES.length]}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    escolaInstituicao={escolaInstituicao}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    periodoSelecionado={periodoSelecionado}
+                    periodosEscolaCemeiComAlunosEmei={
+                      periodosEscolaCemeiComAlunosEmei
+                    }
+                    tiposAlimentacao={tiposAlimentacaoPeriodosEmei(nomePeriodo)}
+                    uuidPeriodoEscolar={uuidPeriodoEscolar(nomePeriodo)}
+                    errosAoSalvar={errosAoSalvar}
+                    periodosPermissoesLancamentosEspeciais={
+                      periodosPermissoesLancamentosEspeciais
+                    }
+                  />
+                ))}
+                {periodosInclusaoContinua && (
+                  <CardLancamentoCEI
+                    key={periodosComAlunos.length + 1}
+                    textoCabecalho={"Programas e Projetos"}
+                    cor={CORES[9]}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    escolaInstituicao={escolaInstituicao}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    periodoSelecionado={periodoSelecionado}
+                    periodosEscolaCemeiComAlunosEmei={
+                      periodosEscolaCemeiComAlunosEmei
+                    }
+                    tiposAlimentacao={tiposAlimentacaoProgramasEProjetos()}
+                    errosAoSalvar={errosAoSalvar}
+                    periodosInclusaoContinua={periodosInclusaoContinua}
+                  />
+                )}
+                {((solicitacoesKitLanchesAutorizadas &&
+                  solicitacoesKitLanchesAutorizadas.length > 0) ||
+                  (solicitacoesAlteracaoLancheEmergencialAutorizadas &&
+                    solicitacoesAlteracaoLancheEmergencialAutorizadas.length >
+                      0)) && (
+                  <CardLancamentoCEI
+                    key={
+                      periodosComAlunos.length +
                       1 +
                       (periodosInclusaoContinua ? 1 : 0)
-                  ]
-                }
-                solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                escolaInstituicao={escolaInstituicao}
-                quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
-                periodoSelecionado={periodoSelecionado}
-                periodosEscolaCemeiComAlunosEmei={
-                  periodosEscolaCemeiComAlunosEmei
-                }
-                tiposAlimentacao={[
-                  { nome: "Kit Lanche" },
-                  { nome: "Lanche Emergencial" },
-                ]}
-                errosAoSalvar={errosAoSalvar}
-              />
+                    }
+                    textoCabecalho={"Solicitações de Alimentação"}
+                    cor={
+                      CORES[
+                        periodosComAlunos.length +
+                          1 +
+                          (periodosInclusaoContinua ? 1 : 0)
+                      ]
+                    }
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    escolaInstituicao={escolaInstituicao}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    periodoSelecionado={periodoSelecionado}
+                    periodosEscolaCemeiComAlunosEmei={
+                      periodosEscolaCemeiComAlunosEmei
+                    }
+                    tiposAlimentacao={[
+                      { nome: "Kit Lanche" },
+                      { nome: "Lanche Emergencial" },
+                    ]}
+                    errosAoSalvar={errosAoSalvar}
+                  />
+                )}
+              </>
+            )}
+            {recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial) && (
+              <>
+                {(!ehEscolaTipoCEMEI(escolaInstituicao) ||
+                  recreioNasFeriasDaMedicaoCEIdaCEMEI(
+                    solicitacaoMedicaoInicial,
+                  )) && (
+                  <CardLancamentoCEI
+                    textoCabecalho={`Recreio nas Férias${ehEscolaTipoCEMEI(escolaInstituicao) ? " - de 0 a 3 anos e 11 meses" : ""}`}
+                    cor={CORES[10]}
+                    tipos_alimentacao={recreioNasFeriasDaMedicao(
+                      solicitacaoMedicaoInicial,
+                    ).unidades_participantes[0].tipos_alimentacao.inscritos.map(
+                      (tpi) => tpi.nome,
+                    )}
+                    periodoSelecionado={periodoSelecionado}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    ehGrupoSolicitacoesDeAlimentacao={true}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    errosAoSalvar={errosAoSalvar}
+                  />
+                )}
+                {recreioNasFeriasDaMedicaoEMEIdaCEMEI(
+                  solicitacaoMedicaoInicial,
+                ) && (
+                  <CardLancamentoCEI
+                    textoCabecalho="Recreio nas Férias - 4 a 14 anos"
+                    cor={CORES[12]}
+                    tiposAlimentacao={recreioNasFeriasDaMedicao(
+                      solicitacaoMedicaoInicial,
+                    )
+                      .unidades_participantes.find(
+                        (up) => up.cei_ou_emei === "EMEI",
+                      )
+                      ?.tipos_alimentacao.inscritos.map((tpi) => ({
+                        nome: tpi.nome,
+                      }))}
+                    periodoSelecionado={periodoSelecionado}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    ehGrupoSolicitacoesDeAlimentacao={true}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    errosAoSalvar={errosAoSalvar}
+                  />
+                )}
+                {recreioNasFeriasComColaboradores(
+                  solicitacaoMedicaoInicial,
+                ) && (
+                  <CardLancamentoCEI
+                    textoCabecalho="Colaboradores"
+                    cor={CORES[11]}
+                    tiposAlimentacao={recreioNasFeriasDaMedicao(
+                      solicitacaoMedicaoInicial,
+                    ).unidades_participantes[0].tipos_alimentacao.colaboradores.map(
+                      (tpi) => ({ nome: tpi.nome }),
+                    )}
+                    periodoSelecionado={periodoSelecionado}
+                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                    ehGrupoSolicitacoesDeAlimentacao={true}
+                    quantidadeAlimentacoesLancadas={
+                      quantidadeAlimentacoesLancadas
+                    }
+                    errosAoSalvar={errosAoSalvar}
+                  />
+                )}
+              </>
             )}
             <div className="mt-4">
               {renderBotaoFinalizar() ? (
