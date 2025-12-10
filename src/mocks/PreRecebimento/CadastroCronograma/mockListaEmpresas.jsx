@@ -43,6 +43,48 @@ export const mockListaEmpresas = {
       ],
     },
     {
+      uuid: "11111111-1111-1111-1111-111111111111",
+      cnpj: "71149836000109",
+      nome_fantasia: "PETISTICO PET LTDA",
+      contatos: [
+        {
+          nome: "KALIL",
+          telefone: "11 976231535",
+          telefone2: "",
+          celular: "",
+          email: "brunshzl@gmail.com",
+          eh_nutricionista: false,
+          crn_numero: "",
+        },
+      ],
+      contratos: [
+        {
+          edital: null,
+          vigencias: [
+            {
+              uuid: "cb29fa0c-852c-4ff5-817a-7b60859d74c9",
+              data_inicial: "02/08/2023",
+              data_final: "02/12/2023",
+              status: "vencido",
+            },
+          ],
+          modalidade_display: "",
+          uuid: "34a23e02-723b-4a1a-a66f-59064499d57e",
+          numero: "432452344",
+          processo: "4325354",
+          data_proposta: null,
+          encerrado: false,
+          data_hora_encerramento: null,
+          ata: "",
+          modalidade: "",
+          numero_pregao: "",
+          numero_chamada_publica: "",
+          programa_display: "Alimentação Escolar",
+          programa: "ALIMENTACAO_ESCOLAR",
+        },
+      ],
+    },
+    {
       uuid: "2d229451-4074-40ff-8fc8-28b921b5a580",
       cnpj: "97470947000106",
       nome_fantasia: "feaffff",
