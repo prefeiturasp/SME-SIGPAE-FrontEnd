@@ -47,7 +47,6 @@ import {
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
-  getDiasCalendario,
   getDiasParaCorrecao,
   getFeriadosNoMes,
   getLogDietasAutorizadasPeriodo,
@@ -108,6 +107,7 @@ import {
   validacoesTabelaEtecAlimentacao,
   validacoesTabelasDietas,
   validarFormulario,
+  carregarDiasCalendario,
 } from "./validacoes";
 
 export default () => {
@@ -1024,15 +1024,18 @@ export default () => {
         setInclusoesEtecAutorizadas(response_inclusoes_etec_autorizadas);
       }
 
-      const params_dias_calendario = {
-        escola_uuid: escola.uuid,
-        mes: mes,
-        ano: ano,
-      };
-      const response_dias_calendario = await getDiasCalendario(
-        params_dias_calendario,
+      const periodoNoiteUuid =
+        periodo?.periodo_escolar?.nome === "NOITE"
+          ? periodo.periodo_escolar.uuid
+          : null;
+      const data = await carregarDiasCalendario(
+        escola.uuid,
+        mes,
+        ano,
+        periodoNoiteUuid,
       );
-      setCalendarioMesConsiderado(response_dias_calendario.data);
+
+      setCalendarioMesConsiderado(data);
 
       const params_feriados_no_mes = {
         mes: mes,

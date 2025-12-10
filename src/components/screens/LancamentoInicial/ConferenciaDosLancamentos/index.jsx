@@ -29,7 +29,6 @@ import {
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
-  getDiasCalendario,
   getFeriadosNoMesComNome,
   getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
@@ -60,6 +59,7 @@ import {
 } from "./constants";
 import "./style.scss";
 import { ModalPedirCorrecaoSemLancamentos } from "./components/ModalPedirCorrecaoSemLancamentos";
+import { carregarDiasCalendario } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/validacoes.jsx";
 
 export const ConferenciaDosLancamentos = () => {
   const location = useLocation();
@@ -106,7 +106,7 @@ export const ConferenciaDosLancamentos = () => {
   const [showModal, setShowModal] = useState(false);
 
   const [feriadosNoMes, setFeriadosNoMes] = useState();
-  const [diasCalendario, setDiasCalendario] = useState();
+  const [diasCalendario, setDiasCalendario] = useState({});
   const [diasSobremesaDoce, setDiasSobremesaDoce] = useState();
 
   const visualizarModal = () => {
@@ -134,21 +134,66 @@ export const ConferenciaDosLancamentos = () => {
     }
   };
 
-  const getDiasCalendarioAsync = async (mes, ano) => {
-    const params_dias_calendario = {
-      escola_uuid: location.state.escolaUuid,
-      mes: mes,
-      ano: ano,
-    };
-    const response = await getDiasCalendario(params_dias_calendario);
-    if (response.status === HTTP_STATUS.OK) {
-      setDiasCalendario(response.data);
-    } else {
-      setErroAPI(
-        "Erro ao carregar dias do calendário escolar para esta escola. Tente novamente mais tarde.",
+  const carregarTodosDiasCalendario = async () => {
+    if (!periodosSimples || !periodosSimples.length || !periodosGruposMedicao)
+      return;
+
+    const escolaUuid = location.state.escolaUuid;
+    const promises = [];
+    const temNoite = periodosGruposMedicao.some(
+      (p) => p.periodo_escolar === "NOITE",
+    );
+
+    promises.push(
+      carregarDiasCalendario(
+        escolaUuid,
+        mesSolicitacao,
+        anoSolicitacao,
+        null,
+      ).then((data) => ({ key: "DEFAULT", data, nomePeriodo: "DEFAULT" })),
+    );
+    if (temNoite) {
+      const periodoNoite = periodosSimples.find(
+        (p) => p.periodo_escolar?.nome === "NOITE",
       );
+      if (periodoNoite) {
+        promises.push(
+          carregarDiasCalendario(
+            escolaUuid,
+            mesSolicitacao,
+            anoSolicitacao,
+            periodoNoite.periodo_escolar.uuid,
+          ).then((data) => ({
+            key: periodoNoite.periodo_escolar.nome,
+            data,
+            nomePeriodo: periodoNoite.periodo_escolar.nome,
+          })),
+        );
+      }
+    }
+
+    try {
+      const results = await Promise.all(promises);
+      const novosDiasCalendario = {};
+
+      results.forEach((result) => {
+        novosDiasCalendario[result.key] = result.data;
+        if (result.nomePeriodo) {
+          novosDiasCalendario[result.nomePeriodo] = result.data;
+        }
+      });
+
+      setDiasCalendario(novosDiasCalendario);
+    } catch {
+      setErroAPI("Erro ao carregar dias do calendário escolar.");
     }
   };
+
+  useEffect(() => {
+    if (periodosSimples && mesSolicitacao && anoSolicitacao) {
+      carregarTodosDiasCalendario();
+    }
+  }, [periodosSimples, mesSolicitacao, anoSolicitacao]);
 
   const getPeriodosGruposMedicaoAsync = async () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -359,7 +404,7 @@ export const ConferenciaDosLancamentos = () => {
   useEffect(() => {
     if (mesSolicitacao && anoSolicitacao) {
       !feriadosNoMes && getFeriadosNoMesAsync(mesSolicitacao, anoSolicitacao);
-      !diasCalendario && getDiasCalendarioAsync(mesSolicitacao, anoSolicitacao);
+      !diasCalendario;
       !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
         getListaDiasSobremesaDoceAsync();
     }
@@ -949,6 +994,10 @@ export const ConferenciaDosLancamentos = () => {
                       </div>
                       <div className="col-12 mt-3">
                         {periodosGruposMedicao.map((periodoGrupo, index) => {
+                          const periodo =
+                            periodoGrupo?.periodo_escolar ?? "DEFAULT";
+                          const chaveCalendario =
+                            periodo === "NOITE" ? "NOITE" : "DEFAULT";
                           return [
                             <TabelaLancamentosPeriodo
                               key={index}
@@ -983,7 +1032,7 @@ export const ConferenciaDosLancamentos = () => {
                               }}
                               solicitacao={solicitacao}
                               feriadosNoMes={feriadosNoMes}
-                              diasCalendario={diasCalendario}
+                              diasCalendario={diasCalendario[chaveCalendario]}
                               diasSobremesaDoce={diasSobremesaDoce}
                             />,
                           ];
