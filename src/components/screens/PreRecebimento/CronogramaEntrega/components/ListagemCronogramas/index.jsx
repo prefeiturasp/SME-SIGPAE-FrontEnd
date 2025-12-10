@@ -99,7 +99,7 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                 !usuarioEhEmpresaFornecedor()) && (
                 <div className="grid-table body-table">
                   <div className={bordas}>{cronograma.numero}</div>
-                  <div className={bordas}>
+                  <div className="d-flex align-items-center justify-content-between">
                     <Tooltip
                       color="#42474a"
                       overlayStyle={{
@@ -109,14 +109,12 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                       }}
                       title={cronograma.ficha_tecnica?.produto?.nome}
                     >
-                      <div className="d-flex align-items-center gap-2">
-                        {cronograma.ficha_tecnica?.produto?.nome &&
-                          formataNome(cronograma.ficha_tecnica?.produto?.nome)}
-
-                        {cronograma.ficha_tecnica?.programa ===
-                          "LEVE_LEITE" && <TagLeveLeite />}
-                      </div>
+                      {cronograma.ficha_tecnica?.produto?.nome &&
+                        formataNome(cronograma.ficha_tecnica?.produto?.nome)}
                     </Tooltip>
+                    {cronograma.ficha_tecnica?.programa === "LEVE_LEITE" && (
+                      <TagLeveLeite />
+                    )}
                   </div>
                   <div className={bordas}>
                     {cronograma.qtd_total_programada &&
