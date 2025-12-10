@@ -30,7 +30,9 @@ const TIPOS_CEMEI = ["CEMEI", "CEU CEMEI"];
 const TIPOS_COM_ALIMENTACAO_FIXA_INSCRITOS = [
   "CEI",
   "CEU CEI",
+  "CCI/CIPS",
   "CCI",
+  "CEI DIRET",
   "CEMEI",
   "CEU CEMEI",
 ];
