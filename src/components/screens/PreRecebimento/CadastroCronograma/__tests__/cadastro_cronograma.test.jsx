@@ -101,4 +101,27 @@ describe("Testes da interface de Cadastro de Cronograma", () => {
       expect(screen.getByText("Dados do Recebimento")).toBeInTheDocument();
     });
   });
+
+  it("não deve gerar warning de keys duplicadas ao renderizar empresas com mesmo nome", async () => {
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+
+    const empresa = screen.getByTestId("input-empresa").querySelector("input");
+    fireEvent.focus(empresa);
+    fireEvent.change(empresa, {
+      target: { value: "PETISTICO PET LTDA" },
+    });
+
+    await waitFor(() => {
+      expect(empresa.value).toBe("PETISTICO PET LTDA");
+    });
+
+    // Verifica se houve warning de keys duplicadas
+    const warningsDuplicateKeys = consoleErrorSpy.mock.calls.filter((call) =>
+      String(call[0]).includes("Encountered two children with the same key"),
+    );
+
+    expect(warningsDuplicateKeys).toHaveLength(0);
+
+    consoleErrorSpy.mockRestore();
+  });
 });
