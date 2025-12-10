@@ -3,6 +3,11 @@ import {
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
 } from "../validacoes";
 
+import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import { carregarDiasCalendario } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/validacoes.jsx";
+import { mockDiasCalendarioNoturnoJaneiro2025 } from "src/mocks/escola/diaCalendario/periodoNoturno.jsx";
+import { mockDiasCalendarioDiurnoJaneiro2025 } from "src/mocks/escola/diaCalendario/periodoDiurno.jsx";
+
 describe("Funções de Tooltip Kit Lanche", () => {
   const baseParams = {
     formValuesAtualizados: {},
@@ -237,10 +242,126 @@ describe("Funções de Tooltip Kit Lanche", () => {
           exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
             ...Object.values(params),
           );
-
         expect(resultDiferente).toBe(false);
         expect(resultMenor).toBe(false);
       });
+    });
+  });
+});
+
+jest.mock(
+  "src/services/medicaoInicial/periodoLancamentoMedicao.service",
+  () => ({
+    getDiasCalendario: jest.fn(),
+  }),
+);
+
+describe("Testa o carregamento de dias úteis", () => {
+  const escolaUuid = "946e3b04-08c1-4838-81d7-4f9625a727f7";
+  const mes = 1;
+  const ano = 2025;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("retorna lista diurna quando periodoUuid é null", async () => {
+    getDiasCalendario.mockResolvedValue({
+      data: mockDiasCalendarioDiurnoJaneiro2025,
+      status: 200,
+    });
+
+    const result = await carregarDiasCalendario(escolaUuid, mes, ano, null);
+
+    expect(result).toEqual(mockDiasCalendarioDiurnoJaneiro2025);
+    expect(getDiasCalendario).toHaveBeenCalledTimes(1);
+    expect(getDiasCalendario).toHaveBeenCalledWith({
+      escola_uuid: escolaUuid,
+      mes,
+      ano,
+      periodo_escolar_uuid: null,
+    });
+  });
+
+  it("retorna lista noturna quando periodoUuid é fornecido e API retorna dados", async () => {
+    const periodoUuid =
+      mockDiasCalendarioNoturnoJaneiro2025[0].periodo_escolar.uuid;
+
+    getDiasCalendario.mockResolvedValue({
+      data: mockDiasCalendarioNoturnoJaneiro2025,
+      status: 200,
+    });
+
+    const result = await carregarDiasCalendario(
+      escolaUuid,
+      mes,
+      ano,
+      periodoUuid,
+    );
+
+    expect(result).toEqual(mockDiasCalendarioNoturnoJaneiro2025);
+    expect(getDiasCalendario).toHaveBeenCalledTimes(1);
+    expect(getDiasCalendario).toHaveBeenCalledWith({
+      escola_uuid: escolaUuid,
+      mes,
+      ano,
+      periodo_escolar_uuid: periodoUuid,
+    });
+  });
+
+  it("quando API retorna vazio para noturno, faz fallback e retorna lista diurna", async () => {
+    const periodoUuid =
+      mockDiasCalendarioNoturnoJaneiro2025[0].periodo_escolar.uuid;
+
+    getDiasCalendario
+      .mockResolvedValueOnce({ data: [], status: 200 })
+      .mockResolvedValueOnce({
+        data: mockDiasCalendarioDiurnoJaneiro2025,
+        status: 200,
+      });
+
+    const result = await carregarDiasCalendario(
+      escolaUuid,
+      mes,
+      ano,
+      periodoUuid,
+    );
+
+    expect(result).toEqual(mockDiasCalendarioDiurnoJaneiro2025);
+    expect(getDiasCalendario).toHaveBeenCalledTimes(2);
+
+    expect(getDiasCalendario.mock.calls[0][0]).toEqual({
+      escola_uuid: escolaUuid,
+      mes,
+      ano,
+      periodo_escolar_uuid: periodoUuid,
+    });
+
+    expect(getDiasCalendario.mock.calls[1][0]).toEqual({
+      escola_uuid: escolaUuid,
+      mes,
+      ano,
+      periodo_escolar_uuid: null,
+    });
+  });
+
+  test("NÃO faz fallback quando periodoUuid é null, mesmo com dados vazios", async () => {
+    getDiasCalendario.mockResolvedValueOnce({
+      data: [],
+      status: 200,
+    });
+
+    const result = await carregarDiasCalendario(escolaUuid, mes, ano, null);
+
+    expect(result).toEqual([]);
+
+    expect(getDiasCalendario).toHaveBeenCalledTimes(1);
+
+    expect(getDiasCalendario).toHaveBeenCalledWith({
+      escola_uuid: escolaUuid,
+      mes,
+      ano,
+      periodo_escolar_uuid: null,
     });
   });
 });
