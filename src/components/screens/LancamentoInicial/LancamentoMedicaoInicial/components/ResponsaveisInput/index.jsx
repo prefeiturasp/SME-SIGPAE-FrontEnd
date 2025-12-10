@@ -14,7 +14,7 @@ function ResponsaveisInputs({
             <Input
               className="mt-2"
               name={`responsavel_nome_${index}`}
-              data-testid={`input-responsavel-nome-${responsavel}`}
+              data-testid={`input-responsavel-nome-${index}`}
               value={responsavel.nome}
               onChange={(e) => setaResponsavel("nome", e.target.value, index)}
               disabled={!emEdicao}
@@ -25,7 +25,7 @@ function ResponsaveisInputs({
               maxLength={7}
               className="mt-2"
               name={`responsavel_rf_${index}`}
-              data-testid={`input-responsavel-rf-${responsavel}`}
+              data-testid={`input-responsavel-rf-${index}`}
               onKeyPress={(event) => verificarInput(event, index)}
               onChange={(event) =>
                 setaResponsavel("rf", event.target.value, index)

@@ -1,9 +1,46 @@
-export const mockRecreioNasFeriasCEMEIDezembro2025 = {
-  count: 1,
-  next: null,
-  previous: null,
-  results: [
-    {
+export const mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025CEMEI = [
+  {
+    escola: "CEMEI SUZANA CAMPOS TAUIL",
+    escola_uuid: "68b35061-9942-4aa2-9cbf-88363127688e",
+    tipos_contagem_alimentacao: [],
+    responsaveis: [
+      {
+        nome: "fulano da silva",
+        rf: "8765432",
+      },
+    ],
+    ocorrencia: null,
+    logs: [
+      {
+        status_evento_explicacao: "Em aberto para preenchimento pela UE",
+        usuario: {
+          uuid: "48e69e36-4722-4d72-9083-cf59fc599116",
+          cpf: null,
+          nome: "SUPER USUARIO ESCOLA CEMEI",
+          email: "escolacemei@admin.com",
+          date_joined: "08/11/2021 14:26:57",
+          registro_funcional: "8969232",
+          tipo_usuario: "escola",
+          cargo: "ANALISTA DE SAUDE NIVEL I",
+          crn_numero: "85856",
+          nome_fantasia: null,
+        },
+        criado_em: "10/12/2025 11:26:31",
+        descricao:
+          "Solicitação #DB08B -- Escola CEMEI SUZANA CAMPOS TAUIL -- 12/2025",
+        justificativa: "",
+        resposta_sim_nao: false,
+      },
+    ],
+    alunos_periodo_parcial: [],
+    historico: null,
+    escola_eh_emebs: false,
+    escola_cei_com_inclusao_parcial_autorizada: false,
+    escola_possui_alunos_regulares: true,
+    sem_lancamentos: false,
+    justificativa_sem_lancamentos: null,
+    justificativa_codae_correcao_sem_lancamentos: null,
+    recreio_nas_ferias: {
       uuid: "cd27796f-9dbf-4e36-ac14-c44f23d41cd4",
       id: 46,
       titulo: "Recreio nas Férias Dez-25",
@@ -170,5 +207,18 @@ export const mockRecreioNasFeriasCEMEIDezembro2025 = {
       criado_em: "09/12/2025 13:45:01",
       alterado_em: "10/12/2025 10:57:48",
     },
-  ],
-};
+    criado_em: "10/12/2025 11:26:31",
+    uuid: "db08b099-ffa9-42f6-83cc-cc6c99be511b",
+    ano: "2025",
+    mes: "12",
+    status: "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE",
+    com_ocorrencias: false,
+    ue_possui_alunos_periodo_parcial: false,
+    logs_salvos: false,
+    dre_ciencia_correcao_data: null,
+    rastro_lote: 21,
+    rastro_terceirizada: 4,
+    dre_ciencia_correcao_usuario: null,
+    relatorio_financeiro: null,
+  },
+];

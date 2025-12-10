@@ -494,6 +494,7 @@ export const InformacoesMedicaoInicialCEI = ({
                     </label>
                     {options.map((option) => (
                       <Checkbox
+                        data-testid={`checkbox-alunos-parcial-${option.value}`}
                         key={option.value}
                         value={option.value}
                         checked={uePossuiAlunosPeriodoParcial === option.value}
