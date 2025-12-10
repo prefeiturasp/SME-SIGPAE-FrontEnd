@@ -14,7 +14,7 @@ import { ResponseCalendarioCronograma } from "src/interfaces/responses.interface
 
 interface Props {
   getObjetos: (
-    _params?: ParametrosCalendario
+    _params?: ParametrosCalendario,
   ) => Promise<ResponseCalendarioCronograma>;
   nomeObjeto: string;
   nomeObjetoMinusculo: string;
@@ -58,6 +58,15 @@ export const CalendarioCronograma: React.FC<Props> = ({
     setShowModalCronograma(true);
   };
 
+  const eventPropGetter = (event: any) => {
+    if (event.programa_leve_leite || event.resource?.programa_leve_leite) {
+      return {
+        className: "programa-leve-leite",
+      };
+    }
+    return {};
+  };
+
   return (
     <div className="card calendario-sobremesa mt-3">
       <div className="card-body">
@@ -83,6 +92,7 @@ export const CalendarioCronograma: React.FC<Props> = ({
                   localizer={localizer}
                   events={objetos}
                   onSelectEvent={handleEvent}
+                  eventPropGetter={eventPropGetter}
                   components={{
                     toolbar: CustomToolbar,
                   }}

@@ -13,14 +13,16 @@ export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
       pregao_chamada_publica: "3231312",
       criado_em: "10/02/2025",
       status: "Rascunho",
+      programa: "ALIMENTACAO_ESCOLAR",
     },
     {
       uuid: "f3606699-7f51-4aca-9615-7fb86c5f939c",
       numero: "FT064",
-      nome_produto: "GRANOLA",
+      nome_produto: "LEITE EM PÓ INTEGRAL",
       pregao_chamada_publica: "789",
       criado_em: "04/02/2025",
-      status: "Rascunho",
+      status: "Enviada para Análise",
+      programa: "LEVE_LEITE",
     },
     {
       uuid: "4fdae93c-489f-401e-b409-1bb18b9294a1",
@@ -29,6 +31,7 @@ export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
       pregao_chamada_publica: "312312312",
       criado_em: "30/01/2025",
       status: "Rascunho",
+      programa: "ALIMENTACAO_ESCOLAR",
     },
     {
       uuid: "a6d37354-1fd1-4103-996d-a418fc911374",
@@ -37,6 +40,7 @@ export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
       pregao_chamada_publica: "123",
       criado_em: "30/01/2025",
       status: "Rascunho",
+      programa: "ALIMENTACAO_ESCOLAR",
     },
     {
       uuid: "16f1133d-58b9-495b-bacf-1be257df875d",
@@ -45,6 +49,7 @@ export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
       pregao_chamada_publica: "56817",
       criado_em: "24/05/2024",
       status: "Rascunho",
+      programa: "ALIMENTACAO_ESCOLAR",
     },
     {
       uuid: "9a43d2e6-e755-489d-8039-f419efcfbde2",
@@ -53,6 +58,7 @@ export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
       pregao_chamada_publica: "888",
       criado_em: "24/05/2024",
       status: "Enviada para Correção",
+      programa: "ALIMENTACAO_ESCOLAR",
     },
     {
       uuid: "8f00b71c-42fa-40eb-b7ca-637fbf33345a",
@@ -61,6 +67,7 @@ export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
       pregao_chamada_publica: "637548",
       criado_em: "16/05/2024",
       status: "Enviada para Correção",
+      programa: "ALIMENTACAO_ESCOLAR",
     },
     {
       uuid: "86f7dde0-7e0f-4c99-b093-2b6e8aacf875",
@@ -69,6 +76,7 @@ export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
       pregao_chamada_publica: "12",
       criado_em: "24/04/2024",
       status: "Enviada para Análise",
+      programa: "ALIMENTACAO_ESCOLAR",
     },
     {
       uuid: "82ee0db8-8582-428f-b6b5-c522c9cb1363",
@@ -77,6 +85,7 @@ export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
       pregao_chamada_publica: "01010101",
       criado_em: "02/04/2024",
       status: "Enviada para Análise",
+      programa: "ALIMENTACAO_ESCOLAR",
     },
     {
       uuid: "7c0bac29-9869-4f08-86b1-d5581429ebbf",
@@ -85,6 +94,7 @@ export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
       pregao_chamada_publica: "123",
       criado_em: "27/03/2024",
       status: "Enviada para Análise",
+      programa: "LEVE_LEITE",
     },
   ],
 };

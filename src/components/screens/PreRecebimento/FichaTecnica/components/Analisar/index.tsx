@@ -48,6 +48,7 @@ import {
 } from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
 import "./styles.scss";
 import FormFabricante from "../Cadastrar/components/FormFabricante";
@@ -64,25 +65,25 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
   const [showModalCancelar, setShowModalCancelar] = useState<boolean>(false);
   const [collapse, setCollapse] = useState<CollapseControl>({});
   const [ficha, setFicha] = useState<FichaTecnicaDetalhadaComAnalise>(
-    {} as FichaTecnicaDetalhadaComAnalise
+    {} as FichaTecnicaDetalhadaComAnalise,
   );
   const [initialValues, setInitialValues] = useState<Record<string, any>>({});
   const [conferidos, setConferidos] = useState<StateConferidosAnalise>({});
   const listaCompletaInformacoesNutricionais = useRef<InformacaoNutricional[]>(
-    []
+    [],
   );
   const listaInformacoesNutricionaisFichaTecnica = useRef<
     InformacaoNutricional[]
   >([]);
   const [proponente, setProponente] =
     useState<TerceirizadaComEnderecoInterface>(
-      {} as TerceirizadaComEnderecoInterface
+      {} as TerceirizadaComEnderecoInterface,
     );
 
   useEffect(() => {
     (async () => {
       await carregaListaCompletaInformacoesNutricionais(
-        listaCompletaInformacoesNutricionais
+        listaCompletaInformacoesNutricionais,
       );
       await carregarDadosAnalisarDetalhar(
         listaInformacoesNutricionaisFichaTecnica,
@@ -90,7 +91,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
         setConferidos,
         setInitialValues,
         setProponente,
-        setCarregando
+        setCarregando,
       );
     })();
   }, []);
@@ -213,7 +214,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
     }
 
     return Object.values(conferidosFiltrados).some(
-      (conf) => conf !== true && conf !== false
+      (conf) => conf !== true && conf !== false,
     );
   };
 
@@ -267,6 +268,11 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                         name={`produto`}
                         className="input-ficha-tecnica"
                         disabled
+                        suffix={
+                          ficha.programa === "LEVE_LEITE" ? (
+                            <TagLeveLeite />
+                          ) : null
+                        }
                       />
                     </div>
                     <div className="col-4">
@@ -1111,13 +1117,13 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                               className="float-end ms-3"
                               onClick={() =>
                                 navigate(
-                                  `/${PRE_RECEBIMENTO}/${ATUALIZAR_FICHA_TECNICA}?uuid=${ficha.uuid}`
+                                  `/${PRE_RECEBIMENTO}/${ATUALIZAR_FICHA_TECNICA}?uuid=${ficha.uuid}`,
                                 )
                               }
                             />
                           )}
                         {["Enviada para Análise", "Aprovada"].includes(
-                          ficha.status
+                          ficha.status,
                         ) && (
                           <Botao
                             texto="Ficha em PDF"

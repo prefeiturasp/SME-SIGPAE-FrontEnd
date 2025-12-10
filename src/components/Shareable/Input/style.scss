@@ -63,6 +63,17 @@ div.input {
     overflow: hidden;
   }
 
+  .input-com-sufixo {
+    display: flex;
+    align-items: center;
+    border: 1px solid $grayInputBorder;
+    border-radius: 0.35rem;
+  }
+
+  .input-com-sufixo .suffix {
+    display: flex;
+  }
+
   .input-com-prefixo .prefix {
     color: #999;
   }
@@ -75,7 +86,21 @@ div.input {
     padding: 0.5rem;
   }
 
-  .input-com-prefixo:focus-within {
+  .input-com-sufixo input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    padding: 8px 12px;
+  }
+
+  .input-com-prefixo:has(input:disabled),
+  .input-com-sufixo:has(input:disabled) {
+    background-color: $grayDisabled;
+  }
+
+  .input-com-prefixo:focus-within,
+  .input-com-sufixo:focus-within {
     box-shadow: 0 0 0 0.2rem rgba(23, 100, 210, 0.23);
   }
 }

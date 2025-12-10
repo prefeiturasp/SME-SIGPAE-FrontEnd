@@ -61,7 +61,7 @@ describe("Teste <ModalCronograma>", () => {
           closeModal={() => setShowModalCronograma(false)}
           event={etapaDoCronograma}
         />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 
@@ -80,7 +80,7 @@ describe("Teste <ModalCronograma>", () => {
     const botaoAlterar = screen.getByRole("button", { name: /Alterar/i });
     fireEvent.click(botaoAlterar);
     expect(navigateMock).toHaveBeenCalledWith(
-      "/pre-recebimento/altera-cronograma?uuid=a11ded5a-e3b3-480f-8132-f412b9c9b5be"
+      "/pre-recebimento/altera-cronograma?uuid=a11ded5a-e3b3-480f-8132-f412b9c9b5be",
     );
   });
 
@@ -129,5 +129,46 @@ describe("Teste <ModalCronograma>", () => {
     const botaoFechar = screen.getByRole("button", { name: /Fechar/i });
     fireEvent.click(botaoFechar);
     expect(setShowModalCronograma).toHaveBeenCalledWith(false);
+  });
+
+  it("deve renderizar a TagLeveLeite quando programa_leve_leite for true", () => {
+    const eventoComProgramaLeveLeite = {
+      ...etapaDoCronograma,
+      programa_leve_leite: true,
+    };
+
+    render(
+      <MemoryRouter>
+        <ModalCronograma
+          showModal={true}
+          closeModal={() => setShowModalCronograma(false)}
+          event={eventoComProgramaLeveLeite}
+        />
+      </MemoryRouter>,
+    );
+
+    const tagLeveLeite = screen.getByText("LEVE LEITE - PLL");
+    expect(tagLeveLeite).toBeInTheDocument();
+    expect(tagLeveLeite).toHaveClass("tag-leve-leite");
+  });
+
+  it("não deve renderizar a TagLeveLeite quando programa_leve_leite for false ou undefined", () => {
+    const eventoSemProgramaLeveLeite = {
+      ...etapaDoCronograma,
+      programa_leve_leite: false,
+    };
+
+    render(
+      <MemoryRouter>
+        <ModalCronograma
+          showModal={true}
+          closeModal={() => setShowModalCronograma(false)}
+          event={eventoSemProgramaLeveLeite}
+        />
+      </MemoryRouter>,
+    );
+
+    const tagLeveLeite = screen.queryByText("LEVE LEITE - PLL");
+    expect(tagLeveLeite).not.toBeInTheDocument();
   });
 });

@@ -164,6 +164,7 @@ export interface FichaTecnica {
   pregao_chamada_publica: string;
   criado_em: string;
   status: string;
+  programa: ProgramaChoices;
 }
 
 export interface InformacoesNutricionaisFichaTecnica {
@@ -291,6 +292,7 @@ export interface EtapaCalendario {
   uuid_cronograma: string;
   status: string;
   unidade_medida: string;
+  programa_leve_leite: boolean;
 }
 
 export interface CardItem {

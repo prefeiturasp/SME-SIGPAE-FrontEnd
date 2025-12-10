@@ -1,5 +1,5 @@
 import { FormApi } from "final-form";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
@@ -27,6 +27,13 @@ type ModalAdicionarUnidadeEducacionalInterface = {
 };
 
 const TIPOS_CEMEI = ["CEMEI", "CEU CEMEI"];
+const TIPOS_COM_ALIMENTACAO_FIXA_INSCRITOS = [
+  "CEI",
+  "CEU CEI",
+  "CCI",
+  "CEMEI",
+  "CEU CEMEI",
+];
 
 export const ModalAdicionarUnidadeEducacional = ({
   showModal,
@@ -37,20 +44,29 @@ export const ModalAdicionarUnidadeEducacional = ({
   const { lotes, lotesOpts } = useLotes();
   const [dreLote, setDreLote] = useState("");
   const [tipoUnidade, setTipoUnidade] = useState("");
-
   const { tipos, tiposOpts, tiposMap } = useTiposUnidade(dreLote, lotes);
   const alimentacao = useAlimentacao();
   const { unidadesFiltradas, fetchUnidades, resetUnidades } =
     useUnidadesEducacionais(form);
 
+  const formApiRef = useRef(null);
+
   const tipoSelecionado = useMemo(
     () => tipos.find((t) => t.uuid === tipoUnidade),
-    [tipos, tipoUnidade]
+    [tipos, tipoUnidade],
   );
 
   const isCemei = useMemo(
     () => TIPOS_CEMEI.includes(tipoSelecionado?.nome || ""),
-    [tipoSelecionado]
+    [tipoSelecionado],
+  );
+
+  const isTipoComAlimentacaoFixaParaInscritos = useMemo(
+    () =>
+      TIPOS_COM_ALIMENTACAO_FIXA_INSCRITOS.includes(
+        tipoSelecionado?.nome || "",
+      ),
+    [tipoSelecionado],
   );
 
   useEffect(() => {
@@ -68,6 +84,22 @@ export const ModalAdicionarUnidadeEducacional = ({
     fetchUnidades(dreUuid, tipoUnidade);
     alimentacao.loadAlimentacao(tipoUnidade, tiposMap, isCemei);
   }, [dreLote, tipoUnidade, lotes, tiposMap, isCemei]);
+
+  useEffect(() => {
+    if (
+      formApiRef?.current &&
+      isTipoComAlimentacaoFixaParaInscritos &&
+      alimentacao.inscritos?.length > 0
+    ) {
+      const opcoesFiltradas = filtrarLancheEmergencial(alimentacao.inscritos);
+      const todosValores = opcoesFiltradas.map((opt: any) => opt.value);
+      formApiRef?.current?.change("tipos_alimentacao_inscritos", todosValores);
+    }
+  }, [
+    formApiRef?.current,
+    isTipoComAlimentacaoFixaParaInscritos,
+    alimentacao.inscritos,
+  ]);
 
   const handleAdicionarUnidade = (values: any) => {
     const lote = lotes.find((l) => l.uuid === values.dres_lote);
@@ -96,7 +128,7 @@ export const ModalAdicionarUnidadeEducacional = ({
 
           alimentacaoColaboradores: mapAlimentacoes(
             alimentacao.colaboradores,
-            values.tipos_alimentacao_colaboradores
+            values.tipos_alimentacao_colaboradores,
           ),
           tiposAlimentacaoColaboradoresUuids:
             values.tipos_alimentacao_colaboradores || [],
@@ -110,14 +142,14 @@ export const ModalAdicionarUnidadeEducacional = ({
 
             alimentacaoInscritos: mapAlimentacoes(
               alimentacao.inscritos,
-              values.tipos_alimentacao_inscritos
+              values.tipos_alimentacao_inscritos,
             ),
             tiposAlimentacaoInscritosUuids:
               values.tipos_alimentacao_inscritos || [],
 
             alimentacaoInscritosInfantil: mapAlimentacoes(
               alimentacao.inscritosInfantil,
-              values.tipos_alimentacao_inscritos_infantil
+              values.tipos_alimentacao_inscritos_infantil,
             ),
             tiposAlimentacaoInfantilUuids:
               values.tipos_alimentacao_inscritos_infantil || [],
@@ -129,7 +161,7 @@ export const ModalAdicionarUnidadeEducacional = ({
             ...base,
             alimentacaoInscritos: mapAlimentacoes(
               alimentacao.inscritos,
-              values.tipos_alimentacao_inscritos
+              values.tipos_alimentacao_inscritos,
             ),
             tiposAlimentacaoInscritosUuids:
               values.tipos_alimentacao_inscritos || [],
@@ -138,7 +170,7 @@ export const ModalAdicionarUnidadeEducacional = ({
             tiposAlimentacaoInfantilUuids: [],
           },
         ];
-      }
+      },
     );
 
     novasUnidades.forEach((unidade) => {
@@ -147,6 +179,11 @@ export const ModalAdicionarUnidadeEducacional = ({
 
     closeModal();
   };
+
+  const filtrarLancheEmergencial = (options: any[] = []) =>
+    options.filter(
+      (opt) => !opt.label?.toLowerCase().includes("lanche emergencial"),
+    );
 
   return (
     <Modal
@@ -165,7 +202,7 @@ export const ModalAdicionarUnidadeEducacional = ({
           onSubmit={() => {}}
           render={({ values, form: formApi, submitting: formSubmitting }) => {
             const enableSelectors = Boolean(
-              values?.dres_lote && values?.tipos_unidades
+              values?.dres_lote && values?.tipos_unidades,
             );
 
             const isAddDisabled =
@@ -204,7 +241,11 @@ export const ModalAdicionarUnidadeEducacional = ({
             }, [values?.tipos_unidades, tipoUnidade]);
 
             return (
-              <form>
+              <form
+                ref={() => {
+                  formApiRef.current = formApi;
+                }}
+              >
                 <div className="row">
                   <div className="w-50">
                     <Field
@@ -247,7 +288,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                     onSelectedChanged={(vals) =>
                       formApi.change(
                         "unidades_educacionais",
-                        vals.map((v) => v.value)
+                        vals.map((v) => v.value),
                       )
                     }
                   />
@@ -261,17 +302,21 @@ export const ModalAdicionarUnidadeEducacional = ({
                         isCemei ? " - CEI" : ""
                       }`}
                       name="tipos_alimentacao_inscritos"
-                      options={alimentacao.inscritos}
+                      options={filtrarLancheEmergencial(alimentacao.inscritos)}
                       selected={values?.tipos_alimentacao_inscritos || []}
                       required
                       validate={required}
-                      disabled={!enableSelectors}
-                      onSelectedChanged={(vals) =>
+                      disabled={
+                        !enableSelectors ||
+                        isTipoComAlimentacaoFixaParaInscritos
+                      }
+                      onSelectedChanged={(vals) => {
+                        if (isTipoComAlimentacaoFixaParaInscritos) return;
                         formApi.change(
                           "tipos_alimentacao_inscritos",
-                          vals.map((v) => v.value)
-                        )
-                      }
+                          vals.map((v) => v.value),
+                        );
+                      }}
                     />
                   </div>
 
@@ -280,13 +325,15 @@ export const ModalAdicionarUnidadeEducacional = ({
                       component={MultiselectRaw}
                       label="Tipos de Alimentações para Colaboradores"
                       name="tipos_alimentacao_colaboradores"
-                      options={alimentacao.colaboradores}
+                      options={filtrarLancheEmergencial(
+                        alimentacao.colaboradores,
+                      )}
                       selected={values?.tipos_alimentacao_colaboradores || []}
                       disabled={!enableSelectors}
                       onSelectedChanged={(vals) =>
                         formApi.change(
                           "tipos_alimentacao_colaboradores",
-                          vals.map((v) => v.value)
+                          vals.map((v) => v.value),
                         )
                       }
                     />
@@ -299,7 +346,9 @@ export const ModalAdicionarUnidadeEducacional = ({
                         dataTestId="multiselect-tipos-alimentacao-inscritos-infantil"
                         label="Tipos de Alimentações para Inscritos - INFANTIL"
                         name="tipos_alimentacao_inscritos_infantil"
-                        options={alimentacao.inscritosInfantil}
+                        options={filtrarLancheEmergencial(
+                          alimentacao.inscritosInfantil,
+                        )}
                         selected={
                           values?.tipos_alimentacao_inscritos_infantil || []
                         }
@@ -309,7 +358,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                         onSelectedChanged={(vals) =>
                           formApi.change(
                             "tipos_alimentacao_inscritos_infantil",
-                            vals.map((v) => v.value)
+                            vals.map((v) => v.value),
                           )
                         }
                       />

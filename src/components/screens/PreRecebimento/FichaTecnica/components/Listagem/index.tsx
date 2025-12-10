@@ -13,6 +13,7 @@ import "./styles.scss";
 import { Tooltip } from "antd";
 import { truncarString } from "../../../../../../helpers/utilities";
 import { imprimirFicha } from "../../helpers";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 interface Props {
   objetos: Array<FichaTecnica>;
@@ -119,7 +120,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
             <>
               <div key={objeto.uuid} className="grid-table body-table">
                 <div>{objeto.numero}</div>
-                <div>
+                <div className="d-flex align-items-center justify-content-between">
                   <Tooltip
                     color="#42474a"
                     overlayStyle={{
@@ -131,6 +132,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
                   >
                     {truncarString(objeto.nome_produto, 30)}
                   </Tooltip>
+                  {objeto.programa === "LEVE_LEITE" && <TagLeveLeite />}
                 </div>
                 <div>{objeto.pregao_chamada_publica}</div>
                 <div>{objeto.criado_em}</div>

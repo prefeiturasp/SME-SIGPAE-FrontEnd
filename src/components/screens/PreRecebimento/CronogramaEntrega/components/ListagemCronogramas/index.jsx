@@ -24,6 +24,7 @@ import {
   usuarioEhDilogDiretoria,
   usuarioEhDilogAbastecimento,
 } from "../../../../../../helpers/utilities";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
   const statusValue = (status) => {
@@ -43,7 +44,7 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
     let numero = cronograma.numero;
     imprimirCronograma(uuid, numero)
       .catch((error) =>
-        error.response.data.text().then((text) => toastError(text))
+        error.response.data.text().then((text) => toastError(text)),
       )
       .finally(() => {
         setCarregando(false);
@@ -97,8 +98,8 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                 cronograma.status !== "Rascunho") ||
                 !usuarioEhEmpresaFornecedor()) && (
                 <div className="grid-table body-table">
-                  <div className={`${bordas}`}>{cronograma.numero}</div>
-                  <div className={`${bordas}`}>
+                  <div className={bordas}>{cronograma.numero}</div>
+                  <div className="d-flex align-items-center justify-content-between">
                     <Tooltip
                       color="#42474a"
                       overlayStyle={{
@@ -111,27 +112,30 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                       {cronograma.ficha_tecnica?.produto?.nome &&
                         formataNome(cronograma.ficha_tecnica?.produto?.nome)}
                     </Tooltip>
+                    {cronograma.ficha_tecnica?.programa === "LEVE_LEITE" && (
+                      <TagLeveLeite />
+                    )}
                   </div>
-                  <div className={`${bordas}`}>
+                  <div className={bordas}>
                     {cronograma.qtd_total_programada &&
                       formataMilhar(cronograma.qtd_total_programada)}{" "}
                     {cronograma.unidade_medida?.abreviacao}
                   </div>
-                  <div className={`${bordas}`}>
+                  <div className={bordas}>
                     {cronograma.empresa
                       ? cronograma.empresa.nome_fantasia
                       : undefined}
                   </div>
-                  <div className={`${bordas}`}>
+                  <div className={bordas}>
                     {cronograma.armazem
                       ? cronograma.armazem.nome_fantasia
                       : undefined}
                   </div>
-                  <div className={`${bordas}`}>
+                  <div className={bordas}>
                     {deParaStatusCronograma(statusValue(cronograma.status))}
                   </div>
 
-                  <div className={`${bordas}`}>
+                  <div className={bordas}>
                     <>
                       {cronograma.status !== "Rascunho" ? (
                         <>
