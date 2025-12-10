@@ -44,4 +44,14 @@ div.calendario-sobremesa {
   div.rbc-event {
     background-color: $green;
   }
+
+  .rbc-event.programa-leve-leite {
+    background-color: #086397 !important;
+    border-color: #086397 !important;
+
+    .rbc-event-content {
+      background-color: #086397 !important;
+      color: white !important;
+    }
+  }
 }
