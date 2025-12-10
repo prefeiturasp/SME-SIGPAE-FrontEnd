@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -8,43 +9,45 @@ import {
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
-import { mockAlteracoesAlimentacaoAutorizadasAgosto2024CEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEMEI/alteracoesAlimentacaoAutorizadasAgosto2024";
-import { mockDiasCalendarioAgosto2024CEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEMEI/diasCalendarioAgosto2024";
 import { mockMeusDadosEscolaCEMEI } from "src/mocks/meusDados/escola/CEMEI";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEMEI } from "src/mocks/services/cadastroTipoAlimentacao.service/CEMEI/vinculosTipoAlimentacaoPeriodoEscolar";
 import { mockEscolaSimplesCEMEI } from "src/mocks/services/escola.service/CEMEI/escolaSimples";
-import { mockKitLanchesAutorizadasAgosto2024CEMEI } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEMEI/kitLanchesAutorizadasAgosto2024";
-import { mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCEMEIAgosto2024 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/quantidadesAlimentacaoesLancadasPeriodoGrupoCEMEIAgosto2024";
-import { mockAlunos } from "src/mocks/services/perfil.service/alunos";
-import { mockSolicitacaoMedicaoInicialCEMEI } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEMEI/solicitacaoMedicaoInicial";
+import { mockDiasCalendarioDezembro2025CEMEI } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/Dezembro2025/diasCalendario";
+import { mockRecreioNasFeriasCEMEIDezembro2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/Dezembro2025/recreioNasFerias";
+import { mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025CEMEI } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/Dezembro2025/solicitacaoRecreioNasFerias";
+import { mockPanoramaEscolaCEMEIDezembro2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEMEI/Dezembro2025/panoramaEscola";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
-describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
+describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Renderiza Medição com Recreio nas Ferias", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
 
   beforeEach(async () => {
+    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock
       .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
-      .reply(200, []);
+      .reply(200, mockPanoramaEscolaCEMEIDezembro2025);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
       .reply(200, mockEscolaSimplesCEMEI);
     mock
-      .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
-      .reply(200, []);
+      .onGet("/medicao-inicial/recreio-nas-ferias/")
+      .reply(200, mockRecreioNasFeriasCEMEIDezembro2025);
     mock
       .onGet(
         `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
+      .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
+      .reply(200, []);
+    mock
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/periodos-escola-cemei-com-alunos-emei/",
       )
       .reply(200, {
-        results: ["Infantil MANHA", "Infantil TARDE", "Infantil INTEGRAL"],
+        results: ["Infantil INTEGRAL"],
       });
     mock
       .onGet(
@@ -53,33 +56,29 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
       .reply(200, { results: [] });
     mock
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-      .reply(200, mockSolicitacaoMedicaoInicialCEMEI);
+      .replyOnce(200, mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025CEMEI);
     mock
       .onGet("/dias-calendario/")
-      .reply(200, mockDiasCalendarioAgosto2024CEMEI);
+      .reply(200, mockDiasCalendarioDezembro2025CEMEI);
     mock
       .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
       .reply(200, mockGetTiposDeContagemAlimentacao);
-    mock.onGet("/alunos/").reply(200, mockAlunos);
     mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
-      periodos: { INTEGRAL: "93b5620a-d8f9-4ddb-a407-f574fce8acbf" },
+      periodos: null,
     });
     mock
       .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
-      .reply(200, mockKitLanchesAutorizadasAgosto2024CEMEI);
+      .reply(200, { results: [] });
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-      .reply(200, mockAlteracoesAlimentacaoAutorizadasAgosto2024CEMEI);
+      .reply(200, { results: [] });
     mock
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
-      .reply(
-        200,
-        mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCEMEIAgosto2024,
-      );
+      .reply(200, { results: [] });
 
-    const search = `?mes=08&ano=2024`;
+    const search = `?mes=12&ano=2025&recreio_nas_ferias=cd27796f-9dbf-4e36-ac14-c44f23d41cd4`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,
@@ -91,6 +90,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("eh_cemei", "true");
 
     await act(async () => {
       render(
@@ -100,7 +100,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
             v7_relativeSplatPath: true,
           }}
         >
-          {" "}
           <MeusDadosContext.Provider
             value={{
               meusDados: mockMeusDadosEscolaCEMEI,
@@ -108,6 +107,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
             }}
           >
             <LancamentoMedicaoInicialPage />
+            <ToastContainer />
           </MeusDadosContext.Provider>
         </MemoryRouter>,
       );
@@ -122,40 +122,13 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("Renderiza períodos escolares de CEMEI", () => {
-    expect(screen.getByText("Período Integral")).toBeInTheDocument();
-    expect(screen.getByText("Período Parcial")).toBeInTheDocument();
-    expect(screen.getByText("Infantil Integral")).toBeInTheDocument();
-  });
-
-  it("Renderiza período `Programas e Projetos`", () => {
-    expect(screen.getByText("Programas e Projetos")).toBeInTheDocument();
-  });
-
-  it("Renderiza período `Solicitações de Alimentação - Infantil`", () => {
+  it("Renderiza períodos Recreio nas Férias e Colaboradores", () => {
     expect(
-      screen.getByText("Solicitações de Alimentação - Infantil"),
+      screen.getByText("Recreio nas Férias - de 0 a 3 anos e 11 meses"),
     ).toBeInTheDocument();
-  });
-
-  it("Verifica a ordem dos cards", () => {
-    const textos = [
-      "Período Integral",
-      "Período Parcial",
-      "Infantil Manhã",
-      "Infantil Tarde",
-      "Infantil Integral",
-      "Programas e Projetos",
-      "Solicitações de Alimentação - Infantil",
-    ];
-
-    const elementos = textos.map((texto) => screen.getByText(texto));
-
-    for (let i = 0; i < elementos.length - 1; i++) {
-      const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
-      expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
-        Node.DOCUMENT_POSITION_FOLLOWING,
-      );
-    }
+    expect(
+      screen.getByText("Recreio nas Férias - 4 a 14 anos"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Colaboradores")).toBeInTheDocument();
   });
 });

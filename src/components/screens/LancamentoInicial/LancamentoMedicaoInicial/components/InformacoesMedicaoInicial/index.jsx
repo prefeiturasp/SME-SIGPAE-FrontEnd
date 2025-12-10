@@ -308,10 +308,7 @@ export default ({
                         handleChangeTipoContagem(values)
                       }
                       hasSelectAll={false}
-                      overrideStrings={{
-                        selectSomeItems: "Selecione os métodos de contagem",
-                        allItemsAreSelected: "Todos os métodos selecionados",
-                      }}
+                      placeholder="Selecione os métodos de contagem"
                       required
                       disabled={!emEdicao}
                     />
