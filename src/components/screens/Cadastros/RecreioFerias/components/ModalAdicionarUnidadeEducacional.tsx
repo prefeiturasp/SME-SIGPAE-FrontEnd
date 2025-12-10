@@ -1,5 +1,5 @@
 import { FormApi } from "final-form";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
@@ -44,12 +44,12 @@ export const ModalAdicionarUnidadeEducacional = ({
   const { lotes, lotesOpts } = useLotes();
   const [dreLote, setDreLote] = useState("");
   const [tipoUnidade, setTipoUnidade] = useState("");
-  const [formApiRef, setFormApiRef] = useState<any>(null);
-
   const { tipos, tiposOpts, tiposMap } = useTiposUnidade(dreLote, lotes);
   const alimentacao = useAlimentacao();
   const { unidadesFiltradas, fetchUnidades, resetUnidades } =
     useUnidadesEducacionais(form);
+
+  const formApiRef = useRef(null);
 
   const tipoSelecionado = useMemo(
     () => tipos.find((t) => t.uuid === tipoUnidade),
@@ -87,16 +87,16 @@ export const ModalAdicionarUnidadeEducacional = ({
 
   useEffect(() => {
     if (
-      formApiRef &&
+      formApiRef?.current &&
       isTipoComAlimentacaoFixaParaInscritos &&
       alimentacao.inscritos?.length > 0
     ) {
       const opcoesFiltradas = filtrarLancheEmergencial(alimentacao.inscritos);
       const todosValores = opcoesFiltradas.map((opt: any) => opt.value);
-      formApiRef.change("tipos_alimentacao_inscritos", todosValores);
+      formApiRef?.current?.change("tipos_alimentacao_inscritos", todosValores);
     }
   }, [
-    formApiRef,
+    formApiRef?.current,
     isTipoComAlimentacaoFixaParaInscritos,
     alimentacao.inscritos,
   ]);
@@ -201,10 +201,6 @@ export const ModalAdicionarUnidadeEducacional = ({
           keepDirtyOnReinitialize
           onSubmit={() => {}}
           render={({ values, form: formApi, submitting: formSubmitting }) => {
-            useEffect(() => {
-              if (!formApi) setFormApiRef(formApi);
-            }, [formApi]);
-
             const enableSelectors = Boolean(
               values?.dres_lote && values?.tipos_unidades,
             );
@@ -245,7 +241,11 @@ export const ModalAdicionarUnidadeEducacional = ({
             }, [values?.tipos_unidades, tipoUnidade]);
 
             return (
-              <form>
+              <form
+                ref={() => {
+                  formApiRef.current = formApi;
+                }}
+              >
                 <div className="row">
                   <div className="w-50">
                     <Field
