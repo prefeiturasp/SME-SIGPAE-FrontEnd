@@ -316,8 +316,16 @@ export default () => {
           );
           return cadastro.dataInicio.toString();
         }
-
-        return new Date(Number(anoParam), Number(mesParam) - 1, 1);
+        const agora = new Date();
+        return new Date(
+          Number(anoParam),
+          Number(mesParam) - 1,
+          agora.getDate(),
+          agora.getHours(),
+          agora.getMinutes(),
+          agora.getSeconds(),
+          agora.getMilliseconds(),
+        );
       }
 
       const periodoInicialSelecionado = getPeriodoInicialSelecionado();
