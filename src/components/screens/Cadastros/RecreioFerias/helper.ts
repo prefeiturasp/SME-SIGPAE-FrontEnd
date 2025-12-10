@@ -56,8 +56,14 @@ export const validateForm = (values: any) => {
       errors.num_inscritos = "Informe o nº de inscritos (maior que 0)";
     }
 
-    if (!u?.num_colaboradores || Number(u.num_colaboradores) <= 0) {
-      errors.num_colaboradores = "Informe o nº de colaboradores (maior que 0)";
+    const temTiposAlimentacaoColaboradores =
+      (u?.tiposAlimentacaoColaboradoresUuids || []).length > 0;
+
+    if (temTiposAlimentacaoColaboradores) {
+      if (!u?.num_colaboradores || Number(u.num_colaboradores) <= 0) {
+        errors.num_colaboradores =
+          "Informe o nº de colaboradores (maior que 0)";
+      }
     }
 
     return Object.keys(errors).length ? errors : undefined;
@@ -70,7 +76,7 @@ export const validateForm = (values: any) => {
 
 export const isPeriodoEditavel = (
   dataInicioStr: string,
-  dataFimStr: string
+  dataFimStr: string,
 ) => {
   const parseDate = (str: string) => {
     if (!str) return null;

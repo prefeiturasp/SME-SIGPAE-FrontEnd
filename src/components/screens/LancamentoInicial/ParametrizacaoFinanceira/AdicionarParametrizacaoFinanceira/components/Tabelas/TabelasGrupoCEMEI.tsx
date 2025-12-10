@@ -25,8 +25,8 @@ export default ({
   const GRUPO_TABELAS_CEI = [TABELA_TIPO_A_CEI, TABELA_TIPO_B_CEI];
 
   const TABELA_TIPO_A_EMEI =
-    "Dietas Tipo A e Tipo A Enteral - Turmas Infantil - EMEI";
-  const TABELA_TIP_B_EMEI = "Dietas Tipo B - Turmas Infantil - EMEI";
+    "Dietas Tipo A e Tipo A Enteral - Turma Infantil - EMEI";
+  const TABELA_TIP_B_EMEI = "Dietas Tipo B - Turma Infantil - EMEI";
   const GRUPO_TABELAS_EMEI = [TABELA_TIPO_A_EMEI, TABELA_TIP_B_EMEI];
 
   const _TIPOS_ALIMENTACAO = tiposAlimentacao.includes(
@@ -88,7 +88,7 @@ export default ({
           form={form}
           tiposAlimentacao={_TIPOS_ALIMENTACAO}
           grupoSelecionado={grupoSelecionado}
-          tipoTurma="Turmas Infantil - EMEI"
+          tipoTurma="Turma Infantil - EMEI"
           pendencias={GRUPO_TABELAS_EMEI}
           temaTag="turma-emei"
         />
@@ -98,14 +98,14 @@ export default ({
           form={form}
           tiposAlimentacao={tiposAlimentacao}
           grupoSelecionado={grupoSelecionado}
-          tipoTurma="Turmas Infantil - EMEI"
+          tipoTurma="Turma Infantil - EMEI"
           temaTag="turma-emei"
         />
         <TabelaDietaTipoB
           form={form}
           tiposAlimentacao={tiposAlimentacao}
           grupoSelecionado={grupoSelecionado}
-          tipoTurma="Turmas Infantil - EMEI"
+          tipoTurma="Turma Infantil - EMEI"
           temaTag="turma-emei"
         />
       </div>
