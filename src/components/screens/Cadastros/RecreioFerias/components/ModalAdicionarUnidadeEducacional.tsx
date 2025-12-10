@@ -202,7 +202,7 @@ export const ModalAdicionarUnidadeEducacional = ({
           onSubmit={() => {}}
           render={({ values, form: formApi, submitting: formSubmitting }) => {
             useEffect(() => {
-              setFormApiRef(formApi);
+              if (!formApi) setFormApiRef(formApi);
             }, [formApi]);
 
             const enableSelectors = Boolean(
