@@ -74,9 +74,9 @@ export default (props: Props) => {
                 validate={ehCadastro && required}
                 required={ehCadastro}
                 disabled={uuidParametrizacao}
-                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
-                  view.onChangeEdital(e.target.value)
-                }
+                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
+                  if (form) view.onChangeEdital(e.target.value);
+                }}
               />
             </div>
             <div className="col-8">
@@ -90,9 +90,9 @@ export default (props: Props) => {
                 validate={ehCadastro && required}
                 required={ehCadastro}
                 disabled={uuidParametrizacao}
-                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
-                  view.onChangeLote(e.target.value)
-                }
+                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
+                  if (form) view.onChangeLote(e.target.value);
+                }}
               />
             </div>
             <div className="col-4">
@@ -105,9 +105,9 @@ export default (props: Props) => {
                 options={view.gruposUnidadesOpcoes}
                 validate={ehCadastro && required}
                 required={ehCadastro}
-                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
-                  view.onChangeTiposUnidades(e.target.value)
-                }
+                onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
+                  if (form) view.onChangeTiposUnidades(e.target.value);
+                }}
                 disabled={uuidParametrizacao}
               />
             </div>
@@ -163,7 +163,7 @@ export default (props: Props) => {
                   style={BUTTON_STYLE.ORANGE_OUTLINE}
                   type={BUTTON_TYPE.BUTTON}
                   onClick={() => {
-                    if (!uuidParametrizacao) view.getGruposPendentes();
+                    if (!uuidParametrizacao && form) view.getGruposPendentes();
                     setCarregarTabelas(true);
                   }}
                 />
