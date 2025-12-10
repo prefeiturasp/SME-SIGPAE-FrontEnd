@@ -194,6 +194,7 @@ export default () => {
     setFornecedores(
       response.data.results.map((fornecedor) => ({
         uuid: fornecedor.uuid,
+        key: fornecedor.uuid,
         value: fornecedor.nome_fantasia,
         contratos: fornecedor.contratos,
       })),
