@@ -4,11 +4,7 @@ import "./style.scss";
 
 export default class CardMatriculados extends Component {
   render() {
-    const { numeroAlunos, meusDados } = this.props;
-
-    const numeroAlunos_ =
-      numeroAlunos ||
-      (meusDados && meusDados?.vinculo_atual?.instituicao?.quantidade_alunos);
+    const { meusDados } = this.props;
 
     return escolaEhCEMEI() ? (
       <div className="card mt-1">
@@ -55,28 +51,50 @@ export default class CardMatriculados extends Component {
           </div>
         </div>
       </div>
-    ) : numeroAlunos_ > 0 ? (
-      <div className="card">
-        <div className="card-body card-enrolled">
-          <div className="row title">
-            <div className="col-12 col-lg-5 ps-0 pb-2">Nº de Matriculados</div>
-          </div>
-          <div className="row">
-            <div className="col-5 col-md-3 col-lg-1 px-0">
-              <div className="rectangle">
-                {numeroAlunos_ && pontuarValor(numeroAlunos_)}
+    ) : (
+      (meusDados?.vinculo_atual?.instituicao?.quantidade_alunos_terceirizada >
+        0 ||
+        meusDados?.vinculo_atual?.instituicao?.quantidade_alunos_parceira >
+          0) && (
+        <div className="card">
+          <div className="card-body card-enrolled">
+            <div className="row">
+              {meusDados.vinculo_atual.instituicao
+                .quantidade_alunos_terceirizada > 0 && (
+                <div className="title-rectangle-wrapper">
+                  <span className="title mb-2">
+                    Matriculados <b>Terceirizada Total</b>
+                  </span>
+                  <div className="rectangle">
+                    {pontuarValor(
+                      meusDados.vinculo_atual.instituicao
+                        .quantidade_alunos_terceirizada,
+                    )}
+                  </div>
+                </div>
+              )}
+              {meusDados.vinculo_atual.instituicao.quantidade_alunos_parceira >
+                0 && (
+                <div className="title-rectangle-wrapper">
+                  <span className="title mb-2">
+                    Matriculados <b>Rede Parceira</b>
+                  </span>
+                  <div className="rectangle">
+                    {pontuarValor(
+                      meusDados.vinculo_atual.instituicao
+                        .quantidade_alunos_parceira,
+                    )}
+                  </div>
+                </div>
+              )}
+              <div className="col-12 col-md-4 beside-text mt-auto">
+                Informação automática disponibilizada pelo EOL
               </div>
             </div>
-            <div className="col-12 col-md-6 beside-text mt-auto">
-              Informação automática disponibilizada pelo Cadastro da Unidade
-              Escolar <br />
-            </div>
+            <div className="row">{this.props.children}</div>
           </div>
-          <div className="row">{this.props.children}</div>
         </div>
-      </div>
-    ) : (
-      <></>
+      )
     );
   }
 }
