@@ -48,7 +48,10 @@ import {
 } from "src/helpers/utilities";
 import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
-import { getEscolasTercTotal } from "src/services/escola.service";
+import {
+  getEscolasTercTotal,
+  getGruposExistentesPorDre,
+} from "src/services/escola.service";
 import { getLotesSimples } from "src/services/lote.service";
 import {
   getDashboardMedicaoInicialResultados,
@@ -113,6 +116,7 @@ export const AcompanhamentoDeLancamentos = () => {
     ocorrencias: null,
   });
 
+  const [gruposHabilitadosPorDre, setGruposHabilitadosPorDre] = useState({});
   const PAGE_SIZE = 10;
 
   const getDashboardMedicaoInicialAsync = async (params = {}) => {
@@ -311,6 +315,13 @@ export const AcompanhamentoDeLancamentos = () => {
     }
   }, [meusDados, diretoriaRegional]);
 
+  useEffect(() => {
+    if (usuarioEhDRE() && meusDados?.vinculo_atual?.instituicao?.uuid) {
+      const dreUUID = meusDados.vinculo_atual.instituicao.uuid;
+      buscarGruposPorDre(dreUUID);
+    }
+  }, [meusDados]);
+
   const onPageChanged = async (page, filtros) => {
     const params = {
       limit: PAGE_SIZE,
@@ -508,6 +519,23 @@ export const AcompanhamentoDeLancamentos = () => {
     });
   };
 
+  const formatarGrupos = (lista) => {
+    const obj = {};
+    lista.forEach((g) => {
+      obj[g.nome] = g.habilitado;
+    });
+    return obj;
+  };
+
+  const buscarGruposPorDre = async (dreUUID) => {
+    const response = await getGruposExistentesPorDre({ dre: dreUUID });
+    if (response.status === HTTP_STATUS.OK) {
+      setGruposHabilitadosPorDre(formatarGrupos(response.data.grupos));
+    } else {
+      toastError(getError(response));
+    }
+  };
+
   return (
     <div className="acompanhamento-de-lancamentos">
       {erroAPI && <div>{erroAPI}</div>}
@@ -541,6 +569,7 @@ export const AcompanhamentoDeLancamentos = () => {
                             ...prev,
                             diretoria_regional: value,
                           }));
+                          buscarGruposPorDre(value);
                         }}
                         name="diretoria_regional"
                         filterOption={(inputValue, option) =>
@@ -967,6 +996,9 @@ export const AcompanhamentoDeLancamentos = () => {
                                   )
                                 }
                                 nomeRelatorio="Relatório Unificado"
+                                gruposHabilitadosPorDre={
+                                  gruposHabilitadosPorDre
+                                }
                               />
 
                               <ModalRelatorio

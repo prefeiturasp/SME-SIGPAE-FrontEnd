@@ -3,8 +3,7 @@
 .periodo-info-ue,
 .info-med-inicial {
   .periodo-lancamento,
-  .info-ue,
-  .panel-med-inicial {
+  .info-ue {
     div {
       width: 100%;
     }
@@ -94,12 +93,12 @@
 .com-linha {
   display: flex;
   align-items: flex-end;
-  gap: 6px; 
+  gap: 6px;
 }
 
 .com-linha::after {
   content: "";
-  flex: 1;  
+  flex: 1;
   border-bottom: 2px solid currentColor;
 }
 

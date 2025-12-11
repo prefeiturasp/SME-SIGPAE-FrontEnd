@@ -46,6 +46,7 @@ export const InputText = (props) => {
     valorInicial,
     inputOnChange,
     prefix,
+    suffix,
     onBlur,
     dataTestId,
     dataTestIdDiv,
@@ -83,7 +84,9 @@ export const InputText = (props) => {
         </label>,
       ]}
       {tooltipText && <TooltipIcone tooltipText={tooltipText} />}
-      <div className={`${prefix && "input-com-prefixo"}`}>
+      <div
+        className={`${prefix ? "input-com-prefixo" : suffix ? "input-com-sufixo" : ""}`}
+      >
         {prefix && <span className="prefix">{prefix}</span>}
         <input
           {...input}
@@ -136,6 +139,7 @@ export const InputText = (props) => {
               : e.target.value;
           }}
         />
+        {suffix && <div className="suffix">{suffix}</div>}
       </div>
       {acrescentarAppend && (
         <div className="input-group-append">

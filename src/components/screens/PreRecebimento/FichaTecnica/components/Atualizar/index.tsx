@@ -33,6 +33,7 @@ import InputFile from "src/components/Shareable/Input/InputFile";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 import ModalVoltar from "src/components/Shareable/Page/ModalVoltar";
 import { PRE_RECEBIMENTO, FICHA_TECNICA } from "src/configs/constants";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 import {
   carregarDadosAtualizar,
   carregarFabricantes,
@@ -180,6 +181,11 @@ export default () => {
                         name={`produto`}
                         className="input-ficha-tecnica"
                         disabled
+                        suffix={
+                          ficha.programa === "LEVE_LEITE" ? (
+                            <TagLeveLeite />
+                          ) : null
+                        }
                       />
                     </div>
                     <div className="col-4">

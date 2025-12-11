@@ -35,6 +35,7 @@ import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 import ModalVoltar from "src/components/Shareable/Page/ModalVoltar";
 import { PRE_RECEBIMENTO, FICHA_TECNICA } from "src/configs/constants";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 import { StateConferidosAnalise } from "../../interfaces";
 import {
@@ -75,19 +76,19 @@ export default () => {
   ]);
   const [collapse, setCollapse] = useState<CollapseControl>({});
   const [ficha, setFicha] = useState<FichaTecnicaDetalhadaComAnalise>(
-    {} as FichaTecnicaDetalhadaComAnalise
+    {} as FichaTecnicaDetalhadaComAnalise,
   );
   const [initialValues, setInitialValues] = useState<Record<string, any>>({});
   const [conferidos, setConferidos] = useState<StateConferidosAnalise>({});
   const listaCompletaInformacoesNutricionais = useRef<InformacaoNutricional[]>(
-    []
+    [],
   );
   const listaInformacoesNutricionaisFichaTecnica = useRef<
     InformacaoNutricional[]
   >([]);
   const [proponente, setProponente] =
     useState<TerceirizadaComEnderecoInterface>(
-      {} as TerceirizadaComEnderecoInterface
+      {} as TerceirizadaComEnderecoInterface,
     );
   const [arquivo, setArquivo] = useState<ArquivoForm[]>([]);
 
@@ -95,7 +96,7 @@ export default () => {
     (async () => {
       await carregarUnidadesMedida(setUnidadesMedidaOptions);
       await carregaListaCompletaInformacoesNutricionais(
-        listaCompletaInformacoesNutricionais
+        listaCompletaInformacoesNutricionais,
       );
       await carregarFabricantes(setFabricantesOptions);
       await carregarDadosCorrgir(
@@ -106,7 +107,7 @@ export default () => {
         setArquivo,
         setProponente,
         setFabricantesCount,
-        setCarregando
+        setCarregando,
       );
     })();
   }, []);
@@ -201,6 +202,11 @@ export default () => {
                         name={`produto`}
                         className="input-ficha-tecnica"
                         disabled
+                        suffix={
+                          ficha.programa === "LEVE_LEITE" ? (
+                            <TagLeveLeite />
+                          ) : null
+                        }
                       />
                     </div>
                     <div className="col-4">
@@ -479,7 +485,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalPositivoOuNegativo
+                                inteiroOuDecimalPositivoOuNegativo,
                               )}
                               disabled={conferidos.temperatura_e_transporte}
                             />
@@ -497,7 +503,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalPositivoOuNegativo
+                                inteiroOuDecimalPositivoOuNegativo,
                               )}
                               disabled={conferidos.temperatura_e_transporte}
                             />
@@ -674,7 +680,7 @@ export default () => {
                                     required
                                     validate={composeValidators(
                                       required,
-                                      inteiroOuDecimalComVirgula
+                                      inteiroOuDecimalComVirgula,
                                     )}
                                     disabled={conferidos.embalagem_e_rotulagem}
                                   />
@@ -722,7 +728,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalComVirgula
+                                inteiroOuDecimalComVirgula,
                               )}
                               disabled={conferidos.embalagem_e_rotulagem}
                             />
@@ -753,7 +759,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalComVirgula
+                                inteiroOuDecimalComVirgula,
                               )}
                               disabled={conferidos.embalagem_e_rotulagem}
                             />
@@ -798,7 +804,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalComVirgula
+                                inteiroOuDecimalComVirgula,
                               )}
                               disabled={conferidos.embalagem_e_rotulagem}
                             />
@@ -829,7 +835,7 @@ export default () => {
                               required
                               validate={composeValidators(
                                 required,
-                                inteiroOuDecimalComVirgula
+                                inteiroOuDecimalComVirgula,
                               )}
                               disabled={conferidos.embalagem_e_rotulagem}
                             />
@@ -874,7 +880,7 @@ export default () => {
                                 required
                                 validate={composeValidators(
                                   required,
-                                  inteiroOuDecimalComVirgula
+                                  inteiroOuDecimalComVirgula,
                                 )}
                                 disabled={conferidos.embalagem_e_rotulagem}
                               />
@@ -995,7 +1001,7 @@ export default () => {
                                 setFiles={(files: ArquivoForm[]) =>
                                   inserirArquivoFichaAssinadaRT(
                                     files,
-                                    setArquivo
+                                    setArquivo,
                                   )
                                 }
                                 removeFile={() =>
@@ -1090,14 +1096,14 @@ export default () => {
                         fabricantesCount,
                         arquivo,
                         ficha.categoria === "PERECIVEIS",
-                        password
+                        password,
                       );
 
                       assinarCorrigirFichaTecnica(
                         payload,
                         ficha,
                         setCarregando,
-                        navigate
+                        navigate,
                       );
                     }}
                     loading={carregando}

@@ -95,7 +95,7 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
         },
       ];
 
-      const resultado = carregarValores(tabelas);
+      const resultado = carregarValores(tabelas, "Grupo 1");
       const faixa =
         resultado["Preço das Alimentações - Período Integral"]["01 a 03 meses"];
       expect(faixa.valor_unitario_total).toBe("12,00");
@@ -129,7 +129,7 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
         },
       ];
 
-      const result = carregarValores(tabelas);
+      const result = carregarValores(tabelas, "Grupo 1");
       const faixa =
         result["Preço das Alimentações - Período Parcial"][
           "01 ano a 03 anos e 11 meses"
@@ -158,7 +158,7 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
         },
       ];
 
-      const result = carregarValores(tabelas);
+      const result = carregarValores(tabelas, "Grupo 1");
       expect(
         result["Dietas Tipo B - Período Integral"]["01 a 03 meses"],
       ).toHaveProperty("faixa_etaria", "381aecc2-e1b2-4d26-a156-1834eec7f1dd");

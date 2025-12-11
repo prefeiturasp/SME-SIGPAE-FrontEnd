@@ -1,8 +1,13 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
 import { Form } from "react-final-form";
+import { useNavigate } from "react-router-dom";
 import { Botao } from "src/components/Shareable/Botao";
 import { PERIODO_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
+import {
+  LANCAMENTO_INICIAL,
+  LANCAMENTO_MEDICAO_INICIAL,
+  PERIODO_LANCAMENTO_CEI,
+} from "src/configs/constants";
+import { deepCopy, ehEscolaTipoCEMEI } from "src/helpers/utilities";
 import {
   desabilitarBotaoEditar,
   justificativaPeriodo,
@@ -10,18 +15,12 @@ import {
   styleBotaoCardLancamento,
   textoBotaoCardLancamento,
 } from "../../LancamentoPorPeriodo/helpers";
-import { deepCopy, ehEscolaTipoCEMEI } from "src/helpers/utilities";
-import {
-  LANCAMENTO_INICIAL,
-  LANCAMENTO_MEDICAO_INICIAL,
-  PERIODO_LANCAMENTO_CEI,
-} from "src/configs/constants";
-import "./styles.scss";
 import {
   ehEmeiDaCemei,
   numeroRefeicoesDiarias,
   textoCabecalhoFormatado,
 } from "../helpers";
+import "./styles.scss";
 
 export const CardLancamentoCEI = ({
   textoCabecalho = null,
@@ -40,7 +39,7 @@ export const CardLancamentoCEI = ({
   const navigate = useNavigate();
 
   const periodoPermissoes = periodosPermissoesLancamentosEspeciais?.find((p) =>
-    textoCabecalho.includes(p.periodo)
+    textoCabecalho.includes(p.periodo),
   );
 
   const ALIMENTACOES_TOTAL = [
@@ -58,13 +57,13 @@ export const CardLancamentoCEI = ({
     typeof errosAoSalvar === "object" &&
     errosAoSalvar.length > 0 &&
     errosAoSalvar.filter((obj) =>
-      [textoCabecalho].includes(obj.periodo_escolar)
+      [textoCabecalho].includes(obj.periodo_escolar),
     );
 
   const qtdAlimentacaoPeriodoFiltrada = () => {
     return quantidadeAlimentacoesLancadas.filter(
       (qtdAlimentacaoPeriodo) =>
-        qtdAlimentacaoPeriodo.nome_periodo_grupo === textoCabecalho
+        qtdAlimentacaoPeriodo.nome_periodo_grupo === textoCabecalho,
     );
   };
 
@@ -78,7 +77,7 @@ export const CardLancamentoCEI = ({
     if (qtdAlimentacaoPeriodoFiltrada().length > 0) {
       const qtdAlimentacaoFiltrada =
         qtdAlimentacaoPeriodoFiltrada()[0].valores.filter(
-          (v) => v.nome_campo === alimentacao
+          (v) => v.nome_campo === alimentacao,
         );
       if (qtdAlimentacaoFiltrada.length > 0) {
         quantidade = qtdAlimentacaoFiltrada[0].valor;
@@ -90,21 +89,24 @@ export const CardLancamentoCEI = ({
   if (
     (ehEscolaTipoCEMEI(escolaInstituicao) &&
       periodosEscolaCemeiComAlunosEmei.includes(textoCabecalho)) ||
-    ["Programas e Projetos", "Solicitações de Alimentação"].includes(
-      textoCabecalho
-    )
+    [
+      "Programas e Projetos",
+      "Solicitações de Alimentação",
+      "Colaboradores",
+      "Recreio nas Férias - 4 a 14 anos",
+    ].includes(textoCabecalho)
   ) {
     let copyTiposAlimentacao = deepCopy(tiposAlimentacao);
     if (periodoPermissoes) {
       copyTiposAlimentacao = copyTiposAlimentacao.concat(
         periodoPermissoes.alimentacoes.map((alimentacao) => ({
           nome: alimentacao,
-        }))
+        })),
       );
     }
     if (textoCabecalho !== "Solicitações de Alimentação") {
       copyTiposAlimentacao = copyTiposAlimentacao.filter((alimentacao) =>
-        ALIMENTACOES_TOTAL.includes(alimentacao.nome)
+        ALIMENTACOES_TOTAL.includes(alimentacao.nome),
       );
     }
     alimentacoesFormatadas = copyTiposAlimentacao
@@ -125,7 +127,7 @@ export const CardLancamentoCEI = ({
       quantidadeAlimentacoesLancadas,
       solicitacaoMedicaoInicial,
       null,
-      textoCabecalho
+      textoCabecalho,
     );
   };
 
@@ -145,19 +147,19 @@ export const CardLancamentoCEI = ({
           justificativa_periodo: justificativaPeriodo(
             quantidadeAlimentacoesLancadas,
             null,
-            textoCabecalho
+            textoCabecalho,
           ),
           ehEmeiDaCemei: ehEmeiDaCemei(
             escolaInstituicao,
             periodosEscolaCemeiComAlunosEmei,
-            textoCabecalho
+            textoCabecalho,
           ),
           uuidPeriodoEscolar: uuidPeriodoEscolar,
           tiposAlimentacao: tiposAlimentacao,
           periodosInclusaoContinua: periodosInclusaoContinua,
           ...location.state,
         },
-      }
+      },
     );
   };
 
@@ -184,11 +186,11 @@ export const CardLancamentoCEI = ({
                   ].includes(getStatusPeriodo())
                     ? "red"
                     : [
-                        "MEDICAO_CORRIGIDA_PELA_UE",
-                        "MEDICAO_CORRIGIDA_PARA_CODAE",
-                      ].includes(getStatusPeriodo())
-                    ? "blue"
-                    : ""
+                          "MEDICAO_CORRIGIDA_PELA_UE",
+                          "MEDICAO_CORRIGIDA_PARA_CODAE",
+                        ].includes(getStatusPeriodo())
+                      ? "blue"
+                      : ""
                 }`}
               >
                 {PERIODO_STATUS_DE_PROGRESSO[getStatusPeriodo()]
@@ -213,11 +215,14 @@ export const CardLancamentoCEI = ({
               {ehEmeiDaCemei(
                 escolaInstituicao,
                 periodosEscolaCemeiComAlunosEmei,
-                textoCabecalho
+                textoCabecalho,
               ) ||
-              ["Programas e Projetos", "Solicitações de Alimentação"].includes(
-                textoCabecalho
-              ) ? (
+              [
+                "Programas e Projetos",
+                "Solicitações de Alimentação",
+                "Colaboradores",
+                "Recreio nas Férias - 4 a 14 anos",
+              ].includes(textoCabecalho) ? (
                 <div className="row">
                   <div className="col-4">
                     {alimentacoesFormatadas.slice(0, 3)}
@@ -243,8 +248,9 @@ export const CardLancamentoCEI = ({
                       </span>
                       <span className="ms-1">
                         - alunos atendidos com{" "}
-                        {numeroRefeicoesDiarias(textoCabecalho)} refeições
-                        diárias
+                        {textoCabecalho.includes("Recreio")
+                          ? "alimentações de Recreio nas Férias"
+                          : `${numeroRefeicoesDiarias(textoCabecalho)} refeições diárias`}
                       </span>
                       <br />
                     </div>
@@ -270,13 +276,13 @@ export const CardLancamentoCEI = ({
                       quantidadeAlimentacoesLancadas,
                       solicitacaoMedicaoInicial,
                       null,
-                      textoCabecalho
+                      textoCabecalho,
                     )}
                     style={styleBotaoCardLancamento(
                       quantidadeAlimentacoesLancadas,
                       solicitacaoMedicaoInicial,
                       null,
-                      textoCabecalho
+                      textoCabecalho,
                     )}
                     className="mt-auto"
                     onClick={() => handleClickEditar()}
@@ -284,7 +290,7 @@ export const CardLancamentoCEI = ({
                       quantidadeAlimentacoesLancadas,
                       solicitacaoMedicaoInicial,
                       null,
-                      textoCabecalho
+                      textoCabecalho,
                     )}
                   />
                 </div>
