@@ -174,7 +174,9 @@ describe("Dashboard CODAE - Gestão Alimentação", () => {
     });
 
     await awaitServices();
-    expect(screen.getByText("Nº de Matriculados")).toBeInTheDocument();
+    expect(screen.getAllByText("Matriculados")).toHaveLength(2);
+    expect(screen.getByText("Terceirizada Total")).toBeInTheDocument();
+    expect(screen.getByText("Rede Parceira")).toBeInTheDocument();
     expect(screen.getByText(/informação automática/i)).toBeInTheDocument();
   });
 

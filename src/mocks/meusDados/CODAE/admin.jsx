@@ -14,6 +14,8 @@ export const mockMeusDadosCODAEADMIN = {
       uuid: "2681a452-5d9d-46d8-bc0f-60dff7be4463",
       codigo_eol: null,
       quantidade_alunos: 971330,
+      quantidade_alunos_terceirizada: 417481,
+      quantidade_alunos_parceira: 159,
       lotes: [],
       periodos_escolares: [],
       diretoria_regional: null,
