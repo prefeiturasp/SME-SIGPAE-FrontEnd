@@ -14,6 +14,8 @@ export const mockMeusDadosCODAEGA = {
       uuid: "43e9c981-8b23-4bc5-8cf2-7731e9eb2f66",
       codigo_eol: null,
       quantidade_alunos: 1002031,
+      quantidade_alunos_parceira: 159,
+      quantidade_alunos_terceirizada: 417481,
       lotes: [],
       periodos_escolares: [],
       diretoria_regional: null,

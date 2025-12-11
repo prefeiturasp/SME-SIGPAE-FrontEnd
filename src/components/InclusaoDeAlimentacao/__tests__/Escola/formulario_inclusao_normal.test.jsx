@@ -8,7 +8,7 @@ import {
   within,
 } from "@testing-library/react";
 import { Container } from "src/components/InclusaoDeAlimentacao/Escola/Formulario/componentes/Container";
-import { TIPO_SOLICITACAO } from "src/constants/shared";
+import { PERFIL, TIPO_SOLICITACAO } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockCreateGrupoInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockCreateGrupoInclusaoNormal";
 import { mockInicioPedidoGrupoInclusaoAlimentacao } from "src/mocks/InclusaoAlimentacao/mockInicioPedidoGrupoInclusaoAlimentacao";
@@ -55,7 +55,7 @@ const awaitServices = async () => {
     expect(getQuantidaDeAlunosPorPeriodoEEscola).toHaveBeenCalled();
     expect(getVinculosTipoAlimentacaoPorEscola).toHaveBeenCalled();
     expect(
-      getVinculosTipoAlimentacaoMotivoInclusaoEspecifico
+      getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
     ).toHaveBeenCalled();
   });
 };
@@ -110,7 +110,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
           data: { results: [] },
           status: 500,
         });
-      }
+      },
     );
     createInclusaoAlimentacao.mockResolvedValue({
       data: mockCreateGrupoInclusaoNormal,
@@ -128,8 +128,9 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "nome_instituicao",
-      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
     );
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
 
     await act(async () => {
       ({ container } = render(
@@ -137,7 +138,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
           value={{ meusDados: mockMeusDadosEscolaEMEFPericles }}
         >
           <Container />
-        </MeusDadosContext.Provider>
+        </MeusDadosContext.Provider>,
       ));
     });
   });
@@ -148,8 +149,8 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.getByText("524")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -157,11 +158,11 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     await awaitServices();
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Inclusão de Alimentação # 06E82")
+      screen.getByText("Inclusão de Alimentação # 06E82"),
     ).toBeInTheDocument();
     expect(screen.getByText("1 dia(s)")).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 24/01/2025 09:43:08")
+      screen.getByText("Criado em: 24/01/2025 09:43:08"),
     ).toBeInTheDocument();
   });
 
@@ -174,7 +175,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     const selectMotivo = screen.getByTestId("select-motivo-0");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoReposicaoDeAula = mockMotivosInclusaoNormal.results.find(
-      (motivo) => motivo.nome === "Reposição de aula"
+      (motivo) => motivo.nome === "Reposição de aula",
     ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoReposicaoDeAula },
@@ -196,8 +197,8 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.queryByText("Atenção")).not.toBeInTheDocument();
     expect(
       screen.queryByText(
-        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
-      )
+        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada.",
+      ),
     ).not.toBeInTheDocument();
 
     fireEvent.change(inputElement, {
@@ -207,8 +208,8 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.queryByText("Atenção")).toBeInTheDocument();
     expect(
       screen.queryByText(
-        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada."
-      )
+        "A solicitação está fora do prazo contratual de cinco dias úteis. Sendo assim, a autorização dependerá de confirmação por parte da empresa terceirizada.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -316,7 +317,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     const selectMotivo = screen.getByTestId("select-motivo-0");
     let selectElement = selectMotivo.querySelector("select");
     const uuidMotivoOutro = mockMotivosInclusaoNormal.results.find(
-      (motivo) => motivo.nome === "Outro"
+      (motivo) => motivo.nome === "Outro",
     ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoOutro },
