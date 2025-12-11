@@ -1,21 +1,21 @@
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Checkbox, Collapse, Modal, Spin } from "antd";
+import { format, getYear } from "date-fns";
+import HTTP_STATUS from "http-status-codes";
+import { useCallback, useEffect, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { DETALHAMENTO_DO_LANCAMENTO } from "src/configs/constants";
-import { format, getYear } from "date-fns";
 import { ehEscolaTipoCEMEI } from "src/helpers/utilities";
-import HTTP_STATUS from "http-status-codes";
-import React, { useCallback, useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
 import {
   getTiposDeContagemAlimentacao,
   setSolicitacaoMedicaoInicial,
@@ -51,13 +51,18 @@ export const InformacoesMedicaoInicialCEI = ({
   nomeTerceirizada,
   solicitacaoMedicaoInicial,
   onClickInfoBasicas,
+  objectoPeriodos,
 }) => {
+  const recreioNasFeriasUuid = objectoPeriodos?.find(
+    (o) => o.dataBRT.getTime() === new Date(periodoSelecionado).getTime(),
+  )?.recreio_nas_ferias;
+
   const { responsaveis, setaResponsavel } = useResponsaveis(
     RESPONSABLES_INITIAL_STATE,
   );
 
   const [uePossuiAlunosPeriodoParcial, setUePossuiAlunosPeriodoParcial] =
-    useState(undefined);
+    useState(recreioNasFeriasUuid ? "false" : undefined);
   const [emEdicao, setEmEdicao] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [showPesquisaAluno, setShowPesquisaAluno] = useState(false);
@@ -293,6 +298,10 @@ export const InformacoesMedicaoInicialCEI = ({
       payload.alunos_periodo_parcial = alunosParciais;
     }
 
+    if (recreioNasFeriasUuid) {
+      payload.recreio_nas_ferias = recreioNasFeriasUuid;
+    }
+
     return payload;
   };
 
@@ -385,7 +394,7 @@ export const InformacoesMedicaoInicialCEI = ({
     : [];
 
   const handleChangeTipoContagem = (values) => {
-    setTipoDeContagemSelecionada(values);
+    setTipoDeContagemSelecionada(values.map((value_) => value_.value));
   };
 
   const getDefaultValueSelectTipoContagem = () => {
@@ -453,19 +462,16 @@ export const InformacoesMedicaoInicialCEI = ({
                         Método de Contagem das Alimentações Servidas
                       </b>
                       {opcoesContagem.length > 0 && (
-                        <StatefulMultiSelect
+                        <MultiselectRaw
                           name="contagem_refeicoes"
+                          dataTestId="multiselect-contagem-refeicoes"
                           selected={tipoDeContagemSelecionada}
                           options={opcoesContagem || []}
                           onSelectedChanged={(values) =>
                             handleChangeTipoContagem(values)
                           }
+                          placeholder="Selecione os métodos de contagem"
                           hasSelectAll={false}
-                          overrideStrings={{
-                            selectSomeItems: "Selecione os métodos de contagem",
-                            allItemsAreSelected:
-                              "Todos os métodos selecionados",
-                          }}
                           disabled={!emEdicao}
                         />
                       )}
@@ -488,11 +494,12 @@ export const InformacoesMedicaoInicialCEI = ({
                     </label>
                     {options.map((option) => (
                       <Checkbox
+                        data-testid={`checkbox-alunos-parcial-${option.value}`}
                         key={option.value}
                         value={option.value}
                         checked={uePossuiAlunosPeriodoParcial === option.value}
                         onChange={onChange}
-                        disabled={!emEdicao}
+                        disabled={!emEdicao || recreioNasFeriasUuid}
                       >
                         {option.label}
                       </Checkbox>
