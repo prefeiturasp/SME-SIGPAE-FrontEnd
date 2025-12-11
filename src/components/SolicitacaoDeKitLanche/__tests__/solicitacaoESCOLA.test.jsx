@@ -19,6 +19,7 @@ import { renderWithProvider } from "src/utils/test-utils";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import userEvent from "@testing-library/user-event";
 import { dataParaUTC } from "src/helpers/utilities";
+import { PERFIL } from "src/constants/shared";
 
 describe("Teste de Solicitação de Kit Lanche", () => {
   const escolaUuid =
@@ -61,6 +62,7 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
     localStorage.setItem("eh_cemei", false);
 
     await act(async () => {
@@ -76,7 +78,7 @@ describe("Teste de Solicitação de Kit Lanche", () => {
             proximos_dois_dias_uteis={dataParaUTC(new Date("2025-07-31"))}
             proximos_cinco_dias_uteis={dataParaUTC(new Date("2025-08-04"))}
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -105,8 +107,8 @@ describe("Teste de Solicitação de Kit Lanche", () => {
       expect(screen.getAllByText(/524/i)).toHaveLength(1);
       expect(
         screen.getAllByText(
-          /Informação automática disponibilizada pelo Cadastro da Unidade Escolar/i
-        )
+          /Informação automática disponibilizada pelo Cadastro da Unidade Escolar/i,
+        ),
       ).toHaveLength(1);
     });
   });
@@ -119,25 +121,25 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     const botaoEditarPrimeiro = screen.getByTestId("btn-edit-rascunho-0");
     expect(
       within(primeiroRascunho).getByText(
-        /Solicitação de Kit Lanche Passeio #73D27/i
-      )
+        /Solicitação de Kit Lanche Passeio #73D27/i,
+      ),
     ).toBeInTheDocument();
     expect(
-      within(primeiroRascunho).getByText(/Data do evento/i)
+      within(primeiroRascunho).getByText(/Data do evento/i),
     ).toBeInTheDocument();
     expect(
-      within(primeiroRascunho).getByText("24/03/2025")
+      within(primeiroRascunho).getByText("24/03/2025"),
     ).toBeInTheDocument();
     expect(
-      within(primeiroRascunho).getByText(/Local do passeio/i)
+      within(primeiroRascunho).getByText(/Local do passeio/i),
     ).toBeInTheDocument();
     expect(within(primeiroRascunho).getByText(/dasdasd/i)).toBeInTheDocument();
     expect(
-      within(primeiroRascunho).getByText(/Nº de Alunos participantes/i)
+      within(primeiroRascunho).getByText(/Nº de Alunos participantes/i),
     ).toBeInTheDocument();
     expect(within(primeiroRascunho).getByText("1")).toBeInTheDocument();
     expect(
-      within(primeiroRascunho).getByText("Salvo em: 12/03/2025 17:04:12")
+      within(primeiroRascunho).getByText("Salvo em: 12/03/2025 17:04:12"),
     ).toBeInTheDocument();
     expect(within(primeiroRascunho).getByText(/RASCUNHO/i)).toBeInTheDocument();
     fireEvent.click(botaoDeletarPrimeiro);
@@ -148,23 +150,23 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     const botaoEditarSegundo = screen.getByTestId("btn-edit-rascunho-1");
     expect(
       within(segundoRascunho).getByText(
-        /Solicitação de Kit Lanche Passeio #F0835/i
-      )
+        /Solicitação de Kit Lanche Passeio #F0835/i,
+      ),
     ).toBeInTheDocument();
     expect(
-      within(segundoRascunho).getByText(/Data do evento/i)
+      within(segundoRascunho).getByText(/Data do evento/i),
     ).toBeInTheDocument();
     expect(within(segundoRascunho).getByText("02/04/2025")).toBeInTheDocument();
     expect(
-      within(segundoRascunho).getByText(/Local do passeio/i)
+      within(segundoRascunho).getByText(/Local do passeio/i),
     ).toBeInTheDocument();
     expect(within(segundoRascunho).getByText(/asdasdasd/i)).toBeInTheDocument();
     expect(
-      within(segundoRascunho).getByText(/Nº de Alunos participantes/i)
+      within(segundoRascunho).getByText(/Nº de Alunos participantes/i),
     ).toBeInTheDocument();
     expect(within(segundoRascunho).getByText("123")).toBeInTheDocument();
     expect(
-      within(segundoRascunho).getByText("Salvo em: 17/03/2025 14:43:45")
+      within(segundoRascunho).getByText("Salvo em: 17/03/2025 14:43:45"),
     ).toBeInTheDocument();
     expect(within(segundoRascunho).getByText(/RASCUNHO/i)).toBeInTheDocument();
     fireEvent.click(botaoDeletarSegundo);
@@ -174,46 +176,46 @@ describe("Teste de Solicitação de Kit Lanche", () => {
   it("Testa card Nova Solicitação", async () => {
     const cardSolicitacao = screen.getByTestId(`card-solicitacao`);
     expect(
-      within(cardSolicitacao).getAllByText(/Data do passeio/i)
+      within(cardSolicitacao).getAllByText(/Data do passeio/i),
     ).toHaveLength(1);
     expect(
-      within(cardSolicitacao).getAllByText(/Local do passeio/i)
+      within(cardSolicitacao).getAllByText(/Local do passeio/i),
     ).toHaveLength(1);
     expect(
-      within(cardSolicitacao).getAllByText(/Número de alunos/i)
+      within(cardSolicitacao).getAllByText(/Número de alunos/i),
     ).toHaveLength(1);
     expect(
-      within(cardSolicitacao).getAllByText("Evento/Atividade")
+      within(cardSolicitacao).getAllByText("Evento/Atividade"),
     ).toHaveLength(1);
     expect(
-      within(cardSolicitacao).getAllByText(/Tempo previsto do passeio/i)
+      within(cardSolicitacao).getAllByText(/Tempo previsto do passeio/i),
     ).toHaveLength(1);
     expect(
-      within(cardSolicitacao).getAllByText("até 4 horas (1 Kit)")
+      within(cardSolicitacao).getAllByText("até 4 horas (1 Kit)"),
     ).toHaveLength(1);
     expect(
-      within(cardSolicitacao).getAllByText("de 5 a 7 horas (2 Kits)")
+      within(cardSolicitacao).getAllByText("de 5 a 7 horas (2 Kits)"),
     ).toHaveLength(1);
     expect(
-      within(cardSolicitacao).getAllByText("8 horas ou mais (3 Kits)")
+      within(cardSolicitacao).getAllByText("8 horas ou mais (3 Kits)"),
     ).toHaveLength(1);
 
     expect(
-      within(cardSolicitacao).getAllByText(/Selecione a opção desejada/i)
+      within(cardSolicitacao).getAllByText(/Selecione a opção desejada/i),
     ).toHaveLength(1);
     expect(within(cardSolicitacao).getAllByText("KIT")).toHaveLength(1);
     expect(within(cardSolicitacao).getAllByText(/teste/i)).toHaveLength(1);
     expect(
-      within(cardSolicitacao).getAllByText(/Número total de kits/i)
+      within(cardSolicitacao).getAllByText(/Número total de kits/i),
     ).toHaveLength(1);
     expect(
       within(cardSolicitacao).getAllByText(
-        /Selecionar alunos com dieta especial/i
-      )
+        /Selecionar alunos com dieta especial/i,
+      ),
     ).toHaveLength(1);
     expect(within(cardSolicitacao).getAllByText(/Código EOL/i)).toHaveLength(1);
     expect(within(cardSolicitacao).getAllByText(/Nome do Aluno/i)).toHaveLength(
-      1
+      1,
     );
   });
 
@@ -258,7 +260,7 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     await usuario.hover(iconeErro);
     const tooltip = await screen.findByRole("tooltip");
     expect(tooltip).toHaveTextContent(
-      /O número de alunos não pode ser maior que 524/i
+      /O número de alunos não pode ser maior que 524/i,
     );
     expect(screen.getByText(/Não pode ser maior que 524/i)).toBeInTheDocument();
   });
