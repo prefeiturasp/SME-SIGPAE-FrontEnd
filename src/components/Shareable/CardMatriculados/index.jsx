@@ -1,10 +1,18 @@
 import { Component } from "react";
-import { escolaEhCEMEI, pontuarValor } from "src/helpers/utilities";
+import {
+  escolaEhCEMEI,
+  pontuarValor,
+  usuarioEhEscola,
+} from "src/helpers/utilities";
 import "./style.scss";
 
 export default class CardMatriculados extends Component {
   render() {
-    const { meusDados } = this.props;
+    const { numeroAlunos, meusDados } = this.props;
+
+    const numeroAlunos_ =
+      numeroAlunos ||
+      (meusDados && meusDados?.vinculo_atual?.instituicao?.quantidade_alunos);
 
     return escolaEhCEMEI() ? (
       <div className="card mt-1">
@@ -51,6 +59,32 @@ export default class CardMatriculados extends Component {
           </div>
         </div>
       </div>
+    ) : usuarioEhEscola() ? (
+      numeroAlunos_ > 0 ? (
+        <div className="card">
+          <div className="card-body card-enrolled">
+            <div className="row title">
+              <div className="col-12 col-lg-5 ps-0 pb-2">
+                Nº de Matriculados
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-5 col-md-3 col-lg-1 px-0">
+                <div className="rectangle">
+                  {numeroAlunos_ && pontuarValor(numeroAlunos_)}
+                </div>
+              </div>
+              <div className="col-12 col-md-6 beside-text mt-auto">
+                Informação automática disponibilizada pelo Cadastro da Unidade
+                Escolar <br />
+              </div>
+            </div>
+            <div className="row">{this.props.children}</div>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )
     ) : (
       (meusDados?.vinculo_atual?.instituicao?.quantidade_alunos_terceirizada >
         0 ||

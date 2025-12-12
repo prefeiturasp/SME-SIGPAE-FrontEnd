@@ -23,15 +23,19 @@ export default ({
   const handleClose = () => setShow(false);
 
   const enviarSolicitacao = async () => {
-    const payload = { ...values };
-    payload.requisicao = solicitacao.uuid;
-    const res = await distribuidorAltera(payload);
-    if (res.status === 201) {
-      setShow(false);
-      handleCloseAll();
-      toastSuccess("Sua solicitação foi enviada e será analisada pela CODAE");
-      updatePage();
-    } else {
+    try {
+      const payload = { ...values };
+      payload.requisicao = solicitacao.uuid;
+      const res = await distribuidorAltera(payload);
+      if (res.status === 201) {
+        setShow(false);
+        handleCloseAll();
+        toastSuccess("Sua solicitação foi enviada e será analisada pela CODAE");
+        updatePage();
+      } else {
+        toastError("Houve um erro ao solicitar a alteração de requisição.");
+      }
+    } catch {
       toastError("Houve um erro ao solicitar a alteração de requisição.");
     }
   };
@@ -47,7 +51,7 @@ export default ({
       />
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title> Confirmar Solicitação</Modal.Title>
+          <Modal.Title>Confirmar Solicitação</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           Deseja confirmar o envio da solicitação de alteração para a CODAE?
