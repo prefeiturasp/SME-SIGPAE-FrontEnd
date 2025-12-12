@@ -972,6 +972,29 @@ export const escolaNaoPossuiAlunosRegulares = (solicitacaoMedicaoInicial) => {
   return solicitacaoMedicaoInicial.escola_possui_alunos_regulares === false;
 };
 
+export const recreioNasFeriasDaMedicao = (solicitacaoMedicaoInicial) => {
+  return solicitacaoMedicaoInicial.recreio_nas_ferias;
+};
+
+const liberarMedicaoPorTipo = (solicitacao, tipo) => {
+  return solicitacao.recreio_nas_ferias?.unidades_participantes.find(
+    (up) => up.cei_ou_emei === tipo,
+  )?.liberar_medicao;
+};
+
+export const recreioNasFeriasDaMedicaoCEIdaCEMEI = (solicitacao) =>
+  liberarMedicaoPorTipo(solicitacao, "CEI");
+
+export const recreioNasFeriasDaMedicaoEMEIdaCEMEI = (solicitacao) =>
+  liberarMedicaoPorTipo(solicitacao, "EMEI");
+
+export const recreioNasFeriasComColaboradores = (solicitacaoMedicaoInicial) => {
+  return (
+    solicitacaoMedicaoInicial.recreio_nas_ferias?.unidades_participantes[0]
+      ?.tipos_alimentacao.colaboradores?.length > 0
+  );
+};
+
 export const tipoSolicitacaoComoQuery = (obj) => {
   return `tipoSolicitacao=${comoTipo(obj)}`;
 };

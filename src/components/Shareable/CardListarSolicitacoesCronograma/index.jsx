@@ -33,16 +33,22 @@ export default ({
                           title={value.textoCompleto}
                         >
                           <NavLink key={key} to={value.link}>
-                            <p className={`data ms-4`}>{`${value.texto}`}</p>
+                            <p
+                              className={`data ms-4 ${value.programa_leve_leite ? "programa-leve-leite" : ""}`}
+                            >{`${value.texto}`}</p>
                           </NavLink>
                         </Tooltip>
                       ) : (
                         <NavLink key={key} to={value.link}>
-                          <p className={`data ms-4`}>{`${value.texto}`}</p>
+                          <p
+                            className={`data ms-4 ${value.programa_leve_leite ? "programa-leve-leite" : ""}`}
+                          >{`${value.texto}`}</p>
                         </NavLink>
                       )}
                     </div>
-                    <span className={`date-time col-3 text-end`}>
+                    <span
+                      className={`date-time col-3 text-end ${value.programa_leve_leite ? "programa-leve-leite" : ""}`}
+                    >
                       {value.data}
                     </span>
                   </div>

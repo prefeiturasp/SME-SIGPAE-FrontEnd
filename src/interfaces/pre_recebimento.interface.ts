@@ -96,6 +96,7 @@ export interface CronogramaSimples {
 }
 
 export interface DocumentosRecebimentoDashboard {
+  programa_leve_leite: boolean;
   log_mais_recente: string;
   nome_empresa: string;
   nome_produto: string;
@@ -114,6 +115,7 @@ export interface FiltrosDashboardDocumentos {
 }
 
 export interface FichaTecnicaDashboard {
+  programa_leve_leite: boolean;
   log_mais_recente: string;
   nome_empresa: string;
   nome_produto: string;
@@ -162,6 +164,7 @@ export interface FichaTecnica {
   pregao_chamada_publica: string;
   criado_em: string;
   status: string;
+  programa: ProgramaChoices;
 }
 
 export interface InformacoesNutricionaisFichaTecnica {
@@ -289,6 +292,7 @@ export interface EtapaCalendario {
   uuid_cronograma: string;
   status: string;
   unidade_medida: string;
+  programa_leve_leite: boolean;
 }
 
 export interface CardItem {

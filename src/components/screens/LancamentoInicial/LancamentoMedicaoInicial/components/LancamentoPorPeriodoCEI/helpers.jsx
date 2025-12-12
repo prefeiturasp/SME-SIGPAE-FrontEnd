@@ -39,6 +39,8 @@ export const numeroRefeicoesDiarias = (textoCabecalho) => {
     case "PARCIAL":
       return 3;
     case "INTEGRAL":
+    case "Recreio nas Férias":
+    case "Recreio nas Férias - de 0 a 3 anos e 11 meses":
       return 5;
     default:
       return 2;

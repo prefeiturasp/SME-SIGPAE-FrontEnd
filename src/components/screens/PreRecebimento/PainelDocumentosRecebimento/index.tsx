@@ -36,7 +36,7 @@ export default () => {
 
   const ordenarPorLogMaisRecente = (
     a: DocumentosRecebimentoDashboard,
-    b: DocumentosRecebimentoDashboard
+    b: DocumentosRecebimentoDashboard,
   ) => {
     let data_a = parseDataHoraBrToMoment(a.log_mais_recente);
     let data_b = parseDataHoraBrToMoment(b.log_mais_recente);
@@ -48,18 +48,19 @@ export default () => {
 
     return `${item.numero_cronograma} / ${truncarString(
       item.nome_produto,
-      TAMANHO_MAXIMO
+      TAMANHO_MAXIMO,
     )} / ${truncarString(item.nome_empresa, TAMANHO_MAXIMO)}`;
   };
 
   const formatarCardsDocumento = (
-    items: DocumentosRecebimentoDashboard[]
+    items: DocumentosRecebimentoDashboard[],
   ): CardItem[] => {
     return items.sort(ordenarPorLogMaisRecente).map((item) => ({
       text: gerarTextoCardDocumento(item),
       date: item.log_mais_recente.slice(0, 10),
       link: gerarLinkDocumento(item),
       status: item.status,
+      programa_leve_leite: item.programa_leve_leite,
     }));
   };
 
@@ -77,7 +78,7 @@ export default () => {
 
   const agruparCardsPorStatus = (
     cardsIniciais: CardConfig<DocumentosRecebimentoDashboard>[],
-    dadosDashboard: ResponseDocumentosRecebimentoDashboard
+    dadosDashboard: ResponseDocumentosRecebimentoDashboard,
   ) => {
     const cardsAgrupados: CardConfig<DocumentosRecebimentoDashboard>[] = [];
 
@@ -99,25 +100,25 @@ export default () => {
       setCarregando(true);
 
       let dadosDashboard = await getDashboardDocumentosRecebimento(
-        filtros ? filtros : null
+        filtros ? filtros : null,
       );
 
       let cardsAprovacao = agruparCardsPorStatus(
         cardsAprovacaoDocumento,
-        dadosDashboard
+        dadosDashboard,
       );
 
       setCardsAprovacaoDocumento(cardsAprovacao);
       setCarregando(false);
     },
-    []
+    [],
   );
 
   const filtrarDocumentos = debounce((values: FiltrosDashboardDocumentos) => {
     const { nome_produto, numero_cronograma, nome_fornecedor } = values;
 
     const podeFiltrar = [nome_produto, numero_cronograma, nome_fornecedor].some(
-      (value) => value && value.length > 2
+      (value) => value && value.length > 2,
     );
 
     if (podeFiltrar) {
@@ -197,7 +198,7 @@ export default () => {
                   cardTitle={card.titulo}
                   cardType={card.style}
                   solicitations={formatarCardsDocumento(
-                    card.items ? card.items : []
+                    card.items ? card.items : [],
                   )}
                   icon={card.icon}
                   href={card.href}

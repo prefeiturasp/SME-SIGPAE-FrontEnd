@@ -63,6 +63,8 @@ import {
   validaRascunho,
 } from "./helpers";
 import { getListaTiposEmbalagens } from "../../../../services/qualidade.service";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
+import { ASelect } from "src/components/Shareable/MakeField";
 
 export default () => {
   const [carregando, setCarregando] = useState(true);
@@ -105,7 +107,7 @@ export default () => {
       empresaSelecionada,
       fichaTecnicaSelecionada,
       etapas,
-      recebimentos
+      recebimentos,
     );
 
     if (!rascunho) {
@@ -120,11 +122,11 @@ export default () => {
         if (rascunho) {
           toastSuccess("Rascunho salvo com sucesso!");
           navigate(
-            `/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA}/${EDITAR}/?uuid=${response.data.uuid}`
+            `/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA}/${EDITAR}/?uuid=${response.data.uuid}`,
           );
         } else {
           toastSuccess(
-            "Cadastro de Cronograma salvo e enviado para aprovação!"
+            "Cadastro de Cronograma salvo e enviado para aprovação!",
           );
           setShowModal(false);
           navigate(`/${PRE_RECEBIMENTO}/${CRONOGRAMA_ENTREGA}`);
@@ -183,7 +185,7 @@ export default () => {
       response.data.results.map((armazem) => ({
         nome: armazem.nome_fantasia,
         uuid: armazem.uuid,
-      }))
+      })),
     );
   };
 
@@ -192,9 +194,10 @@ export default () => {
     setFornecedores(
       response.data.results.map((fornecedor) => ({
         uuid: fornecedor.uuid,
+        key: fornecedor.uuid,
         value: fornecedor.nome_fantasia,
         contratos: fornecedor.contratos,
-      }))
+      })),
     );
   };
 
@@ -242,35 +245,34 @@ export default () => {
       cronograma.contrato?.numero_chamada_publica;
     cronogramaValues["ata"] = cronograma.contrato?.ata;
     cronogramaValues["quantidade_total"] = formataMilharDecimal(
-      cronograma.qtd_total_programada
+      cronograma.qtd_total_programada,
     );
     cronogramaValues["unidade_medida"] = cronograma.unidade_medida?.uuid;
     cronogramaValues["produto"] = cronograma.produto?.uuid;
     cronogramaValues["armazem"] = cronograma.armazem?.uuid;
-    cronogramaValues[
-      "ficha_tecnica"
-    ] = `${cronograma.ficha_tecnica?.numero} - ${cronograma.ficha_tecnica?.produto.nome}`;
+    cronogramaValues["ficha_tecnica"] =
+      `${cronograma.ficha_tecnica?.numero} - ${cronograma.ficha_tecnica?.produto.nome}`;
     cronogramaValues["marca"] = cronograma.ficha_tecnica?.marca.nome;
     cronogramaValues["peso_liquido_embalagem_primaria"] = numberToStringDecimal(
-      cronograma.ficha_tecnica?.peso_liquido_embalagem_primaria
+      cronograma.ficha_tecnica?.peso_liquido_embalagem_primaria,
     );
     cronogramaValues["unidade_medida_primaria"] =
       cronograma.ficha_tecnica?.unidade_medida_primaria?.uuid;
     cronogramaValues["peso_liquido_embalagem_secundaria"] =
       numberToStringDecimal(
-        cronograma.ficha_tecnica?.peso_liquido_embalagem_secundaria
+        cronograma.ficha_tecnica?.peso_liquido_embalagem_secundaria,
       );
     cronogramaValues["unidade_medida_secundaria"] =
       cronograma.ficha_tecnica?.unidade_medida_secundaria?.uuid;
     cronogramaValues["volume_embalagem_primaria"] = numberToStringDecimal(
-      cronograma.ficha_tecnica?.volume_embalagem_primaria
+      cronograma.ficha_tecnica?.volume_embalagem_primaria,
     );
     cronogramaValues["unidade_medida_volume_primaria"] =
       cronograma.ficha_tecnica?.unidade_medida_volume_primaria?.uuid;
     cronogramaValues["tipo_embalagem_secundaria"] =
       cronograma.tipo_embalagem_secundaria?.uuid;
     cronogramaValues["custo_unitario_produto"] = numberToStringDecimalMonetario(
-      cronograma.custo_unitario_produto
+      cronograma.custo_unitario_produto,
     );
     cronogramaValues["numero"] = cronograma.numero;
     cronogramaValues["uuid"] = cronograma.uuid;
@@ -279,29 +281,29 @@ export default () => {
     const etapaValues = {};
     cronograma.etapas.forEach((etapa, i) => {
       etapaValues[`empenho_${i}`] = stringNaoVaziaOuUndefined(
-        etapa.numero_empenho
+        etapa.numero_empenho,
       );
       etapaValues[`qtd_total_empenho_${i}`] = formataMilharDecimal(
-        etapa.qtd_total_empenho
+        etapa.qtd_total_empenho,
       );
       etapaValues[`etapa_${i}`] = stringNaoVaziaOuUndefined(etapa.etapa);
       etapaValues[`parte_${i}`] = stringNaoVaziaOuUndefined(etapa.parte);
       etapaValues[`data_programada_${i}`] = stringNaoVaziaOuUndefined(
-        etapa.data_programada
+        etapa.data_programada,
       );
       etapaValues[`quantidade_${i}`] = formataMilharDecimal(etapa.quantidade);
       etapaValues[`total_embalagens_${i}`] = stringNaoVaziaOuUndefined(
-        etapa.total_embalagens
+        etapa.total_embalagens,
       );
     });
 
     const recebimentoValues = {};
     programacoesDeRecebimento.forEach((recebimento, i) => {
       recebimentoValues[`data_recebimento_${i}`] = stringNaoVaziaOuUndefined(
-        recebimento.data_programada
+        recebimento.data_programada,
       );
       recebimentoValues[`tipo_recebimento_${i}`] = stringNaoVaziaOuUndefined(
-        recebimento.tipo_carga
+        recebimento.tipo_carga,
       );
     });
 
@@ -336,7 +338,7 @@ export default () => {
     let uuidContrato = values.contrato;
     if (!contratoSelecionado || contratoSelecionado.uuid !== uuidContrato) {
       let contrato = empresaSelecionada.contratos.find(
-        (c) => c.uuid === uuidContrato
+        (c) => c.uuid === uuidContrato,
       );
 
       values.numero_processo = contrato.processo;
@@ -362,7 +364,7 @@ export default () => {
       fichaTecnicaSelecionada.numero !== numeroFicha
     ) {
       let uuidFicha = fichasTecnicas.find(
-        (f) => f.numero === numeroFicha
+        (f) => f.numero === numeroFicha,
       )?.uuid;
 
       if (uuidFicha) {
@@ -374,27 +376,27 @@ export default () => {
         form.change("marca", fichaTecnica.marca?.nome);
         form.change(
           "peso_liquido_embalagem_primaria",
-          numberToStringDecimal(fichaTecnica.peso_liquido_embalagem_primaria)
+          numberToStringDecimal(fichaTecnica.peso_liquido_embalagem_primaria),
         );
         form.change(
           "unidade_medida_primaria",
-          fichaTecnica.unidade_medida_primaria?.uuid
+          fichaTecnica.unidade_medida_primaria?.uuid,
         );
         form.change(
           "peso_liquido_embalagem_secundaria",
-          numberToStringDecimal(fichaTecnica.peso_liquido_embalagem_secundaria)
+          numberToStringDecimal(fichaTecnica.peso_liquido_embalagem_secundaria),
         );
         form.change(
           "unidade_medida_secundaria",
-          fichaTecnica.unidade_medida_secundaria?.uuid
+          fichaTecnica.unidade_medida_secundaria?.uuid,
         );
         form.change(
           "volume_embalagem_primaria",
-          numberToStringDecimal(fichaTecnica.volume_embalagem_primaria)
+          numberToStringDecimal(fichaTecnica.volume_embalagem_primaria),
         );
         form.change(
           "unidade_medida_volume_primaria",
-          fichaTecnica.unidade_medida_volume_primaria?.uuid
+          fichaTecnica.unidade_medida_volume_primaria?.uuid,
         );
 
         setFichaTecnicaSelecionada(fichaTecnica);
@@ -435,12 +437,12 @@ export default () => {
                   <div className="row">
                     <div className="col-8">
                       <Field
-                        data-testid="input-empresa"
+                        dataTestId="input-empresa"
                         className="input-cronograma"
                         component={AutoCompleteField}
                         options={getEmpresaFiltrado(
                           fornecedores,
-                          values.empresa
+                          values.empresa,
                         )}
                         label="Pesquisar Empresa"
                         name="empresa"
@@ -450,21 +452,32 @@ export default () => {
                       />
                     </div>
                     <div className="col-4">
+                      <label className="col-form-label">
+                        <span className="required-asterisk">* </span>
+                        Nº do Contrato
+                      </label>
                       <Field
                         className="input-cronograma"
-                        component={Select}
+                        component={ASelect}
                         naoDesabilitarPrimeiraOpcao
-                        options={[
-                          { nome: "Selecione um Contrato", uuid: "" },
-                          ...getOpcoesContrato(empresaSelecionada),
-                        ]}
-                        label="Nº do Contrato"
                         name="contrato"
                         required
                         validate={required}
                         disabled={!values.empresa}
-                        dataTestId="select-div"
-                      />
+                        dataTestId="select-contrato"
+                      >
+                        <Option value="" key={0}>
+                          <label>Selecione um Contrato</label>
+                        </Option>
+                        {getOpcoesContrato(empresaSelecionada)?.map((e) => (
+                          <Option value={e.uuid} key={e.uuid}>
+                            <div className="d-flex justify-content-between align-items-center">
+                              {e.nome}
+                              {e.programa === "LEVE_LEITE" && <TagLeveLeite />}
+                            </div>
+                          </Option>
+                        ))}
+                      </Field>
                     </div>
                   </div>
 
@@ -544,24 +557,40 @@ export default () => {
                           <div className="card-body">
                             <div className="row">
                               <div className="col-6">
+                                <label className="col-form-label">
+                                  <span className="required-asterisk">* </span>
+                                  Ficha Técnica e Produto
+                                </label>
                                 <Field
                                   className="input-cronograma"
-                                  component={AutoCompleteField}
-                                  options={getEmpresaFiltrado(
-                                    geraOptionsFichasTecnicas(
-                                      fichasTecnicas,
-                                      empresaSelecionada
-                                    ),
-                                    values.ficha_tecnica
-                                  )}
-                                  placeholder={
-                                    "Selecione uma Ficha Técnica de Produto"
-                                  }
-                                  label="Ficha Técnica e Produto"
+                                  component={ASelect}
+                                  naoDesabilitarPrimeiraOpcao
                                   name="ficha_tecnica"
                                   required
                                   validate={required}
-                                />
+                                  disabled={!values.empresa}
+                                  dataTestId="select-div"
+                                  showSearch
+                                >
+                                  <Option value="" key={0}>
+                                    <label>
+                                      Selecione uma Ficha Técnica de Produto
+                                    </label>
+                                  </Option>
+                                  {geraOptionsFichasTecnicas(
+                                    fichasTecnicas,
+                                    empresaSelecionada,
+                                  )?.map((e) => (
+                                    <Option value={e.nome} key={e.uuid}>
+                                      <div className="d-flex justify-content-between align-items-center">
+                                        {e.nome}
+                                        {e.programa === "LEVE_LEITE" && (
+                                          <TagLeveLeite />
+                                        )}
+                                      </div>
+                                    </Option>
+                                  ))}
+                                </Field>
                               </div>
                               <div className="col-6">
                                 <Field
@@ -689,7 +718,10 @@ export default () => {
                                   component={Select}
                                   naoDesabilitarPrimeiraOpcao
                                   options={[
-                                    { nome: "Selecione a Embalagem", uuid: "" },
+                                    {
+                                      nome: "Selecione a Embalagem",
+                                      uuid: "",
+                                    },
                                     ...tiposEmbalagemOptions,
                                   ]}
                                   label="Tipo de Embalagem Secundária"
@@ -710,7 +742,7 @@ export default () => {
                                   prefix="R$"
                                   validate={composeValidators(
                                     required,
-                                    decimalMonetario
+                                    decimalMonetario,
                                   )}
                                 />
                               </div>

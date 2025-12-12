@@ -41,6 +41,7 @@ export const SolicitacoesCronogramaStatusGenerico = ({ ...props }) => {
       texto: `${item.numero} - ${item.produto} - ${item.empresa}`,
       data: item.log_mais_recente,
       link: `/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA}?uuid=${item.uuid}`,
+      programa_leve_leite: item.programa_leve_leite,
     }));
   };
 
@@ -49,6 +50,7 @@ export const SolicitacoesCronogramaStatusGenerico = ({ ...props }) => {
       texto: `${item.cronograma} - ${item.empresa}`,
       data: item.log_mais_recente,
       link: `/${PRE_RECEBIMENTO}/${DETALHAR_ALTERACAO_CRONOGRAMA}?uuid=${item.uuid}`,
+      programa_leve_leite: item.programa_leve_leite,
     }));
   };
 
@@ -78,7 +80,7 @@ export const SolicitacoesCronogramaStatusGenerico = ({ ...props }) => {
   const filtrarRequisicao = debounce((value, values) => {
     const { nome_fornecedor, nome_produto, numero_cronograma } = values;
     const podeFiltrar = [nome_fornecedor, nome_produto, numero_cronograma].some(
-      (value) => value && value.length > 2
+      (value) => value && value.length > 2,
     );
     if (podeFiltrar) {
       setLoading(true);
@@ -100,7 +102,6 @@ export const SolicitacoesCronogramaStatusGenerico = ({ ...props }) => {
   useEffect(() => {
     setCurrentPage(1);
     getSolicitacoesAsync(params);
-    // eslint-disable-next-line
   }, []);
 
   const onPageChanged = async (page) => {
@@ -134,7 +135,7 @@ export const SolicitacoesCronogramaStatusGenerico = ({ ...props }) => {
                       inputOnChange={(e) =>
                         filtrarRequisicao(
                           e.target.value,
-                          form.getState().values
+                          form.getState().values,
                         )
                       }
                     />
@@ -147,7 +148,7 @@ export const SolicitacoesCronogramaStatusGenerico = ({ ...props }) => {
                       inputOnChange={(e) =>
                         filtrarRequisicao(
                           e.target.value,
-                          form.getState().values
+                          form.getState().values,
                         )
                       }
                     />
@@ -160,7 +161,7 @@ export const SolicitacoesCronogramaStatusGenerico = ({ ...props }) => {
                       inputOnChange={(e) =>
                         filtrarRequisicao(
                           e.target.value,
-                          form.getState().values
+                          form.getState().values,
                         )
                       }
                     />

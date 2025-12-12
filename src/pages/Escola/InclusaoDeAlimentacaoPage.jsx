@@ -11,7 +11,7 @@ const atual = {
 };
 
 export default () => (
-  <Page titulo={atual.titulo} botaoVoltar>
+  <Page titulo={atual.titulo} pegaAtualmente={true} botaoVoltar>
     <Breadcrumb home={HOME} atual={atual} />
     <Container />
   </Page>
