@@ -118,17 +118,17 @@ describe("Testes da interface de Listagem - Parametrização Financeira", () => 
   });
 
   it("deve preencher campos, clicar em filtrar e receber resultados", async () => {
-    const botao = screen.getByText("Filtrar").closest("button");
-    await waitFor(() => {
-      expect(botao).toBeInTheDocument();
-      fireEvent.click(botao);
-    });
-
     setSelect("edital-select", "752c11a3-b4fe-4f1c-b9af-61d42f0a6b56");
     setSelect("lote-select", "e67daf61-810c-45f0-8eeb-a75dbe4be608");
     setSelect("grupo-unidade-select", "3601dfe6-4dd5-4099-9607-00cbfd04f49e");
     setData("data_inicial", "01/09/2025");
     setData("data_final", "30/09/2025");
+
+    const botao = screen.getByText("Filtrar").closest("button");
+    await waitFor(() => {
+      expect(botao).toBeInTheDocument();
+      fireEvent.click(botao);
+    });
 
     await waitFor(() => {
       expect(
