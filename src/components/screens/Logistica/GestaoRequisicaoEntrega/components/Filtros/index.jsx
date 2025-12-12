@@ -86,6 +86,7 @@ export default ({
             <div className="row">
               <div className="col-3">
                 <Field
+                  dataTestId="numero-requisicao"
                   component={InputText}
                   apenasNumeros
                   label="N° da Requisição de Entrega"
@@ -96,6 +97,7 @@ export default ({
               </div>
               <div className="col-3">
                 <Field
+                  dataTestId="numero-guia"
                   component={InputText}
                   apenasNumeros
                   label="N° da Guia de Remessa"
@@ -106,6 +108,7 @@ export default ({
               </div>
               <div className="col-6">
                 <Field
+                  dataTestId="numero-produto"
                   component={InputText}
                   label="Nome do Produto"
                   name="nome_produto"
@@ -182,6 +185,7 @@ export default ({
             <div className="row mt-2">
               <div className="col-6">
                 <Field
+                  dataTestId="select-status"
                   component={Select}
                   label="Status"
                   name="status"
@@ -208,6 +212,7 @@ export default ({
             </div>
             <div className="mt-4 mb-4" ref={inicioResultado}>
               <Botao
+                dataTestId="botao-consultar"
                 texto="Consultar"
                 type={BUTTON_TYPE.SUBMIT}
                 style={BUTTON_STYLE.GREEN}
@@ -216,6 +221,7 @@ export default ({
               />
 
               <Botao
+                dataTestId="botao-limpar"
                 texto="Limpar Filtros"
                 type={BUTTON_TYPE.BUTTON}
                 style={BUTTON_STYLE.GREEN_OUTLINE}
