@@ -5,31 +5,29 @@ import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import { FluxoDeStatusMedicaoInicial } from "./components/FluxoDeStatusMedicaoInicial";
-import InformacoesEscola from "./components/InformacoesEscola";
-import InformacoesMedicaoInicial from "./components/InformacoesMedicaoInicial";
-import { InformacoesMedicaoInicialCEI } from "./components/InformacoesMedicaoInicialCEI";
-import { LancamentoPorPeriodo } from "./components/LancamentoPorPeriodo";
-import { LancamentoPorPeriodoCEI } from "./components/LancamentoPorPeriodoCEI";
-import Ocorrencias from "./components/Ocorrencias";
-
-import CKEditorField from "src/components/Shareable/CKEditorField";
 import {
   DETALHAMENTO_DO_LANCAMENTO,
   LANCAMENTO_MEDICAO_INICIAL,
 } from "src/configs/constants";
 import { EscolaSimplesContext } from "src/context/EscolaSimplesContext";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { ehEscolaTipoCEI, ehEscolaTipoCEMEI } from "src/helpers/utilities";
+import {
+  ehEscolaTipoCEI,
+  ehEscolaTipoCEMEI,
+  escolaNaoPossuiAlunosRegulares,
+} from "src/helpers/utilities";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { getPanoramaEscola } from "src/services/dietaEspecial.service";
 import { getEscolaSimples } from "src/services/escola.service";
-import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import {
+  getDiasCalendario,
+  getUltimoDiaComSolicitacaoAutorizadaNoMes,
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getPeriodosPermissoesLancamentosEspeciaisMesAno } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
 import {
   getPeriodosEscolaCemeiComAlunosEmei,
@@ -38,6 +36,13 @@ import {
   updateSolicitacaoMedicaoInicial,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { listarRecreioNasFerias } from "src/services/recreioFerias.service";
+import { FluxoDeStatusMedicaoInicial } from "./components/FluxoDeStatusMedicaoInicial";
+import InformacoesEscola from "./components/InformacoesEscola";
+import InformacoesMedicaoInicial from "./components/InformacoesMedicaoInicial";
+import { InformacoesMedicaoInicialCEI } from "./components/InformacoesMedicaoInicialCEI";
+import { LancamentoPorPeriodo } from "./components/LancamentoPorPeriodo";
+import { LancamentoPorPeriodoCEI } from "./components/LancamentoPorPeriodoCEI";
+import Ocorrencias from "./components/Ocorrencias";
 import "./styles.scss";
 
 export default () => {
@@ -70,6 +75,7 @@ export default () => {
     anexo: null,
     status: null,
   });
+
   const [open, setOpen] = useState(false);
   const [naoPodeFinalizar, setNaoPodeFinalizar] = useState(true);
   const [finalizandoMedicao, setFinalizandoMedicao] = useState(false);
@@ -85,7 +91,9 @@ export default () => {
   const location = useLocation();
   const { escolaSimples, setEscolaSimples } = useContext(EscolaSimplesContext);
 
-  const proximosDozeMeses = 12;
+  const PROXIMOS_DOZE_MESES = 12;
+  const DEZEMBRO = "12";
+
   let periodos = [];
 
   const getPeriodosEscolaCemeiComAlunosEmeiAsync = async (escola, mes, ano) => {
@@ -120,6 +128,25 @@ export default () => {
       setPeriodosPermissoesLancamentosEspeciais(response.data.results);
     } else {
       toastError("Erro ao obter períodos com Permissões de Lançamentos");
+    }
+  };
+
+  const getUltimoDiaComSolicitacaoAutorizadaNoMesAsync = async (
+    escola_uuid,
+    mes,
+    ano,
+  ) => {
+    const params = {
+      escola_uuid,
+      mes,
+      ano,
+    };
+    const response = await getUltimoDiaComSolicitacaoAutorizadaNoMes(params);
+    if (response.status === HTTP_STATUS.OK) {
+      return response.data.ultima_data;
+    } else {
+      toastError("Erro ao obter o último dia com solicitação autorizada.");
+      return null;
     }
   };
 
@@ -190,7 +217,7 @@ export default () => {
         };
       });
 
-      for (let mes_ = 0; mes_ <= proximosDozeMeses; mes_++) {
+      for (let mes_ = 0; mes_ <= PROXIMOS_DOZE_MESES; mes_++) {
         const dataBRT = addMonths(new Date(), -mes_);
         const mes = getMonth(dataBRT) + 1;
         const ano = getYear(dataBRT);
@@ -247,6 +274,7 @@ export default () => {
 
       setMes(mes);
       setAno(ano);
+
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
         escola.uuid,
         { ano },
@@ -355,7 +383,7 @@ export default () => {
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
-    await getDiasCalendarioAsync(payload);
+    await getDiasCalendarioAsync(payload, solicitacao);
     await setSolicitacaoMedicaoInicial(solicitacao.data[0]);
   };
 
@@ -367,26 +395,49 @@ export default () => {
       })
     : [];
 
-  const getDiasCalendarioAsync = async (payload) => {
+  const getDiasCalendarioAsync = async (payload, solicitacao) => {
     payload["escola_uuid"] = payload["escola"];
     delete payload["escola"];
     const response = await getDiasCalendario(payload);
+    const ultimoDiaComSolicitacaoAutorizada_ =
+      await getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
+        payload["escola_uuid"],
+        payload["mes"],
+        payload["ano"],
+      );
+
     if (response.status === HTTP_STATUS.OK) {
       const listaDiasLetivos = response.data.filter(
         (dia) => dia.dia_letivo === true,
       );
       if (listaDiasLetivos.length) {
-        const ultimoDiaLetivo = listaDiasLetivos[listaDiasLetivos.length - 1];
-        const dataUltimoDia = new Date(
+        let diasParaDescontar = 1;
+        if (payload["mes"] === DEZEMBRO && listaDiasLetivos.length > 1) {
+          diasParaDescontar += 1;
+        }
+        const ultimoDiaLetivo =
+          listaDiasLetivos[listaDiasLetivos.length - diasParaDescontar];
+        let dataUltimoDia = new Date(
           `${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`,
         );
+        if (
+          ultimoDiaComSolicitacaoAutorizada_ &&
+          escolaNaoPossuiAlunosRegulares(solicitacao)
+        ) {
+          dataUltimoDia = new Date(
+            Math.max(
+              dataUltimoDia.getTime(),
+              new Date(
+                ultimoDiaComSolicitacaoAutorizada_ + "T00:00:00",
+              ).getTime(),
+            ),
+          );
+        }
         dataUltimoDia.setHours(23, 59, 59, 999);
         const dataHoje = new Date();
-        if (dataHoje.getTime() > dataUltimoDia.getTime()) {
-          setNaoPodeFinalizar(false);
-        } else {
-          setNaoPodeFinalizar(true);
-        }
+        const naoPodeFinalizarSeAindaNaoPassouOUltimoDia =
+          dataHoje.getTime() <= dataUltimoDia.getTime();
+        setNaoPodeFinalizar(naoPodeFinalizarSeAindaNaoPassouOUltimoDia);
       } else {
         setNaoPodeFinalizar(false);
       }

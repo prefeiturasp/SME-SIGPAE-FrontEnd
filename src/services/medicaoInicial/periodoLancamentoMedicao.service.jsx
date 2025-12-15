@@ -220,3 +220,13 @@ export const getDiasParaCorrecao = async (params) => {
     return data;
   }
 };
+
+export const getUltimoDiaComSolicitacaoAutorizadaNoMes = async (params) => {
+  const url =
+    "/escola-solicitacoes/ultimo-dia-com-solicitacao-autorizada-no-mes/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
