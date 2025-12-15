@@ -195,7 +195,7 @@ describe("Test <DashboardDietaEpecial> - Visão Escola", () => {
       "Alterar U.E da Dieta Especial",
     );
     expect(cardsAtalhosEscola).toHaveTextContent(
-      "Quando houver necessidade de alteração de unidade escolar do aluno para os programas Polo e Recreio nas Férias.",
+      "Quando houver necessidade de alteração de Unidade Educacional do aluno para Programa de Recreio nas Férias ou outro.",
     );
   });
 

@@ -1,18 +1,21 @@
 import {
-  render,
-  screen,
   act,
   fireEvent,
+  render,
+  screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
-import mock from "src/services/_mock";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import { mockFiltrosRelatorioDietasEspeciais } from "src/mocks/services/dietaEspecial.service/mockGetFiltrosRelatorioDietasEspeciais";
+import { mockGetUnidadeEducacional } from "src/mocks/services/dietaEspecial.service/mockGetUnidadeEducacional";
 import { mockRelatorioDietasEpeciais } from "src/mocks/services/dietaEspecial.service/relatorioDietasEspeciaisTerceirizada";
-import { RelatorioDietasAutorizadas } from "..";
+import { RelatorioDietasAutorizadasPage } from "src/pages/DietaEspecial/RelatorioDietasAutorizadas";
+import mock from "src/services/_mock";
 
 describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
   beforeEach(async () => {
@@ -22,22 +25,20 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
       .reply(200, mockFiltrosRelatorioDietasEspeciais);
     mock
       .onPost(
-        "/solicitacoes-genericas/filtrar-solicitacoes-cards-totalizadores/"
+        "/solicitacoes-genericas/filtrar-solicitacoes-cards-totalizadores/",
       )
       .reply(200, { results: [{ "Rede Municipal de Educação": 28 }] });
     mock
-      .onGet(
-        "/solicitacoes-dieta-especial/relatorio-dieta-especial-terceirizada/"
-      )
-      .reply(200, mockRelatorioDietasEpeciais);
+      .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
+      .reply(200, mockGetUnidadeEducacional);
 
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await act(async () => {
@@ -54,9 +55,10 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
               setMeusDados: jest.fn(),
             }}
           >
-            <RelatorioDietasAutorizadas />
+            <RelatorioDietasAutorizadasPage />
+            <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -87,11 +89,13 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
     setSelect("tipo-gestao-select", TIPO_GESTAO);
 
     await waitFor(() => {
-      const tipoUnidade = screen.getByText("Selecione o tipo de unidade");
-      fireEvent.click(tipoUnidade);
-      fireEvent.click(screen.getByText("EMEF"));
+      const selectTipoUnidade = screen.getByTestId("select-tipo-unidade");
+      const selectControl = within(selectTipoUnidade).getByRole("combobox");
+      fireEvent.mouseDown(selectControl);
+      const optionEMEF = screen.getByText("EMEF");
+      fireEvent.click(optionEMEF);
     });
-    expect(screen.getAllByText("EMEF").length).toBe(2);
+    expect(screen.getAllByText("EMEF").length).toBe(1);
 
     const botaoLimpar = screen.getByText("Limpar Filtros").closest("button");
     fireEvent.click(botaoLimpar);
@@ -104,7 +108,37 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
 
   const filtrar = () => {
     const botao = screen.getByText("Filtrar");
+    mock
+      .onGet(
+        "/solicitacoes-dieta-especial/relatorio-dieta-especial-terceirizada/",
+      )
+      .reply(200, mockRelatorioDietasEpeciais);
     fireEvent.click(botao);
+  };
+
+  const filtrarSemResultados = () => {
+    const botao = screen.getByText("Filtrar");
+    mock
+      .onGet(
+        "/solicitacoes-dieta-especial/relatorio-dieta-especial-terceirizada/",
+      )
+      .reply(200, { results: [] });
+    fireEvent.click(botao);
+  };
+
+  const preencheFiltros = () => {
+    const selectDRELote = screen
+      .getByTestId("div-select-dre-lote")
+      .querySelector("select");
+    const uuid35673IPIRANGA = mockFiltrosRelatorioDietasEspeciais.lotes.find(
+      (l) => l.nome === "3567-3 - DIRETORIA REGIONAL DE EDUCACAO IPIRANGA",
+    );
+    fireEvent.change(selectDRELote, {
+      target: { value: uuid35673IPIRANGA },
+    });
+
+    const checkboxOutro = screen.getByTestId("checkbox-outro");
+    fireEvent.click(checkboxOutro);
   };
 
   it("Preenche campo no formulário, clica em filtrar e verifica registros", async () => {
@@ -112,23 +146,24 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
     filtrar();
     await waitFor(() => {
       expect(
-        screen.getByText("4722212 - RHUAN ANGELLO FERREIRA ABREU")
+        screen.getByText("4722212 - RHUAN ANGELLO FERREIRA ABREU"),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("8026992 - MARTIN ABREU GUIMARAES")
+        screen.getByText("8026992 - MARTIN ABREU GUIMARAES"),
       ).toBeInTheDocument();
     });
   });
 
   it("Filtra, clica para visualizar em gráfico e verifica se foi alterado", async () => {
+    preencheFiltros();
     filtrar();
 
     await waitFor(() => {
       expect(
-        screen.getByText("4722212 - RHUAN ANGELLO FERREIRA ABREU")
+        screen.getByText("4722212 - RHUAN ANGELLO FERREIRA ABREU"),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("8026992 - MARTIN ABREU GUIMARAES")
+        screen.getByText("8026992 - MARTIN ABREU GUIMARAES"),
       ).toBeInTheDocument();
     });
 
@@ -137,6 +172,124 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Tabela")).toBeInTheDocument();
+    });
+  });
+
+  it("Deve exportar xlsx", async () => {
+    filtrar();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("4722212 - RHUAN ANGELLO FERREIRA ABREU"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("8026992 - MARTIN ABREU GUIMARAES"),
+      ).toBeInTheDocument();
+    });
+
+    const botaoExportarXLSX = screen
+      .getByText("Exportar XLSX")
+      .closest("button");
+
+    mock.onGet("/solicitacoes-dieta-especial/exportar-xlsx/").reply(200, {
+      detail: "Solicitação de geração de arquivo recebida com sucesso.",
+    });
+
+    fireEvent.click(botaoExportarXLSX);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Geração solicitada com sucesso."),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve exibir erro ao exportar xlsx", async () => {
+    filtrar();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("4722212 - RHUAN ANGELLO FERREIRA ABREU"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("8026992 - MARTIN ABREU GUIMARAES"),
+      ).toBeInTheDocument();
+    });
+
+    const botaoExportarXLSX = screen
+      .getByText("Exportar XLSX")
+      .closest("button");
+
+    mock.onGet("/solicitacoes-dieta-especial/exportar-xlsx/").reply(400, {});
+
+    fireEvent.click(botaoExportarXLSX);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Erro ao baixar XLSX. Tente novamente mais tarde"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve exportar pdf", async () => {
+    filtrar();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("4722212 - RHUAN ANGELLO FERREIRA ABREU"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("8026992 - MARTIN ABREU GUIMARAES"),
+      ).toBeInTheDocument();
+    });
+
+    const botaoExportarPDF = screen.getByText("Exportar PDF").closest("button");
+
+    mock.onGet("/solicitacoes-dieta-especial/exportar-pdf/").reply(200, {
+      detail: "Solicitação de geração de arquivo recebida com sucesso.",
+    });
+
+    fireEvent.click(botaoExportarPDF);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Geração solicitada com sucesso."),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve exibir erro ao exportar pdf", async () => {
+    filtrar();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("4722212 - RHUAN ANGELLO FERREIRA ABREU"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("8026992 - MARTIN ABREU GUIMARAES"),
+      ).toBeInTheDocument();
+    });
+
+    const botaoExportarPDF = screen.getByText("Exportar PDF").closest("button");
+
+    mock.onGet("/solicitacoes-dieta-especial/exportar-pdf/").reply(400, {});
+
+    fireEvent.click(botaoExportarPDF);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Erro ao baixar PDF. Tente novamente mais tarde"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve exibir `nenhum resultado encontrado`", async () => {
+    filtrarSemResultados();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Nenhum resultado encontrado."),
+      ).toBeInTheDocument();
     });
   });
 });

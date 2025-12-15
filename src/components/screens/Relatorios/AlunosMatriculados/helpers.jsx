@@ -1,4 +1,5 @@
 import { TIPOS_TURMAS } from "../constants";
+import { ehEscolaTipoCEI } from "src/helpers/utilities";
 
 export const formataOpcoes = (lista) => {
   return lista.map((opcao) => ({
@@ -20,4 +21,15 @@ export const formataLista = (lista) => {
     label: TIPOS_TURMAS[opcao],
     value: opcao,
   }));
+};
+
+export const formataPeriodoEscolar = (escola, nomePeriodo) => {
+  if (!ehEscolaTipoCEI(escola)) return nomePeriodo;
+
+  const periodosCEI = {
+    MANHA: "Infantil Manhã",
+    TARDE: "Infantil Tarde",
+  };
+
+  return periodosCEI[nomePeriodo] || nomePeriodo;
 };

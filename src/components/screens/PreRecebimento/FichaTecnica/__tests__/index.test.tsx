@@ -31,7 +31,7 @@ const setup = async () => {
         }}
       >
         <FichaTecnicaPage />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -40,19 +40,19 @@ describe("Testa página de Consulta de Ficha técnica", () => {
   it("carrega a página com requisições", async () => {
     await setup();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar por N° da Ficha`)).toBeInTheDocument()
+      expect(screen.getByText(`Filtrar por N° da Ficha`)).toBeInTheDocument(),
     );
     await waitFor(() =>
       expect(
-        screen.getByText(`Fichas Técnicas Cadastradas`)
-      ).toBeInTheDocument()
+        screen.getByText(`Fichas Técnicas Cadastradas`),
+      ).toBeInTheDocument(),
     );
   });
 
   it("preenche campos e Limpa Filtros", async () => {
     await setup();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar por N° da Ficha`)).toBeInTheDocument()
+      expect(screen.getByText(`Filtrar por N° da Ficha`)).toBeInTheDocument(),
     );
 
     let inputNumeroFicha = screen.getByTestId("numero_ficha");
@@ -72,7 +72,7 @@ describe("Testa página de Consulta de Ficha técnica", () => {
   it("carrega a próxima página de requisições", async () => {
     await setup();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar por N° da Ficha`)).toBeInTheDocument()
+      expect(screen.getByText(`Filtrar por N° da Ficha`)).toBeInTheDocument(),
     );
 
     const nextButton = screen.getByLabelText("right");
@@ -80,15 +80,15 @@ describe("Testa página de Consulta de Ficha técnica", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(`Fichas Técnicas Cadastradas`)
-      ).toBeInTheDocument()
+        screen.getByText(`Fichas Técnicas Cadastradas`),
+      ).toBeInTheDocument(),
     );
   });
 
   it("preenche campos e Aplica Filtros", async () => {
     await setup();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar por N° da Ficha`)).toBeInTheDocument()
+      expect(screen.getByText(`Filtrar por N° da Ficha`)).toBeInTheDocument(),
     );
 
     let inputNumeroFicha = screen.getByTestId("numero_ficha");
@@ -107,13 +107,25 @@ describe("Testa página de Consulta de Ficha técnica", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText(mockListaFichaTecnica.results[0].numero)
-      ).toBeInTheDocument()
+        screen.getByText(mockListaFichaTecnica.results[0].numero),
+      ).toBeInTheDocument(),
     );
 
     const fichaFiltrada = screen.queryByText(
-      mockListaFichaTecnica.results[1].numero
+      mockListaFichaTecnica.results[1].numero,
     );
     expect(fichaFiltrada).toBeNull();
+  });
+
+  it("renderiza tag Leve Leite para fichas do programa LEVE_LEITE", async () => {
+    await setup();
+    await waitFor(() =>
+      expect(
+        screen.getByText(`Fichas Técnicas Cadastradas`),
+      ).toBeInTheDocument(),
+    );
+
+    const tagsLeveLeite = screen.getAllByText("LEVE LEITE - PLL");
+    expect(tagsLeveLeite.length).toBeGreaterThan(0);
   });
 });

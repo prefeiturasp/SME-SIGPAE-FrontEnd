@@ -15,34 +15,40 @@ const gerarValores = (valores: object) => {
   Object.values(valores).forEach((valor: ValorLinha, index) => {
     const { tipo_alimentacao, faixa_etaria, ...rest } = valor;
 
-    const tiposValores = [
-      {
-        campo: "valor_unitario_reajuste",
-        valor: rest.valor_unitario_reajuste,
-        tipo: "REAJUSTE",
-      },
-      { campo: "valor_unitario", valor: rest.valor_unitario, tipo: "UNITARIO" },
-      {
-        campo: "percentual_acrescimo",
-        valor: rest.percentual_acrescimo,
-        tipo: "ACRESCIMO",
-      },
-    ];
+    if (tipo_alimentacao || faixa_etaria) {
+      const tiposValores = [
+        {
+          campo: "valor_unitario_reajuste",
+          valor: rest.valor_unitario_reajuste,
+          tipo: "REAJUSTE",
+        },
+        {
+          campo: "valor_unitario",
+          valor: rest.valor_unitario,
+          tipo: "UNITARIO",
+        },
+        {
+          campo: "percentual_acrescimo",
+          valor: rest.percentual_acrescimo,
+          tipo: "ACRESCIMO",
+        },
+      ];
 
-    const valoresFormatados = tiposValores
-      .filter((e) => e.valor !== undefined)
-      .map((e) => ({
-        faixa_etaria,
-        tipo_alimentacao,
-        nome_campo: titulos[index]
-          .toLowerCase()
-          .replace(/\s+/g, "_")
-          .normalize("NFD"),
-        tipo_valor: e.tipo,
-        valor: e.valor,
-      }));
+      const valoresFormatados = tiposValores
+        .filter((e) => e.valor !== undefined)
+        .map((e) => ({
+          faixa_etaria,
+          tipo_alimentacao,
+          nome_campo: titulos[index]
+            .toLowerCase()
+            .replace(/\s+/g, "_")
+            .normalize("NFD"),
+          tipo_valor: e.tipo,
+          valor: e.valor,
+        }));
 
-    lista_valores = lista_valores.concat(valoresFormatados);
+      lista_valores = lista_valores.concat(valoresFormatados);
+    }
   });
 
   return lista_valores;
@@ -50,12 +56,12 @@ const gerarValores = (valores: object) => {
 
 export const formataPayload = (values: ParametrizacaoFinanceiraPayload) => {
   const tabelas = Object.entries(values.tabelas).map(([tabela, valores]) => {
-    const [nome, periodo] = tabela.split(" - Período ");
-
+    let tabelaLimpa = tabela.replace(" - CEI ", " ");
+    const [nome, periodo] = tabelaLimpa.split(" - Período ");
     return {
-      nome: nome || tabela,
+      nome: nome.trim(),
       valores: gerarValores(valores as object),
-      periodo_escolar: periodo ? periodo?.toUpperCase() : null,
+      periodo_escolar: periodo ? periodo.toUpperCase() : null,
     };
   });
 
@@ -92,7 +98,11 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
   });
 };
 
-export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
+export const carregarValores = (
+  tabelas: TabelaParametrizacao[],
+  grupoSelecionado: string,
+  grupoPendencia?: string,
+) => {
   const getCampo = (tipo: string): string => {
     const campos = {
       UNITARIO: "valor_unitario",
@@ -103,30 +113,43 @@ export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
   };
 
   const resultado: object = {};
-
+  const ehGrupo2 = grupoSelecionado.toLowerCase().includes("grupo 2");
+  const ehGrupo5 = grupoSelecionado.toLowerCase().includes("grupo 5");
   tabelas.forEach((item) => {
-    const chavePrincipal = item.periodo_escolar
-      ? `${item.nome} - Período ${capitalize(item.periodo_escolar)}`
-      : item.nome;
+    let chavePrincipal: string;
+    if (ehGrupo2 && item.periodo_escolar) {
+      chavePrincipal = `${item.nome} - CEI - Período ${capitalize(item.periodo_escolar)}`;
+    } else if (item.periodo_escolar) {
+      chavePrincipal = `${item.nome} - Período ${capitalize(item.periodo_escolar)}`;
+    } else if (ehGrupo2 && grupoPendencia) {
+      chavePrincipal = `${item.nome.replace("/Restrição de Aminoácidos", "")} - Turma Infantil - EMEI`;
+    } else if (ehGrupo5 && grupoPendencia) {
+      if (grupoPendencia === "grupo 3")
+        chavePrincipal = `${item.nome} - EMEBS Fundamental`;
+      else if (grupoPendencia === "grupo 4")
+        chavePrincipal = `${item.nome} - EMEBS Infantil`;
+    } else {
+      chavePrincipal = item.nome;
+    }
     resultado[chavePrincipal] ||= {};
-
     item.valores.forEach((valor: ValorTabela) => {
       if (valor.faixa_etaria) {
         const faixaNome = valor.faixa_etaria?.__str__;
         resultado[chavePrincipal][faixaNome] ||= {};
         resultado[chavePrincipal][faixaNome].faixa_etaria =
-          valor.faixa_etaria?.uuid;
+          valor.faixa_etaria?.uuid || valor.faixa_etaria;
         resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] =
           valor.valor;
       } else if (valor.tipo_alimentacao) {
         const tipoNome = valor.tipo_alimentacao?.nome;
         resultado[chavePrincipal][tipoNome] ||= {};
         resultado[chavePrincipal][tipoNome].tipo_alimentacao =
-          valor.tipo_alimentacao?.uuid;
+          valor.tipo_alimentacao?.uuid || valor.tipo_alimentacao;
         resultado[chavePrincipal][tipoNome][getCampo(valor.tipo_valor)] =
           valor.valor;
       } else if (valor.nome_campo === "kit_lanche") {
         resultado[chavePrincipal]["Kit Lanche"] ||= {};
+        resultado[chavePrincipal]["Kit Lanche"].tipo_alimentacao = "Kit Lanche";
         resultado[chavePrincipal]["Kit Lanche"][getCampo(valor.tipo_valor)] =
           valor.valor;
       }
@@ -134,7 +157,6 @@ export const carregarValores = (tabelas: TabelaParametrizacao[]) => {
 
     calcularTotaisFaixa(resultado[chavePrincipal]);
   });
-
   return resultado;
 };
 

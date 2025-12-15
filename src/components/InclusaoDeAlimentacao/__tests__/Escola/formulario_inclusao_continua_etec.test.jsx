@@ -7,7 +7,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { Container } from "src/components/InclusaoDeAlimentacao/Escola/Formulario/componentes/Container";
-import { TIPO_SOLICITACAO } from "src/constants/shared";
+import { PERFIL, TIPO_SOLICITACAO } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockCreateInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockCreateInclusaoContinua";
 import { mockInicioPedidoInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockInicioPedidoInclusaoContinua";
@@ -55,7 +55,7 @@ const awaitServices = async () => {
     expect(getQuantidaDeAlunosPorPeriodoEEscola).toHaveBeenCalled();
     expect(getVinculosTipoAlimentacaoPorEscola).toHaveBeenCalled();
     expect(
-      getVinculosTipoAlimentacaoMotivoInclusaoEspecifico
+      getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
     ).toHaveBeenCalled();
   });
 };
@@ -108,7 +108,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
           data: { results: [] },
           status: 500,
         });
-      }
+      },
     );
     createInclusaoAlimentacao.mockResolvedValue({
       data: mockCreateInclusaoContinua,
@@ -129,8 +129,9 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "nome_instituicao",
-      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
     );
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
 
     await act(async () => {
       render(
@@ -138,7 +139,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
           value={{ meusDados: mockMeusDadosEscolaEMEFPericles }}
         >
           <Container />
-        </MeusDadosContext.Provider>
+        </MeusDadosContext.Provider>,
       );
     });
   });
@@ -149,8 +150,8 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.getByText("524")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -158,15 +159,15 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     await awaitServices();
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Inclusão de Alimentação # 12CDB")
+      screen.getByText("Inclusão de Alimentação # 12CDB"),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Programas/Projetos Contínuos - (12/02/2025 - 27/02/2025)"
-      )
+        "Programas/Projetos Contínuos - (12/02/2025 - 27/02/2025)",
+      ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 27/01/2025 16:34:09")
+      screen.getByText("Criado em: 27/01/2025 16:34:09"),
     ).toBeInTheDocument();
   });
 
@@ -179,7 +180,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     const selectMotivo = screen.getByTestId("select-motivo-0");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoETEC = mockMotivosInclusaoContinua.results.find(
-      (motivo) => motivo.nome === "ETEC"
+      (motivo) => motivo.nome === "ETEC",
     ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoETEC },
@@ -205,7 +206,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     });
 
     expect(
-      screen.queryByText("Recorrência e detalhes")
+      screen.queryByText("Recorrência e detalhes"),
     ).not.toBeInTheDocument();
 
     expect(screen.getByText("Período")).toBeInTheDocument();

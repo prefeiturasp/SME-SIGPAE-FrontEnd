@@ -1,20 +1,38 @@
-import { toastError } from "src/components/Shareable/Toast/dialogs";
-import { getMensagemDeErro } from "src/helpers/statusErrors";
 import axios from "./_base";
+import { ErrorHandlerFunction } from "./service-helpers";
 
-export const cadastrarRecreioNasFerias = async (payload) =>
-  await axios.post("/medicao-inicial/recreio-nas-ferias/", payload);
-
-export const listarRecreioNasFerias = async (params?: URLSearchParams) => {
-  try {
-    return await axios.get("/medicao-inicial/recreio-nas-ferias/", { params });
-  } catch (error) {
-    toastError(getMensagemDeErro(error.response.status));
+export const cadastrarRecreioNasFerias = async (payload) => {
+  const url = `/medicao-inicial/recreio-nas-ferias/`;
+  const response = await axios.post(url, payload).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
   }
 };
 
-export const buscarRecreioNasFeriasPorUuid = async (uuid: string) =>
-  await axios.get(`/medicao-inicial/recreio-nas-ferias/${uuid}/`);
+export const listarRecreioNasFerias = async (params?: URLSearchParams) => {
+  const url = "/medicao-inicial/recreio-nas-ferias/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
 
-export const atualizarRecreioNasFerias = (uuid: string, payload: any) =>
-  axios.put(`/medicao-inicial/recreio-nas-ferias/${uuid}/`, payload);
+export const buscarRecreioNasFeriasPorUuid = async (uuid: string) => {
+  const url = `/medicao-inicial/recreio-nas-ferias/${uuid}/`;
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
+export const atualizarRecreioNasFerias = async (uuid: string, payload: any) => {
+  const url = `/medicao-inicial/recreio-nas-ferias/${uuid}/`;
+  const response = await axios.put(url, payload).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};

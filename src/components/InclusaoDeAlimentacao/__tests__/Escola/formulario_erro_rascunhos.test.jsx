@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { Container } from "src/components/InclusaoDeAlimentacao/Escola/Formulario/componentes/Container";
-import { TIPO_SOLICITACAO } from "src/constants/shared";
+import { PERFIL, TIPO_SOLICITACAO } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockCreateGrupoInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockCreateGrupoInclusaoNormal";
 import { mockInicioPedidoGrupoInclusaoAlimentacao } from "src/mocks/InclusaoAlimentacao/mockInicioPedidoGrupoInclusaoAlimentacao";
@@ -47,7 +47,7 @@ const awaitServices = async () => {
     expect(getQuantidaDeAlunosPorPeriodoEEscola).toHaveBeenCalled();
     expect(getVinculosTipoAlimentacaoPorEscola).toHaveBeenCalled();
     expect(
-      getVinculosTipoAlimentacaoMotivoInclusaoEspecifico
+      getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
     ).toHaveBeenCalled();
   });
 };
@@ -100,7 +100,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
           data: { results: [] },
           status: 500,
         });
-      }
+      },
     );
     createInclusaoAlimentacao.mockResolvedValue({
       data: mockCreateGrupoInclusaoNormal,
@@ -118,8 +118,9 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "nome_instituicao",
-      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
     );
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
 
     await act(async () => {
       render(
@@ -127,7 +128,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
           value={{ meusDados: mockMeusDadosEscolaEMEFPericles }}
         >
           <Container />
-        </MeusDadosContext.Provider>
+        </MeusDadosContext.Provider>,
       );
     });
   });
@@ -138,11 +139,13 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.getByText("524")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Erro ao carregar rascunhos de Inclusão de Alimentação.")
+      screen.getByText(
+        "Erro ao carregar rascunhos de Inclusão de Alimentação.",
+      ),
     ).toBeInTheDocument();
   });
 });

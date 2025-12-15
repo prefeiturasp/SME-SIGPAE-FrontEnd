@@ -12,6 +12,7 @@ type Props = {
   tiposAlimentacao: Array<any>;
   grupoSelecionado?: string;
   tipoTurma?: string;
+  temaTag?: string;
 };
 
 export default ({
@@ -19,6 +20,7 @@ export default ({
   tiposAlimentacao,
   grupoSelecionado,
   tipoTurma = "",
+  temaTag = "",
 }: Props) => {
   const alimentacoes = tiposAlimentacao
     .filter((t) => ALIMENTACOES.includes(t.nome))
@@ -30,45 +32,42 @@ export default ({
 
   const atualizarPercentuais = (value: string) => {
     tiposAlimentacao.forEach((tipo) => {
-      form.change(
-        `tabelas[${nomeTabela}].${tipo.nome}.percentual_acrescimo`,
-        String(value),
-      );
+      if (alimentacoes.some((a) => a.nome === tipo.nome)) {
+        form.change(
+          `tabelas[${nomeTabela}].${tipo.nome}.percentual_acrescimo`,
+          String(value),
+        );
 
-      const valorUnitario =
-        form.getState().values.tabelas[`${nomeTabela}`]?.[tipo.nome]
-          ?.valor_unitario || "0";
-      const valorUnitarioTotal =
-        stringDecimalToNumber(valorUnitario) *
-        (1 + stringDecimalToNumber(String(value)) / 100);
+        const valorUnitario =
+          form.getState().values.tabelas[`${nomeTabela}`]?.[tipo.nome]
+            ?.valor_unitario || "0";
+        const valorUnitarioTotal =
+          stringDecimalToNumber(valorUnitario) *
+          (1 + stringDecimalToNumber(String(value)) / 100);
 
-      form.change(
-        `tabelas[${nomeTabela}].${tipo.nome}.valor_unitario_total`,
-        formatarTotal(valorUnitarioTotal),
-      );
+        form.change(
+          `tabelas[${nomeTabela}].${tipo.nome}.valor_unitario_total`,
+          formatarTotal(valorUnitarioTotal),
+        );
+      }
     });
   };
 
   return (
     <div className="row mt-5">
       <div className="col">
-        {["grupo 2", "grupo 4"].includes(grupoSelecionado.toLowerCase()) ? (
+        {["grupo 2", "grupo 5"].some((grupo) =>
+          grupoSelecionado.toLowerCase().includes(grupo),
+        ) ? (
           <h2 className="text-start texto-simples-verde fw-bold mb-3">
-            Preço das Dietas Tipo B -{" "}
-            <span
-              className={`titulo-tag turma-${tipoTurma
-                .replace(/\s/g, "-")
-                .toLocaleLowerCase()}`}
-            >
-              {tipoTurma}
-            </span>
+            Preço das Dietas Tipo B{" - "}
+            <span className={`titulo-tag ${temaTag}`}>{tipoTurma}</span>
           </h2>
         ) : (
           <h2 className="text-start texto-simples-verde fw-bold">
             Preço das Dietas Tipo B
           </h2>
         )}
-
         <Table pagination={false} bordered dataSource={alimentacoes}>
           <Table.Column
             title="Tipo de Alimentação"

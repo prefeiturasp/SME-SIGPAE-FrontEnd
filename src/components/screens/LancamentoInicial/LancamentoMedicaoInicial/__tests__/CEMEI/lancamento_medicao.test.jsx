@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
-import { screen, act, render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import {
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
@@ -18,8 +19,6 @@ import { mockAlunos } from "src/mocks/services/perfil.service/alunos";
 import { mockSolicitacaoMedicaoInicialCEMEI } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEMEI/solicitacaoMedicaoInicial";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
-import React from "react";
-import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
 describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
@@ -37,19 +36,19 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
       .reply(200, []);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/periodos-escola-cemei-com-alunos-emei/"
+        "/medicao-inicial/solicitacao-medicao-inicial/periodos-escola-cemei-com-alunos-emei/",
       )
       .reply(200, {
         results: ["Infantil MANHA", "Infantil TARDE", "Infantil INTEGRAL"],
       });
     mock
       .onGet(
-        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/"
+        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
       )
       .reply(200, { results: [] });
     mock
@@ -73,11 +72,11 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
       .reply(200, mockAlteracoesAlimentacaoAutorizadasAgosto2024CEMEI);
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/"
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
       .reply(
         200,
-        mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCEMEIAgosto2024
+        mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCEMEIAgosto2024,
       );
 
     const search = `?mes=08&ano=2024`;
@@ -110,7 +109,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
           >
             <LancamentoMedicaoInicialPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -135,7 +134,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
 
   it("Renderiza período `Solicitações de Alimentação - Infantil`", () => {
     expect(
-      screen.getByText("Solicitações de Alimentação - Infantil")
+      screen.getByText("Solicitações de Alimentação - Infantil"),
     ).toBeInTheDocument();
   });
 
@@ -155,7 +154,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
     for (let i = 0; i < elementos.length - 1; i++) {
       const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
       expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
-        Node.DOCUMENT_POSITION_FOLLOWING
+        Node.DOCUMENT_POSITION_FOLLOWING,
       );
     }
   });

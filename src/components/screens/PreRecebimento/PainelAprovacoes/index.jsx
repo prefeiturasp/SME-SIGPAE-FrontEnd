@@ -86,7 +86,7 @@ export default () => {
 
     return `${item.numero || item.cronograma} / ${truncarString(
       item.produto,
-      TAMANHO_MAXIMO
+      TAMANHO_MAXIMO,
     )} / ${truncarString(item.empresa, TAMANHO_MAXIMO)}`;
   };
 
@@ -102,6 +102,7 @@ export default () => {
       date: item.log_mais_recente,
       link: gerarLinkCronograma(item, alteracao),
       status: item.status,
+      programa_leve_leite: item.programa_leve_leite,
     }));
   };
 
@@ -133,7 +134,7 @@ export default () => {
   const filtrarCronogramas = debounce((value, values) => {
     const { nome_produto, numero_cronograma } = values;
     const podeFiltrar = [nome_produto, numero_cronograma].some(
-      (value) => value && value.length > 2
+      (value) => value && value.length > 2,
     );
     if (podeFiltrar) {
       setCarregando(true);
@@ -154,9 +155,8 @@ export default () => {
     if (!filtros) {
       dadosDashboard = await getDashboardSolicitacoesAlteracao();
     } else {
-      dadosDashboard = await getDashboardSolicitacoesAlteracaoComFiltros(
-        filtros
-      );
+      dadosDashboard =
+        await getDashboardSolicitacoesAlteracaoComFiltros(filtros);
     }
 
     let cards = [];
@@ -177,7 +177,7 @@ export default () => {
   const filtrarSolicitacoesAlteracao = debounce((value, values) => {
     const { numero_cronograma, nome_fornecedor } = values;
     const podeFiltrar = [numero_cronograma, nome_fornecedor].some(
-      (value) => value && value.length > 2
+      (value) => value && value.length > 2,
     );
     if (podeFiltrar) {
       setCarregando(true);
@@ -221,7 +221,7 @@ export default () => {
                           inputOnChange={(e) =>
                             filtrarCronogramas(
                               e.target.value,
-                              form.getState().values
+                              form.getState().values,
                             )
                           }
                         />
@@ -234,7 +234,7 @@ export default () => {
                           inputOnChange={(e) =>
                             filtrarCronogramas(
                               e.target.value,
-                              form.getState().values
+                              form.getState().values,
                             )
                           }
                         />
@@ -253,7 +253,7 @@ export default () => {
                   cardType={card.style}
                   solicitations={formatarCards(
                     card.items ? card.items : [],
-                    false
+                    false,
                   )}
                   icon={card.icon}
                   href={card.href}
@@ -287,7 +287,7 @@ export default () => {
                           inputOnChange={(e) =>
                             filtrarSolicitacoesAlteracao(
                               e.target.value,
-                              form.getState().values
+                              form.getState().values,
                             )
                           }
                         />
@@ -300,7 +300,7 @@ export default () => {
                           inputOnChange={(e) =>
                             filtrarSolicitacoesAlteracao(
                               e.target.value,
-                              form.getState().values
+                              form.getState().values,
                             )
                           }
                         />
@@ -319,7 +319,7 @@ export default () => {
                   cardType={card.style}
                   solicitations={formatarCards(
                     card.items ? card.items : [],
-                    true
+                    true,
                   )}
                   icon={card.icon}
                   href={card.href}

@@ -227,4 +227,14 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     expect(btnImprimir).toBeInTheDocument();
   });
+
+  it("renderiza tag Leve Leite quando programa é LEVE_LEITE", async () => {
+    await setup();
+
+    await waitFor(() =>
+      expect(screen.queryByText("Carregando...")).not.toBeInTheDocument(),
+    );
+
+    expect(screen.getByText("LEVE LEITE - PLL")).toBeInTheDocument();
+  });
 });

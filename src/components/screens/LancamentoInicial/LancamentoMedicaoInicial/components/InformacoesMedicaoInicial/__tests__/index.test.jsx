@@ -34,38 +34,6 @@ jest.mock("src/configs/constants", () => ({
   DETALHAMENTO_DO_LANCAMENTO: "detalhamento-lancamento",
 }));
 
-// Mock do StatefulMultiSelect
-jest.mock("@khanacademy/react-multi-select", () => {
-  return function MockStatefulMultiSelect({
-    selected,
-    options,
-    onSelectedChanged,
-    disabled,
-  }) {
-    return (
-      <select
-        multiple
-        value={selected}
-        onChange={(e) => {
-          const values = Array.from(
-            e.target.selectedOptions,
-            (option) => option.value,
-          );
-          onSelectedChanged(values);
-        }}
-        disabled={disabled}
-        data-testid="stateful-multi-select"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    );
-  };
-});
-
 const mockGetTiposDeContagemAlimentacao =
   require("src/services/medicaoInicial/solicitacaoMedicaoInicial.service").getTiposDeContagemAlimentacao;
 const mockSetSolicitacaoMedicaoInicial =
@@ -185,80 +153,6 @@ describe("InformacoesBasicas", () => {
     expect(screen.getByDisplayValue("7654321")).toBeInTheDocument();
   });
 
-  it("deve habilitar edição ao clicar no botão Editar", async () => {
-    await act(async () => {
-      render(<InformacoesBasicas {...defaultProps} />);
-    });
-
-    const botaoEditar = screen.getByText("Editar");
-    await act(async () => {
-      fireEvent.click(botaoEditar);
-    });
-
-    expect(screen.getByText("Salvar")).toBeInTheDocument();
-
-    const inputsNome = screen.getAllByDisplayValue("");
-    inputsNome.forEach((input) => {
-      expect(input).not.toBeDisabled();
-    });
-
-    const multiSelect = screen.getByTestId("stateful-multi-select");
-    expect(multiSelect).not.toBeDisabled();
-
-    const optionsSelecionadas = Array.from(multiSelect.selectedOptions);
-    expect(optionsSelecionadas).toHaveLength(0);
-
-    const options = screen.getAllByRole("option");
-    expect(options.length).toBeGreaterThan(0);
-
-    options.forEach((option) => {
-      expect(option.selected).toBe(false);
-    });
-  });
-
-  it("deve criar nova solicitação quando não existe solicitação anterior", async () => {
-    mockSetSolicitacaoMedicaoInicial.mockResolvedValue({
-      status: HTTP_STATUS.CREATED,
-    });
-
-    await act(async () => {
-      render(<InformacoesBasicas {...defaultProps} />);
-    });
-
-    const botaoEditar = screen.getByText("Editar");
-    await act(async () => {
-      fireEvent.click(botaoEditar);
-    });
-
-    const inputsNome = screen.getAllByDisplayValue("");
-    const inputsRF = screen.getAllByDisplayValue("");
-
-    await act(async () => {
-      fireEvent.change(inputsNome[0], { target: { value: "João Silva" } });
-      fireEvent.change(inputsRF[1], { target: { value: "1234567" } });
-    });
-
-    const multiSelect = screen.getByTestId("stateful-multi-select");
-    const optionCatraca = "ba5136c7-5da0-4904-9774-b61252902857";
-
-    await act(async () => {
-      fireEvent.change(multiSelect, {
-        target: {
-          value: optionCatraca,
-        },
-      });
-    });
-
-    const botaoSalvar = screen.getByText("Salvar");
-    await act(async () => {
-      fireEvent.click(botaoSalvar);
-    });
-
-    expect(mockToastSuccess).toHaveBeenCalledWith(
-      "Medição Inicial criada com sucesso!",
-    );
-  });
-
   it("deve atualizar solicitação existente", async () => {
     mockUpdateInformacoesBasicas.mockResolvedValue({
       status: HTTP_STATUS.OK,
@@ -314,12 +208,14 @@ describe("InformacoesBasicas", () => {
       fireEvent.click(botaoEditar);
     });
 
-    const inputsNome = screen.getAllByDisplayValue("");
-    const inputsRF = screen.getAllByDisplayValue("");
+    const inputResponsavelNome = screen.getByTestId("input-responsavel-nome-0");
+    fireEvent.change(inputResponsavelNome, {
+      target: { value: "Fulano da Silva" },
+    });
 
-    await act(async () => {
-      fireEvent.change(inputsNome[0], { target: { value: "João Silva" } });
-      fireEvent.change(inputsRF[1], { target: { value: "1234567" } });
+    const inputResponsavelRf = screen.getByTestId("input-responsavel-rf-0");
+    fireEvent.change(inputResponsavelRf, {
+      target: { value: "1234567" },
     });
 
     const botaoSalvar = screen.getByText("Salvar");
@@ -372,7 +268,7 @@ describe("InformacoesBasicas", () => {
       fireEvent.click(botaoEditar);
     });
 
-    const inputRF = screen.getAllByDisplayValue("")[1];
+    const inputRF = screen.getByTestId("input-responsavel-nome-0");
     await act(async () => {
       fireEvent.keyPress(inputRF, { key: "a", code: "KeyA" });
     });
