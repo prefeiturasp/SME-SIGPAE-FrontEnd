@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 import * as constants from "src/configs/constants";
 import { deParaStatusAltCronograma } from "src/components/screens/helper";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 const ListagemAlteracoesCronogramas = ({
   alteracoesCronogramas,
@@ -67,7 +68,11 @@ const ListagemAlteracoesCronogramas = ({
                 }`}
               >
                 <div>{alteracaoCronograma.numero_solicitacao}</div>
-                <div>{alteracaoCronograma.cronograma}</div>
+                {/* <div>'{alteracaoCronograma.cronograma}'</div> */}
+                <div className="d-flex align-items-center justify-content-between">
+                  {alteracaoCronograma.cronograma}
+                  {alteracaoCronograma.programa_leve_leite && <TagLeveLeite />}
+                </div>
                 {!fornecedor && <div>{alteracaoCronograma.fornecedor}</div>}
                 <div
                   className={`${
