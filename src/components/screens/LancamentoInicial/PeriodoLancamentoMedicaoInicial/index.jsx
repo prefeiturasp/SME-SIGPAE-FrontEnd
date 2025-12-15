@@ -1129,6 +1129,12 @@ export default () => {
       }
     }
     setPeriodoGrupo(periodoEscolar);
+
+    if (location.state.recreioNasFerias) {
+      mesAnoFormatado =
+        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias.titulo;
+    }
+
     const dadosMesPeriodo = {
       mes_lancamento: mesAnoFormatado,
       periodo_escolar: periodoEscolar,
