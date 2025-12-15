@@ -54,6 +54,7 @@ import {
   getValoresPeriodosLancamentos,
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
+  getDiasLetivosRecreio,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
@@ -355,6 +356,10 @@ export default () => {
     return response_categorias_medicao;
   };
 
+  const ehRecreioNasFerias = () => {
+    return location.state.recreioNasFerias;
+  };
+
   useEffect(() => {
     const mesAnoSelecionado = location.state
       ? typeof location.state.mesAnoSelecionado === String
@@ -439,10 +444,20 @@ export default () => {
         );
       setInclusoesAutorizadas(response_inclusoes_autorizadas);
 
-      const tipos_alimentacao = periodo.tipos_alimentacao;
+      let tipos_alimentacao = [];
+      if (ehRecreioNasFerias()) {
+        tipos_alimentacao = location.state.tipos_alimentacao;
+      } else {
+        tipos_alimentacao = periodo.tipos_alimentacao;
+      }
+      // const tipos_alimentacao = periodo.tipos_alimentacao;
+      //  console.log(`tipos_alimentacao`, tipos_alimentacao)
+
       const tiposAlimentacaoInclusaoContinua =
         getTiposAlimentacaoInclusoesContinuas(response_inclusoes_autorizadas);
       const cloneTiposAlimentacao = deepCopy(tipos_alimentacao);
+      // console.log(`cloneTiposAlimentacao`, cloneTiposAlimentacao)
+
       const tiposAlimentacaoFormatadas = cloneTiposAlimentacao
         .filter((alimentacao) => alimentacao.nome !== "Lanche Emergencial")
         .map((alimentacao) => {
@@ -455,6 +470,8 @@ export default () => {
               .replaceAll(/ /g, "_"),
           };
         });
+
+      // console.log(`tiposAlimentacaoFormatadas`, tiposAlimentacaoFormatadas)
       const indexRefeicao = tiposAlimentacaoFormatadas.findIndex(
         (ali) => ali.nome === "Refeição",
       );
@@ -497,8 +514,8 @@ export default () => {
 
       tiposAlimentacaoFormatadas.unshift(
         {
-          nome: "Matriculados",
-          name: "matriculados",
+          nome: ehRecreioNasFerias() ? "Participantes" : "Matriculados",
+          name: ehRecreioNasFerias() ? "participantes" : "matriculados",
           uuid: null,
         },
         {
@@ -892,6 +909,8 @@ export default () => {
       let response_alteracoes_alimentacao_autorizadas = [];
       let response_permissoes_lancamentos_especiais_mes_ano_por_periodo = [];
 
+      await obterDiasLetivosCorretos(periodo, escola, mes, ano);
+
       if (!ehGrupoSolicitacoesDeAlimentacaoUrlParam && !ehGrupoETECUrlParam) {
         const params_matriculados = {
           escola_uuid: escola.uuid,
@@ -900,9 +919,12 @@ export default () => {
           tipo_turma: "REGULAR",
           periodo_escolar: periodo.periodo_escolar.uuid,
         };
-        response_matriculados =
-          await getMatriculadosPeriodo(params_matriculados);
-        setValoresMatriculados(response_matriculados.data);
+        //AAQQUUIIIII
+        // response_matriculados =
+        //   await getMatriculadosPeriodo(params_matriculados);
+        // setValoresMatriculados(response_matriculados.data);
+
+        await obterNumerosMatriculados(params_matriculados);
 
         response_suspensoes_autorizadas =
           await getSolicitacoesSuspensoesAutorizadasAsync(
@@ -1024,18 +1046,7 @@ export default () => {
         setInclusoesEtecAutorizadas(response_inclusoes_etec_autorizadas);
       }
 
-      const periodoNoiteUuid =
-        periodo?.periodo_escolar?.nome === "NOITE"
-          ? periodo.periodo_escolar.uuid
-          : null;
-      const data = await carregarDiasCalendario(
-        escola.uuid,
-        mes,
-        ano,
-        periodoNoiteUuid,
-      );
-
-      setCalendarioMesConsiderado(data);
+      //await obterDiasLetivosCorretos(periodo, escola, mes, ano);
 
       const params_feriados_no_mes = {
         mes: mes,
@@ -1044,6 +1055,7 @@ export default () => {
       const response_feriados_no_mes = await getFeriadosNoMes(
         params_feriados_no_mes,
       );
+      // console.log(`feridos`, response_feriados_no_mes.data.results)
       setFeriadosNoMes(response_feriados_no_mes.data.results);
 
       await formatarDadosValoresMedicao(
@@ -1076,6 +1088,7 @@ export default () => {
           label: `Semana ${i + 1}`,
         }),
       );
+      // console.log(`itemsSemanas`, itemsSemanas)
       setTabItemsSemanas(itemsSemanas);
 
       tabAlunosEmebs(
@@ -1130,7 +1143,7 @@ export default () => {
     }
     setPeriodoGrupo(periodoEscolar);
 
-    if (location.state.recreioNasFerias) {
+    if (ehRecreioNasFerias()) {
       mesAnoFormatado =
         location.state.solicitacaoMedicaoInicial.recreio_nas_ferias.titulo;
     }
@@ -1540,6 +1553,7 @@ export default () => {
       week = weekColumns.map((column) => {
         return { ...column, dia: diasSemana[column["position"]] };
       });
+      // console.log(`week`, week)
       setWeekColumns(week);
     }
 
@@ -1874,6 +1888,7 @@ export default () => {
   };
 
   const onChangeSemana = async (values, key) => {
+    // console.log(`values`, values)
     if (exibirTooltip && disableBotaoSalvarLancamentos) {
       setMsgModalErro(null);
       setShowModalErro(true);
@@ -2359,6 +2374,67 @@ export default () => {
               alunosTabSelecionada,
         ))
     );
+  };
+
+  const obterDiasLetivosCorretos = async (periodo, escola, mes, ano) => {
+    let data = [];
+    if (ehRecreioNasFerias()) {
+      const diasLetivos = await getDiasLetivosRecreio({
+        solictacao_uuid: location.state.solicitacaoMedicaoInicial.uuid,
+      });
+      data = diasLetivos.data;
+    } else {
+      const periodoNoiteUuid =
+        periodo?.periodo_escolar?.nome === "NOITE"
+          ? periodo.periodo_escolar.uuid
+          : null;
+      data = await carregarDiasCalendario(
+        escola.uuid,
+        mes,
+        ano,
+        periodoNoiteUuid,
+      );
+    }
+    // console.log(`data`, data)
+    setCalendarioMesConsiderado(data);
+  };
+
+  const obterNumerosMatriculados = async (params_matriculados) => {
+    let response_matriculados = [];
+    if (ehRecreioNasFerias()) {
+      // const calendarioCarregado = calendarioMesConsiderado && calendarioMesConsiderado.length > 0;
+      // if (calendarioCarregado) {
+      //   console.log(`calendarioMesConsiderado`, calendarioMesConsiderado)
+      // }
+      // else {
+      //   console.log('NÂO CAREREGOU')
+      // }
+      response_matriculados = {
+        data: [
+          {
+            dia: "08",
+            periodo_escolar: {
+              possui_alunos_regulares: null,
+              nome: "MANHA",
+              uuid: "5067e137-e5f3-4876-a63f-7f58cce93f33",
+              posicao: 2,
+              tipo_turno: 1,
+            },
+            criado_em: "25/09/2025 00:00:00",
+            quantidade_alunos: 308,
+            tipo_turma: "REGULAR",
+            cei_ou_emei: "N/A",
+            infantil_ou_fundamental: "N/A",
+            escola: 40,
+          },
+        ],
+      };
+    } else {
+      // console.log(`params_matriculados`, params_matriculados);
+      await getMatriculadosPeriodo(params_matriculados);
+    }
+
+    setValoresMatriculados(response_matriculados.data);
   };
 
   return (
