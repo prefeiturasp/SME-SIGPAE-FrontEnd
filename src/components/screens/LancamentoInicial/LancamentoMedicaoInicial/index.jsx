@@ -376,7 +376,7 @@ export default () => {
     recreio_nas_ferias,
   ) => {
     const payload = {
-      escola: escolaUuid,
+      escola_uuid: escolaUuid,
       mes: format(new Date(periodo), "MM").toString(),
       ano: getYear(new Date(periodo)).toString(),
       recreio_nas_ferias,
@@ -396,8 +396,6 @@ export default () => {
     : [];
 
   const getDiasCalendarioAsync = async (payload, solicitacao) => {
-    payload["escola_uuid"] = payload["escola"];
-    delete payload["escola"];
     const response = await getDiasCalendario(payload);
     const ultimoDiaComSolicitacaoAutorizada_ =
       await getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
@@ -500,7 +498,7 @@ export default () => {
     const recreio_nas_ferias = params.get("recreio_nas_ferias");
 
     const payload = {
-      escola: escolaInstituicao.uuid,
+      escola_uuid: escolaInstituicao.uuid,
       mes: mes.toString(),
       ano: ano.toString(),
       recreio_nas_ferias,
