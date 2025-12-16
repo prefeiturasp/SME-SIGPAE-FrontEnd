@@ -35,7 +35,8 @@ export const formatarPayloadPeriodoLancamento = (
     (values["periodo_escolar"] &&
       values["periodo_escolar"].includes("Solicitações")) ||
     values["periodo_escolar"] === "ETEC" ||
-    values["periodo_escolar"] === "Programas e Projetos"
+    values["periodo_escolar"] === "Programas e Projetos" ||
+    values["periodo_escolar"] === "Recreio nas Férias"
   ) {
     values["grupo"] = values["periodo_escolar"];
     delete values["periodo_escolar"];
@@ -44,6 +45,7 @@ export const formatarPayloadPeriodoLancamento = (
   const arrayCategoriesValues = valuesAsArray.filter(([key]) =>
     key.includes("categoria"),
   );
+
   let valoresMedicao = [];
 
   dadosIniciaisFiltered.forEach(([keyDado]) => {
@@ -57,10 +59,15 @@ export const formatarPayloadPeriodoLancamento = (
 
   arrayCategoriesValues.map((arr) => {
     const keySplitted = arr[0].split("__");
+
     const categoria = keySplitted.pop();
+
     const idCategoria = categoria.match(/\d/g).join("");
+
     const dia = keySplitted[1].match(/\d/g).join("");
+
     const nome_campo = keySplitted[0];
+
     let tipoAlimentacao = tabelaAlimentacaoRows.find(
       (alimentacao) => alimentacao.name === nome_campo,
     );
@@ -108,9 +115,12 @@ export const formatarPayloadPeriodoLancamento = (
 export const formatarPayloadParaCorrecao = (payload, escolaEhEMEBS = false) => {
   let payloadParaCorrecao = payload.valores_medicao.filter(
     (valor) =>
-      !["matriculados", "dietas_autorizadas", "numero_de_alunos"].includes(
-        valor.nome_campo,
-      ),
+      ![
+        "matriculados",
+        "dietas_autorizadas",
+        "numero_de_alunos",
+        "participantes",
+      ].includes(valor.nome_campo),
   );
   if (escolaEhEMEBS) {
     payloadParaCorrecao.forEach((objValueParaCorrecao) => {
@@ -178,7 +188,7 @@ export const valorZeroFrequencia = (
 
     linhasDaTabela.forEach((linha) => {
       ![
-        "matriculados",
+        "participantes",
         "frequencia",
         "observacoes",
         "dietas_autorizadas",
@@ -319,9 +329,12 @@ export const desabilitarField = (
       "MEDICAO_CORRIGIDA_PELA_UE",
       "MEDICAO_CORRIGIDA_PARA_CODAE",
     ].includes(location.state.status_periodo) &&
-    !["matriculados", "numero_de_alunos", "dietas_autorizadas"].includes(
-      rowName,
-    )
+    ![
+      "matriculados",
+      "numero_de_alunos",
+      "dietas_autorizadas",
+      "participantes",
+    ].includes(rowName)
   ) {
     if (
       alimentacoesLancamentosEspeciais?.includes(rowName) &&
@@ -372,7 +385,12 @@ export const desabilitarField = (
           "MEDICAO_CORRIGIDA_PARA_CODAE",
         ].includes(location.state.status_periodo) &&
           !valorFieldParaCorrecao))) ||
-    ["matriculados", "numero_de_alunos", "dietas_autorizadas"].includes(rowName)
+    [
+      "matriculados",
+      "numero_de_alunos",
+      "dietas_autorizadas",
+      "participantes",
+    ].includes(rowName)
   ) {
     return true;
   }
@@ -520,6 +538,37 @@ export const desabilitarField = (
       }
     }
   }
+
+  // ++++++++++++++++++++++++++++++++++++++++++++
+  if (grupoLocation === "Recreio nas Férias") {
+    if (feriadosNoMes.includes(dia)) {
+      return true;
+    }
+    if (nomeCategoria === "ALIMENTAÇÃO") {
+      if (rowName === "participantes") {
+        return true;
+      } else if (
+        validacaoSemana(dia) ||
+        (mesConsiderado === mesAtual &&
+          Number(dia) >= format(mesAnoDefault, "dd"))
+      ) {
+        return true;
+      } else if (validacaoDiaLetivo(dia)) {
+        return false;
+      } else if (
+        !Object.keys(values).some((key) => key.includes(`__dia_${dia}`))
+      ) {
+        return true;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  // ++++++++++++++++++++++++++++++++++++++++++++
+
   if (
     ehPeriodoEscolarSimples &&
     nomeCategoria === "ALIMENTAÇÃO" &&
@@ -572,6 +621,7 @@ export const desabilitarField = (
   ) {
     return true;
   }
+
   if (
     `${rowName}__dia_${dia}__categoria_${categoria}` in
       dadosValoresInclusoesAutorizadasState &&
@@ -632,6 +682,7 @@ export const desabilitarField = (
   }
 };
 
+// ---------------------------------------------------------------
 export const getSolicitacoesInclusaoAutorizadasAsync = async (
   escolaUuuid,
   mes,

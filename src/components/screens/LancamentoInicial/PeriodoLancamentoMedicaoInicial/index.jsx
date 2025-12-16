@@ -454,13 +454,10 @@ export default () => {
       } else {
         tipos_alimentacao = periodo.tipos_alimentacao;
       }
-      // const tipos_alimentacao = periodo.tipos_alimentacao;
-      //  console.log(`tipos_alimentacao`, tipos_alimentacao)
 
       const tiposAlimentacaoInclusaoContinua =
         getTiposAlimentacaoInclusoesContinuas(response_inclusoes_autorizadas);
       const cloneTiposAlimentacao = deepCopy(tipos_alimentacao);
-      // console.log(`cloneTiposAlimentacao`, cloneTiposAlimentacao)
 
       const tiposAlimentacaoFormatadas = cloneTiposAlimentacao
         .filter((alimentacao) => alimentacao.nome !== "Lanche Emergencial")
@@ -475,7 +472,6 @@ export default () => {
           };
         });
 
-      // console.log(`tiposAlimentacaoFormatadas`, tiposAlimentacaoFormatadas)
       const indexRefeicao = tiposAlimentacaoFormatadas.findIndex(
         (ali) => ali.nome === "Refeição",
       );
@@ -919,7 +915,7 @@ export default () => {
         mes,
         ano,
       );
-      // console.log(`obterDiasLetivosCorretos`, calendario);
+
       if (!ehGrupoSolicitacoesDeAlimentacaoUrlParam && !ehGrupoETECUrlParam) {
         const params_matriculados = {
           escola_uuid: escola.uuid,
@@ -928,10 +924,6 @@ export default () => {
           tipo_turma: "REGULAR",
           periodo_escolar: periodo.periodo_escolar.uuid,
         };
-        //AAQQUUIIIII
-        // response_matriculados =
-        //   await getMatriculadosPeriodo(params_matriculados);
-        // setValoresMatriculados(response_matriculados.data);
 
         response_matriculados = await obterNumerosMatriculados(
           params_matriculados,
@@ -1059,8 +1051,6 @@ export default () => {
         setInclusoesEtecAutorizadas(response_inclusoes_etec_autorizadas);
       }
 
-      //await obterDiasLetivosCorretos(periodo, escola, mes, ano);
-
       const params_feriados_no_mes = {
         mes: mes,
         ano: ano,
@@ -1068,7 +1058,7 @@ export default () => {
       const response_feriados_no_mes = await getFeriadosNoMes(
         params_feriados_no_mes,
       );
-      // console.log(`feridos`, response_feriados_no_mes.data.results)
+
       setFeriadosNoMes(response_feriados_no_mes.data.results);
 
       await formatarDadosValoresMedicao(
@@ -1101,7 +1091,7 @@ export default () => {
           label: `Semana ${i + 1}`,
         }),
       );
-      // console.log(`itemsSemanas`, itemsSemanas)
+
       setTabItemsSemanas(itemsSemanas);
 
       tabAlunosEmebs(
@@ -1169,7 +1159,6 @@ export default () => {
     let dadosValoresInclusoesAutorizadas = {};
 
     const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
-    // const prefixo = "matriculados";
 
     categoriasMedicao &&
       categoriasMedicao.forEach((categoria) => {
@@ -1569,7 +1558,7 @@ export default () => {
       week = weekColumns.map((column) => {
         return { ...column, dia: diasSemana[column["position"]] };
       });
-      // console.log(`week`, week)
+
       setWeekColumns(week);
     }
 
@@ -1625,6 +1614,7 @@ export default () => {
   ]);
 
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
+    const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     let valoresMedicao = [];
     const valuesMesmoDiaDaObservacao = Object.fromEntries(
       Object.entries(values).filter(([key]) =>
@@ -1634,7 +1624,7 @@ export default () => {
     Object.entries(valuesMesmoDiaDaObservacao).forEach(([key, value]) => {
       return (
         (["Mês anterior", "Mês posterior", null].includes(value) ||
-          key.includes("matriculados") ||
+          key.includes(prefixo) ||
           key.includes("dietas_autorizadas") ||
           key.includes("numero_de_alunos") ||
           (!validacaoDiaLetivo(dia) &&
@@ -1769,6 +1759,7 @@ export default () => {
     chamarFuncaoFormatar = true,
     ehCorrecao = false,
   ) => {
+    const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     const erro = validarFormulario(
       values,
       diasSobremesaDoce,
@@ -1793,14 +1784,14 @@ export default () => {
     Object.entries(valuesClone).forEach(([key, value]) => {
       return (
         (["Mês anterior", "Mês posterior", null].includes(value) ||
-          (key.includes("matriculados") &&
+          (key.includes(prefixo) &&
             !key.includes(`categoria_${idCategoriaAlimentacao}`))) &&
         delete valuesClone[key]
       );
     });
 
     const dadosIniciaisFiltered = Object.entries(dadosIniciais)
-      .filter(([key]) => !key.includes("matriculados"))
+      .filter(([key]) => !key.includes(prefixo))
       .filter(([key]) => !key.includes("dietas_autorizadas"))
       .filter(
         ([, value]) => !["Mês anterior", "Mês posterior", null].includes(value),
@@ -1818,6 +1809,7 @@ export default () => {
       grupoLocation,
       tabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows,
     );
+
     if (payload.valores_medicao.length === 0)
       return (
         !ehSalvamentoAutomatico && toastWarn("Não há valores para serem salvos")
@@ -1904,7 +1896,6 @@ export default () => {
   };
 
   const onChangeSemana = async (values, key) => {
-    // console.log(`values`, values)
     if (exibirTooltip && disableBotaoSalvarLancamentos) {
       setMsgModalErro(null);
       setShowModalErro(true);
@@ -1940,8 +1931,9 @@ export default () => {
   };
 
   const defaultValue = (column, row) => {
+    const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     let result = null;
-    if (row.name === "matriculados") {
+    if (row.name === prefixo) {
       result = null;
     }
     if (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) {
@@ -2411,27 +2403,26 @@ export default () => {
         periodoNoiteUuid,
       );
     }
-    // console.log(`data`, data)
+
     setCalendarioMesConsiderado(data);
     return data;
   };
 
   const obterNumerosMatriculados = async (params_matriculados, calendario) => {
     let response_matriculados = {};
-    const participantes =
-      location.state.solicitacaoMedicaoInicial.recreio_nas_ferias
-        .unidades_participantes[0];
+
     let numeroParticipantes = 0;
     if (ehRecreioNasFerias()) {
-      // console.log(`calendario`, calendario)
-      // console.log(`participantes`, participantes)
+      const participantes =
+        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias
+          .unidades_participantes[0];
+
       if (ehGrupoColaboradores()) {
         numeroParticipantes = participantes.num_colaboradores;
       } else {
         numeroParticipantes = participantes.num_inscritos;
       }
-      // const numeroAlunos = location.state.solicitacaoMedicaoInicial.recreio_nas_ferias.unidades_participantes[0].num_inscritos
-      // console.log(`numeroParticipantes`, numeroParticipantes)
+
       response_matriculados = {
         data: calendario.map((dia) => ({
           dia: dia.dia,
@@ -2439,12 +2430,9 @@ export default () => {
         })),
       };
     } else {
-      // console.log(`params_matriculados`, params_matriculados);
       response_matriculados = await getMatriculadosPeriodo(params_matriculados);
     }
     return response_matriculados;
-
-    // setValoresMatriculados(response_matriculados.data);
   };
 
   return (
