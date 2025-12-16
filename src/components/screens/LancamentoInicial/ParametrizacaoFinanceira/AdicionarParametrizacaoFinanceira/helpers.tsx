@@ -114,6 +114,7 @@ export const carregarValores = (
 
   const resultado: object = {};
   const ehGrupo2 = grupoSelecionado.toLowerCase().includes("grupo 2");
+  const ehGrupo4 = grupoSelecionado.toLowerCase().includes("grupo 4");
   const ehGrupo5 = grupoSelecionado.toLowerCase().includes("grupo 5");
   tabelas.forEach((item) => {
     let chavePrincipal: string;
@@ -141,7 +142,27 @@ export const carregarValores = (
         resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] =
           valor.valor;
       } else if (valor.tipo_alimentacao) {
-        const tipoNome = valor.tipo_alimentacao?.nome;
+        let tipoNome = valor.tipo_alimentacao?.nome;
+        if (ehGrupo4) {
+          const nome = valor.nome_campo
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+
+          const ehEmef = /(^|[_,-])emefm?([_,]|$)/.test(nome);
+          const ehEnteral = nome.includes("dieta_enteral");
+          const ehEja = nome.includes("eja");
+
+          if (ehEmef) {
+            tipoNome = ehEnteral
+              ? "Refeição - Dieta Enteral - CEU EMEF, CEU GESTÃO, EMEF, EMEFM"
+              : "Refeição - CEU EMEF, CEU GESTÃO, EMEF, EMEFM";
+          } else if (ehEja) {
+            tipoNome = ehEnteral
+              ? "Refeição - Dieta Enteral - EJA"
+              : "Refeição - EJA";
+          }
+        }
         resultado[chavePrincipal][tipoNome] ||= {};
         resultado[chavePrincipal][tipoNome].tipo_alimentacao =
           valor.tipo_alimentacao?.uuid || valor.tipo_alimentacao;
@@ -173,3 +194,9 @@ export const retornaTotal = (
   const valorTotal = stringDecimalToNumber(value) + valorSoma;
   return valorTotal ? formatarTotal(valorTotal) : null;
 };
+
+export const normalizar = (texto = "") =>
+  texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
