@@ -340,7 +340,7 @@ export const AcompanhamentoDeLancamentos = () => {
       }
       return nomesEscolas.filter((a) => a.includes(value_.toUpperCase()));
     }
-    return [];
+    return nomesEscolas;
   };
 
   const getDiretoriasRegionaisAsync = async () => {
