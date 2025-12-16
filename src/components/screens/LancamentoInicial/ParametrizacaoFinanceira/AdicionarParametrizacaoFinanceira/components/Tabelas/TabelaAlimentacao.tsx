@@ -33,25 +33,27 @@ export default ({
     ? `Preço das Alimentações - ${tipoTurma}`
     : "Preço das Alimentações";
 
+  const grupoTipo4 = grupoSelecionado.toLowerCase().includes("grupo 4");
+
   const atualizaPendencias = (
     record: RecordItem,
     valorFormatado: string | null,
   ) => {
     pendencias.forEach((e) => {
-      form.change(
-        `tabelas[${e}].${record.nome}.valor_unitario`,
-        valorFormatado,
-      );
+      let nome = record.nome;
+      if (grupoTipo4 && record.nome.includes("Refeição"))
+        nome = nome.replace("- ", "- Dieta Enteral - ");
+
+      form.change(`tabelas[${e}].${nome}.valor_unitario`, valorFormatado);
 
       const percentualAcrescimo =
-        form.getState().values.tabelas[e]?.[record.nome]
-          ?.percentual_acrescimo || "0";
+        form.getState().values.tabelas[e]?.[nome]?.percentual_acrescimo || "0";
       const valorUnitarioTotal =
         stringDecimalToNumber(valorFormatado || "0") *
         (1 + stringDecimalToNumber(percentualAcrescimo) / 100);
 
       form.change(
-        `tabelas[${e}].${record.nome}.valor_unitario_total`,
+        `tabelas[${e}].${nome}.valor_unitario_total`,
         formatarTotal(valorUnitarioTotal),
       );
     });
