@@ -278,6 +278,68 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     });
   });
 
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 4 - EMEF", async () => {
+    setSelect("edital-select", "d5e05d2a-1d4f-456f-ac9a-07ecde54b1b3");
+    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
+    setSelect("grupo-unidade-select", "5bd9ad5c-e0ab-4812-b2b6-336fc8988960");
+    setData("data_inicial", "01/12/2025");
+    setData("data_final", "31/12/2025");
+
+    const botao = screen.getByTestId("botao-carregar");
+    expect(botao).not.toBeDisabled();
+    expect(botao).toBeInTheDocument();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
+      expect(
+        screen.queryAllByText(/- CEU EMEF, CEU GESTÃO, EMEF, EMEFM/i),
+      ).toHaveLength(2);
+      expect(screen.queryAllByText(/- EJA/i)).toHaveLength(2);
+      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
+    });
+
+    setInput(
+      "tabelas[Preço das Alimentações].Refeição - CEU EMEF, CEU GESTÃO, EMEF, EMEFM.valor_unitario",
+      "5,00",
+    );
+    setInput(
+      "tabelas[Preço das Alimentações].Refeição - CEU EMEF, CEU GESTÃO, EMEF, EMEFM.valor_unitario_reajuste",
+      "5,00",
+    );
+    setInput(
+      "tabelas[Preço das Alimentações].Refeição - EJA.valor_unitario",
+      "6,00",
+    );
+    setInput(
+      "tabelas[Preço das Alimentações].Refeição - EJA.valor_unitario_reajuste",
+      "6,00",
+    );
+    const totalRefeicaoEmef = screen.getByTestId(
+      "tabelas[Preço das Alimentações].Refeição - CEU EMEF, CEU GESTÃO, EMEF, EMEFM.valor_unitario_total",
+    );
+    const totalRefeicaoEja = screen.getByTestId(
+      "tabelas[Preço das Alimentações].Refeição - EJA.valor_unitario_total",
+    );
+    const totalDietasTipoAEmef = screen.getByTestId(
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Refeição - Dieta Enteral - CEU EMEF, CEU GESTÃO, EMEF, EMEFM.valor_unitario",
+    );
+    const totalDietasTipoAEja = screen.getByTestId(
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Refeição - Dieta Enteral - EJA.valor_unitario",
+    );
+
+    await waitFor(() => {
+      expect(totalRefeicaoEmef.value).toBe("10,00");
+      expect(totalDietasTipoAEmef.value).toBe("10,00");
+      expect(totalRefeicaoEja.value).toBe("12,00");
+      expect(totalDietasTipoAEja.value).toBe("12,00");
+    });
+  });
+
   it("deve clicar em cancelar e exibir modal de cancelamento", async () => {
     const botao = screen.getByTestId("botao-cancelar");
     fireEvent.click(botao);
