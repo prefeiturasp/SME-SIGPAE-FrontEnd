@@ -360,6 +360,10 @@ export default () => {
     return location.state.recreioNasFerias;
   };
 
+  const ehGrupoColaboradores = () => {
+    return location.state.grupo === "Colaboradores";
+  };
+
   useEffect(() => {
     const mesAnoSelecionado = location.state
       ? typeof location.state.mesAnoSelecionado === String
@@ -909,8 +913,13 @@ export default () => {
       let response_alteracoes_alimentacao_autorizadas = [];
       let response_permissoes_lancamentos_especiais_mes_ano_por_periodo = [];
 
-      await obterDiasLetivosCorretos(periodo, escola, mes, ano);
-
+      const calendario = await obterDiasLetivosCorretos(
+        periodo,
+        escola,
+        mes,
+        ano,
+      );
+      // console.log(`obterDiasLetivosCorretos`, calendario);
       if (!ehGrupoSolicitacoesDeAlimentacaoUrlParam && !ehGrupoETECUrlParam) {
         const params_matriculados = {
           escola_uuid: escola.uuid,
@@ -924,7 +933,11 @@ export default () => {
         //   await getMatriculadosPeriodo(params_matriculados);
         // setValoresMatriculados(response_matriculados.data);
 
-        await obterNumerosMatriculados(params_matriculados);
+        response_matriculados = await obterNumerosMatriculados(
+          params_matriculados,
+          calendario,
+        );
+        setValoresMatriculados(response_matriculados.data);
 
         response_suspensoes_autorizadas =
           await getSolicitacoesSuspensoesAutorizadasAsync(
@@ -1155,6 +1168,9 @@ export default () => {
     };
     let dadosValoresInclusoesAutorizadas = {};
 
+    const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
+    // const prefixo = "matriculados";
+
     categoriasMedicao &&
       categoriasMedicao.forEach((categoria) => {
         if (escolaEhEMEBS()) {
@@ -1178,7 +1194,7 @@ export default () => {
             grupoLocation !== "Programas e Projetos" &&
             matriculados.forEach((obj) => {
               dadosValoresMatriculados[
-                `matriculados__dia_${obj.dia}__categoria_${categoria.id}`
+                `${prefixo}__dia_${obj.dia}__categoria_${categoria.id}`
               ] = obj.quantidade_alunos ? `${obj.quantidade_alunos}` : null;
             });
         }
@@ -2397,44 +2413,38 @@ export default () => {
     }
     // console.log(`data`, data)
     setCalendarioMesConsiderado(data);
+    return data;
   };
 
-  const obterNumerosMatriculados = async (params_matriculados) => {
-    let response_matriculados = [];
+  const obterNumerosMatriculados = async (params_matriculados, calendario) => {
+    let response_matriculados = {};
+    const participantes =
+      location.state.solicitacaoMedicaoInicial.recreio_nas_ferias
+        .unidades_participantes[0];
+    let numeroParticipantes = 0;
     if (ehRecreioNasFerias()) {
-      // const calendarioCarregado = calendarioMesConsiderado && calendarioMesConsiderado.length > 0;
-      // if (calendarioCarregado) {
-      //   console.log(`calendarioMesConsiderado`, calendarioMesConsiderado)
-      // }
-      // else {
-      //   console.log('NÂO CAREREGOU')
-      // }
+      // console.log(`calendario`, calendario)
+      // console.log(`participantes`, participantes)
+      if (ehGrupoColaboradores()) {
+        numeroParticipantes = participantes.num_colaboradores;
+      } else {
+        numeroParticipantes = participantes.num_inscritos;
+      }
+      // const numeroAlunos = location.state.solicitacaoMedicaoInicial.recreio_nas_ferias.unidades_participantes[0].num_inscritos
+      // console.log(`numeroParticipantes`, numeroParticipantes)
       response_matriculados = {
-        data: [
-          {
-            dia: "08",
-            periodo_escolar: {
-              possui_alunos_regulares: null,
-              nome: "MANHA",
-              uuid: "5067e137-e5f3-4876-a63f-7f58cce93f33",
-              posicao: 2,
-              tipo_turno: 1,
-            },
-            criado_em: "25/09/2025 00:00:00",
-            quantidade_alunos: 308,
-            tipo_turma: "REGULAR",
-            cei_ou_emei: "N/A",
-            infantil_ou_fundamental: "N/A",
-            escola: 40,
-          },
-        ],
+        data: calendario.map((dia) => ({
+          dia: dia.dia,
+          quantidade_alunos: numeroParticipantes,
+        })),
       };
     } else {
       // console.log(`params_matriculados`, params_matriculados);
-      await getMatriculadosPeriodo(params_matriculados);
+      response_matriculados = await getMatriculadosPeriodo(params_matriculados);
     }
+    return response_matriculados;
 
-    setValoresMatriculados(response_matriculados.data);
+    // setValoresMatriculados(response_matriculados.data);
   };
 
   return (
