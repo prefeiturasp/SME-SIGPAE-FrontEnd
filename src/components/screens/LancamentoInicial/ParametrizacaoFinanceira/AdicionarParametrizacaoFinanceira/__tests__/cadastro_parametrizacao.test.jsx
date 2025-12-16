@@ -113,6 +113,15 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
         screen.getByText("Salvar Parametrização Financeira"),
       ).toBeInTheDocument();
     });
+
+    const botaoNao = screen.getByText("Não").closest("button");
+    fireEvent.click(botaoNao);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Salvar Parametrização Financeira"),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 1 - CEI", async () => {
