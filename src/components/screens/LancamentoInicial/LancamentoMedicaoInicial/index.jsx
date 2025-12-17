@@ -420,6 +420,7 @@ export default () => {
         );
         if (
           ultimoDiaComSolicitacaoAutorizada_ &&
+          solicitacao &&
           escolaNaoPossuiAlunosRegulares(solicitacao)
         ) {
           dataUltimoDia = new Date(
