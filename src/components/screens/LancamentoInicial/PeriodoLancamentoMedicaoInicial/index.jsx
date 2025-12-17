@@ -763,8 +763,6 @@ export default () => {
 
       setTabelaEtecAlimentacaoRows(tiposAlimentacaoEtecFormatadas);
 
-      let response_log_dietas_autorizadas = [];
-
       let response_categorias_medicao = await getCategoriasDeMedicao();
 
       const params_dietas_autorizadas = {
@@ -781,11 +779,10 @@ export default () => {
       } else {
         params_dietas_autorizadas["unificado"] = true;
       }
-      if (!ehGrupoSolicitacoesDeAlimentacaoUrlParam) {
-        response_log_dietas_autorizadas = await getLogDietasAutorizadasPeriodo(
-          params_dietas_autorizadas,
-        );
-      }
+
+      let response_log_dietas_autorizadas = await obterLogsDietasEspeciais(
+        params_dietas_autorizadas,
+      );
 
       if (ehGrupoSolicitacoesDeAlimentacaoUrlParam) {
         response_categorias_medicao = response_categorias_medicao.data.filter(
@@ -807,7 +804,7 @@ export default () => {
             return !categoria.nome.includes("SOLICITAÇÕES");
           },
         );
-        if (response_log_dietas_autorizadas.data.length) {
+        if (response_log_dietas_autorizadas?.data?.length) {
           let categoriasDietasParaDeletar = [];
           for (const categoria of response_categorias_medicao) {
             if (
@@ -2434,6 +2431,17 @@ export default () => {
       response_matriculados = await getMatriculadosPeriodo(params_matriculados);
     }
     return response_matriculados;
+  };
+
+  const obterLogsDietasEspeciais = async (params_dietas_autorizadas) => {
+    let response_log_dietas_autorizadas = [];
+    if (!ehGrupoSolicitacoesDeAlimentacaoUrlParam && !ehRecreioNasFerias()) {
+      response_log_dietas_autorizadas = await getLogDietasAutorizadasPeriodo(
+        params_dietas_autorizadas,
+      );
+    }
+
+    return response_log_dietas_autorizadas;
   };
 
   return (
