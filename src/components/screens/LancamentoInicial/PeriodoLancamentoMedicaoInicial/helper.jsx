@@ -31,14 +31,18 @@ export const formatarPayloadPeriodoLancamento = (
   grupoLocation,
   tabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows,
 ) => {
+  const valorPeriodoEscolar = values["periodo_escolar"];
+  const gruposIncluidos = [
+    "ETEC",
+    "Programas e Projetos",
+    "Recreio nas Férias",
+  ];
   if (
     (values["periodo_escolar"] &&
       values["periodo_escolar"].includes("Solicitações")) ||
-    values["periodo_escolar"] === "ETEC" ||
-    values["periodo_escolar"] === "Programas e Projetos" ||
-    values["periodo_escolar"] === "Recreio nas Férias"
+    gruposIncluidos.includes(valorPeriodoEscolar)
   ) {
-    values["grupo"] = values["periodo_escolar"];
+    values["grupo"] = valorPeriodoEscolar;
     delete values["periodo_escolar"];
   }
   const valuesAsArray = Object.entries(values);
@@ -539,7 +543,6 @@ export const desabilitarField = (
     }
   }
 
-  // ++++++++++++++++++++++++++++++++++++++++++++
   if (grupoLocation === "Recreio nas Férias") {
     if (feriadosNoMes.includes(dia)) {
       return true;
@@ -566,8 +569,6 @@ export const desabilitarField = (
       return false;
     }
   }
-
-  // ++++++++++++++++++++++++++++++++++++++++++++
 
   if (
     ehPeriodoEscolarSimples &&

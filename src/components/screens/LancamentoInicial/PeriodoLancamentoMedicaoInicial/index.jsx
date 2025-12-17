@@ -6,7 +6,9 @@ import {
   getWeeksInMonth,
   getYear,
   isSunday,
+  isWithinInterval,
   lastDayOfMonth,
+  parse,
   startOfMonth,
   subDays,
 } from "date-fns";
@@ -877,14 +879,16 @@ export default () => {
         );
       }
 
+      let grupoMedicao = location.state.grupo;
       let params = {
         uuid_solicitacao_medicao: uuid,
-        nome_grupo: location.state.grupo,
+        nome_grupo: grupoMedicao,
       };
+      const gruposExcluidos = ["Programas e Projetos", "Recreio nas Férias"];
       if (
         !ehGrupoSolicitacoesDeAlimentacaoUrlParam &&
         !ehGrupoETECUrlParam &&
-        location.state.grupo !== "Programas e Projetos"
+        !gruposExcluidos.includes(grupoMedicao)
       ) {
         params = {
           ...params,
@@ -1075,20 +1079,7 @@ export default () => {
         tiposAlimentacaoEtecFormatadas,
       );
 
-      let itemsSemanas = [];
-      Array.apply(null, {
-        length: isSunday(lastDayOfMonth(mesAnoSelecionado))
-          ? getWeeksInMonth(mesAnoSelecionado) - 1
-          : getDay(startOfMonth(mesAnoSelecionado)) === 0
-            ? getWeeksInMonth(mesAnoSelecionado) + 1
-            : getWeeksInMonth(mesAnoSelecionado),
-      }).map((e, i) =>
-        itemsSemanas.push({
-          key: `${i + 1}`,
-          label: `Semana ${i + 1}`,
-        }),
-      );
-
+      let itemsSemanas = exibirAbaDasSemanas(mesAnoSelecionado);
       setTabItemsSemanas(itemsSemanas);
 
       tabAlunosEmebs(
@@ -1498,66 +1489,29 @@ export default () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    let diasSemana = [];
-    let diaDaSemanaNumerico = getDay(startOfMonth(mesAnoConsiderado)); // 0 representa Domingo
-    let week = [];
-    setLoading(true);
+  const existeSemanaNoIntervaloRecreio = (
+    diasSemana,
+    mesAnoReferencia,
+    dataInicioRecreio,
+    dataFimRecreio,
+  ) => {
+    if (!ehRecreioNasFerias()) return true;
 
-    if (diaDaSemanaNumerico === 0) {
-      diaDaSemanaNumerico = 7;
-    }
-    if (mesAnoConsiderado && Number(semanaSelecionada) === 1) {
-      diasSemana.unshift(format(startOfMonth(mesAnoConsiderado), "dd"));
-      for (let i = 1; i < diaDaSemanaNumerico; i++) {
-        diasSemana.unshift(
-          format(subDays(startOfMonth(mesAnoConsiderado), i), "dd"),
-        );
-      }
-      for (let i = diaDaSemanaNumerico; i < 7; i++) {
-        diasSemana.push(
-          format(
-            addDays(
-              startOfMonth(mesAnoConsiderado),
-              i + 1 - diaDaSemanaNumerico,
-            ),
-            "dd",
-          ),
-        );
-      }
-      setDiasDaSemanaSelecionada(diasSemana.filter((dia) => Number(dia) < 20));
-      week = weekColumns.map((column) => {
-        return { ...column, dia: diasSemana[column["position"]] };
-      });
-      setWeekColumns(week);
-    }
-    if (mesAnoConsiderado && Number(semanaSelecionada) !== 1) {
-      let dia = addDays(
-        startOfMonth(mesAnoConsiderado),
-        7 * (Number(semanaSelecionada) - 1),
+    return diasSemana.some((dia) => {
+      const dataCompleta = parse(
+        `${dia}/${format(mesAnoReferencia, "MM/yyyy")}`,
+        "dd/MM/yyyy",
+        new Date(),
       );
-      diasSemana.unshift(format(dia, "dd"));
-      for (let i = 1; i < diaDaSemanaNumerico; i++) {
-        diasSemana.unshift(format(subDays(dia, i), "dd"));
-      }
-      for (let i = diaDaSemanaNumerico; i < 7; i++) {
-        diasSemana.push(
-          format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
-        );
-      }
-      if ([4, 5, 6].includes(Number(semanaSelecionada))) {
-        setDiasDaSemanaSelecionada(
-          diasSemana.filter((dia) => Number(dia) > 10),
-        );
-      } else {
-        setDiasDaSemanaSelecionada(diasSemana);
-      }
-      week = weekColumns.map((column) => {
-        return { ...column, dia: diasSemana[column["position"]] };
+      return isWithinInterval(dataCompleta, {
+        start: dataInicioRecreio,
+        end: dataFimRecreio,
       });
+    });
+  };
 
-      setWeekColumns(week);
-    }
+  useEffect(() => {
+    montarCalendario();
 
     const formatar = async () => {
       formatarDadosValoresMedicao(
@@ -1704,18 +1658,24 @@ export default () => {
       valores_medicao: valoresMedicao,
       eh_observacao: true,
     };
+
+    const valorPeriodoEscolar = values["periodo_escolar"];
+    const gruposIncluidos = [
+      "ETEC",
+      "Programas e Projetos",
+      "Recreio nas Férias",
+    ];
+
     if (
-      (values["periodo_escolar"] &&
-        values["periodo_escolar"].includes("Solicitações")) ||
-      values["periodo_escolar"] === "ETEC" ||
-      values["periodo_escolar"] === "Programas e Projetos" ||
-      values["periodo_escolar"] === "Recreio nas Férias"
+      (valorPeriodoEscolar && valorPeriodoEscolar.includes("Solicitações")) ||
+      gruposIncluidos.includes(valorPeriodoEscolar)
     ) {
-      payload["grupo"] = values["periodo_escolar"];
+      payload["grupo"] = valorPeriodoEscolar;
       delete values["periodo_escolar"];
     } else {
-      payload["periodo_escolar"] = values["periodo_escolar"];
+      payload["periodo_escolar"] = valorPeriodoEscolar;
     }
+
     if (escolaEhEMEBS()) {
       payload["infantil_ou_fundamental"] = Object.entries(ALUNOS_EMEBS).filter(
         ([, value]) => value.key === alunosTabSelecionada,
@@ -2444,6 +2404,153 @@ export default () => {
     }
 
     return response_log_dietas_autorizadas;
+  };
+
+  const exibirAbaDasSemanas = (mesAnoSelecionado) => {
+    let itemsSemanas = [];
+    let dataInicoRecreio = null;
+    let dataFimRecreio = null;
+    if (ehRecreioNasFerias()) {
+      const dataRecreio =
+        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
+      dataInicoRecreio = parse(
+        dataRecreio.data_inicio,
+        "dd/MM/yyyy",
+        new Date(),
+        { locale: ptBR },
+      );
+      dataFimRecreio = parse(dataRecreio.data_fim, "dd/MM/yyyy", new Date(), {
+        locale: ptBR,
+      });
+    }
+
+    const totalSemanas = isSunday(lastDayOfMonth(mesAnoSelecionado))
+      ? getWeeksInMonth(mesAnoSelecionado) - 1
+      : getDay(startOfMonth(mesAnoSelecionado)) === 0
+        ? getWeeksInMonth(mesAnoSelecionado) + 1
+        : getWeeksInMonth(mesAnoSelecionado);
+
+    let numeroSemanaCorreto = 0;
+    Array.from({ length: totalSemanas }).forEach((_, numeroSemana) => {
+      const dias = [];
+      const inicioSemana = addDays(
+        startOfMonth(mesAnoSelecionado),
+        numeroSemana * 7,
+      );
+
+      for (let i = 0; i < 7; i++) {
+        const data = addDays(inicioSemana, i);
+        const dia = format(data, "dd");
+        dias.push(dia);
+      }
+
+      const incluiSemana = existeSemanaNoIntervaloRecreio(
+        dias,
+        mesAnoSelecionado,
+        dataInicoRecreio,
+        dataFimRecreio,
+      );
+      if (incluiSemana) {
+        itemsSemanas.push({
+          key: `${numeroSemanaCorreto + 1}`,
+          label: `Semana ${numeroSemanaCorreto + 1}`,
+        });
+        numeroSemanaCorreto += 1;
+      }
+    });
+    return itemsSemanas;
+  };
+
+  const montarCalendario = () => {
+    let diasSemana = [];
+    let week = [];
+    const numeroSemana = Number(semanaSelecionada);
+
+    let dataInicoRecreio = null;
+    let dataFimRecreio = null;
+    let diaDaSemanaNumerico = 0;
+    if (ehRecreioNasFerias()) {
+      const dataRecreio =
+        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
+      dataInicoRecreio = parse(
+        dataRecreio.data_inicio,
+        "dd/MM/yyyy",
+        new Date(),
+        { locale: ptBR },
+      );
+      dataFimRecreio = parse(dataRecreio.data_fim, "dd/MM/yyyy", new Date(), {
+        locale: ptBR,
+      });
+      diaDaSemanaNumerico = getDay(dataInicoRecreio);
+    } else {
+      diaDaSemanaNumerico = getDay(startOfMonth(mesAnoConsiderado)); // 0 representa Domingo
+    }
+
+    setLoading(true);
+    if (diaDaSemanaNumerico === 0) {
+      diaDaSemanaNumerico = 7;
+    }
+
+    let qualNomeDaVariavel = null;
+    if (ehRecreioNasFerias()) {
+      qualNomeDaVariavel = mesAnoConsiderado;
+    } else {
+      qualNomeDaVariavel = startOfMonth(mesAnoConsiderado);
+    }
+
+    if (mesAnoConsiderado && numeroSemana === 1) {
+      diasSemana.unshift(format(qualNomeDaVariavel, "dd"));
+      for (let i = 1; i < diaDaSemanaNumerico; i++) {
+        diasSemana.unshift(format(subDays(qualNomeDaVariavel, i), "dd"));
+      }
+      for (let i = diaDaSemanaNumerico; i < 7; i++) {
+        diasSemana.push(
+          format(
+            addDays(qualNomeDaVariavel, i + 1 - diaDaSemanaNumerico),
+            "dd",
+          ),
+        );
+      }
+      setDiasDaSemanaSelecionada(diasSemana.filter((dia) => Number(dia) < 20));
+      week = weekColumns.map((column) => {
+        return { ...column, dia: diasSemana[column["position"]] };
+      });
+      setWeekColumns(week);
+    }
+
+    if (mesAnoConsiderado && numeroSemana !== 1) {
+      let dia = addDays(qualNomeDaVariavel, 7 * (numeroSemana - 1));
+      diasSemana.unshift(format(dia, "dd"));
+
+      for (let i = 1; i < diaDaSemanaNumerico; i++) {
+        diasSemana.unshift(format(subDays(dia, i), "dd"));
+      }
+
+      for (let i = diaDaSemanaNumerico; i < 7; i++) {
+        diasSemana.push(
+          format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
+        );
+      }
+      const deveExibirSemana = existeSemanaNoIntervaloRecreio(
+        diasSemana,
+        mesAnoConsiderado,
+        dataInicoRecreio,
+        dataFimRecreio,
+      );
+      if (deveExibirSemana) {
+        if ([4, 5, 6].includes(numeroSemana)) {
+          setDiasDaSemanaSelecionada(
+            diasSemana.filter((dia) => Number(dia) > 10),
+          );
+        } else {
+          setDiasDaSemanaSelecionada(diasSemana);
+        }
+        week = weekColumns.map((column) => {
+          return { ...column, dia: diasSemana[column["position"]] };
+        });
+        setWeekColumns(week);
+      }
+    }
   };
 
   return (
