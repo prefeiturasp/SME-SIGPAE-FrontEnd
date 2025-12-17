@@ -68,7 +68,6 @@ const ListagemAlteracoesCronogramas = ({
                 }`}
               >
                 <div>{alteracaoCronograma.numero_solicitacao}</div>
-                {/* <div>'{alteracaoCronograma.cronograma}'</div> */}
                 <div className="d-flex align-items-center justify-content-between">
                   {alteracaoCronograma.cronograma}
                   {alteracaoCronograma.programa_leve_leite && <TagLeveLeite />}

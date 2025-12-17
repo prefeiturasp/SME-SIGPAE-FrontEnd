@@ -1,7 +1,6 @@
 import moment from "moment";
 import React from "react";
 import { Form, Field } from "react-final-form";
-import FinalFormToRedux from "src/components/Shareable/FinalFormToRedux";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import { InputText } from "src/components/Shareable/Input/InputText";
@@ -12,8 +11,6 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import "./style.scss";
 import { montarMenuOptionStatus } from "../../helper";
-
-const FORM_NAME = "buscaSolicitacaoAlteracaoCronograma";
 
 export default ({
   setFiltros,
@@ -35,7 +32,6 @@ export default ({
         onSubmit={onSubmit}
         render={({ form, handleSubmit, submitting, values }) => (
           <form onSubmit={handleSubmit}>
-            <FinalFormToRedux form={FORM_NAME} />
             <div className="row">
               <div className="col-6 mb-3">
                 <Field
