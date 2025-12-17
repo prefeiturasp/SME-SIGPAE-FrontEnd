@@ -90,7 +90,9 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
             {
               faixa_etaria: {
                 __str__: "01 a 03 meses",
-                uuid: "uuid-faixa-1",
+                uuid: "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
+                inicio: 0,
+                fim: 1,
               },
               tipo_valor: "UNITARIO",
               valor: "10",
@@ -115,7 +117,9 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
             {
               faixa_etaria: {
                 __str__: "01 a 03 meses",
-                uuid: "uuid-faixa-1",
+                uuid: "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
+                inicio: 0,
+                fim: 1,
               },
               tipo_valor: "UNITARIO",
               valor: "10",
@@ -123,7 +127,9 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
             {
               faixa_etaria: {
                 __str__: "01 a 03 meses",
-                uuid: "uuid-faixa-1",
+                uuid: "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
+                inicio: 1,
+                fim: 4,
               },
               tipo_valor: "REAJUSTE",
               valor: "2",
@@ -149,7 +155,7 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
             {
               faixa_etaria: {
                 __str__: "01 ano a 03 anos e 11 meses",
-                uuid: "uuid-faixa-2",
+                uuid: "e3030bd1-2e85-4676-87b3-96b4032370d4",
               },
               tipo_valor: "UNITARIO",
               valor: "20",
@@ -157,7 +163,7 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
             {
               faixa_etaria: {
                 __str__: "01 ano a 03 anos e 11 meses",
-                uuid: "uuid-faixa-2",
+                uuid: "e3030bd1-2e85-4676-87b3-96b4032370d4",
               },
               tipo_valor: "ACRESCIMO",
               valor: "10",
