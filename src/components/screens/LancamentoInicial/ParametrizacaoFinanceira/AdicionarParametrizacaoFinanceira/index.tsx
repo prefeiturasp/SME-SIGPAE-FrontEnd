@@ -22,6 +22,7 @@ import TabelasGrupoEMEBS from "./components/Tabelas/TabelasGrupoEMEBS";
 import ModalCancelar from "./components/ModalCancelar";
 import ModalSalvar from "./components/ModalSalvar";
 import { formataPayload } from "./helpers";
+import TabelasGrupoEMEF from "./components/Tabelas/TabelasGrupoEMEF";
 
 const VALORES_INICIAIS: ParametrizacaoFinanceiraPayload = {
   edital: null,
@@ -94,17 +95,21 @@ export default () => {
             render={({ form, handleSubmit, submitting }) => {
               const tabelasCarregadas = carregarTabelas || uuidParametrizacao;
 
-              const exibeTabelasCEI =
-                faixasEtarias.length &&
-                grupoSelecionado.toLowerCase().includes("grupo 1");
+              const exibeTabelasCEI = grupoSelecionado
+                .toLowerCase()
+                .includes("grupo 1");
 
-              const exibeTabelasEMEI =
-                tiposAlimentacao.length &&
-                grupoSelecionado.toLowerCase().includes("grupo 3");
+              const exibeTabelasEMEI = grupoSelecionado
+                .toLowerCase()
+                .includes("grupo 3");
 
-              const exibeTabelasCEMEI =
-                faixasEtarias.length &&
-                grupoSelecionado.toLowerCase().includes("grupo 2");
+              const exibeTabelasCEMEI = grupoSelecionado
+                .toLowerCase()
+                .includes("grupo 2");
+
+              const exibeTabelasEMEF = grupoSelecionado
+                .toLowerCase()
+                .includes("grupo 4");
 
               const exibeTabelasEMEBS = grupoSelecionado
                 .toLowerCase()
@@ -153,10 +158,18 @@ export default () => {
                       grupoSelecionado={grupoSelecionado}
                     />
                   ) : null}
+                  {exibeTabelasEMEF && tabelasCarregadas ? (
+                    <TabelasGrupoEMEF
+                      form={form}
+                      tiposAlimentacao={tiposAlimentacao}
+                      grupoSelecionado={grupoSelecionado}
+                    />
+                  ) : null}
                   {(exibeTabelasEMEI ||
                     exibeTabelasCEI ||
                     exibeTabelasCEMEI ||
-                    exibeTabelasEMEBS) &&
+                    exibeTabelasEMEBS ||
+                    exibeTabelasEMEF) &&
                   tabelasCarregadas ? (
                     <div className="row mt-5">
                       <div className="col">

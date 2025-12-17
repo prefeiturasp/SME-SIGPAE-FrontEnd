@@ -24,6 +24,7 @@ export default ({
   temaTag = "",
 }: Props) => {
   const grupoTipo2 = grupoSelecionado.toLowerCase().includes("grupo 2");
+  const grupoTipo4 = grupoSelecionado.toLowerCase().includes("grupo 4");
   const grupoTipo5 = grupoSelecionado.toLowerCase().includes("grupo 5");
   const nomeTabela = `Dietas Tipo A e Tipo A Enteral${grupoTipo2 ? "" : "/Restrição de Aminoácidos"}`;
 
@@ -34,10 +35,24 @@ export default ({
 
   const alimentacoes = tiposAlimentacao
     .filter((t) => ListaDeAlimentacoes.includes(t.nome))
-    .map((ta) => ({
-      ...ta,
-      grupo: ta.nome === "Refeição" ? "Dieta Enteral" : null,
-    }))
+    .flatMap((ta) => {
+      if (ta.nome === "Refeição" && grupoTipo4) {
+        return [
+          {
+            ...ta,
+            nome: "Refeição - Dieta Enteral - EJA",
+          },
+          {
+            ...ta,
+            nome: "Refeição - Dieta Enteral - CEU EMEF, CEU GESTÃO, EMEF, EMEFM",
+          },
+        ];
+      }
+      return {
+        ...ta,
+        grupo: ta.nome === "Refeição" ? "Dieta Enteral" : null,
+      };
+    })
     .reverse();
 
   const labelTabela = tipoTurma ? `${nomeTabela} - ${tipoTurma}` : nomeTabela;
