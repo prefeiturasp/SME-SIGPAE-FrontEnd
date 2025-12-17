@@ -592,8 +592,12 @@ export const validacoesTabelaAlimentacao = (
       (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("LPR"),
     ).length > 0;
 
+  const prefixo = location.state.recreioNasFerias
+    ? "participantes"
+    : "matriculados";
+
   const maxMatriculados = Number(
-    allValues[`matriculados__dia_${dia}__categoria_${categoria}`],
+    allValues[`${prefixo}__dia_${dia}__categoria_${categoria}`],
   );
 
   const maxNumeroDeAlunos = Number(
@@ -696,6 +700,9 @@ export const validacoesTabelaAlimentacao = (
         : maxMatriculados) &&
     inputName.includes("frequencia")
   ) {
+    if (location.state && location.state.grupo === "Recreio nas Férias") {
+      return `A frequência não pode ser maior que o número de participantes.`;
+    }
     const complemento =
       location.state &&
       (location.state.grupo === "Programas e Projetos" ||
