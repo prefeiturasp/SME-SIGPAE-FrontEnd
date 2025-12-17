@@ -1711,7 +1711,8 @@ export default () => {
       (values["periodo_escolar"] &&
         values["periodo_escolar"].includes("Solicitações")) ||
       values["periodo_escolar"] === "ETEC" ||
-      values["periodo_escolar"] === "Programas e Projetos"
+      values["periodo_escolar"] === "Programas e Projetos" ||
+      values["periodo_escolar"] === "Recreio nas Férias"
     ) {
       payload["grupo"] = values["periodo_escolar"];
       delete values["periodo_escolar"];
