@@ -171,7 +171,7 @@ export const LancamentoPorPeriodoCEI = ({
 
   const getSolicitacaoMedicaoInicialAsync = async () => {
     const payload = {
-      escola: escolaInstituicao.uuid,
+      escola_uuid: escolaInstituicao.uuid,
       mes: mes,
       ano: ano,
     };
