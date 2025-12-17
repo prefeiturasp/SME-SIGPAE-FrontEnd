@@ -171,27 +171,6 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     });
   });
 
-  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 3 - EMEI", async () => {
-    setSelect("edital-select", "3dea0d3c-eea2-4f32-90a6-ebae3597374b");
-    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
-    setSelect("grupo-unidade-select", "743ed59c-9861-4230-860e-e01e2e080327");
-    setData("data_inicial", "01/09/2025");
-    setData("data_final", "30/09/2025");
-
-    const botao = screen.getByTestId("botao-carregar");
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
-      ).toBeInTheDocument();
-      expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
-      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
-      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
-    });
-  });
-
   it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 2 - CEMEI", async () => {
     setSelect("edital-select", "557d1c87-ea6c-4911-8876-2a133f754ea1");
     setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
@@ -240,50 +219,24 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     });
   });
 
-  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 5 - EMEBS", async () => {
-    setSelect("edital-select", "ff94d604-4468-4553-9b54-6b428ce3be75");
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 3 - EMEI", async () => {
+    setSelect("edital-select", "3dea0d3c-eea2-4f32-90a6-ebae3597374b");
     setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
-    setSelect("grupo-unidade-select", "fd9907bf-b64e-4e35-8e8d-4909d4daa778");
-    setData("data_inicial", "01/12/2025");
-    setData("data_final", "31/12/2025");
+    setSelect("grupo-unidade-select", "743ed59c-9861-4230-860e-e01e2e080327");
+    setData("data_inicial", "01/09/2025");
+    setData("data_final", "30/09/2025");
 
     const botao = screen.getByTestId("botao-carregar");
     expect(botao).toBeInTheDocument();
     fireEvent.click(botao);
 
     await waitFor(() => {
-      expect(screen.queryAllByText(/Preço das Alimentações/i)).toHaveLength(2);
       expect(
-        screen.queryAllByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
-      ).toHaveLength(2);
-      expect(screen.queryAllByText(/Preço das Dietas Tipo B/i)).toHaveLength(2);
-      expect(screen.queryAllByText(/Kit Lanche/i)).toHaveLength(2);
-      expect(screen.queryAllByText(/EMEBS Infantil/i)).toHaveLength(3);
-      expect(screen.queryAllByText(/EMEBS Fundamental/i)).toHaveLength(3);
-    });
-
-    setInput(
-      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario",
-      "10,00",
-    );
-    setInput(
-      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario_reajuste",
-      "10,00",
-    );
-    const totalAlimentacoesFundamental = screen.getByTestId(
-      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario_total",
-    );
-    const totalDietasTipoAFundamental = screen.getByTestId(
-      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos - EMEBS Fundamental].Lanche.valor_unitario_total",
-    );
-    const totalDietasTipoBFundamental = screen.getByTestId(
-      "tabelas[Dietas Tipo B - EMEBS Fundamental].Lanche.valor_unitario_total",
-    );
-
-    await waitFor(() => {
-      expect(totalAlimentacoesFundamental.value).toBe("20,00");
-      expect(totalDietasTipoAFundamental.value).toBe("20,00");
-      expect(totalDietasTipoBFundamental.value).toBe("20,00");
+        screen.getByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
+      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
     });
   });
 
@@ -346,6 +299,53 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       expect(totalDietasTipoAEmef.value).toBe("10,00");
       expect(totalRefeicaoEja.value).toBe("12,00");
       expect(totalDietasTipoAEja.value).toBe("12,00");
+    });
+  });
+
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 5 - EMEBS", async () => {
+    setSelect("edital-select", "ff94d604-4468-4553-9b54-6b428ce3be75");
+    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
+    setSelect("grupo-unidade-select", "fd9907bf-b64e-4e35-8e8d-4909d4daa778");
+    setData("data_inicial", "01/12/2025");
+    setData("data_final", "31/12/2025");
+
+    const botao = screen.getByTestId("botao-carregar");
+    expect(botao).toBeInTheDocument();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(screen.queryAllByText(/Preço das Alimentações/i)).toHaveLength(2);
+      expect(
+        screen.queryAllByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
+      ).toHaveLength(2);
+      expect(screen.queryAllByText(/Preço das Dietas Tipo B/i)).toHaveLength(2);
+      expect(screen.queryAllByText(/Kit Lanche/i)).toHaveLength(2);
+      expect(screen.queryAllByText(/EMEBS Infantil/i)).toHaveLength(3);
+      expect(screen.queryAllByText(/EMEBS Fundamental/i)).toHaveLength(3);
+    });
+
+    setInput(
+      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario",
+      "10,00",
+    );
+    setInput(
+      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario_reajuste",
+      "10,00",
+    );
+    const totalAlimentacoesFundamental = screen.getByTestId(
+      "tabelas[Preço das Alimentações - EMEBS Fundamental].Lanche.valor_unitario_total",
+    );
+    const totalDietasTipoAFundamental = screen.getByTestId(
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos - EMEBS Fundamental].Lanche.valor_unitario_total",
+    );
+    const totalDietasTipoBFundamental = screen.getByTestId(
+      "tabelas[Dietas Tipo B - EMEBS Fundamental].Lanche.valor_unitario_total",
+    );
+
+    await waitFor(() => {
+      expect(totalAlimentacoesFundamental.value).toBe("20,00");
+      expect(totalDietasTipoAFundamental.value).toBe("20,00");
+      expect(totalDietasTipoBFundamental.value).toBe("20,00");
     });
   });
 
