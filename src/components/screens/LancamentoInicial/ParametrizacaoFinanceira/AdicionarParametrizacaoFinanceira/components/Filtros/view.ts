@@ -218,7 +218,7 @@ export default ({
         "5": ["grupo 3", "grupo 4"],
       };
 
-      let dadosTabelas = {};
+      let dadosTabelas = form.getState().values.tabelas;
       const pendencias = grupoPendencias[numeroGrupo] ?? [];
       for (const grupoPendencia of pendencias) {
         const pendencia = results.find(
@@ -226,21 +226,27 @@ export default ({
             parametrizacao.grupo_unidade_escolar.nome.toLowerCase() ===
             grupoPendencia,
         );
-        if (!pendencia) continue;
-
-        const response =
-          await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
-            pendencia.uuid,
+        if (pendencia) {
+          const response =
+            await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
+              pendencia.uuid,
+            );
+          const dados = carregarValores(
+            response.tabelas,
+            grupoNome,
+            grupoPendencia,
           );
-        const dados = carregarValores(
-          response.tabelas,
-          grupoNome,
-          grupoPendencia,
-        );
-        dadosTabelas = {
-          ...dadosTabelas,
-          ...dados,
-        };
+
+          for (const chave of Object.keys(dados)) {
+            dadosTabelas = {
+              ...dadosTabelas,
+              [chave]: {
+                ...dadosTabelas[chave],
+                ...dados[chave],
+              },
+            };
+          }
+        }
       }
 
       if (Object.keys(dadosTabelas).length > 0)

@@ -577,13 +577,19 @@ export const ConferenciaDosLancamentos = () => {
             ((usuarioEhDRE() &&
               ((ocorrencia.status === "MEDICAO_CORRECAO_SOLICITADA" &&
                 todosPeriodosGruposAnalisadosPelaDRE) ||
-                (ocorrencia.status === "MEDICAO_APROVADA_PELA_DRE" &&
+                ([
+                  "MEDICAO_APROVADA_PELA_DRE",
+                  "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
+                ].includes(ocorrencia.status) &&
                   todosPeriodosGruposAnalisadosPelaDRE &&
                   algumPeriodoGrupoParaCorrigirPelaDRE))) ||
               (usuarioEhMedicao() &&
                 ((ocorrencia.status === "MEDICAO_CORRECAO_SOLICITADA_CODAE" &&
                   todosPeriodosGruposAnalisadosPelaCODAE) ||
-                  (ocorrencia.status === "MEDICAO_APROVADA_PELA_CODAE" &&
+                  ([
+                    "MEDICAO_APROVADA_PELA_CODAE",
+                    "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
+                  ].includes(ocorrencia.status) &&
                     todosPeriodosGruposAnalisadosPelaCODAE &&
                     algumPeriodoGrupoParaCorrigirPelaCODAE))))
           ) {

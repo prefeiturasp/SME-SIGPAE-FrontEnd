@@ -106,15 +106,15 @@ describe("Test <DashboardDietaEpecial>", () => {
 
   it("renderiza label `Nº de Matriculados`", async () => {
     await awaitServices();
-    expect(screen.getByText("Nº de Matriculados")).toBeInTheDocument();
+    expect(screen.getAllByText("Matriculados")).toHaveLength(2);
+    expect(screen.getByText("Terceirizada Total")).toBeInTheDocument();
+    expect(screen.getByText("Rede Parceira")).toBeInTheDocument();
   });
 
   it("renderiza texto `Informação automática...`", async () => {
     await awaitServices();
     expect(
-      screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
-      ),
+      screen.getByText("Informação automática disponibilizada pelo EOL"),
     ).toBeInTheDocument();
   });
 

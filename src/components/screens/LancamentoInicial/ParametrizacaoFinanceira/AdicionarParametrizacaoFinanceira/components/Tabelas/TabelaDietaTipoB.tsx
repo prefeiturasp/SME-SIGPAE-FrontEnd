@@ -32,22 +32,24 @@ export default ({
 
   const atualizarPercentuais = (value: string) => {
     tiposAlimentacao.forEach((tipo) => {
-      form.change(
-        `tabelas[${nomeTabela}].${tipo.nome}.percentual_acrescimo`,
-        String(value),
-      );
+      if (alimentacoes.some((a) => a.nome === tipo.nome)) {
+        form.change(
+          `tabelas[${nomeTabela}].${tipo.nome}.percentual_acrescimo`,
+          String(value),
+        );
 
-      const valorUnitario =
-        form.getState().values.tabelas[`${nomeTabela}`]?.[tipo.nome]
-          ?.valor_unitario || "0";
-      const valorUnitarioTotal =
-        stringDecimalToNumber(valorUnitario) *
-        (1 + stringDecimalToNumber(String(value)) / 100);
+        const valorUnitario =
+          form.getState().values.tabelas[`${nomeTabela}`]?.[tipo.nome]
+            ?.valor_unitario || "0";
+        const valorUnitarioTotal =
+          stringDecimalToNumber(valorUnitario) *
+          (1 + stringDecimalToNumber(String(value)) / 100);
 
-      form.change(
-        `tabelas[${nomeTabela}].${tipo.nome}.valor_unitario_total`,
-        formatarTotal(valorUnitarioTotal),
-      );
+        form.change(
+          `tabelas[${nomeTabela}].${tipo.nome}.valor_unitario_total`,
+          formatarTotal(valorUnitarioTotal),
+        );
+      }
     });
   };
 
