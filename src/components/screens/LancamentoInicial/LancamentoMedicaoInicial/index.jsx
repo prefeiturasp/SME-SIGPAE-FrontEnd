@@ -383,7 +383,7 @@ export default () => {
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
-    await getDiasCalendarioAsync(payload, solicitacao);
+    await getDiasCalendarioAsync(payload, solicitacao.data[0]);
     await setSolicitacaoMedicaoInicial(solicitacao.data[0]);
   };
 

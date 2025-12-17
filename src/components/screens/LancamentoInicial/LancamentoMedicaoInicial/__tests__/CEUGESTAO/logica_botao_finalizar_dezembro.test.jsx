@@ -10,30 +10,35 @@ import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockDiasCalendarioEMEFDezembro2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Dezembro2025/diasCalendario";
-import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
-import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
-import { mockEscolaSimplesEMEF } from "src/mocks/services/escola.service/EMEF/escolaSimples";
-import { quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Maio2025/quantidadesAlimentacaoesLancadasPeriodoGrupo";
+import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
+import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
+import { mockGetEscolaSimplesCEUGESTAO } from "src/mocks/services/escola.service/CEUGESTAO/mockGetEscolaSimplesCEUGESTAO";
+import { mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
+import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEUGESTAO/getQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO";
+import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEUGESTAO/getSolicitacaoMedicaoInicialCEUGESTAO";
 import { mockPanoramaEscolaEMEF } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/panoramaEscola";
-import { mockSolicitacaoMedicaoInicialEMEFMaio2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/solicitacaoMedicaoInicialMaio2025";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
-describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Finalizar", () => {
+import { debug } from "jest-preview";
+
+describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botão Finalizar", () => {
   const escolaUuid =
-    mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
+    mockMeusDadosEscolaCEUGESTAO.vinculo_atual.instituicao.uuid;
+  const solicitacaoMedicaoInicialUUID =
+    mockGetSolicitacaoMedicaoInicialCEUGESTAO[0].uuid;
 
   beforeEach(async () => {
     mock
       .onGet("/usuarios/meus-dados/")
-      .reply(200, mockMeusDadosEscolaEMEFPericles);
+      .reply(200, mockMeusDadosEscolaCEUGESTAO);
     mock
       .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
       .reply(200, mockPanoramaEscolaEMEF);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
-      .reply(200, mockEscolaSimplesEMEF);
+      .reply(200, mockGetEscolaSimplesCEUGESTAO);
     mock
       .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
       .reply(200, []);
@@ -41,7 +46,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
       .onGet(
         `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
-      .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
+      .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO);
     mock
       .onGet(
         "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
@@ -49,7 +54,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
       .reply(200, { results: [] });
     mock
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-      .replyOnce(200, mockSolicitacaoMedicaoInicialEMEFMaio2025);
+      .reply(200, mockGetSolicitacaoMedicaoInicialCEUGESTAO);
     mock
       .onGet("/dias-calendario/")
       .reply(200, mockDiasCalendarioEMEFDezembro2025);
@@ -75,14 +80,22 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
       .reply(200, []);
     mock
       .onGet(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/ceu-gestao-frequencias-dietas/`,
+        `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoMedicaoInicialUUID}/ceu-gestao-frequencias-dietas/`,
       )
       .reply(200, []);
     mock
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
-      .reply(200, quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025);
+      .reply(200, mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO);
+    mock
+      .onGet(
+        "/escola-solicitacoes/ceu-gestao-periodos-com-solicitacoes-autorizadas/",
+      )
+      .reply(
+        200,
+        mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola,
+      );
     mock
       .onGet(
         "/escola-solicitacoes/ultimo-dia-com-solicitacao-autorizada-no-mes/",
@@ -97,10 +110,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
     });
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
-    localStorage.setItem(
-      "nome_instituicao",
-      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
-    );
+    localStorage.setItem("nome_instituicao", `"CEU GESTAO INACIO MONTEIRO"`);
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
@@ -125,7 +135,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
         >
           <MeusDadosContext.Provider
             value={{
-              meusDados: mockMeusDadosEscolaEMEFPericles,
+              meusDados: mockMeusDadosEscolaCEUGESTAO,
               setMeusDados: jest.fn(),
             }}
           >
@@ -135,6 +145,8 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
         </MemoryRouter>,
       );
     });
+
+    debug();
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).toBeDisabled();
@@ -155,7 +167,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
         >
           <MeusDadosContext.Provider
             value={{
-              meusDados: mockMeusDadosEscolaEMEFPericles,
+              meusDados: mockMeusDadosEscolaCEUGESTAO,
               setMeusDados: jest.fn(),
             }}
           >
@@ -170,7 +182,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
     expect(botaoFinalizar).toBeDisabled();
   });
 
-  it("Finaliza - botao habilitado (último dia letivo)", async () => {
+  it("Finaliza - botao bloqueado (último dia letivo)", async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-12-19T10:00:00Z"));
     jest.clearAllMocks();
@@ -185,7 +197,67 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
         >
           <MeusDadosContext.Provider
             value={{
-              meusDados: mockMeusDadosEscolaEMEFPericles,
+              meusDados: mockMeusDadosEscolaCEUGESTAO,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
+    expect(botaoFinalizar).toBeDisabled();
+  });
+
+  it("Finaliza - botao bloqueado (dia da última solicitação)", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-20T10:00:00Z"));
+    jest.clearAllMocks();
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaCEUGESTAO,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
+    expect(botaoFinalizar).toBeDisabled();
+  });
+
+  it("Finaliza - botao habilitado (um dia após a última solicitação)", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-21T10:00:00Z"));
+    jest.clearAllMocks();
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaCEUGESTAO,
               setMeusDados: jest.fn(),
             }}
           >
