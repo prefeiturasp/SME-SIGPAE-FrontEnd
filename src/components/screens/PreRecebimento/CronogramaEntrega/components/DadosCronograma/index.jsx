@@ -301,7 +301,11 @@ export default ({
                         {cronograma.empresa && cronograma.empresa.nome_fantasia}
                       </td>
                       <td className="borda-crono text-center">
-                        {cronograma.ficha_tecnica?.produto?.nome}
+                        <div className="d-flex justify-content-center align-items-center gap-4">
+                          {cronograma.ficha_tecnica?.produto?.nome}
+                          {cronograma.ficha_tecnica?.programa ===
+                            "LEVE_LEITE" && <TagLeveLeite />}
+                        </div>
                       </td>
                       <td className="borda-crono text-center">
                         {etapa.data_programada}

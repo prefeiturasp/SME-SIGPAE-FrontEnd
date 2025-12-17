@@ -19,6 +19,8 @@ import TabelasGrupoCEI from "./components/Tabelas/TabelasGrupoCEI";
 import TabelasGruposEMEI from "./components/Tabelas/TabelasGruposEMEI";
 import TabelasGrupoCEMEI from "./components/Tabelas/TabelasGrupoCEMEI";
 import TabelasGrupoEMEBS from "./components/Tabelas/TabelasGrupoEMEBS";
+import TabelasGrupoEMEF from "./components/Tabelas/TabelasGrupoEMEF";
+import TabelasGrupoCIEJA from "./components/Tabelas/TabelasGrupoCIEJA";
 import ModalCancelar from "./components/ModalCancelar";
 import ModalSalvar from "./components/ModalSalvar";
 import { formataPayload } from "./helpers";
@@ -39,19 +41,20 @@ export default () => {
   const [loteSelecionado, setLoteSelecionado] = useState("");
   const [faixasEtarias, setFaixasEtarias] = useState([]);
   const [tiposAlimentacao, setTiposAlimentacao] = useState([]);
-  const [parametrizacao, setParametrizacao] = useState(VALORES_INICIAIS);
+  const [parametrizacao, setParametrizacao] =
+    useState<ParametrizacaoFinanceiraPayload>(VALORES_INICIAIS);
   const [showModalCancelar, setShowModalCancelar] = useState(false);
   const [showModalSalvar, setShowModalSalvar] = useState(false);
   const [carregarTabelas, setCarregarTabelas] = useState(false);
 
   const navigate = useNavigate();
-
   const [searchParams] = useSearchParams();
   const uuidParametrizacao = searchParams.get("uuid");
 
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
       const payload = formataPayload(values);
+
       if (!uuidParametrizacao) {
         await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(
           payload,
@@ -64,17 +67,19 @@ export default () => {
         );
         toastSuccess("Parametrização Financeira editada com sucesso!");
       }
+
       navigate(-1);
-    } catch (err) {
-      const data = err.response.data;
-      if (data) {
-        if (data.non_field_errors) {
-          toastError(data.non_field_errors[0]);
-        } else {
-          toastError(
-            `Não foi possível finalizar a ${uuidParametrizacao ? "edição" : "inclusão"} da parametrização. Verifique se todos os campos da tabela foram preenchidos`,
-          );
-        }
+    } catch (err: any) {
+      const data = err?.response?.data;
+
+      if (data?.non_field_errors) {
+        toastError(data.non_field_errors[0]);
+      } else if (data) {
+        toastError(
+          `Não foi possível finalizar a ${
+            uuidParametrizacao ? "edição" : "inclusão"
+          } da parametrização. Verifique se todos os campos da tabela foram preenchidos`,
+        );
       } else {
         toastError("Ocorreu um erro inesperado");
       }
@@ -86,29 +91,59 @@ export default () => {
       <div className="adicionar-parametrizacao card mt-4">
         <div className="card-body">
           <Form
-            onSubmit={(values: ParametrizacaoFinanceiraPayload) =>
-              onSubmit(values)
-            }
+            onSubmit={onSubmit}
             initialValues={parametrizacao}
-            destroyOnUnregister={true}
+            destroyOnUnregister
             render={({ form, handleSubmit, submitting }) => {
-              const tabelasCarregadas = carregarTabelas || uuidParametrizacao;
+              const grupo = grupoSelecionado.toLowerCase();
+              const tabelasCarregadas =
+                carregarTabelas || Boolean(uuidParametrizacao);
 
-              const exibeTabelasCEI =
-                faixasEtarias.length &&
-                grupoSelecionado.toLowerCase().includes("grupo 1");
-
-              const exibeTabelasEMEI =
-                tiposAlimentacao.length &&
-                grupoSelecionado.toLowerCase().includes("grupo 3");
-
-              const exibeTabelasCEMEI =
-                faixasEtarias.length &&
-                grupoSelecionado.toLowerCase().includes("grupo 2");
-
-              const exibeTabelasEMEBS = grupoSelecionado
-                .toLowerCase()
-                .includes("grupo 5");
+              const TABELAS_POR_GRUPO: Record<string, React.ReactNode> = {
+                "grupo 1": (
+                  <TabelasGrupoCEI
+                    form={form}
+                    faixasEtarias={faixasEtarias}
+                    grupoSelecionado={grupoSelecionado}
+                  />
+                ),
+                "grupo 2": (
+                  <TabelasGrupoCEMEI
+                    form={form}
+                    tiposAlimentacao={tiposAlimentacao}
+                    faixasEtarias={faixasEtarias}
+                    grupoSelecionado={grupoSelecionado}
+                  />
+                ),
+                "grupo 3": (
+                  <TabelasGruposEMEI
+                    form={form}
+                    tiposAlimentacao={tiposAlimentacao}
+                    grupoSelecionado={grupoSelecionado}
+                  />
+                ),
+                "grupo 4": (
+                  <TabelasGrupoEMEF
+                    form={form}
+                    tiposAlimentacao={tiposAlimentacao}
+                    grupoSelecionado={grupoSelecionado}
+                  />
+                ),
+                "grupo 5": (
+                  <TabelasGrupoEMEBS
+                    form={form}
+                    tiposAlimentacao={tiposAlimentacao}
+                    grupoSelecionado={grupoSelecionado}
+                  />
+                ),
+                "grupo 6": (
+                  <TabelasGrupoCIEJA
+                    form={form}
+                    tiposAlimentacao={tiposAlimentacao}
+                    grupoSelecionado={grupoSelecionado}
+                  />
+                ),
+              };
 
               return (
                 <form onSubmit={handleSubmit}>
@@ -124,40 +159,18 @@ export default () => {
                     uuidParametrizacao={uuidParametrizacao}
                     ehCadastro
                   />
-                  {exibeTabelasCEI && tabelasCarregadas ? (
-                    <TabelasGrupoCEI
-                      form={form}
-                      faixasEtarias={faixasEtarias}
-                      grupoSelecionado={grupoSelecionado}
-                    />
-                  ) : null}
-                  {exibeTabelasEMEI && tabelasCarregadas ? (
-                    <TabelasGruposEMEI
-                      form={form}
-                      tiposAlimentacao={tiposAlimentacao}
-                      grupoSelecionado={grupoSelecionado}
-                    />
-                  ) : null}
-                  {exibeTabelasCEMEI && tabelasCarregadas ? (
-                    <TabelasGrupoCEMEI
-                      form={form}
-                      tiposAlimentacao={tiposAlimentacao}
-                      faixasEtarias={faixasEtarias}
-                      grupoSelecionado={grupoSelecionado}
-                    />
-                  ) : null}
-                  {exibeTabelasEMEBS && tabelasCarregadas ? (
-                    <TabelasGrupoEMEBS
-                      form={form}
-                      tiposAlimentacao={tiposAlimentacao}
-                      grupoSelecionado={grupoSelecionado}
-                    />
-                  ) : null}
-                  {(exibeTabelasEMEI ||
-                    exibeTabelasCEI ||
-                    exibeTabelasCEMEI ||
-                    exibeTabelasEMEBS) &&
-                  tabelasCarregadas ? (
+
+                  {tabelasCarregadas &&
+                    Object.entries(TABELAS_POR_GRUPO).map(
+                      ([key, componente]) =>
+                        grupo.includes(key) && (
+                          <React.Fragment key={key}>
+                            {componente}
+                          </React.Fragment>
+                        ),
+                    )}
+
+                  {tabelasCarregadas && (
                     <div className="row mt-5">
                       <div className="col">
                         <Field
@@ -169,16 +182,17 @@ export default () => {
                         />
                       </div>
                     </div>
-                  ) : null}
+                  )}
+
                   <div className="d-flex justify-content-end gap-3 mt-5">
                     <Botao
                       dataTestId="botao-cancelar"
                       texto="Cancelar"
-                      onClick={() => {
+                      onClick={() =>
                         uuidParametrizacao
                           ? navigate(-1)
-                          : setShowModalCancelar(true);
-                      }}
+                          : setShowModalCancelar(true)
+                      }
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                       type={BUTTON_TYPE.BUTTON}
                     />
@@ -191,6 +205,7 @@ export default () => {
                       onClick={() => setShowModalSalvar(true)}
                     />
                   </div>
+
                   <ModalSalvar
                     showModal={showModalSalvar}
                     setShowModal={setShowModalSalvar}
@@ -203,6 +218,7 @@ export default () => {
           />
         </div>
       </div>
+
       <ModalCancelar
         showModal={showModalCancelar}
         setShowModal={setShowModalCancelar}
