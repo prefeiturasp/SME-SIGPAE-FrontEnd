@@ -5,8 +5,8 @@ import { formatarTotal } from "../../helpers";
 import InputText from "src/components/Shareable/Input/InputText";
 import { stringDecimalToNumber } from "src/helpers/parsers";
 
-const ALIMENTACOES_TIPO_A = ["Lanche", "Lanche 4h"];
-const ALIMENTACOES_ENTERAL = ["Refeição", "Lanche", "Lanche 4h"];
+const ALIMENTACOES_CIEJA = ["Refeição", "Lanche 4h"];
+const ALIMENTACOES_TIPO_A = ["Refeição", "Lanche", "Lanche 4h"];
 
 type Props = {
   form: FormApi<any, any>;
@@ -26,12 +26,12 @@ export default ({
   const grupoTipo2 = grupoSelecionado.toLowerCase().includes("grupo 2");
   const grupoTipo4 = grupoSelecionado.toLowerCase().includes("grupo 4");
   const grupoTipo5 = grupoSelecionado.toLowerCase().includes("grupo 5");
+  const grupoTipo6 = grupoSelecionado.toLowerCase().includes("grupo 6");
   const nomeTabela = `Dietas Tipo A e Tipo A Enteral${grupoTipo2 ? "" : "/Restrição de Aminoácidos"}`;
 
-  const ListaDeAlimentacoes =
-    grupoTipo2 && !nomeTabela.includes("Enteral")
-      ? ALIMENTACOES_TIPO_A
-      : ALIMENTACOES_ENTERAL;
+  const ListaDeAlimentacoes = grupoTipo6
+    ? ALIMENTACOES_CIEJA
+    : ALIMENTACOES_TIPO_A;
 
   const alimentacoes = tiposAlimentacao
     .filter((t) => ListaDeAlimentacoes.includes(t.nome))
@@ -58,25 +58,23 @@ export default ({
   const labelTabela = tipoTurma ? `${nomeTabela} - ${tipoTurma}` : nomeTabela;
 
   const atualizarPercentuais = (value: string) => {
-    tiposAlimentacao.forEach((tipo) => {
-      if (alimentacoes.some((a) => a.nome === tipo.nome)) {
-        form.change(
-          `tabelas[${labelTabela}].${tipo.nome}.percentual_acrescimo`,
-          String(value),
-        );
+    alimentacoes.forEach((tipo) => {
+      form.change(
+        `tabelas[${labelTabela}].${tipo.nome}.percentual_acrescimo`,
+        String(value),
+      );
 
-        const valorUnitario =
-          form.getState().values.tabelas[`${labelTabela}`]?.[tipo.nome]
-            ?.valor_unitario || "0";
-        const valorUnitarioTotal =
-          stringDecimalToNumber(valorUnitario) *
-          (1 + stringDecimalToNumber(String(value)) / 100);
+      const valorUnitario =
+        form.getState().values.tabelas[`${labelTabela}`]?.[tipo.nome]
+          ?.valor_unitario || "0";
+      const valorUnitarioTotal =
+        stringDecimalToNumber(valorUnitario) *
+        (1 + stringDecimalToNumber(String(value)) / 100);
 
-        form.change(
-          `tabelas[${labelTabela}].${tipo.nome}.valor_unitario_total`,
-          formatarTotal(valorUnitarioTotal),
-        );
-      }
+      form.change(
+        `tabelas[${labelTabela}].${tipo.nome}.valor_unitario_total`,
+        formatarTotal(valorUnitarioTotal),
+      );
     });
   };
 
