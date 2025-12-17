@@ -124,15 +124,20 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     });
   });
 
+  const carregarTabelas = () => {
+    const botao = screen.getByTestId("botao-carregar");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+    fireEvent.click(botao);
+  };
+
   it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 1 - CEI", async () => {
     setSelect("edital-select", "752c11a3-b4fe-4f1c-b9af-61d42f0a6b56");
     setSelect("lote-select", "e67daf61-810c-45f0-8eeb-a75dbe4be608");
     setSelect("grupo-unidade-select", "550e8400-e29b-41d4-a716-446655440000");
     setData("data_inicial", "01/09/2025");
 
-    const botao = screen.getByTestId("botao-carregar");
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
+    carregarTabelas();
 
     await waitFor(() => {
       expect(
@@ -178,9 +183,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     setData("data_inicial", "01/11/2025");
     setData("data_final", "30/11/2025");
 
-    const botao = screen.getByTestId("botao-carregar");
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
+    carregarTabelas();
 
     await waitFor(() => {
       expect(
@@ -226,9 +229,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     setData("data_inicial", "01/09/2025");
     setData("data_final", "30/09/2025");
 
-    const botao = screen.getByTestId("botao-carregar");
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
+    carregarTabelas();
 
     await waitFor(() => {
       expect(
@@ -247,10 +248,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     setData("data_inicial", "01/12/2025");
     setData("data_final", "31/12/2025");
 
-    const botao = screen.getByTestId("botao-carregar");
-    expect(botao).not.toBeDisabled();
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
+    carregarTabelas();
 
     await waitFor(() => {
       expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
@@ -309,9 +307,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     setData("data_inicial", "01/12/2025");
     setData("data_final", "31/12/2025");
 
-    const botao = screen.getByTestId("botao-carregar");
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
+    carregarTabelas();
 
     await waitFor(() => {
       expect(screen.queryAllByText(/Preço das Alimentações/i)).toHaveLength(2);
@@ -346,6 +342,25 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       expect(totalAlimentacoesFundamental.value).toBe("20,00");
       expect(totalDietasTipoAFundamental.value).toBe("20,00");
       expect(totalDietasTipoBFundamental.value).toBe("20,00");
+    });
+  });
+
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 6 - CIEJA", async () => {
+    setSelect("edital-select", "172e71fa-e0df-4842-a91c-4542d5778aae");
+    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
+    setSelect("grupo-unidade-select", "fd04e2b8-c952-46f4-b5af-7260e6b7ace8");
+    setData("data_inicial", "01/12/2025");
+    setData("data_final", "31/12/2025");
+
+    carregarTabelas();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
+      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
     });
   });
 
