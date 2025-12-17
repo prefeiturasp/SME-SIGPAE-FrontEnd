@@ -2422,10 +2422,12 @@ export default () => {
       }
 
       response_matriculados = {
-        data: calendario.map((dia) => ({
-          dia: dia.dia,
-          quantidade_alunos: numeroParticipantes,
-        })),
+        data: calendario
+          .filter((dia) => dia.dia_letivo === true)
+          .map((dia) => ({
+            dia: dia.dia,
+            quantidade_alunos: numeroParticipantes,
+          })),
       };
     } else {
       response_matriculados = await getMatriculadosPeriodo(params_matriculados);
