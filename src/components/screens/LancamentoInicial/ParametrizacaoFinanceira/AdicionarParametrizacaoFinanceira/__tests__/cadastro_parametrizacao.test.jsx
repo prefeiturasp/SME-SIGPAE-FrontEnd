@@ -362,6 +362,19 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
       expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
     });
+
+    const botaoSalvar = screen.getByTestId("botao-salvar");
+    expect(botaoSalvar).toBeInTheDocument();
+    fireEvent.click(botaoSalvar);
+
+    const botaoSim = screen.getByText("Sim").closest("button");
+    fireEvent.click(botaoSim);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Parametrização Financeira cadastrada com sucesso!"),
+      ).toBeInTheDocument();
+    });
   });
 
   it("deve clicar em cancelar e exibir modal de cancelamento", async () => {
