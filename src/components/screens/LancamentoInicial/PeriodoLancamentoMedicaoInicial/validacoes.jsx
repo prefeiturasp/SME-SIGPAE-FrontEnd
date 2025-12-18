@@ -4,7 +4,7 @@ import {
 } from "src/helpers/utilities";
 import { ALUNOS_EMEBS } from "../constants";
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
-
+import { format } from "date-fns";
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
   dia,
@@ -1326,7 +1326,8 @@ export const campoComKitLancheAutorizadoMenorQueSolicitadoESemObservacaoOuMaiorQ
     if (categoria.nome !== "SOLICITAÇÕES DE ALIMENTAÇÃO") return false;
     let erro = false;
 
-    for (let dia of diasDaSemanaSelecionada) {
+    for (let diaDaSemana of diasDaSemanaSelecionada) {
+      let dia = diaDaSemana.dia;
       const soma = calcularSomaKitLanches(kitLanchesAutorizadas, dia);
       if (soma) {
         let valorCampoKitLanche =
@@ -1850,3 +1851,19 @@ export async function carregarDiasCalendario(
 
   return response.data;
 }
+
+export const verificarMesAnteriorOuPosterior = (column, mesAnoConsiderado) => {
+  let result = null;
+  const mesAtual = format(mesAnoConsiderado, "MM");
+  const anoAtual = format(mesAnoConsiderado, "yyyy");
+  if (column.mes !== mesAtual) {
+    const dataColumn = new Date(`${column.ano}-${column.mes}-01`);
+    const dataAtual = new Date(`${anoAtual}-${mesAtual}-01`);
+    if (dataColumn < dataAtual) {
+      result = "Mês anterior";
+    } else if (dataColumn > dataAtual) {
+      result = "Mês posterior";
+    }
+  }
+  return result;
+};

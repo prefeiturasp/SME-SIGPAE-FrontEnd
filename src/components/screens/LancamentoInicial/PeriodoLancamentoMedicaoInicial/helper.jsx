@@ -103,9 +103,12 @@ export const formatarPayloadPeriodoLancamento = (
   });
 
   valoresMedicao = valoresMedicao.filter((valorMed) => {
+    const diaExiste = diasDaSemanaSelecionada.some(
+      (diaObj) => diaObj.dia === valorMed.dia,
+    );
     return (
       !(valorMed.nome_campo === "observacoes" && valorMed.valor === 0) &&
-      diasDaSemanaSelecionada.includes(valorMed.dia)
+      diaExiste
     );
   });
 
