@@ -395,7 +395,10 @@ export const desabilitarField = (
       ) &&
         rowName === "lanche_emergencial") ||
       (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd"))
+        Number(dia) >= format(mesAnoDefault, "dd")) ||
+      ["Mês anterior", "Mês posterior"].includes(
+        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
+      )
     ) {
       return true;
     }
