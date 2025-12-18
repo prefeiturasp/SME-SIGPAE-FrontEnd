@@ -2338,9 +2338,27 @@ export default () => {
     const temInclusaoAutorizadaNoDia = inclusoesAutorizadas.some(
       (inclusao) => inclusao.dia === dia,
     );
+
+    const ehCategoriaSolicitacoesDeAlimentacao = categoriasDeMedicao?.find(
+      (categoria) =>
+        categoria.id === categoriaId && categoria.nome.includes("SOLICITAÇÕES"),
+    );
+    const temKitLancheAutorizadoNoDia = kitLanchesAutorizadas?.some(
+      (kitLanche) => kitLanche.dia === dia,
+    );
+    const temLancheEmergencialAutorizadoNoDia =
+      alteracoesAlimentacaoAutorizadas?.some(
+        (alteracao) => alteracao.dia === dia,
+      );
+
     return (
       (!validacaoSemana(dia) &&
-        (validacaoDiaLetivo(dia) || temInclusaoAutorizadaNoDia) &&
+        (validacaoDiaLetivo(dia) ||
+          temInclusaoAutorizadaNoDia ||
+          (temKitLancheAutorizadoNoDia &&
+            ehCategoriaSolicitacoesDeAlimentacao) ||
+          (temLancheEmergencialAutorizadoNoDia &&
+            ehCategoriaSolicitacoesDeAlimentacao)) &&
         !escolaEhEMEBS()) ||
       (escolaEhEMEBS() &&
         !validacaoSemana(dia) &&
