@@ -2285,6 +2285,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alimentacoesLancamentosEspeciais,
                                                           ehProgramasEProjetosLocation,
                                                           dadosValoresInclusoesAutorizadasState,
+                                                          kitLanchesAutorizadas,
+                                                          alteracoesAlimentacaoAutorizadas,
                                                         )}
                                                         defaultValue={defaultValue(
                                                           column,
@@ -2481,6 +2483,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alimentacoesLancamentosEspeciais,
                                                           ehProgramasEProjetosLocation,
                                                           dadosValoresInclusoesAutorizadasState,
+                                                          kitLanchesAutorizadas,
+                                                          alteracoesAlimentacaoAutorizadas,
                                                         )}
                                                         defaultValue={defaultValue(
                                                           column,
