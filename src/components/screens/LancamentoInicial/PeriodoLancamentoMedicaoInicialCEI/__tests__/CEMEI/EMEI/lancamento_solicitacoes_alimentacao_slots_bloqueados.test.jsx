@@ -12,8 +12,6 @@ import { mockMeusDadosEscolaCEMEI } from "src/mocks/meusDados/escola/CEMEI";
 import { PeriodoLancamentoMedicaoInicialCEIPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialCEIPage";
 import mock from "src/services/_mock";
 
-import { debug } from "jest-preview";
-
 describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - EMEI da CEMEI", () => {
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
@@ -116,7 +114,6 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
     expect(
       screen.getByText("SOLICITAÇÕES DE ALIMENTAÇÃO - INFANTIL"),
     ).toBeInTheDocument();
-    debug();
     expect(screen.getByText("Lanche Emergencial")).toBeInTheDocument();
     expect(screen.getByText("Kit Lanche")).toBeInTheDocument();
 
