@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
+import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import { mockDiasCalendarioEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/diasCalendario";
 import { mockLogQuantidadeDietasAutorizadasEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/logQuantidadeDietasAutorizadas";
 import { mockMatriculadosNoMesEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/matriculadosNoMes";
@@ -16,12 +17,12 @@ import { mockStateMANHAEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLan
 import { mockValoresMedicaoMANHAEMEFAbril2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Abril2025/valoresMedicaoMANHA";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
-import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
-import { React } from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
+import { ToastContainer } from "react-toastify";
+import { mockEscolaSimplesEMEF } from "src/mocks/services/escola.service/EMEF/escolaSimples";
 
-describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () => {
+describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 2ª Sobremesa", () => {
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
 
@@ -31,12 +32,12 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
       .reply(200, mockMeusDadosEscolaEMEFPericles);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
     mock
       .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
-      .reply(200, []);
+      .reply(200, ["2025-04-11"]);
     mock
       .onGet("/escola-solicitacoes/inclusoes-autorizadas/")
       .reply(200, { results: [] });
@@ -61,18 +62,23 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
       .reply(200, { results: [] });
     mock
       .onGet(
-        "/medicao-inicial/permissao-lancamentos-especiais/permissoes-lancamentos-especiais-mes-ano-por-periodo/"
+        "/medicao-inicial/permissao-lancamentos-especiais/permissoes-lancamentos-especiais-mes-ano-por-periodo/",
       )
       .reply(
         200,
-        mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025
+        mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025,
       );
     mock.onGet("/dias-calendario/").reply(200, mockDiasCalendarioEMEFAbril2025);
     mock
       .onGet("/medicao-inicial/medicao/feriados-no-mes/")
-      .reply(200, { results: ["18", "20", "21"] });
+      .reply(200, { results: [] });
 
-    const search = `?uuid=a0e68ec3-6fa9-4078-9e78-34f6a270d5ab&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
+    mock.onPost("/solicitacoes-dieta-especial/panorama-escola/").reply(200, []);
+    mock
+      .onGet(`/escolas-simples/${escolaUuid}/`)
+      .reply(200, mockEscolaSimplesEMEF);
+
+    const search = `?uuid=${escolaUuid}&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
     Object.defineProperty(window, "location", {
       value: {
         search: search,
@@ -83,17 +89,13 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
       render(
         <MemoryRouter
           initialEntries={[
-            {
-              pathname: "/",
-              state: mockStateMANHAEMEFAbril2025,
-            },
+            { pathname: "/", state: mockStateMANHAEMEFAbril2025 },
           ]}
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true,
           }}
         >
-          {" "}
           <MeusDadosContext.Provider
             value={{
               meusDados: mockMeusDadosEscolaEMEFPericles,
@@ -101,13 +103,18 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
             }}
           >
             <PeriodoLancamentoMedicaoInicialPage />
+            <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
-  it("renderiza label `Mês do Lançamento`", async () => {
+  it("Renderiza título da página `Lançamento Medição Inicial`", () => {
+    expect(screen.getAllByText("Lançamento Medição Inicial").length).toBe(2);
+  });
+
+  it("Renderiza label `Mês do Lançamento` e seu valor", () => {
     expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
   });
 
@@ -116,102 +123,66 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
     expect(inputElement).toHaveAttribute("value", "Abril / 2025");
   });
 
-  it("renderiza label `Período de Lançamento`", () => {
-    expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
-  });
-
   it("renderiza valor `MANHA` no input `Período de Lançamento`", () => {
     const inputElement = screen.getByTestId("input-periodo-lancamento");
     expect(inputElement).toHaveAttribute("value", "MANHA");
   });
 
-  it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
-    expect(
-      screen.getByText("Semanas do Período para Lançamento da Medição Inicial")
-    ).toBeInTheDocument();
-  });
+  const setSemana2 = () => {
+    const semana1Element = screen.getByText("Semana 2");
+    fireEvent.click(semana1Element);
+  };
 
-  it("renderiza label `Semana 1`", async () => {
-    expect(screen.getByText("Semana 1")).toBeInTheDocument();
-  });
-
-  it("renderiza label `Semana 5`", async () => {
-    expect(screen.getByText("Semana 5")).toBeInTheDocument();
-  });
-
-  it("renderiza label `ALIMENTAÇÃO`", async () => {
-    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
-  });
-
-  it("exibe, no dia 1, o número de matriculados 308", async () => {
-    const inputElementMatriculadosDia01 = screen.getByTestId(
-      "matriculados__dia_01__categoria_1"
-    );
-    expect(inputElementMatriculadosDia01).toHaveAttribute("value", "308");
-  });
-
-  it("exibe, no dia 1, o número de frequentes 300", async () => {
-    const inputElementFrequenciaDia01 = screen.getByTestId(
-      "frequencia__dia_01__categoria_1"
-    );
-    expect(inputElementFrequenciaDia01).toHaveAttribute("value", "300");
-  });
-
-  it("exibe, no dia 1, o número de lanches 299", async () => {
-    const inputElementLancheDia01 = screen.getByTestId(
-      "lanche__dia_01__categoria_1"
-    );
-    expect(inputElementLancheDia01).toHaveAttribute("value", "299");
-  });
-
-  it("exibe borda vermelha (erro) nos lanches das dietas", async () => {
-    // 299 + 1 + 1 + 1 > 300
-
-    const inputElementLancheDia01DietasTipoA = screen.getByTestId(
-      "lanche__dia_01__categoria_2"
-    );
-    expect(inputElementLancheDia01DietasTipoA).toHaveClass("invalid-field");
-
-    const inputElementLancheDia01DietasTipoAEnteral = screen.getByTestId(
-      "lanche__dia_01__categoria_3"
-    );
-    expect(inputElementLancheDia01DietasTipoAEnteral).toHaveClass(
-      "invalid-field"
-    );
-
-    const inputElementLancheDia01DietasTipoB = screen.getByTestId(
-      "lanche__dia_01__categoria_4"
-    );
-    expect(inputElementLancheDia01DietasTipoB).toHaveClass("invalid-field");
-  });
-
-  it("deixa de exibir o erro se a soma dos lanches não ultrapassa a frequência", async () => {
-    const inputElementLancheDia01 = screen.getByTestId(
-      "lanche__dia_01__categoria_1"
-    );
-    await waitFor(() => {
-      fireEvent.change(inputElementLancheDia01, {
-        target: { value: "297" },
-      });
+  const setInput = (id, valor) => {
+    const input = screen.getByTestId(id);
+    expect(input).toBeInTheDocument();
+    fireEvent.change(input, {
+      target: { value: valor },
     });
+    return input;
+  };
 
-    // 297 + 1 + 1 + 1 <= 300
+  it("ao clicar na tab `Semana 2`, preenche oferta/repetição 2ª sobremesa sem a frequência e verifica bloqueio salvar", async () => {
+    setSemana2();
+    setInput("2_sobremesa_1_oferta__dia_11__categoria_1", "2");
+    setInput("repeticao_2_sobremesa__dia_11__categoria_1", "2");
 
-    const inputElementLancheDia01DietasTipoA = screen.getByTestId(
-      "lanche__dia_01__categoria_2"
-    );
-    expect(inputElementLancheDia01DietasTipoA).not.toHaveClass("invalid-field");
+    await waitFor(() => {
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeDisabled();
+    });
+  });
 
-    const inputElementLancheDia01DietasTipoAEnteral = screen.getByTestId(
-      "lanche__dia_01__categoria_3"
-    );
-    expect(inputElementLancheDia01DietasTipoAEnteral).not.toHaveClass(
-      "invalid-field"
+  it("ao clicar na tab `Semana 2`, preenche repetição menor do que oferta e verifica comportamento input", async () => {
+    setSemana2();
+    setInput("frequencia__dia_11__categoria_1", "2");
+    setInput("2_sobremesa_1_oferta__dia_11__categoria_1", "2");
+    const repeticao = setInput(
+      "repeticao_2_sobremesa__dia_11__categoria_1",
+      "1",
     );
 
-    const inputElementLancheDia01DietasTipoB = screen.getByTestId(
-      "lanche__dia_01__categoria_4"
-    );
-    expect(inputElementLancheDia01DietasTipoB).not.toHaveClass("invalid-field");
+    await waitFor(() => {
+      expect(repeticao).toHaveClass("border-warning");
+    });
+  });
+
+  it("Preenche oferta/repetição 2ª sobremesa e verifica validação ao tentar salvar lançamento sem observação", async () => {
+    setSemana2();
+    setInput("frequencia__dia_11__categoria_1", "2");
+    setInput("2_sobremesa_1_oferta__dia_11__categoria_1", "2");
+    setInput("repeticao_2_sobremesa__dia_11__categoria_1", "2");
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Dia 11 é de sobremesa doce. Justifique o lançamento de repetição nas observações",
+        ),
+      ).toBeInTheDocument();
+    });
   });
 });
