@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { ChangeEvent, Dispatch, SetStateAction } from "react";
+import React, { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { Field, FormSpy } from "react-final-form";
 import { FormApi } from "final-form";
 import { required } from "src/helpers/fieldValidators";
@@ -15,6 +15,9 @@ import {
   ParametrizacaoFinanceiraPayload,
   FaixaEtaria,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import ModalConflito from "../ModalConflito";
+import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
+import { useNavigate } from "react-router-dom";
 
 type Cadastro = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
@@ -46,6 +49,7 @@ export default (props: Props) => {
   const setCarregarTabelas = props.ehCadastro && props.setCarregarTabelas;
   const form = props.ehCadastro && props.form;
   const uuidParametrizacao = props.ehCadastro && props.uuidParametrizacao;
+  const navigate = useNavigate();
 
   const view = useView({
     setGrupoSelecionado,
@@ -57,6 +61,15 @@ export default (props: Props) => {
     uuidParametrizacao,
     form,
   });
+
+  const [showModalConflito, setShowModalConflito] = useState(false);
+
+  const onChangeConflito = (opcao: string) => {
+    if (opcao === "manter") {
+      toastSuccess("Parametrização Financeira mantida com sucesso!");
+      navigate(-1);
+    }
+  };
 
   return (
     <div className="row">
@@ -163,7 +176,8 @@ export default (props: Props) => {
                   style={BUTTON_STYLE.ORANGE_OUTLINE}
                   type={BUTTON_TYPE.BUTTON}
                   onClick={() => {
-                    if (!uuidParametrizacao && form) view.getGruposPendentes();
+                    if (!uuidParametrizacao && form)
+                      view.getGruposPendentes(setShowModalConflito);
                     setCarregarTabelas(true);
                   }}
                 />
@@ -172,6 +186,11 @@ export default (props: Props) => {
           </>
         )}
       </FormSpy>
+      <ModalConflito
+        showModal={showModalConflito}
+        setShowModal={setShowModalConflito}
+        onContinuar={onChangeConflito}
+      />
     </div>
   );
 };
