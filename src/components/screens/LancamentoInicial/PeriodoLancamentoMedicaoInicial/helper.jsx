@@ -277,6 +277,7 @@ export const desabilitarField = (
   alimentacoesLancamentosEspeciais,
   escolaEhEMEBS = false,
   alunosTabSelecionada = null,
+  ehUltimoDiaLetivoDoAno,
 ) => {
   const EH_INCLUSAO_SOMENTE_SOBREMESA =
     inclusoesAutorizadas.length &&
@@ -395,7 +396,8 @@ export const desabilitarField = (
         rowName === "lanche_emergencial") ||
       validacaoSemana(dia) ||
       (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd")) ||
+        Number(dia) >= format(mesAnoDefault, "dd") &&
+        !ehUltimoDiaLetivoDoAno(dia, mesConsiderado)) ||
       ["Mês anterior", "Mês posterior"].includes(
         values[`${rowName}__dia_${dia}__categoria_${categoria}`],
       )
@@ -447,7 +449,8 @@ export const desabilitarField = (
         ) ||
         (inclusao.length && !inclusao[0].alimentacoes.includes(rowName)) ||
         (mesConsiderado === mesAtual &&
-          Number(dia) >= format(mesAnoDefault, "dd"))
+          Number(dia) >= format(mesAnoDefault, "dd") &&
+          !ehUltimoDiaLetivoDoAno(dia, mesConsiderado))
       );
     }
   }
@@ -472,7 +475,8 @@ export const desabilitarField = (
         }`
       ] ||
       (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd")) ||
+        Number(dia) >= format(mesAnoDefault, "dd") &&
+        !ehUltimoDiaLetivoDoAno(dia, mesConsiderado)) ||
       validaAlimentacoesEDietasEscolaSemAlunosRegulares(
         inclusoesAutorizadas,
         rowName,
@@ -629,7 +633,8 @@ export const desabilitarField = (
         values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
       ) === 0 ||
       (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd"))
+        Number(dia) >= format(mesAnoDefault, "dd") &&
+        !ehUltimoDiaLetivoDoAno(dia, mesConsiderado))
     );
   }
 };

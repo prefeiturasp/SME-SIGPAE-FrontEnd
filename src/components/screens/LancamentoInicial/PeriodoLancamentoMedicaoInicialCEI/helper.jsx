@@ -144,6 +144,20 @@ export const deveExistirObservacao = (
   );
 };
 
+export const ehUltimoDiaLetivoDoAno = (
+  dia,
+  calendarioMesConsiderado,
+  mesConsiderado,
+) => {
+  if (mesConsiderado !== "dezembro") return false;
+  const ultimoDia = calendarioMesConsiderado
+    .filter((d_) => d_.dia_letivo)
+    .sort((a, b) => a.dia - b.dia)[
+    calendarioMesConsiderado.filter((d_) => d_.dia_letivo).length - 1
+  ].dia;
+  return Number(ultimoDia) === Number(dia);
+};
+
 export const desabilitarField = (
   dia,
   rowName,
@@ -168,6 +182,8 @@ export const desabilitarField = (
   dadosValoresInclusoesAutorizadasState,
   kitLanchesAutorizadas,
   alteracoesAlimentacaoAutorizadas,
+  ehUltimoDiaLetivoDoAno,
+  calendarioMesConsiderado,
 ) => {
   let alimentacoesLancamentosEspeciaisDia = [];
 
@@ -414,7 +430,12 @@ export const desabilitarField = (
         values[`${rowName}__dia_${dia}__categoria_${categoria}`],
       ) ||
       (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd")) ||
+        Number(dia) >= format(mesAnoDefault, "dd") &&
+        !ehUltimoDiaLetivoDoAno(
+          dia,
+          calendarioMesConsiderado,
+          mesConsiderado,
+        )) ||
       !validacaoDiaLetivo(dia)
     ) {
       return true;
@@ -478,7 +499,12 @@ export const desabilitarField = (
         ],
       ) ||
       (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd")) ||
+        Number(dia) >= format(mesAnoDefault, "dd") &&
+        !ehUltimoDiaLetivoDoAno(
+          dia,
+          calendarioMesConsiderado,
+          mesConsiderado,
+        )) ||
       !validacaoDiaLetivo(dia)
     ) {
       return true;

@@ -1928,6 +1928,16 @@ export default () => {
     );
   };
 
+  const ehUltimoDiaLetivoDoAno = (dia, mesConsiderado) => {
+    if (mesConsiderado !== "dezembro") return false;
+    const ultimoDia = calendarioMesConsiderado
+      .filter((d_) => d_.dia_letivo)
+      .sort((a, b) => a.dia - b.dia)[
+      calendarioMesConsiderado.filter((d_) => d_.dia_letivo).length - 1
+    ].dia;
+    return Number(ultimoDia) === Number(dia);
+  };
+
   const validacaoDiaLetivo = (dia) => {
     const objDia = calendarioMesConsiderado.find(
       (objDia) => Number(objDia.dia) === Number(dia),
@@ -2726,6 +2736,7 @@ export default () => {
                                                           alimentacoesLancamentosEspeciais,
                                                           escolaEhEMEBS(),
                                                           alunosTabSelecionada,
+                                                          ehUltimoDiaLetivoDoAno,
                                                         )}
                                                         dia={column.dia}
                                                         defaultValue={defaultValue(
@@ -2953,6 +2964,7 @@ export default () => {
                                                             alimentacoesLancamentosEspeciais,
                                                             escolaEhEMEBS(),
                                                             alunosTabSelecionada,
+                                                            ehUltimoDiaLetivoDoAno,
                                                           )}
                                                           exibeTooltipPadraoRepeticaoDiasSobremesaDoce={exibirTooltipPadraoRepeticaoDiasSobremesaDoce(
                                                             formValuesAtualizados,
