@@ -9,9 +9,14 @@ import {
 type Props = {
   showModal: boolean;
   setShowModal: (_e: boolean) => void;
+  uuidParametrizacao: string | null;
 };
 
-const ModalCancelar = ({ showModal, setShowModal }: Props) => {
+const ModalCancelar = ({
+  showModal,
+  setShowModal,
+  uuidParametrizacao,
+}: Props) => {
   const navigate = useNavigate();
 
   return (
@@ -24,7 +29,10 @@ const ModalCancelar = ({ showModal, setShowModal }: Props) => {
       <Modal.Header closeButton>
         <Modal.Title>Cancelar Parametrização Financeira</Modal.Title>
       </Modal.Header>
-      <Modal.Body>Deseja cancelar o cadastro dessa parametrização?</Modal.Body>
+      <Modal.Body>
+        Deseja cancelar {!uuidParametrizacao ? "o cadastro" : "a edição"} dessa
+        parametrização?
+      </Modal.Body>
       <Modal.Footer>
         <Botao
           texto="Não"

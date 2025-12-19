@@ -188,11 +188,7 @@ export default () => {
                     <Botao
                       dataTestId="botao-cancelar"
                       texto="Cancelar"
-                      onClick={() =>
-                        uuidParametrizacao
-                          ? navigate(-1)
-                          : setShowModalCancelar(true)
-                      }
+                      onClick={() => setShowModalCancelar(true)}
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                       type={BUTTON_TYPE.BUTTON}
                     />
@@ -222,6 +218,7 @@ export default () => {
       <ModalCancelar
         showModal={showModalCancelar}
         setShowModal={setShowModalCancelar}
+        uuidParametrizacao={uuidParametrizacao}
       />
     </>
   );
