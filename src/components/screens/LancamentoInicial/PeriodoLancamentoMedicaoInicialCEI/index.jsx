@@ -88,6 +88,7 @@ import {
   desabilitarField,
   deveExistirObservacao,
   ehDiaParaCorrigir,
+  ehUltimoDiaLetivoDoAno,
   formataNomeCategoriaSolAlimentacoesInfantil,
   formatarLinhasTabelaAlimentacaoCEI,
   formatarLinhasTabelaAlimentacaoEmeiDaCemei,
@@ -2285,6 +2286,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alimentacoesLancamentosEspeciais,
                                                           ehProgramasEProjetosLocation,
                                                           dadosValoresInclusoesAutorizadasState,
+                                                          ehUltimoDiaLetivoDoAno,
+                                                          calendarioMesConsiderado,
                                                         )}
                                                         defaultValue={defaultValue(
                                                           column,
@@ -2481,6 +2484,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alimentacoesLancamentosEspeciais,
                                                           ehProgramasEProjetosLocation,
                                                           dadosValoresInclusoesAutorizadasState,
+                                                          ehUltimoDiaLetivoDoAno,
+                                                          calendarioMesConsiderado,
                                                         )}
                                                         defaultValue={defaultValue(
                                                           column,
