@@ -19,6 +19,7 @@ import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEt
 import { mockGetTiposUnidadeEscolarTiposAlimentacao } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolarTiposAlimentacao";
 import AdicionarParametrizacaoFinanceira from "../index";
 import mock from "src/services/_mock";
+import { mockParametrizacoesFinanceiras } from "src/mocks/services/parametrizacao_financeira.service/mockGetParametrizacoesFinanceiras";
 
 jest.mock("src/components/Shareable/DatePicker", () => ({
   InputComData: ({ input, placeholder }) => (
@@ -46,6 +47,9 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     mock
       .onGet("/tipos-unidade-escolar-agrupados/")
       .reply(200, mockGetTiposUnidadeEscolarTiposAlimentacao);
+    mock
+      .onGet("/medicao-inicial/parametrizacao-financeira/")
+      .reply(200, mockParametrizacoesFinanceiras);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
@@ -373,6 +377,21 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     await waitFor(() => {
       expect(
         screen.getByText("Parametrização Financeira cadastrada com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("deve retornar o modal de conflito de vigência", async () => {
+    setSelect("edital-select", "31587b4e-6aed-48d6-913c-7d9939032f15");
+    setSelect("lote-select", "4e72e8e5-f0d3-4315-998e-2dfc7b8fff45");
+    setSelect("grupo-unidade-select", "743ed59c-9861-4230-860e-e01e2e080327");
+    setData("data_inicial", "01/12/2025");
+
+    carregarTabelas();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Conflito no período de Vigência"),
       ).toBeInTheDocument();
     });
   });
