@@ -1,27 +1,24 @@
-import React from "react";
+import "@testing-library/jest-dom";
 import {
-  render,
-  screen,
   act,
   fireEvent,
+  render,
+  screen,
   waitFor,
 } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockListaUnidadesMedidaLogistica } from "src/mocks/cronograma.service/mockGetUnidadesDeMedidaLogistica";
-import { mockListaProdutosLogistica } from "src/mocks/produto.service/mockGetListaCompletaProdutosLogistica";
-import { mockListaMarcas } from "src/mocks/produto.service/mockGetNomesMarcas";
-import { mockListaFabricantes } from "src/mocks/produto.service/mockGetNomesFabricantes";
 import { mockListaInformacoesNutricionais } from "src/mocks/produto.service/mockGetInformacoesNutricionaisOrdenadas";
-import { mockEmpresa } from "src/mocks/terceirizada.service/mockGetTerceirizadaUUID";
-import { CATEGORIA_OPTIONS } from "../constants";
-import { debug } from "jest-preview";
+import { mockListaProdutosLogistica } from "src/mocks/produto.service/mockGetListaCompletaProdutosLogistica";
+import { mockListaFabricantes } from "src/mocks/produto.service/mockGetNomesFabricantes";
+import { mockListaMarcas } from "src/mocks/produto.service/mockGetNomesMarcas";
 import { mockFichaTecnica } from "src/mocks/services/fichaTecnica.service/mockGetFichaTecnica";
 import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
+import { mockEmpresa } from "src/mocks/terceirizada.service/mockGetTerceirizadaUUID";
 import CadastroFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
 import mock from "src/services/_mock";
-import { PROGRAMA_OPTIONS } from "../constants";
+import { CATEGORIA_OPTIONS, PROGRAMA_OPTIONS } from "../constants";
 
 beforeEach(() => {
   mock
@@ -138,8 +135,6 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     const btnRascunho = screen.getByText("Salvar Rascunho").closest("button");
     expect(btnRascunho).not.toBeDisabled();
     fireEvent.click(btnRascunho);
-
-    debug();
   });
 
   it("Assina e Envia uma ficha técnica", async () => {

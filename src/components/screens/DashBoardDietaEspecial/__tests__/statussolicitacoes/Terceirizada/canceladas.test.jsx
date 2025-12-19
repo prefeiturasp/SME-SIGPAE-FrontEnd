@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { act, screen } from "@testing-library/react";
-import { debug } from "jest-preview";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
@@ -63,7 +62,6 @@ describe("Teste StatusSolicitacoes - Terceirizada - Canceladas", () => {
 
   it("Deve renderizar a tela de Solicitações Dieta Especial - Canceladas", () => {
     expect(screen.queryAllByText("Status Solicitações")).toHaveLength(2);
-    debug();
     expect(screen.getByText("Canceladas")).toBeInTheDocument();
     expect(
       screen.queryAllByText(

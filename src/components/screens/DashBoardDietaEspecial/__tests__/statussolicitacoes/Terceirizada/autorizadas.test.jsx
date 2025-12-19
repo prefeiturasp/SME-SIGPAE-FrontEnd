@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { debug } from "jest-preview";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
@@ -61,7 +60,6 @@ describe("Teste StatusSolicitacoes - Terceirizada - Autorizadas", () => {
 
   it("Deve renderizar a tela de Solicitações Dieta Especial - Autorizadas", () => {
     expect(screen.queryAllByText("Status Solicitações")).toHaveLength(2);
-    debug();
     expect(screen.getByText("Autorizadas")).toBeInTheDocument();
     expect(
       screen.queryAllByText(
@@ -72,8 +70,6 @@ describe("Teste StatusSolicitacoes - Terceirizada - Autorizadas", () => {
 
   it("Deve filtrar por lote", async () => {
     jest.useFakeTimers();
-
-    debug();
 
     const divSelectLote = screen.getByTestId("div-select-lote");
     const selectLote = divSelectLote.querySelector("select");
@@ -99,8 +95,6 @@ describe("Teste StatusSolicitacoes - Terceirizada - Autorizadas", () => {
 
   it("Deve filtrar por Conferência Status", async () => {
     jest.useFakeTimers();
-
-    debug();
 
     const divSelectConferenciaStatus = screen.getByTestId(
       "div-select-conferencia-status",

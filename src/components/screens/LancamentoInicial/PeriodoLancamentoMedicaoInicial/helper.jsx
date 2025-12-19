@@ -412,18 +412,20 @@ export const desabilitarField = (
 
   if (nomeCategoria.includes("SOLICITAÇÕES")) {
     if (
-      (!validacaoDiaLetivo(dia) &&
-        ((!kitLanchesAutorizadas.filter((kitLanche) => kitLanche.dia === dia)
-          .length &&
-          rowName === "kit_lanche") ||
-          (!alteracoesAlimentacaoAutorizadas.filter(
-            (lancheEmergencial) => lancheEmergencial.dia === dia,
-          ).length &&
-            rowName === "lanche_emergencial"))) ||
+      (!kitLanchesAutorizadas.filter((kitLanche) => kitLanche.dia === dia)
+        .length &&
+        rowName === "kit_lanche") ||
+      (!alteracoesAlimentacaoAutorizadas.filter(
+        (lancheEmergencial) => lancheEmergencial.dia === dia,
+      ).length &&
+        rowName === "lanche_emergencial") ||
       validacaoSemana(dia) ||
       (mesConsiderado === mesAtual &&
         Number(dia) >= format(mesAnoDefault, "dd") &&
-        !ehUltimoDiaLetivoDoAno(dia, mesConsiderado))
+        !ehUltimoDiaLetivoDoAno(dia, mesConsiderado)) ||
+      ["Mês anterior", "Mês posterior"].includes(
+        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
+      )
     ) {
       return true;
     }

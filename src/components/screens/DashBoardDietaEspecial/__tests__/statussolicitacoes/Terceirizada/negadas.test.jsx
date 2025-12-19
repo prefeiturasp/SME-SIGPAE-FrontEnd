@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { act, screen } from "@testing-library/react";
-import { debug } from "jest-preview";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
@@ -60,7 +59,6 @@ describe("Teste StatusSolicitacoes - Terceirizada - Negadas", () => {
 
   it("Deve renderizar a tela de Solicitações Dieta Especial - Negadas", () => {
     expect(screen.queryAllByText("Status Solicitações")).toHaveLength(2);
-    debug();
     expect(screen.getByText("Negadas")).toBeInTheDocument();
     expect(
       screen.queryAllByText(
