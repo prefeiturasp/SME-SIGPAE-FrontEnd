@@ -271,11 +271,14 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
         expect(inputLanche.disabled).toBe(false);
       }
     }
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
   });
 
   it("ao clicar na tab `Semana 2`, exibe, nos dias 22 a 28, e verifica oa lançamentos", async () => {
     await awaitServices();
-    preview.debug();
     const semana2Element = screen.getByText("Semana 2");
     fireEvent.click(semana2Element);
 
@@ -318,6 +321,10 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
         expect(inputLanche.disabled).toBe(true);
       }
     }
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
   });
 
   it("ao clicar na tab `Semana 3`, exibe, nos dias 29 a 04/01/2026, e verifica oa lançamentos", async () => {
@@ -385,5 +392,65 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(inputLanche4h.disabled).toBe(true);
       expect(inputLanche.disabled).toBe(true);
     }
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 1`, preencher frequencia maior que participantes e exibe erro", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+
+    const inputElementFrequenciaDia16 = screen.getByTestId(
+      "frequencia__dia_16__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementFrequenciaDia16, {
+        target: { value: "110" },
+      });
+    });
+    expect(inputElementFrequenciaDia16).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 1`, preencher lanche maior que frequencia e exibe erro", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+    const inputElementLancheDia15 = screen.getByTestId(
+      "lanche__dia_15__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementLancheDia15, {
+        target: { value: "110" },
+      });
+    });
+    expect(inputElementLancheDia15).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 1`, preencher lanche 4h maior que frequencia e exibe erro", async () => {
+    await awaitServices();
+    preview.debug();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+    const inputElementLanche4hDia15 = screen.getByTestId(
+      "lanche_4h__dia_15__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementLanche4hDia15, {
+        target: { value: "110" },
+      });
+    });
+    expect(inputElementLanche4hDia15).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
   });
 });
