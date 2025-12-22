@@ -13,6 +13,7 @@ export interface DocumentosRecebimento {
   pregao_chamada_publica: string;
   status: string;
   uuid: string;
+  programa_leve_leite: boolean;
 }
 
 export interface DocumentosRecebimentoDetalhado extends DocumentosRecebimento {
@@ -93,6 +94,7 @@ export interface CronogramaSimples {
   numero: string;
   pregao_chamada_publica: string;
   value?: string;
+  programa_leve_leite?: boolean;
 }
 
 export interface DocumentosRecebimentoDashboard {
@@ -267,6 +269,7 @@ export interface FichaTecnicaSimples {
   produto: ProdutoSimples;
   uuid_empresa: string;
   pregao_chamada_publica: string;
+  programa?: ProgramaChoices;
 }
 
 export interface DadosCronogramaFichaTecnica extends FichaTecnicaSimples {
