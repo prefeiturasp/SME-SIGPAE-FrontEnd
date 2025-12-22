@@ -9,11 +9,11 @@ import {
 import { MemoryRouter } from "react-router-dom";
 
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
-import { mockLocationStateGrupoRecreioNasFerias } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/mockStateCEUGESTAOGrupoRecreio";
-import { mockValoresMedicaoCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/valoresMedicaoCEUGESTAO";
+import { mockLocationStateGrupoRecreioNasFerias } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/CEUGESTAO/mockStateCEUGESTAOGrupoRecreio";
+import { mockValoresMedicaoCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/CEUGESTAO/valoresMedicaoCEUGESTAO";
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockDiasLetivos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/diasLetivosRecreio";
-import { mockSalvaLancamentoSemana1 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/mockSalvaLançamentoCEUGESTAO";
+import { mockSalvaLancamentoSemana1 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/CEUGESTAO/mockSalvaLançamentoCEUGESTAO.jsx";
 import {
   getCategoriasDeMedicao,
   getFeriadosNoMes,
@@ -33,7 +33,6 @@ import {
 } from "src/services/cadastroTipoAlimentacao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
-import preview from "jest-preview";
 import { ToastContainer } from "react-toastify";
 
 jest.mock("src/services/perfil.service.jsx");
@@ -484,8 +483,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
         screen.getByText("Lançamentos salvos com sucesso"),
       ).toBeInTheDocument();
     });
-
-    preview.debug();
     const inputParticipantes = screen.getByTestId(
       `participantes__dia_15__categoria_1`,
     );
