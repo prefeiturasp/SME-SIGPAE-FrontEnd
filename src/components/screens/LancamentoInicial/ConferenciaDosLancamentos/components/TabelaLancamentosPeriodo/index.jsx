@@ -248,7 +248,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
         .padStart(2, "0")}`,
     );
     return (
-      diasCalendario.find(
+      diasCalendario?.find(
         (diaCalendario) =>
           String(diaCalendario.dia) === String(dia) &&
           !diaCalendario.dia_letivo,
@@ -265,7 +265,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
         .padStart(2, "0")}`,
     );
     return (
-      diasCalendario.find(
+      diasCalendario?.find(
         (diaCalendario) =>
           String(diaCalendario.dia) === String(weekColumns[index].dia) &&
           !diaCalendario.dia_letivo,
