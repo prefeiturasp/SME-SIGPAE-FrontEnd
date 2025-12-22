@@ -20,8 +20,8 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
   const getListaDiasLabels = () => {
     const listaDiasLabels = [];
     feriadosNoMes
-      .filter((feriadoNoMes) =>
-        weekColumns.find((weekColumn) => weekColumn.dia === feriadoNoMes.dia)
+      ?.filter((feriadoNoMes) =>
+        weekColumns.find((weekColumn) => weekColumn.dia === feriadoNoMes.dia),
       )
       .filter((diaCalendario) => {
         return (
@@ -31,9 +31,9 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
                 categoria.id
               }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                 0,
-                5
+                5,
               )}`
-            ]
+            ],
           ) &&
           !["Mês anterior", "Mês posterior"].includes(
             values[
@@ -41,9 +41,9 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
                 categoria.id
               }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                 0,
-                5
+                5,
               )}`
-            ]
+            ],
           )
         );
       })
@@ -56,8 +56,8 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
       });
 
     diasCalendario
-      .filter((diaCalendario) =>
-        weekColumns.find((weekColumn) => weekColumn.dia === diaCalendario.dia)
+      ?.filter((diaCalendario) =>
+        weekColumns.find((weekColumn) => weekColumn.dia === diaCalendario.dia),
       )
       .filter((diaCalendario) => {
         return (
@@ -67,9 +67,9 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
                 categoria.id
               }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                 0,
-                5
+                5,
               )}`
-            ]
+            ],
           ) &&
           !["Mês anterior", "Mês posterior"].includes(
             values[
@@ -77,9 +77,9 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
                 categoria.id
               }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                 0,
-                5
+                5,
               )}`
-            ]
+            ],
           )
         );
       })
@@ -87,8 +87,8 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
         (diaCalendario) =>
           !diaCalendario.dia_letivo &&
           !feriadosNoMes.find(
-            (diaFeriado) => diaFeriado.dia === diaCalendario.dia
-          )
+            (diaFeriado) => diaFeriado.dia === diaCalendario.dia,
+          ),
       )
       .forEach((diaCalendario) => {
         const dateObj = new Date(
@@ -96,7 +96,7 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
             parseInt(diaCalendario.dia) + 1
           )
             .toString()
-            .padStart(2, "0")}`
+            .padStart(2, "0")}`,
         );
         !ehFimDeSemana(dateObj) &&
           !validacaoSemana(diaCalendario.dia, semanaSelecionada) &&
