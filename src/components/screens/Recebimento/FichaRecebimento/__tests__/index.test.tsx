@@ -38,7 +38,7 @@ const setup = async () => {
       <MemoryRouter>
         <FichaRecebimentoPage />
         <ToastContainer />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -48,7 +48,7 @@ describe("FichaRecebimentoListagem", () => {
     await setup();
 
     expect(
-      screen.getByText("Filtrar por Nº do Cronograma")
+      screen.getByText("Filtrar por Nº do Cronograma"),
     ).toBeInTheDocument();
     expect(screen.getByText("Filtrar por Status")).toBeInTheDocument();
     expect(screen.getByText("Filtrar por Produto")).toBeInTheDocument();
@@ -60,6 +60,13 @@ describe("FichaRecebimentoListagem", () => {
       expect(screen.getByText("Recebimentos Cadastrados")).toBeInTheDocument();
       expect(screen.getByText("CRONO-001")).toBeInTheDocument();
       expect(screen.getByText("CRONO-002")).toBeInTheDocument();
+
+      const tagLeveLeite = document.querySelector(".tag-leve-leite");
+      expect(tagLeveLeite).toBeInTheDocument();
+      expect(tagLeveLeite).toHaveTextContent("LEVE LEITE - PLL");
+
+      const todasTagsLeveLeite = document.querySelectorAll(".tag-leve-leite");
+      expect(todasTagsLeveLeite.length).toBe(1);
     });
   });
 
@@ -73,7 +80,7 @@ describe("FichaRecebimentoListagem", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Nenhum resultado encontrado")
+        screen.getByText("Nenhum resultado encontrado"),
       ).toBeInTheDocument();
     });
   });
@@ -88,7 +95,7 @@ describe("FichaRecebimentoListagem", () => {
     const initialCallCount = mock.history.get.length;
 
     const inputCronograma = screen.getByPlaceholderText(
-      "Digite o Nº do Cronograma"
+      "Digite o Nº do Cronograma",
     );
     fireEvent.change(inputCronograma, { target: { value: "123" } });
 
@@ -131,7 +138,7 @@ describe("FichaRecebimentoListagem", () => {
     const initialCallCount = mock.history.get.length;
 
     const inputCronograma = screen.getByPlaceholderText(
-      "Digite o Nº do Cronograma"
+      "Digite o Nº do Cronograma",
     );
     fireEvent.change(inputCronograma, { target: { value: "123" } });
 
@@ -148,10 +155,10 @@ describe("FichaRecebimentoListagem", () => {
 
     await waitFor(() => {
       const produtoTruncado = screen.getByText(
-        "Produto Teste 1 com nome muito..."
+        "Produto Teste 1 com nome muito...",
       );
       const fornecedorTruncado = screen.getByText(
-        "Fornecedor Teste com nome muit..."
+        "Fornecedor Teste com nome muit...",
       );
 
       expect(produtoTruncado).toBeInTheDocument();
@@ -165,7 +172,7 @@ describe("FichaRecebimentoListagem", () => {
     const cadastroLink = screen.getByText("Cadastrar Recebimento").closest("a");
     expect(cadastroLink).toHaveAttribute(
       "href",
-      "/recebimento/cadastro-ficha-recebimento"
+      "/recebimento/cadastro-ficha-recebimento",
     );
   });
 
@@ -179,7 +186,7 @@ describe("FichaRecebimentoListagem", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Nenhum resultado encontrado")
+        screen.getByText("Nenhum resultado encontrado"),
       ).toBeInTheDocument();
     });
   });
