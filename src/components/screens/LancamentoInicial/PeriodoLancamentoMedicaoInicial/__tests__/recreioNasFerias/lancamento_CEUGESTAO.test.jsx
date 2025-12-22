@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
@@ -125,5 +125,46 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
   it("renderiza label `Mês do Lançamento`", async () => {
     await awaitServices();
     preview.debug();
+    expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
+  });
+
+  it("renderiza valor `Recreio nas Férias - DEZ 2025` Mês do Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-mes-lancamento");
+    expect(inputElement).toHaveAttribute(
+      "value",
+      mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial
+        .recreio_nas_ferias.titulo,
+    );
+  });
+
+  it("renderiza label `Período de Lançamento`", () => {
+    expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
+  });
+
+  it("renderiza valor `Recreio nas Férias` no input `Período de Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-periodo-lancamento");
+    expect(inputElement).toHaveAttribute(
+      "value",
+      mockLocationStateGrupoRecreioNasFerias.grupo,
+    );
+  });
+
+  it("renderiza quadro de legendas", () => {
+    expect(screen.getByText("Legenda das Informações:")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Há erros no lançamento. Corrija para conseguir salvar.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Há divergências no lançamento. Adicione uma observação.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Atenção! Verifique se está correto e prossiga os apontamentos.",
+      ),
+    ).toBeInTheDocument();
   });
 });
