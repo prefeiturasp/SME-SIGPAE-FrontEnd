@@ -167,4 +167,23 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       ),
     ).toBeInTheDocument();
   });
+
+  it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
+    expect(
+      screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
+    ).toBeInTheDocument();
+  });
+
+  it("renderiza as labels `Semana 1`, `Semana 2` e `Semana 3`", async () => {
+    await awaitServices();
+    expect(screen.getByText("Semana 1")).toBeInTheDocument();
+    expect(screen.getByText("Semana 2")).toBeInTheDocument();
+    expect(screen.getByText("Semana 3")).toBeInTheDocument();
+  });
+
+  it("não renderiza as labels `Semana 4`, `Semana 5`", async () => {
+    await awaitServices();
+    expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
+    expect(screen.queryByText("Semana 5")).not.toBeInTheDocument();
+  });
 });
