@@ -1,12 +1,18 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
 import { mockLocationStateGrupoRecreioNasFerias } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockStateEMEFGrupoRecreio";
 import { mockValoresMedicaoEMEF } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/valoresMedicaoEMEF";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
-import { mockDiasLetivos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/diasLetivosRecreio";
+import { mockDiasLetivos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/diasLetivosRecreio";
 import { mockSalvaLancamentoSemana1 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockSalvaLançamentoEMEF";
 import {
   getCategoriasDeMedicao,
@@ -189,5 +195,334 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
     expect(screen.queryByText("Semana 3")).not.toBeInTheDocument();
     expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
     expect(screen.queryByText("Semana 5")).not.toBeInTheDocument();
+  });
+
+  it("renderiza label `ALIMENTAÇÃO`", async () => {
+    await awaitServices();
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+  });
+
+  it("renderiza label `Participantes` dentro da seção `ALIMENTAÇÃO`", async () => {
+    await awaitServices();
+    const categoriaAlimentacaoUuid = "6a183159-32bb-4a3b-a69b-f0601ee677c1";
+    const myElement = screen.getByTestId(
+      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
+    );
+    const allParticipantes = screen.getAllByText("Participantes");
+    const specificParticipantes = allParticipantes.find((element) =>
+      myElement.contains(element),
+    );
+    expect(specificParticipantes).toBeInTheDocument();
+  });
+
+  it("renderiza label `Seg.` dentro da seção `ALIMENTAÇÃO`", async () => {
+    await awaitServices();
+    const categoriaAlimentacaoUuid = "6a183159-32bb-4a3b-a69b-f0601ee677c1";
+    const myElement = screen.getByTestId(
+      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
+    );
+    const allParticipantes = screen.getAllByText("Seg.");
+    const specificParticipantes = allParticipantes.find((element) =>
+      myElement.contains(element),
+    );
+    expect(specificParticipantes).toBeInTheDocument();
+  });
+
+  it("ao clicar na tab `Semana 1`, exibe, nos dias 01 a 07, e verifica oa lançamentos", async () => {
+    await awaitServices();
+    preview.debug();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+
+    const VALORES_ESPERADOS = {
+      1: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      2: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      3: {
+        participantes: "100",
+        frequencia: "100",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      4: {
+        participantes: "100",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      5: {
+        participantes: "100",
+        frequencia: "83",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      6: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      7: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+    };
+
+    for (let dia = 1; dia <= 7; dia++) {
+      const valoresDia = VALORES_ESPERADOS[dia];
+
+      const inputParticipantes = screen.getByTestId(
+        `participantes__dia_0${dia}__categoria_1`,
+      );
+      const inputFrequencia = screen.getByTestId(
+        `frequencia__dia_0${dia}__categoria_1`,
+      );
+      const inputLanche4h = screen.getByTestId(
+        `lanche_4h__dia_0${dia}__categoria_1`,
+      );
+      const inputLanche = screen.getByTestId(
+        `lanche__dia_0${dia}__categoria_1`,
+      );
+      const inputRefeicao = screen.getByTestId(
+        `refeicao__dia_0${dia}__categoria_1`,
+      );
+      const inputRepeticaoRefeicao = screen.getByTestId(
+        `repeticao_refeicao__dia_0${dia}__categoria_1`,
+      );
+      const inputSobremesa = screen.getByTestId(
+        `sobremesa__dia_0${dia}__categoria_1`,
+      );
+      const inputRepeticaoSobremesa = screen.getByTestId(
+        `repeticao_sobremesa__dia_0${dia}__categoria_1`,
+      );
+
+      expect(inputParticipantes).toHaveAttribute(
+        "value",
+        valoresDia.participantes,
+      );
+      expect(inputFrequencia).toHaveAttribute("value", valoresDia.frequencia);
+      expect(inputLanche4h).toHaveAttribute("value", valoresDia.lanche4h);
+      expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
+      expect(inputRefeicao).toHaveAttribute("value", valoresDia.refeicao);
+      expect(inputRepeticaoRefeicao).toHaveAttribute(
+        "value",
+        valoresDia.repeticao_refeicao,
+      );
+      expect(inputSobremesa).toHaveAttribute("value", valoresDia.sobremesa);
+      expect(inputRepeticaoSobremesa).toHaveAttribute(
+        "value",
+        valoresDia.repeticao_sobremesa,
+      );
+
+      expect(inputParticipantes.disabled).toBe(true);
+      if ([1, 2, 6, 7].includes(dia)) {
+        expect(inputFrequencia.disabled).toBe(true);
+        expect(inputLanche4h.disabled).toBe(true);
+        expect(inputLanche.disabled).toBe(true);
+        expect(inputRefeicao.disabled).toBe(true);
+        expect(inputRepeticaoRefeicao.disabled).toBe(true);
+        expect(inputSobremesa.disabled).toBe(true);
+        expect(inputRepeticaoSobremesa.disabled).toBe(true);
+      } else {
+        expect(inputFrequencia.disabled).toBe(false);
+        expect(inputLanche4h.disabled).toBe(false);
+        expect(inputLanche.disabled).toBe(false);
+        expect(inputRefeicao.disabled).toBe(false);
+        expect(inputRepeticaoRefeicao.disabled).toBe(false);
+        expect(inputSobremesa.disabled).toBe(false);
+        expect(inputRepeticaoSobremesa.disabled).toBe(false);
+      }
+    }
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, exibe, nos dias 08 a 14, e verifica oa lançamentos", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 2");
+    fireEvent.click(semana1Element);
+    preview.debug();
+    const VALORES_ESPERADOS = {
+      8: {
+        participantes: "100",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      9: {
+        participantes: "100",
+        frequencia: "92",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      10: {
+        participantes: "100",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      11: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      12: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      13: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+      14: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+        sobremesa: "",
+        repeticao_sobremesa: "",
+      },
+    };
+
+    for (let dia = 8; dia <= 14; dia++) {
+      const diaFormatado = dia.toString().padStart(2, "0");
+      const valoresDia = VALORES_ESPERADOS[dia];
+
+      const inputParticipantes = screen.getByTestId(
+        `participantes__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputFrequencia = screen.getByTestId(
+        `frequencia__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputLanche4h = screen.getByTestId(
+        `lanche_4h__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputLanche = screen.getByTestId(
+        `lanche__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputRefeicao = screen.getByTestId(
+        `refeicao__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputRepeticaoRefeicao = screen.getByTestId(
+        `repeticao_refeicao__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputSobremesa = screen.getByTestId(
+        `sobremesa__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputRepeticaoSobremesa = screen.getByTestId(
+        `repeticao_sobremesa__dia_${diaFormatado}__categoria_1`,
+      );
+
+      expect(inputParticipantes).toHaveAttribute(
+        "value",
+        valoresDia.participantes,
+      );
+      expect(inputFrequencia).toHaveAttribute("value", valoresDia.frequencia);
+      expect(inputLanche4h).toHaveAttribute("value", valoresDia.lanche4h);
+      expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
+      expect(inputRefeicao).toHaveAttribute("value", valoresDia.refeicao);
+      expect(inputRepeticaoRefeicao).toHaveAttribute(
+        "value",
+        valoresDia.repeticao_refeicao,
+      );
+      expect(inputSobremesa).toHaveAttribute("value", valoresDia.sobremesa);
+      expect(inputRepeticaoSobremesa).toHaveAttribute(
+        "value",
+        valoresDia.repeticao_sobremesa,
+      );
+
+      expect(inputParticipantes.disabled).toBe(true);
+      if ([11, 12, 13, 14].includes(dia)) {
+        expect(inputFrequencia.disabled).toBe(true);
+        expect(inputLanche4h.disabled).toBe(true);
+        expect(inputLanche.disabled).toBe(true);
+        expect(inputRefeicao.disabled).toBe(true);
+        expect(inputRepeticaoRefeicao.disabled).toBe(true);
+        expect(inputSobremesa.disabled).toBe(true);
+        expect(inputRepeticaoSobremesa.disabled).toBe(true);
+      } else {
+        expect(inputFrequencia.disabled).toBe(false);
+        expect(inputLanche4h.disabled).toBe(false);
+        expect(inputLanche.disabled).toBe(false);
+        expect(inputRefeicao.disabled).toBe(false);
+        expect(inputRepeticaoRefeicao.disabled).toBe(false);
+        expect(inputSobremesa.disabled).toBe(false);
+        expect(inputRepeticaoSobremesa.disabled).toBe(false);
+      }
+    }
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
   });
 });
