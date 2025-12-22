@@ -47,6 +47,7 @@ import {
 import RadioButtonField from "src/components/Shareable/RadioButtonField";
 import Label from "src/components/Shareable/Label";
 import InputFileField from "src/components/Shareable/InputFileField";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
 import {
   composeValidators,
@@ -168,10 +169,10 @@ export default () => {
     }
   };
 
-  const getOpcoesEtapas = () : EtapaFicha[] => {
+  const getOpcoesEtapas = (): EtapaFicha[] => {
     let options = [];
 
-    cronograma.etapas?.forEach((etapa : EtapaFicha) => {
+    cronograma.etapas?.forEach((etapa: EtapaFicha) => {
       if (
         etapa.desvinculada_recebimento ||
         (!initialValues.etapa &&
@@ -888,6 +889,11 @@ export default () => {
                               name={`produto`}
                               placeholder="Nome do Produto"
                               disabled={true}
+                              suffix={
+                                cronograma.programa_leve_leite ? (
+                                  <TagLeveLeite />
+                                ) : null
+                              }
                             />
                           </div>
                         </div>
@@ -1207,7 +1213,8 @@ export default () => {
                                           <td className="borda-crono">
                                             {formataMilharDecimal(
                                               doc.saldo_laudo,
-                                            )} {etapaSelecionada?.unidade_medida}
+                                            )}{" "}
+                                            {etapaSelecionada?.unidade_medida}
                                           </td>
                                           <td className="borda-crono">
                                             <Field
