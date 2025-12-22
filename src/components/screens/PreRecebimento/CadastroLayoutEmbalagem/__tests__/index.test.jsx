@@ -57,18 +57,15 @@ const selecionaFichaTecnica = async (index = 0) => {
   const select = screen.getByTestId("ficha_tecnica");
   const input = select.querySelector(".ant-select-selection-search-input");
 
-  // Use fireEvent.mouseDown to open the dropdown (proven reliable in other tests)
   await act(async () => {
     fireEvent.mouseDown(input);
   });
 
-  // Wait for dropdown to appear and find the option within it
   await waitFor(() => {
     const dropdown = document.querySelector(".ant-select-dropdown");
     expect(dropdown).toBeInTheDocument();
   });
 
-  // Find the option by text content within the dropdown
   const option = Array.from(document.querySelectorAll(".ant-select-item")).find(
     (item) => item.textContent.includes(textoFormatado),
   );
@@ -126,18 +123,15 @@ describe("Testa página de Cadastro de Layout de Embalagem", () => {
     const select = screen.getByTestId("ficha_tecnica");
     const input = select.querySelector(".ant-select-selection-search-input");
 
-    // Open the dropdown to see the options
     await act(async () => {
       fireEvent.mouseDown(input);
     });
 
-    // Wait for dropdown to appear
     await waitFor(() => {
       const dropdown = document.querySelector(".ant-select-dropdown");
       expect(dropdown).toBeInTheDocument();
     });
 
-    // Check that LEVE LEITE tag is visible in the dropdown for the LEVE_LEITE program
     await waitFor(() => {
       expect(screen.getByText("LEVE LEITE - PLL")).toBeInTheDocument();
     });
@@ -149,29 +143,24 @@ describe("Testa página de Cadastro de Layout de Embalagem", () => {
     const select = screen.getByTestId("ficha_tecnica");
     const input = select.querySelector(".ant-select-selection-search-input");
 
-    // Open the dropdown to see the options
     await act(async () => {
       fireEvent.mouseDown(input);
     });
 
-    // Wait for dropdown to appear
     await waitFor(() => {
       const dropdown = document.querySelector(".ant-select-dropdown");
       expect(dropdown).toBeInTheDocument();
     });
 
-    // Check that there are options with and without the LEVE LEITE tag
     const leveLeiteTags = screen.getAllByText("LEVE LEITE - PLL");
-    expect(leveLeiteTags.length).toBeGreaterThan(0); // At least one LEVE_LEITE item
+    expect(leveLeiteTags.length).toBeGreaterThan(0);
 
-    // Check that FT082 (LEVE_LEITE) has the tag
     const ft082Option = Array.from(
       document.querySelectorAll(".ant-select-item"),
     ).find((item) => item.textContent.includes("FT082 - ARROZ TIPO I"));
     expect(ft082Option).toBeInTheDocument();
     expect(ft082Option.textContent).toContain("LEVE LEITE - PLL");
 
-    // Check that FT078 (not LEVE_LEITE) doesn't have the tag
     const ft078Option = Array.from(
       document.querySelectorAll(".ant-select-item"),
     ).find((item) => item.textContent.includes("FT078 - FARINHA MANDIOCA"));
