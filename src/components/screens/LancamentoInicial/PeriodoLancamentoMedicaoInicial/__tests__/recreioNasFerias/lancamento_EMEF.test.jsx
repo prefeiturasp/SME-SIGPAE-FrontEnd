@@ -29,6 +29,8 @@ import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
 import { ToastContainer } from "react-toastify";
 
+import preview from "jest-preview";
+
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
@@ -51,7 +53,7 @@ const awaitServices = async () => {
   });
 };
 
-describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Férias", () => {
+describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Férias - EMEF", () => {
   beforeEach(async () => {
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaEMEFPericles,
@@ -173,5 +175,19 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
     expect(
       screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
     ).toBeInTheDocument();
+  });
+
+  it("renderiza as labels `Semana 1` e `Semana 2`", async () => {
+    await awaitServices();
+    preview.debug();
+    expect(screen.getByText("Semana 1")).toBeInTheDocument();
+    expect(screen.getByText("Semana 2")).toBeInTheDocument();
+  });
+
+  it("não renderiza as labels  `Semana 3`, `Semana 4`, `Semana 5`", async () => {
+    await awaitServices();
+    expect(screen.queryByText("Semana 3")).not.toBeInTheDocument();
+    expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
+    expect(screen.queryByText("Semana 5")).not.toBeInTheDocument();
   });
 });

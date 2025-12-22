@@ -57,7 +57,7 @@ const awaitServices = async () => {
   });
 };
 
-describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Férias", () => {
+describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Férias - CEU GESTÃO", () => {
   beforeEach(async () => {
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaCEUGESTAO,
