@@ -13,6 +13,7 @@ import { mockLocationStateGrupoRecreioNasFerias } from "src/mocks/medicaoInicial
 import { mockValoresMedicaoCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/valoresMedicaoCEUGESTAO";
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockDiasLetivos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/diasLetivosRecreio";
+import { mockSalvaLancamentoSemana1 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/mockSalvaLançamentoCEUGESTAO";
 import {
   getCategoriasDeMedicao,
   getFeriadosNoMes,
@@ -33,6 +34,7 @@ import {
 import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
 import preview from "jest-preview";
+import { ToastContainer } from "react-toastify";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -107,7 +109,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       status: 200,
     });
     updateValoresPeriodosLancamentos.mockResolvedValue({
-      data: mockValoresMedicaoCEUGESTAO,
+      data: mockSalvaLancamentoSemana1,
       status: 200,
     });
 
@@ -123,6 +125,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
           }}
         >
           <PeriodoLancamentoMedicaoInicial />
+          <ToastContainer />
         </MemoryRouter>,
       );
     });
@@ -437,7 +440,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
 
   it("ao clicar na tab `Semana 1`, preencher lanche 4h maior que frequencia e exibe erro", async () => {
     await awaitServices();
-    preview.debug();
     const semana1Element = screen.getByText("Semana 1");
     fireEvent.click(semana1Element);
     const inputElementLanche4hDia15 = screen.getByTestId(
@@ -452,5 +454,52 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
     const botao = screen.getByText("Salvar Lançamentos").closest("button");
     expect(botao).toBeInTheDocument();
     expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 1`, preenche dia 15 e salva lançamento", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+    const inputElementLancheDia15 = screen.getByTestId(
+      "lanche__dia_15__categoria_1",
+    );
+    fireEvent.change(inputElementLancheDia15, {
+      target: { value: "90" },
+    });
+
+    const inputElementLanche4hDia15 = screen.getByTestId(
+      "lanche_4h__dia_15__categoria_1",
+    );
+    fireEvent.change(inputElementLanche4hDia15, {
+      target: { value: "80" },
+    });
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Lançamentos salvos com sucesso"),
+      ).toBeInTheDocument();
+    });
+
+    preview.debug();
+    const inputParticipantes = screen.getByTestId(
+      `participantes__dia_15__categoria_1`,
+    );
+    expect(inputParticipantes).toHaveAttribute("value", "100");
+
+    const inputFrequencia = screen.getByTestId(
+      `frequencia__dia_15__categoria_1`,
+    );
+    expect(inputFrequencia).toHaveAttribute("value", "100");
+
+    const inputLanche4h = screen.getByTestId(`lanche_4h__dia_15__categoria_1`);
+    expect(inputLanche4h).toHaveAttribute("value", "80");
+
+    const inputLanche = screen.getByTestId(`lanche__dia_15__categoria_1`);
+    expect(inputLanche).toHaveAttribute("value", "90");
   });
 });
