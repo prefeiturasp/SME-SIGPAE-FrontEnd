@@ -10,6 +10,7 @@ import {
 import { downloadArquivoLaudoAssinado } from "src/services/documentosRecebimento.service";
 import { Tooltip } from "antd";
 import { truncarString } from "../../../../../../helpers/utilities";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 interface Props {
   objetos: Array<DocumentosRecebimento>;
@@ -112,7 +113,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
                 <div>{objeto.numero_cronograma}</div>
                 <div>{objeto.numero_laudo}</div>
                 <div>{objeto.pregao_chamada_publica}</div>
-                <div>
+                <div className="d-flex align-items-center justify-content-between">
                   <Tooltip
                     color="#42474a"
                     overlayStyle={{
@@ -124,6 +125,9 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
                   >
                     {truncarString(objeto.nome_produto, 30)}
                   </Tooltip>
+                  {objeto.programa_leve_leite && (
+                    <TagLeveLeite className="ms-2" />
+                  )}
                 </div>
 
                 <div>{objeto.criado_em}</div>

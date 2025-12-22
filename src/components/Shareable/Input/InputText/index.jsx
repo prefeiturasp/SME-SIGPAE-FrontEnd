@@ -174,6 +174,8 @@ InputText.propTypes = {
   type: PropTypes.string,
   contador: PropTypes.number,
   valorInicial: PropTypes.string,
+  prefix: PropTypes.node,
+  suffix: PropTypes.node,
 };
 
 export default InputText;

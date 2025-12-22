@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { DOCUMENTOS_RECEBIMENTO, PRE_RECEBIMENTO } from "src/configs/constants";
 import ModalConfirmarEnvio from "../ModalConfirmarEnvio";
 import { exibeError } from "src/helpers/utilities";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 import {
   toastError,
   toastSuccess,
@@ -184,6 +185,7 @@ export default () => {
 
     form.change("pregao", cronograma?.pregao_chamada_publica);
     form.change("nome_produto", cronograma?.nome_produto);
+    form.change("programa_leve_leite", cronograma?.programa_leve_leite);
   };
 
   return (
@@ -236,6 +238,7 @@ export default () => {
                       placeholder="Nome do Produto"
                       required
                       disabled={true}
+                      suffix={values.programa_leve_leite && <TagLeveLeite />}
                     />
                   </div>
                   <div className="col-6">
