@@ -25,13 +25,14 @@ import {
   BUTTON_STYLE,
 } from "src/components/Shareable/Botao/constants";
 import { STATUS_DOCUMENTOS_DE_RECEBIMENTO } from "src/constants/shared";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 export default () => {
   const navigate = useNavigate();
 
   const [carregando, setCarregando] = useState(true);
   const [objeto, setObjeto] = useState<DocumentosRecebimentoDetalhado>(
-    {} as DocumentosRecebimentoDetalhado
+    {} as DocumentosRecebimentoDetalhado,
   );
   const [laudo, setLaudo] = useState<TiposDocumentos>();
 
@@ -52,7 +53,7 @@ export default () => {
 
   const goToAtualizarFornecedorDocumentosRecebimentoPage = () => {
     navigate(
-      `/${PRE_RECEBIMENTO}/${ATUALIZAR_FORNECEDOR_DOCUMENTO_RECEBIMENTO}?uuid=${objeto.uuid}`
+      `/${PRE_RECEBIMENTO}/${ATUALIZAR_FORNECEDOR_DOCUMENTO_RECEBIMENTO}?uuid=${objeto.uuid}`,
     );
   };
 
@@ -64,7 +65,7 @@ export default () => {
     const objeto = response.data;
 
     const laudoIndex = objeto.tipos_de_documentos.findIndex(
-      (tipo) => tipo.tipo_documento === "LAUDO"
+      (tipo) => tipo.tipo_documento === "LAUDO",
     );
 
     if (laudoIndex !== -1) {
@@ -131,6 +132,13 @@ export default () => {
                 valorInicial={objeto.nome_produto}
                 required
                 disabled={true}
+                suffix={
+                  objeto.programa_leve_leite && (
+                    <div className="me-2">
+                      <TagLeveLeite />
+                    </div>
+                  )
+                }
               />
             </div>
             <div className="col-6">

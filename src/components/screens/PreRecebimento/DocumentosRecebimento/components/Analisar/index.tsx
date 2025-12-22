@@ -45,6 +45,7 @@ import {
 import ArquivosTipoRecebimento from "../ArquivosTipoDocumento";
 import OutrosDocumentos from "../OutrosDocumentos";
 import { STATUS_DOCUMENTOS_DE_RECEBIMENTO } from "src/constants/shared";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 export default () => {
   const navigate = useNavigate();
@@ -392,6 +393,13 @@ export default () => {
                       valorInicial={objeto.nome_produto}
                       required
                       disabled={true}
+                      suffix={
+                        objeto.programa_leve_leite && (
+                          <div className="me-2">
+                            <TagLeveLeite />
+                          </div>
+                        )
+                      }
                     />
                   </div>
                   <div className="col-6">

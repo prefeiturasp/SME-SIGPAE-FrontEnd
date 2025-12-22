@@ -27,6 +27,7 @@ import {
 import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 import { PERFIL } from "src/constants/shared";
 import useSomenteLeitura from "src/hooks/useSomenteLeitura";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 export default () => {
   const navigate = useNavigate();
@@ -443,10 +444,17 @@ export default () => {
           {Object.keys(layoutDeEmbalagem).length > 0 && (
             <div className="row mt-2">
               <div className="col-6">
-                <span className="valor-dados-produto">
-                  {layoutDeEmbalagem.numero_ficha_tecnica} -{" "}
-                  {layoutDeEmbalagem.nome_produto}
-                </span>
+                <div className="d-flex align-items-center">
+                  <span className="valor-dados-produto">
+                    {layoutDeEmbalagem.numero_ficha_tecnica} -{" "}
+                    {layoutDeEmbalagem.nome_produto}
+                  </span>
+                  {layoutDeEmbalagem.programa === "LEVE_LEITE" && (
+                    <div className="ms-2">
+                      <TagLeveLeite />
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="col-3">
                 <span className="valor-dados-produto">

@@ -13,6 +13,7 @@ export const mockListaFichasSemLayout: ListagemNaoPaginada<FichaTecnicaSimples> 
         },
         uuid_empresa: "d0630b2b-8e45-472c-b9c6-90451b60b081",
         pregao_chamada_publica: "05/SME/CODAE/2024",
+        programa: "LEVE_LEITE",
       },
       {
         uuid: "4dfb9b7a-b48c-4d09-a0fd-c9e316937023",

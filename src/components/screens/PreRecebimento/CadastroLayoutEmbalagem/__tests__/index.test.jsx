@@ -37,7 +37,7 @@ const setup = async () => {
     render(
       <MemoryRouter>
         <CadastroLayoutEmbalagem />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -50,16 +50,33 @@ const clicarBotao = async (texto) => {
   fireEvent.click(botao);
 };
 
-const preencheInput = (testId, value) => {
-  let input = screen.getByTestId(testId);
-  fireEvent.change(input, { target: { value } });
-};
-
 const selecionaFichaTecnica = async (index = 0) => {
   const ficha = mockListaFichasSemLayout.results[index];
   const textoFormatado = formatarNumeroEProdutoFichaTecnica(ficha);
 
-  await preencheInput("ficha_tecnica", textoFormatado);
+  const select = screen.getByTestId("ficha_tecnica");
+  const input = select.querySelector(".ant-select-selection-search-input");
+
+  await act(async () => {
+    fireEvent.mouseDown(input);
+  });
+
+  await waitFor(() => {
+    const dropdown = document.querySelector(".ant-select-dropdown");
+    expect(dropdown).toBeInTheDocument();
+  });
+
+  const option = Array.from(document.querySelectorAll(".ant-select-item")).find(
+    (item) => item.textContent.includes(textoFormatado),
+  );
+
+  if (option) {
+    await act(async () => {
+      fireEvent.click(option);
+    });
+  } else {
+    throw new Error(`Option with text "${textoFormatado}" not found`);
+  }
 };
 
 const simularUpload = (dataTestId, fileName = "arquivo-teste.jpg") => {
@@ -84,7 +101,7 @@ describe("Testa página de Cadastro de Layout de Embalagem", () => {
 
     expect(mock.history.get.length).toBe(1);
     expect(mock.history.get[0].url).toBe(
-      "/ficha-tecnica/lista-simples-sem-layout-embalagem/"
+      "/ficha-tecnica/lista-simples-sem-layout-embalagem/",
     );
   });
 
@@ -93,9 +110,62 @@ describe("Testa página de Cadastro de Layout de Embalagem", () => {
 
     await selecionaFichaTecnica(0);
 
-    expect(screen.getByTestId("pregao-chamada-publica")).toHaveValue(
-      mockListaFichasSemLayout.results[0].pregao_chamada_publica
-    );
+    await waitFor(() => {
+      expect(screen.getByTestId("pregao-chamada-publica")).toHaveValue(
+        mockListaFichasSemLayout.results[0].pregao_chamada_publica,
+      );
+    });
+  });
+
+  it("exibe etiqueta LEVE LEITE - PLL quando ficha técnica do programa LEVE_LEITE está disponível nas opções", async () => {
+    await setup();
+
+    const select = screen.getByTestId("ficha_tecnica");
+    const input = select.querySelector(".ant-select-selection-search-input");
+
+    await act(async () => {
+      fireEvent.mouseDown(input);
+    });
+
+    await waitFor(() => {
+      const dropdown = document.querySelector(".ant-select-dropdown");
+      expect(dropdown).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("LEVE LEITE - PLL")).toBeInTheDocument();
+    });
+  });
+
+  it("exibe etiqueta LEVE LEITE - PLL apenas para fichas técnicas do programa LEVE_LEITE no dropdown", async () => {
+    await setup();
+
+    const select = screen.getByTestId("ficha_tecnica");
+    const input = select.querySelector(".ant-select-selection-search-input");
+
+    await act(async () => {
+      fireEvent.mouseDown(input);
+    });
+
+    await waitFor(() => {
+      const dropdown = document.querySelector(".ant-select-dropdown");
+      expect(dropdown).toBeInTheDocument();
+    });
+
+    const leveLeiteTags = screen.getAllByText("LEVE LEITE - PLL");
+    expect(leveLeiteTags.length).toBeGreaterThan(0);
+
+    const ft082Option = Array.from(
+      document.querySelectorAll(".ant-select-item"),
+    ).find((item) => item.textContent.includes("FT082 - ARROZ TIPO I"));
+    expect(ft082Option).toBeInTheDocument();
+    expect(ft082Option.textContent).toContain("LEVE LEITE - PLL");
+
+    const ft078Option = Array.from(
+      document.querySelectorAll(".ant-select-item"),
+    ).find((item) => item.textContent.includes("FT078 - FARINHA MANDIOCA"));
+    expect(ft078Option).toBeInTheDocument();
+    expect(ft078Option.textContent).not.toContain("LEVE LEITE - PLL");
   });
 
   it("faz upload de arquivos para diferentes tipos de embalagem", async () => {
@@ -148,7 +218,7 @@ describe("Testa página de Cadastro de Layout de Embalagem", () => {
     // Modal de cancelamento
     await clicarBotao("Cancelar");
     expect(
-      screen.getByText("Deseja cancelar o Cadastro do Layout de Embalagem?")
+      screen.getByText("Deseja cancelar o Cadastro do Layout de Embalagem?"),
     ).toBeInTheDocument();
     await clicarBotao("Não");
   });
@@ -173,7 +243,7 @@ describe("Testa página de Cadastro de Layout de Embalagem", () => {
       expect(mock.history.post.length).toBe(1);
       expect(mock.history.post[0].url).toBe("/layouts-de-embalagem/");
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/${PRE_RECEBIMENTO}/${LAYOUT_EMBALAGEM}`
+        `/${PRE_RECEBIMENTO}/${LAYOUT_EMBALAGEM}`,
       );
     });
   });
@@ -185,7 +255,7 @@ describe("Testa página de Cadastro de Layout de Embalagem", () => {
     await clicarBotao("Sim");
 
     expect(mockNavigate).toHaveBeenCalledWith(
-      `/${PRE_RECEBIMENTO}/${LAYOUT_EMBALAGEM}`
+      `/${PRE_RECEBIMENTO}/${LAYOUT_EMBALAGEM}`,
     );
   });
 

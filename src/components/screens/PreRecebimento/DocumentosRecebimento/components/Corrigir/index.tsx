@@ -37,6 +37,7 @@ import {
   TiposDocumentoChoices,
 } from "src/interfaces/pre_recebimento.interface";
 import { OUTROS_DOCUMENTOS_OPTIONS } from "../../constants";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 interface ArquivosDocumentoForm {
   tipoDocumento: TiposDocumentoChoices;
@@ -359,6 +360,13 @@ export default () => {
                 label="Nome do Produto"
                 valorInicial={objeto?.nome_produto}
                 disabled
+                suffix={
+                  objeto.programa_leve_leite && (
+                    <div className="me-2">
+                      <TagLeveLeite />
+                    </div>
+                  )
+                }
               />
             </div>
             <div className="col-6">

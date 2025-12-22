@@ -11,6 +11,7 @@ import {
 import "./styles.scss";
 import { Tooltip } from "antd";
 import { truncarString } from "../../../../../../helpers/utilities";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 export default ({ objetos, perfilFornecedor = false }) => {
   const renderizarStatus = (status, perfilFornecedor) => {
@@ -97,7 +98,7 @@ export default ({ objetos, perfilFornecedor = false }) => {
             <>
               <div key={objeto.uuid} className="grid-table body-table">
                 <div>{objeto.numero_ficha_tecnica}</div>
-                <div>
+                <div className="d-flex align-items-center justify-content-between">
                   <Tooltip
                     color="#42474a"
                     overlayStyle={{
@@ -109,6 +110,7 @@ export default ({ objetos, perfilFornecedor = false }) => {
                   >
                     {truncarString(objeto.nome_produto, 30)}
                   </Tooltip>
+                  {objeto.programa === "LEVE_LEITE" && <TagLeveLeite />}
                 </div>
                 <div>{objeto.pregao_chamada_publica}</div>
                 <div>{renderizarStatus(objeto.status, perfilFornecedor)}</div>
