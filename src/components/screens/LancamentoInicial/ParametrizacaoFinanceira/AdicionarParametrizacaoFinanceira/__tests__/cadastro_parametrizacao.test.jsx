@@ -113,7 +113,23 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
         screen.getByText("Salvar Parametrização Financeira"),
       ).toBeInTheDocument();
     });
+
+    const botaoNao = screen.getByText("Não").closest("button");
+    fireEvent.click(botaoNao);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Salvar Parametrização Financeira"),
+      ).not.toBeInTheDocument();
+    });
   });
+
+  const carregarTabelas = () => {
+    const botao = screen.getByTestId("botao-carregar");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+    fireEvent.click(botao);
+  };
 
   it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 1 - CEI", async () => {
     setSelect("edital-select", "752c11a3-b4fe-4f1c-b9af-61d42f0a6b56");
@@ -121,9 +137,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     setSelect("grupo-unidade-select", "550e8400-e29b-41d4-a716-446655440000");
     setData("data_inicial", "01/09/2025");
 
-    const botao = screen.getByTestId("botao-carregar");
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
+    carregarTabelas();
 
     await waitFor(() => {
       expect(
@@ -162,27 +176,6 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     });
   });
 
-  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 3 - EMEI", async () => {
-    setSelect("edital-select", "3dea0d3c-eea2-4f32-90a6-ebae3597374b");
-    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
-    setSelect("grupo-unidade-select", "743ed59c-9861-4230-860e-e01e2e080327");
-    setData("data_inicial", "01/09/2025");
-    setData("data_final", "30/09/2025");
-
-    const botao = screen.getByTestId("botao-carregar");
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
-      ).toBeInTheDocument();
-      expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
-      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
-      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
-    });
-  });
-
   it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 2 - CEMEI", async () => {
     setSelect("edital-select", "557d1c87-ea6c-4911-8876-2a133f754ea1");
     setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
@@ -190,9 +183,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     setData("data_inicial", "01/11/2025");
     setData("data_final", "30/11/2025");
 
-    const botao = screen.getByTestId("botao-carregar");
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
+    carregarTabelas();
 
     await waitFor(() => {
       expect(
@@ -231,6 +222,84 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     });
   });
 
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 3 - EMEI", async () => {
+    setSelect("edital-select", "3dea0d3c-eea2-4f32-90a6-ebae3597374b");
+    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
+    setSelect("grupo-unidade-select", "743ed59c-9861-4230-860e-e01e2e080327");
+    setData("data_inicial", "01/09/2025");
+    setData("data_final", "30/09/2025");
+
+    carregarTabelas();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
+      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
+    });
+  });
+
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 4 - EMEF", async () => {
+    setSelect("edital-select", "d5e05d2a-1d4f-456f-ac9a-07ecde54b1b3");
+    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
+    setSelect("grupo-unidade-select", "5bd9ad5c-e0ab-4812-b2b6-336fc8988960");
+    setData("data_inicial", "01/12/2025");
+    setData("data_final", "31/12/2025");
+
+    carregarTabelas();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
+      expect(
+        screen.queryAllByText(/- CEU EMEF, CEU GESTÃO, EMEF, EMEFM/i),
+      ).toHaveLength(2);
+      expect(screen.queryAllByText(/- EJA/i)).toHaveLength(2);
+      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
+    });
+
+    setInput(
+      "tabelas[Preço das Alimentações].Refeição - CEU EMEF, CEU GESTÃO, EMEF, EMEFM.valor_unitario",
+      "5,00",
+    );
+    setInput(
+      "tabelas[Preço das Alimentações].Refeição - CEU EMEF, CEU GESTÃO, EMEF, EMEFM.valor_unitario_reajuste",
+      "5,00",
+    );
+    setInput(
+      "tabelas[Preço das Alimentações].Refeição - EJA.valor_unitario",
+      "6,00",
+    );
+    setInput(
+      "tabelas[Preço das Alimentações].Refeição - EJA.valor_unitario_reajuste",
+      "6,00",
+    );
+    const totalRefeicaoEmef = screen.getByTestId(
+      "tabelas[Preço das Alimentações].Refeição - CEU EMEF, CEU GESTÃO, EMEF, EMEFM.valor_unitario_total",
+    );
+    const totalRefeicaoEja = screen.getByTestId(
+      "tabelas[Preço das Alimentações].Refeição - EJA.valor_unitario_total",
+    );
+    const totalDietasTipoAEmef = screen.getByTestId(
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Refeição - Dieta Enteral - CEU EMEF, CEU GESTÃO, EMEF, EMEFM.valor_unitario",
+    );
+    const totalDietasTipoAEja = screen.getByTestId(
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Refeição - Dieta Enteral - EJA.valor_unitario",
+    );
+
+    await waitFor(() => {
+      expect(totalRefeicaoEmef.value).toBe("10,00");
+      expect(totalDietasTipoAEmef.value).toBe("10,00");
+      expect(totalRefeicaoEja.value).toBe("12,00");
+      expect(totalDietasTipoAEja.value).toBe("12,00");
+    });
+  });
+
   it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 5 - EMEBS", async () => {
     setSelect("edital-select", "ff94d604-4468-4553-9b54-6b428ce3be75");
     setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
@@ -238,9 +307,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     setData("data_inicial", "01/12/2025");
     setData("data_final", "31/12/2025");
 
-    const botao = screen.getByTestId("botao-carregar");
-    expect(botao).toBeInTheDocument();
-    fireEvent.click(botao);
+    carregarTabelas();
 
     await waitFor(() => {
       expect(screen.queryAllByText(/Preço das Alimentações/i)).toHaveLength(2);
@@ -275,6 +342,38 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       expect(totalAlimentacoesFundamental.value).toBe("20,00");
       expect(totalDietasTipoAFundamental.value).toBe("20,00");
       expect(totalDietasTipoBFundamental.value).toBe("20,00");
+    });
+  });
+
+  it("deve preencher os campos obrigatórios, clicar em carregar e visualizar tabelas grupo 6 - CIEJA", async () => {
+    setSelect("edital-select", "172e71fa-e0df-4842-a91c-4542d5778aae");
+    setSelect("lote-select", "775d49c5-9a84-4d5b-93e4-aa9d3a5f4459");
+    setSelect("grupo-unidade-select", "fd04e2b8-c952-46f4-b5af-7260e6b7ace8");
+    setData("data_inicial", "01/12/2025");
+    setData("data_final", "31/12/2025");
+
+    carregarTabelas();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Preço das Dietas Tipo A e Tipo A Enteral/i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Alimentações/i)).toBeInTheDocument();
+      expect(screen.getByText(/Preço das Dietas Tipo B/i)).toBeInTheDocument();
+      expect(screen.getByText(/Kit Lanche/i)).toBeInTheDocument();
+    });
+
+    const botaoSalvar = screen.getByTestId("botao-salvar");
+    expect(botaoSalvar).toBeInTheDocument();
+    fireEvent.click(botaoSalvar);
+
+    const botaoSim = screen.getByText("Sim").closest("button");
+    fireEvent.click(botaoSim);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Parametrização Financeira cadastrada com sucesso!"),
+      ).toBeInTheDocument();
     });
   });
 

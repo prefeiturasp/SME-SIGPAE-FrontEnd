@@ -2286,6 +2286,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alimentacoesLancamentosEspeciais,
                                                           ehProgramasEProjetosLocation,
                                                           dadosValoresInclusoesAutorizadasState,
+                                                          kitLanchesAutorizadas,
+                                                          alteracoesAlimentacaoAutorizadas,
                                                           ehUltimoDiaLetivoDoAno,
                                                           calendarioMesConsiderado,
                                                         )}
@@ -2484,6 +2486,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alimentacoesLancamentosEspeciais,
                                                           ehProgramasEProjetosLocation,
                                                           dadosValoresInclusoesAutorizadasState,
+                                                          kitLanchesAutorizadas,
+                                                          alteracoesAlimentacaoAutorizadas,
                                                           ehUltimoDiaLetivoDoAno,
                                                           calendarioMesConsiderado,
                                                         )}
