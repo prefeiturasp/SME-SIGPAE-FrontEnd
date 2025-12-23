@@ -11,25 +11,25 @@ import {
 type OpcaoConflito = "manter" | "encerrar_copiar" | "encerrar_novo" | null;
 
 type Props = {
-  showModal: boolean;
-  setShowModal: (_e: boolean) => void;
+  conflito: boolean;
+  setConflito: (_e: boolean) => void;
   onContinuar?: (_opcao: OpcaoConflito) => void;
 };
 
-const ModalConflito = ({ showModal, setShowModal, onContinuar }: Props) => {
+const ModalConflito = ({ conflito, setConflito, onContinuar }: Props) => {
   const [opcaoSelecionada, setOpcaoSelecionada] =
     React.useState<OpcaoConflito>(null);
 
   const handleContinuar = () => {
     onContinuar?.(opcaoSelecionada);
-    setShowModal(false);
+    setConflito(false);
   };
 
   return (
     <Modal
-      show={showModal}
+      show={conflito}
       onHide={() => {
-        setShowModal(false);
+        setConflito(null);
         setOpcaoSelecionada(null);
       }}
       centered

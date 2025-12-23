@@ -198,7 +198,7 @@ export default ({
     uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
 
   const getGruposPendentes = async (
-    setShowModalConflito: (_e: boolean) => void,
+    setParametrizacaoConflito: (_e: string) => void,
   ) => {
     try {
       const { edital, lote, grupo_unidade_escolar } = form.getState().values;
@@ -219,7 +219,7 @@ export default ({
           e.grupo_unidade_escolar.nome !==
           grupoNome.replace(/\s*\(.*?\)\s*/g, "").trim()
         )
-          return false;
+          return null;
 
         const dataInicial = new Date(e.data_inicial);
         const dataFinal = e.data_final ? new Date(e.data_final) : null;
@@ -227,10 +227,11 @@ export default ({
         const iniciou = dataInicial <= hoje;
         const naoExpirou = !dataFinal || dataFinal >= hoje;
 
-        return iniciou && naoExpirou;
+        if (iniciou && naoExpirou) return e;
       });
 
-      if (parametrizacaoConflito) setShowModalConflito(true);
+      if (parametrizacaoConflito)
+        setParametrizacaoConflito(parametrizacaoConflito.uuid);
       else {
         const numeroGrupo = grupoNome.match(/\d+/)?.[0];
 

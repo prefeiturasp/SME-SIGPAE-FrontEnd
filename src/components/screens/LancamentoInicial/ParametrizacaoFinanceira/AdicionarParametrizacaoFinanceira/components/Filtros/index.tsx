@@ -16,8 +16,13 @@ import {
   FaixaEtaria,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import ModalConflito from "../ModalConflito";
-import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
-import { useNavigate } from "react-router-dom";
+import {
+  toastSuccess,
+  toastError,
+} from "src/components/Shareable/Toast/dialogs";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
+import { carregarValores } from "../../helpers";
 
 type Cadastro = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
@@ -50,6 +55,7 @@ export default (props: Props) => {
   const form = props.ehCadastro && props.form;
   const uuidParametrizacao = props.ehCadastro && props.uuidParametrizacao;
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const view = useView({
     setGrupoSelecionado,
@@ -62,12 +68,51 @@ export default (props: Props) => {
     form,
   });
 
-  const [showModalConflito, setShowModalConflito] = useState(false);
+  const [parametrizacaoConflito, setParametrizacaoConflito] = useState(null);
 
-  const onChangeConflito = (opcao: string) => {
-    if (opcao === "manter") {
-      toastSuccess("Parametrização Financeira mantida com sucesso!");
-      navigate(-1);
+  const onChangeConflito = async (opcao: string) => {
+    try {
+      if (opcao === "manter") {
+        toastSuccess("Parametrização Financeira mantida com sucesso!");
+        navigate(-1);
+      } else if (opcao === "encerrar_copiar") {
+        const { data_inicial, data_final, ...rest } = form.getState().values;
+
+        const response =
+          await ParametrizacaoFinanceiraService.cloneParametrizacaoFinanceira(
+            parametrizacaoConflito,
+            {
+              data_inicial: data_inicial,
+              data_final: data_final,
+              ...rest,
+            },
+          );
+
+        if (response.uuid) {
+          form.change(
+            "tabelas",
+            carregarValores(
+              response.tabelas,
+              response.grupo_unidade_escolar.nome,
+            ),
+          );
+          const params = new URLSearchParams(searchParams);
+          params.set("nova_uuid", response.uuid);
+          setSearchParams(params);
+          setParametrizacaoConflito(null);
+        } else
+          toastError(
+            "Erro ao encerrar e criar nova parametrização financeira.",
+          );
+      } else if (opcao === "encerrar_novo") {
+        await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
+          parametrizacaoConflito,
+          { data_final: moment().format("YYYY-MM-DD") },
+        );
+        setParametrizacaoConflito(null);
+      }
+    } catch {
+      toastError("Ocorreu um erro inesperado");
     }
   };
 
@@ -177,7 +222,7 @@ export default (props: Props) => {
                   type={BUTTON_TYPE.BUTTON}
                   onClick={() => {
                     if (!uuidParametrizacao && form)
-                      view.getGruposPendentes(setShowModalConflito);
+                      view.getGruposPendentes(setParametrizacaoConflito);
                     setCarregarTabelas(true);
                   }}
                 />
@@ -187,8 +232,8 @@ export default (props: Props) => {
         )}
       </FormSpy>
       <ModalConflito
-        showModal={showModalConflito}
-        setShowModal={setShowModalConflito}
+        conflito={!!parametrizacaoConflito}
+        setConflito={setParametrizacaoConflito}
         onContinuar={onChangeConflito}
       />
     </div>
