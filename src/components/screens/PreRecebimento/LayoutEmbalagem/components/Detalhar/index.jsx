@@ -23,6 +23,7 @@ import { detalharLayoutEmbalagem } from "src/services/layoutEmbalagem.service";
 
 import ModalCancelarAnalise from "./components/ModalCancelarAnalise";
 import ModalCancelarCorrecao from "./components/ModalCancelarCorrecao";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 import "./styles.scss";
 
 export default () => {
@@ -248,9 +249,16 @@ export default () => {
           </div>
           <div className="row mt-2">
             <div className="col-6">
-              <span className="valor-dados-produto">
-                {objeto.numero_ficha_tecnica} - {objeto.nome_produto}
-              </span>
+              <div className="d-flex align-items-center">
+                <span className="valor-dados-produto">
+                  {objeto.numero_ficha_tecnica} - {objeto.nome_produto}
+                </span>
+                {objeto.programa === "LEVE_LEITE" && (
+                  <div className="ms-2">
+                    <TagLeveLeite />
+                  </div>
+                )}
+              </div>
             </div>
             <div className="col-3">
               <span className="valor-dados-produto">

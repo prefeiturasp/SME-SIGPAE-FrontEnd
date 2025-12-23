@@ -18,6 +18,7 @@ import { DocumentosRecebimentoParaAnalise } from "src/interfaces/pre_recebimento
 import OutrosDocumentos from "../OutrosDocumentos";
 import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
 import { formataMilharDecimal } from "src/helpers/utilities";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 export default () => {
   const navigate = useNavigate();
@@ -118,6 +119,13 @@ export default () => {
                 label="Nome do Produto"
                 valorInicial={objeto.nome_produto}
                 disabled={true}
+                suffix={
+                  objeto.programa_leve_leite && (
+                    <div className="me-2">
+                      <TagLeveLeite />
+                    </div>
+                  )
+                }
               />
             </div>
             <div className="col-6">
