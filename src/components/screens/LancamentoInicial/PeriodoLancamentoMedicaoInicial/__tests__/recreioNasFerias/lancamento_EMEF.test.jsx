@@ -671,4 +671,57 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
     expect(botao).toBeInTheDocument();
     expect(botao).not.toBeDisabled();
   });
+
+  it("ao clicar na tab `Semana 1`, preenche dia 04 e salva lançamento", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+
+    const valores = {
+      frequencia: "95",
+      lanche_4h: "85",
+      lanche: "85",
+      refeicao: "80",
+      repeticao_refeicao: "70",
+      sobremesa: "85",
+      repeticao_sobremesa: "75",
+    };
+
+    const campos = [
+      { key: "frequencia", testId: "frequencia" },
+      { key: "lanche_4h", testId: "lanche_4h" },
+      { key: "lanche", testId: "lanche" },
+      { key: "refeicao", testId: "refeicao" },
+      { key: "repeticao_refeicao", testId: "repeticao_refeicao" },
+      { key: "sobremesa", testId: "sobremesa" },
+      { key: "repeticao_sobremesa", testId: "repeticao_sobremesa" },
+    ];
+
+    campos.forEach(({ key, testId }) => {
+      const input = screen.getByTestId(`${testId}__dia_04__categoria_1`);
+      fireEvent.change(input, { target: { value: valores[key] } });
+    });
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Lançamentos salvos com sucesso"),
+      ).toBeInTheDocument();
+    });
+
+    const valoresEsperados = { participantes: "100", ...valores };
+    const camposAtualizados = [
+      { key: "participantes", testId: "participantes" },
+      ...campos,
+    ];
+
+    camposAtualizados.forEach(({ key, testId }) => {
+      const input = screen.getByTestId(`${testId}__dia_04__categoria_1`);
+      expect(input).toHaveAttribute("value", valoresEsperados[key]);
+    });
+  });
 });
