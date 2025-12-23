@@ -139,7 +139,10 @@ export const InputText = (props) => {
               : "Lançamento maior do que o registrado na 1º Oferta. Confira a digitação."
           }`}
         >
-          <i className="fas fa-info icone-info-success" />
+          <i
+            className="fas fa-info icone-info-success"
+            data-test-id={`tooltip_${input.name}`}
+          />
         </Tooltip>
       )}
       {exibirTooltipAlimentacoesAutorizadasDiaNaoLetivo() && (
