@@ -35,8 +35,6 @@ import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
 import { ToastContainer } from "react-toastify";
 
-import preview from "jest-preview";
-
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
@@ -185,7 +183,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
 
   it("renderiza as labels `Semana 1` e `Semana 2`", async () => {
     await awaitServices();
-    preview.debug();
     expect(screen.getByText("Semana 1")).toBeInTheDocument();
     expect(screen.getByText("Semana 2")).toBeInTheDocument();
   });
@@ -230,7 +227,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
 
   it("ao clicar na tab `Semana 1`, exibe, nos dias 01 a 07, e verifica oa lançamentos", async () => {
     await awaitServices();
-    preview.debug();
     const semana1Element = screen.getByText("Semana 1");
     fireEvent.click(semana1Element);
 
@@ -381,7 +377,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
     await awaitServices();
     const semana1Element = screen.getByText("Semana 2");
     fireEvent.click(semana1Element);
-    preview.debug();
     const VALORES_ESPERADOS = {
       8: {
         participantes: "100",
@@ -615,5 +610,65 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
     const botao = screen.getByText("Salvar Lançamentos").closest("button");
     expect(botao).toBeInTheDocument();
     expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 1`, preencher repetição de refeição maior que refeição e exibe atenção", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+
+    const inputRefeicao = screen.getByTestId("refeicao__dia_05__categoria_1");
+    fireEvent.change(inputRefeicao, {
+      target: { value: "60" },
+    });
+
+    const inputRepeticaoRefeicao = screen.getByTestId(
+      "repeticao_refeicao__dia_05__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputRepeticaoRefeicao, {
+        target: { value: "170" },
+      });
+    });
+
+    const tooltip = document.querySelector(
+      '[data-test-id="tooltip_repeticao_refeicao__dia_05__categoria_1"]',
+    );
+    expect(tooltip).not.toBeNull();
+    expect(tooltip).toHaveClass("icone-info-success");
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 1`, preencher repetição de sobremesa maior que sobremesa e exibe atenção", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+
+    const inputRefeicao = screen.getByTestId("sobremesa__dia_05__categoria_1");
+    fireEvent.change(inputRefeicao, {
+      target: { value: "60" },
+    });
+
+    const inputRepeticaoRefeicao = screen.getByTestId(
+      "repeticao_sobremesa__dia_05__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputRepeticaoRefeicao, {
+        target: { value: "170" },
+      });
+    });
+
+    const tooltip = document.querySelector(
+      '[data-test-id="tooltip_repeticao_sobremesa__dia_05__categoria_1"]',
+    );
+    expect(tooltip).not.toBeNull();
+    expect(tooltip).toHaveClass("icone-info-success");
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
   });
 });
