@@ -71,3 +71,21 @@ describe("Propriedades específicas", () => {
     });
   });
 });
+
+describe("Uso do fluxoMedicaoInicial em funções", () => {
+  test("função que filtra por status deve retornar apenas o item correto", () => {
+    const filtrarPorStatus = (status) =>
+      fluxoMedicaoInicial.filter((item) =>
+        item.status_evento_explicacao.includes(status),
+      );
+
+    const resultado = filtrarPorStatus("não Iniciada");
+    expect(resultado).toHaveLength(1);
+    expect(resultado[0].status_evento_explicacao).toBe(
+      "Solicitação de Medição não Iniciada",
+    );
+
+    const resultadoVazio = filtrarPorStatus("CODAE");
+    expect(resultadoVazio).toHaveLength(0);
+  });
+});
