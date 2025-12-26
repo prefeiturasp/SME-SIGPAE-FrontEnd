@@ -739,6 +739,14 @@ export const validacoesTabelaAlimentacao = (
     ) {
       return "A quantidade somada de alunos frequentes no infantil e fundamental é maior que a quantidade de Número de Alunos.";
     }
+  } else if (
+    value &&
+    location.state &&
+    location.state.grupo === "Recreio nas Férias" &&
+    inputName.includes("frequencia") &&
+    Number(value) > maxMatriculados
+  ) {
+    return `A frequência não pode ser maior que o número de participantes.`;
   }
   return undefined;
 };
