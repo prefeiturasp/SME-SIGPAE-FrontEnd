@@ -98,13 +98,6 @@ export const fluxoMedicaoInicial = [
     usuario: null,
     status_evento_explicacao: "Solicitação de Medição não Iniciada",
   },
-  {
-    titulo: "Aguardando encerramento pela CODAE",
-    status: "",
-    criado_em: "",
-    usuario: null,
-    status_evento_explicacao: "Aguardando encerramento pela CODAE",
-  },
 ];
 
 export const tipoDeStatus = (status) => {
