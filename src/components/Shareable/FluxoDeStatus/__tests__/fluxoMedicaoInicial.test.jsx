@@ -57,3 +57,17 @@ describe("Estrutura do fluxoMedicaoInicial", () => {
     });
   });
 });
+
+describe("Propriedades específicas", () => {
+  test("usuario deve ser null em todos os itens", () => {
+    fluxoMedicaoInicial.forEach((item) => {
+      expect(item.usuario).toBeNull();
+    });
+  });
+
+  test("status deve ser string vazia em todos os itens", () => {
+    fluxoMedicaoInicial.forEach((item) => {
+      expect(item.status).toBe("");
+    });
+  });
+});
