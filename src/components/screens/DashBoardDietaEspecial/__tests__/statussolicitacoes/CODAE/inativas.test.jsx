@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { act, screen } from "@testing-library/react";
-import { debug } from "jest-preview";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -61,7 +60,6 @@ describe("Teste StatusSolicitacoes - Inativas - CODAE", () => {
 
   it("Deve renderizar a tela de Solicitações Dieta Especial - Inativas", () => {
     expect(screen.queryAllByText("Status Solicitações")).toHaveLength(2);
-    debug();
     expect(screen.getByText("Inativas")).toBeInTheDocument();
     expect(
       screen.queryAllByText(

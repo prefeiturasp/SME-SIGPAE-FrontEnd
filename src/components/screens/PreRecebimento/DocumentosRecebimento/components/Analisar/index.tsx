@@ -22,6 +22,7 @@ import {
 import { getNomesEAbreviacoesUnidadesMedida } from "src/services/qualidade.service";
 import { getListaLaboratoriosCredenciados } from "src/services/laboratorio.service";
 import InputText from "src/components/Shareable/Input/InputText";
+import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
 import {
   DocumentosRecebimentoParaAnalise,
   OptionsGenerico,
@@ -45,6 +46,8 @@ import {
 import ArquivosTipoRecebimento from "../ArquivosTipoDocumento";
 import OutrosDocumentos from "../OutrosDocumentos";
 import { STATUS_DOCUMENTOS_DE_RECEBIMENTO } from "src/constants/shared";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
+import { dataMask } from "src/constants/shared";
 
 export default () => {
   const navigate = useNavigate();
@@ -392,6 +395,13 @@ export default () => {
                       valorInicial={objeto.nome_produto}
                       required
                       disabled={true}
+                      suffix={
+                        objeto.programa_leve_leite && (
+                          <div className="me-2">
+                            <TagLeveLeite />
+                          </div>
+                        )
+                      }
                     />
                   </div>
                   <div className="col-6">
@@ -529,15 +539,15 @@ export default () => {
                       </div>
                       <div className="col">
                         <Field
-                          component={InputComData}
+                          component={MaskedInputText}
                           label="Data de Validade"
                           name={`data_validade_${index}`}
                           placeholder="Selecione uma Data"
                           className="input-analise"
                           required
                           validate={required}
-                          minDate={new Date()}
                           disabled={documentoRecebimentoPassouPorAprovacao}
+                          mask={dataMask}
                         />
                       </div>
                       <div className="col">

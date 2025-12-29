@@ -64,6 +64,7 @@ export const mockCronogramaCadastroRecebimento = {
       },
     ],
     sistema_vedacao_embalagem_secundaria: "gelado",
+    programa_leve_leite: true,
   },
 };
 

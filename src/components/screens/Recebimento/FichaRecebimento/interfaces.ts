@@ -164,6 +164,7 @@ export interface CronogramaFicha {
   qtd_total_programada: string;
   uuid: string;
   sistema_vedacao_embalagem_secundaria: string;
+  programa_leve_leite?: boolean;
 }
 
 export interface FiltrosFichaRecebimento {
@@ -182,6 +183,7 @@ export interface FichaDeRecebimentoItemListagem {
   pregao_chamada_publica?: string;
   data_recebimento?: string;
   status?: string;
+  programa_leve_leite?: boolean;
 }
 
 export interface ResponseFichasDeRecebimento extends ResponseInterface {
