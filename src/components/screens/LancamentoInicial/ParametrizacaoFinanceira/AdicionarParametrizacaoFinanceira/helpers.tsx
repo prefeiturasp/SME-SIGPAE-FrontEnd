@@ -200,3 +200,9 @@ export const normalizar = (texto = "") =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
+
+export const parseDate = (str: string) => {
+  if (!str) return null;
+  const [dia, mes, ano] = str.split("/").map(Number);
+  return new Date(ano, mes - 1, dia);
+};
