@@ -26,4 +26,5 @@ export interface CronogramaRelatorio {
   qtd_total_programada: number;
   status: string;
   uuid: string;
+  programa_leve_leite?: boolean;
 }
