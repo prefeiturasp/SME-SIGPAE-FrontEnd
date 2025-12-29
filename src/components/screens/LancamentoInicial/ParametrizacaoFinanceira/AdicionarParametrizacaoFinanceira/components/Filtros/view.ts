@@ -197,7 +197,9 @@ export default ({
   const initialGrupoUnidade =
     uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
 
-  const getGruposPendentes = async () => {
+  const getGruposPendentes = async (
+    setParametrizacaoConflito: (_e: string) => void,
+  ) => {
     try {
       const { edital, lote, grupo_unidade_escolar } = form.getState().values;
 
@@ -206,51 +208,72 @@ export default ({
           edital,
           lote,
         });
-
       const grupoNome = gruposUnidadesOpcoes.find(
         (e) => e.uuid === grupo_unidade_escolar,
       ).nome;
 
-      const numeroGrupo = grupoNome.match(/\d+/)?.[0];
+      const hoje = new Date();
 
-      const grupoPendencias = {
-        "2": ["grupo 1", "grupo 3"],
-        "5": ["grupo 3", "grupo 4"],
-      };
+      const parametrizacaoConflito = results.find((e) => {
+        if (
+          e.grupo_unidade_escolar.nome !==
+          grupoNome.replace(/\s*\(.*?\)\s*/g, "").trim()
+        )
+          return null;
 
-      let dadosTabelas = form.getState().values.tabelas;
-      const pendencias = grupoPendencias[numeroGrupo] ?? [];
-      for (const grupoPendencia of pendencias) {
-        const pendencia = results.find(
-          (parametrizacao) =>
-            parametrizacao.grupo_unidade_escolar.nome.toLowerCase() ===
-            grupoPendencia,
-        );
-        if (pendencia) {
-          const response =
-            await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
-              pendencia.uuid,
-            );
-          const dados = carregarValores(
-            response.tabelas,
-            grupoNome,
-            grupoPendencia,
+        const dataInicial = new Date(e.data_inicial);
+        const dataFinal = e.data_final ? new Date(e.data_final) : null;
+
+        const iniciou = dataInicial <= hoje;
+        const naoExpirou = !dataFinal || dataFinal >= hoje;
+
+        if (iniciou && naoExpirou) return e;
+      });
+
+      if (parametrizacaoConflito)
+        setParametrizacaoConflito(parametrizacaoConflito.uuid);
+      else {
+        const numeroGrupo = grupoNome.match(/\d+/)?.[0];
+
+        const grupoPendencias = {
+          "2": ["grupo 1", "grupo 3"],
+          "5": ["grupo 3", "grupo 4"],
+        };
+
+        let dadosTabelas = form.getState().values.tabelas;
+        const pendencias = grupoPendencias[numeroGrupo] ?? [];
+        for (const grupoPendencia of pendencias) {
+          const pendencia = results.find(
+            (parametrizacao) =>
+              parametrizacao.grupo_unidade_escolar.nome.toLowerCase() ===
+              grupoPendencia,
           );
+          if (pendencia) {
+            const response =
+              await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
+                pendencia.uuid,
+              );
+            const dados = carregarValores(
+              response.tabelas,
+              grupoNome,
+              grupoPendencia,
+            );
 
-          for (const chave of Object.keys(dados)) {
-            dadosTabelas = {
-              ...dadosTabelas,
-              [chave]: {
-                ...dadosTabelas[chave],
-                ...dados[chave],
-              },
-            };
+            for (const chave of Object.keys(dados)) {
+              dadosTabelas = {
+                ...dadosTabelas,
+                [chave]: {
+                  ...dadosTabelas[chave],
+                  ...dados[chave],
+                },
+              };
+            }
           }
         }
-      }
 
-      if (Object.keys(dadosTabelas).length > 0)
-        form.change("tabelas", dadosTabelas);
+        if (Object.keys(dadosTabelas).length > 0)
+          form.change("tabelas", dadosTabelas);
+      }
     } catch {
       toastError("Erro ao carregar valores do grupo selecionado.");
     }
