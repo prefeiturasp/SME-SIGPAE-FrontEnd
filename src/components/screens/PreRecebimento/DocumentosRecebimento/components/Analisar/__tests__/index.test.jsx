@@ -573,4 +573,32 @@ describe("AnaliseDocumentosRecebimento - Testes Completos", () => {
       });
     });
   });
+
+  describe("TagLeveLeite", () => {
+    it("exibe a tag LEVE LEITE - PLL quando o programa é LEVE_LEITE", async () => {
+      mock.onGet(/\/documentos-de-recebimento\/.*\/?/).reply(200, {
+        ...mockDadosDocumento,
+        programa_leve_leite: true,
+      });
+
+      await setup();
+
+      await waitFor(() => {
+        expect(screen.getByText("LEVE LEITE - PLL")).toBeInTheDocument();
+      });
+    });
+
+    it("não exibe a tag LEVE LEITE - PLL quando o programa não é LEVE_LEITE", async () => {
+      mock.onGet(/\/documentos-de-recebimento\/.*\/?/).reply(200, {
+        ...mockDadosDocumento,
+        programa_leve_leite: false,
+      });
+
+      await setup();
+
+      await waitFor(() => {
+        expect(screen.queryByText("LEVE LEITE - PLL")).not.toBeInTheDocument();
+      });
+    });
+  });
 });

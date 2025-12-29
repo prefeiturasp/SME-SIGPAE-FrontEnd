@@ -298,4 +298,32 @@ describe("AnaliseLayoutEmbalagem - Testes Completos", () => {
       expect(screen.getAllByText("Reprovar")).toHaveLength(3);
     });
   });
+
+  describe("TagLeveLeite", () => {
+    it("exibe a tag LEVE LEITE - PLL quando o programa é LEVE_LEITE", async () => {
+      mock.onGet(/\/layouts-de-embalagem\/.*\/?/).reply(200, {
+        ...mockAnaliseLayoutEmbalagem,
+        programa: "LEVE_LEITE",
+      });
+
+      await setup();
+
+      await waitFor(() => {
+        expect(screen.getByText("LEVE LEITE - PLL")).toBeInTheDocument();
+      });
+    });
+
+    it("não exibe a tag LEVE LEITE - PLL quando o programa não é LEVE_LEITE", async () => {
+      mock.onGet(/\/layouts-de-embalagem\/.*\/?/).reply(200, {
+        ...mockAnaliseLayoutEmbalagem,
+        programa: "ALIMENTACAO_ESCOLAR",
+      });
+
+      await setup();
+
+      await waitFor(() => {
+        expect(screen.queryByText("LEVE LEITE - PLL")).not.toBeInTheDocument();
+      });
+    });
+  });
 });

@@ -19,7 +19,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   diasDaSemanaSelecionada,
   ehEmeiDaCemeiLocation,
   ehSolicitacoesAlimentacaoLocation,
-  ehProgramasEProjetosLocation
+  ehProgramasEProjetosLocation,
 ) => {
   if (
     (ehEmeiDaCemeiLocation &&
@@ -38,7 +38,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   }
   const valuesAsArray = Object.entries(values);
   const arrayCategoriesValues = valuesAsArray.filter(([key]) =>
-    key.includes("categoria")
+    key.includes("categoria"),
   );
   let valoresMedicao = [];
 
@@ -103,8 +103,8 @@ export const formatarPayloadParaCorrecao = (payload) => {
   let payloadParaCorrecao = payload.valores_medicao.filter(
     (valor) =>
       !["matriculados", "dietas_autorizadas", "numero_de_alunos"].includes(
-        valor.nome_campo
-      )
+        valor.nome_campo,
+      ),
   );
   return payloadParaCorrecao;
 };
@@ -112,11 +112,11 @@ export const formatarPayloadParaCorrecao = (payload) => {
 export const deveExistirObservacao = (
   categoria,
   values,
-  calendarioMesConsiderado
+  calendarioMesConsiderado,
 ) => {
   let diasNaoLetivos = [];
   const objDiasNaoLetivos = calendarioMesConsiderado.filter(
-    (obj) => !obj.dia_letivo
+    (obj) => !obj.dia_letivo,
   );
   objDiasNaoLetivos.map((obj) => diasNaoLetivos.push(obj.dia));
 
@@ -129,7 +129,7 @@ export const deveExistirObservacao = (
       !key.includes("frequencia") &&
       !key.includes("observacoes") &&
       !["Mês anterior", "Mês posterior", null].includes(value) &&
-      diasNaoLetivos.some((dia) => key.includes(dia))
+      diasNaoLetivos.some((dia) => key.includes(dia)),
   );
   let dias = [];
   arrayCategoriesValuesDiasNaoletivos.forEach((arr) => {
@@ -140,8 +140,22 @@ export const deveExistirObservacao = (
 
   return !dias.every(
     (dia) =>
-      values[`observacoes__dia_${dia}__categoria_${categoria}`] !== undefined
+      values[`observacoes__dia_${dia}__categoria_${categoria}`] !== undefined,
   );
+};
+
+export const ehUltimoDiaLetivoDoAno = (
+  dia,
+  calendarioMesConsiderado,
+  mesConsiderado,
+) => {
+  if (mesConsiderado !== "dezembro") return false;
+  const ultimoDia = calendarioMesConsiderado
+    .filter((d_) => d_.dia_letivo)
+    .sort((a, b) => a.dia - b.dia)[
+    calendarioMesConsiderado.filter((d_) => d_.dia_letivo).length - 1
+  ].dia;
+  return Number(ultimoDia) === Number(dia);
 };
 
 export const desabilitarField = (
@@ -165,7 +179,11 @@ export const desabilitarField = (
   permissoesLancamentosEspeciaisPorDia,
   alimentacoesLancamentosEspeciais,
   ehProgramasEProjetosLocation,
-  dadosValoresInclusoesAutorizadasState
+  dadosValoresInclusoesAutorizadasState,
+  kitLanchesAutorizadas,
+  alteracoesAlimentacaoAutorizadas,
+  ehUltimoDiaLetivoDoAno,
+  calendarioMesConsiderado,
 ) => {
   let alimentacoesLancamentosEspeciaisDia = [];
 
@@ -203,13 +221,13 @@ export const desabilitarField = (
           !["Mês anterior", "Mês posterior"].includes(
             values[
               `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-            ]
+            ],
           ) &&
           parseInt(
             values[
               `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-            ]
-          ) > 0
+            ],
+          ) > 0,
       );
       if (
         resultado &&
@@ -232,8 +250,8 @@ export const desabilitarField = (
             !["Mês anterior", "Mês posterior"].includes(
               values[
                 `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-              ]
-            )
+              ],
+            ),
         );
       if (resultado) {
         return (
@@ -243,7 +261,7 @@ export const desabilitarField = (
           Number(
             values[
               `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-            ]
+            ],
           ) === 0
         );
       }
@@ -254,13 +272,13 @@ export const desabilitarField = (
         ...new Set(
           permissoesLancamentosEspeciaisPorDia
             .filter((permissao) => permissao.dia === dia)
-            .flatMap((permissao) => permissao.alimentacoes)
+            .flatMap((permissao) => permissao.alimentacoes),
         ),
       ];
     }
     if (
       ["Mês anterior", "Mês posterior"].includes(
-        values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
       )
     )
       return true;
@@ -270,9 +288,9 @@ export const desabilitarField = (
         (inclusao.alimentacoes
           .split(", ")
           .includes(
-            rowName.includes("repeticao") ? rowName.split("_")[1] : rowName
+            rowName.includes("repeticao") ? rowName.split("_")[1] : rowName,
           ) ||
-          rowName === "frequencia")
+          rowName === "frequencia"),
     );
 
     if (!resultado && ehProgramasEProjetosLocation) return true;
@@ -281,7 +299,7 @@ export const desabilitarField = (
         const valueDietasAutorizadasEhZero = () => {
           return (
             Number(
-              values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]
+              values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
             ) === 0
           );
         };
@@ -304,7 +322,7 @@ export const desabilitarField = (
   if (
     ehDiaParaCorrigir(dia, categoria, diasParaCorrecao) &&
     !["Mês anterior", "Mês posterior"].includes(
-      values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+      values[`${rowName}__dia_${dia}__categoria_${categoria}`],
     ) &&
     location.state &&
     [
@@ -314,7 +332,7 @@ export const desabilitarField = (
       "MEDICAO_CORRIGIDA_PARA_CODAE",
     ].includes(location.state.status_periodo) &&
     !["matriculados", "numero_de_alunos", "dietas_autorizadas"].includes(
-      rowName
+      rowName,
     )
   ) {
     if (location.state && ehEscolaTipoCEMEI({ nome: location.state.escola })) {
@@ -368,7 +386,7 @@ export const desabilitarField = (
           !validacaoDiaLetivo(dia) &&
           inclusoesAutorizadas.filter((inc) => inc.dia === dia).length)) &&
       !["Mês anterior", "Mês posterior"].includes(
-        values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
       )
     ) {
       return false;
@@ -384,16 +402,40 @@ export const desabilitarField = (
     locale: ptBR,
   }).toString();
 
+  if (nomeCategoria.includes("SOLICITAÇÕES")) {
+    if (
+      (!kitLanchesAutorizadas?.some((kitLanche) => kitLanche.dia === dia) &&
+        rowName === "kit_lanche") ||
+      (!alteracoesAlimentacaoAutorizadas?.some(
+        (lancheEmergencial) => lancheEmergencial.dia === dia,
+      ) &&
+        rowName === "lanche_emergencial") ||
+      (mesConsiderado === mesAtual &&
+        Number(dia) >= format(mesAnoDefault, "dd")) ||
+      ["Mês anterior", "Mês posterior"].includes(
+        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
+      )
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   if (
     (location && location.state && location.state.ehEmeiDaCemei) ||
     ehSolicitacoesAlimentacaoLocation
   ) {
     if (
       ["Mês anterior", "Mês posterior"].includes(
-        values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
       ) ||
       (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd")) ||
+        Number(dia) >= format(mesAnoDefault, "dd") &&
+        !ehUltimoDiaLetivoDoAno(
+          dia,
+          calendarioMesConsiderado,
+          mesConsiderado,
+        )) ||
       !validacaoDiaLetivo(dia)
     ) {
       return true;
@@ -405,7 +447,7 @@ export const desabilitarField = (
         (rowName === "dietas_autorizadas" ||
           !values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`])) ||
       Number(
-        values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]
+        values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
       ) === 0 ||
       Number(values[`matriculados__dia_${dia}__categoria_${categoria}`]) === 0
     ) {
@@ -421,7 +463,7 @@ export const desabilitarField = (
         return true;
       } else if (
         !Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
-          key.includes(`__dia_${dia}`)
+          key.includes(`__dia_${dia}`),
         )
       ) {
         return true;
@@ -435,7 +477,7 @@ export const desabilitarField = (
         return true;
       } else if (
         !Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
-          key.includes(`__dia_${dia}`)
+          key.includes(`__dia_${dia}`),
         )
       ) {
         return true;
@@ -454,10 +496,15 @@ export const desabilitarField = (
       ["Mês anterior", "Mês posterior"].includes(
         values[
           `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-        ]
+        ],
       ) ||
       (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd")) ||
+        Number(dia) >= format(mesAnoDefault, "dd") &&
+        !ehUltimoDiaLetivoDoAno(
+          dia,
+          calendarioMesConsiderado,
+          mesConsiderado,
+        )) ||
       !validacaoDiaLetivo(dia)
     ) {
       return true;
@@ -475,12 +522,12 @@ export const desabilitarField = (
       Number(
         values[
           `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-        ]
+        ],
       ) === 0 ||
       Number(
         values[
           `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-        ]
+        ],
       ) === 0
     ) {
       return true;
@@ -495,7 +542,7 @@ export const getSolicitacoesInclusaoAutorizadasAsync = async (
   mes,
   ano,
   periodos_escolares,
-  location = null
+  location = null,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
@@ -525,7 +572,7 @@ export const getSolicitacoesInclusaoAutorizadasAsync = async (
 export const getSolicitacoesInclusoesEtecAutorizadasAsync = async (
   escolaUuuid,
   mes,
-  ano
+  ano,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
@@ -546,7 +593,7 @@ export const getSolicitacoesSuspensoesAutorizadasAsync = async (
   escolaUuuid,
   mes,
   ano,
-  nome_periodo_escolar
+  nome_periodo_escolar,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
@@ -569,7 +616,7 @@ export const getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync = async (
   mes,
   ano,
   nomePeriodoEscolar,
-  ehLancheEmergencial = false
+  ehLancheEmergencial = false,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
@@ -593,7 +640,7 @@ export const getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync = async (
 export const getSolicitacoesKitLanchesAutorizadasAsync = async (
   escolaUuuid,
   mes,
-  ano
+  ano,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
@@ -615,7 +662,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
   periodoGrupo,
   faixasEtarias = null,
   inclusoesAutorizadas = null,
-  valores_medicao = null
+  valores_medicao = null,
 ) => {
   let faixas_etarias_alimentacao = [];
   let faixas_etarias_objs_alimentacao = [];
@@ -624,7 +671,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
   const formataFaixasPeriodoManhaTarde = () => {
     if (["MANHA", "TARDE"].includes(periodoGrupo)) {
       faixas_etarias_alimentacao = faixas_etarias_alimentacao.filter(
-        (faixa) => faixa === "04 anos a 06 anos"
+        (faixa) => faixa === "04 anos a 06 anos",
       );
     }
   };
@@ -646,7 +693,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
     valores_medicao.forEach((valor) => {
       valor.faixa_etaria_str &&
         !faixas_etarias_alimentacao.find(
-          (faixa) => faixa === valor.faixa_etaria_str
+          (faixa) => faixa === valor.faixa_etaria_str,
         ) &&
         faixas_etarias_alimentacao.push(valor.faixa_etaria_str);
     });
@@ -655,7 +702,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
 
     faixas_etarias_alimentacao.forEach((faixa) => {
       const valorMedicao = valores_medicao.find(
-        (valor) => valor.faixa_etaria_str === faixa
+        (valor) => valor.faixa_etaria_str === faixa,
       );
       valorMedicao &&
         faixas_etarias_objs_alimentacao.push({
@@ -668,7 +715,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
     const faixasEtariasInclusoes = getFaixasEtarias();
 
     const faixasEtariasSet = new Set(
-      faixas_etarias_alimentacao.map((faixa) => faixa)
+      faixas_etarias_alimentacao.map((faixa) => faixa),
     );
 
     response_log_matriculados_por_faixa_etaria_dia.data.forEach((log) => {
@@ -696,7 +743,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
           __str__: log.faixa_etaria.__str__,
           uuid: log.faixa_etaria.uuid,
         },
-      ])
+      ]),
     );
 
     faixasEtariasSet.forEach((faixa) => {
@@ -731,7 +778,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
           name: "frequencia",
           uuid: faixa_obj.uuid,
           faixa_etaria: faixa_obj.__str__,
-        }
+        },
       );
     });
   linhasTabelaAlimentacaoCEI.push({
@@ -748,7 +795,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   tiposAlimentacao,
   ehSolicitacoesAlimentacaoLocation,
   alimentacoesLancamentosEspeciais,
-  ehProgramasEProjetosLocation
+  ehProgramasEProjetosLocation,
 ) => {
   const tiposAlimentacaoFormatadas = tiposAlimentacao.map((alimentacao) => {
     return {
@@ -778,14 +825,14 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
         nome: "Observações",
         name: "observacoes",
         uuid: null,
-      }
+      },
     );
 
     return rowsSolicitacoesAlimentacao;
   }
 
   const indexRefeicao = tiposAlimentacaoFormatadas.findIndex(
-    (ali) => ali.nome === "Refeição"
+    (ali) => ali.nome === "Refeição",
   );
   if (indexRefeicao !== -1) {
     tiposAlimentacaoFormatadas[indexRefeicao].nome = "Refeição 1ª Oferta";
@@ -797,7 +844,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   }
 
   const indexSobremesa = tiposAlimentacaoFormatadas.findIndex(
-    (ali) => ali.nome === "Sobremesa"
+    (ali) => ali.nome === "Sobremesa",
   );
   if (indexSobremesa !== -1) {
     tiposAlimentacaoFormatadas[indexSobremesa].nome = "Sobremesa 1º Oferta";
@@ -835,21 +882,21 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   });
 
   const indexLanche = tiposAlimentacaoFormatadas.findIndex(
-    (ali) => ali.nome === "Lanche"
+    (ali) => ali.nome === "Lanche",
   );
   const indexLanche4h = tiposAlimentacaoFormatadas.findIndex(
-    (ali) => ali.nome === "Lanche 4h"
+    (ali) => ali.nome === "Lanche 4h",
   );
   const cloneAlimentacoesLancamentosEspeciais = deepCopy(
-    alimentacoesLancamentosEspeciais
+    alimentacoesLancamentosEspeciais,
   );
   const lanchesLancamentosEspeciais =
     cloneAlimentacoesLancamentosEspeciais.filter((alimentacao) =>
-      alimentacao.name.includes("lanche")
+      alimentacao.name.includes("lanche"),
     );
   const lancamentosEspeciaisSemLanches =
     cloneAlimentacoesLancamentosEspeciais.filter(
-      (alimentacao) => !alimentacao.name.includes("lanche")
+      (alimentacao) => !alimentacao.name.includes("lanche"),
     );
   for (
     let index = 0;
@@ -859,11 +906,11 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
     tiposAlimentacaoFormatadas.splice(
       Math.max(indexLanche, indexLanche4h) + 1 + index,
       0,
-      lanchesLancamentosEspeciais[index]
+      lanchesLancamentosEspeciais[index],
     );
   }
   const indexObservacoes = tiposAlimentacaoFormatadas.findIndex(
-    (ali) => ali.nome === "Observações"
+    (ali) => ali.nome === "Observações",
   );
   for (
     let index = 0;
@@ -873,7 +920,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
     tiposAlimentacaoFormatadas.splice(
       indexObservacoes + index,
       0,
-      lancamentosEspeciaisSemLanches[index]
+      lancamentosEspeciaisSemLanches[index],
     );
   }
 
@@ -883,7 +930,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
 export const formatarLinhasTabelasDietasCEI = (
   response_log_dietas_autorizadas_cei,
   periodoGrupo,
-  valores_medicao = null
+  valores_medicao = null,
 ) => {
   let faixas_etarias_dieta = [];
   let faixas_etarias_objs_dieta = [];
@@ -892,7 +939,7 @@ export const formatarLinhasTabelasDietasCEI = (
   const formataFaixasPeriodoManhaTarde = () => {
     if (["MANHA", "TARDE"].includes(periodoGrupo)) {
       faixas_etarias_dieta = faixas_etarias_dieta.filter(
-        (faixa) => faixa === "04 anos a 06 anos"
+        (faixa) => faixa === "04 anos a 06 anos",
       );
     }
   };
@@ -901,7 +948,7 @@ export const formatarLinhasTabelasDietasCEI = (
     valores_medicao.forEach((valor) => {
       valor.faixa_etaria_str &&
         !faixas_etarias_dieta.find(
-          (faixa) => faixa === valor.faixa_etaria_str
+          (faixa) => faixa === valor.faixa_etaria_str,
         ) &&
         faixas_etarias_dieta.push(valor.faixa_etaria_str);
     });
@@ -910,7 +957,7 @@ export const formatarLinhasTabelasDietasCEI = (
 
     faixas_etarias_dieta.forEach((faixa) => {
       const valorMedicao = valores_medicao.find(
-        (valor) => valor.faixa_etaria_str === faixa
+        (valor) => valor.faixa_etaria_str === faixa,
       );
       valorMedicao &&
         faixas_etarias_objs_dieta.push({
@@ -922,7 +969,7 @@ export const formatarLinhasTabelasDietasCEI = (
   } else {
     response_log_dietas_autorizadas_cei.data.forEach((log) => {
       !faixas_etarias_dieta.find(
-        (faixa) => faixa === log.faixa_etaria.__str__
+        (faixa) => faixa === log.faixa_etaria.__str__,
       ) && faixas_etarias_dieta.push(log.faixa_etaria.__str__);
     });
 
@@ -930,7 +977,7 @@ export const formatarLinhasTabelasDietasCEI = (
 
     faixas_etarias_dieta.forEach((faixa) => {
       const log = response_log_dietas_autorizadas_cei.data.find(
-        (log) => log.faixa_etaria.__str__ === faixa
+        (log) => log.faixa_etaria.__str__ === faixa,
       );
       log &&
         faixas_etarias_objs_dieta.push({
@@ -956,7 +1003,7 @@ export const formatarLinhasTabelasDietasCEI = (
           name: "frequencia",
           uuid: faixa_obj.uuid,
           faixa_etaria: faixa_obj.__str__,
-        }
+        },
       );
     });
   linhasTabelasDietasCEI.push({
@@ -981,11 +1028,11 @@ export const formatarLinhasTabelasDietasEmeiDaCemei = (tiposAlimentacao) => {
       nome: "Frequência",
       name: "frequencia",
       uuid: null,
-    }
+    },
   );
 
   const indexLanche4h = tiposAlimentacao.findIndex((ali) =>
-    ali.nome.includes("4h")
+    ali.nome.includes("4h"),
   );
   if (indexLanche4h !== -1) {
     linhasTabelasDietas.push({
@@ -1000,7 +1047,7 @@ export const formatarLinhasTabelasDietasEmeiDaCemei = (tiposAlimentacao) => {
   }
 
   const indexLanche = tiposAlimentacao.findIndex(
-    (ali) => ali.nome === "Lanche"
+    (ali) => ali.nome === "Lanche",
   );
   if (indexLanche !== -1) {
     linhasTabelasDietas.push({
@@ -1025,11 +1072,11 @@ export const formatarLinhasTabelasDietasEmeiDaCemei = (tiposAlimentacao) => {
 
 export const formatarLinhasTabelaDietaEnteral = (
   tipos_alimentacao,
-  linhasTabelasDietas
+  linhasTabelasDietas,
 ) => {
   const linhasTabelaDietaEnteral = deepCopy(linhasTabelasDietas);
   const indexRefeicaoDieta = tipos_alimentacao.findIndex(
-    (ali) => ali.nome === "Refeição"
+    (ali) => ali.nome === "Refeição",
   );
   linhasTabelaDietaEnteral.splice(linhasTabelaDietaEnteral.length - 1, 0, {
     nome: "Refeição",
@@ -1052,7 +1099,7 @@ export const defaultValue = (
   row,
   semanaSelecionada,
   valoresLancamentos,
-  categoria
+  categoria,
 ) => {
   let result = null;
 
@@ -1060,7 +1107,7 @@ export const defaultValue = (
     (valor) =>
       Number(valor.categoria_medicao) === Number(categoria.id) &&
       Number(valor.dia) === Number(column.dia) &&
-      valor.nome_campo === row.name
+      valor.nome_campo === row.name,
   );
 
   if (valorLancamento) {
@@ -1086,7 +1133,7 @@ export const ehDiaParaCorrigir = (dia, categoria, diasParaCorrecao) => {
       (diaParaCorrecao) =>
         String(diaParaCorrecao.dia) === String(dia) &&
         String(diaParaCorrecao.categoria_medicao) === String(categoria) &&
-        diaParaCorrecao.habilitado_correcao === true
+        diaParaCorrecao.habilitado_correcao === true,
     )
   );
 };
@@ -1095,7 +1142,7 @@ export const textoBotaoObservacao = (
   value,
   valoresObservacoes,
   dia,
-  categoria
+  categoria,
 ) => {
   let text = "Adicionar";
   if (value && !["<p></p>", "<p></p>\n", null, "", undefined].includes(value)) {
@@ -1105,7 +1152,7 @@ export const textoBotaoObservacao = (
     valoresObservacoes.find(
       (valor) =>
         String(valor.dia) === String(dia) &&
-        String(valor.categoria_medicao) === String(categoria)
+        String(valor.categoria_medicao) === String(categoria),
     )
   ) {
     text = "Visualizar";
@@ -1122,7 +1169,7 @@ export const desabilitarBotaoColunaObservacoes = (
   row,
   valoresObservacoes,
   dia,
-  diasParaCorrecao
+  diasParaCorrecao,
 ) => {
   const botaoEhAdicionar =
     textoBotaoObservacao(
@@ -1131,7 +1178,7 @@ export const desabilitarBotaoColunaObservacoes = (
       ],
       valoresObservacoes,
       dia,
-      categoria.id
+      categoria.id,
     ) === "Adicionar";
 
   return (
@@ -1149,12 +1196,12 @@ export const desabilitarBotaoColunaObservacoes = (
           .filter((valor) => valor.nome_campo === "observacoes")
           .filter((valor) => String(valor.dia) === String(column.dia))
           .filter(
-            (valor) => String(valor.categoria_medicao) === String(categoria.id)
+            (valor) => String(valor.categoria_medicao) === String(categoria.id),
           )[0])) &&
       botaoEhAdicionar &&
       !ehDiaParaCorrigir(column.dia, categoria.id, diasParaCorrecao)) ||
       (["MEDICAO_APROVADA_PELA_DRE", "MEDICAO_APROVADA_PELA_CODAE"].includes(
-        location.state.status_periodo
+        location.state.status_periodo,
       ) &&
         botaoEhAdicionar) ||
       ([
@@ -1169,24 +1216,24 @@ export const desabilitarBotaoColunaObservacoes = (
 
 const existeDietaTipoA = (logQtdDietasAutorizadasEmeiDaCemei) => {
   return !!logQtdDietasAutorizadasEmeiDaCemei.find(
-    (log) => log.classificacao === "Tipo A" && log.quantidade > 0
+    (log) => log.classificacao === "Tipo A" && log.quantidade > 0,
   );
 };
 
 const existeDietaTipoB = (logQtdDietasAutorizadasEmeiDaCemei) => {
   return !!logQtdDietasAutorizadasEmeiDaCemei.find(
-    (log) => log.classificacao === "Tipo B" && log.quantidade > 0
+    (log) => log.classificacao === "Tipo B" && log.quantidade > 0,
   );
 };
 
 const existeDietaTipoAEnteralOuAminoacidos = (
-  logQtdDietasAutorizadasEmeiDaCemei
+  logQtdDietasAutorizadasEmeiDaCemei,
 ) => {
   return !!logQtdDietasAutorizadasEmeiDaCemei.find(
     (log) =>
       (log.classificacao.includes("ENTERAL") ||
         log.classificacao.includes("AMINOÁCIDOS")) &&
-      log.quantidade > 0
+      log.quantidade > 0,
   );
 };
 
@@ -1196,20 +1243,20 @@ export const categoriasParaExibir = (
   response_categorias_medicao,
   response_log_dietas_autorizadas_cei,
   ehSolicitacoesAlimentacaoLocation,
-  logQtdDietasAutorizadasEmeiDaCemei
+  logQtdDietasAutorizadasEmeiDaCemei,
 ) => {
   if (ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) {
     response_categorias_medicao = response_categorias_medicao.data.filter(
       (categoria) => {
         return !categoria.nome.includes("SOLICITAÇÕES");
-      }
+      },
     );
 
     if (!existeDietaTipoA(logQtdDietasAutorizadasEmeiDaCemei)) {
       response_categorias_medicao = response_categorias_medicao.filter(
         (categoria) => {
           return categoria.nome !== "DIETA ESPECIAL - TIPO A";
-        }
+        },
       );
     }
 
@@ -1217,7 +1264,7 @@ export const categoriasParaExibir = (
       response_categorias_medicao = response_categorias_medicao.filter(
         (categoria) => {
           return categoria.nome !== "DIETA ESPECIAL - TIPO B";
-        }
+        },
       );
     }
 
@@ -1227,7 +1274,7 @@ export const categoriasParaExibir = (
       response_categorias_medicao = response_categorias_medicao.filter(
         (categoria) => {
           return !categoria.nome.includes("ENTERAL");
-        }
+        },
       );
     }
     return response_categorias_medicao;
@@ -1235,7 +1282,7 @@ export const categoriasParaExibir = (
     response_categorias_medicao = response_categorias_medicao.data.filter(
       (categoria) => {
         return categoria.nome.includes("SOLICITAÇÕES");
-      }
+      },
     );
     return response_categorias_medicao;
   } else {
@@ -1245,7 +1292,7 @@ export const categoriasParaExibir = (
           !categoria.nome.includes("SOLICITAÇÕES") &&
           !categoria.nome.includes("ENTERAL")
         );
-      }
+      },
     );
     let categoriasDietasParaDeletar = [];
     if (!response_log_dietas_autorizadas_cei.data?.length) {
@@ -1256,24 +1303,24 @@ export const categoriasParaExibir = (
         if (
           categoria.nome === "DIETA ESPECIAL - TIPO A" &&
           (!response_log_dietas_autorizadas_cei.data.filter((dieta) =>
-            dieta.classificacao.toUpperCase().includes("TIPO A")
+            dieta.classificacao.toUpperCase().includes("TIPO A"),
           ).length ||
             !response_log_dietas_autorizadas_cei.data.filter(
               (dieta) =>
                 dieta.classificacao.toUpperCase().includes("TIPO A") &&
-                Number(dieta.quantidade) !== 0
+                Number(dieta.quantidade) !== 0,
             ).length)
         ) {
           categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO A");
         } else if (
           categoria.nome === "DIETA ESPECIAL - TIPO B" &&
           (!response_log_dietas_autorizadas_cei.data.filter((dieta) =>
-            dieta.classificacao.toUpperCase().includes("TIPO B")
+            dieta.classificacao.toUpperCase().includes("TIPO B"),
           ).length ||
             !response_log_dietas_autorizadas_cei.data.filter(
               (dieta) =>
                 dieta.classificacao.toUpperCase().includes("TIPO B") &&
-                Number(dieta.quantidade) !== 0
+                Number(dieta.quantidade) !== 0,
             ).length)
         ) {
           categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO B");
@@ -1303,7 +1350,7 @@ export const valorZeroFrequenciaCEI = (
   tabelaAlimentacaoCEIRows,
   tabelaDietaCEIRows,
   tabelaDietaEnteralRows,
-  formValuesAtualizados
+  formValuesAtualizados,
 ) => {
   if (rowName === "frequencia" && value && Number(value) === 0) {
     let linhasDaTabela = null;
@@ -1325,7 +1372,7 @@ export const valorZeroFrequenciaCEI = (
       ].includes(linha.name) &&
         form.change(
           `${linha.name}__dia_${dia}__categoria_${categoria.id}`,
-          "0"
+          "0",
         );
     });
   }

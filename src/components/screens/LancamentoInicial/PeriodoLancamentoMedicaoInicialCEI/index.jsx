@@ -88,6 +88,7 @@ import {
   desabilitarField,
   deveExistirObservacao,
   ehDiaParaCorrigir,
+  ehUltimoDiaLetivoDoAno,
   formataNomeCategoriaSolAlimentacoesInfantil,
   formatarLinhasTabelaAlimentacaoCEI,
   formatarLinhasTabelaAlimentacaoEmeiDaCemei,
@@ -2285,6 +2286,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alimentacoesLancamentosEspeciais,
                                                           ehProgramasEProjetosLocation,
                                                           dadosValoresInclusoesAutorizadasState,
+                                                          kitLanchesAutorizadas,
+                                                          alteracoesAlimentacaoAutorizadas,
+                                                          ehUltimoDiaLetivoDoAno,
+                                                          calendarioMesConsiderado,
                                                         )}
                                                         defaultValue={defaultValue(
                                                           column,
@@ -2481,6 +2486,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alimentacoesLancamentosEspeciais,
                                                           ehProgramasEProjetosLocation,
                                                           dadosValoresInclusoesAutorizadasState,
+                                                          kitLanchesAutorizadas,
+                                                          alteracoesAlimentacaoAutorizadas,
+                                                          ehUltimoDiaLetivoDoAno,
+                                                          calendarioMesConsiderado,
                                                         )}
                                                         defaultValue={defaultValue(
                                                           column,

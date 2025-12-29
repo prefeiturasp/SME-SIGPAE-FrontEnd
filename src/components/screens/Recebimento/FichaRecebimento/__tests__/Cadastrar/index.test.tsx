@@ -118,6 +118,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
       expect(
         screen.getByDisplayValue(cronogramaDetalhado.fornecedor),
       ).toBeInTheDocument();
+      expect(screen.getByText("LEVE LEITE - PLL")).toBeInTheDocument();
     });
 
     selecionaOpcao("etapa", cronogramaDetalhado.etapas[0].uuid);

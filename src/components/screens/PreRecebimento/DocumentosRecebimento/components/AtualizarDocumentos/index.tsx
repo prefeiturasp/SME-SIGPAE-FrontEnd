@@ -38,6 +38,7 @@ import {
 } from "src/interfaces/pre_recebimento.interface";
 import { OUTROS_DOCUMENTOS_OPTIONS } from "../../constants";
 import ArquivosTipoRecebimento from "../ArquivosTipoDocumento";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 interface ArquivosDocumentoForm {
   tipoDocumento: TiposDocumentoChoices;
@@ -56,7 +57,7 @@ export default () => {
   const [showModal, setShowModal] = useState<boolean>(false);
 
   const [objeto, setObjeto] = useState<DocumentosRecebimentoDetalhado>(
-    {} as DocumentosRecebimentoDetalhado
+    {} as DocumentosRecebimentoDetalhado,
   );
 
   const [arquivosDocumentosForm, setArquivosDocumentosForm] =
@@ -78,7 +79,7 @@ export default () => {
     const objeto = response.data;
 
     const laudoIndex = objeto.tipos_de_documentos.findIndex(
-      (tipo) => tipo.tipo_documento === "LAUDO"
+      (tipo) => tipo.tipo_documento === "LAUDO",
     );
     const _laudo = objeto.tipos_de_documentos.splice(laudoIndex, 1)[0];
     setLaudo(_laudo);
@@ -92,7 +93,7 @@ export default () => {
           tipoDocumento: documento.tipo_documento,
           arquivosForm: await obterArquivosForm(documento.arquivos),
         } as ArquivosDocumentoForm;
-      })
+      }),
     );
     setArquivosDocumentosForm(arquivosDocumentosForm);
 
@@ -118,7 +119,7 @@ export default () => {
             base64: "", // Retorna um valor padrão ou vazio em caso de erro
           } as ArquivoForm;
         }
-      })
+      }),
     );
 
     return arquivosFormDocumento;
@@ -126,14 +127,14 @@ export default () => {
 
   const setFilesDocumentos = (
     files: ArquivoForm[],
-    tipoDocumento: TiposDocumentoChoices
+    tipoDocumento: TiposDocumentoChoices,
   ) => {
     const arquivosDocumentosFormAtualizado = [...arquivosDocumentosForm];
 
     try {
       arquivosDocumentosFormAtualizado.find(
         (arquivosDocumentoForm) =>
-          arquivosDocumentoForm.tipoDocumento === tipoDocumento
+          arquivosDocumentoForm.tipoDocumento === tipoDocumento,
       ).arquivosForm = files;
     } catch {
       arquivosDocumentosFormAtualizado.push({
@@ -147,13 +148,13 @@ export default () => {
 
   const removeFileDocumentos = (
     index: number,
-    tipoDocumento: TiposDocumentoChoices
+    tipoDocumento: TiposDocumentoChoices,
   ) => {
     const arquivosDocumentosFormAtualizado = [...arquivosDocumentosForm];
     arquivosDocumentosFormAtualizado
       .find(
         (arquivosDocumentoForm) =>
-          arquivosDocumentoForm.tipoDocumento === tipoDocumento
+          arquivosDocumentoForm.tipoDocumento === tipoDocumento,
       )
       ?.arquivosForm.splice(index, 1);
 
@@ -161,7 +162,7 @@ export default () => {
   };
 
   const atualizarDocumentosRecebimento = async (
-    values: Record<string, any>
+    values: Record<string, any>,
   ) => {
     setCarregando(true);
 
@@ -188,10 +189,10 @@ export default () => {
     const tiposDocumentos: TiposDocumentosPayload[] =
       values.tipos_de_documentos?.map(
         (
-          tipoDocumentoSelecionado: TiposDocumentoChoices
+          tipoDocumentoSelecionado: TiposDocumentoChoices,
         ): TiposDocumentosPayload => {
           const arquivosTipoDocumento = arquivosDocumentosForm?.find(
-            ({ tipoDocumento }) => tipoDocumento === tipoDocumentoSelecionado
+            ({ tipoDocumento }) => tipoDocumento === tipoDocumentoSelecionado,
           );
 
           return {
@@ -205,7 +206,7 @@ export default () => {
                 ? values.descricao_documento
                 : "",
           };
-        }
+        },
       );
 
     const payload: CorrecaoDocumentoPayload = {
@@ -220,7 +221,7 @@ export default () => {
 
   const obterInitialValues = (documentos) => {
     const tiposDocumentos = documentos?.map(
-      ({ tipo_documento }) => tipo_documento
+      ({ tipo_documento }) => tipo_documento,
     );
 
     const descricaoDocumentoOutros = tiposDocumentos?.includes("OUTROS")
@@ -236,10 +237,10 @@ export default () => {
 
   const obterArquivosIniciaisDocumentos = (
     arquivosDocumentosForm: ArquivosDocumentoForm[],
-    tipoDocumento: TiposDocumentoChoices
+    tipoDocumento: TiposDocumentoChoices,
   ) => {
     return arquivosDocumentosForm?.find(
-      (arquivosDocumento) => arquivosDocumento.tipoDocumento === tipoDocumento
+      (arquivosDocumento) => arquivosDocumento.tipoDocumento === tipoDocumento,
     )?.arquivosForm;
   };
 
@@ -251,20 +252,21 @@ export default () => {
         return (
           arquivosDocumentosForm?.find(
             (arquivosDocumentoForm) =>
-              arquivosDocumentoForm.tipoDocumento === tipoDocumento
+              arquivosDocumentoForm.tipoDocumento === tipoDocumento,
           )?.arquivosForm.length > 0
         );
-      }
+      },
     );
 
     return nenhumDocumentoSelecionado || !documentosValidos;
   };
 
   const filtrarArquivosDocumentosForm = (
-    tiposDocumentosSelecionados: TiposDocumentoChoices[]
+    tiposDocumentosSelecionados: TiposDocumentoChoices[],
   ) => {
     const arquivosDocumentosFormAtualizado = arquivosDocumentosForm.filter(
-      ({ tipoDocumento }) => tiposDocumentosSelecionados.includes(tipoDocumento)
+      ({ tipoDocumento }) =>
+        tiposDocumentosSelecionados.includes(tipoDocumento),
     );
 
     if (!tiposDocumentosSelecionados.includes("OUTROS"))
@@ -322,6 +324,13 @@ export default () => {
                 label="Nome do Produto"
                 valorInicial={objeto?.nome_produto}
                 disabled
+                suffix={
+                  objeto.programa_leve_leite && (
+                    <div className="me-2">
+                      <TagLeveLeite />
+                    </div>
+                  )
+                }
               />
             </div>
             <div className="col-6">
@@ -384,10 +393,10 @@ export default () => {
                         tipoDocumento={tipoDocumento}
                         arquivosIniciais={obterArquivosIniciaisDocumentos(
                           arquivosDocumentosForm,
-                          tipoDocumento
+                          tipoDocumento,
                         )}
                       />
-                    )
+                    ),
                   )}
 
                 <div className="my-5">

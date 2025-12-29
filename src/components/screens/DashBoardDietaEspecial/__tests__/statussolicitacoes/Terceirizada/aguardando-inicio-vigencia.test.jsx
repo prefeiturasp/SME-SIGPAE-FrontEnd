@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom";
 import { act, screen } from "@testing-library/react";
-import { debug } from "jest-preview";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -67,7 +66,6 @@ describe("Teste StatusSolicitacoes - Aguardando início da vigência - Terceiriz
 
   it("Deve renderizar a tela de Solicitações Dieta Especial - Aguardando início da vigência", () => {
     expect(screen.queryAllByText("Status Solicitações")).toHaveLength(2);
-    debug();
     expect(
       screen.getByText("Aguardando início da vigência"),
     ).toBeInTheDocument();
