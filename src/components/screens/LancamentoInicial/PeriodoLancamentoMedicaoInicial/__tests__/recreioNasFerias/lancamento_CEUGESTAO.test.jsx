@@ -13,7 +13,7 @@ import { mockLocationStateGrupoRecreioNasFerias } from "src/mocks/medicaoInicial
 import { mockValoresMedicaoCEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/CEUGESTAO/valoresMedicaoCEUGESTAO";
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockDiasLetivos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/CEUGESTAO/diasLetivosRecreio";
-import { mockSalvaLancamentoSemana1 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/CEUGESTAO/mockSalvaLançamentoCEUGESTAO.jsx";
+import { mockSalvaLancamentoSemana1 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/CEUGESTAO/mockSalvaLancamentoCEUGESTAO.jsx";
 import {
   getCategoriasDeMedicao,
   getFeriadosNoMes,
