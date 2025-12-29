@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
@@ -45,7 +45,24 @@ describe("Testa a Central de Downloads", () => {
     });
   });
 
-  it("Testa renderização", async () => {
+  it("deve exibir cards de módulo inicialmente", () => {
     preview.debug();
+    expect(
+      screen.getByTestId("card-logo-gestao-alimentacao"),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("card-logo-dieta-especial")).toBeInTheDocument();
+    expect(screen.getByTestId("card-logo-gestao-produto")).toBeInTheDocument();
+    expect(
+      screen.getByText("Selecione um dos módulos acima para"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Gerenciar os e-mails Cadastrados"),
+    ).toBeInTheDocument();
+  });
+
+  it("não deve exibir resultados inicialmente", () => {
+    expect(screen.queryByTestId("filtros-emails")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("listagem-emails")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("paginacao")).not.toBeInTheDocument();
   });
 });

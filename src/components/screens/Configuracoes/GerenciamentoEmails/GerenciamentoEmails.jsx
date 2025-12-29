@@ -34,7 +34,7 @@ export default () => {
     const responseEmpresa = await listaSimplesTerceirizadas();
     if (responseEmpresa.data) {
       setEmpresas(
-        normalizaLabelValueEmpresaSocial(responseEmpresa.data.results)
+        normalizaLabelValueEmpresaSocial(responseEmpresa.data.results),
       );
     }
   };
@@ -101,6 +101,7 @@ export default () => {
             onClick={() => {
               escolheModulo("Gestão de Alimentação");
             }}
+            data-testid="card-logo-gestao-alimentacao"
           >
             <IconeGestaoDeAlimentacao />
           </CardLogo>
@@ -115,6 +116,7 @@ export default () => {
             onClick={() => {
               escolheModulo("Dieta Especial");
             }}
+            data-testid="card-logo-dieta-especial"
           >
             <IconeDietaEspecial />
           </CardLogo>
@@ -129,6 +131,7 @@ export default () => {
             onClick={() => {
               escolheModulo("Gestão de Produto");
             }}
+            data-testid="card-logo-gestao-produto"
           >
             <IconeGestaoDeProduto />
           </CardLogo>
@@ -152,6 +155,7 @@ export default () => {
                   empresas={empresas}
                   onChange={onPesquisaChanged}
                   atualizaTabela={atualizaTabela}
+                  data-testid="filtros-emails"
                 />
                 <ListagemEmails
                   empresas={empresas}
@@ -160,6 +164,7 @@ export default () => {
                   ativos={ativos}
                   setAtivos={setAtivos}
                   modulo={modulo}
+                  data-testid="listagem-emails"
                 />
                 <Paginacao
                   className="mt-3 mb-3"
@@ -168,6 +173,7 @@ export default () => {
                   showSizeChanger={false}
                   onChange={nextPage}
                   pageSize={10}
+                  data-testid="paginacao"
                 />
               </div>
             </div>
