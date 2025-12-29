@@ -55,23 +55,22 @@ export default () => {
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
       const payload = formataPayload(values);
-
       if (!uuidParametrizacao && !uuidNovaParametrizacao) {
         await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(
           payload,
         );
         toastSuccess("Parametrização Financeira cadastrada com sucesso!");
+        navigate(-1);
       } else {
         await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
-          uuidParametrizacao,
+          uuidParametrizacao || uuidNovaParametrizacao,
           payload,
         );
         toastSuccess(
           `Parametrização Financeira ${uuidNovaParametrizacao ? "cadastrada" : "editada"} com sucesso!`,
         );
+        navigate(-2);
       }
-
-      navigate(-1);
     } catch (err: any) {
       const data = err?.response?.data;
       if (data?.non_field_errors) {
@@ -111,7 +110,7 @@ export default () => {
             render={({ form, handleSubmit, submitting }) => {
               const grupo = grupoSelecionado.toLowerCase();
               const tabelasCarregadas =
-                carregarTabelas || Boolean(uuidParametrizacao);
+                carregarTabelas || uuidParametrizacao || uuidNovaParametrizacao;
 
               const TABELAS_POR_GRUPO: Record<string, React.ReactNode> = {
                 "grupo 1": (
@@ -170,7 +169,9 @@ export default () => {
                     setParametrizacao={setParametrizacao}
                     setCarregarTabelas={setCarregarTabelas}
                     form={form}
-                    uuidParametrizacao={uuidParametrizacao}
+                    uuidParametrizacao={
+                      uuidParametrizacao || uuidNovaParametrizacao
+                    }
                     ehCadastro
                   />
 
