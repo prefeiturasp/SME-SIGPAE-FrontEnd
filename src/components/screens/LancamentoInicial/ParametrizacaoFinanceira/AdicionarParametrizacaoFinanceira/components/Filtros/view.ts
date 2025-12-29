@@ -12,7 +12,7 @@ import {
 import { SelectOption } from "src/interfaces/option.interface";
 import { FormApi } from "final-form";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
-import { carregarValores } from "../../helpers";
+import { carregarValores, parseDate } from "../../helpers";
 import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 
 type Props = {
@@ -215,19 +215,18 @@ export default ({
       const hoje = new Date();
 
       const parametrizacaoConflito = results.find((e) => {
-        if (
-          e.grupo_unidade_escolar.nome !==
-          grupoNome.replace(/\s*\(.*?\)\s*/g, "").trim()
-        )
-          return null;
+        const nomeGrupo = e.grupo_unidade_escolar.nome;
+        const nomeSelecionado = grupoNome.replace(/\s*\(.*?\)\s*/g, "").trim();
 
-        const dataInicial = new Date(e.data_inicial);
-        const dataFinal = e.data_final ? new Date(e.data_final) : null;
+        if (nomeGrupo !== nomeSelecionado) return false;
 
-        const iniciou = dataInicial <= hoje;
+        const dataInicial = parseDate(e.data_inicial);
+        const dataFinal = parseDate(e.data_final);
+
+        const iniciou = dataInicial && dataInicial <= hoje;
         const naoExpirou = !dataFinal || dataFinal >= hoje;
 
-        if (iniciou && naoExpirou) return e;
+        return iniciou && naoExpirou;
       });
 
       if (parametrizacaoConflito)
