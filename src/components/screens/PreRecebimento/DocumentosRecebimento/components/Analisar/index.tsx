@@ -47,6 +47,7 @@ import ArquivosTipoRecebimento from "../ArquivosTipoDocumento";
 import OutrosDocumentos from "../OutrosDocumentos";
 import { STATUS_DOCUMENTOS_DE_RECEBIMENTO } from "src/constants/shared";
 import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
+import { dataMask } from "src/constants/shared";
 
 export default () => {
   const navigate = useNavigate();
@@ -546,18 +547,7 @@ export default () => {
                           required
                           validate={required}
                           disabled={documentoRecebimentoPassouPorAprovacao}
-                          mask={[
-                            /\d/,
-                            /\d/,
-                            "/",
-                            /\d/,
-                            /\d/,
-                            "/",
-                            /\d/,
-                            /\d/,
-                            /\d/,
-                            /\d/,
-                          ]}
+                          mask={dataMask}
                         />
                       </div>
                       <div className="col">
