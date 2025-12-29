@@ -50,12 +50,13 @@ export default () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const uuidParametrizacao = searchParams.get("uuid");
+  const uuidNovaParametrizacao = searchParams.get("nova_uuid");
 
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
       const payload = formataPayload(values);
 
-      if (!uuidParametrizacao) {
+      if (!uuidParametrizacao && !uuidNovaParametrizacao) {
         await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(
           payload,
         );
@@ -65,13 +66,14 @@ export default () => {
           uuidParametrizacao,
           payload,
         );
-        toastSuccess("Parametrização Financeira editada com sucesso!");
+        toastSuccess(
+          `Parametrização Financeira ${uuidNovaParametrizacao ? "cadastrada" : "editada"} com sucesso!`,
+        );
       }
 
       navigate(-1);
     } catch (err: any) {
       const data = err?.response?.data;
-
       if (data?.non_field_errors) {
         toastError(data.non_field_errors[0]);
       } else if (data) {
@@ -83,6 +85,18 @@ export default () => {
       } else {
         toastError("Ocorreu um erro inesperado");
       }
+    }
+  };
+
+  const onCancelar = async () => {
+    try {
+      if (uuidNovaParametrizacao)
+        await ParametrizacaoFinanceiraService.deleteParametrizacaoFinanceira(
+          uuidNovaParametrizacao,
+        );
+      navigate(-1);
+    } catch {
+      toastError("Ocorreu um erro inesperado ao cancelar a parametrização.");
     }
   };
 
@@ -219,6 +233,7 @@ export default () => {
         showModal={showModalCancelar}
         setShowModal={setShowModalCancelar}
         uuidParametrizacao={uuidParametrizacao}
+        onCancelar={onCancelar}
       />
     </>
   );

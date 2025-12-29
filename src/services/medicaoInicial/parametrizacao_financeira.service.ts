@@ -46,7 +46,10 @@ export default class ParametrizacaoFinanceiraService {
     uuid: string,
     payload: ParametrizacaoFinanceiraPayload,
   ): Promise<ParametrizacaoFinanceiraInterface> {
-    const response = await axios.post(`${BASE_URL}/clonar/${uuid}/`, payload);
+    const response = await axios.post(
+      `${BASE_URL}/clonar-encerrar/${uuid}/`,
+      payload,
+    );
     return response.data;
   }
 
