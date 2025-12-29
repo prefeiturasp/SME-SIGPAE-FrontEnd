@@ -724,4 +724,222 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(input).toHaveAttribute("value", valoresEsperados[key]);
     });
   });
+
+  it("ao clicar na tab `Semana 2`, preencher frequencia maior que participantes e exibe erro", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+
+    const inputElementFrequenciaDia03 = screen.getByTestId(
+      "frequencia__dia_08__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementFrequenciaDia03, {
+        target: { value: "110" },
+      });
+    });
+    expect(inputElementFrequenciaDia03).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, preencher lanche maior que frequencia e exibe erro", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+    const inputElementLancheDia03 = screen.getByTestId(
+      "lanche__dia_08__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementLancheDia03, {
+        target: { value: "110" },
+      });
+    });
+    expect(inputElementLancheDia03).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, preencher lanche 4h maior que frequencia e exibe erro", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+    const inputElementLanche4hDia03 = screen.getByTestId(
+      "lanche_4h__dia_08__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementLanche4hDia03, {
+        target: { value: "110" },
+      });
+    });
+    expect(inputElementLanche4hDia03).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, preencher refeição maior que frequencia e exibe erro", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+    const inputElementRefeicaoDia03 = screen.getByTestId(
+      "refeicao__dia_08__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementRefeicaoDia03, {
+        target: { value: "110" },
+      });
+    });
+    expect(inputElementRefeicaoDia03).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, preencher sobremesa maior que frequencia e exibe erro", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+    const inputElementSobremesaDia03 = screen.getByTestId(
+      "sobremesa__dia_08__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementSobremesaDia03, {
+        target: { value: "110" },
+      });
+    });
+    expect(inputElementSobremesaDia03).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, preencher repetição de refeição maior que refeição e exibe atenção", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+
+    const inputElementFrequenciaDia8 = screen.getByTestId(
+      "frequencia__dia_08__categoria_1",
+    );
+    fireEvent.change(inputElementFrequenciaDia8, {
+      target: { value: "100" },
+    });
+
+    const inputRefeicao = screen.getByTestId("refeicao__dia_08__categoria_1");
+    fireEvent.change(inputRefeicao, {
+      target: { value: "60" },
+    });
+
+    const inputRepeticaoRefeicao = screen.getByTestId(
+      "repeticao_refeicao__dia_08__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputRepeticaoRefeicao, {
+        target: { value: "170" },
+      });
+    });
+
+    const tooltip = document.querySelector(
+      '[data-test-id="tooltip_repeticao_refeicao__dia_08__categoria_1"]',
+    );
+    expect(tooltip).not.toBeNull();
+    expect(tooltip).toHaveClass("icone-info-success");
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, preencher repetição de sobremesa maior que sobremesa e exibe atenção", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+
+    const inputElementFrequenciaDia8 = screen.getByTestId(
+      "frequencia__dia_08__categoria_1",
+    );
+    fireEvent.change(inputElementFrequenciaDia8, {
+      target: { value: "100" },
+    });
+
+    const inputRefeicao = screen.getByTestId("sobremesa__dia_08__categoria_1");
+    fireEvent.change(inputRefeicao, {
+      target: { value: "60" },
+    });
+
+    const inputRepeticaoRefeicao = screen.getByTestId(
+      "repeticao_sobremesa__dia_08__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputRepeticaoRefeicao, {
+        target: { value: "170" },
+      });
+    });
+
+    const tooltip = document.querySelector(
+      '[data-test-id="tooltip_repeticao_sobremesa__dia_08__categoria_1"]',
+    );
+    expect(tooltip).not.toBeNull();
+    expect(tooltip).toHaveClass("icone-info-success");
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, preenche dia 08 e salva lançamento", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+
+    const valores = {
+      frequencia: "95",
+      lanche_4h: "85",
+      lanche: "85",
+      refeicao: "80",
+      repeticao_refeicao: "70",
+      sobremesa: "85",
+      repeticao_sobremesa: "75",
+    };
+
+    const campos = [
+      { key: "frequencia", testId: "frequencia" },
+      { key: "lanche_4h", testId: "lanche_4h" },
+      { key: "lanche", testId: "lanche" },
+      { key: "refeicao", testId: "refeicao" },
+      { key: "repeticao_refeicao", testId: "repeticao_refeicao" },
+      { key: "sobremesa", testId: "sobremesa" },
+      { key: "repeticao_sobremesa", testId: "repeticao_sobremesa" },
+    ];
+
+    campos.forEach(({ key, testId }) => {
+      const input = screen.getByTestId(`${testId}__dia_08__categoria_1`);
+      fireEvent.change(input, { target: { value: valores[key] } });
+    });
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Lançamentos salvos com sucesso"),
+      ).toBeInTheDocument();
+    });
+
+    const valoresEsperados = { participantes: "100", ...valores };
+    const camposAtualizados = [
+      { key: "participantes", testId: "participantes" },
+      ...campos,
+    ];
+
+    camposAtualizados.forEach(({ key, testId }) => {
+      const input = screen.getByTestId(`${testId}__dia_08__categoria_1`);
+      expect(input).toHaveAttribute("value", valoresEsperados[key]);
+    });
+  });
 });
