@@ -70,6 +70,13 @@ export default (props: Props) => {
 
   const [parametrizacaoConflito, setParametrizacaoConflito] = useState(null);
 
+  const insereParametro = (parametro, valor) => {
+    const params = new URLSearchParams(searchParams);
+    params.set(parametro, valor);
+    setSearchParams(params);
+    setParametrizacaoConflito(null);
+  };
+
   const onChangeConflito = async (opcao: string) => {
     try {
       if (opcao === "manter") {
@@ -96,19 +103,20 @@ export default (props: Props) => {
               response.grupo_unidade_escolar.nome,
             ),
           );
-          const params = new URLSearchParams(searchParams);
-          params.set("nova_uuid", response.uuid);
-          setSearchParams(params);
-          setParametrizacaoConflito(null);
+          form.change("data_inicial", moment().format("DD/MM/YYYY"));
+          insereParametro("nova_uuid", response.uuid);
+          insereParametro("fluxo", "encerrar_copiar");
         } else
           toastError(
             "Erro ao encerrar e criar nova parametrização financeira.",
           );
       } else if (opcao === "encerrar_novo") {
+        form.change("data_inicial", moment().format("DD/MM/YYYY"));
         await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
           parametrizacaoConflito,
-          { data_final: moment().format("YYYY-MM-DD") },
+          { data_final: moment().subtract(1, "day").format("YYYY-MM-DD") },
         );
+        insereParametro("fluxo", "encerrar_novo");
         setParametrizacaoConflito(null);
       }
     } catch {
@@ -185,7 +193,7 @@ export default (props: Props) => {
                     ? moment(values.data_final, "DD/MM/YYYY").toDate()
                     : null
                 }
-                disabled={uuidParametrizacao}
+                disabled={uuidParametrizacao || searchParams.get("fluxo")}
               />
             </div>
             <div className="col-3">
