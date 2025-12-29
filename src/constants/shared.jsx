@@ -618,6 +618,19 @@ export const numeroChamadaPublicamMask = [
   /\d/,
 ];
 
+export const dataMask = [
+  /\d/,
+  /\d/,
+  "/",
+  /\d/,
+  /\d/,
+  "/",
+  /\d/,
+  /\d/,
+  /\d/,
+  /\d/,
+];
+
 export const STATUS_IMR_FORMULARIO_SUPERVISAO = {
   EM_PREENCHIMENTO: "EM_PREENCHIMENTO",
   NUTRIMANIFESTACAO_A_VALIDAR: "NUTRIMANIFESTACAO_A_VALIDAR",
