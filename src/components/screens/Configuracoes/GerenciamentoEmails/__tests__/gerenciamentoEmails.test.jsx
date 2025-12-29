@@ -1,17 +1,18 @@
 import "@testing-library/jest-dom";
-import { act, screen } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 import { mockMeusDadosCODAEADMIN } from "src/mocks/meusDados/CODAE/admin";
 import { mockEmpresas } from "src/mocks/terceirizada.service/mockGetListaSimples";
+import { mockEmailporModulo } from "src/mocks/terceirizada.service/mockGetEmailPorModulo";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { renderWithProvider } from "src/utils/test-utils";
 import GerenciamentoEmails from "src/components/screens/Configuracoes/GerenciamentoEmails/GerenciamentoEmails";
 import preview from "jest-preview";
 
-describe("Testa a Central de Downloads", () => {
+describe("Testa a configuração de Gerenciamento de E-mails", () => {
   beforeEach(async () => {
     mock
       .onGet("/downloads/quantidade-nao-vistos/")
@@ -30,6 +31,9 @@ describe("Testa a Central de Downloads", () => {
       .reply(200, { quantidade_nao_lidos: 0 });
 
     mock.onGet("/terceirizadas/lista-simples/").reply(200, mockEmpresas);
+    mock
+      .onGet("/terceirizadas/emails-por-modulo/")
+      .reply(200, mockEmailporModulo);
 
     await act(async () => {
       renderWithProvider(
@@ -46,7 +50,6 @@ describe("Testa a Central de Downloads", () => {
   });
 
   it("deve exibir cards de módulo inicialmente", () => {
-    preview.debug();
     expect(
       screen.getByTestId("card-logo-gestao-alimentacao"),
     ).toBeInTheDocument();
@@ -61,8 +64,52 @@ describe("Testa a Central de Downloads", () => {
   });
 
   it("não deve exibir resultados inicialmente", () => {
-    expect(screen.queryByTestId("filtros-emails")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("listagem-emails")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("paginacao")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("botao-adicionar")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("input-busca")).not.toBeInTheDocument();
+  });
+
+  it("deve exibir as informações referentes ao  módulo Gestão de Alimentação", async () => {
+    expect(
+      screen.getByTestId("card-logo-gestao-alimentacao"),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("card-logo-gestao-alimentacao"));
+
+    await waitFor(() => {
+      preview.debug();
+
+      expect(
+        screen.getByTestId("card-logo-gestao-alimentacao"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId("card-logo-dieta-especial"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId("card-logo-gestao-produto"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Selecione um dos módulos acima para"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Gerenciar os e-mails Cadastrados"),
+      ).toBeInTheDocument();
+
+      const botaoAdicionar = screen.getByTestId("botao-adicionar");
+      expect(botaoAdicionar).toBeInTheDocument();
+      expect(botaoAdicionar).toHaveTextContent("Adicionar E-mails");
+
+      const inputBusca = screen.getByTestId("input-busca");
+      expect(inputBusca).toBeInTheDocument();
+      expect(inputBusca).toHaveAttribute(
+        "placeholder",
+        "Buscar Empresa ou E-mail cadastrado",
+      );
+
+      expect(
+        screen.getByText(
+          "Empresas e E-mails Cadastrados no Módulo de Gestão de Alimentação",
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Agro Comercial Porto S.A.")).toBeInTheDocument();
+    });
   });
 });

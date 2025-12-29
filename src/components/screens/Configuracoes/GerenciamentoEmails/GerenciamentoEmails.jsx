@@ -155,7 +155,6 @@ export default () => {
                   empresas={empresas}
                   onChange={onPesquisaChanged}
                   atualizaTabela={atualizaTabela}
-                  data-testid="filtros-emails"
                 />
                 <ListagemEmails
                   empresas={empresas}
@@ -164,7 +163,6 @@ export default () => {
                   ativos={ativos}
                   setAtivos={setAtivos}
                   modulo={modulo}
-                  data-testid="listagem-emails"
                 />
                 <Paginacao
                   className="mt-3 mb-3"
@@ -173,7 +171,6 @@ export default () => {
                   showSizeChanger={false}
                   onChange={nextPage}
                   pageSize={10}
-                  data-testid="paginacao"
                 />
               </div>
             </div>
