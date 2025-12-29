@@ -70,7 +70,12 @@ describe("Componente Listagem - Relatório Cronograma", () => {
   it("deve renderizar a lista de cronogramas com os dados principais", () => {
     const setAtivos = jest.fn();
     render(
-      <Listagem objetos={mockCronogramas} ativos={[]} setAtivos={setAtivos} />
+      <Listagem
+        objetos={mockCronogramas}
+        ativos={[]}
+        setAtivos={setAtivos}
+        setCarregando={jest.fn()}
+      />,
     );
 
     expect(screen.getByText("CRONO001")).toBeInTheDocument();
@@ -88,7 +93,12 @@ describe("Componente Listagem - Relatório Cronograma", () => {
   it("deve exibir ícone de expandir/recolher para cada cronograma", () => {
     const setAtivos = jest.fn();
     render(
-      <Listagem objetos={mockCronogramas} ativos={[]} setAtivos={setAtivos} />
+      <Listagem
+        objetos={mockCronogramas}
+        ativos={[]}
+        setAtivos={setAtivos}
+        setCarregando={jest.fn()}
+      />,
     );
 
     const iconesExpandir = screen.getAllByTestId("icone-expandir");
@@ -99,7 +109,12 @@ describe("Componente Listagem - Relatório Cronograma", () => {
   it("deve expandir os detalhes quando clicado no ícone", () => {
     const setAtivos = jest.fn();
     render(
-      <Listagem objetos={mockCronogramas} ativos={[]} setAtivos={setAtivos} />
+      <Listagem
+        objetos={mockCronogramas}
+        ativos={[]}
+        setAtivos={setAtivos}
+        setCarregando={jest.fn()}
+      />,
     );
 
     const iconeExpandir = screen.getAllByTestId("icone-expandir")[0];
@@ -115,7 +130,8 @@ describe("Componente Listagem - Relatório Cronograma", () => {
         objetos={mockCronogramas}
         ativos={["1"]}
         setAtivos={setAtivos}
-      />
+        setCarregando={jest.fn()}
+      />,
     );
 
     expect(screen.getByText("Marca:")).toBeInTheDocument();
@@ -137,7 +153,8 @@ describe("Componente Listagem - Relatório Cronograma", () => {
         objetos={mockCronogramas}
         ativos={["1"]}
         setAtivos={setAtivos}
-      />
+        setCarregando={jest.fn()}
+      />,
     );
 
     const iconeRecolher = screen.getAllByTestId("icone-expandir")[0];
@@ -149,7 +166,12 @@ describe("Componente Listagem - Relatório Cronograma", () => {
   it("não deve exibir detalhes de cronogramas não expandidos", () => {
     const setAtivos = jest.fn();
     render(
-      <Listagem objetos={mockCronogramas} ativos={[]} setAtivos={setAtivos} />
+      <Listagem
+        objetos={mockCronogramas}
+        ativos={[]}
+        setAtivos={setAtivos}
+        setCarregando={jest.fn()}
+      />,
     );
 
     expect(screen.queryByText("Marca:")).not.toBeInTheDocument();
@@ -163,7 +185,8 @@ describe("Componente Listagem - Relatório Cronograma", () => {
         objetos={mockCronogramas}
         ativos={["1"]}
         setAtivos={setAtivos}
-      />
+        setCarregando={jest.fn()}
+      />,
     );
 
     expect(screen.getByText("1000")).toBeInTheDocument();
@@ -178,12 +201,55 @@ describe("Componente Listagem - Relatório Cronograma", () => {
         objetos={mockCronogramas}
         ativos={["1"]}
         setAtivos={setAtivos}
-      />
+        setCarregando={jest.fn()}
+      />,
     );
 
     const etapas = screen.getAllByText("Entrega");
     expect(etapas).toHaveLength(2);
     expect(screen.getByText("1/3")).toBeInTheDocument();
     expect(screen.getByText("2/3")).toBeInTheDocument();
+  });
+
+  describe("TagLeveLeite", () => {
+    it("deve exibir a tag LEVE LEITE - PLL quando programa_leve_leite for true", () => {
+      const mockComTag = [
+        {
+          ...mockCronogramas[0],
+          programa_leve_leite: true,
+        },
+      ];
+      const setAtivos = jest.fn();
+      render(
+        <Listagem
+          objetos={mockComTag}
+          ativos={[]}
+          setAtivos={setAtivos}
+          setCarregando={jest.fn()}
+        />,
+      );
+
+      expect(screen.getByText("LEVE LEITE - PLL")).toBeInTheDocument();
+    });
+
+    it("não deve exibir a tag LEVE LEITE - PLL quando programa_leve_leite for false ou undefined", () => {
+      const mockSemTag = [
+        {
+          ...mockCronogramas[1],
+          programa_leve_leite: false,
+        },
+      ];
+      const setAtivos = jest.fn();
+      render(
+        <Listagem
+          objetos={mockSemTag}
+          ativos={[]}
+          setAtivos={setAtivos}
+          setCarregando={jest.fn()}
+        />,
+      );
+
+      expect(screen.queryByText("LEVE LEITE - PLL")).not.toBeInTheDocument();
+    });
   });
 });
