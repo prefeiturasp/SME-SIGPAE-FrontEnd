@@ -1,4 +1,3 @@
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
@@ -13,6 +12,7 @@ import CKEditorField from "src/components/Shareable/CKEditorField";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { InputText } from "src/components/Shareable/Input/InputText";
 import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import {
   toastError,
   toastSuccess,
@@ -359,15 +359,17 @@ const SolicitacaoUnificada = ({
                         Unidades Escolares
                       </label>
                       <Field
-                        component={StatefulMultiSelect}
+                        component={MultiselectRaw}
                         name="unidades_escolares"
                         filterOptions={filterOptions}
                         options={opcoes}
                         className="form-control"
                         valueRenderer={renderizarLabelUnidadesEscolares}
                         selected={unidadesEscolaresSelecionadas}
+                        naoExibirValidacao
                         onSelectedChanged={(value) => {
-                          let resultado = value.map((v) => {
+                          const value_ = value.map((v) => v.value);
+                          let resultado = value_.map((v) => {
                             if (values.unidades_escolares) {
                               let elementFromForm =
                                 values.unidades_escolares.find(
@@ -401,14 +403,7 @@ const SolicitacaoUnificada = ({
                           }
                           setTotalKits(total);
                           form.change("unidades_escolares", resultado);
-                          setUnidadesEscolaresSelecionadas(value);
-                        }}
-                        overrideStrings={{
-                          search: "Busca",
-                          selectSomeItems: "Selecione",
-                          allItemsAreSelected:
-                            "Todas as escolas estão selecionadas",
-                          selectAll: "Todas",
+                          setUnidadesEscolaresSelecionadas(value_);
                         }}
                       />
                     </div>
@@ -424,7 +419,6 @@ const SolicitacaoUnificada = ({
                   </div>
 
                   <hr />
-
                   {values.unidades_escolares &&
                     values.unidades_escolares.length > 0 && (
                       <div className="row mt-3">
