@@ -14,7 +14,6 @@ import {
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { renderWithProvider } from "src/utils/test-utils";
 import GerenciamentoEmails from "src/components/screens/Configuracoes/GerenciamentoEmails/GerenciamentoEmails";
-import preview from "jest-preview";
 
 describe("Testa a configuração de Gerenciamento de E-mails", () => {
   beforeEach(async () => {
@@ -362,14 +361,14 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
         ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByTestId("card-logo-gestao-alimentacao"));
+      fireEvent.click(screen.getByTestId("card-logo-gestao-produto"));
       await waitFor(() => {
         mock
           .onGet("/terceirizadas/emails-por-modulo/")
           .reply(200, mockEmailGestaoProduto);
         expect(
           screen.getByText(
-            "Empresas e E-mails Cadastrados no Módulo de Gestão de Alimentação",
+            "Empresas e E-mails Cadastrados no Módulo de Gestão de Produto",
           ),
         ).toBeInTheDocument();
         expect(
@@ -408,5 +407,53 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
       expect(screen.getByTestId("input-busca")).toHaveValue("teste");
     });
   });
-  preview.debug();
+  describe("Visualização dos cards de módulo", () => {
+    it("deve destacar visualmente o card do módulo selecionado", async () => {
+      const cardGestaoAlimentacao = screen.getByTestId(
+        "card-logo-gestao-alimentacao",
+      );
+      const cardDietaEspecial = screen.getByTestId("card-logo-dieta-especial");
+      const cardGestaoProduto = screen.getByTestId("card-logo-gestao-produto");
+
+      const paiGestaoAlimentacao = cardGestaoAlimentacao.closest(".col-3");
+      expect(paiGestaoAlimentacao.className).toContain("card-cinza");
+      expect(paiGestaoAlimentacao.className).not.toContain("card-verde");
+
+      const paiDietaEspecial = cardDietaEspecial.closest(".col-3");
+      expect(paiDietaEspecial.className).toContain("card-cinza");
+      expect(paiDietaEspecial.className).not.toContain("card-verde");
+
+      const paiGestaoProduto = cardGestaoProduto.closest(".col-3");
+      expect(paiGestaoProduto.className).toContain("card-cinza");
+      expect(paiGestaoProduto.className).not.toContain("card-verde");
+
+      fireEvent.click(cardGestaoAlimentacao);
+      await waitFor(() => {
+        mock
+          .onGet("/terceirizadas/emails-por-modulo/")
+          .reply(200, mockEmailGestaoAlimentacao);
+
+        expect(paiGestaoAlimentacao.className).toContain("card-verde");
+        expect(paiGestaoAlimentacao.className).not.toContain("card-cinza");
+        expect(paiDietaEspecial.className).toContain("card-cinza");
+        expect(paiDietaEspecial.className).not.toContain("card-verde");
+        expect(paiGestaoProduto.className).toContain("card-cinza");
+        expect(paiGestaoProduto.className).not.toContain("card-verde");
+      });
+
+      fireEvent.click(cardDietaEspecial);
+      await waitFor(() => {
+        mock
+          .onGet("/terceirizadas/emails-por-modulo/")
+          .reply(200, mockEmailDietaEspecial);
+
+        expect(paiDietaEspecial.className).toContain("card-verde");
+        expect(paiDietaEspecial.className).not.toContain("card-cinza");
+        expect(paiGestaoAlimentacao.className).toContain("card-cinza");
+        expect(paiGestaoAlimentacao.className).not.toContain("card-verde");
+        expect(paiGestaoProduto.className).toContain("card-cinza");
+        expect(paiGestaoProduto.className).not.toContain("card-verde");
+      });
+    });
+  });
 });

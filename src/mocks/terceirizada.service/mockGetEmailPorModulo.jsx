@@ -90,7 +90,7 @@ export const mockEmailDietaEspecial = {
 };
 
 export const mockEmailGestaoProduto = {
-  count: 2,
+  count: 3,
   next: null,
   previous: null,
   results: [
