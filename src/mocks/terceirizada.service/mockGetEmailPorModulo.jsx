@@ -39,7 +39,7 @@ export const mockEmailGestaoAlimentacao = {
 };
 
 export const mockEmailDietaEspecial = {
-  count: 4,
+  count: 3,
   next: null,
   previous: null,
   results: [
@@ -83,6 +83,58 @@ export const mockEmailDietaEspecial = {
           uuid: "ddb0a256-0d0c-4f4a-adda-22c1dc066533",
           email: "admin@secretaria.com",
           modulo: "Dieta Especial",
+        },
+      ],
+    },
+  ],
+};
+
+export const mockEmailGestaoProduto = {
+  count: 2,
+  next: null,
+  previous: null,
+  results: [
+    {
+      uuid: "50403e20-402c-49af-b047-1f66173eea91",
+      razao_social: "ALIMENTAR GESTÃO DE SERVIÇOS LTDA",
+      emails_terceirizadas: [
+        {
+          uuid: "efbfb841-ae5b-4537-9b36-7e3ffb09ef07",
+          email: "admin@secretaria.com",
+          modulo: "Gestão de Alimentação",
+        },
+        {
+          uuid: "c244b4e2-112d-4c28-9cb1-e739c3ca40d8",
+          email: "admin@secretaria.com",
+          modulo: "Dieta Especial",
+        },
+        {
+          uuid: "6706867a-9689-4afb-ad1d-d24230ab74b2",
+          email: "admin@secretaria.com",
+          modulo: "Gestão de Produto",
+        },
+      ],
+    },
+    {
+      uuid: "97a61b58-dd6e-4577-993d-5018e085fedb",
+      razao_social: "APETECE SISTEMAS DE ALIMENTAÇÃO S/A",
+      emails_terceirizadas: [
+        {
+          uuid: "84d747e0-4b11-4c4a-a1ca-ddb0c1b9e22b",
+          email: "admin@secretaria.com",
+          modulo: "Gestão de Produto",
+        },
+      ],
+    },
+    {
+      uuid: "cfc9a71f-fd63-461e-93e8-7020169d3563",
+      razao_social:
+        "Associação do Bananicultores do Município de Miracatu - ABAM",
+      emails_terceirizadas: [
+        {
+          uuid: "2adbbc54-fa7e-4c4e-8ec1-8f9c42ea1101",
+          email: "admin@secretaria.com",
+          modulo: "Gestão de Produto",
         },
       ],
     },

@@ -9,6 +9,7 @@ import { mockEmpresas } from "src/mocks/terceirizada.service/mockGetListaSimples
 import {
   mockEmailGestaoAlimentacao,
   mockEmailDietaEspecial,
+  mockEmailGestaoProduto,
 } from "src/mocks/terceirizada.service/mockGetEmailPorModulo";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { renderWithProvider } from "src/utils/test-utils";
@@ -155,7 +156,6 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
     });
 
     it("deve exibir interface para módulo Dieta Especial", () => {
-      preview.debug();
       expect(
         screen.getByText(
           "Empresas e E-mails Cadastrados no Módulo de Dieta Especial",
@@ -196,6 +196,76 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
       expect(screen.getByText("COMERCIAL MILANO BRASIL")).toBeInTheDocument();
       expect(
         screen.getByText("S.H.A COMÉRCIO DE ALIMENTOS LTDA"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("ALIMENTAR GESTÃO DE SERVIÇOS LTDA"),
+      ).toBeInTheDocument();
+    });
+
+    it("deve exibir paginação quando há resultados", () => {
+      expect(screen.getByText("1")).toBeInTheDocument();
+      expect(screen.queryByText("2")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Seleção de módulo 'Gestão de Produto'", () => {
+    beforeEach(async () => {
+      mock
+        .onGet("/terceirizadas/emails-por-modulo/")
+        .reply(200, mockEmailGestaoProduto);
+
+      fireEvent.click(screen.getByTestId("card-logo-gestao-produto"));
+      await waitFor(() => {
+        expect(screen.getByTestId("input-busca")).toBeInTheDocument();
+      });
+    });
+
+    it("deve exibir interface para módulo Gestão de Produto", () => {
+      preview.debug();
+      expect(
+        screen.getByText(
+          "Empresas e E-mails Cadastrados no Módulo de Gestão de Produto",
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByTestId("botao-adicionar")).toBeInTheDocument();
+      expect(screen.getByTestId("input-busca")).toBeInTheDocument();
+    });
+
+    it("deve exibir botão 'Adicionar E-mails' com propriedades corretas", () => {
+      const botaoAdicionar = screen.getByTestId("botao-adicionar");
+
+      expect(botaoAdicionar).toBeInTheDocument();
+      expect(botaoAdicionar).toHaveTextContent("Adicionar E-mails");
+      expect(botaoAdicionar).toHaveAttribute("type", "button");
+      expect(botaoAdicionar).toHaveAttribute("data-cy", "Adicionar E-mails");
+      expect(botaoAdicionar).toHaveClass(
+        "general-button",
+        "green-button",
+        "float-end",
+        "ms-3",
+      );
+    });
+
+    it("deve exibir input de busca com placeholder correto", () => {
+      const inputBusca = screen.getByTestId("input-busca");
+
+      expect(inputBusca).toBeInTheDocument();
+      expect(inputBusca).toHaveAttribute(
+        "placeholder",
+        "Buscar Empresa ou E-mail cadastrado",
+      );
+      expect(inputBusca).toHaveAttribute("type", "text");
+      expect(inputBusca).toHaveAttribute("data-cy", "buscar");
+    });
+
+    it("deve carregar e exibir empresas do mock", () => {
+      expect(
+        screen.getByText(
+          "Associação do Bananicultores do Município de Miracatu - ABAM",
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("APETECE SISTEMAS DE ALIMENTAÇÃO S/A"),
       ).toBeInTheDocument();
       expect(
         screen.getByText("ALIMENTAR GESTÃO DE SERVIÇOS LTDA"),
