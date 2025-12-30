@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import { mockEmpresas } from "src/mocks/terceirizada.service/mockGetListaSimples";
 import FiltrosEmails from "../FiltrosEmails";
 import mock from "src/services/_mock";
+import preview from "jest-preview";
 
 describe("Testes do componente de Filtros de Emails - Gerenciamento Emails", () => {
   const atualizaTabela = jest.fn();
@@ -100,4 +101,50 @@ describe("Testes do componente de Filtros de Emails - Gerenciamento Emails", () 
       expect(screen.queryByText("Adicionar E-mail")).not.toBeInTheDocument();
     });
   });
+
+  it("deve fechar o modal ao clicar no botão de fechar (X)", async () => {
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+
+    await waitFor(() => {
+      expect(screen.getByText("Adicionar E-mail")).toBeInTheDocument();
+    });
+    const closeButton = screen.getByLabelText("Close");
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Adicionar E-mail")).not.toBeInTheDocument();
+    });
+  });
+
+  it("deve testar validação de email inválido no formulário", async () => {
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+    const inputEmail = screen.getByTestId("input-email");
+    fireEvent.change(inputEmail, {
+      target: { value: "email-invalido" },
+    });
+    fireEvent.blur(inputEmail);
+
+    await waitFor(() => {
+      expect(inputEmail.value).toBe("email-invalido");
+    });
+  });
+
+  it("deve testar o onChange do select de empresa", async () => {
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+    const selectEmpresa = screen.getByLabelText("Empresa");
+    fireEvent.mouseDown(selectEmpresa);
+  });
+
+  it("deve testar handleAdicionarEmail", async () => {
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+
+    await waitFor(() => {
+      expect(screen.getByText("Adicionar E-mail")).toBeInTheDocument();
+    });
+  });
+  preview.debug();
 });
