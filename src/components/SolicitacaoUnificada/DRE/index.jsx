@@ -31,7 +31,7 @@ import {
   removerSolicitacaoUnificada,
   solicitacoesUnificadasSalvas,
 } from "src/services/solicitacaoUnificada.service";
-import { formatarSubmissao } from "./helper";
+import { formatarSubmissao } from "../helper";
 import { Rascunhos } from "./Rascunhos";
 import "./style.scss";
 
@@ -302,14 +302,7 @@ const SolicitacaoUnificada = ({
 
   return (
     <>
-      <CardMatriculados
-        meusDados={dadosUsuario}
-        numeroAlunos={
-          dadosUsuario
-            ? dadosUsuario.vinculo_atual.instituicao.quantidade_alunos
-            : 0
-        }
-      />
+      <CardMatriculados meusDados={dadosUsuario} />
       <div className="mt-3">
         <Form
           onSubmit={onSubmit}
@@ -512,7 +505,7 @@ const SolicitacaoUnificada = ({
                                       >
                                         <span className="required-asterisk">
                                           *
-                                        </span>
+                                        </span>{" "}
                                         Nº de alunos por Unidade Educacional
                                       </label>
                                       <Field
@@ -811,10 +804,10 @@ const SolicitacaoUnificada = ({
                                         {kits.map((kit, indice) => {
                                           return (
                                             <div
-                                              className="col-4 d-flex"
+                                              className="col-4 mt-3"
                                               key={indice}
                                             >
-                                              <div className="card card-kits w-100">
+                                              <div className="card card-kits">
                                                 <div className="card-body p-2">
                                                   <div className="row">
                                                     <div className="col-6">
