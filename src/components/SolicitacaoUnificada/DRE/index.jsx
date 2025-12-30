@@ -53,7 +53,7 @@ const SolicitacaoUnificada = ({
   async function fetchData() {
     await solicitacoesUnificadasSalvas().then(
       (res) => {
-        setRascunhosSalvos(res.results);
+        setRascunhosSalvos(res.data.results);
       },
       function (error) {
         toastError(

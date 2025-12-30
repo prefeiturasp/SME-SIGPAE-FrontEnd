@@ -72,38 +72,21 @@ export const inicioPedido = (uuid) => {
 };
 
 export const solicitacoesUnificadasSalvas = async () => {
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
   const url = `${URL_SOLICITACAO_UNIFICADA}/${PEDIDOS.MEUS}/`;
-  return await fetch(url, OBJ_REQUEST)
-    .then((response) => {
-      return response.json();
-    })
-    .catch((error) => {
-      console.log("Error Kit Lanche: ", error);
-      return {};
-    });
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const removerSolicitacaoUnificada = async (uuid) => {
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "DELETE",
-  };
-  let status = 0;
-  return await fetch(`${URL_SOLICITACAO_UNIFICADA}/${uuid}/`, OBJ_REQUEST)
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return { data: error, status: status };
-    });
+  const url = `${URL_SOLICITACAO_UNIFICADA}/${uuid}/`;
+  const response = await axios.delete(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const motivosSolicitacaoUnificada = () => {
@@ -117,7 +100,7 @@ export const motivosSolicitacaoUnificada = () => {
       return result.json();
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
 };
 
@@ -142,7 +125,7 @@ export const getSolicitacaoUnificada = (uuid) => {
 
 export const getCODAEPedidosSolicitacoesUnificadas = async (
   filtroAplicado,
-  paramsFromPrevPage
+  paramsFromPrevPage,
 ) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/${PEDIDOS.CODAE}/${filtroAplicado}/`;
   const response = await axios.get(url, { params: paramsFromPrevPage });
@@ -150,7 +133,7 @@ export const getCODAEPedidosSolicitacoesUnificadas = async (
 };
 
 export const getTerceirizadaPedidosSolicitacoesUnificadas = (
-  filtroAplicado
+  filtroAplicado,
 ) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/${PEDIDOS.TERCEIRIZADA}/${filtroAplicado}/`;
   const OBJ_REQUEST = {
@@ -162,13 +145,13 @@ export const getTerceirizadaPedidosSolicitacoesUnificadas = (
       return result.json();
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
 };
 
 export const CODAEAutorizaPedidoKitLancheUnificado = (
   uuid,
-  justificativa = {}
+  justificativa = {},
 ) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/${uuid}/${FLUXO.CODAE_AUTORIZA}/`;
   let status = 0;
@@ -191,7 +174,7 @@ export const CODAEAutorizaPedidoKitLancheUnificado = (
 
 export const CODAENegaKitLancheUnificadoEscola = async (
   uuid,
-  justificativa
+  justificativa,
 ) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/${uuid}/${FLUXO.CODAE_NEGA}/`;
   const response = await axios
@@ -233,7 +216,7 @@ export const TerceirizadaTomaCienciaSolicitacoUnificada = (uuid) => {
 
 export const terceirizadaRespondeQuestionamentoSolitacaoUnificada = async (
   uuid,
-  payload
+  payload,
 ) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/${uuid}/${FLUXO.TERCEIRIZADA_RESPONDE_QUESTIONAMENTO}/`;
   const OBJ_REQUEST = {
@@ -256,7 +239,7 @@ export const cancelaKitLancheUnificadoDre = async (
   uuid,
   justificativa,
   tipoSolicitacao,
-  escolas_selecionadas
+  escolas_selecionadas,
 ) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/${uuid}/${FLUXO.DRE_CANCELA}/`;
   const OBJ_REQUEST = {
@@ -287,7 +270,7 @@ export const cancelaKitLancheUnificadoEscola = async (uuid, justificativa) => {
 };
 
 export const getTerceirizadasPedidosSolicitacoesUnificadas = (
-  filtroAplicado
+  filtroAplicado,
 ) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/${PEDIDOS.TERCEIRIZADA}/${filtroAplicado}/`;
   const OBJ_REQUEST = {
@@ -299,6 +282,6 @@ export const getTerceirizadasPedidosSolicitacoesUnificadas = (
       return result.json();
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
 };
