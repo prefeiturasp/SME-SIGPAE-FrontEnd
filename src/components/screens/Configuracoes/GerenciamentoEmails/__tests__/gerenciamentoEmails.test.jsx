@@ -6,7 +6,10 @@ import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 import { mockMeusDadosCODAEADMIN } from "src/mocks/meusDados/CODAE/admin";
 import { mockEmpresas } from "src/mocks/terceirizada.service/mockGetListaSimples";
-import { mockEmailporModulo } from "src/mocks/terceirizada.service/mockGetEmailPorModulo";
+import {
+  mockEmailGestaoAlimentacao,
+  mockEmailDietaEspecial,
+} from "src/mocks/terceirizada.service/mockGetEmailPorModulo";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { renderWithProvider } from "src/utils/test-utils";
 import GerenciamentoEmails from "src/components/screens/Configuracoes/GerenciamentoEmails/GerenciamentoEmails";
@@ -31,9 +34,6 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
       .reply(200, { quantidade_nao_lidos: 0 });
 
     mock.onGet("/terceirizadas/lista-simples/").reply(200, mockEmpresas);
-    mock
-      .onGet("/terceirizadas/emails-por-modulo/")
-      .reply(200, mockEmailporModulo);
 
     await act(async () => {
       renderWithProvider(
@@ -82,13 +82,17 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
 
   describe("Seleção de módulo 'Gestão de Alimentação'", () => {
     beforeEach(async () => {
+      mock
+        .onGet("/terceirizadas/emails-por-modulo/")
+        .reply(200, mockEmailGestaoAlimentacao);
+
       fireEvent.click(screen.getByTestId("card-logo-gestao-alimentacao"));
       await waitFor(() => {
         expect(screen.getByTestId("input-busca")).toBeInTheDocument();
       });
     });
 
-    it("deve exibir interface de gerenciamento após selecionar módulo", () => {
+    it("deve exibir interface para módulo Gestão de Alimentação", () => {
       expect(
         screen.getByText(
           "Empresas e E-mails Cadastrados no Módulo de Gestão de Alimentação",
@@ -136,6 +140,71 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
       expect(screen.getByText("1")).toBeInTheDocument();
       expect(screen.queryByText("2")).not.toBeInTheDocument();
     });
-    preview.debug();
+  });
+
+  describe("Seleção de módulo 'Dieta Especial'", () => {
+    beforeEach(async () => {
+      mock
+        .onGet("/terceirizadas/emails-por-modulo/")
+        .reply(200, mockEmailDietaEspecial);
+
+      fireEvent.click(screen.getByTestId("card-logo-dieta-especial"));
+      await waitFor(() => {
+        expect(screen.getByTestId("input-busca")).toBeInTheDocument();
+      });
+    });
+
+    it("deve exibir interface para módulo Dieta Especial", () => {
+      preview.debug();
+      expect(
+        screen.getByText(
+          "Empresas e E-mails Cadastrados no Módulo de Dieta Especial",
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByTestId("botao-adicionar")).toBeInTheDocument();
+      expect(screen.getByTestId("input-busca")).toBeInTheDocument();
+    });
+
+    it("deve exibir botão 'Adicionar E-mails' com propriedades corretas", () => {
+      const botaoAdicionar = screen.getByTestId("botao-adicionar");
+
+      expect(botaoAdicionar).toBeInTheDocument();
+      expect(botaoAdicionar).toHaveTextContent("Adicionar E-mails");
+      expect(botaoAdicionar).toHaveAttribute("type", "button");
+      expect(botaoAdicionar).toHaveAttribute("data-cy", "Adicionar E-mails");
+      expect(botaoAdicionar).toHaveClass(
+        "general-button",
+        "green-button",
+        "float-end",
+        "ms-3",
+      );
+    });
+
+    it("deve exibir input de busca com placeholder correto", () => {
+      const inputBusca = screen.getByTestId("input-busca");
+
+      expect(inputBusca).toBeInTheDocument();
+      expect(inputBusca).toHaveAttribute(
+        "placeholder",
+        "Buscar Empresa ou E-mail cadastrado",
+      );
+      expect(inputBusca).toHaveAttribute("type", "text");
+      expect(inputBusca).toHaveAttribute("data-cy", "buscar");
+    });
+
+    it("deve carregar e exibir empresas do mock", () => {
+      expect(screen.getByText("COMERCIAL MILANO BRASIL")).toBeInTheDocument();
+      expect(
+        screen.getByText("S.H.A COMÉRCIO DE ALIMENTOS LTDA"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("ALIMENTAR GESTÃO DE SERVIÇOS LTDA"),
+      ).toBeInTheDocument();
+    });
+
+    it("deve exibir paginação quando há resultados", () => {
+      expect(screen.getByText("1")).toBeInTheDocument();
+      expect(screen.queryByText("2")).not.toBeInTheDocument();
+    });
   });
 });
