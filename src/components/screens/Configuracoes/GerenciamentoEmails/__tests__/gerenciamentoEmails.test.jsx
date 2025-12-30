@@ -221,7 +221,6 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
     });
 
     it("deve exibir interface para módulo Gestão de Produto", () => {
-      preview.debug();
       expect(
         screen.getByText(
           "Empresas e E-mails Cadastrados no Módulo de Gestão de Produto",
@@ -322,4 +321,92 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
       });
     });
   });
+
+  describe("Troca entre módulos", () => {
+    it("deve alternar corretamente entre módulos", async () => {
+      fireEvent.click(screen.getByTestId("card-logo-gestao-alimentacao"));
+      await waitFor(() => {
+        mock
+          .onGet("/terceirizadas/emails-por-modulo/")
+          .reply(200, mockEmailGestaoAlimentacao);
+        expect(
+          screen.getByText(
+            "Empresas e E-mails Cadastrados no Módulo de Gestão de Alimentação",
+          ),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("Agro Comercial Porto S.A."),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("ALIMENTAR GESTÃO DE SERVIÇOS LTDA"),
+        ).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByTestId("card-logo-dieta-especial"));
+      await waitFor(() => {
+        mock
+          .onGet("/terceirizadas/emails-por-modulo/")
+          .reply(200, mockEmailDietaEspecial);
+
+        expect(
+          screen.getByText(
+            "Empresas e E-mails Cadastrados no Módulo de Dieta Especial",
+          ),
+        ).toBeInTheDocument();
+        expect(screen.getByText("COMERCIAL MILANO BRASIL")).toBeInTheDocument();
+        expect(
+          screen.getByText("S.H.A COMÉRCIO DE ALIMENTOS LTDA"),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("ALIMENTAR GESTÃO DE SERVIÇOS LTDA"),
+        ).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByTestId("card-logo-gestao-alimentacao"));
+      await waitFor(() => {
+        mock
+          .onGet("/terceirizadas/emails-por-modulo/")
+          .reply(200, mockEmailGestaoProduto);
+        expect(
+          screen.getByText(
+            "Empresas e E-mails Cadastrados no Módulo de Gestão de Alimentação",
+          ),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            "Associação do Bananicultores do Município de Miracatu - ABAM",
+          ),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("APETECE SISTEMAS DE ALIMENTAÇÃO S/A"),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("ALIMENTAR GESTÃO DE SERVIÇOS LTDA"),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("deve manter estado de busca ao trocar de módulo", async () => {
+      fireEvent.click(screen.getByTestId("card-logo-gestao-alimentacao"));
+      await waitFor(() => {
+        mock
+          .onGet("/terceirizadas/emails-por-modulo/")
+          .reply(200, mockEmailGestaoAlimentacao);
+        expect(screen.getByTestId("input-busca")).toBeInTheDocument();
+      });
+
+      const inputBusca = screen.getByTestId("input-busca");
+      fireEvent.change(inputBusca, { target: { value: "teste" } });
+
+      fireEvent.click(screen.getByTestId("card-logo-dieta-especial"));
+      await waitFor(() => {
+        mock
+          .onGet("/terceirizadas/emails-por-modulo/")
+          .reply(200, mockEmailDietaEspecial);
+        expect(screen.getByTestId("input-busca")).toBeInTheDocument();
+      });
+      expect(screen.getByTestId("input-busca")).toHaveValue("teste");
+    });
+  });
+  preview.debug();
 });
