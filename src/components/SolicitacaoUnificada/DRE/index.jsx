@@ -128,7 +128,7 @@ const SolicitacaoUnificada = ({
       setSubmeteu(true);
       if (!formValues.uuid) {
         await criarSolicitacaoUnificada(
-          JSON.stringify(formatarSubmissao(formValues, dadosUsuario)),
+          formatarSubmissao(formValues, dadosUsuario),
         ).then(
           (res) => {
             if (res.status === HTTP_STATUS.CREATED) {
@@ -330,6 +330,7 @@ const SolicitacaoUnificada = ({
                       <Field
                         component={InputComData}
                         name="data"
+                        dataTestId="div-input-data-passeio"
                         minDate={proximosDoisDiasUteis}
                         maxDate={fimDoCalendario()}
                         label="Dia"
@@ -343,6 +344,7 @@ const SolicitacaoUnificada = ({
                       <Field
                         component={InputText}
                         label="Local do passeio"
+                        dataTestIdDiv="div-input-local-passeio"
                         placeholder="Insira o local do passeio"
                         name="local"
                         className="form-control"
@@ -361,6 +363,7 @@ const SolicitacaoUnificada = ({
                       <Field
                         component={MultiselectRaw}
                         name="unidades_escolares"
+                        dataTestId="select-unidades-escolares"
                         filterOptions={filterOptions}
                         options={opcoes}
                         className="form-control"
@@ -411,6 +414,7 @@ const SolicitacaoUnificada = ({
                       <Field
                         component={InputText}
                         label="Evento/Atividade"
+                        dataTestIdDiv="div-input-evento"
                         name="evento"
                         required
                         validate={required}
@@ -456,6 +460,7 @@ const SolicitacaoUnificada = ({
                                     <div className="col-1">
                                       <Botao
                                         type={BUTTON_TYPE.BUTTON}
+                                        dataTestId={`botao-toggle-detalhes-escola-${idx}`}
                                         onClick={() => {
                                           let e = document.getElementById(
                                             ue.uuid,
@@ -505,6 +510,7 @@ const SolicitacaoUnificada = ({
                                       <Field
                                         component={InputText}
                                         type="number"
+                                        dataTestIdDiv={`div-input-nmr-alunos-${idx}`}
                                         min={0}
                                         max={
                                           ue.nome.includes("CEU GESTAO")
@@ -582,7 +588,8 @@ const SolicitacaoUnificada = ({
                                           <label className="container-radio">
                                             até 4 horas (1 Kit)
                                             <Field
-                                              component={"input"}
+                                              component="input"
+                                              data-testid={`radio-tempo-previsto-ate-4-horas-${idx}`}
                                               type="radio"
                                               required
                                               validate={required}
@@ -811,8 +818,9 @@ const SolicitacaoUnificada = ({
                                                     </div>
                                                     <div className="col-6 form-check">
                                                       <Field
-                                                        component={"input"}
+                                                        component="input"
                                                         type="checkbox"
+                                                        data-testid={`checkbox-kit-${indice}-escola-${idx}`}
                                                         required
                                                         validate={required}
                                                         value={kit.uuid}

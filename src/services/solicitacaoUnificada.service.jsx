@@ -12,24 +12,13 @@ const authToken = {
 const URL_SOLICITACAO_UNIFICADA = `${API_URL}/solicitacoes-kit-lanche-unificada`;
 const MOTIVOS_UNIFICADA = `${API_URL}/motivos-solicitacao-unificada`;
 
-export const criarSolicitacaoUnificada = (payload) => {
+export const criarSolicitacaoUnificada = async (payload) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/`;
-  let status = 0;
-  return fetch(url, {
-    method: "POST",
-    body: payload,
-    headers: authToken,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  const response = await axios.post(url, payload).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const atualizarSolicitacaoUnificada = (uuid, payload) => {
