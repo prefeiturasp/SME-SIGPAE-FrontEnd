@@ -35,6 +35,8 @@ const VALORES_INICIAIS: ParametrizacaoFinanceiraPayload = {
   data_final: null,
 };
 
+const URL_RETORNO = "/medicao-inicial/parametrizacao-financeira/";
+
 export default () => {
   const [grupoSelecionado, setGrupoSelecionado] = useState("");
   const [editalSelecionado, setEditalSelecionado] = useState("");
@@ -60,7 +62,7 @@ export default () => {
           payload,
         );
         toastSuccess("Parametrização Financeira cadastrada com sucesso!");
-        navigate(-1);
+        navigate(URL_RETORNO);
       } else {
         await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
           uuidParametrizacao || uuidNovaParametrizacao,
@@ -69,7 +71,7 @@ export default () => {
         toastSuccess(
           `Parametrização Financeira ${uuidNovaParametrizacao ? "cadastrada" : "editada"} com sucesso!`,
         );
-        navigate(-2);
+        navigate(URL_RETORNO);
       }
     } catch (err: any) {
       const data = err?.response?.data;
