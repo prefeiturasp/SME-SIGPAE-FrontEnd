@@ -1,35 +1,38 @@
-import React, { useState, useEffect } from "react";
-import HTTP_STATUS from "http-status-codes";
-import CardMatriculados from "src/components/Shareable/CardMatriculados";
-import { Rascunhos } from "./Rascunhos";
-import { InputComData } from "../Shareable/DatePicker";
-import { maxValue, required } from "../../helpers/fieldValidators";
-import {
-  solicitacoesUnificadasSalvas,
-  criarSolicitacaoUnificada,
-  atualizarSolicitacaoUnificada,
-  removerSolicitacaoUnificada,
-  inicioPedido,
-} from "../../services/solicitacaoUnificada.service";
-import { InputText } from "../Shareable/Input/InputText";
-import { toastSuccess, toastError } from "../Shareable/Toast/dialogs";
-import { Form, Field } from "react-final-form";
-import CKEditorField from "src/components/Shareable/CKEditorField";
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
+import { Field, Form } from "react-final-form";
 import { Botao } from "src/components/Shareable/Botao";
 import {
+  BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-  BUTTON_ICON,
 } from "src/components/Shareable/Botao/constants";
+import CardMatriculados from "src/components/Shareable/CardMatriculados";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { InputText } from "src/components/Shareable/Input/InputText";
+import ModalDataPrioritaria from "src/components/Shareable/ModalDataPrioritaria";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { maxValue, required } from "src/helpers/fieldValidators";
 import {
   checaSeDataEstaEntre2e5DiasUteis,
   composeValidators,
   fimDoCalendario,
   getError,
-} from "../../helpers/utilities";
-import ModalDataPrioritaria from "../Shareable/ModalDataPrioritaria";
+} from "src/helpers/utilities";
+import {
+  atualizarSolicitacaoUnificada,
+  criarSolicitacaoUnificada,
+  inicioPedido,
+  removerSolicitacaoUnificada,
+  solicitacoesUnificadasSalvas,
+} from "src/services/solicitacaoUnificada.service";
 import { formatarSubmissao } from "./helper";
+import { Rascunhos } from "./Rascunhos";
 import "./style.scss";
 
 const SolicitacaoUnificada = ({
@@ -54,9 +57,9 @@ const SolicitacaoUnificada = ({
       },
       function (error) {
         toastError(
-          `Erro ao carregar as inclusões salvas: ${getError(error.data)}`
+          `Erro ao carregar as inclusões salvas: ${getError(error.data)}`,
         );
-      }
+      },
     );
   }
 
@@ -83,19 +86,19 @@ const SolicitacaoUnificada = ({
     form.change("uuid", solicitacaoUnificada.uuid);
     form.change(
       "descricao",
-      solicitacaoUnificada.solicitacao_kit_lanche.descricao
+      solicitacaoUnificada.solicitacao_kit_lanche.descricao,
     );
     let escolas_quantidades = opcoes
       .filter((opcao) =>
         solicitacaoUnificada.escolas_quantidades.find(
-          (eq) => eq.escola.uuid === opcao.uuid
-        )
+          (eq) => eq.escola.uuid === opcao.uuid,
+        ),
       )
       .map((opcao) => opcao.value);
     setUnidadesEscolaresSelecionadas(escolas_quantidades);
     escolas_quantidades.forEach((eq) => {
       const eq_back = solicitacaoUnificada.escolas_quantidades.find(
-        (equ) => equ.escola.uuid === eq.uuid
+        (equ) => equ.escola.uuid === eq.uuid,
       );
       eq.nmr_alunos = eq_back.quantidade_alunos;
       eq.quantidade_kits = (eq_back.tempo_passeio + 1).toString();
@@ -125,7 +128,7 @@ const SolicitacaoUnificada = ({
       setSubmeteu(true);
       if (!formValues.uuid) {
         await criarSolicitacaoUnificada(
-          JSON.stringify(formatarSubmissao(formValues, dadosUsuario))
+          JSON.stringify(formatarSubmissao(formValues, dadosUsuario)),
         ).then(
           (res) => {
             if (res.status === HTTP_STATUS.CREATED) {
@@ -146,20 +149,20 @@ const SolicitacaoUnificada = ({
             } else {
               toastError(
                 `Houve um erro ao salvar a solicitação unificada: ${getError(
-                  res.data
-                )}`
+                  res.data,
+                )}`,
               );
               setSubmeteu(false);
             }
           },
           function () {
             toastError("Houve um erro ao salvar a solicitação unificada");
-          }
+          },
         );
       } else {
         atualizarSolicitacaoUnificada(
           formValues.uuid,
-          JSON.stringify(formatarSubmissao(formValues, dadosUsuario))
+          JSON.stringify(formatarSubmissao(formValues, dadosUsuario)),
         ).then(
           (res) => {
             if (res.status === HTTP_STATUS.OK) {
@@ -181,15 +184,15 @@ const SolicitacaoUnificada = ({
             } else {
               toastError(
                 `Houve um erro ao salvar a solicitação unificada: ${getError(
-                  res.data
-                )}`
+                  res.data,
+                )}`,
               );
               setSubmeteu(false);
             }
           },
           function () {
             toastError("Houve um erro ao atualizar a solicitação unificada");
-          }
+          },
         );
       }
     }
@@ -204,15 +207,15 @@ const SolicitacaoUnificada = ({
             fetchData();
           } else {
             toastError(
-              `Houve um erro ao excluir o rascunho: ${getError(res.data)}`
+              `Houve um erro ao excluir o rascunho: ${getError(res.data)}`,
             );
           }
         },
         function (error) {
           toastError(
-            `Houve um erro ao excluir o rascunho: ${getError(error.data)}`
+            `Houve um erro ao excluir o rascunho: ${getError(error.data)}`,
           );
-        }
+        },
       );
     }
   };
@@ -226,31 +229,31 @@ const SolicitacaoUnificada = ({
         } else if (res.status === HTTP_STATUS.BAD_REQUEST) {
           toastError(
             `Houve um erro ao salvar a solicitação unificada: ${getError(
-              res.data
-            )}`
+              res.data,
+            )}`,
           );
         }
       },
       function () {
         toastError("Houve um erro ao enviar a solicitação unificada");
-      }
+      },
     );
   };
 
   const removerEscola = (ue, form, values) => {
     let resultado = values.unidades_escolares.filter((v) => v.uuid !== ue.uuid);
     let resultadoLabels = unidadesEscolaresSelecionadas.filter(
-      (v) => v.uuid !== ue.uuid
+      (v) => v.uuid !== ue.uuid,
     );
     let total = 0;
     let listaQuantidadeKits = resultado.filter(
       (v) =>
         !["", undefined].includes(v.quantidade_kits) &&
-        !["", undefined].includes(v.nmr_alunos)
+        !["", undefined].includes(v.nmr_alunos),
     );
     if (listaQuantidadeKits.length !== 0) {
       listaQuantidadeKits = listaQuantidadeKits.map(
-        (v) => parseInt(v.quantidade_kits) * parseInt(v.nmr_alunos)
+        (v) => parseInt(v.quantidade_kits) * parseInt(v.nmr_alunos),
       );
       for (let index = 0; index < listaQuantidadeKits.length; index++) {
         total = total + listaQuantidadeKits[index];
@@ -282,7 +285,7 @@ const SolicitacaoUnificada = ({
       checaSeDataEstaEntre2e5DiasUteis(
         value,
         proximosDoisDiasUteis,
-        proximosCincoDiasUteis
+        proximosCincoDiasUteis,
       )
     ) {
       setShowModal(true);
@@ -375,7 +378,7 @@ const SolicitacaoUnificada = ({
                             if (values.unidades_escolares) {
                               let elementFromForm =
                                 values.unidades_escolares.find(
-                                  (e) => e.uuid === v.uuid
+                                  (e) => e.uuid === v.uuid,
                                 );
                               if (elementFromForm) {
                                 return elementFromForm;
@@ -387,13 +390,13 @@ const SolicitacaoUnificada = ({
                           let listaQuantidadeKits = resultado.filter(
                             (v) =>
                               !["", undefined].includes(v.quantidade_kits) &&
-                              !["", undefined].includes(v.nmr_alunos)
+                              !["", undefined].includes(v.nmr_alunos),
                           );
                           if (listaQuantidadeKits.length !== 0) {
                             listaQuantidadeKits = listaQuantidadeKits.map(
                               (v) =>
                                 parseInt(v.quantidade_kits) *
-                                parseInt(v.nmr_alunos)
+                                parseInt(v.nmr_alunos),
                             );
                             for (
                               let index = 0;
@@ -468,10 +471,10 @@ const SolicitacaoUnificada = ({
                                         type={BUTTON_TYPE.BUTTON}
                                         onClick={() => {
                                           let e = document.getElementById(
-                                            ue.uuid
+                                            ue.uuid,
                                           );
                                           let i = document.getElementById(
-                                            `${ue.uuid}-angle`
+                                            `${ue.uuid}-angle`,
                                           );
                                           if (e.classList.contains("d-none")) {
                                             e.classList.remove("d-none");
@@ -481,7 +484,7 @@ const SolicitacaoUnificada = ({
 
                                           if (
                                             i.classList.contains(
-                                              "fa-angle-down"
+                                              "fa-angle-down",
                                             )
                                           ) {
                                             i.classList.remove("fa-angle-down");
@@ -528,7 +531,7 @@ const SolicitacaoUnificada = ({
                                         onChange={(event) => {
                                           form.change(
                                             `unidades_escolares[${idx}].nmr_alunos`,
-                                            event.target.value
+                                            event.target.value,
                                           );
                                           let total = 0;
                                           let listaQuantidadeKits =
@@ -536,11 +539,11 @@ const SolicitacaoUnificada = ({
                                               (e) =>
                                                 e.uuid !== ue.uuid &&
                                                 !["", undefined].includes(
-                                                  e.quantidade_kits
+                                                  e.quantidade_kits,
                                                 ) &&
                                                 !["", undefined].includes(
-                                                  e.nmr_alunos
-                                                )
+                                                  e.nmr_alunos,
+                                                ),
                                             );
                                           if (
                                             listaQuantidadeKits.length !== 0
@@ -549,7 +552,7 @@ const SolicitacaoUnificada = ({
                                               listaQuantidadeKits.map(
                                                 (e) =>
                                                   parseInt(e.quantidade_kits) *
-                                                  parseInt(e.nmr_alunos)
+                                                  parseInt(e.nmr_alunos),
                                               );
                                             for (
                                               let i = 0;
@@ -562,10 +565,10 @@ const SolicitacaoUnificada = ({
                                           }
                                           if (
                                             !["", undefined].includes(
-                                              event.target.value
+                                              event.target.value,
                                             ) &&
                                             !["", undefined].includes(
-                                              ue.quantidade_kits
+                                              ue.quantidade_kits,
                                             )
                                           ) {
                                             total =
@@ -605,11 +608,11 @@ const SolicitacaoUnificada = ({
                                                     (e) =>
                                                       e.uuid !== ue.uuid &&
                                                       !["", undefined].includes(
-                                                        e.quantidade_kits
+                                                        e.quantidade_kits,
                                                       ) &&
                                                       !["", undefined].includes(
-                                                        e.nmr_alunos
-                                                      )
+                                                        e.nmr_alunos,
+                                                      ),
                                                   );
                                                 if (
                                                   listaQuantidadeKits.length !==
@@ -619,9 +622,9 @@ const SolicitacaoUnificada = ({
                                                     listaQuantidadeKits.map(
                                                       (e) =>
                                                         parseInt(
-                                                          e.quantidade_kits
+                                                          e.quantidade_kits,
                                                         ) *
-                                                        parseInt(e.nmr_alunos)
+                                                        parseInt(e.nmr_alunos),
                                                     );
                                                   for (
                                                     let i = 0;
@@ -636,15 +639,15 @@ const SolicitacaoUnificada = ({
                                                 }
                                                 form.change(
                                                   `unidades_escolares[${idx}].kits_selecionados`,
-                                                  []
+                                                  [],
                                                 );
                                                 form.change(
                                                   `unidades_escolares[${idx}].quantidade_kits`,
-                                                  "1"
+                                                  "1",
                                                 );
                                                 if (
                                                   !["", undefined].includes(
-                                                    ue.nmr_alunos
+                                                    ue.nmr_alunos,
                                                   )
                                                 ) {
                                                   total =
@@ -674,11 +677,11 @@ const SolicitacaoUnificada = ({
                                                     (e) =>
                                                       e.uuid !== ue.uuid &&
                                                       !["", undefined].includes(
-                                                        e.quantidade_kits
+                                                        e.quantidade_kits,
                                                       ) &&
                                                       !["", undefined].includes(
-                                                        e.nmr_alunos
-                                                      )
+                                                        e.nmr_alunos,
+                                                      ),
                                                   );
                                                 if (
                                                   listaQuantidadeKits.length !==
@@ -688,9 +691,9 @@ const SolicitacaoUnificada = ({
                                                     listaQuantidadeKits.map(
                                                       (e) =>
                                                         parseInt(
-                                                          e.quantidade_kits
+                                                          e.quantidade_kits,
                                                         ) *
-                                                        parseInt(e.nmr_alunos)
+                                                        parseInt(e.nmr_alunos),
                                                     );
                                                   for (
                                                     let i = 0;
@@ -705,15 +708,15 @@ const SolicitacaoUnificada = ({
                                                 }
                                                 form.change(
                                                   `unidades_escolares[${idx}].kits_selecionados`,
-                                                  []
+                                                  [],
                                                 );
                                                 form.change(
                                                   `unidades_escolares[${idx}].quantidade_kits`,
-                                                  "2"
+                                                  "2",
                                                 );
                                                 if (
                                                   !["", undefined].includes(
-                                                    ue.nmr_alunos
+                                                    ue.nmr_alunos,
                                                   )
                                                 ) {
                                                   total =
@@ -743,11 +746,11 @@ const SolicitacaoUnificada = ({
                                                     (e) =>
                                                       e.uuid !== ue.uuid &&
                                                       !["", undefined].includes(
-                                                        e.quantidade_kits
+                                                        e.quantidade_kits,
                                                       ) &&
                                                       !["", undefined].includes(
-                                                        e.nmr_alunos
-                                                      )
+                                                        e.nmr_alunos,
+                                                      ),
                                                   );
                                                 if (
                                                   listaQuantidadeKits.length !==
@@ -757,9 +760,9 @@ const SolicitacaoUnificada = ({
                                                     listaQuantidadeKits.map(
                                                       (e) =>
                                                         parseInt(
-                                                          e.quantidade_kits
+                                                          e.quantidade_kits,
                                                         ) *
-                                                        parseInt(e.nmr_alunos)
+                                                        parseInt(e.nmr_alunos),
                                                     );
                                                   for (
                                                     let i = 0;
@@ -774,15 +777,15 @@ const SolicitacaoUnificada = ({
                                                 }
                                                 form.change(
                                                   `unidades_escolares[${idx}].kits_selecionados`,
-                                                  []
+                                                  [],
                                                 );
                                                 form.change(
                                                   `unidades_escolares[${idx}].quantidade_kits`,
-                                                  "3"
+                                                  "3",
                                                 );
                                                 if (
                                                   !["", undefined].includes(
-                                                    ue.nmr_alunos
+                                                    ue.nmr_alunos,
                                                   )
                                                 ) {
                                                   total =
@@ -834,12 +837,12 @@ const SolicitacaoUnificada = ({
                                                             undefined,
                                                             "",
                                                           ].includes(
-                                                            ue.quantidade_kits
+                                                            ue.quantidade_kits,
                                                           ) ||
                                                           (ue.quantidade_kits ===
                                                             `${ue.kits_selecionados.length}` &&
                                                             !ue.kits_selecionados.includes(
-                                                              kit.uuid
+                                                              kit.uuid,
                                                             ))
                                                         }
                                                       />
@@ -864,10 +867,10 @@ const SolicitacaoUnificada = ({
                                       <p>
                                         Número de kits dessa escola:{" "}
                                         {!["", undefined].includes(
-                                          ue.nmr_alunos
+                                          ue.nmr_alunos,
                                         ) &&
                                         !["", undefined].includes(
-                                          ue.quantidade_kits
+                                          ue.quantidade_kits,
                                         )
                                           ? parseInt(ue.nmr_alunos) *
                                             parseInt(ue.quantidade_kits)
