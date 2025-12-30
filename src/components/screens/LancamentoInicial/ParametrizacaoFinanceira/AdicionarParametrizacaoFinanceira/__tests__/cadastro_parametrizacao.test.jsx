@@ -381,7 +381,7 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
     });
   });
 
-  it("deve retornar o modal de conflito de vigência", async () => {
+  it("deve retornar o modal de conflito de vigência e testa opção de fluxo", async () => {
     setSelect("edital-select", "31587b4e-6aed-48d6-913c-7d9939032f15");
     setSelect("lote-select", "4e72e8e5-f0d3-4315-998e-2dfc7b8fff45");
     setSelect("grupo-unidade-select", "743ed59c-9861-4230-860e-e01e2e080327");
@@ -393,6 +393,35 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       expect(
         screen.getByText("Conflito no período de Vigência"),
       ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Manter parametrização anterior vigente/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Encerrar parametrização anterior e copiar valores para a nova/i,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Encerrar parametrização anterior e cadastrar novos valores/i,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    const radioEncerrarCopiar = screen.getByLabelText(
+      "Encerrar parametrização anterior e copiar valores para a nova.",
+    );
+    fireEvent.click(radioEncerrarCopiar);
+    expect(radioEncerrarCopiar).toBeChecked();
+
+    const botaoConfirmar = screen.getByText("Continuar").closest("button");
+    expect(botaoConfirmar).toBeEnabled();
+    fireEvent.click(botaoConfirmar);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Conflito no período de Vigência"),
+      ).not.toBeInTheDocument();
     });
   });
 
