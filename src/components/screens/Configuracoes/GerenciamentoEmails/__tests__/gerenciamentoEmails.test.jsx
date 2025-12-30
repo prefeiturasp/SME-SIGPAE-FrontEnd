@@ -49,34 +49,8 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
     });
   });
 
-  it("deve exibir cards de módulo inicialmente", () => {
-    expect(
-      screen.getByTestId("card-logo-gestao-alimentacao"),
-    ).toBeInTheDocument();
-    expect(screen.getByTestId("card-logo-dieta-especial")).toBeInTheDocument();
-    expect(screen.getByTestId("card-logo-gestao-produto")).toBeInTheDocument();
-    expect(
-      screen.getByText("Selecione um dos módulos acima para"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Gerenciar os e-mails Cadastrados"),
-    ).toBeInTheDocument();
-  });
-
-  it("não deve exibir resultados inicialmente", () => {
-    expect(screen.queryByTestId("botao-adicionar")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("input-busca")).not.toBeInTheDocument();
-  });
-
-  it("deve exibir as informações referentes ao  módulo Gestão de Alimentação", async () => {
-    expect(
-      screen.getByTestId("card-logo-gestao-alimentacao"),
-    ).toBeInTheDocument();
-    fireEvent.click(screen.getByTestId("card-logo-gestao-alimentacao"));
-
-    await waitFor(() => {
-      preview.debug();
-
+  describe("Estado inicial", () => {
+    it("deve exibir os três cards de módulo", () => {
       expect(
         screen.getByTestId("card-logo-gestao-alimentacao"),
       ).toBeInTheDocument();
@@ -86,30 +60,82 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
       expect(
         screen.getByTestId("card-logo-gestao-produto"),
       ).toBeInTheDocument();
+    });
+
+    it("deve exibir instrução para selecionar módulo", () => {
       expect(
         screen.getByText("Selecione um dos módulos acima para"),
       ).toBeInTheDocument();
       expect(
         screen.getByText("Gerenciar os e-mails Cadastrados"),
       ).toBeInTheDocument();
+    });
 
-      const botaoAdicionar = screen.getByTestId("botao-adicionar");
-      expect(botaoAdicionar).toBeInTheDocument();
-      expect(botaoAdicionar).toHaveTextContent("Adicionar E-mails");
+    it("não deve exibir área de resultados inicialmente", () => {
+      expect(screen.queryByTestId("botao-adicionar")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("input-busca")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Empresas e E-mails Cadastrados"),
+      ).not.toBeInTheDocument();
+    });
+  });
 
-      const inputBusca = screen.getByTestId("input-busca");
-      expect(inputBusca).toBeInTheDocument();
-      expect(inputBusca).toHaveAttribute(
-        "placeholder",
-        "Buscar Empresa ou E-mail cadastrado",
-      );
+  describe("Seleção de módulo 'Gestão de Alimentação'", () => {
+    beforeEach(async () => {
+      fireEvent.click(screen.getByTestId("card-logo-gestao-alimentacao"));
+      await waitFor(() => {
+        expect(screen.getByTestId("input-busca")).toBeInTheDocument();
+      });
+    });
 
+    it("deve exibir interface de gerenciamento após selecionar módulo", () => {
       expect(
         screen.getByText(
           "Empresas e E-mails Cadastrados no Módulo de Gestão de Alimentação",
         ),
       ).toBeInTheDocument();
-      expect(screen.getByText("Agro Comercial Porto S.A.")).toBeInTheDocument();
+      expect(screen.getByTestId("botao-adicionar")).toBeInTheDocument();
+      expect(screen.getByTestId("input-busca")).toBeInTheDocument();
     });
+
+    it("deve exibir botão 'Adicionar E-mails' com propriedades corretas", () => {
+      const botaoAdicionar = screen.getByTestId("botao-adicionar");
+
+      expect(botaoAdicionar).toBeInTheDocument();
+      expect(botaoAdicionar).toHaveTextContent("Adicionar E-mails");
+      expect(botaoAdicionar).toHaveAttribute("type", "button");
+      expect(botaoAdicionar).toHaveAttribute("data-cy", "Adicionar E-mails");
+      expect(botaoAdicionar).toHaveClass(
+        "general-button",
+        "green-button",
+        "float-end",
+        "ms-3",
+      );
+    });
+
+    it("deve exibir input de busca com placeholder correto", () => {
+      const inputBusca = screen.getByTestId("input-busca");
+
+      expect(inputBusca).toBeInTheDocument();
+      expect(inputBusca).toHaveAttribute(
+        "placeholder",
+        "Buscar Empresa ou E-mail cadastrado",
+      );
+      expect(inputBusca).toHaveAttribute("type", "text");
+      expect(inputBusca).toHaveAttribute("data-cy", "buscar");
+    });
+
+    it("deve carregar e exibir empresas do mock", () => {
+      expect(screen.getByText("Agro Comercial Porto S.A.")).toBeInTheDocument();
+      expect(
+        screen.getByText("ALIMENTAR GESTÃO DE SERVIÇOS LTDA"),
+      ).toBeInTheDocument();
+    });
+
+    it("deve exibir paginação quando há resultados", () => {
+      expect(screen.getByText("1")).toBeInTheDocument();
+      expect(screen.queryByText("2")).not.toBeInTheDocument();
+    });
+    preview.debug();
   });
 });
