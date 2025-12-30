@@ -12,7 +12,7 @@ import {
 import { SelectOption } from "src/interfaces/option.interface";
 import { FormApi } from "final-form";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
-import { carregarValores } from "../../helpers";
+import { carregarValores, parseDate } from "../../helpers";
 import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 
 type Props = {
@@ -201,33 +201,37 @@ export default ({
     setParametrizacaoConflito: (_e: string) => void,
   ) => {
     try {
-      const { edital, lote, grupo_unidade_escolar } = form.getState().values;
+      const { edital, lote, grupo_unidade_escolar, data_inicial, data_final } =
+        form.getState().values;
 
       const { results } =
         await ParametrizacaoFinanceiraService.getParametrizacoesFinanceiras(1, {
           edital,
           lote,
         });
+
       const grupoNome = gruposUnidadesOpcoes.find(
         (e) => e.uuid === grupo_unidade_escolar,
       ).nome;
 
-      const hoje = new Date();
+      const nomeSelecionado = grupoNome.replace(/\s*\(.*?\)\s*/g, "").trim();
+
+      const novoInicio = parseDate(data_inicial);
+      const novoFim = parseDate(data_final);
 
       const parametrizacaoConflito = results.find((e) => {
-        if (
-          e.grupo_unidade_escolar.nome !==
-          grupoNome.replace(/\s*\(.*?\)\s*/g, "").trim()
-        )
-          return null;
+        if (e.grupo_unidade_escolar.nome !== nomeSelecionado) {
+          return false;
+        }
 
-        const dataInicial = new Date(e.data_inicial);
-        const dataFinal = e.data_final ? new Date(e.data_final) : null;
+        const inicioVigente = parseDate(e.data_inicial);
+        const fimVigente = parseDate(e.data_final);
 
-        const iniciou = dataInicial <= hoje;
-        const naoExpirou = !dataFinal || dataFinal >= hoje;
+        if (!fimVigente && !novoFim) return true;
+        if (!fimVigente) return inicioVigente <= novoFim;
+        if (!novoFim) return novoInicio <= fimVigente;
 
-        if (iniciou && naoExpirou) return e;
+        return novoInicio <= fimVigente && inicioVigente <= novoFim;
       });
 
       if (parametrizacaoConflito)

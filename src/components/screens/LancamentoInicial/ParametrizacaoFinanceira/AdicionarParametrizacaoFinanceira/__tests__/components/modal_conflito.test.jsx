@@ -3,15 +3,15 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import ModalConflito from "../../components/ModalConflito";
 
 describe("Testes comportamento ModalConflito - Parametrização Financeira", () => {
-  const mockSetShowModal = jest.fn();
+  const mockSetConflito = jest.fn();
   const mockOnContinuar = jest.fn();
 
-  const setup = async ({ showModal = true } = {}) => {
+  const setup = async ({ conflito = true } = {}) => {
     await act(async () => {
       render(
         <ModalConflito
-          showModal={showModal}
-          setShowModal={mockSetShowModal}
+          conflito={conflito}
+          setConflito={mockSetConflito}
           onContinuar={mockOnContinuar}
         />,
       );
@@ -22,8 +22,8 @@ describe("Testes comportamento ModalConflito - Parametrização Financeira", () 
     jest.clearAllMocks();
   });
 
-  it("deve renderizar título, mensagem e opções quando showModal = true", async () => {
-    await setup({ showModal: true });
+  it("deve renderizar título, mensagem e opções quando conflito = true", async () => {
+    await setup({ conflito: true });
 
     expect(
       screen.getByText("Conflito no período de Vigência"),
@@ -53,7 +53,7 @@ describe("Testes comportamento ModalConflito - Parametrização Financeira", () 
   });
 
   it("deve alterar a opção selecionada ao clicar em um radio", async () => {
-    await setup({ showModal: true });
+    await setup({ conflito: true });
 
     const opcaoManter = screen.getByText(
       "Manter parametrização anterior vigente.",
@@ -62,12 +62,14 @@ describe("Testes comportamento ModalConflito - Parametrização Financeira", () 
     fireEvent.click(opcaoManter);
 
     expect(
-      screen.getByRole("radio", { name: /Manter parametrização anterior/i }),
+      screen.getByRole("radio", {
+        name: /Manter parametrização anterior vigente/i,
+      }),
     ).toBeChecked();
   });
 
   it('deve chamar onContinuar com a opção selecionada ao clicar em "Continuar"', async () => {
-    await setup({ showModal: true });
+    await setup({ conflito: true });
 
     fireEvent.click(
       screen.getByText(
@@ -78,21 +80,23 @@ describe("Testes comportamento ModalConflito - Parametrização Financeira", () 
     fireEvent.click(screen.getByText("Continuar"));
 
     expect(mockOnContinuar).toHaveBeenCalledWith("encerrar_copiar");
-    expect(mockSetShowModal).toHaveBeenCalledWith(false);
+    expect(mockSetConflito).toHaveBeenCalledWith(false);
   });
 
-  it("deve proibir clicar no botão continuar se nenhuma for selecionada", async () => {
-    await setup({ showModal: true });
+  it("deve desabilitar o botão continuar se nenhuma opção for selecionada", async () => {
+    await setup({ conflito: true });
 
     const botao = screen.getByText("Continuar").closest("button");
+
     expect(botao).toBeDisabled();
+
     fireEvent.click(botao);
 
     expect(mockOnContinuar).not.toHaveBeenCalled();
   });
 
-  it("não deve renderizar conteúdo quando showModal = false", async () => {
-    await setup({ showModal: false });
+  it("não deve renderizar conteúdo quando conflito = false", async () => {
+    await setup({ conflito: false });
 
     expect(
       screen.queryByText("Conflito no período de Vigência"),
