@@ -277,4 +277,49 @@ describe("Testa a configuração de Gerenciamento de E-mails", () => {
       expect(screen.queryByText("2")).not.toBeInTheDocument();
     });
   });
+
+  describe("Funcionalidade de busca", () => {
+    beforeEach(async () => {
+      mock
+        .onGet("/terceirizadas/emails-por-modulo/")
+        .reply(200, mockEmailGestaoAlimentacao);
+
+      fireEvent.click(screen.getByTestId("card-logo-gestao-alimentacao"));
+      await waitFor(() => {
+        expect(screen.getByTestId("input-busca")).toBeInTheDocument();
+      });
+    });
+
+    it("deve permitir digitar no campo de busca", () => {
+      const inputBusca = screen.getByTestId("input-busca");
+      fireEvent.change(inputBusca, { target: { value: "Agro" } });
+      expect(inputBusca).toHaveValue("Agro");
+    });
+
+    it("deve realizar nova busca ao modificar filtro", async () => {
+      mock
+        .onGet("/terceirizadas/emails-por-modulo/", {
+          params: expect.objectContaining({
+            page: 1,
+            modulo: "Gestão de Alimentação",
+            busca: "Agro",
+          }),
+        })
+        .reply(200, {
+          ...mockEmailGestaoAlimentacao,
+          results: mockEmailGestaoAlimentacao.results.filter((e) =>
+            e.razao_social.includes("Agro"),
+          ),
+        });
+
+      const inputBusca = screen.getByTestId("input-busca");
+      fireEvent.change(inputBusca, { target: { value: "Agro" } });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Agro Comercial Porto S.A."),
+        ).toBeInTheDocument();
+      });
+    });
+  });
 });
