@@ -20,6 +20,10 @@ import { SolicitacaoUnificadaPage } from "src/pages/DRE/SolicitacaoUnificadaPage
 import mock from "src/services/_mock";
 
 describe("Formulário Solicitação Unificada - DRE", () => {
+  const solicitacaoUnificada =
+    mockSolicitacaoKitLancheUnificadoRascunho.results[0];
+  const solicitacaoUnificadaUuid = solicitacaoUnificada.uuid;
+
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
     mock.onGet("/kit-lanches/").reply(200, mockKitLanche);
@@ -133,6 +137,32 @@ describe("Formulário Solicitação Unificada - DRE", () => {
     await waitFor(() => {
       expect(
         screen.getByText("Solicitação Unificada salva com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Carrega rascunho e envia a solicitação unificada", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-editar-rascunho-0");
+    fireEvent.click(botaoCarregarRascunho);
+
+    mock
+      .onPut(`/solicitacoes-kit-lanche-unificada/${solicitacaoUnificadaUuid}/`)
+      .reply(200, solicitacaoUnificada);
+
+    mock
+      .onPatch(
+        `/solicitacoes-kit-lanche-unificada/${solicitacaoUnificadaUuid}/inicio-pedido/`,
+      )
+      .reply(200, {});
+
+    const botaoEnviarSolicitacao = await screen
+      .getByText("Enviar")
+      .closest("button");
+    fireEvent.click(botaoEnviarSolicitacao);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitação Unificada enviada com sucesso!"),
       ).toBeInTheDocument();
     });
   });

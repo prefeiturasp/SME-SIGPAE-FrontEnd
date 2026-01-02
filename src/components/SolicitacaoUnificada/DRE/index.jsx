@@ -162,7 +162,7 @@ const SolicitacaoUnificada = ({
       } else {
         atualizarSolicitacaoUnificada(
           formValues.uuid,
-          JSON.stringify(formatarSubmissao(formValues, dadosUsuario)),
+          formatarSubmissao(formValues, dadosUsuario),
         ).then(
           (res) => {
             if (res.status === HTTP_STATUS.OK) {
