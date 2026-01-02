@@ -285,6 +285,27 @@ const SolicitacaoUnificada = ({
     }
   };
 
+  const calcularTotalKits = (unidades) =>
+    unidades.reduce((total, u) => {
+      const alunos = Number(u.nmr_alunos) || 0;
+      const kits = Number(u.quantidade_kits) || 0;
+      return total + alunos * kits;
+    }, 0);
+
+  const handleUnidadesEscolaresSelectedChanged = (selected, form, values) => {
+    const selecionadas = selected.map((s) => s.value);
+
+    const resultado = selecionadas.map((v) => {
+      return values.unidades_escolares?.find((e) => e.uuid === v.uuid) ?? v;
+    });
+
+    const total = calcularTotalKits(resultado);
+
+    setTotalKits(total);
+    form.change("unidades_escolares", resultado);
+    setUnidadesEscolaresSelecionadas(selecionadas);
+  };
+
   const handleNumeroAlunosChange = (event, form, values, ue, idx) => {
     const novoValor = Number(event.target.value) || 0;
 
@@ -417,42 +438,11 @@ const SolicitacaoUnificada = ({
                         selected={unidadesEscolaresSelecionadas}
                         naoExibirValidacao
                         onSelectedChanged={(value) => {
-                          const value_ = value.map((v) => v.value);
-                          let resultado = value_.map((v) => {
-                            if (values.unidades_escolares) {
-                              let elementFromForm =
-                                values.unidades_escolares.find(
-                                  (e) => e.uuid === v.uuid,
-                                );
-                              if (elementFromForm) {
-                                return elementFromForm;
-                              }
-                            }
-                            return v;
-                          });
-                          let total = 0;
-                          let listaQuantidadeKits = resultado.filter(
-                            (v) =>
-                              !["", undefined].includes(v.quantidade_kits) &&
-                              !["", undefined].includes(v.nmr_alunos),
+                          handleUnidadesEscolaresSelectedChanged(
+                            value,
+                            form,
+                            values,
                           );
-                          if (listaQuantidadeKits.length !== 0) {
-                            listaQuantidadeKits = listaQuantidadeKits.map(
-                              (v) =>
-                                parseInt(v.quantidade_kits) *
-                                parseInt(v.nmr_alunos),
-                            );
-                            for (
-                              let index = 0;
-                              index < listaQuantidadeKits.length;
-                              index++
-                            ) {
-                              total = total + listaQuantidadeKits[index];
-                            }
-                          }
-                          setTotalKits(total);
-                          form.change("unidades_escolares", resultado);
-                          setUnidadesEscolaresSelecionadas(value_);
                         }}
                       />
                     </div>
