@@ -203,7 +203,7 @@ const SolicitacaoUnificada = ({
       removerSolicitacaoUnificada(uuid).then(
         (res) => {
           if (res.status === HTTP_STATUS.NO_CONTENT) {
-            toastSuccess(`Rascunho # ${id_externo} excluído com sucesso`);
+            toastSuccess(`Rascunho # ${id_externo} excluído com sucesso!`);
             fetchData();
           } else {
             toastError(

@@ -23,6 +23,7 @@ describe("Formulário Solicitação Unificada - DRE", () => {
   const solicitacaoUnificada =
     mockSolicitacaoKitLancheUnificadoRascunho.results[0];
   const solicitacaoUnificadaUuid = solicitacaoUnificada.uuid;
+  const idExterno = solicitacaoUnificada.id_externo;
 
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
@@ -163,6 +164,24 @@ describe("Formulário Solicitação Unificada - DRE", () => {
     await waitFor(() => {
       expect(
         screen.getByText("Solicitação Unificada enviada com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Exclui rascunho com sucesso", async () => {
+    window.confirm = jest.fn().mockImplementation(() => true);
+
+    mock
+      .onDelete(
+        `/solicitacoes-kit-lanche-unificada/${solicitacaoUnificadaUuid}/`,
+      )
+      .reply(204, {});
+    const botaoExcluirRascunho = screen.getByTestId("botao-excluir-rascunho-0");
+    fireEvent.click(botaoExcluirRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(`Rascunho # ${idExterno} excluído com sucesso!`),
       ).toBeInTheDocument();
     });
   });
