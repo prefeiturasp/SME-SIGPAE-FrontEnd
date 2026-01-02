@@ -20,6 +20,11 @@ import { SolicitacaoUnificadaPage } from "src/pages/DRE/SolicitacaoUnificadaPage
 import mock from "src/services/_mock";
 
 describe("Formulário Solicitação Unificada - DRE", () => {
+  const solicitacaoUnificada =
+    mockSolicitacaoKitLancheUnificadoRascunho.results[0];
+  const solicitacaoUnificadaUuid = solicitacaoUnificada.uuid;
+  const idExterno = solicitacaoUnificada.id_externo;
+
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
     mock.onGet("/kit-lanches/").reply(200, mockKitLanche);
@@ -69,6 +74,62 @@ describe("Formulário Solicitação Unificada - DRE", () => {
     expect(screen.getByText("Terceirizada Total")).toBeInTheDocument();
     expect(screen.getByText("Rede Parceira")).toBeInTheDocument();
     expect(screen.getByText(/informação automática/i)).toBeInTheDocument();
+  });
+
+  it("Deve renderizar toast erro `Selecione ao menos uma unidade escolar`", async () => {
+    const divDataPasseio = screen.getByTestId("div-input-data-passeio");
+    const inputElement = divDataPasseio.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "28/01/2026" },
+    });
+
+    const divLocalPasseio = screen.getByTestId("div-input-local-passeio");
+    const inputLocalPasseio = divLocalPasseio.querySelector("input");
+    fireEvent.change(inputLocalPasseio, {
+      target: { value: "Parque Ibirapuera" },
+    });
+
+    const divInputEvento = screen.getByTestId("div-input-evento");
+    const inputEvento = divInputEvento.querySelector("input");
+    fireEvent.change(inputEvento, {
+      target: { value: "Passeio Cultural" },
+    });
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar Rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Selecione ao menos uma unidade escolar"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Remove escola do formulário ao clicar no ícone de remover", async () => {
+    const selectUnidadesEscolares = screen.getByTestId(
+      "select-unidades-escolares",
+    );
+    const selectControl = within(selectUnidadesEscolares).getByRole("combobox");
+    fireEvent.mouseDown(selectControl);
+    const EMEISENAMADUREIRA = screen.getByText("000558 - EMEI SENA MADUREIRA");
+    fireEvent.click(EMEISENAMADUREIRA);
+
+    await waitFor(() => {
+      expect(
+        screen.queryAllByText("000558 - EMEI SENA MADUREIRA"),
+      ).toHaveLength(2);
+    });
+
+    const botaoRemoverEscola = screen.getByTestId("botao-remover-escola-0");
+    fireEvent.click(botaoRemoverEscola);
+
+    await waitFor(() => {
+      expect(
+        screen.queryAllByText("000558 - EMEI SENA MADUREIRA"),
+      ).toHaveLength(0);
+    });
   });
 
   it("Preenche e envia formulário de solicitação unificada", async () => {
@@ -133,6 +194,71 @@ describe("Formulário Solicitação Unificada - DRE", () => {
     await waitFor(() => {
       expect(
         screen.getByText("Solicitação Unificada salva com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Carrega rascunho e envia a solicitação unificada", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-editar-rascunho-0");
+    fireEvent.click(botaoCarregarRascunho);
+
+    mock
+      .onPut(`/solicitacoes-kit-lanche-unificada/${solicitacaoUnificadaUuid}/`)
+      .reply(200, solicitacaoUnificada);
+
+    mock
+      .onPatch(
+        `/solicitacoes-kit-lanche-unificada/${solicitacaoUnificadaUuid}/inicio-pedido/`,
+      )
+      .reply(200, {});
+
+    const botaoEnviarSolicitacao = await screen
+      .getByText("Enviar")
+      .closest("button");
+    fireEvent.click(botaoEnviarSolicitacao);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitação Unificada enviada com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Exclui rascunho com sucesso", async () => {
+    window.confirm = jest.fn().mockImplementation(() => true);
+
+    mock
+      .onDelete(
+        `/solicitacoes-kit-lanche-unificada/${solicitacaoUnificadaUuid}/`,
+      )
+      .reply(204, {});
+    const botaoExcluirRascunho = screen.getByTestId("botao-excluir-rascunho-0");
+    fireEvent.click(botaoExcluirRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(`Rascunho # ${idExterno} excluído com sucesso!`),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Renderiza erro ao excluir rascunho", async () => {
+    window.confirm = jest.fn().mockImplementation(() => true);
+
+    mock
+      .onDelete(
+        `/solicitacoes-kit-lanche-unificada/${solicitacaoUnificadaUuid}/`,
+      )
+      .reply(400, { detail: "Erro ao excluir rascunho" });
+
+    const botaoExcluirRascunho = screen.getByTestId("botao-excluir-rascunho-0");
+    fireEvent.click(botaoExcluirRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          `Houve um erro ao excluir o rascunho ${idExterno}. Tente novamente mais tarde.`,
+        ),
       ).toBeInTheDocument();
     });
   });

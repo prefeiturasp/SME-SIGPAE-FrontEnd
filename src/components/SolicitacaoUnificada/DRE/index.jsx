@@ -51,16 +51,14 @@ const SolicitacaoUnificada = ({
   const [submeteu, setSubmeteu] = useState(false);
 
   async function fetchData() {
-    await solicitacoesUnificadasSalvas().then(
-      (res) => {
-        setRascunhosSalvos(res.data.results);
-      },
-      function (error) {
-        toastError(
-          `Erro ao carregar as inclusões salvas: ${getError(error.data)}`,
-        );
-      },
-    );
+    const response = await solicitacoesUnificadasSalvas();
+    if (response.status !== HTTP_STATUS.OK) {
+      toastError(
+        `Erro ao carregar as inclusões salvas. Tente novamente mais tarde.`,
+      );
+      return;
+    }
+    setRascunhosSalvos(response.data.results);
   }
 
   useEffect(() => {
@@ -107,14 +105,6 @@ const SolicitacaoUnificada = ({
     form.change("unidades_escolares", escolas_quantidades);
   };
 
-  const filterOptions = (options, filter) => {
-    if (!filter) {
-      return options;
-    }
-    const re = new RegExp(filter, "i");
-    return options.filter(({ label }) => label && label.match(re));
-  };
-
   const resetStates = () => {
     setUnidadesEscolaresSelecionadas([]);
     setTotalKits(0);
@@ -124,120 +114,106 @@ const SolicitacaoUnificada = ({
   const onSubmit = async (formValues, form) => {
     if (unidadesEscolaresSelecionadas.length === 0) {
       toastError("Selecione ao menos uma unidade escolar");
-    } else {
-      setSubmeteu(true);
-      if (!formValues.uuid) {
-        await criarSolicitacaoUnificada(
-          formatarSubmissao(formValues, dadosUsuario),
-        ).then(
-          (res) => {
-            if (res.status === HTTP_STATUS.CREATED) {
-              if (formValues.status === "DRE_A_VALIDAR") {
-                iniciarPedido(res.data.uuid);
-                setTimeout(() => {
-                  form.restart();
-                  resetStates();
-                });
-              } else {
-                toastSuccess("Solicitação Unificada salva com sucesso!");
-                setTimeout(() => {
-                  form.restart();
-                  resetStates();
-                });
-                fetchData();
-              }
-            } else {
-              toastError(
-                `Houve um erro ao salvar a solicitação unificada: ${getError(
-                  res.data,
-                )}`,
-              );
-              setSubmeteu(false);
-            }
-          },
-          function () {
-            toastError("Houve um erro ao salvar a solicitação unificada");
-          },
-        );
-      } else {
-        atualizarSolicitacaoUnificada(
-          formValues.uuid,
-          JSON.stringify(formatarSubmissao(formValues, dadosUsuario)),
-        ).then(
-          (res) => {
-            if (res.status === HTTP_STATUS.OK) {
-              if (formValues.status === "DRE_A_VALIDAR") {
-                iniciarPedido(res.data.uuid);
-                setTimeout(() => {
-                  form.restart();
-                  resetStates();
-                });
-                fetchData();
-              } else {
-                toastSuccess("Solicitação Unificada atualizada com sucesso!");
-                setTimeout(() => {
-                  form.restart();
-                  resetStates();
-                });
-                fetchData();
-              }
-            } else {
-              toastError(
-                `Houve um erro ao salvar a solicitação unificada: ${getError(
-                  res.data,
-                )}`,
-              );
-              setSubmeteu(false);
-            }
-          },
-          function () {
-            toastError("Houve um erro ao atualizar a solicitação unificada");
-          },
-        );
-      }
+      return;
     }
-  };
-
-  const removerRascunho = (id_externo, uuid) => {
-    if (window.confirm("Deseja remover este rascunho?")) {
-      removerSolicitacaoUnificada(uuid).then(
+    setSubmeteu(true);
+    if (!formValues.uuid) {
+      await criarSolicitacaoUnificada(
+        formatarSubmissao(formValues, dadosUsuario),
+      ).then(
         (res) => {
-          if (res.status === HTTP_STATUS.NO_CONTENT) {
-            toastSuccess(`Rascunho # ${id_externo} excluído com sucesso`);
-            fetchData();
+          if (res.status === HTTP_STATUS.CREATED) {
+            if (formValues.status === "DRE_A_VALIDAR") {
+              iniciarPedido(res.data.uuid);
+              setTimeout(() => {
+                form.restart();
+                resetStates();
+              });
+            } else {
+              toastSuccess("Solicitação Unificada salva com sucesso!");
+              setTimeout(() => {
+                form.restart();
+                resetStates();
+              });
+              fetchData();
+            }
           } else {
             toastError(
-              `Houve um erro ao excluir o rascunho: ${getError(res.data)}`,
+              `Houve um erro ao salvar a solicitação unificada: ${getError(
+                res.data,
+              )}`,
             );
+            setSubmeteu(false);
           }
         },
-        function (error) {
-          toastError(
-            `Houve um erro ao excluir o rascunho: ${getError(error.data)}`,
-          );
+        function () {
+          toastError("Houve um erro ao salvar a solicitação unificada");
+        },
+      );
+    } else {
+      atualizarSolicitacaoUnificada(
+        formValues.uuid,
+        formatarSubmissao(formValues, dadosUsuario),
+      ).then(
+        (res) => {
+          if (res.status === HTTP_STATUS.OK) {
+            if (formValues.status === "DRE_A_VALIDAR") {
+              iniciarPedido(res.data.uuid);
+              setTimeout(() => {
+                form.restart();
+                resetStates();
+              });
+              fetchData();
+            } else {
+              toastSuccess("Solicitação Unificada atualizada com sucesso!");
+              setTimeout(() => {
+                form.restart();
+                resetStates();
+              });
+              fetchData();
+            }
+          } else {
+            toastError(
+              `Houve um erro ao salvar a solicitação unificada: ${getError(
+                res.data,
+              )}`,
+            );
+            setSubmeteu(false);
+          }
+        },
+        function () {
+          toastError("Houve um erro ao atualizar a solicitação unificada");
         },
       );
     }
   };
 
-  const iniciarPedido = (uuid) => {
-    inicioPedido(uuid).then(
-      (res) => {
-        if (res.status === HTTP_STATUS.OK) {
-          toastSuccess("Solicitação Unificada enviada com sucesso!");
-          fetchData();
-        } else if (res.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(
-            `Houve um erro ao salvar a solicitação unificada: ${getError(
-              res.data,
-            )}`,
-          );
-        }
-      },
-      function () {
-        toastError("Houve um erro ao enviar a solicitação unificada");
-      },
-    );
+  const removerRascunho = async (id_externo, uuid) => {
+    if (!window.confirm("Deseja remover este rascunho?")) {
+      return;
+    }
+
+    const response = await removerSolicitacaoUnificada(uuid);
+    if (response.status !== HTTP_STATUS.NO_CONTENT) {
+      toastError(
+        `Houve um erro ao excluir o rascunho ${id_externo}. Tente novamente mais tarde.`,
+      );
+      return;
+    }
+    toastSuccess(`Rascunho # ${id_externo} excluído com sucesso!`);
+    fetchData();
+  };
+
+  const iniciarPedido = async (uuid) => {
+    const response = await inicioPedido(uuid);
+    if (response.status !== HTTP_STATUS.OK) {
+      toastError(
+        "Houve um erro ao salvar a solicitação unificada. Tente novamente mais tarde.",
+      );
+      return;
+    }
+    toastSuccess("Solicitação Unificada enviada com sucesso!");
+    fetchData();
   };
 
   const removerEscola = (ue, form, values) => {
@@ -432,7 +408,6 @@ const SolicitacaoUnificada = ({
                         component={MultiselectRaw}
                         name="unidades_escolares"
                         dataTestId="select-unidades-escolares"
-                        filterOptions={filterOptions}
                         options={opcoes}
                         className="form-control"
                         selected={unidadesEscolaresSelecionadas}
@@ -490,6 +465,7 @@ const SolicitacaoUnificada = ({
                                         }
                                         style={BUTTON_STYLE.RED_OUTLINE}
                                         icon={BUTTON_ICON.TRASH}
+                                        dataTestId={`botao-remover-escola-${idx}`}
                                         className="botao-remover-escola mt-1"
                                       />
                                     </div>
@@ -557,7 +533,7 @@ const SolicitacaoUnificada = ({
                                         placeholder="Quantidade de alunos"
                                         name={`unidades_escolares[${idx}].nmr_alunos`}
                                         className="form-control"
-                                        onChange={(event) => {
+                                        inputOnChange={(event) => {
                                           handleNumeroAlunosChange(
                                             event,
                                             form,

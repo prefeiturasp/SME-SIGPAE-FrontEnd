@@ -10,7 +10,6 @@ const authToken = {
 };
 
 const URL_SOLICITACAO_UNIFICADA = `${API_URL}/solicitacoes-kit-lanche-unificada`;
-const MOTIVOS_UNIFICADA = `${API_URL}/motivos-solicitacao-unificada`;
 
 export const criarSolicitacaoUnificada = async (payload) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/`;
@@ -21,43 +20,22 @@ export const criarSolicitacaoUnificada = async (payload) => {
   }
 };
 
-export const atualizarSolicitacaoUnificada = (uuid, payload) => {
+export const atualizarSolicitacaoUnificada = async (uuid, payload) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/${uuid}/`;
-  let status = 0;
-  return fetch(url, {
-    method: "PUT",
-    body: payload,
-    headers: authToken,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  const response = await axios.put(url, payload).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
-export const inicioPedido = (uuid) => {
+export const inicioPedido = async (uuid) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/${uuid}/${FLUXO.INICIO_PEDIDO}/`;
-  let status = 0;
-  return fetch(url, {
-    method: "PATCH",
-    headers: authToken,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  const response = await axios.patch(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const solicitacoesUnificadasSalvas = async () => {
@@ -78,38 +56,13 @@ export const removerSolicitacaoUnificada = async (uuid) => {
   }
 };
 
-export const motivosSolicitacaoUnificada = () => {
-  const url = `${MOTIVOS_UNIFICADA}/`;
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error;
-    });
-};
-
-export const getSolicitacaoUnificada = (uuid) => {
+export const getSolicitacaoUnificada = async (uuid) => {
   const url = `${URL_SOLICITACAO_UNIFICADA}/${uuid}/`;
-  let status = 0;
-  return fetch(url, {
-    method: "GET",
-    headers: authToken,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getCODAEPedidosSolicitacoesUnificadas = async (
