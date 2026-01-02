@@ -546,7 +546,7 @@ const SolicitacaoUnificada = ({
                                         placeholder="Quantidade de alunos"
                                         name={`unidades_escolares[${idx}].nmr_alunos`}
                                         className="form-control"
-                                        onChange={(event) => {
+                                        inputOnChange={(event) => {
                                           handleNumeroAlunosChange(
                                             event,
                                             form,
