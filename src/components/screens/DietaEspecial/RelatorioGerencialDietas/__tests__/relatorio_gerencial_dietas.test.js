@@ -15,6 +15,9 @@ import mock from "src/services/_mock";
 
 describe("Teste interface de Relatório Gerencial de Dietas", () => {
   beforeEach(async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-19T10:00:00Z"));
+
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosNutriSupervisao);
@@ -47,14 +50,18 @@ describe("Teste interface de Relatório Gerencial de Dietas", () => {
           >
             <RelatorioGerencialDietas />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("Renderiza título e breadcrumb `Relatório Gerencial de Dietas`", () => {
     expect(screen.queryAllByText("Relatório Gerencial de Dietas")).toHaveLength(
-      2
+      2,
     );
   });
 
