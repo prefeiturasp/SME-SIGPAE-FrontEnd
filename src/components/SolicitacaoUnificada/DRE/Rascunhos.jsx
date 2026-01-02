@@ -41,10 +41,10 @@ export class Rascunhos extends Component {
               {solicitacaoUnificada.lista_kit_lanche_igual
                 ? "Pedido Múltiplo - "
                 : solicitacaoUnificada.escolas_quantidades.length > 1
-                ? solicitacaoUnificada.escolas_quantidades.length +
-                  " escolas - "
-                : solicitacaoUnificada.escolas_quantidades.length +
-                  " escola - "}
+                  ? solicitacaoUnificada.escolas_quantidades.length +
+                    " escolas - "
+                  : solicitacaoUnificada.escolas_quantidades.length +
+                    " escola - "}
               {solicitacaoUnificada.solicitacao_kit_lanche.data}
             </p>
           </div>

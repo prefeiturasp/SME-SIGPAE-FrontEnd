@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { getDiasUteis } from "src/services/diasUteis.service";
-import { getKitLanches } from "src/services/kitLanche";
-import { getEscolasTercTotal } from "src/services/escola.service";
-import { dataParaUTC } from "src/helpers/utilities";
-import SolicitacaoUnificada from ".";
-import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { useContext, useEffect, useState } from "react";
 import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { dataParaUTC } from "src/helpers/utilities";
+import { getDiasUteis } from "src/services/diasUteis.service";
+import { getEscolasTercTotal } from "src/services/escola.service";
+import { getKitLanches } from "src/services/kitLanche";
+import SolicitacaoUnificada from ".";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -34,10 +34,10 @@ export const Container = () => {
     });
     if (response.status === HTTP_STATUS.OK) {
       setProximosDoisDiasUteis(
-        dataParaUTC(new Date(response.data.proximos_dois_dias_uteis))
+        dataParaUTC(new Date(response.data.proximos_dois_dias_uteis)),
       );
       setProximosCincoDiasUteis(
-        dataParaUTC(new Date(response.data.proximos_cinco_dias_uteis))
+        dataParaUTC(new Date(response.data.proximos_cinco_dias_uteis)),
       );
     } else {
       setErro("Erro ao carregar dias úteis. Tente novamente mais tarde.");

@@ -363,7 +363,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
 
       expect(inputParticipantes.disabled).toBe(true);
-      if ([30].includes(dia)) {
+      if ([31].includes(dia)) {
         expect(inputFrequencia.disabled).toBe(true);
         expect(inputLanche4h.disabled).toBe(true);
         expect(inputLanche.disabled).toBe(true);

@@ -28,7 +28,7 @@ import { ConsultaKitLanchePage } from "src/pages/Cadastros/ConsultaKitLanchePage
 import PainelPedidosAlteracaoDeCardapioDREPage from "src/pages/DRE/AlteracaoDeCardapio/PainelPedidosPage";
 import PainelPedidosInclusaoDeAlimentacaoDREPage from "src/pages/DRE/InclusaoDeAlimentacao/PainelPedidosPage";
 import PainelPedidosInversaoDiaCardapioDREPage from "src/pages/DRE/InversaoDiaCardapio/PainelPedidosPage";
-import SolicitacaoUnificadaPage from "src/pages/DRE/SolicitacaoUnificadaPage";
+import { SolicitacaoUnificadaPage } from "src/pages/DRE/SolicitacaoUnificadaPage";
 import StatusSolicitacoesAguardandoDREPage from "src/pages/DRE/Solicitacoes/StatusSolicitacoesAguardandoDREPage";
 import StatusSolicitacoesAutorizadasDREPage from "src/pages/DRE/Solicitacoes/StatusSolicitacoesAutorizadasDREPage";
 import StatusSolicitacoesCanceladasDREPage from "src/pages/DRE/Solicitacoes/StatusSolicitacoesCanceladasDREPage";
