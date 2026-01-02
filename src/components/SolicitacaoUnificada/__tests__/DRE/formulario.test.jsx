@@ -107,6 +107,31 @@ describe("Formulário Solicitação Unificada - DRE", () => {
     });
   });
 
+  it("Remove escola do formulário ao clicar no ícone de remover", async () => {
+    const selectUnidadesEscolares = screen.getByTestId(
+      "select-unidades-escolares",
+    );
+    const selectControl = within(selectUnidadesEscolares).getByRole("combobox");
+    fireEvent.mouseDown(selectControl);
+    const EMEISENAMADUREIRA = screen.getByText("000558 - EMEI SENA MADUREIRA");
+    fireEvent.click(EMEISENAMADUREIRA);
+
+    await waitFor(() => {
+      expect(
+        screen.queryAllByText("000558 - EMEI SENA MADUREIRA"),
+      ).toHaveLength(2);
+    });
+
+    const botaoRemoverEscola = screen.getByTestId("botao-remover-escola-0");
+    fireEvent.click(botaoRemoverEscola);
+
+    await waitFor(() => {
+      expect(
+        screen.queryAllByText("000558 - EMEI SENA MADUREIRA"),
+      ).toHaveLength(0);
+    });
+  });
+
   it("Preenche e envia formulário de solicitação unificada", async () => {
     const divDataPasseio = screen.getByTestId("div-input-data-passeio");
     const inputElement = divDataPasseio.querySelector("input");
@@ -213,6 +238,27 @@ describe("Formulário Solicitação Unificada - DRE", () => {
     await waitFor(() => {
       expect(
         screen.getByText(`Rascunho # ${idExterno} excluído com sucesso!`),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Renderiza erro ao excluir rascunho", async () => {
+    window.confirm = jest.fn().mockImplementation(() => true);
+
+    mock
+      .onDelete(
+        `/solicitacoes-kit-lanche-unificada/${solicitacaoUnificadaUuid}/`,
+      )
+      .reply(400, { detail: "Erro ao excluir rascunho" });
+
+    const botaoExcluirRascunho = screen.getByTestId("botao-excluir-rascunho-0");
+    fireEvent.click(botaoExcluirRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          `Houve um erro ao excluir o rascunho ${idExterno}. Tente novamente mais tarde.`,
+        ),
       ).toBeInTheDocument();
     });
   });

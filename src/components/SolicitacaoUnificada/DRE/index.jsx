@@ -465,6 +465,7 @@ const SolicitacaoUnificada = ({
                                         }
                                         style={BUTTON_STYLE.RED_OUTLINE}
                                         icon={BUTTON_ICON.TRASH}
+                                        dataTestId={`botao-remover-escola-${idx}`}
                                         className="botao-remover-escola mt-1"
                                       />
                                     </div>
