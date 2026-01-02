@@ -188,46 +188,32 @@ const SolicitacaoUnificada = ({
     }
   };
 
-  const removerRascunho = (id_externo, uuid) => {
-    if (window.confirm("Deseja remover este rascunho?")) {
-      removerSolicitacaoUnificada(uuid).then(
-        (res) => {
-          if (res.status === HTTP_STATUS.NO_CONTENT) {
-            toastSuccess(`Rascunho # ${id_externo} excluído com sucesso!`);
-            fetchData();
-          } else {
-            toastError(
-              `Houve um erro ao excluir o rascunho: ${getError(res.data)}`,
-            );
-          }
-        },
-        function (error) {
-          toastError(
-            `Houve um erro ao excluir o rascunho: ${getError(error.data)}`,
-          );
-        },
-      );
+  const removerRascunho = async (id_externo, uuid) => {
+    if (!window.confirm("Deseja remover este rascunho?")) {
+      return;
     }
+
+    const response = await removerSolicitacaoUnificada(uuid);
+    if (response.status !== HTTP_STATUS.NO_CONTENT) {
+      toastError(
+        `Houve um erro ao excluir o rascunho ${id_externo}. Tente novamente mais tarde.`,
+      );
+      return;
+    }
+    toastSuccess(`Rascunho # ${id_externo} excluído com sucesso!`);
+    fetchData();
   };
 
-  const iniciarPedido = (uuid) => {
-    inicioPedido(uuid).then(
-      (res) => {
-        if (res.status === HTTP_STATUS.OK) {
-          toastSuccess("Solicitação Unificada enviada com sucesso!");
-          fetchData();
-        } else if (res.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(
-            `Houve um erro ao salvar a solicitação unificada: ${getError(
-              res.data,
-            )}`,
-          );
-        }
-      },
-      function () {
-        toastError("Houve um erro ao enviar a solicitação unificada");
-      },
-    );
+  const iniciarPedido = async (uuid) => {
+    const response = await inicioPedido(uuid);
+    if (response.status !== HTTP_STATUS.OK) {
+      toastError(
+        "Houve um erro ao salvar a solicitação unificada. Tente novamente mais tarde.",
+      );
+      return;
+    }
+    toastSuccess("Solicitação Unificada enviada com sucesso!");
+    fetchData();
   };
 
   const removerEscola = (ue, form, values) => {
