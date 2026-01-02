@@ -120,6 +120,15 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
 
     expect(screen.getByText("Visualizar Anexo")).toBeInTheDocument();
   });
+
+  it("Deve renderizar a TagLeveLeite", async () => {
+    const collapseTitulo = screen.getByText("Dados do Cronograma de Entregas");
+    fireEvent.click(collapseTitulo);
+
+    const tagLeveLeite = document.querySelector(".tag-leve-leite");
+    expect(tagLeveLeite).toBeInTheDocument();
+    expect(tagLeveLeite).toHaveTextContent("LEVE LEITE - PLL");
+  });
 });
 
 describe("Testes quando reposicao_cronograma.tipo é Credito", () => {

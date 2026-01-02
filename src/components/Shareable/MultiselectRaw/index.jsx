@@ -27,6 +27,7 @@ export const MultiselectRaw = (props) => {
     usarDirty,
     dataTestId,
     labelAllOption = "Todos",
+    naoExibirValidacao,
   } = props;
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const selectRef = useRef(null);
@@ -131,7 +132,9 @@ export const MultiselectRaw = (props) => {
         placeholder={placeholder}
       />
       <HelpText helpText={helpText} />
-      <InputErroMensagem meta={meta} dirtyValidation={usarDirty} />
+      {!naoExibirValidacao && (
+        <InputErroMensagem meta={meta} dirtyValidation={usarDirty} />
+      )}
     </div>
   );
 };

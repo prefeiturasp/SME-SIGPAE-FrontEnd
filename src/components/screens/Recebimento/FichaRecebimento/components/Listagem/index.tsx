@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 import { truncarString } from "src/helpers/utilities";
 import { imprimirFichaRecebimento } from "src/services/fichaRecebimento.service";
 import { FichaDeRecebimentoItemListagem } from "../../interfaces";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 import "./styles.scss";
 import {
@@ -25,7 +26,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
   const imprimirFicha = async (
     uuid: string,
     numero: string,
-    setCarregando: Dispatch<SetStateAction<boolean>>
+    setCarregando: Dispatch<SetStateAction<boolean>>,
   ) => {
     setCarregando(true);
     await imprimirFichaRecebimento(uuid, numero);
@@ -33,7 +34,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
   };
 
   const renderizarAcoes = (
-    objeto: FichaDeRecebimentoItemListagem
+    objeto: FichaDeRecebimentoItemListagem,
   ): ReactElement => {
     const iconeEditar = (
       <span className="link-acoes px-1">
@@ -117,10 +118,11 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
             <>
               <div key={objeto.uuid} className="grid-table body-table">
                 <div>{objeto.numero_cronograma}</div>
-                <div>
+                <div className="d-flex align-items-center justify-content-between">
                   <Tooltip title={objeto.nome_produto}>
                     {truncarString(objeto.nome_produto, TAMANHO_MAXIMO)}
                   </Tooltip>
+                  {objeto.programa_leve_leite && <TagLeveLeite />}
                 </div>
                 <div>
                   <Tooltip title={objeto.fornecedor}>

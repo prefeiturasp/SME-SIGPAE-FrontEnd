@@ -37,8 +37,23 @@ export default class ParametrizacaoFinanceiraService {
 
   static async editParametrizacaoFinanceira(
     uuid: string,
-    payload: ParametrizacaoFinanceiraPayload,
+    payload: Partial<ParametrizacaoFinanceiraPayload>,
   ): Promise<void> {
     await axios.patch(`${BASE_URL}/${uuid}/`, payload);
+  }
+
+  static async cloneParametrizacaoFinanceira(
+    uuid: string,
+    payload: ParametrizacaoFinanceiraPayload,
+  ): Promise<ParametrizacaoFinanceiraInterface> {
+    const response = await axios.post(
+      `${BASE_URL}/clonar-encerrar/${uuid}/`,
+      payload,
+    );
+    return response.data;
+  }
+
+  static async deleteParametrizacaoFinanceira(uuid: string): Promise<void> {
+    await axios.delete(`${BASE_URL}/${uuid}/`);
   }
 }

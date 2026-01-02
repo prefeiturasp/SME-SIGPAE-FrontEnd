@@ -12,7 +12,7 @@ import {
 import { SelectOption } from "src/interfaces/option.interface";
 import { FormApi } from "final-form";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
-import { carregarValores } from "../../helpers";
+import { carregarValores, parseDate } from "../../helpers";
 import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 
 type Props = {
@@ -197,9 +197,12 @@ export default ({
   const initialGrupoUnidade =
     uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
 
-  const getGruposPendentes = async () => {
+  const getGruposPendentes = async (
+    setParametrizacaoConflito: (_e: string) => void,
+  ) => {
     try {
-      const { edital, lote, grupo_unidade_escolar } = form.getState().values;
+      const { edital, lote, grupo_unidade_escolar, data_inicial, data_final } =
+        form.getState().values;
 
       const { results } =
         await ParametrizacaoFinanceiraService.getParametrizacoesFinanceiras(1, {
@@ -211,46 +214,70 @@ export default ({
         (e) => e.uuid === grupo_unidade_escolar,
       ).nome;
 
-      const numeroGrupo = grupoNome.match(/\d+/)?.[0];
+      const nomeSelecionado = grupoNome.replace(/\s*\(.*?\)\s*/g, "").trim();
 
-      const grupoPendencias = {
-        "2": ["grupo 1", "grupo 3"],
-        "5": ["grupo 3", "grupo 4"],
-      };
+      const novoInicio = parseDate(data_inicial);
+      const novoFim = parseDate(data_final);
 
-      let dadosTabelas = form.getState().values.tabelas;
-      const pendencias = grupoPendencias[numeroGrupo] ?? [];
-      for (const grupoPendencia of pendencias) {
-        const pendencia = results.find(
-          (parametrizacao) =>
-            parametrizacao.grupo_unidade_escolar.nome.toLowerCase() ===
-            grupoPendencia,
-        );
-        if (pendencia) {
-          const response =
-            await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
-              pendencia.uuid,
-            );
-          const dados = carregarValores(
-            response.tabelas,
-            grupoNome,
-            grupoPendencia,
+      const parametrizacaoConflito = results.find((e) => {
+        if (e.grupo_unidade_escolar.nome !== nomeSelecionado) {
+          return false;
+        }
+
+        const inicioVigente = parseDate(e.data_inicial);
+        const fimVigente = parseDate(e.data_final);
+
+        if (!fimVigente && !novoFim) return true;
+        if (!fimVigente) return inicioVigente <= novoFim;
+        if (!novoFim) return novoInicio <= fimVigente;
+
+        return novoInicio <= fimVigente && inicioVigente <= novoFim;
+      });
+
+      if (parametrizacaoConflito)
+        setParametrizacaoConflito(parametrizacaoConflito.uuid);
+      else {
+        const numeroGrupo = grupoNome.match(/\d+/)?.[0];
+
+        const grupoPendencias = {
+          "2": ["grupo 1", "grupo 3"],
+          "5": ["grupo 3", "grupo 4"],
+        };
+
+        let dadosTabelas = form.getState().values.tabelas;
+        const pendencias = grupoPendencias[numeroGrupo] ?? [];
+        for (const grupoPendencia of pendencias) {
+          const pendencia = results.find(
+            (parametrizacao) =>
+              parametrizacao.grupo_unidade_escolar.nome.toLowerCase() ===
+              grupoPendencia,
           );
+          if (pendencia) {
+            const response =
+              await ParametrizacaoFinanceiraService.getDadosParametrizacaoFinanceira(
+                pendencia.uuid,
+              );
+            const dados = carregarValores(
+              response.tabelas,
+              grupoNome,
+              grupoPendencia,
+            );
 
-          for (const chave of Object.keys(dados)) {
-            dadosTabelas = {
-              ...dadosTabelas,
-              [chave]: {
-                ...dadosTabelas[chave],
-                ...dados[chave],
-              },
-            };
+            for (const chave of Object.keys(dados)) {
+              dadosTabelas = {
+                ...dadosTabelas,
+                [chave]: {
+                  ...dadosTabelas[chave],
+                  ...dados[chave],
+                },
+              };
+            }
           }
         }
-      }
 
-      if (Object.keys(dadosTabelas).length > 0)
-        form.change("tabelas", dadosTabelas);
+        if (Object.keys(dadosTabelas).length > 0)
+          form.change("tabelas", dadosTabelas);
+      }
     } catch {
       toastError("Erro ao carregar valores do grupo selecionado.");
     }

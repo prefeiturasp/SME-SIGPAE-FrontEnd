@@ -324,7 +324,7 @@ export const LancamentoPorPeriodo = ({
 
   const getSolicitacaoMedicaoInicialAsync = async () => {
     const payload = {
-      escola: escolaInstituicao.uuid,
+      escola_uuid: escolaInstituicao.uuid,
       mes: mes,
       ano: ano,
     };
@@ -589,15 +589,13 @@ export const LancamentoPorPeriodo = ({
               <CardLancamento
                 grupo="Recreio nas Férias"
                 cor={CORES[10]}
-                tipos_alimentacao={recreioNasFeriasDaMedicao(
-                  solicitacaoMedicaoInicial,
-                ).unidades_participantes[0].tipos_alimentacao.inscritos.map(
-                  (tpi) => tpi.nome,
-                )}
+                tipos_alimentacao={
+                  recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial)
+                    .unidades_participantes[0].tipos_alimentacao.inscritos
+                }
                 periodoSelecionado={periodoSelecionado}
                 solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                 objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                ehGrupoSolicitacoesDeAlimentacao={true}
                 quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
                 errosAoSalvar={errosAoSalvar}
               />
@@ -605,15 +603,13 @@ export const LancamentoPorPeriodo = ({
                 <CardLancamento
                   grupo="Colaboradores"
                   cor={CORES[11]}
-                  tipos_alimentacao={recreioNasFeriasDaMedicao(
-                    solicitacaoMedicaoInicial,
-                  ).unidades_participantes[0].tipos_alimentacao.colaboradores.map(
-                    (tpi) => tpi.nome,
-                  )}
+                  tipos_alimentacao={
+                    recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial)
+                      .unidades_participantes[0].tipos_alimentacao.colaboradores
+                  }
                   periodoSelecionado={periodoSelecionado}
                   solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                   objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                  ehGrupoSolicitacoesDeAlimentacao={true}
                   quantidadeAlimentacoesLancadas={
                     quantidadeAlimentacoesLancadas
                   }

@@ -14,10 +14,10 @@ import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import { ASelect } from "src/components/Shareable/MakeField";
+import { Select } from "antd";
 import { getListaFichasTecnicasSimplesSemLayoutEmbalagem } from "src/services/fichaTecnica.service";
 import { cadastraLayoutEmbalagem } from "src/services/layoutEmbalagem.service";
-import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
 import { required } from "src/helpers/fieldValidators";
 import { exibeError } from "src/helpers/utilities";
 import { formatarNumeroEProdutoFichaTecnica } from "src/helpers/preRecebimento";
@@ -26,8 +26,11 @@ import { LAYOUT_EMBALAGEM, PRE_RECEBIMENTO } from "src/configs/constants";
 import ModalConfirmar from "./components/ModalConfirmar";
 import ModalCancelar from "./components/ModalCancelar";
 import InserirArquivo from "../LayoutEmbalagem/components/InserirArquivo";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 import "./styles.scss";
+
+const { Option } = Select;
 
 export default () => {
   const navigate = useNavigate();
@@ -195,36 +198,53 @@ export default () => {
                 <div className="subtitulo">Dados do Produto</div>
                 <div className="row">
                   <div className="col">
+                    <span className="required-asterisk">*</span>
+                    <label className="col-form-label">
+                      Ficha Técnica e Produto
+                    </label>
                     <Field
-                      component={AutoCompleteSelectField}
-                      options={getListaFiltradaAutoCompleteSelect(
-                        fichasTecnicas.map((e) =>
-                          formatarNumeroEProdutoFichaTecnica(e)
-                        ),
-                        values.ficha_tecnica,
-                        true
-                      )}
-                      label="Ficha Técnica e Produto"
-                      name={`ficha_tecnica`}
-                      dataTestId={"ficha_tecnica"}
-                      className="input-busca-produto"
-                      placeholder="Digite o Nº da Ficha Técnica ou nome do Produto"
-                      required
+                      name="ficha_tecnica"
                       validate={required}
-                      esconderIcone
-                      onChange={(value) => {
-                        const ficha = fichasTecnicas.find(
-                          ({ numero }) => numero === value?.split("-")[0].trim()
-                        );
-
-                        values.ficha_tecnica = value;
-                        fichaTecnicaSelecionada.current = ficha?.uuid;
-
-                        form.change(
-                          "pregao_chamada_publica",
-                          ficha?.pregao_chamada_publica
-                        );
-                      }}
+                      render={({ input, meta }) => (
+                        <ASelect
+                          {...input}
+                          placeholder="Digite o Nº da Ficha Técnica ou nome do Produto"
+                          className="input-busca-produto"
+                          dataTestId="ficha_tecnica"
+                          meta={meta}
+                          showSearch
+                          onChange={(value) => {
+                            input.onChange(value);
+                            const numero = value?.split("-")[0].trim();
+                            const ficha = fichasTecnicas.find(
+                              (f) => f.numero === numero,
+                            );
+                            values.ficha_tecnica = value;
+                            fichaTecnicaSelecionada.current = ficha?.uuid;
+                            form.change(
+                              "pregao_chamada_publica",
+                              ficha?.pregao_chamada_publica,
+                            );
+                          }}
+                        >
+                          <Option value="" key="0">
+                            Selecione uma Ficha Técnica de Produto
+                          </Option>
+                          {fichasTecnicas.map((e) => (
+                            <Option
+                              value={formatarNumeroEProdutoFichaTecnica(e)}
+                              key={e.uuid}
+                            >
+                              <div className="d-flex justify-content-between align-items-center">
+                                {formatarNumeroEProdutoFichaTecnica(e)}
+                                {e.programa === "LEVE_LEITE" && (
+                                  <TagLeveLeite />
+                                )}
+                              </div>
+                            </Option>
+                          ))}
+                        </ASelect>
+                      )}
                     />
                   </div>
 
