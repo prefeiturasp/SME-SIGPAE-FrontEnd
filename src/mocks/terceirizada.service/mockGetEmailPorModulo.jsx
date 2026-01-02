@@ -9,7 +9,7 @@ export const mockEmailGestaoAlimentacao = {
       emails_terceirizadas: [
         {
           uuid: "efbfb841-ae5b-4537-9b36-7e3ffb09ef07",
-          email: "admin@secretaria.com",
+          email: "admin.alimentar@secretaria.com",
           modulo: "Gestão de Alimentação",
         },
         {
@@ -30,7 +30,7 @@ export const mockEmailGestaoAlimentacao = {
       emails_terceirizadas: [
         {
           uuid: "d5122b00-9b0f-4dea-90f9-05ccc8c14c8f",
-          email: "admin@secretaria.com",
+          email: "admin.agro@secretaria.com",
           modulo: "Gestão de Alimentação",
         },
       ],
