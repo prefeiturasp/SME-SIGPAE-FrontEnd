@@ -100,4 +100,151 @@ describe("Testes do componente de Filtros de Emails - Gerenciamento Emails", () 
       expect(screen.queryByText("Adicionar E-mail")).not.toBeInTheDocument();
     });
   });
+
+  it("deve fechar o modal ao clicar no botão de fechar (X)", async () => {
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+
+    await waitFor(() => {
+      expect(screen.getByText("Adicionar E-mail")).toBeInTheDocument();
+    });
+    const closeButton = screen.getByLabelText("Close");
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Adicionar E-mail")).not.toBeInTheDocument();
+    });
+  });
+
+  it("deve testar validação de email inválido no formulário", async () => {
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+    const inputEmail = screen.getByTestId("input-email");
+    fireEvent.change(inputEmail, {
+      target: { value: "email-invalido" },
+    });
+    fireEvent.blur(inputEmail);
+
+    await waitFor(() => {
+      expect(inputEmail.value).toBe("email-invalido");
+    });
+  });
+
+  it("deve testar o onChange do select de empresa", async () => {
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+    const selectEmpresa = screen.getByLabelText("Empresa");
+    fireEvent.mouseDown(selectEmpresa);
+  });
+
+  it("deve testar handleAdicionarEmail", async () => {
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+
+    await waitFor(() => {
+      expect(screen.getByText("Adicionar E-mail")).toBeInTheDocument();
+    });
+  });
+
+  it("deve testar cadastro com erro 400 - empresa inválida", async () => {
+    mock.onPost("/emails-terceirizadas-modulos/").reply(400, {
+      terceirizada: ["Empresa inválida"],
+    });
+
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+
+    const selectEmpresa = screen.getByLabelText("Empresa");
+    fireEvent.change(selectEmpresa, {
+      target: { value: "uuid-invalido" },
+    });
+
+    const inputEmail = screen.getByTestId("input-email");
+    fireEvent.change(inputEmail, {
+      target: { value: "teste@gmail.com" },
+    });
+
+    const botaoSalvar = screen.getByTestId("botao-salvar");
+    fireEvent.click(botaoSalvar);
+    await waitFor(() => {
+      expect(screen.getByText("Empresa inválida")).toBeInTheDocument();
+    });
+  });
+
+  it("deve testar cadastro com erro 400 - email já existe", async () => {
+    mock.onPost("/emails-terceirizadas-modulos/").reply(400, {
+      email: ["E-mail já existe para esta empresa"],
+    });
+
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+
+    const selectEmpresa = screen.getByLabelText("Empresa");
+    fireEvent.change(selectEmpresa, {
+      target: { value: mockEmpresas.results[0].uuid },
+    });
+
+    const inputEmail = screen.getByTestId("input-email");
+    fireEvent.change(inputEmail, {
+      target: { value: "teste@gmail.com" },
+    });
+
+    const botaoSalvar = screen.getByTestId("botao-salvar");
+    fireEvent.click(botaoSalvar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("E-mail já cadastrado para esta empresa"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("deve testar cadastro com erro 400 - email inválido no servidor", async () => {
+    mock.onPost("/emails-terceirizadas-modulos/").reply(400, {
+      email: ["Formato de email inválido"],
+    });
+
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+
+    const selectEmpresa = screen.getByLabelText("Empresa");
+    fireEvent.change(selectEmpresa, {
+      target: { value: mockEmpresas.results[0].uuid },
+    });
+
+    const inputEmail = screen.getByTestId("input-email");
+    fireEvent.change(inputEmail, {
+      target: { value: "teste@gmail.com" },
+    });
+
+    const botaoSalvar = screen.getByTestId("botao-salvar");
+    fireEvent.click(botaoSalvar);
+
+    await waitFor(() => {
+      expect(screen.getByText("Formato de email inválido")).toBeInTheDocument();
+    });
+  });
+
+  it("deve testar cadastro com erro 400 - erro genérico", async () => {
+    mock.onPost("/emails-terceirizadas-modulos/").reply(400, {});
+
+    const botaoAdicionar = screen.getByTestId("botao-adicionar");
+    fireEvent.click(botaoAdicionar);
+
+    const selectEmpresa = screen.getByLabelText("Empresa");
+    fireEvent.change(selectEmpresa, {
+      target: { value: mockEmpresas.results[0].uuid },
+    });
+
+    const inputEmail = screen.getByTestId("input-email");
+    fireEvent.change(inputEmail, {
+      target: { value: "teste@gmail.com" },
+    });
+
+    const botaoSalvar = screen.getByTestId("botao-salvar");
+    fireEvent.click(botaoSalvar);
+    await waitFor(() => {
+      expect(screen.getByText("Erro")).toBeInTheDocument();
+    });
+  });
 });

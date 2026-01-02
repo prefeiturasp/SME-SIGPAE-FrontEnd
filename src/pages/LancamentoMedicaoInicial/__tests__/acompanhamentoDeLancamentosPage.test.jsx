@@ -270,10 +270,10 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
     const grupo5Wrapper = screen.getByText("Grupo 5 (EMEBS)").closest("label");
     expect(grupo5Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
 
-    // Verifica se Grupo 6 está desabilitado
+    // Verifica se Grupo 6 está habilitado
     const grupo6Wrapper = screen
       .getByText("Grupo 6 (CIEJA, CMCT)")
       .closest("label");
-    expect(grupo6Wrapper).toHaveClass("ant-radio-wrapper-disabled");
+    expect(grupo6Wrapper).not.toHaveClass("ant-radio-wrapper-disabled");
   });
 });

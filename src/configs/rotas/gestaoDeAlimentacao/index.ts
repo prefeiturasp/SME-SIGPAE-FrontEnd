@@ -28,7 +28,7 @@ import { ConsultaKitLanchePage } from "src/pages/Cadastros/ConsultaKitLanchePage
 import PainelPedidosAlteracaoDeCardapioDREPage from "src/pages/DRE/AlteracaoDeCardapio/PainelPedidosPage";
 import PainelPedidosInclusaoDeAlimentacaoDREPage from "src/pages/DRE/InclusaoDeAlimentacao/PainelPedidosPage";
 import PainelPedidosInversaoDiaCardapioDREPage from "src/pages/DRE/InversaoDiaCardapio/PainelPedidosPage";
-import SolicitacaoUnificadaPage from "src/pages/DRE/SolicitacaoUnificadaPage";
+import { SolicitacaoUnificadaPage } from "src/pages/DRE/SolicitacaoUnificadaPage";
 import StatusSolicitacoesAguardandoDREPage from "src/pages/DRE/Solicitacoes/StatusSolicitacoesAguardandoDREPage";
 import StatusSolicitacoesAutorizadasDREPage from "src/pages/DRE/Solicitacoes/StatusSolicitacoesAutorizadasDREPage";
 import StatusSolicitacoesCanceladasDREPage from "src/pages/DRE/Solicitacoes/StatusSolicitacoesCanceladasDREPage";
@@ -51,7 +51,6 @@ import RelatorioAlunosMatriculadosPage from "src/pages/Relatorios/RelatorioAluno
 import RelatorioSolicitacoesAlimentacaoPage from "src/pages/Relatorios/RelatorioSolicitacoesAlimentacaoPage";
 import * as PainelPageKitLanche from "src/pages/SolicitacaoDeKitLanche/ContainerPage";
 import PainelPedidosSuspensaoAlimentacaoCEIRelatorio from "src/pages/SuspensaoAlimentacaoCEI/RelatorioPage";
-import PainelPedidosSolicitacaoUnificadaTerceirizadaPage from "src/pages/Terceirizada/SolicitacaoUnificada/PainelPedidosPage";
 import { StatusQuestionamentosCodae } from "src/pages/Terceirizada/StatusSolicitacoes/StatusQuestionamentosCodae";
 import { StatusSolicitacoesAutorizadasTerceirizadaPage } from "src/pages/Terceirizada/StatusSolicitacoes/StatusSolicitacoesAutorizadas";
 import { StatusSolicitacoesCanceladasTerceirizadaPage } from "src/pages/Terceirizada/StatusSolicitacoes/StatusSolicitacoesCanceladasTerceirizada";
@@ -391,11 +390,6 @@ export const rotasGestaoDeAlimentacao: Array<RotaInterface> = [
   {
     path: `/${constants.TERCEIRIZADA}/${constants.SOLICITACOES_CANCELADAS}`,
     component: StatusSolicitacoesCanceladasTerceirizadaPage,
-    tipoUsuario: usuarioEhEmpresaTerceirizada(),
-  },
-  {
-    path: `/${constants.TERCEIRIZADA}/${constants.SOLICITACAO_KIT_LANCHE_UNIFICADA}`,
-    component: PainelPedidosSolicitacaoUnificadaTerceirizadaPage,
     tipoUsuario: usuarioEhEmpresaTerceirizada(),
   },
   {

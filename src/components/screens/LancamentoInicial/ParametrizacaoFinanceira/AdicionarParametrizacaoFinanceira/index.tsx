@@ -35,6 +35,8 @@ const VALORES_INICIAIS: ParametrizacaoFinanceiraPayload = {
   data_final: null,
 };
 
+const URL_RETORNO = "/medicao-inicial/parametrizacao-financeira/";
+
 export default () => {
   const [grupoSelecionado, setGrupoSelecionado] = useState("");
   const [editalSelecionado, setEditalSelecionado] = useState("");
@@ -50,28 +52,29 @@ export default () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const uuidParametrizacao = searchParams.get("uuid");
+  const uuidNovaParametrizacao = searchParams.get("nova_uuid");
 
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
       const payload = formataPayload(values);
-
-      if (!uuidParametrizacao) {
+      if (!uuidParametrizacao && !uuidNovaParametrizacao) {
         await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(
           payload,
         );
         toastSuccess("Parametrização Financeira cadastrada com sucesso!");
+        navigate(URL_RETORNO);
       } else {
         await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
-          uuidParametrizacao,
+          uuidParametrizacao || uuidNovaParametrizacao,
           payload,
         );
-        toastSuccess("Parametrização Financeira editada com sucesso!");
+        toastSuccess(
+          `Parametrização Financeira ${uuidNovaParametrizacao ? "cadastrada" : "editada"} com sucesso!`,
+        );
+        navigate(URL_RETORNO);
       }
-
-      navigate(-1);
     } catch (err: any) {
       const data = err?.response?.data;
-
       if (data?.non_field_errors) {
         toastError(data.non_field_errors[0]);
       } else if (data) {
@@ -86,6 +89,18 @@ export default () => {
     }
   };
 
+  const onCancelar = async () => {
+    try {
+      if (uuidNovaParametrizacao)
+        await ParametrizacaoFinanceiraService.deleteParametrizacaoFinanceira(
+          uuidNovaParametrizacao,
+        );
+      navigate(-1);
+    } catch {
+      toastError("Ocorreu um erro inesperado ao cancelar a parametrização.");
+    }
+  };
+
   return (
     <>
       <div className="adicionar-parametrizacao card mt-4">
@@ -97,7 +112,7 @@ export default () => {
             render={({ form, handleSubmit, submitting }) => {
               const grupo = grupoSelecionado.toLowerCase();
               const tabelasCarregadas =
-                carregarTabelas || Boolean(uuidParametrizacao);
+                carregarTabelas || uuidParametrizacao || uuidNovaParametrizacao;
 
               const TABELAS_POR_GRUPO: Record<string, React.ReactNode> = {
                 "grupo 1": (
@@ -156,7 +171,9 @@ export default () => {
                     setParametrizacao={setParametrizacao}
                     setCarregarTabelas={setCarregarTabelas}
                     form={form}
-                    uuidParametrizacao={uuidParametrizacao}
+                    uuidParametrizacao={
+                      uuidParametrizacao || uuidNovaParametrizacao
+                    }
                     ehCadastro
                   />
 
@@ -188,11 +205,7 @@ export default () => {
                     <Botao
                       dataTestId="botao-cancelar"
                       texto="Cancelar"
-                      onClick={() =>
-                        uuidParametrizacao
-                          ? navigate(-1)
-                          : setShowModalCancelar(true)
-                      }
+                      onClick={() => setShowModalCancelar(true)}
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                       type={BUTTON_TYPE.BUTTON}
                     />
@@ -222,6 +235,8 @@ export default () => {
       <ModalCancelar
         showModal={showModalCancelar}
         setShowModal={setShowModalCancelar}
+        uuidParametrizacao={uuidParametrizacao}
+        onCancelar={onCancelar}
       />
     </>
   );

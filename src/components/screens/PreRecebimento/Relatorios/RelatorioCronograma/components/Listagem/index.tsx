@@ -13,6 +13,7 @@ import {
 import { imprimirFichaRecebimento } from "src/services/fichaRecebimento.service";
 import { Tooltip } from "antd";
 import { formataNome } from "../../helpers";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 interface Props {
   objetos: CronogramaRelatorio[];
@@ -92,7 +93,15 @@ const Listagem: React.FC<Props> = ({
             <>
               <div key={cronograma.uuid} className="grid-table body-table">
                 <div>{cronograma.numero}</div>
-                <div>{cronograma.produto}</div>
+                <div className="d-flex justify-content-between">
+                  {cronograma.produto}
+
+                  {cronograma.programa_leve_leite && (
+                    <div className="me-2">
+                      <TagLeveLeite />
+                    </div>
+                  )}
+                </div>
                 <div>{cronograma.empresa}</div>
                 <div>{cronograma.qtd_total_programada}</div>
                 <div>{cronograma.armazem}</div>
