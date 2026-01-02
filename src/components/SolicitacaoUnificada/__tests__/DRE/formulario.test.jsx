@@ -76,6 +76,37 @@ describe("Formulário Solicitação Unificada - DRE", () => {
     expect(screen.getByText(/informação automática/i)).toBeInTheDocument();
   });
 
+  it("Deve renderizar toast erro `Selecione ao menos uma unidade escolar`", async () => {
+    const divDataPasseio = screen.getByTestId("div-input-data-passeio");
+    const inputElement = divDataPasseio.querySelector("input");
+    fireEvent.change(inputElement, {
+      target: { value: "28/01/2026" },
+    });
+
+    const divLocalPasseio = screen.getByTestId("div-input-local-passeio");
+    const inputLocalPasseio = divLocalPasseio.querySelector("input");
+    fireEvent.change(inputLocalPasseio, {
+      target: { value: "Parque Ibirapuera" },
+    });
+
+    const divInputEvento = screen.getByTestId("div-input-evento");
+    const inputEvento = divInputEvento.querySelector("input");
+    fireEvent.change(inputEvento, {
+      target: { value: "Passeio Cultural" },
+    });
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar Rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Selecione ao menos uma unidade escolar"),
+      ).toBeInTheDocument();
+    });
+  });
+
   it("Preenche e envia formulário de solicitação unificada", async () => {
     const divDataPasseio = screen.getByTestId("div-input-data-passeio");
     const inputElement = divDataPasseio.querySelector("input");
