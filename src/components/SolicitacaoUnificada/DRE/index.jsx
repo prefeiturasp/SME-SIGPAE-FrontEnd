@@ -264,21 +264,6 @@ const SolicitacaoUnificada = ({
     form.change("unidades_escolares", resultado);
   };
 
-  const renderizarLabelUnidadesEscolares = (selected, options) => {
-    if (selected.length === 0) {
-      return "Selecione";
-    }
-    if (selected.length === options.length) {
-      return "Todos as unidades escolares selecionados";
-    }
-    if (selected.length === 1) {
-      return `${selected[0].nome}`;
-    }
-    if (selected.length > 1) {
-      return `${selected[0].nome}; +${selected.length - 1}`;
-    }
-  };
-
   const validaDiasUteis = (value) => {
     if (
       value &&
@@ -298,6 +283,68 @@ const SolicitacaoUnificada = ({
     } else {
       return composeValidators(required, maxValue(ue.quantidade_alunos));
     }
+  };
+
+  const handleNumeroAlunosChange = (event, form, values, ue, idx) => {
+    const novoValor = Number(event.target.value) || 0;
+
+    form.change(`unidades_escolares[${idx}].nmr_alunos`, event.target.value);
+
+    const total = values.unidades_escolares.reduce((acc, e) => {
+      const alunos = e.uuid === ue.uuid ? novoValor : Number(e.nmr_alunos) || 0;
+
+      const kits = Number(e.quantidade_kits) || 0;
+
+      return acc + alunos * kits;
+    }, 0);
+
+    setTotalKits(total);
+  };
+
+  const opcoesKits = [
+    {
+      label: "até 4 horas (1 Kit)",
+      value: 1,
+      testId: "radio-tempo-previsto-ate-4-horas",
+    },
+    {
+      label: "de 5 à 7 horas (2 Kits)",
+      value: 2,
+      testId: "radio-tempo-previsto-5-a-7-horas",
+    },
+    {
+      label: "8 horas ou mais (3 Kits)",
+      value: 3,
+      testId: "radio-tempo-previsto-8-horas-ou-mais",
+    },
+  ];
+
+  const handleChangeQuantidadeKits = (
+    quantidadeKits,
+    form,
+    values,
+    ue,
+    idx,
+  ) => {
+    form.change(`unidades_escolares[${idx}].kits_selecionados`, []);
+    form.change(
+      `unidades_escolares[${idx}].quantidade_kits`,
+      String(quantidadeKits),
+    );
+
+    const total = values.unidades_escolares.reduce((acc, e) => {
+      const alunos =
+        e.uuid === ue.uuid
+          ? Number(ue.nmr_alunos) || 0
+          : Number(e.nmr_alunos) || 0;
+
+      const kits =
+        e.uuid === ue.uuid ? quantidadeKits : Number(e.quantidade_kits) || 0;
+
+      return acc + alunos * kits;
+    }, 0);
+
+    setTotalKits(total);
   };
 
   return (
@@ -367,7 +414,6 @@ const SolicitacaoUnificada = ({
                         filterOptions={filterOptions}
                         options={opcoes}
                         className="form-control"
-                        valueRenderer={renderizarLabelUnidadesEscolares}
                         selected={unidadesEscolaresSelecionadas}
                         naoExibirValidacao
                         onSelectedChanged={(value) => {
@@ -522,54 +568,13 @@ const SolicitacaoUnificada = ({
                                         name={`unidades_escolares[${idx}].nmr_alunos`}
                                         className="form-control"
                                         onChange={(event) => {
-                                          form.change(
-                                            `unidades_escolares[${idx}].nmr_alunos`,
-                                            event.target.value,
+                                          handleNumeroAlunosChange(
+                                            event,
+                                            form,
+                                            values,
+                                            ue,
+                                            idx,
                                           );
-                                          let total = 0;
-                                          let listaQuantidadeKits =
-                                            values.unidades_escolares.filter(
-                                              (e) =>
-                                                e.uuid !== ue.uuid &&
-                                                !["", undefined].includes(
-                                                  e.quantidade_kits,
-                                                ) &&
-                                                !["", undefined].includes(
-                                                  e.nmr_alunos,
-                                                ),
-                                            );
-                                          if (
-                                            listaQuantidadeKits.length !== 0
-                                          ) {
-                                            listaQuantidadeKits =
-                                              listaQuantidadeKits.map(
-                                                (e) =>
-                                                  parseInt(e.quantidade_kits) *
-                                                  parseInt(e.nmr_alunos),
-                                              );
-                                            for (
-                                              let i = 0;
-                                              i < listaQuantidadeKits.length;
-                                              i++
-                                            ) {
-                                              total =
-                                                total + listaQuantidadeKits[i];
-                                            }
-                                          }
-                                          if (
-                                            !["", undefined].includes(
-                                              event.target.value,
-                                            ) &&
-                                            !["", undefined].includes(
-                                              ue.quantidade_kits,
-                                            )
-                                          ) {
-                                            total =
-                                              total +
-                                              parseInt(event.target.value) *
-                                                parseInt(ue.quantidade_kits);
-                                          }
-                                          setTotalKits(total);
                                         }}
                                         required
                                         validate={validaNdeAlunos(ue)}
@@ -584,214 +589,34 @@ const SolicitacaoUnificada = ({
                                         Tempo previsto do passeio
                                       </div>
                                       <div className="row mt-3">
-                                        <div className="col-4">
-                                          <label className="container-radio">
-                                            até 4 horas (1 Kit)
-                                            <Field
-                                              component="input"
-                                              data-testid={`radio-tempo-previsto-ate-4-horas-${idx}`}
-                                              type="radio"
-                                              required
-                                              validate={required}
-                                              value="1"
-                                              name={`unidades_escolares[${idx}].quantidade_kits`}
-                                              onChange={() => {
-                                                let total = 0;
-                                                let listaQuantidadeKits =
-                                                  values.unidades_escolares.filter(
-                                                    (e) =>
-                                                      e.uuid !== ue.uuid &&
-                                                      !["", undefined].includes(
-                                                        e.quantidade_kits,
-                                                      ) &&
-                                                      !["", undefined].includes(
-                                                        e.nmr_alunos,
-                                                      ),
-                                                  );
-                                                if (
-                                                  listaQuantidadeKits.length !==
-                                                  0
-                                                ) {
-                                                  listaQuantidadeKits =
-                                                    listaQuantidadeKits.map(
-                                                      (e) =>
-                                                        parseInt(
-                                                          e.quantidade_kits,
-                                                        ) *
-                                                        parseInt(e.nmr_alunos),
-                                                    );
-                                                  for (
-                                                    let i = 0;
-                                                    i <
-                                                    listaQuantidadeKits.length;
-                                                    i++
-                                                  ) {
-                                                    total =
-                                                      total +
-                                                      listaQuantidadeKits[i];
+                                        {opcoesKits.map(
+                                          ({ label, value, testId }) => (
+                                            <div className="col-4" key={value}>
+                                              <label className="container-radio">
+                                                {label}
+                                                <Field
+                                                  component="input"
+                                                  type="radio"
+                                                  value={String(value)}
+                                                  required
+                                                  validate={required}
+                                                  name={`unidades_escolares[${idx}].quantidade_kits`}
+                                                  data-testid={`${testId}-${idx}`}
+                                                  onChange={() =>
+                                                    handleChangeQuantidadeKits(
+                                                      value,
+                                                      form,
+                                                      values,
+                                                      ue,
+                                                      idx,
+                                                    )
                                                   }
-                                                }
-                                                form.change(
-                                                  `unidades_escolares[${idx}].kits_selecionados`,
-                                                  [],
-                                                );
-                                                form.change(
-                                                  `unidades_escolares[${idx}].quantidade_kits`,
-                                                  "1",
-                                                );
-                                                if (
-                                                  !["", undefined].includes(
-                                                    ue.nmr_alunos,
-                                                  )
-                                                ) {
-                                                  total =
-                                                    total +
-                                                    parseInt(ue.nmr_alunos);
-                                                }
-                                                setTotalKits(total);
-                                              }}
-                                            />
-                                            <span className="checkmark" />
-                                          </label>
-                                        </div>
-                                        <div className="col-4">
-                                          <label className="container-radio">
-                                            de 5 á 7 horas (2 Kits)
-                                            <Field
-                                              component={"input"}
-                                              type="radio"
-                                              value="2"
-                                              required
-                                              validate={required}
-                                              name={`unidades_escolares[${idx}].quantidade_kits`}
-                                              onChange={() => {
-                                                let total = 0;
-                                                let listaQuantidadeKits =
-                                                  values.unidades_escolares.filter(
-                                                    (e) =>
-                                                      e.uuid !== ue.uuid &&
-                                                      !["", undefined].includes(
-                                                        e.quantidade_kits,
-                                                      ) &&
-                                                      !["", undefined].includes(
-                                                        e.nmr_alunos,
-                                                      ),
-                                                  );
-                                                if (
-                                                  listaQuantidadeKits.length !==
-                                                  0
-                                                ) {
-                                                  listaQuantidadeKits =
-                                                    listaQuantidadeKits.map(
-                                                      (e) =>
-                                                        parseInt(
-                                                          e.quantidade_kits,
-                                                        ) *
-                                                        parseInt(e.nmr_alunos),
-                                                    );
-                                                  for (
-                                                    let i = 0;
-                                                    i <
-                                                    listaQuantidadeKits.length;
-                                                    i++
-                                                  ) {
-                                                    total =
-                                                      total +
-                                                      listaQuantidadeKits[i];
-                                                  }
-                                                }
-                                                form.change(
-                                                  `unidades_escolares[${idx}].kits_selecionados`,
-                                                  [],
-                                                );
-                                                form.change(
-                                                  `unidades_escolares[${idx}].quantidade_kits`,
-                                                  "2",
-                                                );
-                                                if (
-                                                  !["", undefined].includes(
-                                                    ue.nmr_alunos,
-                                                  )
-                                                ) {
-                                                  total =
-                                                    total +
-                                                    parseInt(ue.nmr_alunos) * 2;
-                                                }
-                                                setTotalKits(total);
-                                              }}
-                                            />
-                                            <span className="checkmark" />
-                                          </label>
-                                        </div>
-                                        <div className="col-4">
-                                          <label className="container-radio">
-                                            8 horas ou mais (3 Kits)
-                                            <Field
-                                              component={"input"}
-                                              type="radio"
-                                              value="3"
-                                              required
-                                              validate={required}
-                                              name={`unidades_escolares[${idx}].quantidade_kits`}
-                                              onChange={() => {
-                                                let total = 0;
-                                                let listaQuantidadeKits =
-                                                  values.unidades_escolares.filter(
-                                                    (e) =>
-                                                      e.uuid !== ue.uuid &&
-                                                      !["", undefined].includes(
-                                                        e.quantidade_kits,
-                                                      ) &&
-                                                      !["", undefined].includes(
-                                                        e.nmr_alunos,
-                                                      ),
-                                                  );
-                                                if (
-                                                  listaQuantidadeKits.length !==
-                                                  0
-                                                ) {
-                                                  listaQuantidadeKits =
-                                                    listaQuantidadeKits.map(
-                                                      (e) =>
-                                                        parseInt(
-                                                          e.quantidade_kits,
-                                                        ) *
-                                                        parseInt(e.nmr_alunos),
-                                                    );
-                                                  for (
-                                                    let i = 0;
-                                                    i <
-                                                    listaQuantidadeKits.length;
-                                                    i++
-                                                  ) {
-                                                    total =
-                                                      total +
-                                                      listaQuantidadeKits[i];
-                                                  }
-                                                }
-                                                form.change(
-                                                  `unidades_escolares[${idx}].kits_selecionados`,
-                                                  [],
-                                                );
-                                                form.change(
-                                                  `unidades_escolares[${idx}].quantidade_kits`,
-                                                  "3",
-                                                );
-                                                if (
-                                                  !["", undefined].includes(
-                                                    ue.nmr_alunos,
-                                                  )
-                                                ) {
-                                                  total =
-                                                    total +
-                                                    parseInt(ue.nmr_alunos) * 3;
-                                                }
-                                                setTotalKits(total);
-                                              }}
-                                            />
-                                            <span className="checkmark" />
-                                          </label>
-                                        </div>
+                                                />
+                                                <span className="checkmark" />
+                                              </label>
+                                            </div>
+                                          ),
+                                        )}
                                       </div>
                                     </div>
                                     <div className="col-12 mt-3">
