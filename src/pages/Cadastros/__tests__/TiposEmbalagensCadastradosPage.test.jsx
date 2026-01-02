@@ -1,61 +1,68 @@
 import React from "react";
-import { render, screen, cleanup } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import TiposEmbalagensCadastradosPage from "../TiposEmbalagensCadastradosPage";
+import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import mock from "src/services/_mock";
 
-jest.mock("src/components/Shareable/Page/Page", () => {
-  return ({ children, titulo, botaoVoltar, voltarPara }) => (
-    <div data-testid="mock-page">
-      <div>{titulo}</div>
-      <div>{botaoVoltar ? "Voltar habilitado" : "Voltar desabilitado"}</div>
-      <div>{`Voltar para: ${voltarPara}`}</div>
-      {children}
-    </div>
-  );
-});
+import { mockGetListaNomesTiposEmbalagens } from "src/mocks/services/qualidade.service/mockGetListaNomesTiposEmbalagens";
+import { mockGetListaAbreviacoesTiposEmbalagens } from "src/mocks/services/qualidade.service/mockGetListaAbreviacoesTiposEmbalagens";
+import { mockGetTiposEmbalagens } from "src/mocks/services/qualidade.service/mockGetTiposEmbalagens";
+import { mockMeusDadosDilogQualidade } from "src/mocks/meusDados/dilog-qualidade";
 
-jest.mock("src/components/Shareable/Breadcrumb", () => {
-  return ({ home, anteriores, atual }) => (
-    <nav data-testid="mock-breadcrumb">
-      <div>{`Home: ${home}`}</div>
-      {anteriores.map((item, index) => (
-        <div key={index}>{`${item.titulo} (${item.href})`}</div>
-      ))}
-      <div>{`Atual: ${atual.titulo} (${atual.href})`}</div>
-    </nav>
-  );
-});
+describe("Teste da página TiposEmbalagensCadastrados", () => {
+  beforeEach(async () => {
+    localStorage.setItem("perfil", PERFIL.DILOG_QUALIDADE);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
 
-jest.mock("src/components/screens/Cadastros/TiposEmbalagens", () => {
-  return () => (
-    <div data-testid="mock-tipos-embalagens">
-      Componente Tipos de Embalagens
-    </div>
-  );
-});
+    mock
+      .onGet("/tipos-embalagens/lista-nomes-tipos-embalagens/")
+      .reply(200, mockGetListaNomesTiposEmbalagens);
 
-afterEach(cleanup);
+    mock
+      .onGet("/tipos-embalagens/lista-abreviacoes-tipos-embalagens/")
+      .reply(200, mockGetListaAbreviacoesTiposEmbalagens);
 
-describe("TiposEmbalagensCadastradosPage", () => {
-  test("deve renderizar a página com título, breadcrumb e o componente TiposEmbalagens", () => {
-    render(<TiposEmbalagensCadastradosPage />);
+    mock.onGet("/tipos-embalagens/").reply(200, mockGetTiposEmbalagens);
 
-    expect(screen.getByTestId("mock-page")).toBeInTheDocument();
-    expect(screen.getByText("Tipos de Embalagens")).toBeInTheDocument();
-    expect(screen.getByText("Voltar habilitado")).toBeInTheDocument();
-    expect(screen.getByText("Voltar para: /")).toBeInTheDocument();
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosDilogQualidade,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <TiposEmbalagensCadastradosPage />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  });
 
-    expect(screen.getByTestId("mock-breadcrumb")).toBeInTheDocument();
-    expect(screen.getByText("Home: /")).toBeInTheDocument();
-    expect(
-      screen.getByText("Cadastros (/configuracoes/cadastros)")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Atual: Tipos de Embalagens (/configuracoes/cadastros/tipos-embalagens)"
-      )
-    ).toBeInTheDocument();
+  it("valida se a listagem está renderizando corretamente", async () => {
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    expect(botaoFiltrar).toBeInTheDocument();
 
-    expect(screen.getByTestId("mock-tipos-embalagens")).toBeInTheDocument();
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(screen.getByText("COPO PLASTICO")).toBeInTheDocument();
+      expect(screen.getByText("CAIXA DE PAPELAO")).toBeInTheDocument();
+    });
   });
 });
