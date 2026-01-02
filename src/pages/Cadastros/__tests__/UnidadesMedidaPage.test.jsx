@@ -1,59 +1,67 @@
 import React from "react";
-import { render, screen, cleanup } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import UnidadesMedidaPage from "../UnidadesMedidaPage";
+import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import mock from "src/services/_mock";
 
-jest.mock("src/components/Shareable/Page/Page", () => {
-  return ({ children, titulo, botaoVoltar, voltarPara }) => (
-    <div data-testid="mock-page">
-      <div>{titulo}</div>
-      <div>{botaoVoltar ? "Voltar habilitado" : "Voltar desabilitado"}</div>
-      <div>{`Voltar para: ${voltarPara}`}</div>
-      {children}
-    </div>
-  );
-});
+import { mockGetNomesEAbreviacoesUnidadesMedida } from "src/mocks/services/qualidade.service/mockGetNomesEAbreviacoesUnidadesMedida";
+import { mockGetUnidadesMedida } from "src/mocks/services/qualidade.service/mockGetUnidadesMedida";
+import { mockMeusDadosDilogQualidade } from "src/mocks/meusDados/dilog-qualidade";
 
-jest.mock("src/components/Shareable/Breadcrumb", () => {
-  return ({ home, anteriores, atual }) => (
-    <nav data-testid="mock-breadcrumb">
-      <div>{`Home: ${home}`}</div>
-      {anteriores.map((item, index) => (
-        <div key={index}>{`${item.titulo} (${item.href})`}</div>
-      ))}
-      <div>{`Atual: ${atual.titulo} (${atual.href})`}</div>
-    </nav>
-  );
-});
+import { debug } from "jest-preview";
 
-jest.mock("src/components/screens/Cadastros/UnidadesMedida", () => {
-  return () => (
-    <div data-testid="mock-unidades-medida">Componente Unidades de Medida</div>
-  );
-});
+describe("Teste da página TiposEmbalagensCadastrados", () => {
+  beforeEach(async () => {
+    localStorage.setItem("perfil", PERFIL.DILOG_QUALIDADE);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
 
-afterEach(cleanup);
+    mock
+      .onGet("/unidades-medida-logistica/lista-nomes-abreviacoes/")
+      .reply(200, mockGetNomesEAbreviacoesUnidadesMedida);
 
-describe("UnidadesMedidaPage", () => {
-  test("deve renderizar a página com título, breadcrumb e componente UnidadesMedida", () => {
-    render(<UnidadesMedidaPage />);
+    mock.onGet("/unidades-medida-logistica/").reply(200, mockGetUnidadesMedida);
 
-    expect(screen.getByTestId("mock-page")).toBeInTheDocument();
-    expect(screen.getByText("Unidades de Medida")).toBeInTheDocument();
-    expect(screen.getByText("Voltar habilitado")).toBeInTheDocument();
-    expect(screen.getByText("Voltar para: /")).toBeInTheDocument();
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosDilogQualidade,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <UnidadesMedidaPage />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  });
 
-    expect(screen.getByTestId("mock-breadcrumb")).toBeInTheDocument();
-    expect(screen.getByText("Home: /")).toBeInTheDocument();
-    expect(
-      screen.getByText("Cadastros (/configuracoes/cadastros)")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Atual: Unidades de Medida (/configuracoes/cadastros/unidades-medida)"
-      )
-    ).toBeInTheDocument();
+  it("valida se a listagem está renderizando corretamente", async () => {
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    expect(botaoFiltrar).toBeInTheDocument();
 
-    expect(screen.getByTestId("mock-unidades-medida")).toBeInTheDocument();
+    fireEvent.click(botaoFiltrar);
+
+    debug();
+
+    await waitFor(() => {
+      expect(screen.getByText("DECIGRAMA")).toBeInTheDocument();
+      expect(screen.getByText("dg")).toBeInTheDocument();
+    });
   });
 });
