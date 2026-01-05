@@ -885,7 +885,11 @@ export default () => {
         uuid_solicitacao_medicao: uuid,
         nome_grupo: grupoMedicao,
       };
-      const gruposExcluidos = ["Programas e Projetos", "Recreio nas Férias"];
+      const gruposExcluidos = [
+        "Programas e Projetos",
+        "Recreio nas Férias",
+        "Colaboradores",
+      ];
       if (
         !ehGrupoSolicitacoesDeAlimentacaoUrlParam &&
         !ehGrupoETECUrlParam &&
@@ -1639,15 +1643,11 @@ export default () => {
     };
 
     const valorPeriodoEscolar = values["periodo_escolar"];
-    const gruposIncluidos = [
-      "ETEC",
-      "Programas e Projetos",
-      "Recreio nas Férias",
-    ];
-
+    const gruposIncluidos = ["ETEC", "Programas e Projetos"];
     if (
       (valorPeriodoEscolar && valorPeriodoEscolar.includes("Solicitações")) ||
-      gruposIncluidos.includes(valorPeriodoEscolar)
+      gruposIncluidos.includes(valorPeriodoEscolar) ||
+      ehRecreioNasFerias()
     ) {
       payload["grupo"] = valorPeriodoEscolar;
       delete values["periodo_escolar"];

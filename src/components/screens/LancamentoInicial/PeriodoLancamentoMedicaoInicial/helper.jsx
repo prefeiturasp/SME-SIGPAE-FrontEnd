@@ -32,15 +32,13 @@ export const formatarPayloadPeriodoLancamento = (
   tabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows,
 ) => {
   const valorPeriodoEscolar = values["periodo_escolar"];
-  const gruposIncluidos = [
-    "ETEC",
-    "Programas e Projetos",
-    "Recreio nas Férias",
-  ];
+  const gruposIncluidos = ["ETEC", "Programas e Projetos"];
+  const grupoRecreio = ehGrupoRecreioNasFerias(grupoLocation);
   if (
     (values["periodo_escolar"] &&
       values["periodo_escolar"].includes("Solicitações")) ||
-    gruposIncluidos.includes(valorPeriodoEscolar)
+    gruposIncluidos.includes(valorPeriodoEscolar) ||
+    grupoRecreio
   ) {
     values["grupo"] = valorPeriodoEscolar;
     delete values["periodo_escolar"];
@@ -693,7 +691,6 @@ export const desabilitarField = (
   }
 };
 
-// ---------------------------------------------------------------
 export const getSolicitacoesInclusaoAutorizadasAsync = async (
   escolaUuuid,
   mes,
