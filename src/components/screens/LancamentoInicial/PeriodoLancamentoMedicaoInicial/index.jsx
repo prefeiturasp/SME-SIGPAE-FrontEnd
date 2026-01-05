@@ -2396,6 +2396,8 @@ export default () => {
 
   const obterLogsDietasEspeciais = async (params_dietas_autorizadas) => {
     let response_log_dietas_autorizadas = [];
+    if (ehGrupoColaboradores()) return response_log_dietas_autorizadas;
+
     if (!ehGrupoSolicitacoesDeAlimentacaoUrlParam && !ehRecreioNasFerias()) {
       response_log_dietas_autorizadas = await getLogDietasAutorizadasPeriodo(
         params_dietas_autorizadas,
