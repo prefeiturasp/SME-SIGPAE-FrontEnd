@@ -14,6 +14,8 @@ export const mockMeusDadosCogestor = {
       uuid: "3972e0e9-2d8e-472a-9dfa-30cd219a6d9a",
       codigo_eol: "108600",
       quantidade_alunos: 70507,
+      quantidade_alunos_terceirizada: 35000,
+      quantidade_alunos_parceira: 5000,
       lotes: [
         {
           uuid: "3de37841-ef82-4e70-a05b-7246131fba54",
