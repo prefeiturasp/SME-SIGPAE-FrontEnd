@@ -552,7 +552,7 @@ export const desabilitarField = (
     }
   }
 
-  if (grupoLocation === "Recreio nas Férias") {
+  if (ehGrupoRecreioNasFerias) {
     if (feriadosNoMes.includes(dia)) {
       return true;
     }
@@ -1431,3 +1431,8 @@ export const desabilitarBotaoObservacoesConferenciaLancamentos = (
     );
   }
 };
+
+function ehGrupoRecreioNasFerias(location) {
+  const gruposEspeciais = ["Recreio nas Férias", "Colaboradores"];
+  return gruposEspeciais.includes(location);
+}
