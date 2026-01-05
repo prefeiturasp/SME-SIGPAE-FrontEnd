@@ -885,15 +885,12 @@ export default () => {
         uuid_solicitacao_medicao: uuid,
         nome_grupo: grupoMedicao,
       };
-      const gruposExcluidos = [
-        "Programas e Projetos",
-        "Recreio nas Férias",
-        "Colaboradores",
-      ];
+      const gruposExcluidos = ["Programas e Projetos"];
       if (
         !ehGrupoSolicitacoesDeAlimentacaoUrlParam &&
         !ehGrupoETECUrlParam &&
-        !gruposExcluidos.includes(grupoMedicao)
+        !gruposExcluidos.includes(grupoMedicao) &&
+        !ehRecreioNasFerias()
       ) {
         params = {
           ...params,

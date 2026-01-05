@@ -743,7 +743,7 @@ export const validacoesTabelaAlimentacao = (
   } else if (
     value &&
     location.state &&
-    location.state.grupo === "Recreio nas Férias" &&
+    ehGrupoRecreioNasFerias(location.state.grupo) &&
     inputName.includes("frequencia") &&
     Number(value) > maxMatriculados
   ) {
