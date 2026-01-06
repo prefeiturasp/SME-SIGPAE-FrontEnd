@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
@@ -127,7 +133,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - E
 
   it("renderiza label `Mês do Lançamento`", async () => {
     await awaitServices();
-    preview.debug();
     expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
   });
 
@@ -219,5 +224,261 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - E
       myElement.contains(element),
     );
     expect(specificParticipantes).toBeInTheDocument();
+  });
+
+  it("ao clicar na tab `Semana 1`, exibe, nos dias 01 a 07, e verifica oa lançamentos", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+
+    const VALORES_ESPERADOS = {
+      1: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      2: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      3: {
+        participantes: "50",
+        frequencia: "45",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      4: {
+        participantes: "50",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      5: {
+        participantes: "50",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      6: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      7: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+    };
+
+    for (let dia = 1; dia <= 7; dia++) {
+      const valoresDia = VALORES_ESPERADOS[dia];
+
+      const inputParticipantes = screen.getByTestId(
+        `participantes__dia_0${dia}__categoria_1`,
+      );
+      const inputFrequencia = screen.getByTestId(
+        `frequencia__dia_0${dia}__categoria_1`,
+      );
+      const inputLanche4h = screen.getByTestId(
+        `lanche_4h__dia_0${dia}__categoria_1`,
+      );
+      const inputLanche = screen.getByTestId(
+        `lanche__dia_0${dia}__categoria_1`,
+      );
+      const inputRefeicao = screen.getByTestId(
+        `refeicao__dia_0${dia}__categoria_1`,
+      );
+      const inputRepeticaoRefeicao = screen.getByTestId(
+        `repeticao_refeicao__dia_0${dia}__categoria_1`,
+      );
+      const inputSobremesa = screen.queryByTestId(
+        `sobremesa__dia_0${dia}__categoria_1`,
+      );
+      const inputRepeticaoSobremesa = screen.queryByTestId(
+        `repeticao_sobremesa__dia_0${dia}__categoria_1`,
+      );
+
+      expect(inputParticipantes).toHaveAttribute(
+        "value",
+        valoresDia.participantes,
+      );
+      expect(inputFrequencia).toHaveAttribute("value", valoresDia.frequencia);
+      expect(inputLanche4h).toHaveAttribute("value", valoresDia.lanche4h);
+      expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
+      expect(inputRefeicao).toHaveAttribute("value", valoresDia.refeicao);
+      expect(inputRepeticaoRefeicao).toHaveAttribute(
+        "value",
+        valoresDia.repeticao_refeicao,
+      );
+      expect(inputSobremesa).not.toBeInTheDocument();
+      expect(inputRepeticaoSobremesa).not.toBeInTheDocument();
+
+      expect(inputParticipantes.disabled).toBe(true);
+      if ([1, 2, 6, 7].includes(dia)) {
+        expect(inputFrequencia.disabled).toBe(true);
+        expect(inputLanche4h.disabled).toBe(true);
+        expect(inputLanche.disabled).toBe(true);
+        expect(inputRefeicao.disabled).toBe(true);
+        expect(inputRepeticaoRefeicao.disabled).toBe(true);
+      } else {
+        expect(inputFrequencia.disabled).toBe(false);
+        expect(inputLanche4h.disabled).toBe(false);
+        expect(inputLanche.disabled).toBe(false);
+        expect(inputRefeicao.disabled).toBe(false);
+        expect(inputRepeticaoRefeicao.disabled).toBe(false);
+      }
+    }
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, exibe, nos dias 08 a 14, e verifica oa lançamentos", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 2");
+    fireEvent.click(semana1Element);
+    preview.debug();
+
+    const VALORES_ESPERADOS = {
+      8: {
+        participantes: "50",
+        frequencia: "41",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      9: {
+        participantes: "50",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      10: {
+        participantes: "50",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      11: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      12: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      13: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+      14: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+        refeicao: "",
+        repeticao_refeicao: "",
+      },
+    };
+
+    for (let dia = 8; dia <= 14; dia++) {
+      const diaFormatado = dia.toString().padStart(2, "0");
+      const valoresDia = VALORES_ESPERADOS[dia];
+
+      const inputParticipantes = screen.getByTestId(
+        `participantes__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputFrequencia = screen.getByTestId(
+        `frequencia__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputLanche4h = screen.getByTestId(
+        `lanche_4h__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputLanche = screen.getByTestId(
+        `lanche__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputRefeicao = screen.getByTestId(
+        `refeicao__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputRepeticaoRefeicao = screen.getByTestId(
+        `repeticao_refeicao__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputSobremesa = screen.queryByTestId(
+        `sobremesa__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputRepeticaoSobremesa = screen.queryByTestId(
+        `repeticao_sobremesa__dia_${diaFormatado}__categoria_1`,
+      );
+
+      expect(inputParticipantes).toHaveAttribute(
+        "value",
+        valoresDia.participantes,
+      );
+      expect(inputFrequencia).toHaveAttribute("value", valoresDia.frequencia);
+      expect(inputLanche4h).toHaveAttribute("value", valoresDia.lanche4h);
+      expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
+      expect(inputRefeicao).toHaveAttribute("value", valoresDia.refeicao);
+      expect(inputRepeticaoRefeicao).toHaveAttribute(
+        "value",
+        valoresDia.repeticao_refeicao,
+      );
+      expect(inputSobremesa).not.toBeInTheDocument();
+      expect(inputRepeticaoSobremesa).not.toBeInTheDocument();
+
+      expect(inputParticipantes.disabled).toBe(true);
+      if ([11, 12, 13, 14].includes(dia)) {
+        expect(inputFrequencia.disabled).toBe(true);
+        expect(inputLanche4h.disabled).toBe(true);
+        expect(inputLanche.disabled).toBe(true);
+        expect(inputRefeicao.disabled).toBe(true);
+        expect(inputRepeticaoRefeicao.disabled).toBe(true);
+      } else {
+        expect(inputFrequencia.disabled).toBe(false);
+        expect(inputLanche4h.disabled).toBe(false);
+        expect(inputLanche.disabled).toBe(false);
+        expect(inputRefeicao.disabled).toBe(false);
+        expect(inputRepeticaoRefeicao.disabled).toBe(false);
+      }
+    }
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
   });
 });
