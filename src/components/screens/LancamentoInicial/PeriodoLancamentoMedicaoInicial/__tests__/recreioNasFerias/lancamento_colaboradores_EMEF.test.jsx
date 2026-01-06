@@ -130,4 +130,94 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - E
     preview.debug();
     expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
   });
+
+  it("renderiza valor `Recreio nas Férias - DEZ 2025` Mês do Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-mes-lancamento");
+    expect(inputElement).toHaveAttribute(
+      "value",
+      mockLocationStateGrupoColaboradores.solicitacaoMedicaoInicial
+        .recreio_nas_ferias.titulo,
+    );
+  });
+
+  it("renderiza label `Período de Lançamento`", () => {
+    expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
+  });
+
+  it("renderiza valor `Recreio nas Férias` no input `Período de Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-periodo-lancamento");
+    expect(inputElement).toHaveAttribute(
+      "value",
+      mockLocationStateGrupoColaboradores.grupo,
+    );
+  });
+
+  it("renderiza quadro de legendas", () => {
+    expect(screen.getByText("Legenda das Informações:")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Há erros no lançamento. Corrija para conseguir salvar.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Há divergências no lançamento. Adicione uma observação.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Atenção! Verifique se está correto e prossiga os apontamentos.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
+    expect(
+      screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
+    ).toBeInTheDocument();
+  });
+
+  it("renderiza as labels `Semana 1` e `Semana 2`", async () => {
+    await awaitServices();
+    expect(screen.getByText("Semana 1")).toBeInTheDocument();
+    expect(screen.getByText("Semana 2")).toBeInTheDocument();
+  });
+
+  it("não renderiza as labels  `Semana 3`, `Semana 4`, `Semana 5`", async () => {
+    await awaitServices();
+    expect(screen.queryByText("Semana 3")).not.toBeInTheDocument();
+    expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
+    expect(screen.queryByText("Semana 5")).not.toBeInTheDocument();
+  });
+
+  it("renderiza label `ALIMENTAÇÃO`", async () => {
+    await awaitServices();
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+  });
+
+  it("renderiza label `Participantes` dentro da seção `ALIMENTAÇÃO`", async () => {
+    await awaitServices();
+    const categoriaAlimentacaoUuid = "6a183159-32bb-4a3b-a69b-f0601ee677c1";
+    const myElement = screen.getByTestId(
+      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
+    );
+    const allParticipantes = screen.getAllByText("Participantes");
+    const specificParticipantes = allParticipantes.find((element) =>
+      myElement.contains(element),
+    );
+    expect(specificParticipantes).toBeInTheDocument();
+  });
+
+  it("renderiza label `Seg.` dentro da seção `ALIMENTAÇÃO`", async () => {
+    await awaitServices();
+    const categoriaAlimentacaoUuid = "6a183159-32bb-4a3b-a69b-f0601ee677c1";
+    const myElement = screen.getByTestId(
+      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
+    );
+    const allParticipantes = screen.getAllByText("Seg.");
+    const specificParticipantes = allParticipantes.find((element) =>
+      myElement.contains(element),
+    );
+    expect(specificParticipantes).toBeInTheDocument();
+  });
 });
