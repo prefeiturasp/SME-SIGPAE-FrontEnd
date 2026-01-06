@@ -17,16 +17,23 @@ import { escolaCancelaSuspensaoCEI } from "src/services/suspensaoAlimentacaoCei.
 
 export default ({ showModal, closeModal, setSolicitacaoSuspensao, uuid }) => {
   const onSubmit = async (values) => {
-    const resp = await escolaCancelaSuspensaoCEI(uuid, values);
-    if (resp.status === HTTP_STATUS.OK) {
-      setSolicitacaoSuspensao(resp.data);
+    try {
+      const resp = await escolaCancelaSuspensaoCEI(uuid, values);
+
+      if (resp.status === HTTP_STATUS.OK) {
+        setSolicitacaoSuspensao(resp.data);
+        closeModal();
+        toastSuccess(
+          "A solicitação de Suspensão de Alimentação foi cancelada com sucesso!",
+        );
+      }
+    } catch (error) {
       closeModal();
-      toastSuccess(
-        "A solicitação de Suspensão de Alimentação foi cancelada com sucesso!"
-      );
-    } else {
-      closeModal();
-      toastError(getError(resp.data));
+      if (error.response) {
+        toastError(getError(error.response.data));
+      } else {
+        toastError("Erro inesperado ao cancelar suspensão");
+      }
     }
   };
 

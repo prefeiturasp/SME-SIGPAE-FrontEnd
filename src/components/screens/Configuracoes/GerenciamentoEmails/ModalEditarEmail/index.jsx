@@ -53,7 +53,7 @@ export const ModalEditarEmail = ({ ...props }) => {
         }
       } else {
         toastError(
-          `Houve um erro ao editar e-mail: ${getError(response.data)}`
+          `Houve um erro ao editar e-mail: ${getError(response.data)}`,
         );
       }
     }
@@ -81,6 +81,7 @@ export const ModalEditarEmail = ({ ...props }) => {
                   options={empresas}
                   className="input-add-emails"
                   disabled
+                  data-testid="campo-empresa"
                 />
               </div>
               <div className="mt-4">
