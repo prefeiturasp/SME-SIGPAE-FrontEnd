@@ -34,7 +34,6 @@ import {
 import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
 import { ToastContainer } from "react-toastify";
-import preview from "jest-preview";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -608,7 +607,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - E
       const input = screen.getByTestId(`${testId}__dia_04__categoria_1`);
       fireEvent.change(input, { target: { value: valores[key] } });
     });
-    preview.debug();
+
     const botao = screen.getByText("Salvar Lançamentos").closest("button");
     expect(botao).toBeInTheDocument();
     expect(botao).not.toBeDisabled();
