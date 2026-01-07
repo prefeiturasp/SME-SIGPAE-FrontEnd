@@ -62,12 +62,11 @@ export function RelatorioFinanceiro() {
                   <table>
                     <thead>
                       <tr className="row">
-                        <th className="col-3">DRE</th>
-                        <th className="col-3">Tipo de UE</th>
-                        <th className="col-1 text-center">Lote</th>
+                        <th className="col-3">Lote e DRE</th>
+                        <th className="col-4">Tipo de Unidade</th>
                         <th className="col-2 text-center">Mês de Referência</th>
-                        <th className="col-2 text-center">Status</th>
-                        <th className="col-1 text-center">Ações</th>
+                        <th className="col-1 text-center">Status</th>
+                        <th className="col-2 text-center">Ações</th>
                       </tr>
                     </thead>
 
@@ -75,27 +74,27 @@ export function RelatorioFinanceiro() {
                       {view.relatoriosFinanceiros.map((relatorioFinanceiro) => (
                         <tr key={relatorioFinanceiro.uuid} className="row">
                           <td className="col-3">
+                            {relatorioFinanceiro.lote.nome} -{" "}
                             {relatorioFinanceiro.lote.diretoria_regional.nome}
                           </td>
-                          <td className="col-3">
+                          <td className="col-4">
+                            {relatorioFinanceiro.grupo_unidade_escolar.nome} (
                             {relatorioFinanceiro.grupo_unidade_escolar.tipos_unidades
                               .map((unidade) => unidade.iniciais)
                               .join(", ")}
-                          </td>
-                          <td className="col-1 text-center">
-                            {relatorioFinanceiro.lote.nome}
+                            )
                           </td>
                           <td className="col-2 text-center">{`${
                             MESES[parseInt(relatorioFinanceiro.mes) - 1]
                           } de ${relatorioFinanceiro.ano}`}</td>
-                          <td className="col-2 text-center">
+                          <td className="col-1 text-center">
                             {
                               STATUS_RELATORIO_FINANCEIRO[
                                 relatorioFinanceiro.status
                               ]
                             }
                           </td>
-                          <td className="col-1 text-center">
+                          <td className="col-2 text-center">
                             <Link
                               to={`/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${RELATORIO_CONSOLIDADO}/?uuid=${relatorioFinanceiro.uuid}`}
                             >
