@@ -475,8 +475,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - C
       target: { value: "6" },
     });
 
-    preview.debug();
-
     const botao = screen.getByText("Salvar Lançamentos").closest("button");
     expect(botao).toBeInTheDocument();
     expect(botao).not.toBeDisabled();
@@ -503,4 +501,116 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - C
     const inputLanche = screen.getByTestId(`lanche__dia_15__categoria_1`);
     expect(inputLanche).toHaveAttribute("value", "6");
   });
+
+  it("ao clicar na tab `Semana 2`, preencher frequencia maior que participantes e exibe erro", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+
+    const inputElementFrequenciaDia16 = screen.getByTestId(
+      "frequencia__dia_22__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementFrequenciaDia16, {
+        target: { value: "20" },
+      });
+    });
+    expect(inputElementFrequenciaDia16).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, preencher lanche maior que frequencia e exibe erro", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+    const inputElementLancheDia15 = screen.getByTestId(
+      "lanche__dia_22__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementLancheDia15, {
+        target: { value: "20" },
+      });
+    });
+    expect(inputElementLancheDia15).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, preencher lanche 4h maior que frequencia e exibe erro", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+    const inputElementLanche4hDia15 = screen.getByTestId(
+      "lanche_4h__dia_22__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementLanche4hDia15, {
+        target: { value: "20" },
+      });
+    });
+    expect(inputElementLanche4hDia15).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 2`, preenche dia 23 e salva lançamento", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+
+    const inputElementFrequenciaDia23 = screen.getByTestId(
+      "frequencia__dia_23__categoria_1",
+    );
+
+    fireEvent.change(inputElementFrequenciaDia23, {
+      target: { value: "9" },
+    });
+
+    const inputElementLancheDia15 = screen.getByTestId(
+      "lanche__dia_23__categoria_1",
+    );
+    fireEvent.change(inputElementLancheDia15, {
+      target: { value: "8" },
+    });
+
+    const inputElementLanche4hDia15 = screen.getByTestId(
+      "lanche_4h__dia_23__categoria_1",
+    );
+    fireEvent.change(inputElementLanche4hDia15, {
+      target: { value: "5" },
+    });
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+
+    expect(botao).not.toBeDisabled();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Lançamentos salvos com sucesso"),
+      ).toBeInTheDocument();
+    });
+    const inputParticipantes = screen.getByTestId(
+      `participantes__dia_23__categoria_1`,
+    );
+    expect(inputParticipantes).toHaveAttribute("value", "10");
+
+    const inputFrequencia = screen.getByTestId(
+      `frequencia__dia_23__categoria_1`,
+    );
+    expect(inputFrequencia).toHaveAttribute("value", "9");
+
+    const inputLanche4h = screen.getByTestId(`lanche_4h__dia_23__categoria_1`);
+    expect(inputLanche4h).toHaveAttribute("value", "5");
+
+    const inputLanche = screen.getByTestId(`lanche__dia_23__categoria_1`);
+    expect(inputLanche).toHaveAttribute("value", "8");
+  });
+
+  preview.debug();
 });
