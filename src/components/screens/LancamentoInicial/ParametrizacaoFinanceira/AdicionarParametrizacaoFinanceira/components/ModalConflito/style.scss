@@ -1,0 +1,22 @@
+.ant-radio-inner {
+  border-color: #198754 !important;
+  background-color: #fff !important;
+}
+
+.ant-radio-checked .ant-radio-inner {
+  border-color: #198754 !important;
+  background-color: #fff !important;
+}
+
+.ant-radio-checked .ant-radio-inner::after {
+  background-color: #198754 !important;
+  transform: scale(0.5) !important;
+}
+
+.ant-radio-wrapper:hover .ant-radio-inner {
+  border-color: #198754 !important;
+}
+
+.ant-radio-input:focus + .ant-radio-inner {
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.25) !important;
+}

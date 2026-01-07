@@ -34,7 +34,7 @@ export default () => {
     const responseEmpresa = await listaSimplesTerceirizadas();
     if (responseEmpresa.data) {
       setEmpresas(
-        normalizaLabelValueEmpresaSocial(responseEmpresa.data.results)
+        normalizaLabelValueEmpresaSocial(responseEmpresa.data.results),
       );
     }
   };
@@ -101,6 +101,7 @@ export default () => {
             onClick={() => {
               escolheModulo("Gestão de Alimentação");
             }}
+            data-testid="card-logo-gestao-alimentacao"
           >
             <IconeGestaoDeAlimentacao />
           </CardLogo>
@@ -115,6 +116,7 @@ export default () => {
             onClick={() => {
               escolheModulo("Dieta Especial");
             }}
+            data-testid="card-logo-dieta-especial"
           >
             <IconeDietaEspecial />
           </CardLogo>
@@ -129,6 +131,7 @@ export default () => {
             onClick={() => {
               escolheModulo("Gestão de Produto");
             }}
+            data-testid="card-logo-gestao-produto"
           >
             <IconeGestaoDeProduto />
           </CardLogo>

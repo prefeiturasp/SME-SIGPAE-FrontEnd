@@ -5,12 +5,13 @@ import { formatarTotal } from "../../helpers";
 import InputText from "src/components/Shareable/Input/InputText";
 import { stringDecimalToNumber } from "src/helpers/parsers";
 
-const ALIMENTACOES = ["Lanche", "Lanche 4h"];
+const ALIMENTACOES_TIPO_B = ["Lanche", "Lanche 4h"];
+const ALIMENTACOES_CIEJA = ["Lanche 4h"];
 
 type Props = {
   form: FormApi<any, any>;
   tiposAlimentacao: Array<any>;
-  grupoSelecionado?: string;
+  grupoSelecionado: string;
   tipoTurma?: string;
   temaTag?: string;
 };
@@ -22,8 +23,14 @@ export default ({
   tipoTurma = "",
   temaTag = "",
 }: Props) => {
+  const grupoTipo6 = grupoSelecionado.toLowerCase().includes("grupo 6");
+
+  const ListaDeAlimentacoes = grupoTipo6
+    ? ALIMENTACOES_CIEJA
+    : ALIMENTACOES_TIPO_B;
+
   const alimentacoes = tiposAlimentacao
-    .filter((t) => ALIMENTACOES.includes(t.nome))
+    .filter((t) => ListaDeAlimentacoes.includes(t.nome))
     .reverse();
 
   const nomeTabela = tipoTurma
@@ -31,25 +38,23 @@ export default ({
     : "Dietas Tipo B";
 
   const atualizarPercentuais = (value: string) => {
-    tiposAlimentacao.forEach((tipo) => {
-      if (alimentacoes.some((a) => a.nome === tipo.nome)) {
-        form.change(
-          `tabelas[${nomeTabela}].${tipo.nome}.percentual_acrescimo`,
-          String(value),
-        );
+    alimentacoes.forEach((tipo) => {
+      form.change(
+        `tabelas[${nomeTabela}].${tipo.nome}.percentual_acrescimo`,
+        String(value),
+      );
 
-        const valorUnitario =
-          form.getState().values.tabelas[`${nomeTabela}`]?.[tipo.nome]
-            ?.valor_unitario || "0";
-        const valorUnitarioTotal =
-          stringDecimalToNumber(valorUnitario) *
-          (1 + stringDecimalToNumber(String(value)) / 100);
+      const valorUnitario =
+        form.getState().values.tabelas[`${nomeTabela}`]?.[tipo.nome]
+          ?.valor_unitario || "0";
+      const valorUnitarioTotal =
+        stringDecimalToNumber(valorUnitario) *
+        (1 + stringDecimalToNumber(String(value)) / 100);
 
-        form.change(
-          `tabelas[${nomeTabela}].${tipo.nome}.valor_unitario_total`,
-          formatarTotal(valorUnitarioTotal),
-        );
-      }
+      form.change(
+        `tabelas[${nomeTabela}].${tipo.nome}.valor_unitario_total`,
+        formatarTotal(valorUnitarioTotal),
+      );
     });
   };
 

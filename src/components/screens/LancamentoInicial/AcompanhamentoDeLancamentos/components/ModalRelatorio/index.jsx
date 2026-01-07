@@ -30,10 +30,9 @@ const ModalRelatorio = ({
     if (nomeRelatorio === "Relatório Consolidado") {
       return false;
     }
-    const gruposDesabilitados = ["Grupo 6"];
     const desabilitadoPorDre =
       gruposHabilitadosPorDre && gruposHabilitadosPorDre[grupo] === false;
-    return gruposDesabilitados.includes(grupo) || desabilitadoPorDre;
+    return desabilitadoPorDre;
   }
 
   const getGruposUnidades = async () => {

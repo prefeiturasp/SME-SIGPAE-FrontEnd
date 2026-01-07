@@ -21,8 +21,6 @@ import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitaca
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
-import { debug } from "jest-preview";
-
 describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botão Finalizar", () => {
   const escolaUuid =
     mockMeusDadosEscolaCEUGESTAO.vinculo_atual.instituicao.uuid;
@@ -145,8 +143,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
         </MemoryRouter>,
       );
     });
-
-    debug();
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).toBeDisabled();

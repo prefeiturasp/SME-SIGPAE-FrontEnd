@@ -29,6 +29,7 @@ import {
 } from "src/helpers/utilities";
 import { NavLink } from "react-router-dom";
 import { FICHA_RECEBIMENTO, RECEBIMENTO } from "src/configs/constants";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 const COLLAPSES_FICHA_RECEBIMENTO = [
   "Dados do Cronograma de Entregas",
@@ -144,7 +145,13 @@ export default () => {
                       Fornecedor: <strong>{dadosCronograma?.fornecedor}</strong>
                     </p>
                     <p>
-                      Produto: <strong>{dadosCronograma?.produto}</strong>
+                      Produto:{" "}
+                      <span className="d-flex align-items-center gap-3 d-inline-flex">
+                        <strong>{dadosCronograma?.produto}</strong>
+                        {dadosCronograma?.programa_leve_leite && (
+                          <TagLeveLeite />
+                        )}
+                      </span>
                     </p>
                     <p>
                       Marca: <strong>{dadosCronograma?.marca}</strong>

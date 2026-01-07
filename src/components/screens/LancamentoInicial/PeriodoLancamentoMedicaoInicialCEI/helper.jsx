@@ -180,6 +180,8 @@ export const desabilitarField = (
   alimentacoesLancamentosEspeciais,
   ehProgramasEProjetosLocation,
   dadosValoresInclusoesAutorizadasState,
+  kitLanchesAutorizadas,
+  alteracoesAlimentacaoAutorizadas,
   ehUltimoDiaLetivoDoAno,
   calendarioMesConsiderado,
 ) => {
@@ -399,6 +401,25 @@ export const desabilitarField = (
   const mesAtual = format(mesAnoDefault, "LLLL", {
     locale: ptBR,
   }).toString();
+
+  if (nomeCategoria.includes("SOLICITAÇÕES")) {
+    if (
+      (!kitLanchesAutorizadas?.some((kitLanche) => kitLanche.dia === dia) &&
+        rowName === "kit_lanche") ||
+      (!alteracoesAlimentacaoAutorizadas?.some(
+        (lancheEmergencial) => lancheEmergencial.dia === dia,
+      ) &&
+        rowName === "lanche_emergencial") ||
+      (mesConsiderado === mesAtual &&
+        Number(dia) >= format(mesAnoDefault, "dd")) ||
+      ["Mês anterior", "Mês posterior"].includes(
+        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
+      )
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   if (
     (location && location.state && location.state.ehEmeiDaCemei) ||

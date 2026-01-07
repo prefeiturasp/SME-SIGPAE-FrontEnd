@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import { Botao } from "src/components/Shareable/Botao";
 import {
@@ -9,10 +9,20 @@ import {
 type Props = {
   showModal: boolean;
   setShowModal: (_e: boolean) => void;
+  uuidParametrizacao: string | null;
+  onCancelar: () => void;
 };
 
-const ModalCancelar = ({ showModal, setShowModal }: Props) => {
+const ModalCancelar = ({
+  showModal,
+  setShowModal,
+  uuidParametrizacao,
+  onCancelar,
+}: Props) => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const conflitoUuid = searchParams.get("nova_uuid");
+  const fluxo = searchParams.get("fluxo");
 
   return (
     <Modal
@@ -24,7 +34,16 @@ const ModalCancelar = ({ showModal, setShowModal }: Props) => {
       <Modal.Header closeButton>
         <Modal.Title>Cancelar Parametrização Financeira</Modal.Title>
       </Modal.Header>
-      <Modal.Body>Deseja cancelar o cadastro dessa parametrização?</Modal.Body>
+      <Modal.Body>
+        Deseja cancelar {!uuidParametrizacao ? "o cadastro" : "a edição"} dessa
+        parametrização?
+        {fluxo && (
+          <label className="mt-2">
+            Ao cancelar não haverá nenhuma parametrização ativa, será necessário
+            cadastrar novos valores.
+          </label>
+        )}
+      </Modal.Body>
       <Modal.Footer>
         <Botao
           texto="Não"
@@ -39,6 +58,7 @@ const ModalCancelar = ({ showModal, setShowModal }: Props) => {
           texto="Sim"
           type={BUTTON_TYPE.BUTTON}
           onClick={() => {
+            if (conflitoUuid) onCancelar();
             navigate(-1);
           }}
           style={BUTTON_STYLE.GREEN}

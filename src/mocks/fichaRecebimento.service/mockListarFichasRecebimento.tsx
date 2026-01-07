@@ -9,6 +9,7 @@ export const mockFichas: FichaDeRecebimentoItemListagem[] = [
     pregao_chamada_publica: "PC-001",
     data_recebimento: "2023-10-01",
     status: "Assinado CODAE",
+    programa_leve_leite: true,
   },
   {
     uuid: "2",
@@ -18,5 +19,6 @@ export const mockFichas: FichaDeRecebimentoItemListagem[] = [
     pregao_chamada_publica: "PC-002",
     data_recebimento: "2023-10-02",
     status: "Rascunho",
+    programa_leve_leite: false,
   },
 ];

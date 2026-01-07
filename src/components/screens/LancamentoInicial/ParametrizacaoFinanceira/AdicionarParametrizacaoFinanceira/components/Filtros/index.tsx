@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { ChangeEvent, Dispatch, SetStateAction } from "react";
+import React, { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { Field, FormSpy } from "react-final-form";
 import { FormApi } from "final-form";
 import { required } from "src/helpers/fieldValidators";
@@ -15,6 +15,14 @@ import {
   ParametrizacaoFinanceiraPayload,
   FaixaEtaria,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import ModalConflito from "../ModalConflito";
+import {
+  toastSuccess,
+  toastError,
+} from "src/components/Shareable/Toast/dialogs";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
+import { carregarValores } from "../../helpers";
 
 type Cadastro = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
@@ -46,6 +54,8 @@ export default (props: Props) => {
   const setCarregarTabelas = props.ehCadastro && props.setCarregarTabelas;
   const form = props.ehCadastro && props.form;
   const uuidParametrizacao = props.ehCadastro && props.uuidParametrizacao;
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const view = useView({
     setGrupoSelecionado,
@@ -57,6 +67,68 @@ export default (props: Props) => {
     uuidParametrizacao,
     form,
   });
+
+  const [parametrizacaoConflito, setParametrizacaoConflito] = useState(null);
+
+  const insereParametros = (novos: Record<string, string>) => {
+    const params = new URLSearchParams(searchParams);
+    Object.entries(novos).forEach(([key, value]) => params.set(key, value));
+    setSearchParams(params);
+  };
+
+  const onChangeConflito = async (opcao: string) => {
+    try {
+      if (opcao === "manter") {
+        toastSuccess("Parametrização Financeira mantida com sucesso!");
+        navigate(-1);
+      } else if (opcao === "encerrar_copiar") {
+        const { data_inicial, data_final, ...rest } = form.getState().values;
+
+        const response =
+          await ParametrizacaoFinanceiraService.cloneParametrizacaoFinanceira(
+            parametrizacaoConflito,
+            {
+              data_inicial: data_inicial,
+              data_final: data_final,
+              ...rest,
+            },
+          );
+
+        if (response.uuid) {
+          form.change(
+            "tabelas",
+            carregarValores(
+              response.tabelas,
+              response.grupo_unidade_escolar.nome,
+            ),
+          );
+          form.change("data_inicial", moment().format("DD/MM/YYYY"));
+          form.change("data_final", null);
+          insereParametros({
+            nova_uuid: response.uuid,
+            fluxo: "encerrar_copiar",
+          });
+          setParametrizacaoConflito(null);
+        } else
+          toastError(
+            "Erro ao encerrar e criar nova parametrização financeira.",
+          );
+      } else if (opcao === "encerrar_novo") {
+        form.change("data_inicial", moment().format("DD/MM/YYYY"));
+        form.change("data_final", null);
+        await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
+          parametrizacaoConflito,
+          { data_final: moment().subtract(1, "day").format("YYYY-MM-DD") },
+        );
+        insereParametros({
+          fluxo: "encerrar_novo",
+        });
+        setParametrizacaoConflito(null);
+      }
+    } catch {
+      toastError("Ocorreu um erro inesperado");
+    }
+  };
 
   return (
     <div className="row">
@@ -127,7 +199,7 @@ export default (props: Props) => {
                     ? moment(values.data_final, "DD/MM/YYYY").toDate()
                     : null
                 }
-                disabled={uuidParametrizacao}
+                disabled={uuidParametrizacao || searchParams.get("fluxo")}
               />
             </div>
             <div className="col-3">
@@ -163,7 +235,8 @@ export default (props: Props) => {
                   style={BUTTON_STYLE.ORANGE_OUTLINE}
                   type={BUTTON_TYPE.BUTTON}
                   onClick={() => {
-                    if (!uuidParametrizacao && form) view.getGruposPendentes();
+                    if (!uuidParametrizacao && form)
+                      view.getGruposPendentes(setParametrizacaoConflito);
                     setCarregarTabelas(true);
                   }}
                 />
@@ -172,6 +245,11 @@ export default (props: Props) => {
           </>
         )}
       </FormSpy>
+      <ModalConflito
+        conflito={!!parametrizacaoConflito}
+        setConflito={setParametrizacaoConflito}
+        onContinuar={onChangeConflito}
+      />
     </div>
   );
 };

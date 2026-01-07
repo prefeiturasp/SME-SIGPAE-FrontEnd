@@ -31,6 +31,7 @@ import ModalAtualizar from "./components/ModalAtualizar";
 import InserirArquivo from "../InserirArquivo";
 import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 import { getMensagemDeErro } from "../../../../../../helpers/statusErrors";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 const TITULOS_SECOES_TIPOS_EMBALAGENS = {
   PRIMARIA: "Embalagem Primária",
@@ -495,9 +496,16 @@ export default ({ atualizar }) => {
           </div>
           <div className="row mt-2">
             <div className="col-6">
-              <span className="valor-dados-produto">
-                {objeto.numero_ficha_tecnica} - {objeto.nome_produto}
-              </span>
+              <div className="d-flex align-items-center">
+                <span className="valor-dados-produto">
+                  {objeto.numero_ficha_tecnica} - {objeto.nome_produto}
+                </span>
+                {objeto.programa === "LEVE_LEITE" && (
+                  <div className="ms-2">
+                    <TagLeveLeite />
+                  </div>
+                )}
+              </div>
             </div>
             <div className="col-6">
               <span className="valor-dados-produto">
