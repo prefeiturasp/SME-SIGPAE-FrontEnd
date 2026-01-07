@@ -542,7 +542,7 @@ export default () => {
                           component={MaskedInputText}
                           label="Data de Validade"
                           name={`data_validade_${index}`}
-                          placeholder="Selecione uma Data"
+                          placeholder="Digite uma Data"
                           className="input-analise"
                           required
                           validate={required}
