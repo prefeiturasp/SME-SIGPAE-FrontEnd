@@ -1,12 +1,12 @@
-import React, { useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { Paginacao } from "src/components/Shareable/Paginacao";
+import { useState } from "react";
 import { formataAlergias } from "src/components/screens/DietaEspecial/Relatorio/componentes/FormAutorizaDietaEspecial/helper";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
 import { getSolicitacoesRelatorioDietasEspeciais } from "src/services/dietaEspecial.service";
 
-import "./styles.scss";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
+import "./styles.scss";
 
 export const ListagemDietas = ({ ...props }) => {
   const [paginaAtual, setPaginaAtual] = useState(1);
@@ -20,6 +20,9 @@ export const ListagemDietas = ({ ...props }) => {
   } = props;
 
   const PAGE_SIZE = 10;
+  const ehAutorizadaTerceirizada =
+    values.status_selecionado === "AUTORIZADAS" &&
+    usuarioEhEmpresaTerceirizada();
 
   const onChangePage = async (page, values) => {
     setPaginaAtual(page);
@@ -37,7 +40,7 @@ export const ListagemDietas = ({ ...props }) => {
       setDietasEspeciais(response.data);
     } else {
       toastError(
-        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde."
+        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde.",
       );
     }
     setLoadingDietas(false);
@@ -47,13 +50,22 @@ export const ListagemDietas = ({ ...props }) => {
     <section className="tabela-dietas-especiais">
       <article>
         <div
-          className={`grid-table-rel-dietas dietas-${values.status_selecionado.toLowerCase()} header-table`}
+          className={`grid-table-rel-dietas dietas-${values.status_selecionado.toLowerCase()} ${ehAutorizadaTerceirizada && "autorizada-terceirizada"} header-table`}
         >
           <div>DRE/Lote</div>
           <div>Unidade Escolar</div>
           <div>Nome do Aluno</div>
+          {values.status_selecionado === "AUTORIZADAS" && (
+            <div>Data de Nascimento</div>
+          )}
           <div>Classificação da Dieta</div>
-          <div>Relação por Diagnóstico</div>
+          <div>
+            {!usuarioEhEmpresaTerceirizada()
+              ? "Relação por Diagnóstico"
+              : "Protocolo Padrão"}
+          </div>
+          {values.status_selecionado === "AUTORIZADAS" &&
+            !usuarioEhEmpresaTerceirizada() && <div>Protocolo Padrão</div>}
           {values.status_selecionado === "CANCELADAS" && (
             <div>Data de cancelamento</div>
           )}
@@ -62,13 +74,16 @@ export const ListagemDietas = ({ ...props }) => {
           return (
             <div key={index}>
               <div
-                className={`grid-table-rel-dietas dietas-${values.status_selecionado.toLowerCase()} body-table`}
+                className={`grid-table-rel-dietas dietas-${values.status_selecionado.toLowerCase()} ${ehAutorizadaTerceirizada && "autorizada-terceirizada"} body-table`}
               >
                 <div>{dietaEspecial.dre}</div>
                 <div>{dietaEspecial.nome_escola}</div>
                 <div>
                   {dietaEspecial.cod_eol_aluno} - {dietaEspecial.nome_aluno}
                 </div>
+                {values.status_selecionado === "AUTORIZADAS" && (
+                  <div>{dietaEspecial.data_nascimento_aluno}</div>
+                )}
                 <div>
                   {dietaEspecial.classificacao
                     ? dietaEspecial.classificacao.nome
@@ -83,6 +98,10 @@ export const ListagemDietas = ({ ...props }) => {
                         dietaEspecial.protocolo_padrao.nome) ||
                       dietaEspecial.nome_protocolo}
                 </div>
+                {values.status_selecionado === "AUTORIZADAS" &&
+                  !usuarioEhEmpresaTerceirizada() && (
+                    <div>{dietaEspecial.protocolo_padrao.nome_protocolo}</div>
+                  )}
                 {values.status_selecionado === "CANCELADAS" && (
                   <div>{dietaEspecial.data_ultimo_log}</div>
                 )}
