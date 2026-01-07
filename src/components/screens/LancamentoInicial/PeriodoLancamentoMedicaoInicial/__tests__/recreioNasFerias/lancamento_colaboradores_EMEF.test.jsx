@@ -148,7 +148,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - E
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
   });
 
-  it("renderiza valor `Recreio nas Férias` no input `Período de Lançamento`", () => {
+  it("renderiza valor `Colaboradores` no input `Período de Lançamento`", () => {
     const inputElement = screen.getByTestId("input-periodo-lancamento");
     expect(inputElement).toHaveAttribute(
       "value",
