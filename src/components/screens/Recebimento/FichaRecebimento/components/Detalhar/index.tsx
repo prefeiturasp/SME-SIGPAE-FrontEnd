@@ -241,6 +241,7 @@ export default () => {
                           <th className="borda-crono">Lote(s) do Laudo</th>
                           <th className="borda-crono">Data(s) Fabricação</th>
                           <th className="borda-crono">Data(s) Validade</th>
+                          <th className="borda-crono">Qtde Recebida</th>
                         </thead>
                         <tbody>
                           {dadosCronograma?.documentos_de_recebimento?.map(
@@ -258,6 +259,17 @@ export default () => {
                                   </td>
                                   <td className="borda-crono">
                                     {documento.datas_validade}
+                                  </td>
+                                  <td className="borda-crono">
+                                    {formataMilharDecimal(
+                                      (
+                                        fichaRecebimento?.documentos_recebimento as any[]
+                                      )?.find(
+                                        (doc: any) =>
+                                          doc.uuid === documento.uuid,
+                                      )?.quantidade_recebida,
+                                    )}{" "}
+                                    {etapa.unidade_medida}
                                   </td>
                                 </tr>
                               );
