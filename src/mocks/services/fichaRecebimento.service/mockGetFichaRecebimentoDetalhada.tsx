@@ -20,6 +20,7 @@ export const mockGetFichaRecebimentoDetalhada = {
     data_programada: "22/04/2024",
     quantidade: 13000.0,
     total_embalagens: 1182.0,
+    unidade_medida: "kg",
   },
   data_entrega: "01/09/2025",
   documentos_recebimento: [
@@ -29,6 +30,7 @@ export const mockGetFichaRecebimentoDetalhada = {
       numero_lote_laudo: "23",
       datas_fabricacao: "12/08/2025",
       datas_validade: "31/08/2025",
+      quantidade_recebida: 13000.0,
     },
   ],
   lote_fabricante_de_acordo: true,
