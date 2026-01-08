@@ -612,5 +612,115 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - C
     expect(inputLanche).toHaveAttribute("value", "8");
   });
 
+  it("ao clicar na tab `Semana 3`, preencher frequencia maior que participantes e exibe erro", async () => {
+    await awaitServices();
+    const semana3Element = screen.getByText("Semana 3");
+    fireEvent.click(semana3Element);
+
+    const inputElementFrequenciaDia16 = screen.getByTestId(
+      "frequencia__dia_29__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementFrequenciaDia16, {
+        target: { value: "20" },
+      });
+    });
+    expect(inputElementFrequenciaDia16).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 3`, preencher lanche maior que frequencia e exibe erro", async () => {
+    await awaitServices();
+    const semana3Element = screen.getByText("Semana 3");
+    fireEvent.click(semana3Element);
+    const inputElementLancheDia15 = screen.getByTestId(
+      "lanche__dia_29__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementLancheDia15, {
+        target: { value: "20" },
+      });
+    });
+    expect(inputElementLancheDia15).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 3`, preencher lanche 4h maior que frequencia e exibe erro", async () => {
+    await awaitServices();
+    const semana3Element = screen.getByText("Semana 3");
+    fireEvent.click(semana3Element);
+    const inputElementLanche4hDia15 = screen.getByTestId(
+      "lanche_4h__dia_29__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementLanche4hDia15, {
+        target: { value: "20" },
+      });
+    });
+    expect(inputElementLanche4hDia15).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
+  });
+
+  it("ao clicar na tab `Semana 3`, preenche dia 30 e salva lançamento", async () => {
+    await awaitServices();
+    const semana3Element = screen.getByText("Semana 3");
+    fireEvent.click(semana3Element);
+
+    const inputElementFrequenciaDia23 = screen.getByTestId(
+      "frequencia__dia_30__categoria_1",
+    );
+
+    fireEvent.change(inputElementFrequenciaDia23, {
+      target: { value: "10" },
+    });
+
+    const inputElementLancheDia15 = screen.getByTestId(
+      "lanche__dia_30__categoria_1",
+    );
+    fireEvent.change(inputElementLancheDia15, {
+      target: { value: "9" },
+    });
+
+    const inputElementLanche4hDia15 = screen.getByTestId(
+      "lanche_4h__dia_30__categoria_1",
+    );
+    fireEvent.change(inputElementLanche4hDia15, {
+      target: { value: "10" },
+    });
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+
+    expect(botao).not.toBeDisabled();
+    fireEvent.click(botao);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Lançamentos salvos com sucesso"),
+      ).toBeInTheDocument();
+    });
+    const inputParticipantes = screen.getByTestId(
+      `participantes__dia_30__categoria_1`,
+    );
+    expect(inputParticipantes).toHaveAttribute("value", "10");
+
+    const inputFrequencia = screen.getByTestId(
+      `frequencia__dia_30__categoria_1`,
+    );
+    expect(inputFrequencia).toHaveAttribute("value", "10");
+
+    const inputLanche4h = screen.getByTestId(`lanche_4h__dia_30__categoria_1`);
+    expect(inputLanche4h).toHaveAttribute("value", "10");
+
+    const inputLanche = screen.getByTestId(`lanche__dia_30__categoria_1`);
+    expect(inputLanche).toHaveAttribute("value", "9");
+  });
+
   preview.debug();
 });
