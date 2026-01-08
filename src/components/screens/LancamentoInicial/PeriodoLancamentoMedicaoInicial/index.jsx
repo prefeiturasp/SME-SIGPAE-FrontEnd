@@ -885,11 +885,12 @@ export default () => {
         uuid_solicitacao_medicao: uuid,
         nome_grupo: grupoMedicao,
       };
-      const gruposExcluidos = ["Programas e Projetos", "Recreio nas Férias"];
+      const gruposExcluidos = ["Programas e Projetos"];
       if (
         !ehGrupoSolicitacoesDeAlimentacaoUrlParam &&
         !ehGrupoETECUrlParam &&
-        !gruposExcluidos.includes(grupoMedicao)
+        !gruposExcluidos.includes(grupoMedicao) &&
+        !ehRecreioNasFerias()
       ) {
         params = {
           ...params,
@@ -1639,15 +1640,11 @@ export default () => {
     };
 
     const valorPeriodoEscolar = values["periodo_escolar"];
-    const gruposIncluidos = [
-      "ETEC",
-      "Programas e Projetos",
-      "Recreio nas Férias",
-    ];
-
+    const gruposIncluidos = ["ETEC", "Programas e Projetos"];
     if (
       (valorPeriodoEscolar && valorPeriodoEscolar.includes("Solicitações")) ||
-      gruposIncluidos.includes(valorPeriodoEscolar)
+      gruposIncluidos.includes(valorPeriodoEscolar) ||
+      ehRecreioNasFerias()
     ) {
       payload["grupo"] = valorPeriodoEscolar;
       delete values["periodo_escolar"];
@@ -2396,6 +2393,8 @@ export default () => {
 
   const obterLogsDietasEspeciais = async (params_dietas_autorizadas) => {
     let response_log_dietas_autorizadas = [];
+    if (ehGrupoColaboradores()) return response_log_dietas_autorizadas;
+
     if (!ehGrupoSolicitacoesDeAlimentacaoUrlParam && !ehRecreioNasFerias()) {
       response_log_dietas_autorizadas = await getLogDietasAutorizadasPeriodo(
         params_dietas_autorizadas,

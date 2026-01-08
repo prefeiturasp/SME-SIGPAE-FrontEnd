@@ -4,6 +4,7 @@ import {
 } from "src/helpers/utilities";
 import { ALUNOS_EMEBS } from "../constants";
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import { ehGrupoRecreioNasFerias } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import { format } from "date-fns";
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
@@ -700,7 +701,7 @@ export const validacoesTabelaAlimentacao = (
         : maxMatriculados) &&
     inputName.includes("frequencia")
   ) {
-    if (location.state && location.state.grupo === "Recreio nas Férias") {
+    if (location.state && ehGrupoRecreioNasFerias(location.state.grupo)) {
       return `A frequência não pode ser maior que o número de participantes.`;
     }
     const complemento =
@@ -742,7 +743,7 @@ export const validacoesTabelaAlimentacao = (
   } else if (
     value &&
     location.state &&
-    location.state.grupo === "Recreio nas Férias" &&
+    ehGrupoRecreioNasFerias(location.state.grupo) &&
     inputName.includes("frequencia") &&
     Number(value) > maxMatriculados
   ) {
