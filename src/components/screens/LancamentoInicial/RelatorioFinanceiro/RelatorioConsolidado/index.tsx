@@ -13,10 +13,6 @@ import "./styles.scss";
 export function RelatorioConsolidado() {
   const view = useView({});
 
-  const exibeTabelasCEI = view.relatorioConsolidado?.tipos_unidades.find(
-    (tipoUnidade) => ["CEI", "CEI CEU", "CCI"].includes(tipoUnidade.iniciais)
-  );
-
   return (
     <div className="relatorio-consolidado">
       <Spin tip="Carregando..." spinning={view.carregando}>
@@ -36,7 +32,8 @@ export function RelatorioConsolidado() {
 
             {!view.carregando && view.relatorioConsolidado ? (
               <div className="tabelas-relatorio-consolidado mt-5 mb-4">
-                {exibeTabelasCEI ? (
+                {view.relatorioConsolidado?.grupo_unidade_escolar.nome ===
+                "Grupo 1" ? (
                   <>
                     <TabelaAlimentacaoCEI
                       tabelas={view.relatorioConsolidado.tabelas}
