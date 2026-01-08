@@ -318,37 +318,15 @@ export const Filtros = ({ ...props }) => {
                   <span>
                     <Field
                       component="input"
-                      type="checkbox"
-                      name="cei_polo"
-                      className="ckbox-motivo-alteracao-ue"
-                    />
-                  </span>
-                  <span className="label-motivo-alteracao-ue">CEI POLO</span>
-                </div>
-                <div>
-                  <span>
-                    <Field
-                      component="input"
-                      type="checkbox"
-                      name="recreio_nas_ferias"
-                      className="ckbox-recreio-nas-ferias"
-                    />
-                  </span>
-                  <span className="label-motivo-alteracao-ue">
-                    RECREIO NAS FÉRIAS
-                  </span>
-                </div>
-                <div>
-                  <span>
-                    <Field
-                      component="input"
                       data-testid="checkbox-outro"
                       type="checkbox"
                       name="outro"
                       className="ckbox-outro"
                     />
                   </span>
-                  <span className="label-motivo-alteracao-ue">OUTRO</span>
+                  <span className="label-motivo-alteracao-ue">
+                    Alteração de UE - Motivo Outro
+                  </span>
                 </div>
               </div>
             </>
