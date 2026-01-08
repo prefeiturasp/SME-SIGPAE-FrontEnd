@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import { Select } from "src/components/Shareable/Select";
+import { STATUS_RELATORIO_FINANCEIRO } from "../../../constants";
 
 type FieldsProps = {
   lotes: {
@@ -35,25 +36,25 @@ export function FormFields({
           component={MultiSelect}
           name="lote"
           label="Lote e DRE"
-          placeholder="Selecione um lote e uma DRE"
+          placeholder="Selecione as DREs e lotes"
           nomeDoItemNoPlural="lotes"
           naoDesabilitarPrimeiraOpcao
           options={lotes}
           disabled={uuidRelatorioFinanceiro}
         />
       </div>
-
       <div className="col-4">
         <Field
-          component={Select}
+          component={MultiSelect}
           name="grupo_unidade_escolar"
-          label="Tipo de UE"
+          label="Tipo de Unidade"
+          placeholder="Selecione os tipos de unidades"
+          nomeDoItemNoPlural="grupos de unidades"
           naoDesabilitarPrimeiraOpcao
           options={gruposUnidadeEscolar}
           disabled={uuidRelatorioFinanceiro}
         />
       </div>
-
       <div className="col-4">
         <Field
           component={Select}
@@ -61,6 +62,23 @@ export function FormFields({
           label="Mês de Referência"
           naoDesabilitarPrimeiraOpcao
           options={mesesAnos}
+          disabled={uuidRelatorioFinanceiro}
+        />
+      </div>
+      <div className="col-4">
+        <Field
+          component={MultiSelect}
+          name="status"
+          label="Status"
+          placeholder="Selecione os status"
+          nomeDoItemNoPlural="status"
+          naoDesabilitarPrimeiraOpcao
+          options={Object.entries(STATUS_RELATORIO_FINANCEIRO).map(
+            ([key, value]) => ({
+              value: key,
+              label: value,
+            }),
+          )}
           disabled={uuidRelatorioFinanceiro}
         />
       </div>
