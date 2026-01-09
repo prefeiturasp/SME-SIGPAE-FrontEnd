@@ -762,6 +762,10 @@ const validaFrequenciaDietasEscolaSemAlunosRegulares = (
   maxDietasAutorizadas,
 ) => {
   if (rowName !== "frequencia") return false;
+  if (ehGrupoRecreioNasFerias(location.state.grupo)) {
+    return false;
+  }
+
   const totalFrequencia = location.state.frequenciasDietasEscolaSemAlunoRegular
     .filter(
       (campoFrequencia) =>
