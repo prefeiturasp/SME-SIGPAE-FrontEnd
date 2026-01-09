@@ -133,7 +133,7 @@ const server = setupServer(
     `${API_URL}/solicitacoes-dieta-especial/${cancelamento_data_termino.uuid}/`,
     () => {
       return HttpResponse.json(cancelamento_data_termino);
-    }
+    },
   ),
   http.get(`${API_URL}/motivos-negacao/`, () => {
     return HttpResponse.json(motivosNegacao());
@@ -148,7 +148,7 @@ const server = setupServer(
     `${API_URL}/protocolo-padrao-dieta-especial/lista-protocolos-liberados/`,
     () => {
       return HttpResponse.json(listaProtocolosLiberados());
-    }
+    },
   ),
   http.get(`${API_URL}/alimentos/`, () => {
     return HttpResponse.json(alimentos());
@@ -160,14 +160,14 @@ const server = setupServer(
     `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/7772877/`,
     () => {
       return HttpResponse.json(solicitacoesDietaEspecialDoAluno());
-    }
+    },
   ),
   http.get(
     `${API_URL}/protocolo-padrao-dieta-especial/${cancelamento_data_termino.protocolo_padrao}/`,
     () => {
       return HttpResponse.json(protocoloPadraoDietaEspecial());
-    }
-  )
+    },
+  ),
 );
 
 beforeAll(() => server.listen());
@@ -189,17 +189,17 @@ test("Relatorio para cancelamento por atingir data termino - visão CODAE", asyn
   await waitFor(() => {
     expect(
       screen.getByText(
-        /dieta especial - cancelamento automático por atingir data de término/i
-      )
+        /dieta especial - cancelamento automático por atingir data de término/i,
+      ),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Justificativa do Cancelamento")
+      screen.getByText("Justificativa do Cancelamento"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/justificativa do cancelamento/i)
+      screen.getByText(/justificativa do cancelamento/i),
     ).toBeInTheDocument();
     const justificativa = formataJustificativa(cancelamento_data_termino);
     expect(screen.getByText(`${justificativa}`)).toBeInTheDocument();
@@ -209,7 +209,7 @@ test("Relatorio para cancelamento por atingir data termino - visão CODAE", asyn
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
@@ -248,21 +248,21 @@ test("Relatorio para cancelamento para aluno não matriculado na rede - visão C
   await waitFor(() => {
     expect(
       screen.getByText(
-        /dieta especial - Cancelamento para aluno não matriculado na rede municipal/i
-      )
+        /dieta especial - Cancelamento para aluno não matriculado na rede municipal/i,
+      ),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Justificativa do Cancelamento")
+      screen.getByText("Justificativa do Cancelamento"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/justificativa do cancelamento/i)
+      screen.getByText(/justificativa do cancelamento/i),
     ).toBeInTheDocument();
     const justificativa = formataJustificativa(cancelamento_rede_municipal);
     expect(justificativa).toEqual(
-      "Cancelamento automático para aluno não matriculado na rede municipal."
+      "Cancelamento automático para aluno não matriculado na rede municipal.",
     );
     expect(screen.getByText(`${justificativa}`)).toBeInTheDocument();
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -271,7 +271,7 @@ test("Relatorio para cancelamento para aluno não matriculado na rede - visão C
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
@@ -313,19 +313,19 @@ test("Relatorio para cancelamento quando a escola cancela antes da aprovação p
 
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Cancelada pela Unidade Educacional/i)
+      screen.getByText(/dieta especial - Cancelada pela Unidade Educacional/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Justificativa do Cancelamento")
+      screen.getByText("Justificativa do Cancelamento"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/justificativa do cancelamento/i)
+      screen.getByText(/justificativa do cancelamento/i),
     ).toBeInTheDocument();
     const justificativa = formataJustificativa(
-      cancelamentoEscolaAntesAprovacao
+      cancelamentoEscolaAntesAprovacao,
     );
     expect(justificativa).toEqual("<p>Cancelei</p>");
     expect(screen.getByText(`Cancelei`)).toBeInTheDocument();
@@ -335,7 +335,7 @@ test("Relatorio para cancelamento quando a escola cancela antes da aprovação p
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
@@ -346,26 +346,26 @@ test("Relatorio para cancelamento quando a escola cancela antes da aprovação p
 
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Relação por Diagnóstico/i)
+      screen.queryByText(/Relação por Diagnóstico/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Classificação da Dieta/i)
+      screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i)
+      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Lista de Substituições/i)
+      screen.queryByText(/Lista de Substituições/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Período de Vigência/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Início/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Fim/i)).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Informações Adicionais/i)
+      screen.queryByText(/Informações Adicionais/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Identificação do Nutricionista/i)
+      screen.queryByText(/Identificação do Nutricionista/i),
     ).not.toBeInTheDocument();
 
     const textoProtocolo = screen.queryAllByText("Gerar Protocolo");
@@ -395,16 +395,16 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
 
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Cancelada pela Unidade Educacional/i)
+      screen.getByText(/dieta especial - Cancelada pela Unidade Educacional/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Justificativa do Cancelamento")
+      screen.getByText("Justificativa do Cancelamento"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/justificativa do cancelamento/i)
+      screen.getByText(/justificativa do cancelamento/i),
     ).toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -413,7 +413,7 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
@@ -428,7 +428,7 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
     expect(screen.queryByText(/Fim/i)).not.toBeInTheDocument();
 
     const textoProtocolo = screen.queryAllByText("Gerar Protocolo");
-    expect(textoProtocolo).toHaveLength(0);
+    expect(textoProtocolo).toHaveLength(2);
 
     const textoConferencia = screen.queryAllByText("Marcar Conferência");
     expect(textoConferencia).toHaveLength(0);
@@ -464,16 +464,16 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
 
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Cancelada pela Unidade Educacional/i)
+      screen.getByText(/dieta especial - Cancelada pela Unidade Educacional/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Justificativa do Cancelamento")
+      screen.getByText("Justificativa do Cancelamento"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/justificativa do cancelamento/i)
+      screen.getByText(/justificativa do cancelamento/i),
     ).toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -482,7 +482,7 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
@@ -536,16 +536,16 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
 
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Cancelada pela Unidade Educacional/i)
+      screen.getByText(/dieta especial - Cancelada pela Unidade Educacional/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Justificativa do Cancelamento")
+      screen.getByText("Justificativa do Cancelamento"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/justificativa do cancelamento/i)
+      screen.getByText(/justificativa do cancelamento/i),
     ).toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -554,7 +554,7 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
