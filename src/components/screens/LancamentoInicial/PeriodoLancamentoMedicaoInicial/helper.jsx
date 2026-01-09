@@ -32,15 +32,13 @@ export const formatarPayloadPeriodoLancamento = (
   tabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows,
 ) => {
   const valorPeriodoEscolar = values["periodo_escolar"];
-  const gruposIncluidos = [
-    "ETEC",
-    "Programas e Projetos",
-    "Recreio nas Férias",
-  ];
+  const gruposIncluidos = ["ETEC", "Programas e Projetos"];
+  const grupoRecreio = ehGrupoRecreioNasFerias(grupoLocation);
   if (
     (values["periodo_escolar"] &&
       values["periodo_escolar"].includes("Solicitações")) ||
-    gruposIncluidos.includes(valorPeriodoEscolar)
+    gruposIncluidos.includes(valorPeriodoEscolar) ||
+    grupoRecreio
   ) {
     values["grupo"] = valorPeriodoEscolar;
     delete values["periodo_escolar"];
@@ -552,7 +550,7 @@ export const desabilitarField = (
     }
   }
 
-  if (grupoLocation === "Recreio nas Férias") {
+  if (ehGrupoRecreioNasFerias(grupoLocation)) {
     if (feriadosNoMes.includes(dia)) {
       return true;
     }
@@ -693,7 +691,6 @@ export const desabilitarField = (
   }
 };
 
-// ---------------------------------------------------------------
 export const getSolicitacoesInclusaoAutorizadasAsync = async (
   escolaUuuid,
   mes,
@@ -1430,4 +1427,9 @@ export const desabilitarBotaoObservacoesConferenciaLancamentos = (
         Number(valor.categoria_medicao) === Number(categoria.id),
     );
   }
+};
+
+export const ehGrupoRecreioNasFerias = (grupoRecreio) => {
+  const grupos = ["Recreio nas Férias", "Colaboradores"];
+  return grupos.includes(grupoRecreio);
 };
