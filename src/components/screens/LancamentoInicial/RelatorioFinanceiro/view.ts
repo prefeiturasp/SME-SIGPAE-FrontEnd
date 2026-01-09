@@ -27,7 +27,7 @@ type Props = {
 
 const VALORES_INICIAIS = {
   lote: [""],
-  grupo_unidade_escolar: "",
+  grupo_unidade_escolar: {},
   mes_ano: "",
 };
 
@@ -66,7 +66,8 @@ export default ({ ...props }: Props) => {
       setLotes(lotes);
     } catch (error) {
       toastError(
-        "Erro ao carregar lotes. Tente novamente mais tarde." + error.toString()
+        "Erro ao carregar lotes. Tente novamente mais tarde." +
+          error.toString(),
       );
     }
   };
@@ -74,25 +75,18 @@ export default ({ ...props }: Props) => {
   const getGruposUnidades = async () => {
     try {
       const { data } = await getGrupoUnidadeEscolar();
-      const tiposUnidades = data.results.map((grupo) => ({
-        uuid: grupo.uuid,
-        nome: grupo.tipos_unidades
-          ?.map((unidade) => unidade.iniciais)
-          .join(", "),
-      }));
-
       setGruposUnidadeEscolar(
-        [
-          {
-            uuid: "",
-            nome: "Selecione o tipo de UE",
-          },
-        ].concat(tiposUnidades)
+        data.results.map((grupo) => ({
+          value: grupo.uuid,
+          label: `${grupo.nome} (${grupo.tipos_unidades
+            ?.map((unidade) => unidade.iniciais)
+            .join(", ")})`,
+        })),
       );
     } catch (error) {
       toastError(
         "Erro ao carregar tipos de unidade escolar. Tente novamente mais tarde." +
-          error.toString()
+          error.toString(),
       );
     }
   };
@@ -112,22 +106,27 @@ export default ({ ...props }: Props) => {
             uuid: "",
             nome: "Selecione o mês de referência",
           },
-        ].concat(mesesAnos)
+        ].concat(mesesAnos),
       );
     } catch (error) {
       toastError(
         "Erro ao carregar meses de referência. Tente novamente mais tarde." +
-          error.toString()
+          error.toString(),
       );
     }
   };
 
   const getRelatoriosFinanceirosAsync = async (
     page: number = null,
-    filtros: FiltrosInterface = null
+    filtros: FiltrosInterface = null,
   ) => {
     try {
-      filtros = { ...filtros, lote: filtros?.lote?.toString() };
+      filtros = {
+        ...filtros,
+        lote: filtros?.lote?.toString(),
+        grupo_unidade_escolar: filtros?.grupo_unidade_escolar?.toString(),
+        status: filtros?.status?.toString(),
+      };
 
       const { data } = await getRelatoriosFinanceiros(page, filtros);
 
@@ -136,7 +135,7 @@ export default ({ ...props }: Props) => {
     } catch (error) {
       toastError(
         "Erro ao carregar relatórios financeiros. Tente novamente mais tarde." +
-          error.toString()
+          error.toString(),
       );
     }
   };
@@ -144,7 +143,7 @@ export default ({ ...props }: Props) => {
   const getRelatorioConsolidadoAsync = async () => {
     try {
       const { data } = await getRelatorioFinanceiroConsolidado(
-        uuidRelatorioFinanceiro
+        uuidRelatorioFinanceiro,
       );
       setRelatorioConsolidado(data);
       setValoresIniciais({
