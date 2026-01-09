@@ -314,7 +314,9 @@ const Relatorio = ({ visao }) => {
       dietaEspecial &&
       !editar &&
       ehSolicitacaoDeCancelamento(status) &&
-      (usuarioEhCODAENutriManifestacao() || usuarioEhEmpresaTerceirizada())
+      (usuarioEhCODAENutriManifestacao() ||
+        usuarioEhEmpresaTerceirizada() ||
+        usuarioEhCoordenadorNutriCODAE())
     ) {
       exibir = true;
     }
@@ -337,7 +339,9 @@ const Relatorio = ({ visao }) => {
       dietaEspecial?.ativo === false &&
       !editar &&
       ehSolicitacaoDeInativa(status) &&
-      (usuarioEhCODAENutriManifestacao() || usuarioEhEmpresaTerceirizada())
+      (usuarioEhCODAENutriManifestacao() ||
+        usuarioEhEmpresaTerceirizada() ||
+        usuarioEhCoordenadorNutriCODAE())
     );
   };
 
