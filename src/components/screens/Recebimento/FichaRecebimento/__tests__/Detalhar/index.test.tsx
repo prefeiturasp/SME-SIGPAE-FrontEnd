@@ -129,6 +129,15 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
     expect(tagLeveLeite).toBeInTheDocument();
     expect(tagLeveLeite).toHaveTextContent("LEVE LEITE - PLL");
   });
+
+  it("Exibe a coluna Qtde Recebida na tabela de Laudos com valor formatado", async () => {
+    const collapseTitulo = screen.getByText("Laudos");
+    fireEvent.click(collapseTitulo);
+
+    expect(screen.getByText("Qtde Recebida")).toBeInTheDocument();
+
+    expect(await screen.findByText("13.000,00 kg")).toBeInTheDocument();
+  });
 });
 
 describe("Testes quando reposicao_cronograma.tipo é Credito", () => {
