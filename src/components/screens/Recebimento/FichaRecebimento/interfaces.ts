@@ -173,6 +173,7 @@ export interface FiltrosFichaRecebimento {
   nome_empresa?: string;
   data_inicial?: string;
   data_final?: string;
+  status?: string;
 }
 
 export interface FichaDeRecebimentoItemListagem {

@@ -92,6 +92,8 @@ const Filtros: React.FC<Props> = ({
         "YYYY-MM-DD",
       );
 
+    if (!usuarioEhRecebimento()) filtros.status = "ASSINADA";
+
     setFiltros(filtros);
   };
 
@@ -112,7 +114,7 @@ const Filtros: React.FC<Props> = ({
         {(values) => (
           <>
             <div className="row">
-              <div className="col-4">
+              <div className={`col-${usuarioEhRecebimento() ? "4" : "6"}`}>
                 <Field
                   component={InputText}
                   label="Filtrar por Nº do Cronograma"
@@ -120,20 +122,20 @@ const Filtros: React.FC<Props> = ({
                   placeholder="Digite o Nº do Cronograma"
                 />
               </div>
-
-              <div className="col-4">
-                <Field
-                  component={MultiSelect}
-                  disableSearch
-                  options={opcoesStatus}
-                  label="Filtrar por Status"
-                  name="status"
-                  nomeDoItemNoPlural="Status"
-                  placeholder="Selecione um Status"
-                />
-              </div>
-
-              <div className="col-4">
+              {usuarioEhRecebimento() && (
+                <div className="col-4">
+                  <Field
+                    component={MultiSelect}
+                    disableSearch
+                    options={opcoesStatus}
+                    label="Filtrar por Status"
+                    name="status"
+                    nomeDoItemNoPlural="Status"
+                    placeholder="Selecione um Status"
+                  />
+                </div>
+              )}
+              <div className={`col-${usuarioEhRecebimento() ? "4" : "6"}`}>
                 <Field
                   component={AutoCompleteSelectField}
                   options={optionsCampoProdutos(values)}
