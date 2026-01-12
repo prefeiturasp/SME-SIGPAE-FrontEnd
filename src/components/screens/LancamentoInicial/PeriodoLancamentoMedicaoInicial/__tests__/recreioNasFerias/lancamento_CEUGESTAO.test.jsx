@@ -24,6 +24,7 @@ import {
   getDiasParaCorrecao,
   getSolicitacoesSuspensoesAutorizadasEscola,
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
+  getLogDietasAutorizadasRecreioNasFerias,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "src/mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
@@ -34,6 +35,7 @@ import {
 import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
 import { ToastContainer } from "react-toastify";
+import { mockLogQuantidadeDietasAutorizadasRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockDietasEspeciais";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -54,6 +56,7 @@ const awaitServices = async () => {
     ).toHaveBeenCalled();
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
+    expect(getLogDietasAutorizadasRecreioNasFerias).toHaveBeenCalled();
   });
 };
 
@@ -109,6 +112,10 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
     });
     updateValoresPeriodosLancamentos.mockResolvedValue({
       data: mockSalvaLancamentoSemana1,
+      status: 200,
+    });
+    getLogDietasAutorizadasRecreioNasFerias.mockResolvedValue({
+      data: mockLogQuantidadeDietasAutorizadasRecreio,
       status: 200,
     });
 
