@@ -15,6 +15,8 @@ import {
   RECEBIMENTO,
 } from "src/configs/constants";
 
+import { usuarioEhRecebimento } from "src/helpers/utilities";
+
 interface Props {
   objetos: FichaDeRecebimentoItemListagem[];
   setCarregando: Dispatch<SetStateAction<boolean>>;
@@ -92,8 +94,12 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
     return (
       <div className="d-flex border-0">
         {objeto.status === "Assinado CODAE" && botaoDetalhar}
-        {botaoEditar}
-        {objeto.status === "Assinado CODAE" && botaoImprimir}
+        {usuarioEhRecebimento() && (
+          <>
+            {botaoEditar}
+            {objeto.status === "Assinado CODAE" && botaoImprimir}
+          </>
+        )}
       </div>
     );
   };
