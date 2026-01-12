@@ -18,5 +18,8 @@ export const FUNDAMENTAL_EMEBS = {
 };
 
 export const STATUS_RELATORIO_FINANCEIRO = {
+  RELATORIO_FINANCEIRO_GERADO: "Relatório Financeiro Gerado",
   EM_ANALISE: "Em Análise",
+  GERADA_MEDICAO_FINAL: "Gerada Medição Final",
+  FINALIZADO: "Finalizado",
 };

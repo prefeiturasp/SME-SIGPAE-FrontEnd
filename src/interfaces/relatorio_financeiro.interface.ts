@@ -1,6 +1,7 @@
 export interface FiltrosInterface {
   lote?: string[] | string;
-  grupo_unidade_escolar?: string;
+  grupo_unidade_escolar?: string[] | string;
+  status?: string[] | string;
   mes_ano?: string;
 }
 
@@ -29,7 +30,7 @@ export interface RelatorioFinanceiroConsolidado {
   tipos_unidades: TipoUnidade[];
   legenda: string;
   tabelas: Tabela[];
-  grupo_unidade_escolar: string;
+  grupo_unidade_escolar: GrupoUnidadeEscolar;
   mes_ano: string;
 }
 
