@@ -41,6 +41,8 @@ import {
   usuarioEhRecebimento,
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
+  usuarioEhCronograma,
+  usuarioEhDilogAbastecimento,
 } from "src/helpers/utilities";
 
 import {
@@ -68,23 +70,23 @@ export const SidebarContent = () => {
     (clickedMenu) => {
       setActiveMenu(clickedMenu === activeMenu ? "" : clickedMenu);
     },
-    [activeMenu]
+    [activeMenu],
   );
 
   const onSubmenuCadastroClick = useCallback(
     (clickedMenu) => {
       setActiveMenuCadastros(
-        clickedMenu === activeMenuCadastros ? "" : clickedMenu
+        clickedMenu === activeMenuCadastros ? "" : clickedMenu,
       );
     },
-    [activeMenuCadastros]
+    [activeMenuCadastros],
   );
 
   const onSubmenuLancamentoClick = useCallback(
     (clickedMenu) => {
       setActiveSubMenu(clickedMenu === activeSubmenu ? "" : clickedMenu);
     },
-    [activeSubmenu]
+    [activeSubmenu],
   );
 
   // NOTE: essas condicoes consideram apenas codae e terceirizada.
@@ -203,7 +205,12 @@ export const SidebarContent = () => {
     usuarioEhCODAEGabinete() ||
     usuarioEhGticCODAE();
 
-  const exibirMenuRecebimento = usuarioEhRecebimento();
+  const exibirMenuRecebimento =
+    usuarioEhRecebimento() ||
+    usuarioEhCronograma() ||
+    usuarioEhDilogAbastecimento() ||
+    usuarioEhCodaeDilog() ||
+    usuarioEhDilogDiretoria();
 
   const exibirMenuSupervisao =
     (usuarioEhNutricionistaSupervisao() ||
