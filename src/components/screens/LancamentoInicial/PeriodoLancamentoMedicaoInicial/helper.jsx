@@ -554,7 +554,7 @@ export const desabilitarField = (
     if (feriadosNoMes.includes(dia)) {
       return true;
     }
-    if (nomeCategoria === "ALIMENTAÇÃO") {
+    if (nomeCategoria === "ALIMENTAÇÃO" || nomeCategoria.includes("DIETA")) {
       if (rowName === "participantes") {
         return true;
       } else if (
