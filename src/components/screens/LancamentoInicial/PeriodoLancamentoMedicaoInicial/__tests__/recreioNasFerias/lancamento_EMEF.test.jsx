@@ -36,7 +36,6 @@ import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
 import { ToastContainer } from "react-toastify";
 import { mockLogQuantidadeDietasAutorizadasRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockDietasEspeciais";
-import preview from "jest-preview";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -1313,7 +1312,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
-      const valores = {
+      const valoresAlimentacao = {
         frequencia: "95",
         lanche_4h: "85",
         lanche: "85",
@@ -1323,7 +1322,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
         repeticao_sobremesa: "75",
       };
 
-      const campos = [
+      const camposAlimentacao = [
         { key: "frequencia", testId: "frequencia" },
         { key: "lanche_4h", testId: "lanche_4h" },
         { key: "lanche", testId: "lanche" },
@@ -1333,13 +1332,29 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
         { key: "repeticao_sobremesa", testId: "repeticao_sobremesa" },
       ];
 
-      campos.forEach(({ key, testId }) => {
+      camposAlimentacao.forEach(({ key, testId }) => {
         const input = screen.getByTestId(`${testId}__dia_04__categoria_1`);
-        fireEvent.change(input, { target: { value: valores[key] } });
+        fireEvent.change(input, { target: { value: valoresAlimentacao[key] } });
+      });
+
+      const valoresDieta = {
+        frequencia: "2",
+        lanche_4h: "1",
+        lanche: "1",
+      };
+
+      const camposDieta = [
+        { key: "frequencia", testId: "frequencia" },
+        { key: "lanche_4h", testId: "lanche_4h" },
+        { key: "lanche", testId: "lanche" },
+      ];
+
+      camposDieta.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_04__categoria_2`);
+        fireEvent.change(input, { target: { value: valoresDieta[key] } });
       });
 
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
-      preview.debug();
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
       fireEvent.click(botao);
@@ -1350,15 +1365,34 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
         ).toBeInTheDocument();
       });
 
-      const valoresEsperados = { participantes: "100", ...valores };
-      const camposAtualizados = [
+      const valoresEsperadosAlimentacao = {
+        participantes: "100",
+        ...valoresAlimentacao,
+      };
+      const camposAtualizadosAlimentacao = [
         { key: "participantes", testId: "participantes" },
-        ...campos,
+        ...camposAlimentacao,
+      ];
+      camposAtualizadosAlimentacao.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_04__categoria_1`);
+        expect(input).toHaveAttribute(
+          "value",
+          valoresEsperadosAlimentacao[key],
+        );
+      });
+
+      const valoresEsperadosDieta = {
+        dietas_autorizadas: "2",
+        ...valoresDieta,
+      };
+      const camposAtualizadosDieta = [
+        { key: "dietas_autorizadas", testId: "dietas_autorizadas" },
+        ...camposDieta,
       ];
 
-      camposAtualizados.forEach(({ key, testId }) => {
-        const input = screen.getByTestId(`${testId}__dia_04__categoria_1`);
-        expect(input).toHaveAttribute("value", valoresEsperados[key]);
+      camposAtualizadosDieta.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_04__categoria_2`);
+        expect(input).toHaveAttribute("value", valoresEsperadosDieta[key]);
       });
     });
 
@@ -1367,7 +1401,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       const semana2Element = screen.getByText("Semana 2");
       fireEvent.click(semana2Element);
 
-      const valores = {
+      const valoresAlimentacao = {
         frequencia: "95",
         lanche_4h: "85",
         lanche: "85",
@@ -1377,7 +1411,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
         repeticao_sobremesa: "75",
       };
 
-      const campos = [
+      const camposAlimentacao = [
         { key: "frequencia", testId: "frequencia" },
         { key: "lanche_4h", testId: "lanche_4h" },
         { key: "lanche", testId: "lanche" },
@@ -1387,9 +1421,26 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
         { key: "repeticao_sobremesa", testId: "repeticao_sobremesa" },
       ];
 
-      campos.forEach(({ key, testId }) => {
+      camposAlimentacao.forEach(({ key, testId }) => {
         const input = screen.getByTestId(`${testId}__dia_08__categoria_1`);
-        fireEvent.change(input, { target: { value: valores[key] } });
+        fireEvent.change(input, { target: { value: valoresAlimentacao[key] } });
+      });
+
+      const valoresDieta = {
+        frequencia: "2",
+        lanche_4h: "2",
+        lanche: "0",
+      };
+
+      const camposDieta = [
+        { key: "frequencia", testId: "frequencia" },
+        { key: "lanche_4h", testId: "lanche_4h" },
+        { key: "lanche", testId: "lanche" },
+      ];
+
+      camposDieta.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_08__categoria_2`);
+        fireEvent.change(input, { target: { value: valoresDieta[key] } });
       });
 
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
@@ -1403,15 +1454,35 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
         ).toBeInTheDocument();
       });
 
-      const valoresEsperados = { participantes: "100", ...valores };
-      const camposAtualizados = [
+      const valoresEsperadosAlimentacao = {
+        participantes: "100",
+        ...valoresAlimentacao,
+      };
+      const camposAtualizadosAlimentacao = [
         { key: "participantes", testId: "participantes" },
-        ...campos,
+        ...camposAlimentacao,
       ];
 
-      camposAtualizados.forEach(({ key, testId }) => {
+      camposAtualizadosAlimentacao.forEach(({ key, testId }) => {
         const input = screen.getByTestId(`${testId}__dia_08__categoria_1`);
-        expect(input).toHaveAttribute("value", valoresEsperados[key]);
+        expect(input).toHaveAttribute(
+          "value",
+          valoresEsperadosAlimentacao[key],
+        );
+      });
+
+      const valoresEsperadosDieta = {
+        dietas_autorizadas: "2",
+        ...valoresDieta,
+      };
+      const camposAtualizadosDieta = [
+        { key: "dietas_autorizadas", testId: "dietas_autorizadas" },
+        ...camposDieta,
+      ];
+
+      camposAtualizadosDieta.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_08__categoria_2`);
+        expect(input).toHaveAttribute("value", valoresEsperadosDieta[key]);
       });
     });
   });
