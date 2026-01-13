@@ -234,7 +234,105 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       );
       expect(specificParticipantes).toBeInTheDocument();
     });
+
+    it("renderiza label `DIETA ESPECIAL - TIPO A`", async () => {
+      await awaitServices();
+      expect(screen.getByText("DIETA ESPECIAL - TIPO A")).toBeInTheDocument();
+    });
+
+    it("renderiza label `Dietas Autorizadas` dentro da seção `DIETA ESPECIAL - TIPO A`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "07cc34f7-13ab-4ecb-b32c-f5b81a1c76a1";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Dietas Autorizadas");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `Seg.` dentro da seção `DIETA ESPECIAL - TIPO A`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "07cc34f7-13ab-4ecb-b32c-f5b81a1c76a1";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Seg.");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `DIETA ESPECIAL - TIPO A - ENTERAL / RESTRIÇÃO DE AMINOÁCIDOS`", async () => {
+      await awaitServices();
+      expect(
+        screen.getByText(
+          "DIETA ESPECIAL - TIPO A - ENTERAL / RESTRIÇÃO DE AMINOÁCIDOS",
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it("renderiza label `Dietas Autorizadas` dentro da seção `DIETA ESPECIAL - TIPO A - ENTERAL / RESTRIÇÃO DE AMINOÁCIDOS`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "97ac9200-377d-4fd8-8361-faaebfffd0e4";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Dietas Autorizadas");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `Seg.` dentro da seção `DIETA ESPECIAL - TIPO A - ENTERAL / RESTRIÇÃO DE AMINOÁCIDOS`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "97ac9200-377d-4fd8-8361-faaebfffd0e4";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Seg.");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `DIETA ESPECIAL - TIPO B`", async () => {
+      await awaitServices();
+      expect(screen.getByText("DIETA ESPECIAL - TIPO B")).toBeInTheDocument();
+    });
+
+    it("renderiza label `Dietas Autorizadas` dentro da seção `DIETA ESPECIAL - TIPO B`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "9e23f15a-b0f5-4e8d-ab5c-44e5eb2e6e13";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Dietas Autorizadas");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `Seg.` dentro da seção `DIETA ESPECIAL - TIPO B`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "9e23f15a-b0f5-4e8d-ab5c-44e5eb2e6e13";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Seg.");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
   });
+
   describe("Testa a parte de ALIMENTAÇÃO", () => {
     it("ao clicar na tab `Semana 1`, exibe, nos dias 15 a 21, e verifica oa lançamentos", async () => {
       await awaitServices();
@@ -408,6 +506,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
     });
+
     it("ao clicar na tab `Semana 2`, preencher frequencia maior que participantes e exibe erro", async () => {
       await awaitServices();
       const semana2Element = screen.getByText("Semana 2");
