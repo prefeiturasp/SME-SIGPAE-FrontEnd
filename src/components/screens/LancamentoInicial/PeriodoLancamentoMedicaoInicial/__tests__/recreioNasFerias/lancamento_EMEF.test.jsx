@@ -484,154 +484,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(botao).not.toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 2`, exibe, nos dias 08 a 14, e verifica oa lançamentos", async () => {
-      await awaitServices();
-      const semana1Element = screen.getByText("Semana 2");
-      fireEvent.click(semana1Element);
-      const VALORES_ESPERADOS = {
-        8: {
-          participantes: "100",
-          frequencia: "",
-          lanche: "",
-          lanche4h: "",
-          refeicao: "",
-          repeticao_refeicao: "",
-          sobremesa: "",
-          repeticao_sobremesa: "",
-        },
-        9: {
-          participantes: "100",
-          frequencia: "92",
-          lanche: "",
-          lanche4h: "",
-          refeicao: "",
-          repeticao_refeicao: "",
-          sobremesa: "",
-          repeticao_sobremesa: "",
-        },
-        10: {
-          participantes: "100",
-          frequencia: "",
-          lanche: "",
-          lanche4h: "",
-          refeicao: "",
-          repeticao_refeicao: "",
-          sobremesa: "",
-          repeticao_sobremesa: "",
-        },
-        11: {
-          participantes: "",
-          frequencia: "",
-          lanche: "",
-          lanche4h: "",
-          refeicao: "",
-          repeticao_refeicao: "",
-          sobremesa: "",
-          repeticao_sobremesa: "",
-        },
-        12: {
-          participantes: "",
-          frequencia: "",
-          lanche: "",
-          lanche4h: "",
-          refeicao: "",
-          repeticao_refeicao: "",
-          sobremesa: "",
-          repeticao_sobremesa: "",
-        },
-        13: {
-          participantes: "",
-          frequencia: "",
-          lanche: "",
-          lanche4h: "",
-          refeicao: "",
-          repeticao_refeicao: "",
-          sobremesa: "",
-          repeticao_sobremesa: "",
-        },
-        14: {
-          participantes: "",
-          frequencia: "",
-          lanche: "",
-          lanche4h: "",
-          refeicao: "",
-          repeticao_refeicao: "",
-          sobremesa: "",
-          repeticao_sobremesa: "",
-        },
-      };
-
-      for (let dia = 8; dia <= 14; dia++) {
-        const diaFormatado = dia.toString().padStart(2, "0");
-        const valoresDia = VALORES_ESPERADOS[dia];
-
-        const inputParticipantes = screen.getByTestId(
-          `participantes__dia_${diaFormatado}__categoria_1`,
-        );
-        const inputFrequencia = screen.getByTestId(
-          `frequencia__dia_${diaFormatado}__categoria_1`,
-        );
-        const inputLanche4h = screen.getByTestId(
-          `lanche_4h__dia_${diaFormatado}__categoria_1`,
-        );
-        const inputLanche = screen.getByTestId(
-          `lanche__dia_${diaFormatado}__categoria_1`,
-        );
-        const inputRefeicao = screen.getByTestId(
-          `refeicao__dia_${diaFormatado}__categoria_1`,
-        );
-        const inputRepeticaoRefeicao = screen.getByTestId(
-          `repeticao_refeicao__dia_${diaFormatado}__categoria_1`,
-        );
-        const inputSobremesa = screen.getByTestId(
-          `sobremesa__dia_${diaFormatado}__categoria_1`,
-        );
-        const inputRepeticaoSobremesa = screen.getByTestId(
-          `repeticao_sobremesa__dia_${diaFormatado}__categoria_1`,
-        );
-
-        expect(inputParticipantes).toHaveAttribute(
-          "value",
-          valoresDia.participantes,
-        );
-        expect(inputFrequencia).toHaveAttribute("value", valoresDia.frequencia);
-        expect(inputLanche4h).toHaveAttribute("value", valoresDia.lanche4h);
-        expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
-        expect(inputRefeicao).toHaveAttribute("value", valoresDia.refeicao);
-        expect(inputRepeticaoRefeicao).toHaveAttribute(
-          "value",
-          valoresDia.repeticao_refeicao,
-        );
-        expect(inputSobremesa).toHaveAttribute("value", valoresDia.sobremesa);
-        expect(inputRepeticaoSobremesa).toHaveAttribute(
-          "value",
-          valoresDia.repeticao_sobremesa,
-        );
-
-        expect(inputParticipantes.disabled).toBe(true);
-        if ([11, 12, 13, 14].includes(dia)) {
-          expect(inputFrequencia.disabled).toBe(true);
-          expect(inputLanche4h.disabled).toBe(true);
-          expect(inputLanche.disabled).toBe(true);
-          expect(inputRefeicao.disabled).toBe(true);
-          expect(inputRepeticaoRefeicao.disabled).toBe(true);
-          expect(inputSobremesa.disabled).toBe(true);
-          expect(inputRepeticaoSobremesa.disabled).toBe(true);
-        } else {
-          expect(inputFrequencia.disabled).toBe(false);
-          expect(inputLanche4h.disabled).toBe(false);
-          expect(inputLanche.disabled).toBe(false);
-          expect(inputRefeicao.disabled).toBe(false);
-          expect(inputRepeticaoRefeicao.disabled).toBe(false);
-          expect(inputSobremesa.disabled).toBe(false);
-          expect(inputRepeticaoSobremesa.disabled).toBe(false);
-        }
-      }
-      const botao = screen.getByText("Salvar Lançamentos").closest("button");
-      expect(botao).toBeInTheDocument();
-      expect(botao).not.toBeDisabled();
-    });
-
     it("ao clicar na tab `Semana 1`, preencher frequencia maior que participantes e exibe erro", async () => {
       await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
@@ -785,57 +637,152 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(botao).not.toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 1`, preenche dia 04 e salva lançamento", async () => {
+    it("ao clicar na tab `Semana 2`, exibe, nos dias 08 a 14, e verifica oa lançamentos", async () => {
       await awaitServices();
-      const semana1Element = screen.getByText("Semana 1");
+      const semana1Element = screen.getByText("Semana 2");
       fireEvent.click(semana1Element);
-
-      const valores = {
-        frequencia: "95",
-        lanche_4h: "85",
-        lanche: "85",
-        refeicao: "80",
-        repeticao_refeicao: "70",
-        sobremesa: "85",
-        repeticao_sobremesa: "75",
+      const VALORES_ESPERADOS = {
+        8: {
+          participantes: "100",
+          frequencia: "",
+          lanche: "",
+          lanche4h: "",
+          refeicao: "",
+          repeticao_refeicao: "",
+          sobremesa: "",
+          repeticao_sobremesa: "",
+        },
+        9: {
+          participantes: "100",
+          frequencia: "92",
+          lanche: "",
+          lanche4h: "",
+          refeicao: "",
+          repeticao_refeicao: "",
+          sobremesa: "",
+          repeticao_sobremesa: "",
+        },
+        10: {
+          participantes: "100",
+          frequencia: "",
+          lanche: "",
+          lanche4h: "",
+          refeicao: "",
+          repeticao_refeicao: "",
+          sobremesa: "",
+          repeticao_sobremesa: "",
+        },
+        11: {
+          participantes: "",
+          frequencia: "",
+          lanche: "",
+          lanche4h: "",
+          refeicao: "",
+          repeticao_refeicao: "",
+          sobremesa: "",
+          repeticao_sobremesa: "",
+        },
+        12: {
+          participantes: "",
+          frequencia: "",
+          lanche: "",
+          lanche4h: "",
+          refeicao: "",
+          repeticao_refeicao: "",
+          sobremesa: "",
+          repeticao_sobremesa: "",
+        },
+        13: {
+          participantes: "",
+          frequencia: "",
+          lanche: "",
+          lanche4h: "",
+          refeicao: "",
+          repeticao_refeicao: "",
+          sobremesa: "",
+          repeticao_sobremesa: "",
+        },
+        14: {
+          participantes: "",
+          frequencia: "",
+          lanche: "",
+          lanche4h: "",
+          refeicao: "",
+          repeticao_refeicao: "",
+          sobremesa: "",
+          repeticao_sobremesa: "",
+        },
       };
 
-      const campos = [
-        { key: "frequencia", testId: "frequencia" },
-        { key: "lanche_4h", testId: "lanche_4h" },
-        { key: "lanche", testId: "lanche" },
-        { key: "refeicao", testId: "refeicao" },
-        { key: "repeticao_refeicao", testId: "repeticao_refeicao" },
-        { key: "sobremesa", testId: "sobremesa" },
-        { key: "repeticao_sobremesa", testId: "repeticao_sobremesa" },
-      ];
+      for (let dia = 8; dia <= 14; dia++) {
+        const diaFormatado = dia.toString().padStart(2, "0");
+        const valoresDia = VALORES_ESPERADOS[dia];
 
-      campos.forEach(({ key, testId }) => {
-        const input = screen.getByTestId(`${testId}__dia_04__categoria_1`);
-        fireEvent.change(input, { target: { value: valores[key] } });
-      });
+        const inputParticipantes = screen.getByTestId(
+          `participantes__dia_${diaFormatado}__categoria_1`,
+        );
+        const inputFrequencia = screen.getByTestId(
+          `frequencia__dia_${diaFormatado}__categoria_1`,
+        );
+        const inputLanche4h = screen.getByTestId(
+          `lanche_4h__dia_${diaFormatado}__categoria_1`,
+        );
+        const inputLanche = screen.getByTestId(
+          `lanche__dia_${diaFormatado}__categoria_1`,
+        );
+        const inputRefeicao = screen.getByTestId(
+          `refeicao__dia_${diaFormatado}__categoria_1`,
+        );
+        const inputRepeticaoRefeicao = screen.getByTestId(
+          `repeticao_refeicao__dia_${diaFormatado}__categoria_1`,
+        );
+        const inputSobremesa = screen.getByTestId(
+          `sobremesa__dia_${diaFormatado}__categoria_1`,
+        );
+        const inputRepeticaoSobremesa = screen.getByTestId(
+          `repeticao_sobremesa__dia_${diaFormatado}__categoria_1`,
+        );
 
+        expect(inputParticipantes).toHaveAttribute(
+          "value",
+          valoresDia.participantes,
+        );
+        expect(inputFrequencia).toHaveAttribute("value", valoresDia.frequencia);
+        expect(inputLanche4h).toHaveAttribute("value", valoresDia.lanche4h);
+        expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
+        expect(inputRefeicao).toHaveAttribute("value", valoresDia.refeicao);
+        expect(inputRepeticaoRefeicao).toHaveAttribute(
+          "value",
+          valoresDia.repeticao_refeicao,
+        );
+        expect(inputSobremesa).toHaveAttribute("value", valoresDia.sobremesa);
+        expect(inputRepeticaoSobremesa).toHaveAttribute(
+          "value",
+          valoresDia.repeticao_sobremesa,
+        );
+
+        expect(inputParticipantes.disabled).toBe(true);
+        if ([11, 12, 13, 14].includes(dia)) {
+          expect(inputFrequencia.disabled).toBe(true);
+          expect(inputLanche4h.disabled).toBe(true);
+          expect(inputLanche.disabled).toBe(true);
+          expect(inputRefeicao.disabled).toBe(true);
+          expect(inputRepeticaoRefeicao.disabled).toBe(true);
+          expect(inputSobremesa.disabled).toBe(true);
+          expect(inputRepeticaoSobremesa.disabled).toBe(true);
+        } else {
+          expect(inputFrequencia.disabled).toBe(false);
+          expect(inputLanche4h.disabled).toBe(false);
+          expect(inputLanche.disabled).toBe(false);
+          expect(inputRefeicao.disabled).toBe(false);
+          expect(inputRepeticaoRefeicao.disabled).toBe(false);
+          expect(inputSobremesa.disabled).toBe(false);
+          expect(inputRepeticaoSobremesa.disabled).toBe(false);
+        }
+      }
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
-      fireEvent.click(botao);
-
-      await waitFor(() => {
-        expect(
-          screen.getByText("Lançamentos salvos com sucesso"),
-        ).toBeInTheDocument();
-      });
-
-      const valoresEsperados = { participantes: "100", ...valores };
-      const camposAtualizados = [
-        { key: "participantes", testId: "participantes" },
-        ...campos,
-      ];
-
-      camposAtualizados.forEach(({ key, testId }) => {
-        const input = screen.getByTestId(`${testId}__dia_04__categoria_1`);
-        expect(input).toHaveAttribute("value", valoresEsperados[key]);
-      });
     });
 
     it("ao clicar na tab `Semana 2`, preencher frequencia maior que participantes e exibe erro", async () => {
@@ -1004,59 +951,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
     });
-
-    it("ao clicar na tab `Semana 2`, preenche dia 08 e salva lançamento", async () => {
-      await awaitServices();
-      const semana2Element = screen.getByText("Semana 2");
-      fireEvent.click(semana2Element);
-
-      const valores = {
-        frequencia: "95",
-        lanche_4h: "85",
-        lanche: "85",
-        refeicao: "80",
-        repeticao_refeicao: "70",
-        sobremesa: "85",
-        repeticao_sobremesa: "75",
-      };
-
-      const campos = [
-        { key: "frequencia", testId: "frequencia" },
-        { key: "lanche_4h", testId: "lanche_4h" },
-        { key: "lanche", testId: "lanche" },
-        { key: "refeicao", testId: "refeicao" },
-        { key: "repeticao_refeicao", testId: "repeticao_refeicao" },
-        { key: "sobremesa", testId: "sobremesa" },
-        { key: "repeticao_sobremesa", testId: "repeticao_sobremesa" },
-      ];
-
-      campos.forEach(({ key, testId }) => {
-        const input = screen.getByTestId(`${testId}__dia_08__categoria_1`);
-        fireEvent.change(input, { target: { value: valores[key] } });
-      });
-
-      const botao = screen.getByText("Salvar Lançamentos").closest("button");
-      expect(botao).toBeInTheDocument();
-      expect(botao).not.toBeDisabled();
-      fireEvent.click(botao);
-
-      await waitFor(() => {
-        expect(
-          screen.getByText("Lançamentos salvos com sucesso"),
-        ).toBeInTheDocument();
-      });
-
-      const valoresEsperados = { participantes: "100", ...valores };
-      const camposAtualizados = [
-        { key: "participantes", testId: "participantes" },
-        ...campos,
-      ];
-
-      camposAtualizados.forEach(({ key, testId }) => {
-        const input = screen.getByTestId(`${testId}__dia_08__categoria_1`);
-        expect(input).toHaveAttribute("value", valoresEsperados[key]);
-      });
-    });
   });
 
   describe("Testa a parte de DIETAS ESPECIAIS", () => {
@@ -1174,11 +1068,79 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(botao).not.toBeDisabled();
     });
 
+    it("ao clicar na tab `Semana 1`, preencher frequencia maior que dietas autorizadas e exibe erro", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const inputElementFrequenciaDia03 = screen.getByTestId(
+        "frequencia__dia_03__categoria_2",
+      );
+      waitFor(() => {
+        fireEvent.change(inputElementFrequenciaDia03, {
+          target: { value: "5" },
+        });
+      });
+      expect(inputElementFrequenciaDia03).toHaveClass("invalid-field");
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      expect(botao).toBeDisabled();
+    });
+
+    it("ao clicar na tab `Semana 1`, preencher lanche maior que frequencia e exibe erro", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const inputElementFrequenciaDia03 = screen.getByTestId(
+        "frequencia__dia_03__categoria_2",
+      );
+      fireEvent.change(inputElementFrequenciaDia03, {
+        target: { value: "2" },
+      });
+      const inputElementLancheDia03 = screen.getByTestId(
+        "lanche__dia_03__categoria_2",
+      );
+      waitFor(() => {
+        fireEvent.change(inputElementLancheDia03, {
+          target: { value: "5" },
+        });
+      });
+      expect(inputElementLancheDia03).toHaveClass("invalid-field");
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      expect(botao).toBeDisabled();
+    });
+
+    it("ao clicar na tab `Semana 1`, preencher lanche 4h maior que frequencia e exibe erro", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+      const inputElementFrequenciaDia03 = screen.getByTestId(
+        "frequencia__dia_03__categoria_2",
+      );
+      fireEvent.change(inputElementFrequenciaDia03, {
+        target: { value: "2" },
+      });
+
+      const inputElementLanche4hDia03 = screen.getByTestId(
+        "lanche_4h__dia_03__categoria_2",
+      );
+      waitFor(() => {
+        fireEvent.change(inputElementLanche4hDia03, {
+          target: { value: "5" },
+        });
+      });
+      expect(inputElementLanche4hDia03).toHaveClass("invalid-field");
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      expect(botao).toBeDisabled();
+    });
+
     it("ao clicar na tab `Semana 2`, exibe, nos dias 08 a 14, e verifica oa lançamentos", async () => {
       await awaitServices();
       const semana2Element = screen.getByText("Semana 2");
       fireEvent.click(semana2Element);
-      preview.debug();
       const VALORES_ESPERADOS = {
         8: {
           dietas: "2",
@@ -1289,17 +1251,17 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(botao).not.toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 1`, preencher frequencia maior que dietas autorizadas e exibe erro", async () => {
+    it("ao clicar na tab `Semana 2`, preencher frequencia maior que participantes e exibe erro", async () => {
       await awaitServices();
-      const semana1Element = screen.getByText("Semana 1");
-      fireEvent.click(semana1Element);
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
 
       const inputElementFrequenciaDia03 = screen.getByTestId(
-        "frequencia__dia_03__categoria_2",
+        "frequencia__dia_08__categoria_2",
       );
       waitFor(() => {
         fireEvent.change(inputElementFrequenciaDia03, {
-          target: { value: "5" },
+          target: { value: "3" },
         });
       });
       expect(inputElementFrequenciaDia03).toHaveClass("invalid-field");
@@ -1308,23 +1270,16 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(botao).toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 1`, preencher lanche maior que frequencia e exibe erro", async () => {
+    it("ao clicar na tab `Semana 2`, preencher lanche maior que frequencia e exibe erro", async () => {
       await awaitServices();
-      const semana1Element = screen.getByText("Semana 1");
-      fireEvent.click(semana1Element);
-
-      const inputElementFrequenciaDia03 = screen.getByTestId(
-        "frequencia__dia_03__categoria_2",
-      );
-      fireEvent.change(inputElementFrequenciaDia03, {
-        target: { value: "2" },
-      });
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
       const inputElementLancheDia03 = screen.getByTestId(
-        "lanche__dia_03__categoria_2",
+        "lanche__dia_08__categoria_2",
       );
       waitFor(() => {
         fireEvent.change(inputElementLancheDia03, {
-          target: { value: "5" },
+          target: { value: "4" },
         });
       });
       expect(inputElementLancheDia03).toHaveClass("invalid-field");
@@ -1333,29 +1288,131 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(botao).toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 1`, preencher lanche 4h maior que frequencia e exibe erro", async () => {
+    it("ao clicar na tab `Semana 2`, preencher lanche 4h maior que frequencia e exibe erro", async () => {
       await awaitServices();
-      const semana1Element = screen.getByText("Semana 1");
-      fireEvent.click(semana1Element);
-      const inputElementFrequenciaDia03 = screen.getByTestId(
-        "frequencia__dia_03__categoria_2",
-      );
-      fireEvent.change(inputElementFrequenciaDia03, {
-        target: { value: "2" },
-      });
-
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
       const inputElementLanche4hDia03 = screen.getByTestId(
-        "lanche_4h__dia_03__categoria_2",
+        "lanche_4h__dia_08__categoria_2",
       );
       waitFor(() => {
         fireEvent.change(inputElementLanche4hDia03, {
-          target: { value: "5" },
+          target: { value: "3" },
         });
       });
       expect(inputElementLanche4hDia03).toHaveClass("invalid-field");
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();
       expect(botao).toBeDisabled();
+    });
+  });
+
+  describe("Testa o Salvar Lançamentos", () => {
+    it("ao clicar na tab `Semana 1`, preenche dia 04 e salva lançamento", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const valores = {
+        frequencia: "95",
+        lanche_4h: "85",
+        lanche: "85",
+        refeicao: "80",
+        repeticao_refeicao: "70",
+        sobremesa: "85",
+        repeticao_sobremesa: "75",
+      };
+
+      const campos = [
+        { key: "frequencia", testId: "frequencia" },
+        { key: "lanche_4h", testId: "lanche_4h" },
+        { key: "lanche", testId: "lanche" },
+        { key: "refeicao", testId: "refeicao" },
+        { key: "repeticao_refeicao", testId: "repeticao_refeicao" },
+        { key: "sobremesa", testId: "sobremesa" },
+        { key: "repeticao_sobremesa", testId: "repeticao_sobremesa" },
+      ];
+
+      campos.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_04__categoria_1`);
+        fireEvent.change(input, { target: { value: valores[key] } });
+      });
+
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      preview.debug();
+      expect(botao).toBeInTheDocument();
+      expect(botao).not.toBeDisabled();
+      fireEvent.click(botao);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Lançamentos salvos com sucesso"),
+        ).toBeInTheDocument();
+      });
+
+      const valoresEsperados = { participantes: "100", ...valores };
+      const camposAtualizados = [
+        { key: "participantes", testId: "participantes" },
+        ...campos,
+      ];
+
+      camposAtualizados.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_04__categoria_1`);
+        expect(input).toHaveAttribute("value", valoresEsperados[key]);
+      });
+    });
+
+    it("ao clicar na tab `Semana 2`, preenche dia 08 e salva lançamento", async () => {
+      await awaitServices();
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
+
+      const valores = {
+        frequencia: "95",
+        lanche_4h: "85",
+        lanche: "85",
+        refeicao: "80",
+        repeticao_refeicao: "70",
+        sobremesa: "85",
+        repeticao_sobremesa: "75",
+      };
+
+      const campos = [
+        { key: "frequencia", testId: "frequencia" },
+        { key: "lanche_4h", testId: "lanche_4h" },
+        { key: "lanche", testId: "lanche" },
+        { key: "refeicao", testId: "refeicao" },
+        { key: "repeticao_refeicao", testId: "repeticao_refeicao" },
+        { key: "sobremesa", testId: "sobremesa" },
+        { key: "repeticao_sobremesa", testId: "repeticao_sobremesa" },
+      ];
+
+      campos.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_08__categoria_1`);
+        fireEvent.change(input, { target: { value: valores[key] } });
+      });
+
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      expect(botao).not.toBeDisabled();
+      fireEvent.click(botao);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Lançamentos salvos com sucesso"),
+        ).toBeInTheDocument();
+      });
+
+      const valoresEsperados = { participantes: "100", ...valores };
+      const camposAtualizados = [
+        { key: "participantes", testId: "participantes" },
+        ...campos,
+      ];
+
+      camposAtualizados.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_08__categoria_1`);
+        expect(input).toHaveAttribute("value", valoresEsperados[key]);
+      });
     });
   });
 });
