@@ -92,8 +92,6 @@ const Filtros: React.FC<Props> = ({
         "YYYY-MM-DD",
       );
 
-    if (!usuarioEhRecebimento()) filtros.status = "ASSINADA";
-
     setFiltros(filtros);
   };
 
