@@ -17,8 +17,6 @@ import { mockGetNomesEAbreviacoesUnidadesMedida } from "src/mocks/services/quali
 import { mockGetUnidadesMedida } from "src/mocks/services/qualidade.service/mockGetUnidadesMedida";
 import { mockMeusDadosDilogQualidade } from "src/mocks/meusDados/dilog-qualidade";
 
-import { debug } from "jest-preview";
-
 describe("Teste da página TiposEmbalagensCadastrados", () => {
   beforeEach(async () => {
     localStorage.setItem("perfil", PERFIL.DILOG_QUALIDADE);
@@ -56,8 +54,6 @@ describe("Teste da página TiposEmbalagensCadastrados", () => {
     expect(botaoFiltrar).toBeInTheDocument();
 
     fireEvent.click(botaoFiltrar);
-
-    debug();
 
     await waitFor(() => {
       expect(screen.getByText("DECIGRAMA")).toBeInTheDocument();
