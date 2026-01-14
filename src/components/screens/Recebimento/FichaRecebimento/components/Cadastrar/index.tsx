@@ -1576,6 +1576,7 @@ export default () => {
                                   placeholder="Digite a qtde da nota"
                                   required
                                   validate={requiredSaldoTotalZero(required)}
+                                  agrupadorMilharComDecimal
                                   disabled={saldoTotalZero}
                                 />
                               </div>
@@ -1588,6 +1589,7 @@ export default () => {
                                   required
                                   validate={requiredSaldoTotalZero(required)}
                                   disabled={saldoTotalZero}
+                                  agrupadorMilharPositivo
                                 />
                               </div>
                               <div className="col-3">
@@ -1598,6 +1600,7 @@ export default () => {
                                   placeholder="Digite a qtde recebida"
                                   required
                                   validate={requiredSaldoTotalZero(required)}
+                                  agrupadorMilharComDecimal
                                   disabled={saldoTotalZero}
                                 />
                               </div>
@@ -1610,6 +1613,7 @@ export default () => {
                                   required
                                   validate={requiredSaldoTotalZero(required)}
                                   disabled={saldoTotalZero}
+                                  agrupadorMilharPositivo
                                 />
                               </div>
                             </div>
