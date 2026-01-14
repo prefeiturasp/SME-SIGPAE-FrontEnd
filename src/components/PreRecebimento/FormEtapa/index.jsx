@@ -22,8 +22,11 @@ import {
 import { required } from "src/helpers/fieldValidators";
 
 import "./styles.scss";
-import { usuarioEhEmpresaFornecedor } from "../../../helpers/utilities";
-import { usuarioEhCodaeDilog } from "../../../helpers/utilities";
+import {
+  usuarioEhCronogramaOuCodae,
+  usuarioEhCodaeDilog,
+  usuarioEhEmpresaFornecedor,
+} from "../../../helpers/utilities";
 
 export default ({
   etapas,
@@ -299,7 +302,11 @@ export default ({
                   required
                   validate={required}
                   writable={false}
-                  minDate={getAmanha()}
+                  minDate={
+                    ehAlteracao && usuarioEhCronogramaOuCodae()
+                      ? null
+                      : getAmanha()
+                  }
                   disabled={desabilitar[index] && desabilitarData[index]}
                   filterDate={isWeekday}
                   excludeDates={feriados}
