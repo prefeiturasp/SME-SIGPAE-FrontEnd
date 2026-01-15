@@ -414,20 +414,26 @@ export default () => {
                               <p>
                                 Embalagens da Nota Fiscal:{" "}
                                 <strong>
-                                  {veiculo.embalagens_nota_fiscal}
+                                  {formataMilhar(
+                                    veiculo.embalagens_nota_fiscal,
+                                  )}
                                 </strong>
                               </p>
                               <p>
                                 Quantidade da Nota Fiscal:{" "}
                                 <strong>
-                                  {veiculo.quantidade_nota_fiscal}
+                                  {formataMilharDecimal(
+                                    veiculo.quantidade_nota_fiscal,
+                                  )}
                                 </strong>
                               </p>
                             </div>
                             <div className="linha-dupla">
                               <p>
                                 Embalagens Recebidas:{" "}
-                                <strong>{veiculo.embalagens_recebidas}</strong>
+                                <strong>
+                                  {formataMilhar(veiculo.embalagens_recebidas)}
+                                </strong>
                               </p>
                               <p>
                                 Estado Higiênico-Sanitário:{" "}
