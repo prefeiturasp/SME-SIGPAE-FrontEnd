@@ -2,14 +2,12 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { HeaderLogo } from "src/components/Shareable/HeaderLogo";
-import preview from "jest-preview";
 
 jest.mock("src/components/Shareable/HeaderLogo/style.scss", () => ({}));
 
 describe("Teste do componente HeaderLogo", () => {
   it("deve renderizar o componente corretamente", () => {
     const { container } = render(<HeaderLogo />);
-    preview.debug();
     const logoContainer = container.querySelector(".header-logo");
     expect(logoContainer).toBeInTheDocument();
     const image = logoContainer.querySelector("img");
