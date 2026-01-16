@@ -28,7 +28,7 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
           !["Mês anterior", "Mês posterior"].includes(
             values[
               `frequencia__dia_${diaCalendario.dia}__categoria_${
-                categoria.id
+                categoria?.id
               }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                 0,
                 5,
@@ -38,7 +38,7 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
           !["Mês anterior", "Mês posterior"].includes(
             values[
               `lanche_emergencial__dia_${diaCalendario.dia}__categoria_${
-                categoria.id
+                categoria?.id
               }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                 0,
                 5,
@@ -64,7 +64,7 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
           !["Mês anterior", "Mês posterior"].includes(
             values[
               `frequencia__dia_${diaCalendario.dia}__categoria_${
-                categoria.id
+                categoria?.id
               }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                 0,
                 5,
@@ -74,7 +74,7 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
           !["Mês anterior", "Mês posterior"].includes(
             values[
               `lanche_emergencial__dia_${diaCalendario.dia}__categoria_${
-                categoria.id
+                categoria?.id
               }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                 0,
                 5,
