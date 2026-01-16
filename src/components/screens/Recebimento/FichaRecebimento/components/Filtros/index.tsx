@@ -20,7 +20,7 @@ import { listaSimplesTerceirizadas } from "src/services/terceirizada.service";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
 import { ProdutoLogistica } from "src/interfaces/produto.interface";
 import { TerceirizadaSimplesInterface } from "src/interfaces/terceirizada.interface";
-import { dateDelta } from "src/helpers/utilities.jsx";
+import { dateDelta, usuarioEhRecebimento } from "src/helpers/utilities.jsx";
 
 import {
   FichaDeRecebimentoItemListagem,
@@ -28,7 +28,6 @@ import {
 } from "../../interfaces";
 
 import "./styles.scss";
-
 interface Props {
   setFiltros: Dispatch<SetStateAction<FiltrosFichaRecebimento>>;
   setFichasRecebimento: Dispatch<
@@ -70,14 +69,14 @@ const Filtros: React.FC<Props> = ({
     getListaFiltradaAutoCompleteSelect(
       produtos.map((e) => e.nome),
       values.nome_produto,
-      true
+      true,
     );
 
   const optionsCampoEmpresa = (values: Record<string, any>) =>
     getListaFiltradaAutoCompleteSelect(
       empresas.map((e) => e.nome_fantasia),
       values.nome_empresa,
-      true
+      true,
     );
 
   const onSubmit = (values: Record<string, any>): void => {
@@ -85,12 +84,12 @@ const Filtros: React.FC<Props> = ({
 
     if (values.data_inicial)
       filtros.data_inicial = moment(values.data_inicial, "DD/MM/YYYY").format(
-        "YYYY-MM-DD"
+        "YYYY-MM-DD",
       );
 
     if (values.data_final)
       filtros.data_final = moment(values.data_final, "DD/MM/YYYY").format(
-        "YYYY-MM-DD"
+        "YYYY-MM-DD",
       );
 
     setFiltros(filtros);
@@ -113,7 +112,7 @@ const Filtros: React.FC<Props> = ({
         {(values) => (
           <>
             <div className="row">
-              <div className="col-4">
+              <div className={`col-${usuarioEhRecebimento() ? "4" : "6"}`}>
                 <Field
                   component={InputText}
                   label="Filtrar por Nº do Cronograma"
@@ -121,20 +120,20 @@ const Filtros: React.FC<Props> = ({
                   placeholder="Digite o Nº do Cronograma"
                 />
               </div>
-
-              <div className="col-4">
-                <Field
-                  component={MultiSelect}
-                  disableSearch
-                  options={opcoesStatus}
-                  label="Filtrar por Status"
-                  name="status"
-                  nomeDoItemNoPlural="Status"
-                  placeholder="Selecione um Status"
-                />
-              </div>
-
-              <div className="col-4">
+              {usuarioEhRecebimento() && (
+                <div className="col-4">
+                  <Field
+                    component={MultiSelect}
+                    disableSearch
+                    options={opcoesStatus}
+                    label="Filtrar por Status"
+                    name="status"
+                    nomeDoItemNoPlural="Status"
+                    placeholder="Selecione um Status"
+                  />
+                </div>
+              )}
+              <div className={`col-${usuarioEhRecebimento() ? "4" : "6"}`}>
                 <Field
                   component={AutoCompleteSelectField}
                   options={optionsCampoProdutos(values)}
@@ -195,16 +194,18 @@ const Filtros: React.FC<Props> = ({
         )}
       </CollapseFiltros>
 
-      <div className="pt-4 pb-4">
-        <NavLink to={`/${RECEBIMENTO}/${CADASTRO_FICHA_RECEBIMENTO}`}>
-          <Botao
-            texto="Cadastrar Recebimento"
-            type={BUTTON_TYPE.BUTTON}
-            style={BUTTON_STYLE.GREEN}
-            onClick={() => {}}
-          />
-        </NavLink>
-      </div>
+      {usuarioEhRecebimento() && (
+        <div className="pt-4 pb-4">
+          <NavLink to={`/${RECEBIMENTO}/${CADASTRO_FICHA_RECEBIMENTO}`}>
+            <Botao
+              texto="Cadastrar Recebimento"
+              type={BUTTON_TYPE.BUTTON}
+              style={BUTTON_STYLE.GREEN}
+              onClick={() => {}}
+            />
+          </NavLink>
+        </div>
+      )}
     </div>
   );
 };

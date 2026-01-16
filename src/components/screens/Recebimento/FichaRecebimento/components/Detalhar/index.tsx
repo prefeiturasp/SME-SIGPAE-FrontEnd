@@ -241,6 +241,7 @@ export default () => {
                           <th className="borda-crono">Lote(s) do Laudo</th>
                           <th className="borda-crono">Data(s) Fabricação</th>
                           <th className="borda-crono">Data(s) Validade</th>
+                          <th className="borda-crono">Qtde Recebida</th>
                         </thead>
                         <tbody>
                           {dadosCronograma?.documentos_de_recebimento?.map(
@@ -258,6 +259,17 @@ export default () => {
                                   </td>
                                   <td className="borda-crono">
                                     {documento.datas_validade}
+                                  </td>
+                                  <td className="borda-crono">
+                                    {formataMilharDecimal(
+                                      (
+                                        fichaRecebimento?.documentos_recebimento as any[]
+                                      )?.find(
+                                        (doc: any) =>
+                                          doc.uuid === documento.uuid,
+                                      )?.quantidade_recebida,
+                                    )}{" "}
+                                    {etapa.unidade_medida}
                                   </td>
                                 </tr>
                               );
@@ -402,20 +414,26 @@ export default () => {
                               <p>
                                 Embalagens da Nota Fiscal:{" "}
                                 <strong>
-                                  {veiculo.embalagens_nota_fiscal}
+                                  {formataMilhar(
+                                    veiculo.embalagens_nota_fiscal,
+                                  )}
                                 </strong>
                               </p>
                               <p>
                                 Quantidade da Nota Fiscal:{" "}
                                 <strong>
-                                  {veiculo.quantidade_nota_fiscal}
+                                  {formataMilharDecimal(
+                                    veiculo.quantidade_nota_fiscal,
+                                  )}
                                 </strong>
                               </p>
                             </div>
                             <div className="linha-dupla">
                               <p>
                                 Embalagens Recebidas:{" "}
-                                <strong>{veiculo.embalagens_recebidas}</strong>
+                                <strong>
+                                  {formataMilhar(veiculo.embalagens_recebidas)}
+                                </strong>
                               </p>
                               <p>
                                 Estado Higiênico-Sanitário:{" "}

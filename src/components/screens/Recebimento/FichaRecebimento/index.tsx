@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 
-import { gerarParametrosConsulta } from "src/helpers/utilities";
+import {
+  gerarParametrosConsulta,
+  usuarioEhRecebimento,
+} from "src/helpers/utilities";
 import { listarFichasRecebimentos } from "src/services/fichaRecebimento.service";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 
@@ -25,11 +28,15 @@ export default () => {
   const buscarResultados = async (pageNumber: number) => {
     setCarregando(true);
 
+    let _filtros = {
+      page: pageNumber,
+      ...filtros,
+    };
+
+    if (!usuarioEhRecebimento()) _filtros = { ..._filtros, status: "ASSINADA" };
+
     try {
-      const params: URLSearchParams = gerarParametrosConsulta({
-        page: pageNumber,
-        ...filtros,
-      });
+      const params: URLSearchParams = gerarParametrosConsulta(_filtros);
       const response = await listarFichasRecebimentos(params);
 
       if (response?.status === 200) {

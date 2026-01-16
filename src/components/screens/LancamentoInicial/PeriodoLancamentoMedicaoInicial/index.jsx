@@ -57,6 +57,7 @@ import {
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
   getDiasLetivosRecreio,
+  getLogDietasAutorizadasRecreioNasFerias,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
@@ -767,22 +768,12 @@ export default () => {
       setTabelaEtecAlimentacaoRows(tiposAlimentacaoEtecFormatadas);
 
       let response_categorias_medicao = await getCategoriasDeMedicao();
-
-      const params_dietas_autorizadas = {
-        escola_uuid: escola.uuid,
-        mes: mes,
-        ano: ano,
-      };
-      if (
-        grupoLocation !== "Programas e Projetos" &&
-        urlParams.get("ehPeriodoEspecifico") !== "true"
-      ) {
-        params_dietas_autorizadas["periodo_escolar"] =
-          periodo.periodo_escolar.uuid;
-      } else {
-        params_dietas_autorizadas["unificado"] = true;
-      }
-
+      let params_dietas_autorizadas = parametrosBuscaDietaEspecial(
+        mes,
+        ano,
+        periodo,
+        escola,
+      );
       let response_log_dietas_autorizadas = await obterLogsDietasEspeciais(
         params_dietas_autorizadas,
       );
@@ -885,11 +876,12 @@ export default () => {
         uuid_solicitacao_medicao: uuid,
         nome_grupo: grupoMedicao,
       };
-      const gruposExcluidos = ["Programas e Projetos", "Recreio nas Férias"];
+      const gruposExcluidos = ["Programas e Projetos"];
       if (
         !ehGrupoSolicitacoesDeAlimentacaoUrlParam &&
         !ehGrupoETECUrlParam &&
-        !gruposExcluidos.includes(grupoMedicao)
+        !gruposExcluidos.includes(grupoMedicao) &&
+        !ehRecreioNasFerias()
       ) {
         params = {
           ...params,
@@ -1639,15 +1631,11 @@ export default () => {
     };
 
     const valorPeriodoEscolar = values["periodo_escolar"];
-    const gruposIncluidos = [
-      "ETEC",
-      "Programas e Projetos",
-      "Recreio nas Férias",
-    ];
-
+    const gruposIncluidos = ["ETEC", "Programas e Projetos"];
     if (
       (valorPeriodoEscolar && valorPeriodoEscolar.includes("Solicitações")) ||
-      gruposIncluidos.includes(valorPeriodoEscolar)
+      gruposIncluidos.includes(valorPeriodoEscolar) ||
+      ehRecreioNasFerias()
     ) {
       payload["grupo"] = valorPeriodoEscolar;
       delete values["periodo_escolar"];
@@ -2396,6 +2384,13 @@ export default () => {
 
   const obterLogsDietasEspeciais = async (params_dietas_autorizadas) => {
     let response_log_dietas_autorizadas = [];
+    if (ehRecreioNasFerias() && !ehGrupoColaboradores()) {
+      response_log_dietas_autorizadas =
+        await getLogDietasAutorizadasRecreioNasFerias(
+          params_dietas_autorizadas,
+        );
+    }
+
     if (!ehGrupoSolicitacoesDeAlimentacaoUrlParam && !ehRecreioNasFerias()) {
       response_log_dietas_autorizadas = await getLogDietasAutorizadasPeriodo(
         params_dietas_autorizadas,
@@ -2632,6 +2627,30 @@ export default () => {
     );
 
     return { inicio: dataInicoRecreio, fim: dataFimRecreio };
+  };
+
+  const parametrosBuscaDietaEspecial = (mes, ano, periodo, escola) => {
+    const params_dietas_autorizadas = {
+      escola_uuid: escola.uuid,
+      mes: mes,
+      ano: ano,
+    };
+
+    if (ehRecreioNasFerias() && !ehGrupoColaboradores()) {
+      return params_dietas_autorizadas;
+    }
+
+    if (
+      grupoLocation !== "Programas e Projetos" &&
+      urlParams.get("ehPeriodoEspecifico") !== "true"
+    ) {
+      params_dietas_autorizadas["periodo_escolar"] =
+        periodo.periodo_escolar.uuid;
+    } else {
+      params_dietas_autorizadas["unificado"] = true;
+    }
+
+    return params_dietas_autorizadas;
   };
 
   return (

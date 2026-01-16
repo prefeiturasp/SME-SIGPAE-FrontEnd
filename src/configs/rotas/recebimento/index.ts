@@ -1,4 +1,10 @@
-import { usuarioEhRecebimento } from "src/helpers/utilities";
+import {
+  usuarioEhRecebimento,
+  usuarioEhCodaeDilog,
+  usuarioEhCronograma,
+  usuarioEhDilogAbastecimento,
+  usuarioEhDilogDiretoria,
+} from "src/helpers/utilities";
 
 import CadastroFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/CadastroFichaRecebimentoPage";
 import DetalharFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/DetalharFichaRecebimentoPage";
@@ -36,7 +42,12 @@ export const rotasRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.RECEBIMENTO}/${constants.FICHA_RECEBIMENTO}`,
     component: FichaRecebimentoPage,
-    tipoUsuario: usuarioEhRecebimento(),
+    tipoUsuario:
+      usuarioEhRecebimento() ||
+      usuarioEhCronograma() ||
+      usuarioEhDilogAbastecimento() ||
+      usuarioEhCodaeDilog() ||
+      usuarioEhDilogDiretoria(),
   },
   {
     path: `/${constants.RECEBIMENTO}/${constants.CADASTRO_FICHA_RECEBIMENTO}`,
@@ -51,6 +62,11 @@ export const rotasRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.RECEBIMENTO}/${constants.DETALHAR_FICHA_RECEBIMENTO}`,
     component: DetalharFichaRecebimentoPage,
-    tipoUsuario: usuarioEhRecebimento(),
+    tipoUsuario:
+      usuarioEhRecebimento() ||
+      usuarioEhCronograma() ||
+      usuarioEhDilogAbastecimento() ||
+      usuarioEhCodaeDilog() ||
+      usuarioEhDilogDiretoria(),
   },
 ];

@@ -14,8 +14,14 @@ import FichaRecebimentoPage from "../../../../../pages/Recebimento/FichaRecebime
 import { mockListaProdutosLogistica } from "../../../../../mocks/produto.service/mockGetListaCompletaProdutosLogistica";
 import { mockEmpresas } from "../../../../../mocks/terceirizada.service/mockGetListaSimples";
 import { mockFichas } from "../../../../../mocks/fichaRecebimento.service/mockListarFichasRecebimento";
+import { mockMeusDadosDilogQualidade } from "src/mocks/meusDados/dilog-qualidade";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 
 beforeEach(() => {
+  localStorage.setItem("perfil", PERFIL.DILOG_QUALIDADE);
+  localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
+
   mock.onGet("/fichas-de-recebimento/").reply(200, {
     results: mockFichas,
     count: mockFichas.length,
@@ -36,8 +42,15 @@ const setup = async () => {
   await act(async () => {
     render(
       <MemoryRouter>
-        <FichaRecebimentoPage />
-        <ToastContainer />
+        <MeusDadosContext.Provider
+          value={{
+            meusDados: mockMeusDadosDilogQualidade,
+            setMeusDados: jest.fn(),
+          }}
+        >
+          <FichaRecebimentoPage />
+          <ToastContainer />
+        </MeusDadosContext.Provider>
       </MemoryRouter>,
     );
   });

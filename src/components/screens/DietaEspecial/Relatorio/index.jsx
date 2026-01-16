@@ -314,7 +314,9 @@ const Relatorio = ({ visao }) => {
       dietaEspecial &&
       !editar &&
       ehSolicitacaoDeCancelamento(status) &&
-      (usuarioEhCODAENutriManifestacao() || usuarioEhEmpresaTerceirizada())
+      (usuarioEhCODAENutriManifestacao() ||
+        usuarioEhEmpresaTerceirizada() ||
+        usuarioEhCoordenadorNutriCODAE())
     ) {
       exibir = true;
     }
@@ -337,7 +339,9 @@ const Relatorio = ({ visao }) => {
       dietaEspecial?.ativo === false &&
       !editar &&
       ehSolicitacaoDeInativa(status) &&
-      (usuarioEhCODAENutriManifestacao() || usuarioEhEmpresaTerceirizada())
+      (usuarioEhCODAENutriManifestacao() ||
+        usuarioEhEmpresaTerceirizada() ||
+        usuarioEhCoordenadorNutriCODAE())
     );
   };
 
@@ -525,21 +529,24 @@ const Relatorio = ({ visao }) => {
           )}
           {dietaEspecial &&
             status === statusEnum.CODAE_AUTORIZADO &&
-            !["inativo", "inativas", "inativas-temp"].includes(card) &&
-            !exibirBotaoGerarProtocoloCanceladasOuInativas() && (
+            !["inativo", "inativas", "inativas-temp"].includes(card) && (
               <>
-                {!editar && (
-                  <div className="form-group float-end mt-4">
-                    <BotaoGerarProtocolo
-                      uuid={dietaEspecial.uuid}
-                      eh_importado={dietaEspecial.eh_importado}
-                    />
-                  </div>
-                )}
+                {!exibirBotaoGerarProtocoloCanceladasOuInativas() &&
+                  !editar && (
+                    <div className="form-group float-end mt-4">
+                      <BotaoGerarProtocolo
+                        uuid={dietaEspecial.uuid}
+                        eh_importado={dietaEspecial.eh_importado}
+                      />
+                    </div>
+                  )}
+
                 {dietaEspecial.tipo_solicitacao !==
                   TIPO_SOLICITACAO_DIETA.ALTERACAO_UE &&
                   !editar &&
-                  usuarioEhCoordenadorNutriCODAE() && (
+                  usuarioEhCoordenadorNutriCODAE() &&
+                  (!exibirBotaoGerarProtocoloCanceladasOuInativas() ||
+                    usuarioEhCoordenadorNutriCODAE()) && (
                     <BotaoEditarDieta nome="Editar" />
                   )}
               </>
