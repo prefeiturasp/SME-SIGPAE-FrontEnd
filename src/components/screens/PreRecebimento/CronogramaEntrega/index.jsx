@@ -44,7 +44,7 @@ export default () => {
       response.data.results.map((armazem) => ({
         label: armazem.nome_fantasia,
         value: armazem.uuid,
-      }))
+      })),
     );
   };
 
@@ -53,10 +53,14 @@ export default () => {
       buscarCronogramas(1);
       setPage(1);
     }
+  }, [filtros]);
+
+  useEffect(() => {
     if (usuarioEhEmpresaFornecedor()) {
+      setFiltros({});
       buscaArmazens();
     }
-  }, [filtros]);
+  }, []);
 
   const nextPage = (page) => {
     buscarCronogramas(page);
