@@ -30,13 +30,32 @@ const TabelaNutricional: React.FC<Props> = ({
     informacoesNutricionaisAdicionais,
     setInformacoesNutricionaisAdicionais,
   ] = useState<InformacaoNutricional[]>(
-    informacoesNutricionaisCarregadas.filter(({ eh_fixo }) => !eh_fixo)
+    informacoesNutricionaisCarregadas.filter(({ eh_fixo }) => !eh_fixo),
   );
 
   useEffect(() => {
-    setInformacoesNutricionaisAdicionais(
-      informacoesNutricionaisCarregadas.filter(({ eh_fixo }) => !eh_fixo)
-    );
+    const informacoesAdicionaisDoForm: InformacaoNutricional[] = [];
+    let index = 0;
+
+    while (values[`informacao_adicional_${index}`]) {
+      const uuidSelecionado = values[`informacao_adicional_${index}`];
+      const informacao = listaCompletaInformacoesNutricionais.find(
+        (info) => info.uuid === uuidSelecionado,
+      );
+
+      if (informacao) {
+        informacoesAdicionaisDoForm.push(informacao);
+      }
+      index++;
+    }
+
+    if (informacoesAdicionaisDoForm.length > 0) {
+      setInformacoesNutricionaisAdicionais(informacoesAdicionaisDoForm);
+    } else {
+      setInformacoesNutricionaisAdicionais(
+        informacoesNutricionaisCarregadas.filter(({ eh_fixo }) => !eh_fixo),
+      );
+    }
   }, [informacoesNutricionaisCarregadas]);
 
   const adicionarInformacaoNutricional = () => {
@@ -71,7 +90,7 @@ const TabelaNutricional: React.FC<Props> = ({
   };
 
   const gerarOptionsInformacoes = (
-    informacao: InformacaoNutricional
+    informacao: InformacaoNutricional,
   ): OptionsGenerico[] => {
     const removeFixos = ({ eh_fixo }) => !eh_fixo;
 
@@ -132,7 +151,7 @@ const TabelaNutricional: React.FC<Props> = ({
                   required
                   validate={composeValidators(
                     required,
-                    inteiroOuDecimalComVirgula
+                    inteiroOuDecimalComVirgula,
                   )}
                   disabled={desabilitar}
                 />
@@ -147,7 +166,7 @@ const TabelaNutricional: React.FC<Props> = ({
                   required
                   validate={composeValidators(
                     required,
-                    inteiroOuDecimalComVirgula
+                    inteiroOuDecimalComVirgula,
                   )}
                   disabled={desabilitar}
                 />
@@ -158,7 +177,7 @@ const TabelaNutricional: React.FC<Props> = ({
                     <InputText
                       className="input-tabela-nutricional"
                       valorInicial={converterDeKcalParaKj(
-                        values[`quantidade_porcao_${informacao.uuid}`]
+                        values[`quantidade_porcao_${informacao.uuid}`],
                       )}
                       disabled
                     />
@@ -175,7 +194,7 @@ const TabelaNutricional: React.FC<Props> = ({
                   required
                   validate={composeValidators(
                     required,
-                    inteiroOuDecimalComVirgula
+                    inteiroOuDecimalComVirgula,
                   )}
                   disabled={desabilitar}
                 />
@@ -218,7 +237,7 @@ const TabelaNutricional: React.FC<Props> = ({
                     required
                     validate={composeValidators(
                       required,
-                      inteiroOuDecimalComVirgula
+                      inteiroOuDecimalComVirgula,
                     )}
                     disabled={desabilitar}
                   />
@@ -233,7 +252,7 @@ const TabelaNutricional: React.FC<Props> = ({
                     required
                     validate={composeValidators(
                       required,
-                      inteiroOuDecimalComVirgula
+                      inteiroOuDecimalComVirgula,
                     )}
                     disabled={desabilitar}
                   />
@@ -247,7 +266,7 @@ const TabelaNutricional: React.FC<Props> = ({
                         name={`quantidade_porcao_kj_${informacao.uuid}`}
                         className="input-tabela-nutricional"
                         valorInicial={converterDeKcalParaKj(
-                          values[`quantidade_porcao_${informacao.uuid}`]
+                          values[`quantidade_porcao_${informacao.uuid}`],
                         )}
                         disabled
                       />
@@ -264,7 +283,7 @@ const TabelaNutricional: React.FC<Props> = ({
                     required
                     validate={composeValidators(
                       required,
-                      inteiroOuDecimalComVirgula
+                      inteiroOuDecimalComVirgula,
                     )}
                     disabled={desabilitar}
                   />
