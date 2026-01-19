@@ -172,14 +172,18 @@ export const geraInitialValuesCadastrar = (
       initialValues[`numero_sif_sisbi_sisp_${index}`] =
         veiculo.numero_sif_sisbi_sisp;
       initialValues[`numero_nota_fiscal_${index}`] = veiculo.numero_nota_fiscal;
-      initialValues[`quantidade_nota_fiscal_${index}`] =
-        veiculo.quantidade_nota_fiscal;
-      initialValues[`embalagens_nota_fiscal_${index}`] =
-        veiculo.embalagens_nota_fiscal;
-      initialValues[`quantidade_recebida_${index}`] =
-        veiculo.quantidade_recebida;
-      initialValues[`embalagens_recebidas_${index}`] =
-        veiculo.embalagens_recebidas;
+      initialValues[`quantidade_nota_fiscal_${index}`] = formataMilharDecimal(
+        veiculo.quantidade_nota_fiscal,
+      );
+      initialValues[`embalagens_nota_fiscal_${index}`] = formataMilhar(
+        veiculo.embalagens_nota_fiscal,
+      );
+      initialValues[`quantidade_recebida_${index}`] = formataMilharDecimal(
+        veiculo.quantidade_recebida,
+      );
+      initialValues[`embalagens_recebidas_${index}`] = formataMilhar(
+        veiculo.embalagens_recebidas,
+      );
       initialValues[`estado_higienico_adequado_${index}`] = booleanToString(
         veiculo.estado_higienico_adequado as boolean,
       );
