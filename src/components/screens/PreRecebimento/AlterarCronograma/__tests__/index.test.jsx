@@ -27,11 +27,31 @@ import {
   mockOpcoesEtapas,
   mockFeriados,
 } from "src/mocks/services/cronograma.service/mockAlterarCronograma";
+import {
+  usuarioEhEmpresaFornecedor,
+  usuarioEhCronogramaOuCodae,
+  usuarioEhCronograma,
+  usuarioEhCodaeDilog,
+  usuarioEhDilogAbastecimento,
+  usuarioEhDilogDiretoria,
+} from "src/helpers/utilities";
 
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigate,
+}));
+
+jest.mock("src/components/Shareable/DatePicker", () => ({
+  InputComData: ({ input, placeholder, minDate }) => (
+    <input
+      data-testid={input.name}
+      data-min-date={minDate}
+      placeholder={placeholder}
+      value={input.value}
+      onChange={(e) => input.onChange(e.target.value)}
+    />
+  ),
 }));
 
 // Mock das funções de utilidade de usuário
@@ -57,15 +77,6 @@ beforeEach(() => {
   window.scrollTo = jest.fn();
 
   // Reset mocks de usuário
-  const {
-    usuarioEhEmpresaFornecedor,
-    usuarioEhCronogramaOuCodae,
-    usuarioEhCronograma,
-    usuarioEhCodaeDilog,
-    usuarioEhDilogAbastecimento,
-    usuarioEhDilogDiretoria,
-  } = require("src/helpers/utilities");
-
   usuarioEhEmpresaFornecedor.mockReturnValue(false);
   usuarioEhCronogramaOuCodae.mockReturnValue(false);
   usuarioEhCronograma.mockReturnValue(false);
@@ -166,7 +177,6 @@ describe("AlterarCronograma - Testes Completos", () => {
 
   describe("Fluxo Fornecedor - Nova Solicitação", () => {
     beforeEach(() => {
-      const { usuarioEhEmpresaFornecedor } = require("src/helpers/utilities");
       usuarioEhEmpresaFornecedor.mockReturnValue(true);
     });
 
@@ -237,7 +247,6 @@ describe("AlterarCronograma - Testes Completos", () => {
 
   describe("Fluxo Fornecedor - Ciência da Alteração", () => {
     beforeEach(() => {
-      const { usuarioEhEmpresaFornecedor } = require("src/helpers/utilities");
       usuarioEhEmpresaFornecedor.mockReturnValue(true);
       mock
         .onGet(/\/solicitacao-de-alteracao-de-cronograma\/.*\/?/)
@@ -303,7 +312,6 @@ describe("AlterarCronograma - Testes Completos", () => {
 
   describe("Fluxo CODAE/Cronograma - Alteração", () => {
     beforeEach(() => {
-      const { usuarioEhCronogramaOuCodae } = require("src/helpers/utilities");
       usuarioEhCronogramaOuCodae.mockReturnValue(true);
     });
 
@@ -320,10 +328,6 @@ describe("AlterarCronograma - Testes Completos", () => {
 
   describe("Fluxo CODAE/Cronograma - Análise", () => {
     beforeEach(() => {
-      const {
-        usuarioEhCronogramaOuCodae,
-        usuarioEhCronograma,
-      } = require("src/helpers/utilities");
       usuarioEhCronogramaOuCodae.mockReturnValue(true);
       usuarioEhCronograma.mockReturnValue(true);
     });
@@ -359,7 +363,6 @@ describe("AlterarCronograma - Testes Completos", () => {
 
   describe("Fluxo Abastecimento", () => {
     beforeEach(() => {
-      const { usuarioEhDilogAbastecimento } = require("src/helpers/utilities");
       usuarioEhDilogAbastecimento.mockReturnValue(true);
       mock
         .onGet(/\/solicitacao-de-alteracao-de-cronograma\/.*\/?/)
@@ -409,7 +412,6 @@ describe("AlterarCronograma - Testes Completos", () => {
 
   describe("Fluxo DILOG", () => {
     beforeEach(() => {
-      const { usuarioEhDilogDiretoria } = require("src/helpers/utilities");
       usuarioEhDilogDiretoria.mockReturnValue(true);
       mock
         .onGet(/\/solicitacao-de-alteracao-de-cronograma\/.*\/?/)
@@ -447,7 +449,6 @@ describe("AlterarCronograma - Testes Completos", () => {
 
   describe("Validações e Modais", () => {
     beforeEach(() => {
-      const { usuarioEhEmpresaFornecedor } = require("src/helpers/utilities");
       usuarioEhEmpresaFornecedor.mockReturnValue(true);
     });
 
@@ -512,7 +513,6 @@ describe("AlterarCronograma - Testes Completos", () => {
 
   describe("Renderização da Tabela de Alterações", () => {
     beforeEach(() => {
-      const { usuarioEhCronogramaOuCodae } = require("src/helpers/utilities");
       usuarioEhCronogramaOuCodae.mockReturnValue(true);
     });
 
@@ -539,7 +539,6 @@ describe("AlterarCronograma - Testes Completos", () => {
 
   describe("Fluxo Completo de Envio", () => {
     beforeEach(() => {
-      const { usuarioEhDilogAbastecimento } = require("src/helpers/utilities");
       usuarioEhDilogAbastecimento.mockReturnValue(true);
       mock
         .onGet(/\/solicitacao-de-alteracao-de-cronograma\/.*\/?/)
@@ -583,6 +582,30 @@ describe("AlterarCronograma - Testes Completos", () => {
 
       await waitFor(() => {
         expect(screen.getByText(/Status do Cronograma/i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("Validação de Datas Anteriores", () => {
+    it("deve permitir selecionar datas anteriores quando ehAlteracao=true e usuarioEhCronogramaOuCodae=true", async () => {
+      usuarioEhCronogramaOuCodae.mockReturnValue(true);
+
+      await setup(false);
+
+      await waitFor(() => {
+        const input = screen.getByTestId("data_programada_0");
+        expect(input).not.toHaveAttribute("data-min-date");
+      });
+    });
+
+    it("não deve permitir selecionar datas anteriores quando ehAlteracao=true e usuarioEhCronogramaOuCodae=false", async () => {
+      usuarioEhCronogramaOuCodae.mockReturnValue(false);
+
+      await setup(false);
+
+      await waitFor(() => {
+        const input = screen.getByTestId("data_programada_0");
+        expect(input).toHaveAttribute("data-min-date");
       });
     });
   });

@@ -60,13 +60,13 @@ export function TabelaDietasCEI({ tabelas, tipoDieta }: Props) {
               >
                 <td className="col-6 text-center">{`${periodo} ${valor.faixa_etaria.__str__}`}</td>
                 <td className="col-2 text-center">{`R$ ${formataValorDecimal(
-                  valor.valor_colunas.valor_unitario
+                  valor.valor_colunas?.valor_unitario,
                 )}`}</td>
                 <td className="col-2 text-center">{`${formataValorDecimal(
-                  valor.valor_colunas.percentual_acrescimo
+                  valor.valor_colunas?.percentual_acrescimo,
                 )} %`}</td>
                 <td className="col-2 text-center">{`R$ ${formataValorDecimal(
-                  valor.valor_colunas.valor_unitario_total
+                  valor.valor_colunas?.valor_unitario_total,
                 )}`}</td>
               </tr>
             ));

@@ -174,13 +174,12 @@ describe("Testa página de Consulta de Cronogramas (Perfil Fornecedor)", () => {
     );
   });
 
-  it("carrega a página com requisições", async () => {
+  it("atualmente carrega a página com requisições automaticamente", async () => {
     await setup();
     await waitFor(() =>
       expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
     );
 
-    filtrar();
     await waitFor(() =>
       expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
     );
@@ -189,7 +188,6 @@ describe("Testa página de Consulta de Cronogramas (Perfil Fornecedor)", () => {
   it("verifica exibição de tag PLL nos resultados", async () => {
     await setup();
 
-    filtrar();
     await waitFor(() =>
       expect(screen.getByText(/LEVE LEITE - PLL/i)).toBeInTheDocument(),
     );
