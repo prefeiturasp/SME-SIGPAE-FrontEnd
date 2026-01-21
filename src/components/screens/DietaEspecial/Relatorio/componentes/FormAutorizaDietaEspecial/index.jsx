@@ -187,10 +187,12 @@ const FormAutorizaDietaEspecial = ({
     ) {
       delete values["substituicoes"];
     }
-    const response = await atualizaDietaEspecial(dietaEspecial.uuid, values);
-    if (response.status === HTTP_STATUS.OK) {
-      toastSuccess("Rascunho salvo com sucesso!");
-    } else {
+    try {
+      const response = await atualizaDietaEspecial(dietaEspecial.uuid, values);
+      if (response.status === HTTP_STATUS.OK) {
+        toastSuccess("Rascunho salvo com sucesso!");
+      }
+    } catch {
       toastError("Houve um erro ao salvar o rascunho.");
     }
     onAutorizarOuNegar();
