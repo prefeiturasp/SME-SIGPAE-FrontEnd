@@ -324,6 +324,49 @@ export const validacoesTabelaAlimentacaoCEI = (
   return undefined;
 };
 
+export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (
+  rowName,
+  dia,
+  categoria,
+  allValues,
+  uuidFaixaEtaria,
+) => {
+  if (rowName !== "frequencia") {
+    return undefined;
+  }
+
+  const keyMax = `matriculados__faixa_null__dia_${dia}__categoria_${categoria}`;
+  const maxMatriculados = Number(allValues[keyMax]);
+
+  if (!Number.isFinite(maxMatriculados)) {
+    return undefined;
+  }
+
+  const suffix = `__dia_${dia}__categoria_${categoria}`;
+  const currentKey = `frequencia__faixa_${uuidFaixaEtaria}${suffix}`;
+  const currentValue = Number(allValues[currentKey]) || 0;
+
+  const totalFrequencias = Object.entries(allValues)
+    .filter(
+      ([key]) => key.startsWith("frequencia__faixa_") && key.endsWith(suffix),
+    )
+    .reduce((acc, [, value]) => {
+      const n = Number(value);
+      return acc + (Number.isFinite(n) ? n : 0);
+    }, 0);
+
+  const totalSemAtual = totalFrequencias - currentValue;
+
+  const estouraSoPorCausaDesteCampo =
+    totalSemAtual <= maxMatriculados && totalFrequencias > maxMatriculados;
+
+  if (estouraSoPorCausaDesteCampo) {
+    return "A soma da frequência do dia não pode ser maior do que a quantidade de alunos matriculados no período.";
+  }
+
+  return undefined;
+};
+
 export const validacoesTabelaAlimentacaoEmeidaCemei = (
   rowName,
   dia,
