@@ -14,26 +14,17 @@ const authToken = {
   "Content-Type": "application/json",
 };
 
-export const getTerceirizada = (filtros = null) => {
-  let url = `${API_URL}/terceirizadas/`;
+export const getTerceirizada = async (filtros = null) => {
+  let url = "/terceirizadas/";
   if (filtros) {
     url += `?${filtros}`;
   }
-  let status = 0;
-  return fetch(url, {
-    headers: authToken,
-    method: "GET",
-  })
-    .then((response) => {
-      status = response.status;
-      return response.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  try {
+    const response = await axios.get(url);
+    return { data: response.data, status: response.status };
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response.status));
+  }
 };
 
 export const listaSimplesTerceirizadas = async () => {
@@ -120,7 +111,7 @@ export const getPdfRelatorioQuantitativo = async (params) => {
     {
       responseType: "blob",
       params,
-    }
+    },
   );
   saveAs(data, "relatorio_quantitativo_por_terceirizada.pdf");
 };

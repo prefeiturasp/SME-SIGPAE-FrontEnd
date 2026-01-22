@@ -38,7 +38,9 @@ class EmpresasCadastradas extends Component {
         tipoPerfil === PERFIL.ADMINISTRADOR_CONTRATOS ||
         tipoPerfil === PERFIL.DILOG_CRONOGRAMA ||
         tipoPerfil === PERFIL.COORDENADOR_GESTAO_PRODUTO ||
-        tipoPerfil === PERFIL.ADMINISTRADOR_GESTAO_PRODUTO
+        tipoPerfil === PERFIL.ADMINISTRADOR_GESTAO_PRODUTO ||
+        tipoPerfil === PERFIL.DILOG_VISUALIZACAO ||
+        tipoPerfil === PERFIL.DILOG_QUALIDADE
       ) {
         this.setState({ ...this.state, ehDistribuidor: true });
         resp.forEach((empresa) => {
@@ -129,18 +131,23 @@ class EmpresasCadastradas extends Component {
                         ativo={empresa.ativo}
                         dataTestId={`botao-expandir-${key}`}
                       />
-                      <div className="ms-4">
-                        <Tooltip title="Editar">
-                          <span>
-                            <NavLink
-                              className="float-start botao-editar"
-                              to={`/configuracoes/cadastros/editar-empresa?uuid=${empresa.uuid}`}
-                            >
-                              <i className="fas fa-edit" />
-                            </NavLink>
-                          </span>
-                        </Tooltip>
-                      </div>
+                      {localStorage.getItem("perfil") !==
+                        PERFIL.DILOG_VISUALIZACAO &&
+                        localStorage.getItem("perfil") !==
+                          PERFIL.DILOG_QUALIDADE && (
+                          <div className="ms-4">
+                            <Tooltip title="Editar">
+                              <span>
+                                <NavLink
+                                  className="float-start botao-editar"
+                                  to={`/configuracoes/cadastros/editar-empresa?uuid=${empresa.uuid}`}
+                                >
+                                  <i className="fas fa-edit" />
+                                </NavLink>
+                              </span>
+                            </Tooltip>
+                          </div>
+                        )}
                     </td>
                   </tr>,
 
