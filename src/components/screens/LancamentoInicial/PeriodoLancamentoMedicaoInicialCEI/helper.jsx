@@ -1,8 +1,12 @@
-import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { deepCopy, ehEscolaTipoCEMEI } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import {
+  deepCopy,
+  ehEscolaTipoCEMEI,
+  ehFimDeSemanaUTC,
+} from "src/helpers/utilities";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
@@ -184,6 +188,7 @@ export const desabilitarField = (
   alteracoesAlimentacaoAutorizadas,
   ehUltimoDiaLetivoDoAno,
   calendarioMesConsiderado,
+  ehRecreioNasFerias,
 ) => {
   let alimentacoesLancamentosEspeciaisDia = [];
 
@@ -238,6 +243,41 @@ export const desabilitarField = (
         if (statusDeCorrecao()) {
           return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
         }
+        return false;
+      }
+
+      if (ehRecreioNasFerias) {
+        const dataAtual = new Date(
+          mesAnoConsiderado.getFullYear(),
+          mesAnoConsiderado.getMonth(),
+          dia,
+        );
+
+        const temInclusaoAutorizada = inclusoesAutorizadas.some(
+          (inclusao) => Number(inclusao.dia) === Number(dia),
+        );
+
+        const ehFeriado = feriadosNoMes.some(
+          (feriado) => Number(feriado) === Number(dia),
+        );
+
+        const ehFinalDeSemanaOuFeriado =
+          ehFimDeSemanaUTC(dataAtual) || ehFeriado;
+
+        if (ehFinalDeSemanaOuFeriado) {
+          return !temInclusaoAutorizada;
+        }
+
+        if (
+          ["Mês anterior", "Mês posterior"].includes(
+            values[
+              `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+            ],
+          )
+        ) {
+          return true;
+        }
+
         return false;
       }
     } else {
@@ -663,6 +703,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
   faixasEtarias = null,
   inclusoesAutorizadas = null,
   valores_medicao = null,
+  ehRecreioNasFerias = false,
 ) => {
   let faixas_etarias_alimentacao = [];
   let faixas_etarias_objs_alimentacao = [];
@@ -711,7 +752,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
           uuid: valorMedicao.faixa_etaria,
         });
     });
-  } else {
+  } else if (!ehRecreioNasFerias) {
     const faixasEtariasInclusoes = getFaixasEtarias();
 
     const faixasEtariasSet = new Set(
@@ -763,24 +804,45 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
     });
   }
 
-  faixas_etarias_objs_alimentacao
-    .sort((a, b) => a.inicio - b.inicio)
-    .forEach((faixa_obj) => {
-      linhasTabelaAlimentacaoCEI.push(
-        {
-          nome: "Matriculados",
-          name: "matriculados",
-          uuid: faixa_obj.uuid,
-          faixa_etaria: faixa_obj.__str__,
-        },
-        {
+  if (ehRecreioNasFerias) {
+    linhasTabelaAlimentacaoCEI.push({
+      nome: "Participantes",
+      name: "matriculados",
+      uuid: null,
+      faixa_etaria: null,
+    });
+
+    faixasEtarias
+      .sort((a, b) => a.inicio - b.inicio)
+      .forEach((faixa_obj) => {
+        linhasTabelaAlimentacaoCEI.push({
           nome: "Frequência",
           name: "frequencia",
           uuid: faixa_obj.uuid,
           faixa_etaria: faixa_obj.__str__,
-        },
-      );
-    });
+        });
+      });
+  } else {
+    faixas_etarias_objs_alimentacao
+      .sort((a, b) => a.inicio - b.inicio)
+      .forEach((faixa_obj) => {
+        linhasTabelaAlimentacaoCEI.push(
+          {
+            nome: "Matriculados",
+            name: "matriculados",
+            uuid: faixa_obj.uuid,
+            faixa_etaria: faixa_obj.__str__,
+          },
+          {
+            nome: "Frequência",
+            name: "frequencia",
+            uuid: faixa_obj.uuid,
+            faixa_etaria: faixa_obj.__str__,
+          },
+        );
+      });
+  }
+
   linhasTabelaAlimentacaoCEI.push({
     nome: "Observações",
     name: "observacoes",

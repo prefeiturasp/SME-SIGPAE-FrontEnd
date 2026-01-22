@@ -39,6 +39,7 @@ import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import {
   getCategoriasDeMedicao,
   getDiasCalendario,
+  getDiasLetivosRecreio,
   getDiasParaCorrecao,
   getFeriadosNoMes,
   getLogDietasAutorizadasCEIPeriodo,
@@ -66,16 +67,16 @@ import {
   camposKitLancheSolicitacoesAlimentacaoESemObservacao,
   exibeTooltipInclusoesAutorizadasComZero,
   exibirTooltipKitLancheSolAlimentacoes,
-  exibirTooltipLPRAutorizadas,
   exibirTooltipLancheEmergencialAutorizado,
   exibirTooltipLancheEmergencialNaoAutorizado,
   exibirTooltipLancheEmergencialZeroAutorizadoJustificado,
+  exibirTooltipLPRAutorizadas,
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
   exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
-  exibirTooltipRPLAutorizadas,
   exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
+  exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
 } from "../PeriodoLancamentoMedicaoInicial/validacoes";
 import ModalErro from "./components/ModalErro";
@@ -233,6 +234,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     location.state.periodo === "Programas e Projetos";
   const uuidPeriodoEscolarLocation =
     location && location.state && location.state.uuidPeriodoEscolar;
+
+  const ehRecreioNasFerias = () => {
+    return location.state.recreioNasFerias;
+  };
 
   useEffect(() => {
     const mesAnoSelecionado = location.state
@@ -428,10 +433,27 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           mes: mes,
           ano: ano,
         };
-        response_log_matriculados_por_faixa_etaria_dia =
-          await getLogMatriculadosPorFaixaEtariaDia(
-            params_matriculados_por_faixa_etaria_dia,
+
+        if (ehRecreioNasFerias()) {
+          const calendario = await obterDiasLetivosCorretos(
+            periodo,
+            escola,
+            mes,
+            ano,
           );
+
+          response_log_matriculados_por_faixa_etaria_dia =
+            await obterNumerosMatriculados(
+              params_matriculados_por_faixa_etaria_dia,
+              calendario,
+            );
+        } else {
+          response_log_matriculados_por_faixa_etaria_dia =
+            await getLogMatriculadosPorFaixaEtariaDia(
+              params_matriculados_por_faixa_etaria_dia,
+            );
+        }
+
         setValoresMatriculadosFaixaEtariaDia(
           response_log_matriculados_por_faixa_etaria_dia.data,
         );
@@ -465,6 +487,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
               periodoGrupo,
               response_faixas_etarias.data.results,
               response_inclusoes_autorizadas,
+              null,
+              ehRecreioNasFerias(),
             );
       setTabelaAlimentacaoCEIRows(linhasTabelaAlimentacaoCEI);
 
@@ -511,7 +535,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         !(
           ehEmeiDaCemeiLocation ||
           ehSolicitacoesAlimentacaoLocation ||
-          ehProgramasEProjetosLocation
+          ehProgramasEProjetosLocation ||
+          ehRecreioNasFerias()
         )
       ) {
         params = {
@@ -614,7 +639,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     let justificativaPeriodo = "";
     if (location.state) {
       justificativaPeriodo = location.state.justificativa_periodo;
-      if (location.state.grupo && location.state.periodo) {
+      if (
+        location.state.grupo &&
+        location.state.periodo &&
+        location.state.grupo !== location.state.periodo
+      ) {
         periodoEscolar = `${location.state.grupo} - ${location.state.periodo}`;
       } else if (location.state.grupo) {
         periodoEscolar = `${location.state.grupo}`;
@@ -630,6 +659,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         return periodoEscolar;
       }
     };
+
+    if (ehRecreioNasFerias()) {
+      mesAnoFormatado =
+        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias.titulo;
+    }
     const dadosMesPeriodo = {
       mes_lancamento: mesAnoFormatado,
       periodo_escolar: formataPeriodoSolAlimentacoesInfantil(periodoEscolar),
@@ -1417,7 +1451,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     );
 
     const ehDiaLetivo = diaCalendario?.dia_letivo === true;
-    if (!ehDiaLetivo) return false;
+    if (!ehDiaLetivo && !ehRecreioNasFerias()) return false;
 
     const dataAtual = new Date(
       mesAnoConsiderado.getFullYear(),
@@ -1795,20 +1829,29 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     ) {
       return "";
     }
-    return `${
-      `${row.name}__dia_${column.dia}__categoria_${categoria.id}` in
-      dadosValoresInclusoesAutorizadasState
+    return `${(() => {
+      const chave = `${row.name}__dia_${column.dia}__categoria_${categoria.id}`;
+      const estaEmDados = chave in dadosValoresInclusoesAutorizadasState;
+      const diaLetivo = validacaoDiaLetivo(column.dia);
+      const temInclusao = inclusoesAutorizadas.some(
+        (inclusao) =>
+          parseInt(column.dia) === parseInt(inclusao.dia) &&
+          row.name === "frequencia",
+      );
+      const diaCorrigir = ehDiaParaCorrigir(
+        column.dia,
+        categoria.id,
+        diasParaCorrecao,
+      );
+
+      const resultado = estaEmDados
         ? ""
-        : !validacaoDiaLetivo(column.dia) &&
-            !inclusoesAutorizadas.some(
-              (inclusao) =>
-                parseInt(column.dia) === parseInt(inclusao.dia) &&
-                row.name === "frequencia",
-            ) &&
-            !ehDiaParaCorrigir(column.dia, categoria.id, diasParaCorrecao)
+        : !diaLetivo && !temInclusao && !diaCorrigir
           ? "nao-eh-dia-letivo"
-          : ""
-    }`;
+          : "";
+
+      return resultado;
+    })()}`;
   };
 
   const onClickBotaoVoltar = () => {
@@ -1854,6 +1897,48 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       !validacaoSemana(dia) &&
       (validacaoDiaLetivo(dia) || temInclusaoAutorizadaNoDia)
     );
+  };
+
+  const obterNumerosMatriculados = async (params_matriculados, calendario) => {
+    let response_matriculados = {};
+
+    let numeroParticipantes = 0;
+    if (ehRecreioNasFerias()) {
+      const participantes =
+        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias
+          .unidades_participantes[0];
+
+      numeroParticipantes = participantes.num_inscritos;
+
+      response_matriculados = {
+        data: calendario
+          .filter((dia) => dia.dia_letivo === true)
+          .map((dia) => ({
+            dia: dia.dia,
+            quantidade: numeroParticipantes,
+            faixa_etaria: {
+              uuid: null,
+            },
+          })),
+      };
+    } else {
+      response_matriculados =
+        await getLogMatriculadosPorFaixaEtariaDia(params_matriculados);
+    }
+    return response_matriculados;
+  };
+
+  const obterDiasLetivosCorretos = async () => {
+    let data = [];
+    if (ehRecreioNasFerias()) {
+      const diasLetivos = await getDiasLetivosRecreio({
+        solictacao_uuid: location.state.solicitacaoMedicaoInicial.uuid,
+      });
+      data = diasLetivos.data;
+    }
+
+    setCalendarioMesConsiderado(data);
+    return data;
   };
 
   return (
@@ -2490,6 +2575,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alteracoesAlimentacaoAutorizadas,
                                                           ehUltimoDiaLetivoDoAno,
                                                           calendarioMesConsiderado,
+                                                          ehRecreioNasFerias(),
                                                         )}
                                                         defaultValue={defaultValue(
                                                           column,
