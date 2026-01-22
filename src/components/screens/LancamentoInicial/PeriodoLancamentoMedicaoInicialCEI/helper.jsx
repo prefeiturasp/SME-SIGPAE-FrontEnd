@@ -24,6 +24,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   ehEmeiDaCemeiLocation,
   ehSolicitacoesAlimentacaoLocation,
   ehProgramasEProjetosLocation,
+  ehRecreioNasFerias,
 ) => {
   if (
     (ehEmeiDaCemeiLocation &&
@@ -92,13 +93,28 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   valoresMedicao = valoresMedicao.filter((valorMed) => {
     return (
       !(valorMed.nome_campo === "observacoes" && valorMed.valor === 0) &&
-      diasDaSemanaSelecionada.includes(valorMed.dia)
+      diasDaSemanaSelecionada.some(
+        (d) => (typeof d === "object" ? d.dia : d) === valorMed.dia,
+      )
     );
   });
 
   Object.entries(values).forEach(([key]) => {
     return key.includes("categoria") && delete values[key];
   });
+
+  if (ehRecreioNasFerias) {
+    valoresMedicao = valoresMedicao.filter(
+      (item) => item.nome_campo !== "matriculados",
+    );
+    // eslint-disable-next-line no-unused-vars
+    const { periodo_escolar, ...rest } = values;
+    values = {
+      ...rest,
+      grupo: "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+      valores_medicao: valoresMedicao,
+    };
+  }
 
   return { ...values, valores_medicao: valoresMedicao };
 };
@@ -273,7 +289,8 @@ export const desabilitarField = (
             values[
               `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
             ],
-          )
+          ) ||
+          rowName === "matriculados"
         ) {
           return true;
         }
