@@ -292,7 +292,7 @@ const FormAutorizaDietaEspecial = ({
       substituicoes: substituicoes,
       data_termino:
         data_termino_formatada || dietaEspecial.data_termino || undefined,
-      data_inicio: dietaEspecial.data_inicio,
+      data_inicio: dietaEspecial.data_inicio || undefined,
       informacoes_adicionais: dietaEspecial.informacoes_adicionais,
       registro_funcional_nutricionista: obtemIdentificacaoNutricionista(),
     };
