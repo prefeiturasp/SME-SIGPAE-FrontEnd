@@ -32,10 +32,12 @@ const ModalSuspensaoProdutoEdital = ({
 
   const vinculosProdutoEditais = async () => {
     const vinculosEditais = await vinculosAtivosProdutoEditais(
-      produto?.homologacao?.uuid || produto?.ultima_homologacao.uuid
+      produto?.homologacao?.uuid || produto?.ultima_homologacao.uuid,
     );
     if (vinculosEditais.status === HTTP_STATUS.OK) {
       setVinculos(vinculosEditais.data);
+    } else if (vinculosEditais.status === HTTP_STATUS.BAD_REQUEST) {
+      toastError(vinculosEditais.data.detail);
     } else {
       toastError(`Houve um erro ao carregar a lista de editais ativos`);
     }
@@ -73,7 +75,7 @@ const ModalSuspensaoProdutoEdital = ({
       vinculos_produto_edital = vinculos_produto_edital.filter(
         (vinculo) =>
           !vinculo.suspenso &&
-          !EDITAIS_INVALIDOS.includes(vinculo.edital.numero.toUpperCase())
+          !EDITAIS_INVALIDOS.includes(vinculo.edital.numero.toUpperCase()),
       );
 
       return vinculos_produto_edital.map((vinculo) => ({
