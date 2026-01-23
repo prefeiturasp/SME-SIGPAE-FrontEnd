@@ -143,7 +143,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [mesAnoConsiderado, setMesAnoConsiderado] = useState(null);
   const [mesAnoFormatadoState, setMesAnoFormatadoState] = useState(null);
   const [weekColumns, setWeekColumns] = useState(initialStateWeekColumns);
-  const [, setFaixasEtarias] = useState();
+  const [faixaEtaria, setFaixasEtarias] = useState();
   const [tabelaAlimentacaoCEIRows, setTabelaAlimentacaoCEIRows] = useState([]);
   const [tabelaDietaCEIRows, setTabelaDietaCEIRows] = useState([]);
   const [tabelaDietaEnteralRows, setTabelaDietaEnteralRows] = useState([]);
@@ -1968,6 +1968,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             idCategoria,
             allValues,
             uuidFaixaEtaria,
+            faixaEtaria,
           );
         } else {
           return validacoesTabelaAlimentacaoCEI(

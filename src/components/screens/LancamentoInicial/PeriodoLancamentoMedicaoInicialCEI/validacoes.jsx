@@ -330,6 +330,7 @@ export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (
   categoria,
   allValues,
   uuidFaixaEtaria,
+  faixaEtaria,
 ) => {
   if (rowName !== "frequencia") {
     return undefined;
@@ -342,26 +343,28 @@ export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (
     return undefined;
   }
 
-  const suffix = `__dia_${dia}__categoria_${categoria}`;
-  const currentKey = `frequencia__faixa_${uuidFaixaEtaria}${suffix}`;
-  const currentValue = Number(allValues[currentKey]) || 0;
+  const suffixDiaCategoria = `__dia_${dia}__categoria_${categoria}`;
 
-  const totalFrequencias = Object.entries(allValues)
-    .filter(
-      ([key]) => key.startsWith("frequencia__faixa_") && key.endsWith(suffix),
-    )
-    .reduce((acc, [, value]) => {
-      const n = Number(value);
-      return acc + (Number.isFinite(n) ? n : 0);
-    }, 0);
+  const uuidsPreenchidos = faixaEtaria
+    .map((f) => f.uuid)
+    .filter((uuid) => {
+      const valor = allValues[`frequencia__faixa_${uuid}${suffixDiaCategoria}`];
+      return valor !== null && valor !== "" && !isNaN(Number(valor));
+    });
 
-  const totalSemAtual = totalFrequencias - currentValue;
+  const totalFrequenciaNoDia = uuidsPreenchidos.reduce((acc, uuid) => {
+    const valor = Number(
+      allValues[`frequencia__faixa_${uuid}${suffixDiaCategoria}`],
+    );
+    return acc + valor;
+  }, 0);
 
-  const estouraSoPorCausaDesteCampo =
-    totalSemAtual <= maxMatriculados && totalFrequencias > maxMatriculados;
+  if (totalFrequenciaNoDia > maxMatriculados) {
+    const ultimoUuidComValor = uuidsPreenchidos[uuidsPreenchidos.length - 1];
 
-  if (estouraSoPorCausaDesteCampo) {
-    return "A soma da frequência do dia não pode ser maior do que a quantidade de alunos matriculados no período.";
+    if (uuidFaixaEtaria === ultimoUuidComValor) {
+      return "A quantidade de alunos frequentes não pode ser maior do que a quantidade de alunos participantes no Recreio nas Férias.";
+    }
   }
 
   return undefined;
