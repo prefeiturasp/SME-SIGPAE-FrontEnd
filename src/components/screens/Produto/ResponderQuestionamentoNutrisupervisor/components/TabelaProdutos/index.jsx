@@ -42,7 +42,7 @@ const TabelaProdutos = ({
     setExibirModal(false);
     const response = await responderQuestionamentoNutrisupervisor(
       formValues,
-      uuid
+      uuid,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Resposta enviada com sucesso");
@@ -105,7 +105,7 @@ const TabelaProdutos = ({
                       }`}
                       onClick={() => {
                         setIndiceProdutoAtivo(
-                          indice === indiceProdutoAtivo ? undefined : indice
+                          indice === indiceProdutoAtivo ? undefined : indice,
                         );
                       }}
                     />
@@ -171,6 +171,7 @@ const TabelaProdutos = ({
           closeModal={() => setExibirModal(false)}
           onSubmit={onSubmit}
           comAnexo={true}
+          produto={produtoSelecionado}
         />
       </section>
     </>
