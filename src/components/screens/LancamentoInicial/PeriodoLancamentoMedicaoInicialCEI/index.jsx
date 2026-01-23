@@ -1475,7 +1475,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     const uuid = urlParams.get("uuid");
 
     const solicitacao_medicao_inicial = uuid;
-    const payload = {
+    let payload = {
       solicitacao_medicao_inicial: solicitacao_medicao_inicial,
       valores_medicao: valoresMedicao,
       eh_observacao: true,
@@ -1499,6 +1499,17 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     }
     let valores_medicao_response = [];
     if (valoresPeriodosLancamentos.length) {
+      if (ehRecreioNasFerias()) {
+        // eslint-disable-next-line no-unused-vars
+        const { periodo_escolar, ...rest } = payload;
+        payload = {
+          ...rest,
+          grupo: "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+          valores_medicao: payload.valores_medicao.filter(
+            (item) => item.nome_campo !== "matriculados",
+          ),
+        };
+      }
       const response = await updateValoresPeriodosLancamentos(
         valoresPeriodosLancamentos[0].medicao_uuid,
         payload,
