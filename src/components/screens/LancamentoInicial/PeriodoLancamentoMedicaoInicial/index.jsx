@@ -92,7 +92,6 @@ import {
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
   campoLancheComLPRAutorizadaESemObservacao,
-  exibirTooltipErroQtdMaiorQueAutorizado,
   exibirTooltipFrequenciaZeroTabelaEtec,
   exibirTooltipKitLancheSolAlimentacoes,
   exibirTooltipLancheEmergencialAutorizado,
@@ -3269,13 +3268,6 @@ export default () => {
                                                               `observacoes__dia_${column.dia}__categoria_${categoria.id}`
                                                             ]
                                                           }
-                                                          exibeTooltipErroQtdMaiorQueAutorizado={exibirTooltipErroQtdMaiorQueAutorizado(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            dadosValoresInclusoesAutorizadasState,
-                                                          )}
                                                           exibeTooltipSuspensoesAutorizadas={exibirTooltipSuspensoesAutorizadas(
                                                             formValuesAtualizados,
                                                             row,
@@ -3378,6 +3370,7 @@ export default () => {
                                                             column.dia,
                                                             categoria.id,
                                                             categoria.nome,
+                                                            column,
                                                           )}
                                                           inputOnChange={(
                                                             e,

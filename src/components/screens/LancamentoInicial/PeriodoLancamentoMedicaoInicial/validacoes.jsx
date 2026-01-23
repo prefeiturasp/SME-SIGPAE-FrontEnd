@@ -606,6 +606,22 @@ export const validacoesTabelaAlimentacao = (
   );
 
   if (
+    `${rowName}__dia_${dia}__categoria_${categoria}` in
+      dadosValoresInclusoesAutorizadasState &&
+    Number(allValues[`${rowName}__dia_${dia}__categoria_${categoria}`]) >
+      Number(
+        dadosValoresInclusoesAutorizadasState[
+          `${rowName}__dia_${dia}__categoria_${categoria}`
+        ],
+      ) &&
+    !allValues[`observacoes__dia_${dia}__categoria_${categoria}`]
+  ) {
+    return `Número de alimentações é maior que a quantidade autorizada (${Number(
+      dadosValoresInclusoesAutorizadasState[
+        `${rowName}__dia_${dia}__categoria_${categoria}`
+      ],
+    )}). Corrija o apontamento.`;
+  } else if (
     `${rowName}__dia_${dia}__categoria_${categoria}` ===
       `frequencia__dia_${dia}__categoria_${categoria}` &&
     Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
@@ -1079,32 +1095,6 @@ export const validacoesTabelaEtecAlimentacao = (
     return "A quantidade não pode ser maior do que a quantidade inserida em Frequência.";
   }
   return undefined;
-};
-
-export const exibirTooltipErroQtdMaiorQueAutorizado = (
-  formValuesAtualizados,
-  row,
-  column,
-  categoria,
-  dadosValoresInclusoesAutorizadasState,
-) => {
-  return (
-    `${row.name}__dia_${column.dia}__categoria_${categoria.id}` in
-      dadosValoresInclusoesAutorizadasState &&
-    Number(
-      formValuesAtualizados[
-        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-      ],
-    ) >
-      Number(
-        dadosValoresInclusoesAutorizadasState[
-          `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-        ],
-      ) &&
-    !formValuesAtualizados[
-      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
-    ]
-  );
 };
 
 export const exibeTooltipInclusoesAutorizadasComZero = (
