@@ -648,6 +648,11 @@ export const validacoesTabelaAlimentacao = (
     }
     if (!validacaoDiaLetivo(dia) && allValues[inputName] > maxFrequencia) {
       return `Número apontado de alimentação é maior que número de alunos frequentes. Ajuste o apontamento. `;
+    } else if (
+      validacaoDiaLetivo(dia) &&
+      allValues[inputName] > maxFrequencia
+    ) {
+      return `Lançamento maior que a frequência de alunos no dia.`;
     }
     return undefined;
   } else if (
