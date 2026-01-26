@@ -18,6 +18,9 @@ import {
   responderQuestionamentoNutrisupervisor,
   filtrarReclamacoesNutrisupervisor,
 } from "src/services/reclamacaoProduto.service";
+import { vinculosAtivosProdutoEditais } from "src/services/produto.service";
+
+import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities";
 
 import { ordenaPorCriadoEm } from "./helpers";
 import "./styles.scss";
@@ -36,13 +39,15 @@ const TabelaProdutos = ({
   const [indiceProdutoAtivo, setIndiceProdutoAtivo] = useState();
   const [uuid, setUuid] = useState();
   const [produtoSelecionado, setProdutoSelecionado] = useState();
+  const [verificando, setVerificando] = useState(false);
+  const [podeAbrirModal, setPodeAbrirModal] = useState(false);
 
   const onSubmit = async (formValues) => {
     setCarregando(true);
     setExibirModal(false);
     const response = await responderQuestionamentoNutrisupervisor(
       formValues,
-      uuid
+      uuid,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Resposta enviada com sucesso");
@@ -70,6 +75,38 @@ const TabelaProdutos = ({
       setIndiceProdutoAtivo(0);
     }
   }, [filtradoPorParametro]);
+
+  const verificaVinculoProduto = async (produtoParaValidar) => {
+    if (!usuarioEhEscolaTerceirizadaQualquerPerfil()) {
+      const uuidHomologacao =
+        produtoParaValidar?.homologacao?.uuid ||
+        produtoParaValidar?.ultima_homologacao?.uuid;
+      const vinculosEditais =
+        await vinculosAtivosProdutoEditais(uuidHomologacao);
+      return vinculosEditais;
+    }
+    return { status: HTTP_STATUS.OK };
+  };
+  const handleResponderClick = async (produto, reclamacaoUuid) => {
+    setVerificando(true);
+    setPodeAbrirModal(false);
+    const vinculosEditais = await verificaVinculoProduto(produto);
+    if (vinculosEditais.status !== HTTP_STATUS.OK) {
+      let mensagem = `Houve um erro ao carregar a lista de editais ativos`;
+      if (vinculosEditais.status === HTTP_STATUS.FORBIDDEN) {
+        mensagem = vinculosEditais.data.detail;
+      }
+      toastError(mensagem);
+      setVerificando(false);
+      return;
+    }
+
+    setUuid(reclamacaoUuid);
+    setProdutoSelecionado(produto);
+    setPodeAbrirModal(true);
+    setExibirModal(true);
+    setVerificando(false);
+  };
 
   return (
     <>
@@ -105,7 +142,7 @@ const TabelaProdutos = ({
                       }`}
                       onClick={() => {
                         setIndiceProdutoAtivo(
-                          indice === indiceProdutoAtivo ? undefined : indice
+                          indice === indiceProdutoAtivo ? undefined : indice,
                         );
                       }}
                     />
@@ -138,15 +175,20 @@ const TabelaProdutos = ({
                               <div className="col-12">
                                 <div className="botao-responder mb-4">
                                   <Botao
-                                    texto="Responder"
+                                    texto={
+                                      verificando ? "Aguarde..." : "Responder"
+                                    }
                                     type={BUTTON_TYPE.BUTTON}
                                     style={BUTTON_STYLE.GREEN}
-                                    onClick={() => {
-                                      setUuid(reclamacao.uuid);
-                                      setProdutoSelecionado(produto);
-                                      setExibirModal(true);
-                                    }}
-                                    disabled={desabilitarResponder}
+                                    onClick={() =>
+                                      handleResponderClick(
+                                        produto,
+                                        reclamacao.uuid,
+                                      )
+                                    }
+                                    disabled={
+                                      desabilitarResponder || verificando
+                                    }
                                   />
                                 </div>
                               </div>
@@ -159,19 +201,25 @@ const TabelaProdutos = ({
               </div>
             );
           })}
-        <ModalJustificativa
-          titulo="Responder Questionamento da CODAE"
-          state={{
-            acao: "resposta_nutrisupervisor",
-            uuidReclamacao: uuid,
-            produto: produtoSelecionado,
-          }}
-          labelJustificativa="Responder"
-          showModal={exibirModal}
-          closeModal={() => setExibirModal(false)}
-          onSubmit={onSubmit}
-          comAnexo={true}
-        />
+        {podeAbrirModal && exibirModal && (
+          <ModalJustificativa
+            titulo="Responder Questionamento da CODAE"
+            state={{
+              acao: "resposta_nutrisupervisor",
+              uuidReclamacao: uuid,
+              produto: produtoSelecionado,
+            }}
+            labelJustificativa="Responder"
+            showModal={exibirModal}
+            closeModal={() => {
+              setExibirModal(false);
+              setPodeAbrirModal(false);
+            }}
+            onSubmit={onSubmit}
+            comAnexo={true}
+            produto={produtoSelecionado}
+          />
+        )}
       </section>
     </>
   );
