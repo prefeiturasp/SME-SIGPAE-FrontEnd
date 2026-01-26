@@ -1,3 +1,5 @@
+import { TabelaParametrizacao } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+
 export interface FiltrosInterface {
   lote?: string[] | string;
   grupo_unidade_escolar?: string[] | string;
@@ -29,15 +31,10 @@ export interface RelatorioFinanceiroConsolidado {
   lote: string;
   tipos_unidades: TipoUnidade[];
   legenda: string;
-  tabelas: Tabela[];
+  tabelas: TabelaParametrizacao[];
   grupo_unidade_escolar: GrupoUnidadeEscolar;
   mes_ano: string;
 }
-
-type Tabela = {
-  nome: string;
-  valores: [];
-};
 
 type Edital = {
   uuid: string;
