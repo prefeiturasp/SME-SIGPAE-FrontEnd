@@ -192,8 +192,11 @@ const FormAutorizaDietaEspecial = ({
       if (response.status === HTTP_STATUS.OK) {
         toastSuccess("Rascunho salvo com sucesso!");
       }
-    } catch {
-      toastError("Houve um erro ao salvar o rascunho.");
+    } catch (error) {
+      const mensagem =
+        error?.response?.data?.substituicoes ||
+        "Houve um erro ao salvar o rascunho.";
+      toastError(mensagem);
     }
     onAutorizarOuNegar();
   };
@@ -393,6 +396,7 @@ const FormAutorizaDietaEspecial = ({
                         produtos={produtos}
                         form={form}
                         values={values}
+                        required
                       />
                     </div>
                   </>
