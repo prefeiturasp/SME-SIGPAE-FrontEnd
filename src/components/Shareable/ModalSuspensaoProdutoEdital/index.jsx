@@ -5,7 +5,6 @@ import { Field, Form } from "react-final-form";
 import CKEditorField from "src/components/Shareable/CKEditorField";
 import InputText from "src/components/Shareable/Input/InputText";
 import ManagedInputFileField from "src/components/Shareable/Input/InputFile/ManagedField";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import Botao from "src/components/Shareable/Botao";
 import {
@@ -32,12 +31,10 @@ const ModalSuspensaoProdutoEdital = ({
 
   const vinculosProdutoEditais = async () => {
     const vinculosEditais = await vinculosAtivosProdutoEditais(
-      produto?.homologacao?.uuid || produto?.ultima_homologacao.uuid
+      produto?.homologacao?.uuid || produto?.ultima_homologacao.uuid,
     );
     if (vinculosEditais.status === HTTP_STATUS.OK) {
       setVinculos(vinculosEditais.data);
-    } else {
-      toastError(`Houve um erro ao carregar a lista de editais ativos`);
     }
   };
 
@@ -47,7 +44,6 @@ const ModalSuspensaoProdutoEdital = ({
       setDados(resposta);
       !usuarioEhEscolaTerceirizadaQualquerPerfil() && vinculosProdutoEditais();
     };
-
     fetchDados();
   }, []);
 
@@ -57,9 +53,9 @@ const ModalSuspensaoProdutoEdital = ({
           funcionario_registro_funcional: dados.registro_funcional,
           funcionario_nome: dados.nome,
           funcionario_cargo: dados.cargo || "",
-          nome_produto: produto.nome,
-          marca_produto: produto.marca.nome,
-          produto_tipo: produto.eh_para_alunos_com_dieta
+          nome_produto: produto?.nome,
+          marca_produto: produto?.marca.nome,
+          produto_tipo: produto?.eh_para_alunos_com_dieta
             ? "D. Especial"
             : "Comum",
         }
@@ -73,7 +69,7 @@ const ModalSuspensaoProdutoEdital = ({
       vinculos_produto_edital = vinculos_produto_edital.filter(
         (vinculo) =>
           !vinculo.suspenso &&
-          !EDITAIS_INVALIDOS.includes(vinculo.edital.numero.toUpperCase())
+          !EDITAIS_INVALIDOS.includes(vinculo.edital.numero.toUpperCase()),
       );
 
       return vinculos_produto_edital.map((vinculo) => ({
