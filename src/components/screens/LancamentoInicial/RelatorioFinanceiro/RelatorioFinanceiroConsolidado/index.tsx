@@ -12,7 +12,7 @@ import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { FaixaEtaria } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { getTotaisAtendimentoConsumo } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 
-export function RelatorioConsolidado() {
+export function RelatorioFinanceiroConsolidado() {
   const [faixasEtarias, setFaixasEtarias] = useState<FaixaEtaria[]>([]);
   const [totaisConsumo, setTotaisConsumo] = useState<any>([]);
 
