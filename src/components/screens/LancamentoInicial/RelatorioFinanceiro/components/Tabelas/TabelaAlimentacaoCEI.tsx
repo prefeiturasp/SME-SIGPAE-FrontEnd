@@ -10,6 +10,7 @@ type Props = {
   tabelas: TabelaParametrizacao[];
   faixasEtarias: FaixaEtaria[];
   totaisConsumo?: any;
+  ordem?: string;
 };
 
 const _PERIODOS = [
@@ -21,7 +22,11 @@ export function TabelaAlimentacaoCEI({
   tabelas,
   faixasEtarias,
   totaisConsumo,
+  ordem,
 }: Props) {
+  let totalAtendimentosGeral = 0;
+  let valorTotalGeral = 0;
+
   return (
     <table className="tabela-relatorio">
       <thead>
@@ -64,6 +69,9 @@ export function TabelaAlimentacaoCEI({
               totaisConsumo?.[periodo.value]?.[faixa.__str__] ?? 0;
             const valorTotal = totalUnitario * numeroAtendimentos;
 
+            totalAtendimentosGeral += numeroAtendimentos;
+            valorTotalGeral += valorTotal;
+
             return (
               <tr key={`${faixa.uuid}-${periodo.value}`}>
                 <td className="col-faixa">
@@ -86,6 +94,16 @@ export function TabelaAlimentacaoCEI({
             );
           }),
         )}
+        <tr key={`total_${ordem}`} className="linha-total">
+          <td className="col-faixa">TOTAL ({ordem})</td>
+          <td className="col-unitario"></td>
+          <td className="col-reajuste"></td>
+          <td className="col-total-unitario"></td>
+          <td className="col-atendimentos">{totalAtendimentosGeral}</td>
+          <td className="col-valor-total">
+            R$ {formatarTotal(valorTotalGeral)}
+          </td>
+        </tr>
       </tbody>
     </table>
   );
