@@ -18,7 +18,12 @@ const _PERIODOS = [
   { value: "PARCIAL", label: "Período Parcial" },
 ];
 
-export function TabelaDietasCEI({ tabelas, tipoDieta, faixasEtarias }: Props) {
+export function TabelaDietasCEI({
+  tabelas,
+  tipoDieta,
+  faixasEtarias,
+  totaisConsumo,
+}: Props) {
   return (
     <table className="tabela-relatorio">
       <thead>
@@ -58,7 +63,10 @@ export function TabelaDietasCEI({ tabelas, tipoDieta, faixasEtarias }: Props) {
             );
 
             const totalUnitario = valorUnitario * (1 + valorAcrescimo / 100);
-            const numeroConsumo = 2;
+            const numeroConsumo =
+              totaisConsumo?.[
+                `DIETA ESPECIAL - ${tipoDieta} - ${periodo.value}`
+              ]?.[faixa.__str__] ?? 0;
             const valorTotal = totalUnitario * numeroConsumo;
 
             return (
