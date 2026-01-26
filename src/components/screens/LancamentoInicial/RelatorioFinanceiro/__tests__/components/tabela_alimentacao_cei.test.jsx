@@ -78,7 +78,7 @@ describe("Teste de comportamentos componente - TabelaAlimentacaoCEI", () => {
         tabelas={tabelas}
         faixasEtarias={faixasEtarias}
         totaisConsumo={totaisConsumo}
-        ordem="1"
+        ordem="A"
       />,
     );
 
@@ -107,7 +107,7 @@ describe("Teste de comportamentos componente - TabelaAlimentacaoCEI", () => {
     expect(screen.getByText("R$ 14,00")).toBeInTheDocument();
     expect(screen.getByText("R$ 84,00")).toBeInTheDocument();
 
-    expect(screen.getByText("TOTAL (1)")).toBeInTheDocument();
+    expect(screen.getByText("TOTAL (A)")).toBeInTheDocument();
     expect(screen.getByText("36")).toBeInTheDocument();
     expect(screen.getByText("R$ 132,00")).toBeInTheDocument();
   });
