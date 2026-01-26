@@ -13,6 +13,7 @@ import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockRelatoriosFinanceiro } from "src/mocks/services/relatorioFinanceiro.service/mockGetRelatoriosFinanceiro";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { mockGetMesesAnosMedicaoInicial } from "src/mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
 import mock from "src/services/_mock";
 
 describe("Testes da interface de Relatorio Financeiro", () => {
@@ -27,6 +28,9 @@ describe("Testes da interface de Relatorio Financeiro", () => {
     mock
       .onGet("/medicao-inicial/relatorio-financeiro/")
       .reply(200, mockRelatoriosFinanceiro);
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/meses-anos/")
+      .reply(200, mockGetMesesAnosMedicaoInicial);
 
     await act(async () => {
       render(
