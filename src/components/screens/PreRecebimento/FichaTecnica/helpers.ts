@@ -377,9 +377,6 @@ export const validaProximoIdentificacaoProduto = (
     (values.organico === "1" && values.mecanismo_controle) ||
     values.organico === "0";
 
-  const camposFormPereciveisValidos =
-    values.agroecologico && campoOrganicoValido;
-
   return (
     Object.keys(errors).length !== 0 ||
     !values.produto ||
@@ -391,7 +388,7 @@ export const validaProximoIdentificacaoProduto = (
     !values.gluten ||
     !campoAlergenicosValido ||
     !campoComLactoseValido ||
-    (values.categoria === "PERECIVEIS" && !camposFormPereciveisValidos)
+    (values.categoria === "PERECIVEIS" && !campoOrganicoValido)
   );
 };
 
@@ -478,7 +475,6 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
       ficha.unidade_medida_secundaria_vazia?.uuid,
     prazo_validade: ficha.prazo_validade,
     numero_registro: ficha.numero_registro,
-    agroecologico: booleanToString(ficha.agroecologico),
     organico: booleanToString(ficha.organico),
     mecanismo_controle: ficha.mecanismo_controle,
     componentes_produto: ficha.componentes_produto,
@@ -794,7 +790,6 @@ const gerarCamposDetalhesProduto = (values: Record<string, any>) => {
   return {
     prazo_validade: values.prazo_validade || "",
     numero_registro: values.numero_registro || "",
-    agroecologico: stringToBoolean(values.agroecologico as string),
     organico: stringToBoolean(values.organico as string),
     mecanismo_controle: values.mecanismo_controle || undefined,
     componentes_produto: values.componentes_produto || "",

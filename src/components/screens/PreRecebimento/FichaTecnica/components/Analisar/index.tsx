@@ -682,7 +682,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                         <div className="col">
                           <Field
                             component={TextArea}
-                            label="Embalagem Primária:"
+                            label="Informações de Armazenamento que deverão constar na embalagem Primária:"
                             name={`embalagem_primaria`}
                             className="textarea-ficha-tecnica"
                             disabled
@@ -693,7 +693,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                         <div className="col">
                           <Field
                             component={TextArea}
-                            label="Embalagem Secundária:"
+                            label="Informações de Armazenamento que deverão constar na embalagem Secundária:"
                             name={`embalagem_secundaria`}
                             className="textarea-ficha-tecnica"
                             disabled

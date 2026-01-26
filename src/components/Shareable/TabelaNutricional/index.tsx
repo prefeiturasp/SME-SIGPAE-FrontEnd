@@ -136,7 +136,11 @@ const TabelaNutricional: React.FC<Props> = ({
               <div className="table-cell">
                 <span
                   className={`${
-                    informacao.eh_dependente && "informacao-recuada"
+                    informacao.nome === "AÇÚCARES ADICIONADOS"
+                      ? "informacao-recuada-2x"
+                      : informacao.eh_dependente
+                        ? "informacao-recuada"
+                        : ""
                   }`}
                 >
                   {informacao.nome}

@@ -188,7 +188,6 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     preencheInput("prazo_validade", "12 Meses");
     preencheInput("numero_registro", "11111");
 
-    clickRadio("agroecologico-nao");
     clickRadio("organico-nao");
     preencheInput("componentes_produto", "aaaaa");
     clickRadio("alergenicos-nao");
