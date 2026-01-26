@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -122,5 +122,31 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
   it("renderiza valor `Programas e Projetos` no input `Período de Lançamento`", () => {
     const inputElement = screen.getByTestId("input-periodo-lancamento");
     expect(inputElement).toHaveAttribute("value", "Programas e Projetos");
+  });
+
+  const setInput = (id, valor) => {
+    const input = screen.getByTestId(id);
+    expect(input).toBeInTheDocument();
+    fireEvent.change(input, {
+      target: { value: valor },
+    });
+    return input;
+  };
+
+  it("ao preencher lanche, valida quantidade de alunos por tipo de alimentação", async () => {
+    setInput("frequencia__dia_01__categoria_1", "120");
+    expect(screen.getByTestId("frequencia__dia_01__categoria_1")).toHaveValue(
+      "120",
+    );
+
+    let inputLancheDia01 = setInput("lanche__dia_01__categoria_1", "100");
+    expect(inputLancheDia01).not.toHaveClass("invalid-field");
+    inputLancheDia01 = setInput("lanche__dia_01__categoria_1", "101");
+    expect(inputLancheDia01).toHaveClass("invalid-field");
+
+    let inputRefeicaoDia01 = setInput("refeicao__dia_01__categoria_1", "20");
+    expect(inputRefeicaoDia01).not.toHaveClass("invalid-field");
+    inputRefeicaoDia01 = setInput("refeicao__dia_01__categoria_1", "21");
+    expect(inputRefeicaoDia01).toHaveClass("invalid-field");
   });
 });
