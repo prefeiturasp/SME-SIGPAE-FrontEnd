@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import { Spin } from "antd";
 import { FormFields } from "../components/FormFields";
-import { TabelaAlimentacaoCEI } from "../components/Tabelas/TabelaAlimentacaoCEI";
-import { TabelaDietasCEI } from "../components/TabelaDietasCEI";
+import GrupoCEI from "../components/Tabelas/GrupoCEI";
 import { useRelatorioFinanceiro } from "../view";
 import { useLocation } from "react-router-dom";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
@@ -76,25 +75,11 @@ export function RelatorioConsolidado() {
               <div className="tabelas-relatorio-consolidado mt-5 mb-4">
                 {relatorioConsolidado?.grupo_unidade_escolar.nome ===
                 "Grupo 1" ? (
-                  <>
-                    <TabelaAlimentacaoCEI
-                      tabelas={relatorioConsolidado.tabelas}
-                      faixasEtarias={faixasEtarias}
-                      totaisConsumo={totaisConsumo}
-                    />
-                    <TabelaDietasCEI
-                      tabelas={relatorioConsolidado.tabelas}
-                      tipoDieta="TIPO A"
-                      faixasEtarias={faixasEtarias}
-                      totaisConsumo={totaisConsumo}
-                    />
-                    <TabelaDietasCEI
-                      tabelas={relatorioConsolidado.tabelas}
-                      tipoDieta="TIPO B"
-                      faixasEtarias={faixasEtarias}
-                      totaisConsumo={totaisConsumo}
-                    />
-                  </>
+                  <GrupoCEI
+                    relatorioConsolidado={relatorioConsolidado}
+                    faixasEtarias={faixasEtarias}
+                    totaisConsumo={totaisConsumo}
+                  />
                 ) : null}
               </div>
             ) : null}
