@@ -192,7 +192,6 @@ export interface FichaTecnicaDetalhada {
   envasador_distribuidor: FabricanteFichaTecnica;
   prazo_validade: string;
   numero_registro: string;
-  agroecologico: boolean;
   organico: boolean;
   mecanismo_controle: MecanismoControleChoices;
   componentes_produto: string;

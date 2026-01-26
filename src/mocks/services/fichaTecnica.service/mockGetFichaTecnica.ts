@@ -55,7 +55,6 @@ export const mockFichaTecnica: FichaTecnicaDetalhada = {
   },
   prazo_validade: "60 dias",
   numero_registro: "3214234",
-  agroecologico: false,
   organico: false,
   mecanismo_controle: "",
   componentes_produto: "43243242",

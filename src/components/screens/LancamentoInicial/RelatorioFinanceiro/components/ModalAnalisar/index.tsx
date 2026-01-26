@@ -14,10 +14,16 @@ import {
 type Props = {
   showModal: boolean;
   setShowModal: (_e: boolean) => void;
-  uuidRelatorio: string | null;
+  uuidRelatorio: string | undefined;
+  onAnalisar: () => void;
 };
 
-const ModalAnalisar = ({ showModal, setShowModal, uuidRelatorio }: Props) => {
+const ModalAnalisar = ({
+  onAnalisar,
+  showModal,
+  setShowModal,
+  uuidRelatorio,
+}: Props) => {
   const navigate = useNavigate();
 
   return (
@@ -52,6 +58,7 @@ const ModalAnalisar = ({ showModal, setShowModal, uuidRelatorio }: Props) => {
           type={BUTTON_TYPE.BUTTON}
           style={BUTTON_STYLE.GREEN}
           className="ms-3"
+          onClick={() => onAnalisar()}
         />
       </Modal.Footer>
     </Modal>

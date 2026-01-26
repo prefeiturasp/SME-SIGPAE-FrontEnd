@@ -42,42 +42,13 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
             placeholder="Digite o Número do Registro do Órgão Competente"
             className="input-ficha-tecnica"
             disabled={desabilitar}
+            tooltipText={
+              "Deverá ser preenchido para produtos de origem animal, sucos e fórmula infantil."
+            }
           />
         </div>
       </div>
       <div className="row">
-        <div className="col-4">
-          <p className="label-radio">
-            <span className="required-asterisk">*</span>O Produto é
-            agroecológico?
-          </p>
-          <label className="container-radio">
-            Não
-            <Field
-              component="input"
-              data-testid="agroecologico-nao"
-              type="radio"
-              value="0"
-              name={`agroecologico`}
-              validate={required}
-              disabled={desabilitar}
-            />
-            <span className="checkmark" />
-          </label>
-          <label className="container-radio">
-            Sim
-            <Field
-              component="input"
-              data-testid="agroecologico-sim"
-              type="radio"
-              value="1"
-              name={`agroecologico`}
-              validate={required}
-              disabled={desabilitar}
-            />
-            <span className="checkmark" />
-          </label>
-        </div>
         <div className="col-4">
           <p className="label-radio">
             <span className="required-asterisk">*</span>O Produto é orgânico?

@@ -42,6 +42,7 @@ export const BUTTON_ICON = {
   EYE: "fas fa-eye",
   PEN: "fas fa-pen",
   PAPER_CLIP: "fas fa-paperclip",
+  REFRESH: "fas fa-undo",
 };
 
 export const BUTTON_TYPE = {
