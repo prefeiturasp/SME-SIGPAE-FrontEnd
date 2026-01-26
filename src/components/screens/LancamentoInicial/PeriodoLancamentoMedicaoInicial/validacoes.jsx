@@ -119,32 +119,6 @@ export const campoLancheEmergencialSemAutorizacaoSemObservacao = (
   );
 };
 
-export const campoComInclusaoContinuaValorMaiorQueAutorizadoESemObservacao = (
-  dia,
-  categoria,
-  dadosValoresInclusoesAutorizadasState,
-  values,
-) => {
-  const alimentacoes = ["lanche_4h", "lanche", "refeicao", "sobremesa"];
-  let erro = false;
-  alimentacoes.forEach((alimentacao) => {
-    if (
-      `${alimentacao}__dia_${dia}__categoria_${categoria.id}` in
-        dadosValoresInclusoesAutorizadasState &&
-      Number(values[`${alimentacao}__dia_${dia}__categoria_${categoria.id}`]) >
-        Number(
-          dadosValoresInclusoesAutorizadasState[
-            `${alimentacao}__dia_${dia}__categoria_${categoria.id}`
-          ],
-        ) &&
-      !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
-    ) {
-      erro = true;
-    }
-  });
-  return erro;
-};
-
 export const campoFrequenciaValor0ESemObservacao = (dia, categoria, values) => {
   let erro = false;
   if (
@@ -376,12 +350,6 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         diasSobremesaDoce,
         location,
       ) ||
-      campoComInclusaoContinuaValorMaiorQueAutorizadoESemObservacao(
-        dia,
-        categoria,
-        dadosValoresInclusoesAutorizadasState,
-        formValuesAtualizados,
-      ) ||
       campoFrequenciaValor0ESemObservacao(
         dia,
         categoria,
@@ -468,9 +436,6 @@ export const validarFormulario = (
   dadosValoresInclusoesAutorizadasState,
   weekColumns,
 ) => {
-  const categoriaAlimentacao = categoriasDeMedicao.find((categoria) =>
-    categoria.nome.includes("ALIMENTAÇÃO"),
-  );
   let erro = false;
 
   const values_ = deepCopy(values);
@@ -506,21 +471,6 @@ export const validarFormulario = (
         } é de sobremesa doce. Justifique o lançamento de repetição nas observações`;
       }
     });
-
-    categoria.id === categoriaAlimentacao.id &&
-      Object.keys(dadosValoresInclusoesAutorizadasState).forEach((inclusao) => {
-        const dia = inclusao.split("__dia_")[1].split("__categoria")[0];
-        if (
-          campoComInclusaoContinuaValorMaiorQueAutorizadoESemObservacao(
-            dia,
-            categoria,
-            dadosValoresInclusoesAutorizadasState,
-            values_,
-          )
-        ) {
-          erro = `Dia ${dia} está com valor maior que o autorizado. Justifique nas observações`;
-        }
-      });
   });
 
   let arrayDiasInclusoesAutorizadasEmValues = [];
