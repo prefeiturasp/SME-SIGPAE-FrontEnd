@@ -515,9 +515,6 @@ export const validacoesTabelaAlimentacao = (
   const inputName = `${rowName}__dia_${dia}__categoria_${categoria}`;
 
   if (location.state && location.state.grupo === "Programas e Projetos") {
-    if (feriadosNoMes.includes(dia)) {
-      return undefined;
-    }
     if (
       value &&
       !["Mês anterior", "Mês posterior"].includes(value) &&
