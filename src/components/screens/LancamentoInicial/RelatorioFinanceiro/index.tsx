@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
-import { FiltrosInterface } from "src/interfaces/relatorio_financeiro.interface";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Spin } from "antd";
 import { Filtros } from "./components/Filtros/Index";
@@ -14,45 +12,52 @@ import {
   RELATORIO_FINANCEIRO,
   RELATORIO_CONSOLIDADO,
 } from "src/configs/constants";
+
 import "./styles.scss";
-import useView from "./view";
+import { useRelatorioFinanceiro } from "./view";
 import ModalAnalisar from "./components/ModalAnalisar";
 
+interface RelatorioSelecionado {
+  uuid: string;
+  lote: string[];
+  grupo_unidade_escolar: string[];
+  status: string[];
+  mes_ano: string;
+}
+
 export function RelatorioFinanceiro() {
-  const [filtros, setFiltros] = useState<FiltrosInterface>({});
-  const [showAnalisar, setShowAnalisar] = useState<boolean>(false);
-  const [relatorioUuid, setRelatorioUuid] = useState<string | null>(null);
+  const [showAnalisar, setShowAnalisar] = useState(false);
+  const [relatorioSelecionado, setRelatorioSelecionado] =
+    useState<RelatorioSelecionado | null>(null);
+  const navigate = useNavigate();
 
-  const view = useView({ filtros });
-
-  const onChangePage = async (page: number, filtros: FiltrosInterface) => {
-    view.setPaginaAtual(page);
-    view.setCarregando(true);
-    await view.getRelatoriosFinanceirosAsync(page, filtros);
-    view.setCarregando(false);
-  };
+  const {
+    carregando,
+    aplicarFiltros,
+    lotes,
+    gruposUnidadeEscolar,
+    mesesAnos,
+    relatoriosFinanceiros,
+    setPaginaAtual,
+    paginaAtual,
+    relatoriosFinanceirosResponse,
+  } = useRelatorioFinanceiro();
 
   return (
     <div className="relatorio-financeiro">
-      <Spin tip="Carregando..." spinning={view.carregando}>
+      <Spin tip="Carregando..." spinning={carregando}>
         <div className="card mt-3">
           <div className="card-body">
             <Filtros
-              onSubmit={(values) => {
-                setFiltros(values);
-                onChangePage(1, values);
-              }}
-              onClear={() => {
-                setFiltros({});
-                onChangePage(1, {});
-              }}
-              lotes={view.lotes}
-              gruposUnidadeEscolar={view.gruposUnidadeEscolar}
-              mesesAnos={view.mesesAnos}
+              onSubmit={aplicarFiltros}
+              onClear={() => aplicarFiltros({})}
+              lotes={lotes}
+              gruposUnidadeEscolar={gruposUnidadeEscolar}
+              mesesAnos={mesesAnos}
             />
 
             <div className="mt-4">
-              {view.relatoriosFinanceiros.length === 0 && !view.carregando ? (
+              {relatoriosFinanceiros.length === 0 && !carregando ? (
                 <div className="text-center mt-4 mb-4">
                   Nenhum resultado encontrado
                 </div>
@@ -74,35 +79,34 @@ export function RelatorioFinanceiro() {
                     </thead>
 
                     <tbody>
-                      {view.relatoriosFinanceiros.map((relatorioFinanceiro) => (
-                        <tr key={relatorioFinanceiro.uuid} className="row">
+                      {relatoriosFinanceiros.map((relatorio) => (
+                        <tr key={relatorio.uuid} className="row">
                           <td className="col-3">
-                            {relatorioFinanceiro.lote.nome} -{" "}
-                            {relatorioFinanceiro.lote.diretoria_regional.nome}
+                            {relatorio.lote.nome} -{" "}
+                            {relatorio.lote.diretoria_regional.nome}
                           </td>
                           <td className="col-3">
-                            {relatorioFinanceiro.grupo_unidade_escolar.nome} (
-                            {relatorioFinanceiro.grupo_unidade_escolar.tipos_unidades
+                            {relatorio.grupo_unidade_escolar.nome} (
+                            {relatorio.grupo_unidade_escolar.tipos_unidades
                               .map((unidade) => unidade.iniciais)
                               .join(", ")}
                             )
                           </td>
-                          <td className="col-2 text-center">{`${
-                            MESES[parseInt(relatorioFinanceiro.mes) - 1]
-                          } de ${relatorioFinanceiro.ano}`}</td>
                           <td className="col-2 text-center">
-                            {
-                              STATUS_RELATORIO_FINANCEIRO[
-                                relatorioFinanceiro.status
-                              ]
-                            }
+                            {`${MESES[parseInt(relatorio.mes) - 1]} de ${
+                              relatorio.ano
+                            }`}
                           </td>
                           <td className="col-2 text-center">
-                            {relatorioFinanceiro.status !==
+                            {STATUS_RELATORIO_FINANCEIRO[relatorio.status]}
+                          </td>
+                          <td className="col-2 text-center">
+                            {relatorio.status !==
                             "RELATORIO_FINANCEIRO_GERADO" ? (
                               <>
                                 <Link
-                                  to={`/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${RELATORIO_CONSOLIDADO}/?uuid=${relatorioFinanceiro.uuid}`}
+                                  to={`/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${RELATORIO_CONSOLIDADO}/?uuid=${relatorio.uuid}`}
+                                  state={{}}
                                 >
                                   <span className="px-2">
                                     <i
@@ -128,7 +132,15 @@ export function RelatorioFinanceiro() {
                               <span
                                 className="px-2"
                                 onClick={() => {
-                                  setRelatorioUuid(relatorioFinanceiro.uuid);
+                                  setRelatorioSelecionado({
+                                    uuid: relatorio.uuid,
+                                    mes_ano: `${relatorio.mes}_${relatorio.ano}`,
+                                    lote: [relatorio.lote.uuid],
+                                    grupo_unidade_escolar: [
+                                      relatorio.grupo_unidade_escolar.uuid,
+                                    ],
+                                    status: [relatorio.status],
+                                  });
                                   setShowAnalisar(true);
                                 }}
                               >
@@ -145,18 +157,27 @@ export function RelatorioFinanceiro() {
                   </table>
 
                   <Paginacao
-                    onChange={(page: number) => onChangePage(page, filtros)}
-                    total={view.relatoriosFinanceirosResponse?.count}
-                    pageSize={view.relatoriosFinanceirosResponse?.page_size}
-                    current={view.paginaAtual}
+                    onChange={setPaginaAtual}
+                    total={relatoriosFinanceirosResponse?.count}
+                    pageSize={relatoriosFinanceirosResponse?.page_size}
+                    current={paginaAtual}
                   />
                 </div>
               )}
             </div>
+
             <ModalAnalisar
               showModal={showAnalisar}
               setShowModal={setShowAnalisar}
-              uuidRelatorio={relatorioUuid}
+              uuidRelatorio={relatorioSelecionado?.uuid}
+              onAnalisar={() =>
+                navigate(
+                  `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${RELATORIO_CONSOLIDADO}/?uuid=${relatorioSelecionado.uuid}`,
+                  {
+                    state: relatorioSelecionado,
+                  },
+                )
+              }
             />
           </div>
         </div>
