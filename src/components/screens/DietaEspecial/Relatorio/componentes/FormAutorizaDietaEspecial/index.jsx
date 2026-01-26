@@ -187,10 +187,12 @@ const FormAutorizaDietaEspecial = ({
     ) {
       delete values["substituicoes"];
     }
-    const response = await atualizaDietaEspecial(dietaEspecial.uuid, values);
-    if (response.status === HTTP_STATUS.OK) {
-      toastSuccess("Rascunho salvo com sucesso!");
-    } else {
+    try {
+      const response = await atualizaDietaEspecial(dietaEspecial.uuid, values);
+      if (response.status === HTTP_STATUS.OK) {
+        toastSuccess("Rascunho salvo com sucesso!");
+      }
+    } catch {
       toastError("Houve um erro ao salvar o rascunho.");
     }
     onAutorizarOuNegar();
@@ -290,7 +292,7 @@ const FormAutorizaDietaEspecial = ({
       substituicoes: substituicoes,
       data_termino:
         data_termino_formatada || dietaEspecial.data_termino || undefined,
-      data_inicio: dietaEspecial.data_inicio,
+      data_inicio: dietaEspecial.data_inicio || undefined,
       informacoes_adicionais: dietaEspecial.informacoes_adicionais,
       registro_funcional_nutricionista: obtemIdentificacaoNutricionista(),
     };
