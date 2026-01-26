@@ -28,7 +28,7 @@ import { EditarParametrizacaoFinanceiraPage } from "src/pages/LancamentoMedicaoI
 import { ParametrizacaoFinanceiraPage } from "src/pages/LancamentoMedicaoInicial/ParametrizacaoFinanceira/ParametrizacaoFinanceiraPage";
 import { PeriodoLancamentoMedicaoInicialCEIPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialCEIPage";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
-import { RelatorioConsolidadoPage } from "src/pages/LancamentoMedicaoInicial/RelatorioConsolidado/RelatorioConsolidadoPage";
+import { RelatorioFinanceiroConsolidadoPage } from "src/pages/LancamentoMedicaoInicial/RelatorioFinanceiroConsolidado/RelatorioFinanceiroConsolidadoPage";
 import { RelatorioFinanceiroPage } from "src/pages/LancamentoMedicaoInicial/RelatorioFinanceiro/RelatorioFinanceiroPage";
 import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
 import * as constants from "../../constants";
@@ -166,7 +166,7 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.RELATORIO_FINANCEIRO}/${constants.RELATORIO_CONSOLIDADO}`,
-    component: RelatorioConsolidadoPage,
+    component: RelatorioFinanceiroConsolidadoPage,
     tipoUsuario: usuarioEhMedicao(),
   },
 ];

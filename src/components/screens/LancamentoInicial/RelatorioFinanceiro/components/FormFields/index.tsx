@@ -5,6 +5,12 @@ import { useSearchParams } from "react-router-dom";
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import { Select } from "src/components/Shareable/Select";
 import { STATUS_RELATORIO_FINANCEIRO } from "../../../constants";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
 
 type FieldsProps = {
   lotes: {
@@ -80,6 +86,16 @@ export function FormFields({
             }),
           )}
           disabled={uuidRelatorioFinanceiro}
+        />
+      </div>
+      <div className="col-3 mt-2">
+        <br />
+        <Botao
+          dataTestId="botao-carregar"
+          texto="Reabrir Lançamentos"
+          style={BUTTON_STYLE.ORANGE_OUTLINE}
+          type={BUTTON_TYPE.BUTTON}
+          icon={BUTTON_ICON.REFRESH}
         />
       </div>
     </div>
