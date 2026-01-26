@@ -112,7 +112,6 @@ import {
   campoDietaComInclusaoAutorizadaSemObservacao,
   exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI,
   exibirTooltipDietasInclusaoDiaNaoLetivoCEI,
-  exibirTooltipErroQtdMaiorQueAutorizado,
   exibirTooltipSuspensoesAutorizadasCEI,
   frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao,
   repeticaoSobremesaDoceComValorESemObservacao,
@@ -782,7 +781,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
               ) {
                 const inclusoesFiltradas = solInclusoesAutorizadas.filter(
                   (inclusao) =>
-                    inclusao.alimentacoes.includes(alimentacao.name),
+                    inclusao.alimentacoes
+                      .split(", ")
+                      .includes(alimentacao.name),
                 );
                 for (let i = 1; i <= 31; i++) {
                   const dia =
@@ -1716,6 +1717,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           inclusoesAutorizadas,
           validacaoDiaLetivo,
           ehProgramasEProjetosLocation,
+          dadosValoresInclusoesAutorizadasState,
         );
       } else if (nomeCategoria.includes("DIETA")) {
         return validacoesTabelasDietasEmeidaCemei(
@@ -2294,14 +2296,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                         defaultValue={defaultValue(
                                                           column,
                                                           row,
-                                                        )}
-                                                        exibeTooltipErroQtdMaiorQueAutorizado={exibirTooltipErroQtdMaiorQueAutorizado(
-                                                          formValuesAtualizados,
-                                                          row,
-                                                          column,
-                                                          categoria,
-                                                          inclusoesAutorizadas,
-                                                          ehProgramasEProjetosLocation,
                                                         )}
                                                         numeroDeInclusoesAutorizadas={
                                                           inclusoesAutorizadas.find(

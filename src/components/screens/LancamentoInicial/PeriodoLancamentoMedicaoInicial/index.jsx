@@ -92,7 +92,6 @@ import {
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
   campoLancheComLPRAutorizadaESemObservacao,
-  exibirTooltipErroQtdMaiorQueAutorizado,
   exibirTooltipFrequenciaZeroTabelaEtec,
   exibirTooltipKitLancheSolAlimentacoes,
   exibirTooltipLancheEmergencialAutorizado,
@@ -1333,7 +1332,8 @@ export default () => {
               solInclusoesAutorizadas
             ) {
               const inclusoesFiltradas = solInclusoesAutorizadas.filter(
-                (inclusao) => inclusao.alimentacoes.includes(alimentacao.name),
+                (inclusao) =>
+                  inclusao.alimentacoes.split(", ").includes(alimentacao.name),
               );
               for (let i = 1; i <= 31; i++) {
                 const dia =
@@ -3269,13 +3269,6 @@ export default () => {
                                                               `observacoes__dia_${column.dia}__categoria_${categoria.id}`
                                                             ]
                                                           }
-                                                          exibeTooltipErroQtdMaiorQueAutorizado={exibirTooltipErroQtdMaiorQueAutorizado(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            dadosValoresInclusoesAutorizadasState,
-                                                          )}
                                                           exibeTooltipSuspensoesAutorizadas={exibirTooltipSuspensoesAutorizadas(
                                                             formValuesAtualizados,
                                                             row,
@@ -3378,6 +3371,7 @@ export default () => {
                                                             column.dia,
                                                             categoria.id,
                                                             categoria.nome,
+                                                            column,
                                                           )}
                                                           inputOnChange={(
                                                             e,
