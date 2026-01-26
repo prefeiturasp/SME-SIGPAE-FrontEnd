@@ -3,8 +3,8 @@ import {
   TabelaParametrizacao,
   ValorTabela,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
-import { formataValorDecimal } from "../../../../helper.jsx";
 import { stringDecimalToNumber } from "src/helpers/parsers.js";
+import { formatarTotal } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
 
 type Props = {
   tabelas: TabelaParametrizacao[];
@@ -70,17 +70,17 @@ export function TabelaAlimentacaoCEI({
                   {periodo.label} <b>- {faixa.__str__}</b>
                 </td>
                 <td className="col-unitario">
-                  R$ {formataValorDecimal(valorUnitario)}
+                  R$ {formatarTotal(valorUnitario)}
                 </td>
                 <td className="col-reajuste">
-                  R$ {formataValorDecimal(valorReajuste)}
+                  R$ {formatarTotal(valorReajuste)}
                 </td>
                 <td className="col-total-unitario">
-                  R$ {formataValorDecimal(totalUnitario)}
+                  R$ {formatarTotal(totalUnitario)}
                 </td>
                 <td className="col-atendimentos">{numeroAtendimentos}</td>
                 <td className="col-valor-total">
-                  R$ {formataValorDecimal(valorTotal)}
+                  R$ {formatarTotal(valorTotal)}
                 </td>
               </tr>
             );

@@ -1,10 +1,10 @@
-import { stringDecimalToNumber } from "src/helpers/parsers.js";
-import { formataValorDecimal } from "../../../../helper.jsx";
 import {
   FaixaEtaria,
   TabelaParametrizacao,
   ValorTabela,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import { formatarTotal } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
+import { stringDecimalToNumber } from "src/helpers/parsers.js";
 
 type Props = {
   tabelas: TabelaParametrizacao[];
@@ -75,17 +75,17 @@ export function TabelaDietasCEI({
                   {periodo.label} <b>- {faixa.__str__}</b>
                 </td>
                 <td className="col-unitario">
-                  R$ {formataValorDecimal(valorUnitario)}
+                  R$ {formatarTotal(valorUnitario)}
                 </td>
                 <td className="col-reajuste">
-                  % {formataValorDecimal(valorAcrescimo)}
+                  % {formatarTotal(valorAcrescimo)}
                 </td>
                 <td className="col-total-unitario">
-                  R$ {formataValorDecimal(totalUnitario)}
+                  R$ {formatarTotal(totalUnitario)}
                 </td>
                 <td className="col-atendimentos">{numeroConsumo}</td>
                 <td className="col-valor-total">
-                  R$ {formataValorDecimal(valorTotal)}
+                  R$ {formatarTotal(valorTotal)}
                 </td>
               </tr>
             );
