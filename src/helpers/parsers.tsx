@@ -10,12 +10,13 @@ export const numberToStringDecimal = (num: number) =>
 export const numberToStringDecimalMonetario = (num: number) =>
   num?.toFixed(2).replace(".", ",");
 
-export const stringDecimalToNumber = (str: string) =>
+export const stringDecimalToNumber = (str: string) => {
   str === "0"
     ? Number(str)
     : str
       ? Number(str?.replaceAll(".", "").replace(",", "."))
       : null;
+};
 
 export const stringNaoVaziaOuUndefined = (value: string) => {
   let valor = value ? value.toString() : undefined;

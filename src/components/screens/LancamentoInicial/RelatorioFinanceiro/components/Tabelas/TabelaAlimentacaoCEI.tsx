@@ -3,7 +3,7 @@ import {
   TabelaParametrizacao,
   ValorTabela,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
-import { stringDecimalToNumber } from "src/helpers/parsers.js";
+import { stringDecimalToNumber } from "src/helpers/parsers";
 import { formatarTotal } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
 
 type Props = {
