@@ -12,6 +12,7 @@ describe("Testes de comportamentos - ModalAnalisar", () => {
           showModal={showModal}
           setShowModal={setShowModal}
           uuidRelatorio="123e4567-e89b-12d3-a456-426614174000"
+          onAnalisar={jest.fn()}
         />
       </MemoryRouter>,
     );
