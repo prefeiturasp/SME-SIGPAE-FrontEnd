@@ -190,37 +190,6 @@ export const campoComInclusaoAutorizadaValorZeroESemObservacao = (
   return erro;
 };
 
-export const exibirTooltipErroQtdMaiorQueAutorizado = (
-  formValuesAtualizados,
-  row,
-  column,
-  categoria,
-  inclusoesAutorizadas,
-  ehProgramasEProjetosLocation = false,
-) => {
-  return (
-    !ehProgramasEProjetosLocation &&
-    row.name !== "matriculados" &&
-    inclusoesAutorizadas &&
-    inclusoesAutorizadas.some(
-      (inclusao) => column.dia === String(inclusao.dia),
-    ) &&
-    Number(
-      formValuesAtualizados[
-        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-      ],
-    ) >
-      Number(
-        inclusoesAutorizadas.find(
-          (inclusao) => column.dia === String(inclusao.dia),
-        ).numero_alunos,
-      ) &&
-    !formValuesAtualizados[
-      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
-    ]
-  );
-};
-
 export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   column,
   categoria,
@@ -334,6 +303,7 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
   inclusoesAutorizadas,
   validacaoDiaLetivo,
   ehProgramasEProjetosLocation,
+  dadosValoresInclusoesAutorizadasState,
 ) => {
   const maxFrequencia = Number(
     allValues[`frequencia__dia_${dia}__categoria_${categoria}`],
@@ -347,6 +317,22 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
   const inputName = `${rowName}__dia_${dia}__categoria_${categoria}`;
 
   if (
+    `${rowName}__dia_${dia}__categoria_${categoria}` in
+      dadosValoresInclusoesAutorizadasState &&
+    Number(allValues[`${rowName}__dia_${dia}__categoria_${categoria}`]) >
+      Number(
+        dadosValoresInclusoesAutorizadasState[
+          `${rowName}__dia_${dia}__categoria_${categoria}`
+        ],
+      ) &&
+    !allValues[`observacoes__dia_${dia}__categoria_${categoria}`]
+  ) {
+    return `Número de alimentações é maior que a quantidade autorizada (${Number(
+      dadosValoresInclusoesAutorizadasState[
+        `${rowName}__dia_${dia}__categoria_${categoria}`
+      ],
+    )}). Corrija o apontamento.`;
+  } else if (
     rowName === "frequencia" &&
     !allValues[`frequencia__dia_${dia}__categoria_${categoria}`] &&
     !validacaoDiaLetivo(dia) &&

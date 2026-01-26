@@ -1332,7 +1332,8 @@ export default () => {
               solInclusoesAutorizadas
             ) {
               const inclusoesFiltradas = solInclusoesAutorizadas.filter(
-                (inclusao) => inclusao.alimentacoes.includes(alimentacao.name),
+                (inclusao) =>
+                  inclusao.alimentacoes.split(", ").includes(alimentacao.name),
               );
               for (let i = 1; i <= 31; i++) {
                 const dia =
