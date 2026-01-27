@@ -83,3 +83,50 @@ export const mockVinculosTipoAlimentacaoEPeriodoEscolar = {
     },
   ],
 };
+
+export const mockVinculosTipoAlimentacaoEPeriodoEscolarCEI = {
+  count: 1,
+  next: null,
+  previous: null,
+  results: [
+    {
+      uuid: "1a1e1a11-111b-11ed-acf8-1d111ea1cef1",
+      tipo_unidade_escolar: {
+        iniciais: "CEI DIRET",
+        ativo: true,
+        uuid: "1a1e1a11-111b-11ed-acf8-1d111ea1cef1",
+        tem_somente_integral_e_parcial: false,
+        pertence_relatorio_solicitacoes_alimentacao: true,
+      },
+      periodo_escolar: {
+        possui_alunos_regulares: null,
+        nome: "MANHA",
+        uuid: "1a1e1a11-111b-11ed-acf8-1d111ea1cef1",
+        posicao: 2,
+        tipo_turno: 1,
+      },
+      tipos_alimentacao: [
+        {
+          nome: "Lanche",
+          uuid: "1a1e1a11-111b-11ed-acf8-1d111ea1cef1",
+          posicao: 2,
+        },
+        {
+          nome: "Refeição",
+          uuid: "2a2e2a22-222b-22ed-acf2-2d222ea2cef2",
+          posicao: 3,
+        },
+        {
+          nome: "Sobremesa",
+          uuid: "3a3e3a33-333b-33ed-acf3-3d333ea3cef3",
+          posicao: 4,
+        },
+        {
+          nome: "Lanche Emergencial",
+          uuid: "4a4e4a44-444b-44ed-acf4-4d444ea4cef4",
+          posicao: null,
+        },
+      ],
+    },
+  ],
+};

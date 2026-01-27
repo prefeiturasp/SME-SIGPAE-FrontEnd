@@ -247,6 +247,52 @@ export const validacoesTabelaAlimentacaoCEI = (
   return undefined;
 };
 
+export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (
+  rowName,
+  dia,
+  categoria,
+  allValues,
+  uuidFaixaEtaria,
+  faixaEtaria,
+) => {
+  if (rowName !== "frequencia") {
+    return undefined;
+  }
+
+  const keyMax = `matriculados__faixa_null__dia_${dia}__categoria_${categoria}`;
+  const maxMatriculados = Number(allValues[keyMax]);
+
+  if (!Number.isFinite(maxMatriculados)) {
+    return undefined;
+  }
+
+  const suffixDiaCategoria = `__dia_${dia}__categoria_${categoria}`;
+
+  const uuidsPreenchidos = faixaEtaria
+    .map((f) => f.uuid)
+    .filter((uuid) => {
+      const valor = allValues[`frequencia__faixa_${uuid}${suffixDiaCategoria}`];
+      return valor !== null && valor !== "" && !isNaN(Number(valor));
+    });
+
+  const totalFrequenciaNoDia = uuidsPreenchidos.reduce((acc, uuid) => {
+    const valor = Number(
+      allValues[`frequencia__faixa_${uuid}${suffixDiaCategoria}`],
+    );
+    return acc + valor;
+  }, 0);
+
+  if (totalFrequenciaNoDia > maxMatriculados) {
+    const ultimoUuidComValor = uuidsPreenchidos[uuidsPreenchidos.length - 1];
+
+    if (uuidFaixaEtaria === ultimoUuidComValor) {
+      return "A quantidade de alunos frequentes não pode ser maior do que a quantidade de alunos participantes no Recreio nas Férias.";
+    }
+  }
+
+  return undefined;
+};
+
 export const validacoesTabelaAlimentacaoEmeidaCemei = (
   rowName,
   dia,

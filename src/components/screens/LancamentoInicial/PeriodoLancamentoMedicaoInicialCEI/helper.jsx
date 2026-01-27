@@ -1,8 +1,12 @@
-import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
-import { deepCopy, ehEscolaTipoCEMEI } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import {
+  deepCopy,
+  ehEscolaTipoCEMEI,
+  ehFimDeSemanaUTC,
+} from "src/helpers/utilities";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
@@ -20,6 +24,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   ehEmeiDaCemeiLocation,
   ehSolicitacoesAlimentacaoLocation,
   ehProgramasEProjetosLocation,
+  ehRecreioNasFerias,
 ) => {
   if (
     (ehEmeiDaCemeiLocation &&
@@ -88,13 +93,28 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   valoresMedicao = valoresMedicao.filter((valorMed) => {
     return (
       !(valorMed.nome_campo === "observacoes" && valorMed.valor === 0) &&
-      diasDaSemanaSelecionada.includes(valorMed.dia)
+      diasDaSemanaSelecionada.some(
+        (d) => (typeof d === "object" ? d.dia : d) === valorMed.dia,
+      )
     );
   });
 
   Object.entries(values).forEach(([key]) => {
     return key.includes("categoria") && delete values[key];
   });
+
+  if (ehRecreioNasFerias) {
+    valoresMedicao = valoresMedicao.filter(
+      (item) => item.nome_campo !== "matriculados",
+    );
+    // eslint-disable-next-line no-unused-vars
+    const { periodo_escolar, ...rest } = values;
+    values = {
+      ...rest,
+      grupo: "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+      valores_medicao: valoresMedicao,
+    };
+  }
 
   return { ...values, valores_medicao: valoresMedicao };
 };
@@ -184,6 +204,7 @@ export const desabilitarField = (
   alteracoesAlimentacaoAutorizadas,
   ehUltimoDiaLetivoDoAno,
   calendarioMesConsiderado,
+  ehRecreioNasFerias,
 ) => {
   let alimentacoesLancamentosEspeciaisDia = [];
 
@@ -238,6 +259,42 @@ export const desabilitarField = (
         if (statusDeCorrecao()) {
           return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
         }
+        return false;
+      }
+
+      if (ehRecreioNasFerias) {
+        const dataAtual = new Date(
+          mesAnoConsiderado.getFullYear(),
+          mesAnoConsiderado.getMonth(),
+          dia,
+        );
+
+        const temInclusaoAutorizada = inclusoesAutorizadas.some(
+          (inclusao) => Number(inclusao.dia) === Number(dia),
+        );
+
+        const ehFeriado = feriadosNoMes.some(
+          (feriado) => Number(feriado) === Number(dia),
+        );
+
+        const ehFinalDeSemanaOuFeriado =
+          ehFimDeSemanaUTC(dataAtual) || ehFeriado;
+
+        if (ehFinalDeSemanaOuFeriado) {
+          return !temInclusaoAutorizada;
+        }
+
+        if (
+          ["Mês anterior", "Mês posterior"].includes(
+            values[
+              `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+            ],
+          ) ||
+          rowName === "matriculados"
+        ) {
+          return true;
+        }
+
         return false;
       }
     } else {
@@ -663,6 +720,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
   faixasEtarias = null,
   inclusoesAutorizadas = null,
   valores_medicao = null,
+  ehRecreioNasFerias = false,
 ) => {
   let faixas_etarias_alimentacao = [];
   let faixas_etarias_objs_alimentacao = [];
@@ -711,7 +769,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
           uuid: valorMedicao.faixa_etaria,
         });
     });
-  } else {
+  } else if (!ehRecreioNasFerias) {
     const faixasEtariasInclusoes = getFaixasEtarias();
 
     const faixasEtariasSet = new Set(
@@ -763,24 +821,45 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
     });
   }
 
-  faixas_etarias_objs_alimentacao
-    .sort((a, b) => a.inicio - b.inicio)
-    .forEach((faixa_obj) => {
-      linhasTabelaAlimentacaoCEI.push(
-        {
-          nome: "Matriculados",
-          name: "matriculados",
-          uuid: faixa_obj.uuid,
-          faixa_etaria: faixa_obj.__str__,
-        },
-        {
+  if (ehRecreioNasFerias) {
+    linhasTabelaAlimentacaoCEI.push({
+      nome: "Participantes",
+      name: "matriculados",
+      uuid: null,
+      faixa_etaria: null,
+    });
+
+    faixasEtarias
+      .sort((a, b) => a.inicio - b.inicio)
+      .forEach((faixa_obj) => {
+        linhasTabelaAlimentacaoCEI.push({
           nome: "Frequência",
           name: "frequencia",
           uuid: faixa_obj.uuid,
           faixa_etaria: faixa_obj.__str__,
-        },
-      );
-    });
+        });
+      });
+  } else {
+    faixas_etarias_objs_alimentacao
+      .sort((a, b) => a.inicio - b.inicio)
+      .forEach((faixa_obj) => {
+        linhasTabelaAlimentacaoCEI.push(
+          {
+            nome: "Matriculados",
+            name: "matriculados",
+            uuid: faixa_obj.uuid,
+            faixa_etaria: faixa_obj.__str__,
+          },
+          {
+            nome: "Frequência",
+            name: "frequencia",
+            uuid: faixa_obj.uuid,
+            faixa_etaria: faixa_obj.__str__,
+          },
+        );
+      });
+  }
+
   linhasTabelaAlimentacaoCEI.push({
     nome: "Observações",
     name: "observacoes",
