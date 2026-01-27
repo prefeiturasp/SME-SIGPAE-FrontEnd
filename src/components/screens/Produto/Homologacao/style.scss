@@ -3,7 +3,7 @@
 .card {
   .card-body {
     .titulo-section {
-      font-family: "Roboto";
+      font-family: "Roboto", sans-serif;
       font-style: normal;
       font-weight: 600;
       font-size: 14px;
@@ -18,7 +18,7 @@
     .importante-section {
       margin-top: 10px !important;
       margin-bottom: 0px !important;
-      font-family: "Roboto";
+      font-family: "Roboto", sans-serif;
       font-style: normal;
       font-weight: 700;
       font-size: 11px;
@@ -31,7 +31,7 @@
       border-radius: 4px;
       margin-top: 7px !important;
       padding: 9.5px !important;
-      font-family: "Roboto";
+      font-family: "Roboto", sans-serif;
       font-style: normal;
       font-weight: 400;
       font-size: 12px;
@@ -40,7 +40,7 @@
     }
 
     .info-calorias {
-      font-family: "Roboto";
+      font-family: "Roboto", sans-serif;
       font-style: normal;
       font-weight: 400;
       font-size: 11px;
@@ -58,7 +58,7 @@ table.table-ficha-identificacao-produto {
       border-top-right-radius: 3px;
       border: 1px solid $grayDisabled;
       color: $blackInput;
-      font-family: "Roboto";
+      font-family: "Roboto", sans-serif;
       font-style: normal;
       font-weight: 700;
       font-size: 12px;
@@ -79,7 +79,7 @@ table.table-ficha-identificacao-produto {
       border: 1px solid $grayDisabled;
       border-top: none;
       color: $blackSubtle;
-      font-family: "Roboto";
+      font-family: "Roboto", sans-serif;
       font-style: normal;
       font-weight: 400;
       font-size: 14px;
