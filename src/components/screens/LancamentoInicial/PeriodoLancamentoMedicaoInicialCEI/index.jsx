@@ -563,7 +563,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const response_dias_calendario = await getDiasCalendario(
         params_dias_calendario,
       );
-      setCalendarioMesConsiderado(response_dias_calendario.data);
+      if (!ehRecreioNasFerias()) {
+        setCalendarioMesConsiderado(response_dias_calendario.data);
+      }
 
       const params_feriados_no_mes = {
         mes: mes,
@@ -2154,6 +2156,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     if (ehSolicitacoesAlimentacaoLocation || ehProgramasEProjetosLocation) {
       return !validacaoSemana(dia);
     }
+
+    if (ehRecreioNasFerias()) {
+      const diaEncontrado = calendarioMesConsiderado.find(
+        (item) => item.dia === dia,
+      );
+      if (!diaEncontrado) {
+        return false;
+      }
+    }
+
     const temInclusaoAutorizadaNoDia = inclusoesAutorizadas.some(
       (inclusao) => Number(inclusao.dia) === Number(dia),
     );
