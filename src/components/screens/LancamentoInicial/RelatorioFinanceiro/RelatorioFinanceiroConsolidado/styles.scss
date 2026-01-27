@@ -9,6 +9,13 @@
     thead tr,
     tbody tr.linha-total {
       background-color: $grayLightHeader;
+      &.cor-tipo-a {
+        background-color: $greenBackgroundToastSuccess;
+      }
+      &.cor-tipo-b {
+        background-color: $greenBackgroundTable;
+      }
+
       border: 1px solid $grayDisabled;
       font-weight: bold;
 
