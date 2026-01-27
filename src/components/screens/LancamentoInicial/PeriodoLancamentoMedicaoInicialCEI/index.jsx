@@ -2154,6 +2154,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     if (ehSolicitacoesAlimentacaoLocation || ehProgramasEProjetosLocation) {
       return !validacaoSemana(dia);
     }
+
+    if (ehRecreioNasFerias()) {
+      const diaEncontrado = calendarioMesConsiderado.find(
+        (item) => item.dia === dia,
+      );
+      if (!diaEncontrado) {
+        return false;
+      }
+    }
+
     const temInclusaoAutorizadaNoDia = inclusoesAutorizadas.some(
       (inclusao) => Number(inclusao.dia) === Number(dia),
     );
