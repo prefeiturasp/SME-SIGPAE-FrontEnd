@@ -260,7 +260,6 @@ export const DashboardDietaEspecial = ({ ...props }) => {
                     <CardStatusDeSolicitacao
                       cardTitle={`${contadorDietas(
                         getNomeCardAguardandoAutorizacao(),
-                        aguardandoAutorizacao,
                       )}`}
                       cardType={CARD_TYPE_ENUM.PENDENTE}
                       solicitations={aguardandoAutorizacao}
@@ -271,10 +270,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
                   </div>
                   <div className="col-6">
                     <CardStatusDeSolicitacao
-                      cardTitle={`${contadorDietas(
-                        "Autorizadas",
-                        autorizadas,
-                      )}`}
+                      cardTitle={`${contadorDietas("Autorizadas")}`}
                       cardType={CARD_TYPE_ENUM.AUTORIZADO}
                       solicitations={autorizadas}
                       icon={ICON_CARD_TYPE_ENUM.AUTORIZADO}
