@@ -3,7 +3,7 @@ import {
   TabelaParametrizacao,
   ValorTabela,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
-import { formatarTotal } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
+import { formataMilharDecimal } from "src/helpers/utilities";
 import { stringDecimalToNumber } from "src/helpers/parsers";
 
 type Props = {
@@ -19,6 +19,11 @@ const _PERIODOS = [
   { value: "PARCIAL", label: "Período Parcial" },
 ];
 
+const _TIPO_CLASS = {
+  "TIPO A": "cor-tipo-a",
+  "TIPO B": "cor-tipo-b",
+};
+
 export function TabelaDietasCEI({
   tabelas,
   tipoDieta,
@@ -32,7 +37,7 @@ export function TabelaDietasCEI({
   return (
     <table className="tabela-relatorio">
       <thead>
-        <tr>
+        <tr className={_TIPO_CLASS[tipoDieta] ?? ""}>
           <th className="col-faixa">DIETA ESPECIAL - {tipoDieta}</th>
           <th className="col-unitario">VALOR UNITÁRIO</th>
           <th className="col-reajuste">% de ACRÉSCIMO</th>
@@ -83,17 +88,17 @@ export function TabelaDietasCEI({
                   {periodo.label} <b>- {faixa.__str__}</b>
                 </td>
                 <td className="col-unitario">
-                  R$ {formatarTotal(valorUnitario)}
+                  R$ {formataMilharDecimal(valorUnitario)}
                 </td>
                 <td className="col-reajuste">
-                  % {formatarTotal(valorAcrescimo)}
+                  % {formataMilharDecimal(valorAcrescimo)}
                 </td>
                 <td className="col-total-unitario">
-                  R$ {formatarTotal(totalUnitario)}
+                  R$ {formataMilharDecimal(totalUnitario)}
                 </td>
                 <td className="col-atendimentos">{numeroConsumo}</td>
                 <td className="col-valor-total">
-                  R$ {formatarTotal(valorTotal)}
+                  R$ {formataMilharDecimal(valorTotal)}
                 </td>
               </tr>
             );
@@ -106,7 +111,7 @@ export function TabelaDietasCEI({
           <td className="col-total-unitario"></td>
           <td className="col-atendimentos">{totalConsumoGeral}</td>
           <td className="col-valor-total">
-            R$ {formatarTotal(valorTotalGeral)}
+            R$ {formataMilharDecimal(valorTotalGeral)}
           </td>
         </tr>
       </tbody>
