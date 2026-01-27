@@ -360,7 +360,6 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         column,
         categoria,
         suspensoesAutorizadas,
-        row,
       ) ||
       campoRefeicaoComRPLAutorizadaESemObservacao(
         formValuesAtualizados,

@@ -2040,7 +2040,6 @@ export default () => {
         column,
         categoria,
         suspensoesAutorizadas,
-        row,
       ) ||
       campoComKitLancheAutorizadoMenorQueSolicitadoESemObservacaoOuMaiorQueOSolicitado(
         formValuesAtualizados,
