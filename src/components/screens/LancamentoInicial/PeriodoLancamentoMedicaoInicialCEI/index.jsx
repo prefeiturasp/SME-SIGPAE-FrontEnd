@@ -437,12 +437,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         };
 
         if (ehRecreioNasFerias()) {
-          const calendario = await obterDiasLetivosCorretos(
-            periodo,
-            escola,
-            mes,
-            ano,
-          );
+          const calendario = await obterDiasLetivosCorretos();
 
           response_log_matriculados_por_faixa_etaria_dia =
             await obterNumerosMatriculados(
