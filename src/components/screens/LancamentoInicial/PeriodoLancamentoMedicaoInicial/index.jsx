@@ -3371,7 +3371,6 @@ export default () => {
                                                             column.dia,
                                                             categoria.id,
                                                             categoria.nome,
-                                                            column,
                                                           )}
                                                           inputOnChange={(
                                                             e,
