@@ -564,7 +564,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const response_dias_calendario = await getDiasCalendario(
         params_dias_calendario,
       );
-      setCalendarioMesConsiderado(response_dias_calendario.data);
+      if (!ehRecreioNasFerias()) {
+        setCalendarioMesConsiderado(response_dias_calendario.data);
+      }
 
       const params_feriados_no_mes = {
         mes: mes,

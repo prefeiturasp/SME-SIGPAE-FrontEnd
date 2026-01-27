@@ -295,6 +295,13 @@ export const desabilitarField = (
           return true;
         }
 
+        const diaEncontrado = calendarioMesConsiderado.find(
+          (item) => item.dia === dia,
+        );
+        if (!diaEncontrado) {
+          return true;
+        }
+
         return false;
       }
     } else {
