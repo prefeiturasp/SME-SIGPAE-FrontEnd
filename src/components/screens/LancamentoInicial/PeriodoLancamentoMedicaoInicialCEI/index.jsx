@@ -2749,7 +2749,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           column.dia,
                                                           categoria.id,
                                                           categoria.nome,
-                                                          null,
                                                         )}
                                                         inputOnChange={(e) => {
                                                           const value =
