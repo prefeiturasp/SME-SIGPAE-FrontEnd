@@ -383,4 +383,60 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F�
     expect(botao).toBeInTheDocument();
     expect(botao).toBeDisabled();
   });
+
+  it("ao clicar na tab `Semana 1`, preenche dia 08 e salva lançamento", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+
+    const valores = {
+      "frequencia__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece": "1",
+      "frequencia__faixa_381aecc2-e1b2-4d26-a156-1834eec7f1dd": "6",
+      "frequencia__faixa_4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "1",
+      "frequencia__faixa_78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+      "frequencia__faixa_55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+      "frequencia__faixa_e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+      "frequencia__faixa_2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+    };
+
+    const campos = [
+      "frequencia__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece",
+      "frequencia__faixa_381aecc2-e1b2-4d26-a156-1834eec7f1dd",
+      "frequencia__faixa_4e60c819-4c0b-4d46-95c8-2e3b9674b40e",
+      "frequencia__faixa_78e4f4a6-ae04-42a6-9cc3-8f9813e98e66",
+      "frequencia__faixa_55f0af28-e1d5-43a0-a3f3-bbc453b784a5",
+      "frequencia__faixa_e3030bd1-2e85-4676-87b3-96b4032370d4",
+      "frequencia__faixa_2e14cd6e-33e6-4168-b1ce-449f686d1e7d",
+    ];
+
+    campos.forEach((frequenciaFaixaEtaria) => {
+      const input = screen.getByTestId(
+        `${frequenciaFaixaEtaria}__dia_08__categoria_1`,
+      );
+      fireEvent.change(input, {
+        target: { value: valores[frequenciaFaixaEtaria] },
+      });
+    });
+
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    await waitFor(() => {
+      expect(botao).not.toBeDisabled();
+      fireEvent.click(botao);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Lançamentos salvos com sucesso"),
+      ).toBeInTheDocument();
+    });
+
+    const valoresEsperados = { matriculados__faixa_null: "100", ...valores };
+    const camposAtualizados = ["matriculados__faixa_null", ...campos];
+
+    camposAtualizados.forEach((testId) => {
+      const input = screen.getByTestId(`${testId}__dia_08__categoria_1`);
+      expect(input).toHaveAttribute("value", valoresEsperados[testId]);
+    });
+  });
 });
