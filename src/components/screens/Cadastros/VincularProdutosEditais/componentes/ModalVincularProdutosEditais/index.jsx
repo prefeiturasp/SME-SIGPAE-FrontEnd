@@ -58,14 +58,14 @@ export default ({ closeModal, showModal, listaEditais, opcoesTipos }) => {
     let payload = formValues;
     if (produtosEditaisSelecionados.length !== 0) {
       const produtos_editais = produtosEditaisSelecionados.filter(
-        (prod) => prod !== "todos"
+        (prod) => prod !== "todos",
       );
       payload["produtos_editais"] = produtos_editais;
     }
     let resultadoValidacao = await validatePayload(payload);
     setErros(resultadoValidacao);
     let temErros = Object.keys(resultadoValidacao).find(
-      (k) => resultadoValidacao[k] === true
+      (k) => resultadoValidacao[k] === true,
     );
     if (temErros === undefined) {
       try {
@@ -119,7 +119,7 @@ export default ({ closeModal, showModal, listaEditais, opcoesTipos }) => {
         resultado = resultado.concat([extra.triggerValue]);
       } else {
         resultado = resultado.filter(
-          (uuid) => !extra.triggerValue.includes(uuid)
+          (uuid) => !extra.triggerValue.includes(uuid),
         );
       }
     }
@@ -161,7 +161,7 @@ export default ({ closeModal, showModal, listaEditais, opcoesTipos }) => {
       (changes.values["tipo_produto_edital_origem"] !== tipoProdEditalOrigem ||
         changes.values["edital_origem"] !== editalOrigem) &&
       ["edital_origem", "tipo_produto_edital_origem"].includes(
-        changes.active
+        changes.active,
       ) &&
       !loadingProdutos
     ) {
@@ -176,7 +176,7 @@ export default ({ closeModal, showModal, listaEditais, opcoesTipos }) => {
         .filter(
           (edital) =>
             !changes.values["edital_origem"].includes(edital.uuid) &&
-            !EDITAIS_INVALIDOS.includes(edital.numero.toUpperCase())
+            !EDITAIS_INVALIDOS.includes(edital.numero.toUpperCase()),
         )
         .map((edital) => {
           return { nome: edital.numero, uuid: edital.uuid };
@@ -212,7 +212,7 @@ export default ({ closeModal, showModal, listaEditais, opcoesTipos }) => {
           setCarregando(false);
           setQtdProdutosGetListaProdutos(response.data.length);
         }
-      } catch (e) {
+      } catch {
         toastError("Houve um erro ao carregar opções dos produtos");
         setLoadingProdutos(false);
         setCarregando(false);
@@ -262,9 +262,7 @@ export default ({ closeModal, showModal, listaEditais, opcoesTipos }) => {
                       onClick={() => setOpenSelect1(!openSelect1)}
                       onBlur={() => setOpenSelect1(false)}
                       name="edital_origem"
-                      onChange={(value) =>
-                        onChangeEditalDeOrigem(value, form, values)
-                      }
+                      onChange={(value) => onChangeEditalDeOrigem(value, form)}
                       filterOption={(inputValue, option) =>
                         option.props.children
                           .toString()
