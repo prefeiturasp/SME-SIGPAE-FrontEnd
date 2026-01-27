@@ -4,6 +4,7 @@ import ModalAnalisar from "../../components/ModalAnalisar";
 
 describe("Testes de comportamentos - ModalAnalisar", () => {
   const setShowModal = jest.fn();
+  const onAnalisar = jest.fn();
 
   const renderComponent = (showModal = true) =>
     render(
@@ -12,7 +13,7 @@ describe("Testes de comportamentos - ModalAnalisar", () => {
           showModal={showModal}
           setShowModal={setShowModal}
           uuidRelatorio="123e4567-e89b-12d3-a456-426614174000"
-          onAnalisar={jest.fn()}
+          onAnalisar={onAnalisar}
         />
       </MemoryRouter>,
     );
@@ -48,9 +49,15 @@ describe("Testes de comportamentos - ModalAnalisar", () => {
     expect(setShowModal).toHaveBeenCalledWith(false);
   });
 
-  it("deve renderizar o botão 'Analisar Ateste Financeiro'", () => {
+  it("deve renderizar o botão 'Analisar Ateste Financeiro' e clicar chamando onAnalisar", () => {
     renderComponent(true);
 
     expect(screen.getByText("Analisar Ateste Financeiro")).toBeInTheDocument();
+    const analisarButton = screen.getByRole("button", {
+      name: /Analisar Ateste Financeiro/i,
+    });
+    fireEvent.click(analisarButton);
+
+    expect(onAnalisar).toHaveBeenCalled();
   });
 });
