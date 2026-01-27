@@ -66,6 +66,7 @@ export function RelatorioFinanceiroConsolidado() {
                     lotes={lotes}
                     gruposUnidadeEscolar={gruposUnidadeEscolar}
                     mesesAnos={mesesAnos}
+                    exibirReabrirLancamentos
                   />
                 </form>
               )}

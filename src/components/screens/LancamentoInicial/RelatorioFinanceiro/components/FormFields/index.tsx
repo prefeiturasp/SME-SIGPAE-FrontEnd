@@ -25,12 +25,14 @@ type FieldsProps = {
     uuid: string;
     nome: string;
   }[];
+  exibirReabrirLancamentos?: boolean;
 };
 
 export function FormFields({
   lotes,
   gruposUnidadeEscolar,
   mesesAnos,
+  exibirReabrirLancamentos,
 }: FieldsProps) {
   const [searchParams] = useSearchParams();
   const uuidRelatorioFinanceiro = searchParams.get("uuid");
@@ -88,16 +90,18 @@ export function FormFields({
           disabled={uuidRelatorioFinanceiro}
         />
       </div>
-      <div className="col-3 mt-2">
-        <br />
-        <Botao
-          dataTestId="botao-carregar"
-          texto="Reabrir Lançamentos"
-          style={BUTTON_STYLE.ORANGE_OUTLINE}
-          type={BUTTON_TYPE.BUTTON}
-          icon={BUTTON_ICON.REFRESH}
-        />
-      </div>
+      {exibirReabrirLancamentos && (
+        <div className="col-3 mt-2">
+          <br />
+          <Botao
+            dataTestId="botao-carregar"
+            texto="Reabrir Lançamentos"
+            style={BUTTON_STYLE.ORANGE_OUTLINE}
+            type={BUTTON_TYPE.BUTTON}
+            icon={BUTTON_ICON.REFRESH}
+          />
+        </div>
+      )}
     </div>
   );
 }

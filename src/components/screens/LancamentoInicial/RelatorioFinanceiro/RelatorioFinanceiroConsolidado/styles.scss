@@ -6,18 +6,18 @@
     font-size: 14px;
     color: $blackInput;
 
-    thead {
-      tr {
-        background-color: $grayLightHeader;
-        border: 1px solid $grayDisabled;
-        border-radius: 4px 4px 0 0;
-        font-weight: bold;
+    thead tr,
+    tbody tr.linha-total {
+      background-color: $grayLightHeader;
+      border: 1px solid $grayDisabled;
+      font-weight: bold;
 
-        th {
-          padding: 0.5em;
-          &:not(:first-child) {
-            border-left: 1px solid $grayDisabled;
-          }
+      td,
+      th {
+        padding: 0.5em;
+
+        &:not(:first-child) {
+          border-left: 1px solid $grayDisabled;
         }
       }
     }
