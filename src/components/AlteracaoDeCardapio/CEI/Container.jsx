@@ -30,7 +30,7 @@ export const Container = () => {
       setMotivos(agregarDefault(response.data.results));
     } else {
       setErroAPI(
-        "Erro ao carregar motivos de alteração de dia de alimentação. Tente novamente mais tarde."
+        "Erro ao carregar motivos de alteração de dia de alimentação. Tente novamente mais tarde.",
       );
     }
   };
@@ -41,7 +41,7 @@ export const Container = () => {
       setPeriodosValidos(response.data);
     } else {
       setErroAPI(
-        "Erro ao carregar períodos válidos. Tente novamente mais tarde."
+        "Erro ao carregar períodos válidos. Tente novamente mais tarde.",
       );
     }
   };
@@ -52,7 +52,7 @@ export const Container = () => {
       setVinculos(response.data.results);
     } else {
       setErroAPI(
-        "Erro ao carregar vínculos de tipo de alimentação. Tente novamente mais tarde."
+        "Erro ao carregar vínculos de tipo de alimentação. Tente novamente mais tarde.",
       );
     }
     getPeriodosValidos(escola_uuid);
@@ -64,14 +64,14 @@ export const Container = () => {
     });
     if (response.status === HTTP_STATUS.OK) {
       setProximosCincoDiasUteis(
-        dataParaUTC(new Date(response.data.proximos_cinco_dias_uteis))
+        dataParaUTC(new Date(response.data.proximos_cinco_dias_uteis)),
       );
       setProximosDoisDiasUteis(
-        dataParaUTC(new Date(response.data.proximos_dois_dias_uteis))
+        dataParaUTC(new Date(response.data.proximos_dois_dias_uteis)),
       );
     } else {
       setErroAPI(
-        "Erro ao carregar dias úteis para a solicitação. Tente novamente mais tarde."
+        "Erro ao carregar dias úteis para a solicitação. Tente novamente mais tarde.",
       );
     }
   };
@@ -96,7 +96,7 @@ export const Container = () => {
     await Promise.all([
       getDiasUteisAsync(),
       getVinculosTipoAlimentacaoPorEscolaAsync(
-        meusDados.vinculo_atual.instituicao.uuid
+        meusDados.vinculo_atual.instituicao.uuid,
       ),
     ]);
   };
@@ -113,13 +113,15 @@ export const Container = () => {
 
   const filtroPeriodos = () => {
     return meusDados.vinculo_atual.instituicao.periodos_escolares.filter(
-      (periodo) => periodosValidos.includes(periodo.nome)
+      (periodo) => periodosValidos.includes(periodo.nome),
     );
   };
 
   const filtroVinculos = () => {
+    if (!Array.isArray(vinculos)) return [];
+
     return vinculos.filter(
-      (vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL"
+      (vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL",
     );
   };
 
