@@ -14,6 +14,7 @@ import {
 import {
   usuarioEhCronograma,
   usuarioEhCodaeDilog,
+  usuarioEhDilogDiretoria,
 } from "../../../../../helpers/utilities";
 import { ItemCalendario } from "../../interfaces";
 import { EtapaCalendario } from "src/interfaces/pre_recebimento.interface";
@@ -93,7 +94,9 @@ export const ModalCronograma: React.FC<Props> = ({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        {(usuarioEhCronograma() || usuarioEhCodaeDilog()) &&
+        {(usuarioEhCronograma() ||
+          usuarioEhDilogDiretoria() ||
+          usuarioEhCodaeDilog()) &&
           event.objeto.status === "Assinado CODAE" && (
             <Botao
               texto="Alterar"

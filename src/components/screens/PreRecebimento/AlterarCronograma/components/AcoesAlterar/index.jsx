@@ -81,7 +81,9 @@ export default ({
     usuarioEhEmpresaFornecedor() && !solicitacaoAlteracaoCronograma;
 
   const ehCronogramaNovo =
-    (usuarioEhCronograma() || usuarioEhCodaeDilog()) &&
+    (usuarioEhCronograma() ||
+      usuarioEhDilogDiretoria() ||
+      usuarioEhCodaeDilog()) &&
     !solicitacaoAlteracaoCronograma;
 
   const ehCronogramaEmAnalise =
@@ -95,7 +97,7 @@ export default ({
   const ehDilogDiretoriaAbastecimento =
     usuarioEhDilogDiretoria() &&
     ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
-      solicitacaoAlteracaoCronograma?.status
+      solicitacaoAlteracaoCronograma?.status,
     );
 
   const botoes = [
@@ -165,7 +167,7 @@ export default ({
               setShow={setShow}
             />
           </React.Fragment>
-        ) : null
+        ) : null,
       )}
       <Botao
         texto="Voltar"
