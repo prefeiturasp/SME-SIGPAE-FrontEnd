@@ -229,7 +229,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F√
     expect(specificParticipantes).toBeInTheDocument();
   });
 
-  it("ao clicar na tab `Semana 1`, exibe, nos dias 01 a 07, e verifica os lan√ßamentos", async () => {
+  it("ao clicar na tab `Semana 1`, exibe, nos dias 08 a 14, e verifica os lan√ßamentos", async () => {
     await awaitServices();
     const semana1Element = screen.getByText("Semana 1");
     fireEvent.click(semana1Element);
@@ -363,5 +363,24 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F√
     await waitFor(() => {
       expect(botao).not.toBeDisabled();
     });
+  });
+
+  it("ao clicar na tab `Semana 1`, preencher frequencia maior que participantes e exibe erro", async () => {
+    await awaitServices();
+    const semana1Element = screen.getByText("Semana 1");
+    fireEvent.click(semana1Element);
+
+    const inputElementFrequenciaDia03 = screen.getByTestId(
+      "frequencia__faixa_4e60c819-4c0b-4d46-95c8-2e3b9674b40e__dia_08__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputElementFrequenciaDia03, {
+        target: { value: "110" },
+      });
+    });
+    expect(inputElementFrequenciaDia03).toHaveClass("invalid-field");
+    const botao = screen.getByText("Salvar Lan√ßamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).toBeDisabled();
   });
 });
