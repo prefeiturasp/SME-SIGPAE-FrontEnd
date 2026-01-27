@@ -4,7 +4,7 @@ import {
   ValorTabela,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { stringDecimalToNumber } from "src/helpers/parsers";
-import { formatarTotal } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
+import { formataMilharDecimal } from "src/helpers/utilities";
 
 type Props = {
   tabelas: TabelaParametrizacao[];
@@ -78,17 +78,17 @@ export function TabelaAlimentacaoCEI({
                   {periodo.label} <b>- {faixa.__str__}</b>
                 </td>
                 <td className="col-unitario">
-                  R$ {formatarTotal(valorUnitario)}
+                  R$ {formataMilharDecimal(valorUnitario)}
                 </td>
                 <td className="col-reajuste">
-                  R$ {formatarTotal(valorReajuste)}
+                  R$ {formataMilharDecimal(valorReajuste)}
                 </td>
                 <td className="col-total-unitario">
-                  R$ {formatarTotal(totalUnitario)}
+                  R$ {formataMilharDecimal(totalUnitario)}
                 </td>
                 <td className="col-atendimentos">{numeroAtendimentos}</td>
                 <td className="col-valor-total">
-                  R$ {formatarTotal(valorTotal)}
+                  R$ {formataMilharDecimal(valorTotal)}
                 </td>
               </tr>
             );
@@ -101,7 +101,7 @@ export function TabelaAlimentacaoCEI({
           <td className="col-total-unitario"></td>
           <td className="col-atendimentos">{totalAtendimentosGeral}</td>
           <td className="col-valor-total">
-            R$ {formatarTotal(valorTotalGeral)}
+            R$ {formataMilharDecimal(valorTotalGeral)}
           </td>
         </tr>
       </tbody>
