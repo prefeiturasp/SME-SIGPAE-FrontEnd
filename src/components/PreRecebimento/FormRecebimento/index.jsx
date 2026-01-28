@@ -114,19 +114,20 @@ export default ({ values, form, etapas, recebimentos, setRecebimentos }) => {
                       name={`data_recebimento_${index}`}
                       placeholder={"Selecionar a Data"}
                       onChangeEffect={(e) => {
-                        const index_ = datasProgramadas.findIndex(
+                        const datasProgramadas_ = [...datasProgramadas];
+                        const index_ = datasProgramadas_.findIndex(
                           (dp) => dp.index === index,
                         );
                         const values_ = form.getState().values;
                         const value = e.target.value;
                         if (index_ !== -1) {
-                          datasProgramadas.splice(index_, 1);
+                          datasProgramadas_.splice(index_, 1);
                         }
-                        datasProgramadas.push({
+                        datasProgramadas_.push({
                           nome: value,
                           index,
                         });
-                        setDatasProgramadas(datasProgramadas);
+                        setDatasProgramadas(datasProgramadas_);
                         form.change("reload", !values_.reload);
                       }}
                     />
