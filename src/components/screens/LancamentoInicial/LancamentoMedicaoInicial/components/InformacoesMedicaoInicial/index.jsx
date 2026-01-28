@@ -138,7 +138,6 @@ export default ({
 
   const handleClickEditar = () => {
     setEmEdicao(true);
-    !solicitacaoMedicaoInicial && opcoesContagem.length > 0;
   };
 
   const handleClickSalvar = async () => {
