@@ -55,40 +55,40 @@ class PainelPedidos extends Component {
       getCodaePedidosDeKitLanche(
         filtro,
         TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
-        paramsFromPrevPage
+        paramsFromPrevPage,
       ),
       getCodaePedidosDeKitLanche(
         filtro,
         TIPO_SOLICITACAO.SOLICITACAO_CEI,
-        paramsFromPrevPage
+        paramsFromPrevPage,
       ),
       getCodaePedidosDeKitLanche(
         filtro,
         TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
-        paramsFromPrevPage
+        paramsFromPrevPage,
       ),
     ]).then(([response, responseCei, responseCEMEI]) => {
       const results = safeConcatOn(
         "results",
         response,
         responseCei,
-        responseCEMEI
+        responseCEMEI,
       );
       pedidosPrioritarios = ordenarPedidosDataMaisRecente(
-        filtraPrioritarios(results)
+        filtraPrioritarios(results),
       );
       pedidosNoPrazoLimite = ordenarPedidosDataMaisRecente(
-        filtraNoLimite(results)
+        filtraNoLimite(results),
       );
       pedidosNoPrazoRegular = ordenarPedidosDataMaisRecente(
-        filtraRegular(results)
+        filtraRegular(results),
       );
-      this.setState({
+      this.setState((prevState) => ({
         pedidosPrioritarios,
         pedidosNoPrazoLimite,
         pedidosNoPrazoRegular,
-        pedidosCarregados: this.state.pedidosCarregados + 1,
-      });
+        pedidosCarregados: prevState.pedidosCarregados + 1,
+      }));
     });
   }
 
@@ -103,7 +103,7 @@ class PainelPedidos extends Component {
     if (this.props.filtros) {
       this.props.change(
         "diretoria_regional",
-        this.props.filtros.diretoria_regional
+        this.props.filtros.diretoria_regional,
       );
       this.props.change("lote", this.props.filtros.lote);
     }
