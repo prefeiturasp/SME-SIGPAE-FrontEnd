@@ -177,7 +177,7 @@ nav.navbar {
 
     .nav-item .nav-link[data-toggle="collapse"].collapsed::after {
       content: "\f078";
-      font-family: "Font Awesome 5 Free";
+      font-family: "Font Awesome 5 Free", sans-serif;
       float: right;
     }
 
