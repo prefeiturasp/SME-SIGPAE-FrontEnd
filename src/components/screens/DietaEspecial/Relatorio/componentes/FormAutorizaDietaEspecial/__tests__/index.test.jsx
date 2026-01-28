@@ -276,4 +276,37 @@ describe("Test <Relatorio> - Dieta Especial - Solicitação de Inclusão - Visã
       );
     });
   });
+
+  it("não deve salvar rascunho e deve exibir aviso se campos obrigatórios estiverem faltando", async () => {
+    await awaitServices();
+    const campoOrientacoes = screen.getByTestId("ckeditor-orientacoes_gerais");
+    fireEvent.change(campoOrientacoes, { target: { value: "" } });
+
+    const btnRascunho = screen.getByRole("button", {
+      name: /salvar rascunho/i,
+    });
+
+    await fireEvent.click(btnRascunho);
+
+    await waitFor(() => {
+      expect(atualizaDietaEspecial).not.toHaveBeenCalled();
+      expect(toastError).toHaveBeenCalledWith(
+        "Preencha todos os campos obrigatórios antes de salvar o rascunho.",
+      );
+    });
+  });
+
+  it("deve habilitar o envio do rascunho apenas quando o formulário for modificado (pristine check)", async () => {
+    await awaitServices();
+
+    const btnRascunho = screen.getByRole("button", {
+      name: /salvar rascunho/i,
+    });
+    expect(btnRascunho).toBeDisabled();
+    const campoOrientacoes = screen.getByTestId("ckeditor-orientacoes_gerais");
+    fireEvent.change(campoOrientacoes, {
+      target: { value: "Nova orientação" },
+    });
+    expect(btnRascunho).not.toBeDisabled();
+  });
 });
