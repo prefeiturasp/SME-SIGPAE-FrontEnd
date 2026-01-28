@@ -26,7 +26,7 @@ export function TabelaAlimentacao({
     <table className="tabela-relatorio">
       <thead>
         <tr>
-          <th className="col-faixa">TIPOS DE ALIMENTAÇÕES - SEM DIETA</th>
+          <th className="col-faixa">TIPOS DE ALIMENTAÇÕES - SEM DIETAS</th>
           <th className="col-unitario">VALOR UNITÁRIO</th>
           <th className="col-reajuste">VALOR DO REAJUSTE</th>
           <th className="col-total-unitario">VALOR UNITÁRIO TOTAL</th>
