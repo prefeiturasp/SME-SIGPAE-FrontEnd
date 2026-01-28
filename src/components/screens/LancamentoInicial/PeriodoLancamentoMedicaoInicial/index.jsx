@@ -2317,7 +2317,7 @@ export default () => {
         !escolaEhEMEBS()) ||
       (escolaEhEMEBS() &&
         !validacaoSemana(dia) &&
-        diasParaCorrecao.find(
+        diasParaCorrecao?.find(
           (diaParaCorrecao) =>
             String(diaParaCorrecao.dia) === String(dia) &&
             String(diaParaCorrecao.categoria_medicao) === String(categoriaId) &&
@@ -2833,7 +2833,7 @@ export default () => {
                                   <div>Sáb.</div>
                                   <div>Dom.</div>
                                 </div>
-                                {semanaSelecionada &&
+                                {!!semanaSelecionada &&
                                   calendarioMesConsiderado &&
                                   feriadosNoMes &&
                                   (tabelaDietaRows || tabelaDietaEnteralRows) &&

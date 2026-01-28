@@ -2380,7 +2380,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                   <div>Sáb.</div>
                                   <div>Dom.</div>
                                 </div>
-                                {semanaSelecionada &&
+                                {!!semanaSelecionada &&
                                   calendarioMesConsiderado &&
                                   feriadosNoMes &&
                                   tabelaAlimentacaoCEIRows &&
