@@ -715,7 +715,7 @@ export const formataPayloadAtualizacaoFichaTecnica = (
   };
   let infosNutricionais = {};
 
-  Object.keys(values).map((key) => {
+  Object.keys(values).forEach((key) => {
     const ehFabricante = key.includes("fabricante");
 
     if (initialValues[key] !== values[key] && !ehFabricante) {
