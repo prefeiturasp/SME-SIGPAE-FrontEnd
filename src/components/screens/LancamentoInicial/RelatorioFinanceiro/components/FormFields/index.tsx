@@ -13,15 +13,9 @@ import {
 import { SelectOption, MultiSelectOption } from "../../types";
 
 type FieldsProps = {
-  lotes: {
-    value: string;
-    label: string;
-  }[];
+  lotes: MultiSelectOption[];
   gruposUnidadeEscolar: MultiSelectOption[] | SelectOption[];
-  mesesAnos: {
-    uuid: string;
-    nome: string;
-  }[];
+  mesesAnos: SelectOption[];
   exibirReabrirLancamentos?: boolean;
 };
 
