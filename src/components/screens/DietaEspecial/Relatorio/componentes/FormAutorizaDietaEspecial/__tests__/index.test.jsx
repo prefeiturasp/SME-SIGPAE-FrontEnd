@@ -27,7 +27,6 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 
 import { mockDietaEspecialComum } from "src/mocks/DietaEspecial/mockDietaAvalidar";
-import preview from "jest-preview";
 
 jest.mock("src/components/Shareable/Toast/dialogs", () => ({
   toastSuccess: jest.fn(),
@@ -232,8 +231,6 @@ describe("Test <Relatorio> - Dieta Especial - Solicitação de Inclusão - Visã
 
   it("Testa o botão de Salvar Rascunho", async () => {
     await awaitServices();
-    preview.debug();
-
     const btnRascunho = screen.getByRole("button", {
       name: /salvar rascunho/i,
     });
