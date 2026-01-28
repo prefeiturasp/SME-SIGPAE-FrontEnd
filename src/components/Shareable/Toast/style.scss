@@ -1,7 +1,7 @@
 @use "src/styles/variables.scss" as *;
 
 * {
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
 }
 
 .Toastify__toast {
@@ -16,7 +16,7 @@
 
 // Container
 .Toastify__toast-container--top-center {
-  font-family: Roboto;
+  font-family: Roboto, sans-serif;
   font-weight: bold;
   font-size: 18px;
   letter-spacing: 0.02em;
