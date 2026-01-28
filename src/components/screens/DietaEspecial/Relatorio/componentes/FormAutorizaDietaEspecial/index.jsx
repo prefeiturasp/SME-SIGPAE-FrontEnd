@@ -171,7 +171,15 @@ const FormAutorizaDietaEspecial = ({
     setAlergias(formataAlergias(dietaEspecial));
   };
 
-  const salvaRascunho = async (values) => {
+  const salvaRascunho = async (values, form) => {
+    const { valid } = form.getState();
+    if (!valid) {
+      toastError(
+        "Preencha todos os campos obrigatórios antes de salvar o rascunho.",
+      );
+      return;
+    }
+
     values.alergias_intolerancias = diagnosticosSelecionados;
     if (protocoloPadrao) {
       values.nome_protocolo = protocoloPadrao.nome_protocolo;
@@ -192,8 +200,11 @@ const FormAutorizaDietaEspecial = ({
       if (response.status === HTTP_STATUS.OK) {
         toastSuccess("Rascunho salvo com sucesso!");
       }
-    } catch {
-      toastError("Houve um erro ao salvar o rascunho.");
+    } catch (error) {
+      const mensagem =
+        error?.response?.data?.substituicoes ||
+        "Houve um erro ao salvar o rascunho.";
+      toastError(mensagem);
     }
     onAutorizarOuNegar();
   };
@@ -393,6 +404,7 @@ const FormAutorizaDietaEspecial = ({
                         produtos={produtos}
                         form={form}
                         values={values}
+                        required
                       />
                     </div>
                   </>
@@ -416,7 +428,7 @@ const FormAutorizaDietaEspecial = ({
                       texto="Salvar Rascunho"
                       type={BUTTON_TYPE.BUTTON}
                       style={BUTTON_STYLE.GREEN_OUTLINE}
-                      onClick={() => salvaRascunho(values)}
+                      onClick={() => salvaRascunho(values, form)}
                       disabled={pristine || submitting}
                     />
                   )}
