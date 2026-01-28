@@ -350,7 +350,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
           valoresDia.frequencia[faixa.uuid],
         );
 
-        if ([13, 14].includes(dia)) {
+        if ([11, 12, 13, 14].includes(dia)) {
           expect(inputFrequencia.disabled).toBe(true);
         } else {
           expect(inputFrequencia.disabled).toBe(false);
