@@ -62,7 +62,7 @@ export default () => {
   const filtrarAlimentos = (guia) => {
     let listaAlimentos = localStorage.alimentosConferencia;
     guia.alimentos = guia.alimentos.filter((item) =>
-      listaAlimentos.includes(item.nome_alimento)
+      listaAlimentos.includes(item.nome_alimento),
     );
     return guia;
   };
@@ -175,7 +175,7 @@ export default () => {
     } else {
       if (values[`ocorrencias_${index}`] && flagAtraso) {
         values[`ocorrencias_${index}`] = values[`ocorrencias_${index}`].filter(
-          (o) => o !== "ATRASO_ENTREGA"
+          (o) => o !== "ATRASO_ENTREGA",
         );
         setFlagAtraso(false);
       }
@@ -219,7 +219,7 @@ export default () => {
       guia.alimentos.forEach((item, index) => {
         let recebidos_fechada = parseInt(values[`recebidos_fechada_${index}`]);
         let recebidos_fracionada = parseInt(
-          values[`recebidos_fracionada_${index}`]
+          values[`recebidos_fracionada_${index}`],
         );
         let dataEhDepois = comparaDataEntrega(values.data_entrega_real);
         let embalagensAlimento = guia.alimentos[index].embalagens;
@@ -317,7 +317,7 @@ export default () => {
 
     let valoresConf = JSON.parse(localStorage.getItem("valoresConferencia"));
     let guiaConf = filtrarAlimentos(
-      JSON.parse(localStorage.getItem("guiaConferencia"))
+      JSON.parse(localStorage.getItem("guiaConferencia")),
     );
     let ultimoItem = valoresConf[valoresConf.length - 1];
     let arquivos = arquivoAtual;
@@ -481,7 +481,7 @@ export default () => {
                       validate={composeValidators(
                         required,
                         maxLength(100),
-                        apenasLetras
+                        apenasLetras,
                       )}
                       required
                       dataTestId="nome_motorista"
@@ -498,7 +498,7 @@ export default () => {
                         required,
                         maxLength(7),
                         alphaNumeric,
-                        peloMenosUmNumeroEUmaLetra
+                        peloMenosUmNumeroEUmaLetra,
                       )}
                       toUppercaseActive
                       required
@@ -524,7 +524,7 @@ export default () => {
                         <div
                           className={`card-header card-tipo-${checaErrosCard(
                             errors,
-                            index
+                            index,
                           )}`}
                           id={`heading_${alimento.uuid}`}
                         >
@@ -574,11 +574,11 @@ export default () => {
                                     : item.embalagens;
                                   const fechada = filtraEmbalagemPorTipo(
                                     embalagens,
-                                    "FECHADA"
+                                    "FECHADA",
                                   );
                                   const fracionada = filtraEmbalagemPorTipo(
                                     embalagens,
-                                    "FRACIONADA"
+                                    "FRACIONADA",
                                   );
                                   const value_col =
                                     fechada && fracionada ? "col-6" : "col-12";
@@ -635,12 +635,12 @@ export default () => {
                                                       }
                                                       validate={composeValidators(
                                                         required,
-                                                        numericInteger
+                                                        numericInteger,
                                                       )}
                                                       onChange={validaOcorrencias(
                                                         values,
                                                         index,
-                                                        errors
+                                                        errors,
                                                       )}
                                                       dataTestId={`recebidos_fechada_${index}`}
                                                     />
@@ -707,12 +707,12 @@ export default () => {
                                                       }
                                                       validate={composeValidators(
                                                         required,
-                                                        numericInteger
+                                                        numericInteger,
                                                       )}
                                                       onChange={validaOcorrencias(
                                                         values,
                                                         index,
-                                                        errors
+                                                        errors,
                                                       )}
                                                       dataTestId={`recebidos_fracionada_${index}`}
                                                     />
@@ -754,7 +754,7 @@ export default () => {
                                   onChange={checaAtraso(values, index)}
                                   disabled={
                                     !["Parcial", "Não Recebido"].includes(
-                                      values[`status_${index}`]
+                                      values[`status_${index}`],
                                     )
                                   }
                                 />
@@ -786,7 +786,7 @@ export default () => {
                                     alignLeft
                                     disabled={
                                       !["Parcial", "Não Recebido"].includes(
-                                        values[`status_${index}`]
+                                        values[`status_${index}`],
                                       )
                                     }
                                     dataTestId={`input-file-${index}`}
@@ -811,7 +811,7 @@ export default () => {
                                   contador={500}
                                   validate={composeValidators(
                                     validaObservacoes(values, index),
-                                    maxLength(500)
+                                    maxLength(500),
                                   )}
                                   disabled={
                                     !values[`ocorrencias_${index}`] ||
@@ -844,7 +844,7 @@ export default () => {
                       type={BUTTON_TYPE.BUTTON}
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                       className="me-3"
-                      onClick={() => cancelarConferencia(values)}
+                      onClick={() => cancelarConferencia()}
                       dataTestId="botao-cancelar"
                     />
                     <Botao

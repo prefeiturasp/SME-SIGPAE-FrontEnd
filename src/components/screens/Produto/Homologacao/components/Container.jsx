@@ -34,7 +34,7 @@ export const Container = () => {
     const response = await getNumerosEditais();
     if (response.status === HTTP_STATUS.OK) {
       let editais = response.data.results.filter(
-        (edital) => !EDITAIS_INVALIDOS.includes(edital.numero.toUpperCase())
+        (edital) => !EDITAIS_INVALIDOS.includes(edital.numero.toUpperCase()),
       );
       setEditaisOptions(editais);
     } else {
@@ -67,10 +67,10 @@ export const Container = () => {
           .map((vinculo) => vinculo.edital.numero)
           .join(", "),
         dieta_especial: formataValoresBooleanos(
-          data.produto.eh_para_alunos_com_dieta
+          data.produto.eh_para_alunos_com_dieta,
         ),
         aditivos_alergicos: formataValoresBooleanos(
-          data.produto.tem_aditivos_alergenicos
+          data.produto.tem_aditivos_alergenicos,
         ),
         tem_gluten: formataValoresBooleanos(data.produto.tem_gluten),
       },
@@ -82,13 +82,12 @@ export const Container = () => {
   const getHomologacaoProdutoAsync = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
-    const card_suspensos = urlParams.get("card_suspensos");
 
     const response = await getHomologacaoProduto(uuid);
     if (response.status === HTTP_STATUS.OK) {
       setHomologacao(response.data);
       setProduto(response.data.produto);
-      setInitialValuesForm(response.data, card_suspensos);
+      setInitialValuesForm(response.data);
     } else {
       toastError("Erro ao carregar homologação do produto");
       setErro(true);
