@@ -155,8 +155,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     setAlteracoesAlimentacaoAutorizadas,
   ] = useState(null);
   const [kitLanchesAutorizadas, setKitLanchesAutorizadas] = useState(null);
-  const [exibirTooltipAoSalvar, setExibirTooltipAoSalvar] = useState(false);
-  const [inputsInclusaoComErro, setInputsInclusaoComErro] = useState([]);
+  const [exibirTooltipAoSalvar] = useState(false);
+  const [inputsInclusaoComErro] = useState([]);
   const [
     valoresMatriculadosFaixaEtariaDia,
     setValoresMatriculadosFaixaEtariaDia,
@@ -1815,15 +1815,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       }
     }
     desabilitaTooltip(formValuesAtualizados);
-
-    if (exibirTooltipAoSalvar) {
-      (formValuesAtualizados,
-        categoriasDeMedicao,
-        inclusoesAutorizadas,
-        setInputsInclusaoComErro,
-        setExibirTooltipAoSalvar,
-        validacaoDiaLetivo);
-    }
 
     if (
       (exibirTooltipRPLAutorizadas(
