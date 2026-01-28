@@ -1591,7 +1591,7 @@ export default () => {
       );
       return;
     }
-    Object.entries(valuesMesmoDiaDaObservacao).map((v) => {
+    Object.entries(valuesMesmoDiaDaObservacao).forEach((v) => {
       const keySplitted = v[0].split("__");
       const categoria = keySplitted.pop();
       const idCategoria = categoria.match(/\d/g).join("");
