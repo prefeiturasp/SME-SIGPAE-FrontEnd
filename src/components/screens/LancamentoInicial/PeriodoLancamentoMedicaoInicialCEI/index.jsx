@@ -243,7 +243,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   useEffect(() => {
     const mesAnoSelecionado = location.state
-      ? typeof location.state.mesAnoSelecionado === String
+      ? typeof location.state.mesAnoSelecionado === "string"
         ? new Date(location.state.mesAnoSelecionado.replace("'", ""))
         : new Date(location.state.mesAnoSelecionado)
       : mesAnoDefault;
