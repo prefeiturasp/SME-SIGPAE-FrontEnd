@@ -367,10 +367,10 @@ export default () => {
                           validate={required}
                         />
                       </div>
-                      <div className="col-3 my-2">
+                      <div className="col-3" style={{ marginTop: "30px" }}>
                         <Field
                           component={Select}
-                          label=" "
+                          label=""
                           dataTestId={"unidade_medida_porcao"}
                           naoDesabilitarPrimeiraOpcao
                           options={[
@@ -404,7 +404,7 @@ export default () => {
                           required
                           validate={required}
                           tooltipText={
-                            "A unidade de medida caseira é a utilizada com utensílios, exemplo: colher de sopa colher de chá, xícara, etc."
+                            "A unidade de medida caseira é a utilizada com utensílios, exemplo: colher de sopa, colher de chá, xícara, etc."
                           }
                         />
                       </div>

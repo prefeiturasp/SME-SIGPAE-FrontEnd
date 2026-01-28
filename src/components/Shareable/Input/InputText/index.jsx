@@ -77,7 +77,7 @@ export const InputText = (props) => {
         ),
         <label
           key={1}
-          htmlFor={name}
+          htmlFor={id || name || input?.name}
           className={`col-form-label ${labelClassName}`}
         >
           {label}

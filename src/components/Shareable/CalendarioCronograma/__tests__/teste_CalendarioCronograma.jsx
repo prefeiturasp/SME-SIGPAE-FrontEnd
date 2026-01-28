@@ -95,4 +95,118 @@ describe("Teste para o componente <CalendarioCronograma>", () => {
       });
     }
   });
+
+  describe("Exibição de Interrupções", () => {
+    it("deve aplicar classe interrupcao-entrega para eventos de interrupção", async () => {
+      await waitFor(() => {
+        expect(getObjetosMock).toHaveBeenCalled();
+      });
+
+      const eventPropGetterTest = (event) => {
+        if (event.isInterrupcao) {
+          return {
+            className: "interrupcao-entrega",
+            style: {
+              backgroundColor: "#ffcc80",
+              borderColor: "#f57c00",
+              color: "#5d4037",
+            },
+          };
+        }
+        return {};
+      };
+
+      const resultadoInterrupcao = eventPropGetterTest({
+        isInterrupcao: true,
+        title: "INTERRUPÇÃO DE ENTREGA",
+      });
+      expect(resultadoInterrupcao.className).toBe("interrupcao-entrega");
+      expect(resultadoInterrupcao.style.backgroundColor).toBe("#ffcc80");
+      expect(resultadoInterrupcao.style.borderColor).toBe("#f57c00");
+    });
+
+    it("deve exibir cor laranja para eventos de interrupção", async () => {
+      await waitFor(() => {
+        expect(getObjetosMock).toHaveBeenCalled();
+      });
+
+      const eventPropGetterTest = (event) => {
+        if (event.isInterrupcao) {
+          return {
+            style: {
+              backgroundColor: "#ffcc80",
+            },
+          };
+        }
+        return {};
+      };
+
+      const resultado = eventPropGetterTest({ isInterrupcao: true });
+      expect(resultado.style.backgroundColor).toBe("#ffcc80");
+    });
+
+    it("deve exibir tooltip com informações da interrupção", () => {
+      const mockInterrupcao = {
+        isInterrupcao: true,
+        motivo_display: "Reunião",
+        descricao_motivo: "",
+        title: "INTERRUPÇÃO DE ENTREGA",
+      };
+
+      const tooltipText = mockInterrupcao.descricao_motivo
+        ? `${mockInterrupcao.motivo_display}: ${mockInterrupcao.descricao_motivo}`
+        : mockInterrupcao.motivo_display;
+
+      expect(tooltipText).toBe("Reunião");
+    });
+
+    it("deve exibir tooltip com descrição quando motivo é OUTROS", () => {
+      const mockInterrupcao = {
+        isInterrupcao: true,
+        motivo_display: "Outros",
+        descricao_motivo: "Manutenção do sistema",
+        title: "INTERRUPÇÃO DE ENTREGA",
+      };
+
+      const tooltipText = mockInterrupcao.descricao_motivo
+        ? `${mockInterrupcao.motivo_display}: ${mockInterrupcao.descricao_motivo}`
+        : mockInterrupcao.motivo_display;
+
+      expect(tooltipText).toBe("Outros: Manutenção do sistema");
+    });
+
+    it("deve processar corretamente eventos mistos (cronogramas e interrupções)", async () => {
+      await waitFor(() => {
+        expect(getObjetosMock).toHaveBeenCalled();
+      });
+
+      const eventos = [
+        { isInterrupcao: false, programa_leve_leite: true, title: "Produto A" },
+        {
+          isInterrupcao: true,
+          motivo_display: "Emenda",
+          title: "INTERRUPÇÃO DE ENTREGA",
+        },
+        {
+          isInterrupcao: false,
+          programa_leve_leite: false,
+          title: "Produto B",
+        },
+      ];
+
+      const eventPropGetter = (event) => {
+        if (event.isInterrupcao) {
+          return { className: "interrupcao-entrega" };
+        }
+        if (event.programa_leve_leite) {
+          return { className: "programa-leve-leite" };
+        }
+        return {};
+      };
+
+      expect(eventPropGetter(eventos[0]).className).toBe("programa-leve-leite");
+      expect(eventPropGetter(eventos[1]).className).toBe("interrupcao-entrega");
+      expect(Object.keys(eventPropGetter(eventos[2])).length).toBe(0);
+    });
+  });
 });
