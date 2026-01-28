@@ -321,3 +321,39 @@ export interface VerMaisItem {
   data: string;
   link: string;
 }
+
+// Interrupção Programada de Entregas
+export type MotivoInterrupcaoChoices =
+  | "EMENDA"
+  | "REUNIAO"
+  | "INVENTARIO"
+  | "OUTROS";
+
+export type TipoCalendarioInterrupcaoChoices = "ARMAZENAVEL" | "PONTO_A_PONTO";
+
+export interface InterrupcaoProgramadaEntrega {
+  uuid: string;
+  data: string;
+  motivo: MotivoInterrupcaoChoices;
+  motivo_display: string;
+  descricao_motivo: string;
+  tipo_calendario: TipoCalendarioInterrupcaoChoices;
+  tipo_calendario_display: string;
+}
+
+export interface InterrupcaoProgramadaEntregaPayload {
+  data: string;
+  motivo: MotivoInterrupcaoChoices;
+  descricao_motivo?: string;
+  tipo_calendario: TipoCalendarioInterrupcaoChoices;
+}
+
+export interface MotivoInterrupcaoOption {
+  value: MotivoInterrupcaoChoices;
+  label: string;
+}
+
+export interface FiltrosInterrupcaoProgramada {
+  mes?: number;
+  ano?: number;
+}
