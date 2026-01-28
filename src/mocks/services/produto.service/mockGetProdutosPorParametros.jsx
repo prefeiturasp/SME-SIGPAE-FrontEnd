@@ -1046,7 +1046,7 @@ export const mockGetProdutosPorParametros = {
             },
             criado_em: "01/02/2022 13:56:55",
             reclamacao:
-              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;">VERIFICAR O PRODUTO</span>&nbsp;</p>',
+              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;">VERIFICAR O PRODUTO</span>&nbsp;</p>',
             uuid: "d0eeaa3f-46d9-418f-bf28-65c014baf71c",
             reclamante_cargo: "ANALISTA DE SAUDE NIVEL I",
           },
@@ -1422,7 +1422,7 @@ export const mockGetProdutosPorParametros = {
             },
             criado_em: "01/02/2022 13:37:31",
             reclamacao:
-              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;">VERIFICAR O PRODUTO</span>&nbsp;</p>',
+              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;">VERIFICAR O PRODUTO</span>&nbsp;</p>',
             uuid: "e47131fc-3551-4ddc-9005-c84a724b2c56",
             reclamante_cargo: "ANALISTA DE SAUDE NIVEL I",
           },
@@ -4739,7 +4739,7 @@ export const mockGetProdutosPorParametros = {
                 descricao:
                   "Reclamação f8450abe-4a59-4725-b5f7-0aea37c0290a feita por SUPER USUARIO ESCOLA EMEF em 2021-04-30 16:40:38.807580",
                 justificativa:
-                  '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;">Teste questionamento do produto</span>&nbsp;</p>\n',
+                  '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;">Teste questionamento do produto</span>&nbsp;</p>\n',
                 resposta_sim_nao: false,
               },
               {
@@ -5610,7 +5610,7 @@ export const mockGetProdutosPorParametros = {
                 descricao:
                   "Reclamação 80eb3bed-8fbb-4f1f-bfee-6782ad4e019f feita por SUPER USUARIO ESCOLA EMEI em 2020-10-28 11:23:52.285970",
                 justificativa:
-                  '<p><span style="color: rgba(0,0,0,0);background-color: rgb(248,249,250);font-size: 0px;font-family: Roboto;">%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26lt%3Bspan%26gt%3B%26lt%3Bi%26gt%3BAguardando%20an%C3%A1lise%26lt%3Bbr%26gt%3Bdas%20reclama%C3%A7%C3%B5es%26lt%3B%2Fi%26gt%3B%26lt%3Bbr%26gt%3B%26lt%3B%2Fspan%26gt%3B%22%20style%3D%22rounded%3D1%3BstrokeWidth%3D1%3BfontFamily%3DHelvetica%3Bhtml%3D1%3Bdashed%3D1%3BfillColor%3D%23B1DDF0%3Bshadow%3D0%3Bglass%3D0%3Bsketch%3D0%3BlabelBorderColor%3Dnone%3BstrokeColor%3D%237EA6E0%3BfontStyle%3D0%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22345%22%20y%3D%221945%22%20width%3D%22120%22%20height%3D%2250%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E</span><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;"> Teste questionamento terceirizada lamen</span>&nbsp;</p>\n',
+                  '<p><span style="color: rgba(0,0,0,0);background-color: rgb(248,249,250);font-size: 0px;font-family: "Roboto", sans-serif;">%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26lt%3Bspan%26gt%3B%26lt%3Bi%26gt%3BAguardando%20an%C3%A1lise%26lt%3Bbr%26gt%3Bdas%20reclama%C3%A7%C3%B5es%26lt%3B%2Fi%26gt%3B%26lt%3Bbr%26gt%3B%26lt%3B%2Fspan%26gt%3B%22%20style%3D%22rounded%3D1%3BstrokeWidth%3D1%3BfontFamily%3DHelvetica%3Bhtml%3D1%3Bdashed%3D1%3BfillColor%3D%23B1DDF0%3Bshadow%3D0%3Bglass%3D0%3Bsketch%3D0%3BlabelBorderColor%3Dnone%3BstrokeColor%3D%237EA6E0%3BfontStyle%3D0%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22345%22%20y%3D%221945%22%20width%3D%22120%22%20height%3D%2250%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E</span><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;"> Teste questionamento terceirizada lamen</span>&nbsp;</p>\n',
                 resposta_sim_nao: false,
               },
               {
@@ -5632,7 +5632,7 @@ export const mockGetProdutosPorParametros = {
                 descricao:
                   "Reclamação 80eb3bed-8fbb-4f1f-bfee-6782ad4e019f feita por SUPER USUARIO ESCOLA EMEI em 2020-10-28 11:23:52.285970",
                 justificativa:
-                  '<p><span style="color: rgba(0,0,0,0);background-color: rgb(248,249,250);font-size: 0px;font-family: Roboto;">%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26lt%3Bspan%26gt%3B%26lt%3Bi%26gt%3BAguardando%20an%C3%A1lise%26lt%3Bbr%26gt%3Bdas%20reclama%C3%A7%C3%B5es%26lt%3B%2Fi%26gt%3B%26lt%3Bbr%26gt%3B%26lt%3B%2Fspan%26gt%3B%22%20style%3D%22rounded%3D1%3BstrokeWidth%3D1%3BfontFamily%3DHelvetica%3Bhtml%3D1%3Bdashed%3D1%3BfillColor%3D%23B1DDF0%3Bshadow%3D0%3Bglass%3D0%3Bsketch%3D0%3BlabelBorderColor%3Dnone%3BstrokeColor%3D%237EA6E0%3BfontStyle%3D0%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22345%22%20y%3D%221945%22%20width%3D%22120%22%20height%3D%2250%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E</span><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;"> Teste questionamento terceirizada lamen</span>&nbsp;</p>\n',
+                  '<p><span style="color: rgba(0,0,0,0);background-color: rgb(248,249,250);font-size: 0px;font-family: "Roboto", sans-serif;">%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26lt%3Bspan%26gt%3B%26lt%3Bi%26gt%3BAguardando%20an%C3%A1lise%26lt%3Bbr%26gt%3Bdas%20reclama%C3%A7%C3%B5es%26lt%3B%2Fi%26gt%3B%26lt%3Bbr%26gt%3B%26lt%3B%2Fspan%26gt%3B%22%20style%3D%22rounded%3D1%3BstrokeWidth%3D1%3BfontFamily%3DHelvetica%3Bhtml%3D1%3Bdashed%3D1%3BfillColor%3D%23B1DDF0%3Bshadow%3D0%3Bglass%3D0%3Bsketch%3D0%3BlabelBorderColor%3Dnone%3BstrokeColor%3D%237EA6E0%3BfontStyle%3D0%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22345%22%20y%3D%221945%22%20width%3D%22120%22%20height%3D%2250%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E</span><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;"> Teste questionamento terceirizada lamen</span>&nbsp;</p>\n',
                 resposta_sim_nao: false,
               },
             ],
@@ -6405,7 +6405,7 @@ export const mockGetProdutosPorParametros = {
                 descricao:
                   "Reclamação 79c68c14-e70f-434d-8766-78e5f6a0ff69 feita por SUPER USUARIO ESCOLA EMEF em 2020-10-08 13:46:07.896889",
                 justificativa:
-                  '<p><span style="color: rgba(0,0,0,0);background-color: rgb(248,249,250);font-size: 0px;font-family: Roboto;">%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26lt%3Bspan%26gt%3B%26lt%3Bi%26gt%3BAguardando%20an%C3%A1lise%26lt%3Bbr%26gt%3Bdas%20reclama%C3%A7%C3%B5es%26lt%3B%2Fi%26gt%3B%26lt%3Bbr%26gt%3B%26lt%3B%2Fspan%26gt%3B%22%20style%3D%22rounded%3D1%3BstrokeWidth%3D1%3BfontFamily%3DHelvetica%3Bhtml%3D1%3Bdashed%3D1%3BfillColor%3D%23B1DDF0%3Bshadow%3D0%3Bglass%3D0%3Bsketch%3D0%3BlabelBorderColor%3Dnone%3BstrokeColor%3D%237EA6E0%3BfontStyle%3D0%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22345%22%20y%3D%221945%22%20width%3D%22120%22%20height%3D%2250%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E</span><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;"> Teste questionamento terceirizada lamen</span>&nbsp;</p>\n',
+                  '<p><span style="color: rgba(0,0,0,0);background-color: rgb(248,249,250);font-size: 0px;font-family: "Roboto", sans-serif;">%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26lt%3Bspan%26gt%3B%26lt%3Bi%26gt%3BAguardando%20an%C3%A1lise%26lt%3Bbr%26gt%3Bdas%20reclama%C3%A7%C3%B5es%26lt%3B%2Fi%26gt%3B%26lt%3Bbr%26gt%3B%26lt%3B%2Fspan%26gt%3B%22%20style%3D%22rounded%3D1%3BstrokeWidth%3D1%3BfontFamily%3DHelvetica%3Bhtml%3D1%3Bdashed%3D1%3BfillColor%3D%23B1DDF0%3Bshadow%3D0%3Bglass%3D0%3Bsketch%3D0%3BlabelBorderColor%3Dnone%3BstrokeColor%3D%237EA6E0%3BfontStyle%3D0%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22345%22%20y%3D%221945%22%20width%3D%22120%22%20height%3D%2250%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E</span><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;"> Teste questionamento terceirizada lamen</span>&nbsp;</p>\n',
                 resposta_sim_nao: false,
               },
             ],
@@ -16188,7 +16188,7 @@ export const mockGetProdutosPorParametros = {
             },
             criado_em: "01/02/2022 13:55:25",
             reclamacao:
-              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;">VERIFICAR O PRODUTO</span>&nbsp;</p>',
+              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;">VERIFICAR O PRODUTO</span>&nbsp;</p>',
             uuid: "969cbc80-1c3b-4cc4-be3c-0e4a687c2aa1",
             reclamante_cargo: "ANALISTA DE SAUDE NIVEL I",
           },
@@ -18044,7 +18044,7 @@ export const mockGetProdutosPorParametros = {
             },
             criado_em: "06/01/2022 21:55:20",
             reclamacao:
-              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;"><ins>LICHIA_TESTE_RECLAMAÇÃO_NUTRISUPERVISAO</ins></span></p>',
+              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;"><ins>LICHIA_TESTE_RECLAMAÇÃO_NUTRISUPERVISAO</ins></span></p>',
             uuid: "ac6f0ad2-8f67-498e-a3b7-0faf1e868457",
             reclamante_cargo: "ANALISTA DE SAUDE NIVEL I",
           },
@@ -18094,7 +18094,7 @@ export const mockGetProdutosPorParametros = {
             },
             criado_em: "01/02/2022 13:56:20",
             reclamacao:
-              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;">VERIFICAR O PRODUTO</span>&nbsp;</p>',
+              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;">VERIFICAR O PRODUTO</span>&nbsp;</p>',
             uuid: "17ea26f4-a148-4092-b406-063f0bbb3246",
             reclamante_cargo: "ANALISTA DE SAUDE NIVEL I",
           },
@@ -18470,7 +18470,7 @@ export const mockGetProdutosPorParametros = {
             },
             criado_em: "01/02/2022 13:36:58",
             reclamacao:
-              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;">VERIFICAR O PRODUTO</span>&nbsp;</p>',
+              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;">VERIFICAR O PRODUTO</span>&nbsp;</p>',
             uuid: "d39fbc75-ec09-456a-8e6f-b711a0e9c30e",
             reclamante_cargo: "ANALISTA DE SAUDE NIVEL I",
           },
@@ -19272,7 +19272,7 @@ export const mockGetProdutosPorParametros = {
                 descricao:
                   "Reclamação 5d07189a-f2b4-44c6-8537-6f663e009a00 feita por SUPER USUARIO ESCOLA EMEF em 2022-03-03 14:32:30.748936",
                 justificativa:
-                  '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;">teste_review</span></p>\n',
+                  '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;">teste_review</span></p>\n',
                 resposta_sim_nao: false,
               },
               {
@@ -19294,7 +19294,7 @@ export const mockGetProdutosPorParametros = {
                 descricao:
                   "Reclamação 5d07189a-f2b4-44c6-8537-6f663e009a00 feita por SUPER USUARIO ESCOLA EMEF em 2022-03-03 14:32:30.748936",
                 justificativa:
-                  '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;">teste_review</span></p>',
+                  '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;">teste_review</span></p>',
                 resposta_sim_nao: false,
               },
             ],
@@ -19647,7 +19647,7 @@ export const mockGetProdutosPorParametros = {
             },
             criado_em: "03/03/2022 14:32:30",
             reclamacao:
-              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;">teste_review</span></p>',
+              '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;">teste_review</span></p>',
             uuid: "5d07189a-f2b4-44c6-8537-6f663e009a00",
             reclamante_cargo: "ANALISTA DE SAUDE NIVEL I",
           },

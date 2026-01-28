@@ -17,7 +17,7 @@
   text-align: center;
   width: max-content;
   padding: 0;
-  
+
   li {
     width: 160px;
     min-width: 160px;
@@ -34,7 +34,7 @@
   width: max-content;
   display: flex;
   padding: 0;
-  
+
   li {
     color: $grayPlaceholder;
     list-style-type: none;
@@ -46,7 +46,7 @@
     width: 160px;
     min-width: 160px;
     max-width: 160px;
-    
+
     &:before {
       width: 30px;
       height: 30px;
@@ -57,9 +57,8 @@
       margin: 0 auto 10px auto;
       border-radius: 50%;
       background-color: #a4a4a4;
-      font-family: "Font Awesome 5 Free";
+      font-family: "Font Awesome 5 Free", sans-serif;
       font-size: 18px;
-      font-weight: 900;
       color: $white;
       position: relative;
       z-index: 1;
@@ -117,7 +116,7 @@
 
   .pending {
     &:before {
-      font-family: "Font Awesome 5 Free";
+      font-family: "Font Awesome 5 Free", sans-serif;
       font-size: 10px;
       color: $white;
       content: "\f04d";
@@ -143,7 +142,7 @@
 .fluxo-scroll-container {
   display: flex;
   flex-direction: column;
-  overflow-x: auto; 
+  overflow-x: auto;
   scroll-behavior: smooth;
   max-width: 100%;
 
@@ -160,7 +159,7 @@
   color: $grayPlaceholder;
   cursor: pointer;
   z-index: 10;
-  
+
   &:hover {
     color: $blue;
   }

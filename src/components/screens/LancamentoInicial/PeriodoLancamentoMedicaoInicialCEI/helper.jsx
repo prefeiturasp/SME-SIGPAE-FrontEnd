@@ -58,7 +58,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
 
   arrayCategoriesValues
     .filter(([key]) => !key.includes("observacoes"))
-    .map((arr) => {
+    .forEach((arr) => {
       const keySplitted = arr[0].split("__");
       const categoria = keySplitted.pop();
       const idCategoria = categoria.match(/\d/g).join("");

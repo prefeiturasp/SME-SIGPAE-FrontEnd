@@ -117,13 +117,10 @@ export const Container = () => {
     );
   };
 
-  const filtroVinculos = () => {
-    if (!Array.isArray(vinculos)) return [];
-
-    return vinculos.filter(
-      (vinculo) => vinculo.periodo_escolar.nome === "INTEGRAL",
-    );
-  };
+  const filtroVinculos = () =>
+    vinculos?.filter(
+      (vinculo) => vinculo.periodo_escolar?.nome === "INTEGRAL",
+    ) ?? [];
 
   const LOADING =
     !meusDados ||

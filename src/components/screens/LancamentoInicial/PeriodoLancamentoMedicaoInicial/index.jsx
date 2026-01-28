@@ -369,7 +369,7 @@ export default () => {
 
   useEffect(() => {
     const mesAnoSelecionado = location.state
-      ? typeof location.state.mesAnoSelecionado === String
+      ? typeof location.state.mesAnoSelecionado === "string"
         ? new Date(location.state.mesAnoSelecionado.replace("'", ""))
         : new Date(location.state.mesAnoSelecionado)
       : mesAnoDefault;
@@ -1591,7 +1591,7 @@ export default () => {
       );
       return;
     }
-    Object.entries(valuesMesmoDiaDaObservacao).map((v) => {
+    Object.entries(valuesMesmoDiaDaObservacao).forEach((v) => {
       const keySplitted = v[0].split("__");
       const categoria = keySplitted.pop();
       const idCategoria = categoria.match(/\d/g).join("");
@@ -2317,7 +2317,7 @@ export default () => {
         !escolaEhEMEBS()) ||
       (escolaEhEMEBS() &&
         !validacaoSemana(dia) &&
-        diasParaCorrecao.find(
+        diasParaCorrecao?.find(
           (diaParaCorrecao) =>
             String(diaParaCorrecao.dia) === String(dia) &&
             String(diaParaCorrecao.categoria_medicao) === String(categoriaId) &&
@@ -2833,7 +2833,7 @@ export default () => {
                                   <div>Sáb.</div>
                                   <div>Dom.</div>
                                 </div>
-                                {semanaSelecionada &&
+                                {!!semanaSelecionada &&
                                   calendarioMesConsiderado &&
                                   feriadosNoMes &&
                                   (tabelaDietaRows || tabelaDietaEnteralRows) &&

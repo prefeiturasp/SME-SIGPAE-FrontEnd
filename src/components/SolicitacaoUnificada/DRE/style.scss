@@ -100,7 +100,7 @@
       border-radius: 4px;
       display: grid;
       grid-row: 50% 50%;
-      font-family: Roboto !important;
+      font-family: "Roboto", sans-serif !important;
       font-style: normal;
       font-weight: bold;
       font-size: 1em;
@@ -118,7 +118,7 @@
       height: 17px;
       left: 555px;
       top: 192px;
-      font-family: Roboto !important;
+      font-family: "Roboto", sans-serif !important;
       font-style: normal;
       font-weight: normal;
       font-size: 13px;
@@ -137,7 +137,7 @@
       }
       .solicitante,
       .lote {
-        font-family: Roboto !important;
+        font-family: "Roboto", sans-serif !important;
         font-style: normal;
         font-weight: normal;
         font-size: 14px;
@@ -147,7 +147,7 @@
       }
       .prop-solicitante,
       .prop-lote {
-        font-family: Roboto !important;
+        font-family: "Roboto", sans-serif !important;
         font-style: normal;
         font-weight: bold;
         font-size: 15px;
@@ -190,7 +190,7 @@
     }
     .descricao-titulo {
       //color: #686868;
-      font-family: Roboto !important;
+      font-family: "Roboto", sans-serif !important;
       font-style: normal;
       font-weight: normal;
       font-size: 14px;
@@ -198,7 +198,7 @@
     }
     .descricao-texto {
       //color: #686868;
-      font-family: Roboto !important;
+      font-family: "Roboto", sans-serif !important;
       font-style: normal;
       font-weight: bold;
       font-size: 14px;
@@ -210,7 +210,7 @@
     background: #333333;
     //color: #fff;
     color: #fff;
-    font-family: Roboto !important;
+    font-family: "Roboto", sans-serif !important;
     font-style: normal;
     font-weight: bold;
     font-size: 0.875em;
@@ -256,7 +256,7 @@
     .descricao-titulo {
       //color: #686868;
       color: $gray;
-      font-family: Roboto !important;
+      font-family: "Roboto", sans-serif !important;
       font-style: normal;
       font-weight: normal;
       font-size: 14px;
@@ -265,7 +265,7 @@
     .descricao-texto {
       //color: #686868;
       color: $blackInput;
-      font-family: Roboto !important;
+      font-family: "Roboto", sans-serif !important;
       font-style: normal;
       font-weight: bold;
       font-size: 14px;
@@ -274,7 +274,7 @@
     }
     .descricao-observacao {
       //color: #686868;
-      font-family: Roboto !important;
+      font-family: "Roboto", sans-serif !important;
       font-style: normal;
       font-weight: bold;
       font-size: 14px;

@@ -123,17 +123,17 @@ export const NovoRelatorioVisitas = ({
 
   function navigateToPainelRelatorios() {
     navigate(
-      `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`
+      `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`,
     );
   }
 
   const salvarRascunho = async (
     values: NovoRelatorioVisitasFormInterface,
-    gerarRelatorioNotificacoes = false
+    gerarRelatorioNotificacoes = false,
   ): Promise<void> => {
     if (!values.escola || !values.data) {
       toastError(
-        "Os campos unidade educacional e data da visita são obrigatórios para salvar um rascunho."
+        "Os campos unidade educacional e data da visita são obrigatórios para salvar um rascunho.",
       );
       return;
     }
@@ -148,12 +148,12 @@ export const NovoRelatorioVisitas = ({
           escolaSelecionada,
           anexos,
           notificacoesAssinadas,
-          respostasOcorrenciaNaoSeAplica
-        )
+          respostasOcorrenciaNaoSeAplica,
+        ),
       );
       if (response.status === HTTP_STATUS.OK) {
         toastSuccess(
-          "Rascunho do Relatório de Fiscalização salvo com sucesso!"
+          "Rascunho do Relatório de Fiscalização salvo com sucesso!",
         );
         if (gerarRelatorioNotificacoes) {
           solicitarGeracaoRelatorioNotificacoes(values.uuid);
@@ -162,16 +162,21 @@ export const NovoRelatorioVisitas = ({
         }
       } else {
         toastError(
-          "Erro ao atualizar rascunho do Relatório de Fiscalização. Tente novamente mais tarde."
+          "Erro ao atualizar rascunho do Relatório de Fiscalização. Tente novamente mais tarde.",
         );
       }
     } else {
       const response = await createRascunhoFormularioSupervisao(
-        formataPayload(values, escolaSelecionada, anexos, notificacoesAssinadas)
+        formataPayload(
+          values,
+          escolaSelecionada,
+          anexos,
+          notificacoesAssinadas,
+        ),
       );
       if (response.status === HTTP_STATUS.CREATED) {
         toastSuccess(
-          "Rascunho do Relatório de Fiscalização salvo com sucesso!"
+          "Rascunho do Relatório de Fiscalização salvo com sucesso!",
         );
         if (gerarRelatorioNotificacoes) {
           solicitarGeracaoRelatorioNotificacoes(response.data.uuid);
@@ -180,14 +185,14 @@ export const NovoRelatorioVisitas = ({
         }
       } else {
         toastError(
-          "Erro ao criar rascunho do Relatório de Fiscalização. Tente novamente mais tarde."
+          "Erro ao criar rascunho do Relatório de Fiscalização. Tente novamente mais tarde.",
         );
       }
     }
   };
 
   const solicitarGeracaoRelatorioNotificacoes = async (
-    formulario_uuid: string
+    formulario_uuid: string,
   ): Promise<void> => {
     const response = await exportarPDFRelatorioNotificacao(formulario_uuid);
     if (response.status === HTTP_STATUS.OK) {
@@ -200,7 +205,7 @@ export const NovoRelatorioVisitas = ({
   };
 
   const salvar = async (
-    values: NovoRelatorioVisitasFormInterface
+    values: NovoRelatorioVisitasFormInterface,
   ): Promise<void> => {
     if (!showModalSalvar) {
       setShowModalSalvar(true);
@@ -214,31 +219,36 @@ export const NovoRelatorioVisitas = ({
           escolaSelecionada,
           anexos,
           notificacoesAssinadas,
-          respostasOcorrenciaNaoSeAplica
-        )
+          respostasOcorrenciaNaoSeAplica,
+        ),
       );
       if (response.status === HTTP_STATUS.OK) {
         toastSuccess("Relatório de Fiscalização enviado com sucesso!");
         navigate(
-          `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`
+          `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`,
         );
       } else {
         toastError(
-          "Erro ao enviar Relatório de Fiscalização. Tente novamente mais tarde."
+          "Erro ao enviar Relatório de Fiscalização. Tente novamente mais tarde.",
         );
       }
     } else {
       const response = await createFormularioSupervisao(
-        formataPayload(values, escolaSelecionada, anexos, notificacoesAssinadas)
+        formataPayload(
+          values,
+          escolaSelecionada,
+          anexos,
+          notificacoesAssinadas,
+        ),
       );
       if (response.status === HTTP_STATUS.CREATED) {
         toastSuccess("Relatório de Fiscalização enviado com sucesso!");
         navigate(
-          `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`
+          `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`,
         );
       } else {
         toastError(
-          "Erro ao enviar Relatório de Fiscalização. Tente novamente mais tarde."
+          "Erro ao enviar Relatório de Fiscalização. Tente novamente mais tarde.",
         );
       }
     }
@@ -246,7 +256,7 @@ export const NovoRelatorioVisitas = ({
 
   const getTiposOcorrenciaPorEditalNutrisupervisaoAsync = async (
     form: FormApi<any, Partial<any>>,
-    _escola: EscolaLabelInterface
+    _escola: EscolaLabelInterface,
   ): Promise<void> => {
     setLoadingTiposOcorrencia(true);
     const response: ResponseFormularioSupervisaoTiposOcorrenciasInterface =
@@ -262,7 +272,7 @@ export const NovoRelatorioVisitas = ({
       setErroAPI("");
     } else {
       setErroAPI(
-        "Erro ao carregar tipos de ocorrência do edital da unidade educacional. Tente novamente mais tarde."
+        "Erro ao carregar tipos de ocorrência do edital da unidade educacional. Tente novamente mais tarde.",
       );
     }
     setLoadingTiposOcorrencia(false);
@@ -275,16 +285,16 @@ export const NovoRelatorioVisitas = ({
   }, [escolaSelecionada]);
 
   const onSubmit = async (
-    values: NovoRelatorioVisitasFormInterface
+    _values: NovoRelatorioVisitasFormInterface,
   ): Promise<void> => {
-    values;
+    // TODO: implementar
   };
 
   const formularioValido = (form: FormApi<any, Partial<any>>) => {
     const _validarFormulariosTiposOcorrencia =
       validarFormulariosTiposOcorrencia(
         form.getState().values,
-        tiposOcorrencia
+        tiposOcorrencia,
       );
     return (
       !form.getState().hasValidationErrors &&
@@ -295,12 +305,12 @@ export const NovoRelatorioVisitas = ({
 
   const showNotificacoesComponent = (
     form: FormApi<any, Partial<any>>,
-    tiposOcorrencia
+    tiposOcorrencia,
   ) => {
     const _validarFormulariosTiposOcorrencia =
       validarFormulariosParaCategoriasDeNotificacao(
         form.getState().values,
-        tiposOcorrencia
+        tiposOcorrencia,
       );
     return (
       _validarFormulariosTiposOcorrencia.listaValidacaoPorTipoOcorrencia
@@ -310,12 +320,12 @@ export const NovoRelatorioVisitas = ({
 
   const habilitarBotaoBaixarNotificacao = (
     form: FormApi<any, Partial<any>>,
-    tiposOcorrencia
+    tiposOcorrencia,
   ) => {
     const _validarFormulariosTiposOcorrencia =
       validarFormulariosParaCategoriasDeNotificacao(
         form.getState().values,
-        tiposOcorrencia
+        tiposOcorrencia,
       );
     return (
       !form.getState().hasValidationErrors &&
@@ -325,7 +335,7 @@ export const NovoRelatorioVisitas = ({
 
   const handleClickVoltar = () => {
     navigate(
-      `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`
+      `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`,
     );
   };
 
@@ -404,7 +414,7 @@ export const NovoRelatorioVisitas = ({
               {tiposOcorrencia &&
                 validarFormulariosTiposOcorrencia(
                   form.getState().values,
-                  tiposOcorrencia
+                  tiposOcorrencia,
                 ).listaValidacaoPorTipoOcorrencia.length !== 0 && (
                   <Anexos
                     setAnexos={setAnexos}
