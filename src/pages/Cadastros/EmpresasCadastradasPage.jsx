@@ -8,21 +8,33 @@ import {
   EMPRESA,
   EMPRESAS_CADASTRADAS,
 } from "../../configs/constants";
+import { PERFIL } from "../../constants/shared";
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${EMPRESAS_CADASTRADAS}`,
   titulo: "Empresas Cadastradas",
 };
 
+const perfil = localStorage.getItem("perfil") || "";
+
+const mostrarEmpresa = ![
+  PERFIL.DILOG_QUALIDADE,
+  PERFIL.DILOG_VISUALIZACAO,
+].includes(perfil);
+
 const anteriores = [
   {
     href: `/${CONFIGURACOES}/${CADASTROS}`,
     titulo: "Cadastros",
   },
-  {
-    href: `/${CONFIGURACOES}/${CADASTROS}/${EMPRESA}`,
-    titulo: "Empresa",
-  },
+  ...(mostrarEmpresa
+    ? [
+        {
+          href: `/${CONFIGURACOES}/${CADASTROS}/${EMPRESA}`,
+          titulo: "Empresa",
+        },
+      ]
+    : []),
 ];
 
 export default () => (
