@@ -49,18 +49,19 @@ const ModalHistorico = ({
   }, []);
 
   const itemLogAtivo = (index, ativo) => {
-    logs.forEach((log) => {
+    const logs_ = [...logs];
+    logs_.forEach((log) => {
       log.ativo = false;
     });
 
     if (!ativo) {
-      logs[index].ativo = !ativo;
-      setLogSelecionado(logs[index]);
+      logs_[index].ativo = !ativo;
+      setLogSelecionado(logs_[index]);
     } else {
       setLogSelecionado(null);
     }
 
-    setLogs(logs);
+    setLogs(logs_);
   };
 
   const retornaIniciais = (log) => {
