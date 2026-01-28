@@ -69,7 +69,7 @@ export default ({ analiseSolicitacao }) => {
   const solicitacaoCodae =
     solicitacaoAlteracaoCronograma &&
     ["Alteração Enviada ao Fornecedor", "Fornecedor Ciente"].includes(
-      solicitacaoAlteracaoCronograma.status
+      solicitacaoAlteracaoCronograma.status,
     );
 
   const onChangeCampos = (e) => {
@@ -81,7 +81,7 @@ export default ({ analiseSolicitacao }) => {
     usuarioEhCronogramaOuCodae() ||
     ((usuarioEhDilogDiretoria() || usuarioEhDilogAbastecimento()) &&
       ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
-        solicitacaoAlteracaoCronograma.status
+        solicitacaoAlteracaoCronograma.status,
       ));
 
   const getDetalhes = async () => {
@@ -92,7 +92,7 @@ export default ({ analiseSolicitacao }) => {
       const responseCronograma = responseSolicitacaoCronograma.data.cronograma;
       if (usuarioEhEmpresaFornecedor()) {
         responseSolicitacaoCronograma.data.logs = montarFluxoStatusFornecedor(
-          responseSolicitacaoCronograma.data.logs
+          responseSolicitacaoCronograma.data.logs,
         );
       }
       setSolicitacaoAlteracaoCronograma(responseSolicitacaoCronograma.data);
@@ -122,23 +122,23 @@ export default ({ analiseSolicitacao }) => {
       justificativa: solicitacao.justificativa,
       justificativa_cronograma: buscaLogJustificativaCronograma(
         solicitacao.logs,
-        "cronograma"
+        "cronograma",
       ),
       justificativa_abastecimento: buscaLogJustificativaCronograma(
         solicitacao.logs,
-        "abastecimento"
+        "abastecimento",
       ),
       justificativa_dilog: buscaLogJustificativaCronograma(
         solicitacao.logs,
-        "dilog"
+        "dilog",
       ),
       quantidade_total: formataMilhar(
-        solicitacao.cronograma.qtd_total_programada
+        solicitacao.cronograma.qtd_total_programada,
       ),
     };
     solicitacao.etapas_novas.forEach((etapa, index) => {
       values[`total_embalagens_${index}`] = numberToStringDecimal(
-        etapa.total_embalagens
+        etapa.total_embalagens,
       );
       values[`etapa_${index}`] = etapa.etapa;
       values[`parte_${index}`] = etapa.parte;
@@ -157,10 +157,10 @@ export default ({ analiseSolicitacao }) => {
       values[`data_programada_${index}`] = etapa.data_programada;
       values[`quantidade_${index}`] = formataMilhar(etapa.quantidade);
       values[`total_embalagens_${index}`] = numberToStringDecimal(
-        etapa.total_embalagens
+        etapa.total_embalagens,
       );
       values[`qtd_total_empenho_${index}`] = numberToStringDecimal(
-        etapa.qtd_total_empenho
+        etapa.qtd_total_empenho,
       );
     });
     values.quantidade_total = formataMilhar(cronograma.qtd_total_programada);
@@ -173,20 +173,22 @@ export default ({ analiseSolicitacao }) => {
   const analisadoPeloAbastecimento = () => {
     return solicitacaoAlteracaoCronograma?.logs.some((l) =>
       ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
-        l.status_evento_explicacao
-      )
+        l.status_evento_explicacao,
+      ),
     );
   };
 
   const reprovadoPeloAbastecimento = () => {
     return solicitacaoAlteracaoCronograma?.logs.some(
-      (l) => l.status_evento_explicacao === "Reprovado Abastecimento"
+      (l) => l.status_evento_explicacao === "Reprovado Abastecimento",
     );
   };
 
   const analisadoPelaDilog = () => {
     return solicitacaoAlteracaoCronograma?.logs.some((l) =>
-      ["Aprovado DILOG", "Reprovado DILOG"].includes(l.status_evento_explicacao)
+      ["Aprovado DILOG", "Reprovado DILOG"].includes(
+        l.status_evento_explicacao,
+      ),
     );
   };
 
@@ -198,7 +200,7 @@ export default ({ analiseSolicitacao }) => {
       cronograma,
       values,
       etapas,
-      recebimentos
+      recebimentos,
     );
     await cadastraSolicitacaoAlteracaoCronograma(payload)
       .then(() => {
@@ -270,7 +272,7 @@ export default ({ analiseSolicitacao }) => {
       .then(() => {
         toastSuccess("Ciência da alteração gravada com sucesso!");
         navigate(
-          `/${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR}`
+          `/${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR}`,
         );
       })
       .catch(() => {
@@ -281,7 +283,7 @@ export default ({ analiseSolicitacao }) => {
   const defineSubmit = (values) => {
     if (usuarioEhDilogAbastecimento()) {
       analiseAbastecimento(values, aprovacaoAbastecimento);
-    } else if (usuarioEhDilogDiretoria()) {
+    } else if (usuarioEhDilogDiretoria() && analisadoPeloAbastecimento()) {
       analiseDilog(values, aprovacaoDilog);
     } else if (
       usuarioEhEmpresaFornecedor() &&
@@ -302,7 +304,7 @@ export default ({ analiseSolicitacao }) => {
       justificativa,
       values,
       etapas,
-      recebimentos
+      recebimentos,
     );
     await dilogCienteSolicitacaoAlteracaoCronograma(uuid, payload)
       .then(() => {
@@ -322,7 +324,7 @@ export default ({ analiseSolicitacao }) => {
     };
     let log_correto = logs.find((log) => {
       return dict_logs[autorJustificativa].includes(
-        log.status_evento_explicacao
+        log.status_evento_explicacao,
       );
     });
     return log_correto ? log_correto.justificativa : "";
@@ -332,8 +334,8 @@ export default ({ analiseSolicitacao }) => {
     const logsFiltrados = logs.filter(
       (log) =>
         !["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
-          log.status_evento_explicacao
-        )
+          log.status_evento_explicacao,
+        ),
     );
     logsFiltrados[0].status_evento_explicacao = "Em Análise";
     const logsNomesAtualizados = logsFiltrados.map((log) => {
@@ -350,7 +352,6 @@ export default ({ analiseSolicitacao }) => {
 
   useEffect(() => {
     getDetalhes();
-    // eslint-disable-next-line
   }, [uuid]);
 
   return (
@@ -400,7 +401,7 @@ export default ({ analiseSolicitacao }) => {
                           changes,
                           etapas,
                           setRestante,
-                          setDuplicados
+                          setDuplicados,
                         )
                       }
                     />
@@ -423,7 +424,8 @@ export default ({ analiseSolicitacao }) => {
                         <div className="head-green">
                           Informe as Alterações Necessárias
                         </div>
-                        {usuarioEhCronogramaOuCodae() && (
+                        {(usuarioEhCronogramaOuCodae() ||
+                          usuarioEhDilogDiretoria()) && (
                           <div className="row">
                             <div className="col-4">
                               <Field
@@ -461,7 +463,8 @@ export default ({ analiseSolicitacao }) => {
                         component={TextArea}
                         name="justificativa"
                         placeholder={
-                          usuarioEhCronogramaOuCodae()
+                          usuarioEhCronogramaOuCodae() ||
+                          usuarioEhDilogDiretoria()
                             ? "Escreva o motivo da alteração"
                             : "Escreva o motivo da solicitação de alteração"
                         }
@@ -546,7 +549,9 @@ export default ({ analiseSolicitacao }) => {
                         )}
                       </>
                     )}
-                    {((!analiseSolicitacao && usuarioEhCronogramaOuCodae()) ||
+                    {((!analiseSolicitacao &&
+                      (usuarioEhCronogramaOuCodae() ||
+                        usuarioEhDilogDiretoria())) ||
                       (analiseSolicitacao && analiseCronograma())) && (
                       <div className="accordion mt-1" id="accordionCronograma">
                         <FormRecebimento
