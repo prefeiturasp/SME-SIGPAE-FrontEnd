@@ -37,7 +37,7 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
-  --font-family: Roboto !important;
+  --font-family: "Roboto", sans-serif !important;
 }
 
 *,
@@ -48,7 +48,7 @@
 }
 
 html {
-  font-family: Roboto !important;
+  font-family: "Roboto", sans-serif !important;
   line-height: 1.15;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -69,7 +69,7 @@ section {
 
 body {
   margin: 0;
-  font-family: Roboto !important;
+  font-family: "Roboto", sans-serif !important;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -203,7 +203,7 @@ pre,
 code,
 kbd,
 samp {
-  font-family: Roboto !important;
+  font-family: "Roboto", sans-serif !important;
   font-size: 1em;
 }
 
@@ -263,7 +263,7 @@ select,
 optgroup,
 textarea {
   margin: 0;
-  font-family: Roboto !important;
+  font-family: "Roboto", sans-serif !important;
   font-size: inherit;
   line-height: inherit;
 }
@@ -6761,7 +6761,7 @@ a.close.disabled {
   z-index: 1070;
   display: block;
   margin: 0;
-  font-family: Roboto !important;
+  font-family: "Roboto", sans-serif !important;
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -6886,7 +6886,7 @@ a.close.disabled {
   z-index: 1060;
   display: block;
   max-width: 276px;
-  font-family: Roboto !important;
+  font-family: "Roboto", sans-serif !important;
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -10696,7 +10696,7 @@ button.bg-dark:focus {
 }
 
 .font-monospace {
-  font-family: Roboto !important;
+  font-family: "Roboto", sans-serif !important;
 }
 
 .text-justify {

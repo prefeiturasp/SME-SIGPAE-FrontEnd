@@ -126,7 +126,7 @@
   height: 100%;
   margin-top: 1.5em;
   font-size: 12px;
-  font-family: Roboto !important;
+  font-family: "Roboto", sans-serif !important;
   list-style: none;
 }
 
@@ -228,7 +228,7 @@ nav.navbar {
         list-style: none;
         p {
           font-size: 12px;
-          font-family: Roboto !important;
+          font-family: "Roboto", sans-serif !important;
           color: $white;
           font-weight: bold;
         }
