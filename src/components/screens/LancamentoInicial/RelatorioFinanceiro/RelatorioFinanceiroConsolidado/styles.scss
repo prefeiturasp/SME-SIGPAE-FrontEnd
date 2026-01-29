@@ -5,13 +5,16 @@
     width: 100%;
     font-size: 14px;
     color: $blackInput;
+    border-collapse: collapse;
 
     thead tr,
     tbody tr.linha-total {
       background-color: $grayLightHeader;
+
       &.cor-tipo-a {
         background-color: $greenBackgroundToastSuccess;
       }
+
       &.cor-tipo-b {
         background-color: $greenBackgroundTable;
       }
@@ -19,8 +22,8 @@
       border: 1px solid $grayDisabled;
       font-weight: bold;
 
-      td,
-      th {
+      th,
+      td {
         padding: 0.5em;
 
         &:not(:first-child) {
@@ -32,20 +35,23 @@
     tbody {
       tr {
         td {
-          align-content: center;
-          align-items: center;
+          vertical-align: middle;
+          text-align: center;
           padding: 0.5em;
           border-left: 1px solid $grayDisabled;
           border-bottom: 1px solid $grayDisabled;
+
           &:last-child {
             border-right: 1px solid $grayDisabled;
           }
         }
+
         &:last-child {
           td {
             &:first-child {
               border-radius: 0 0 0 4px;
             }
+
             &:last-child {
               border-radius: 0 0 4px 0;
             }
@@ -80,6 +86,15 @@
   width: 10%;
 }
 
+.col-tipo {
+  width: 32%;
+}
+
+.tabela-relatorio th.col-tipo,
+.tabela-relatorio td.col-tipo {
+  text-align: left;
+  padding-left: 30px;
+}
 .col-reajuste,
 .col-total-unitario,
 .col-atendimentos {

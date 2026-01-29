@@ -1,5 +1,6 @@
 import { TabelaAlimentacao } from "./TabelaAlimentacao";
 import { TipoAlimentacao } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import { TabelaDietas } from "./TabelaDietas";
 
 type Props = {
   relatorioConsolidado: any;
@@ -19,6 +20,20 @@ export default ({
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
         ordem="A"
+      />
+      <TabelaDietas
+        tabelas={relatorioConsolidado.tabelas}
+        tipoDieta="TIPO A"
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+        ordem="B"
+      />
+      <TabelaDietas
+        tabelas={relatorioConsolidado.tabelas}
+        tipoDieta="TIPO B"
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+        ordem="C"
       />
     </div>
   );
