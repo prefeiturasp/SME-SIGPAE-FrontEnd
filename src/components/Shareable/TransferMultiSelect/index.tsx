@@ -35,7 +35,7 @@ export default ({
 }: TransferMultiSelectProps) => {
   return (
     <>
-      {labels?.length && (
+      {labels?.length > 0 && (
         <div className="row">
           <div className="col ps-0">
             <Label content={labels[0]} required={required} />

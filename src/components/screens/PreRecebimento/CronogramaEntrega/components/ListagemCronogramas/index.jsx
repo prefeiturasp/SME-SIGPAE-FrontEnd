@@ -167,6 +167,7 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                           {cronograma.status === "Assinado CODAE" &&
                             (usuarioEhEmpresaFornecedor() ||
                               usuarioEhCronograma() ||
+                              usuarioEhDilogDiretoria() ||
                               usuarioEhCodaeDilog()) && (
                               <NavLink
                                 className="float-start ms-1"

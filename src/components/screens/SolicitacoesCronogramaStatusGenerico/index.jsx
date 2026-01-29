@@ -84,7 +84,7 @@ export const SolicitacoesCronogramaStatusGenerico = ({ ...props }) => {
     );
     if (podeFiltrar) {
       setLoading(true);
-      Object.keys(values).map((key) => {
+      Object.keys(values).forEach((key) => {
         if (!values[key]) {
           delete values[key];
         }

@@ -171,7 +171,15 @@ const FormAutorizaDietaEspecial = ({
     setAlergias(formataAlergias(dietaEspecial));
   };
 
-  const salvaRascunho = async (values) => {
+  const salvaRascunho = async (values, form) => {
+    const { valid } = form.getState();
+    if (!valid) {
+      toastError(
+        "Preencha todos os campos obrigatórios antes de salvar o rascunho.",
+      );
+      return;
+    }
+
     values.alergias_intolerancias = diagnosticosSelecionados;
     if (protocoloPadrao) {
       values.nome_protocolo = protocoloPadrao.nome_protocolo;
@@ -187,11 +195,16 @@ const FormAutorizaDietaEspecial = ({
     ) {
       delete values["substituicoes"];
     }
-    const response = await atualizaDietaEspecial(dietaEspecial.uuid, values);
-    if (response.status === HTTP_STATUS.OK) {
-      toastSuccess("Rascunho salvo com sucesso!");
-    } else {
-      toastError("Houve um erro ao salvar o rascunho.");
+    try {
+      const response = await atualizaDietaEspecial(dietaEspecial.uuid, values);
+      if (response.status === HTTP_STATUS.OK) {
+        toastSuccess("Rascunho salvo com sucesso!");
+      }
+    } catch (error) {
+      const mensagem =
+        error?.response?.data?.substituicoes ||
+        "Houve um erro ao salvar o rascunho.";
+      toastError(mensagem);
     }
     onAutorizarOuNegar();
   };
@@ -290,7 +303,7 @@ const FormAutorizaDietaEspecial = ({
       substituicoes: substituicoes,
       data_termino:
         data_termino_formatada || dietaEspecial.data_termino || undefined,
-      data_inicio: dietaEspecial.data_inicio,
+      data_inicio: dietaEspecial.data_inicio || undefined,
       informacoes_adicionais: dietaEspecial.informacoes_adicionais,
       registro_funcional_nutricionista: obtemIdentificacaoNutricionista(),
     };
@@ -391,6 +404,7 @@ const FormAutorizaDietaEspecial = ({
                         produtos={produtos}
                         form={form}
                         values={values}
+                        required
                       />
                     </div>
                   </>
@@ -414,7 +428,7 @@ const FormAutorizaDietaEspecial = ({
                       texto="Salvar Rascunho"
                       type={BUTTON_TYPE.BUTTON}
                       style={BUTTON_STYLE.GREEN_OUTLINE}
-                      onClick={() => salvaRascunho(values)}
+                      onClick={() => salvaRascunho(values, form)}
                       disabled={pristine || submitting}
                     />
                   )}

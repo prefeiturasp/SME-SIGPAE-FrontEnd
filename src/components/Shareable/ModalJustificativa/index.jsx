@@ -69,7 +69,7 @@ const ModalJustificativa = ({
                     />
                   </div>
                   {["resposta_ue", "resposta_nutrisupervisor"].includes(
-                    state.acao
+                    state.acao,
                   ) ? (
                     <div className="col-4">
                       <Field
@@ -222,7 +222,7 @@ const ModalJustificativa = ({
       />
       <ModalSuspensaoProdutoEdital
         showModal={showModalSuspensao}
-        closeModalSuspender={closeModalSuspensao}
+        closeModalSuspender={closeModalSuspensao || closeModal}
         onSubmitSupender={onSubmit}
         closeModalJustificativa={closeModal}
         produto={produto}

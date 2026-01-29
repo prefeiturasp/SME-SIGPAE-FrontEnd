@@ -119,7 +119,7 @@ export default ({
               required
               validate={composeValidators(
                 required,
-                inteiroOuDecimalPositivoOuNegativo
+                inteiroOuDecimalPositivoOuNegativo,
               )}
             />
           </div>
@@ -136,7 +136,7 @@ export default ({
               required
               validate={composeValidators(
                 required,
-                inteiroOuDecimalPositivoOuNegativo
+                inteiroOuDecimalPositivoOuNegativo,
               )}
             />
           </div>
@@ -169,7 +169,7 @@ export default ({
           <div className="col">
             <Field
               component={TextArea}
-              label="Embalagem Primária:"
+              label="Informações de Armazenamento que deverão constar na embalagem Primária:"
               name={`embalagem_primaria`}
               className="textarea-ficha-tecnica"
               placeholder="Digite as informações de armazenamento para embalagem primária"
@@ -182,7 +182,7 @@ export default ({
           <div className="col">
             <Field
               component={TextArea}
-              label="Embalagem Secundária:"
+              label="Informações de Armazenamento que deverão constar na embalagem Secundária:"
               name={`embalagem_secundaria`}
               className="textarea-ficha-tecnica"
               placeholder="Digite as informações de armazenamento para embalagem secundária"
@@ -252,7 +252,7 @@ export default ({
                 required
                 validate={composeValidators(
                   required,
-                  inteiroOuDecimalComVirgula
+                  inteiroOuDecimalComVirgula,
                 )}
               />
             </div>
@@ -281,7 +281,7 @@ export default ({
                 required
                 validate={composeValidators(
                   required,
-                  inteiroOuDecimalComVirgula
+                  inteiroOuDecimalComVirgula,
                 )}
               />
             </div>
@@ -324,7 +324,7 @@ export default ({
                 required
                 validate={composeValidators(
                   required,
-                  inteiroOuDecimalComVirgula
+                  inteiroOuDecimalComVirgula,
                 )}
               />
             </div>
@@ -353,7 +353,7 @@ export default ({
                 required
                 validate={composeValidators(
                   required,
-                  inteiroOuDecimalComVirgula
+                  inteiroOuDecimalComVirgula,
                 )}
               />
             </div>
@@ -395,7 +395,7 @@ export default ({
                 required
                 validate={composeValidators(
                   required,
-                  inteiroOuDecimalComVirgula
+                  inteiroOuDecimalComVirgula,
                 )}
               />
             </div>

@@ -34,7 +34,6 @@ export interface FichaTecnicaPayload {
   envasador_distribuidor?: FabricanteFichaPayload;
   prazo_validade?: string;
   numero_registro?: string;
-  agroecologico?: boolean | string;
   organico?: boolean | string;
   mecanismo_controle?: MecanismoControleChoices;
   componentes_produto?: string;

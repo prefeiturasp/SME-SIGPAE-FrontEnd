@@ -21,7 +21,7 @@ const postLogin = async (login_, password) => {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-      }
+      },
     )
     .catch(ErrorHandlerFunction);
   if (response) {
@@ -42,79 +42,79 @@ const atualizarCargo = async () => {
 const atualizaLocalStorage = (result_) => {
   localStorage.setItem(
     "registro_funcional",
-    JSON.stringify(result_.registro_funcional)
+    JSON.stringify(result_.registro_funcional),
   );
   localStorage.setItem("tipo_perfil", JSON.stringify(result_.tipo_usuario));
   localStorage.setItem(
     "perfil",
-    JSON.stringify(result_.vinculo_atual.perfil.nome)
+    JSON.stringify(result_.vinculo_atual.perfil.nome),
   );
   localStorage.setItem(
     "visao_perfil",
-    JSON.stringify(result_.vinculo_atual.perfil.visao)
+    JSON.stringify(result_.vinculo_atual.perfil.visao),
   );
   localStorage.setItem(
     "tipo_gestao",
-    JSON.stringify(result_.vinculo_atual.instituicao.tipo_gestao)
+    JSON.stringify(result_.vinculo_atual.instituicao.tipo_gestao),
   );
   localStorage.setItem(
     "nome_instituicao",
-    JSON.stringify(result_.vinculo_atual.instituicao.nome)
+    JSON.stringify(result_.vinculo_atual.instituicao.nome),
   );
   localStorage.setItem(
     "uuid_instituicao",
-    JSON.stringify(result_.vinculo_atual.instituicao.uuid)
+    JSON.stringify(result_.vinculo_atual.instituicao.uuid),
   );
   localStorage.setItem(
     "tipo_servico",
-    JSON.stringify(result_.vinculo_atual.instituicao.tipo_servico)
+    JSON.stringify(result_.vinculo_atual.instituicao.tipo_servico),
   );
   localStorage.setItem(
     "modulo_gestao",
-    JSON.stringify(result_.vinculo_atual.instituicao.modulo_gestao)
+    JSON.stringify(result_.vinculo_atual.instituicao.modulo_gestao),
   );
   localStorage.setItem(
     "eh_cei",
-    JSON.stringify(result_.vinculo_atual.instituicao.eh_cei)
+    JSON.stringify(result_.vinculo_atual.instituicao.eh_cei),
   );
   localStorage.setItem(
     "eh_cemei",
-    JSON.stringify(result_.vinculo_atual.instituicao.eh_cemei)
+    JSON.stringify(result_.vinculo_atual.instituicao.eh_cemei),
   );
   localStorage.setItem(
     "eh_emebs",
-    JSON.stringify(result_.vinculo_atual.instituicao.eh_emebs)
+    JSON.stringify(result_.vinculo_atual.instituicao.eh_emebs),
   );
   localStorage.setItem(
     "dre_nome",
     result_.vinculo_atual.instituicao.diretoria_regional &&
-      result_.vinculo_atual.instituicao.diretoria_regional.nome
+      result_.vinculo_atual.instituicao.diretoria_regional.nome,
   );
   localStorage.setItem(
     "lotes",
     result_.vinculo_atual.instituicao.lotes &&
-      JSON.stringify(result_.vinculo_atual.instituicao.lotes)
+      JSON.stringify(result_.vinculo_atual.instituicao.lotes),
   );
   localStorage.setItem(
     "acesso_modulo_medicao_inicial",
     JSON.stringify(
-      result_.vinculo_atual.instituicao.acesso_modulo_medicao_inicial
-    )
+      result_.vinculo_atual.instituicao.acesso_modulo_medicao_inicial,
+    ),
   );
   localStorage.setItem(
     "dre_acesso_modulo_medicao_inicial",
     JSON.stringify(
       result_.vinculo_atual.instituicao.diretoria_regional &&
         result_.vinculo_atual.instituicao.diretoria_regional
-          .acesso_modulo_medicao_inicial
-    )
+          .acesso_modulo_medicao_inicial,
+    ),
   );
   localStorage.setItem(
     "possui_escolas_com_acesso_ao_medicao_inicial",
     JSON.stringify(
       result_.vinculo_atual.instituicao
-        .possui_escolas_com_acesso_ao_medicao_inicial
-    )
+        .possui_escolas_com_acesso_ao_medicao_inicial,
+    ),
   );
 };
 
@@ -189,7 +189,7 @@ const getToken = () => {
   if (token && refresh) {
     if (isTokenExpired(token)) logout();
     if (needsToRefreshToken(token)) {
-      refreshToken(refresh).then((json) => {
+      refreshToken().then((json) => {
         if (isValidResponse(json))
           localStorage.setItem(TOKEN_ALIAS, json.token);
       });

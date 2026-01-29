@@ -42,16 +42,16 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
     return iniciais;
   };
 
-  componentDidMount = async () => {
+  componentDidMount() {
     const { history } = this.props;
     this.setState({ history });
-  };
+  }
 
   filterFieldsProtocolos = (history) => {
     if (history !== undefined && history.changes) {
       const fields = history.changes.filter((change) => {
         return ["nome_protocolo", "status", "orientacoes_gerais"].includes(
-          change.field
+          change.field,
         );
       });
       return fields;
@@ -139,7 +139,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                 history.map((hist, index) => {
                   const { ativo } = hist;
                   const iniciais = this.retornaIniciais(
-                    hist.user.nome ? hist.user.nome : hist.user.email
+                    hist.user.nome ? hist.user.nome : hist.user.email,
                   );
                   return (
                     <div
@@ -219,7 +219,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                           {this.retornaIniciais(
                             histSelecionado.user.nome
                               ? histSelecionado.user.nome
-                              : histSelecionado.user.email
+                              : histSelecionado.user.email,
                           )}
                         </div>
                       </div>
@@ -232,11 +232,11 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                             </div>
                             {histSelecionado.user.username.length === 11 ? (
                               <div className="w-100">{`CPF: ${formatarCPFouCNPJ(
-                                histSelecionado.user.username
+                                histSelecionado.user.username,
                               )}`}</div>
                             ) : histSelecionado.user.username.length === 14 ? (
                               <div className="w-100">{`CNPJ: ${formatarCPFouCNPJ(
-                                histSelecionado.user.username
+                                histSelecionado.user.username,
                               )}`}</div>
                             ) : (
                               <div className="w-100">{`RF: ${histSelecionado.user.username}`}</div>
@@ -253,7 +253,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                               {
                                 moment(
                                   histSelecionado.updated_at,
-                                  "YYYY-MM-DD HH:mm:ss"
+                                  "YYYY-MM-DD HH:mm:ss",
                                 )
                                   .format("DD/MM/YYYY HH:mm:ss")
                                   .split(" ")[0]
@@ -263,7 +263,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                               {
                                 moment(
                                   histSelecionado.updated_at,
-                                  "YYYY-MM-DD HH:mm:ss"
+                                  "YYYY-MM-DD HH:mm:ss",
                                 )
                                   .format("DD/MM/YYYY HH:mm:ss")
                                   .split(" ")[1]
@@ -277,7 +277,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                               {
                                 moment(
                                   histSelecionado.created_at,
-                                  "YYYY-MM-DD HH:mm:ss"
+                                  "YYYY-MM-DD HH:mm:ss",
                                 )
                                   .format("DD/MM/YYYY HH:mm:ss")
                                   .split(" ")[0]
@@ -287,7 +287,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                               {
                                 moment(
                                   histSelecionado.created_at,
-                                  "YYYY-MM-DD HH:mm:ss"
+                                  "YYYY-MM-DD HH:mm:ss",
                                 )
                                   .format("DD/MM/YYYY HH:mm:ss")
                                   .split(" ")[1]
@@ -326,7 +326,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                         dangerouslySetInnerHTML={{
                                           __html: this.ajusta_valor(
                                             change.field,
-                                            change.from
+                                            change.from,
                                           ),
                                         }}
                                       />
@@ -336,13 +336,13 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                         dangerouslySetInnerHTML={{
                                           __html: this.ajusta_valor(
                                             change.field,
-                                            change.to
+                                            change.to,
                                           ),
                                         }}
                                       />
                                     </td>
                                   </tr>
-                                )
+                                ),
                               )}
                           </tbody>
                         </table>
@@ -360,7 +360,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                   Lista de Substituições
                                 </p>
                                 {this.findFieldSubstituicoes(
-                                  histSelecionado
+                                  histSelecionado,
                                 ).changes.map((change, index) => {
                                   return (
                                     <table
@@ -383,7 +383,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                       <tbody>
                                         {Object.prototype.hasOwnProperty.call(
                                           change,
-                                          "tipo"
+                                          "tipo",
                                         ) ? (
                                           <tr
                                             key={`${index}_tipo`}
@@ -416,7 +416,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                         ) : null}
                                         {Object.prototype.hasOwnProperty.call(
                                           change,
-                                          "alimento"
+                                          "alimento",
                                         ) ? (
                                           <tr
                                             key={`${index}_alimento`}
@@ -445,7 +445,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                         ) : null}
                                         {Object.prototype.hasOwnProperty.call(
                                           change,
-                                          "substitutos"
+                                          "substitutos",
                                         ) ? (
                                           <tr
                                             key={`${index}_substitutos`}
@@ -464,7 +464,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                                             {alimento.nome}
                                                           </li>
                                                         );
-                                                      }
+                                                      },
                                                     )
                                                   : ""}
                                               </ul>
@@ -481,7 +481,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                                             {alimento.nome}
                                                           </li>
                                                         );
-                                                      }
+                                                      },
                                                     )
                                                   : ""}
                                               </ul>
@@ -527,7 +527,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                             {this.findEditais(histSelecionado)
                                               .from &&
                                               this.findEditais(
-                                                histSelecionado
+                                                histSelecionado,
                                               ).from.map((edital, idx) => {
                                                 return (
                                                   <li key={idx}>{edital}</li>
@@ -540,7 +540,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                             {this.findEditais(histSelecionado)
                                               .to &&
                                               this.findEditais(
-                                                histSelecionado
+                                                histSelecionado,
                                               ).to.map((edital, idx) => {
                                                 return (
                                                   <li key={idx}>{edital}</li>
@@ -551,19 +551,19 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                       </tr>
                                     )}
                                     {this.findOutrasInformacoes(
-                                      histSelecionado
+                                      histSelecionado,
                                     ) !== undefined && (
                                       <tr className="table-body-alimentacao">
                                         <td>Outras Informações</td>
                                         <td>
                                           {this.findOutrasInformacoes(
-                                            histSelecionado
+                                            histSelecionado,
                                           ).from && (
                                             <p
                                               dangerouslySetInnerHTML={{
                                                 __html:
                                                   this.findOutrasInformacoes(
-                                                    histSelecionado
+                                                    histSelecionado,
                                                   ).from,
                                               }}
                                             />
@@ -571,13 +571,13 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                                         </td>
                                         <td>
                                           {this.findOutrasInformacoes(
-                                            histSelecionado
+                                            histSelecionado,
                                           ).to && (
                                             <p
                                               dangerouslySetInnerHTML={{
                                                 __html:
                                                   this.findOutrasInformacoes(
-                                                    histSelecionado
+                                                    histSelecionado,
                                                   ).to,
                                               }}
                                             />

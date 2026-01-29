@@ -172,7 +172,7 @@ export const CardLancamento = ({
         >
           <div className="wraper-periodo-status mb-2">
             <div className="periodo-cabecalho">
-              {grupo && grupo}
+              {grupo}
               {textoCabecalho
                 ? formataPeriodosNormais(textoCabecalho)
                 : textoCabecalho}

@@ -18,7 +18,7 @@ export default ({ fornecedor }) => {
   const buscarSolicitacoesCronograma = async (page) => {
     setCarregando(true);
     setFiltros(remove_filtros_nulos(filtros));
-    if (filtros.status) filtros.status = filtros.status.flat();
+    if (filtros?.status) filtros.status = filtros.status.flat();
     const params = gerarParametrosConsulta({ page: page, ...filtros });
     const response = await getListagemSolicitacaoAlteracaoCronograma(params);
     if (response.data.count) {

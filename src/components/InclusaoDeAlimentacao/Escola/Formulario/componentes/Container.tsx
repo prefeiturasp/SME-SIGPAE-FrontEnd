@@ -62,7 +62,7 @@ export const Container = () => {
 
   const getQuantidaDeAlunosPorPeriodoEEscolaAsync = async (
     periodos: Array<PeriodosInclusaoInterface>,
-    escola_uuid: string
+    escola_uuid: string,
   ): Promise<void> => {
     const response: ResponseQuantidadeAlunosEscolaInterface =
       await getQuantidaDeAlunosPorPeriodoEEscola(escola_uuid);
@@ -70,31 +70,31 @@ export const Container = () => {
       const periodos_: Array<any> = abstraiPeriodosComAlunosMatriculados(
         periodos,
         response.data.results,
-        false
+        false,
       );
       const vinculos: ResponseVinculosTipoAlimentacaoPorEscolaInterface =
         await getVinculosTipoAlimentacaoPorEscola(escola_uuid);
       if (vinculos.status === HTTP_STATUS.OK) {
-        periodos_.map((periodo) => {
+        periodos_.forEach((periodo) => {
           return (periodo.tipos_alimentacao = vinculos.data.results.find(
-            (v) => v.periodo_escolar.nome === periodo.nome
+            (v) => v.periodo_escolar.nome === periodo.nome,
           ).tipos_alimentacao);
         });
         setPeriodos(
           abstraiPeriodosComAlunosMatriculados(
             periodos,
             response.data.results,
-            false
-          )
+            false,
+          ),
         );
       } else {
         setErro(
-          "Erro ao carregar vinculos do tipo de alimentação da escola. Tente novamente mais tarde."
+          "Erro ao carregar vinculos do tipo de alimentação da escola. Tente novamente mais tarde.",
         );
       }
     } else {
       setErro(
-        "Erro ao carregar quantidade de alunos da escola. Tente novamente mais tarde."
+        "Erro ao carregar quantidade de alunos da escola. Tente novamente mais tarde.",
       );
     }
   };
@@ -104,13 +104,13 @@ export const Container = () => {
     if (response.status === HTTP_STATUS.OK) {
       if (!exibeMotivoETEC()) {
         response.data.results = response.data.results.filter(
-          (motivo) => motivo.nome !== "ETEC"
+          (motivo) => motivo.nome !== "ETEC",
         );
       }
       setMotivosContinuos(response.data.results);
     } else {
       setErro(
-        "Erro ao carregar motivos de inclusão normal. Tente novamente mais tarde."
+        "Erro ao carregar motivos de inclusão normal. Tente novamente mais tarde.",
       );
     }
   };
@@ -121,7 +121,7 @@ export const Container = () => {
       setMotivosSimples(response.data.results);
     } else {
       setErro(
-        "Erro ao carregar motivos de inclusão contínua. Tente novamente mais tarde."
+        "Erro ao carregar motivos de inclusão contínua. Tente novamente mais tarde.",
       );
     }
   };
@@ -132,10 +132,10 @@ export const Container = () => {
     });
     if (response.status === HTTP_STATUS.OK) {
       setProximosCincoDiasUteis(
-        dataParaUTC(new Date(response.data.proximos_cinco_dias_uteis))
+        dataParaUTC(new Date(response.data.proximos_cinco_dias_uteis)),
       );
       setProximosDoisDiasUteis(
-        dataParaUTC(new Date(response.data.proximos_dois_dias_uteis))
+        dataParaUTC(new Date(response.data.proximos_dois_dias_uteis)),
       );
     } else {
       setErro("Erro ao carregar dias úteis. Tente novamente mais tarde.");
@@ -151,15 +151,16 @@ export const Container = () => {
       response.data.results[0].tipos_alimentacao =
         response.data.results[0].tipos_alimentacao
           .filter(
-            (tipo_alimentacao) => tipo_alimentacao.nome !== "Lanche Emergencial"
+            (tipo_alimentacao) =>
+              tipo_alimentacao.nome !== "Lanche Emergencial",
           )
           .filter((tipo_alimentacao) =>
-            tiposAlimentacaoETEC().includes(tipo_alimentacao.nome)
+            tiposAlimentacaoETEC().includes(tipo_alimentacao.nome),
           );
       setPeriodoNoite(formatarPeriodos(response.data.results));
     } else {
       setErro(
-        "Erro ao carregar períodos escolares. Tente novamente mais tarde."
+        "Erro ao carregar períodos escolares. Tente novamente mais tarde.",
       );
     }
   };
@@ -174,7 +175,7 @@ export const Container = () => {
 
   const requisicoesPreRenderComMeusDados = async (): Promise<void> => {
     const periodos = formatarPeriodos(
-      meusDados.vinculo_atual.instituicao.periodos_escolares
+      meusDados.vinculo_atual.instituicao.periodos_escolares,
     );
     const escola_uuid = meusDados.vinculo_atual.instituicao.uuid;
     const tipo_unidade_escolar_iniciais =
@@ -193,10 +194,10 @@ export const Container = () => {
           periodo.tipos_alimentacao = vinculo.tipos_alimentacao;
           periodo.maximo_alunos = null;
           periodosMotivoInclusaoEspecifico.push(periodo);
-        }
+        },
       );
       setPeriodosMotivoEspecifico(
-        formatarPeriodosEspecificosEMEF(periodosMotivoInclusaoEspecifico)
+        formatarPeriodosEspecificosEMEF(periodosMotivoInclusaoEspecifico),
       );
     });
   };

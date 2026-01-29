@@ -3736,7 +3736,7 @@ export const mockProdutosReclamacoesEscolaEMEF = {
                 descricao:
                   "Reclamação f8450abe-4a59-4725-b5f7-0aea37c0290a feita por SUPER USUARIO ESCOLA EMEF em 2021-04-30 16:40:38.807580",
                 justificativa:
-                  '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;">Teste questionamento do produto</span>&nbsp;</p>\n',
+                  '<p><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;">Teste questionamento do produto</span>&nbsp;</p>\n',
                 resposta_sim_nao: false,
                 anexos: [],
               },
@@ -4353,7 +4353,7 @@ export const mockProdutosReclamacoesEscolaEMEF = {
                 descricao:
                   "Reclamação 79c68c14-e70f-434d-8766-78e5f6a0ff69 feita por SUPER USUARIO ESCOLA EMEF em 2020-10-08 13:46:07.896889",
                 justificativa:
-                  '<p><span style="color: rgba(0,0,0,0);background-color: rgb(248,249,250);font-size: 0px;font-family: Roboto;">%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26lt%3Bspan%26gt%3B%26lt%3Bi%26gt%3BAguardando%20an%C3%A1lise%26lt%3Bbr%26gt%3Bdas%20reclama%C3%A7%C3%B5es%26lt%3B%2Fi%26gt%3B%26lt%3Bbr%26gt%3B%26lt%3B%2Fspan%26gt%3B%22%20style%3D%22rounded%3D1%3BstrokeWidth%3D1%3BfontFamily%3DHelvetica%3Bhtml%3D1%3Bdashed%3D1%3BfillColor%3D%23B1DDF0%3Bshadow%3D0%3Bglass%3D0%3Bsketch%3D0%3BlabelBorderColor%3Dnone%3BstrokeColor%3D%237EA6E0%3BfontStyle%3D0%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22345%22%20y%3D%221945%22%20width%3D%22120%22%20height%3D%2250%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E</span><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: Roboto;"> Teste questionamento terceirizada lamen</span>&nbsp;</p>\n',
+                  '<p><span style="color: rgba(0,0,0,0);background-color: rgb(248,249,250);font-size: 0px;font-family: "Roboto", sans-serif;">%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26lt%3Bspan%26gt%3B%26lt%3Bi%26gt%3BAguardando%20an%C3%A1lise%26lt%3Bbr%26gt%3Bdas%20reclama%C3%A7%C3%B5es%26lt%3B%2Fi%26gt%3B%26lt%3Bbr%26gt%3B%26lt%3B%2Fspan%26gt%3B%22%20style%3D%22rounded%3D1%3BstrokeWidth%3D1%3BfontFamily%3DHelvetica%3Bhtml%3D1%3Bdashed%3D1%3BfillColor%3D%23B1DDF0%3Bshadow%3D0%3Bglass%3D0%3Bsketch%3D0%3BlabelBorderColor%3Dnone%3BstrokeColor%3D%237EA6E0%3BfontStyle%3D0%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22345%22%20y%3D%221945%22%20width%3D%22120%22%20height%3D%2250%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E</span><span style="color: rgb(66,71,74);background-color: rgb(255,255,255);font-size: 14px;font-family: "Roboto", sans-serif;"> Teste questionamento terceirizada lamen</span>&nbsp;</p>\n',
                 resposta_sim_nao: false,
                 anexos: [],
               },

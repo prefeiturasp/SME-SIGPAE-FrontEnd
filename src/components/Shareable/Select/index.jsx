@@ -24,6 +24,7 @@ export const Select = (props) => {
     usarDirty,
     onChangeEffect,
     dataTestId,
+    id,
   } = props;
   return (
     <div className="select" data-testid={dataTestId}>
@@ -35,7 +36,7 @@ export const Select = (props) => {
         ),
         <label
           key={1}
-          htmlFor={name}
+          htmlFor={id || name}
           className={`${labelClassName || "col-form-label"}`}
         >
           {label}
@@ -60,6 +61,7 @@ export const Select = (props) => {
           if (onChangeEffect) onChangeEffect(e);
         }}
         name={name}
+        id={id || name}
         style={width && { width: width - 12 }}
       >
         {options &&
@@ -92,7 +94,7 @@ Select.propTypes = {
       uuid: PropTypes.string,
       disable: PropTypes.bool,
       selected: PropTypes.bool,
-    })
+    }),
   ),
   name: PropTypes.string,
 };

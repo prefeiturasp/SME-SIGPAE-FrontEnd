@@ -3,6 +3,7 @@ import {
   CONFIGURACOES,
   EDITAIS_CONTRATOS,
   EMPRESA,
+  EMPRESAS_CADASTRADAS,
   FABRICANTES,
   FAIXAS_ETARIAS,
   HORARIO_COMBOS_ALIMENTACAO,
@@ -25,6 +26,7 @@ import {
   usuarioEhCronograma,
   usuarioEhDilogQualidade,
   usuarioEhDilogQualidadeOuCronograma,
+  usuarioEhDilogVisualizacao,
   usuarioEhEmpresaFornecedor,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
@@ -54,6 +56,11 @@ const MenuCadastros = () => {
         usuarioEhCronograma() ||
         usuarioEhCODAEGestaoProduto()) && (
         <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${EMPRESA}`}>
+          Empresas
+        </LeafItem>
+      )}
+      {(usuarioEhDilogQualidade() || usuarioEhDilogVisualizacao()) && (
+        <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${EMPRESAS_CADASTRADAS}`}>
           Empresas
         </LeafItem>
       )}

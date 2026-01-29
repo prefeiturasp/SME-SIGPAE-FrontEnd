@@ -276,3 +276,12 @@ export const updateInformacoesBasicas = async (uuid, params) => {
     return data;
   }
 };
+
+export const getTotaisAtendimentoConsumo = async (params) => {
+  const url = `medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
