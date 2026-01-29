@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-
+import "./styles.scss";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import { Filtros } from "./components/Filtros/Index";
 import { Paginacao } from "src/components/Shareable/Paginacao";
-
 import { MESES } from "src/constants/shared";
 import { STATUS_RELATORIO_FINANCEIRO } from "../constants";
 import {
@@ -12,8 +11,6 @@ import {
   RELATORIO_FINANCEIRO,
   RELATORIO_CONSOLIDADO,
 } from "src/configs/constants";
-
-import "./styles.scss";
 import { useRelatorioFinanceiro } from "./view";
 import ModalAnalisar from "./components/ModalAnalisar";
 
@@ -104,17 +101,12 @@ export function RelatorioFinanceiro() {
                             {relatorio.status !==
                             "RELATORIO_FINANCEIRO_GERADO" ? (
                               <>
-                                <Link
-                                  to={`/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${RELATORIO_CONSOLIDADO}/?uuid=${relatorio.uuid}`}
-                                  state={{}}
-                                >
-                                  <span className="px-2">
-                                    <i
-                                      title="Visualizar"
-                                      className="fas fa-eye green"
-                                    />
-                                  </span>
-                                </Link>
+                                <span className="px-2">
+                                  <i
+                                    title="Visualizar"
+                                    className="fas fa-eye green"
+                                  />
+                                </span>
                                 <span className="px-2">
                                   <i
                                     title="Lançamentos Consolidados"

@@ -56,14 +56,15 @@ export class OpcoesKits extends Component {
   }
 
   onCardChange(uuid) {
-    let kitsChecked = this.state.kitsChecked;
-    if (!kitsChecked.includes(uuid)) {
-      kitsChecked.push(uuid);
-    } else {
-      kitsChecked.splice(kitsChecked.indexOf(uuid), 1);
-    }
-    this.setState({ kitsChecked });
-    this.props.updateKitsChecked(kitsChecked);
+    this.setState((prevState) => {
+      const kitsChecked = prevState.kitsChecked.includes(uuid)
+        ? prevState.kitsChecked.filter((id) => id !== uuid)
+        : [...prevState.kitsChecked, uuid];
+
+      this.props.updateKitsChecked(kitsChecked);
+
+      return { kitsChecked };
+    });
   }
 
   render() {

@@ -142,7 +142,6 @@ export const InformacoesMedicaoInicialCEI = ({
 
   const handleClickEditar = () => {
     setEmEdicao(true);
-    !solicitacaoMedicaoInicial && opcoesContagem.length > 0;
   };
 
   const handleClickSalvar = async () => {

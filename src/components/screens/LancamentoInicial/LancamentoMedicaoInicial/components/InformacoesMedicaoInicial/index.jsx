@@ -84,9 +84,9 @@ export default ({
     : [];
 
   const setaResponsavel = (input, event, indice) => {
-    let responsavel = responsaveis;
-    responsavel[indice][input] = event;
-    setResponsaveis(responsaveis);
+    let responsaveis_ = [...responsaveis];
+    responsaveis_[indice][input] = event;
+    setResponsaveis(responsaveis_);
   };
 
   const verificarInput = (event, responsavel) => {
@@ -138,7 +138,6 @@ export default ({
 
   const handleClickEditar = () => {
     setEmEdicao(true);
-    !solicitacaoMedicaoInicial && opcoesContagem.length > 0;
   };
 
   const handleClickSalvar = async () => {

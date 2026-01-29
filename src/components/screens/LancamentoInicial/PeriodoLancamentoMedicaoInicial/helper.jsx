@@ -59,15 +59,11 @@ export const formatarPayloadPeriodoLancamento = (
     }
   });
 
-  arrayCategoriesValues.map((arr) => {
+  arrayCategoriesValues.forEach((arr) => {
     const keySplitted = arr[0].split("__");
-
     const categoria = keySplitted.pop();
-
     const idCategoria = categoria.match(/\d/g).join("");
-
     const dia = keySplitted[1].match(/\d/g).join("");
-
     const nome_campo = keySplitted[0];
 
     let tipoAlimentacao = tabelaAlimentacaoRows.find(

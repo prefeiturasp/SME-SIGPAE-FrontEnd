@@ -83,7 +83,7 @@ describe("Teste de comportamentos componente - TabelaAlimentacaoCEI", () => {
     );
 
     expect(
-      screen.getByText("ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETA"),
+      screen.getByText("ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS"),
     ).toBeInTheDocument();
     expect(screen.getByText("VALOR UNITÁRIO")).toBeInTheDocument();
     expect(screen.getByText("VALOR DO REAJUSTE")).toBeInTheDocument();

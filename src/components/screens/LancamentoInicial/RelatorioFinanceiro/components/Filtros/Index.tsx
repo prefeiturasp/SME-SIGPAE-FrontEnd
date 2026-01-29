@@ -1,23 +1,13 @@
-import React from "react";
-
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import { FormFields } from "../FormFields";
+import { SelectOption, MultiSelectOption } from "../../types";
 
 type FiltrosProps = {
   onSubmit: (_values: any) => void;
   onClear: () => void;
-  lotes: {
-    value: string;
-    label: string;
-  }[];
-  gruposUnidadeEscolar: {
-    uuid: string;
-    nome: string;
-  }[];
-  mesesAnos: {
-    uuid: string;
-    nome: string;
-  }[];
+  lotes: MultiSelectOption[];
+  gruposUnidadeEscolar: MultiSelectOption[] | SelectOption[];
+  mesesAnos: SelectOption[];
 };
 
 export function Filtros({

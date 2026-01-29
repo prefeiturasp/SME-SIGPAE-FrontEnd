@@ -831,6 +831,7 @@ export default () => {
                       type={BUTTON_TYPE.SUBMIT}
                       style={BUTTON_STYLE.GREEN}
                       className="float-end ms-3"
+                      disabled={restante !== 0}
                     />
                     <Botao
                       texto="Salvar Rascunho"

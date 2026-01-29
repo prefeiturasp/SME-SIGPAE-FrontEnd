@@ -96,7 +96,7 @@ export default ({
       <div className="row">
         <div
           className={`col-12 texto-alimento-faltante ${
-            restante === 0 ? "verde" : "vermelho"
+            restante === 0 ? "mensagem-verde" : "mensagem-vermelho"
           }`}
         >
           {restante < 0 ? textoQuantidadeMaior : textoPadrao}

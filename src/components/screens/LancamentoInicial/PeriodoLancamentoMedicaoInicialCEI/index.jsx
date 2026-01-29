@@ -155,8 +155,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     setAlteracoesAlimentacaoAutorizadas,
   ] = useState(null);
   const [kitLanchesAutorizadas, setKitLanchesAutorizadas] = useState(null);
-  const [exibirTooltipAoSalvar, setExibirTooltipAoSalvar] = useState(false);
-  const [inputsInclusaoComErro, setInputsInclusaoComErro] = useState([]);
+  const [exibirTooltipAoSalvar] = useState(false);
+  const [inputsInclusaoComErro] = useState([]);
   const [
     valoresMatriculadosFaixaEtariaDia,
     setValoresMatriculadosFaixaEtariaDia,
@@ -243,7 +243,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   useEffect(() => {
     const mesAnoSelecionado = location.state
-      ? typeof location.state.mesAnoSelecionado === String
+      ? typeof location.state.mesAnoSelecionado === "string"
         ? new Date(location.state.mesAnoSelecionado.replace("'", ""))
         : new Date(location.state.mesAnoSelecionado)
       : mesAnoDefault;
@@ -1437,7 +1437,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       );
       return;
     }
-    Object.entries(valuesMesmoDiaDaObservacao).map((v) => {
+    Object.entries(valuesMesmoDiaDaObservacao).forEach((v) => {
       const keySplitted = v[0].split("__");
       const categoria = keySplitted.pop();
       const idCategoria = categoria.match(/\d/g).join("");
@@ -1815,15 +1815,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       }
     }
     desabilitaTooltip(formValuesAtualizados);
-
-    if (exibirTooltipAoSalvar) {
-      (formValuesAtualizados,
-        categoriasDeMedicao,
-        inclusoesAutorizadas,
-        setInputsInclusaoComErro,
-        setExibirTooltipAoSalvar,
-        validacaoDiaLetivo);
-    }
 
     if (
       (exibirTooltipRPLAutorizadas(
@@ -2380,7 +2371,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                   <div>Sáb.</div>
                                   <div>Dom.</div>
                                 </div>
-                                {semanaSelecionada &&
+                                {!!semanaSelecionada &&
                                   calendarioMesConsiderado &&
                                   feriadosNoMes &&
                                   tabelaAlimentacaoCEIRows &&

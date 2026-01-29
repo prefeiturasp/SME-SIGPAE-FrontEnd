@@ -27,7 +27,6 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 
 import { mockDietaEspecialComum } from "src/mocks/DietaEspecial/mockDietaAvalidar";
-import preview from "jest-preview";
 
 jest.mock("src/components/Shareable/Toast/dialogs", () => ({
   toastSuccess: jest.fn(),
@@ -232,8 +231,6 @@ describe("Test <Relatorio> - Dieta Especial - Solicitação de Inclusão - Visã
 
   it("Testa o botão de Salvar Rascunho", async () => {
     await awaitServices();
-    preview.debug();
-
     const btnRascunho = screen.getByRole("button", {
       name: /salvar rascunho/i,
     });
@@ -275,5 +272,38 @@ describe("Test <Relatorio> - Dieta Especial - Solicitação de Inclusão - Visã
         "Houve um erro ao salvar o rascunho.",
       );
     });
+  });
+
+  it("não deve salvar rascunho e deve exibir aviso se campos obrigatórios estiverem faltando", async () => {
+    await awaitServices();
+    const campoOrientacoes = screen.getByTestId("ckeditor-orientacoes_gerais");
+    fireEvent.change(campoOrientacoes, { target: { value: "" } });
+
+    const btnRascunho = screen.getByRole("button", {
+      name: /salvar rascunho/i,
+    });
+
+    await fireEvent.click(btnRascunho);
+
+    await waitFor(() => {
+      expect(atualizaDietaEspecial).not.toHaveBeenCalled();
+      expect(toastError).toHaveBeenCalledWith(
+        "Preencha todos os campos obrigatórios antes de salvar o rascunho.",
+      );
+    });
+  });
+
+  it("deve habilitar o envio do rascunho apenas quando o formulário for modificado (pristine check)", async () => {
+    await awaitServices();
+
+    const btnRascunho = screen.getByRole("button", {
+      name: /salvar rascunho/i,
+    });
+    expect(btnRascunho).toBeDisabled();
+    const campoOrientacoes = screen.getByTestId("ckeditor-orientacoes_gerais");
+    fireEvent.change(campoOrientacoes, {
+      target: { value: "Nova orientação" },
+    });
+    expect(btnRascunho).not.toBeDisabled();
   });
 });

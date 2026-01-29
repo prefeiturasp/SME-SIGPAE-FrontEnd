@@ -551,7 +551,7 @@ section {
 }
 
 * {
-  font-family: Roboto;
+  font-family: "Roboto", sans-serif;
 }
 
 .modal-cadastro-edital {
@@ -560,7 +560,7 @@ section {
 
   header {
     color: $gray;
-    font-family: Roboto !important;
+    font-family: "Roboto", sans-serif !important;
     font-size: 14px;
     font-weight: bold;
   }
@@ -571,7 +571,7 @@ section {
     font-size: 14px;
 
     span {
-      font-family: Roboto !important;
+      font-family: "Roboto", sans-serif !important;
       font-weight: normal;
       font-size: 14px;
       line-height: 1.29;

@@ -87,13 +87,13 @@ export const DashboardDietaEspecial = ({ ...props }) => {
       responseInativasTemporariamente,
       responseAutorizadasTemporariamente,
     ] = await Promise.all([
-      getDietaEspecialPendenteAutorizacao(instituicao.uuid, params),
-      getDietaEspecialAutorizadas(instituicao.uuid, params),
-      getDietaEspecialNegadas(instituicao.uuid, params),
-      getDietaEspecialCanceladas(instituicao.uuid, params),
-      getDietaEspecialInativas(instituicao.uuid, params),
-      getDietaEspecialInativasTemporariamente(instituicao.uuid, params),
-      getDietaEspecialAutorizadasTemporariamente(instituicao.uuid, params),
+      getDietaEspecialPendenteAutorizacao(instituicao?.uuid, params),
+      getDietaEspecialAutorizadas(instituicao?.uuid, params),
+      getDietaEspecialNegadas(instituicao?.uuid, params),
+      getDietaEspecialCanceladas(instituicao?.uuid, params),
+      getDietaEspecialInativas(instituicao?.uuid, params),
+      getDietaEspecialInativasTemporariamente(instituicao?.uuid, params),
+      getDietaEspecialAutorizadasTemporariamente(instituicao?.uuid, params),
     ]);
 
     if (responsePendenteAutorizacao.status === HTTP_STATUS.OK) {
