@@ -90,11 +90,11 @@ describe("Teste de comportamentos componente - Tabela Alimentação", () => {
       screen.getByText("TIPOS DE ALIMENTAÇÕES - SEM DIETAS"),
     ).toBeInTheDocument();
 
-    expect(screen.getByText("Lanche 4h")).toBeInTheDocument();
-    expect(screen.getByText("Lanche")).toBeInTheDocument();
-    expect(screen.getByText("Refeição")).toBeInTheDocument();
-    expect(screen.getByText("Sobremesa")).toBeInTheDocument();
-    expect(screen.getByText("Lanche Emergencial")).toBeInTheDocument();
+    expect(screen.getByText("LANCHE 4H")).toBeInTheDocument();
+    expect(screen.getByText("LANCHE")).toBeInTheDocument();
+    expect(screen.getByText("REFEIÇÃO")).toBeInTheDocument();
+    expect(screen.getByText("SOBREMESA")).toBeInTheDocument();
+    expect(screen.getByText("LANCHE EMERGENCIAL")).toBeInTheDocument();
 
     expect(screen.getAllByText("R$ 5,00").length).toBeGreaterThan(0);
     expect(screen.getAllByText("R$ 4,00").length).toBeGreaterThan(0);
