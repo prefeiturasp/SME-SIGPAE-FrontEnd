@@ -29,17 +29,33 @@ export const Rascunhos = ({
               Criado em: {alteracaoDeCardapio.criado_em}
               <span
                 data-testid={`botao-remover-rascunho-${alteracaoDeCardapio.id_externo}`}
+                role="button"
+                tabIndex={0}
                 onClick={() => removerRascunho(id_externo, uuid, form)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    removerRascunho(id_externo, uuid, form);
+                  }
+                }}
               >
-                <i className="fas fa-trash" />
+                <i className="fas fa-trash" aria-hidden="true" />
               </span>
               <span
                 data-testid={`botao-carregar-rascunho-${alteracaoDeCardapio.id_externo}`}
+                role="button"
+                tabIndex={0}
                 onClick={async () =>
                   await carregarRascunho(form, alteracaoDeCardapio)
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    carregarRascunho(form, alteracaoDeCardapio);
+                  }
+                }}
               >
-                <i className="fas fa-edit" />
+                <i className="fas fa-edit" aria-hidden="true" />
               </span>
             </div>
             <div className="ms-3">
