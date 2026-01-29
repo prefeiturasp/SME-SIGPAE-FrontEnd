@@ -104,7 +104,8 @@ export function TabelaDietas({
               key={`${tipoDieta.replace(" ", "_").toLocaleLowerCase()}_${tipo.uuid}`}
             >
               <td className="col-tipo">
-                <b>{tipo.nome}</b> {tipo.grupo && `- ${tipo.grupo}`}
+                <b>{tipo.nome.toUpperCase()}</b>{" "}
+                {tipo.grupo && `- ${tipo.grupo}`}
               </td>
               <td className="col-unitario">
                 R$ {formataMilharDecimal(valorUnitario)}
