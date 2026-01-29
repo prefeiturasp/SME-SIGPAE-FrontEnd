@@ -1,14 +1,14 @@
 import InputText from "src/components/Shareable/Input/InputText";
 import { required } from "src/helpers/fieldValidators";
-import React from "react";
-import { Field } from "react-final-form";
+import React, { useEffect } from "react";
+import { Field, useForm } from "react-final-form";
 import "./styles.scss";
 import { numberToStringDecimal } from "src/helpers/parsers";
 import { formataMilharDecimal } from "../../../../../../helpers/utilities";
 
 const pintaTabela = (campo, etapaAtual, etapasAntigas) => {
   const etapaAntiga = etapasAntigas.find(
-    (e) => e.etapa === etapaAtual.etapa && e.parte === etapaAtual.parte
+    (e) => e.etapa === etapaAtual.etapa && e.parte === etapaAtual.parte,
   );
   if (!etapaAntiga) return { paintCell: false, paintRow: true };
   if (etapaAtual[campo] !== etapaAntiga[campo]) {
@@ -17,13 +17,54 @@ const pintaTabela = (campo, etapaAtual, etapasAntigas) => {
   return { paintCell: false, paintRow: false };
 };
 
+const preencherDadosEtapas = (etapasNovas, etapasAntigas, form) => {
+  if (!etapasAntigas || etapasAntigas.length === 0) return;
+
+  const ultimaEtapaAntiga = etapasAntigas[etapasAntigas.length - 1];
+
+  etapasNovas.forEach((etapaNova, index) => {
+    const etapaCorrespondente = etapasAntigas.find(
+      (antiga) =>
+        (antiga.etapa === etapaNova.etapa &&
+          antiga.parte === etapaNova.parte) ||
+        antiga.etapa === etapaNova.etapa,
+    );
+
+    const etapaParaUsar = etapaCorrespondente || ultimaEtapaAntiga;
+
+    form.change(`empenho_${index}`, etapaParaUsar.numero_empenho || "");
+    form.change(
+      `qtd_total_empenho_${index}`,
+      etapaParaUsar.qtd_total_empenho
+        ? formataMilharDecimal(etapaParaUsar.qtd_total_empenho)
+        : "",
+    );
+  });
+};
+
 export default ({ solicitacao, somenteLeitura }) => {
+  const form = useForm();
+
+  useEffect(() => {
+    if (
+      !somenteLeitura &&
+      solicitacao.etapas_novas &&
+      solicitacao.etapas_antigas
+    ) {
+      preencherDadosEtapas(
+        solicitacao.etapas_novas,
+        solicitacao.etapas_antigas,
+        form,
+      );
+    }
+  }, [solicitacao.etapas_novas, solicitacao.etapas_antigas, somenteLeitura]);
+
   return (
     <>
       <table className="table tabela-form-alteracao mt-2 mb-4">
         <thead className="head-crono">
           <tr>
-            <th className="borda-crono">Confirmar N° do Empenho</th>
+            <th className="borda-crono">N° do Empenho</th>
             <th className="borda-crono">Qtde Total do Empenho</th>
             <th className="borda-crono">Etapa</th>
             <th className="borda-crono">Parte</th>
@@ -36,14 +77,14 @@ export default ({ solicitacao, somenteLeitura }) => {
           {solicitacao.etapas_novas.length > 0 &&
             solicitacao.etapas_novas.map((etapa, index) => {
               const etapaAntiga = solicitacao.etapas_antigas.find(
-                (e) => e.etapa === etapa.etapa && e.parte === etapa.parte
+                (e) => e.etapa === etapa.etapa && e.parte === etapa.parte,
               );
               const linhaDiferente = !etapaAntiga;
               const getClass = (campo) => {
                 const { paintCell, paintRow } = pintaTabela(
                   campo,
                   etapa,
-                  solicitacao.etapas_antigas
+                  solicitacao.etapas_antigas,
                 );
                 return paintRow || paintCell ? "fundo-laranja" : "";
               };
