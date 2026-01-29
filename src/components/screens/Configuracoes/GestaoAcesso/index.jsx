@@ -150,24 +150,24 @@ export default ({
   const buscarVinculos = async (page) => {
     setCarregando(true);
     if (geral && !filtros?.perfil) {
-      filtros?.perfil = perfisSubordinados;
+      filtros.perfil = perfisSubordinados;
     }
 
     if (cogestor) {
-      filtros?.perfil = filtros?.perfil ?? [
+      filtros.perfil = filtros?.perfil ?? [
         "COGESTOR_DRE",
         "ADMINISTRADOR_UE",
         "DIRETOR_UE",
       ];
-      filtros?.visao = filtros?.visao ?? ["DRE", "ESCOLA"];
+      filtros.visao = filtros?.visao ?? ["DRE", "ESCOLA"];
     }
 
     if (codae) {
-      filtros?.visao = "CODAE";
+      filtros.visao = "CODAE";
     }
 
     if (empresa) {
-      filtros?.visao = "EMPRESA";
+      filtros.visao = "EMPRESA";
     }
 
     let payload = gerarParametrosConsulta({ page, ...filtros });
