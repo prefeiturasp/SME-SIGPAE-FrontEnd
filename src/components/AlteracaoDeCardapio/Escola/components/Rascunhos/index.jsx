@@ -30,7 +30,15 @@ export const Rascunhos = ({ ...props }) => {
           </span>
           <span
             data-testid="botao-carregar-rascunho"
+            role="button"
+            tabIndex={0}
             onClick={() => carregarRascunho(alteracaoDeCardapio, form, values)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                carregarRascunho(alteracaoDeCardapio, form, values);
+              }
+            }}
           >
             <i className="fas fa-edit" />
           </span>
@@ -40,12 +48,12 @@ export const Rascunhos = ({ ...props }) => {
             {alteracaoDeCardapio.data
               ? `Dia: ${alteracaoDeCardapio.data}`
               : alteracaoDeCardapio.data_inicial ===
-                alteracaoDeCardapio.data_final
-              ? `Dia: ${
-                  alteracaoDeCardapio.data_inicial ||
-                  alteracaoDeCardapio.alterar_dia
-                }`
-              : `De ${alteracaoDeCardapio.data_inicial} a ${alteracaoDeCardapio.data_final}`}
+                  alteracaoDeCardapio.data_final
+                ? `Dia: ${
+                    alteracaoDeCardapio.data_inicial ||
+                    alteracaoDeCardapio.alterar_dia
+                  }`
+                : `De ${alteracaoDeCardapio.data_inicial} a ${alteracaoDeCardapio.data_final}`}
           </p>
         </div>
       </div>
