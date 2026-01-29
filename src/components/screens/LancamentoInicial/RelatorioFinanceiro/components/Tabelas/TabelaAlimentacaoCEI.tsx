@@ -31,7 +31,9 @@ export function TabelaAlimentacaoCEI({
     <table className="tabela-relatorio">
       <thead>
         <tr>
-          <th className="col-faixa">ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETA</th>
+          <th className="col-faixa">
+            ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS
+          </th>
           <th className="col-unitario">VALOR UNITÁRIO</th>
           <th className="col-reajuste">VALOR DO REAJUSTE</th>
           <th className="col-total-unitario">VALOR UNITÁRIO TOTAL</th>

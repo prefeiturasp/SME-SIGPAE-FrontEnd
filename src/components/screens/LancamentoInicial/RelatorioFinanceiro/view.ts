@@ -31,7 +31,7 @@ const VALORES_INICIAIS = {
 export function useRelatorioFinanceiro(filtrosIniciais?: FiltrosInterface) {
   const [lotes, setLotes] = useState<MultiSelectOption[]>([]);
   const [gruposUnidadeEscolar, setGruposUnidadeEscolar] = useState<
-    SelectOption[]
+    MultiSelectOption[]
   >([]);
   const [mesesAnos, setMesesAnos] = useState<SelectOption[]>([]);
   const [carregando, setCarregando] = useState(true);
