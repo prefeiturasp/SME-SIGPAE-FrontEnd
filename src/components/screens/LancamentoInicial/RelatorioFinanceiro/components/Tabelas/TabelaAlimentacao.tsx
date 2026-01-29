@@ -74,7 +74,7 @@ export function TabelaAlimentacao({
           return (
             <tr key={`${tipo.uuid}`}>
               <td className="col-tipo">
-                <b>{tipo.nome}</b>
+                <b>{tipo.nome.toUpperCase()}</b>
               </td>
               <td className="col-unitario">
                 R$ {formataMilharDecimal(valorUnitario)}
