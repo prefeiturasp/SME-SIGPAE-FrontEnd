@@ -56,15 +56,16 @@ export function TabelaAlimentacao({
             )?.valor ?? "0",
           );
 
-          const totalUnitario = valorUnitario + valorReajuste;
+          let nomeCampoAtendimento = `total_${tipo.nome
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\s+/g, "_")
+            .toLowerCase()}`;
+
           const numeroAtendimentos =
-            totaisConsumo?.["ALIMENTAÇÃO"][
-              tipo.nome
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .replace(/\s+/g, "_")
-                .toLowerCase()
-            ] ?? 0;
+            totaisConsumo?.["ALIMENTAÇÃO"][nomeCampoAtendimento] ?? 0;
+
+          const totalUnitario = valorUnitario + valorReajuste;
           const valorTotal = totalUnitario * numeroAtendimentos;
 
           totalAtendimentosGeral += numeroAtendimentos;
