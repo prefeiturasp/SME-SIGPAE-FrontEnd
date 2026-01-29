@@ -57,7 +57,14 @@ export function TabelaAlimentacao({
           );
 
           const totalUnitario = valorUnitario + valorReajuste;
-          const numeroAtendimentos = totaisConsumo?.[tipo.nome] ?? 0;
+          const numeroAtendimentos =
+            totaisConsumo?.["ALIMENTAÇÃO"][
+              tipo.nome
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, "_")
+                .toLowerCase()
+            ] ?? 0;
           const valorTotal = totalUnitario * numeroAtendimentos;
 
           totalAtendimentosGeral += numeroAtendimentos;
@@ -85,7 +92,7 @@ export function TabelaAlimentacao({
           );
         })}
         <tr key={`total_${ordem}`} className="linha-total">
-          <td className="col-tipo">TOTAL ({ordem})</td>
+          <td className="col-faixa">TOTAL ({ordem})</td>
           <td className="col-unitario"></td>
           <td className="col-reajuste"></td>
           <td className="col-total-unitario"></td>
