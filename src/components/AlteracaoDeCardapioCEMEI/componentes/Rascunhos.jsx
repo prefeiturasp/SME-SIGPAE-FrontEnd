@@ -1,4 +1,3 @@
-import React from "react";
 import "src/components/Shareable/style.scss";
 
 export const Rascunhos = ({

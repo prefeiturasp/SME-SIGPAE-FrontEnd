@@ -1,5 +1,3 @@
-import React from "react";
-
 export const Rascunhos = ({ ...props }) => {
   const { rascunhos, removerRascunho, carregarRascunho, form, values } = props;
 

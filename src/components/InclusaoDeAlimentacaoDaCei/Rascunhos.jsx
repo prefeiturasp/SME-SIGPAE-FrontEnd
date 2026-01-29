@@ -1,4 +1,3 @@
-import React from "react";
 import "src/components/Shareable/style.scss";
 
 export const Rascunhos = ({
@@ -30,15 +29,31 @@ export const Rascunhos = ({
               Criado em: {inclusao.criado_em}
               <span
                 data-testid="botao-remover-rascunho"
+                role="button"
+                tabIndex={0}
                 onClick={() => removerRascunho(id_externo, uuid, values)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    removerRascunho(id_externo, uuid, values);
+                  }
+                }}
               >
-                <i className="fas fa-trash" />
+                <i className="fas fa-trash" aria-hidden="true" />
               </span>
               <span
                 data-testid="botao-carregar-rascunho"
+                role="button"
+                tabIndex={0}
                 onClick={() => carregarRascunho(form, inclusao, values)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    carregarRascunho(form, inclusao, values);
+                  }
+                }}
               >
-                <i className="fas fa-edit" />
+                <i className="fas fa-edit" aria-hidden="true" />
               </span>
             </div>
             <div className="ms-3">
