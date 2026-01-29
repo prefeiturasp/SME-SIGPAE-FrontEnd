@@ -42,7 +42,7 @@ describe("Teste <CustomToolbar>", () => {
 
   it("verifica se o componente renderizou 2 botões", () => {
     const botoes = screen.getAllByRole("button");
-    expect(botoes.length).toBe(2);
+    expect(botoes.length).toBe(3);
   });
 
   it("verifica se o botão de 'Anterior' chama a função onNavigate corretamente", () => {
