@@ -264,9 +264,7 @@ describe("AlterarCronograma - Testes Completos", () => {
 
       // Verifica se a tabela está presente
       await waitFor(() => {
-        expect(
-          screen.getByText(/Confirmar N° do Empenho/i),
-        ).toBeInTheDocument();
+        expect(screen.getAllByText(/N° do Empenho/i)).toHaveLength(2);
       });
     });
 
@@ -340,6 +338,41 @@ describe("AlterarCronograma - Testes Completos", () => {
           screen.getByText(/Solicitação de Alteração do Fornecedor/i),
         ).toBeInTheDocument();
       });
+    });
+
+    it("valida pré-preenchimento dos campos de empenho e quantidade", async () => {
+      await setup(true);
+
+      await waitFor(() => {
+        expect(screen.getAllByText(/N° do Empenho/i)).toHaveLength(2);
+      });
+
+      await waitFor(() => {
+        const camposEmpenho = document.querySelectorAll(
+          'input[data-cy^="empenho_"]',
+        );
+        expect(camposEmpenho.length).toBeGreaterThan(0);
+      });
+
+      const camposEmpenho = document.querySelectorAll(
+        'input[data-cy^="empenho_"]',
+      );
+      const camposQuantidade = document.querySelectorAll(
+        'input[data-cy^="qtd_total_empenho_"]',
+      );
+
+      expect(camposEmpenho.length).toBeGreaterThan(0);
+      expect(camposQuantidade.length).toBeGreaterThan(0);
+
+      const todosEmpenhosPreenchidos = Array.from(camposEmpenho).every(
+        (campo) => campo.value && campo.value.trim() !== "",
+      );
+      expect(todosEmpenhosPreenchidos).toBeTruthy();
+
+      const todasQuantidadesPreenchidas = Array.from(camposQuantidade).every(
+        (campo) => campo.value && campo.value.trim() !== "",
+      );
+      expect(todasQuantidadesPreenchidas).toBeTruthy();
     });
 
     it("exibe botão Enviar Abastecimento", async () => {
@@ -530,9 +563,7 @@ describe("AlterarCronograma - Testes Completos", () => {
       await setup(true);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/Confirmar N° do Empenho/i),
-        ).toBeInTheDocument();
+        expect(screen.queryAllByText(/N° do Empenho/i)).toHaveLength(2);
       });
     });
   });
