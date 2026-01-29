@@ -124,4 +124,171 @@ describe("Testes da interface de Cadastro de Cronograma", () => {
 
     consoleErrorSpy.mockRestore();
   });
+
+  it("deve exibir texto em vermelho e botão desabilitado quando restante não for zero", async () => {
+    const empresa = screen.getByTestId("input-empresa").querySelector("input");
+    fireEvent.focus(empresa);
+    fireEvent.change(empresa, {
+      target: { value: "Empresa do Luis Zimmermann" },
+    });
+
+    await act(async () => {
+      fireEvent.mouseDown(
+        screen
+          .getByTestId("select-contrato")
+          .querySelector(".ant-select-selection-search-input"),
+      );
+    });
+
+    const opcaoContrato = await screen.findByText(/LEVE LEITE - PLL/i);
+    fireEvent.click(opcaoContrato);
+
+    await waitFor(() => {
+      expect(screen.getByText("Dados do Produto")).toBeInTheDocument();
+    });
+
+    const botaoExpandir = screen
+      .getByText("Dados do Produto")
+      .closest(".card-header")
+      .querySelector("button");
+    fireEvent.click(botaoExpandir);
+
+    await waitFor(() => {
+      expect(screen.getByText("Ficha Técnica e Produto")).toBeInTheDocument();
+    });
+
+    const quantidadeTotalInput = screen.getByPlaceholderText(
+      "Informe a Quantidade Total",
+    );
+    fireEvent.change(quantidadeTotalInput, { target: { value: "1000" } });
+
+    const quantidadeEtapaInput = screen.getByPlaceholderText(
+      "Digite a Quantidade",
+    );
+    fireEvent.change(quantidadeEtapaInput, { target: { value: "500" } });
+
+    await waitFor(() => {
+      const textoRestante = screen.getByText(/Faltam/i);
+      expect(textoRestante).toBeInTheDocument();
+      const elementoTexto = textoRestante.closest(".texto-alimento-faltante");
+      expect(elementoTexto).toHaveClass("mensagem-vermelho");
+      expect(elementoTexto).not.toHaveClass("mensagem-verde");
+    });
+    const botaoAssinar = screen
+      .getByText("Assinar e Enviar Cronograma")
+      .closest("button");
+    expect(botaoAssinar).toBeDisabled();
+  });
+
+  it("deve exibir texto em verde e botão habilitado quando restante for zero", async () => {
+    const empresa = screen.getByTestId("input-empresa").querySelector("input");
+    fireEvent.focus(empresa);
+    fireEvent.change(empresa, {
+      target: { value: "Empresa do Luis Zimmermann" },
+    });
+
+    await act(async () => {
+      fireEvent.mouseDown(
+        screen
+          .getByTestId("select-contrato")
+          .querySelector(".ant-select-selection-search-input"),
+      );
+    });
+
+    const opcaoContrato = await screen.findByText(/LEVE LEITE - PLL/i);
+    fireEvent.click(opcaoContrato);
+
+    await waitFor(() => {
+      expect(screen.getByText("Dados do Produto")).toBeInTheDocument();
+    });
+
+    const botaoExpandir = screen
+      .getByText("Dados do Produto")
+      .closest(".card-header")
+      .querySelector("button");
+    fireEvent.click(botaoExpandir);
+
+    await waitFor(() => {
+      expect(screen.getByText("Ficha Técnica e Produto")).toBeInTheDocument();
+    });
+
+    const quantidadeTotalInput = screen.getByPlaceholderText(
+      "Informe a Quantidade Total",
+    );
+    fireEvent.change(quantidadeTotalInput, { target: { value: "1000" } });
+
+    const quantidadeEtapaInput = screen.getByPlaceholderText(
+      "Digite a Quantidade",
+    );
+    fireEvent.change(quantidadeEtapaInput, { target: { value: "1000" } });
+
+    await waitFor(() => {
+      const textoRestante = screen.getByText(/Faltam/i);
+      expect(textoRestante).toBeInTheDocument();
+      const elementoTexto = textoRestante.closest(".texto-alimento-faltante");
+      expect(elementoTexto).not.toHaveClass("mensagem-vermelho");
+      expect(elementoTexto).toHaveClass("mensagem-verde");
+    });
+    const botaoAssinar = screen
+      .getByText("Assinar e Enviar Cronograma")
+      .closest("button");
+    expect(botaoAssinar).not.toBeDisabled();
+  });
+
+  it("deve exibir texto em vermelho quando quantidade for maior que a prevista", async () => {
+    const empresa = screen.getByTestId("input-empresa").querySelector("input");
+    fireEvent.focus(empresa);
+    fireEvent.change(empresa, {
+      target: { value: "Empresa do Luis Zimmermann" },
+    });
+
+    await act(async () => {
+      fireEvent.mouseDown(
+        screen
+          .getByTestId("select-contrato")
+          .querySelector(".ant-select-selection-search-input"),
+      );
+    });
+
+    const opcaoContrato = await screen.findByText(/LEVE LEITE - PLL/i);
+    fireEvent.click(opcaoContrato);
+
+    await waitFor(() => {
+      expect(screen.getByText("Dados do Produto")).toBeInTheDocument();
+    });
+
+    const botaoExpandir = screen
+      .getByText("Dados do Produto")
+      .closest(".card-header")
+      .querySelector("button");
+    fireEvent.click(botaoExpandir);
+
+    await waitFor(() => {
+      expect(screen.getByText("Ficha Técnica e Produto")).toBeInTheDocument();
+    });
+
+    const quantidadeTotalInput = screen.getByPlaceholderText(
+      "Informe a Quantidade Total",
+    );
+    fireEvent.change(quantidadeTotalInput, { target: { value: "1000" } });
+
+    const quantidadeEtapaInput = screen.getByPlaceholderText(
+      "Digite a Quantidade",
+    );
+    fireEvent.change(quantidadeEtapaInput, { target: { value: "2000" } });
+
+    await waitFor(() => {
+      const textoRestante = screen.getByText(
+        /Quantidade maior que a prevista em contrato/i,
+      );
+      expect(textoRestante).toBeInTheDocument();
+      const elementoTexto = textoRestante.closest(".texto-alimento-faltante");
+      expect(elementoTexto).toHaveClass("mensagem-vermelho");
+      expect(elementoTexto).not.toHaveClass("mensagem-verde");
+    });
+    const botaoAssinar = screen
+      .getByText("Assinar e Enviar Cronograma")
+      .closest("button");
+    expect(botaoAssinar).toBeDisabled();
+  });
 });
