@@ -93,7 +93,7 @@ export default ({ closeModal, showModal, listaEditais, opcoesTipos }) => {
       } else {
         opcoesProdutosEditais
           .filter((op) => op.key !== "todos")
-          .map((op) => op.children.map((ch) => checked.push(ch.key)));
+          .forEach((op) => op.children.map((ch) => checked.push(ch.key)));
         checked.push("todos");
         setProdutosEditaisSelecionados(checked);
       }
