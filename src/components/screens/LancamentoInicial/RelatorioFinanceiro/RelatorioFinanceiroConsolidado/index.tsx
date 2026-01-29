@@ -41,12 +41,17 @@ export function RelatorioFinanceiroConsolidado() {
     const { mes_ano, lote, grupo_unidade_escolar, status } = state;
     const [mes, ano] = mes_ano.split("_");
 
+    const grupo = gruposUnidadeEscolar.find(
+      (e) => e.value === state.grupo_unidade_escolar[0],
+    )?.label;
+
     const response = await getTotaisAtendimentoConsumo({
       mes: mes,
       ano: ano,
       lote: lote[0],
       grupo_unidade_escolar: grupo_unidade_escolar[0],
       status: status[0],
+      tipo_calculo: grupo.includes("CEI") ? "faixa_etaria" : "tipo_alimentacao",
     });
 
     if (response.status === HTTP_STATUS.OK) setTotaisConsumo(response.data);
@@ -58,7 +63,7 @@ export function RelatorioFinanceiroConsolidado() {
 
     const grupo = gruposUnidadeEscolar.find(
       (e) => e.value === state.grupo_unidade_escolar[0],
-    ).label;
+    )?.label;
 
     const match = grupo.match(/\((.*?)\)/);
     let unidades: string[] = [];
@@ -103,14 +108,10 @@ export function RelatorioFinanceiroConsolidado() {
   }, []);
 
   useEffect(() => {
-    if (!state) return;
-    getTotaisConsumo();
-  }, [state]);
-
-  useEffect(() => {
     if (!state?.grupo_unidade_escolar?.length || !gruposUnidadeEscolar?.length)
       return;
     getTiposUnidades();
+    getTotaisConsumo();
   }, [state, gruposUnidadeEscolar]);
 
   const grupo =
