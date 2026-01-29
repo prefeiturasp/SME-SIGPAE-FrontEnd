@@ -42,7 +42,18 @@ export const CustomToolbar = (toolbar) => {
   return (
     <div className="row toolbar-container mb-3">
       <div className="col-6">
-        <div onClick={goToMonthView} className="mes-tab">
+        <div
+          className="mes-tab"
+          role="button"
+          tabIndex={0}
+          onClick={goToMonthView}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              goToMonthView();
+            }
+          }}
+        >
           Mês
         </div>
       </div>
