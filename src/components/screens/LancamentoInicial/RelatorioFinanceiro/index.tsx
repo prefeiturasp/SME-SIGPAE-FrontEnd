@@ -9,7 +9,7 @@ import { STATUS_RELATORIO_FINANCEIRO } from "../constants";
 import {
   MEDICAO_INICIAL,
   RELATORIO_FINANCEIRO,
-  RELATORIO_CONSOLIDADO,
+  ANALISAR_RELATORIO_FINANCEIRO,
 } from "src/configs/constants";
 import { useRelatorioFinanceiro } from "./view";
 import ModalAnalisar from "./components/ModalAnalisar";
@@ -164,7 +164,7 @@ export function RelatorioFinanceiro() {
               uuidRelatorio={relatorioSelecionado?.uuid}
               onAnalisar={() =>
                 navigate(
-                  `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${RELATORIO_CONSOLIDADO}/?uuid=${relatorioSelecionado.uuid}`,
+                  `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${ANALISAR_RELATORIO_FINANCEIRO}/?uuid=${relatorioSelecionado.uuid}`,
                   {
                     state: relatorioSelecionado,
                   },
