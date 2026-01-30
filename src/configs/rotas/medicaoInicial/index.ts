@@ -165,7 +165,7 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
     tipoUsuario: usuarioEhMedicao(),
   },
   {
-    path: `/${constants.MEDICAO_INICIAL}/${constants.RELATORIO_FINANCEIRO}/${constants.RELATORIO_CONSOLIDADO}`,
+    path: `/${constants.MEDICAO_INICIAL}/${constants.RELATORIO_FINANCEIRO}/${constants.ANALISAR_RELATORIO_FINANCEIRO}`,
     component: RelatorioFinanceiroConsolidadoPage,
     tipoUsuario: usuarioEhMedicao(),
   },

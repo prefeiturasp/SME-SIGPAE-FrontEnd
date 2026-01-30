@@ -8,7 +8,7 @@ import {
 import {
   MEDICAO_INICIAL,
   RELATORIO_FINANCEIRO,
-  RELATORIO_CONSOLIDADO,
+  ANALISAR_RELATORIO_FINANCEIRO,
 } from "src/configs/constants";
 
 type Props = {
@@ -49,7 +49,7 @@ const ModalAnalisar = ({
           className="ms-3"
           onClick={() =>
             navigate(
-              `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${RELATORIO_CONSOLIDADO}/?uuid=${uuidRelatorio}`,
+              `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${ANALISAR_RELATORIO_FINANCEIRO}/?uuid=${uuidRelatorio}`,
             )
           }
         />
