@@ -92,7 +92,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
             v7_relativeSplatPath: true,
           }}
         >
-          {" "}
           <MeusDadosContext.Provider
             value={{
               meusDados: mockMeusDadosEscolaEMEFPericles,

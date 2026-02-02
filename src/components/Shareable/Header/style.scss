@@ -126,7 +126,7 @@
   height: 100%;
   margin-top: 1.5em;
   font-size: 12px;
-  font-family: Roboto !important;
+  font-family: "Roboto", sans-serif !important;
   list-style: none;
 }
 
@@ -177,7 +177,7 @@ nav.navbar {
 
     .nav-item .nav-link[data-toggle="collapse"].collapsed::after {
       content: "\f078";
-      font-family: "Font Awesome 5 Free";
+      font-family: "Font Awesome 5 Free", sans-serif;
       float: right;
     }
 
@@ -228,7 +228,7 @@ nav.navbar {
         list-style: none;
         p {
           font-size: 12px;
-          font-family: Roboto !important;
+          font-family: "Roboto", sans-serif !important;
           color: $white;
           font-weight: bold;
         }

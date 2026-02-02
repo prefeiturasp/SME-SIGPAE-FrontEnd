@@ -1,5 +1,3 @@
-import React from "react";
-
 export const Rascunhos = ({ ...props }) => {
   const { rascunhos, removerRascunho, carregarRascunho, form, values } = props;
 
@@ -24,15 +22,31 @@ export const Rascunhos = ({ ...props }) => {
           Salvo em: {alteracaoDeCardapio.criado_em}
           <span
             data-testid="botao-remover-rascunho"
+            role="button"
+            tabIndex={0}
             onClick={() => removerRascunho(id_externo, uuid, form)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                removerRascunho(id_externo, uuid, form);
+              }
+            }}
           >
-            <i className="fas fa-trash" />
+            <i className="fas fa-trash" aria-hidden="true" />
           </span>
           <span
             data-testid="botao-carregar-rascunho"
+            role="button"
+            tabIndex={0}
             onClick={() => carregarRascunho(alteracaoDeCardapio, form, values)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                carregarRascunho(alteracaoDeCardapio, form, values);
+              }
+            }}
           >
-            <i className="fas fa-edit" />
+            <i className="fas fa-edit" aria-hidden="true" />
           </span>
         </div>
         <div className="ms-3">
@@ -40,12 +54,12 @@ export const Rascunhos = ({ ...props }) => {
             {alteracaoDeCardapio.data
               ? `Dia: ${alteracaoDeCardapio.data}`
               : alteracaoDeCardapio.data_inicial ===
-                alteracaoDeCardapio.data_final
-              ? `Dia: ${
-                  alteracaoDeCardapio.data_inicial ||
-                  alteracaoDeCardapio.alterar_dia
-                }`
-              : `De ${alteracaoDeCardapio.data_inicial} a ${alteracaoDeCardapio.data_final}`}
+                  alteracaoDeCardapio.data_final
+                ? `Dia: ${
+                    alteracaoDeCardapio.data_inicial ||
+                    alteracaoDeCardapio.alterar_dia
+                  }`
+                : `De ${alteracaoDeCardapio.data_inicial} a ${alteracaoDeCardapio.data_final}`}
           </p>
         </div>
       </div>

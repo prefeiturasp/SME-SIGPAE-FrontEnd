@@ -48,40 +48,40 @@ class PainelPedidos extends Component {
       getDREPedidosDeKitLanche(
         filtro,
         TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
-        filtros
+        filtros,
       ),
       getDREPedidosDeKitLanche(
         filtro,
         TIPO_SOLICITACAO.SOLICITACAO_CEI,
-        filtros
+        filtros,
       ),
       getDREPedidosDeKitLanche(
         filtro,
         TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
-        filtros
+        filtros,
       ),
     ]).then(([response, responseCei, responseCEMEI]) => {
       const results = safeConcatOn(
         "results",
         response,
         responseCei,
-        responseCEMEI
+        responseCEMEI,
       );
       pedidosPrioritarios = ordenarPedidosDataMaisRecente(
-        filtraPrioritarios(results)
+        filtraPrioritarios(results),
       );
       pedidosNoPrazoLimite = ordenarPedidosDataMaisRecente(
-        filtraNoLimite(results)
+        filtraNoLimite(results),
       );
       pedidosNoPrazoRegular = ordenarPedidosDataMaisRecente(
-        filtraRegular(results)
+        filtraRegular(results),
       );
-      this.setState({
+      this.setState((prevState) => ({
         pedidosPrioritarios,
         pedidosNoPrazoLimite,
         pedidosNoPrazoRegular,
-        pedidosCarregados: this.state.pedidosCarregados + 1,
-      });
+        pedidosCarregados: prevState.pedidosCarregados + 1,
+      }));
     });
   }
 

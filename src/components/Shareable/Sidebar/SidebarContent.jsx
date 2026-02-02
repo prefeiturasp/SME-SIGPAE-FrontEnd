@@ -152,6 +152,7 @@ export const SidebarContent = () => {
     usuarioEhMedicao() ||
     usuarioEhAdministradorCONTRATOS() ||
     usuarioEhDilogQualidadeOuCronograma() ||
+    usuarioEhDilogVisualizacao() ||
     usuarioEhEmpresaFornecedor() ||
     usuarioEhCODAEGestaoProduto() ||
     (!exibeMenuValidandoAmbiente && usuarioEhCODAEGestaoAlimentacao()) ||

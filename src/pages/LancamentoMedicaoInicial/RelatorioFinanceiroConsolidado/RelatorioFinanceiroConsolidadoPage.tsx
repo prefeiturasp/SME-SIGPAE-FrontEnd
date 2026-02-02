@@ -1,16 +1,15 @@
-import React from "react";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import Page from "src/components/Shareable/Page/Page";
 import {
   MEDICAO_INICIAL,
   RELATORIO_FINANCEIRO,
-  RELATORIO_CONSOLIDADO,
+  ANALISAR_RELATORIO_FINANCEIRO,
 } from "src/configs/constants";
-import { RelatorioConsolidado } from "src/components/screens/LancamentoInicial/RelatorioFinanceiro/RelatorioConsolidado";
+import { RelatorioFinanceiroConsolidado } from "src/components/screens/LancamentoInicial/RelatorioFinanceiro/RelatorioFinanceiroConsolidado";
 
 const atual = {
-  href: `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${RELATORIO_CONSOLIDADO}`,
-  titulo: "Relatório Consolidado",
+  href: `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${ANALISAR_RELATORIO_FINANCEIRO}`,
+  titulo: "Analisar Relatório Financeiro",
 };
 
 const anterior = [
@@ -24,9 +23,9 @@ const anterior = [
   },
 ];
 
-export const RelatorioConsolidadoPage = () => (
-  <Page titulo="Relatório Consolidado Resumido" botaoVoltar>
+export const RelatorioFinanceiroConsolidadoPage = () => (
+  <Page titulo="Relatório Financeiro" botaoVoltar>
     <Breadcrumb home={"/"} anteriores={anterior} atual={atual} />
-    <RelatorioConsolidado />
+    <RelatorioFinanceiroConsolidado />
   </Page>
 );

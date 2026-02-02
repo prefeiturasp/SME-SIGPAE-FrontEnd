@@ -68,13 +68,13 @@ export default ({ uuid }) => {
     });
     setAlimentos(
       respAlimentos.data.filter((alimento) =>
-        ["AMBOS", "SO_ALIMENTOS"].includes(alimento.tipo_listagem_protocolo)
-      )
+        ["AMBOS", "SO_ALIMENTOS"].includes(alimento.tipo_listagem_protocolo),
+      ),
     );
     setProdutos(
       respAlimentos.data.filter((alimento) =>
-        ["AMBOS", "SO_SUBSTITUTOS"].includes(alimento.tipo_listagem_protocolo)
-      )
+        ["AMBOS", "SO_SUBSTITUTOS"].includes(alimento.tipo_listagem_protocolo),
+      ),
     );
     if (uuid) {
       const respProtocolo = await getProtocoloPadrao(uuid);
@@ -126,12 +126,12 @@ export default ({ uuid }) => {
           const response = await cadastraProtocoloPadraoDietaEspecial(values);
           if (response.status === HTTP_STATUS.CREATED) {
             toastSuccess(
-              "Cópia do protocolo padrão da dieta especial salvo com sucesso"
+              "Cópia do protocolo padrão da dieta especial salvo com sucesso",
             );
             navigate("/dieta-especial/consultar-protocolo-padrao-dieta");
           } else {
             toastError(
-              "Houve um erro ao cadastrar cópia do protocolo de dieta especial"
+              "Houve um erro ao cadastrar cópia do protocolo de dieta especial",
             );
           }
         } catch (e) {
@@ -140,7 +140,7 @@ export default ({ uuid }) => {
             toastError(getError(e.response));
           } else {
             toastError(
-              "Houve um erro ao cadastrar cópia do protocolo de dieta especial"
+              "Houve um erro ao cadastrar cópia do protocolo de dieta especial",
             );
           }
         }
@@ -149,7 +149,7 @@ export default ({ uuid }) => {
           const response = await editaProtocoloPadraoDietaEspecial(values);
           if (response.status === HTTP_STATUS.OK) {
             toastSuccess(
-              "Protocolo Padrão de dieta especial salvo com sucesso"
+              "Protocolo Padrão de dieta especial salvo com sucesso",
             );
             navigate("/dieta-especial/consultar-protocolo-padrao-dieta");
           } else {
@@ -216,10 +216,6 @@ export default ({ uuid }) => {
                 <form
                   onSubmit={(event) => {
                     const promise = handleSubmit(event);
-                    promise &&
-                      promise.then(() => {
-                        // resetForm(form);
-                      });
                     return promise;
                   }}
                 >

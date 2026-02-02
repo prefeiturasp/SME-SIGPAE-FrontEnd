@@ -376,6 +376,34 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     }
   };
 
+  const handlePeriodoOnClick = async (form, name, indice, values) => {
+    await form.change(
+      `${name}.checked`,
+      !values.substituicoes[indice][`checked`],
+    );
+    await form.change(
+      `${name}.multiselect`,
+      !values.substituicoes[indice][`checked`]
+        ? "multiselect-wrapper-enabled"
+        : "multiselect-wrapper-disabled",
+    );
+    if (values.substituicoes[indice][`checked`]) {
+      form.change(`substituicoes[${indice}].tipos_alimentacao_de`, undefined);
+      form.change(
+        `substituicoes[${indice}].tipos_alimentacao_de_selecionados`,
+        undefined,
+      );
+      form.change(`substituicoes[${indice}].tipo_alimentacao_para`, undefined);
+    } else {
+      getFaixasEtariasPorPeriodo(
+        values.substituicoes[indice].uuid,
+        values.data.split("/").reverse().join("-"),
+        indice,
+        form,
+      );
+    }
+  };
+
   return (
     <>
       {erroAPI && <div>{erroAPI}</div>}
@@ -511,61 +539,40 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                           name={`${name}.checked`}
                                         />
                                         <span
-                                          onClick={async () => {
-                                            await form.change(
-                                              `${name}.checked`,
-                                              !values.substituicoes[indice][
-                                                `checked`
-                                              ],
-                                            );
-                                            await form.change(
-                                              `${name}.multiselect`,
-                                              !values.substituicoes[indice][
-                                                `checked`
-                                              ]
-                                                ? "multiselect-wrapper-enabled"
-                                                : "multiselect-wrapper-disabled",
-                                            );
+                                          role="checkbox"
+                                          tabIndex={0}
+                                          onKeyDown={(e) => {
                                             if (
-                                              values.substituicoes[indice][
-                                                `checked`
-                                              ]
+                                              e.key === "Enter" ||
+                                              e.key === " "
                                             ) {
-                                              form.change(
-                                                `substituicoes[${indice}].tipos_alimentacao_de`,
-                                                undefined,
-                                              );
-                                              form.change(
-                                                `substituicoes[${indice}].tipos_alimentacao_de_selecionados`,
-                                                undefined,
-                                              );
-                                              form.change(
-                                                `substituicoes[${indice}].tipo_alimentacao_para`,
-                                                undefined,
-                                              );
-                                            } else {
-                                              getFaixasEtariasPorPeriodo(
-                                                values.substituicoes[indice]
-                                                  .uuid,
-                                                values.data
-                                                  .split("/")
-                                                  .reverse()
-                                                  .join("-"),
-                                                indice,
+                                              e.preventDefault();
+                                              handlePeriodoOnClick(
                                                 form,
+                                                name,
+                                                indice,
+                                                values,
                                               );
                                             }
+                                          }}
+                                          aria-checked={
+                                            values.substituicoes[indice].checked
+                                          }
+                                          aria-disabled={
+                                            !getPeriodo(values, indice).checked
+                                          }
+                                          onClick={async () => {
+                                            handlePeriodoOnClick(
+                                              form,
+                                              name,
+                                              indice,
+                                              values,
+                                            );
                                           }}
                                           className="checkbox-custom"
                                           data-cy={`checkbox-${
                                             getPeriodo(values, indice).nome
                                           }`}
-                                          required={
-                                            getPeriodo(values, indice).checked
-                                          }
-                                          disabled={
-                                            !getPeriodo(values, indice).checked
-                                          }
                                         />{" "}
                                         {getPeriodo(values, indice).nome}
                                       </label>

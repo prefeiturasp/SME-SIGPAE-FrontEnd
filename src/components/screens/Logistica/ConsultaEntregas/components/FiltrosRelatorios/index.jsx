@@ -47,7 +47,7 @@ export default ({ solicitacao, excel, pdf, showModal }) => {
   const handleDownload = () => {
     setLoading(true);
     let uuid = solicitacao.uuid;
-    let payload = montaPayload(uuid);
+    let payload = montaPayload();
     if (excel) {
       const params = gerarParametrosConsulta({ uuid, ...payload });
       gerarExcelEntregas(params).then(thenDownload).catch(catchDownload);

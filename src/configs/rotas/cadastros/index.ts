@@ -10,6 +10,7 @@ import {
   usuarioEhMedicao,
   usuarioEhQualquerCODAE,
   usuarioEhAdministradorCONTRATOS,
+  usuarioEhDilogVisualizacao,
 } from "src/helpers/utilities";
 
 import CadastroEmpresaPage from "src/pages/Cadastros/CadastroEmpresaPage";
@@ -129,7 +130,9 @@ export const rotasCadastros: Array<RotaInterface> = [
       usuarioEhQualquerCODAE() ||
       usuarioEhCodaeDilog() ||
       usuarioEhCronograma() ||
-      usuarioEhAdministradorCONTRATOS(),
+      usuarioEhAdministradorCONTRATOS() ||
+      usuarioEhDilogQualidade() ||
+      usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/empresa`,

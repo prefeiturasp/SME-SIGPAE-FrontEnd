@@ -28,9 +28,13 @@ export const getListagemCronogramas = async (params) => {
 
 export const getListagemRelatorioCronogramas = async (params) => {
   try {
-    return axios.get(`/cronogramas/listagem-relatorio/`, { params });
+    const response = await axios.get("/cronogramas/listagem-relatorio/", {
+      params,
+    });
+    return response;
   } catch (error) {
     toastError(getMensagemDeErro(error.response?.status));
+    throw error;
   }
 };
 
@@ -55,31 +59,31 @@ export const cadastraSolicitacaoAlteracaoCronograma = async (payload) => {
 
 export const dilogCienteSolicitacaoAlteracaoCronograma = async (
   uuid,
-  payload
+  payload,
 ) => {
   return await axios.patch(
     `solicitacao-de-alteracao-de-cronograma/${uuid}/cronograma-ciente/`,
-    payload
+    payload,
   );
 };
 
 export const analiseAbastecimentoSolicitacaoAlteracaoCronograma = async (
   uuid,
-  payload
+  payload,
 ) => {
   return await axios.patch(
     `solicitacao-de-alteracao-de-cronograma/${uuid}/analise-abastecimento/`,
-    payload
+    payload,
   );
 };
 
 export const analiseDilogSolicitacaoAlteracaoCronograma = async (
   uuid,
-  payload
+  payload,
 ) => {
   return await axios.patch(
     `solicitacao-de-alteracao-de-cronograma/${uuid}/analise-dilog/`,
-    payload
+    payload,
   );
 };
 
@@ -116,7 +120,7 @@ export const codaeAssinaCronograma = async (uuid, password) => {
 
 export const fornecedorCienteAlteracaoCodae = async (uuid) => {
   return await axios.patch(
-    `solicitacao-de-alteracao-de-cronograma/${uuid}/fornecedor-ciente/`
+    `solicitacao-de-alteracao-de-cronograma/${uuid}/fornecedor-ciente/`,
   );
 };
 
@@ -132,13 +136,13 @@ export const getDashboardSolicitacoesAlteracao = async (params = null) =>
   });
 
 export const getDashboardSolicitacoesAlteracaoComFiltros = async (
-  params = null
+  params = null,
 ) =>
   await axios.get(
     `/solicitacao-de-alteracao-de-cronograma/dashboard-com-filtro/`,
     {
       params,
-    }
+    },
   );
 
 export const imprimirCronograma = async (uuid, numero) => {
@@ -170,7 +174,7 @@ export const getListaCronogramasPraFichaRecebimento = async () => {
 export const getCronogramaPraCadastroRecebimento = async (uuid) => {
   try {
     return await axios.get(
-      `/cronogramas/${uuid}/dados-cronograma-ficha-recebimento/`
+      `/cronogramas/${uuid}/dados-cronograma-ficha-recebimento/`,
     );
   } catch (error) {
     toastError(getMensagemDeErro(error.response?.status));
@@ -186,3 +190,18 @@ export const baixarRelatorioCronogramasPdf = async (params) =>
   await axios.get("/cronogramas/gerar-relatorio-pdf-async/", {
     params,
   });
+
+// Interrupção Programada de Entregas
+export const getMotivosInterrupcao = async () =>
+  await axios.get("/interrupcao-programada-entrega/motivos/");
+
+export const getInterrupcoesProgramadas = async (params) => {
+  try {
+    return await axios.get("/interrupcao-programada-entrega/", { params });
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
+};
+
+export const cadastraInterrupcaoProgramada = async (payload) =>
+  await axios.post("/interrupcao-programada-entrega/", payload);

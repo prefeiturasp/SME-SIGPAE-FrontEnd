@@ -1,7 +1,7 @@
 import { Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
-import { Botao } from "src/components/Shareable/Botao";
 import { PERIODO_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
+import { Botao } from "src/components/Shareable/Botao";
 import {
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
@@ -25,6 +25,7 @@ import "./styles.scss";
 export const CardLancamentoCEI = ({
   textoCabecalho = null,
   cor,
+  grupo,
   solicitacaoMedicaoInicial,
   escolaInstituicao,
   quantidadeAlimentacoesLancadas,
@@ -61,6 +62,14 @@ export const CardLancamentoCEI = ({
     );
 
   const qtdAlimentacaoPeriodoFiltrada = () => {
+    if (textoCabecalho.includes("Recreio")) {
+      return quantidadeAlimentacoesLancadas.filter(
+        (qtdAlimentacaoPeriodo) =>
+          qtdAlimentacaoPeriodo.nome_periodo_grupo ===
+          "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+      );
+    }
+
     return quantidadeAlimentacoesLancadas.filter(
       (qtdAlimentacaoPeriodo) =>
         qtdAlimentacaoPeriodo.nome_periodo_grupo === textoCabecalho,
@@ -157,6 +166,10 @@ export const CardLancamentoCEI = ({
           uuidPeriodoEscolar: uuidPeriodoEscolar,
           tiposAlimentacao: tiposAlimentacao,
           periodosInclusaoContinua: periodosInclusaoContinua,
+          grupo,
+          solicitacaoMedicaoInicial: solicitacaoMedicaoInicial,
+          recreioNasFerias:
+            solicitacaoMedicaoInicial.recreio_nas_ferias !== null,
           ...location.state,
         },
       },

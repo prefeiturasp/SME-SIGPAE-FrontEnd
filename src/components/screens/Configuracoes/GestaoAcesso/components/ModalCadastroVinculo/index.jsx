@@ -452,10 +452,10 @@ const ModalCadastroVinculo = ({
                               className="input-busca-produto"
                               required
                               options={subdivisoes}
-                              disabled={subdivisoes.length === 1}
+                              disabled={subdivisoes?.length === 1}
                               defaultValue={
-                                subdivisoes.length === 1
-                                  ? subdivisoes[0].uuid
+                                subdivisoes?.length === 1
+                                  ? subdivisoes[0]?.uuid
                                   : undefined
                               }
                               validate={required}

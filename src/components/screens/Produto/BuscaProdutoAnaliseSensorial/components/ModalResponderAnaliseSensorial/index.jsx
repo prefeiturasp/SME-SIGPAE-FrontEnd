@@ -37,8 +37,9 @@ export const ModalResponderAnaliseSensorial = ({ ...props }) => {
   const navigate = useNavigate();
 
   const removeFile = (index) => {
-    arquivos.splice(index, 1);
-    SetArquivos(arquivos);
+    const arquivos_ = [...arquivos];
+    arquivos_.splice(index, 1);
+    SetArquivos(arquivos_);
   };
 
   const resetForm = (form) => {
@@ -113,7 +114,7 @@ export const ModalResponderAnaliseSensorial = ({ ...props }) => {
                     validate={composeValidators(
                       required,
                       length(7),
-                      numericInteger
+                      numericInteger,
                     )}
                     maxlength="10"
                   />
