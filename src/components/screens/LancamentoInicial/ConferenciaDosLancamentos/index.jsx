@@ -25,6 +25,7 @@ import {
   getISOLocalDatetimeString,
   usuarioEhDRE,
   usuarioEhMedicao,
+  usuarioEhCODAENutriManifestacao,
 } from "src/helpers/utilities";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
@@ -215,9 +216,11 @@ export const ConferenciaDosLancamentos = () => {
     ["MEDICAO_ENVIADA_PELA_UE", "MEDICAO_CORRIGIDA_PELA_UE"].includes(
       solicitacao.status,
     );
+  const usuarioMedicaoOuManifestacaoTemPermissao =
+    usuarioEhMedicao() || usuarioEhCODAENutriManifestacao();
 
   const exibirBotoesOcorrenciaCODAE =
-    usuarioEhMedicao() &&
+    usuarioMedicaoOuManifestacaoTemPermissao &&
     solicitacao &&
     ["MEDICAO_APROVADA_PELA_DRE", "MEDICAO_CORRIGIDA_PARA_CODAE"].includes(
       solicitacao.status,
@@ -236,7 +239,7 @@ export const ConferenciaDosLancamentos = () => {
     ].includes(solicitacao.ocorrencia.status);
 
   const desabilitarSolicitarCorrecaoOcorrenciaCODAE =
-    usuarioEhMedicao() &&
+    usuarioMedicaoOuManifestacaoTemPermissao &&
     solicitacao &&
     solicitacao.ocorrencia &&
     ![
@@ -248,7 +251,7 @@ export const ConferenciaDosLancamentos = () => {
     ].includes(solicitacao.ocorrencia.status);
 
   const desabilitarAprovarOcorrenciaCODAE =
-    usuarioEhMedicao() &&
+    usuarioMedicaoOuManifestacaoTemPermissao &&
     solicitacao &&
     solicitacao.ocorrencia &&
     ![
@@ -367,7 +370,7 @@ export const ConferenciaDosLancamentos = () => {
               logOcorrencia &&
               logOcorrencia.status_evento_explicacao ===
                 "Correção solicitada") ||
-              (usuarioEhMedicao() &&
+              (usuarioMedicaoOuManifestacaoTemPermissao &&
                 logOcorrenciaCODAE &&
                 logOcorrenciaCODAE.status_evento_explicacao ===
                   "Correção solicitada pela CODAE")
@@ -907,7 +910,7 @@ export const ConferenciaDosLancamentos = () => {
                                   logCorrecaoOcorrencia &&
                                   `${textoOcorrencia} ${logCorrecaoOcorrencia.criado_em}`}
 
-                                {usuarioEhMedicao() &&
+                                {usuarioMedicaoOuManifestacaoTemPermissao &&
                                   !ocorrenciaExcluida() &&
                                   logCorrecaoOcorrenciaCODAE &&
                                   `${textoOcorrencia} ${logCorrecaoOcorrenciaCODAE.criado_em}`}
