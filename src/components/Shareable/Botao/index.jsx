@@ -26,6 +26,16 @@ export const Botao = (props) => {
 
   const [exibeMensagem, setExibeMensagem] = useState(false);
 
+  const mostrarTooltip = () => {
+    if (tooltipExterno || exibirTooltip) {
+      setExibeMensagem(true);
+    }
+  };
+
+  const esconderTooltip = () => {
+    setExibeMensagem(false);
+  };
+
   return (
     <button
       type={type}
@@ -34,12 +44,10 @@ export const Botao = (props) => {
       data-testid={dataTestId}
       className={`general-button ${style} ${className}`}
       onClick={onClick}
-      onMouseOver={() =>
-        (tooltipExterno || exibirTooltip) && setExibeMensagem(true)
-      }
-      onMouseOut={() =>
-        (tooltipExterno || exibirTooltip) && setExibeMensagem(false)
-      }
+      onMouseOver={mostrarTooltip}
+      onFocus={mostrarTooltip}
+      onMouseOut={esconderTooltip}
+      onBlur={esconderTooltip}
       disabled={disabled}
       accept={accept}
       tabIndex={tabindex}

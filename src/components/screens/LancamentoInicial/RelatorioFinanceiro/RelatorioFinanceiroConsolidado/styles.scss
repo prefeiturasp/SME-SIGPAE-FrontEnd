@@ -1,0 +1,106 @@
+@use "src/styles/variables.scss" as *;
+
+.tabelas-relatorio-consolidado {
+  table {
+    width: 100%;
+    font-size: 14px;
+    color: $blackInput;
+    border-collapse: collapse;
+
+    thead tr,
+    tbody tr.linha-total {
+      background-color: $grayLightHeader;
+
+      &.cor-tipo-a {
+        background-color: $greenBackgroundToastSuccess;
+      }
+
+      &.cor-tipo-b {
+        background-color: $greenBackgroundTable;
+      }
+
+      border: 1px solid $grayDisabled;
+      font-weight: bold;
+
+      th,
+      td {
+        padding: 0.5em;
+
+        &:not(:first-child) {
+          border-left: 1px solid $grayDisabled;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          vertical-align: middle;
+          text-align: center;
+          padding: 0.5em;
+          border-left: 1px solid $grayDisabled;
+          border-bottom: 1px solid $grayDisabled;
+
+          &:last-child {
+            border-right: 1px solid $grayDisabled;
+          }
+        }
+
+        &:last-child {
+          td {
+            &:first-child {
+              border-radius: 0 0 0 4px;
+            }
+
+            &:last-child {
+              border-radius: 0 0 4px 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.tabela-relatorio {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela-relatorio th,
+.tabela-relatorio td {
+  vertical-align: middle;
+  text-align: center;
+  padding: 8px;
+}
+
+.tabela-relatorio th {
+  font-weight: 600;
+}
+
+.col-faixa {
+  width: 32%;
+}
+
+.col-unitario {
+  width: 10%;
+}
+
+.col-tipo {
+  width: 32%;
+}
+
+.tabela-relatorio th.col-tipo,
+.tabela-relatorio td.col-tipo {
+  text-align: left;
+  padding-left: 30px;
+}
+.col-reajuste,
+.col-total-unitario,
+.col-atendimentos {
+  width: 14%;
+}
+
+.col-valor-total {
+  width: 10%;
+}

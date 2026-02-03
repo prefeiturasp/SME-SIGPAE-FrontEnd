@@ -31,7 +31,7 @@ export default ({
 }) => {
   const onSubmit = async (values) => {
     const filtros = { ...values };
-    if (filtros.status) filtros.status = filtros.status.flat();
+    if (filtros?.status) filtros.status = filtros.status.flat();
     setFiltros({ ...filtros });
   };
 

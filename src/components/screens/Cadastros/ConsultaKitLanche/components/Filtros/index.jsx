@@ -36,7 +36,7 @@ export default ({ setFiltros, setKits }) => {
   const getEditaisFiltrado = (numEdital) => {
     if (numEdital) {
       const reg = new RegExp(numEdital, "i");
-      return editais.filter((a) => reg.test(a));
+      return editais?.filter((a) => reg.test(a));
     }
     return editais;
   };

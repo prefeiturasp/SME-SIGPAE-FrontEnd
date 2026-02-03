@@ -8,16 +8,22 @@ import {
 import {
   MEDICAO_INICIAL,
   RELATORIO_FINANCEIRO,
-  RELATORIO_CONSOLIDADO,
+  ANALISAR_RELATORIO_FINANCEIRO,
 } from "src/configs/constants";
 
 type Props = {
   showModal: boolean;
   setShowModal: (_e: boolean) => void;
-  uuidRelatorio: string | null;
+  uuidRelatorio: string | undefined;
+  onAnalisar: () => void;
 };
 
-const ModalAnalisar = ({ showModal, setShowModal, uuidRelatorio }: Props) => {
+const ModalAnalisar = ({
+  onAnalisar,
+  showModal,
+  setShowModal,
+  uuidRelatorio,
+}: Props) => {
   const navigate = useNavigate();
 
   return (
@@ -43,7 +49,7 @@ const ModalAnalisar = ({ showModal, setShowModal, uuidRelatorio }: Props) => {
           className="ms-3"
           onClick={() =>
             navigate(
-              `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${RELATORIO_CONSOLIDADO}/?uuid=${uuidRelatorio}`,
+              `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${ANALISAR_RELATORIO_FINANCEIRO}/?uuid=${uuidRelatorio}`,
             )
           }
         />
@@ -52,6 +58,7 @@ const ModalAnalisar = ({ showModal, setShowModal, uuidRelatorio }: Props) => {
           type={BUTTON_TYPE.BUTTON}
           style={BUTTON_STYLE.GREEN}
           className="ms-3"
+          onClick={() => onAnalisar()}
         />
       </Modal.Footer>
     </Modal>

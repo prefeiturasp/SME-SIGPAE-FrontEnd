@@ -32,7 +32,7 @@ export const PeriodosFields = ({ ...props }) => {
     else if (ehMotivoPorNome("LPR", values)) {
       return removePorNome(
         exibeApenasPorNome(tiposAlimentacao, "Lanche"),
-        "Lanche Emergencial"
+        "Lanche Emergencial",
       );
     } else if (ehMotivoPorNome("RPL", values)) {
       return removePorNome(tiposAlimentacao, "Lanche");
@@ -48,7 +48,7 @@ export const PeriodosFields = ({ ...props }) => {
     } else if (ehMotivoPorNome("RPL", values)) {
       return removePorNome(
         exibeApenasPorNome(tiposAlimentacao, "Lanche"),
-        "Lanche Emergencial"
+        "Lanche Emergencial",
       );
     }
     return tiposAlimentacao;
@@ -60,12 +60,27 @@ export const PeriodosFields = ({ ...props }) => {
       : composeValidators(
           naoPodeSerZero,
           required,
-          maxValue(getPeriodo(index).maximo_alunos)
+          maxValue(getPeriodo(index).maximo_alunos),
         );
   };
 
   const getPeriodo = (index) => {
     return periodos[index];
+  };
+
+  const handlePeriodoOnClick = (name, index) => {
+    form.change(`${name}.check`, !values.substituicoes[index]["check"]);
+    if (values.substituicoes[index]["check"]) {
+      form.change(
+        `substituicoes[${index}].tipos_alimentacao_de_selecionados`,
+        undefined,
+      );
+      form.change(
+        `substituicoes[${index}].tipos_alimentacao_para_selecionados`,
+        undefined,
+      );
+      form.change(`substituicoes[${index}].qtd_alunos`, undefined);
+    }
   };
 
   return (
@@ -93,28 +108,18 @@ export const PeriodosFields = ({ ...props }) => {
                         name={`${name}.check`}
                       />
                       <span
-                        onClick={() => {
-                          form.change(
-                            `${name}.check`,
-                            !values.substituicoes[index]["check"]
-                          );
-                          if (values.substituicoes[index]["check"]) {
-                            form.change(
-                              `substituicoes[${index}].tipos_alimentacao_de_selecionados`,
-                              undefined
-                            );
-                            form.change(
-                              `substituicoes[${index}].tipos_alimentacao_para_selecionados`,
-                              undefined
-                            );
-                            form.change(
-                              `substituicoes[${index}].qtd_alunos`,
-                              undefined
-                            );
-                          }
-                        }}
+                        onClick={() => handlePeriodoOnClick(name, index)}
                         className="checkbox-custom"
                         data-cy={`checkbox-${getPeriodo(index).nome}`}
+                        role="checkbox"
+                        tabIndex={0}
+                        aria-checked={values.substituicoes[index]["check"]}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handlePeriodoOnClick(name, index);
+                          }
+                        }}
                       />
                       <div className=""> {getPeriodo(index).nome}</div>
                     </label>
@@ -137,14 +142,14 @@ export const PeriodosFields = ({ ...props }) => {
                       (tipo_alimentacao) => ({
                         label: tipo_alimentacao.nome,
                         value: tipo_alimentacao.uuid,
-                      })
+                      }),
                     ),
-                    values
+                    values,
                   )}
                   onSelectedChanged={async (values_) => {
                     await form.change(
                       `substituicoes[${index}].tipos_alimentacao_de_selecionados`,
-                      values_.map((value_) => value_.value)
+                      values_.map((value_) => value_.value),
                     );
                   }}
                   placeholder="Selecione tipos de alimentação"
@@ -172,14 +177,14 @@ export const PeriodosFields = ({ ...props }) => {
                       (tipo_alimentacao) => ({
                         label: tipo_alimentacao.nome,
                         value: tipo_alimentacao.uuid,
-                      })
+                      }),
                     ),
-                    values
+                    values,
                   )}
                   onSelectedChanged={async (values_) => {
                     await form.change(
                       `substituicoes[${index}].tipos_alimentacao_para_selecionados`,
-                      values_.map((value_) => value_.value)
+                      values_.map((value_) => value_.value),
                     );
                   }}
                   placeholder="Selecione tipos de alimentação"

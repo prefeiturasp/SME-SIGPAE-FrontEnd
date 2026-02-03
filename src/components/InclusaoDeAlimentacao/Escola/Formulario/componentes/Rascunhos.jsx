@@ -1,4 +1,3 @@
-import React from "react";
 import { comoTipo } from "src/helpers/utilities";
 import "../../../../Shareable/style.scss";
 
@@ -31,24 +30,45 @@ export const Rascunhos = ({
               Criado em: {inclusaoDeAlimentacao.criado_em}
               <span
                 data-testid={`remover-rascunho-${id_externo}`}
+                role="button"
+                tabIndex={0}
                 onClick={() =>
                   removerRascunho(
                     id_externo,
                     uuid,
                     comoTipo(inclusaoDeAlimentacao),
-                    form
+                    form,
                   )
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    removerRascunho(
+                      id_externo,
+                      uuid,
+                      comoTipo(inclusaoDeAlimentacao),
+                      form,
+                    );
+                  }
+                }}
               >
-                <i className="fas fa-trash" />
+                <i className="fas fa-trash" aria-hidden="true" />
               </span>
               <span
                 data-testid={`rascunho-${id_externo}`}
+                role="button"
+                tabIndex={0}
                 onClick={async () => {
                   await carregarRascunho(form, values, inclusaoDeAlimentacao);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    carregarRascunho(form, values, inclusaoDeAlimentacao);
+                  }
+                }}
               >
-                <i className="fas fa-edit" />
+                <i className="fas fa-edit" aria-hidden="true" />
               </span>
             </div>
             <div className="ms-3">

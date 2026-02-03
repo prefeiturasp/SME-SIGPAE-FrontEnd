@@ -58,7 +58,7 @@ const Relatorio = (props) => {
           (s) => {
             s["collapsed"] = true;
             return s;
-          }
+          },
         );
         _response["solicitacoes_similares"] = solicitacoes_similares;
         setSolicitacaoKitLanche(_response);
@@ -67,7 +67,7 @@ const Relatorio = (props) => {
           uuid,
           tipoSolicitacao,
           prazoDoPedidoMensagem: prazoDoPedidoMensagem(
-            detalheResponse.prioridade
+            detalheResponse.prioridade,
           ),
         };
       }
@@ -134,14 +134,14 @@ const Relatorio = (props) => {
       (response) => {
         if (response.status === HTTP_STATUS.OK) {
           toastSuccess(toastAprovaMensagem);
-          loadSolicitacao(uuid, tipoSolicitacao);
+          loadSolicitacao(uuid);
         } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
           toastError(toastAprovaMensagemErro);
         }
       },
       function () {
         toastError(toastAprovaMensagemErro);
-      }
+      },
     );
   };
 
@@ -192,7 +192,7 @@ const Relatorio = (props) => {
     (solicitacaoKitLanche.prioridade !== "REGULAR" ||
       (visao === CODAE && solicitacaoKitLanche.prioridade !== "REGULAR")) &&
     [statusEnum.DRE_VALIDADO, statusEnum.CODAE_QUESTIONADO].includes(
-      solicitacaoKitLanche.status
+      solicitacaoKitLanche.status,
     );
 
   const EXIBIR_MODAL_AUTORIZACAO =
@@ -207,7 +207,7 @@ const Relatorio = (props) => {
     visao === TERCEIRIZADA &&
     solicitacaoKitLanche &&
     [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(
-      solicitacaoKitLanche.status
+      solicitacaoKitLanche.status,
     );
 
   const BotaoMarcarConferencia = () => {
@@ -261,7 +261,7 @@ const Relatorio = (props) => {
                 showModal={estado.showModalMarcarConferencia}
                 closeModal={() => closeModalMarcarConferencia()}
                 onMarcarConferencia={() => {
-                  loadSolicitacao(estado.uuid, estado.tipoSolicitacao);
+                  loadSolicitacao(estado.uuid);
                 }}
                 uuid={solicitacaoKitLanche.uuid}
                 endpoint={
@@ -324,7 +324,7 @@ const Relatorio = (props) => {
                               (log) =>
                                 log.status_evento_explicacao ===
                                   "Terceirizada respondeu questionamento" &&
-                                !log.resposta_sim_nao
+                                !log.resposta_sim_nao,
                             ).length > 0 ? null : (
                               <Botao
                                 texto={textoBotaoAprova}
@@ -333,9 +333,9 @@ const Relatorio = (props) => {
                                   EXIBIR_MODAL_AUTORIZACAO
                                     ? showAutorizarModal()
                                     : tipoPerfil ===
-                                      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
-                                    ? showModalObservacaoCodae()
-                                    : handleSubmit()
+                                        TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+                                      ? showModalObservacaoCodae()
+                                      : handleSubmit()
                                 }
                                 style={BUTTON_STYLE.GREEN}
                                 className="custom-col-width ms-3"

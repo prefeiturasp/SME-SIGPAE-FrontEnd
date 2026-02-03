@@ -119,7 +119,7 @@ export class SolicitacaoDeKitLanche extends Component {
         },
         function () {
           toastError("Houve um erro ao excluir o rascunho");
-        }
+        },
       );
       this.resetForm();
     }
@@ -130,28 +130,28 @@ export class SolicitacaoDeKitLanche extends Component {
     this.props.change("uuid", solicitacaoKitLanche.uuid);
     this.props.change(
       "observacao",
-      solicitacaoKitLanche.solicitacao_kit_lanche.descricao + "\n"
+      solicitacaoKitLanche.solicitacao_kit_lanche.descricao + "\n",
     );
     this.props.change(
       "evento_data",
-      solicitacaoKitLanche.solicitacao_kit_lanche.data
+      solicitacaoKitLanche.solicitacao_kit_lanche.data,
     );
     this.props.change("local", solicitacaoKitLanche.local);
     this.props.change("evento", solicitacaoKitLanche.evento);
     this.props.change(
       "quantidade_alunos",
-      solicitacaoKitLanche.quantidade_alunos
+      solicitacaoKitLanche.quantidade_alunos,
     );
     this.props.change(
       "tempo_passeio",
-      solicitacaoKitLanche.solicitacao_kit_lanche.tempo_passeio.toString()
+      solicitacaoKitLanche.solicitacao_kit_lanche.tempo_passeio.toString(),
     );
     if (this.state.ehCei) {
       solicitacaoKitLanche.faixas_etarias.forEach((faixa) =>
         this.props.change(
           `faixas_etarias.${faixa.faixa_etaria.uuid}`,
-          faixa.quantidade
-        )
+          faixa.quantidade,
+        ),
       );
       // TODO: caso tenha alunos no rascunho, expandir o seletor
       //       tem que passar state.collapsed do componente SeletorAlunosDietaEspecial pra prop
@@ -161,15 +161,15 @@ export class SolicitacaoDeKitLanche extends Component {
       (aluno) =>
         this.props.change(
           `alunos_com_dieta_especial_participantes.${aluno.uuid}`,
-          true
-        )
+          true,
+        ),
     );
     this.setState({
       status: solicitacaoKitLanche.status,
       title: `Solicitação de Kit Lanche Passeio #${solicitacaoKitLanche.id_externo}`,
       salvarAtualizarLbl: "Atualizar",
       kitsChecked: extrairKitsLanche(
-        solicitacaoKitLanche.solicitacao_kit_lanche.kits
+        solicitacaoKitLanche.solicitacao_kit_lanche.kits,
       ),
     });
   }
@@ -199,6 +199,21 @@ export class SolicitacaoDeKitLanche extends Component {
 
   componentDidMount() {
     this.refresh();
+    this.carregarDietas();
+  }
+
+  async carregarDietas() {
+    const resposta = await getDietasAtivasInativasPorAluno({
+      incluir_alteracao_ue: true,
+    });
+
+    if (resposta.status === 200) {
+      this.setState({
+        alunosComDietaEspecial: resposta.data.solicitacoes.filter(
+          (s) => s.ativas > 0,
+        ),
+      });
+    }
   }
 
   componentDidUpdate() {
@@ -218,26 +233,13 @@ export class SolicitacaoDeKitLanche extends Component {
     this.props.reset();
   }
 
-  UNSAFE_componentWillMount = async () => {
-    const resposta = await getDietasAtivasInativasPorAluno({
-      incluir_alteracao_ue: true,
-    });
-    if (resposta.status === 200) {
-      this.setState({
-        alunosComDietaEspecial: resposta.data.solicitacoes.filter(
-          (s) => s.ativas > 0
-        ),
-      });
-    }
-  };
-
   validaDiasUteis = (value) => {
     if (
       value &&
       checaSeDataEstaEntre2e5DiasUteis(
         value,
         this.props.proximos_dois_dias_uteis,
-        this.props.proximos_cinco_dias_uteis
+        this.props.proximos_cinco_dias_uteis,
       )
     ) {
       this.showModal();
@@ -254,7 +256,7 @@ export class SolicitacaoDeKitLanche extends Component {
     values.escola = this.props.meusDados.vinculo_atual.instituicao.uuid;
     let solicitacao_kit_lanche = montaObjetoRequisicao(
       values,
-      _alunosPorFaixaEtaria
+      _alunosPorFaixaEtaria,
     );
     if (values.confirmar) {
       solicitacao_kit_lanche.confirmar = values.confirmar;
@@ -264,7 +266,7 @@ export class SolicitacaoDeKitLanche extends Component {
       solicitacao_kit_lanche.alunos_com_dieta_especial_participantes.length
     ) {
       toastError(
-        "O número de alunos selecionados com Dieta Especial é maior que a quantidade de alunos prevista para o evento."
+        "O número de alunos selecionados com Dieta Especial é maior que a quantidade de alunos prevista para o evento.",
       );
       return;
     }
@@ -279,7 +281,7 @@ export class SolicitacaoDeKitLanche extends Component {
           values,
           ehCei
             ? TIPO_SOLICITACAO.SOLICITACAO_CEI
-            : TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+            : TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
         );
         this.handleConfirmation();
         resolve();
@@ -294,22 +296,22 @@ export class SolicitacaoDeKitLanche extends Component {
       (res) => {
         if (res.status === HTTP_STATUS.OK) {
           toastSuccess(
-            "Solicitação de Kit Lanche Passeio enviada com sucesso!"
+            "Solicitação de Kit Lanche Passeio enviada com sucesso!",
           );
           this.resetForm();
         } else if (res.status === HTTP_STATUS.BAD_REQUEST) {
           toastError(
             `Houve um erro ao enviar a Solicitação de Kit Lanche Passeio: ${getError(
-              res.data.detail
-            )}`
+              res.data.detail,
+            )}`,
           );
         }
       },
       function () {
         toastError(
-          "Houve um erro ao enviar a Solicitação de Kit Lanche Passeio"
+          "Houve um erro ao enviar a Solicitação de Kit Lanche Passeio",
         );
-      }
+      },
     );
   }
 
@@ -338,7 +340,7 @@ export class SolicitacaoDeKitLanche extends Component {
               this.iniciarPedido(resp.data.uuid);
             } else {
               toastSuccess(
-                "Solicitação de Kit Lanche Passeio salva com sucesso!"
+                "Solicitação de Kit Lanche Passeio salva com sucesso!",
               );
               this.resetForm();
             }
@@ -347,13 +349,13 @@ export class SolicitacaoDeKitLanche extends Component {
           } else {
             toastError(getError(resp.data));
           }
-        }
+        },
       );
     } else {
       registroAtualizaKitLanche(
         solicitacao_kit_lanche,
         values.uuid,
-        tipoSolicitacao
+        tipoSolicitacao,
       )
         .then((resp) => {
           if (resp.status === HTTP_STATUS.OK) {
@@ -361,7 +363,7 @@ export class SolicitacaoDeKitLanche extends Component {
               this.iniciarPedido(values.uuid);
             } else {
               toastSuccess(
-                "Solicitação de Kit Lanche Passeio atualizada com sucesso!"
+                "Solicitação de Kit Lanche Passeio atualizada com sucesso!",
               );
               this.setState({ carregandoRascunhos: true });
               this.resetForm();
@@ -370,7 +372,7 @@ export class SolicitacaoDeKitLanche extends Component {
             this.validaTipoMensagemError(resp.data);
           } else {
             toastError(
-              `Erro ao atualizar a solicitação: ${getError(resp.data)}`
+              `Erro ao atualizar a solicitação: ${getError(resp.data)}`,
             );
           }
         })
@@ -387,14 +389,14 @@ export class SolicitacaoDeKitLanche extends Component {
     if (!values.uuid) {
       solicitarKitLanche(
         solicitacao_kit_lanche,
-        this.state.tipoSolicitacao
+        this.state.tipoSolicitacao,
       ).then((resp) => {
         if (resp.status === HTTP_STATUS.CREATED) {
           if (values.status === STATUS_DRE_A_VALIDAR) {
             this.iniciarPedido(resp.data.uuid);
           } else {
             toastSuccess(
-              "Solicitação de Kit Lanche Passeio salva com sucesso!"
+              "Solicitação de Kit Lanche Passeio salva com sucesso!",
             );
             this.resetForm();
           }
@@ -402,7 +404,7 @@ export class SolicitacaoDeKitLanche extends Component {
           this.validaTipoMensagemError(resp.data);
         } else {
           toastError(
-            `Erro ao salvar Solicitação de Kit Lanche Passeio ${resp.data}`
+            `Erro ao salvar Solicitação de Kit Lanche Passeio ${resp.data}`,
           );
         }
       });
@@ -410,7 +412,7 @@ export class SolicitacaoDeKitLanche extends Component {
       registroAtualizaKitLanche(
         solicitacao_kit_lanche,
         values.uuid,
-        this.state.tipoSolicitacao
+        this.state.tipoSolicitacao,
       )
         .then((resp) => {
           if (resp.status === HTTP_STATUS.OK) {
@@ -418,7 +420,7 @@ export class SolicitacaoDeKitLanche extends Component {
               this.iniciarPedido(values.uuid);
             } else {
               toastSuccess(
-                "Solicitação de Kit Lanche Passeio atualizada com sucesso!"
+                "Solicitação de Kit Lanche Passeio atualizada com sucesso!",
               );
               this.resetForm();
             }
@@ -426,7 +428,7 @@ export class SolicitacaoDeKitLanche extends Component {
             this.validaTipoMensagemError(resp.data);
           } else {
             toastError(
-              `Erro ao atualizar a solicitação: ${getError(resp.data)}`
+              `Erro ao atualizar a solicitação: ${getError(resp.data)}`,
             );
           }
         })
@@ -481,8 +483,8 @@ export class SolicitacaoDeKitLanche extends Component {
     const qtdeAlunos = this.state.ehCei
       ? this.props.totalAlunosSelecionadosCei || 0
       : this.props.quantidade_alunos !== undefined
-      ? parseInt(this.props.quantidade_alunos)
-      : 0;
+        ? parseInt(this.props.quantidade_alunos)
+        : 0;
     return qtdeAlunos * this.state.kitsChecked.length;
   }
 
@@ -702,7 +704,7 @@ export class SolicitacaoDeKitLanche extends Component {
                       this.onSubmit({
                         ...values,
                         status: "RASCUNHO",
-                      })
+                      }),
                     )}
                     className="ms-3"
                     type={BUTTON_TYPE.SUBMIT}
@@ -716,7 +718,7 @@ export class SolicitacaoDeKitLanche extends Component {
                       this.onSubmit({
                         ...values,
                         status: STATUS_DRE_A_VALIDAR,
-                      })
+                      }),
                     )}
                     style={BUTTON_STYLE.GREEN}
                     className="ms-3"
@@ -741,7 +743,7 @@ export class SolicitacaoDeKitLanche extends Component {
                           status: STATUS_DRE_A_VALIDAR,
                           salvo_em: new Date(),
                           confirmar: true,
-                        })
+                        }),
                       )}
                       style={BUTTON_STYLE.BLUE}
                       className="ms-3"
@@ -780,7 +782,7 @@ SolicitacaoDeKitLanche = reduxForm({
     ) {
       const response = await getSomatorioFaixas(
         props.meusDados.vinculo_atual.instituicao.uuid,
-        converterDDMMYYYYparaYYYYMMDD(values.evento_data)
+        converterDDMMYYYYparaYYYYMMDD(values.evento_data),
       );
       if (response.status === 200) {
         dispatch({
@@ -799,7 +801,7 @@ SolicitacaoDeKitLanche = reduxForm({
     ) {
       let totalAlunos = 0;
       Object.values(values.faixas_etarias).forEach(
-        (v) => (totalAlunos += parseInt(v))
+        (v) => (totalAlunos += parseInt(v)),
       );
       dispatch({ type: "SET_TOTAL_ALUNOS_SELECIONADOS", data: totalAlunos });
     }

@@ -441,8 +441,8 @@ export const LancamentoPorPeriodo = ({
             <>
               {!escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) &&
                 frequenciasDietasPeriodosEspeciais &&
-                periodosEspecificos.length &&
-                periodosEspecificos.map((periodo, index) => (
+                periodosEspecificos?.length > 0 &&
+                periodosEspecificos?.map((periodo, index) => (
                   <CardLancamento
                     key={index}
                     textoCabecalho={periodo.periodo_escolar.nome}

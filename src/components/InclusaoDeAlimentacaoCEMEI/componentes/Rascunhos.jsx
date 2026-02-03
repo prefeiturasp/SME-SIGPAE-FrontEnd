@@ -1,4 +1,3 @@
-import React from "react";
 import "src/components/Shareable/style.scss";
 import { TIPO_SOLICITACAO } from "src/constants/shared";
 
@@ -31,6 +30,8 @@ export const Rascunhos = ({
               Criado em: {inclusaoDeAlimentacao.criado_em}
               <span
                 data-testid="botao-remover-rascunho"
+                role="button"
+                tabIndex={0}
                 onClick={() =>
                   removerRascunho(
                     id_externo,
@@ -38,19 +39,40 @@ export const Rascunhos = ({
                     inclusaoDeAlimentacao.quantidades_periodo
                       ? TIPO_SOLICITACAO.SOLICITACAO_CONTINUA
                       : null,
-                    form
+                    form,
                   )
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    removerRascunho(
+                      id_externo,
+                      uuid,
+                      inclusaoDeAlimentacao.quantidades_periodo
+                        ? TIPO_SOLICITACAO.SOLICITACAO_CONTINUA
+                        : null,
+                      form,
+                    );
+                  }
+                }}
               >
-                <i className="fas fa-trash" />
+                <i className="fas fa-trash" aria-hidden="true" />
               </span>
               <span
                 data-testid="botao-carregar-rascunho"
+                role="button"
+                tabIndex={0}
                 onClick={() =>
                   carregarRascunho(form, values, inclusaoDeAlimentacao)
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    carregarRascunho(form, values, inclusaoDeAlimentacao);
+                  }
+                }}
               >
-                <i className="fas fa-edit" />
+                <i className="fas fa-edit" aria-hidden="true" />
               </span>
             </div>
             <div className="ms-3">

@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Field, Form } from "react-final-form";
-import Label from "src/components/Shareable/Label";
 
 import { required } from "src/helpers/fieldValidators";
 import { Spin, Tooltip } from "antd";
@@ -357,18 +356,10 @@ export default () => {
                     <div className="subtitulo">Informações Nutricionais</div>
 
                     <div className="row">
-                      <div className="col-6">
-                        <Label content="Porção" required />
-                      </div>
-                      <div className="col-6">
-                        <Label content="Unidade Caseira" required />
-                      </div>
-                    </div>
-
-                    <div className="row">
                       <div className="col-3">
                         <Field
                           component={InputText}
+                          label="Porção"
                           name={`porcao`}
                           placeholder="Quantidade Numérica"
                           className="input-ficha-tecnica"
@@ -376,9 +367,10 @@ export default () => {
                           validate={required}
                         />
                       </div>
-                      <div className="col-3">
+                      <div className="col-3" style={{ marginTop: "30px" }}>
                         <Field
                           component={Select}
+                          label=""
                           dataTestId={"unidade_medida_porcao"}
                           naoDesabilitarPrimeiraOpcao
                           options={[
@@ -394,6 +386,7 @@ export default () => {
                       <div className="col-3">
                         <Field
                           component={InputText}
+                          label="Unidade Caseira"
                           name={`valor_unidade_caseira`}
                           placeholder="Quantidade Numérica"
                           className="input-ficha-tecnica"
@@ -401,14 +394,18 @@ export default () => {
                           validate={required}
                         />
                       </div>
-                      <div className="col-3">
+                      <div className="col-3  my-2">
                         <Field
                           component={InputText}
+                          label=""
                           name={`unidade_medida_caseira`}
                           placeholder="Unidade de Medida"
                           className="input-ficha-tecnica"
                           required
                           validate={required}
+                          tooltipText={
+                            "A unidade de medida caseira é a utilizada com utensílios, exemplo: colher de sopa, colher de chá, xícara, etc."
+                          }
                         />
                       </div>
                     </div>

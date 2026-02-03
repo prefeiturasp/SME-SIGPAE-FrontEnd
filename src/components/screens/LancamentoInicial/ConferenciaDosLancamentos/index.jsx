@@ -404,7 +404,6 @@ export const ConferenciaDosLancamentos = () => {
   useEffect(() => {
     if (mesSolicitacao && anoSolicitacao) {
       !feriadosNoMes && getFeriadosNoMesAsync(mesSolicitacao, anoSolicitacao);
-      !diasCalendario;
       !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
         getListaDiasSobremesaDoceAsync();
     }
