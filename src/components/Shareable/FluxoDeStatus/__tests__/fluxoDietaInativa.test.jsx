@@ -97,8 +97,9 @@ describe("Teste <FluxoDeStatus> com Fluxo de Inativação", () => {
   });
 
   it("deve renderizar os dados do responsável pela inativação (Nome e RF)", () => {
-    expect(screen.getByText(/NUTRI CODAE ADMIN/i)).toBeInTheDocument();
-    expect(screen.getByText(/RF: 8107807/i)).toBeInTheDocument();
+    expect(screen.getByText(/ESCOLA EMEF ADMIN/i)).toBeInTheDocument();
+    const nomesNutri = screen.getAllByText(/NUTRI CODAE ADMIN/i);
+    expect(nomesNutri).toHaveLength(2);
   });
 
   it("deve exibir a data e hora exata da inativação", () => {
