@@ -104,6 +104,7 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "ckeditor5": "^46.1.1",
     "date-fns": "^4.1.0",
+    "extenso": "^2.1.0",
     "file-saver": "^2.0.5",
     "final-form": "^4.20.10",
     "final-form-arrays": "^3.1.0",
