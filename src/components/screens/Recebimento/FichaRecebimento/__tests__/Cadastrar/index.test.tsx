@@ -529,13 +529,11 @@ describe("Cadastro de Ficha de Recebimento", () => {
       ).toBeInTheDocument();
     });
 
-    // Verifica o PUT (que é onde o payload completo vai)
     await waitFor(() => expect(putSpy).toHaveBeenCalled());
 
     const requestConfig = putSpy.mock.calls[0][0];
     const payload = JSON.parse(requestConfig.data);
 
-    // quantidade_nota_fiscal está dentro de veiculos[]
     expect(payload.veiculos[0].quantidade_nota_fiscal).toBe(1.55);
     expect(typeof payload.veiculos[0].quantidade_nota_fiscal).toBe("number");
   });
