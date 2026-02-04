@@ -371,12 +371,14 @@ export default () => {
                       numero_sif_sisbi_sisp:
                         values[`numero_sif_sisbi_sisp_${index}`],
                       numero_nota_fiscal: values[`numero_nota_fiscal_${index}`],
-                      quantidade_nota_fiscal:
+                      quantidade_nota_fiscal: stringDecimalToNumber(
                         values[`quantidade_nota_fiscal_${index}`],
+                      ),
                       embalagens_nota_fiscal:
                         values[`embalagens_nota_fiscal_${index}`],
-                      quantidade_recebida:
+                      quantidade_recebida: stringDecimalToNumber(
                         values[`quantidade_recebida_${index}`],
+                      ),
                       embalagens_recebidas:
                         values[`embalagens_recebidas_${index}`],
                       estado_higienico_adequado: stringToBoolean(
