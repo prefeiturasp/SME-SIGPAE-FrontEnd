@@ -146,6 +146,7 @@ export const tipoDeStatus = (status) => {
     case "CODAE cancelou solicitação de correção":
     case "Terceirizada cancelou solicitação de correção":
     case "CODAE autorizou o cancelamento":
+    case "CODAE inativou":
       return "cancelado";
 
     case "DRE não validou":
