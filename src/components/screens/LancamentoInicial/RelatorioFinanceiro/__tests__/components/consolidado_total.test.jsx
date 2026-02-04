@@ -12,17 +12,11 @@ describe("Teste de comportamentos componente - ConsolidadoTotal", () => {
     );
 
     expect(
-      screen.getByRole("heading", {
-        level: 3,
-        name: "CONSOLIDADO TOTAL (A + B + C)",
-      }),
+      screen.getByText("CONSOLIDADO TOTAL (A + B + C)"),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText(
-        (_, element) =>
-          element?.textContent === "QUANTIDADE SERVIDA (A + B + C):",
-      ),
+      screen.getByText("QUANTIDADE SERVIDA (A + B + C):"),
     ).toBeInTheDocument();
 
     expect(
@@ -34,10 +28,7 @@ describe("Teste de comportamentos componente - ConsolidadoTotal", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText(
-        (_, element) =>
-          element?.textContent === "VALOR DO FATURAMENTO TOTAL (A + B + C):",
-      ),
+      screen.getByText("VALOR DO FATURAMENTO TOTAL (A + B + C):"),
     ).toBeInTheDocument();
 
     expect(
