@@ -93,7 +93,6 @@ const gerarLinkDoItem = (item, apontaParaEdicao, titulo) => {
       CODAE_HOMOLOGADO,
       CODAE_SUSPENDEU,
       CODAE_NAO_HOMOLOGADO,
-      CODAE_QUESTIONADO,
       CODAE_AUTORIZOU_RECLAMACAO,
       TERCEIRIZADA_CANCELOU_SOLICITACAO_HOMOLOGACAO,
     ].includes(item.status.toLowerCase())
@@ -130,7 +129,6 @@ const gerarLinkDoItem = (item, apontaParaEdicao, titulo) => {
   ) {
     return `/${GESTAO_PRODUTO}/responder-questionamento-nutrisupervisor/?nome_produto=${item.nome_produto}`;
   }
-
   return apontaParaEdicao
     ? `/${GESTAO_PRODUTO}/${EDITAR}?uuid=${item.uuid}`
     : `/${GESTAO_PRODUTO}/${RELATORIO}?uuid=${item.uuid}`;
