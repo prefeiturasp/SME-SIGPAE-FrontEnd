@@ -5,6 +5,8 @@ import {
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { stringDecimalToNumber } from "src/helpers/parsers";
 import { formataMilharDecimal } from "src/helpers/utilities";
+import { forwardRef, useImperativeHandle } from "react";
+import { TabelaAlimentacaoCEIHandle } from "../../types";
 
 type Props = {
   tabelas: TabelaParametrizacao[];
@@ -18,14 +20,21 @@ const _PERIODOS = [
   { value: "PARCIAL", label: "Período Parcial" },
 ];
 
-export function TabelaAlimentacaoCEI({
-  tabelas,
-  faixasEtarias,
-  totaisConsumo,
-  ordem,
-}: Props) {
+export const TabelaAlimentacaoCEI = forwardRef<
+  TabelaAlimentacaoCEIHandle,
+  Props
+>(({ tabelas, faixasEtarias, totaisConsumo, ordem }, ref) => {
   let totalAtendimentosGeral = 0;
   let valorTotalGeral = 0;
+
+  useImperativeHandle(ref, () => ({
+    getTotais() {
+      return {
+        totalAtendimentosGeral,
+        valorTotalGeral,
+      };
+    },
+  }));
 
   return (
     <table className="tabela-relatorio">
@@ -109,4 +118,4 @@ export function TabelaAlimentacaoCEI({
       </tbody>
     </table>
   );
-}
+});

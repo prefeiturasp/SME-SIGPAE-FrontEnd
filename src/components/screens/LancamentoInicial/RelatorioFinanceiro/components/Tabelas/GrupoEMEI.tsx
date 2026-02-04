@@ -1,9 +1,10 @@
 import { TabelaAlimentacao } from "./TabelaAlimentacao";
 import { TipoAlimentacao } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { TabelaDietas } from "./TabelaDietas";
+import { RelatorioFinanceiroConsolidado } from "src/interfaces/relatorio_financeiro.interface";
 
 type Props = {
-  relatorioConsolidado: any;
+  relatorioConsolidado: RelatorioFinanceiroConsolidado;
   tiposAlimentacao: Array<TipoAlimentacao>;
   totaisConsumo: any;
 };
