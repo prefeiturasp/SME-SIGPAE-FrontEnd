@@ -1,93 +1,88 @@
 .consolidado-total {
-  .header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
+  width: 100%;
+  padding: 16px 24px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #1b1b1b;
+}
 
-  .titulo {
-    color: #118c4f;
-    font-size: 16px;
-    font-weight: 700;
-    white-space: nowrap;
-  }
+.consolidado-titulo {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0b8a5a;
+  margin-bottom: 22px;
+}
 
-  .linha-separadora {
-    flex: 1;
-    height: 1px;
-    background-color: #dcdcdc;
-  }
+.consolidado-titulo::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #dcdcdc;
+  position: relative;
+  top: -2px;
+}
 
-  .conteudo {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-  }
+.consolidado-conteudo {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
 
-  .bloco {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    width: 100%;
+.bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-    &.bloco-grande {
-      flex: 2;
-    }
-  }
+.bloco-grande {
+  flex: 1;
+}
 
-  .bloco-titulo {
-    font-size: 14px;
-    font-weight: 700;
-    color: #118c4f;
-  }
+.bloco-titulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0b8a5a;
+}
 
-  .card {
-    width: 100%;
-    background-color: #f1f3f8;
-    border-radius: 6px;
-    padding: 12px 16px;
+.caixa {
+  background: #eef0f5;
+  border-radius: 6px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #cfd4dd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
 
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
+.caixa.quantidade {
+  min-width: 260px;
+  gap: 12px;
+  justify-content: space-between;
+}
 
-  .card-quantidade {
-    .valor {
-      font-size: 20px;
-      font-weight: 700;
-      color: #333;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+.caixa.valor {
+  justify-content: space-between;
+  gap: 16px;
+}
 
-    .descricao {
-      font-size: 12px;
-      color: #555;
-      white-space: nowrap;
-      text-align: right;
-    }
-  }
+.valor {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4a4a4a;
+  white-space: nowrap;
+  padding-left: 10px;
+}
 
-  .card-faturamento {
-    .valor {
-      font-size: 20px;
-      font-weight: 700;
-      color: #333;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+.unidade {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b6b6b;
+}
 
-    .extenso {
-      font-size: 12px;
-      color: #444;
-      line-height: 1.4;
-      text-align: right;
-      max-width: 65%;
-    }
-  }
+.extenso {
+  font-size: 12px;
+  color: #6b6b6b;
+  text-align: right;
 }

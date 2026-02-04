@@ -11,25 +11,20 @@ type Props = {
 export function ConsolidadoTotal({ titulo, quantidade, valor }: Props) {
   return (
     <div className="consolidado-total">
-      <div className="header">
-        <h3 className="titulo">{titulo}</h3>
-        <div className="linha-separadora" />
-      </div>
-
-      <div className="conteudo">
+      <h2 className="consolidado-titulo">{titulo}</h2>
+      <div className="consolidado-conteudo">
         <div className="bloco">
           <span className="bloco-titulo">QUANTIDADE SERVIDA (A + B + C):</span>
-          <div className="card card-quantidade">
+          <div className="caixa quantidade">
             <span className="valor">{quantidade}</span>
-            <span className="descricao">ALIMENTAÇÕES</span>
+            <span className="unidade">ALIMENTAÇÕES</span>
           </div>
         </div>
-
         <div className="bloco bloco-grande">
           <span className="bloco-titulo">
             VALOR DO FATURAMENTO TOTAL (A + B + C):
           </span>
-          <div className="card card-faturamento">
+          <div className="caixa valor">
             <span className="valor">R$ {formataMilharDecimal(valor)}</span>
             <span className="extenso">
               {extenso(valor, {
