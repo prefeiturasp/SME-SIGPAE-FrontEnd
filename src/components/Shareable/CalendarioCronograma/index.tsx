@@ -93,6 +93,8 @@ export const CalendarioCronograma: React.FC<Props> = ({
             isInterrupcao: true as const,
             motivo_display: item.motivo_display,
             descricao_motivo: item.descricao_motivo,
+            tipo_calendario: item.tipo_calendario,
+            tipo_calendario_display: item.tipo_calendario_display,
           };
         });
         setInterrupcoes(interrupcoesFormatadas);
@@ -119,8 +121,10 @@ export const CalendarioCronograma: React.FC<Props> = ({
 
   const obterEstiloEvento = (evento: EventoCalendario) => {
     if ("isInterrupcao" in evento && evento.isInterrupcao) {
+      const sufixo =
+        evento.tipo_calendario === "PONTO_A_PONTO" ? "-ponto-a-ponto" : "";
       return {
-        className: "interrupcao-entrega",
+        className: `interrupcao-entrega${sufixo}`,
       };
     }
 
@@ -145,9 +149,11 @@ export const CalendarioCronograma: React.FC<Props> = ({
     children: React.ReactNode;
   }) => {
     if ("isInterrupcao" in event && event.isInterrupcao) {
-      const tooltipTitle = event.descricao_motivo
+      const textoPrincipal = event.descricao_motivo
         ? `${event.motivo_display}: ${event.descricao_motivo}`
         : event.motivo_display;
+
+      const tooltipTitle = `${textoPrincipal} - ${event.tipo_calendario_display}`;
 
       return <Tooltip title={tooltipTitle}>{children}</Tooltip>;
     }

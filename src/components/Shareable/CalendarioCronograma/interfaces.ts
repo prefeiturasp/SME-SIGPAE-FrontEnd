@@ -22,4 +22,6 @@ export interface ItemCalendarioInterrupcao {
   isInterrupcao: true;
   motivo_display: string;
   descricao_motivo: string;
+  tipo_calendario: string;
+  tipo_calendario_display: string;
 }
