@@ -11,8 +11,10 @@ import InputText from "src/components/Shareable/Input/InputText";
 import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import Select from "src/components/Shareable/Select";
-import { getEtapas } from "src/services/cronograma.service";
-import { getFeriadosAnoAtualEProximo } from "src/services/diasUteis.service";
+import {
+  getEtapas,
+  getDatasBloqueioCadastroEtapas,
+} from "src/services/cronograma.service";
 import { deletaValues } from "src/helpers/formHelper";
 import {
   formataMilharDecimal,
@@ -42,7 +44,7 @@ export default ({
   const [etapasOptions, setEtapasOptions] = useState([{}]);
   const [desabilitar, setDesabilitar] = useState([]);
   const [desabilitarData, setDesabilitarData] = useState([]);
-  const [feriados, setFeriados] = useState([{}]);
+  const [datasBloqueadas, setDatasBloqueadas] = useState([{}]);
 
   const getEtapasFiltrado = (etapa) => {
     if (etapa) {
@@ -110,12 +112,12 @@ export default ({
     setEtapasOptions(response.data);
   };
 
-  const buscaFeriados = async () => {
-    const response = await getFeriadosAnoAtualEProximo();
+  const buscaDatasBloqueadas = async () => {
+    const response = await getDatasBloqueioCadastroEtapas();
     const datas = response.data.results.map((dateString) =>
       moment(dateString, "YYYY-MM-DD").toDate(),
     );
-    setFeriados(datas);
+    setDatasBloqueadas(datas);
   };
 
   const isWeekday = (date) => {
@@ -124,7 +126,7 @@ export default ({
   };
 
   const requisicoesPreRender = async () => {
-    await Promise.all([buscaFeriados(), buscaEtapas()]);
+    await Promise.all([buscaDatasBloqueadas(), buscaEtapas()]);
   };
 
   const desativaAdicionarEtapa = () => {
@@ -309,7 +311,7 @@ export default ({
                   }
                   disabled={desabilitar[index] && desabilitarData[index]}
                   filterDate={isWeekday}
-                  excludeDates={feriados}
+                  excludeDates={datasBloqueadas}
                 />
               </div>
               <div className="col-4">
