@@ -926,6 +926,7 @@ export const ConferenciaDosLancamentos = () => {
                                       type={BUTTON_TYPE.BUTTON}
                                       style={BUTTON_STYLE.GREEN_OUTLINE}
                                       onClick={visualizarModal}
+                                      dataTestId="botao-historico"
                                     />
                                   </>
                                 ) : null}
