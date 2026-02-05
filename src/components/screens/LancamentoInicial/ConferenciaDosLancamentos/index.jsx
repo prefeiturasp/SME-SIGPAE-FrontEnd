@@ -872,10 +872,10 @@ export const ConferenciaDosLancamentos = () => {
                                         medicaoInicialExportarOcorrenciasPDF(
                                           ocorrencia?.ultimo_arquivo,
                                         );
-                                        usuarioEhMedicao() &&
+                                        usuarioMedicaoOuManifestacaoTemPermissao &&
                                           medicaoInicialExportarOcorrenciasXLSX(
                                             ocorrencia.ultimo_arquivo_excel,
-                                            ocorrencia.nome_ultimo_arquivo,
+                                            "ocorrencias.xlsx",
                                           );
                                       }}
                                     >
