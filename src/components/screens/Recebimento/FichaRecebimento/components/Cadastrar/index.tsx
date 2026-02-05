@@ -374,13 +374,15 @@ export default () => {
                       quantidade_nota_fiscal: stringDecimalToNumber(
                         values[`quantidade_nota_fiscal_${index}`],
                       ),
-                      embalagens_nota_fiscal:
+                      embalagens_nota_fiscal: stringDecimalToNumber(
                         values[`embalagens_nota_fiscal_${index}`],
+                      ),
                       quantidade_recebida: stringDecimalToNumber(
                         values[`quantidade_recebida_${index}`],
                       ),
-                      embalagens_recebidas:
+                      embalagens_recebidas: stringDecimalToNumber(
                         values[`embalagens_recebidas_${index}`],
+                      ),
                       estado_higienico_adequado: stringToBoolean(
                         values[`estado_higienico_adequado_${index}`],
                       ),
