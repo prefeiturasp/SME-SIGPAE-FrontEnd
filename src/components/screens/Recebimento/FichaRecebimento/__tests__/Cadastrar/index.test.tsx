@@ -508,6 +508,9 @@ describe("Cadastro de Ficha de Recebimento", () => {
     fireEvent.click(btnProximo);
 
     preencheInputByPlaceholder("Digite a qtde da nota", "1,55");
+    preencheInputByPlaceholder("Digite a qtde de embalagens", "1,55");
+    preencheInputByPlaceholder("Digite a qtde recebida", "1,55");
+    preencheInputByPlaceholder("Digite qtde recebida", "1,55");
 
     const btnSalvarRascunho = screen
       .getByText("Salvar Rascunho")
@@ -535,6 +538,9 @@ describe("Cadastro de Ficha de Recebimento", () => {
     const payload = JSON.parse(requestConfig.data);
 
     expect(payload.veiculos[0].quantidade_nota_fiscal).toBe(1.55);
+    expect(payload.veiculos[0].embalagens_nota_fiscal).toBe(1.55);
+    expect(payload.veiculos[0].quantidade_recebida).toBe(1.55);
+    expect(payload.veiculos[0].embalagens_recebidas).toBe(1.55);
     expect(typeof payload.veiculos[0].quantidade_nota_fiscal).toBe("number");
   });
 
