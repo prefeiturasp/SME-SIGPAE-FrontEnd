@@ -37,12 +37,11 @@ describe("Testes da interface de Cadastro de Cronograma", () => {
       .onGet("/tipos-embalagens/lista-tipos-embalagens/")
       .reply(200, mockListaTiposEmbalagens);
     mock.onGet("/cronogramas/opcoes-etapas/").reply(200, mockGetOpcoesEtapas);
-    mock.onGet("/feriados-ano/ano-atual-e-proximo/").reply(200, {
-      results: [
-        { data: "2025-01-01", descricao: "Ano novo" },
-        { data: "2025-12-25", descricao: "Natal" },
-      ],
-    });
+    mock
+      .onGet("/interrupcao-programada-entrega/datas-bloqueadas-armazenavel/")
+      .reply(200, {
+        results: ["2025-01-01", "2025-12-25"],
+      });
 
     await act(async () => {
       render(
