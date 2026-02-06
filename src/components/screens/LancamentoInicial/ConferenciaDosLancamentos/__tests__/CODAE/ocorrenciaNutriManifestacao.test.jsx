@@ -21,6 +21,7 @@ import {
   mockOcorrenciaAprovadaPelaDRE,
   mockOcorrenciaAprovadaPelaCODAE,
   mockOcorrenciaDevolvidoParaAjustesPelaCODAE,
+  mockOcorrenciaCorrigidoParaCODAE,
 } from "src/mocks/medicaoInicial/ConferenciaDeLancamentos/mockOcorrencias";
 import { ConferenciaDosLancamentosPage } from "src/pages/LancamentoMedicaoInicial/ConferenciaDosLancamentosPage";
 import {
@@ -34,7 +35,6 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import mock from "src/services/_mock";
 import { saveAs } from "file-saver";
-import preview from "jest-preview";
 
 jest.mock("file-saver", () => ({
   saveAs: jest.fn(),
@@ -250,7 +250,7 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
       expect(btnDownload).not.toHaveClass("disabled");
     });
 
-    it("Deve garantir que os botões de ação excluisvos do usurio MEDIÇÃO não aparecem na tela", async () => {
+    it("Deve garantir que os botões de ação excluisvos do usuário MEDIÇÃO não aparecem na tela", async () => {
       setupMocks();
       await renderComponent();
       const btnAprovarMedicao = screen.queryByRole("button", {
@@ -414,7 +414,6 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
               /Informe quais os pontos necessários de correção no Formulário de Ocorrências/i,
             ),
           ).toBeInTheDocument();
-          preview.debug();
         },
         { timeout: 2000 },
       );
@@ -493,7 +492,6 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
         .reply(200, mockSemOcorrencia);
 
       await renderComponent();
-      preview.debug();
 
       expect(screen.queryByText(/Avaliação do Serviço:/i)).toBeInTheDocument();
       expect(screen.queryByText(/COM OCORRÊNCIAS/i)).not.toBeInTheDocument();
@@ -880,6 +878,35 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
       });
     });
 
+    it("Deve garantir que os botões de ação excluisvos do usurio MEDIÇÃO não aparecem na tela", async () => {
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoDevolvidaParaAjustesPelaCODAEComOcorrencia);
+      await renderComponent();
+      const btnAprovarMedicao = screen.queryByRole("button", {
+        name: /Aprovar Medição/i,
+      });
+      expect(btnAprovarMedicao).not.toBeInTheDocument();
+
+      const btnCiente = screen.queryByRole("button", {
+        name: /ciente das correções/i,
+      });
+      expect(btnCiente).not.toBeInTheDocument();
+
+      const btnAprovarPeriodo = screen.queryByRole("button", {
+        name: /aprovar período/i,
+      });
+      expect(btnAprovarPeriodo).not.toBeInTheDocument();
+
+      const btnSolicitarCorrecao = screen.queryByRole("button", {
+        name: /solicitar correcao/i,
+      });
+      expect(btnSolicitarCorrecao).not.toBeInTheDocument();
+    });
+
     it("Deve permitir o download dos anexos da ocorrência em PDF e Excel", async () => {
       setupMocks();
       const pdfUrl =
@@ -897,6 +924,517 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         }),
       );
+
+      await renderComponent();
+
+      const btnVisualizar = document.querySelector(".visualizar-ocorrencias");
+      fireEvent.click(btnVisualizar);
+
+      const btnDownloadGeral = document.querySelector(".download-ocorrencias");
+
+      await act(async () => {
+        fireEvent.click(btnDownloadGeral);
+      });
+      await waitFor(() => {
+        expect(saveAs).toHaveBeenCalledTimes(2);
+      });
+    });
+  });
+
+  describe("Card CORRIGIDO PARA CODAE", () => {
+    const mockMedicaoCorrigidaParaCODAEComOcorrencia = {
+      ...mockMedicaoAprovadaPelaDREComOcorrencia,
+      status: "MEDICAO_CORRIGIDA_PARA_CODAE",
+      ocorrencia: mockOcorrenciaCorrigidoParaCODAE,
+    };
+
+    it("Deve carregar os dados de ocorrência para NUTRIMANIFESTACAO", async () => {
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoCorrigidaParaCODAEComOcorrencia);
+      await renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText(/carregando/i)).not.toBeInTheDocument();
+        expect(screen.getByText(/Avaliação do Serviço:/i)).toBeInTheDocument();
+        expect(screen.getByText(/COM OCORRÊNCIAS/i)).toBeInTheDocument();
+
+        const aprovadroDre = document.querySelector(".status-ocorrencia");
+        expect(aprovadroDre).toHaveTextContent(/Corrigido para CODAE/i);
+
+        const container = screen.getByTestId("texto-ocorrencia-com-data");
+        const expectedText =
+          "Solicitação de correção no Formulário de Ocorrências realizada em 06/02/2026 09:44:38";
+        expect(container).toHaveTextContent(expectedText);
+
+        const visualizar = document.querySelector(".visualizar-ocorrencias");
+        expect(visualizar).toHaveTextContent(/VISUALIZAR/i);
+      });
+    });
+
+    it("Deve renderizar os botões referentes a modal ocorrência ao clicar em VISUALIZAR", async () => {
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoCorrigidaParaCODAEComOcorrencia);
+      await renderComponent();
+      const btnExpandir = document.querySelector(".visualizar-ocorrencias");
+      fireEvent.click(btnExpandir);
+
+      const btnAprovarForm = screen.getByRole("button", {
+        name: /aprovar formulário/i,
+      });
+      expect(btnAprovarForm).toBeInTheDocument();
+      expect(btnAprovarForm).not.toBeDisabled();
+
+      const btnSolicitarCorrecaoForm = screen.getByRole("button", {
+        name: /solicitar correção no formulário/i,
+      });
+      expect(btnSolicitarCorrecaoForm).toBeInTheDocument();
+      expect(btnSolicitarCorrecaoForm).not.toBeDisabled();
+
+      const btnHistorico = screen.getByTestId("botao-historico");
+      expect(btnHistorico).toBeInTheDocument();
+      expect(btnHistorico).not.toBeDisabled();
+      expect(btnHistorico).toHaveTextContent(/histórico/i);
+
+      const btnDownload = screen.getByText(/download de ocorrências/i);
+      expect(btnDownload).not.toHaveClass("disabled");
+    });
+
+    it("Deve garantir que os botões de ação excluisvos do usuário MEDIÇÃO não aparecem na tela", async () => {
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoCorrigidaParaCODAEComOcorrencia);
+      await renderComponent();
+      const btnAprovarMedicao = screen.queryByRole("button", {
+        name: /Aprovar Medição/i,
+      });
+      expect(btnAprovarMedicao).not.toBeInTheDocument();
+
+      const btnCiente = screen.queryByRole("button", {
+        name: /ciente das correções/i,
+      });
+      expect(btnCiente).not.toBeInTheDocument();
+
+      const btnAprovarPeriodo = screen.queryByRole("button", {
+        name: /aprovar período/i,
+      });
+      expect(btnAprovarPeriodo).not.toBeInTheDocument();
+
+      const btnSolicitarCorrecao = screen.queryByRole("button", {
+        name: /solicitar correcao/i,
+      });
+      expect(btnSolicitarCorrecao).not.toBeInTheDocument();
+    });
+
+    it("Deve enviar a aprovação com sucesso ao clicar em Aprovar Formulário", async () => {
+      codaePedeAprovacaoOcorrencia.mockResolvedValue({
+        status: 200,
+        data: { success: true },
+      });
+
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoCorrigidaParaCODAEComOcorrencia);
+      await renderComponent();
+      const btnVisualizar = document.querySelector(".visualizar-ocorrencias");
+      fireEvent.click(btnVisualizar);
+      const btnAprovarForm = await screen.findByRole("button", {
+        name: /Aprovar Formulário/i,
+      });
+      fireEvent.click(btnAprovarForm);
+
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
+          expect(
+            screen.getByText(/Deseja aprovar o Formulário de Ocorrências\?/i),
+          ).toBeInTheDocument();
+        },
+        { timeout: 2000 },
+      );
+
+      const btnConfirmar = screen.getByTestId("botao-Sim");
+      fireEvent.click(btnConfirmar);
+      await waitFor(() => {
+        expect(toastSuccess).toHaveBeenCalledWith(
+          "Solicitação de aprovação no Formulário de Ocorrências salva com sucesso!",
+        );
+      });
+    });
+
+    it("Deve exibir erro se a chamada da API falhar ao Aprovar Formulário", async () => {
+      codaePedeAprovacaoOcorrencia.mockResolvedValue({
+        status: 500,
+        data: { success: false },
+      });
+
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoCorrigidaParaCODAEComOcorrencia);
+      await renderComponent();
+      const btnVisualizar = document.querySelector(".visualizar-ocorrencias");
+      fireEvent.click(btnVisualizar);
+      const btnAprovarForm = await screen.findByRole("button", {
+        name: /Aprovar Formulário/i,
+      });
+      fireEvent.click(btnAprovarForm);
+
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
+          expect(
+            screen.getByText(/Deseja aprovar o Formulário de Ocorrências\?/i),
+          ).toBeInTheDocument();
+        },
+        { timeout: 2000 },
+      );
+
+      const btnConfirmar = screen.getByTestId("botao-Sim");
+      fireEvent.click(btnConfirmar);
+
+      await waitFor(() => {
+        expect(toastError).toHaveBeenCalledWith(
+          "Houve um erro ao salvar aprovação no Formulário de Ocorrências!",
+        );
+      });
+    });
+
+    it("Deve validar o campo obrigatório e enviar a correção com a justificativa preenchida", async () => {
+      codaePedeCorrecaoOcorrencia.mockResolvedValue({
+        status: 200,
+        data: { success: true },
+      });
+
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoCorrigidaParaCODAEComOcorrencia);
+      await renderComponent();
+      const btnVisualizar = document.querySelector(".visualizar-ocorrencias");
+      fireEvent.click(btnVisualizar);
+      const btnSolicitarCor = await screen.findByRole("button", {
+        name: /Solicitar correção no formulário/i,
+      });
+      fireEvent.click(btnSolicitarCor);
+
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
+          expect(
+            screen.queryByText(
+              /Informe quais os pontos necessários de correção no Formulário de Ocorrências/i,
+            ),
+          ).toBeInTheDocument();
+        },
+        { timeout: 2000 },
+      );
+
+      const btnEnviarCorrecao = screen.getByTestId("botao-Salvar");
+      expect(btnEnviarCorrecao).toBeDisabled();
+      const btnCancelar = screen.getByTestId("botao-Cancelar");
+      expect(btnCancelar).not.toBeDisabled();
+
+      const messagem = "Minha justificativa para correção";
+      const ckEditor = screen.getByTestId("ckeditor-mock");
+      fireEvent.change(ckEditor, { target: { value: messagem } });
+      await waitFor(() => {
+        expect(ckEditor.value).toBe(messagem);
+        expect(btnEnviarCorrecao).not.toBeDisabled();
+      });
+
+      fireEvent.click(btnEnviarCorrecao);
+      await waitFor(() => {
+        expect(toastSuccess).toHaveBeenCalledWith(
+          "Solicitação de correção no Formulário de Ocorrências salva com sucesso!",
+        );
+      });
+    });
+
+    it("Deve exibir erro se a chamada da API falhar ao solicitar correção", async () => {
+      codaePedeCorrecaoOcorrencia.mockResolvedValue({
+        status: 500,
+        data: { success: true },
+      });
+
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoCorrigidaParaCODAEComOcorrencia);
+      await renderComponent();
+      const btnVisualizar = document.querySelector(".visualizar-ocorrencias");
+      fireEvent.click(btnVisualizar);
+      const btnSolicitarCor = await screen.findByRole("button", {
+        name: /Solicitar correção no formulário/i,
+      });
+      fireEvent.click(btnSolicitarCor);
+
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
+          expect(
+            screen.queryByText(
+              /Informe quais os pontos necessários de correção no Formulário de Ocorrências/i,
+            ),
+          ).toBeInTheDocument();
+        },
+        { timeout: 2000 },
+      );
+
+      const btnEnviarCorrecao = screen.getByTestId("botao-Salvar");
+      expect(btnEnviarCorrecao).toBeDisabled();
+      const btnCancelar = screen.getByTestId("botao-Cancelar");
+      expect(btnCancelar).not.toBeDisabled();
+
+      const messagem = "Minha justificativa para correção";
+      const ckEditor = screen.getByTestId("ckeditor-mock");
+      fireEvent.change(ckEditor, { target: { value: messagem } });
+      await waitFor(() => {
+        expect(ckEditor.value).toBe(messagem);
+        expect(btnEnviarCorrecao).not.toBeDisabled();
+      });
+
+      fireEvent.click(btnEnviarCorrecao);
+      await waitFor(() => {
+        expect(toastError).toHaveBeenCalledWith(
+          "Houve um erro ao salvar correção no Formulário de Ocorrências!",
+        );
+      });
+    });
+
+    it("Deve fechar a modal de correção ao clicar em Cancelar sem chamar a API", async () => {
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoCorrigidaParaCODAEComOcorrencia);
+      await renderComponent();
+
+      fireEvent.click(document.querySelector(".visualizar-ocorrencias"));
+      fireEvent.click(
+        await screen.findByRole("button", { name: /Solicitar correção/i }),
+      );
+
+      const btnCancelar = screen.getByTestId("botao-Cancelar");
+      fireEvent.click(btnCancelar);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Informe quais os pontos necessários/i),
+        ).not.toBeInTheDocument();
+      });
+      expect(codaePedeCorrecaoOcorrencia).not.toHaveBeenCalled();
+    });
+
+    it("Deve desabilitar o botão Salvar se o usuário apagar a justificativa", async () => {
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoCorrigidaParaCODAEComOcorrencia);
+      await renderComponent();
+
+      fireEvent.click(document.querySelector(".visualizar-ocorrencias"));
+      fireEvent.click(
+        await screen.findByRole("button", { name: /Solicitar correção/i }),
+      );
+
+      const ckEditor = screen.getByTestId("ckeditor-mock");
+      const btnSalvar = screen.getByTestId("botao-Salvar");
+
+      fireEvent.change(ckEditor, { target: { value: "Teste" } });
+      await waitFor(() => expect(btnSalvar).not.toBeDisabled());
+
+      fireEvent.change(ckEditor, { target: { value: "" } });
+      await waitFor(() => expect(btnSalvar).toBeDisabled());
+    });
+
+    it("Não deve exibir a seção de ocorrências e deve exibir botões padrão quando a medição não possuir ocorrências", async () => {
+      const mockSemOcorrencia = {
+        ...mockMedicaoCorrigidaParaCODAEComOcorrencia,
+        com_ocorrencias: false,
+        ocorrencia: null,
+      };
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockSemOcorrencia);
+
+      await renderComponent();
+
+      expect(screen.queryByText(/Avaliação do Serviço:/i)).toBeInTheDocument();
+      expect(screen.queryByText(/COM OCORRÊNCIAS/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/SEM OCORRÊNCIAS/i)).toBeInTheDocument();
+
+      const btnVisualizar = document.querySelector(".visualizar-ocorrencias");
+      expect(btnVisualizar).not.toBeInTheDocument();
+
+      const btnSolicitarCorrecaoForm = screen.getByRole("button", {
+        name: /solicitar correção no formulário/i,
+      });
+      expect(btnSolicitarCorrecaoForm).toBeInTheDocument();
+      expect(btnSolicitarCorrecaoForm).not.toBeDisabled();
+    });
+
+    it("Sem Ocorrencia - Deve validar o campo obrigatório e enviar a correção com a justificativa preenchida", async () => {
+      geraOcorrenciaParaCorrecao.mockResolvedValue({
+        status: 200,
+        data: { success: true },
+      });
+
+      const mockSemOcorrencia = {
+        ...mockMedicaoCorrigidaParaCODAEComOcorrencia,
+        com_ocorrencias: false,
+        ocorrencia: null,
+      };
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockSemOcorrencia);
+
+      await renderComponent();
+      const btnSolicitarCor = await screen.findByRole("button", {
+        name: /Solicitar correção no formulário/i,
+      });
+      fireEvent.click(btnSolicitarCor);
+
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
+          expect(
+            screen.queryByText(
+              /Informe quais os pontos necessários de correção no Formulário de Ocorrências/i,
+            ),
+          ).toBeInTheDocument();
+        },
+        { timeout: 2000 },
+      );
+
+      const btnEnviarCorrecao = screen.getByTestId("botao-Salvar");
+      expect(btnEnviarCorrecao).toBeDisabled();
+      const btnCancelar = screen.getByTestId("botao-Cancelar");
+      expect(btnCancelar).not.toBeDisabled();
+
+      const messagem = "Minha justificativa para correção";
+      const ckEditor = screen.getByTestId("ckeditor-mock");
+      fireEvent.change(ckEditor, { target: { value: messagem } });
+      await waitFor(() => {
+        expect(ckEditor.value).toBe(messagem);
+        expect(btnEnviarCorrecao).not.toBeDisabled();
+      });
+
+      fireEvent.click(btnEnviarCorrecao);
+      await waitFor(() => {
+        expect(toastSuccess).toHaveBeenCalledWith(
+          "Solicitação de correção no Formulário de Ocorrências salva com sucesso!",
+        );
+      });
+    });
+
+    it("Sem Ocorrencia - Deve exibir erro se a chamada da API falhar ao solicitar correção", async () => {
+      geraOcorrenciaParaCorrecao.mockResolvedValue({
+        status: 500,
+        data: { success: false },
+      });
+
+      const mockSemOcorrencia = {
+        ...mockMedicaoCorrigidaParaCODAEComOcorrencia,
+        com_ocorrencias: false,
+        ocorrencia: null,
+      };
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockSemOcorrencia);
+
+      await renderComponent();
+      const btnSolicitarCor = await screen.findByRole("button", {
+        name: /Solicitar correção no formulário/i,
+      });
+      fireEvent.click(btnSolicitarCor);
+
+      await waitFor(
+        () => {
+          expect(screen.queryByText(/Carregando/i)).not.toBeInTheDocument();
+          expect(
+            screen.queryByText(
+              /Informe quais os pontos necessários de correção no Formulário de Ocorrências/i,
+            ),
+          ).toBeInTheDocument();
+        },
+        { timeout: 2000 },
+      );
+
+      const btnEnviarCorrecao = screen.getByTestId("botao-Salvar");
+      expect(btnEnviarCorrecao).toBeDisabled();
+      const btnCancelar = screen.getByTestId("botao-Cancelar");
+      expect(btnCancelar).not.toBeDisabled();
+
+      const messagem = "Minha justificativa para correção";
+      const ckEditor = screen.getByTestId("ckeditor-mock");
+      fireEvent.change(ckEditor, { target: { value: messagem } });
+      await waitFor(() => {
+        expect(ckEditor.value).toBe(messagem);
+        expect(btnEnviarCorrecao).not.toBeDisabled();
+      });
+
+      fireEvent.click(btnEnviarCorrecao);
+      await waitFor(() => {
+        expect(toastError).toHaveBeenCalledWith(
+          "Houve um erro ao salvar correção no Formulário de Ocorrências!",
+        );
+      });
+    });
+
+    it("Deve permitir o download dos anexos da ocorrência em PDF e Excel", async () => {
+      setupMocks();
+      const pdfUrl =
+        mockMedicaoCorrigidaParaCODAEComOcorrencia.ocorrencia.ultimo_arquivo;
+      mock
+        .onGet(pdfUrl)
+        .reply(200, new Blob(["test"], { type: "application/pdf" }));
+      const ExcelUrl =
+        mockMedicaoCorrigidaParaCODAEComOcorrencia.ocorrencia
+          .ultimo_arquivo_excel;
+      mock.onGet(ExcelUrl).reply(
+        200,
+        new Blob(["test"], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+      );
+
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoCorrigidaParaCODAEComOcorrencia);
 
       await renderComponent();
 
