@@ -20,6 +20,7 @@ import { mockSolicitacaoMedicaoInicialCMCTSetembro2025 } from "src/mocks/service
 import {
   mockOcorrenciaAprovadaPelaDRE,
   mockOcorrenciaAprovadaPelaCODAE,
+  mockOcorrenciaDevolvidoParaAjustesPelaCODAE,
 } from "src/mocks/medicaoInicial/ConferenciaDeLancamentos/mockOcorrencias";
 import { ConferenciaDosLancamentosPage } from "src/pages/LancamentoMedicaoInicial/ConferenciaDosLancamentosPage";
 import {
@@ -758,6 +759,137 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
         .reply(200, new Blob(["test"], { type: "application/pdf" }));
       const ExcelUrl =
         mockMedicaoAprovadaPelaCODAEComOcorrencia.ocorrencia
+          .ultimo_arquivo_excel;
+      mock.onGet(ExcelUrl).reply(
+        200,
+        new Blob(["test"], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+      );
+
+      await renderComponent();
+
+      const btnVisualizar = document.querySelector(".visualizar-ocorrencias");
+      fireEvent.click(btnVisualizar);
+
+      const btnDownloadGeral = document.querySelector(".download-ocorrencias");
+
+      await act(async () => {
+        fireEvent.click(btnDownloadGeral);
+      });
+      await waitFor(() => {
+        expect(saveAs).toHaveBeenCalledTimes(2);
+      });
+    });
+  });
+
+  describe("Card DEVOLVIDO PARA AJUSTES PELA CODAE", () => {
+    const mockMedicaoDevolvidaParaAjustesPelaCODAEComOcorrencia = {
+      ...mockMedicaoAprovadaPelaDREComOcorrencia,
+      status: "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+      ocorrencia: mockOcorrenciaDevolvidoParaAjustesPelaCODAE,
+    };
+
+    it("Deve carregar os dados de ocorrência para NUTRIMANIFESTACAO", async () => {
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoDevolvidaParaAjustesPelaCODAEComOcorrencia);
+      await renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText(/carregando/i)).not.toBeInTheDocument();
+        expect(screen.getByText(/Avaliação do Serviço:/i)).toBeInTheDocument();
+        expect(screen.getByText(/COM OCORRÊNCIAS/i)).toBeInTheDocument();
+
+        const aprovadroDre = document.querySelector(".status-ocorrencia");
+        expect(aprovadroDre).toHaveTextContent(
+          /Devolvido para ajustes pela CODAE/i,
+        );
+
+        const container = screen.getByTestId("texto-ocorrencia-com-data");
+        const expectedText =
+          "Solicitação de correção no Formulário de Ocorrências realizada em 06/02/2026 09:44:38";
+        expect(container).toHaveTextContent(expectedText);
+        const visualizar = document.querySelector(".visualizar-ocorrencias");
+        expect(visualizar).toHaveTextContent(/VISUALIZAR/i);
+      });
+    });
+
+    it("Deve renderizar os botões referentes a modal ocorrência ao clicar em VISUALIZAR", async () => {
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoDevolvidaParaAjustesPelaCODAEComOcorrencia);
+      await renderComponent();
+      const btnExpandir = document.querySelector(".visualizar-ocorrencias");
+      fireEvent.click(btnExpandir);
+
+      const btnAprovarForm = screen.queryByRole("button", {
+        name: /aprovar formulário/i,
+      });
+      expect(btnAprovarForm).not.toBeInTheDocument();
+
+      const btnSolicitarCorrecaoForm = screen.queryByRole("button", {
+        name: /solicitar correção no formulário/i,
+      });
+      expect(btnSolicitarCorrecaoForm).not.toBeInTheDocument();
+
+      const btnHistorico = screen.getByTestId("botao-historico");
+      expect(btnHistorico).toBeInTheDocument();
+      expect(btnHistorico).not.toBeDisabled();
+      expect(btnHistorico).toHaveTextContent(/histórico/i);
+
+      const btnDownload = screen.getByText(/download de ocorrências/i);
+      expect(btnDownload).not.toHaveClass("disabled");
+    });
+
+    it("Sem Ocorrencia - Só deve apercer o texto SEM OCORRÊNCIAS", async () => {
+      const mockSemOcorrencia = {
+        ...mockMedicaoDevolvidaParaAjustesPelaCODAEComOcorrencia,
+        com_ocorrencias: false,
+        ocorrencia: null,
+      };
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockSemOcorrencia);
+      await renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText(/carregando/i)).not.toBeInTheDocument();
+        expect(screen.getByText(/Avaliação do Serviço:/i)).toBeInTheDocument();
+        expect(screen.getByText(/SEM OCORRÊNCIAS/i)).toBeInTheDocument();
+
+        const aprovadoCodae = document.querySelector(".status-ocorrencia");
+        expect(aprovadoCodae).toBeNull();
+
+        const container = screen.getByTestId("texto-ocorrencia-com-data");
+        const expectedText =
+          "Solicitação de correção no Formulário de Ocorrências realizada em 04/02/2026 12:59:59";
+        expect(container).not.toHaveTextContent(expectedText);
+
+        const visualizar = document.querySelector(".visualizar-ocorrencias");
+        expect(visualizar).toBeNull();
+      });
+    });
+
+    it("Deve permitir o download dos anexos da ocorrência em PDF e Excel", async () => {
+      setupMocks();
+      const pdfUrl =
+        mockMedicaoDevolvidaParaAjustesPelaCODAEComOcorrencia.ocorrencia
+          .ultimo_arquivo;
+      mock
+        .onGet(pdfUrl)
+        .reply(200, new Blob(["test"], { type: "application/pdf" }));
+      const ExcelUrl =
+        mockMedicaoDevolvidaParaAjustesPelaCODAEComOcorrencia.ocorrencia
           .ultimo_arquivo_excel;
       mock.onGet(ExcelUrl).reply(
         200,
