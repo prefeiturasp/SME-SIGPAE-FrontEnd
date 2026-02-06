@@ -505,11 +505,11 @@ export const LancamentoPorPeriodoCEI = ({
                   <CardLancamentoCEI
                     textoCabecalho="Colaboradores"
                     cor={CORES[11]}
-                    tiposAlimentacao={recreioNasFeriasDaMedicao(
-                      solicitacaoMedicaoInicial,
-                    ).unidades_participantes[0].tipos_alimentacao.colaboradores.map(
-                      (tpi) => ({ nome: tpi.nome }),
-                    )}
+                    tiposAlimentacao={
+                      recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial)
+                        .unidades_participantes[0].tipos_alimentacao
+                        .colaboradores
+                    }
                     periodoSelecionado={periodoSelecionado}
                     solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                     ehGrupoSolicitacoesDeAlimentacao={true}
@@ -517,6 +517,7 @@ export const LancamentoPorPeriodoCEI = ({
                       quantidadeAlimentacoesLancadas
                     }
                     errosAoSalvar={errosAoSalvar}
+                    grupo="Colaboradores"
                   />
                 )}
               </>
