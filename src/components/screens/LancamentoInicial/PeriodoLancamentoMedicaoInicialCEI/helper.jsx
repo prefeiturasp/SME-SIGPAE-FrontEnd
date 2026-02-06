@@ -882,6 +882,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   ehSolicitacoesAlimentacaoLocation,
   alimentacoesLancamentosEspeciais,
   ehProgramasEProjetosLocation,
+  ehGrupoColaboradores,
 ) => {
   const tiposAlimentacaoFormatadas = tiposAlimentacao.map((alimentacao) => {
     return {
@@ -942,6 +943,8 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   }
 
   const matriculadosOuNumeroDeAlunos = () => {
+    const name = ehGrupoColaboradores ? "participantes" : "matriculados";
+    const nome = ehGrupoColaboradores ? "Participantes" : "matriculados";
     return ehProgramasEProjetosLocation
       ? {
           nome: "Número de Alunos",
@@ -949,8 +952,8 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
           uuid: null,
         }
       : {
-          nome: "Matriculados",
-          name: "matriculados",
+          nome: nome,
+          name: name,
           uuid: null,
         };
   };

@@ -241,6 +241,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     return location.state.recreioNasFerias;
   };
 
+  const ehGrupoColaboradores = () => {
+    return location.state.grupo === "Colaboradores";
+  };
+
   useEffect(() => {
     const mesAnoSelecionado = location.state
       ? typeof location.state.mesAnoSelecionado === "string"
@@ -367,6 +371,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
       let response_categorias_medicao = await getCategoriasDeMedicao();
 
+      const params_dias_calendario = {
+        escola_uuid: escola.uuid,
+        mes: mes,
+        ano: ano,
+      };
+      const calendario = await obterDiasLetivosCorretos(params_dias_calendario);
+
       if (ehEmeiDaCemeiLocation) {
         response_permissoes_lancamentos_especiais_mes_ano_por_periodo =
           await getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync(
@@ -394,8 +405,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           tipo_turma: "REGULAR",
           periodo_escolar: periodo,
         };
-        response_matriculados_emei_da_cemei =
-          await getMatriculadosPeriodo(params_matriculados);
+        response_matriculados_emei_da_cemei = await obterNumerosMatriculados(
+          params_matriculados,
+          calendario,
+          ehEmeiDaCemeiLocation,
+        );
         setValoresMatriculadosEmeiDaCemei(
           response_matriculados_emei_da_cemei.data,
         );
@@ -436,20 +450,12 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           ano: ano,
         };
 
-        if (ehRecreioNasFerias()) {
-          const calendario = await obterDiasLetivosCorretos();
-
-          response_log_matriculados_por_faixa_etaria_dia =
-            await obterNumerosMatriculados(
-              params_matriculados_por_faixa_etaria_dia,
-              calendario,
-            );
-        } else {
-          response_log_matriculados_por_faixa_etaria_dia =
-            await getLogMatriculadosPorFaixaEtariaDia(
-              params_matriculados_por_faixa_etaria_dia,
-            );
-        }
+        response_log_matriculados_por_faixa_etaria_dia =
+          await obterNumerosMatriculados(
+            params_matriculados_por_faixa_etaria_dia,
+            calendario,
+            ehEmeiDaCemeiLocation,
+          );
 
         setValoresMatriculadosFaixaEtariaDia(
           response_log_matriculados_por_faixa_etaria_dia.data,
@@ -471,13 +477,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const linhasTabelaAlimentacaoCEI =
         ehEmeiDaCemeiLocation ||
         ehSolicitacoesAlimentacaoLocation ||
-        ehProgramasEProjetosLocation
+        ehProgramasEProjetosLocation ||
+        ehGrupoColaboradores()
           ? formatarLinhasTabelaAlimentacaoEmeiDaCemei(
               location.state.tiposAlimentacao,
               ehSolicitacoesAlimentacaoLocation,
               response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais ||
                 [],
               ehProgramasEProjetosLocation,
+              ehGrupoColaboradores(),
             )
           : formatarLinhasTabelaAlimentacaoCEI(
               response_log_matriculados_por_faixa_etaria_dia,
@@ -548,18 +556,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const response_dias_correcao = await getDiasParaCorrecao(params);
       if (response_dias_correcao.status === HTTP_STATUS.OK) {
         setDiasParaCorrecao(response_dias_correcao.data);
-      }
-
-      const params_dias_calendario = {
-        escola_uuid: escola.uuid,
-        mes: mes,
-        ano: ano,
-      };
-      const response_dias_calendario = await getDiasCalendario(
-        params_dias_calendario,
-      );
-      if (!ehRecreioNasFerias()) {
-        setCalendarioMesConsiderado(response_dias_calendario.data);
       }
 
       const params_feriados_no_mes = {
@@ -2161,7 +2157,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     );
   };
 
-  const obterNumerosMatriculados = async (params_matriculados, calendario) => {
+  const obterNumerosMatriculados = async (
+    params_matriculados,
+    calendario,
+    ehEmeiDaCemeiLocation,
+  ) => {
     let response_matriculados = {};
 
     let numeroParticipantes = 0;
@@ -2170,7 +2170,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         location.state.solicitacaoMedicaoInicial.recreio_nas_ferias
           .unidades_participantes[0];
 
-      numeroParticipantes = participantes.num_inscritos;
+      if (ehGrupoColaboradores()) {
+        numeroParticipantes = participantes.num_colaboradores;
+      } else {
+        numeroParticipantes = participantes.num_inscritos;
+      }
 
       response_matriculados = {
         data: calendario
@@ -2184,18 +2188,22 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           })),
       };
     } else {
-      response_matriculados =
-        await getLogMatriculadosPorFaixaEtariaDia(params_matriculados);
+      response_matriculados = ehEmeiDaCemeiLocation
+        ? await getMatriculadosPeriodo(params_matriculados)
+        : await getLogMatriculadosPorFaixaEtariaDia(params_matriculados);
     }
     return response_matriculados;
   };
 
-  const obterDiasLetivosCorretos = async () => {
+  const obterDiasLetivosCorretos = async (params_dias_calendario) => {
     let data = [];
     if (ehRecreioNasFerias()) {
-      const diasLetivos = await getDiasLetivosRecreio({
+      const diasLetivosRecreio = await getDiasLetivosRecreio({
         solictacao_uuid: location.state.solicitacaoMedicaoInicial.uuid,
       });
+      data = diasLetivosRecreio.data;
+    } else {
+      const diasLetivos = await getDiasCalendario(params_dias_calendario);
       data = diasLetivos.data;
     }
 
