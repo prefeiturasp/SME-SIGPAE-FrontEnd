@@ -30,6 +30,22 @@ export default ({
     setShowModalHistorico(true);
   };
 
+  const exibirBotaoAtualizarOcorrencia = () => {
+    const statusPermitidos = [
+      "MEDICAO_CORRECAO_SOLICITADA",
+      "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+    ];
+
+    const statusOcorrencia = solicitacaoMedicaoInicial?.ocorrencia?.status;
+    const statusSolicitacao = solicitacaoMedicaoInicial?.status;
+
+    return (
+      statusPermitidos.includes(statusOcorrencia) &&
+      statusPermitidos.includes(statusSolicitacao) &&
+      statusOcorrencia === statusSolicitacao
+    );
+  };
+
   return (
     <>
       <div className="row mb-3">
@@ -130,13 +146,7 @@ export default ({
                           className="ms-3"
                           onClick={visualizarModalHistorico}
                         />
-                        {[
-                          "MEDICAO_CORRECAO_SOLICITADA",
-                          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-                          "MEDICAO_CORRIGIDA_PARA_CODAE",
-                        ].includes(
-                          solicitacaoMedicaoInicial.ocorrencia.status,
-                        ) && (
+                        {exibirBotaoAtualizarOcorrencia() && (
                           <Botao
                             className="float-end ms-3"
                             texto="Atualizar Formulário de Ocorrências"
