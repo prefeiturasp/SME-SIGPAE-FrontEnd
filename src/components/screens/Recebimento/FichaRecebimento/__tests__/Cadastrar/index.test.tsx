@@ -1,24 +1,24 @@
+import "@testing-library/jest-dom";
 import {
+  act,
+  cleanup,
+  fireEvent,
   render,
   screen,
-  act,
-  fireEvent,
   waitFor,
   within,
-  cleanup,
 } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import moment from "moment";
 import { MemoryRouter } from "react-router-dom";
-import mock from "src/services/_mock";
-import CadastroFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/CadastroFichaRecebimentoPage";
-import { mockListaCronogramasRecebimento } from "src/mocks/cronograma.service/mockGetCronogramasRecebimento";
+import { ToastContainer } from "react-toastify";
 import { mockCronogramaCadastroRecebimento } from "src/mocks/cronograma.service/mockGetCronogramaCadastroRecebimento";
+import { mockListaCronogramasRecebimento } from "src/mocks/cronograma.service/mockGetCronogramasRecebimento";
 import { mockCadastroFichaRecebimento } from "src/mocks/services/fichaRecebimento.service/mockCadastroFichaRecebimento";
+import { mockGetFichaRecebimentoDetalhada } from "src/mocks/services/fichaRecebimento.service/mockGetFichaRecebimentoDetalhada";
 import { mockOpcoesReposicaoCronograma } from "src/mocks/services/fichaRecebimento.service/mockOpcoesReposicaoCronograma";
 import { mockQuestoesPorCronograma } from "src/mocks/services/questoesConferencia.service/mockDetalharQuestoesPorCronograma";
-import moment from "moment";
-import { ToastContainer } from "react-toastify";
-import { mockGetFichaRecebimentoDetalhada } from "src/mocks/services/fichaRecebimento.service/mockGetFichaRecebimentoDetalhada";
+import CadastroFichaRecebimentoPage from "src/pages/Recebimento/FichaRecebimento/CadastroFichaRecebimentoPage";
+import mock from "src/services/_mock";
 
 beforeEach(() => {
   mock
@@ -476,6 +476,72 @@ describe("Cadastro de Ficha de Recebimento", () => {
     const btnProximo = screen.getByText("Próximo").closest("button");
     expect(btnProximo).not.toBeDisabled();
     fireEvent.click(btnProximo);
+  });
+
+  it("deve enviar quantidade_nota_fiscal como Number no payload ao salvar rascunho", async () => {
+    const putSpy = jest.fn(() => [200, {}]);
+    mock.onPut(/\/rascunho-ficha-de-recebimento\/.*/).reply(putSpy);
+
+    await setup();
+
+    let cronograma = mockListaCronogramasRecebimento.results[0];
+    let cronogramaDetalhado = mockCronogramaCadastroRecebimento.results;
+
+    preencheInput("cronograma", cronograma.numero);
+
+    await waitFor(() => {
+      expect(
+        screen.getByDisplayValue(cronogramaDetalhado.fornecedor),
+      ).toBeInTheDocument();
+    });
+
+    selecionaOpcao("etapa", cronogramaDetalhado.etapas[0].uuid);
+
+    const inputDataEntrega = screen
+      .getByTestId("data_entrega")
+      .querySelector("input");
+    fireEvent.change(inputDataEntrega, {
+      target: { value: moment().add(7, "days").format("DD/MM/YYYY") },
+    });
+
+    const btnProximo = screen.getByText("Próximo").closest("button");
+    fireEvent.click(btnProximo);
+
+    preencheInputByPlaceholder("Digite a qtde da nota", "1,55");
+    preencheInputByPlaceholder("Digite a qtde de embalagens", "1,55");
+    preencheInputByPlaceholder("Digite a qtde recebida", "1,55");
+    preencheInputByPlaceholder("Digite qtde recebida", "1,55");
+
+    const btnSalvarRascunho = screen
+      .getByText("Salvar Rascunho")
+      .closest("button");
+    fireEvent.click(btnSalvarRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Deseja salvar o rascunho da Ficha de Recebimento?"),
+      ).toBeInTheDocument();
+    });
+
+    const btnConfirmarSalvar = screen.getByText("Sim").closest("button");
+    fireEvent.click(btnConfirmarSalvar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Rascunho salvo com sucesso!"),
+      ).toBeInTheDocument();
+    });
+
+    await waitFor(() => expect(putSpy).toHaveBeenCalled());
+
+    const requestConfig = putSpy.mock.calls[0][0];
+    const payload = JSON.parse(requestConfig.data);
+
+    expect(payload.veiculos[0].quantidade_nota_fiscal).toBe(1.55);
+    expect(payload.veiculos[0].embalagens_nota_fiscal).toBe(1.55);
+    expect(payload.veiculos[0].quantidade_recebida).toBe(1.55);
+    expect(payload.veiculos[0].embalagens_recebidas).toBe(1.55);
+    expect(typeof payload.veiculos[0].quantidade_nota_fiscal).toBe("number");
   });
 
   it("não deve ilustrar 'parte' quando o valor de parte for null", async () => {

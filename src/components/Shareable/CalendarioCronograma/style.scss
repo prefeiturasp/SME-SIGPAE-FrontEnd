@@ -64,4 +64,14 @@ div.calendario-sobremesa {
       color: #000000 !important;
     }
   }
+
+  .rbc-event.interrupcao-entrega-ponto-a-ponto {
+    background-color: #ffe0b2 !important;
+    border-color: #fb8c00 !important;
+
+    .rbc-event-content {
+      background-color: #ffe0b2 !important;
+      color: #000000 !important;
+    }
+  }
 }

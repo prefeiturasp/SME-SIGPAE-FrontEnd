@@ -322,9 +322,9 @@ export default () => {
         (x: DocumentoFicha, key: number) =>
           ({
             documento_recebimento: x.uuid,
-            quantidade_recebida: values[`qtd_recebida_laudo_${key}`]
-              .replaceAll(".", "")
-              .replace(",", "."),
+            quantidade_recebida: stringDecimalToNumber(
+              values[`qtd_recebida_laudo_${key}`],
+            ),
           }) as DocumentoFichaPayload,
       ),
       observacao: values.observacao,
@@ -352,11 +352,19 @@ export default () => {
             ),
             data_validade_divergencia: values.data_validade_divergencia,
             numero_lote_armazenagem: values.numero_lote_armazenagem,
-            numero_paletes: values.numero_paletes,
-            peso_embalagem_primaria_1: values.peso_embalagem_primaria_1,
-            peso_embalagem_primaria_2: values.peso_embalagem_primaria_2,
-            peso_embalagem_primaria_3: values.peso_embalagem_primaria_3,
-            peso_embalagem_primaria_4: values.peso_embalagem_primaria_4,
+            numero_paletes: stringDecimalToNumber(values.numero_paletes),
+            peso_embalagem_primaria_1: stringDecimalToNumber(
+              values.peso_embalagem_primaria_1,
+            ),
+            peso_embalagem_primaria_2: stringDecimalToNumber(
+              values.peso_embalagem_primaria_2,
+            ),
+            peso_embalagem_primaria_3: stringDecimalToNumber(
+              values.peso_embalagem_primaria_3,
+            ),
+            peso_embalagem_primaria_4: stringDecimalToNumber(
+              values.peso_embalagem_primaria_4,
+            ),
             veiculos: values.numero_0
               ? veiculos.map(
                   (v, index) =>
@@ -371,14 +379,18 @@ export default () => {
                       numero_sif_sisbi_sisp:
                         values[`numero_sif_sisbi_sisp_${index}`],
                       numero_nota_fiscal: values[`numero_nota_fiscal_${index}`],
-                      quantidade_nota_fiscal:
+                      quantidade_nota_fiscal: stringDecimalToNumber(
                         values[`quantidade_nota_fiscal_${index}`],
-                      embalagens_nota_fiscal:
+                      ),
+                      embalagens_nota_fiscal: stringDecimalToNumber(
                         values[`embalagens_nota_fiscal_${index}`],
-                      quantidade_recebida:
+                      ),
+                      quantidade_recebida: stringDecimalToNumber(
                         values[`quantidade_recebida_${index}`],
-                      embalagens_recebidas:
+                      ),
+                      embalagens_recebidas: stringDecimalToNumber(
                         values[`embalagens_recebidas_${index}`],
+                      ),
                       estado_higienico_adequado: stringToBoolean(
                         values[`estado_higienico_adequado_${index}`],
                       ),

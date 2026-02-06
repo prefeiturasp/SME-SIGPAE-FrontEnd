@@ -85,7 +85,9 @@ beforeEach(() => {
   usuarioEhDilogDiretoria.mockReturnValue(false);
 
   mock.onGet(/\/cronogramas\/opcoes-etapas\/?/).reply(200, mockOpcoesEtapas);
-  mock.onGet(/\/feriados-ano\/ano-atual-e-proximo\/?/).reply(200, mockFeriados);
+  mock
+    .onGet(/\/interrupcao-programada-entrega\/datas-bloqueadas-armazenavel\/?/)
+    .reply(200, mockFeriados);
 
   // Mock padrão das APIs
   mock.onGet(/\/cronogramas\/.*\/?/).reply(200, mockCronogramaBase);
