@@ -17,6 +17,10 @@ import { mockMeusDadosNutriSupervisao } from "src/mocks/meusDados/nutri-supervis
 import { mockGetVinculosTipoAlimentacaoPorEscola } from "src/mocks/cadastroTipoAlimentacao.service/mockGetVinculosTipoAlimentacaoPorEscola";
 import { mockPeriodosGruposMedicaoCMCTSetembro2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CMCT/Setembro2025/periodosGruposMedicao";
 import { mockSolicitacaoMedicaoInicialCMCTSetembro2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CMCT/Setembro2025/solicitacaoMedicaoInicial";
+import {
+  mockOcorrenciaAprovadaPelaDRE,
+  mockOcorrenciaAprovadaPelaCODAE,
+} from "src/mocks/medicaoInicial/ConferenciaDeLancamentos/mockOcorrencias";
 import { ConferenciaDosLancamentosPage } from "src/pages/LancamentoMedicaoInicial/ConferenciaDosLancamentosPage";
 import {
   codaePedeAprovacaoOcorrencia,
@@ -88,79 +92,9 @@ jest.mock(
 describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação", () => {
   const escolaUuid = mockSolicitacaoMedicaoInicialCMCTSetembro2025.escola_uuid;
   const solicitacaoUuid = mockSolicitacaoMedicaoInicialCMCTSetembro2025.uuid;
-  const mockMedicaoComOcorrencia = {
+  const mockMedicaoAprovadaPelaDREComOcorrencia = {
     ...mockSolicitacaoMedicaoInicialCMCTSetembro2025,
-    ocorrencia: {
-      logs: [
-        {
-          anexos: [
-            {
-              nome: "arquivo_adesao.xlsx",
-              arquivo: "/media/d40a8a38-b8fb-44af-b3bf-8a977f84ea8b.xlsx",
-              arquivo_url:
-                "http://localhost:8000/media/d40a8a38-b8fb-44af-b3bf-8a977f84ea8b.xlsx",
-            },
-            {
-              nome: "Protocolo FERNANDA PALHA SANTOS RODRIGUES.pdf",
-              arquivo: "/media/0ef8a250-586b-41dc-beb7-660e0fbbaee9.pdf",
-              arquivo_url:
-                "http://localhost:8000/media/0ef8a250-586b-41dc-beb7-660e0fbbaee9.pdf",
-            },
-          ],
-          status_evento_explicacao: "Enviado pela UE",
-          usuario: {
-            uuid: "36750ded-5790-433e-b765-0507303828df",
-            cpf: null,
-            nome: "ESCOLA EMEF ADMIN",
-            email: "escolaemef@admin.com",
-            date_joined: "10/07/2020 13:15:23",
-            registro_funcional: "8115257",
-            tipo_usuario: "escola",
-            cargo: "ANALISTA DE SAUDE NIVEL II",
-            crn_numero: null,
-            nome_fantasia: null,
-          },
-          criado_em: "03/02/2026 20:02:24",
-          descricao:
-            "Ocorrência cf9da872-77ee-4125-b8e4-2c2aed96dd84 da Solicitação de Medição Inicial aad6565e-0a08-482b-8a74-2aeba0c03110",
-          justificativa: "",
-          resposta_sim_nao: false,
-          tipo_solicitacao_explicacao: "Solicitação de medição inicial",
-        },
-        {
-          anexos: [],
-          status_evento_explicacao: "Aprovado pela DRE",
-          usuario: {
-            uuid: "a4f08910-44e1-4828-99f4-d008cb79753c",
-            cpf: null,
-            nome: "DRE ADMIN",
-            email: "dre@admin.com",
-            date_joined: "10/07/2020 13:15:12",
-            registro_funcional: "0000010",
-            tipo_usuario: "diretoriaregional",
-            cargo: "COGESTOR",
-            crn_numero: null,
-            nome_fantasia: null,
-          },
-          criado_em: "04/02/2026 10:55:28",
-          descricao:
-            "Ocorrência cf9da872-77ee-4125-b8e4-2c2aed96dd84 da Solicitação de Medição Inicial aad6565e-0a08-482b-8a74-2aeba0c03110",
-          justificativa: "",
-          resposta_sim_nao: false,
-          tipo_solicitacao_explicacao: "Solicitação de medição inicial",
-        },
-      ],
-      ultimo_arquivo:
-        "http://localhost:8000/media/679bf5ad-a9db-4c47-91f2-976b044ebff2.pdf",
-      ultimo_arquivo_excel:
-        "http://localhost:8000/media/d40a8a38-b8fb-44af-b3bf-8a977f84ea8b.xlsx",
-      status: "MEDICAO_APROVADA_PELA_DRE",
-      uuid: "cf9da872-77ee-4125-b8e4-2c2aed96dd84",
-      nome_ultimo_arquivo: "Protocolo FERNANDA PALHA SANTOS RODRIGUES.pdf",
-      rastro_lote: null,
-      rastro_terceirizada: null,
-      solicitacao_medicao_inicial: 533,
-    },
+    ocorrencia: mockOcorrenciaAprovadaPelaDRE,
     com_ocorrencias: true,
     status: "MEDICAO_APROVADA_PELA_DRE",
   };
@@ -176,7 +110,7 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
       .reply(200, mockPeriodosGruposMedicaoCMCTSetembro2025);
     mock
       .onGet(`/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`)
-      .reply(200, mockMedicaoComOcorrencia);
+      .reply(200, mockMedicaoAprovadaPelaDREComOcorrencia);
     mock
       .onGet("/medicao-inicial/medicao/feriados-no-mes-com-nome/")
       .reply(200, {
@@ -546,7 +480,7 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
 
     it("Não deve exibir a seção de ocorrências e deve exibir botões padrão quando a medição não possuir ocorrências", async () => {
       const mockSemOcorrencia = {
-        ...mockMedicaoComOcorrencia,
+        ...mockMedicaoAprovadaPelaDREComOcorrencia,
         com_ocorrencias: false,
         ocorrencia: null,
       };
@@ -581,7 +515,7 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
       });
 
       const mockSemOcorrencia = {
-        ...mockMedicaoComOcorrencia,
+        ...mockMedicaoAprovadaPelaDREComOcorrencia,
         com_ocorrencias: false,
         ocorrencia: null,
       };
@@ -638,7 +572,7 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
       });
 
       const mockSemOcorrencia = {
-        ...mockMedicaoComOcorrencia,
+        ...mockMedicaoAprovadaPelaDREComOcorrencia,
         com_ocorrencias: false,
         ocorrencia: null,
       };
@@ -688,21 +622,149 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
       });
     });
 
-    it("deve permitir o download dos anexos da ocorrência em PDF e Excel", async () => {
+    it("Deve permitir o download dos anexos da ocorrência em PDF e Excel", async () => {
       setupMocks();
-      const pdfUrl = mockMedicaoComOcorrencia.ocorrencia.ultimo_arquivo;
+      const pdfUrl =
+        mockMedicaoAprovadaPelaDREComOcorrencia.ocorrencia.ultimo_arquivo;
       mock
         .onGet(pdfUrl)
         .reply(200, new Blob(["test"], { type: "application/pdf" }));
-      const ExcelUrl = mockMedicaoComOcorrencia.ocorrencia.ultimo_arquivo_excel;
+      const ExcelUrl =
+        mockMedicaoAprovadaPelaDREComOcorrencia.ocorrencia.ultimo_arquivo_excel;
+      mock.onGet(ExcelUrl).reply(
+        200,
+        new Blob(["test"], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+      );
+
+      await renderComponent();
+
+      const btnVisualizar = document.querySelector(".visualizar-ocorrencias");
+      fireEvent.click(btnVisualizar);
+
+      const btnDownloadGeral = document.querySelector(".download-ocorrencias");
+
+      await act(async () => {
+        fireEvent.click(btnDownloadGeral);
+      });
+      await waitFor(() => {
+        expect(saveAs).toHaveBeenCalledTimes(2);
+      });
+    });
+  });
+
+  describe("Card APROVADO PELA CODAE", () => {
+    const mockMedicaoAprovadaPelaCODAEComOcorrencia = {
+      ...mockMedicaoAprovadaPelaDREComOcorrencia,
+      status: "MEDICAO_APROVADA_PELA_CODAE",
+      ocorrencia: mockOcorrenciaAprovadaPelaCODAE,
+    };
+
+    it("Deve carregar os dados de ocorrência para NUTRIMANIFESTACAO", async () => {
+      setupMocks();
       mock
-        .onGet(ExcelUrl)
-        .reply(
-          200,
-          new Blob(["test"], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          }),
-        );
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoAprovadaPelaCODAEComOcorrencia);
+      await renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText(/carregando/i)).not.toBeInTheDocument();
+        expect(screen.getByText(/Avaliação do Serviço:/i)).toBeInTheDocument();
+        expect(screen.getByText(/COM OCORRÊNCIAS/i)).toBeInTheDocument();
+
+        const aprovadroDre = document.querySelector(".status-ocorrencia");
+        expect(aprovadroDre).toHaveTextContent(/Aprovado pela CODAE/i);
+
+        const container = screen.getByTestId("texto-ocorrencia-com-data");
+        const expectedText =
+          "Solicitação de correção no Formulário de Ocorrências realizada em 04/02/2026 12:59:59";
+        expect(container).toHaveTextContent(expectedText);
+        const visualizar = document.querySelector(".visualizar-ocorrencias");
+        expect(visualizar).toHaveTextContent(/VISUALIZAR/i);
+      });
+    });
+
+    it("Deve renderizar os botões referentes a modal ocorrência ao clicar em VISUALIZAR", async () => {
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockMedicaoAprovadaPelaCODAEComOcorrencia);
+      await renderComponent();
+      const btnExpandir = document.querySelector(".visualizar-ocorrencias");
+      fireEvent.click(btnExpandir);
+
+      const btnAprovarForm = screen.queryByRole("button", {
+        name: /aprovar formulário/i,
+      });
+      expect(btnAprovarForm).not.toBeInTheDocument();
+
+      const btnSolicitarCorrecaoForm = screen.queryByRole("button", {
+        name: /solicitar correção no formulário/i,
+      });
+      expect(btnSolicitarCorrecaoForm).not.toBeInTheDocument();
+
+      const btnHistorico = screen.getByTestId("botao-historico");
+      expect(btnHistorico).toBeInTheDocument();
+      expect(btnHistorico).not.toBeDisabled();
+      expect(btnHistorico).toHaveTextContent(/histórico/i);
+
+      const btnDownload = screen.getByText(/download de ocorrências/i);
+      expect(btnDownload).not.toHaveClass("disabled");
+    });
+
+    it("Sem Ocorrencia - Só deve apercer o texto SEM OCORRÊNCIAS", async () => {
+      const mockSemOcorrencia = {
+        ...mockMedicaoAprovadaPelaCODAEComOcorrencia,
+        com_ocorrencias: false,
+        ocorrencia: null,
+      };
+      setupMocks();
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoUuid}/`,
+        )
+        .reply(200, mockSemOcorrencia);
+      await renderComponent();
+
+      await waitFor(() => {
+        expect(screen.queryByText(/carregando/i)).not.toBeInTheDocument();
+        expect(screen.getByText(/Avaliação do Serviço:/i)).toBeInTheDocument();
+        expect(screen.getByText(/SEM OCORRÊNCIAS/i)).toBeInTheDocument();
+
+        const aprovadoCodae = document.querySelector(".status-ocorrencia");
+        expect(aprovadoCodae).toBeNull();
+
+        const container = screen.getByTestId("texto-ocorrencia-com-data");
+        const expectedText =
+          "Solicitação de correção no Formulário de Ocorrências realizada em 04/02/2026 12:59:59";
+        expect(container).not.toHaveTextContent(expectedText);
+
+        const visualizar = document.querySelector(".visualizar-ocorrencias");
+        expect(visualizar).toBeNull();
+      });
+    });
+
+    it("Deve permitir o download dos anexos da ocorrência em PDF e Excel", async () => {
+      setupMocks();
+      const pdfUrl =
+        mockMedicaoAprovadaPelaCODAEComOcorrencia.ocorrencia.ultimo_arquivo;
+      mock
+        .onGet(pdfUrl)
+        .reply(200, new Blob(["test"], { type: "application/pdf" }));
+      const ExcelUrl =
+        mockMedicaoAprovadaPelaCODAEComOcorrencia.ocorrencia
+          .ultimo_arquivo_excel;
+      mock.onGet(ExcelUrl).reply(
+        200,
+        new Blob(["test"], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+      );
 
       await renderComponent();
 

@@ -904,7 +904,10 @@ export const ConferenciaDosLancamentos = () => {
                           </div>
                           <div className="row">
                             <Fragment>
-                              <div className="col-5 mt-3">
+                              <div
+                                className="col-5 mt-3"
+                                data-testid="texto-ocorrencia-com-data"
+                              >
                                 {usuarioEhDRE() &&
                                   !ocorrenciaExcluida() &&
                                   logCorrecaoOcorrencia &&
