@@ -28,7 +28,7 @@ export default ({
     },
     {
       uuid: REFEICAO.uuid,
-      nome: "Refeição - EJA",
+      nome: "Refeição EJA",
     },
     ..._TIPOS_SEM_REFEICAO,
     { uuid: "Kit Lanche", nome: "Kit Lanche" },

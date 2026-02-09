@@ -61,8 +61,6 @@ export function TabelaAlimentacao({
           let nomeCampoAtendimento = "";
           if (tipo.nome === "Kit Lanche")
             nomeCampoAtendimento = "total_kit_lanche";
-          else if (tipo.nome === "Refeição - EJA")
-            nomeCampoAtendimento = "total_refeicao_eja";
           else
             nomeCampoAtendimento = `total_${tipo.nome
               .normalize("NFD")
