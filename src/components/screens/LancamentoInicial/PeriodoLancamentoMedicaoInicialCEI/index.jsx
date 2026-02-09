@@ -244,6 +244,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const ehGrupoColaboradores = () => {
     return location.state.grupo === "Colaboradores";
   };
+  let valuesInputArray = [];
 
   useEffect(() => {
     const mesAnoSelecionado = location.state
@@ -441,6 +442,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           await getLogDietasAutorizadasPeriodo(params_dietas_autorizadas);
         setLogQtdDietasAutorizadasEmeiDaCemei(
           response_log_dietas_autorizadas_emei_da_cemei.data,
+        );
+      } else if (ehGrupoColaboradores()) {
+        response_matriculados_emei_da_cemei = await obterNumerosMatriculados(
+          {},
+          calendario,
+          ehEmeiDaCemeiLocation,
+        );
+        setValoresMatriculadosEmeiDaCemei(
+          response_matriculados_emei_da_cemei.data,
         );
       } else {
         const params_matriculados_por_faixa_etaria_dia = {
@@ -949,7 +959,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                   if (
                     ehEmeiDaCemeiLocation ||
                     ehSolicitacoesAlimentacaoLocation ||
-                    ehProgramasEProjetosLocation
+                    ehProgramasEProjetosLocation ||
+                    ehGrupoColaboradores()
                   ) {
                     nameInputField = `${row.name}__dia_${dia}__categoria_${categoria.id}`;
                   } else {
@@ -981,7 +992,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
               valor_medicao.nome_campo === "observacoes" ||
               ehEmeiDaCemeiLocation ||
               ehSolicitacoesAlimentacaoLocation ||
-              ehProgramasEProjetosLocation
+              ehProgramasEProjetosLocation ||
+              ehGrupoColaboradores()
             ) {
               dadosValoresMedicoes[
                 `${valor_medicao.nome_campo}__dia_${valor_medicao.dia}__categoria_${valor_medicao.categoria_medicao}`
@@ -1051,12 +1063,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       },
     );
 
-    ehEmeiDaCemeiLocation &&
+    const prefixo = ehGrupoColaboradores() ? "participantes" : "matriculados";
+
+    (ehEmeiDaCemeiLocation || ehGrupoColaboradores()) &&
       matriculadosEmeiDaCemei &&
       idCategoriaAlimentacao &&
       matriculadosEmeiDaCemei.forEach((objMatriculadoEmeiDaCemei) => {
         dadosValoresMatriculadosEmeiDaCemei[
-          `matriculados__dia_${objMatriculadoEmeiDaCemei.dia}__categoria_${idCategoriaAlimentacao}`
+          `${prefixo}__dia_${objMatriculadoEmeiDaCemei.dia}__categoria_${idCategoriaAlimentacao}`
         ] = objMatriculadoEmeiDaCemei.quantidade_alunos;
       });
 
@@ -1414,8 +1428,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const keySplitted = key.split("__");
       const uuid_faixa_etaria = keySplitted[1].replace("faixa_", "");
       let nameMatriculadoInputField = null;
-      if (ehEmeiDaCemeiLocation) {
-        nameMatriculadoInputField = `matriculados__dia_${dia}__categoria_${categoria}`;
+      const prefixo = ehGrupoColaboradores() ? "participantes" : "matriculados";
+      if (ehEmeiDaCemeiLocation || ehGrupoColaboradores()) {
+        nameMatriculadoInputField = `${prefixo}__dia_${dia}__categoria_${categoria}`;
       } else {
         nameMatriculadoInputField = `matriculados__faixa_${uuid_faixa_etaria}__dia_${dia}__categoria_${categoria}`;
       }
@@ -1441,7 +1456,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         v[0].includes("observacoes") ||
         ehEmeiDaCemeiLocation ||
         ehSolicitacoesAlimentacaoLocation ||
-        ehProgramasEProjetosLocation
+        ehProgramasEProjetosLocation ||
+        ehGrupoColaboradores()
           ? 1
           : 2
       ]
@@ -1452,7 +1468,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         v[0].includes("observacoes") ||
         ehEmeiDaCemeiLocation ||
         ehSolicitacoesAlimentacaoLocation ||
-        ehProgramasEProjetosLocation
+        ehProgramasEProjetosLocation ||
+        ehGrupoColaboradores()
           ? ""
           : keySplitted[1].replace("faixa_", "");
 
@@ -1667,7 +1684,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   const defaultValue = (column, row) => {
     let result = null;
-    if (row.name === "matriculados") {
+    const prefixo = ehGrupoColaboradores() ? "participantes" : "matriculados";
+    if (row.name === prefixo) {
       result = null;
     }
     if (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) {
@@ -1730,8 +1748,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const onClickBotaoObservacao = (dia, categoria) => {
     openModalObservacaoDiaria(dia, categoria);
   };
-
-  let valuesInputArray = [];
 
   const desabilitaTooltip = (values) => {
     const erro = validarFormulario(

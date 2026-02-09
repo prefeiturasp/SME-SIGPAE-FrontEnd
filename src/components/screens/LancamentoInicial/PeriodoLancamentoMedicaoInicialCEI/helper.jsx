@@ -122,9 +122,12 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
 export const formatarPayloadParaCorrecao = (payload) => {
   let payloadParaCorrecao = payload.valores_medicao.filter(
     (valor) =>
-      !["matriculados", "dietas_autorizadas", "numero_de_alunos"].includes(
-        valor.nome_campo,
-      ),
+      ![
+        "matriculados",
+        "dietas_autorizadas",
+        "numero_de_alunos",
+        "participantes",
+      ].includes(valor.nome_campo),
   );
   return payloadParaCorrecao;
 };
@@ -148,6 +151,7 @@ export const deveExistirObservacao = (
       !key.includes("dietas_autorizadas") &&
       !key.includes("frequencia") &&
       !key.includes("observacoes") &&
+      !key.includes("participantes") &&
       !["Mês anterior", "Mês posterior", null].includes(value) &&
       diasNaoLetivos.some((dia) => key.includes(dia)),
   );
@@ -395,9 +399,12 @@ export const desabilitarField = (
       "MEDICAO_CORRIGIDA_PELA_UE",
       "MEDICAO_CORRIGIDA_PARA_CODAE",
     ].includes(location.state.status_periodo) &&
-    !["matriculados", "numero_de_alunos", "dietas_autorizadas"].includes(
-      rowName,
-    )
+    ![
+      "matriculados",
+      "numero_de_alunos",
+      "dietas_autorizadas",
+      "participantes",
+    ].includes(rowName)
   ) {
     if (location.state && ehEscolaTipoCEMEI({ nome: location.state.escola })) {
       if (
@@ -433,7 +440,12 @@ export const desabilitarField = (
       "MEDICAO_CORRIGIDA_PARA_CODAE",
     ].includes(location.state.status_periodo) &&
       !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao)) ||
-    ["matriculados", "numero_de_alunos", "dietas_autorizadas"].includes(rowName)
+    [
+      "matriculados",
+      "numero_de_alunos",
+      "dietas_autorizadas",
+      "participantes",
+    ].includes(rowName)
   ) {
     return true;
   }
@@ -1056,7 +1068,7 @@ export const formatarLinhasTabelasDietasCEI = (
         });
     });
   } else {
-    response_log_dietas_autorizadas_cei.data.forEach((log) => {
+    response_log_dietas_autorizadas_cei?.data?.forEach((log) => {
       !faixas_etarias_dieta.find(
         (faixa) => faixa === log.faixa_etaria.__str__,
       ) && faixas_etarias_dieta.push(log.faixa_etaria.__str__);
@@ -1458,6 +1470,7 @@ export const valorZeroFrequenciaCEI = (
         "observacoes",
         "dietas_autorizadas",
         "numero_de_alunos",
+        "participantes",
       ].includes(linha.name) &&
         form.change(
           `${linha.name}__dia_${dia}__categoria_${categoria.id}`,
