@@ -14,6 +14,7 @@ import { getTotaisAtendimentoConsumo } from "src/services/medicaoInicial/solicit
 import GrupoEMEI from "../components/Tabelas/GrupoEMEI";
 import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import { SelectOption } from "../types";
+import GrupoEMEF from "../components/Tabelas/GrupoEMEF";
 
 export function RelatorioFinanceiroConsolidado() {
   const [faixasEtarias, setFaixasEtarias] = useState<FaixaEtaria[]>([]);
@@ -127,6 +128,13 @@ export function RelatorioFinanceiroConsolidado() {
     ),
     "grupo 3": (
       <GrupoEMEI
+        relatorioConsolidado={relatorioConsolidado}
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+      />
+    ),
+    "grupo 4": (
+      <GrupoEMEF
         relatorioConsolidado={relatorioConsolidado}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
