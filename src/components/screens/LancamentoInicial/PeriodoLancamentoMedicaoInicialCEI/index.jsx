@@ -711,7 +711,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     if (location.state) {
       justificativaPeriodo = location.state.justificativa_periodo;
       if (location.state.grupo && location.state.periodo) {
-        periodoEscolar = `${location.state.periodo}`;
+        periodoEscolar = location.state.recreioNasFerias
+          ? `${location.state.grupo}`
+          : `${location.state.periodo}`;
       } else if (location.state.grupo) {
         periodoEscolar = `${location.state.grupo}`;
       } else {
@@ -1041,9 +1043,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         if (inclusaoNesseDia) {
           quantidade = inclusaoNesseDia.quantidade;
         }
-
+        const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
         dadosValoresMatriculadosFaixaEtariaDia[
-          `matriculados__faixa_${objMatriculado.faixa_etaria.uuid}__dia_${objMatriculado.dia}__categoria_${idCategoriaAlimentacao}`
+          `${prefixo}__faixa_${objMatriculado.faixa_etaria.uuid}__dia_${objMatriculado.dia}__categoria_${idCategoriaAlimentacao}`
         ] = quantidade
           ? `${Math.max(quantidade - somaDietasMesmoDia, 0)}`
           : null;
@@ -1473,7 +1475,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         ehEmeiDaCemeiLocation ||
         ehSolicitacoesAlimentacaoLocation ||
         ehProgramasEProjetosLocation ||
-        ehGrupoColaboradores()
+        ehRecreioNasFerias()
           ? ""
           : keySplitted[1].replace("faixa_", "");
 
@@ -1502,7 +1504,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       (values["periodo_escolar"] &&
         values["periodo_escolar"].includes("Solicitações")) ||
       values["periodo_escolar"] === "ETEC" ||
-      values["periodo_escolar"] === "Programas e Projetos"
+      values["periodo_escolar"] === "Programas e Projetos" ||
+      ehRecreioNasFerias()
     ) {
       payload["grupo"] = values["periodo_escolar"];
       if (payload["grupo"] && payload["grupo"].includes("Solicitações")) {
@@ -1514,17 +1517,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     }
     let valores_medicao_response = [];
     if (valoresPeriodosLancamentos.length) {
-      if (ehRecreioNasFerias()) {
-        // eslint-disable-next-line no-unused-vars
-        const { periodo_escolar, ...rest } = payload;
-        payload = {
-          ...rest,
-          grupo: "Recreio nas Férias - de 0 a 3 anos e 11 meses",
-          valores_medicao: payload.valores_medicao.filter(
-            (item) => item.nome_campo !== "matriculados",
-          ),
-        };
-      }
       const response = await updateValoresPeriodosLancamentos(
         valoresPeriodosLancamentos[0].medicao_uuid,
         payload,

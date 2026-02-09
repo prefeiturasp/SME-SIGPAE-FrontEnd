@@ -107,18 +107,14 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   });
 
   if (ehRecreioNasFerias) {
-    valoresMedicao = valoresMedicao.filter(
-      (item) => item.nome_campo !== "matriculados",
-    );
-    // eslint-disable-next-line no-unused-vars
-    const { periodo_escolar, ...rest } = values;
-    values = {
-      ...rest,
-      grupo: ehGrupoColaboradores
-        ? values["grupo"]
-        : "Recreio nas Férias - de 0 a 3 anos e 11 meses",
-      valores_medicao: valoresMedicao,
-    };
+    valoresMedicao = valoresMedicao.map((item) => {
+      if (item.nome_campo === "participantes") {
+        // eslint-disable-next-line no-unused-vars
+        const { faixa_etaria, ...resto } = item;
+        return resto;
+      }
+      return item;
+    });
   }
 
   return { ...values, valores_medicao: valoresMedicao };
@@ -848,7 +844,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
   if (ehRecreioNasFerias) {
     linhasTabelaAlimentacaoCEI.push({
       nome: "Participantes",
-      name: "matriculados",
+      name: "participantes",
       uuid: null,
       faixa_etaria: null,
     });
