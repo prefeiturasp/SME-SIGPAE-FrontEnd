@@ -25,6 +25,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   ehSolicitacoesAlimentacaoLocation,
   ehProgramasEProjetosLocation,
   ehRecreioNasFerias,
+  ehGrupoColaboradores,
 ) => {
   if (
     (ehEmeiDaCemeiLocation &&
@@ -33,7 +34,8 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
     (values["periodo_escolar"] &&
       values["periodo_escolar"].includes("Solicitações")) ||
     values["periodo_escolar"] === "ETEC" ||
-    values["periodo_escolar"] === "Programas e Projetos"
+    values["periodo_escolar"] === "Programas e Projetos" ||
+    ehRecreioNasFerias
   ) {
     values["grupo"] = values["periodo_escolar"];
     if (values["grupo"] && values["grupo"].includes("Solicitações")) {
@@ -68,7 +70,8 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
       if (
         ehEmeiDaCemeiLocation ||
         ehSolicitacoesAlimentacaoLocation ||
-        ehProgramasEProjetosLocation
+        ehProgramasEProjetosLocation ||
+        ehGrupoColaboradores
       ) {
         dia = keySplitted[1].match(/\d/g).join("");
         return valoresMedicao.push({
@@ -111,7 +114,9 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
     const { periodo_escolar, ...rest } = values;
     values = {
       ...rest,
-      grupo: "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+      grupo: ehGrupoColaboradores
+        ? values["grupo"]
+        : "Recreio nas Férias - de 0 a 3 anos e 11 meses",
       valores_medicao: valoresMedicao,
     };
   }

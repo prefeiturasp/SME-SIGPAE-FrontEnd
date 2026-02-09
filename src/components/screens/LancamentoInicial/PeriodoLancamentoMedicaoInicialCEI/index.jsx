@@ -1593,6 +1593,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       ehSolicitacoesAlimentacaoLocation,
       ehProgramasEProjetosLocation,
       ehRecreioNasFerias(),
+      ehGrupoColaboradores(),
     );
     if (payload.valores_medicao.length === 0)
       return (
