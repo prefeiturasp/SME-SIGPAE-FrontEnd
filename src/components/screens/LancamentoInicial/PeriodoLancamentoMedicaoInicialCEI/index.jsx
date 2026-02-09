@@ -1063,15 +1063,19 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       },
     );
 
-    const prefixo = ehGrupoColaboradores() ? "participantes" : "matriculados";
+    const ehColaborador = ehGrupoColaboradores();
+    const prefixo = ehColaborador ? "participantes" : "matriculados";
+    const propriedadeQuantidade = ehColaborador
+      ? "quantidade"
+      : "quantidade_alunos";
 
     (ehEmeiDaCemeiLocation || ehGrupoColaboradores()) &&
       matriculadosEmeiDaCemei &&
       idCategoriaAlimentacao &&
       matriculadosEmeiDaCemei.forEach((objMatriculadoEmeiDaCemei) => {
-        dadosValoresMatriculadosEmeiDaCemei[
-          `${prefixo}__dia_${objMatriculadoEmeiDaCemei.dia}__categoria_${idCategoriaAlimentacao}`
-        ] = objMatriculadoEmeiDaCemei.quantidade_alunos;
+        const chave = `${prefixo}__dia_${objMatriculadoEmeiDaCemei.dia}__categoria_${idCategoriaAlimentacao}`;
+        dadosValoresMatriculadosEmeiDaCemei[chave] =
+          objMatriculadoEmeiDaCemei[propriedadeQuantidade];
       });
 
     valoresMedicao &&
@@ -2014,6 +2018,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           validacaoDiaLetivo,
           ehProgramasEProjetosLocation,
           dadosValoresInclusoesAutorizadasState,
+          ehGrupoColaboradores(),
         );
       } else if (nomeCategoria.includes("DIETA")) {
         return validacoesTabelasDietasEmeidaCemei(
@@ -2130,9 +2135,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       column &&
       index + 1 < tabelaAlimentacaoCEIRows.length - 1
     ) {
-      return `${tabelaAlimentacaoCEIRows[index + 1].name}__faixa_${
-        row.uuid
-      }__dia_${column.dia}__categoria_${categoria.id}`;
+      const faixa = ehGrupoColaboradores() ? "" : `__faixa_${row.uuid}`;
+      return `${tabelaAlimentacaoCEIRows[index + 1].name}${faixa}__dia_${column.dia}__categoria_${categoria.id}`;
     }
     return undefined;
   };
@@ -2143,9 +2147,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       column &&
       tabelaAlimentacaoCEIRows[index - 1]
     ) {
-      return `${tabelaAlimentacaoCEIRows[index - 1].name}__faixa_${
-        row.uuid
-      }__dia_${column.dia}__categoria_${categoria.id}`;
+      const faixa = ehGrupoColaboradores() ? "" : `__faixa_${row.uuid}`;
+      return `${tabelaAlimentacaoCEIRows[index - 1].name}${faixa}__dia_${column.dia}__categoria_${categoria.id}`;
     }
     return undefined;
   };
@@ -2610,7 +2613,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                 <div className="field-values-input">
                                                   {ehEmeiDaCemeiLocation ||
                                                   ehSolicitacoesAlimentacaoLocation ||
-                                                  ehProgramasEProjetosLocation ? (
+                                                  ehProgramasEProjetosLocation ||
+                                                  ehGrupoColaboradores() ? (
                                                     <>
                                                       <Field
                                                         className={`m-2 ${classNameFieldTabelaAlimentacaoEMEI(
@@ -2661,6 +2665,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alteracoesAlimentacaoAutorizadas,
                                                           ehUltimoDiaLetivoDoAno,
                                                           calendarioMesConsiderado,
+                                                          ehRecreioNasFerias(),
                                                         )}
                                                         defaultValue={defaultValue(
                                                           column,

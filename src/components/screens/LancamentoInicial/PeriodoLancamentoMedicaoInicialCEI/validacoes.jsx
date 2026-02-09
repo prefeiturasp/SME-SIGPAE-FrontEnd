@@ -304,12 +304,15 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
   validacaoDiaLetivo,
   ehProgramasEProjetosLocation,
   dadosValoresInclusoesAutorizadasState,
+  ehGrupoColaboradores,
 ) => {
+  const prefixo = ehGrupoColaboradores ? "participantes" : "matriculados";
+
   const maxFrequencia = Number(
     allValues[`frequencia__dia_${dia}__categoria_${categoria}`],
   );
   const maxMatriculados = Number(
-    allValues[`matriculados__dia_${dia}__categoria_${categoria}`],
+    allValues[`${prefixo}__dia_${dia}__categoria_${categoria}`],
   );
   const maxNumeroDeAlunos = Number(
     allValues[`numero_de_alunos__dia_${dia}__categoria_${categoria}`],

@@ -294,7 +294,7 @@ export const desabilitarField = (
               `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
             ],
           ) ||
-          rowName === "matriculados"
+          ["matriculados", "participantes"].includes(rowName)
         ) {
           return true;
         }
