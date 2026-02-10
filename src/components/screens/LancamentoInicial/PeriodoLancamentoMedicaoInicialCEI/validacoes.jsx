@@ -375,7 +375,11 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
     Number(allValues[inputName]) > Number(maxMatriculados) &&
     !ehProgramasEProjetosLocation
   ) {
-    return "A quantidade de alunos frequentes não pode ser maior do que a quantidade de alunos matriculados no período.";
+    const mensagemPadrao =
+      "A quantidade de alunos frequentes não pode ser maior do que a quantidade de alunos matriculados no período.";
+    return ehGrupoColaboradores
+      ? "A frequência não pode ser maior do que o número de Participantes"
+      : mensagemPadrao;
   } else if (
     value &&
     existeAlteracaoAlimentacaoRPL &&
@@ -417,7 +421,8 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
     !inputName.includes("repeticao") &&
     !inputName.includes("emergencial")
   ) {
-    return "Lançamento maior que a frequência de alunos no dia.";
+    const nome = ehGrupoColaboradores ? "participantes" : "alunos";
+    return `Lançamento maior que a frequência de ${nome} no dia.`;
   }
 
   return undefined;

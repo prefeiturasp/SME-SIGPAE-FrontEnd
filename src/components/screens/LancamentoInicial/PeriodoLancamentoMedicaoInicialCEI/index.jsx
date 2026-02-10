@@ -2763,13 +2763,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           )
                                                         }
                                                         exibeTooltipRepeticao={
-                                                          ehProgramasEProjetosLocation &&
-                                                          exibirTooltipRepeticao(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                          )
+                                                          ehProgramasEProjetosLocation ||
+                                                          (ehGrupoColaboradores() &&
+                                                            exibirTooltipRepeticao(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                            ))
                                                         }
                                                         validate={fieldValidationsTabelasEmeidaCemei(
                                                           row.name,
