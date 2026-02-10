@@ -19,7 +19,7 @@ import { ESCOLA } from "src/configs/constants";
 export const CorpoRelatorio = (props) => {
   const { solicitacaoUnificada, prazoDoPedidoMensagem, visao } = props;
   const justificativaNegacao = justificativaAoNegarSolicitacao(
-    solicitacaoUnificada.logs
+    solicitacaoUnificada.logs,
   );
 
   let escolasQuantidades = solicitacaoUnificada.escolas_quantidades;
@@ -34,8 +34,8 @@ export const CorpoRelatorio = (props) => {
       copyLogs.splice(-1);
     }
     const nomeEscola = localStorage.getItem("nome_instituicao");
-    escolasQuantidades = escolasQuantidades.filter(
-      (eq) => `"${eq.escola.nome}"` === nomeEscola
+    escolasQuantidades = escolasQuantidades.filter((eq) =>
+      eq.escola.nome.includes(nomeEscola.replace(/"/g, "")),
     );
     if (escolasQuantidades[0].cancelado) {
       copyLogs.push({
@@ -60,7 +60,7 @@ export const CorpoRelatorio = (props) => {
         <div className="row">
           <p
             className={`col-12 title-message ${corDaMensagem(
-              prazoDoPedidoMensagem
+              prazoDoPedidoMensagem,
             )}`}
           >
             {prazoDoPedidoMensagem}
@@ -178,7 +178,7 @@ export const CorpoRelatorio = (props) => {
                     ? escolasQuantidades.reduce(
                         (acc, curr) =>
                           acc + curr.kits.length * curr.quantidade_alunos,
-                        0
+                        0,
                       )
                     : solicitacaoUnificada.total_kit_lanche}{" "}
                   Kits
