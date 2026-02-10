@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   TabelaParametrizacao,
   TipoAlimentacao,
@@ -12,6 +13,7 @@ type Props = {
   tiposAlimentacao: Array<TipoAlimentacao>;
   totaisConsumo?: any;
   ordem?: string;
+  exibeNoturno?: boolean;
 };
 
 const _TIPO_CLASS = {
@@ -28,22 +30,33 @@ export function TabelaDietas({
   tiposAlimentacao,
   totaisConsumo,
   ordem,
+  exibeNoturno,
 }: Props) {
   let totalConsumoGeral = 0;
   let valorTotalGeral = 0;
 
-  const ListaDeAlimentacoes =
-    tipoDieta === "TIPO A" ? ALIMENTACOES_TIPO_A : ALIMENTACOES_TIPO_B;
+  const alimentacoes = useMemo(() => {
+    const lista =
+      tipoDieta === "TIPO A" ? ALIMENTACOES_TIPO_A : ALIMENTACOES_TIPO_B;
 
-  const alimentacoes = tiposAlimentacao
-    .filter((t) => ListaDeAlimentacoes.includes(t.nome))
-    .flatMap((ta) => {
-      return {
-        ...ta,
-        grupo: ta.nome === "Refeição" ? "Dieta Enteral" : null,
-      };
-    })
-    .reverse();
+    return tiposAlimentacao
+      .filter((t) => lista.includes(t.nome))
+      .flatMap((ta) => {
+        if (ta.nome === "Refeição" && exibeNoturno) {
+          return [
+            { ...ta, nome: "Refeição EJA", grupo: null },
+            { ...ta, grupo: null },
+          ];
+        }
+
+        return {
+          ...ta,
+          grupo: ta.nome === "Refeição" ? "Dieta Enteral" : null,
+        };
+      })
+      .slice()
+      .reverse();
+  }, [tipoDieta, tiposAlimentacao, exibeNoturno]);
 
   return (
     <table className="tabela-relatorio">
@@ -51,7 +64,7 @@ export function TabelaDietas({
         <tr className={_TIPO_CLASS[tipoDieta] ?? ""}>
           <th className="col-faixa">
             DIETA ESPECIAL -{" "}
-            {tipoDieta === "TIPO B"
+            {tipoDieta !== "TIPO A"
               ? tipoDieta
               : "TIPO A, A ENTERAL E RESTRIÇÃO DE AMINOÁCIDOS"}
           </th>

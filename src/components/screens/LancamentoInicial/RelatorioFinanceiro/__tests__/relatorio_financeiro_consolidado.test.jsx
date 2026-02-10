@@ -128,6 +128,24 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     }
   });
 
+  const verificaTabelaDietas = async () => {
+    const headers = await screen.findAllByRole("columnheader", {
+      name: /DIETA ESPECIAL/i,
+    });
+
+    expect(headers).toHaveLength(2);
+    expect(
+      headers.some((h) =>
+        h.textContent?.includes(
+          "DIETA ESPECIAL - TIPO A, A ENTERAL E RESTRIÇÃO DE AMINOÁCIDOS",
+        ),
+      ),
+    ).toBe(true);
+    expect(
+      headers.some((h) => h.textContent?.includes("DIETA ESPECIAL - TIPO B")),
+    ).toBe(true);
+  };
+
   it("deve exibir tabelas e valores do grupo 3 - EMEI", async () => {
     const grupoEMEI = gruposUnidadeEscolar.find((grupo) =>
       grupo.nome.includes("Grupo 3"),
@@ -155,6 +173,8 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       ).toBeGreaterThan(0);
     }
     expect(screen.getByText("TOTAL (B)")).toBeInTheDocument();
+
+    await verificaTabelaDietas();
   });
 
   it("deve exibir tabelas e valores do grupo 4 - EMEF", async () => {
@@ -184,6 +204,8 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       ).toBeGreaterThan(0);
     }
     expect(screen.getByText("TOTAL (C)")).toBeInTheDocument();
+
+    await verificaTabelaDietas();
   });
 
   it("deve exibir o consolidado total", async () => {
