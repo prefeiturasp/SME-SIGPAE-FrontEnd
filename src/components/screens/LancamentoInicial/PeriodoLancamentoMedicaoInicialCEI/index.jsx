@@ -1043,7 +1043,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         if (inclusaoNesseDia) {
           quantidade = inclusaoNesseDia.quantidade;
         }
-        const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
+        const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
         dadosValoresMatriculadosFaixaEtariaDia[
           `${prefixo}__faixa_${objMatriculado.faixa_etaria.uuid}__dia_${objMatriculado.dia}__categoria_${idCategoriaAlimentacao}`
         ] = quantidade
