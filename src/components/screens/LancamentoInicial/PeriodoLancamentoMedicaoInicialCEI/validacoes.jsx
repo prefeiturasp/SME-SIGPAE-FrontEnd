@@ -259,7 +259,7 @@ export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (
     return undefined;
   }
 
-  const keyMax = `matriculados__faixa_null__dia_${dia}__categoria_${categoria}`;
+  const keyMax = `participantes__faixa_null__dia_${dia}__categoria_${categoria}`;
   const maxMatriculados = Number(allValues[keyMax]);
 
   if (!Number.isFinite(maxMatriculados)) {
