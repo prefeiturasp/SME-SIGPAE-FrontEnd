@@ -51,7 +51,7 @@ export function TabelaDietas({
         <tr className={_TIPO_CLASS[tipoDieta] ?? ""}>
           <th className="col-faixa">
             DIETA ESPECIAL -{" "}
-            {tipoDieta === "TIPO B"
+            {tipoDieta !== "TIPO A"
               ? tipoDieta
               : "TIPO A, A ENTERAL E RESTRIÇÃO DE AMINOÁCIDOS"}
           </th>

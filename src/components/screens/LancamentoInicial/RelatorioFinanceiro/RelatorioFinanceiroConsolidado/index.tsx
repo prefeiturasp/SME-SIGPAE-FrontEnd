@@ -52,7 +52,9 @@ export function RelatorioFinanceiroConsolidado() {
       lote: lote[0],
       grupo_unidade_escolar: grupo_unidade_escolar[0],
       status: status[0],
-      tipo_calculo: grupo.includes("CEI") ? "faixa_etaria" : "tipo_alimentacao",
+      tipo_calculo: grupo?.includes("CEI")
+        ? "faixa_etaria"
+        : "tipo_alimentacao",
     });
 
     if (response.status === HTTP_STATUS.OK) setTotaisConsumo(response.data);

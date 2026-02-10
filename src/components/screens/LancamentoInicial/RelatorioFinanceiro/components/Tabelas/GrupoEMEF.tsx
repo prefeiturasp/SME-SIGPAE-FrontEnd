@@ -2,6 +2,7 @@ import { TabelaAlimentacao } from "./TabelaAlimentacao";
 import { TipoAlimentacao } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { RelatorioFinanceiroConsolidado } from "src/interfaces/relatorio_financeiro.interface";
 import { normalizar } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
+import { TabelaDietas } from "./TabelaDietas";
 
 type Props = {
   relatorioConsolidado: RelatorioFinanceiroConsolidado;
@@ -23,11 +24,11 @@ export default ({
 
   const _TIPOS_ALIMENTACAO = [
     {
-      uuid: REFEICAO.uuid,
+      uuid: REFEICAO?.uuid,
       nome: "Refeição",
     },
     {
-      uuid: REFEICAO.uuid,
+      uuid: REFEICAO?.uuid,
       nome: "Refeição EJA",
     },
     ..._TIPOS_SEM_REFEICAO,
@@ -41,6 +42,20 @@ export default ({
         tiposAlimentacao={_TIPOS_ALIMENTACAO}
         totaisConsumo={totaisConsumo}
         ordem="A"
+      />
+      <TabelaDietas
+        tabelas={relatorioConsolidado.tabelas}
+        tipoDieta="TIPO A"
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+        ordem="B"
+      />
+      <TabelaDietas
+        tabelas={relatorioConsolidado.tabelas}
+        tipoDieta="TIPO B"
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+        ordem="C"
       />
     </div>
   );
