@@ -49,6 +49,7 @@ export default ({
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
         ordem="B"
+        exibeNoturno={true}
       />
       <TabelaDietas
         tabelas={relatorioConsolidado.tabelas}
