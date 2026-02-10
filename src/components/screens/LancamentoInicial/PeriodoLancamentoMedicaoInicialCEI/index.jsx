@@ -724,6 +724,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     const formataPeriodoSolAlimentacoesInfantil = (periodoEscolar) => {
       if (periodoEscolar === "Solicitações de Alimentação") {
         return "Solicitações de Alimentação - Infantil";
+      } else if (periodoEscolar.includes("Recreio nas Férias")) {
+        return "Recreio nas Férias";
       } else {
         return periodoEscolar;
       }
