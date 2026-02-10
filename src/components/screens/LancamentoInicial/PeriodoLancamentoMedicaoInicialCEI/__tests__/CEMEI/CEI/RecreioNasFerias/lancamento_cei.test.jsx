@@ -331,7 +331,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
       const diaFormatado = dia < 10 ? `0${dia}` : dia;
 
       const inputParticipantes = screen.getByTestId(
-        `matriculados__faixa_null__dia_${diaFormatado}__categoria_1`,
+        `participantes__faixa_null__dia_${diaFormatado}__categoria_1`,
       );
 
       expect(inputParticipantes).toHaveAttribute(
@@ -432,7 +432,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
     });
 
     const valoresEsperados = { matriculados__faixa_null: "100", ...valores };
-    const camposAtualizados = ["matriculados__faixa_null", ...campos];
+    const camposAtualizados = ["participantes__faixa_null", ...campos];
 
     camposAtualizados.forEach((testId) => {
       const input = screen.getByTestId(`${testId}__dia_08__categoria_1`);
