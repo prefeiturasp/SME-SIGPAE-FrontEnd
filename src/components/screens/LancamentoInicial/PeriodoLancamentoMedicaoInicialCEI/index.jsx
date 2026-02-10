@@ -124,6 +124,7 @@ import {
   validacoesTabelasDietasCEI,
   validacoesTabelasDietasEmeidaCemei,
   validarFormulario,
+  verificarMesAnteriorOuPosterior,
 } from "./validacoes";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
@@ -603,63 +604,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     fetch();
   }, []);
 
-  const exibirAbaDasSemanas = (mesAnoSelecionado) => {
-    let itemsSemanas = [];
-    let dataInicoRecreio = null;
-    let dataFimRecreio = null;
-    if (ehRecreioNasFerias()) {
-      const dataRecreio =
-        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
-      dataInicoRecreio = parse(
-        dataRecreio.data_inicio,
-        "dd/MM/yyyy",
-        new Date(),
-        { locale: ptBR },
-      );
-      dataFimRecreio = parse(dataRecreio.data_fim, "dd/MM/yyyy", new Date(), {
-        locale: ptBR,
-      });
-    }
-
-    const totalSemanas = isSunday(lastDayOfMonth(mesAnoSelecionado))
-      ? getWeeksInMonth(mesAnoSelecionado) - 1
-      : getDay(startOfMonth(mesAnoSelecionado)) === 0
-        ? getWeeksInMonth(mesAnoSelecionado) + 1
-        : getWeeksInMonth(mesAnoSelecionado);
-
-    let numeroSemanaCorreto = 0;
-    Array.from({ length: totalSemanas }).forEach((_, numeroSemana) => {
-      const dias = [];
-      const inicioSemana = addDays(
-        startOfMonth(mesAnoSelecionado),
-        numeroSemana * 7,
-      );
-      for (let i = 0; i < 7; i++) {
-        const data = addDays(inicioSemana, i);
-        dias.push({
-          dia: format(data, "dd"),
-          mes: format(data, "MM"),
-          ano: format(data, "yyyy"),
-        });
-      }
-
-      const incluiSemana = existeSemanaNoIntervaloRecreio(
-        dias,
-        mesAnoSelecionado,
-        dataInicoRecreio,
-        dataFimRecreio,
-      );
-      if (incluiSemana) {
-        itemsSemanas.push({
-          key: `${numeroSemanaCorreto + 1}`,
-          label: `Semana ${numeroSemanaCorreto + 1}`,
-        });
-        numeroSemanaCorreto += 1;
-      }
-    });
-    return itemsSemanas;
-  };
-
   const existeSemanaNoIntervaloRecreio = (
     diasSemana,
     mesAnoReferencia,
@@ -744,41 +688,41 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
     categoriasMedicao &&
       categoriasMedicao.forEach((categoria) => {
-        let diasSemana = [];
-        let diaDaSemanaNumerico = getDay(startOfMonth(mesAno)); // 0 representa Domingo
+        // let diasSemana = [];
+        // let diaDaSemanaNumerico = getDay(startOfMonth(mesAno)); // 0 representa Domingo
 
-        if (diaDaSemanaNumerico === 0) {
-          diaDaSemanaNumerico = 7;
-        }
-        if (Number(semanaSelecionada) === 1) {
-          diasSemana.unshift(format(startOfMonth(mesAno), "dd"));
-          for (let i = 1; i < diaDaSemanaNumerico; i++) {
-            diasSemana.unshift(format(subDays(startOfMonth(mesAno), i), "dd"));
-          }
-          for (let i = diaDaSemanaNumerico; i < 7; i++) {
-            diasSemana.push(
-              format(
-                addDays(startOfMonth(mesAno), i + 1 - diaDaSemanaNumerico),
-                "dd",
-              ),
-            );
-          }
-        }
-        if (Number(semanaSelecionada) !== 1) {
-          let dia = addDays(
-            startOfMonth(mesAno),
-            7 * (Number(semanaSelecionada) - 1),
-          );
-          diasSemana.unshift(format(dia, "dd"));
-          for (let i = 1; i < diaDaSemanaNumerico; i++) {
-            diasSemana.unshift(format(subDays(dia, i), "dd"));
-          }
-          for (let i = diaDaSemanaNumerico; i < 7; i++) {
-            diasSemana.push(
-              format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
-            );
-          }
-        }
+        // if (diaDaSemanaNumerico === 0) {
+        //   diaDaSemanaNumerico = 7;
+        // }
+        // if (Number(semanaSelecionada) === 1) {
+        //   diasSemana.unshift(format(startOfMonth(mesAno), "dd"));
+        //   for (let i = 1; i < diaDaSemanaNumerico; i++) {
+        //     diasSemana.unshift(format(subDays(startOfMonth(mesAno), i), "dd"));
+        //   }
+        //   for (let i = diaDaSemanaNumerico; i < 7; i++) {
+        //     diasSemana.push(
+        //       format(
+        //         addDays(startOfMonth(mesAno), i + 1 - diaDaSemanaNumerico),
+        //         "dd",
+        //       ),
+        //     );
+        //   }
+        // }
+        // if (Number(semanaSelecionada) !== 1) {
+        //   let dia = addDays(
+        //     startOfMonth(mesAno),
+        //     7 * (Number(semanaSelecionada) - 1),
+        //   );
+        //   diasSemana.unshift(format(dia, "dd"));
+        //   for (let i = 1; i < diaDaSemanaNumerico; i++) {
+        //     diasSemana.unshift(format(subDays(dia, i), "dd"));
+        //   }
+        //   for (let i = diaDaSemanaNumerico; i < 7; i++) {
+        //     diasSemana.push(
+        //       format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
+        //     );
+        //   }
+        // }
 
         logQtdDietasAutorizadasCEI &&
           logQtdDietasAutorizadasCEI.forEach((log) => {
@@ -918,16 +862,42 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           dadosValoresInclusoesAutorizadas,
         );
 
+        let diasSemana = [];
+        const numeroSemana = Number(semanaSelecionada);
+        let datasRecreio = {};
+        if (ehRecreioNasFerias()) {
+          datasRecreio = datasInicoFimRecreio();
+        }
+        let diaDaSemanaNumerico = obterDiaNumericoDaSemana(
+          mesAno,
+          datasRecreio?.inicio,
+        );
+        let dataInicioCalendario = obterDataInicioCalendario(mesAno);
+        if (numeroSemana === 1) {
+          diasSemana = construirPrimeiraSemanaCalendario(
+            [],
+            dataInicioCalendario,
+            diaDaSemanaNumerico,
+          );
+        }
+        if (numeroSemana !== 1) {
+          diasSemana = construirOutrasSemanaCalendario(
+            dataInicioCalendario,
+            diasSemana,
+            diaDaSemanaNumerico,
+            numeroSemana,
+          );
+        }
+
         tabelaAlimentacaoCEIRows &&
           tabelaDietaCEIRows &&
           [tabelaAlimentacaoCEIRows, tabelaDietaCEIRows].forEach(
             (each) =>
               each &&
               each.forEach((row) => {
-                for (let i = 1; i <= 31; i++) {
-                  const dia =
-                    String(i).length === 1 ? "0" + String(i) : String(i);
-                  let result = null;
+                for (let { dia, mes, ano } of diasSemana) {
+                  const dataCompleta = { dia, mes, ano };
+
                   let uuidFaixasDietas = [];
                   if (categoria.nome === "DIETA ESPECIAL - TIPO A") {
                     logQtdDietasAutorizadasCEI &&
@@ -970,22 +940,30 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                   } else {
                     nameInputField = `${row.name}__faixa_${row.uuid}__dia_${dia}__categoria_${categoria.id}`;
                   }
-                  if (
-                    Number(semanaSelecionada) === 1 &&
-                    Number(dia) > 20 &&
-                    diasSemana.includes(dia)
-                  ) {
-                    result = "Mês anterior";
+                  let result = verificarMesAnteriorOuPosterior(
+                    dataCompleta,
+                    mesAno,
+                  );
+
+                  if (result) {
                     dadosValoresForaDoMes[nameInputField] = result;
                   }
-                  if (
-                    [4, 5, 6].includes(Number(semanaSelecionada)) &&
-                    Number(dia) < 10 &&
-                    diasSemana.includes(dia)
-                  ) {
-                    result = "Mês posterior";
-                    dadosValoresForaDoMes[nameInputField] = result;
-                  }
+                  // if (
+                  //   Number(semanaSelecionada) === 1 &&
+                  //   Number(dia) > 20 &&
+                  //   diasSemana.includes(dia)
+                  // ) {
+                  //   result = "Mês anterior";
+                  //   dadosValoresForaDoMes[nameInputField] = result;
+                  // }
+                  // if (
+                  //   [4, 5, 6].includes(Number(semanaSelecionada)) &&
+                  //   Number(dia) < 10 &&
+                  //   diasSemana.includes(dia)
+                  // ) {
+                  //   result = "Mês posterior";
+                  //   dadosValoresForaDoMes[nameInputField] = result;
+                  // }
                 }
               }),
           );
@@ -1122,237 +1100,65 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     setLoading(false);
   };
 
-  const construirPrimeiraSemanaCalendario = (
-    diasSemana,
-    dataInicioCalendario,
-    diaDaSemanaNumerico,
-  ) => {
-    diasSemana.unshift({
-      dia: format(dataInicioCalendario, "dd"),
-      mes: format(dataInicioCalendario, "MM"),
-      ano: format(dataInicioCalendario, "yyyy"),
-    });
-
-    for (let i = 1; i < diaDaSemanaNumerico; i++) {
-      const data = subDays(dataInicioCalendario, i);
-      diasSemana.unshift({
-        dia: format(data, "dd"),
-        mes: format(data, "MM"),
-        ano: format(data, "yyyy"),
-      });
-    }
-    for (let i = diaDaSemanaNumerico; i < 7; i++) {
-      const data = addDays(dataInicioCalendario, i + 1 - diaDaSemanaNumerico);
-      diasSemana.push({
-        dia: format(data, "dd"),
-        mes: format(data, "MM"),
-        ano: format(data, "yyyy"),
-      });
-    }
-
-    return diasSemana;
-  };
-
-  const construirOutrasSemanaCalendario = (
-    dataInicioCalendario,
-    diasSemana,
-    diaDaSemanaNumerico,
-    numeroSemana,
-  ) => {
-    let dia = addDays(dataInicioCalendario, 7 * (numeroSemana - 1));
-    diasSemana.unshift({
-      dia: format(dia, "dd"),
-      mes: format(dia, "MM"),
-      ano: format(dia, "yyyy"),
-    });
-
-    for (let i = 1; i < diaDaSemanaNumerico; i++) {
-      const data = subDays(dia, i);
-      diasSemana.unshift({
-        dia: format(data, "dd"),
-        mes: format(data, "MM"),
-        ano: format(data, "yyyy"),
-      });
-    }
-
-    for (let i = diaDaSemanaNumerico; i < 7; i++) {
-      const data = addDays(dia, i + 1 - diaDaSemanaNumerico);
-      diasSemana.push({
-        dia: format(data, "dd"),
-        mes: format(data, "MM"),
-        ano: format(data, "yyyy"),
-      });
-    }
-
-    return diasSemana;
-  };
-
-  const obterDataInicioCalendario = (mesAnoConsiderado) => {
-    return ehRecreioNasFerias()
-      ? mesAnoConsiderado
-      : startOfMonth(mesAnoConsiderado);
-  };
-
-  const obterDiaNumericoDaSemana = (mesAnoConsiderado, dataInicoRecreio) => {
-    let diaDaSemanaNumerico = 0;
-    if (ehRecreioNasFerias() && dataInicoRecreio) {
-      diaDaSemanaNumerico = getDay(dataInicoRecreio);
-    } else {
-      diaDaSemanaNumerico = getDay(startOfMonth(mesAnoConsiderado)); // 0 representa Domingo
-    }
-
-    if (diaDaSemanaNumerico === 0) {
-      diaDaSemanaNumerico = 7;
-    }
-
-    return diaDaSemanaNumerico;
-  };
-
-  const datasInicoFimRecreio = () => {
-    const dataRecreio =
-      location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
-    const dataInicoRecreio = parse(
-      dataRecreio.data_inicio,
-      "dd/MM/yyyy",
-      new Date(),
-      { locale: ptBR },
-    );
-    const dataFimRecreio = parse(
-      dataRecreio.data_fim,
-      "dd/MM/yyyy",
-      new Date(),
-      {
-        locale: ptBR,
-      },
-    );
-
-    return { inicio: dataInicoRecreio, fim: dataFimRecreio };
-  };
-
-  const montarCalendario = () => {
-    let diasSemana = [];
-    let week = [];
-    const numeroSemana = Number(semanaSelecionada);
-
-    let datasRecreio = {};
-    if (ehRecreioNasFerias()) {
-      datasRecreio = datasInicoFimRecreio();
-    }
-
-    setLoading(true);
-
-    let diaDaSemanaNumerico = obterDiaNumericoDaSemana(
-      mesAnoConsiderado,
-      datasRecreio?.inicio,
-    );
-    let dataInicioCalendario = obterDataInicioCalendario(mesAnoConsiderado);
-
-    if (mesAnoConsiderado && numeroSemana === 1) {
-      diasSemana = construirPrimeiraSemanaCalendario(
-        [],
-        dataInicioCalendario,
-        diaDaSemanaNumerico,
-      );
-      setDiasDaSemanaSelecionada(diasSemana);
-      week = weekColumns.map((column) => {
-        return {
-          ...column,
-          dia: diasSemana[column["position"]].dia,
-          mes: diasSemana[column["position"]].mes,
-          ano: diasSemana[column["position"]].ano,
-        };
-      });
-      setWeekColumns(week);
-    }
-
-    if (mesAnoConsiderado && numeroSemana !== 1) {
-      diasSemana = construirOutrasSemanaCalendario(
-        dataInicioCalendario,
-        diasSemana,
-        diaDaSemanaNumerico,
-        numeroSemana,
-      );
-      const deveExibirSemana = existeSemanaNoIntervaloRecreio(
-        diasSemana,
-        mesAnoConsiderado,
-        datasRecreio?.inicio,
-        datasRecreio?.fim,
-      );
-
-      if (deveExibirSemana) {
-        setDiasDaSemanaSelecionada(diasSemana);
-        week = weekColumns.map((column) => {
-          return {
-            ...column,
-            dia: diasSemana[column["position"]].dia,
-            mes: diasSemana[column["position"]].mes,
-            ano: diasSemana[column["position"]].ano,
-          };
-        });
-        setWeekColumns(week);
-      }
-    }
-  };
-
   useEffect(() => {
-    let diasSemana = [];
-    let diaDaSemanaNumerico = getDay(startOfMonth(mesAnoConsiderado)); // 0 representa Domingo
-    let week = [];
-    setLoading(true);
+    // let diasSemana = [];
+    // let diaDaSemanaNumerico = getDay(startOfMonth(mesAnoConsiderado)); // 0 representa Domingo
+    // let week = [];
+    // setLoading(true);
 
-    if (diaDaSemanaNumerico === 0) {
-      diaDaSemanaNumerico = 7;
-    }
-    if (mesAnoConsiderado && Number(semanaSelecionada) === 1) {
-      diasSemana.unshift(format(startOfMonth(mesAnoConsiderado), "dd"));
-      for (let i = 1; i < diaDaSemanaNumerico; i++) {
-        diasSemana.unshift(
-          format(subDays(startOfMonth(mesAnoConsiderado), i), "dd"),
-        );
-      }
-      for (let i = diaDaSemanaNumerico; i < 7; i++) {
-        diasSemana.push(
-          format(
-            addDays(
-              startOfMonth(mesAnoConsiderado),
-              i + 1 - diaDaSemanaNumerico,
-            ),
-            "dd",
-          ),
-        );
-      }
-      setDiasDaSemanaSelecionada(diasSemana.filter((dia) => Number(dia) < 20));
-      week = weekColumns.map((column) => {
-        return { ...column, dia: diasSemana[column["position"]] };
-      });
-      setWeekColumns(week);
-    }
-    if (mesAnoConsiderado && Number(semanaSelecionada) !== 1) {
-      let dia = addDays(
-        startOfMonth(mesAnoConsiderado),
-        7 * (Number(semanaSelecionada) - 1),
-      );
-      diasSemana.unshift(format(dia, "dd"));
-      for (let i = 1; i < diaDaSemanaNumerico; i++) {
-        diasSemana.unshift(format(subDays(dia, i), "dd"));
-      }
-      for (let i = diaDaSemanaNumerico; i < 7; i++) {
-        diasSemana.push(
-          format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
-        );
-      }
-      if ([4, 5, 6].includes(Number(semanaSelecionada))) {
-        setDiasDaSemanaSelecionada(
-          diasSemana.filter((dia) => Number(dia) > 10),
-        );
-      } else {
-        setDiasDaSemanaSelecionada(diasSemana);
-      }
-      week = weekColumns.map((column) => {
-        return { ...column, dia: diasSemana[column["position"]] };
-      });
-      setWeekColumns(week);
-    }
+    // if (diaDaSemanaNumerico === 0) {
+    //   diaDaSemanaNumerico = 7;
+    // }
+    // if (mesAnoConsiderado && Number(semanaSelecionada) === 1) {
+    //   diasSemana.unshift(format(startOfMonth(mesAnoConsiderado), "dd"));
+    //   for (let i = 1; i < diaDaSemanaNumerico; i++) {
+    //     diasSemana.unshift(
+    //       format(subDays(startOfMonth(mesAnoConsiderado), i), "dd"),
+    //     );
+    //   }
+    //   for (let i = diaDaSemanaNumerico; i < 7; i++) {
+    //     diasSemana.push(
+    //       format(
+    //         addDays(
+    //           startOfMonth(mesAnoConsiderado),
+    //           i + 1 - diaDaSemanaNumerico,
+    //         ),
+    //         "dd",
+    //       ),
+    //     );
+    //   }
+    //   setDiasDaSemanaSelecionada(diasSemana.filter((dia) => Number(dia) < 20));
+    //   week = weekColumns.map((column) => {
+    //     return { ...column, dia: diasSemana[column["position"]] };
+    //   });
+    //   setWeekColumns(week);
+    // }
+    // if (mesAnoConsiderado && Number(semanaSelecionada) !== 1) {
+    //   let dia = addDays(
+    //     startOfMonth(mesAnoConsiderado),
+    //     7 * (Number(semanaSelecionada) - 1),
+    //   );
+    //   diasSemana.unshift(format(dia, "dd"));
+    //   for (let i = 1; i < diaDaSemanaNumerico; i++) {
+    //     diasSemana.unshift(format(subDays(dia, i), "dd"));
+    //   }
+    //   for (let i = diaDaSemanaNumerico; i < 7; i++) {
+    //     diasSemana.push(
+    //       format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
+    //     );
+    //   }
+    //   if ([4, 5, 6].includes(Number(semanaSelecionada))) {
+    //     setDiasDaSemanaSelecionada(
+    //       diasSemana.filter((dia) => Number(dia) > 10),
+    //     );
+    //   } else {
+    //     setDiasDaSemanaSelecionada(diasSemana);
+    //   }
+    //   week = weekColumns.map((column) => {
+    //     return { ...column, dia: diasSemana[column["position"]] };
+    //   });
+    //   setWeekColumns(week);
+    // }
 
     montarCalendario();
     const formatar = async () => {
@@ -1553,6 +1359,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     chamarFuncaoFormatar = true,
     ehCorrecao = false,
   ) => {
+    const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
     let valuesClone = deepCopy(values);
@@ -1564,14 +1371,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     Object.entries(valuesClone).forEach(([key, value]) => {
       return (
         (["Mês anterior", "Mês posterior", null].includes(value) ||
-          (key.includes("matriculados") &&
+          (key.includes(prefixo) &&
             !key.includes(`categoria_${idCategoriaAlimentacao}`))) &&
         delete valuesClone[key]
       );
     });
 
     const dadosIniciaisFiltered = Object.entries(dadosIniciais)
-      .filter(([key]) => !key.includes("matriculados"))
+      .filter(([key]) => !key.includes(prefixo))
       .filter(([key]) => !key.includes("dietas_autorizadas"))
       .filter(
         ([, value]) => !["Mês anterior", "Mês posterior", null].includes(value),
@@ -1683,19 +1490,20 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   const defaultValue = (column, row) => {
     let result = null;
-    const prefixo = ehGrupoColaboradores() ? "participantes" : "matriculados";
+    const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     if (row.name === prefixo) {
       result = null;
     }
-    if (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) {
-      result = "Mês anterior";
-    }
-    if (
-      [4, 5, 6].includes(Number(semanaSelecionada)) &&
-      Number(column.dia) < 10
-    ) {
-      result = "Mês posterior";
-    }
+    result = verificarMesAnteriorOuPosterior(column, mesAnoConsiderado);
+    // if (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) {
+    //   result = "Mês anterior";
+    // }
+    // if (
+    //   [4, 5, 6].includes(Number(semanaSelecionada)) &&
+    //   Number(column.dia) < 10
+    // ) {
+    //   result = "Mês posterior";
+    // }
 
     return result;
   };
@@ -2171,6 +1979,22 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     );
   };
 
+  const obterDiasLetivosCorretos = async (params_dias_calendario) => {
+    let data = [];
+    if (ehRecreioNasFerias()) {
+      const diasLetivosRecreio = await getDiasLetivosRecreio({
+        solictacao_uuid: location.state.solicitacaoMedicaoInicial.uuid,
+      });
+      data = diasLetivosRecreio.data;
+    } else {
+      const diasLetivos = await getDiasCalendario(params_dias_calendario);
+      data = diasLetivos.data;
+    }
+
+    setCalendarioMesConsiderado(data);
+    return data;
+  };
+
   const obterNumerosMatriculados = async (
     params_matriculados,
     calendario,
@@ -2209,20 +2033,233 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     return response_matriculados;
   };
 
-  const obterDiasLetivosCorretos = async (params_dias_calendario) => {
-    let data = [];
+  const exibirAbaDasSemanas = (mesAnoSelecionado) => {
+    let itemsSemanas = [];
+    let dataInicoRecreio = null;
+    let dataFimRecreio = null;
     if (ehRecreioNasFerias()) {
-      const diasLetivosRecreio = await getDiasLetivosRecreio({
-        solictacao_uuid: location.state.solicitacaoMedicaoInicial.uuid,
+      const dataRecreio =
+        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
+      dataInicoRecreio = parse(
+        dataRecreio.data_inicio,
+        "dd/MM/yyyy",
+        new Date(),
+        { locale: ptBR },
+      );
+      dataFimRecreio = parse(dataRecreio.data_fim, "dd/MM/yyyy", new Date(), {
+        locale: ptBR,
       });
-      data = diasLetivosRecreio.data;
-    } else {
-      const diasLetivos = await getDiasCalendario(params_dias_calendario);
-      data = diasLetivos.data;
     }
 
-    setCalendarioMesConsiderado(data);
-    return data;
+    const totalSemanas = isSunday(lastDayOfMonth(mesAnoSelecionado))
+      ? getWeeksInMonth(mesAnoSelecionado) - 1
+      : getDay(startOfMonth(mesAnoSelecionado)) === 0
+        ? getWeeksInMonth(mesAnoSelecionado) + 1
+        : getWeeksInMonth(mesAnoSelecionado);
+
+    let numeroSemanaCorreto = 0;
+    Array.from({ length: totalSemanas }).forEach((_, numeroSemana) => {
+      const dias = [];
+      const inicioSemana = addDays(
+        startOfMonth(mesAnoSelecionado),
+        numeroSemana * 7,
+      );
+      for (let i = 0; i < 7; i++) {
+        const data = addDays(inicioSemana, i);
+        dias.push({
+          dia: format(data, "dd"),
+          mes: format(data, "MM"),
+          ano: format(data, "yyyy"),
+        });
+      }
+
+      const incluiSemana = existeSemanaNoIntervaloRecreio(
+        dias,
+        mesAnoSelecionado,
+        dataInicoRecreio,
+        dataFimRecreio,
+      );
+      if (incluiSemana) {
+        itemsSemanas.push({
+          key: `${numeroSemanaCorreto + 1}`,
+          label: `Semana ${numeroSemanaCorreto + 1}`,
+        });
+        numeroSemanaCorreto += 1;
+      }
+    });
+    return itemsSemanas;
+  };
+
+  const montarCalendario = () => {
+    let diasSemana = [];
+    let week = [];
+    const numeroSemana = Number(semanaSelecionada);
+
+    let datasRecreio = {};
+    if (ehRecreioNasFerias()) {
+      datasRecreio = datasInicoFimRecreio();
+    }
+
+    setLoading(true);
+
+    let diaDaSemanaNumerico = obterDiaNumericoDaSemana(
+      mesAnoConsiderado,
+      datasRecreio?.inicio,
+    );
+    let dataInicioCalendario = obterDataInicioCalendario(mesAnoConsiderado);
+
+    if (mesAnoConsiderado && numeroSemana === 1) {
+      diasSemana = construirPrimeiraSemanaCalendario(
+        [],
+        dataInicioCalendario,
+        diaDaSemanaNumerico,
+      );
+      setDiasDaSemanaSelecionada(diasSemana);
+      week = weekColumns.map((column) => {
+        return {
+          ...column,
+          dia: diasSemana[column["position"]].dia,
+          mes: diasSemana[column["position"]].mes,
+          ano: diasSemana[column["position"]].ano,
+        };
+      });
+      setWeekColumns(week);
+    }
+
+    if (mesAnoConsiderado && numeroSemana !== 1) {
+      diasSemana = construirOutrasSemanaCalendario(
+        dataInicioCalendario,
+        diasSemana,
+        diaDaSemanaNumerico,
+        numeroSemana,
+      );
+      const deveExibirSemana = existeSemanaNoIntervaloRecreio(
+        diasSemana,
+        mesAnoConsiderado,
+        datasRecreio?.inicio,
+        datasRecreio?.fim,
+      );
+
+      if (deveExibirSemana) {
+        setDiasDaSemanaSelecionada(diasSemana);
+        week = weekColumns.map((column) => {
+          return {
+            ...column,
+            dia: diasSemana[column["position"]].dia,
+            mes: diasSemana[column["position"]].mes,
+            ano: diasSemana[column["position"]].ano,
+          };
+        });
+        setWeekColumns(week);
+      }
+    }
+  };
+
+  const construirPrimeiraSemanaCalendario = (
+    diasSemana,
+    dataInicioCalendario,
+    diaDaSemanaNumerico,
+  ) => {
+    diasSemana.unshift({
+      dia: format(dataInicioCalendario, "dd"),
+      mes: format(dataInicioCalendario, "MM"),
+      ano: format(dataInicioCalendario, "yyyy"),
+    });
+
+    for (let i = 1; i < diaDaSemanaNumerico; i++) {
+      const data = subDays(dataInicioCalendario, i);
+      diasSemana.unshift({
+        dia: format(data, "dd"),
+        mes: format(data, "MM"),
+        ano: format(data, "yyyy"),
+      });
+    }
+    for (let i = diaDaSemanaNumerico; i < 7; i++) {
+      const data = addDays(dataInicioCalendario, i + 1 - diaDaSemanaNumerico);
+      diasSemana.push({
+        dia: format(data, "dd"),
+        mes: format(data, "MM"),
+        ano: format(data, "yyyy"),
+      });
+    }
+
+    return diasSemana;
+  };
+
+  const construirOutrasSemanaCalendario = (
+    dataInicioCalendario,
+    diasSemana,
+    diaDaSemanaNumerico,
+    numeroSemana,
+  ) => {
+    let dia = addDays(dataInicioCalendario, 7 * (numeroSemana - 1));
+    diasSemana.unshift({
+      dia: format(dia, "dd"),
+      mes: format(dia, "MM"),
+      ano: format(dia, "yyyy"),
+    });
+
+    for (let i = 1; i < diaDaSemanaNumerico; i++) {
+      const data = subDays(dia, i);
+      diasSemana.unshift({
+        dia: format(data, "dd"),
+        mes: format(data, "MM"),
+        ano: format(data, "yyyy"),
+      });
+    }
+
+    for (let i = diaDaSemanaNumerico; i < 7; i++) {
+      const data = addDays(dia, i + 1 - diaDaSemanaNumerico);
+      diasSemana.push({
+        dia: format(data, "dd"),
+        mes: format(data, "MM"),
+        ano: format(data, "yyyy"),
+      });
+    }
+
+    return diasSemana;
+  };
+
+  const obterDataInicioCalendario = (mesAnoConsiderado) => {
+    return ehRecreioNasFerias()
+      ? mesAnoConsiderado
+      : startOfMonth(mesAnoConsiderado);
+  };
+
+  const obterDiaNumericoDaSemana = (mesAnoConsiderado, dataInicoRecreio) => {
+    let diaDaSemanaNumerico = 0;
+    if (ehRecreioNasFerias() && dataInicoRecreio) {
+      diaDaSemanaNumerico = getDay(dataInicoRecreio);
+    } else {
+      diaDaSemanaNumerico = getDay(startOfMonth(mesAnoConsiderado)); // 0 representa Domingo
+    }
+
+    if (diaDaSemanaNumerico === 0) {
+      diaDaSemanaNumerico = 7;
+    }
+
+    return diaDaSemanaNumerico;
+  };
+
+  const datasInicoFimRecreio = () => {
+    const dataRecreio =
+      location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
+    const dataInicoRecreio = parse(
+      dataRecreio.data_inicio,
+      "dd/MM/yyyy",
+      new Date(),
+      { locale: ptBR },
+    );
+    const dataFimRecreio = parse(
+      dataRecreio.data_fim,
+      "dd/MM/yyyy",
+      new Date(),
+      {
+        locale: ptBR,
+      },
+    );
+
+    return { inicio: dataInicoRecreio, fim: dataFimRecreio };
   };
 
   return (

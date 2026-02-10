@@ -1,4 +1,5 @@
 import { deepCopy } from "src/helpers/utilities";
+import { format } from "date-fns";
 
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
@@ -722,4 +723,20 @@ export const frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao = (
       `observacoes__dia_${column.dia}__categoria_${categoria.id}`
     ]
   );
+};
+
+export const verificarMesAnteriorOuPosterior = (column, mesAnoConsiderado) => {
+  let result = null;
+  const mesAtual = format(mesAnoConsiderado, "MM");
+  const anoAtual = format(mesAnoConsiderado, "yyyy");
+  if (column.mes !== mesAtual) {
+    const dataColumn = new Date(`${column.ano}-${column.mes}-01`);
+    const dataAtual = new Date(`${anoAtual}-${mesAtual}-01`);
+    if (dataColumn < dataAtual) {
+      result = "Mês anterior";
+    } else if (dataColumn > dataAtual) {
+      result = "Mês posterior";
+    }
+  }
+  return result;
 };

@@ -94,11 +94,12 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
     });
 
   valoresMedicao = valoresMedicao.filter((valorMed) => {
+    const diaExiste = diasDaSemanaSelecionada.some(
+      (diaObj) => diaObj.dia === valorMed.dia,
+    );
     return (
       !(valorMed.nome_campo === "observacoes" && valorMed.valor === 0) &&
-      diasDaSemanaSelecionada.some(
-        (d) => (typeof d === "object" ? d.dia : d) === valorMed.dia,
-      )
+      diaExiste
     );
   });
 
