@@ -43,7 +43,8 @@ export function TabelaAlimentacao({
           const valorUnitario = stringDecimalToNumber(
             tabela?.valores.find(
               (v: ValorTabela) =>
-                v.tipo_alimentacao.uuid === tipo.uuid &&
+                (v.tipo_alimentacao?.uuid === tipo.uuid ||
+                  v.nome_campo === "kit_lanche") &&
                 v.tipo_valor === "UNITARIO",
             )?.valor ?? "0",
           );
@@ -51,19 +52,24 @@ export function TabelaAlimentacao({
           const valorReajuste = stringDecimalToNumber(
             tabela?.valores.find(
               (v: ValorTabela) =>
-                v.tipo_alimentacao.uuid === tipo.uuid &&
+                (v.tipo_alimentacao?.uuid === tipo.uuid ||
+                  v.nome_campo === "kit_lanche") &&
                 v.tipo_valor === "REAJUSTE",
             )?.valor ?? "0",
           );
 
-          let nomeCampoAtendimento = `total_${tipo.nome
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/\s+/g, "_")
-            .toLowerCase()}`;
+          let nomeCampoAtendimento = "";
+          if (tipo.nome === "Kit Lanche")
+            nomeCampoAtendimento = "total_kit_lanche";
+          else
+            nomeCampoAtendimento = `total_${tipo.nome
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/\s+/g, "_")
+              .toLowerCase()}`;
 
           const numeroAtendimentos =
-            totaisConsumo?.["ALIMENTAÇÃO"][nomeCampoAtendimento] ?? 0;
+            totaisConsumo?.["ALIMENTAÇÃO"]?.[nomeCampoAtendimento] ?? 0;
 
           const totalUnitario = valorUnitario + valorReajuste;
           const valorTotal = totalUnitario * numeroAtendimentos;
