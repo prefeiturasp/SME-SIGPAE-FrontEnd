@@ -1,4 +1,4 @@
-export const mockRelatorioFinanceiroConsolidado = {
+export const mockRelatorioFinanceiroFaixaEtaria = {
   uuid: "2e8e3153-880f-454f-b5cf-9f87c2f77bf9",
   edital: {
     uuid: "752c11a3-b4fe-4f1c-b9af-61d42f0a6b56",
@@ -978,4 +978,340 @@ export const mockRelatorioFinanceiroConsolidado = {
     },
   ],
   mes_ano: "04_2023",
+};
+
+export const mockRelatorioFinanceiroTipoAlimentacao = {
+  uuid: "499ac934-5e98-46e1-a0dc-bb3a7a8fb7c4",
+  edital: {
+    uuid: "8b12fb07-ede8-4765-a5f7-56201a723e7a",
+    numero: "78/SME/2016",
+  },
+  lote: "655a63ff-dd0b-4259-86a0-cdd43ac36030",
+  grupo_unidade_escolar: {
+    tipos_unidades: [
+      {
+        uuid: "e4cf8827-bb88-4dd7-ad69-d0b50f40a771",
+        iniciais: "CEU EMEF",
+      },
+      {
+        uuid: "3b1ce66c-8760-4a68-8352-472d194fbda1",
+        iniciais: "CEU GESTAO",
+      },
+      {
+        uuid: "1cc69b3e-6210-4825-bf67-274d3c050bc0",
+        iniciais: "EMEF",
+      },
+      {
+        uuid: "f2134983-2267-4f1f-aa3f-bafdd0f41ae8",
+        iniciais: "EMEFM",
+      },
+    ],
+    nome: "Grupo 4",
+    uuid: "5bd9ad5c-e0ab-4812-b2b6-336fc8988960",
+  },
+  data_inicial: "01/09/2025",
+  data_final: "30/09/2025",
+  legenda:
+    "Fonte: Relatório de Medição Inicial do Serviço de Alimentação e Nutrição Escolar realizada pela direção das unidades educacionais, conforme disposto no edital Pregão XXX/XXX e nas Portarias Intersecretariais SMG/SME n° 005/2006 e 001/2008.",
+  tabelas: [
+    {
+      nome: "Preço das Alimentações",
+      periodo_escolar: null,
+      valores: [
+        {
+          faixa_etaria: null,
+          nome_campo: "refeição_-_ceu_emef,_ceu_gestão,_emef,_emefm",
+          tipo_valor: "REAJUSTE",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Refeição",
+            uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+            posicao: 3,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "refeição_-_ceu_emef,_ceu_gestão,_emef,_emefm",
+          tipo_valor: "UNITARIO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Refeição",
+            uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+            posicao: 3,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "refeição_-_eja",
+          tipo_valor: "REAJUSTE",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Refeição",
+            uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+            posicao: 3,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "refeição_-_eja",
+          tipo_valor: "UNITARIO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Refeição",
+            uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+            posicao: 3,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche_4h",
+          tipo_valor: "REAJUSTE",
+          valor: "2",
+          tipo_alimentacao: {
+            nome: "Lanche 4h",
+            uuid: "83fefd96-e476-42a0-81fc-75b9853b726c",
+            posicao: 1,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche_4h",
+          tipo_valor: "UNITARIO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Lanche 4h",
+            uuid: "83fefd96-e476-42a0-81fc-75b9853b726c",
+            posicao: 1,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche",
+          tipo_valor: "REAJUSTE",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Lanche",
+            uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+            posicao: 2,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche",
+          tipo_valor: "UNITARIO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Lanche",
+            uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+            posicao: 2,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "sobremesa",
+          tipo_valor: "REAJUSTE",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Sobremesa",
+            uuid: "5aa2c32b-1df2-46b6-b2e7-514b885fa9a4",
+            posicao: 4,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "sobremesa",
+          tipo_valor: "UNITARIO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Sobremesa",
+            uuid: "5aa2c32b-1df2-46b6-b2e7-514b885fa9a4",
+            posicao: 4,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche_emergencial",
+          tipo_valor: "REAJUSTE",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Lanche Emergencial",
+            uuid: "c4255a14-85fd-412f-b35f-30828215e4d5",
+            posicao: null,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche_emergencial",
+          tipo_valor: "UNITARIO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Lanche Emergencial",
+            uuid: "c4255a14-85fd-412f-b35f-30828215e4d5",
+            posicao: null,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "kit_lanche",
+          tipo_valor: "REAJUSTE",
+          valor: "6",
+          tipo_alimentacao: null,
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "kit_lanche",
+          tipo_valor: "UNITARIO",
+          valor: "6",
+          tipo_alimentacao: null,
+        },
+      ],
+    },
+    {
+      nome: "Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos",
+      periodo_escolar: null,
+      valores: [
+        {
+          faixa_etaria: null,
+          nome_campo:
+            "refeição_-_dieta_enteral_-_ceu_emef,_ceu_gestão,_emef,_emefm",
+          tipo_valor: "UNITARIO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Refeição",
+            uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+            posicao: 3,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo:
+            "refeição_-_dieta_enteral_-_ceu_emef,_ceu_gestão,_emef,_emefm",
+          tipo_valor: "ACRESCIMO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Refeição",
+            uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+            posicao: 3,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "refeição_-_dieta_enteral_-_eja",
+          tipo_valor: "UNITARIO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Refeição",
+            uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+            posicao: 3,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "refeição_-_dieta_enteral_-_eja",
+          tipo_valor: "ACRESCIMO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Refeição",
+            uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+            posicao: 3,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche",
+          tipo_valor: "UNITARIO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Lanche",
+            uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+            posicao: 2,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche",
+          tipo_valor: "ACRESCIMO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Lanche",
+            uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+            posicao: 2,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche_4h",
+          tipo_valor: "UNITARIO",
+          valor: "8,00",
+          tipo_alimentacao: {
+            nome: "Lanche 4h",
+            uuid: "83fefd96-e476-42a0-81fc-75b9853b726c",
+            posicao: 1,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche_4h",
+          tipo_valor: "ACRESCIMO",
+          valor: "6",
+          tipo_alimentacao: {
+            nome: "Lanche 4h",
+            uuid: "83fefd96-e476-42a0-81fc-75b9853b726c",
+            posicao: 1,
+          },
+        },
+      ],
+    },
+    {
+      nome: "Dietas Tipo B",
+      periodo_escolar: null,
+      valores: [
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche",
+          tipo_valor: "UNITARIO",
+          valor: "12,00",
+          tipo_alimentacao: {
+            nome: "Lanche",
+            uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+            posicao: 2,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche",
+          tipo_valor: "ACRESCIMO",
+          valor: "3",
+          tipo_alimentacao: {
+            nome: "Lanche",
+            uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+            posicao: 2,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche_4h",
+          tipo_valor: "UNITARIO",
+          valor: "8,00",
+          tipo_alimentacao: {
+            nome: "Lanche 4h",
+            uuid: "83fefd96-e476-42a0-81fc-75b9853b726c",
+            posicao: 1,
+          },
+        },
+        {
+          faixa_etaria: null,
+          nome_campo: "lanche_4h",
+          tipo_valor: "ACRESCIMO",
+          valor: "3",
+          tipo_alimentacao: {
+            nome: "Lanche 4h",
+            uuid: "83fefd96-e476-42a0-81fc-75b9853b726c",
+            posicao: 1,
+          },
+        },
+      ],
+    },
+  ],
+  mes_ano: "09_2025",
 };
