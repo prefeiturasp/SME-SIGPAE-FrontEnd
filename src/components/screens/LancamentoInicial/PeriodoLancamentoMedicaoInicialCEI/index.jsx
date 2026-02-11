@@ -688,42 +688,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
     categoriasMedicao &&
       categoriasMedicao.forEach((categoria) => {
-        // let diasSemana = [];
-        // let diaDaSemanaNumerico = getDay(startOfMonth(mesAno)); // 0 representa Domingo
-
-        // if (diaDaSemanaNumerico === 0) {
-        //   diaDaSemanaNumerico = 7;
-        // }
-        // if (Number(semanaSelecionada) === 1) {
-        //   diasSemana.unshift(format(startOfMonth(mesAno), "dd"));
-        //   for (let i = 1; i < diaDaSemanaNumerico; i++) {
-        //     diasSemana.unshift(format(subDays(startOfMonth(mesAno), i), "dd"));
-        //   }
-        //   for (let i = diaDaSemanaNumerico; i < 7; i++) {
-        //     diasSemana.push(
-        //       format(
-        //         addDays(startOfMonth(mesAno), i + 1 - diaDaSemanaNumerico),
-        //         "dd",
-        //       ),
-        //     );
-        //   }
-        // }
-        // if (Number(semanaSelecionada) !== 1) {
-        //   let dia = addDays(
-        //     startOfMonth(mesAno),
-        //     7 * (Number(semanaSelecionada) - 1),
-        //   );
-        //   diasSemana.unshift(format(dia, "dd"));
-        //   for (let i = 1; i < diaDaSemanaNumerico; i++) {
-        //     diasSemana.unshift(format(subDays(dia, i), "dd"));
-        //   }
-        //   for (let i = diaDaSemanaNumerico; i < 7; i++) {
-        //     diasSemana.push(
-        //       format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
-        //     );
-        //   }
-        // }
-
         logQtdDietasAutorizadasCEI &&
           logQtdDietasAutorizadasCEI.forEach((log) => {
             categoria.nome.includes("TIPO B") &&
@@ -1495,16 +1459,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       result = null;
     }
     result = verificarMesAnteriorOuPosterior(column, mesAnoConsiderado);
-    // if (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) {
-    //   result = "Mês anterior";
-    // }
-    // if (
-    //   [4, 5, 6].includes(Number(semanaSelecionada)) &&
-    //   Number(column.dia) < 10
-    // ) {
-    //   result = "Mês posterior";
-    // }
-
     return result;
   };
 
