@@ -17,7 +17,9 @@ import {
 import { EscolaSimplesContext } from "src/context/EscolaSimplesContext";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
+  ehEscolaTipoCEI,
   ehEscolaTipoCEISolicitacaoMedicao,
+  ehEscolaTipoCEMEI,
   ehEscolaTipoCEMEISolicitacaoMedicao,
   escolaNaoPossuiAlunosRegulares,
 } from "src/helpers/utilities";
@@ -369,6 +371,7 @@ export default () => {
         ano: getYear(new Date(periodoInicialSelecionado)).toString(),
         recreio_nas_ferias: recreioNasFeriasParam,
       });
+      const medicaoExistente = solicitacao?.data?.[0] || null;
       await getDiasCalendarioAsync(
         {
           escola_uuid: escola.uuid,
@@ -376,11 +379,11 @@ export default () => {
           ano: getYear(new Date(periodoInicialSelecionado)).toString(),
           recreio_nas_ferias: recreioNasFeriasParam,
         },
-        solicitacao.data[0],
+        medicaoExistente,
       );
-      setSolicitacaoMedicaoInicial(solicitacao.data[0]);
+      setSolicitacaoMedicaoInicial(medicaoExistente);
       await getPeriodosEscolaCemeiComAlunosEmeiAsync(
-        solicitacao.data[0],
+        medicaoExistente,
         mes,
         ano,
       );
@@ -402,8 +405,9 @@ export default () => {
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
-    await getDiasCalendarioAsync(payload, solicitacao.data[0]);
-    await setSolicitacaoMedicaoInicial(solicitacao.data[0]);
+    const medicaoExistente = solicitacao?.data?.[0] || null;
+    await getDiasCalendarioAsync(payload, medicaoExistente);
+    await setSolicitacaoMedicaoInicial(medicaoExistente);
   };
 
   const { Option } = Select;
@@ -498,6 +502,7 @@ export default () => {
       ano: getYear(new Date(value)).toString(),
       recreio_nas_ferias,
     });
+    const medicaoExistente = solicitacao?.data?.[0] || null;
     await getDiasCalendarioAsync(
       {
         escola_uuid: escolaInstituicao.uuid,
@@ -505,14 +510,10 @@ export default () => {
         ano: getYear(new Date(value)).toString(),
         recreio_nas_ferias,
       },
-      solicitacao.data[0],
+      medicaoExistente,
     );
-    setSolicitacaoMedicaoInicial(solicitacao.data[0]);
-    await getPeriodosEscolaCemeiComAlunosEmeiAsync(
-      solicitacao.data[0],
-      mes,
-      ano,
-    );
+    setSolicitacaoMedicaoInicial(medicaoExistente);
+    await getPeriodosEscolaCemeiComAlunosEmeiAsync(medicaoExistente, mes, ano);
     await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
       escolaInstituicao.uuid,
       mes,
@@ -545,7 +546,8 @@ export default () => {
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
-    setSolicitacaoMedicaoInicial(solicitacao.data[0]);
+    const medicaoExistente = solicitacao?.data?.[0] || null;
+    setSolicitacaoMedicaoInicial(medicaoExistente);
   };
 
   const handleFinalizarMedicao = async () => {
@@ -650,7 +652,9 @@ export default () => {
         {loadingSolicitacaoMedInicial ? (
           <Skeleton paragraph={false} active />
         ) : ehEscolaTipoCEISolicitacaoMedicao(solicitacaoMedicaoInicial) ||
-          ehEscolaTipoCEMEISolicitacaoMedicao(solicitacaoMedicaoInicial) ? (
+          ehEscolaTipoCEMEISolicitacaoMedicao(solicitacaoMedicaoInicial) ||
+          ehEscolaTipoCEI(escolaInstituicao) ||
+          ehEscolaTipoCEMEI(escolaInstituicao) ? (
           <InformacoesMedicaoInicialCEI
             periodoSelecionado={periodoSelecionado}
             escolaInstituicao={escolaInstituicao}
@@ -720,7 +724,9 @@ export default () => {
             periodosEscolaSimples &&
             !loadingSolicitacaoMedInicial &&
             (ehEscolaTipoCEISolicitacaoMedicao(solicitacaoMedicaoInicial) ||
-            ehEscolaTipoCEMEISolicitacaoMedicao(solicitacaoMedicaoInicial) ? (
+            ehEscolaTipoCEMEISolicitacaoMedicao(solicitacaoMedicaoInicial) ||
+            ehEscolaTipoCEI(escolaInstituicao) ||
+            ehEscolaTipoCEMEI(escolaInstituicao) ? (
               <LancamentoPorPeriodoCEI
                 panoramaGeral={panoramaGeral}
                 mes={mes}
