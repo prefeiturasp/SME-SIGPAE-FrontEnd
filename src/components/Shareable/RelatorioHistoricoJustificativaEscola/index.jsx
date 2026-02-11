@@ -14,8 +14,8 @@ export const RelatorioHistoricoJustificativaEscola = (props) => {
   let escolaQuantidade;
 
   if (solicitacao && visao === ESCOLA) {
-    escolaQuantidade = solicitacao.escolas_quantidades.filter(
-      (eq) => `"${eq.escola.nome}"` === nomeEscola
+    escolaQuantidade = solicitacao.escolas_quantidades.filter((eq) =>
+      eq.escola.nome.includes(nomeEscola.replace(/"/g, "")),
     )[0];
     EXIBIR_HISTORICO_CANCELAMENTO_ESCOLA = escolaQuantidade.cancelado;
   }
@@ -28,7 +28,7 @@ export const RelatorioHistoricoJustificativaEscola = (props) => {
     let justificativasFormatadas = [];
     let arrayHorariosCancelados = [];
     escolas_quantidades.forEach((eq) =>
-      arrayHorariosCancelados.push(eq.cancelado_em_com_hora)
+      arrayHorariosCancelados.push(eq.cancelado_em_com_hora),
     );
     let uniqueArrayHorarioCancelados = [...new Set(arrayHorariosCancelados)];
     uniqueArrayHorarioCancelados.forEach((dateTime) => {
@@ -41,7 +41,7 @@ export const RelatorioHistoricoJustificativaEscola = (props) => {
         +day,
         +hours,
         +minutes,
-        +seconds
+        +seconds,
       );
       const isoString = date.toISOString();
 
@@ -71,7 +71,7 @@ export const RelatorioHistoricoJustificativaEscola = (props) => {
     });
 
     return justificativasFormatadas.sort(
-      (a, b) => new Date(b.data_para_ordenar) - new Date(a.data_para_ordenar)
+      (a, b) => new Date(b.data_para_ordenar) - new Date(a.data_para_ordenar),
     );
   };
 
@@ -92,13 +92,13 @@ export const RelatorioHistoricoJustificativaEscola = (props) => {
                   <p className="mb-2">
                     {escolaQuantidade.cancelado_em_com_hora} -{" "}
                     {foiCanceladoPelaDRE(
-                      escolaQuantidade.cancelado_por.tipo_usuario
+                      escolaQuantidade.cancelado_por.tipo_usuario,
                     )
                       ? "DRE"
                       : "UNIDADE"}{" "}
                     CANCELOU -{" "}
                     {foiCanceladoPelaDRE(
-                      escolaQuantidade.cancelado_por.tipo_usuario
+                      escolaQuantidade.cancelado_por.tipo_usuario,
                     )
                       ? escolaQuantidade.escola.diretoria_regional.nome
                       : "USUÁRIO " + escolaQuantidade.cancelado_por.nome}
@@ -116,7 +116,7 @@ export const RelatorioHistoricoJustificativaEscola = (props) => {
             }
           </div>
         ) : solicitacao.escolas_quantidades.some(
-            (eq) => eq.cancelado && (visao === DRE || visao === CODAE)
+            (eq) => eq.cancelado && (visao === DRE || visao === CODAE),
           ) ? (
           <div className="question-history">
             <hr />
@@ -126,7 +126,7 @@ export const RelatorioHistoricoJustificativaEscola = (props) => {
               </div>
             </div>
             {formataJustificativasDRE(
-              solicitacao.escolas_quantidades.filter((eq) => eq.cancelado)
+              solicitacao.escolas_quantidades.filter((eq) => eq.cancelado),
             ).map((item, key) => {
               return (
                 <div className="question-log" key={key}>
