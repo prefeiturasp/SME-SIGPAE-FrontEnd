@@ -167,6 +167,8 @@ export const LancamentoPorPeriodoCEI = ({
           .concat(periodosEscolaCemeiComAlunosEmei);
 
         periodos = periodos.filter((periodo) => {
+          if (periodo.includes("PARCIAL")) return true;
+
           if (periodo.includes("INTEGRAL")) {
             const integralComAlunos = periodoComAlunos.filter(
               (p) => p.nome === "INTEGRAL" && p.quantidade_alunos > 0,
@@ -183,7 +185,10 @@ export const LancamentoPorPeriodoCEI = ({
             return false;
           }
 
-          return true;
+          const periodoNormalizado = periodo.replace(/^Infantil\s+/i, "");
+          return periodoComAlunos.some(
+            (p) => p.nome === periodo || p.nome === periodoNormalizado,
+          );
         });
       }
 
