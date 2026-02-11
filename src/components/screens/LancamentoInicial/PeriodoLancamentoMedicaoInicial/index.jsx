@@ -2424,12 +2424,13 @@ export default () => {
         : getWeeksInMonth(mesAnoSelecionado);
 
     let numeroSemanaCorreto = 0;
+    const primeiroDiaDoMes = startOfMonth(mesAnoSelecionado);
+    let diaDaSemana = getDay(primeiroDiaDoMes);
+    const offsetParaDomingo = diaDaSemana; // quantos dias para trás até o domingo
+    const domingoPrimeiraSemana = subDays(primeiroDiaDoMes, offsetParaDomingo);
     Array.from({ length: totalSemanas }).forEach((_, numeroSemana) => {
       const dias = [];
-      const inicioSemana = addDays(
-        startOfMonth(mesAnoSelecionado),
-        numeroSemana * 7,
-      );
+      const inicioSemana = addDays(domingoPrimeiraSemana, numeroSemana * 7);
       for (let i = 0; i < 7; i++) {
         const data = addDays(inicioSemana, i);
         dias.push({

@@ -25,6 +25,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   ehSolicitacoesAlimentacaoLocation,
   ehProgramasEProjetosLocation,
   ehRecreioNasFerias,
+  ehGrupoColaboradores,
 ) => {
   if (
     (ehEmeiDaCemeiLocation &&
@@ -33,7 +34,8 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
     (values["periodo_escolar"] &&
       values["periodo_escolar"].includes("Solicitações")) ||
     values["periodo_escolar"] === "ETEC" ||
-    values["periodo_escolar"] === "Programas e Projetos"
+    values["periodo_escolar"] === "Programas e Projetos" ||
+    ehRecreioNasFerias
   ) {
     values["grupo"] = values["periodo_escolar"];
     if (values["grupo"] && values["grupo"].includes("Solicitações")) {
@@ -68,7 +70,8 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
       if (
         ehEmeiDaCemeiLocation ||
         ehSolicitacoesAlimentacaoLocation ||
-        ehProgramasEProjetosLocation
+        ehProgramasEProjetosLocation ||
+        ehGrupoColaboradores
       ) {
         dia = keySplitted[1].match(/\d/g).join("");
         return valoresMedicao.push({
@@ -91,11 +94,12 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
     });
 
   valoresMedicao = valoresMedicao.filter((valorMed) => {
+    const diaExiste = diasDaSemanaSelecionada.some(
+      (diaObj) => diaObj.dia === valorMed.dia,
+    );
     return (
       !(valorMed.nome_campo === "observacoes" && valorMed.valor === 0) &&
-      diasDaSemanaSelecionada.some(
-        (d) => (typeof d === "object" ? d.dia : d) === valorMed.dia,
-      )
+      diaExiste
     );
   });
 
@@ -104,16 +108,14 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   });
 
   if (ehRecreioNasFerias) {
-    valoresMedicao = valoresMedicao.filter(
-      (item) => item.nome_campo !== "matriculados",
-    );
-    // eslint-disable-next-line no-unused-vars
-    const { periodo_escolar, ...rest } = values;
-    values = {
-      ...rest,
-      grupo: "Recreio nas Férias - de 0 a 3 anos e 11 meses",
-      valores_medicao: valoresMedicao,
-    };
+    valoresMedicao = valoresMedicao.map((item) => {
+      if (item.nome_campo === "participantes") {
+        // eslint-disable-next-line no-unused-vars
+        const { faixa_etaria, ...resto } = item;
+        return resto;
+      }
+      return item;
+    });
   }
 
   return { ...values, valores_medicao: valoresMedicao };
@@ -122,9 +124,12 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
 export const formatarPayloadParaCorrecao = (payload) => {
   let payloadParaCorrecao = payload.valores_medicao.filter(
     (valor) =>
-      !["matriculados", "dietas_autorizadas", "numero_de_alunos"].includes(
-        valor.nome_campo,
-      ),
+      ![
+        "matriculados",
+        "dietas_autorizadas",
+        "numero_de_alunos",
+        "participantes",
+      ].includes(valor.nome_campo),
   );
   return payloadParaCorrecao;
 };
@@ -148,6 +153,7 @@ export const deveExistirObservacao = (
       !key.includes("dietas_autorizadas") &&
       !key.includes("frequencia") &&
       !key.includes("observacoes") &&
+      !key.includes("participantes") &&
       !["Mês anterior", "Mês posterior", null].includes(value) &&
       diasNaoLetivos.some((dia) => key.includes(dia)),
   );
@@ -290,7 +296,7 @@ export const desabilitarField = (
               `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
             ],
           ) ||
-          rowName === "matriculados"
+          ["matriculados", "participantes"].includes(rowName)
         ) {
           return true;
         }
@@ -395,9 +401,12 @@ export const desabilitarField = (
       "MEDICAO_CORRIGIDA_PELA_UE",
       "MEDICAO_CORRIGIDA_PARA_CODAE",
     ].includes(location.state.status_periodo) &&
-    !["matriculados", "numero_de_alunos", "dietas_autorizadas"].includes(
-      rowName,
-    )
+    ![
+      "matriculados",
+      "numero_de_alunos",
+      "dietas_autorizadas",
+      "participantes",
+    ].includes(rowName)
   ) {
     if (location.state && ehEscolaTipoCEMEI({ nome: location.state.escola })) {
       if (
@@ -433,7 +442,12 @@ export const desabilitarField = (
       "MEDICAO_CORRIGIDA_PARA_CODAE",
     ].includes(location.state.status_periodo) &&
       !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao)) ||
-    ["matriculados", "numero_de_alunos", "dietas_autorizadas"].includes(rowName)
+    [
+      "matriculados",
+      "numero_de_alunos",
+      "dietas_autorizadas",
+      "participantes",
+    ].includes(rowName)
   ) {
     return true;
   }
@@ -831,7 +845,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
   if (ehRecreioNasFerias) {
     linhasTabelaAlimentacaoCEI.push({
       nome: "Participantes",
-      name: "matriculados",
+      name: "participantes",
       uuid: null,
       faixa_etaria: null,
     });
@@ -882,6 +896,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   ehSolicitacoesAlimentacaoLocation,
   alimentacoesLancamentosEspeciais,
   ehProgramasEProjetosLocation,
+  ehGrupoColaboradores,
 ) => {
   const tiposAlimentacaoFormatadas = tiposAlimentacao.map((alimentacao) => {
     return {
@@ -942,6 +957,8 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   }
 
   const matriculadosOuNumeroDeAlunos = () => {
+    const name = ehGrupoColaboradores ? "participantes" : "matriculados";
+    const nome = ehGrupoColaboradores ? "Participantes" : "matriculados";
     return ehProgramasEProjetosLocation
       ? {
           nome: "Número de Alunos",
@@ -949,8 +966,8 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
           uuid: null,
         }
       : {
-          nome: "Matriculados",
-          name: "matriculados",
+          nome: nome,
+          name: name,
           uuid: null,
         };
   };
@@ -1053,7 +1070,7 @@ export const formatarLinhasTabelasDietasCEI = (
         });
     });
   } else {
-    response_log_dietas_autorizadas_cei.data.forEach((log) => {
+    response_log_dietas_autorizadas_cei?.data?.forEach((log) => {
       !faixas_etarias_dieta.find(
         (faixa) => faixa === log.faixa_etaria.__str__,
       ) && faixas_etarias_dieta.push(log.faixa_etaria.__str__);
@@ -1455,6 +1472,7 @@ export const valorZeroFrequenciaCEI = (
         "observacoes",
         "dietas_autorizadas",
         "numero_de_alunos",
+        "participantes",
       ].includes(linha.name) &&
         form.change(
           `${linha.name}__dia_${dia}__categoria_${categoria.id}`,

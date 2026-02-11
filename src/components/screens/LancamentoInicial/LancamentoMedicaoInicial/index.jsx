@@ -345,7 +345,8 @@ export default () => {
           const cadastro = cadastrosRecreioPreparados.find(
             (c) =>
               c.anoInicio === Number(anoParam) &&
-              c.mesInicio === Number(mesParam),
+              c.mesInicio === Number(mesParam) &&
+              c.uuid === recreioNasFeriasParam,
           );
           return cadastro.dataInicio.toString();
         }
