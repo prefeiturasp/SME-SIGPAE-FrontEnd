@@ -18,6 +18,7 @@ import { mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCEMEIAgosto2024 } from 
 import { mockAlunos } from "src/mocks/services/perfil.service/alunos";
 import { mockSolicitacaoMedicaoInicialCEMEI } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEMEI/solicitacaoMedicaoInicial";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
+import { mockGetMatriculadosPeriodo } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEMEI/mockGetMatriculadosPeriodo";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
@@ -78,6 +79,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
         200,
         mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCEMEIAgosto2024,
       );
+    mock.onGet("/matriculados-no-mes/").reply(200, mockGetMatriculadosPeriodo);
 
     const search = `?mes=08&ano=2024`;
     Object.defineProperty(window, "location", {
