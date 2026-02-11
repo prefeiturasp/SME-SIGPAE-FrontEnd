@@ -25,6 +25,7 @@ import {
   getPeriodosInclusaoContinua,
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
   getSolicitacoesKitLanchesAutorizadasEscola,
+  getMatriculadosPeriodo,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
   escolaEnviaCorrecaoMedicaoInicialCODAE,
@@ -112,33 +113,95 @@ export const LancamentoPorPeriodoCEI = ({
   };
 
   useEffect(() => {
-    let periodos = [
-      ...new Set(
-        periodosEscolaSimples.map((periodo) => periodo.periodo_escolar.nome),
-      ),
-    ];
-    if (
-      solicitacaoMedicaoInicial?.ue_possui_alunos_periodo_parcial ||
-      solicitacaoMedicaoInicial?.escola_cei_com_inclusao_parcial_autorizada
-    ) {
-      if (!periodos.includes("PARCIAL")) {
-        const indexPeriodoParcial = periodos.includes("INTEGRAL")
-          ? periodos.indexOf("INTEGRAL") + 1
-          : 0;
-        periodos.splice(indexPeriodoParcial, 0, "PARCIAL");
-      }
-    }
+    const fetchPeriodoMensal = async () => {
+      const params_matriculados = {
+        escola_uuid: escolaInstituicao.uuid,
+        mes: mes,
+        ano: ano,
+        tipo_turma: "REGULAR",
+      };
 
-    if (ehEscolaTipoCEMEI(escolaInstituicao)) {
-      periodos = periodos
-        .filter((periodo) => !["MANHA", "TARDE"].includes(periodo))
-        .concat(periodosEscolaCemeiComAlunosEmei);
-    }
-    setPeriodosComAlunos(periodos);
+      const response_matriculados =
+        await getMatriculadosPeriodo(params_matriculados);
+      const periodoComAlunos = response_matriculados.data.reduce(
+        (acc, item) => {
+          const jaAdicionado = acc.find(
+            (p) =>
+              p.nome === item.periodo_escolar.nome &&
+              p.cei_ou_emei === item.cei_ou_emei,
+          );
+
+          if (item.quantidade_alunos > 0 && !jaAdicionado) {
+            acc.push({
+              nome: item.periodo_escolar.nome,
+              posicao: item.periodo_escolar.posicao,
+              cei_ou_emei: item.cei_ou_emei,
+              quantidade_alunos: item.quantidade_alunos,
+            });
+          }
+          return acc;
+        },
+        [],
+      );
+
+      let periodos = [
+        ...new Set(
+          periodosEscolaSimples.map((periodo) => periodo.periodo_escolar.nome),
+        ),
+      ];
+      if (
+        solicitacaoMedicaoInicial?.ue_possui_alunos_periodo_parcial ||
+        solicitacaoMedicaoInicial?.escola_cei_com_inclusao_parcial_autorizada
+      ) {
+        if (!periodos.includes("PARCIAL")) {
+          const indexPeriodoParcial = periodos.includes("INTEGRAL")
+            ? periodos.indexOf("INTEGRAL") + 1
+            : 0;
+          periodos.splice(indexPeriodoParcial, 0, "PARCIAL");
+        }
+      }
+
+      if (ehEscolaTipoCEMEI(escolaInstituicao)) {
+        periodos = periodos
+          .filter((periodo) => !["MANHA", "TARDE"].includes(periodo))
+          .concat(periodosEscolaCemeiComAlunosEmei);
+
+        periodos = periodos.filter((periodo) => {
+          if (periodo.includes("PARCIAL")) return true;
+
+          if (periodo.includes("INTEGRAL")) {
+            const integralComAlunos = periodoComAlunos.filter(
+              (p) => p.nome === "INTEGRAL" && p.quantidade_alunos > 0,
+            );
+
+            if (periodo === "Infantil INTEGRAL") {
+              return integralComAlunos.some((p) => p.cei_ou_emei === "EMEI");
+            }
+
+            if (periodo === "INTEGRAL") {
+              return integralComAlunos.some((p) => p.cei_ou_emei === "CEI");
+            }
+
+            return false;
+          }
+
+          const periodoNormalizado = periodo.replace(/^Infantil\s+/i, "");
+          return periodoComAlunos.some(
+            (p) => p.nome === periodo || p.nome === periodoNormalizado,
+          );
+        });
+      }
+
+      setPeriodosComAlunos(periodos, periodosEscolaCemeiComAlunosEmei);
+    };
+
+    fetchPeriodoMensal();
   }, [
     escolaInstituicao,
     solicitacaoMedicaoInicial,
     quantidadeAlimentacoesLancadas,
+    mes,
+    ano,
   ]);
 
   const renderBotaoFinalizar = () => {

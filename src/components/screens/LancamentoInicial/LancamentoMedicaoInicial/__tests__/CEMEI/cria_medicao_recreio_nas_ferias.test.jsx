@@ -26,6 +26,7 @@ import { mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025CEMEI } from "src/moc
 import { mockSolicitacaoComRecreioNasFeriasCriadaDezembro2025CEMEI } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/Dezembro2025/solicitacaoRecreioNasFeriasCriada";
 import { mockPanoramaEscolaCEMEIDezembro2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEMEI/Dezembro2025/panoramaEscola";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
+import { mockGetMatriculadosPeriodo } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEMEI/mockGetMatriculadosPeriodo";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
@@ -86,6 +87,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Cria Medição com
         "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
       .reply(200, { results: [] });
+    mock.onGet("/matriculados-no-mes/").reply(200, mockGetMatriculadosPeriodo);
 
     const search = `?mes=12&ano=2025`;
     Object.defineProperty(window, "location", {
