@@ -217,10 +217,12 @@ export default ({
       payload.eh_servidor = "S";
     }
 
+    setCarregando(true);
+    setShowCadastro(false);
     let response = await cadastrarVinculo(payload);
     if (response.status === 201) {
+      setCarregando(false);
       toastSuccess("Acesso adicionado com sucesso!");
-      setShowCadastro(false);
       buscarVinculos(page);
     } else {
       if (
@@ -228,10 +230,12 @@ export default ({
         response.data.length &&
         ehErroEmail(response.data[0])
       ) {
+        setCarregando(false);
         toastError(
           "Erro ao adicionar acesso ao usuário: já existe um usuário com este e-mail cadastrado!",
         );
       } else {
+        setCarregando(false);
         toastError(
           "Erro ao adicionar acesso ao usuário, procure o administrador do SIGPAE na sua Unidade!",
         );
