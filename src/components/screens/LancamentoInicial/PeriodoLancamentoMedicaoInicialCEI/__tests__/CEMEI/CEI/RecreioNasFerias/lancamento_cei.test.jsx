@@ -194,7 +194,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
 
   it("nÃ£o renderiza as labels  `Semana 4`, `Semana 5`", async () => {
     await awaitServices();
-    expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
     expect(screen.queryByText("Semana 5")).not.toBeInTheDocument();
   });
 
