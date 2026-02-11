@@ -162,6 +162,10 @@ export const LancamentoPorPeriodoCEI = ({
       }
 
       if (ehEscolaTipoCEMEI(escolaInstituicao)) {
+        periodos = periodos
+          .filter((periodo) => !["MANHA", "TARDE"].includes(periodo))
+          .concat(periodosEscolaCemeiComAlunosEmei);
+
         periodos = periodos.filter((periodo) => {
           if (periodo.includes("INTEGRAL")) {
             const integralComAlunos = periodoComAlunos.filter(
@@ -175,14 +179,12 @@ export const LancamentoPorPeriodoCEI = ({
             if (periodo === "INTEGRAL") {
               return integralComAlunos.some((p) => p.cei_ou_emei === "CEI");
             }
+
+            return false;
           }
 
           return true;
         });
-
-        periodos = periodos
-          .filter((periodo) => !["MANHA", "TARDE"].includes(periodo))
-          .concat(periodosEscolaCemeiComAlunosEmei);
       }
 
       setPeriodosComAlunos(periodos, periodosEscolaCemeiComAlunosEmei);
