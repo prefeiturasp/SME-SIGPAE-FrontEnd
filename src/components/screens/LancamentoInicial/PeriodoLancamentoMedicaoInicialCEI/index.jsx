@@ -912,22 +912,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                   if (result) {
                     dadosValoresForaDoMes[nameInputField] = result;
                   }
-                  // if (
-                  //   Number(semanaSelecionada) === 1 &&
-                  //   Number(dia) > 20 &&
-                  //   diasSemana.includes(dia)
-                  // ) {
-                  //   result = "Mês anterior";
-                  //   dadosValoresForaDoMes[nameInputField] = result;
-                  // }
-                  // if (
-                  //   [4, 5, 6].includes(Number(semanaSelecionada)) &&
-                  //   Number(dia) < 10 &&
-                  //   diasSemana.includes(dia)
-                  // ) {
-                  //   result = "Mês posterior";
-                  //   dadosValoresForaDoMes[nameInputField] = result;
-                  // }
                 }
               }),
           );
@@ -1065,65 +1049,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   useEffect(() => {
-    // let diasSemana = [];
-    // let diaDaSemanaNumerico = getDay(startOfMonth(mesAnoConsiderado)); // 0 representa Domingo
-    // let week = [];
-    // setLoading(true);
-
-    // if (diaDaSemanaNumerico === 0) {
-    //   diaDaSemanaNumerico = 7;
-    // }
-    // if (mesAnoConsiderado && Number(semanaSelecionada) === 1) {
-    //   diasSemana.unshift(format(startOfMonth(mesAnoConsiderado), "dd"));
-    //   for (let i = 1; i < diaDaSemanaNumerico; i++) {
-    //     diasSemana.unshift(
-    //       format(subDays(startOfMonth(mesAnoConsiderado), i), "dd"),
-    //     );
-    //   }
-    //   for (let i = diaDaSemanaNumerico; i < 7; i++) {
-    //     diasSemana.push(
-    //       format(
-    //         addDays(
-    //           startOfMonth(mesAnoConsiderado),
-    //           i + 1 - diaDaSemanaNumerico,
-    //         ),
-    //         "dd",
-    //       ),
-    //     );
-    //   }
-    //   setDiasDaSemanaSelecionada(diasSemana.filter((dia) => Number(dia) < 20));
-    //   week = weekColumns.map((column) => {
-    //     return { ...column, dia: diasSemana[column["position"]] };
-    //   });
-    //   setWeekColumns(week);
-    // }
-    // if (mesAnoConsiderado && Number(semanaSelecionada) !== 1) {
-    //   let dia = addDays(
-    //     startOfMonth(mesAnoConsiderado),
-    //     7 * (Number(semanaSelecionada) - 1),
-    //   );
-    //   diasSemana.unshift(format(dia, "dd"));
-    //   for (let i = 1; i < diaDaSemanaNumerico; i++) {
-    //     diasSemana.unshift(format(subDays(dia, i), "dd"));
-    //   }
-    //   for (let i = diaDaSemanaNumerico; i < 7; i++) {
-    //     diasSemana.push(
-    //       format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
-    //     );
-    //   }
-    //   if ([4, 5, 6].includes(Number(semanaSelecionada))) {
-    //     setDiasDaSemanaSelecionada(
-    //       diasSemana.filter((dia) => Number(dia) > 10),
-    //     );
-    //   } else {
-    //     setDiasDaSemanaSelecionada(diasSemana);
-    //   }
-    //   week = weekColumns.map((column) => {
-    //     return { ...column, dia: diasSemana[column["position"]] };
-    //   });
-    //   setWeekColumns(week);
-    // }
-
     montarCalendario();
     const formatar = async () => {
       formatarDadosValoresMedicao(
@@ -2012,12 +1937,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         : getWeeksInMonth(mesAnoSelecionado);
 
     let numeroSemanaCorreto = 0;
+    const primeiroDiaDoMes = startOfMonth(mesAnoSelecionado);
+    let diaDaSemana = getDay(primeiroDiaDoMes);
+    const offsetParaDomingo = diaDaSemana; // quantos dias para trás até o domingo
+    const domingoPrimeiraSemana = subDays(primeiroDiaDoMes, offsetParaDomingo);
     Array.from({ length: totalSemanas }).forEach((_, numeroSemana) => {
       const dias = [];
-      const inicioSemana = addDays(
-        startOfMonth(mesAnoSelecionado),
-        numeroSemana * 7,
-      );
+      const inicioSemana = addDays(domingoPrimeiraSemana, numeroSemana * 7);
       for (let i = 0; i < 7; i++) {
         const data = addDays(inicioSemana, i);
         dias.push({
