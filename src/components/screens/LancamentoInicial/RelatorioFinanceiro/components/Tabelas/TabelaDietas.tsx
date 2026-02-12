@@ -47,6 +47,12 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
       }),
     }));
 
+    const prioridadeAlimentacao = (nome: string) => {
+      if (nome === "Refeição") return 0;
+      if (nome === "Refeição EJA") return 1;
+      return 2;
+    };
+
     const alimentacoes = useMemo(() => {
       const lista =
         tipoDieta === "TIPO A" ? ALIMENTACOES_TIPO_A : ALIMENTACOES_TIPO_B;
@@ -56,8 +62,8 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
         .flatMap((ta) => {
           if (ta.nome === "Refeição" && exibeNoturno) {
             return [
-              { ...ta, nome: "Refeição EJA", grupo: null },
-              { ...ta, grupo: null },
+              { ...ta, nome: "Refeição EJA", grupo: "Dieta Enteral" },
+              { ...ta, grupo: "Dieta Enteral" },
             ];
           }
 
@@ -66,8 +72,10 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
             grupo: ta.nome === "Refeição" ? "Dieta Enteral" : null,
           };
         })
-        .slice()
-        .reverse();
+        .sort(
+          (a, b) =>
+            prioridadeAlimentacao(a.nome) - prioridadeAlimentacao(b.nome),
+        );
     }, [tipoDieta, tiposAlimentacao, exibeNoturno]);
 
     return (

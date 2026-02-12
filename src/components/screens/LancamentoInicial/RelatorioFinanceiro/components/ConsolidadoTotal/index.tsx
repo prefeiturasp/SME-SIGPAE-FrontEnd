@@ -1,6 +1,7 @@
-import { formataMilharDecimal } from "src/helpers/utilities";
 import "./style.scss";
 import extenso from "extenso";
+import { formataMilharDecimal, formataMilhar } from "src/helpers/utilities";
+import { capitalize } from "src/helpers/utilities";
 
 type Props = {
   titulo: string;
@@ -16,7 +17,7 @@ export function ConsolidadoTotal({ titulo, quantidade, valor }: Props) {
         <div className="bloco">
           <span className="bloco-titulo">QUANTIDADE SERVIDA (A + B + C):</span>
           <div className="caixa quantidade">
-            <span className="valor">{quantidade}</span>
+            <span className="valor">{formataMilhar(quantidade)}</span>
             <span className="unidade">ALIMENTAÇÕES</span>
           </div>
         </div>
@@ -27,10 +28,12 @@ export function ConsolidadoTotal({ titulo, quantidade, valor }: Props) {
           <div className="caixa valor">
             <span className="valor">R$ {formataMilharDecimal(valor)}</span>
             <span className="extenso">
-              {extenso(valor, {
-                mode: "currency",
-                locale: "br",
-              })}
+              {`(${capitalize(
+                extenso(valor, {
+                  mode: "currency",
+                  locale: "br",
+                }),
+              )}.)`}
             </span>
           </div>
         </div>

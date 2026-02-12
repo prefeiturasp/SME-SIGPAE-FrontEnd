@@ -21,9 +21,10 @@ export function RelatorioFinanceiroConsolidado() {
   const [faixasEtarias, setFaixasEtarias] = useState<FaixaEtaria[]>([]);
   const [totaisConsumo, setTotaisConsumo] = useState<any>([]);
   const [tiposAlimentacao, setTiposAlimentacao] = useState<any[]>([]);
+  const [carregando, setCarregando] = useState<boolean>(false);
 
   const {
-    carregando,
+    carregando: carregandoRelatorio,
     lotes,
     gruposUnidadeEscolar,
     mesesAnos,
@@ -47,6 +48,7 @@ export function RelatorioFinanceiroConsolidado() {
       (e) => e.value === state.grupo_unidade_escolar[0],
     )?.label;
 
+    setCarregando(true);
     const response = await getTotaisAtendimentoConsumo({
       mes: mes,
       ano: ano,
@@ -57,6 +59,7 @@ export function RelatorioFinanceiroConsolidado() {
         ? "faixa_etaria"
         : "tipo_alimentacao",
     });
+    setCarregando(false);
 
     if (response.status === HTTP_STATUS.OK) setTotaisConsumo(response.data);
     else toastError("Erro ao carregar totais de atendimento e consumo.");
@@ -148,7 +151,7 @@ export function RelatorioFinanceiroConsolidado() {
 
   return (
     <div className="relatorio-consolidado">
-      <Spin tip="Carregando..." spinning={carregando}>
+      <Spin tip="Carregando..." spinning={carregando || carregandoRelatorio}>
         <div className="card mt-3">
           <div className="card-body">
             <Form key={state} onSubmit={() => {}} initialValues={state}>
