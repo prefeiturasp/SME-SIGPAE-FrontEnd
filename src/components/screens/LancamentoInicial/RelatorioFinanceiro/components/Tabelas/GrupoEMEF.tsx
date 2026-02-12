@@ -15,11 +15,14 @@ export default ({
   tiposAlimentacao,
   totaisConsumo,
 }: Props) => {
-  const REFEICAO = tiposAlimentacao.find((e: TipoAlimentacao) =>
-    normalizar(e.nome),
-  );
+  const verificaRefeicao = (e: TipoAlimentacao) => {
+    return normalizar(e.nome) === "refeicao";
+  };
+
+  const REFEICAO = tiposAlimentacao.find((e) => verificaRefeicao(e));
+
   const _TIPOS_SEM_REFEICAO = tiposAlimentacao.filter(
-    (e: TipoAlimentacao) => normalizar(e.nome) !== normalizar("Refeição"),
+    (e) => !verificaRefeicao(e),
   );
 
   const _TIPOS_ALIMENTACAO = [
