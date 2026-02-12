@@ -5,7 +5,7 @@ import {
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { formataMilharDecimal } from "src/helpers/utilities";
 import { stringDecimalToNumber } from "src/helpers/parsers";
-import { TabelaDietasCEIHandle } from "../../types";
+import { TabelaDietasHandle } from "../../types";
 import { forwardRef, useImperativeHandle } from "react";
 
 type Props = {
@@ -26,7 +26,7 @@ const _TIPO_CLASS = {
   "TIPO B": "cor-tipo-b",
 };
 
-export const TabelaDietasCEI = forwardRef<TabelaDietasCEIHandle, Props>(
+export const TabelaDietasCEI = forwardRef<TabelaDietasHandle, Props>(
   ({ tabelas, tipoDieta, faixasEtarias, totaisConsumo, ordem }, ref) => {
     let totalConsumoGeral = 0;
     let valorTotalGeral = 0;
