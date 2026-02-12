@@ -16,11 +16,9 @@ const authToken = {
 
 export const getTerceirizada = async (filtros = null) => {
   let url = "/terceirizadas/";
-  if (filtros) {
-    url += `?${filtros}`;
-  }
+
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(url, { params: filtros });
     return { data: response.data, status: response.status };
   } catch (error) {
     toastError(getMensagemDeErro(error.response.status));
