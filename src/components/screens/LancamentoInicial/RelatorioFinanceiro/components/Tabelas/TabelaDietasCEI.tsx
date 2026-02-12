@@ -5,7 +5,7 @@ import {
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { formataMilharDecimal } from "src/helpers/utilities";
 import { stringDecimalToNumber } from "src/helpers/parsers";
-import { TabelaDietasCEIHandle } from "../../types";
+import { TabelaDietasHandle } from "../../types";
 import { forwardRef, useImperativeHandle } from "react";
 
 type Props = {
@@ -26,7 +26,7 @@ const _TIPO_CLASS = {
   "TIPO B": "cor-tipo-b",
 };
 
-export const TabelaDietasCEI = forwardRef<TabelaDietasCEIHandle, Props>(
+export const TabelaDietasCEI = forwardRef<TabelaDietasHandle, Props>(
   ({ tabelas, tipoDieta, faixasEtarias, totaisConsumo, ordem }, ref) => {
     let totalConsumoGeral = 0;
     let valorTotalGeral = 0;
@@ -76,12 +76,18 @@ export const TabelaDietasCEI = forwardRef<TabelaDietasCEIHandle, Props>(
                 )?.valor ?? "0",
               );
 
-              const totalUnitario = valorUnitario * (1 + valorAcrescimo / 100);
               const numeroConsumo =
                 totaisConsumo?.[
                   `DIETA ESPECIAL - ${tipoDieta} - ${periodo.value}`
                 ]?.[faixa.__str__] ?? 0;
-              const valorTotal = totalUnitario * numeroConsumo;
+
+              const totalUnitario = Number(
+                (valorUnitario * (1 + valorAcrescimo / 100)).toFixed(2),
+              );
+
+              const valorTotal = Number(
+                (totalUnitario * numeroConsumo).toFixed(2),
+              );
 
               totalConsumoGeral += numeroConsumo;
               valorTotalGeral += valorTotal;

@@ -2,7 +2,7 @@ import { TabelaAlimentacaoCEI } from "./TabelaAlimentacaoCEI";
 import { TabelaDietasCEI } from "./TabelaDietasCEI";
 import { ConsolidadoTotal } from "../ConsolidadoTotal";
 import { useEffect, useRef, useState } from "react";
-import { TabelaAlimentacaoCEIHandle, TabelaDietasCEIHandle } from "../../types";
+import { TabelaAlimentacaoHandle, TabelaDietasHandle } from "../../types";
 import { FaixaEtaria } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { RelatorioFinanceiroConsolidado } from "src/interfaces/relatorio_financeiro.interface";
 
@@ -22,9 +22,9 @@ export default ({
     valor: 0,
   });
 
-  const refAlimentacao = useRef<TabelaAlimentacaoCEIHandle>(null);
-  const refDietaA = useRef<TabelaDietasCEIHandle>(null);
-  const refDietaB = useRef<TabelaDietasCEIHandle>(null);
+  const refAlimentacao = useRef<TabelaAlimentacaoHandle>(null);
+  const refDietaA = useRef<TabelaDietasHandle>(null);
+  const refDietaB = useRef<TabelaDietasHandle>(null);
 
   useEffect(() => {
     const alimentacao = refAlimentacao.current?.getTotais();

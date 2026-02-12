@@ -294,7 +294,7 @@ export const desabilitarField = (
           ["Mês anterior", "Mês posterior"].includes(
             values[
               `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-            ],
+            ] || values[`${rowName}__dia_${dia}__categoria_${categoria}`],
           ) ||
           ["matriculados", "participantes"].includes(rowName)
         ) {
