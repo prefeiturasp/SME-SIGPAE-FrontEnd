@@ -8,7 +8,10 @@ import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mo
 import { mockRelatoriosFinanceiro } from "src/mocks/services/relatorioFinanceiro.service/mockGetRelatoriosFinanceiro";
 import { mockGetMesesAnosMedicaoInicial } from "src/mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
 import { mockGetTiposUnidadeEscolarTiposAlimentacao } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolarTiposAlimentacao";
-import { mockTotaisAtendimentoFaixaEtaria } from "src/mocks/services/relatorioFinanceiro.service/mockGetTotaisConsumoAtendimento";
+import {
+  mockTotaisAtendimentoFaixaEtaria,
+  mockTotaisAtendimentoTipoAlimentacao,
+} from "src/mocks/services/relatorioFinanceiro.service/mockGetTotaisConsumoAtendimento";
 import {
   mockRelatorioFinanceiroFaixaEtaria,
   mockRelatorioFinanceiroTipoAlimentacao,
@@ -41,11 +44,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     mock
       .onGet("/tipos-unidade-escolar-agrupados/")
       .reply(200, mockGetTiposUnidadeEscolarTiposAlimentacao);
-    mock
-      .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
-      )
-      .reply(200, mockTotaisAtendimentoFaixaEtaria);
+
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
@@ -91,6 +90,11 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     mock
       .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
       .reply(200, mockRelatorioFinanceiroFaixaEtaria);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, mockTotaisAtendimentoFaixaEtaria);
 
     await setup();
 
@@ -105,6 +109,11 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     mock
       .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
       .reply(200, mockRelatorioFinanceiroFaixaEtaria);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, mockTotaisAtendimentoFaixaEtaria);
 
     await setup();
 
@@ -126,6 +135,12 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
         ).length,
       ).toBeGreaterThan(0);
     }
+
+    expect(
+      await screen.findByText("CONSOLIDADO TOTAL (A + B + C)"),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("98")).toBeInTheDocument();
+    expect(await screen.findByText("R$ 154.888,20")).toBeInTheDocument();
   });
 
   const verificaTabelaDietas = async () => {
@@ -157,6 +172,11 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
         ...mockRelatorioFinanceiroTipoAlimentacao,
         grupo_unidade_escolar: grupoEMEI,
       });
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, mockTotaisAtendimentoTipoAlimentacao);
 
     await setup(grupoEMEI.uuid);
 
@@ -175,6 +195,12 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     expect(screen.getByText("TOTAL (B)")).toBeInTheDocument();
 
     await verificaTabelaDietas();
+
+    expect(
+      await screen.findByText("CONSOLIDADO TOTAL (A + B + C)"),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("9.196")).toBeInTheDocument();
+    expect(await screen.findByText("R$ 101.226,08")).toBeInTheDocument();
   });
 
   it("deve exibir tabelas e valores do grupo 4 - EMEF", async () => {
@@ -188,6 +214,11 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
         ...mockRelatorioFinanceiroTipoAlimentacao,
         grupo_unidade_escolar: grupoEMEF,
       });
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, mockTotaisAtendimentoTipoAlimentacao);
 
     await setup(grupoEMEF.uuid);
 
@@ -206,19 +237,36 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     expect(screen.getByText("TOTAL (C)")).toBeInTheDocument();
 
     await verificaTabelaDietas();
-  });
-
-  it("deve exibir o consolidado total", async () => {
-    mock
-      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
-      .reply(200, mockRelatorioFinanceiroFaixaEtaria);
-
-    await setup();
 
     expect(
-      await screen.findByText("CONSOLIDADO TOTAL (A + B + C)"),
+      await screen.findByText("QUANTIDADE SERVIDA (A + B + C):"),
     ).toBeInTheDocument();
-    expect(await screen.findByText("98")).toBeInTheDocument();
-    expect(await screen.findByText("R$ 154.888,20")).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "(Cento e dois mil quatrocentos e sessenta e oito reais e cinquenta e seis centavos.)",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("deve exibir tabelas e valores do grupo 6 - CIEJA", async () => {
+    const grupoCIEJA = gruposUnidadeEscolar.find((grupo) =>
+      grupo.nome.includes("Grupo 6"),
+    );
+
+    mock
+      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
+      .reply(200, {
+        ...mockRelatorioFinanceiroTipoAlimentacao,
+        grupo_unidade_escolar: grupoCIEJA,
+      });
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, mockTotaisAtendimentoTipoAlimentacao);
+
+    await setup(grupoCIEJA.uuid);
+
+    expect(await screen.findByText("(Zero centavos.)")).toBeInTheDocument();
   });
 });
