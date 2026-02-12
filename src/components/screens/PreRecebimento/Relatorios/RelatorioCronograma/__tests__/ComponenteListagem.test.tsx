@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import Listagem from "../components/Listagem";
 import { CronogramaRelatorio } from "../interfaces";
@@ -88,6 +88,28 @@ describe("Componente Listagem - Relatório Cronograma", () => {
     expect(screen.getByText("CRONO002")).toBeInTheDocument();
     expect(screen.getByText("Feijão Carioca")).toBeInTheDocument();
     expect(screen.getByText("EMPRESA B")).toBeInTheDocument();
+  });
+
+  it("deve exibir tooltip com nome completo do produto ao fazer hover", async () => {
+    const setAtivos = jest.fn();
+    render(
+      <Listagem
+        objetos={mockCronogramas}
+        ativos={[]}
+        setAtivos={setAtivos}
+        setCarregando={jest.fn()}
+      />,
+    );
+
+    const nomeProduto = screen.getByText("Arroz Integral");
+
+    fireEvent.mouseEnter(nomeProduto);
+
+    await waitFor(() => {
+      const tooltip = document.querySelector(".ant-tooltip-inner");
+      expect(tooltip).toBeInTheDocument();
+      expect(tooltip).toHaveTextContent("Arroz Integral");
+    });
   });
 
   it("deve exibir ícone de expandir/recolher para cada cronograma", () => {

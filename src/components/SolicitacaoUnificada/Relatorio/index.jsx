@@ -128,7 +128,7 @@ const Relatorio = (props) => {
       },
       function () {
         toastError(toastAprovaMensagemErro);
-      }
+      },
     );
   };
 
@@ -144,8 +144,8 @@ const Relatorio = (props) => {
   if (solicitacaoUnificada && visao === ESCOLA) {
     const escolaQuantidade = solicitacaoUnificada.escolas_quantidades.filter(
       (eq) => {
-        return `"${eq.escola.nome}"` === nomeEscola;
-      }
+        return eq.escola.nome.includes(nomeEscola.replace(/"/g, ""));
+      },
     )[0];
     EXIBIR_BOTAO_NAO_APROVAR = !escolaQuantidade.cancelado;
   }
@@ -171,7 +171,7 @@ const Relatorio = (props) => {
     (solicitacaoUnificada.prioridade !== "REGULAR" ||
       (visao === CODAE && solicitacaoUnificada.prioridade !== "REGULAR")) &&
     [statusEnum.CODAE_A_AUTORIZAR, statusEnum.CODAE_QUESTIONADO].includes(
-      solicitacaoUnificada.status
+      solicitacaoUnificada.status,
     );
   const EXIBIR_MODAL_AUTORIZACAO =
     visao === CODAE &&
@@ -277,7 +277,7 @@ const Relatorio = (props) => {
                 />
               )}
               {visualizaBotoesDoFluxoSolicitacaoUnificada(
-                solicitacaoUnificada
+                solicitacaoUnificada,
               ) && (
                 <div className="form-group row float-end justify-content-end mt-4">
                   {EXIBIR_BOTAO_NAO_APROVAR && (
@@ -296,7 +296,7 @@ const Relatorio = (props) => {
                       (log) =>
                         log.status_evento_explicacao ===
                           "Terceirizada respondeu questionamento" &&
-                        !log.resposta_sim_nao
+                        !log.resposta_sim_nao,
                     ).length > 0 ? null : (
                       <Botao
                         texto={textoBotaoAprova}

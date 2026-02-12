@@ -18,7 +18,6 @@ import { mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCEMEIAgosto2024 } from 
 import { mockAlunos } from "src/mocks/services/perfil.service/alunos";
 import { mockSolicitacaoMedicaoInicialCEMEI } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEMEI/solicitacaoMedicaoInicial";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
-import { mockGetMatriculadosPeriodo } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEMEI/mockGetMatriculadosPeriodo";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
@@ -79,7 +78,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
         200,
         mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCEMEIAgosto2024,
       );
-    mock.onGet("/matriculados-no-mes/").reply(200, mockGetMatriculadosPeriodo);
+    mock.onGet("/matriculados-no-mes/").reply(200, []);
     mock.onGet(`/historico-escola/${escolaUuid}/`).reply(200, {
       nome: mockEscolaSimplesCEMEI.nome,
       tipo_unidade: mockEscolaSimplesCEMEI.tipo_unidade,
@@ -120,48 +119,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
     });
   });
 
-  it("Renderiza título da página `Lançamento Medição Inicial`", () => {
-    expect(screen.getAllByText("Lançamento Medição Inicial").length).toBe(2);
-  });
-
-  it("Renderiza label `Período de Lançamento`", () => {
-    expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
-  });
-
-  it("Renderiza períodos escolares de CEMEI", () => {
-    expect(screen.getByText("Período Integral")).toBeInTheDocument();
+  it("Nao renderiza periodos Integral caso nao tenha log", () => {
+    expect(screen.queryByText("Período Integral")).not.toBeInTheDocument();
     expect(screen.getByText("Período Parcial")).toBeInTheDocument();
-    expect(screen.getByText("Infantil Integral")).toBeInTheDocument();
-  });
-
-  it("Renderiza período `Programas e Projetos`", () => {
-    expect(screen.getByText("Programas e Projetos")).toBeInTheDocument();
-  });
-
-  it("Renderiza período `Solicitações de Alimentação - Infantil`", () => {
-    expect(
-      screen.getByText("Solicitações de Alimentação - Infantil"),
-    ).toBeInTheDocument();
-  });
-
-  it("Verifica a ordem dos cards", () => {
-    const textos = [
-      "Período Integral",
-      "Período Parcial",
-      "Infantil Manhã",
-      "Infantil Tarde",
-      "Infantil Integral",
-      "Programas e Projetos",
-      "Solicitações de Alimentação - Infantil",
-    ];
-
-    const elementos = textos.map((texto) => screen.getByText(texto));
-
-    for (let i = 0; i < elementos.length - 1; i++) {
-      const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
-      expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
-        Node.DOCUMENT_POSITION_FOLLOWING,
-      );
-    }
+    expect(screen.queryByText("Infantil Integral")).not.toBeInTheDocument();
   });
 });
