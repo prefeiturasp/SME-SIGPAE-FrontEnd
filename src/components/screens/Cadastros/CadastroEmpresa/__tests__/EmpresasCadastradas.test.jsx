@@ -71,6 +71,44 @@ describe("Carrega página de Empresas Cadastradas - Administrador Contratos", ()
 
     await waitFor(() => expect(getTerceirizada).toHaveBeenCalled());
   });
+
+  it("Verifica pesquisa nao chama api com menos de 3 caracteres", async () => {
+    await setup();
+    await waitFor(() => expect(getTerceirizada).toHaveBeenCalled());
+    getTerceirizada.mockClear();
+
+    const barraPesquisa = screen.getByPlaceholderText("Pesquisar");
+
+    // Testa com menos de 3 caracteres - NÃO deve chamar a API
+    fireEvent.change(barraPesquisa, {
+      target: { value: "Ag" },
+    });
+    await waitFor(() => {
+      expect(getTerceirizada).not.toHaveBeenCalled();
+    });
+  });
+
+  it("Verifica a funcionalidade de pesquisa com debounce e parâmetros corretos", async () => {
+    await setup();
+    await waitFor(() => expect(getTerceirizada).toHaveBeenCalled());
+    getTerceirizada.mockClear();
+
+    const barraPesquisa = screen.getByPlaceholderText("Pesquisar");
+
+    // Testa com 3 ou mais caracteres - DEVE chamar a API após 500ms
+    fireEvent.change(barraPesquisa, {
+      target: { value: "Agro" },
+    });
+
+    // Aguarda o debounce
+    await waitFor(
+      () => {
+        expect(getTerceirizada).toHaveBeenCalledTimes(1);
+      },
+      { timeout: 1000 },
+    );
+    expect(getTerceirizada).toHaveBeenCalledWith({ busca: "Agro" });
+  });
 });
 
 describe("Carrega página de Empresas Cadastradas - CODAE", () => {
