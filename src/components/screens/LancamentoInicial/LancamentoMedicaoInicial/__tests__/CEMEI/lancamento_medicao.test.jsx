@@ -80,6 +80,10 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI", () => {
         mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCEMEIAgosto2024,
       );
     mock.onGet("/matriculados-no-mes/").reply(200, mockGetMatriculadosPeriodo);
+    mock.onGet(`/historico-escola/${escolaUuid}/`).reply(200, {
+      nome: mockEscolaSimplesCEMEI.nome,
+      tipo_unidade: mockEscolaSimplesCEMEI.tipo_unidade,
+    });
 
     const search = `?mes=08&ano=2024`;
     Object.defineProperty(window, "location", {

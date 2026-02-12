@@ -959,22 +959,8 @@ export const ehEscolaTipoCEI = (escola) => {
   );
 };
 
-export const ehEscolaTipoCEISolicitacaoMedicao = (solicitacao) => {
-  const nome = (solicitacao && solicitacao.escola) || "";
-  return (
-    nome.startsWith("CEU CEI") ||
-    nome.startsWith("CEI") ||
-    nome.startsWith("CCI")
-  );
-};
-
 export const ehEscolaTipoCEMEI = (escola) => {
   const nome = (escola && escola.nome) || "";
-  return nome.startsWith("CEMEI") || nome.startsWith("CEU CEMEI");
-};
-
-export const ehEscolaTipoCEMEISolicitacaoMedicao = (solicitacao) => {
-  const nome = (solicitacao && solicitacao.escola) || "";
   return nome.startsWith("CEMEI") || nome.startsWith("CEU CEMEI");
 };
 

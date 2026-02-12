@@ -18,9 +18,7 @@ import { EscolaSimplesContext } from "src/context/EscolaSimplesContext";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
   ehEscolaTipoCEI,
-  ehEscolaTipoCEISolicitacaoMedicao,
   ehEscolaTipoCEMEI,
-  ehEscolaTipoCEMEISolicitacaoMedicao,
   escolaNaoPossuiAlunosRegulares,
 } from "src/helpers/utilities";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
@@ -28,6 +26,7 @@ import { getPanoramaEscola } from "src/services/dietaEspecial.service";
 import { getEscolaSimples } from "src/services/escola.service";
 import {
   getDiasCalendario,
+  getHistoricoEscola,
   getUltimoDiaComSolicitacaoAutorizadaNoMes,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getPeriodosPermissoesLancamentosEspeciaisMesAno } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
@@ -88,6 +87,7 @@ export default () => {
   const [comOcorrencias, setComOcorrencias] = useState("");
   const [opcaoSelecionada, setOpcaoSelecionada] = useState(null);
   const [arquivo, setArquivo] = useState([]);
+  const [historicoEscola, setHistoricoEscola] = useState();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,12 +98,8 @@ export default () => {
 
   let periodos = [];
 
-  const getPeriodosEscolaCemeiComAlunosEmeiAsync = async (
-    solicitacao,
-    mes,
-    ano,
-  ) => {
-    if (ehEscolaTipoCEMEISolicitacaoMedicao(solicitacao)) {
+  const getPeriodosEscolaCemeiComAlunosEmeiAsync = async (escola, mes, ano) => {
+    if (ehEscolaTipoCEMEI(escola)) {
       const payload = {
         mes,
         ano,
@@ -169,6 +165,19 @@ export default () => {
       );
     } else {
       toastError("Erro ao carregar cadastros de Recreio nas Férias.");
+    }
+  };
+
+  const getHistoricoEscolaAsync = async (uuidEscola, mes, ano) => {
+    const params = { ...mes, ...ano };
+    const response = await getHistoricoEscola(uuidEscola, params);
+
+    if (response.status === HTTP_STATUS.OK) {
+      setHistoricoEscola(response.data);
+      return response.data;
+    } else {
+      toastError("Erro ao carregar histórico da escola.");
+      return null;
     }
   };
 
@@ -281,9 +290,15 @@ export default () => {
       setMes(mes);
       setAno(ano);
 
+      const responseHistoricoEscola = await getHistoricoEscolaAsync(
+        escola.uuid,
+        { mes },
+        { ano },
+      );
+
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
         escola.uuid,
-        { ano, mes },
+        { ano },
       );
       setPeriodosEscolaSimples(response_vinculos.data.results);
       if (location.search || (mes && ano)) {
@@ -323,6 +338,11 @@ export default () => {
         setPeriodoFromSearchParam(periodoFromSearch);
       }
 
+      await getPeriodosEscolaCemeiComAlunosEmeiAsync(
+        responseHistoricoEscola,
+        mes,
+        ano,
+      );
       await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
         escola.uuid,
         mes,
@@ -366,27 +386,10 @@ export default () => {
 
       setObjectoPeriodos(periodos);
       setPeriodoSelecionado(periodoInicialSelecionado);
-      const solicitacao = await getSolicitacaoMedicaoInicial({
-        escola_uuid: escola.uuid,
-        mes: format(new Date(periodoInicialSelecionado), "MM").toString(),
-        ano: getYear(new Date(periodoInicialSelecionado)).toString(),
-        recreio_nas_ferias: recreioNasFeriasParam,
-      });
-      const medicaoExistente = solicitacao?.data?.[0] || null;
-      await getDiasCalendarioAsync(
-        {
-          escola_uuid: escola.uuid,
-          mes: format(new Date(periodoInicialSelecionado), "MM").toString(),
-          ano: getYear(new Date(periodoInicialSelecionado)).toString(),
-          recreio_nas_ferias: recreioNasFeriasParam,
-        },
-        medicaoExistente,
-      );
-      setSolicitacaoMedicaoInicial(medicaoExistente);
-      await getPeriodosEscolaCemeiComAlunosEmeiAsync(
-        medicaoExistente,
-        mes,
-        ano,
+      await getSolicitacaoMedInicial(
+        periodoInicialSelecionado,
+        escola.uuid,
+        recreioNasFeriasParam,
       );
       setLoadingSolicitacaoMedicaoInicial(false);
     }
@@ -406,9 +409,8 @@ export default () => {
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
-    const medicaoExistente = solicitacao?.data?.[0] || null;
-    await getDiasCalendarioAsync(payload, medicaoExistente);
-    await setSolicitacaoMedicaoInicial(medicaoExistente);
+    await getDiasCalendarioAsync(payload, solicitacao.data[0]);
+    await setSolicitacaoMedicaoInicial(solicitacao.data[0]);
   };
 
   const { Option } = Select;
@@ -492,29 +494,21 @@ export default () => {
     const ano = getYear(new Date(value)).toString();
     setMes(mes);
     setAno(ano);
+    const historicoEscola = await getHistoricoEscolaAsync(
+      escolaInstituicao.uuid,
+      { mes },
+      { ano },
+    );
     const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
       escolaInstituicao.uuid,
       { ano },
     );
     setPeriodosEscolaSimples(response_vinculos.data.results);
-    const solicitacao = await getSolicitacaoMedicaoInicial({
-      escola_uuid: escolaInstituicao.uuid,
-      mes: format(new Date(value), "MM").toString(),
-      ano: getYear(new Date(value)).toString(),
-      recreio_nas_ferias,
-    });
-    const medicaoExistente = solicitacao?.data?.[0] || null;
-    await getDiasCalendarioAsync(
-      {
-        escola_uuid: escolaInstituicao.uuid,
-        mes: format(new Date(value), "MM").toString(),
-        ano: getYear(new Date(value)).toString(),
-        recreio_nas_ferias,
-      },
-      medicaoExistente,
+    await getPeriodosEscolaCemeiComAlunosEmeiAsync(
+      historicoEscola || escolaInstituicao,
+      mes,
+      ano,
     );
-    setSolicitacaoMedicaoInicial(medicaoExistente);
-    await getPeriodosEscolaCemeiComAlunosEmeiAsync(medicaoExistente, mes, ano);
     await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
       escolaInstituicao.uuid,
       mes,
@@ -547,8 +541,7 @@ export default () => {
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
-    const medicaoExistente = solicitacao?.data?.[0] || null;
-    setSolicitacaoMedicaoInicial(medicaoExistente);
+    setSolicitacaoMedicaoInicial(solicitacao.data[0]);
   };
 
   const handleFinalizarMedicao = async () => {
@@ -652,10 +645,8 @@ export default () => {
         </div>
         {loadingSolicitacaoMedInicial ? (
           <Skeleton paragraph={false} active />
-        ) : ehEscolaTipoCEISolicitacaoMedicao(solicitacaoMedicaoInicial) ||
-          ehEscolaTipoCEMEISolicitacaoMedicao(solicitacaoMedicaoInicial) ||
-          ehEscolaTipoCEI(escolaInstituicao) ||
-          ehEscolaTipoCEMEI(escolaInstituicao) ? (
+        ) : ehEscolaTipoCEI(historicoEscola || escolaInstituicao) ||
+          ehEscolaTipoCEMEI(historicoEscola || escolaInstituicao) ? (
           <InformacoesMedicaoInicialCEI
             periodoSelecionado={periodoSelecionado}
             escolaInstituicao={escolaInstituicao}
@@ -724,10 +715,8 @@ export default () => {
             ano &&
             periodosEscolaSimples &&
             !loadingSolicitacaoMedInicial &&
-            (ehEscolaTipoCEISolicitacaoMedicao(solicitacaoMedicaoInicial) ||
-            ehEscolaTipoCEMEISolicitacaoMedicao(solicitacaoMedicaoInicial) ||
-            ehEscolaTipoCEI(escolaInstituicao) ||
-            ehEscolaTipoCEMEI(escolaInstituicao) ? (
+            (ehEscolaTipoCEI(historicoEscola || escolaInstituicao) ||
+            ehEscolaTipoCEMEI(historicoEscola) ? (
               <LancamentoPorPeriodoCEI
                 panoramaGeral={panoramaGeral}
                 mes={mes}

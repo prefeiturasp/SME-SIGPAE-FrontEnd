@@ -248,3 +248,12 @@ export const getLogDietasAutorizadasRecreioNasFerias = async (params) => {
     return data;
   }
 };
+
+export const getHistoricoEscola = async (uuidEscola, params) => {
+  const url = `/historico-escola/${uuidEscola}/`;
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
