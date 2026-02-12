@@ -641,6 +641,7 @@ export default () => {
           <InformacoesEscola
             escolaInstituicao={escolaInstituicao}
             loteEscolaSimples={loteEscolaSimples}
+            historicoEscola={historicoEscola}
           />
         </div>
         {loadingSolicitacaoMedInicial ? (
