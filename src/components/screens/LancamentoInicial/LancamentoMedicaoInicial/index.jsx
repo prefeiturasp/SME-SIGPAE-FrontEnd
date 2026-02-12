@@ -17,8 +17,8 @@ import {
 import { EscolaSimplesContext } from "src/context/EscolaSimplesContext";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
-  ehEscolaTipoCEISolicitacaoMedicao,
-  ehEscolaTipoCEMEISolicitacaoMedicao,
+  ehEscolaTipoCEI,
+  ehEscolaTipoCEMEI,
   escolaNaoPossuiAlunosRegulares,
 } from "src/helpers/utilities";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
@@ -96,12 +96,8 @@ export default () => {
 
   let periodos = [];
 
-  const getPeriodosEscolaCemeiComAlunosEmeiAsync = async (
-    solicitacao,
-    mes,
-    ano,
-  ) => {
-    if (ehEscolaTipoCEMEISolicitacaoMedicao(solicitacao)) {
+  const getPeriodosEscolaCemeiComAlunosEmeiAsync = async (escola, mes, ano) => {
+    if (ehEscolaTipoCEMEI(escola)) {
       const payload = {
         mes,
         ano,
@@ -281,7 +277,7 @@ export default () => {
 
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
         escola.uuid,
-        { ano, mes },
+        { ano },
       );
       setPeriodosEscolaSimples(response_vinculos.data.results);
       if (location.search || (mes && ano)) {
@@ -321,6 +317,7 @@ export default () => {
         setPeriodoFromSearchParam(periodoFromSearch);
       }
 
+      await getPeriodosEscolaCemeiComAlunosEmeiAsync(escola, mes, ano);
       await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
         escola.uuid,
         mes,
@@ -364,26 +361,10 @@ export default () => {
 
       setObjectoPeriodos(periodos);
       setPeriodoSelecionado(periodoInicialSelecionado);
-      const solicitacao = await getSolicitacaoMedicaoInicial({
-        escola_uuid: escola.uuid,
-        mes: format(new Date(periodoInicialSelecionado), "MM").toString(),
-        ano: getYear(new Date(periodoInicialSelecionado)).toString(),
-        recreio_nas_ferias: recreioNasFeriasParam,
-      });
-      await getDiasCalendarioAsync(
-        {
-          escola_uuid: escola.uuid,
-          mes: format(new Date(periodoInicialSelecionado), "MM").toString(),
-          ano: getYear(new Date(periodoInicialSelecionado)).toString(),
-          recreio_nas_ferias: recreioNasFeriasParam,
-        },
-        solicitacao.data[0],
-      );
-      setSolicitacaoMedicaoInicial(solicitacao.data[0]);
-      await getPeriodosEscolaCemeiComAlunosEmeiAsync(
-        solicitacao.data[0],
-        mes,
-        ano,
+      await getSolicitacaoMedInicial(
+        periodoInicialSelecionado,
+        escola.uuid,
+        recreioNasFeriasParam,
       );
       setLoadingSolicitacaoMedicaoInicial(false);
     }
@@ -493,27 +474,7 @@ export default () => {
       { ano },
     );
     setPeriodosEscolaSimples(response_vinculos.data.results);
-    const solicitacao = await getSolicitacaoMedicaoInicial({
-      escola_uuid: escolaInstituicao.uuid,
-      mes: format(new Date(value), "MM").toString(),
-      ano: getYear(new Date(value)).toString(),
-      recreio_nas_ferias,
-    });
-    await getDiasCalendarioAsync(
-      {
-        escola_uuid: escolaInstituicao.uuid,
-        mes: format(new Date(value), "MM").toString(),
-        ano: getYear(new Date(value)).toString(),
-        recreio_nas_ferias,
-      },
-      solicitacao.data[0],
-    );
-    setSolicitacaoMedicaoInicial(solicitacao.data[0]);
-    await getPeriodosEscolaCemeiComAlunosEmeiAsync(
-      solicitacao.data[0],
-      mes,
-      ano,
-    );
+    await getPeriodosEscolaCemeiComAlunosEmeiAsync(escolaInstituicao, mes, ano);
     await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
       escolaInstituicao.uuid,
       mes,
@@ -650,8 +611,8 @@ export default () => {
         </div>
         {loadingSolicitacaoMedInicial ? (
           <Skeleton paragraph={false} active />
-        ) : ehEscolaTipoCEISolicitacaoMedicao(solicitacaoMedicaoInicial) ||
-          ehEscolaTipoCEMEISolicitacaoMedicao(solicitacaoMedicaoInicial) ? (
+        ) : ehEscolaTipoCEI(escolaInstituicao) ||
+          ehEscolaTipoCEMEI(escolaInstituicao) ? (
           <InformacoesMedicaoInicialCEI
             periodoSelecionado={periodoSelecionado}
             escolaInstituicao={escolaInstituicao}
@@ -720,8 +681,8 @@ export default () => {
             ano &&
             periodosEscolaSimples &&
             !loadingSolicitacaoMedInicial &&
-            (ehEscolaTipoCEISolicitacaoMedicao(solicitacaoMedicaoInicial) ||
-            ehEscolaTipoCEMEISolicitacaoMedicao(solicitacaoMedicaoInicial) ? (
+            (ehEscolaTipoCEI(escolaInstituicao) ||
+            ehEscolaTipoCEMEI(escolaInstituicao) ? (
               <LancamentoPorPeriodoCEI
                 panoramaGeral={panoramaGeral}
                 mes={mes}
