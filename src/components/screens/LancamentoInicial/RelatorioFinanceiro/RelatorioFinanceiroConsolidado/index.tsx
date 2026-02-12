@@ -15,6 +15,7 @@ import GrupoEMEI from "../components/Tabelas/GrupoEMEI";
 import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import { SelectOption } from "../types";
 import GrupoEMEF from "../components/Tabelas/GrupoEMEF";
+import GrupoCIEJA from "../components/Tabelas/GrupoCIEJA";
 
 export function RelatorioFinanceiroConsolidado() {
   const [faixasEtarias, setFaixasEtarias] = useState<FaixaEtaria[]>([]);
@@ -142,6 +143,7 @@ export function RelatorioFinanceiroConsolidado() {
         totaisConsumo={totaisConsumo}
       />
     ),
+    "grupo 6": <GrupoCIEJA />,
   };
 
   return (

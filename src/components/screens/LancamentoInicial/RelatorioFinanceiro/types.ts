@@ -8,14 +8,14 @@ export type MultiSelectOption = {
   label: string;
 };
 
-export type TabelaAlimentacaoCEIHandle = {
+export type TabelaAlimentacaoHandle = {
   getTotais: () => {
     totalAtendimentosGeral: number;
     valorTotalGeral: number;
   };
 };
 
-export type TabelaDietasCEIHandle = {
+export type TabelaDietasHandle = {
   getTotais: () => {
     totalConsumoGeral: number;
     valorTotalGeral: number;
