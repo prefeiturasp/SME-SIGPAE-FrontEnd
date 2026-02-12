@@ -20,7 +20,7 @@ describe("Teste de comportamentos componente - ConsolidadoTotal", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText((_, element) => element?.textContent === "1450"),
+      screen.getByText((_, element) => element?.textContent === "1.450"),
     ).toBeInTheDocument();
 
     expect(
@@ -36,7 +36,7 @@ describe("Teste de comportamentos componente - ConsolidadoTotal", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("dez mil cento e cinquenta reais", {
+      screen.getByText("(Dez mil cento e cinquenta reais.)", {
         selector: "span.extenso",
       }),
     ).toBeInTheDocument();
