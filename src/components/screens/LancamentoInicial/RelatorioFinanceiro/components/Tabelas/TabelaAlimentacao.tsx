@@ -71,8 +71,12 @@ export function TabelaAlimentacao({
           const numeroAtendimentos =
             totaisConsumo?.["ALIMENTAÇÃO"]?.[nomeCampoAtendimento] ?? 0;
 
-          const totalUnitario = valorUnitario + valorReajuste;
-          const valorTotal = totalUnitario * numeroAtendimentos;
+          const totalUnitario = Number(
+            (valorUnitario + valorReajuste).toFixed(2),
+          );
+          const valorTotal = Number(
+            (totalUnitario * numeroAtendimentos).toFixed(2),
+          );
 
           totalAtendimentosGeral += numeroAtendimentos;
           valorTotalGeral += valorTotal;

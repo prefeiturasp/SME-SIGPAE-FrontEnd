@@ -98,7 +98,6 @@ export function TabelaDietas({
             )?.valor ?? "0",
           );
 
-          const totalUnitario = valorUnitario * (1 + valorAcrescimo / 100);
           const numeroConsumo =
             totaisConsumo?.[`DIETA ESPECIAL - ${tipoDieta}`]?.[
               tipo.nome
@@ -107,7 +106,12 @@ export function TabelaDietas({
                 .replace(/\s+/g, "_")
                 .toLowerCase()
             ] ?? 0;
-          const valorTotal = totalUnitario * numeroConsumo;
+
+          const totalUnitario = Number(
+            (valorUnitario * (1 + valorAcrescimo / 100)).toFixed(2),
+          );
+
+          const valorTotal = Number((totalUnitario * numeroConsumo).toFixed(2));
 
           totalConsumoGeral += numeroConsumo;
           valorTotalGeral += valorTotal;

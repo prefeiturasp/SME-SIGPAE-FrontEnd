@@ -76,12 +76,18 @@ export const TabelaDietasCEI = forwardRef<TabelaDietasCEIHandle, Props>(
                 )?.valor ?? "0",
               );
 
-              const totalUnitario = valorUnitario * (1 + valorAcrescimo / 100);
               const numeroConsumo =
                 totaisConsumo?.[
                   `DIETA ESPECIAL - ${tipoDieta} - ${periodo.value}`
                 ]?.[faixa.__str__] ?? 0;
-              const valorTotal = totalUnitario * numeroConsumo;
+
+              const totalUnitario = Number(
+                (valorUnitario * (1 + valorAcrescimo / 100)).toFixed(2),
+              );
+
+              const valorTotal = Number(
+                (totalUnitario * numeroConsumo).toFixed(2),
+              );
 
               totalConsumoGeral += numeroConsumo;
               valorTotalGeral += valorTotal;
