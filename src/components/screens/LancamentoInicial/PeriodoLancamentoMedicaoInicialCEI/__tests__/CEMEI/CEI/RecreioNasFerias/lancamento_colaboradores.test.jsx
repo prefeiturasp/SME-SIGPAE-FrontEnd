@@ -305,4 +305,93 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Colaboradores 
     expect(botao).toBeInTheDocument();
     expect(botao).not.toBeDisabled();
   });
+  it("ao clicar na tab `Semana 2`, exibe, nos dias 06 a 12, e verifica oa lançamentos", async () => {
+    await awaitServices();
+    const semana2Element = screen.getByText("Semana 2");
+    fireEvent.click(semana2Element);
+
+    const VALORES_ESPERADOS = {
+      6: {
+        participantes: "15",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+      },
+      7: {
+        participantes: "15",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+      },
+      8: {
+        participantes: "15",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+      },
+      9: {
+        participantes: "15",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+      },
+      10: {
+        participantes: "15",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+      },
+      11: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+      },
+      12: {
+        participantes: "",
+        frequencia: "",
+        lanche: "",
+        lanche4h: "",
+      },
+    };
+
+    Object.keys(VALORES_ESPERADOS).forEach((dia) => {
+      const valoresDia = VALORES_ESPERADOS[dia];
+      const diaFormatado = dia.toString().padStart(2, "0");
+      const inputParticipantes = screen.getByTestId(
+        `participantes__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputFrequencia = screen.getByTestId(
+        `frequencia__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputLanche4h = screen.getByTestId(
+        `lanche_4h__dia_${diaFormatado}__categoria_1`,
+      );
+      const inputLanche = screen.getByTestId(
+        `lanche__dia_${diaFormatado}__categoria_1`,
+      );
+
+      expect(inputParticipantes).toHaveAttribute(
+        "value",
+        valoresDia.participantes,
+      );
+      expect(inputFrequencia).toHaveAttribute("value", valoresDia.frequencia);
+      expect(inputLanche4h).toHaveAttribute("value", valoresDia.lanche4h);
+      expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
+
+      expect(inputParticipantes.disabled).toBe(true);
+      if ([11, 12].includes(Number(dia))) {
+        expect(inputFrequencia.disabled).toBe(true);
+        expect(inputLanche4h.disabled).toBe(true);
+        expect(inputLanche.disabled).toBe(true);
+      } else {
+        expect(inputFrequencia.disabled).toBe(false);
+        expect(inputLanche4h.disabled).toBe(false);
+        expect(inputLanche.disabled).toBe(false);
+      }
+    });
+    const botao = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botao).toBeInTheDocument();
+    expect(botao).not.toBeDisabled();
+  });
 });
