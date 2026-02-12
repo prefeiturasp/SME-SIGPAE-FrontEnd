@@ -31,8 +31,8 @@ export const Tabela = ({ ...props }) => {
   return (
     <>
       <div className="titulo mt-4">
-        Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS PARA RECREIO NAS
-        FÉRIAS: <span>{total}</span>
+        Resultado da pesquisa - TOTAL DE DIETAS PARA RECREIO NAS FÉRIAS:{" "}
+        <span>{total}</span>
       </div>
       <table className="mt-3">
         <thead>
