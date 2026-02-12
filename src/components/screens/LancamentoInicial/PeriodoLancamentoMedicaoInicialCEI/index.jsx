@@ -1146,8 +1146,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       }
     });
     if (qtdCamposComErro) {
+      const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
       toastError(
-        `Existe(m) ${qtdCamposComErro} campo(s) com valor maior que matriculados. Necessário corrigir.`,
+        `Existe(m) ${qtdCamposComErro} campo(s) com valor maior que ${prefixo}. Necessário corrigir.`,
       );
       return;
     }
