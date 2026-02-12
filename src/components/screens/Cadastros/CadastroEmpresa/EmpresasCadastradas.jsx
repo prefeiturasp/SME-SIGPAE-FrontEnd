@@ -70,7 +70,7 @@ class EmpresasCadastradas extends Component {
   onPesquisaChanged(values) {
     if (values.length >= 3 && !this.state.loading) {
       setTimeout(() => {
-        this.buscaTerceirizadas(`busca=${values}`);
+        this.buscaTerceirizadas({ busca: values });
       }, 500);
     } else if (values.length < 3 && !this.state.loading) {
       this.setState({
