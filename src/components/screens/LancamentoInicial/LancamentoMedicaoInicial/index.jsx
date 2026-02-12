@@ -26,6 +26,7 @@ import { getPanoramaEscola } from "src/services/dietaEspecial.service";
 import { getEscolaSimples } from "src/services/escola.service";
 import {
   getDiasCalendario,
+  getHistoricoEscola,
   getUltimoDiaComSolicitacaoAutorizadaNoMes,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getPeriodosPermissoesLancamentosEspeciaisMesAno } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
@@ -86,6 +87,7 @@ export default () => {
   const [comOcorrencias, setComOcorrencias] = useState("");
   const [opcaoSelecionada, setOpcaoSelecionada] = useState(null);
   const [arquivo, setArquivo] = useState([]);
+  const [historicoEscola, setHistoricoEscola] = useState();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -163,6 +165,19 @@ export default () => {
       );
     } else {
       toastError("Erro ao carregar cadastros de Recreio nas Férias.");
+    }
+  };
+
+  const getHistoricoEscolaAsync = async (uuidEscola, mes, ano) => {
+    const params = { ...mes, ...ano };
+    const response = await getHistoricoEscola(uuidEscola, params);
+
+    if (response.status === HTTP_STATUS.OK) {
+      setHistoricoEscola(response.data);
+      return response.data;
+    } else {
+      toastError("Erro ao carregar histórico da escola.");
+      return null;
     }
   };
 
@@ -275,6 +290,12 @@ export default () => {
       setMes(mes);
       setAno(ano);
 
+      const responseHistoricoEscola = await getHistoricoEscolaAsync(
+        escola.uuid,
+        { mes },
+        { ano },
+      );
+
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
         escola.uuid,
         { ano },
@@ -317,7 +338,11 @@ export default () => {
         setPeriodoFromSearchParam(periodoFromSearch);
       }
 
-      await getPeriodosEscolaCemeiComAlunosEmeiAsync(escola, mes, ano);
+      await getPeriodosEscolaCemeiComAlunosEmeiAsync(
+        responseHistoricoEscola,
+        mes,
+        ano,
+      );
       await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
         escola.uuid,
         mes,
@@ -469,12 +494,21 @@ export default () => {
     const ano = getYear(new Date(value)).toString();
     setMes(mes);
     setAno(ano);
+    const historicoEscola = await getHistoricoEscolaAsync(
+      escolaInstituicao.uuid,
+      { mes },
+      { ano },
+    );
     const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
       escolaInstituicao.uuid,
       { ano },
     );
     setPeriodosEscolaSimples(response_vinculos.data.results);
-    await getPeriodosEscolaCemeiComAlunosEmeiAsync(escolaInstituicao, mes, ano);
+    await getPeriodosEscolaCemeiComAlunosEmeiAsync(
+      historicoEscola || escolaInstituicao,
+      mes,
+      ano,
+    );
     await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
       escolaInstituicao.uuid,
       mes,
@@ -611,8 +645,8 @@ export default () => {
         </div>
         {loadingSolicitacaoMedInicial ? (
           <Skeleton paragraph={false} active />
-        ) : ehEscolaTipoCEI(escolaInstituicao) ||
-          ehEscolaTipoCEMEI(escolaInstituicao) ? (
+        ) : ehEscolaTipoCEI(historicoEscola || escolaInstituicao) ||
+          ehEscolaTipoCEMEI(historicoEscola || escolaInstituicao) ? (
           <InformacoesMedicaoInicialCEI
             periodoSelecionado={periodoSelecionado}
             escolaInstituicao={escolaInstituicao}
@@ -681,8 +715,8 @@ export default () => {
             ano &&
             periodosEscolaSimples &&
             !loadingSolicitacaoMedInicial &&
-            (ehEscolaTipoCEI(escolaInstituicao) ||
-            ehEscolaTipoCEMEI(escolaInstituicao) ? (
+            (ehEscolaTipoCEI(historicoEscola || escolaInstituicao) ||
+            ehEscolaTipoCEMEI(historicoEscola) ? (
               <LancamentoPorPeriodoCEI
                 panoramaGeral={panoramaGeral}
                 mes={mes}
