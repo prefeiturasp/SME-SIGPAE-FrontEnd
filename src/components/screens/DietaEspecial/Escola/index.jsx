@@ -225,8 +225,6 @@ class solicitacaoDietaEspecial extends Component {
         criadoRf: null,
       });
       this.resetForm();
-    } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
-      toastError(response.data);
     } else {
       toastError(getError(response.data));
     }
