@@ -79,11 +79,11 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
             marcas: marcas.data.results,
             fabricantes: fabricantes.data.results,
             terceirizadas: terceirizadas.data.results.map(
-              (el) => el.nome_fantasia
+              (el) => el.nome_fantasia,
             ),
-            editais: editais.data.results,
+            editais: editais.data.results.filter((item) => item !== "PARCEIRA"),
           },
-        })
+        }),
       );
     }
     fetchData();
@@ -105,7 +105,7 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
       setStatus({ opcoesStatus: getOpecoesStatus(), statusSelecionados: [] });
     } else {
       const filtered = status.statusSelecionados.filter(
-        (item) => item !== value
+        (item) => item !== value,
       );
       setStatus({
         opcoesStatus: getOpecoesStatus(),
