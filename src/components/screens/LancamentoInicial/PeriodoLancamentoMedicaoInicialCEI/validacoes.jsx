@@ -250,7 +250,8 @@ export const validacoesTabelaAlimentacaoCEI = (
 
 export const validacoesFaixasZeradasAlimentacao = (
   rowName,
-  dia,
+  calendario,
+  feriadosNoMes,
   categoria,
   allValues,
   uuidFaixaEtaria,
@@ -260,21 +261,30 @@ export const validacoesFaixasZeradasAlimentacao = (
     return false;
   }
   // console.log(`allValues`, allValues)
+  // setDisableBotaoSalvarLancamentos(true);
 
-  const faixasComMatriculados = faixaEtaria.filter((faixa) => {
-    const inputMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
-    const valorMatriculados = allValues[inputMatriculados];
-    return valorMatriculados !== undefined && Number(valorMatriculados) > 0;
+  const diasLetivos = calendario.filter((dia) => dia.dia_letivo === true);
+
+  const temDiaZerado = diasLetivos.some((diaLetivo) => {
+    const dia = diaLetivo.dia;
+
+    const faixasComMatriculados = faixaEtaria.filter((faixa) => {
+      const inputMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+      const valorMatriculados = allValues[inputMatriculados];
+      return valorMatriculados !== undefined && Number(valorMatriculados) > 0;
+    });
+
+    if (faixasComMatriculados.length === 0) {
+      return false;
+    }
+
+    return faixasComMatriculados.every((faixa) => {
+      const inputFrequencia = `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+      return allValues[inputFrequencia] === "0";
+    });
   });
 
-  if (faixasComMatriculados.length === 0) {
-    return false;
-  }
-
-  return faixasComMatriculados.every((faixa) => {
-    const inputFrequencia = `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
-    return allValues[inputFrequencia] === "0";
-  });
+  return temDiaZerado;
 };
 
 export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (

@@ -221,6 +221,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   ] = useState(null);
   const [dataInicioPermissoes, setDataInicioPermissoes] = useState(null);
   const [previousValue, setPreviousValue] = useState(null);
+  const [diasZerados, setDiasZerados] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -1661,9 +1662,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             faixaEtaria,
           );
         } else {
+          // console.log(`calendarioMesConsiderado`,calendarioMesConsiderado)
+          // console.log(`feriadosNoMes`,feriadosNoMes)
+
           const diaTotalmenteZerado = validacoesFaixasZeradasAlimentacao(
             rowName,
-            dia,
+            calendarioMesConsiderado,
+            feriadosNoMes,
             categoria,
             allValues,
             uuidFaixaEtaria,
@@ -1672,7 +1677,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
           if (diaTotalmenteZerado) {
             // console.log(`diaTotalmenteZerado - ${dia}:`, diaTotalmenteZerado)
-            return null;
+            // setDisableBotaoSalvarLancamentos(true)
+            // setExibirTooltip(true);
+            setDiasZerados(true);
+            setExibirTooltip(true);
+            return undefined;
           }
           return validacoesTabelaAlimentacaoCEI(
             rowName,
@@ -2507,7 +2516,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           categoria,
                                                           diasSobremesaDoce,
                                                           location,
-                                                        ))
+                                                        )) ||
+                                                      diasZerados
                                                         ? textoBotaoObservacao(
                                                             formValuesAtualizados[
                                                               `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
@@ -2920,7 +2930,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                             location.state.status_periodo ===
                               "MEDICAO_APROVADA_PELA_DRE") ||
                           disableBotaoSalvarLancamentos ||
-                          !calendarioMesConsiderado
+                          !calendarioMesConsiderado ||
+                          diasZerados
                         }
                         exibirTooltip={exibirTooltip}
                         tooltipTitulo="Existem campos a serem corrigidos. Realize as correções para salvar."
