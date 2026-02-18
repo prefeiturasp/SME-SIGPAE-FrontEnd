@@ -2036,6 +2036,14 @@ export default () => {
       (ehZeroFrequencia &&
         !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]) ||
       campoFrequenciaValor0ESemObservacao(dia, categoria, values) ||
+      exibirTooltipFrequenciaAlimentacaoZeroESemObservacao(
+        formValuesAtualizados,
+        row,
+        column,
+        categoria,
+        categoriasDeMedicao,
+        value,
+      ) ||
       campoComSuspensaoAutorizadaESemObservacao(
         formValuesAtualizados,
         column,
