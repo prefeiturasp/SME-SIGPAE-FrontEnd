@@ -78,6 +78,10 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Renderiza Mediçã
       )
       .reply(200, { results: [] });
     mock.onGet("/matriculados-no-mes/").reply(200, []);
+    mock.onGet(`/historico-escola/${escolaUuid}/`).reply(200, {
+      nome: mockEscolaSimplesCEMEI.nome,
+      tipo_unidade: mockEscolaSimplesCEMEI.tipo_unidade,
+    });
 
     const search = `?mes=12&ano=2025&recreio_nas_ferias=cd27796f-9dbf-4e36-ac14-c44f23d41cd4`;
     Object.defineProperty(window, "location", {

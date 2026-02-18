@@ -13,6 +13,7 @@ import {
 import { imprimirFichaRecebimento } from "src/services/fichaRecebimento.service";
 import { Tooltip } from "antd";
 import { formataNome } from "../../helpers";
+import { truncarString } from "src/helpers/utilities";
 import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 interface Props {
@@ -94,7 +95,9 @@ const Listagem: React.FC<Props> = ({
               <div key={cronograma.uuid} className="grid-table body-table">
                 <div>{cronograma.numero}</div>
                 <div className="d-flex justify-content-between">
-                  {cronograma.produto}
+                  <Tooltip title={cronograma.produto}>
+                    {truncarString(cronograma.produto, 30)}
+                  </Tooltip>
 
                   {cronograma.programa_leve_leite && (
                     <div className="me-2">

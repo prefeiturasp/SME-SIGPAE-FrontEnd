@@ -1,4 +1,5 @@
 import { deepCopy } from "src/helpers/utilities";
+import { format } from "date-fns";
 
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
@@ -259,7 +260,7 @@ export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (
     return undefined;
   }
 
-  const keyMax = `matriculados__faixa_null__dia_${dia}__categoria_${categoria}`;
+  const keyMax = `participantes__faixa_null__dia_${dia}__categoria_${categoria}`;
   const maxMatriculados = Number(allValues[keyMax]);
 
   if (!Number.isFinite(maxMatriculados)) {
@@ -304,12 +305,15 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
   validacaoDiaLetivo,
   ehProgramasEProjetosLocation,
   dadosValoresInclusoesAutorizadasState,
+  ehGrupoColaboradores,
 ) => {
+  const prefixo = ehGrupoColaboradores ? "participantes" : "matriculados";
+
   const maxFrequencia = Number(
     allValues[`frequencia__dia_${dia}__categoria_${categoria}`],
   );
   const maxMatriculados = Number(
-    allValues[`matriculados__dia_${dia}__categoria_${categoria}`],
+    allValues[`${prefixo}__dia_${dia}__categoria_${categoria}`],
   );
   const maxNumeroDeAlunos = Number(
     allValues[`numero_de_alunos__dia_${dia}__categoria_${categoria}`],
@@ -372,7 +376,11 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
     Number(allValues[inputName]) > Number(maxMatriculados) &&
     !ehProgramasEProjetosLocation
   ) {
-    return "A quantidade de alunos frequentes não pode ser maior do que a quantidade de alunos matriculados no período.";
+    const mensagemPadrao =
+      "A quantidade de alunos frequentes não pode ser maior do que a quantidade de alunos matriculados no período.";
+    return ehGrupoColaboradores
+      ? "A frequência não pode ser maior do que o número de Participantes"
+      : mensagemPadrao;
   } else if (
     value &&
     existeAlteracaoAlimentacaoRPL &&
@@ -414,7 +422,8 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
     !inputName.includes("repeticao") &&
     !inputName.includes("emergencial")
   ) {
-    return "Lançamento maior que a frequência de alunos no dia.";
+    const nome = ehGrupoColaboradores ? "participantes" : "alunos";
+    return `Lançamento maior que a frequência de ${nome} no dia.`;
   }
 
   return undefined;
@@ -714,4 +723,20 @@ export const frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao = (
       `observacoes__dia_${column.dia}__categoria_${categoria.id}`
     ]
   );
+};
+
+export const verificarMesAnteriorOuPosterior = (column, mesAnoConsiderado) => {
+  let result = null;
+  const mesAtual = format(mesAnoConsiderado, "MM");
+  const anoAtual = format(mesAnoConsiderado, "yyyy");
+  if (column.mes !== mesAtual) {
+    const dataColumn = new Date(`${column.ano}-${column.mes}-01`);
+    const dataAtual = new Date(`${anoAtual}-${mesAtual}-01`);
+    if (dataColumn < dataAtual) {
+      result = "Mês anterior";
+    } else if (dataColumn > dataAtual) {
+      result = "Mês posterior";
+    }
+  }
+  return result;
 };

@@ -124,6 +124,7 @@ import {
   validacoesTabelasDietasCEI,
   validacoesTabelasDietasEmeidaCemei,
   validarFormulario,
+  verificarMesAnteriorOuPosterior,
 } from "./validacoes";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
@@ -240,6 +241,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const ehRecreioNasFerias = () => {
     return location.state.recreioNasFerias;
   };
+
+  const ehGrupoColaboradores = () => {
+    return location.state.grupo === "Colaboradores";
+  };
+  let valuesInputArray = [];
 
   useEffect(() => {
     const mesAnoSelecionado = location.state
@@ -367,6 +373,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
       let response_categorias_medicao = await getCategoriasDeMedicao();
 
+      const params_dias_calendario = {
+        escola_uuid: escola.uuid,
+        mes: mes,
+        ano: ano,
+      };
+      const calendario = await obterDiasLetivosCorretos(params_dias_calendario);
+
       if (ehEmeiDaCemeiLocation) {
         response_permissoes_lancamentos_especiais_mes_ano_por_periodo =
           await getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync(
@@ -394,8 +407,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           tipo_turma: "REGULAR",
           periodo_escolar: periodo,
         };
-        response_matriculados_emei_da_cemei =
-          await getMatriculadosPeriodo(params_matriculados);
+        response_matriculados_emei_da_cemei = await obterNumerosMatriculados(
+          params_matriculados,
+          calendario,
+          ehEmeiDaCemeiLocation,
+        );
         setValoresMatriculadosEmeiDaCemei(
           response_matriculados_emei_da_cemei.data,
         );
@@ -428,6 +444,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         setLogQtdDietasAutorizadasEmeiDaCemei(
           response_log_dietas_autorizadas_emei_da_cemei.data,
         );
+      } else if (ehGrupoColaboradores()) {
+        response_matriculados_emei_da_cemei = await obterNumerosMatriculados(
+          {},
+          calendario,
+          ehEmeiDaCemeiLocation,
+        );
+        setValoresMatriculadosEmeiDaCemei(
+          response_matriculados_emei_da_cemei.data,
+        );
       } else {
         const params_matriculados_por_faixa_etaria_dia = {
           escola_uuid: escola.uuid,
@@ -436,20 +461,12 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           ano: ano,
         };
 
-        if (ehRecreioNasFerias()) {
-          const calendario = await obterDiasLetivosCorretos();
-
-          response_log_matriculados_por_faixa_etaria_dia =
-            await obterNumerosMatriculados(
-              params_matriculados_por_faixa_etaria_dia,
-              calendario,
-            );
-        } else {
-          response_log_matriculados_por_faixa_etaria_dia =
-            await getLogMatriculadosPorFaixaEtariaDia(
-              params_matriculados_por_faixa_etaria_dia,
-            );
-        }
+        response_log_matriculados_por_faixa_etaria_dia =
+          await obterNumerosMatriculados(
+            params_matriculados_por_faixa_etaria_dia,
+            calendario,
+            ehEmeiDaCemeiLocation,
+          );
 
         setValoresMatriculadosFaixaEtariaDia(
           response_log_matriculados_por_faixa_etaria_dia.data,
@@ -471,13 +488,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const linhasTabelaAlimentacaoCEI =
         ehEmeiDaCemeiLocation ||
         ehSolicitacoesAlimentacaoLocation ||
-        ehProgramasEProjetosLocation
+        ehProgramasEProjetosLocation ||
+        ehGrupoColaboradores()
           ? formatarLinhasTabelaAlimentacaoEmeiDaCemei(
               location.state.tiposAlimentacao,
               ehSolicitacoesAlimentacaoLocation,
               response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais ||
                 [],
               ehProgramasEProjetosLocation,
+              ehGrupoColaboradores(),
             )
           : formatarLinhasTabelaAlimentacaoCEI(
               response_log_matriculados_por_faixa_etaria_dia,
@@ -550,18 +569,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         setDiasParaCorrecao(response_dias_correcao.data);
       }
 
-      const params_dias_calendario = {
-        escola_uuid: escola.uuid,
-        mes: mes,
-        ano: ano,
-      };
-      const response_dias_calendario = await getDiasCalendario(
-        params_dias_calendario,
-      );
-      if (!ehRecreioNasFerias()) {
-        setCalendarioMesConsiderado(response_dias_calendario.data);
-      }
-
       const params_feriados_no_mes = {
         mes: mes,
         ano: ano,
@@ -596,63 +603,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     };
     fetch();
   }, []);
-
-  const exibirAbaDasSemanas = (mesAnoSelecionado) => {
-    let itemsSemanas = [];
-    let dataInicoRecreio = null;
-    let dataFimRecreio = null;
-    if (ehRecreioNasFerias()) {
-      const dataRecreio =
-        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
-      dataInicoRecreio = parse(
-        dataRecreio.data_inicio,
-        "dd/MM/yyyy",
-        new Date(),
-        { locale: ptBR },
-      );
-      dataFimRecreio = parse(dataRecreio.data_fim, "dd/MM/yyyy", new Date(), {
-        locale: ptBR,
-      });
-    }
-
-    const totalSemanas = isSunday(lastDayOfMonth(mesAnoSelecionado))
-      ? getWeeksInMonth(mesAnoSelecionado) - 1
-      : getDay(startOfMonth(mesAnoSelecionado)) === 0
-        ? getWeeksInMonth(mesAnoSelecionado) + 1
-        : getWeeksInMonth(mesAnoSelecionado);
-
-    let numeroSemanaCorreto = 0;
-    Array.from({ length: totalSemanas }).forEach((_, numeroSemana) => {
-      const dias = [];
-      const inicioSemana = addDays(
-        startOfMonth(mesAnoSelecionado),
-        numeroSemana * 7,
-      );
-      for (let i = 0; i < 7; i++) {
-        const data = addDays(inicioSemana, i);
-        dias.push({
-          dia: format(data, "dd"),
-          mes: format(data, "MM"),
-          ano: format(data, "yyyy"),
-        });
-      }
-
-      const incluiSemana = existeSemanaNoIntervaloRecreio(
-        dias,
-        mesAnoSelecionado,
-        dataInicoRecreio,
-        dataFimRecreio,
-      );
-      if (incluiSemana) {
-        itemsSemanas.push({
-          key: `${numeroSemanaCorreto + 1}`,
-          label: `Semana ${numeroSemanaCorreto + 1}`,
-        });
-        numeroSemanaCorreto += 1;
-      }
-    });
-    return itemsSemanas;
-  };
 
   const existeSemanaNoIntervaloRecreio = (
     diasSemana,
@@ -705,7 +655,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     if (location.state) {
       justificativaPeriodo = location.state.justificativa_periodo;
       if (location.state.grupo && location.state.periodo) {
-        periodoEscolar = `${location.state.periodo}`;
+        periodoEscolar = location.state.recreioNasFerias
+          ? `${location.state.grupo}`
+          : `${location.state.periodo}`;
       } else if (location.state.grupo) {
         periodoEscolar = `${location.state.grupo}`;
       } else {
@@ -716,6 +668,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     const formataPeriodoSolAlimentacoesInfantil = (periodoEscolar) => {
       if (periodoEscolar === "Solicitações de Alimentação") {
         return "Solicitações de Alimentação - Infantil";
+      } else if (periodoEscolar.includes("Recreio nas Férias")) {
+        return "Recreio nas Férias";
       } else {
         return periodoEscolar;
       }
@@ -734,42 +688,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
     categoriasMedicao &&
       categoriasMedicao.forEach((categoria) => {
-        let diasSemana = [];
-        let diaDaSemanaNumerico = getDay(startOfMonth(mesAno)); // 0 representa Domingo
-
-        if (diaDaSemanaNumerico === 0) {
-          diaDaSemanaNumerico = 7;
-        }
-        if (Number(semanaSelecionada) === 1) {
-          diasSemana.unshift(format(startOfMonth(mesAno), "dd"));
-          for (let i = 1; i < diaDaSemanaNumerico; i++) {
-            diasSemana.unshift(format(subDays(startOfMonth(mesAno), i), "dd"));
-          }
-          for (let i = diaDaSemanaNumerico; i < 7; i++) {
-            diasSemana.push(
-              format(
-                addDays(startOfMonth(mesAno), i + 1 - diaDaSemanaNumerico),
-                "dd",
-              ),
-            );
-          }
-        }
-        if (Number(semanaSelecionada) !== 1) {
-          let dia = addDays(
-            startOfMonth(mesAno),
-            7 * (Number(semanaSelecionada) - 1),
-          );
-          diasSemana.unshift(format(dia, "dd"));
-          for (let i = 1; i < diaDaSemanaNumerico; i++) {
-            diasSemana.unshift(format(subDays(dia, i), "dd"));
-          }
-          for (let i = diaDaSemanaNumerico; i < 7; i++) {
-            diasSemana.push(
-              format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
-            );
-          }
-        }
-
         logQtdDietasAutorizadasCEI &&
           logQtdDietasAutorizadasCEI.forEach((log) => {
             categoria.nome.includes("TIPO B") &&
@@ -908,16 +826,42 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           dadosValoresInclusoesAutorizadas,
         );
 
+        let diasSemana = [];
+        const numeroSemana = Number(semanaSelecionada);
+        let datasRecreio = {};
+        if (ehRecreioNasFerias()) {
+          datasRecreio = datasInicoFimRecreio();
+        }
+        let diaDaSemanaNumerico = obterDiaNumericoDaSemana(
+          mesAno,
+          datasRecreio?.inicio,
+        );
+        let dataInicioCalendario = obterDataInicioCalendario(mesAno);
+        if (numeroSemana === 1) {
+          diasSemana = construirPrimeiraSemanaCalendario(
+            [],
+            dataInicioCalendario,
+            diaDaSemanaNumerico,
+          );
+        }
+        if (numeroSemana !== 1) {
+          diasSemana = construirOutrasSemanaCalendario(
+            dataInicioCalendario,
+            diasSemana,
+            diaDaSemanaNumerico,
+            numeroSemana,
+          );
+        }
+
         tabelaAlimentacaoCEIRows &&
           tabelaDietaCEIRows &&
           [tabelaAlimentacaoCEIRows, tabelaDietaCEIRows].forEach(
             (each) =>
               each &&
               each.forEach((row) => {
-                for (let i = 1; i <= 31; i++) {
-                  const dia =
-                    String(i).length === 1 ? "0" + String(i) : String(i);
-                  let result = null;
+                for (let { dia, mes, ano } of diasSemana) {
+                  const dataCompleta = { dia, mes, ano };
+
                   let uuidFaixasDietas = [];
                   if (categoria.nome === "DIETA ESPECIAL - TIPO A") {
                     logQtdDietasAutorizadasCEI &&
@@ -953,26 +897,19 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                   if (
                     ehEmeiDaCemeiLocation ||
                     ehSolicitacoesAlimentacaoLocation ||
-                    ehProgramasEProjetosLocation
+                    ehProgramasEProjetosLocation ||
+                    ehGrupoColaboradores()
                   ) {
                     nameInputField = `${row.name}__dia_${dia}__categoria_${categoria.id}`;
                   } else {
                     nameInputField = `${row.name}__faixa_${row.uuid}__dia_${dia}__categoria_${categoria.id}`;
                   }
-                  if (
-                    Number(semanaSelecionada) === 1 &&
-                    Number(dia) > 20 &&
-                    diasSemana.includes(dia)
-                  ) {
-                    result = "Mês anterior";
-                    dadosValoresForaDoMes[nameInputField] = result;
-                  }
-                  if (
-                    [4, 5, 6].includes(Number(semanaSelecionada)) &&
-                    Number(dia) < 10 &&
-                    diasSemana.includes(dia)
-                  ) {
-                    result = "Mês posterior";
+                  let result = verificarMesAnteriorOuPosterior(
+                    dataCompleta,
+                    mesAno,
+                  );
+
+                  if (result) {
                     dadosValoresForaDoMes[nameInputField] = result;
                   }
                 }
@@ -985,7 +922,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
               valor_medicao.nome_campo === "observacoes" ||
               ehEmeiDaCemeiLocation ||
               ehSolicitacoesAlimentacaoLocation ||
-              ehProgramasEProjetosLocation
+              ehProgramasEProjetosLocation ||
+              ehGrupoColaboradores()
             ) {
               dadosValoresMedicoes[
                 `${valor_medicao.nome_campo}__dia_${valor_medicao.dia}__categoria_${valor_medicao.categoria_medicao}`
@@ -1033,9 +971,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         if (inclusaoNesseDia) {
           quantidade = inclusaoNesseDia.quantidade;
         }
-
+        const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
         dadosValoresMatriculadosFaixaEtariaDia[
-          `matriculados__faixa_${objMatriculado.faixa_etaria.uuid}__dia_${objMatriculado.dia}__categoria_${idCategoriaAlimentacao}`
+          `${prefixo}__faixa_${objMatriculado.faixa_etaria.uuid}__dia_${objMatriculado.dia}__categoria_${idCategoriaAlimentacao}`
         ] = quantidade
           ? `${Math.max(quantidade - somaDietasMesmoDia, 0)}`
           : null;
@@ -1055,13 +993,19 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       },
     );
 
-    ehEmeiDaCemeiLocation &&
+    const ehColaborador = ehGrupoColaboradores();
+    const prefixo = ehColaborador ? "participantes" : "matriculados";
+    const propriedadeQuantidade = ehColaborador
+      ? "quantidade"
+      : "quantidade_alunos";
+
+    (ehEmeiDaCemeiLocation || ehGrupoColaboradores()) &&
       matriculadosEmeiDaCemei &&
       idCategoriaAlimentacao &&
       matriculadosEmeiDaCemei.forEach((objMatriculadoEmeiDaCemei) => {
-        dadosValoresMatriculadosEmeiDaCemei[
-          `matriculados__dia_${objMatriculadoEmeiDaCemei.dia}__categoria_${idCategoriaAlimentacao}`
-        ] = objMatriculadoEmeiDaCemei.quantidade_alunos;
+        const chave = `${prefixo}__dia_${objMatriculadoEmeiDaCemei.dia}__categoria_${idCategoriaAlimentacao}`;
+        dadosValoresMatriculadosEmeiDaCemei[chave] =
+          objMatriculadoEmeiDaCemei[propriedadeQuantidade];
       });
 
     valoresMedicao &&
@@ -1104,238 +1048,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     setLoading(false);
   };
 
-  const construirPrimeiraSemanaCalendario = (
-    diasSemana,
-    dataInicioCalendario,
-    diaDaSemanaNumerico,
-  ) => {
-    diasSemana.unshift({
-      dia: format(dataInicioCalendario, "dd"),
-      mes: format(dataInicioCalendario, "MM"),
-      ano: format(dataInicioCalendario, "yyyy"),
-    });
-
-    for (let i = 1; i < diaDaSemanaNumerico; i++) {
-      const data = subDays(dataInicioCalendario, i);
-      diasSemana.unshift({
-        dia: format(data, "dd"),
-        mes: format(data, "MM"),
-        ano: format(data, "yyyy"),
-      });
-    }
-    for (let i = diaDaSemanaNumerico; i < 7; i++) {
-      const data = addDays(dataInicioCalendario, i + 1 - diaDaSemanaNumerico);
-      diasSemana.push({
-        dia: format(data, "dd"),
-        mes: format(data, "MM"),
-        ano: format(data, "yyyy"),
-      });
-    }
-
-    return diasSemana;
-  };
-
-  const construirOutrasSemanaCalendario = (
-    dataInicioCalendario,
-    diasSemana,
-    diaDaSemanaNumerico,
-    numeroSemana,
-  ) => {
-    let dia = addDays(dataInicioCalendario, 7 * (numeroSemana - 1));
-    diasSemana.unshift({
-      dia: format(dia, "dd"),
-      mes: format(dia, "MM"),
-      ano: format(dia, "yyyy"),
-    });
-
-    for (let i = 1; i < diaDaSemanaNumerico; i++) {
-      const data = subDays(dia, i);
-      diasSemana.unshift({
-        dia: format(data, "dd"),
-        mes: format(data, "MM"),
-        ano: format(data, "yyyy"),
-      });
-    }
-
-    for (let i = diaDaSemanaNumerico; i < 7; i++) {
-      const data = addDays(dia, i + 1 - diaDaSemanaNumerico);
-      diasSemana.push({
-        dia: format(data, "dd"),
-        mes: format(data, "MM"),
-        ano: format(data, "yyyy"),
-      });
-    }
-
-    return diasSemana;
-  };
-
-  const obterDataInicioCalendario = (mesAnoConsiderado) => {
-    return ehRecreioNasFerias()
-      ? mesAnoConsiderado
-      : startOfMonth(mesAnoConsiderado);
-  };
-
-  const obterDiaNumericoDaSemana = (mesAnoConsiderado, dataInicoRecreio) => {
-    let diaDaSemanaNumerico = 0;
-    if (ehRecreioNasFerias() && dataInicoRecreio) {
-      diaDaSemanaNumerico = getDay(dataInicoRecreio);
-    } else {
-      diaDaSemanaNumerico = getDay(startOfMonth(mesAnoConsiderado)); // 0 representa Domingo
-    }
-
-    if (diaDaSemanaNumerico === 0) {
-      diaDaSemanaNumerico = 7;
-    }
-
-    return diaDaSemanaNumerico;
-  };
-
-  const datasInicoFimRecreio = () => {
-    const dataRecreio =
-      location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
-    const dataInicoRecreio = parse(
-      dataRecreio.data_inicio,
-      "dd/MM/yyyy",
-      new Date(),
-      { locale: ptBR },
-    );
-    const dataFimRecreio = parse(
-      dataRecreio.data_fim,
-      "dd/MM/yyyy",
-      new Date(),
-      {
-        locale: ptBR,
-      },
-    );
-
-    return { inicio: dataInicoRecreio, fim: dataFimRecreio };
-  };
-
-  const montarCalendario = () => {
-    let diasSemana = [];
-    let week = [];
-    const numeroSemana = Number(semanaSelecionada);
-
-    let datasRecreio = {};
-    if (ehRecreioNasFerias()) {
-      datasRecreio = datasInicoFimRecreio();
-    }
-
-    setLoading(true);
-
-    let diaDaSemanaNumerico = obterDiaNumericoDaSemana(
-      mesAnoConsiderado,
-      datasRecreio?.inicio,
-    );
-    let dataInicioCalendario = obterDataInicioCalendario(mesAnoConsiderado);
-
-    if (mesAnoConsiderado && numeroSemana === 1) {
-      diasSemana = construirPrimeiraSemanaCalendario(
-        [],
-        dataInicioCalendario,
-        diaDaSemanaNumerico,
-      );
-      setDiasDaSemanaSelecionada(diasSemana);
-      week = weekColumns.map((column) => {
-        return {
-          ...column,
-          dia: diasSemana[column["position"]].dia,
-          mes: diasSemana[column["position"]].mes,
-          ano: diasSemana[column["position"]].ano,
-        };
-      });
-      setWeekColumns(week);
-    }
-
-    if (mesAnoConsiderado && numeroSemana !== 1) {
-      diasSemana = construirOutrasSemanaCalendario(
-        dataInicioCalendario,
-        diasSemana,
-        diaDaSemanaNumerico,
-        numeroSemana,
-      );
-      const deveExibirSemana = existeSemanaNoIntervaloRecreio(
-        diasSemana,
-        mesAnoConsiderado,
-        datasRecreio?.inicio,
-        datasRecreio?.fim,
-      );
-
-      if (deveExibirSemana) {
-        setDiasDaSemanaSelecionada(diasSemana);
-        week = weekColumns.map((column) => {
-          return {
-            ...column,
-            dia: diasSemana[column["position"]].dia,
-            mes: diasSemana[column["position"]].mes,
-            ano: diasSemana[column["position"]].ano,
-          };
-        });
-        setWeekColumns(week);
-      }
-    }
-  };
-
   useEffect(() => {
-    let diasSemana = [];
-    let diaDaSemanaNumerico = getDay(startOfMonth(mesAnoConsiderado)); // 0 representa Domingo
-    let week = [];
-    setLoading(true);
-
-    if (diaDaSemanaNumerico === 0) {
-      diaDaSemanaNumerico = 7;
-    }
-    if (mesAnoConsiderado && Number(semanaSelecionada) === 1) {
-      diasSemana.unshift(format(startOfMonth(mesAnoConsiderado), "dd"));
-      for (let i = 1; i < diaDaSemanaNumerico; i++) {
-        diasSemana.unshift(
-          format(subDays(startOfMonth(mesAnoConsiderado), i), "dd"),
-        );
-      }
-      for (let i = diaDaSemanaNumerico; i < 7; i++) {
-        diasSemana.push(
-          format(
-            addDays(
-              startOfMonth(mesAnoConsiderado),
-              i + 1 - diaDaSemanaNumerico,
-            ),
-            "dd",
-          ),
-        );
-      }
-      setDiasDaSemanaSelecionada(diasSemana.filter((dia) => Number(dia) < 20));
-      week = weekColumns.map((column) => {
-        return { ...column, dia: diasSemana[column["position"]] };
-      });
-      setWeekColumns(week);
-    }
-    if (mesAnoConsiderado && Number(semanaSelecionada) !== 1) {
-      let dia = addDays(
-        startOfMonth(mesAnoConsiderado),
-        7 * (Number(semanaSelecionada) - 1),
-      );
-      diasSemana.unshift(format(dia, "dd"));
-      for (let i = 1; i < diaDaSemanaNumerico; i++) {
-        diasSemana.unshift(format(subDays(dia, i), "dd"));
-      }
-      for (let i = diaDaSemanaNumerico; i < 7; i++) {
-        diasSemana.push(
-          format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
-        );
-      }
-      if ([4, 5, 6].includes(Number(semanaSelecionada))) {
-        setDiasDaSemanaSelecionada(
-          diasSemana.filter((dia) => Number(dia) > 10),
-        );
-      } else {
-        setDiasDaSemanaSelecionada(diasSemana);
-      }
-      week = weekColumns.map((column) => {
-        return { ...column, dia: diasSemana[column["position"]] };
-      });
-      setWeekColumns(week);
-    }
-
     montarCalendario();
     const formatar = async () => {
       formatarDadosValoresMedicao(
@@ -1418,8 +1131,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const keySplitted = key.split("__");
       const uuid_faixa_etaria = keySplitted[1].replace("faixa_", "");
       let nameMatriculadoInputField = null;
-      if (ehEmeiDaCemeiLocation) {
-        nameMatriculadoInputField = `matriculados__dia_${dia}__categoria_${categoria}`;
+      const prefixo = ehGrupoColaboradores() ? "participantes" : "matriculados";
+      if (ehEmeiDaCemeiLocation || ehGrupoColaboradores()) {
+        nameMatriculadoInputField = `${prefixo}__dia_${dia}__categoria_${categoria}`;
       } else {
         nameMatriculadoInputField = `matriculados__faixa_${uuid_faixa_etaria}__dia_${dia}__categoria_${categoria}`;
       }
@@ -1432,8 +1146,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       }
     });
     if (qtdCamposComErro) {
+      const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
       toastError(
-        `Existe(m) ${qtdCamposComErro} campo(s) com valor maior que matriculados. Necessário corrigir.`,
+        `Existe(m) ${qtdCamposComErro} campo(s) com valor maior que ${prefixo}. Necessário corrigir.`,
       );
       return;
     }
@@ -1445,7 +1160,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         v[0].includes("observacoes") ||
         ehEmeiDaCemeiLocation ||
         ehSolicitacoesAlimentacaoLocation ||
-        ehProgramasEProjetosLocation
+        ehProgramasEProjetosLocation ||
+        ehGrupoColaboradores()
           ? 1
           : 2
       ]
@@ -1456,7 +1172,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         v[0].includes("observacoes") ||
         ehEmeiDaCemeiLocation ||
         ehSolicitacoesAlimentacaoLocation ||
-        ehProgramasEProjetosLocation
+        ehProgramasEProjetosLocation ||
+        ehRecreioNasFerias()
           ? ""
           : keySplitted[1].replace("faixa_", "");
 
@@ -1485,7 +1202,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       (values["periodo_escolar"] &&
         values["periodo_escolar"].includes("Solicitações")) ||
       values["periodo_escolar"] === "ETEC" ||
-      values["periodo_escolar"] === "Programas e Projetos"
+      values["periodo_escolar"] === "Programas e Projetos" ||
+      ehRecreioNasFerias()
     ) {
       payload["grupo"] = values["periodo_escolar"];
       if (payload["grupo"] && payload["grupo"].includes("Solicitações")) {
@@ -1497,17 +1215,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     }
     let valores_medicao_response = [];
     if (valoresPeriodosLancamentos.length) {
-      if (ehRecreioNasFerias()) {
-        // eslint-disable-next-line no-unused-vars
-        const { periodo_escolar, ...rest } = payload;
-        payload = {
-          ...rest,
-          grupo: "Recreio nas Férias - de 0 a 3 anos e 11 meses",
-          valores_medicao: payload.valores_medicao.filter(
-            (item) => item.nome_campo !== "matriculados",
-          ),
-        };
-      }
       const response = await updateValoresPeriodosLancamentos(
         valoresPeriodosLancamentos[0].medicao_uuid,
         payload,
@@ -1542,6 +1249,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     chamarFuncaoFormatar = true,
     ehCorrecao = false,
   ) => {
+    const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
     let valuesClone = deepCopy(values);
@@ -1553,14 +1261,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     Object.entries(valuesClone).forEach(([key, value]) => {
       return (
         (["Mês anterior", "Mês posterior", null].includes(value) ||
-          (key.includes("matriculados") &&
+          (key.includes(prefixo) &&
             !key.includes(`categoria_${idCategoriaAlimentacao}`))) &&
         delete valuesClone[key]
       );
     });
 
     const dadosIniciaisFiltered = Object.entries(dadosIniciais)
-      .filter(([key]) => !key.includes("matriculados"))
+      .filter(([key]) => !key.includes(prefixo))
       .filter(([key]) => !key.includes("dietas_autorizadas"))
       .filter(
         ([, value]) => !["Mês anterior", "Mês posterior", null].includes(value),
@@ -1576,6 +1284,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       ehSolicitacoesAlimentacaoLocation,
       ehProgramasEProjetosLocation,
       ehRecreioNasFerias(),
+      ehGrupoColaboradores(),
     );
     if (payload.valores_medicao.length === 0)
       return (
@@ -1671,19 +1380,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   const defaultValue = (column, row) => {
     let result = null;
-    if (row.name === "matriculados") {
+    const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
+    if (row.name === prefixo) {
       result = null;
     }
-    if (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) {
-      result = "Mês anterior";
-    }
-    if (
-      [4, 5, 6].includes(Number(semanaSelecionada)) &&
-      Number(column.dia) < 10
-    ) {
-      result = "Mês posterior";
-    }
-
+    result = verificarMesAnteriorOuPosterior(column, mesAnoConsiderado);
     return result;
   };
 
@@ -1734,8 +1435,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const onClickBotaoObservacao = (dia, categoria) => {
     openModalObservacaoDiaria(dia, categoria);
   };
-
-  let valuesInputArray = [];
 
   const desabilitaTooltip = (values) => {
     const erro = validarFormulario(
@@ -2002,6 +1701,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           validacaoDiaLetivo,
           ehProgramasEProjetosLocation,
           dadosValoresInclusoesAutorizadasState,
+          ehGrupoColaboradores(),
         );
       } else if (nomeCategoria.includes("DIETA")) {
         return validacoesTabelasDietasEmeidaCemei(
@@ -2118,9 +1818,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       column &&
       index + 1 < tabelaAlimentacaoCEIRows.length - 1
     ) {
-      return `${tabelaAlimentacaoCEIRows[index + 1].name}__faixa_${
-        row.uuid
-      }__dia_${column.dia}__categoria_${categoria.id}`;
+      const faixa = ehGrupoColaboradores() ? "" : `__faixa_${row.uuid}`;
+      return `${tabelaAlimentacaoCEIRows[index + 1].name}${faixa}__dia_${column.dia}__categoria_${categoria.id}`;
     }
     return undefined;
   };
@@ -2131,9 +1830,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       column &&
       tabelaAlimentacaoCEIRows[index - 1]
     ) {
-      return `${tabelaAlimentacaoCEIRows[index - 1].name}__faixa_${
-        row.uuid
-      }__dia_${column.dia}__categoria_${categoria.id}`;
+      const faixa = ehGrupoColaboradores() ? "" : `__faixa_${row.uuid}`;
+      return `${tabelaAlimentacaoCEIRows[index - 1].name}${faixa}__dia_${column.dia}__categoria_${categoria.id}`;
     }
     return undefined;
   };
@@ -2161,7 +1859,27 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     );
   };
 
-  const obterNumerosMatriculados = async (params_matriculados, calendario) => {
+  const obterDiasLetivosCorretos = async (params_dias_calendario) => {
+    let data = [];
+    if (ehRecreioNasFerias()) {
+      const diasLetivosRecreio = await getDiasLetivosRecreio({
+        solictacao_uuid: location.state.solicitacaoMedicaoInicial.uuid,
+      });
+      data = diasLetivosRecreio.data;
+    } else {
+      const diasLetivos = await getDiasCalendario(params_dias_calendario);
+      data = diasLetivos.data;
+    }
+
+    setCalendarioMesConsiderado(data);
+    return data;
+  };
+
+  const obterNumerosMatriculados = async (
+    params_matriculados,
+    calendario,
+    ehEmeiDaCemeiLocation,
+  ) => {
     let response_matriculados = {};
 
     let numeroParticipantes = 0;
@@ -2170,7 +1888,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         location.state.solicitacaoMedicaoInicial.recreio_nas_ferias
           .unidades_participantes[0];
 
-      numeroParticipantes = participantes.num_inscritos;
+      if (ehGrupoColaboradores()) {
+        numeroParticipantes = participantes.num_colaboradores;
+      } else {
+        numeroParticipantes = participantes.num_inscritos;
+      }
 
       response_matriculados = {
         data: calendario
@@ -2184,23 +1906,241 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           })),
       };
     } else {
-      response_matriculados =
-        await getLogMatriculadosPorFaixaEtariaDia(params_matriculados);
+      response_matriculados = ehEmeiDaCemeiLocation
+        ? await getMatriculadosPeriodo(params_matriculados)
+        : await getLogMatriculadosPorFaixaEtariaDia(params_matriculados);
     }
     return response_matriculados;
   };
 
-  const obterDiasLetivosCorretos = async () => {
-    let data = [];
+  const exibirAbaDasSemanas = (mesAnoSelecionado) => {
+    let itemsSemanas = [];
+    let dataInicoRecreio = null;
+    let dataFimRecreio = null;
     if (ehRecreioNasFerias()) {
-      const diasLetivos = await getDiasLetivosRecreio({
-        solictacao_uuid: location.state.solicitacaoMedicaoInicial.uuid,
+      const dataRecreio =
+        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
+      dataInicoRecreio = parse(
+        dataRecreio.data_inicio,
+        "dd/MM/yyyy",
+        new Date(),
+        { locale: ptBR },
+      );
+      dataFimRecreio = parse(dataRecreio.data_fim, "dd/MM/yyyy", new Date(), {
+        locale: ptBR,
       });
-      data = diasLetivos.data;
     }
 
-    setCalendarioMesConsiderado(data);
-    return data;
+    const totalSemanas = isSunday(lastDayOfMonth(mesAnoSelecionado))
+      ? getWeeksInMonth(mesAnoSelecionado) - 1
+      : getDay(startOfMonth(mesAnoSelecionado)) === 0
+        ? getWeeksInMonth(mesAnoSelecionado) + 1
+        : getWeeksInMonth(mesAnoSelecionado);
+
+    let numeroSemanaCorreto = 0;
+    const primeiroDiaDoMes = startOfMonth(mesAnoSelecionado);
+    let diaDaSemana = getDay(primeiroDiaDoMes);
+    const offsetParaDomingo = diaDaSemana; // quantos dias para trás até o domingo
+    const domingoPrimeiraSemana = subDays(primeiroDiaDoMes, offsetParaDomingo);
+    Array.from({ length: totalSemanas }).forEach((_, numeroSemana) => {
+      const dias = [];
+      const inicioSemana = addDays(domingoPrimeiraSemana, numeroSemana * 7);
+      for (let i = 0; i < 7; i++) {
+        const data = addDays(inicioSemana, i);
+        dias.push({
+          dia: format(data, "dd"),
+          mes: format(data, "MM"),
+          ano: format(data, "yyyy"),
+        });
+      }
+
+      const incluiSemana = existeSemanaNoIntervaloRecreio(
+        dias,
+        mesAnoSelecionado,
+        dataInicoRecreio,
+        dataFimRecreio,
+      );
+      if (incluiSemana) {
+        itemsSemanas.push({
+          key: `${numeroSemanaCorreto + 1}`,
+          label: `Semana ${numeroSemanaCorreto + 1}`,
+        });
+        numeroSemanaCorreto += 1;
+      }
+    });
+    return itemsSemanas;
+  };
+
+  const montarCalendario = () => {
+    let diasSemana = [];
+    let week = [];
+    const numeroSemana = Number(semanaSelecionada);
+
+    let datasRecreio = {};
+    if (ehRecreioNasFerias()) {
+      datasRecreio = datasInicoFimRecreio();
+    }
+
+    setLoading(true);
+
+    let diaDaSemanaNumerico = obterDiaNumericoDaSemana(
+      mesAnoConsiderado,
+      datasRecreio?.inicio,
+    );
+    let dataInicioCalendario = obterDataInicioCalendario(mesAnoConsiderado);
+
+    if (mesAnoConsiderado && numeroSemana === 1) {
+      diasSemana = construirPrimeiraSemanaCalendario(
+        [],
+        dataInicioCalendario,
+        diaDaSemanaNumerico,
+      );
+      setDiasDaSemanaSelecionada(diasSemana);
+      week = weekColumns.map((column) => {
+        return {
+          ...column,
+          dia: diasSemana[column["position"]].dia,
+          mes: diasSemana[column["position"]].mes,
+          ano: diasSemana[column["position"]].ano,
+        };
+      });
+      setWeekColumns(week);
+    }
+
+    if (mesAnoConsiderado && numeroSemana !== 1) {
+      diasSemana = construirOutrasSemanaCalendario(
+        dataInicioCalendario,
+        diasSemana,
+        diaDaSemanaNumerico,
+        numeroSemana,
+      );
+      const deveExibirSemana = existeSemanaNoIntervaloRecreio(
+        diasSemana,
+        mesAnoConsiderado,
+        datasRecreio?.inicio,
+        datasRecreio?.fim,
+      );
+
+      if (deveExibirSemana) {
+        setDiasDaSemanaSelecionada(diasSemana);
+        week = weekColumns.map((column) => {
+          return {
+            ...column,
+            dia: diasSemana[column["position"]].dia,
+            mes: diasSemana[column["position"]].mes,
+            ano: diasSemana[column["position"]].ano,
+          };
+        });
+        setWeekColumns(week);
+      }
+    }
+  };
+
+  const construirPrimeiraSemanaCalendario = (
+    diasSemana,
+    dataInicioCalendario,
+    diaDaSemanaNumerico,
+  ) => {
+    diasSemana.unshift({
+      dia: format(dataInicioCalendario, "dd"),
+      mes: format(dataInicioCalendario, "MM"),
+      ano: format(dataInicioCalendario, "yyyy"),
+    });
+
+    for (let i = 1; i < diaDaSemanaNumerico; i++) {
+      const data = subDays(dataInicioCalendario, i);
+      diasSemana.unshift({
+        dia: format(data, "dd"),
+        mes: format(data, "MM"),
+        ano: format(data, "yyyy"),
+      });
+    }
+    for (let i = diaDaSemanaNumerico; i < 7; i++) {
+      const data = addDays(dataInicioCalendario, i + 1 - diaDaSemanaNumerico);
+      diasSemana.push({
+        dia: format(data, "dd"),
+        mes: format(data, "MM"),
+        ano: format(data, "yyyy"),
+      });
+    }
+
+    return diasSemana;
+  };
+
+  const construirOutrasSemanaCalendario = (
+    dataInicioCalendario,
+    diasSemana,
+    diaDaSemanaNumerico,
+    numeroSemana,
+  ) => {
+    let dia = addDays(dataInicioCalendario, 7 * (numeroSemana - 1));
+    diasSemana.unshift({
+      dia: format(dia, "dd"),
+      mes: format(dia, "MM"),
+      ano: format(dia, "yyyy"),
+    });
+
+    for (let i = 1; i < diaDaSemanaNumerico; i++) {
+      const data = subDays(dia, i);
+      diasSemana.unshift({
+        dia: format(data, "dd"),
+        mes: format(data, "MM"),
+        ano: format(data, "yyyy"),
+      });
+    }
+
+    for (let i = diaDaSemanaNumerico; i < 7; i++) {
+      const data = addDays(dia, i + 1 - diaDaSemanaNumerico);
+      diasSemana.push({
+        dia: format(data, "dd"),
+        mes: format(data, "MM"),
+        ano: format(data, "yyyy"),
+      });
+    }
+
+    return diasSemana;
+  };
+
+  const obterDataInicioCalendario = (mesAnoConsiderado) => {
+    return ehRecreioNasFerias()
+      ? mesAnoConsiderado
+      : startOfMonth(mesAnoConsiderado);
+  };
+
+  const obterDiaNumericoDaSemana = (mesAnoConsiderado, dataInicoRecreio) => {
+    let diaDaSemanaNumerico = 0;
+    if (ehRecreioNasFerias() && dataInicoRecreio) {
+      diaDaSemanaNumerico = getDay(dataInicoRecreio);
+    } else {
+      diaDaSemanaNumerico = getDay(startOfMonth(mesAnoConsiderado)); // 0 representa Domingo
+    }
+
+    if (diaDaSemanaNumerico === 0) {
+      diaDaSemanaNumerico = 7;
+    }
+
+    return diaDaSemanaNumerico;
+  };
+
+  const datasInicoFimRecreio = () => {
+    const dataRecreio =
+      location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
+    const dataInicoRecreio = parse(
+      dataRecreio.data_inicio,
+      "dd/MM/yyyy",
+      new Date(),
+      { locale: ptBR },
+    );
+    const dataFimRecreio = parse(
+      dataRecreio.data_fim,
+      "dd/MM/yyyy",
+      new Date(),
+      {
+        locale: ptBR,
+      },
+    );
+
+    return { inicio: dataInicoRecreio, fim: dataFimRecreio };
   };
 
   return (
@@ -2586,7 +2526,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                 <div className="field-values-input">
                                                   {ehEmeiDaCemeiLocation ||
                                                   ehSolicitacoesAlimentacaoLocation ||
-                                                  ehProgramasEProjetosLocation ? (
+                                                  ehProgramasEProjetosLocation ||
+                                                  ehGrupoColaboradores() ? (
                                                     <>
                                                       <Field
                                                         className={`m-2 ${classNameFieldTabelaAlimentacaoEMEI(
@@ -2637,6 +2578,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           alteracoesAlimentacaoAutorizadas,
                                                           ehUltimoDiaLetivoDoAno,
                                                           calendarioMesConsiderado,
+                                                          ehRecreioNasFerias(),
                                                         )}
                                                         defaultValue={defaultValue(
                                                           column,
@@ -2739,13 +2681,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           )
                                                         }
                                                         exibeTooltipRepeticao={
-                                                          ehProgramasEProjetosLocation &&
-                                                          exibirTooltipRepeticao(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                          )
+                                                          ehProgramasEProjetosLocation ||
+                                                          (ehGrupoColaboradores() &&
+                                                            exibirTooltipRepeticao(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                            ))
                                                         }
                                                         validate={fieldValidationsTabelasEmeidaCemei(
                                                           row.name,

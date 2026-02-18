@@ -205,3 +205,8 @@ export const getInterrupcoesProgramadas = async (params) => {
 
 export const cadastraInterrupcaoProgramada = async (payload) =>
   await axios.post("/interrupcao-programada-entrega/", payload);
+
+export const getDatasBloqueioCadastroEtapas = async () =>
+  await axios.get(
+    "/interrupcao-programada-entrega/datas-bloqueadas-armazenavel/",
+  );

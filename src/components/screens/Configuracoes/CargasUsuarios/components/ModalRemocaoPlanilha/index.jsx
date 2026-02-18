@@ -27,6 +27,7 @@ const ModalRemocaoPlanilha = ({ show, setShow, planilha, removerPlanilha }) => {
       </Modal.Body>
       <Modal.Footer>
         <Botao
+          dataTestId="botao-cancelar"
           texto="Não"
           type={BUTTON_TYPE.BUTTON}
           onClick={handleClose}
@@ -34,6 +35,7 @@ const ModalRemocaoPlanilha = ({ show, setShow, planilha, removerPlanilha }) => {
           className="ms-3"
         />
         <Botao
+          dataTestId="botao-remover"
           texto="Sim"
           type={BUTTON_TYPE.BUTTON}
           onClick={() => {

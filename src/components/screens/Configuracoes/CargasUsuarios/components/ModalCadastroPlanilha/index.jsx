@@ -15,7 +15,7 @@ const EXTENSOES_PERMITIDAS = "XLSX, XLS";
 
 const ModalCadastroVinculo = ({ show, setShow, onSubmit, servidores }) => {
   const [tipoPlanilha, setTipoPlanilha] = useState(
-    servidores ? "SERVIDOR" : undefined
+    servidores ? "SERVIDOR" : undefined,
   );
   const [arquivo, setArquivo] = useState([]);
 
@@ -73,6 +73,7 @@ const ModalCadastroVinculo = ({ show, setShow, onSubmit, servidores }) => {
                   <div className="row pb-3">
                     <article className="col-9 produto">
                       <Field
+                        dataTestId="input-anexar"
                         component={InputFile}
                         className="inputfile"
                         texto="Anexar Planilha"

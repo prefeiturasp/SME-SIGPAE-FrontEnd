@@ -144,6 +144,7 @@ export const ModalOcorrencia = ({ ...props }) => {
                     onClick={() => setShowModal(false)}
                     style={BUTTON_STYLE.GREEN_OUTLINE}
                     className="ms-3"
+                    dataTestId={`botao-${tituloBotoes[0]}`}
                   />
                   <Botao
                     texto={tituloBotoes[1]}
@@ -157,6 +158,7 @@ export const ModalOcorrencia = ({ ...props }) => {
                             undefined
                         : false
                     }
+                    dataTestId={`botao-${tituloBotoes[1]}`}
                   />
                 </div>
               </div>
