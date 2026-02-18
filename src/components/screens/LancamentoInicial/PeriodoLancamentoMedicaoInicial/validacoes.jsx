@@ -1190,6 +1190,7 @@ export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacao = (
 
   return (
     value &&
+    !["Mês anterior", "Mês posterior"].includes(value) &&
     Number(value) !== 0 &&
     categoria.nome.includes("DIETA") &&
     frequenciaAlimentacao &&
