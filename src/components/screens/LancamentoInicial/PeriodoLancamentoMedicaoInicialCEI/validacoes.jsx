@@ -248,6 +248,35 @@ export const validacoesTabelaAlimentacaoCEI = (
   return undefined;
 };
 
+export const validacoesFaixasZeradasAlimentacao = (
+  rowName,
+  dia,
+  categoria,
+  allValues,
+  uuidFaixaEtaria,
+  faixaEtaria,
+) => {
+  if (rowName !== "frequencia" || categoria.nome !== "ALIMENTAÇÃO") {
+    return false;
+  }
+  // console.log(`allValues`, allValues)
+
+  const faixasComMatriculados = faixaEtaria.filter((faixa) => {
+    const inputMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+    const valorMatriculados = allValues[inputMatriculados];
+    return valorMatriculados !== undefined && Number(valorMatriculados) > 0;
+  });
+
+  if (faixasComMatriculados.length === 0) {
+    return false;
+  }
+
+  return faixasComMatriculados.every((faixa) => {
+    const inputFrequencia = `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+    return allValues[inputFrequencia] === "0";
+  });
+};
+
 export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (
   rowName,
   dia,

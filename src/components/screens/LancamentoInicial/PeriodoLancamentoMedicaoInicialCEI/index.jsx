@@ -125,6 +125,7 @@ import {
   validacoesTabelasDietasEmeidaCemei,
   validarFormulario,
   verificarMesAnteriorOuPosterior,
+  validacoesFaixasZeradasAlimentacao,
 } from "./validacoes";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
@@ -1646,8 +1647,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const fieldValidationsTabelasCEI =
-    (rowName, dia, idCategoria, nomeCategoria, uuidFaixaEtaria) =>
+    (rowName, dia, categoria, nomeCategoria, uuidFaixaEtaria) =>
     (value, allValues) => {
+      const idCategoria = categoria.id;
       if (nomeCategoria === "ALIMENTAÇÃO") {
         if (ehRecreioNasFerias()) {
           return validacoesTabelaAlimentacaoCEIRecreioNasFerias(
@@ -1659,6 +1661,19 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             faixaEtaria,
           );
         } else {
+          const diaTotalmenteZerado = validacoesFaixasZeradasAlimentacao(
+            rowName,
+            dia,
+            categoria,
+            allValues,
+            uuidFaixaEtaria,
+            faixaEtaria,
+          );
+
+          if (diaTotalmenteZerado) {
+            // console.log(`diaTotalmenteZerado - ${dia}:`, diaTotalmenteZerado)
+            return null;
+          }
           return validacoesTabelaAlimentacaoCEI(
             rowName,
             dia,
@@ -2808,7 +2823,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                         validate={fieldValidationsTabelasCEI(
                                                           row.name,
                                                           column.dia,
-                                                          categoria.id,
+                                                          categoria,
                                                           categoria.nome,
                                                           row.uuid,
                                                         )}
