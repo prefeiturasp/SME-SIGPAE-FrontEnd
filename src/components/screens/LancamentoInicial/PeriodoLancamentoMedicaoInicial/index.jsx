@@ -112,6 +112,7 @@ import {
   validarFormulario,
   carregarDiasCalendario,
   verificarMesAnteriorOuPosterior,
+  exibirTooltipFrequenciaAlimentacaoZeroESemObservacao,
 } from "./validacoes";
 
 export default () => {
@@ -2906,6 +2907,7 @@ export default () => {
                                                             location,
                                                             row,
                                                             alteracoesAlimentacaoAutorizadas,
+                                                            categoriasDeMedicao,
                                                           )
                                                             ? textoBotaoObservacao(
                                                                 formValuesAtualizados[
@@ -2964,6 +2966,13 @@ export default () => {
                                                           categoria,
                                                           alteracoesAlimentacaoAutorizadas,
                                                         )}
+                                                        exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacao(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          categoriasDeMedicao,
+                                                        )}
                                                         classNameToNextInput={getClassNameToNextInput(
                                                           row,
                                                           column,
@@ -3009,6 +3018,7 @@ export default () => {
                                                           ehUltimoDiaLetivoDoAno,
                                                         )}
                                                         dia={column.dia}
+                                                        maxFrequenciaAlimentacao
                                                         defaultValue={defaultValue(
                                                           column,
                                                           row,

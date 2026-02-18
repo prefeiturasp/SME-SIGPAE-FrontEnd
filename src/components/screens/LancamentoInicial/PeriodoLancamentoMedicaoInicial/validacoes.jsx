@@ -6,6 +6,35 @@ import { ALUNOS_EMEBS } from "../constants";
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { ehGrupoRecreioNasFerias } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import { format } from "date-fns";
+
+export const alimentacoesFrequenciaZeroESemObservacao = (
+  values,
+  dia,
+  categoria,
+  categorias,
+) => {
+  const categoriaAlimentacao = categorias.find(
+    (cat) => cat.nome === "ALIMENTAÇÃO",
+  );
+  const frequenciaAlimentacao =
+    values[`frequencia__dia_${dia}__categoria_${categoriaAlimentacao.id}`];
+
+  const alimentacoes = ["frequencia", "lanche_4h", "lanche", "refeicao"];
+  let erro = false;
+  alimentacoes.forEach((alimentacao) => {
+    if (
+      categoria.nome.includes("DIETA") &&
+      Number(values[`${alimentacao}__dia_${dia}__categoria_${categoria.id}`]) >
+        0 &&
+      Number(frequenciaAlimentacao) === 0 &&
+      !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
+    ) {
+      erro = true;
+    }
+  });
+  return erro;
+};
+
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
   dia,
@@ -404,6 +433,7 @@ export const botaoAdicionarObrigatorio = (
   location,
   row,
   alteracoesAlimentacaoAutorizadas,
+  categorias,
 ) => {
   return (
     repeticaoSobremesaDoceComValorESemObservacao(
@@ -423,6 +453,12 @@ export const botaoAdicionarObrigatorio = (
       column,
       categoria,
       alteracoesAlimentacaoAutorizadas,
+    ) ||
+    alimentacoesFrequenciaZeroESemObservacao(
+      formValuesAtualizados,
+      column.dia,
+      categoria,
+      categorias,
     )
   );
 };
@@ -1125,6 +1161,40 @@ export const exibirTooltipRPLAutorizadas = (
     ).length > 0 &&
     row.name.includes("refeicao") &&
     !row.name.includes("repeticao") &&
+    !formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ]
+  );
+};
+
+export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacao = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  categoriasDeMedicao,
+  value_,
+) => {
+  const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
+    c.nome.includes("ALIMENTAÇÃO"),
+  );
+  const frequenciaAlimentacao =
+    formValuesAtualizados[
+      `frequencia__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`
+    ];
+  const value =
+    value_ ??
+    formValuesAtualizados[
+      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    value &&
+    Number(value) !== 0 &&
+    categoria.nome.includes("DIETA") &&
+    frequenciaAlimentacao &&
+    Number(frequenciaAlimentacao) === 0 &&
+    row.name !== "dietas_autorizadas" &&
     !formValuesAtualizados[
       `observacoes__dia_${column.dia}__categoria_${categoria.id}`
     ]
