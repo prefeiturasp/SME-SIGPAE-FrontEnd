@@ -1201,6 +1201,111 @@ export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacao = (
     ]
   );
 };
+/**
+ * Verifica se existe algum campo de dieta com valor maior que zero em dias onde
+ * a frequência de alimentação é zero e sem observação registrada.
+ *
+ * Esta função percorre todos os dias da semana e todas as categorias de dieta,
+ * validando se há inconsistências entre os lançamentos de dieta e a frequência
+ * de alimentação. Utiliza o valor em tempo real (value_) para o campo sendo editado
+ * e os valores salvos (formValuesAtualizados) para os demais campos.
+ *
+ * @param {Object} formValuesAtualizados - Objeto com todos os valores do formulário
+ * @param {Array} categoriasDeMedicao - Lista de categorias de medição disponíveis
+ * @param {Array} weekColumns - Colunas representando os dias da semana atual
+ * @param {Array} tabelaDietaRows - Linhas da tabela de dieta comum
+ * @param {Array} tabelaDietaEnteralRows - Linhas da tabela de dieta enteral
+ * @param {string|number} value_ - Valor em tempo real do campo sendo editado
+ * @param {Object} currentRow - Row do campo sendo editado (opcional)
+ * @param {Object} currentColumn - Column do campo sendo editado (opcional)
+ * @param {Object} currentCategoria - Categoria do campo sendo editado (opcional)
+ * @returns {boolean} true se encontrar algum campo com valor > 0, frequência = 0 e sem observação
+ */
+export const existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao = (
+  formValuesAtualizados,
+  categoriasDeMedicao,
+  weekColumns,
+  tabelaDietaRows,
+  tabelaDietaEnteralRows,
+  value_,
+  currentRow = null,
+  currentColumn = null,
+  currentCategoria = null,
+) => {
+  if (!formValuesAtualizados || !categoriasDeMedicao || !weekColumns) {
+    return false;
+  }
+
+  const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
+    c.nome.includes("ALIMENTAÇÃO"),
+  );
+  const categoriasDieta = categoriasDeMedicao.filter((c) =>
+    c.nome.includes("DIETA"),
+  );
+
+  if (!categoriaAlimentacao || !categoriasDieta.length) {
+    return false;
+  }
+
+  const camposDieta = [
+    ...(tabelaDietaRows || []).filter(
+      (row) => row.name !== "dietas_autorizadas",
+    ),
+    ...(tabelaDietaEnteralRows || []).filter(
+      (row) => row.name !== "dietas_autorizadas",
+    ),
+  ];
+
+  for (const column of weekColumns) {
+    const dia = column.dia;
+
+    const frequenciaAlimentacao =
+      formValuesAtualizados[
+        `frequencia__dia_${dia}__categoria_${categoriaAlimentacao.id}`
+      ];
+
+    if (!frequenciaAlimentacao || Number(frequenciaAlimentacao) !== 0) {
+      continue;
+    }
+
+    for (const categoriaDieta of categoriasDieta) {
+      const temObservacao =
+        formValuesAtualizados[
+          `observacoes__dia_${dia}__categoria_${categoriaDieta.id}`
+        ];
+
+      if (temObservacao) {
+        continue;
+      }
+
+      for (const campoDieta of camposDieta) {
+        const ehCampoAtual =
+          currentRow &&
+          currentColumn &&
+          currentCategoria &&
+          currentRow.name === campoDieta.name &&
+          currentColumn.dia === dia &&
+          currentCategoria.id === categoriaDieta.id;
+
+        const value = ehCampoAtual
+          ? value_
+          : formValuesAtualizados[
+              `${campoDieta.name}__dia_${dia}__categoria_${categoriaDieta.id}`
+            ];
+
+        if (
+          value &&
+          !["Mês anterior", "Mês posterior"].includes(value) &&
+          Number(value) > 0
+        ) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+};
 
 export const exibirTooltipLPRAutorizadas = (
   formValuesAtualizados,

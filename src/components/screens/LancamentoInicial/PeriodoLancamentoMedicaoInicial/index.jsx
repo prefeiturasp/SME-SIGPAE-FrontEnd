@@ -49,15 +49,15 @@ import {
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
+  getDiasLetivosRecreio,
   getDiasParaCorrecao,
   getFeriadosNoMes,
   getLogDietasAutorizadasPeriodo,
+  getLogDietasAutorizadasRecreioNasFerias,
   getMatriculadosPeriodo,
   getValoresPeriodosLancamentos,
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
-  getDiasLetivosRecreio,
-  getLogDietasAutorizadasRecreioNasFerias,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
@@ -92,6 +92,8 @@ import {
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
   campoLancheComLPRAutorizadaESemObservacao,
+  carregarDiasCalendario,
+  exibirTooltipFrequenciaAlimentacaoZeroESemObservacao,
   exibirTooltipFrequenciaZeroTabelaEtec,
   exibirTooltipKitLancheSolAlimentacoes,
   exibirTooltipLancheEmergencialAutorizado,
@@ -106,13 +108,12 @@ import {
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
+  existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao,
   validacoesTabelaAlimentacao,
   validacoesTabelaEtecAlimentacao,
   validacoesTabelasDietas,
   validarFormulario,
-  carregarDiasCalendario,
   verificarMesAnteriorOuPosterior,
-  exibirTooltipFrequenciaAlimentacaoZeroESemObservacao,
 } from "./validacoes";
 
 export default () => {
@@ -2036,13 +2037,16 @@ export default () => {
       (ehZeroFrequencia &&
         !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]) ||
       campoFrequenciaValor0ESemObservacao(dia, categoria, values) ||
-      exibirTooltipFrequenciaAlimentacaoZeroESemObservacao(
+      existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao(
         formValuesAtualizados,
+        categoriasDeMedicao,
+        weekColumns,
+        tabelaDietaRows,
+        tabelaDietaEnteralRows,
+        value,
         row,
         column,
         categoria,
-        categoriasDeMedicao,
-        value,
       ) ||
       campoComSuspensaoAutorizadaESemObservacao(
         formValuesAtualizados,
