@@ -1,7 +1,6 @@
-import React from "react";
 import { Collapse } from "antd";
 
-export default ({ escolaInstituicao, loteEscolaSimples }) => {
+export default ({ escolaInstituicao, loteEscolaSimples, historicoEscola }) => {
   const { Panel } = Collapse;
 
   const formataEnderencoCompleto = (endereco) => {
@@ -17,7 +16,7 @@ export default ({ escolaInstituicao, loteEscolaSimples }) => {
               <div className="col-12 info-label">
                 <label>NOME DA UE</label>
                 <p className="value-label">
-                  {escolaInstituicao && escolaInstituicao.nome}
+                  {historicoEscola && historicoEscola.nome}
                 </p>
               </div>
             </div>
