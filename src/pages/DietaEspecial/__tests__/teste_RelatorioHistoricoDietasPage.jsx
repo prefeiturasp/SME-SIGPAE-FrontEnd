@@ -30,12 +30,14 @@ import mock from "src/services/_mock";
 
 describe("Teste - Relatório Histórico de Dietas Especiais", () => {
   const getMocksGetDietasEspeciais = (
-    segundaRequisicao = mockGetSolicitacoesRelatorioHistoricoDietas
+    segundaRequisicao = mockGetSolicitacoesRelatorioHistoricoDietas,
   ) => {
     let callCount = 0;
 
     mock
-      .onGet("/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/")
+      .onPost(
+        "/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/",
+      )
       .reply(() => {
         callCount++;
 
@@ -79,11 +81,11 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await act(async () => {
@@ -102,7 +104,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
           >
             <RelatorioHistoricoDietasPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -123,7 +125,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
   const selectOptionUE = async (container, optionText) => {
     const placeholder = getByText(
       container,
-      "Selecione as Unidades Educacionais"
+      "Selecione as Unidades Educacionais",
     );
     fireEvent.keyDown(placeholder, keyDownEvent);
     await findByText(container, optionText);
@@ -134,7 +136,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     await setDRELote();
     await selectOptionUE(
       screen.getByTestId("select-unidades-educacionais"),
-      "000566 - EMEF TERESA MARGARIDA DA SILVA E ORTA"
+      "000566 - EMEF TERESA MARGARIDA DA SILVA E ORTA",
     );
 
     const divInputAlterarDia = screen.getByTestId("div-input-data");
@@ -159,8 +161,8 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS EM 12/02/2024: 27"
-        )
+          "Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS EM 12/02/2024: 27",
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -173,7 +175,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     const escolaCei = angleDownIcon[3];
     fireEvent.click(escolaCei);
     expect(
-      screen.getByText("Faixas Etárias com Dietas Autorizadas")
+      screen.getByText("Faixas Etárias com Dietas Autorizadas"),
     ).toBeInTheDocument();
     expect(screen.getByText("Período INTEGRAL")).toBeInTheDocument();
     expect(screen.getByText("07 a 11 meses")).toBeInTheDocument();
@@ -182,7 +184,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     const escolaCeuCemei = angleDownIcon[7];
     fireEvent.click(escolaCeuCemei);
     expect(
-      screen.getByText("Dietas Autorizadas nas Turmas do Infantil")
+      screen.getByText("Dietas Autorizadas nas Turmas do Infantil"),
     ).toBeInTheDocument();
     expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
 
@@ -196,30 +198,30 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     await setFiltrosEClicaEmFiltrar();
 
     const paginaDois = document.querySelector(
-      ".ant-pagination .ant-pagination-item-2"
+      ".ant-pagination .ant-pagination-item-2",
     );
     fireEvent.click(paginaDois);
 
     await waitFor(() => {
       expect(
-        screen.getAllByText("EMEBS NEUSA BASSETTO, PROFA.").length
+        screen.getAllByText("EMEBS NEUSA BASSETTO, PROFA.").length,
       ).toBeGreaterThan(0);
       expect(
         screen.getAllByText(
-          "CEU GESTAO MENINOS - ARTUR ALBERTO DE MOTA GONCALVES, PROF. PR."
-        ).length
+          "CEU GESTAO MENINOS - ARTUR ALBERTO DE MOTA GONCALVES, PROF. PR.",
+        ).length,
       ).toBeGreaterThan(0);
     });
 
     const angleDownIcon = document.querySelector(".fa-angle-down");
     fireEvent.click(angleDownIcon);
     expect(
-      screen.getByText("Alunos do Infantil (4 a 6 anos)")
+      screen.getByText("Alunos do Infantil (4 a 6 anos)"),
     ).toBeInTheDocument();
     expect(screen.getByText("MANHA")).toBeInTheDocument();
 
     expect(
-      screen.getByText("Alunos do Fundamental (acima de 6 anos)")
+      screen.getByText("Alunos do Fundamental (acima de 6 anos)"),
     ).toBeInTheDocument();
     expect(screen.getByText("TARDE")).toBeInTheDocument();
   });
@@ -229,26 +231,26 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     await setFiltrosEClicaEmFiltrar();
 
     const paginaDois = document.querySelector(
-      ".ant-pagination .ant-pagination-item-2"
+      ".ant-pagination .ant-pagination-item-2",
     );
     fireEvent.click(paginaDois);
 
     await waitFor(() => {
       expect(
-        screen.getAllByText("CEMEI MARCIA KUMBREVICIUS DE MOURA").length
+        screen.getAllByText("CEMEI MARCIA KUMBREVICIUS DE MOURA").length,
       ).toBeGreaterThan(0);
     });
 
     const angleDownIcon = document.querySelector(".fa-angle-down");
     fireEvent.click(angleDownIcon);
     expect(
-      screen.getByText("Faixas Etárias com Dietas Autorizadas")
+      screen.getByText("Faixas Etárias com Dietas Autorizadas"),
     ).toBeInTheDocument();
     expect(screen.getByText("Período INTEGRAL")).toBeInTheDocument();
     expect(screen.getByText("01 a 03 meses")).toBeInTheDocument();
 
     expect(
-      screen.getByText("Dietas Autorizadas nas Turmas do Infantil")
+      screen.getByText("Dietas Autorizadas nas Turmas do Infantil"),
     ).toBeInTheDocument();
     expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
     expect(screen.getByText("MANHA")).toBeInTheDocument();
@@ -260,13 +262,13 @@ describe("Teste - Relatório Histórico de Dietas Especiais", () => {
     await setFiltrosEClicaEmFiltrar();
 
     const pagina_dois = document.querySelector(
-      ".ant-pagination .ant-pagination-item-2"
+      ".ant-pagination .ant-pagination-item-2",
     );
     fireEvent.click(pagina_dois);
 
     await waitFor(() => {
       expect(
-        screen.getAllByText("EMEF PERICLES EUGENIO DA SILVA RAMOS").length
+        screen.getAllByText("EMEF PERICLES EUGENIO DA SILVA RAMOS").length,
       ).toBeGreaterThan(0);
     });
 
