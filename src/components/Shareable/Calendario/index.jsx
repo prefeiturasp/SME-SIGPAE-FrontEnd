@@ -80,7 +80,10 @@ export class Calendario extends React.Component {
   }
 
   async getEditaisAsync() {
-    const response = await getNumerosEditais();
+    const response = await getNumerosEditais({
+      excluir_encerrados: true,
+      excluir_parceira: true,
+    });
     if (response.status === HTTP_STATUS.OK) {
       this.setState({ editais: response.data.results });
     } else {

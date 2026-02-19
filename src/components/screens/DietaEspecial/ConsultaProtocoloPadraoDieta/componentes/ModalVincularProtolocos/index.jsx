@@ -24,6 +24,7 @@ export const ModalVincularProtocolos = ({
   closeModal,
   showModal,
   editais,
+  editaisDestino,
   buscar,
 }) => {
   const [protocolosPadrao, setProtocolosPadrao] = useState([]);
@@ -36,7 +37,7 @@ export const ModalVincularProtocolos = ({
       if (response.status === HTTP_STATUS.OK) {
         setProtocolosPadrao(response.data.results);
       }
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao tentar filtrar os Protocolos");
     }
   };
@@ -49,7 +50,7 @@ export const ModalVincularProtocolos = ({
         buscar();
         closeModal(false);
       }
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao tentar vincular os Protocolos Padrão");
     }
   };
@@ -86,7 +87,7 @@ export const ModalVincularProtocolos = ({
                         editais.map((edital) => ({
                           nome: edital.numero,
                           uuid: edital.uuid,
-                        }))
+                        })),
                       )
                     }
                     required
@@ -131,14 +132,14 @@ export const ModalVincularProtocolos = ({
                     name="editais_destino"
                     selected={values.editais_destino || []}
                     options={
-                      editais &&
-                      editais
+                      editaisDestino &&
+                      editaisDestino
                         .map((edital) => ({
                           label: edital.numero,
                           value: edital.uuid,
                         }))
                         .filter(
-                          (edital) => edital.value !== values.edital_origem
+                          (edital) => edital.value !== values.edital_origem,
                         )
                     }
                     nomeDoItemNoPlural="Editais"

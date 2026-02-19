@@ -63,9 +63,9 @@ export const excluirEdital = async (uuid) => {
     });
 };
 
-export const getNumerosEditais = async () => {
+export const getNumerosEditais = async (params = {}) => {
   const url = `/editais/lista-numeros/`;
-  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;
