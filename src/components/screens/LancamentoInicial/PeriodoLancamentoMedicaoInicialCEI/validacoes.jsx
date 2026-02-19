@@ -254,18 +254,19 @@ export const validacoesFaixasZeradasAlimentacao = (
   feriadosNoMes,
   categoria,
   allValues,
-  uuidFaixaEtaria,
   faixaEtaria,
 ) => {
   if (rowName !== "frequencia" || categoria.nome !== "ALIMENTAÇÃO") {
-    return false;
+    return [];
   }
   // console.log(`allValues`, allValues)
   // setDisableBotaoSalvarLancamentos(true);
 
-  const diasLetivos = calendario.filter((dia) => dia.dia_letivo === true);
+  const diasLetivos = calendario.filter(
+    (dia) => dia.dia_letivo === true && !feriadosNoMes.includes(dia.dia),
+  );
 
-  const temDiaZerado = diasLetivos.some((diaLetivo) => {
+  const diasZerado = diasLetivos.reduce((acumulador, diaLetivo) => {
     const dia = diaLetivo.dia;
 
     const faixasComMatriculados = faixaEtaria.filter((faixa) => {
@@ -278,13 +279,20 @@ export const validacoesFaixasZeradasAlimentacao = (
       return false;
     }
 
-    return faixasComMatriculados.every((faixa) => {
+    const diaZerado = faixasComMatriculados.every((faixa) => {
       const inputFrequencia = `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
       return allValues[inputFrequencia] === "0";
     });
-  });
 
-  return temDiaZerado;
+    if (diaZerado) {
+      acumulador.push({
+        dia: dia,
+      });
+    }
+    return acumulador;
+  }, []);
+
+  return diasZerado;
 };
 
 export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (
