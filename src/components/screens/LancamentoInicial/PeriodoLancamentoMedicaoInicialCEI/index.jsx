@@ -109,6 +109,7 @@ import {
 } from "./helper";
 import "./styles.scss";
 import {
+  alimentacoesFrequenciaZeroESemObservacaoCEI,
   botaoAdicionarObrigatorioTabelaAlimentacao,
   campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao,
   campoComInclusaoAutorizadaValorZeroESemObservacao,
@@ -2413,6 +2414,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           ],
                                                           formValuesAtualizados,
                                                         )) ||
+                                                      alimentacoesFrequenciaZeroESemObservacaoCEI(
+                                                        formValuesAtualizados,
+                                                        column.dia,
+                                                        categoria,
+                                                        categoriasDeMedicao,
+                                                        faixaEtaria,
+                                                      ) ||
                                                       campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao(
                                                         inclusoesAutorizadas,
                                                         column,

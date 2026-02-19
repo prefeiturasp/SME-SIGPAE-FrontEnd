@@ -82,6 +82,87 @@ export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI = (
   );
 };
 
+/**
+ * Esta função verifica se existem alunos com dieta especial frequentes em um dia onde
+ * a frequência de alimentação geral está zerada, sem uma observação que justifique essa situação.
+ *
+ * @param {Object} values - Objeto contendo todos os valores do formulário
+ * @param {string} dia - Dia do mês a ser validado (formato: "01", "02", etc.)
+ * @param {Object} categoria - Objeto da categoria de medição atual (categoria de dieta)
+ * @param {number} categoria.id - Identificador da categoria
+ * @param {string} categoria.nome - Nome da categoria (deve incluir "DIETA" para ativar validação)
+ * @param {Array<Object>} categorias - Array com todas as categorias de medição disponíveis
+ * @param {string} categorias[].nome - Nome da categoria (ex: "ALIMENTAÇÃO")
+ * @param {number} categorias[].id - Identificador da categoria
+ * @param {Array<Object>} faixasEtarias - Array com todas as faixas etárias
+ * @param {string} faixasEtarias[].uuid - Identificador único de cada faixa etária
+ *
+ * @returns {boolean} `true` se há erro (dietas com frequência mas alimentação zerada sem observação), `false` caso contrário
+ *
+ * @description
+ * A função executa a seguinte lógica:
+ * 1. Calcula a soma das frequências de alimentação geral (para faixas com matriculados > 0)
+ * 2. Calcula a soma das frequências de dietas (para faixas com dietas autorizadas > 0)
+ * 3. Retorna `true` quando TODAS as condições abaixo são atendidas:
+ *    - A categoria atual é de DIETA
+ *    - A soma das frequências de alimentação geral é zero
+ *    - A soma das frequências de dietas é maior que zero
+ *    - Não existe observação registrada para o dia/categoria
+ *
+ */
+export const alimentacoesFrequenciaZeroESemObservacaoCEI = (
+  values,
+  dia,
+  categoria,
+  categorias,
+  faixasEtarias,
+) => {
+  const categoriaAlimentacao = categorias.find(
+    (cat) => cat.nome === "ALIMENTAÇÃO",
+  );
+
+  let sumFrequenciasAlimentacao = 0;
+  for (const faixa of faixasEtarias) {
+    if (
+      Number(
+        values[
+          `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
+        ],
+      ) > 0
+    ) {
+      sumFrequenciasAlimentacao += Number(
+        values[
+          `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
+        ] ?? 1,
+      );
+    }
+  }
+
+  let sumFrequenciasAlimentacaoDietas = 0;
+  for (const faixa of faixasEtarias) {
+    if (
+      Number(
+        values[
+          `dietas_autorizadas__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`
+        ],
+      ) > 0
+    ) {
+      sumFrequenciasAlimentacaoDietas += Number(
+        values[
+          `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`
+        ] ?? 0,
+      );
+    }
+  }
+
+  return (
+    categoria.nome.includes("DIETA") &&
+    sumFrequenciasAlimentacao === 0 &&
+    sumFrequenciasAlimentacaoDietas > 0 &&
+    !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
+  );
+};
+
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
   dia,
