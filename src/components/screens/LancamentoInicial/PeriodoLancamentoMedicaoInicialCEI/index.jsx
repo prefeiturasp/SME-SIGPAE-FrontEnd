@@ -114,6 +114,7 @@ import {
   campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao,
   campoComInclusaoAutorizadaValorZeroESemObservacao,
   campoDietaComInclusaoAutorizadaSemObservacao,
+  existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI,
   exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI,
   exibirTooltipDietasInclusaoDiaNaoLetivoCEI,
   exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI,
@@ -1630,6 +1631,19 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           categoria,
           diasSobremesaDoce,
           location,
+        )) ||
+      (!ehEmeiDaCemeiLocation &&
+        existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI(
+          formValuesAtualizados,
+          categoriasDeMedicao,
+          weekColumns,
+          faixaEtaria,
+          tabelaDietaCEIRows,
+          tabelaDietaEnteralRows,
+          value,
+          row,
+          column,
+          categoria,
         ))
     ) {
       setDisableBotaoSalvarLancamentos(true);
