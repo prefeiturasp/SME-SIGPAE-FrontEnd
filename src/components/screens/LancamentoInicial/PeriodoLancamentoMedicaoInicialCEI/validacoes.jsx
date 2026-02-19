@@ -1,6 +1,52 @@
 import { deepCopy } from "src/helpers/utilities";
 import { format } from "date-fns";
 
+export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  categoriasDeMedicao,
+  faixasEtarias,
+) => {
+  const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
+    c.nome.includes("ALIMENTAÇÃO"),
+  );
+  let sumFrequenciasAlimentacao = 0;
+  for (const faixa of faixasEtarias) {
+    if (
+      Number(
+        formValuesAtualizados[
+          `matriculados__faixa_${faixa.uuid}__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`
+        ],
+      ) > 0
+    ) {
+      sumFrequenciasAlimentacao += Number(
+        formValuesAtualizados[
+          `frequencia__faixa_${faixa.uuid}__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`
+        ] ?? 1,
+      );
+    }
+  }
+
+  const value =
+    formValuesAtualizados[
+      `${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    !!value &&
+    !["Mês anterior", "Mês posterior"].includes(value) &&
+    Number(value) !== 0 &&
+    categoria.nome.includes("DIETA") &&
+    sumFrequenciasAlimentacao === 0 &&
+    row.name !== "dietas_autorizadas" &&
+    !formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ]
+  );
+};
+
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
   dia,

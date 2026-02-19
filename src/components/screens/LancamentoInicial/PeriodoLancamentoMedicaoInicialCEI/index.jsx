@@ -115,6 +115,7 @@ import {
   campoDietaComInclusaoAutorizadaSemObservacao,
   exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI,
   exibirTooltipDietasInclusaoDiaNaoLetivoCEI,
+  exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI,
   exibirTooltipSuspensoesAutorizadasCEI,
   frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao,
   repeticaoSobremesaDoceComValorESemObservacao,
@@ -2593,6 +2594,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               ),
                                                           )?.numero_alunos
                                                         }
+                                                        exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          categoriasDeMedicao,
+                                                        )}
                                                         exibeTooltipSuspensoesAutorizadas={exibirTooltipSuspensoesAutorizadas(
                                                           formValuesAtualizados,
                                                           row,
@@ -2776,6 +2784,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                         defaultValue={defaultValue(
                                                           column,
                                                           row,
+                                                        )}
+                                                        exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          categoriasDeMedicao,
+                                                          faixaEtaria,
                                                         )}
                                                         exibeTooltipDietasInclusaoDiaNaoLetivoCEI={exibirTooltipDietasInclusaoDiaNaoLetivoCEI(
                                                           inclusoesAutorizadas,

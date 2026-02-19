@@ -126,6 +126,7 @@ describe("Lancamento de Dieta Especial com Frequência Zero na Alimentação - E
 
   it("Exibe mensagem de erro ao tentar lançar dieta especial com frequência zero na alimentação", async () => {
     /* Frequência da alimentação do dia 02 é zero */
+
     const inputFrequenciaAlimentacaoDia2 = screen.getByTestId(
       "frequencia__dia_02__categoria_1",
     );
@@ -133,6 +134,7 @@ describe("Lancamento de Dieta Especial com Frequência Zero na Alimentação - E
 
     /* Ao colocar frequência > 0, é exibido um warning, botão de adicionar 
     observação fica destacado e o botão Salvar fica desabilitado */
+
     const inputFrequenciaDietaTipoAEnteralDia2 = screen.getByTestId(
       "frequencia__dia_02__categoria_3",
     );
