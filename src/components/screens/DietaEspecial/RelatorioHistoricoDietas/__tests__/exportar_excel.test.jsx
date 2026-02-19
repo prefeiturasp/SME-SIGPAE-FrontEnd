@@ -26,12 +26,14 @@ import mock from "src/services/_mock";
 
 describe("Teste - Relatório Histórico de Dietas Especiais - Exportar Excel", () => {
   const getMocksGetDietasEspeciais = (
-    segundaRequisicao = mockGetSolicitacoesRelatorioHistoricoDietas
+    segundaRequisicao = mockGetSolicitacoesRelatorioHistoricoDietas,
   ) => {
     let callCount = 0;
 
     mock
-      .onGet("/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/")
+      .onPost(
+        "/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/",
+      )
       .reply(() => {
         callCount++;
 
@@ -72,8 +74,8 @@ describe("Teste - Relatório Histórico de Dietas Especiais - Exportar Excel", (
       .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
       .reply(200, mockGetUnidadeEducacional);
     mock
-      .onGet(
-        "/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/exportar-excel/"
+      .onPost(
+        "/solicitacoes-dieta-especial/relatorio-historico-dieta-especial/exportar-excel/",
       )
       .reply(200, {
         detail: "Solicitação de geração de arquivo recebida com sucesso.",
@@ -82,11 +84,11 @@ describe("Teste - Relatório Histórico de Dietas Especiais - Exportar Excel", (
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await act(async () => {
@@ -105,7 +107,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais - Exportar Excel", (
           >
             <RelatorioHistoricoDietasPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -126,7 +128,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais - Exportar Excel", (
   const selectOptionUE = async (container, optionText) => {
     const placeholder = getByText(
       container,
-      "Selecione as Unidades Educacionais"
+      "Selecione as Unidades Educacionais",
     );
     fireEvent.keyDown(placeholder, keyDownEvent);
     await findByText(container, optionText);
@@ -137,7 +139,7 @@ describe("Teste - Relatório Histórico de Dietas Especiais - Exportar Excel", (
     await setDRELote();
     await selectOptionUE(
       screen.getByTestId("select-unidades-educacionais"),
-      "000566 - EMEF TERESA MARGARIDA DA SILVA E ORTA"
+      "000566 - EMEF TERESA MARGARIDA DA SILVA E ORTA",
     );
 
     const divInputAlterarDia = screen.getByTestId("div-input-data");
@@ -162,8 +164,8 @@ describe("Teste - Relatório Histórico de Dietas Especiais - Exportar Excel", (
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS EM 12/02/2024: 27"
-        )
+          "Resultado da pesquisa - TOTAL DE DIETAS AUTORIZADAS EM 12/02/2024: 27",
+        ),
       ).toBeInTheDocument();
     });
     expect(screen.getByText("Exportar XLSX"));
@@ -175,12 +177,12 @@ describe("Teste - Relatório Histórico de Dietas Especiais - Exportar Excel", (
     });
 
     expect(
-      screen.getByText("Geração solicitada com sucesso.")
+      screen.getByText("Geração solicitada com sucesso."),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Como este arquivo poderá ser muito grande, acompanhe o seu processamento na Central de Downloads."
-      )
+        "Como este arquivo poderá ser muito grande, acompanhe o seu processamento na Central de Downloads.",
+      ),
     ).toBeInTheDocument();
   });
 });
