@@ -259,8 +259,6 @@ export const validacoesFaixasZeradasAlimentacao = (
   if (rowName !== "frequencia" || categoria.nome !== "ALIMENTAÇÃO") {
     return [];
   }
-  // console.log(`allValues`, allValues)
-  // setDisableBotaoSalvarLancamentos(true);
 
   const diasLetivos = calendario.filter(
     (dia) => dia.dia_letivo === true && !feriadosNoMes.includes(dia.dia),
@@ -276,7 +274,7 @@ export const validacoesFaixasZeradasAlimentacao = (
     });
 
     if (faixasComMatriculados.length === 0) {
-      return false;
+      return acumulador;
     }
 
     const diaZerado = faixasComMatriculados.every((faixa) => {
@@ -284,9 +282,18 @@ export const validacoesFaixasZeradasAlimentacao = (
       return allValues[inputFrequencia] === "0";
     });
 
+    const inputObservacao = `observacoes__dia_${dia}__categoria_${categoria.id}`;
+    const temObservacao =
+      allValues[inputObservacao] &&
+      allValues[inputObservacao] !== "" &&
+      allValues[inputObservacao] !== "<p></p>\n"
+        ? true
+        : false;
+
     if (diaZerado) {
       acumulador.push({
         dia: dia,
+        tem_observacao: temObservacao,
       });
     }
     return acumulador;

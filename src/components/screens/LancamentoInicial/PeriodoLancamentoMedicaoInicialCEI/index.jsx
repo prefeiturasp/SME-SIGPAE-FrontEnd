@@ -1104,6 +1104,41 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     disableBotaoSalvarLancamentos,
   ]);
 
+  useEffect(() => {
+    if (
+      calendarioMesConsiderado &&
+      feriadosNoMes &&
+      faixaEtaria &&
+      formValuesAtualizados &&
+      categoriasDeMedicao.length > 0
+    ) {
+      categoriasDeMedicao
+        .filter((cat) => cat.nome === "ALIMENTAÇÃO")
+        .forEach((categoria) => {
+          const diasZeradosEncontrados = validacoesFaixasZeradasAlimentacao(
+            "frequencia",
+            calendarioMesConsiderado,
+            feriadosNoMes,
+            categoria,
+            formValuesAtualizados,
+            faixaEtaria,
+          );
+          const diasZeradosSemObservacao = diasZeradosEncontrados.filter(
+            (dia) => !dia.tem_observacao,
+          );
+          setDiasZerados(diasZeradosSemObservacao.length > 0);
+          setListaDiasZerados(diasZeradosSemObservacao);
+        });
+    }
+  }, [
+    valoresObservacoes,
+    formValuesAtualizados,
+    calendarioMesConsiderado,
+    feriadosNoMes,
+    faixaEtaria,
+    categoriasDeMedicao,
+  ]);
+
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
     let valoresMedicao = [];
     const valuesMesmoDiaDaObservacao = Object.fromEntries(
@@ -1661,8 +1696,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         faixaEtaria,
       );
 
-      setDiasZerados(diasZeradosEncontrados.length > 0);
-      setListaDiasZerados(diasZeradosEncontrados);
+      const diasZeradosSemObservacao = diasZeradosEncontrados.filter(
+        (dia) => !dia.tem_observacao,
+      );
+      setDiasZerados(diasZeradosSemObservacao.length > 0);
+      setListaDiasZerados(diasZeradosSemObservacao);
     }
   };
 
@@ -2166,15 +2204,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const verificarDiaZerado = (dia, categoria) => {
-    // console.log(`dia`, dia)
-    // console.log(`listaDiasZerados`, listaDiasZerados)
-    // console.log(`categoria`, categoria)
-
     if (categoria.nome !== "ALIMENTAÇÃO") {
       return false;
     }
     const estaZerado =
-      diasZerados && listaDiasZerados.some((item) => item.dia === dia);
+      diasZerados &&
+      listaDiasZerados.some(
+        (item) => item.dia === dia && item.tem_observacao === false,
+      );
     return estaZerado;
   };
 
