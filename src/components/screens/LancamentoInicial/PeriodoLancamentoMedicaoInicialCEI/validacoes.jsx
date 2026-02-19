@@ -1,6 +1,41 @@
 import { deepCopy } from "src/helpers/utilities";
 import { format } from "date-fns";
 
+/**
+ * Verifica se deve exibir um tooltip de alerta quando há frequência de dieta registrada
+ * mas a frequência de alimentação está zerada para todas as faixas etárias de uma determinada coluna (dia)
+ * e não há observação justificando.
+ *
+ * Esta validação garante que quando há alunos com dieta especial registrados em um dia,
+ * mas a frequência geral de alimentação está em zero, uma observação explicativa seja obrigatória.
+ *
+ * @param {Object} formValuesAtualizados - Objeto contendo todos os valores atualizados do formulário
+ * @param {Object} row - Objeto representando a linha atual da tabela
+ * @param {string} row.name - Nome do campo da linha (ex: "frequencia", "dietas_autorizadas")
+ * @param {string} row.uuid - Identificador único da faixa etária da linha
+ * @param {Object} column - Objeto representando a coluna atual da tabela
+ * @param {string} column.dia - Dia do mês correspondente à coluna
+ * @param {Object} categoria - Objeto da categoria de medição atual
+ * @param {number} categoria.id - Identificador da categoria
+ * @param {string} categoria.nome - Nome da categoria (deve incluir "DIETA" para ativar validação)
+ * @param {Array<Object>} categoriasDeMedicao - Array com todas as categorias de medição disponíveis
+ * @param {Array<Object>} faixasEtarias - Array com todas as faixas etárias
+ * @param {string} faixasEtarias[].uuid - Identificador único de cada faixa etária
+ *
+ * @returns {boolean} `true` se o tooltip de alerta deve ser exibido, `false` caso contrário
+ *
+ * @description
+ * O tooltip é exibido quando TODAS as seguintes condições são atendidas:
+ * - Existe um valor preenchido no campo atual
+ * - O valor não é "Mês anterior" nem "Mês posterior"
+ * - O valor preenchido é diferente de zero
+ * - A categoria atual é de DIETA
+ * - A soma das frequências de alimentação de todas as faixas etárias é zero
+ * - O campo não é "dietas_autorizadas"
+ * - Não existe observação registrada para o dia/categoria
+ *
+ * // Retorna true se há dieta registrada mas alimentação zerada sem observação
+ */
 export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI = (
   formValuesAtualizados,
   row,
