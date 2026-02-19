@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -110,5 +110,58 @@ describe("Teste de validação para frequência de alimentação zero e frequên
     expect(
       screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
     ).toBeInTheDocument();
+  });
+
+  it("Exibe mensagem de erro ao tentar lançar dieta especial com frequência zero na alimentação", async () => {
+    /* Frequência da alimentação do dia 01 das faixas etárias é zero */
+
+    const inputFrequenciaAlimentacaoDia1Faixa1 = screen.getByTestId(
+      "frequencia__faixa_e3030bd1-2e85-4676-87b3-96b4032370d4__dia_01__categoria_1",
+    );
+    fireEvent.change(inputFrequenciaAlimentacaoDia1Faixa1, {
+      target: { value: "0" },
+    });
+    expect(inputFrequenciaAlimentacaoDia1Faixa1).toHaveAttribute("value", "0");
+
+    const inputFrequenciaAlimentacaoDia1Faixa2 = screen.getByTestId(
+      "frequencia__faixa_2e14cd6e-33e6-4168-b1ce-449f686d1e7d__dia_01__categoria_1",
+    );
+    fireEvent.change(inputFrequenciaAlimentacaoDia1Faixa2, {
+      target: { value: "0" },
+    });
+    expect(inputFrequenciaAlimentacaoDia1Faixa2).toHaveAttribute("value", "0");
+
+    /* Ao colocar frequência > 0, é exibido um warning, botão de adicionar 
+    observação fica destacado e o botão Salvar fica desabilitado */
+
+    const inputFrequenciaDietaTipoADia1 = screen.getByTestId(
+      "frequencia__faixa_e3030bd1-2e85-4676-87b3-96b4032370d4__dia_01__categoria_2",
+    );
+    fireEvent.change(inputFrequenciaDietaTipoADia1, {
+      target: { value: "1" },
+    });
+
+    expect(inputFrequenciaDietaTipoADia1).toHaveClass("border-warning");
+
+    const botaoAdicionarObservacao = screen
+      .getByTestId("div-botao-add-obs-01-2-observacoes")
+      .querySelector("button");
+    expect(botaoAdicionarObservacao).toHaveClass("red-button-outline");
+
+    const botaoSalvarLancamentos = screen
+      .getByText("Salvar Lançamentos")
+      .closest("button");
+    fireEvent.click(botaoSalvarLancamentos);
+    expect(botaoSalvarLancamentos).toBeDisabled();
+
+    /* Ao corrigir frequência para zero, warning é removido, botão de adicionar 
+    observação não fica mais destacado e o botão Salvar fica habilitado */
+
+    fireEvent.change(inputFrequenciaDietaTipoADia1, {
+      target: { value: "0" },
+    });
+    expect(inputFrequenciaDietaTipoADia1).not.toHaveClass("border-warning");
+    expect(botaoAdicionarObservacao).not.toHaveClass("red-button-outline");
+    expect(botaoSalvarLancamentos).not.toBeDisabled();
   });
 });
