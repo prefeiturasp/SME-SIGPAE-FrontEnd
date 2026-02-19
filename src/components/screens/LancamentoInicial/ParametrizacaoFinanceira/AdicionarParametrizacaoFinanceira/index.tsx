@@ -113,6 +113,9 @@ export default () => {
               const grupo = grupoSelecionado.toLowerCase();
               const tabelasCarregadas =
                 carregarTabelas || uuidParametrizacao || uuidNovaParametrizacao;
+              const bloqueiaEdicao =
+                uuidParametrizacao &&
+                new Date(form.getState().values.data_inicial) < new Date();
 
               const TABELAS_POR_GRUPO: Record<string, React.ReactNode> = {
                 "grupo 1": (
@@ -120,6 +123,7 @@ export default () => {
                     form={form}
                     faixasEtarias={faixasEtarias}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
                 "grupo 2": (
@@ -128,6 +132,7 @@ export default () => {
                     tiposAlimentacao={tiposAlimentacao}
                     faixasEtarias={faixasEtarias}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
                 "grupo 3": (
@@ -135,6 +140,7 @@ export default () => {
                     form={form}
                     tiposAlimentacao={tiposAlimentacao}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
                 "grupo 4": (
@@ -142,6 +148,7 @@ export default () => {
                     form={form}
                     tiposAlimentacao={tiposAlimentacao}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
                 "grupo 5": (
@@ -149,6 +156,7 @@ export default () => {
                     form={form}
                     tiposAlimentacao={tiposAlimentacao}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
                 "grupo 6": (
@@ -156,6 +164,7 @@ export default () => {
                     form={form}
                     tiposAlimentacao={tiposAlimentacao}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
               };

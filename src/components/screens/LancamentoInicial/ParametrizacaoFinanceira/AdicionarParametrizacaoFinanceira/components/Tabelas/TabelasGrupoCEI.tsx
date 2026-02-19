@@ -9,9 +9,15 @@ type Props = {
   form: FormApi<any, any>;
   faixasEtarias: Array<any>;
   grupoSelecionado: string | null;
+  bloqueiaEdicao?: boolean;
 };
 
-export default ({ form, faixasEtarias, grupoSelecionado }: Props) => {
+export default ({
+  form,
+  faixasEtarias,
+  grupoSelecionado,
+  bloqueiaEdicao,
+}: Props) => {
   const tabelasPendentes = [
     "Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos",
     "Dietas Tipo B",
@@ -24,6 +30,7 @@ export default ({ form, faixasEtarias, grupoSelecionado }: Props) => {
         grupoSelecionado={grupoSelecionado}
         periodo="Integral"
         pendencias={tabelasPendentes}
+        bloqueiaEdicao={bloqueiaEdicao}
       />
       <TabelaAlimentacaoCEI
         form={form}
@@ -31,6 +38,7 @@ export default ({ form, faixasEtarias, grupoSelecionado }: Props) => {
         grupoSelecionado={grupoSelecionado}
         periodo="Parcial"
         pendencias={tabelasPendentes}
+        bloqueiaEdicao={bloqueiaEdicao}
       />
       <TabelaDietasCEI
         form={form}
@@ -38,6 +46,7 @@ export default ({ form, faixasEtarias, grupoSelecionado }: Props) => {
         grupoSelecionado={grupoSelecionado}
         nomeTabela="Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos"
         periodo="Integral"
+        bloqueiaEdicao={bloqueiaEdicao}
       />
       <TabelaDietasCEI
         form={form}
@@ -45,6 +54,7 @@ export default ({ form, faixasEtarias, grupoSelecionado }: Props) => {
         grupoSelecionado={grupoSelecionado}
         nomeTabela="Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos"
         periodo="Parcial"
+        bloqueiaEdicao={bloqueiaEdicao}
       />
       <TabelaDietasCEI
         form={form}
@@ -52,6 +62,7 @@ export default ({ form, faixasEtarias, grupoSelecionado }: Props) => {
         grupoSelecionado={grupoSelecionado}
         nomeTabela="Dietas Tipo B"
         periodo="Integral"
+        bloqueiaEdicao={bloqueiaEdicao}
       />
       <TabelaDietasCEI
         form={form}
@@ -59,6 +70,7 @@ export default ({ form, faixasEtarias, grupoSelecionado }: Props) => {
         grupoSelecionado={grupoSelecionado}
         nomeTabela="Dietas Tipo B"
         periodo="Parcial"
+        bloqueiaEdicao={bloqueiaEdicao}
       />
     </div>
   );
