@@ -223,7 +223,9 @@ export default (props: Props) => {
                 <br />
                 <Botao
                   dataTestId="botao-carregar"
-                  texto="Carregar Tabelas"
+                  texto={
+                    uuidParametrizacao ? "Criar Cópia" : "Carregar Tabelas"
+                  }
                   disabled={
                     !(
                       values.edital &&
