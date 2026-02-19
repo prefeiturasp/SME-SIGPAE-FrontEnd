@@ -2165,6 +2165,19 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     return { inicio: dataInicoRecreio, fim: dataFimRecreio };
   };
 
+  const verificarDiaZerado = (dia, categoria) => {
+    // console.log(`dia`, dia)
+    // console.log(`listaDiasZerados`, listaDiasZerados)
+    // console.log(`categoria`, categoria)
+
+    if (categoria.nome !== "ALIMENTAÇÃO") {
+      return false;
+    }
+    const estaZerado =
+      diasZerados && listaDiasZerados.some((item) => item.dia === dia);
+    return estaZerado;
+  };
+
   return (
     <>
       <div className="text-end botao-voltar-lancamento-medicao">
@@ -2515,8 +2528,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           diasSobremesaDoce,
                                                           location,
                                                         )) ||
-                                                      (diasZerados &&
-                                                        listaDiasZerados)
+                                                      verificarDiaZerado(
+                                                        column.dia,
+                                                        categoria,
+                                                      )
                                                         ? textoBotaoObservacao(
                                                             formValuesAtualizados[
                                                               `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
