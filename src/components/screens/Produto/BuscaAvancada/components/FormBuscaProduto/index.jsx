@@ -81,7 +81,9 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
             terceirizadas: terceirizadas.data.results.map(
               (el) => el.nome_fantasia,
             ),
-            editais: editais.data.results.filter((item) => item !== "PARCEIRA"),
+            editais: editais.data.results?.filter(
+              (item) => item !== "PARCEIRA",
+            ),
           },
         }),
       );
