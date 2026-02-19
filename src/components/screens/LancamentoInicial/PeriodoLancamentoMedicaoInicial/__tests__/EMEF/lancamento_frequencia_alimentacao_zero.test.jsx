@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockGetTipoAlimentacao } from "src/mocks/cadastroTipoAlimentacao.service/mockGetTipoAlimentacao";
@@ -9,6 +9,7 @@ import { mockLogQuantidadeDietasAutorizadasEMEFJaneiro2026 } from "src/mocks/med
 import { mockMatriculadosNoMesEMEFJaneiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Janeiro2026/matriculadosNoMes";
 import { mockPermissaoLancamentosEspeciaisEMEFJaneiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Janeiro2026/permissaoLancamentosEspeciais";
 import { mockStateMANHAEMEFJaneiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Janeiro2026/stateMANHA";
+import { mockValoresMedicaoEMEFJaneiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Janeiro2026/valoresMedicao";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
@@ -40,7 +41,9 @@ describe("Lancamento de Dieta Especial com Frequência Zero na Alimentação - E
     mock
       .onGet("/log-quantidade-dietas-autorizadas/")
       .reply(200, mockLogQuantidadeDietasAutorizadasEMEFJaneiro2026);
-    mock.onGet("/medicao-inicial/valores-medicao/").reply(200, []);
+    mock
+      .onGet("/medicao-inicial/valores-medicao/")
+      .reply(200, mockValoresMedicaoEMEFJaneiro2026);
     mock.onGet("/medicao-inicial/dias-para-corrigir/").reply(200, []);
     mock
       .onGet("/dias-calendario/")
@@ -119,5 +122,46 @@ describe("Lancamento de Dieta Especial com Frequência Zero na Alimentação - E
     expect(
       screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
     ).toBeInTheDocument();
+  });
+
+  it("Exibe mensagem de erro ao tentar lançar dieta especial com frequência zero na alimentação", async () => {
+    /* Frequência da alimentação do dia 02 é zero */
+    const inputFrequenciaAlimentacaoDia2 = screen.getByTestId(
+      "frequencia__dia_02__categoria_1",
+    );
+    expect(inputFrequenciaAlimentacaoDia2).toHaveAttribute("value", "0");
+
+    /* Ao colocar frequência > 0, é exibido um warning, botão de adicionar 
+    observação fica destacado e o botão Salvar fica desabilitado */
+    const inputFrequenciaDietaTipoAEnteralDia2 = screen.getByTestId(
+      "frequencia__dia_02__categoria_3",
+    );
+    fireEvent.change(inputFrequenciaDietaTipoAEnteralDia2, {
+      target: { value: "1" },
+    });
+    expect(inputFrequenciaDietaTipoAEnteralDia2).toHaveClass("border-warning");
+
+    const botaoAdicionarObservacao = screen.getByTestId(
+      "botao-observacao__dia_02__categoria_3",
+    );
+    expect(botaoAdicionarObservacao).toHaveClass("red-button-outline");
+
+    const botaoSalvarLancamentos = screen
+      .getByText("Salvar Lançamentos")
+      .closest("button");
+    fireEvent.click(botaoSalvarLancamentos);
+    expect(botaoSalvarLancamentos).toBeDisabled();
+
+    /* Ao corrigir frequência para zero, warning é removido, botão de adicionar 
+    observação não fica mais destacado e o botão Salvar fica habilitado */
+
+    fireEvent.change(inputFrequenciaDietaTipoAEnteralDia2, {
+      target: { value: "0" },
+    });
+    expect(inputFrequenciaDietaTipoAEnteralDia2).not.toHaveClass(
+      "border-warning",
+    );
+    expect(botaoAdicionarObservacao).not.toHaveClass("red-button-outline");
+    expect(botaoSalvarLancamentos).not.toBeDisabled();
   });
 });

@@ -2896,6 +2896,7 @@ export default () => {
                                                           alunosTabSelecionada,
                                                           formValuesAtualizados,
                                                         )}
+                                                        dataTestId={`botao-observacao__dia_${column.dia}__categoria_${categoria.id}`}
                                                         disabled={desabilitarBotaoColunaObservacoes(
                                                           location,
                                                           valoresPeriodosLancamentos,
@@ -3130,6 +3131,7 @@ export default () => {
                                                             alunosTabSelecionada,
                                                             formValuesAtualizados,
                                                           )}
+                                                          dataTestId={`botao-observacao__dia_${column.dia}__categoria_${categoria.id}`}
                                                           disabled={desabilitarBotaoColunaObservacoes(
                                                             location,
                                                             valoresPeriodosLancamentos,
