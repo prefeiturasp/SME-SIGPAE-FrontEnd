@@ -954,7 +954,6 @@ export const existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI = (
   const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
     c.nome.includes("ALIMENTAÇÃO"),
   );
-  if (!categoriaAlimentacao) return false;
 
   const categoriasDieta = categoriasDeMedicao.filter((c) =>
     c.nome.includes("DIETA"),

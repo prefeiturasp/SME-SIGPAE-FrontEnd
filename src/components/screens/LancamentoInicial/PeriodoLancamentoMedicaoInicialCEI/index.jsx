@@ -68,6 +68,7 @@ import {
   campoRefeicaoComRPLAutorizadaESemObservacao,
   camposKitLancheSolicitacoesAlimentacaoESemObservacao,
   exibeTooltipInclusoesAutorizadasComZero,
+  exibirTooltipFrequenciaAlimentacaoZeroESemObservacao,
   exibirTooltipKitLancheSolAlimentacoes,
   exibirTooltipLancheEmergencialAutorizado,
   exibirTooltipLancheEmergencialNaoAutorizado,
@@ -80,6 +81,7 @@ import {
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
+  existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao,
 } from "../PeriodoLancamentoMedicaoInicial/validacoes";
 import ModalErro from "./components/ModalErro";
 import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";
@@ -1644,6 +1646,18 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           row,
           column,
           categoria,
+        )) ||
+      (ehEmeiDaCemeiLocation &&
+        existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao(
+          formValuesAtualizados,
+          categoriasDeMedicao,
+          weekColumns,
+          tabelaDietaCEIRows,
+          tabelaDietaEnteralRows,
+          value,
+          row,
+          column,
+          categoria,
         ))
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -2616,7 +2630,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               ),
                                                           )?.numero_alunos
                                                         }
-                                                        exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI(
+                                                        exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacao(
                                                           formValuesAtualizados,
                                                           row,
                                                           column,
