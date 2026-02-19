@@ -44,6 +44,7 @@ export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI = (
   categoriasDeMedicao,
   faixasEtarias,
 ) => {
+  if (!faixasEtarias || faixasEtarias.length === 0) return false;
   const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
     c.nome.includes("ALIMENTAÇÃO"),
   );
@@ -117,9 +118,12 @@ export const alimentacoesFrequenciaZeroESemObservacaoCEI = (
   categorias,
   faixasEtarias,
 ) => {
+  if (!faixasEtarias || faixasEtarias.length === 0) return false;
   const categoriaAlimentacao = categorias.find(
     (cat) => cat.nome === "ALIMENTAÇÃO",
   );
+
+  if (!categoriaAlimentacao) return false;
 
   let sumFrequenciasAlimentacao = 0;
   for (const faixa of faixasEtarias) {
@@ -950,6 +954,8 @@ export const existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI = (
   const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
     c.nome.includes("ALIMENTAÇÃO"),
   );
+  if (!categoriaAlimentacao) return false;
+
   const categoriasDieta = categoriasDeMedicao.filter((c) =>
     c.nome.includes("DIETA"),
   );
