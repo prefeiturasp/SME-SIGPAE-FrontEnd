@@ -157,8 +157,8 @@ describe("Teste de validação para frequência de alimentação zero e frequên
     /* Ao corrigir frequência para zero, warning é removido, botão de adicionar 
     observação não fica mais destacado e o botão Salvar fica habilitado */
 
-    fireEvent.change(inputFrequenciaDietaTipoADia1, {
-      target: { value: "0" },
+    fireEvent.change(inputFrequenciaAlimentacaoDia1Faixa1, {
+      target: { value: "1" },
     });
     expect(inputFrequenciaDietaTipoADia1).not.toHaveClass("border-warning");
     expect(botaoAdicionarObservacao).not.toHaveClass("red-button-outline");
