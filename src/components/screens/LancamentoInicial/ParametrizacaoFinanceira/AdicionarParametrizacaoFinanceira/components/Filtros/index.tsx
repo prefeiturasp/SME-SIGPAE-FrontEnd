@@ -23,6 +23,7 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
 import { carregarValores } from "../../helpers";
+import ModalCopiar from "../ModalCopiar";
 
 type Cadastro = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
@@ -69,11 +70,14 @@ export default (props: Props) => {
   });
 
   const [parametrizacaoConflito, setParametrizacaoConflito] = useState(null);
+  const [showCopiar, setShowCopiar] = useState(false);
 
   const insereParametros = (novos: Record<string, string>) => {
-    const params = new URLSearchParams(searchParams);
-    Object.entries(novos).forEach(([key, value]) => params.set(key, value));
-    setSearchParams(params);
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      Object.entries(novos).forEach(([key, value]) => params.set(key, value));
+      return params;
+    });
   };
 
   const onChangeConflito = async (opcao: string) => {
@@ -127,6 +131,20 @@ export default (props: Props) => {
       }
     } catch {
       toastError("Ocorreu um erro inesperado");
+    }
+  };
+
+  const onChangeCopiar = async () => {
+    try {
+      setSearchParams((prev) => {
+        const params = new URLSearchParams(prev);
+        params.set("uuid_origem", uuidParametrizacao);
+        params.delete("uuid");
+        return params;
+      });
+      setCarregarTabelas(true);
+    } catch {
+      toastError("Erro ao copiar dados da parametrização financeira.");
     }
   };
 
@@ -237,9 +255,13 @@ export default (props: Props) => {
                   style={BUTTON_STYLE.ORANGE_OUTLINE}
                   type={BUTTON_TYPE.BUTTON}
                   onClick={() => {
-                    if (!uuidParametrizacao && form)
-                      view.getGruposPendentes(setParametrizacaoConflito);
-                    setCarregarTabelas(true);
+                    if (uuidParametrizacao) {
+                      setShowCopiar(true);
+                    } else {
+                      if (form)
+                        view.getGruposPendentes(setParametrizacaoConflito);
+                      setCarregarTabelas(true);
+                    }
                   }}
                 />
               </div>
@@ -251,6 +273,11 @@ export default (props: Props) => {
         conflito={!!parametrizacaoConflito}
         setConflito={setParametrizacaoConflito}
         onContinuar={onChangeConflito}
+      />
+      <ModalCopiar
+        showModal={showCopiar}
+        setShowModal={setShowCopiar}
+        onCopiar={onChangeCopiar}
       />
     </div>
   );
