@@ -59,6 +59,7 @@ import {
   getSolicitacoesInclusaoAutorizadasAsync,
 } from "../PeriodoLancamentoMedicaoInicial/helper";
 import {
+  alimentacoesFrequenciaZeroESemObservacao,
   calcularSomaKitLanches,
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
@@ -68,6 +69,7 @@ import {
   campoRefeicaoComRPLAutorizadaESemObservacao,
   camposKitLancheSolicitacoesAlimentacaoESemObservacao,
   exibeTooltipInclusoesAutorizadasComZero,
+  exibirTooltipFrequenciaAlimentacaoZeroESemObservacao,
   exibirTooltipKitLancheSolAlimentacoes,
   exibirTooltipLancheEmergencialAutorizado,
   exibirTooltipLancheEmergencialNaoAutorizado,
@@ -80,6 +82,7 @@ import {
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
+  existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao,
 } from "../PeriodoLancamentoMedicaoInicial/validacoes";
 import ModalErro from "./components/ModalErro";
 import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";
@@ -109,12 +112,15 @@ import {
 } from "./helper";
 import "./styles.scss";
 import {
+  alimentacoesFrequenciaZeroESemObservacaoCEI,
   botaoAdicionarObrigatorioTabelaAlimentacao,
   campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao,
   campoComInclusaoAutorizadaValorZeroESemObservacao,
   campoDietaComInclusaoAutorizadaSemObservacao,
+  existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI,
   exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI,
   exibirTooltipDietasInclusaoDiaNaoLetivoCEI,
+  exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI,
   exibirTooltipSuspensoesAutorizadasCEI,
   frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao,
   repeticaoSobremesaDoceComValorESemObservacao,
@@ -1667,6 +1673,31 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           categoria,
           diasSobremesaDoce,
           location,
+        )) ||
+      (!ehEmeiDaCemeiLocation &&
+        existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI(
+          formValuesAtualizados,
+          categoriasDeMedicao,
+          weekColumns,
+          faixaEtaria,
+          tabelaDietaCEIRows,
+          tabelaDietaEnteralRows,
+          value,
+          row,
+          column,
+          categoria,
+        )) ||
+      (ehEmeiDaCemeiLocation &&
+        existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao(
+          formValuesAtualizados,
+          categoriasDeMedicao,
+          weekColumns,
+          tabelaDietaCEIRows,
+          tabelaDietaEnteralRows,
+          value,
+          row,
+          column,
+          categoria,
         ))
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -2486,6 +2517,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           ],
                                                           formValuesAtualizados,
                                                         )) ||
+                                                      alimentacoesFrequenciaZeroESemObservacaoCEI(
+                                                        formValuesAtualizados,
+                                                        column.dia,
+                                                        categoria,
+                                                        categoriasDeMedicao,
+                                                        faixaEtaria,
+                                                      ) ||
                                                       campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao(
                                                         inclusoesAutorizadas,
                                                         column,
@@ -2532,6 +2570,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           column,
                                                           categoria,
                                                           suspensoesAutorizadas,
+                                                        )) ||
+                                                      (ehEmeiDaCemeiLocation &&
+                                                        alimentacoesFrequenciaZeroESemObservacao(
+                                                          formValuesAtualizados,
+                                                          column.dia,
+                                                          categoria,
+                                                          categoriasDeMedicao,
                                                         )) ||
                                                       (ehSolicitacoesAlimentacaoLocation &&
                                                         (campoLancheEmergencialComZeroOuSemObservacao(
@@ -2671,6 +2716,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               ),
                                                           )?.numero_alunos
                                                         }
+                                                        exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacao(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          categoriasDeMedicao,
+                                                        )}
                                                         exibeTooltipSuspensoesAutorizadas={exibirTooltipSuspensoesAutorizadas(
                                                           formValuesAtualizados,
                                                           row,
@@ -2854,6 +2906,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                         defaultValue={defaultValue(
                                                           column,
                                                           row,
+                                                        )}
+                                                        exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          categoriasDeMedicao,
+                                                          faixaEtaria,
                                                         )}
                                                         exibeTooltipDietasInclusaoDiaNaoLetivoCEI={exibirTooltipDietasInclusaoDiaNaoLetivoCEI(
                                                           inclusoesAutorizadas,
