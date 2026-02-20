@@ -54,7 +54,9 @@ export default ({ uuid }) => {
   const ehCopia = location.pathname.includes("criar-copia");
 
   const getEditaisAsync = async () => {
-    const response = await getNumerosEditais();
+    const response = await getNumerosEditais({
+      excluir_encerrados: true,
+    });
     if (response.status === HTTP_STATUS.OK) {
       setEditais(response.data.results);
     } else {

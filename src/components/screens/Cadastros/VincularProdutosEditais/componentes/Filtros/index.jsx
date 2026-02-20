@@ -17,6 +17,7 @@ export default ({
   setResultado,
   listaProdutos,
   listaEditais,
+  listaEditaisDestino,
   listaTipos,
   setCarregando,
   setTotal,
@@ -65,7 +66,7 @@ export default ({
         setTotal(response.data.count);
         setFiltros(payload);
       }
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao tentar filtrar os produtos");
     }
     setCarregando(false);
@@ -166,6 +167,7 @@ export default ({
         closeModal={() => setShowModal(false)}
         showModal={showModal}
         listaEditais={listaEditais}
+        listaEditaisDestino={listaEditaisDestino}
         opcoesTipos={opcoesTipos}
       />
     </>
