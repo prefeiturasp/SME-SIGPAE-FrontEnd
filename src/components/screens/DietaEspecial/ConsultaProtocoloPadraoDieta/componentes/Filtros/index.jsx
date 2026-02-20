@@ -24,6 +24,7 @@ export default ({
   setFiltros,
   setPage,
   editais,
+  editaisDestino,
   onChangePage,
 }) => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ export default ({
   const getNomesProtocolosFiltrado = (nomeProtocolo) => {
     if (nomeProtocolo) {
       return nomes.filter((nome) =>
-        nome.toUpperCase().includes(nomeProtocolo.toUpperCase())
+        nome.toUpperCase().includes(nomeProtocolo.toUpperCase()),
       );
     }
     return [];
@@ -41,7 +42,7 @@ export default ({
   const getStatusProtocolosFiltrado = (statusProtocolo) => {
     if (statusProtocolo) {
       return status.filter((status) =>
-        status.toUpperCase().includes(statusProtocolo.toUpperCase())
+        status.toUpperCase().includes(statusProtocolo.toUpperCase()),
       );
     }
     return [];
@@ -71,7 +72,7 @@ export default ({
         setTotal(response.data.count);
         setFiltros(payload);
       }
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao tentar filtrar os Protocolos");
     }
     setCarregando(false);
@@ -169,6 +170,7 @@ export default ({
             showModal={showModal}
             closeModal={(value) => setShowModal(value)}
             editais={editais}
+            editaisDestino={editaisDestino}
             buscar={() => onChangePage()}
             filtros={filtros}
           />
