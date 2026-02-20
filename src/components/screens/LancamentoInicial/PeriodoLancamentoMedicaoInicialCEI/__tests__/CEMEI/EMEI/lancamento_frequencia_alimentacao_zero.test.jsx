@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -116,5 +116,51 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
     expect(
       screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
     ).toBeInTheDocument();
+  });
+
+  it("Exibe mensagem de erro ao tentar lançar dieta especial com frequência zero na alimentação", async () => {
+    const semanaTres = screen.getByText("Semana 3");
+    fireEvent.click(semanaTres);
+
+    /* Frequência da alimentação do dia 02 é zero */
+
+    const inputFrequenciaAlimentacaoDia12 = screen.getByTestId(
+      "frequencia__dia_12__categoria_1",
+    );
+    fireEvent.change(inputFrequenciaAlimentacaoDia12, {
+      target: { value: "0" },
+    });
+    expect(inputFrequenciaAlimentacaoDia12).toHaveAttribute("value", "0");
+
+    /* Ao colocar frequência > 0, é exibido um warning, botão de adicionar 
+    observação fica destacado e o botão Salvar fica desabilitado */
+
+    const inputFrequenciaDietaTipoADia12 = screen.getByTestId(
+      "frequencia__dia_12__categoria_2",
+    );
+    fireEvent.change(inputFrequenciaDietaTipoADia12, {
+      target: { value: "1" },
+    });
+    expect(inputFrequenciaDietaTipoADia12).toHaveClass("border-warning");
+
+    const botaoAdicionarObservacao = screen
+      .getByTestId("div-botao-add-obs-12-2-observacoes")
+      .querySelector("button");
+    expect(botaoAdicionarObservacao).toHaveClass("red-button-outline");
+    const botaoSalvarLancamentos = screen
+      .getByText("Salvar Lançamentos")
+      .closest("button");
+    fireEvent.click(botaoSalvarLancamentos);
+    expect(botaoSalvarLancamentos).toBeDisabled();
+
+    /* Ao corrigir frequência para zero, warning é removido, botão de adicionar 
+    observação não fica mais destacado e o botão Salvar fica habilitado */
+
+    fireEvent.change(inputFrequenciaDietaTipoADia12, {
+      target: { value: "0" },
+    });
+    expect(inputFrequenciaDietaTipoADia12).not.toHaveClass("border-warning");
+    expect(botaoAdicionarObservacao).not.toHaveClass("red-button-outline");
+    expect(botaoSalvarLancamentos).not.toBeDisabled();
   });
 });
