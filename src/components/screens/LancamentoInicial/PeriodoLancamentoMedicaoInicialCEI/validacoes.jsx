@@ -414,6 +414,60 @@ export const validacoesTabelaAlimentacaoCEI = (
   return undefined;
 };
 
+export const validacoesFaixasZeradasAlimentacao = (
+  rowName,
+  calendario,
+  feriadosNoMes,
+  categoria,
+  allValues,
+  faixaEtaria,
+) => {
+  if (rowName !== "frequencia" || categoria.nome !== "ALIMENTAÇÃO") {
+    return [];
+  }
+
+  const diasLetivos = calendario.filter(
+    (dia) => dia.dia_letivo === true && !feriadosNoMes.includes(dia.dia),
+  );
+
+  const diasZerado = diasLetivos.reduce((acumulador, diaLetivo) => {
+    const dia = diaLetivo.dia;
+
+    const faixasComMatriculados = faixaEtaria.filter((faixa) => {
+      const inputMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+      const valorMatriculados = allValues[inputMatriculados];
+      return valorMatriculados !== undefined && Number(valorMatriculados) > 0;
+    });
+
+    if (faixasComMatriculados.length === 0) {
+      return acumulador;
+    }
+
+    const diaZerado = faixasComMatriculados.every((faixa) => {
+      const inputFrequencia = `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+      return allValues[inputFrequencia] === "0";
+    });
+
+    const inputObservacao = `observacoes__dia_${dia}__categoria_${categoria.id}`;
+    const temObservacao =
+      allValues[inputObservacao] &&
+      allValues[inputObservacao] !== "" &&
+      allValues[inputObservacao] !== "<p></p>\n"
+        ? true
+        : false;
+
+    if (diaZerado) {
+      acumulador.push({
+        dia: dia,
+        tem_observacao: temObservacao,
+      });
+    }
+    return acumulador;
+  }, []);
+
+  return diasZerado;
+};
+
 export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (
   rowName,
   dia,

@@ -131,6 +131,7 @@ import {
   validacoesTabelasDietasEmeidaCemei,
   validarFormulario,
   verificarMesAnteriorOuPosterior,
+  validacoesFaixasZeradasAlimentacao,
 } from "./validacoes";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
@@ -226,6 +227,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   ] = useState(null);
   const [dataInicioPermissoes, setDataInicioPermissoes] = useState(null);
   const [previousValue, setPreviousValue] = useState(null);
+  const [diasZerados, setDiasZerados] = useState(false);
+  const [listaDiasZerados, setListaDiasZerados] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -1107,6 +1110,42 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     disableBotaoSalvarLancamentos,
   ]);
 
+  useEffect(() => {
+    if (
+      calendarioMesConsiderado &&
+      feriadosNoMes &&
+      faixaEtaria &&
+      formValuesAtualizados &&
+      categoriasDeMedicao.length > 0 &&
+      !ehRecreioNasFerias()
+    ) {
+      categoriasDeMedicao
+        .filter((cat) => cat.nome === "ALIMENTAÇÃO")
+        .forEach((categoria) => {
+          const diasZeradosEncontrados = validacoesFaixasZeradasAlimentacao(
+            "frequencia",
+            calendarioMesConsiderado,
+            feriadosNoMes,
+            categoria,
+            formValuesAtualizados,
+            faixaEtaria,
+          );
+          const diasZeradosSemObservacao = diasZeradosEncontrados.filter(
+            (dia) => !dia.tem_observacao,
+          );
+          setDiasZerados(diasZeradosSemObservacao.length > 0);
+          setListaDiasZerados(diasZeradosSemObservacao);
+        });
+    }
+  }, [
+    valoresObservacoes,
+    formValuesAtualizados,
+    calendarioMesConsiderado,
+    feriadosNoMes,
+    faixaEtaria,
+    categoriasDeMedicao,
+  ]);
+
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
     let valoresMedicao = [];
     const valuesMesmoDiaDaObservacao = Object.fromEntries(
@@ -1674,11 +1713,34 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     ) {
       return;
     }
+
+    if (
+      categoria.nome === "ALIMENTAÇÃO" &&
+      calendarioMesConsiderado &&
+      feriadosNoMes &&
+      !ehRecreioNasFerias()
+    ) {
+      const diasZeradosEncontrados = validacoesFaixasZeradasAlimentacao(
+        "frequencia",
+        calendarioMesConsiderado,
+        feriadosNoMes,
+        categoria,
+        formValuesAtualizados,
+        faixaEtaria,
+      );
+
+      const diasZeradosSemObservacao = diasZeradosEncontrados.filter(
+        (dia) => !dia.tem_observacao,
+      );
+      setDiasZerados(diasZeradosSemObservacao.length > 0);
+      setListaDiasZerados(diasZeradosSemObservacao);
+    }
   };
 
   const fieldValidationsTabelasCEI =
-    (rowName, dia, idCategoria, nomeCategoria, uuidFaixaEtaria) =>
+    (rowName, dia, categoria, nomeCategoria, uuidFaixaEtaria) =>
     (value, allValues) => {
+      const idCategoria = categoria.id;
       if (nomeCategoria === "ALIMENTAÇÃO") {
         if (ehRecreioNasFerias()) {
           return validacoesTabelaAlimentacaoCEIRecreioNasFerias(
@@ -2174,6 +2236,18 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     return { inicio: dataInicoRecreio, fim: dataFimRecreio };
   };
 
+  const verificarDiaZerado = (dia, categoria) => {
+    if (categoria.nome !== "ALIMENTAÇÃO") {
+      return false;
+    }
+    const estaZerado =
+      diasZerados &&
+      listaDiasZerados.some(
+        (item) => item.dia === dia && item.tem_observacao === false,
+      );
+    return estaZerado;
+  };
+
   return (
     <>
       <div className="text-end botao-voltar-lancamento-medicao">
@@ -2537,7 +2611,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           categoria,
                                                           diasSobremesaDoce,
                                                           location,
-                                                        ))
+                                                        )) ||
+                                                      verificarDiaZerado(
+                                                        column.dia,
+                                                        categoria,
+                                                      )
                                                         ? textoBotaoObservacao(
                                                             formValuesAtualizados[
                                                               `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
@@ -2868,7 +2946,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                         validate={fieldValidationsTabelasCEI(
                                                           row.name,
                                                           column.dia,
-                                                          categoria.id,
+                                                          categoria,
                                                           categoria.nome,
                                                           row.uuid,
                                                         )}
@@ -2965,9 +3043,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                             location.state.status_periodo ===
                               "MEDICAO_APROVADA_PELA_DRE") ||
                           disableBotaoSalvarLancamentos ||
-                          !calendarioMesConsiderado
+                          !calendarioMesConsiderado ||
+                          diasZerados
                         }
-                        exibirTooltip={exibirTooltip}
+                        exibirTooltip={exibirTooltip || diasZerados}
                         tooltipTitulo="Existem campos a serem corrigidos. Realize as correções para salvar."
                         classTooltip="icone-info-invalid"
                       />
