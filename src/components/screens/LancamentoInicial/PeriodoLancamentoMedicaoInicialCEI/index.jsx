@@ -1110,7 +1110,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       feriadosNoMes &&
       faixaEtaria &&
       formValuesAtualizados &&
-      categoriasDeMedicao.length > 0
+      categoriasDeMedicao.length > 0 &&
+      !ehRecreioNasFerias()
     ) {
       categoriasDeMedicao
         .filter((cat) => cat.nome === "ALIMENTAÇÃO")
@@ -1685,7 +1686,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     if (
       categoria.nome === "ALIMENTAÇÃO" &&
       calendarioMesConsiderado &&
-      feriadosNoMes
+      feriadosNoMes &&
+      !ehRecreioNasFerias()
     ) {
       const diasZeradosEncontrados = validacoesFaixasZeradasAlimentacao(
         "frequencia",
