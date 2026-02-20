@@ -11,11 +11,11 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockSolicitacaoKitLancheUnificadoRascunho } from "src/mocks/SolicitacaoUnificada/Relatorio/solicitacaoKitLancheUnificadoRascunho";
-import { mockKitLanche } from "src/mocks/SolicitacaokitLanche/mockKitLanche";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
 import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
+import { mockKitLanche } from "src/mocks/SolicitacaokitLanche/mockKitLanche";
+import { mockSolicitacaoKitLancheUnificadoRascunho } from "src/mocks/SolicitacaoUnificada/Relatorio/solicitacaoKitLancheUnificadoRascunho";
 import { SolicitacaoUnificadaPage } from "src/pages/DRE/SolicitacaoUnificadaPage";
 import mock from "src/services/_mock";
 
@@ -104,6 +104,31 @@ describe("Formulário Solicitação Unificada - DRE", () => {
       expect(
         screen.getByText("Selecione ao menos uma unidade escolar"),
       ).toBeInTheDocument();
+    });
+  });
+
+  it("Filtra escolas ao digitar no seletor", async () => {
+    const selectUnidadesEscolares = screen.getByTestId(
+      "select-unidades-escolares",
+    );
+    const selectControl = within(selectUnidadesEscolares).getByRole("combobox");
+
+    fireEvent.mouseDown(selectControl);
+    fireEvent.change(selectControl, { target: { value: "EMEI" } });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/000054 - EMEI ALUISIO DE ALMEIDA/i),
+      ).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/000001 - TESTE LOTE/i),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/000002 - Teste Prod/i),
+      ).not.toBeInTheDocument();
     });
   });
 

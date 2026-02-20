@@ -163,6 +163,10 @@ export const ajustarFormatoLog = (logs, card) => {
         : card;
 
     const getTextCard = () => {
+      if (log.tipo_doc === KIT_LANCHE_UNIFICADA) {
+        return truncarString(descricao, tamanhoString);
+      }
+
       let text = "";
       if (
         usuarioEhEscolaTerceirizadaDiretor() ||
