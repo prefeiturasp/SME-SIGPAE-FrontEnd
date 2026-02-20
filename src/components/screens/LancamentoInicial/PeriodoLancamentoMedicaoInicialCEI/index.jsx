@@ -59,6 +59,7 @@ import {
   getSolicitacoesInclusaoAutorizadasAsync,
 } from "../PeriodoLancamentoMedicaoInicial/helper";
 import {
+  alimentacoesFrequenciaZeroESemObservacao,
   calcularSomaKitLanches,
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
@@ -2495,6 +2496,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           column,
                                                           categoria,
                                                           suspensoesAutorizadas,
+                                                        )) ||
+                                                      (ehEmeiDaCemeiLocation &&
+                                                        alimentacoesFrequenciaZeroESemObservacao(
+                                                          formValuesAtualizados,
+                                                          column.dia,
+                                                          categoria,
+                                                          categoriasDeMedicao,
                                                         )) ||
                                                       (ehSolicitacoesAlimentacaoLocation &&
                                                         (campoLancheEmergencialComZeroOuSemObservacao(
