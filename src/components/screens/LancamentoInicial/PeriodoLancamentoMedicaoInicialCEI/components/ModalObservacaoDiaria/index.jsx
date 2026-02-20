@@ -59,7 +59,7 @@ export default ({
         .filter((valor) => valor.nome_campo === rowName)
         .filter((valor) => String(valor.dia) === String(dia))
         .filter(
-          (valor) => String(valor.categoria_medicao) === String(categoria)
+          (valor) => String(valor.categoria_medicao) === String(categoria),
         )[0];
       const uuidValor =
         (valorAtual && valorAtual.uuid) ||
@@ -67,21 +67,20 @@ export default ({
           valoresObservacoes.find(
             (valor) =>
               String(valor.dia) === String(dia) &&
-              String(valor.categoria_medicao) === String(categoria)
+              String(valor.categoria_medicao) === String(categoria),
           ).uuid);
-      const response = await deleteObservacaoValoresPeriodosLancamentos(
-        uuidValor
-      );
+      const response =
+        await deleteObservacaoValoresPeriodosLancamentos(uuidValor);
       if (response.status === HTTP_STATUS.NO_CONTENT) {
         form.change(`${rowName}__dia_${dia}__categoria_${categoria}`, "");
         setValoresObservacoes(
-          valoresObservacoes.filter((v) => v.uuid !== uuidValor)
+          valoresObservacoes.filter((v) => v.uuid !== uuidValor),
         );
         valoresPeriodosLancamentos.splice(
           valoresPeriodosLancamentos.findIndex(
-            (valor) => valor.uuid === uuidValor
+            (valor) => valor.uuid === uuidValor,
           ),
-          1
+          1,
         );
         if (Object.keys(errors).length > 0) {
           setExibirTooltip(true);
@@ -92,7 +91,7 @@ export default ({
       } else {
         toastError(msgError);
       }
-    } catch (e) {
+    } catch {
       toastError(msgError);
     }
     closeModal();
@@ -104,7 +103,7 @@ export default ({
         .filter((valor) => valor.nome_campo === rowName)
         .filter((valor) => String(valor.dia) === String(dia))
         .filter(
-          (valor) => String(valor.categoria_medicao) === String(categoria)
+          (valor) => String(valor.categoria_medicao) === String(categoria),
         )
     ) {
       form.change(`${rowName}__dia_${dia}__categoria_${categoria}`, "");
@@ -113,18 +112,18 @@ export default ({
         (valor) =>
           valor.nome_campo === rowName &&
           String(valor.dia) === String(dia) &&
-          String(valor.categoria_medicao) === String(categoria)
+          String(valor.categoria_medicao) === String(categoria),
       );
       let valoresLancamentos = valoresPeriodosLancamentos.filter(
         (valor) =>
           valor.nome_campo === rowName &&
           String(valor.dia) === String(dia) &&
-          String(valor.categoria_medicao) === String(categoria)
+          String(valor.categoria_medicao) === String(categoria),
       );
 
       form.change(
         `${rowName}__dia_${dia}__categoria_${categoria}`,
-        valueObs[0]?.valor || valoresLancamentos[0]?.valor
+        valueObs[0]?.valor || valoresLancamentos[0]?.valor,
       );
     }
     setDesabilitarBotaoSalvar(true);
@@ -139,7 +138,7 @@ export default ({
       .filter((valor) => valor.nome_campo === rowName)
       .filter((valor) => String(valor.dia) === String(dia))
       .filter(
-        (valor) => String(valor.categoria_medicao) === String(categoria)
+        (valor) => String(valor.categoria_medicao) === String(categoria),
       )[0] && setShowBotaoExcluir(true);
 
     setDesabilitarBotaoSalvar(false);
@@ -148,7 +147,7 @@ export default ({
 
   const onHideModal = () => {
     const validation = peloMenosUmCaractere(
-      values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+      values[`${rowName}__dia_${dia}__categoria_${categoria}`],
     );
     validation &&
       form.change(`${rowName}__dia_${dia}__categoria_${categoria}`, "");
@@ -157,7 +156,7 @@ export default ({
         .filter((valor) => valor.nome_campo === rowName)
         .filter((valor) => String(valor.dia) === String(dia))
         .filter(
-          (valor) => String(valor.categoria_medicao) === String(categoria)
+          (valor) => String(valor.categoria_medicao) === String(categoria),
         )[0]
     ) {
       form.change(`${rowName}__dia_${dia}__categoria_${categoria}`, "");
@@ -168,8 +167,8 @@ export default ({
           .filter((valor) => valor.nome_campo === rowName)
           .filter((valor) => String(valor.dia) === String(dia))
           .filter(
-            (valor) => String(valor.categoria_medicao) === String(categoria)
-          )[0].valor
+            (valor) => String(valor.categoria_medicao) === String(categoria),
+          )[0].valor,
       );
     }
     const updateObs = {};
@@ -177,14 +176,14 @@ export default ({
       valoresObservacoes.find(
         (valor) =>
           String(valor.dia) === String(dia) &&
-          String(valor.categoria_medicao) === String(categoria)
+          String(valor.categoria_medicao) === String(categoria),
       )
     ) {
       updateObs[`${rowName}__dia_${dia}__categoria_${categoria}`] =
         valoresObservacoes.find(
           (valor) =>
             String(valor.dia) === String(dia) &&
-            String(valor.categoria_medicao) === String(categoria)
+            String(valor.categoria_medicao) === String(categoria),
         ).valor;
       setFormValuesAtualizados({ ...values, ...updateObs });
       form.change(
@@ -192,8 +191,8 @@ export default ({
         valoresObservacoes.find(
           (valor) =>
             String(valor.dia) === String(dia) &&
-            String(valor.categoria_medicao) === String(categoria)
-        ).valor
+            String(valor.categoria_medicao) === String(categoria),
+        ).valor,
       );
     }
     setDesabilitarBotaoSalvar(true);
@@ -208,7 +207,7 @@ export default ({
         valoresObservacoes.find(
           (valor) =>
             String(valor.dia) === String(dia) &&
-            String(valor.categoria_medicao) === String(categoria)
+            String(valor.categoria_medicao) === String(categoria),
         )
       ) {
         const updateObs = {};
@@ -216,7 +215,7 @@ export default ({
           valoresObservacoes.find(
             (valor) =>
               String(valor.dia) === String(dia) &&
-              String(valor.categoria_medicao) === String(categoria)
+              String(valor.categoria_medicao) === String(categoria),
           ).valor;
         setFormValuesAtualizados({ ...values, ...updateObs });
         form.change(
@@ -224,8 +223,8 @@ export default ({
           valoresObservacoes.find(
             (valor) =>
               String(valor.dia) === String(dia) &&
-              String(valor.categoria_medicao) === String(categoria)
-          ).valor
+              String(valor.categoria_medicao) === String(categoria),
+          ).valor,
         );
       }
     }
@@ -236,19 +235,19 @@ export default ({
       .filter((valor) => valor.nome_campo === rowName)
       .filter((valor) => String(valor.dia) === String(dia))
       .filter(
-        (valor) => String(valor.categoria_medicao) === String(categoria)
+        (valor) => String(valor.categoria_medicao) === String(categoria),
       )[0];
     if (value) {
       setDesabilitarBotaoSalvar(
         ((!["<p></p>\n", null, ""].includes(
-          values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+          values[`${rowName}__dia_${dia}__categoria_${categoria}`],
         ) ||
           !!peloMenosUmCaractere(
-            values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+            values[`${rowName}__dia_${dia}__categoria_${categoria}`],
           )) &&
           valorFiltered &&
           valorFiltered.valor === value) ||
-          strip_tags(value).length > 250
+          strip_tags(value).length > 250,
       );
 
       setShowBotaoExcluir(
@@ -256,8 +255,8 @@ export default ({
           .filter((valor) => valor.nome_campo === rowName)
           .filter((valor) => String(valor.dia) === String(dia))
           .filter(
-            (valor) => String(valor.categoria_medicao) === String(categoria)
-          ).length > 0
+            (valor) => String(valor.categoria_medicao) === String(categoria),
+          ).length > 0,
       );
 
       form.change(`${rowName}__dia_${dia}__categoria_${categoria}`, value);
@@ -312,14 +311,14 @@ export default ({
         <Modal.Footer className="botoes-modal-footer">
           {values &&
           !["<p></p>\n", null, ""].includes(
-            values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+            values[`${rowName}__dia_${dia}__categoria_${categoria}`],
           ) &&
           valoresPeriodosLancamentos.length > 0 &&
           (showBotaoExcluir ||
             valoresObservacoes.find(
               (valor) =>
                 String(valor.dia) === String(dia) &&
-                String(valor.categoria_medicao) === String(categoria)
+                String(valor.categoria_medicao) === String(categoria),
             ) ||
             (!!dadosIniciais[
               `observacoes__dia_${dia}__categoria_${categoria}`
@@ -339,6 +338,7 @@ export default ({
               icon={BUTTON_ICON.TRASH}
               onClick={() => onClickExcluir()}
               style={BUTTON_STYLE.RED_OUTLINE}
+              dataTestId="botao-excluir"
             />
           ) : (
             <div />
@@ -350,6 +350,7 @@ export default ({
               type={BUTTON_TYPE.BUTTON}
               onClick={() => onClickVoltar()}
               style={BUTTON_STYLE.GREEN_OUTLINE}
+              dataTestId="botao-voltar"
             />
             <Botao
               className="ms-3 me-3"
@@ -358,6 +359,7 @@ export default ({
               style={BUTTON_STYLE.GREEN}
               disabled={desabilitarBotaoSalvar}
               onClick={() => onClickSalvar()}
+              dataTestId="botao-salvar"
             />
           </div>
         </Modal.Footer>

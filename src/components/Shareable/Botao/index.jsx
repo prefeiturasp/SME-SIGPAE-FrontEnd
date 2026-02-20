@@ -69,7 +69,10 @@ export const Botao = (props) => {
       )}
       {exibirTooltip && (
         <Tooltip open={exibeMensagem} title={tooltipTitulo}>
-          <i className={`fas fa-info ${classTooltip}`} />
+          <i
+            data-testid="icone-tooltip-info"
+            className={`fas fa-info ${classTooltip}`}
+          />
         </Tooltip>
       )}
     </button>
