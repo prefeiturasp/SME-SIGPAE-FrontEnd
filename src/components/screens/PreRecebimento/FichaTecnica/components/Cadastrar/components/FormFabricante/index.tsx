@@ -10,7 +10,11 @@ import InputText from "src/components/Shareable/Input/InputText";
 import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
 import { cepMask, cnpjMask, telefoneMask } from "src/constants/shared";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
-import { required, email } from "src/helpers/fieldValidators";
+import {
+  required,
+  email,
+  composeValidators,
+} from "src/helpers/fieldValidators";
 import { OptionsGenerico } from "src/interfaces/pre_recebimento.interface";
 
 interface Props {
@@ -76,11 +80,15 @@ const FormFabricante: React.FC<Props> = ({
                 <Field
                   component={AutoCompleteSelectField}
                   dataTestId={`fabricante_${idx}`}
-                  label={idx === 0 ? "Fabricante" : "Envasador/Distribuidor"}
+                  label={
+                    idx === 0
+                      ? "Fabricante ou Produtor"
+                      : "Envasador/Distribuidor"
+                  }
                   name={`fabricante_${idx}`}
                   options={getListaFiltradaAutoCompleteSelect(
                     fabricantesOptions.map((e) => e.nome),
-                    values[`fabricante_${idx}`]
+                    values[`fabricante_${idx}`],
                   )}
                   placeholder={`Selecione o ${
                     idx === 0 ? "Fabricante" : "Envasador/Distribuidor"
@@ -203,7 +211,8 @@ const FormFabricante: React.FC<Props> = ({
                 name={`email_fabricante_${idx}`}
                 placeholder={somenteLeitura ? "" : "Digite o E-mail"}
                 className="input-ficha-tecnica"
-                validate={email}
+                required
+                validate={composeValidators(required, email)}
                 disabled={somenteLeitura}
               />
             </div>
@@ -215,6 +224,8 @@ const FormFabricante: React.FC<Props> = ({
                 name={`telefone_fabricante_${idx}`}
                 placeholder={somenteLeitura ? "" : "Digite o Telefone"}
                 className="input-ficha-tecnica"
+                required
+                validate={required}
                 disabled={somenteLeitura}
               />
             </div>

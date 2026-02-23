@@ -4,7 +4,11 @@ import { Field, Form } from "react-final-form";
 
 import { required } from "src/helpers/fieldValidators";
 import { Spin, Tooltip } from "antd";
-import { CATEGORIA_OPTIONS, PROGRAMA_OPTIONS } from "../../constants";
+import {
+  CATEGORIA_OPTIONS,
+  PROGRAMA_OPTIONS,
+  TIPO_ENTREGA_OPTIONS,
+} from "../../constants";
 import InputText from "src/components/Shareable/Input/InputText";
 
 import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
@@ -55,6 +59,7 @@ import "./styles.scss";
 import FormProponente from "./components/FormProponente";
 import StepsSigpae from "src/components/Shareable/StepsSigpae";
 import FormFabricante from "./components/FormFabricante";
+import InfoAcondicionamentoFLV from "./components/InfoAcondicionamentoFLV";
 
 const ITENS_STEPS = [
   {
@@ -145,7 +150,7 @@ export default () => {
             onSubmit={() => {}}
             initialValues={initialValues}
             decorators={[cepCalculator(setDesabilitaEndereco)]}
-            render={({ form, handleSubmit, values, errors }) => (
+            render={({ handleSubmit, values, errors }) => (
               <form onSubmit={handleSubmit}>
                 <StepsSigpae current={stepAtual} items={ITENS_STEPS} />
 
@@ -156,47 +161,6 @@ export default () => {
                     <div className="subtitulo">Identificação do Produto</div>
 
                     <div className="row mt-4">
-                      <div className="col-6">
-                        <Field
-                          component={AutoCompleteSelectField}
-                          dataTestId={"produto"}
-                          options={getListaFiltradaAutoCompleteSelect(
-                            produtosOptions.map((e) => e.nome),
-                            values["produto"],
-                            true,
-                          )}
-                          label="Produto"
-                          name={`produto`}
-                          placeholder="Selecione um Produto"
-                          className="input-ficha-tecnica"
-                          required
-                          validate={required}
-                          tooltipText={
-                            "Caso não localize o produto no seletor, faça o cadastro no botão Cadastrar Produto."
-                          }
-                          onChange={(value) => {
-                            if (form.getState().dirty) {
-                              form.restart({ produto: value });
-                            }
-                          }}
-                        />
-                      </div>
-                      <div className="col-2 cadastro-externo">
-                        <Botao
-                          dataTestId="btnCadastrarProduto"
-                          texto="Cadastrar Produto"
-                          type={BUTTON_TYPE.BUTTON}
-                          style={BUTTON_STYLE.GREEN_OUTLINE}
-                          className="botao-cadastro-externo"
-                          onClick={() =>
-                            gerenciaModalCadastroExterno(
-                              "PRODUTO",
-                              setTipoCadastro,
-                              setShowModalCadastro,
-                            )
-                          }
-                        />
-                      </div>
                       <div className="col-4">
                         <Field
                           component={Select}
@@ -213,53 +177,20 @@ export default () => {
                           validate={required}
                         />
                       </div>
-                      <div className="col-6">
-                        <Field
-                          component={Select}
-                          dataTestId={"marca"}
-                          naoDesabilitarPrimeiraOpcao
-                          options={[
-                            { nome: "Selecione uma Marca", uuid: "" },
-                            ...marcasOptions,
-                          ]}
-                          label="Marca"
-                          name={`marca`}
-                          className="input-ficha-tecnica"
-                          required
-                          validate={required}
-                          tooltipText={
-                            "Caso não localize a marca no seletor, faça o cadastro no botão Cadastrar Marca."
-                          }
-                        />
-                      </div>
-                      <div className="col-2 cadastro-externo">
-                        <Botao
-                          texto="Cadastrar Marca"
-                          type={BUTTON_TYPE.BUTTON}
-                          style={BUTTON_STYLE.GREEN_OUTLINE}
-                          className="botao-cadastro-externo"
-                          onClick={() =>
-                            gerenciaModalCadastroExterno(
-                              "MARCA",
-                              setTipoCadastro,
-                              setShowModalCadastro,
-                            )
-                          }
-                        />
-                      </div>
                       <div className="col-4">
                         <Field
-                          component={InputText}
-                          dataTestId={"pregao_chamada_publica"}
-                          label="Nº do Pregão/Chamada Pública"
-                          name={`pregao_chamada_publica`}
-                          placeholder="Nº do Pregão/Chamada Pública"
+                          component={Select}
+                          dataTestId={"categoria"}
+                          naoDesabilitarPrimeiraOpcao
+                          options={[
+                            { nome: "Selecione o tipo de entrega", uuid: "" },
+                            ...TIPO_ENTREGA_OPTIONS,
+                          ]}
+                          label="Tipo de Entrega"
+                          name={`tipo_entrega`}
                           className="input-ficha-tecnica"
                           required
                           validate={required}
-                          tooltipText={
-                            "Deve ser informado o número do Edital do Pregão Eletrônico ou Chamada Pública referente ao Produto."
-                          }
                         />
                       </div>
                       <div className="col-4">
@@ -279,6 +210,96 @@ export default () => {
                         />
                       </div>
                     </div>
+
+                    <div className="row mt-4">
+                      <div className="col-4">
+                        <Field
+                          component={AutoCompleteSelectField}
+                          dataTestId={"produto"}
+                          options={getListaFiltradaAutoCompleteSelect(
+                            produtosOptions.map((e) => e.nome),
+                            values["produto"],
+                            true,
+                          )}
+                          label="Produto"
+                          name={`produto`}
+                          placeholder="Selecione um Produto"
+                          className="input-ficha-tecnica"
+                          required
+                          validate={required}
+                          tooltipText={
+                            "Caso não localize o produto no seletor, faça o cadastro no botão Cadastrar Produto."
+                          }
+                        />
+                      </div>
+
+                      <div className="col-4">
+                        <Field
+                          component={Select}
+                          dataTestId={"marca"}
+                          naoDesabilitarPrimeiraOpcao
+                          options={[
+                            { nome: "Selecione uma Marca", uuid: "" },
+                            ...marcasOptions,
+                          ]}
+                          label="Marca"
+                          name={`marca`}
+                          className="input-ficha-tecnica"
+                          tooltipText={
+                            "Caso não localize a marca no seletor, faça o cadastro no botão Cadastrar Marca."
+                          }
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          dataTestId={"pregao_chamada_publica"}
+                          label="Nº do Pregão/Chamada Pública"
+                          name={`pregao_chamada_publica`}
+                          placeholder="Nº do Pregão/Chamada Pública"
+                          className="input-ficha-tecnica"
+                          required
+                          validate={required}
+                          tooltipText={
+                            "Deve ser informado o número do Edital do Pregão Eletrônico ou Chamada Pública referente ao Produto."
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="row mt-4">
+                      <div className="col-2">
+                        <Botao
+                          dataTestId="btnCadastrarProduto"
+                          texto="Cadastrar Produto"
+                          type={BUTTON_TYPE.BUTTON}
+                          style={BUTTON_STYLE.GREEN_OUTLINE}
+                          className="botao-cadastro-externo-2"
+                          onClick={() =>
+                            gerenciaModalCadastroExterno(
+                              "PRODUTO",
+                              setTipoCadastro,
+                              setShowModalCadastro,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="col-2">
+                        <Botao
+                          texto="Cadastrar Marca"
+                          type={BUTTON_TYPE.BUTTON}
+                          style={BUTTON_STYLE.GREEN_OUTLINE}
+                          className="botao-cadastro-externo-2"
+                          onClick={() =>
+                            gerenciaModalCadastroExterno(
+                              "MARCA",
+                              setTipoCadastro,
+                              setShowModalCadastro,
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
                     <hr />
 
                     <Collapse
@@ -292,7 +313,7 @@ export default () => {
                         <span className="fw-bold" key={1}>
                           Empresa ou Organização{" "}
                           <span className="verde-escuro">
-                            Fabricante, Envasador e/ou Distribuidor
+                            Fabricante, Produtor, Envasador e/ou Distribuidor
                           </span>
                         </span>,
                         <span className="fw-bold" key={1}>
@@ -428,7 +449,14 @@ export default () => {
                 )}
 
                 {stepAtual === 2 &&
-                  (values["categoria"] === "PERECIVEIS" ? (
+                  (values["categoria"] === "FLV" ? (
+                    <InfoAcondicionamentoFLV
+                      collapse={collapse}
+                      setCollapse={setCollapse}
+                      arquivo={arquivo}
+                      setArquivo={setArquivo}
+                    />
+                  ) : values["categoria"] === "PERECIVEIS" ? (
                     <InfoAcondicionamentoPereciveis
                       collapse={collapse}
                       setCollapse={setCollapse}
@@ -502,7 +530,11 @@ export default () => {
                           style={BUTTON_STYLE.GREEN_OUTLINE}
                           className="float-end ms-3"
                           onClick={() => {
-                            setStepAtual((stepAtual) => stepAtual + 1);
+                            const ehFLV = values["categoria"] === "FLV";
+                            const proximoStep =
+                              ehFLV && stepAtual === 0 ? 2 : stepAtual + 1;
+
+                            setStepAtual(proximoStep);
                             setCollapse({ 0: true });
                           }}
                           disabled={validaProximo(
@@ -562,7 +594,11 @@ export default () => {
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                       className="float-end ms-3"
                       onClick={() => {
-                        setStepAtual((stepAtual) => stepAtual - 1);
+                        const ehFLV = values["categoria"] === "FLV";
+                        const proximoStep =
+                          ehFLV && stepAtual === 2 ? 0 : stepAtual - 1;
+
+                        setStepAtual(proximoStep);
                         setCollapse({});
                       }}
                     />
