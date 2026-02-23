@@ -112,11 +112,12 @@ export default () => {
             destroyOnUnregister
             render={({ form, handleSubmit, submitting }) => {
               const grupo = grupoSelecionado.toLowerCase();
-              const tabelasCarregadas =
+              const tabelasCarregadas = !!(
                 carregarTabelas ||
                 uuidParametrizacao ||
                 uuidNovaParametrizacao ||
-                uuidOrigem;
+                uuidOrigem
+              );
 
               const hoje = new Date();
               hoje.setHours(0, 0, 0, 0);
