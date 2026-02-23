@@ -14,6 +14,7 @@ type Props = {
   grupoSelecionado: string;
   tipoTurma?: string;
   temaTag?: string;
+  bloqueiaEdicao?: boolean;
 };
 
 export default ({
@@ -22,6 +23,7 @@ export default ({
   grupoSelecionado,
   tipoTurma = "",
   temaTag = "",
+  bloqueiaEdicao,
 }: Props) => {
   const grupoTipo2 = grupoSelecionado.toLowerCase().includes("grupo 2");
   const grupoTipo4 = grupoSelecionado.toLowerCase().includes("grupo 4");
@@ -142,6 +144,7 @@ export default ({
                     value,
                   );
                 }}
+                disabled={bloqueiaEdicao}
               />
             )}
           />
@@ -178,6 +181,7 @@ export default ({
                   if (record.nome === alimentacoes[0].nome)
                     atualizarPercentuais(value);
                 }}
+                disabled={bloqueiaEdicao}
               />
             )}
           />

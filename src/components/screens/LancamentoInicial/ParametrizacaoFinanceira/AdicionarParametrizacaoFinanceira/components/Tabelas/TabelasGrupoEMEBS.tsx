@@ -8,9 +8,15 @@ type Props = {
   form: FormApi<any, any>;
   tiposAlimentacao: Array<any>;
   grupoSelecionado: string;
+  bloqueiaEdicao?: boolean;
 };
 
-export default ({ form, tiposAlimentacao, grupoSelecionado }: Props) => {
+export default ({
+  form,
+  tiposAlimentacao,
+  grupoSelecionado,
+  bloqueiaEdicao,
+}: Props) => {
   const GRUPO_TABELAS = [
     "Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos - EMEBS",
     "Dietas Tipo B - EMEBS",
@@ -36,6 +42,7 @@ export default ({ form, tiposAlimentacao, grupoSelecionado }: Props) => {
           tipoTurma="EMEBS Fundamental"
           pendencias={GRUPO_TABELAS_FUNDAMENTAL}
           temaTag="turma-emebs-fundamental"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
         <TabelaDietaTipoA
           form={form}
@@ -43,6 +50,7 @@ export default ({ form, tiposAlimentacao, grupoSelecionado }: Props) => {
           grupoSelecionado={grupoSelecionado}
           tipoTurma="EMEBS Fundamental"
           temaTag="turma-emebs-fundamental"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
         <TabelaDietaTipoB
           form={form}
@@ -50,6 +58,7 @@ export default ({ form, tiposAlimentacao, grupoSelecionado }: Props) => {
           grupoSelecionado={grupoSelecionado}
           tipoTurma="EMEBS Fundamental"
           temaTag="turma-emebs-fundamental"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
       </div>
 
@@ -61,6 +70,7 @@ export default ({ form, tiposAlimentacao, grupoSelecionado }: Props) => {
           tipoTurma="EMEBS Infantil"
           pendencias={GRUPO_TABELAS_INFANTIL}
           temaTag="turma-emebs-infantil"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
         <TabelaDietaTipoA
           form={form}
@@ -68,6 +78,7 @@ export default ({ form, tiposAlimentacao, grupoSelecionado }: Props) => {
           grupoSelecionado={grupoSelecionado}
           tipoTurma="EMEBS Infantil"
           temaTag="turma-emebs-infantil"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
         <TabelaDietaTipoB
           form={form}
@@ -75,6 +86,7 @@ export default ({ form, tiposAlimentacao, grupoSelecionado }: Props) => {
           grupoSelecionado={grupoSelecionado}
           tipoTurma="EMEBS Infantil"
           temaTag="turma-emebs-infantil"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
       </div>
     </div>

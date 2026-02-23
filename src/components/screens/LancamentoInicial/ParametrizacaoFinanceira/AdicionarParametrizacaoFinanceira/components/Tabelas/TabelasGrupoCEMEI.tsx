@@ -11,6 +11,7 @@ type Props = {
   faixasEtarias: Array<any>;
   tiposAlimentacao: Array<any>;
   grupoSelecionado: string;
+  bloqueiaEdicao?: boolean;
 };
 
 export default ({
@@ -18,6 +19,7 @@ export default ({
   faixasEtarias,
   tiposAlimentacao,
   grupoSelecionado,
+  bloqueiaEdicao,
 }: Props) => {
   const TABELA_TIPO_A_CEI =
     "Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos";
@@ -44,6 +46,7 @@ export default ({
           grupoSelecionado={grupoSelecionado}
           periodo="Integral"
           pendencias={GRUPO_TABELAS_CEI}
+          bloqueiaEdicao={bloqueiaEdicao}
         />
         <TabelaDietasCEI
           form={form}
@@ -51,6 +54,7 @@ export default ({
           nomeTabela={TABELA_TIPO_A_CEI}
           periodo="Integral"
           grupoSelecionado={grupoSelecionado}
+          bloqueiaEdicao={bloqueiaEdicao}
         />
         <TabelaDietasCEI
           form={form}
@@ -58,6 +62,7 @@ export default ({
           grupoSelecionado={grupoSelecionado}
           nomeTabela={TABELA_TIPO_B_CEI}
           periodo="Integral"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
       </div>
       <div>
@@ -67,6 +72,7 @@ export default ({
           grupoSelecionado={grupoSelecionado}
           periodo="Parcial"
           pendencias={GRUPO_TABELAS_CEI}
+          bloqueiaEdicao={bloqueiaEdicao}
         />
         <TabelaDietasCEI
           form={form}
@@ -81,6 +87,7 @@ export default ({
           grupoSelecionado={grupoSelecionado}
           nomeTabela={TABELA_TIPO_B_CEI}
           periodo="Parcial"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
       </div>
       <div>
@@ -91,6 +98,7 @@ export default ({
           tipoTurma="Turma Infantil - EMEI"
           pendencias={GRUPO_TABELAS_EMEI}
           temaTag="turma-emei"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
       </div>
       <div>
@@ -100,6 +108,7 @@ export default ({
           grupoSelecionado={grupoSelecionado}
           tipoTurma="Turma Infantil - EMEI"
           temaTag="turma-emei"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
         <TabelaDietaTipoB
           form={form}
@@ -107,6 +116,7 @@ export default ({
           grupoSelecionado={grupoSelecionado}
           tipoTurma="Turma Infantil - EMEI"
           temaTag="turma-emei"
+          bloqueiaEdicao={bloqueiaEdicao}
         />
       </div>
     </div>
