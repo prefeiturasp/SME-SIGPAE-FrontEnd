@@ -240,7 +240,7 @@ export default (props: Props) => {
               <div className="col-2 mt-1">
                 <br />
                 <Botao
-                  dataTestId="botao-carregar"
+                  dataTestId={`${uuidParametrizacao ? "botao-criar-copia" : "botao-carregar"}`}
                   texto={
                     uuidParametrizacao ? "Criar Cópia" : "Carregar Tabelas"
                   }
