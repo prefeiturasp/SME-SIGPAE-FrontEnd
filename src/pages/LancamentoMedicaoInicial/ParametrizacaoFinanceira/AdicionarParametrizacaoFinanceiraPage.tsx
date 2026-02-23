@@ -32,7 +32,11 @@ const anterior = [
 ];
 
 export const AdicionarParametrizacaoFinanceiraPage = () => (
-  <Page titulo="Adicionar Parametrização Financeira" botaoVoltar>
+  <Page
+    titulo="Adicionar Parametrização Financeira"
+    botaoVoltar
+    voltarPara={`/${MEDICAO_INICIAL}/${PARAMETRIZACAO_FINANCEIRA}/`}
+  >
     <Breadcrumb home={"/"} anteriores={anterior} atual={atual} />
     <AdicionarParametrizacaoFinanceira />
   </Page>

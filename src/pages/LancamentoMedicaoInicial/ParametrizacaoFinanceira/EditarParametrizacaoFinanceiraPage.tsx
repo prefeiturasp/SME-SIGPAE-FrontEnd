@@ -35,7 +35,11 @@ export const EditarParametrizacaoFinanceiraPage = () => {
   ];
 
   return (
-    <Page titulo={titulo} botaoVoltar>
+    <Page
+      titulo={titulo}
+      botaoVoltar
+      voltarPara={`/${MEDICAO_INICIAL}/${PARAMETRIZACAO_FINANCEIRA}/`}
+    >
       <Breadcrumb home={"/"} anteriores={anterior} atual={atual} />
       <AdicionarParametrizacaoFinanceira />
     </Page>
