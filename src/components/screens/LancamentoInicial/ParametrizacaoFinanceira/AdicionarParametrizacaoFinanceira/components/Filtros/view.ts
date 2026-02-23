@@ -1,4 +1,4 @@
-import { useEffect, useState, Dispatch, SetStateAction } from "react";
+import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react";
 import { getNumerosEditais } from "src/services/edital.service";
 import { getLotesSimples } from "src/services/lote.service";
 import { getGrupoUnidadeEscolar } from "src/services/escola.service";
@@ -321,22 +321,22 @@ export default ({
     setTiposAlimentacao(tiposAlimentacao);
   };
 
+  const inicializouRef = useRef(false);
   useEffect(() => {
     if (!uuidParametrizacao || carregando || !form) return;
+    if (inicializouRef.current) return;
 
     const values = form.getState().values;
 
-    if (values?.grupo_unidade_escolar) {
-      onChangeTiposUnidades(values.grupo_unidade_escolar);
-    }
+    if (!values?.grupo_unidade_escolar) return;
 
-    if (values?.edital) {
-      onChangeEdital(values.edital);
-    }
+    onChangeTiposUnidades(values.grupo_unidade_escolar);
 
-    if (values?.lote) {
-      onChangeLote(values.lote);
-    }
+    if (values?.edital) onChangeEdital(values.edital);
+
+    if (values?.lote) onChangeLote(values.lote);
+
+    inicializouRef.current = true;
   }, [uuidParametrizacao, carregando, form]);
 
   return {
