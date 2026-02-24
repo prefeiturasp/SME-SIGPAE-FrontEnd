@@ -1705,6 +1705,8 @@ export default () => {
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
+    } else {
+      setDisableBotaoSalvarLancamentos(false);
     }
   };
 
@@ -2166,7 +2168,7 @@ export default () => {
         categoriasDeMedicao.find(
           (categoria) => categoria.nome === "ALIMENTAÇÃO",
         ),
-        valuesFrequencia,
+        values,
         diasFrequenciaZerada,
         location.state.grupo,
       )
@@ -3202,6 +3204,7 @@ export default () => {
                                                               inclusoesEtecAutorizadas,
                                                               ehGrupoETECUrlParam,
                                                               feriadosNoMes,
+                                                              diasFrequenciaZerada,
                                                             )
                                                               ? textoBotaoObservacao(
                                                                   formValuesAtualizados[

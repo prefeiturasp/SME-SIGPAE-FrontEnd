@@ -364,6 +364,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   inclusoesEtecAutorizadas,
   ehGrupoETECUrlParam = false,
   feriadosNoMes,
+  diasFrequenciaZerada,
 ) => {
   if (
     location.state.grupo === "Programas e Projetos" &&
@@ -420,6 +421,14 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         column,
         categoria,
         alteracoesAlimentacaoAutorizadas,
+      ) ||
+      habitarBotaoAdicionar(
+        "frequencia",
+        column.dia,
+        categoria,
+        formValuesAtualizados,
+        diasFrequenciaZerada,
+        location.state.grupo,
       )
     );
   }
@@ -2059,4 +2068,33 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
     }
   }
   return false;
+};
+
+export const habitarBotaoAdicionar = (
+  row,
+  dia,
+  categoriaAlimentacao,
+  formValuesAtualizados,
+  diasFrequenciaZerada,
+  grupo,
+) => {
+  if (grupo !== "Programas e Projetos") return false;
+
+  const inputName = `${row}__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
+  const inputObservacao = `observacoes__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
+  const temObservacao =
+    formValuesAtualizados[inputObservacao] &&
+    formValuesAtualizados[inputObservacao] !== "" &&
+    formValuesAtualizados[inputObservacao] !== "<p></p>\n"
+      ? true
+      : false;
+
+  const value = formValuesAtualizados[inputName];
+  return (
+    diasFrequenciaZerada &&
+    value &&
+    diasFrequenciaZerada.alimentacoes.includes(dia) &&
+    Number(value) > 0 &&
+    !temObservacao
+  );
 };
