@@ -1,4 +1,4 @@
-import { useEffect, useState, Dispatch, SetStateAction } from "react";
+import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react";
 import { getNumerosEditais } from "src/services/edital.service";
 import { getLotesSimples } from "src/services/lote.service";
 import { getGrupoUnidadeEscolar } from "src/services/escola.service";
@@ -182,20 +182,15 @@ export default ({
     requisicoesPreRender();
   }, []);
 
-  const initialEdital = uuidParametrizacao && form.getState().values?.edital;
   const onChangeEdital = (edital: string) => {
     form.change("edital", edital);
     setEditalSelecionado(editais.find((e) => e.uuid === edital).nome);
   };
 
-  const initialLote = uuidParametrizacao && form.getState().values?.lote;
   const onChangeLote = (lote: string) => {
     form.change("lote", lote);
     setLoteSelecionado(lotes.find((e) => e.uuid === lote).nome);
   };
-
-  const initialGrupoUnidade =
-    uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
 
   const getGruposPendentes = async (
     setParametrizacaoConflito: (_e: string) => void,
@@ -326,13 +321,23 @@ export default ({
     setTiposAlimentacao(tiposAlimentacao);
   };
 
+  const inicializouRef = useRef(false);
   useEffect(() => {
-    if (uuidParametrizacao && !carregando) {
-      if (initialGrupoUnidade) onChangeTiposUnidades(initialGrupoUnidade);
-      if (initialEdital) onChangeEdital(initialEdital);
-      if (initialLote) onChangeLote(initialLote);
-    }
-  }, [uuidParametrizacao, carregando]);
+    if (!uuidParametrizacao || carregando || !form) return;
+    if (inicializouRef.current) return;
+
+    const values = form.getState().values;
+
+    if (!values?.grupo_unidade_escolar) return;
+
+    onChangeTiposUnidades(values.grupo_unidade_escolar);
+
+    if (values?.edital) onChangeEdital(values.edital);
+
+    if (values?.lote) onChangeLote(values.lote);
+
+    inicializouRef.current = true;
+  }, [uuidParametrizacao, carregando, form]);
 
   return {
     carregando,

@@ -10,6 +10,7 @@ type Props = {
   nomeTabela: string;
   periodo: string;
   grupoSelecionado: string;
+  bloqueiaEdicao?: boolean;
 };
 
 export default ({
@@ -18,6 +19,7 @@ export default ({
   nomeTabela,
   periodo,
   grupoSelecionado,
+  bloqueiaEdicao,
 }: Props) => {
   const labelTabela = grupoSelecionado?.toLowerCase().includes("grupo 2")
     ? `CEI - Período ${periodo}`
@@ -108,6 +110,7 @@ export default ({
                     value,
                   );
                 }}
+                disabled={bloqueiaEdicao}
               />
             )}
           />
@@ -146,6 +149,7 @@ export default ({
                   if (record.__str__ === faixasEtarias[0].__str__)
                     atualizarPercentuais(value);
                 }}
+                disabled={bloqueiaEdicao}
               />
             )}
           />

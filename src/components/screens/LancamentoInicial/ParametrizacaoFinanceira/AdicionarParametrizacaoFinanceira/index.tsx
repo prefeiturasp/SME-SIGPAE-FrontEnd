@@ -23,7 +23,7 @@ import TabelasGrupoEMEF from "./components/Tabelas/TabelasGrupoEMEF";
 import TabelasGrupoCIEJA from "./components/Tabelas/TabelasGrupoCIEJA";
 import ModalCancelar from "./components/ModalCancelar";
 import ModalSalvar from "./components/ModalSalvar";
-import { formataPayload } from "./helpers";
+import { formataPayload, parseDate } from "./helpers";
 
 const VALORES_INICIAIS: ParametrizacaoFinanceiraPayload = {
   edital: null,
@@ -53,6 +53,7 @@ export default () => {
   const [searchParams] = useSearchParams();
   const uuidParametrizacao = searchParams.get("uuid");
   const uuidNovaParametrizacao = searchParams.get("nova_uuid");
+  const uuidOrigem = searchParams.get("uuid_origem");
 
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
@@ -111,8 +112,23 @@ export default () => {
             destroyOnUnregister
             render={({ form, handleSubmit, submitting }) => {
               const grupo = grupoSelecionado.toLowerCase();
-              const tabelasCarregadas =
-                carregarTabelas || uuidParametrizacao || uuidNovaParametrizacao;
+              const tabelasCarregadas = !!(
+                carregarTabelas ||
+                uuidParametrizacao ||
+                uuidNovaParametrizacao ||
+                uuidOrigem
+              );
+
+              const hoje = new Date();
+              hoje.setHours(0, 0, 0, 0);
+
+              const dataInicial = parseDate(
+                form.getState().values.data_inicial,
+              );
+              if (dataInicial) dataInicial.setHours(0, 0, 0, 0);
+
+              const bloqueiaEdicao =
+                uuidParametrizacao && dataInicial && dataInicial <= hoje;
 
               const TABELAS_POR_GRUPO: Record<string, React.ReactNode> = {
                 "grupo 1": (
@@ -120,6 +136,7 @@ export default () => {
                     form={form}
                     faixasEtarias={faixasEtarias}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
                 "grupo 2": (
@@ -128,6 +145,7 @@ export default () => {
                     tiposAlimentacao={tiposAlimentacao}
                     faixasEtarias={faixasEtarias}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
                 "grupo 3": (
@@ -135,6 +153,7 @@ export default () => {
                     form={form}
                     tiposAlimentacao={tiposAlimentacao}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
                 "grupo 4": (
@@ -142,6 +161,7 @@ export default () => {
                     form={form}
                     tiposAlimentacao={tiposAlimentacao}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
                 "grupo 5": (
@@ -149,6 +169,7 @@ export default () => {
                     form={form}
                     tiposAlimentacao={tiposAlimentacao}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
                 "grupo 6": (
@@ -156,6 +177,7 @@ export default () => {
                     form={form}
                     tiposAlimentacao={tiposAlimentacao}
                     grupoSelecionado={grupoSelecionado}
+                    bloqueiaEdicao={bloqueiaEdicao}
                   />
                 ),
               };
