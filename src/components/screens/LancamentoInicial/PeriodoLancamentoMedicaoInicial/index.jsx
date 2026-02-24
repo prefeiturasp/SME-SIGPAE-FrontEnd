@@ -116,6 +116,7 @@ import {
   validarFormulario,
   verificarMesAnteriorOuPosterior,
   exibirTooltipPeriodosZeradosNoProgramasProjetos,
+  boqueaSalvamentoPeriodosZeradosNoProgramasProjetos,
 } from "./validacoes";
 
 export default () => {
@@ -1689,6 +1690,22 @@ export default () => {
       ),
     );
     setExibirTooltip(false);
+    if (
+      valorPeriodoEscolar === "Programas e Projetos" &&
+      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+        "frequencia",
+        dia,
+        categoriasDeMedicao.find(
+          (categoria) => categoria.nome === "ALIMENTAÇÃO",
+        ),
+        formValuesAtualizados,
+        diasFrequenciaZerada,
+        valorPeriodoEscolar,
+      )
+    ) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    }
   };
 
   const onSubmit = async (
@@ -2143,10 +2160,12 @@ export default () => {
           ehGrupoETECUrlParam,
           inclusoesEtecAutorizadas,
         )) ||
-      exibirTooltipPeriodosZeradosNoProgramasProjetos(
-        rowName,
+      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+        "frequencia",
         dia,
-        categoria,
+        categoriasDeMedicao.find(
+          (categoria) => categoria.nome === "ALIMENTAÇÃO",
+        ),
         valuesFrequencia,
         diasFrequenciaZerada,
         location.state.grupo,

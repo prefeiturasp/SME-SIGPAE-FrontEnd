@@ -2006,18 +2006,55 @@ export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
   diasFrequenciaZerada,
   grupo,
 ) => {
-  if (grupo !== "Programas e Projetos") return false;
-  const inputName = `${row}__dia_${dia}__categoria_${categoria.id}`;
-  const value = formValuesAtualizados[inputName];
+  if (
+    grupo !== "Programas e Projetos" ||
+    row !== "frequencia" ||
+    categoria.nome !== "ALIMENTAÇÃO"
+  )
+    return false;
 
-  if (inputName.includes("frequencia") && diasFrequenciaZerada) {
-    const alimentaçao = diasFrequenciaZerada.alimentacoes;
-    if (
-      value &&
-      categoria.nome === "ALIMENTAÇÃO" &&
-      alimentaçao.includes(dia) &&
-      Number(value) > 0
-    ) {
+  const inputName = `${row}__dia_${dia}__categoria_${categoria.id}`;
+  const inputObservacao = `observacoes__dia_${dia}__categoria_${categoria.id}`;
+  const temObservacao =
+    formValuesAtualizados[inputObservacao] &&
+    formValuesAtualizados[inputObservacao] !== "" &&
+    formValuesAtualizados[inputObservacao] !== "<p></p>\n"
+      ? true
+      : false;
+
+  const value = formValuesAtualizados[inputName];
+  return (
+    diasFrequenciaZerada &&
+    value &&
+    diasFrequenciaZerada.alimentacoes.includes(dia) &&
+    Number(value) > 0 &&
+    !temObservacao
+  );
+};
+
+export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
+  row,
+  dia,
+  categoriaAlimentacao,
+  formValuesAtualizados,
+  diasFrequenciaZerada,
+  grupo,
+) => {
+  if (grupo !== "Programas e Projetos") return false;
+
+  for (const diaZerado of diasFrequenciaZerada.alimentacoes) {
+    const inputName = `${row}__dia_${diaZerado}__categoria_${categoriaAlimentacao.id}`;
+    const inputObservacao = `observacoes__dia_${diaZerado}__categoria_${categoriaAlimentacao.id}`;
+
+    const value = formValuesAtualizados[inputName];
+    const temObservacao =
+      formValuesAtualizados[inputObservacao] &&
+      formValuesAtualizados[inputObservacao] !== "" &&
+      formValuesAtualizados[inputObservacao] !== "<p></p>\n"
+        ? true
+        : false;
+
+    if (value && Number(value) > 0 && !temObservacao) {
       return true;
     }
   }
