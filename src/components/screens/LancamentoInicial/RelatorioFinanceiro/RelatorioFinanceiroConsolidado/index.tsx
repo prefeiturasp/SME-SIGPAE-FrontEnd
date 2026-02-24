@@ -146,7 +146,13 @@ export function RelatorioFinanceiroConsolidado() {
         totaisConsumo={totaisConsumo}
       />
     ),
-    "grupo 6": <GrupoCIEJA />,
+    "grupo 6": (
+      <GrupoCIEJA
+        relatorioConsolidado={relatorioConsolidado}
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+      />
+    ),
   };
 
   return (
