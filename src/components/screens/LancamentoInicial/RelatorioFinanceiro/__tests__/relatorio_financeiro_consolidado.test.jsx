@@ -259,6 +259,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
         ...mockRelatorioFinanceiroTipoAlimentacao,
         grupo_unidade_escolar: grupoCIEJA,
       });
+
     mock
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
@@ -267,6 +268,12 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoCIEJA.uuid);
 
-    expect(await screen.findByText("(Zero centavos.)")).toBeInTheDocument();
+    expect(
+      await screen.findByText("REFEIÇÃO CIEJA E CMCT"),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByText("(Cento e um mil duzentos e dezesseis reais.)"),
+    ).toBeInTheDocument();
   });
 });
