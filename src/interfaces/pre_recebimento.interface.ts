@@ -140,7 +140,12 @@ export interface OptionsGenerico {
   nome: string;
 }
 
-export type CategoriaFichaTecnicaChoices = "PERECIVEIS" | "NAO_PERECIVEIS";
+export type CategoriaFichaTecnicaChoices =
+  | "FLV"
+  | "PERECIVEIS"
+  | "NAO_PERECIVEIS";
+
+export type TipoEntregaChoices = "ARMAZEM" | "PONTO_A_PONTO";
 
 export interface ProdutoSimples {
   uuid: string;
@@ -184,6 +189,7 @@ export interface FichaTecnicaDetalhada {
   pregao_chamada_publica: string;
   marca: MarcaSimples;
   categoria: CategoriaFichaTecnicaChoices;
+  tipo_entrega: TipoEntregaChoices;
   programa: ProgramaChoices;
   status: string;
   criado_em: string;

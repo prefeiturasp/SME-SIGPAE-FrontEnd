@@ -18,7 +18,11 @@ import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockM
 import { mockEmpresa } from "src/mocks/terceirizada.service/mockGetTerceirizadaUUID";
 import CadastroFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
 import mock from "src/services/_mock";
-import { CATEGORIA_OPTIONS, PROGRAMA_OPTIONS } from "../constants";
+import {
+  CATEGORIA_OPTIONS,
+  PROGRAMA_OPTIONS,
+  TIPO_ENTREGA_OPTIONS,
+} from "../constants";
 
 beforeEach(() => {
   mock
@@ -155,7 +159,14 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       .getByTestId("categoria")
       .querySelector("select");
     fireEvent.change(selectCategoria, {
-      target: { value: CATEGORIA_OPTIONS[0].uuid },
+      target: { value: CATEGORIA_OPTIONS[1].uuid },
+    });
+
+    let selectTipoEntrega = screen
+      .getByTestId("tipo_entrega")
+      .querySelector("select");
+    fireEvent.change(selectTipoEntrega, {
+      target: { value: TIPO_ENTREGA_OPTIONS[0].uuid },
     });
 
     let selectPrograma = screen.getByTestId("programa").querySelector("select");
@@ -170,6 +181,8 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     preencheInput("pregao_chamada_publica", "123");
     preencheInput("fabricante_0", mockListaFabricantes.results[0].uuid);
+    preencheInput("email_fabricante_0", "fabricante@teste.com");
+    preencheInput("telefone_fabricante_0", "123456789");
 
     adicionaEnvasador();
 
@@ -185,6 +198,9 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     });
 
     preencheInput("fabricante_1", mockListaFabricantes.results[1].uuid);
+    preencheInput("email_fabricante_1", "fabricante@teste.com");
+    preencheInput("telefone_fabricante_1", "123456789");
+
     preencheInput("prazo_validade", "12 Meses");
     preencheInput("numero_registro", "11111");
 
@@ -259,6 +275,97 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     fireEvent.click(btnCancelar);
 
     fireEvent.click(btnAssinar);
+
+    const btnEnviar = screen.getByText("Sim, Assinar Ficha").closest("button");
+    fireEvent.click(btnEnviar);
+
+    expect(
+      screen.getByText(/Confirme sua senha de acesso ao/i),
+    ).toBeInTheDocument();
+
+    preencheInput("password", "123456");
+
+    const btnConfirmar = screen.getByText("Confirmar").closest("button");
+    fireEvent.click(btnConfirmar);
+
+    await waitFor(() => {
+      expect(
+        mock.history.post.some((call) => call.url.includes("/ficha-tecnica/")),
+      ).toBe(true);
+    });
+  });
+
+  it("Assina e Envia uma ficha técnica FLV Ponto a Ponto", async () => {
+    await setup();
+    expect(screen.getByText(/Informações Nutricionais/i)).toBeInTheDocument();
+
+    preencheInput("produto", mockListaProdutosLogistica.results[0].uuid);
+
+    let selectCategoria = screen
+      .getByTestId("categoria")
+      .querySelector("select");
+    fireEvent.change(selectCategoria, {
+      target: { value: "FLV" },
+    });
+
+    let selectTipoEntrega = screen
+      .getByTestId("tipo_entrega")
+      .querySelector("select");
+    fireEvent.change(selectTipoEntrega, {
+      target: { value: TIPO_ENTREGA_OPTIONS[1].uuid },
+    });
+
+    let selectPrograma = screen.getByTestId("programa").querySelector("select");
+    fireEvent.change(selectPrograma, {
+      target: { value: PROGRAMA_OPTIONS[0].uuid },
+    });
+
+    let selectMarca = screen.getByTestId("marca").querySelector("select");
+    fireEvent.change(selectMarca, {
+      target: { value: mockListaMarcas.results[0].uuid },
+    });
+
+    preencheInput("pregao_chamada_publica", "123");
+
+    preencheInput("fabricante_0", mockListaFabricantes.results[0].uuid);
+    preencheInput("email_fabricante_0", "fabricante@teste.com");
+    preencheInput("telefone_fabricante_0", "123456789");
+
+    preencheInput("numero_registro", "11111");
+    clickRadio("organico-nao");
+    preencheInput("especie_variedade", "Variedade X");
+
+    const btnProximo = screen.getByText("Próximo").closest("button");
+    expect(btnProximo).not.toBeDisabled();
+    fireEvent.click(btnProximo);
+
+    // Para FLV, pula direto para último step
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/Quantidade por 100g ou 100 ml/i),
+      ).not.toBeInTheDocument();
+    });
+
+    const inputsStep3 = screen.getAllByRole("textbox");
+    inputsStep3.forEach((input) => {
+      fireEvent.change(input, {
+        target: { value: "10" },
+      });
+    });
+
+    let inputFile = screen.getByTestId("arquivo");
+    const arquivo = new File(["conteúdo do PDF"], "arquivoTeste.pdf", {
+      type: "application/pdf",
+    });
+    fireEvent.change(inputFile, { target: { files: [arquivo] } });
+
+    const btnAssinar = screen.getByText("Assinar e Enviar").closest("button");
+    await waitFor(() => {
+      expect(btnAssinar).not.toBeDisabled();
+    });
+    fireEvent.click(btnAssinar);
+
+    expect(screen.getByText(/Assinar Ficha Técnica/i)).toBeInTheDocument();
 
     const btnEnviar = screen.getByText("Sim, Assinar Ficha").closest("button");
     fireEvent.click(btnEnviar);
