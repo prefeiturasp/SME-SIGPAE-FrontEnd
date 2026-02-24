@@ -209,6 +209,7 @@ const FormFabricante: React.FC<Props> = ({
                 component={InputText}
                 label="E-mail"
                 name={`email_fabricante_${idx}`}
+                dataTestId={`email_fabricante_${idx}`}
                 placeholder={somenteLeitura ? "" : "Digite o E-mail"}
                 className="input-ficha-tecnica"
                 required
@@ -222,6 +223,7 @@ const FormFabricante: React.FC<Props> = ({
                 mask={telefoneMask}
                 label="Telefone"
                 name={`telefone_fabricante_${idx}`}
+                dataTestId={`telefone_fabricante_${idx}`}
                 placeholder={somenteLeitura ? "" : "Digite o Telefone"}
                 className="input-ficha-tecnica"
                 required

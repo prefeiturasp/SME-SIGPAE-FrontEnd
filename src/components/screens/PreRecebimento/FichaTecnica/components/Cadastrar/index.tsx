@@ -180,7 +180,7 @@ export default () => {
                       <div className="col-4">
                         <Field
                           component={Select}
-                          dataTestId={"categoria"}
+                          dataTestId={"tipo_entrega"}
                           naoDesabilitarPrimeiraOpcao
                           options={[
                             { nome: "Selecione o tipo de entrega", uuid: "" },

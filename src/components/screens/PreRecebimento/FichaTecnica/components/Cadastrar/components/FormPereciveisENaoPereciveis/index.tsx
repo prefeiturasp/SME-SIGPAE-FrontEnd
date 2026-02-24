@@ -383,6 +383,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
               <Field
                 component={InputText}
                 label="Espécie ou Variedade Cultivada"
+                dataTestId="especie_variedade"
                 name={`especie_variedade`}
                 placeholder="Descreva a espécie ou variedade cultivada"
                 className="input-ficha-tecnica"
