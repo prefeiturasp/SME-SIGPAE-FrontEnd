@@ -257,3 +257,13 @@ export const getHistoricoEscola = async (uuidEscola, params) => {
     return data;
   }
 };
+
+export const getDiasFrequenciaZerada = async (params) => {
+  const url =
+    "medicao-inicial/solicitacao-medicao-inicial/dias-frequencia-zerada/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
