@@ -1997,3 +1997,29 @@ export const verificarMesAnteriorOuPosterior = (column, mesAnoConsiderado) => {
   }
   return result;
 };
+
+export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
+  row,
+  dia,
+  categoria,
+  formValuesAtualizados,
+  diasFrequenciaZerada,
+  grupo,
+) => {
+  if (grupo !== "Programas e Projetos") return false;
+  const inputName = `${row}__dia_${dia}__categoria_${categoria.id}`;
+  const value = formValuesAtualizados[inputName];
+
+  if (inputName.includes("frequencia") && diasFrequenciaZerada) {
+    const alimentaçao = diasFrequenciaZerada.alimentacoes;
+    if (
+      value &&
+      categoria.nome === "ALIMENTAÇÃO" &&
+      alimentaçao.includes(dia) &&
+      Number(value) > 0
+    ) {
+      return true;
+    }
+  }
+  return false;
+};

@@ -57,6 +57,7 @@ export const InputText = (props) => {
     exibeTooltipDietasInclusaoDiaNaoLetivoCEI,
     inputOnChange,
     exibeTooltipFrequenciaAlimentacaoZero,
+    exibirTooltipPeriodosZeradosNoProgramasProjetos,
   } = props;
 
   const inputProps = {
@@ -351,6 +352,15 @@ export const InputText = (props) => {
           title={"Há suspensão deste tipo de alimentação para este dia."}
         >
           <i className="fas fa-info icone-info-success" />
+        </Tooltip>
+      )}
+      {exibirTooltipPeriodosZeradosNoProgramasProjetos && (
+        <Tooltip
+          title={
+            "Não há apontamento de estudantes nos demais períodos. Justifique a frequência nos Programas e Projetos."
+          }
+        >
+          <i className="fas fa-info icone-info-warning" />
         </Tooltip>
       )}
 

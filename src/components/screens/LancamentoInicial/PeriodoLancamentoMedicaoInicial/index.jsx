@@ -58,6 +58,7 @@ import {
   getValoresPeriodosLancamentos,
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
+  getDiasFrequenciaZerada,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
@@ -114,6 +115,7 @@ import {
   validacoesTabelasDietas,
   validarFormulario,
   verificarMesAnteriorOuPosterior,
+  exibirTooltipPeriodosZeradosNoProgramasProjetos,
 } from "./validacoes";
 
 export default () => {
@@ -214,6 +216,7 @@ export default () => {
   );
   const [msgModalErro, setMsgModalErro] = useState(null);
   const [previousValue, setPreviousValue] = useState(null);
+  const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -1055,6 +1058,15 @@ export default () => {
       );
 
       setFeriadosNoMes(response_feriados_no_mes.data.results);
+
+      if (grupoMedicao === "Programas e Projetos") {
+        const response_dias = await getDiasFrequenciaZerada({
+          uuid_solicitacao: uuid,
+        });
+        if (response_dias.status === HTTP_STATUS.OK) {
+          setDiasFrequenciaZeradas(response_dias.data);
+        }
+      }
 
       await formatarDadosValoresMedicao(
         mesAnoFormatado,
@@ -2130,7 +2142,15 @@ export default () => {
           categoria,
           ehGrupoETECUrlParam,
           inclusoesEtecAutorizadas,
-        ))
+        )) ||
+      exibirTooltipPeriodosZeradosNoProgramasProjetos(
+        rowName,
+        dia,
+        categoria,
+        valuesFrequencia,
+        diasFrequenciaZerada,
+        location.state.grupo,
+      )
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
@@ -3372,6 +3392,15 @@ export default () => {
                                                             categoria,
                                                             ehGrupoETECUrlParam,
                                                             inclusoesEtecAutorizadas,
+                                                          )}
+                                                          exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
+                                                            row.name,
+                                                            column.dia,
+                                                            categoria,
+                                                            formValuesAtualizados,
+                                                            diasFrequenciaZerada,
+                                                            location.state
+                                                              .grupo,
                                                           )}
                                                           ehGrupoETECUrlParam={
                                                             ehGrupoETECUrlParam
