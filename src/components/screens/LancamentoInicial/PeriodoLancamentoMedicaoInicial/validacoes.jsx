@@ -366,6 +366,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   feriadosNoMes,
   diasFrequenciaZerada,
   escolaEmebs,
+  alunosTabSelecionada,
 ) => {
   if (
     location.state.grupo === "Programas e Projetos" &&
@@ -431,6 +432,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         diasFrequenciaZerada,
         location.state.grupo,
         escolaEmebs,
+        alunosTabSelecionada,
       )
     );
   }
@@ -2061,14 +2063,21 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
   diasFrequenciaZerada,
   grupo,
   escolaEmebs,
+  alunosTabSelecionada,
 ) => {
   if (grupo !== "Programas e Projetos") return false;
 
+  let diasInclusoAlimentacao = [];
   if (escolaEmebs === true) {
-    return false;
+    const tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
+      ([, v]) => v.key === alunosTabSelecionada,
+    )[0][0];
+    diasInclusoAlimentacao = diasFrequenciaZerada.alimentacoes[tabSelecionada];
+  } else {
+    diasInclusoAlimentacao = diasFrequenciaZerada.alimentacoes;
   }
 
-  for (const diaZerado of diasFrequenciaZerada.alimentacoes) {
+  for (const diaZerado of diasInclusoAlimentacao) {
     const inputName = `${row}__dia_${diaZerado}__categoria_${categoriaAlimentacao.id}`;
     const inputObservacao = `observacoes__dia_${diaZerado}__categoria_${categoriaAlimentacao.id}`;
 
@@ -2095,12 +2104,22 @@ export const habitarBotaoAdicionar = (
   diasFrequenciaZerada,
   grupo,
   escolaEmebs,
+  alunosTabSelecionada,
 ) => {
-  if (grupo !== "Programas e Projetos") return false;
+  if (grupo !== "Programas e Projetos" || !diasFrequenciaZerada) return false;
 
+  let diaIncluso = false;
   if (escolaEmebs === true) {
-    return false;
+    const tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
+      ([, v]) => v.key === alunosTabSelecionada,
+    )[0][0];
+    diaIncluso =
+      diasFrequenciaZerada.alimentacoes[tabSelecionada].includes(dia);
+  } else {
+    diaIncluso = diasFrequenciaZerada.alimentacoes.includes(dia);
   }
+
+  if (diaIncluso === false) return false;
 
   const inputName = `${row}__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
   const inputObservacao = `observacoes__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
@@ -2112,11 +2131,5 @@ export const habitarBotaoAdicionar = (
       : false;
 
   const value = formValuesAtualizados[inputName];
-  return (
-    diasFrequenciaZerada &&
-    value &&
-    diasFrequenciaZerada.alimentacoes.includes(dia) &&
-    Number(value) > 0 &&
-    !temObservacao
-  );
+  return value && Number(value) > 0 && !temObservacao;
 };

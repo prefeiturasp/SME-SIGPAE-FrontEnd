@@ -1702,6 +1702,7 @@ export default () => {
         diasFrequenciaZerada,
         valorPeriodoEscolar,
         escolaEhEMEBS(),
+        alunosTabSelecionada,
       )
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -2173,6 +2174,7 @@ export default () => {
         diasFrequenciaZerada,
         location.state.grupo,
         escolaEhEMEBS(),
+        alunosTabSelecionada,
       )
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -3210,6 +3212,7 @@ export default () => {
                                                               feriadosNoMes,
                                                               diasFrequenciaZerada,
                                                               escolaEhEMEBS(),
+                                                              alunosTabSelecionada,
                                                             )
                                                               ? textoBotaoObservacao(
                                                                   formValuesAtualizados[
