@@ -84,6 +84,9 @@ import {
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
   existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao,
+  exibirTooltipPeriodosZeradosNoProgramasProjetos,
+  habitarBotaoAdicionar,
+  boqueaSalvamentoPeriodosZeradosNoProgramasProjetos,
 } from "../PeriodoLancamentoMedicaoInicial/validacoes";
 import ModalErro from "./components/ModalErro";
 import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";
@@ -133,7 +136,6 @@ import {
   validarFormulario,
   verificarMesAnteriorOuPosterior,
   validacoesFaixasZeradasAlimentacao,
-  exibirTooltipPeriodosZeradosNoProgramasProjetos,
 } from "./validacoes";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
@@ -1297,6 +1299,22 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       ),
     );
     setExibirTooltip(false);
+    if (
+      values["periodo_escolar"] === "Programas e Projetos" &&
+      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+        "frequencia",
+        dia,
+        categoriasDeMedicao,
+        formValuesAtualizados,
+        diasFrequenciaZerada,
+        values["periodo_escolar"],
+      )
+    ) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    } else {
+      setDisableBotaoSalvarLancamentos(false);
+    }
   };
 
   const onSubmit = async (
@@ -1580,6 +1598,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         categoria,
         alteracoesAlimentacaoAutorizadas,
       ) ||
+        exibirTooltipPeriodosZeradosNoProgramasProjetos(
+          row.name,
+          dia,
+          categoria,
+          formValuesAtualizados,
+          diasFrequenciaZerada,
+          location.state.periodo,
+        ) ||
         (categoria.nome.includes("ALIMENTAÇÃO") &&
           (exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI(
             inclusoesAutorizadas,
@@ -2615,6 +2641,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           column.dia,
                                                           categoria,
                                                           formValuesAtualizados,
+                                                          diasFrequenciaZerada,
+                                                          location.state
+                                                            .periodo,
                                                         )) ||
                                                       (ehProgramasEProjetosLocation &&
                                                         repeticaoSobremesaDoceComValorESemObservacao(
@@ -2627,7 +2656,17 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                       verificarDiaZerado(
                                                         column.dia,
                                                         categoria,
-                                                      )
+                                                      ) ||
+                                                      (ehProgramasEProjetosLocation &&
+                                                        habitarBotaoAdicionar(
+                                                          "frequencia",
+                                                          column.dia,
+                                                          categoria,
+                                                          formValuesAtualizados,
+                                                          diasFrequenciaZerada,
+                                                          location.state
+                                                            .periodo,
+                                                        ))
                                                         ? textoBotaoObservacao(
                                                             formValuesAtualizados[
                                                               `${row.name}__dia_${column.dia}__categoria_${categoria.id}`

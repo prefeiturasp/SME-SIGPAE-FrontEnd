@@ -154,8 +154,8 @@ export const campoFrequenciaValor0ESemObservacao = (
   values,
   diasFrequenciaZerada,
   grupo,
-  escolaEmebs,
-  alunosTabSelecionada,
+  escolaEmebs = false,
+  alunosTabSelecionada = null,
 ) => {
   let erro = false;
   if (
@@ -2079,8 +2079,8 @@ export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
   formValuesAtualizados,
   diasFrequenciaZerada,
   grupo,
-  escolaEmebs,
-  alunosTabSelecionada,
+  escolaEmebs = false,
+  alunosTabSelecionada = null,
 ) => {
   if (
     grupo !== "Programas e Projetos" ||
