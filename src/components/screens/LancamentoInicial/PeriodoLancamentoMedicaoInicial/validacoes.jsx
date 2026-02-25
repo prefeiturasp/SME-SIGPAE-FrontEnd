@@ -148,8 +148,44 @@ export const campoLancheEmergencialSemAutorizacaoSemObservacao = (
   );
 };
 
-export const campoFrequenciaValor0ESemObservacao = (dia, categoria, values) => {
+export const campoFrequenciaValor0ESemObservacao = (
+  dia,
+  categoria,
+  values,
+  diasFrequenciaZerada,
+  grupo,
+  escolaEmebs,
+  alunosTabSelecionada,
+) => {
   let erro = false;
+  if (
+    grupo === "Programas e Projetos" &&
+    !categoria.nome.includes("SOLICITAÇÕES")
+  ) {
+    let tabSelecionada = null;
+    let diaIncluso = [];
+    const ehDietaEspecial = categoria.nome.includes("DIETA");
+    if (escolaEmebs === true) {
+      tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
+        ([, v]) => v.key === alunosTabSelecionada,
+      )[0][0];
+      diaIncluso = ehDietaEspecial
+        ? diasFrequenciaZerada?.dietas?.[categoria.nome]?.[tabSelecionada]
+        : diasFrequenciaZerada?.alimentacoes[tabSelecionada];
+    } else {
+      diaIncluso = ehDietaEspecial
+        ? diasFrequenciaZerada?.dietas?.[categoria.nome]
+        : diasFrequenciaZerada?.alimentacoes;
+    }
+    if (
+      diaIncluso?.includes(dia) &&
+      values[`frequencia__dia_${dia}__categoria_${categoria.id}`] &&
+      Number(values[`frequencia__dia_${dia}__categoria_${categoria.id}`]) === 0
+    ) {
+      return false;
+    }
+  }
+
   if (
     categoria.nome === "ALIMENTAÇÃO" &&
     values[`frequencia__dia_${dia}__categoria_${categoria.id}`] &&
@@ -386,6 +422,10 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         dia,
         categoria,
         formValuesAtualizados,
+        diasFrequenciaZerada,
+        location.state.grupo,
+        escolaEmebs,
+        alunosTabSelecionada,
       ) ||
       campoComSuspensaoAutorizadaESemObservacao(
         formValuesAtualizados,
@@ -463,6 +503,10 @@ export const botaoAdicionarObrigatorio = (
       column.dia,
       categoria,
       formValuesAtualizados,
+      diasFrequenciaZerada,
+      location.state.grupo,
+      escolaEmebs,
+      alunosTabSelecionada,
     ) ||
     campoRefeicaoComRPLAutorizadaESemObservacao(
       formValuesAtualizados,
