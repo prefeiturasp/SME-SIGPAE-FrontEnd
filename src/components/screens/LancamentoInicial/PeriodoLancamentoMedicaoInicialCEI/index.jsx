@@ -51,6 +51,7 @@ import {
   getValoresPeriodosLancamentos,
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
+  getDiasFrequenciaZerada,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
@@ -132,6 +133,7 @@ import {
   validarFormulario,
   verificarMesAnteriorOuPosterior,
   validacoesFaixasZeradasAlimentacao,
+  exibirTooltipPeriodosZeradosNoProgramasProjetos,
 } from "./validacoes";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
@@ -229,6 +231,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [previousValue, setPreviousValue] = useState(null);
   const [diasZerados, setDiasZerados] = useState(false);
   const [listaDiasZerados, setListaDiasZerados] = useState([]);
+  const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -586,6 +589,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         params_feriados_no_mes,
       );
       setFeriadosNoMes(response_feriados_no_mes.data.results);
+
+      if (periodo === "Programas e Projetos") {
+        const response_dias = await getDiasFrequenciaZerada({
+          uuid_solicitacao: uuid,
+        });
+        if (response_dias.status === HTTP_STATUS.OK) {
+          setDiasFrequenciaZeradas(response_dias.data);
+        }
+      }
 
       await formatarDadosValoresMedicao(
         mesAnoFormatado,
@@ -2820,6 +2832,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               categoria,
                                                             ))
                                                         }
+                                                        exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
+                                                          row.name,
+                                                          column.dia,
+                                                          categoria,
+                                                          formValuesAtualizados,
+                                                          diasFrequenciaZerada,
+                                                          location.state
+                                                            .periodo,
+                                                        )}
                                                         validate={fieldValidationsTabelasEmeidaCemei(
                                                           row.name,
                                                           column.dia,

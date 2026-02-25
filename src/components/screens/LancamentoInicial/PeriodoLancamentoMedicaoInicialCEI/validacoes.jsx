@@ -1107,3 +1107,40 @@ export const verificarMesAnteriorOuPosterior = (column, mesAnoConsiderado) => {
   }
   return result;
 };
+
+export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
+  row,
+  dia,
+  categoria,
+  formValuesAtualizados,
+  diasFrequenciaZerada,
+  grupo,
+) => {
+  if (
+    grupo !== "Programas e Projetos" ||
+    row !== "frequencia" ||
+    categoria.nome.includes("SOLICITAÇÕES") ||
+    !diasFrequenciaZerada
+  )
+    return false;
+
+  let diaIncluso = [];
+  const ehDietaEspecial = categoria.nome.includes("DIETA");
+  diaIncluso = ehDietaEspecial
+    ? diasFrequenciaZerada?.dietas?.[categoria.nome]
+    : diasFrequenciaZerada?.alimentacoes;
+
+  if (!diaIncluso?.includes(dia)) return false;
+
+  const inputName = `${row}__dia_${dia}__categoria_${categoria.id}`;
+  const inputObservacao = `observacoes__dia_${dia}__categoria_${categoria.id}`;
+  const temObservacao =
+    formValuesAtualizados[inputObservacao] &&
+    formValuesAtualizados[inputObservacao] !== "" &&
+    formValuesAtualizados[inputObservacao] !== "<p></p>\n"
+      ? true
+      : false;
+
+  const value = formValuesAtualizados[inputName];
+  return value && Number(value) > 0 && !temObservacao;
+};
