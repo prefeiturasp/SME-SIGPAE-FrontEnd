@@ -2105,9 +2105,9 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
     diasInclusoAlimentacao = diasFrequenciaZerada.alimentacoes;
   }
 
-  for (const diaZeradoAlimentacao of diasInclusoAlimentacao) {
-    const inputName = `${row}__dia_${diaZeradoAlimentacao}__categoria_${categoriaAlimentacao.id}`;
-    const inputObservacao = `observacoes__dia_${diaZeradoAlimentacao}__categoria_${categoriaAlimentacao.id}`;
+  const bloquerSalvarLancamentos = (diaZerado, idCategoria) => {
+    const inputName = `${row}__dia_${diaZerado}__categoria_${idCategoria}`;
+    const inputObservacao = `observacoes__dia_${diaZerado}__categoria_${idCategoria}`;
 
     const value = formValuesAtualizados[inputName];
     const temObservacao =
@@ -2117,27 +2117,23 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
         ? true
         : false;
 
-    if (value && Number(value) > 0 && !temObservacao) {
+    return value && Number(value) > 0 && !temObservacao;
+  };
+
+  for (const diaZeradoAlimentacao of diasInclusoAlimentacao) {
+    if (
+      bloquerSalvarLancamentos(diaZeradoAlimentacao, categoriaAlimentacao.id)
+    ) {
       return true;
     }
   }
 
   for (const categoriaDieta of categoriasDietas) {
-    const diasDieta =
-      diasInclusoDietas?.[categoriaDieta.nome]?.[tabSelecionada];
+    const diasDieta = escolaEmebs
+      ? diasInclusoDietas?.[categoriaDieta.nome]?.[tabSelecionada]
+      : diasInclusoDietas?.[categoriaDieta.nome];
     for (const diaZeradoDieta of diasDieta) {
-      const inputName = `${row}__dia_${diaZeradoDieta}__categoria_${categoriaDieta.id}`;
-      const inputObservacao = `observacoes__dia_${diaZeradoDieta}__categoria_${categoriaDieta.id}`;
-
-      const value = formValuesAtualizados[inputName];
-      const temObservacao =
-        formValuesAtualizados[inputObservacao] &&
-        formValuesAtualizados[inputObservacao] !== "" &&
-        formValuesAtualizados[inputObservacao] !== "<p></p>\n"
-          ? true
-          : false;
-
-      if (value && Number(value) > 0 && !temObservacao) {
+      if (bloquerSalvarLancamentos(diaZeradoDieta, categoriaDieta.id)) {
         return true;
       }
     }
