@@ -202,7 +202,7 @@ export default () => {
                             { nome: "Selecione um Programa", uuid: "" },
                             ...PROGRAMA_OPTIONS,
                           ]}
-                          label="Para qual Programa o produto é destinado"
+                          label="Para qual Programa o Produto é Destinado"
                           name={`programa`}
                           className="input-ficha-tecnica"
                           required
