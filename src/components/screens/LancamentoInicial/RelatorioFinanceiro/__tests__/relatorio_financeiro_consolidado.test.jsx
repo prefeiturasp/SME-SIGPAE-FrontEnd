@@ -268,12 +268,16 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoCIEJA.uuid);
 
-    expect(
-      await screen.findByText("REFEIÇÃO CIEJA E CMCT"),
-    ).toBeInTheDocument();
+    expect(await screen.findAllByText("REFEIÇÃO CIEJA E CMCT")).toHaveLength(2);
+    expect(await screen.findAllByText("LANCHE 4H")).toHaveLength(3);
+    expect(await screen.findAllByText("LANCHE")).toHaveLength(1);
+
+    await verificaTabelaDietas();
 
     expect(
-      await screen.findByText("(Cento e um mil duzentos e dezesseis reais.)"),
+      await screen.findByText(
+        "(Cento e um mil quatrocentos e setenta e quatro reais e trinta e seis centavos.)",
+      ),
     ).toBeInTheDocument();
   });
 });
