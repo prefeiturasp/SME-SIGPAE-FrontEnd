@@ -365,6 +365,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   ehGrupoETECUrlParam = false,
   feriadosNoMes,
   diasFrequenciaZerada,
+  escolaEmebs,
 ) => {
   if (
     location.state.grupo === "Programas e Projetos" &&
@@ -429,6 +430,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         formValuesAtualizados,
         diasFrequenciaZerada,
         location.state.grupo,
+        escolaEmebs,
       )
     );
   }
@@ -2014,13 +2016,29 @@ export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
   formValuesAtualizados,
   diasFrequenciaZerada,
   grupo,
+  escolaEmebs,
+  alunosTabSelecionada,
 ) => {
   if (
     grupo !== "Programas e Projetos" ||
     row !== "frequencia" ||
-    categoria.nome !== "ALIMENTAÇÃO"
+    categoria.nome !== "ALIMENTAÇÃO" ||
+    !diasFrequenciaZerada
   )
     return false;
+
+  let diaIncluso = false;
+  if (escolaEmebs === true) {
+    const tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
+      ([, v]) => v.key === alunosTabSelecionada,
+    )[0][0];
+    diaIncluso =
+      diasFrequenciaZerada.alimentacoes[tabSelecionada].includes(dia);
+  } else {
+    diaIncluso = diasFrequenciaZerada.alimentacoes.includes(dia);
+  }
+
+  if (diaIncluso === false) return false;
 
   const inputName = `${row}__dia_${dia}__categoria_${categoria.id}`;
   const inputObservacao = `observacoes__dia_${dia}__categoria_${categoria.id}`;
@@ -2032,13 +2050,7 @@ export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
       : false;
 
   const value = formValuesAtualizados[inputName];
-  return (
-    diasFrequenciaZerada &&
-    value &&
-    diasFrequenciaZerada.alimentacoes.includes(dia) &&
-    Number(value) > 0 &&
-    !temObservacao
-  );
+  return value && Number(value) > 0 && !temObservacao;
 };
 
 export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
@@ -2048,8 +2060,13 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
   formValuesAtualizados,
   diasFrequenciaZerada,
   grupo,
+  escolaEmebs,
 ) => {
   if (grupo !== "Programas e Projetos") return false;
+
+  if (escolaEmebs === true) {
+    return false;
+  }
 
   for (const diaZerado of diasFrequenciaZerada.alimentacoes) {
     const inputName = `${row}__dia_${diaZerado}__categoria_${categoriaAlimentacao.id}`;
@@ -2077,8 +2094,13 @@ export const habitarBotaoAdicionar = (
   formValuesAtualizados,
   diasFrequenciaZerada,
   grupo,
+  escolaEmebs,
 ) => {
   if (grupo !== "Programas e Projetos") return false;
+
+  if (escolaEmebs === true) {
+    return false;
+  }
 
   const inputName = `${row}__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
   const inputObservacao = `observacoes__dia_${dia}__categoria_${categoriaAlimentacao.id}`;

@@ -1701,6 +1701,7 @@ export default () => {
         formValuesAtualizados,
         diasFrequenciaZerada,
         valorPeriodoEscolar,
+        escolaEhEMEBS(),
       )
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -2171,6 +2172,7 @@ export default () => {
         values,
         diasFrequenciaZerada,
         location.state.grupo,
+        escolaEhEMEBS(),
       )
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -3205,6 +3207,7 @@ export default () => {
                                                               ehGrupoETECUrlParam,
                                                               feriadosNoMes,
                                                               diasFrequenciaZerada,
+                                                              escolaEhEMEBS(),
                                                             )
                                                               ? textoBotaoObservacao(
                                                                   formValuesAtualizados[
@@ -3423,6 +3426,8 @@ export default () => {
                                                             diasFrequenciaZerada,
                                                             location.state
                                                               .grupo,
+                                                            escolaEhEMEBS(),
+                                                            alunosTabSelecionada,
                                                           )}
                                                           ehGrupoETECUrlParam={
                                                             ehGrupoETECUrlParam
