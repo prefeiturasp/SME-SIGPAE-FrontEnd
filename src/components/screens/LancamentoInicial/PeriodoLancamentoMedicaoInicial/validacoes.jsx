@@ -447,6 +447,9 @@ export const botaoAdicionarObrigatorio = (
   row,
   alteracoesAlimentacaoAutorizadas,
   categorias,
+  diasFrequenciaZerada,
+  escolaEmebs,
+  alunosTabSelecionada,
 ) => {
   return (
     repeticaoSobremesaDoceComValorESemObservacao(
@@ -472,6 +475,16 @@ export const botaoAdicionarObrigatorio = (
       column.dia,
       categoria,
       categorias,
+    ) ||
+    habitarBotaoAdicionar(
+      "frequencia",
+      column.dia,
+      categoria,
+      formValuesAtualizados,
+      diasFrequenciaZerada,
+      location.state.grupo,
+      escolaEmebs,
+      alunosTabSelecionada,
     )
   );
 };
@@ -2029,7 +2042,7 @@ export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
   )
     return false;
 
-  let diaIncluso = false;
+  let diaIncluso = [];
   const ehDietaEspecial = categoria.nome.includes("DIETA");
 
   if (escolaEmebs === true) {
@@ -2105,30 +2118,41 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
 export const habitarBotaoAdicionar = (
   row,
   dia,
-  categoriaAlimentacao,
+  categoria,
   formValuesAtualizados,
   diasFrequenciaZerada,
   grupo,
   escolaEmebs,
   alunosTabSelecionada,
 ) => {
-  if (grupo !== "Programas e Projetos" || !diasFrequenciaZerada) return false;
+  if (
+    grupo !== "Programas e Projetos" ||
+    !diasFrequenciaZerada ||
+    categoria.nome.includes("SOLICITAÇÕES")
+  )
+    return false;
 
-  let diaIncluso = false;
+  let diaIncluso = [];
+  const ehDietaEspecial = categoria.nome.includes("DIETA");
+
   if (escolaEmebs === true) {
     const tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
       ([, v]) => v.key === alunosTabSelecionada,
     )[0][0];
-    diaIncluso =
-      diasFrequenciaZerada.alimentacoes[tabSelecionada].includes(dia);
+
+    diaIncluso = ehDietaEspecial
+      ? diasFrequenciaZerada?.dietas?.[categoria.nome]?.[tabSelecionada]
+      : diasFrequenciaZerada?.alimentacoes[tabSelecionada];
   } else {
-    diaIncluso = diasFrequenciaZerada.alimentacoes.includes(dia);
+    diaIncluso = ehDietaEspecial
+      ? diasFrequenciaZerada?.dietas?.[categoria.nome]
+      : diasFrequenciaZerada?.alimentacoes;
   }
 
-  if (diaIncluso === false) return false;
+  if (!diaIncluso?.includes(dia)) return false;
 
-  const inputName = `${row}__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
-  const inputObservacao = `observacoes__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
+  const inputName = `${row}__dia_${dia}__categoria_${categoria.id}`;
+  const inputObservacao = `observacoes__dia_${dia}__categoria_${categoria.id}`;
   const temObservacao =
     formValuesAtualizados[inputObservacao] &&
     formValuesAtualizados[inputObservacao] !== "" &&

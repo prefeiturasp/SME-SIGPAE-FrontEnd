@@ -2968,6 +2968,9 @@ export default () => {
                                                             row,
                                                             alteracoesAlimentacaoAutorizadas,
                                                             categoriasDeMedicao,
+                                                            diasFrequenciaZerada,
+                                                            escolaEhEMEBS(),
+                                                            alunosTabSelecionada,
                                                           )
                                                             ? textoBotaoObservacao(
                                                                 formValuesAtualizados[
