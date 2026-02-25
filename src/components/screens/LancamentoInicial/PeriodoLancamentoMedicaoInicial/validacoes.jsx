@@ -560,6 +560,8 @@ export const validacoesTabelaAlimentacao = (
           `${rowName}__dia_${dia}__categoria_${categoria}`
         ],
       ) &&
+    !existeAlteracaoAlimentacaoLPR &&
+    !existeAlteracaoAlimentacaoRPL &&
     !allValues[`observacoes__dia_${dia}__categoria_${categoria}`]
   ) {
     return `Número de alimentações é maior que a quantidade autorizada (${Number(
@@ -596,7 +598,9 @@ export const validacoesTabelaAlimentacao = (
   } else if (
     inputName in dadosValoresInclusoesAutorizadasState &&
     !escolaNaoPossuiAlunosRegulares(location.state.solicitacaoMedicaoInicial) &&
-    !location.state.periodoEspecifico
+    !location.state.periodoEspecifico &&
+    !existeAlteracaoAlimentacaoRPL &&
+    !existeAlteracaoAlimentacaoLPR
   ) {
     if (
       validacaoDiaLetivo(dia) &&
