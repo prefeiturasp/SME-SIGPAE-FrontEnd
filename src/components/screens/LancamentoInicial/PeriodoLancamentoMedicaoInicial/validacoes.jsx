@@ -2024,23 +2024,29 @@ export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
   if (
     grupo !== "Programas e Projetos" ||
     row !== "frequencia" ||
-    categoria.nome !== "ALIMENTAÇÃO" ||
+    categoria.nome.includes("SOLICITAÇÕES") ||
     !diasFrequenciaZerada
   )
     return false;
 
   let diaIncluso = false;
+  const ehDietaEspecial = categoria.nome.includes("DIETA");
+
   if (escolaEmebs === true) {
     const tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
       ([, v]) => v.key === alunosTabSelecionada,
     )[0][0];
-    diaIncluso =
-      diasFrequenciaZerada.alimentacoes[tabSelecionada].includes(dia);
+
+    diaIncluso = ehDietaEspecial
+      ? diasFrequenciaZerada?.dietas?.[categoria.nome]?.[tabSelecionada]
+      : diasFrequenciaZerada?.alimentacoes[tabSelecionada];
   } else {
-    diaIncluso = diasFrequenciaZerada.alimentacoes.includes(dia);
+    diaIncluso = ehDietaEspecial
+      ? diasFrequenciaZerada?.dietas?.[categoria.nome]
+      : diasFrequenciaZerada?.alimentacoes;
   }
 
-  if (diaIncluso === false) return false;
+  if (!diaIncluso?.includes(dia)) return false;
 
   const inputName = `${row}__dia_${dia}__categoria_${categoria.id}`;
   const inputObservacao = `observacoes__dia_${dia}__categoria_${categoria.id}`;

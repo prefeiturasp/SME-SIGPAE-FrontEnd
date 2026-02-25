@@ -3083,6 +3083,16 @@ export default () => {
                                                           column,
                                                           row,
                                                         )}
+                                                        exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
+                                                          row.name,
+                                                          column.dia,
+                                                          categoria,
+                                                          formValuesAtualizados,
+                                                          diasFrequenciaZerada,
+                                                          location.state.grupo,
+                                                          escolaEhEMEBS(),
+                                                          alunosTabSelecionada,
+                                                        )}
                                                         validate={fieldValidationsTabelasDietas(
                                                           row.name,
                                                           column.dia,
