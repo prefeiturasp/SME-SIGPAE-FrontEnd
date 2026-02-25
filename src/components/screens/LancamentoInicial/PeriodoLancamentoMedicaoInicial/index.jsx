@@ -1695,9 +1695,7 @@ export default () => {
       boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
         "frequencia",
         dia,
-        categoriasDeMedicao.find(
-          (categoria) => categoria.nome === "ALIMENTAÇÃO",
-        ),
+        categoriasDeMedicao,
         formValuesAtualizados,
         diasFrequenciaZerada,
         valorPeriodoEscolar,
@@ -2167,9 +2165,7 @@ export default () => {
       boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
         "frequencia",
         dia,
-        categoriasDeMedicao.find(
-          (categoria) => categoria.nome === "ALIMENTAÇÃO",
-        ),
+        categoriasDeMedicao,
         values,
         diasFrequenciaZerada,
         location.state.grupo,

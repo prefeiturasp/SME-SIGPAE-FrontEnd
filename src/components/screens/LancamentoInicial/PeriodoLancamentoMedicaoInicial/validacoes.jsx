@@ -2077,7 +2077,7 @@ export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
 export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
   row,
   dia,
-  categoriaAlimentacao,
+  categoriasDeMedicao,
   formValuesAtualizados,
   diasFrequenciaZerada,
   grupo,
@@ -2086,9 +2086,18 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
 ) => {
   if (grupo !== "Programas e Projetos") return false;
 
+  const categoriaAlimentacao = categoriasDeMedicao.find(
+    (categoria) => categoria.nome === "ALIMENTAÇÃO",
+  );
+  const categoriasDietas = categoriasDeMedicao.filter((c) =>
+    c.nome.includes("DIETA"),
+  );
+
   let diasInclusoAlimentacao = [];
+  let diasInclusoDietas = diasFrequenciaZerada?.dietas;
+  let tabSelecionada = null;
   if (escolaEmebs === true) {
-    const tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
+    tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
       ([, v]) => v.key === alunosTabSelecionada,
     )[0][0];
     diasInclusoAlimentacao = diasFrequenciaZerada.alimentacoes[tabSelecionada];
@@ -2096,9 +2105,9 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
     diasInclusoAlimentacao = diasFrequenciaZerada.alimentacoes;
   }
 
-  for (const diaZerado of diasInclusoAlimentacao) {
-    const inputName = `${row}__dia_${diaZerado}__categoria_${categoriaAlimentacao.id}`;
-    const inputObservacao = `observacoes__dia_${diaZerado}__categoria_${categoriaAlimentacao.id}`;
+  for (const diaZeradoAlimentacao of diasInclusoAlimentacao) {
+    const inputName = `${row}__dia_${diaZeradoAlimentacao}__categoria_${categoriaAlimentacao.id}`;
+    const inputObservacao = `observacoes__dia_${diaZeradoAlimentacao}__categoria_${categoriaAlimentacao.id}`;
 
     const value = formValuesAtualizados[inputName];
     const temObservacao =
@@ -2112,6 +2121,28 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
       return true;
     }
   }
+
+  for (const categoriaDieta of categoriasDietas) {
+    const diasDieta =
+      diasInclusoDietas?.[categoriaDieta.nome]?.[tabSelecionada];
+    for (const diaZeradoDieta of diasDieta) {
+      const inputName = `${row}__dia_${diaZeradoDieta}__categoria_${categoriaDieta.id}`;
+      const inputObservacao = `observacoes__dia_${diaZeradoDieta}__categoria_${categoriaDieta.id}`;
+
+      const value = formValuesAtualizados[inputName];
+      const temObservacao =
+        formValuesAtualizados[inputObservacao] &&
+        formValuesAtualizados[inputObservacao] !== "" &&
+        formValuesAtualizados[inputObservacao] !== "<p></p>\n"
+          ? true
+          : false;
+
+      if (value && Number(value) > 0 && !temObservacao) {
+        return true;
+      }
+    }
+  }
+
   return false;
 };
 
