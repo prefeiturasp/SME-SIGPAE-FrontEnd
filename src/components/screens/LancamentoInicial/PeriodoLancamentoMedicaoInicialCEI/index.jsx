@@ -2823,14 +2823,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           )
                                                         }
                                                         exibeTooltipRepeticao={
-                                                          ehProgramasEProjetosLocation ||
-                                                          (ehGrupoColaboradores() &&
-                                                            exibirTooltipRepeticao(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                            ))
+                                                          (ehProgramasEProjetosLocation ||
+                                                            ehGrupoColaboradores()) &&
+                                                          exibirTooltipRepeticao(
+                                                            formValuesAtualizados,
+                                                            row,
+                                                            column,
+                                                            categoria,
+                                                          )
                                                         }
                                                         exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
                                                           row.name,
