@@ -2373,14 +2373,16 @@ export default () => {
         !escolaEhEMEBS()) ||
       (escolaEhEMEBS() &&
         !validacaoSemana(dia) &&
-        diasParaCorrecao?.find(
-          (diaParaCorrecao) =>
-            String(diaParaCorrecao.dia) === String(dia) &&
-            String(diaParaCorrecao.categoria_medicao) === String(categoriaId) &&
-            diaParaCorrecao.habilitado_correcao === true &&
-            ALUNOS_EMEBS[diaParaCorrecao.infantil_ou_fundamental].key ===
-              alunosTabSelecionada,
-        ))
+        (diasParaCorrecao?.length === 0 ||
+          diasParaCorrecao?.find(
+            (diaParaCorrecao) =>
+              String(diaParaCorrecao.dia) === String(dia) &&
+              String(diaParaCorrecao.categoria_medicao) ===
+                String(categoriaId) &&
+              diaParaCorrecao.habilitado_correcao === true &&
+              ALUNOS_EMEBS[diaParaCorrecao.infantil_ou_fundamental].key ===
+                alunosTabSelecionada,
+          )))
     );
   };
 
