@@ -7,6 +7,8 @@ import {
 import { formataMilharDecimal } from "src/helpers/utilities";
 import { stringDecimalToNumber } from "src/helpers/parsers";
 import { TabelaDietasHandle } from "../../types";
+import { listaAlimentacoes, prioridadeAlimentacao } from "../../helpers";
+import { normalizar } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
 
 type Props = {
   tabelas: TabelaParametrizacao[];
@@ -15,15 +17,13 @@ type Props = {
   totaisConsumo?: any;
   ordem?: string;
   exibeNoturno?: boolean;
+  cieja?: boolean;
 };
 
 const _TIPO_CLASS = {
   "TIPO A": "cor-tipo-a",
   "TIPO B": "cor-tipo-b",
 };
-
-const ALIMENTACOES_TIPO_A = ["Refeição", "Lanche", "Lanche 4h"];
-const ALIMENTACOES_TIPO_B = ["Lanche", "Lanche 4h"];
 
 export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
   (
@@ -34,6 +34,7 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
       totaisConsumo,
       ordem,
       exibeNoturno,
+      cieja = false,
     },
     ref,
   ) => {
@@ -47,20 +48,14 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
       }),
     }));
 
-    const prioridadeAlimentacao = (nome: string) => {
-      if (nome === "Refeição") return 0;
-      if (nome === "Refeição EJA") return 1;
-      return 2;
-    };
-
     const alimentacoes = useMemo(() => {
-      const lista =
-        tipoDieta === "TIPO A" ? ALIMENTACOES_TIPO_A : ALIMENTACOES_TIPO_B;
+      const lista = listaAlimentacoes(tipoDieta, cieja);
 
       return tiposAlimentacao
-        .filter((t) => lista.includes(t.nome))
+        .filter((t) => lista.includes(normalizar(t.nome)))
         .flatMap((ta) => {
-          if (ta.nome === "Refeição" && exibeNoturno) {
+          const nomeNormalizado = normalizar(ta.nome);
+          if (nomeNormalizado === "refeicao" && exibeNoturno) {
             return [
               { ...ta, nome: "Refeição EJA", grupo: "Dieta Enteral" },
               { ...ta, grupo: "Dieta Enteral" },
@@ -69,14 +64,14 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
 
           return {
             ...ta,
-            grupo: ta.nome === "Refeição" ? "Dieta Enteral" : null,
+            grupo: nomeNormalizado === "refeicao" ? "Dieta Enteral" : null,
           };
         })
         .sort(
           (a, b) =>
             prioridadeAlimentacao(a.nome) - prioridadeAlimentacao(b.nome),
         );
-    }, [tipoDieta, tiposAlimentacao, exibeNoturno]);
+    }, [tipoDieta, tiposAlimentacao, exibeNoturno, cieja]);
 
     return (
       <table className="tabela-relatorio">
@@ -98,6 +93,11 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
 
         <tbody>
           {alimentacoes.map((tipo) => {
+            const nomeExibicao =
+              cieja && normalizar(tipo.nome) === "refeicao"
+                ? "Refeição CIEJA e CMCT"
+                : tipo.nome;
+
             const tabela = tabelas.find((tabela) =>
               tabela.nome.toUpperCase().includes(tipoDieta),
             );
@@ -145,7 +145,7 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
                   .toLowerCase()}_${tipo.uuid}`}
               >
                 <td className="col-tipo">
-                  <b>{tipo.nome.toUpperCase()}</b>{" "}
+                  <b>{nomeExibicao.toUpperCase()}</b>{" "}
                   {tipo.grupo && `- ${tipo.grupo}`}
                 </td>
                 <td className="col-unitario">
