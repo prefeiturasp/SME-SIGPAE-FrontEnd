@@ -475,6 +475,7 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
   const initialValues = {
     produto: ficha.produto?.nome,
     categoria: ficha.categoria as CategoriaFichaTecnicaChoices,
+    tipo_entrega: ficha.tipo_entrega,
     programa: ficha.programa,
     marca: ficha.marca?.uuid,
     pregao_chamada_publica: ficha.pregao_chamada_publica,
@@ -490,6 +491,7 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
     numero_registro: ficha.numero_registro,
     organico: booleanToString(ficha.organico),
     mecanismo_controle: ficha.mecanismo_controle,
+    especie_variedade: ficha.especie_variedade,
     componentes_produto: ficha.componentes_produto,
     alergenicos: booleanToString(ficha.alergenicos),
     ingredientes_alergenicos: ficha.ingredientes_alergenicos,

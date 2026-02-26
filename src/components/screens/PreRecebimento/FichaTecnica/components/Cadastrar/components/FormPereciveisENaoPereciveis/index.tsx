@@ -291,7 +291,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
               <Field
                 component={InputText}
                 dataTestId="numero_registro"
-                label="Nº do Registro do Rótulo do Produto e Nome do Órgão Competente"
+                label="Nº do Registro do Produto e Nome do Órgão Competente"
                 name={`numero_registro`}
                 placeholder="Digite o Número do Registro do Órgão Competente"
                 className="input-ficha-tecnica"
