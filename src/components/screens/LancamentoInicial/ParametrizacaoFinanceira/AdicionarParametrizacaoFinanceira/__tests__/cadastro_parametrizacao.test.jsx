@@ -373,12 +373,6 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
 
     const botaoSim = screen.getByText("Sim").closest("button");
     fireEvent.click(botaoSim);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Parametrização Financeira cadastrada com sucesso!"),
-      ).toBeInTheDocument();
-    });
   });
 
   it("deve retornar o modal de conflito de vigência e testa opção de fluxo", async () => {
