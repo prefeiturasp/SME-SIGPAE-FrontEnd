@@ -206,3 +206,26 @@ export const parseDate = (str: string) => {
   const [dia, mes, ano] = str.split("/").map(Number);
   return new Date(ano, mes - 1, dia);
 };
+
+export const limparTabelas = (tabelas: Record<string, any>) => {
+  const novasTabelas: Record<string, any> = {};
+
+  for (const categoria in tabelas) {
+    novasTabelas[categoria] = {};
+
+    for (const item in tabelas[categoria]) {
+      const linha = tabelas[categoria][item];
+
+      novasTabelas[categoria][item] = Object.keys(linha).reduce(
+        (acc, key) => {
+          if (key === "tipo_alimentacao") acc[key] = linha[key];
+          else acc[key] = "";
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
+    }
+  }
+
+  return novasTabelas;
+};
