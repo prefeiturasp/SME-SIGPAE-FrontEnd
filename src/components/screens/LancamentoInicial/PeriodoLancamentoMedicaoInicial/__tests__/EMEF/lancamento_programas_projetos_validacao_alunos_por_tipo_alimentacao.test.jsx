@@ -60,6 +60,19 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
       .onGet("/medicao-inicial/medicao/feriados-no-mes/")
       .reply(200, { results: ["12"] });
 
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/dias-frequencia-zerada/",
+      )
+      .reply(200, {
+        alimentacoes: [],
+        dietas: {
+          "DIETA ESPECIAL - TIPO A": [],
+          "DIETA ESPECIAL - TIPO A - ENTERAL / RESTRIÇÃO DE AMINOÁCIDOS": [],
+          "DIETA ESPECIAL - TIPO B": [],
+        },
+      });
+
     const search = `?uuid=b386231a-2a77-488b-b6d5-b016987e55c2&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
     Object.defineProperty(window, "location", {
       value: {

@@ -58,6 +58,7 @@ import {
   getValoresPeriodosLancamentos,
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
+  getDiasFrequenciaZerada,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
@@ -114,6 +115,8 @@ import {
   validacoesTabelasDietas,
   validarFormulario,
   verificarMesAnteriorOuPosterior,
+  exibirTooltipPeriodosZeradosNoProgramasProjetos,
+  boqueaSalvamentoPeriodosZeradosNoProgramasProjetos,
 } from "./validacoes";
 
 export default () => {
@@ -214,6 +217,7 @@ export default () => {
   );
   const [msgModalErro, setMsgModalErro] = useState(null);
   const [previousValue, setPreviousValue] = useState(null);
+  const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -1056,6 +1060,15 @@ export default () => {
 
       setFeriadosNoMes(response_feriados_no_mes.data.results);
 
+      if (grupoMedicao === "Programas e Projetos") {
+        const response_dias = await getDiasFrequenciaZerada({
+          uuid_solicitacao: uuid,
+        });
+        if (response_dias.status === HTTP_STATUS.OK) {
+          setDiasFrequenciaZeradas(response_dias.data);
+        }
+      }
+
       await formatarDadosValoresMedicao(
         mesAnoFormatado,
         response_valores_periodos.data,
@@ -1677,6 +1690,24 @@ export default () => {
       ),
     );
     setExibirTooltip(false);
+    if (
+      valorPeriodoEscolar === "Programas e Projetos" &&
+      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+        "frequencia",
+        dia,
+        categoriasDeMedicao,
+        formValuesAtualizados,
+        diasFrequenciaZerada,
+        valorPeriodoEscolar,
+        escolaEhEMEBS(),
+        alunosTabSelecionada,
+      )
+    ) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    } else {
+      setDisableBotaoSalvarLancamentos(false);
+    }
   };
 
   const onSubmit = async (
@@ -2130,7 +2161,17 @@ export default () => {
           categoria,
           ehGrupoETECUrlParam,
           inclusoesEtecAutorizadas,
-        ))
+        )) ||
+      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+        "frequencia",
+        dia,
+        categoriasDeMedicao,
+        values,
+        diasFrequenciaZerada,
+        location.state.grupo,
+        escolaEhEMEBS(),
+        alunosTabSelecionada,
+      )
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
@@ -2923,6 +2964,9 @@ export default () => {
                                                             row,
                                                             alteracoesAlimentacaoAutorizadas,
                                                             categoriasDeMedicao,
+                                                            diasFrequenciaZerada,
+                                                            escolaEhEMEBS(),
+                                                            alunosTabSelecionada,
                                                           )
                                                             ? textoBotaoObservacao(
                                                                 formValuesAtualizados[
@@ -3037,6 +3081,16 @@ export default () => {
                                                         defaultValue={defaultValue(
                                                           column,
                                                           row,
+                                                        )}
+                                                        exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
+                                                          row.name,
+                                                          column.dia,
+                                                          categoria,
+                                                          formValuesAtualizados,
+                                                          diasFrequenciaZerada,
+                                                          location.state.grupo,
+                                                          escolaEhEMEBS(),
+                                                          alunosTabSelecionada,
                                                         )}
                                                         validate={fieldValidationsTabelasDietas(
                                                           row.name,
@@ -3165,6 +3219,9 @@ export default () => {
                                                               inclusoesEtecAutorizadas,
                                                               ehGrupoETECUrlParam,
                                                               feriadosNoMes,
+                                                              diasFrequenciaZerada,
+                                                              escolaEhEMEBS(),
+                                                              alunosTabSelecionada,
                                                             )
                                                               ? textoBotaoObservacao(
                                                                   formValuesAtualizados[
@@ -3374,6 +3431,17 @@ export default () => {
                                                             categoria,
                                                             ehGrupoETECUrlParam,
                                                             inclusoesEtecAutorizadas,
+                                                          )}
+                                                          exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
+                                                            row.name,
+                                                            column.dia,
+                                                            categoria,
+                                                            formValuesAtualizados,
+                                                            diasFrequenciaZerada,
+                                                            location.state
+                                                              .grupo,
+                                                            escolaEhEMEBS(),
+                                                            alunosTabSelecionada,
                                                           )}
                                                           ehGrupoETECUrlParam={
                                                             ehGrupoETECUrlParam
