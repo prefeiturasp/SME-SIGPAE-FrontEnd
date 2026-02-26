@@ -45,7 +45,6 @@ export default (props: Props) => {
       setSearchParams((prev) => {
         const params = new URLSearchParams(prev);
         if (uuidParametrizacao) params.set("uuid_origem", uuidParametrizacao);
-
         params.delete("uuid");
         return params;
       });

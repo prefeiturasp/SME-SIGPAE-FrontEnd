@@ -7,6 +7,7 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import { useSearchParams } from "react-router-dom";
 
 type OpcaoConflito = "manter" | "encerrar_copiar" | "encerrar_novo" | null;
 
@@ -19,6 +20,7 @@ type Props = {
 const ModalConflito = ({ conflito, setConflito, onContinuar }: Props) => {
   const [opcaoSelecionada, setOpcaoSelecionada] =
     React.useState<OpcaoConflito>(null);
+  const [searchParams] = useSearchParams();
 
   const handleContinuar = () => {
     onContinuar?.(opcaoSelecionada);
@@ -52,9 +54,11 @@ const ModalConflito = ({ conflito, setConflito, onContinuar }: Props) => {
         >
           <Radio value="manter">Manter parametrização anterior vigente.</Radio>
 
-          <Radio value="encerrar_copiar">
-            Encerrar parametrização anterior e copiar valores para a nova.
-          </Radio>
+          {!searchParams.get("uuid_origem") && (
+            <Radio value="encerrar_copiar">
+              Encerrar parametrização anterior e copiar valores para a nova.
+            </Radio>
+          )}
 
           <Radio value="encerrar_novo">
             Encerrar parametrização anterior e cadastrar novos valores.
