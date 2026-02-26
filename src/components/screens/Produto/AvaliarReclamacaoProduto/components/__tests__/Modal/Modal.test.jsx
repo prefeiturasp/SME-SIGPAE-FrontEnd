@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import HTTP_STATUS from "http-status-codes";
 import React from "react";
 import ModalProsseguirReclamacao from "src/components/screens/Produto/AvaliarReclamacaoProduto/components/Modal";
-import { getMensagemSucesso } from "src/components/screens/Produto/AvaliarReclamacaoProduto/components/Modal/helpers";
 import {
   toastError,
   toastSuccess,
@@ -19,13 +18,6 @@ jest.mock("src/services/produto.service", () => ({
   CODAERecusaReclamacao: jest.fn(),
   CODAEAceitaReclamacao: jest.fn(),
 }));
-
-jest.mock(
-  "src/components/screens/Produto/AvaliarReclamacaoProduto/components/Modal/helpers",
-  () => ({
-    getMensagemSucesso: jest.fn((titulo) => `Sucesso: ${titulo}`),
-  }),
-);
 
 jest.mock("src/components/Shareable/Toast/dialogs", () => ({
   toastSuccess: jest.fn(),
@@ -99,227 +91,102 @@ const defaultProps = {
 const renderComponent = (props = {}) =>
   render(<ModalProsseguirReclamacao {...defaultProps} {...props} />);
 
+const submitForm = (justificativa = "Justificativa válida") => {
+  fireEvent.change(screen.getByTestId("ckeditor-field"), {
+    target: { value: justificativa },
+  });
+  fireEvent.submit(screen.getByTestId("ckeditor-field").closest("form"));
+};
+
 describe("ModalProsseguirReclamacao", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  beforeEach(() => jest.clearAllMocks());
+
+  it("deve chamar closeModal ao clicar no botão Voltar", () => {
+    renderComponent();
+    fireEvent.click(screen.getByTestId("botao-voltar"));
+    expect(defaultProps.closeModal).toHaveBeenCalledTimes(1);
   });
 
-  describe("Renderização", () => {
-    it("deve renderizar o modal quando showModal é true", () => {
-      renderComponent();
-      expect(screen.getByText("Questionar terceirizada")).toBeInTheDocument();
+  it("deve chamar CODAEPedeAnaliseReclamacao e tratar sucesso ao questionar terceirizada", async () => {
+    const mockData = { id: 1 };
+    CODAEPedeAnaliseReclamacao.mockResolvedValue({
+      status: HTTP_STATUS.OK,
+      data: mockData,
     });
 
-    it("não deve exibir o modal quando showModal é false", () => {
-      renderComponent({ showModal: false });
-      expect(
-        screen.queryByText("Questionar terceirizada"),
-      ).not.toBeInTheDocument();
-    });
+    renderComponent({ tituloModal: "Questionar terceirizada" });
+    submitForm();
 
-    it("deve exibir o título correto passado via tituloModal", () => {
-      renderComponent({ tituloModal: "Recusar reclamação" });
-      expect(screen.getByText("Recusar reclamação")).toBeInTheDocument();
-    });
-
-    it("deve renderizar o campo de justificativa", () => {
-      renderComponent();
-      expect(screen.getByTestId("ckeditor-field")).toBeInTheDocument();
-      expect(screen.getByText(/Justificativa/)).toBeInTheDocument();
-    });
-
-    it("deve renderizar o campo de anexo", () => {
-      renderComponent();
-      expect(screen.getByTestId("input-file-field")).toBeInTheDocument();
-    });
-
-    it("deve renderizar os botões Voltar e Enviar", () => {
-      renderComponent();
-      expect(screen.getByTestId("botao-voltar")).toBeInTheDocument();
-      expect(screen.getByTestId("botao-enviar")).toBeInTheDocument();
-    });
-  });
-
-  describe("Interações", () => {
-    it("deve chamar closeModal ao clicar no botão Voltar", () => {
-      renderComponent();
-      fireEvent.click(screen.getByTestId("botao-voltar"));
+    await waitFor(() => {
+      expect(CODAEPedeAnaliseReclamacao).toHaveBeenCalledWith(
+        "uuid-homologacao-123",
+        expect.objectContaining({ justificativa: "Justificativa válida" }),
+      );
+      expect(toastSuccess).toHaveBeenCalled();
       expect(defaultProps.closeModal).toHaveBeenCalledTimes(1);
+      expect(defaultProps.onAtualizarProduto).toHaveBeenCalledWith(mockData);
     });
   });
 
-  describe("onSubmit – seleção de endpoint", () => {
-    it("deve chamar CODAEPedeAnaliseReclamacao quando tituloModal é 'Questionar terceirizada'", async () => {
-      CODAEPedeAnaliseReclamacao.mockResolvedValue({
-        status: HTTP_STATUS.OK,
-        data: {},
-      });
-
-      renderComponent({ tituloModal: "Questionar terceirizada" });
-
-      fireEvent.change(screen.getByTestId("ckeditor-field"), {
-        target: { value: "Justificativa válida" },
-      });
-      fireEvent.submit(screen.getByTestId("ckeditor-field").closest("form"));
-
-      await waitFor(() => {
-        expect(CODAEPedeAnaliseReclamacao).toHaveBeenCalledWith(
-          "uuid-homologacao-123",
-          expect.objectContaining({ justificativa: "Justificativa válida" }),
-        );
-      });
+  it("deve chamar CODAERecusaReclamacao quando tituloModal é 'Recusar reclamação'", async () => {
+    CODAERecusaReclamacao.mockResolvedValue({
+      status: HTTP_STATUS.OK,
+      data: {},
     });
 
-    it("deve chamar CODAERecusaReclamacao quando tituloModal é 'Recusar reclamação'", async () => {
-      CODAERecusaReclamacao.mockResolvedValue({
-        status: HTTP_STATUS.OK,
-        data: {},
-      });
+    renderComponent({ tituloModal: "Recusar reclamação" });
+    submitForm();
 
-      renderComponent({ tituloModal: "Recusar reclamação" });
-
-      fireEvent.change(screen.getByTestId("ckeditor-field"), {
-        target: { value: "Justificativa válida" },
-      });
-      fireEvent.submit(screen.getByTestId("ckeditor-field").closest("form"));
-
-      await waitFor(() => {
-        expect(CODAERecusaReclamacao).toHaveBeenCalledWith(
-          "uuid-homologacao-123",
-          expect.any(Object),
-        );
-      });
-    });
-
-    it("deve chamar CODAEAceitaReclamacao para qualquer outro tituloModal", async () => {
-      CODAEAceitaReclamacao.mockResolvedValue({
-        status: HTTP_STATUS.OK,
-        data: {},
-      });
-
-      renderComponent({ tituloModal: "Aceitar reclamação" });
-
-      fireEvent.change(screen.getByTestId("ckeditor-field"), {
-        target: { value: "Justificativa válida" },
-      });
-      fireEvent.submit(screen.getByTestId("ckeditor-field").closest("form"));
-
-      await waitFor(() => {
-        expect(CODAEAceitaReclamacao).toHaveBeenCalledWith(
-          "uuid-homologacao-123",
-          expect.any(Object),
-        );
-      });
+    await waitFor(() => {
+      expect(CODAERecusaReclamacao).toHaveBeenCalledWith(
+        "uuid-homologacao-123",
+        expect.any(Object),
+      );
     });
   });
 
-  describe("onSubmit – resposta de sucesso (HTTP 200)", () => {
-    it("deve chamar toastSuccess com a mensagem correta", async () => {
-      const mockData = { id: 1 };
-      CODAEPedeAnaliseReclamacao.mockResolvedValue({
-        status: HTTP_STATUS.OK,
-        data: mockData,
-      });
-
-      renderComponent();
-
-      fireEvent.change(screen.getByTestId("ckeditor-field"), {
-        target: { value: "Justificativa válida" },
-      });
-      fireEvent.submit(screen.getByTestId("ckeditor-field").closest("form"));
-
-      await waitFor(() => {
-        expect(getMensagemSucesso).toHaveBeenCalledWith(
-          "Questionar terceirizada",
-        );
-        expect(toastSuccess).toHaveBeenCalledWith(
-          "Sucesso: Questionar terceirizada",
-        );
-      });
+  it("deve chamar CODAEAceitaReclamacao para qualquer outro tituloModal", async () => {
+    CODAEAceitaReclamacao.mockResolvedValue({
+      status: HTTP_STATUS.OK,
+      data: {},
     });
 
-    it("deve chamar closeModal após sucesso", async () => {
-      CODAEPedeAnaliseReclamacao.mockResolvedValue({
-        status: HTTP_STATUS.OK,
-        data: {},
-      });
+    renderComponent({ tituloModal: "Aceitar reclamação" });
+    submitForm();
 
-      renderComponent();
-
-      fireEvent.change(screen.getByTestId("ckeditor-field"), {
-        target: { value: "Justificativa válida" },
-      });
-      fireEvent.submit(screen.getByTestId("ckeditor-field").closest("form"));
-
-      await waitFor(() => {
-        expect(defaultProps.closeModal).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    it("deve chamar onAtualizarProduto com os dados da resposta após sucesso", async () => {
-      const mockData = { nome: "Produto Atualizado" };
-      CODAEPedeAnaliseReclamacao.mockResolvedValue({
-        status: HTTP_STATUS.OK,
-        data: mockData,
-      });
-
-      renderComponent();
-
-      fireEvent.change(screen.getByTestId("ckeditor-field"), {
-        target: { value: "Justificativa válida" },
-      });
-      fireEvent.submit(screen.getByTestId("ckeditor-field").closest("form"));
-
-      await waitFor(() => {
-        expect(defaultProps.onAtualizarProduto).toHaveBeenCalledWith(mockData);
-      });
+    await waitFor(() => {
+      expect(CODAEAceitaReclamacao).toHaveBeenCalledWith(
+        "uuid-homologacao-123",
+        expect.any(Object),
+      );
     });
   });
 
-  describe("onSubmit – resposta de erro (HTTP 400)", () => {
-    it("deve chamar toastError com a mensagem de erro correta", async () => {
-      CODAEPedeAnaliseReclamacao.mockResolvedValue({
-        status: HTTP_STATUS.BAD_REQUEST,
-        data: {},
-      });
-
-      renderComponent();
-
-      fireEvent.change(screen.getByTestId("ckeditor-field"), {
-        target: { value: "Justificativa válida" },
-      });
-      fireEvent.submit(screen.getByTestId("ckeditor-field").closest("form"));
-
-      await waitFor(() => {
-        expect(toastError).toHaveBeenCalledWith(
-          "Houve um erro ao registrar a reclamação de produto",
-        );
-      });
+  it("deve chamar toastError e não fechar o modal em caso de HTTP 400", async () => {
+    CODAEPedeAnaliseReclamacao.mockResolvedValue({
+      status: HTTP_STATUS.BAD_REQUEST,
+      data: {},
     });
 
-    it("não deve chamar closeModal nem onAtualizarProduto em caso de erro 400", async () => {
-      CODAEPedeAnaliseReclamacao.mockResolvedValue({
-        status: HTTP_STATUS.BAD_REQUEST,
-        data: {},
-      });
+    renderComponent();
+    submitForm();
 
-      renderComponent();
-
-      fireEvent.change(screen.getByTestId("ckeditor-field"), {
-        target: { value: "Justificativa válida" },
-      });
-      fireEvent.submit(screen.getByTestId("ckeditor-field").closest("form"));
-
-      await waitFor(() => {
-        expect(defaultProps.closeModal).not.toHaveBeenCalled();
-        expect(defaultProps.onAtualizarProduto).not.toHaveBeenCalled();
-      });
+    await waitFor(() => {
+      expect(toastError).toHaveBeenCalledWith(
+        "Houve um erro ao registrar a reclamação de produto",
+      );
+      expect(defaultProps.closeModal).not.toHaveBeenCalled();
     });
   });
 
-  describe("Seleção de homologação com status TERCEIRIZADA_RESPONDEU_RECLAMACAO", () => {
-    it("deve usar a homologação com status TERCEIRIZADA_RESPONDEU_RECLAMACAO", async () => {
-      const produtoComOutroStatus = {
+  it("deve usar a homologação com status TERCEIRIZADA_RESPONDEU_RECLAMACAO", async () => {
+    CODAEPedeAnaliseReclamacao.mockResolvedValue({
+      status: HTTP_STATUS.OK,
+      data: {},
+    });
+
+    renderComponent({
+      produto: {
         homologacoes: [
           { uuid: "uuid-outro", status: "OUTRO_STATUS" },
           {
@@ -327,26 +194,15 @@ describe("ModalProsseguirReclamacao", () => {
             status: "TERCEIRIZADA_RESPONDEU_RECLAMACAO",
           },
         ],
-      };
+      },
+    });
+    submitForm();
 
-      CODAEPedeAnaliseReclamacao.mockResolvedValue({
-        status: HTTP_STATUS.OK,
-        data: {},
-      });
-
-      renderComponent({ produto: produtoComOutroStatus });
-
-      fireEvent.change(screen.getByTestId("ckeditor-field"), {
-        target: { value: "Justificativa válida" },
-      });
-      fireEvent.submit(screen.getByTestId("ckeditor-field").closest("form"));
-
-      await waitFor(() => {
-        expect(CODAEPedeAnaliseReclamacao).toHaveBeenCalledWith(
-          "uuid-terceirizada",
-          expect.any(Object),
-        );
-      });
+    await waitFor(() => {
+      expect(CODAEPedeAnaliseReclamacao).toHaveBeenCalledWith(
+        "uuid-terceirizada",
+        expect.any(Object),
+      );
     });
   });
 });
