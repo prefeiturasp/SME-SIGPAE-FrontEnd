@@ -11,8 +11,8 @@ import {
 type OpcaoConflito = "manter" | "encerrar_copiar" | "encerrar_novo" | null;
 
 type Props = {
-  conflito: boolean;
-  setConflito: (_e: boolean) => void;
+  conflito?: string;
+  setConflito: (_e: string | null) => void;
   onContinuar?: (_opcao: OpcaoConflito) => void;
 };
 
@@ -22,12 +22,12 @@ const ModalConflito = ({ conflito, setConflito, onContinuar }: Props) => {
 
   const handleContinuar = () => {
     onContinuar?.(opcaoSelecionada);
-    setConflito(false);
+    setConflito(null);
   };
 
   return (
     <Modal
-      show={conflito}
+      show={!!conflito}
       onHide={() => {
         setConflito(null);
         setOpcaoSelecionada(null);
