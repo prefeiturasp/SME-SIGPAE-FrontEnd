@@ -73,7 +73,6 @@ export default () => {
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
       const payload = formataPayload(values);
-
       const tabelasValidas = validaTabelas(payload.tabelas);
       if (!tabelasValidas) {
         toastError(

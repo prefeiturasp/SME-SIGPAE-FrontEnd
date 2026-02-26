@@ -218,7 +218,8 @@ export const limparTabelas = (tabelas: Record<string, any>) => {
 
       novasTabelas[categoria][item] = Object.keys(linha).reduce(
         (acc, key) => {
-          if (key === "tipo_alimentacao") acc[key] = linha[key];
+          if (key === "tipo_alimentacao" || key === "faixa_etaria")
+            acc[key] = linha[key];
           else acc[key] = "";
           return acc;
         },
