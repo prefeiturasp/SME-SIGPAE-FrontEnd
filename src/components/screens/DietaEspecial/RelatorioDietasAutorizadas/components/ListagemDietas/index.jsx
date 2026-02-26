@@ -95,12 +95,16 @@ export const ListagemDietas = ({ ...props }) => {
                         .map((a) => a.nome)
                         .join("; ")
                     : (dietaEspecial.protocolo_padrao &&
-                        dietaEspecial.protocolo_padrao.nome) ||
+                        dietaEspecial.protocolo_padrao.nome_protocolo) ||
                       dietaEspecial.nome_protocolo}
                 </div>
                 {values.status_selecionado === "AUTORIZADAS" &&
                   !usuarioEhEmpresaTerceirizada() && (
-                    <div>{dietaEspecial.protocolo_padrao.nome_protocolo}</div>
+                    <div>
+                      {(dietaEspecial.protocolo_padrao &&
+                        dietaEspecial.protocolo_padrao.nome_protocolo) ||
+                        dietaEspecial.nome_protocolo}
+                    </div>
                   )}
                 {values.status_selecionado === "CANCELADAS" && (
                   <div>{dietaEspecial.data_ultimo_log}</div>
