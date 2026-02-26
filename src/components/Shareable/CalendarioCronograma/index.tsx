@@ -16,6 +16,7 @@ import { EtapaCalendario } from "src/interfaces/pre_recebimento.interface";
 import { ResponseCalendarioCronograma } from "src/interfaces/responses.interface";
 import { getInterrupcoesProgramadas } from "src/services/cronograma.service";
 import ModalCadastrarInterrupcao from "./componentes/ModalCadastrarInterrupcao";
+import ModalDetalheInterrupcao from "./componentes/ModalDetalheInterrupcao";
 import { usuarioEhCronogramaOuCodae } from "../../../helpers/utilities";
 
 interface Props {
@@ -54,7 +55,12 @@ export const CalendarioCronograma: React.FC<Props> = ({
   const [ano, setAno] = useState<number>(moment().year());
 
   const [exibirModalInterrupcao, setExibirModalInterrupcao] = useState(false);
+  const [exibirModalDetalheInterrupcao, setExibirModalDetalheInterrupcao] =
+    useState(false);
   const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
+  const [interrupcaoSelecionada, setInterrupcaoSelecionada] = useState<
+    ItemCalendarioInterrupcao | undefined
+  >(undefined);
 
   useEffect(() => {
     carregarObjetosAsync({ mes, ano });
@@ -106,6 +112,8 @@ export const CalendarioCronograma: React.FC<Props> = ({
 
   const handleSelecionarEvento = (evento: EventoCalendario) => {
     if ("isInterrupcao" in evento && evento.isInterrupcao) {
+      setInterrupcaoSelecionada(evento as ItemCalendarioInterrupcao);
+      setExibirModalDetalheInterrupcao(true);
       return;
     }
     setEventoAtual(evento as ItemCalendario<EtapaCalendario>);
@@ -223,6 +231,14 @@ export const CalendarioCronograma: React.FC<Props> = ({
                   closeModal={() => setExibirModalInterrupcao(false)}
                   dataSelecionada={dataSelecionada}
                   onSave={() => carregarObjetosAsync({ mes, ano })}
+                />
+              )}
+              {exibirModalDetalheInterrupcao && interrupcaoSelecionada && (
+                <ModalDetalheInterrupcao
+                  showModal={exibirModalDetalheInterrupcao}
+                  closeModal={() => setExibirModalDetalheInterrupcao(false)}
+                  evento={interrupcaoSelecionada}
+                  onDelete={() => carregarObjetosAsync({ mes, ano })}
                 />
               )}
             </>
