@@ -31,7 +31,7 @@ type Props = {
   setFaixasEtarias: Dispatch<SetStateAction<Array<any>>>;
   setTiposAlimentacao: Dispatch<SetStateAction<Array<any>>>;
   setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
-  uuidParametrizacao: string;
+  uuidParametrizacao: string | null;
   form: FormApi<any, any>;
 };
 

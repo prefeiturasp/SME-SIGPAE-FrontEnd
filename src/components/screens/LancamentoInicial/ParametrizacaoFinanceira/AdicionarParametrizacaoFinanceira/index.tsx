@@ -14,7 +14,10 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
-import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import {
+  ParametrizacaoFinanceiraPayload,
+  TabelaParametrizacao,
+} from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import TabelasGrupoCEI from "./components/Tabelas/TabelasGrupoCEI";
 import TabelasGruposEMEI from "./components/Tabelas/TabelasGruposEMEI";
 import TabelasGrupoCEMEI from "./components/Tabelas/TabelasGrupoCEMEI";
@@ -60,9 +63,25 @@ export default () => {
   const uuidNovaParametrizacao = searchParams.get("nova_uuid");
   const uuidOrigem = searchParams.get("uuid_origem");
 
+  const validaTabelas = (tabelas: TabelaParametrizacao[] | object): boolean => {
+    if (!tabelas) return false;
+    if (Array.isArray(tabelas)) {
+      return tabelas.every((tabela) => tabela.valores.length > 0);
+    }
+  };
+
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
       const payload = formataPayload(values);
+
+      const tabelasValidas = validaTabelas(payload.tabelas);
+      if (!tabelasValidas) {
+        toastError(
+          "Não foi possível finalizar a parametrização. Verifique se todos os campos da tabela foram preenchidos",
+        );
+        return;
+      }
+
       if (!uuidParametrizacao && !uuidNovaParametrizacao) {
         await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(
           payload,
@@ -144,8 +163,11 @@ export default () => {
               );
               if (dataInicial) dataInicial.setHours(0, 0, 0, 0);
 
-              const bloqueiaEdicao =
-                uuidParametrizacao && dataInicial && dataInicial <= hoje;
+              const bloqueiaEdicao = !!(
+                uuidParametrizacao &&
+                dataInicial &&
+                dataInicial <= hoje
+              );
 
               const TABELAS_POR_GRUPO: Record<string, React.ReactNode> = {
                 "grupo 1": (
