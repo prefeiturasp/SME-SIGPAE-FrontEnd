@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import { Field, FormSpy } from "react-final-form";
 import { FormApi } from "final-form";
 import { required } from "src/helpers/fieldValidators";
@@ -11,31 +11,17 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import {
-  ParametrizacaoFinanceiraPayload,
-  FaixaEtaria,
-} from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import ModalConflito from "../ModalConflito";
-import {
-  toastSuccess,
-  toastError,
-} from "src/components/Shareable/Toast/dialogs";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
-import { carregarValores } from "../../helpers";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { useSearchParams } from "react-router-dom";
 import ModalCopiar from "../ModalCopiar";
 
 type Cadastro = {
-  setGrupoSelecionado: Dispatch<SetStateAction<string>>;
-  setEditalSelecionado: Dispatch<SetStateAction<string>>;
-  setLoteSelecionado: Dispatch<SetStateAction<string>>;
-  setFaixasEtarias: Dispatch<SetStateAction<Array<FaixaEtaria>>>;
-  setTiposAlimentacao: Dispatch<SetStateAction<Array<any>>>;
-  setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
   setCarregarTabelas: Dispatch<SetStateAction<boolean>>;
   form: FormApi<any, any>;
   uuidParametrizacao: string | null;
   ehCadastro: true;
+  view: ReturnType<typeof useView>;
 };
 
 type Filtro = {
@@ -46,93 +32,14 @@ type Props = Cadastro | Filtro;
 
 export default (props: Props) => {
   const ehCadastro = props.ehCadastro;
-  const setGrupoSelecionado = props.ehCadastro && props.setGrupoSelecionado;
-  const setEditalSelecionado = props.ehCadastro && props.setEditalSelecionado;
-  const setLoteSelecionado = props.ehCadastro && props.setLoteSelecionado;
-  const setFaixasEtarias = props.ehCadastro && props.setFaixasEtarias;
-  const setTiposAlimentacao = props.ehCadastro && props.setTiposAlimentacao;
-  const setParametrizacao = props.ehCadastro && props.setParametrizacao;
+
   const setCarregarTabelas = props.ehCadastro && props.setCarregarTabelas;
   const form = props.ehCadastro && props.form;
   const uuidParametrizacao = props.ehCadastro && props.uuidParametrizacao;
-  const navigate = useNavigate();
+  const view = props.ehCadastro && props.view;
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const view = useView({
-    setGrupoSelecionado,
-    setEditalSelecionado,
-    setLoteSelecionado,
-    setFaixasEtarias,
-    setTiposAlimentacao,
-    setParametrizacao,
-    uuidParametrizacao,
-    form,
-  });
-
-  const [parametrizacaoConflito, setParametrizacaoConflito] = useState(null);
   const [showCopiar, setShowCopiar] = useState(false);
-
-  const insereParametros = (novos: Record<string, string>) => {
-    setSearchParams((prev) => {
-      const params = new URLSearchParams(prev);
-      Object.entries(novos).forEach(([key, value]) => params.set(key, value));
-      return params;
-    });
-  };
-
-  const onChangeConflito = async (opcao: string) => {
-    try {
-      if (opcao === "manter") {
-        toastSuccess("Parametrização Financeira mantida com sucesso!");
-        navigate(-1);
-      } else if (opcao === "encerrar_copiar") {
-        const { data_inicial, data_final, ...rest } = form.getState().values;
-
-        const response =
-          await ParametrizacaoFinanceiraService.cloneParametrizacaoFinanceira(
-            parametrizacaoConflito,
-            {
-              data_inicial: data_inicial,
-              data_final: data_final,
-              ...rest,
-            },
-          );
-
-        if (response.uuid) {
-          form.change(
-            "tabelas",
-            carregarValores(
-              response.tabelas,
-              response.grupo_unidade_escolar.nome,
-            ),
-          );
-          form.change("data_inicial", moment().format("DD/MM/YYYY"));
-          form.change("data_final", null);
-          insereParametros({
-            nova_uuid: response.uuid,
-            fluxo: "encerrar_copiar",
-          });
-          setParametrizacaoConflito(null);
-        } else
-          toastError(
-            "Erro ao encerrar e criar nova parametrização financeira.",
-          );
-      } else if (opcao === "encerrar_novo") {
-        form.change("data_inicial", moment().format("DD/MM/YYYY"));
-        form.change("data_final", null);
-        await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
-          parametrizacaoConflito,
-          { data_final: moment().subtract(1, "day").format("YYYY-MM-DD") },
-        );
-        insereParametros({
-          fluxo: "encerrar_novo",
-        });
-        setParametrizacaoConflito(null);
-      }
-    } catch {
-      toastError("Ocorreu um erro inesperado");
-    }
-  };
 
   const onChangeCopiar = async () => {
     try {
@@ -160,12 +67,12 @@ export default (props: Props) => {
                 name="edital"
                 label="Nº do Edital"
                 naoDesabilitarPrimeiraOpcao
-                options={view.editais}
+                options={view?.editais}
                 validate={ehCadastro && required}
                 required={ehCadastro}
                 disabled={uuidParametrizacao}
                 onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
-                  if (form) view.onChangeEdital(e.target.value);
+                  if (form) view?.onChangeEdital(e.target.value);
                 }}
               />
             </div>
@@ -176,12 +83,12 @@ export default (props: Props) => {
                 name="lote"
                 label="Lote e DRE"
                 naoDesabilitarPrimeiraOpcao
-                options={view.lotes}
+                options={view?.lotes}
                 validate={ehCadastro && required}
                 required={ehCadastro}
                 disabled={uuidParametrizacao}
                 onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
-                  if (form) view.onChangeLote(e.target.value);
+                  if (form) view?.onChangeLote(e.target.value);
                 }}
               />
             </div>
@@ -192,11 +99,11 @@ export default (props: Props) => {
                 name="grupo_unidade_escolar"
                 label="Tipo de Unidade"
                 naoDesabilitarPrimeiraOpcao
-                options={view.gruposUnidadesOpcoes}
+                options={view?.gruposUnidadesOpcoes}
                 validate={ehCadastro && required}
                 required={ehCadastro}
                 onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
-                  if (form) view.onChangeTiposUnidades(e.target.value);
+                  if (form) view?.onChangeTiposUnidades(e.target.value);
                 }}
                 disabled={uuidParametrizacao}
               />
@@ -258,8 +165,7 @@ export default (props: Props) => {
                     if (uuidParametrizacao) {
                       setShowCopiar(true);
                     } else {
-                      if (form)
-                        view.getGruposPendentes(setParametrizacaoConflito);
+                      if (form) view?.getGruposPendentes();
                       setCarregarTabelas(true);
                     }
                   }}
@@ -270,9 +176,9 @@ export default (props: Props) => {
         )}
       </FormSpy>
       <ModalConflito
-        conflito={!!parametrizacaoConflito}
-        setConflito={setParametrizacaoConflito}
-        onContinuar={onChangeConflito}
+        conflito={view?.parametrizacaoConflito}
+        setConflito={view?.setParametrizacaoConflito}
+        onContinuar={view?.onChangeConflito}
       />
       <ModalCopiar
         showModal={showCopiar}
