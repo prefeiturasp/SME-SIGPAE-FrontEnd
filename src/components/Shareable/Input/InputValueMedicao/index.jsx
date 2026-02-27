@@ -360,7 +360,10 @@ export const InputText = (props) => {
             "Não há apontamento de estudantes nos demais períodos. Justifique a frequência nos Programas e Projetos."
           }
         >
-          <i className="fas fa-info icone-info-warning" />
+          <i
+            data-testid="icone-tooltip-warning"
+            className="fas fa-info icone-info-warning"
+          />
         </Tooltip>
       )}
 
