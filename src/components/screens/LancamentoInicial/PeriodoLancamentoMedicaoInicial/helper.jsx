@@ -1429,3 +1429,15 @@ export const ehGrupoRecreioNasFerias = (grupoRecreio) => {
   const grupos = ["Recreio nas Férias", "Colaboradores"];
   return grupos.includes(grupoRecreio);
 };
+
+export const existeAlteracaoRPL = (alteracoesAlimentacaoAutorizadas, dia) =>
+  alteracoesAlimentacaoAutorizadas &&
+  alteracoesAlimentacaoAutorizadas.some(
+    (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL"),
+  );
+
+export const existeAlteracaoLPR = (alteracoesAlimentacaoAutorizadas, dia) =>
+  alteracoesAlimentacaoAutorizadas &&
+  alteracoesAlimentacaoAutorizadas.some(
+    (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("LPR"),
+  );
