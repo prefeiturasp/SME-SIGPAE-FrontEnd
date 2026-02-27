@@ -462,4 +462,60 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       ),
     ).toBe(true);
   });
+
+  it("carrega dados pré-existentes de rascunho FLV", async () => {
+    const mockFichaTecnicaFLV = {
+      ...mockFichaTecnica,
+      uuid: "ficha-flv-uuid-123",
+      categoria: "FLV",
+      tipo_entrega: "PONTO_A_PONTO",
+      especie_variedade: "Alface X",
+    };
+
+    mock
+      .onGet(`/ficha-tecnica/${mockFichaTecnicaFLV.uuid}/`)
+      .reply(200, mockFichaTecnicaFLV);
+
+    mock.onGet(mockFichaTecnicaFLV.arquivo).reply(200, new Blob());
+
+    const search = `?uuid=${mockFichaTecnicaFLV.uuid}`;
+    Object.defineProperty(window, "location", {
+      value: {
+        search: search,
+      },
+    });
+
+    await setup();
+
+    expect(screen.getByText(/Informações Nutricionais/i)).toBeInTheDocument();
+
+    expect(
+      mock.history.get.some((call) =>
+        call.url.includes(`/ficha-tecnica/${mockFichaTecnicaFLV.uuid}/`),
+      ),
+    ).toBe(true);
+
+    await waitFor(() => {
+      const selectCategoria = screen
+        .getByTestId("categoria")
+        .querySelector("select");
+      expect(selectCategoria).toHaveValue("FLV");
+    });
+
+    await waitFor(() => {
+      const selectTipoEntrega = screen
+        .getByTestId("tipo_entrega")
+        .querySelector("select");
+      expect(selectTipoEntrega).toHaveValue("PONTO_A_PONTO");
+    });
+
+    await waitFor(() => {
+      const inputEspecieVariedade = screen.getByTestId("especie_variedade");
+      expect(inputEspecieVariedade).toHaveValue("Alface X");
+    });
+
+    expect(screen.queryByTestId("componentes_produto")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("gluten-nao")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("alergenicos-nao")).not.toBeInTheDocument();
+  });
 });

@@ -14,7 +14,10 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
-import { ParametrizacaoFinanceiraPayload } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import {
+  ParametrizacaoFinanceiraPayload,
+  TabelaParametrizacao,
+} from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import TabelasGrupoCEI from "./components/Tabelas/TabelasGrupoCEI";
 import TabelasGruposEMEI from "./components/Tabelas/TabelasGruposEMEI";
 import TabelasGrupoCEMEI from "./components/Tabelas/TabelasGrupoCEMEI";
@@ -24,6 +27,11 @@ import TabelasGrupoCIEJA from "./components/Tabelas/TabelasGrupoCIEJA";
 import ModalCancelar from "./components/ModalCancelar";
 import ModalSalvar from "./components/ModalSalvar";
 import { formataPayload, parseDate } from "./helpers";
+import useView from "./components/Filtros/view";
+import {
+  MEDICAO_INICIAL,
+  PARAMETRIZACAO_FINANCEIRA,
+} from "src/configs/constants";
 
 const VALORES_INICIAIS: ParametrizacaoFinanceiraPayload = {
   edital: null,
@@ -55,9 +63,24 @@ export default () => {
   const uuidNovaParametrizacao = searchParams.get("nova_uuid");
   const uuidOrigem = searchParams.get("uuid_origem");
 
+  const validaTabelas = (tabelas: TabelaParametrizacao[] | object): boolean => {
+    if (!tabelas) return false;
+    if (Array.isArray(tabelas)) {
+      return tabelas.every((tabela) => tabela.valores.length > 0);
+    }
+  };
+
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
       const payload = formataPayload(values);
+      const tabelasValidas = validaTabelas(payload.tabelas);
+      if (!tabelasValidas) {
+        toastError(
+          "Não foi possível finalizar a parametrização. Verifique se todos os campos da tabela foram preenchidos",
+        );
+        return;
+      }
+
       if (!uuidParametrizacao && !uuidNovaParametrizacao) {
         await ParametrizacaoFinanceiraService.addParametrizacaoFinanceira(
           payload,
@@ -96,7 +119,7 @@ export default () => {
         await ParametrizacaoFinanceiraService.deleteParametrizacaoFinanceira(
           uuidNovaParametrizacao,
         );
-      navigate(-1);
+      navigate(`/${MEDICAO_INICIAL}/${PARAMETRIZACAO_FINANCEIRA}/`);
     } catch {
       toastError("Ocorreu um erro inesperado ao cancelar a parametrização.");
     }
@@ -111,6 +134,18 @@ export default () => {
             initialValues={parametrizacao}
             destroyOnUnregister
             render={({ form, handleSubmit, submitting }) => {
+              const view = useView({
+                setGrupoSelecionado,
+                setEditalSelecionado,
+                setLoteSelecionado,
+                setFaixasEtarias,
+                setTiposAlimentacao,
+                setParametrizacao,
+                uuidParametrizacao:
+                  uuidParametrizacao || uuidNovaParametrizacao || uuidOrigem,
+                form,
+              });
+
               const grupo = grupoSelecionado.toLowerCase();
               const tabelasCarregadas = !!(
                 carregarTabelas ||
@@ -127,8 +162,11 @@ export default () => {
               );
               if (dataInicial) dataInicial.setHours(0, 0, 0, 0);
 
-              const bloqueiaEdicao =
-                uuidParametrizacao && dataInicial && dataInicial <= hoje;
+              const bloqueiaEdicao = !!(
+                uuidParametrizacao &&
+                dataInicial &&
+                dataInicial <= hoje
+              );
 
               const TABELAS_POR_GRUPO: Record<string, React.ReactNode> = {
                 "grupo 1": (
@@ -185,17 +223,12 @@ export default () => {
               return (
                 <form onSubmit={handleSubmit}>
                   <Filtros
-                    setGrupoSelecionado={setGrupoSelecionado}
-                    setEditalSelecionado={setEditalSelecionado}
-                    setLoteSelecionado={setLoteSelecionado}
-                    setFaixasEtarias={setFaixasEtarias}
-                    setTiposAlimentacao={setTiposAlimentacao}
-                    setParametrizacao={setParametrizacao}
                     setCarregarTabelas={setCarregarTabelas}
                     form={form}
                     uuidParametrizacao={
                       uuidParametrizacao || uuidNovaParametrizacao
                     }
+                    view={view}
                     ehCadastro
                   />
 
@@ -237,10 +270,15 @@ export default () => {
                       style={BUTTON_STYLE.GREEN}
                       type={BUTTON_TYPE.BUTTON}
                       disabled={submitting}
-                      onClick={() => setShowModalSalvar(true)}
+                      onClick={() => {
+                        if (uuidOrigem) {
+                          view.getGruposPendentes(false).then((conflito) => {
+                            if (!conflito) setShowModalSalvar(true);
+                          });
+                        } else setShowModalSalvar(true);
+                      }}
                     />
                   </div>
-
                   <ModalSalvar
                     showModal={showModalSalvar}
                     setShowModal={setShowModalSalvar}

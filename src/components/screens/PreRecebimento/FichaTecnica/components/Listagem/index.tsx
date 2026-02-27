@@ -116,11 +116,15 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
         </div>
 
         {objetos.map((objeto) => {
+          const classNameVerde = objeto.flv_ponto_a_ponto ? "green" : "";
+
           return (
             <>
               <div key={objeto.uuid} className="grid-table body-table">
-                <div>{objeto.numero}</div>
-                <div className="d-flex align-items-center justify-content-between">
+                <div className={classNameVerde}>{objeto.numero}</div>
+                <div
+                  className={`d-flex align-items-center justify-content-between ${classNameVerde}`}
+                >
                   <Tooltip
                     color="#42474a"
                     overlayStyle={{
@@ -134,9 +138,13 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
                   </Tooltip>
                   {objeto.programa === "LEVE_LEITE" && <TagLeveLeite />}
                 </div>
-                <div>{objeto.pregao_chamada_publica}</div>
-                <div>{objeto.criado_em}</div>
-                <div>{renderizarStatus(objeto.status)}</div>
+                <div className={classNameVerde}>
+                  {objeto.pregao_chamada_publica}
+                </div>
+                <div className={classNameVerde}>{objeto.criado_em}</div>
+                <div className={classNameVerde}>
+                  {renderizarStatus(objeto.status)}
+                </div>
                 <div className="p-0">{renderizarAcoes(objeto)}</div>
               </div>
             </>

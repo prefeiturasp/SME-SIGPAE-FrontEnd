@@ -172,6 +172,7 @@ export interface FichaTecnica {
   criado_em: string;
   status: string;
   programa: ProgramaChoices;
+  flv_ponto_a_ponto: boolean;
 }
 
 export interface InformacoesNutricionaisFichaTecnica {
@@ -200,6 +201,7 @@ export interface FichaTecnicaDetalhada {
   numero_registro: string;
   organico: boolean;
   mecanismo_controle: MecanismoControleChoices;
+  especie_variedade: string;
   componentes_produto: string;
   alergenicos: boolean;
   ingredientes_alergenicos: string;

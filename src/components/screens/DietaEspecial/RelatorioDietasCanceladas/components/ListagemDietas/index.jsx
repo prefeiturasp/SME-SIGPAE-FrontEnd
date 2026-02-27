@@ -37,7 +37,7 @@ export const ListagemDietas = ({ ...props }) => {
       setDietasEspeciais(response.data);
     } else {
       toastError(
-        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde."
+        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde.",
       );
     }
     setLoadingDietas(false);
@@ -82,7 +82,7 @@ export const ListagemDietas = ({ ...props }) => {
                         .map((a) => a.nome)
                         .join("; ")
                     : (dietaEspecial.protocolo_padrao &&
-                        dietaEspecial.protocolo_padrao.nome) ||
+                        dietaEspecial.protocolo_padrao.nome_protocolo) ||
                       dietaEspecial.nome_protocolo}
                 </div>
                 {values.status_selecionado === "CANCELADAS" && (

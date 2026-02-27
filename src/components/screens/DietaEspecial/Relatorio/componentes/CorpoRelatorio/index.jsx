@@ -349,11 +349,11 @@ const CorpoRelatorio = ({
     )
       ? ""
       : dietaEspecial.classificacao.nome;
-    dietaEspecial.nome_protocolo_padrao = [undefined, null].includes(
-      dietaEspecial.nome_protocolo,
-    )
-      ? ""
-      : dietaEspecial.nome_protocolo;
+    dietaEspecial.nome_protocolo_padrao =
+      (dietaEspecial.protocolo_padrao &&
+        dietaEspecial.protocolo_padrao.nome_protocolo) ||
+      dietaEspecial.nome_protocolo ||
+      "";
     dietaEspecial.data_inicio = [undefined, null].includes(
       dietaEspecial.data_inicio,
     )
