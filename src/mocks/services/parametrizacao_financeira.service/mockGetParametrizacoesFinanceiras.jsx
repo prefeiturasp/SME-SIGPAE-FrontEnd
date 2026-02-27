@@ -60,5 +60,38 @@ export const mockParametrizacoesFinanceiras = {
       legenda:
         "Fonte: Relatório de Medição Inicial do Serviço de Alimentação e Nutrição Escolar realizada pela direção das unidades educacionais, conforme disposto no edital Pregão XXX/XXX e nas Portarias Intersecretariais SMG/SME n° 005/2006 e 001/2008.",
     },
+    {
+      uuid: "8dfda8c1-a82d-4e04-beda-c271c254fde5",
+      edital: {
+        uuid: "752c11a3-b4fe-4f1c-b9af-61d42f0a6b56",
+        numero: "1",
+      },
+      lote: {
+        uuid: "4e72e8e5-f0d3-4315-998e-2dfc7b8fff45",
+        nome: "04",
+      },
+      grupo_unidade_escolar: {
+        tipos_unidades: [
+          {
+            uuid: "de8dab55-687f-46ce-8cf2-21381ccd6629",
+            iniciais: "CCI",
+          },
+          {
+            uuid: "1f43b785-006e-41ba-87db-8e44a5fc1ed0",
+            iniciais: "CEI",
+          },
+          {
+            uuid: "e16d9c35-767a-4e5b-928f-56b8a4d0dd52",
+            iniciais: "CEI CEU",
+          },
+        ],
+        nome: "Grupo 1",
+        uuid: "550e8400-e29b-41d4-a716-446655440000",
+      },
+      data_inicial: "20/02/2026",
+      data_final: "31/03/2026",
+      legenda:
+        "Fonte: Relatório de Medição Inicial do Serviço de Alimentação e Nutrição Escolar realizada pela direção das unidades educacionais, conforme disposto no edital Pregão XXX/XXX e nas Portarias Intersecretariais SMG/SME n° 005/2006 e 001/2008.",
+    },
   ],
 };
