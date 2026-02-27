@@ -391,6 +391,7 @@ export const InputText = (props) => {
             exibeTooltipRepeticaoDiasSobremesaDoceDiferenteZero ||
             exibeTooltipDietasInclusaoDiaNaoLetivoCEI ||
             exibeTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI ||
+            exibirTooltipPeriodosZeradosNoProgramasProjetos ||
             exibeTooltipSuspensoesAutorizadasCEI)
             ? "border-warning"
             : ""
