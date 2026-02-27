@@ -13,6 +13,7 @@ type Props = {
   tipoTurma?: string;
   pendencias: string[];
   temaTag?: string;
+  bloqueiaEdicao?: boolean;
 };
 
 interface RecordItem {
@@ -26,6 +27,7 @@ export default ({
   tipoTurma,
   pendencias,
   temaTag = "",
+  bloqueiaEdicao,
 }: Props) => {
   const alimentacoes = tiposAlimentacao.map((t) => ({ ...t }));
 
@@ -136,6 +138,7 @@ export default ({
                     "valor_unitario",
                   )
                 }
+                disabled={bloqueiaEdicao}
               />
             )}
           />
@@ -159,6 +162,7 @@ export default ({
                     "valor_unitario_reajuste",
                   )
                 }
+                disabled={bloqueiaEdicao}
               />
             )}
           />

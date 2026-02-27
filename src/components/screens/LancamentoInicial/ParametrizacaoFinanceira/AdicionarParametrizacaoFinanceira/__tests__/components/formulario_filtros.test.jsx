@@ -7,15 +7,23 @@ import Filtros from "../../components/Filtros";
 import { Form } from "react-final-form";
 
 describe("Testes comportamento componente de Filtros - Parametrização Financeira", () => {
+  const mockView = {
+    editais: [],
+    lotes: [],
+    gruposUnidadesOpcoes: [],
+    parametrizacaoConflito: null,
+    setParametrizacaoConflito: jest.fn(),
+    onChangeConflito: jest.fn(),
+    onChangeEdital: jest.fn(),
+    onChangeLote: jest.fn(),
+    onChangeTiposUnidades: jest.fn(),
+    getGruposPendentes: jest.fn(),
+  };
+
   const setup = async (props) => {
     await act(async () => {
       render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
+        <MemoryRouter>
           <MeusDadosContext.Provider
             value={{
               meusDados: mockMeusDadosSuperUsuarioMedicao,
@@ -27,12 +35,9 @@ describe("Testes comportamento componente de Filtros - Parametrização Financei
               render={({ form }) => (
                 <Filtros
                   ehCadastro={props.ehCadastro}
-                  setGrupoSelecionado={props.setGrupoSelecionado}
-                  setEditalSelecionado={props.setEditalSelecionado}
-                  setLoteSelecionado={props.setLoteSelecionado}
-                  setFaixasEtarias={props.setFaixasEtarias}
-                  setParametrizacao={props.setParametrizacao}
-                  uuidParametrizacao={props.uuidParametrizacao}
+                  setCarregarTabelas={jest.fn()}
+                  uuidParametrizacao={props.uuidParametrizacao ?? null}
+                  view={mockView}
                   form={form}
                 />
               )}
@@ -46,11 +51,6 @@ describe("Testes comportamento componente de Filtros - Parametrização Financei
   it("verifica se o componente e seus campos foram renderizados", async () => {
     await setup({
       ehCadastro: true,
-      setGrupoSelecionado: jest.fn(),
-      setEditalSelecionado: jest.fn(),
-      setLoteSelecionado: jest.fn(),
-      setFaixasEtarias: jest.fn(),
-      setParametrizacao: jest.fn(),
       uuidParametrizacao: null,
     });
 

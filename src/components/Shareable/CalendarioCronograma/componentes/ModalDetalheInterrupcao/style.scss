@@ -1,0 +1,43 @@
+.modal-detalhe-interrupcao {
+  .modal-dialog {
+    max-width: 600px;
+  }
+
+  .modal-title {
+    color: #42474a;
+    font-weight: 500;
+    font-size: 1.5rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .info-row {
+    font-size: 14px;
+    color: #42474a;
+
+    .label {
+      font-weight: 600;
+    }
+
+    .value {
+      font-weight: 400;
+
+      &.date {
+        color: #198459;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 1rem;
+    gap: 0.75rem;
+
+    button {
+      min-width: 100px;
+    }
+  }
+}

@@ -56,6 +56,8 @@ export const InputText = (props) => {
     exibeTooltipInclusoesAutorizadasComZero,
     exibeTooltipDietasInclusaoDiaNaoLetivoCEI,
     inputOnChange,
+    exibeTooltipFrequenciaAlimentacaoZero,
+    exibirTooltipPeriodosZeradosNoProgramasProjetos,
   } = props;
 
   const inputProps = {
@@ -167,6 +169,15 @@ export const InputText = (props) => {
         <Tooltip
           title={
             "Há autorização de RPL para essa data. Justifique o apontamento de refeição."
+          }
+        >
+          <i className="fas fa-info icone-info-warning" />
+        </Tooltip>
+      )}
+      {exibeTooltipFrequenciaAlimentacaoZero && (
+        <Tooltip
+          title={
+            "Não há apontamento no campo de alimentação. Justifique a frequência de estudantes com dietas especiais autorizadas."
           }
         >
           <i className="fas fa-info icone-info-warning" />
@@ -343,6 +354,15 @@ export const InputText = (props) => {
           <i className="fas fa-info icone-info-success" />
         </Tooltip>
       )}
+      {exibirTooltipPeriodosZeradosNoProgramasProjetos && (
+        <Tooltip
+          title={
+            "Não há apontamento de estudantes nos demais períodos. Justifique a frequência nos Programas e Projetos."
+          }
+        >
+          <i className="fas fa-info icone-info-warning" />
+        </Tooltip>
+      )}
 
       <input
         {...input}
@@ -354,6 +374,7 @@ export const InputText = (props) => {
         } ${
           !meta.error &&
           (exibirTooltipAlimentacoesAutorizadasDiaNaoLetivo() ||
+            exibeTooltipFrequenciaAlimentacaoZero ||
             exibeTooltipErroQtdMaiorQueAutorizado ||
             exibeTooltipSuspensoesAutorizadas ||
             exibeTooltipRPLAutorizadas ||

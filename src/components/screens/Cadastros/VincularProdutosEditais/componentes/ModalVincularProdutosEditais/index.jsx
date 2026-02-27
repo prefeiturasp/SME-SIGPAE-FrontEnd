@@ -28,7 +28,13 @@ import { EDITAIS_INVALIDOS } from "src/helpers/gestaoDeProdutos";
 
 import "./style.scss";
 
-export default ({ closeModal, showModal, listaEditais, opcoesTipos }) => {
+export default ({
+  closeModal,
+  showModal,
+  listaEditais,
+  listaEditaisDestino,
+  opcoesTipos,
+}) => {
   const [carregando, setCarregando] = useState(false);
   const [desabilitarCampos, setDesabilitarCampos] = useState(true);
   const [loadingProdutos, setLoadingProdutos] = useState(false);
@@ -172,7 +178,7 @@ export default ({ closeModal, showModal, listaEditais, opcoesTipos }) => {
       setCarregando(true);
       setEditalOrigem(changes.values["edital_origem"]);
       setTipoProdEditalOrigem(changes.values["tipo_produto_edital_origem"]);
-      let opcoesDestino = listaEditais
+      let opcoesDestino = listaEditaisDestino
         .filter(
           (edital) =>
             !changes.values["edital_origem"].includes(edital.uuid) &&

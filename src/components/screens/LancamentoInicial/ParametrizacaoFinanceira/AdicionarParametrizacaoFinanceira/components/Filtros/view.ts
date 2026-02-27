@@ -1,9 +1,12 @@
-import { useEffect, useState, Dispatch, SetStateAction } from "react";
+import { useEffect, useState, Dispatch, SetStateAction, useRef } from "react";
 import { getNumerosEditais } from "src/services/edital.service";
 import { getLotesSimples } from "src/services/lote.service";
 import { getGrupoUnidadeEscolar } from "src/services/escola.service";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   ParametrizacaoFinanceiraPayload,
   GrupoUnidadeEscolar,
@@ -12,8 +15,14 @@ import {
 import { SelectOption } from "src/interfaces/option.interface";
 import { FormApi } from "final-form";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
-import { carregarValores, parseDate } from "../../helpers";
+import { carregarValores, limparTabelas, parseDate } from "../../helpers";
 import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
+import moment from "moment";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  MEDICAO_INICIAL,
+  PARAMETRIZACAO_FINANCEIRA,
+} from "src/configs/constants";
 
 type Props = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
@@ -22,7 +31,7 @@ type Props = {
   setFaixasEtarias: Dispatch<SetStateAction<Array<any>>>;
   setTiposAlimentacao: Dispatch<SetStateAction<Array<any>>>;
   setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
-  uuidParametrizacao: string;
+  uuidParametrizacao: string | null;
   form: FormApi<any, any>;
 };
 
@@ -42,7 +51,13 @@ export default ({
     SelectOption[]
   >([]);
   const [tiposUnidades, setTiposUnidades] = useState<any[]>([]);
-  const [carregando, setCarregando] = useState(true);
+  const [carregando, setCarregando] = useState<boolean>(true);
+  const [parametrizacaoConflito, setParametrizacaoConflito] = useState<
+    string | null
+  >(null);
+
+  const [, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const getEditaisAsync = async () => {
     try {
@@ -182,24 +197,17 @@ export default ({
     requisicoesPreRender();
   }, []);
 
-  const initialEdital = uuidParametrizacao && form.getState().values?.edital;
   const onChangeEdital = (edital: string) => {
     form.change("edital", edital);
     setEditalSelecionado(editais.find((e) => e.uuid === edital).nome);
   };
 
-  const initialLote = uuidParametrizacao && form.getState().values?.lote;
   const onChangeLote = (lote: string) => {
     form.change("lote", lote);
     setLoteSelecionado(lotes.find((e) => e.uuid === lote).nome);
   };
 
-  const initialGrupoUnidade =
-    uuidParametrizacao && form.getState().values?.grupo_unidade_escolar;
-
-  const getGruposPendentes = async (
-    setParametrizacaoConflito: (_e: string) => void,
-  ) => {
+  const getGruposPendentes = async (carregamento = true) => {
     try {
       const { edital, lote, grupo_unidade_escolar, data_inicial, data_final } =
         form.getState().values;
@@ -234,9 +242,10 @@ export default ({
         return novoInicio <= fimVigente && inicioVigente <= novoFim;
       });
 
-      if (parametrizacaoConflito)
+      if (parametrizacaoConflito) {
         setParametrizacaoConflito(parametrizacaoConflito.uuid);
-      else {
+        return true;
+      } else if (carregamento) {
         const numeroGrupo = grupoNome.match(/\d+/)?.[0];
 
         const grupoPendencias = {
@@ -277,7 +286,9 @@ export default ({
 
         if (Object.keys(dadosTabelas).length > 0)
           form.change("tabelas", dadosTabelas);
+        return false;
       }
+      return false;
     } catch {
       toastError("Erro ao carregar valores do grupo selecionado.");
     }
@@ -326,22 +337,101 @@ export default ({
     setTiposAlimentacao(tiposAlimentacao);
   };
 
+  const inicializouRef = useRef(false);
   useEffect(() => {
-    if (uuidParametrizacao && !carregando) {
-      if (initialGrupoUnidade) onChangeTiposUnidades(initialGrupoUnidade);
-      if (initialEdital) onChangeEdital(initialEdital);
-      if (initialLote) onChangeLote(initialLote);
+    if (!uuidParametrizacao || carregando || !form) return;
+    if (inicializouRef.current) return;
+
+    const values = form.getState().values;
+
+    if (!values?.grupo_unidade_escolar) return;
+
+    onChangeTiposUnidades(values.grupo_unidade_escolar);
+
+    if (values?.edital) onChangeEdital(values.edital);
+
+    if (values?.lote) onChangeLote(values.lote);
+
+    inicializouRef.current = true;
+  }, [uuidParametrizacao, carregando, form]);
+
+  const onChangeConflito = async (opcao: string, _form = form) => {
+    try {
+      const { data_inicial, data_final, tabelas, ...rest } =
+        _form.getState().values;
+
+      if (opcao === "manter") {
+        toastSuccess("Parametrização Financeira mantida com sucesso!");
+        navigate(`/${MEDICAO_INICIAL}/${PARAMETRIZACAO_FINANCEIRA}/`);
+      } else if (opcao === "encerrar_copiar") {
+        const response =
+          await ParametrizacaoFinanceiraService.cloneParametrizacaoFinanceira(
+            parametrizacaoConflito,
+            {
+              data_inicial: data_inicial,
+              data_final: data_final,
+              tabelas,
+              ...rest,
+            },
+          );
+
+        if (response.uuid) {
+          _form.change(
+            "tabelas",
+            carregarValores(
+              response.tabelas,
+              response.grupo_unidade_escolar.nome,
+            ),
+          );
+          _form.change("data_inicial", moment().format("DD/MM/YYYY"));
+          _form.change("data_final", null);
+
+          setSearchParams((prev) => {
+            const params = new URLSearchParams(prev);
+            params.set("nova_uuid", response.uuid);
+            params.set("fluxo", "encerrar_copiar");
+            params.delete("uuid_origem");
+            return params;
+          });
+          setParametrizacaoConflito(null);
+        } else
+          toastError(
+            "Erro ao encerrar e criar nova parametrização financeira.",
+          );
+      } else if (opcao === "encerrar_novo") {
+        const tabelasLimpas = limparTabelas(tabelas);
+        _form.change("tabelas", tabelasLimpas);
+        _form.change("data_inicial", moment().format("DD/MM/YYYY"));
+        _form.change("data_final", null);
+
+        await ParametrizacaoFinanceiraService.editParametrizacaoFinanceira(
+          parametrizacaoConflito,
+          { data_final: moment().subtract(1, "day").format("YYYY-MM-DD") },
+        );
+        setSearchParams((prev) => {
+          const params = new URLSearchParams(prev);
+          params.set("fluxo", "encerrar_novo");
+          params.delete("uuid_origem");
+          return params;
+        });
+        setParametrizacaoConflito(null);
+      }
+    } catch {
+      toastError("Ocorreu um erro inesperado");
     }
-  }, [uuidParametrizacao, carregando]);
+  };
 
   return {
     carregando,
     editais,
     lotes,
     gruposUnidadesOpcoes,
+    parametrizacaoConflito,
     onChangeTiposUnidades,
     onChangeEdital,
     onChangeLote,
+    onChangeConflito,
+    setParametrizacaoConflito,
     getGruposPendentes,
   };
 };

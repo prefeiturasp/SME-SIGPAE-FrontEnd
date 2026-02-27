@@ -1,6 +1,172 @@
 import { deepCopy } from "src/helpers/utilities";
 import { format } from "date-fns";
 
+/**
+ * Verifica se deve exibir um tooltip de alerta quando há frequência de dieta registrada
+ * mas a frequência de alimentação está zerada para todas as faixas etárias de uma determinada coluna (dia)
+ * e não há observação justificando.
+ *
+ * Esta validação garante que quando há alunos com dieta especial registrados em um dia,
+ * mas a frequência geral de alimentação está em zero, uma observação explicativa seja obrigatória.
+ *
+ * @param {Object} formValuesAtualizados - Objeto contendo todos os valores atualizados do formulário
+ * @param {Object} row - Objeto representando a linha atual da tabela
+ * @param {string} row.name - Nome do campo da linha (ex: "frequencia", "dietas_autorizadas")
+ * @param {string} row.uuid - Identificador único da faixa etária da linha
+ * @param {Object} column - Objeto representando a coluna atual da tabela
+ * @param {string} column.dia - Dia do mês correspondente à coluna
+ * @param {Object} categoria - Objeto da categoria de medição atual
+ * @param {number} categoria.id - Identificador da categoria
+ * @param {string} categoria.nome - Nome da categoria (deve incluir "DIETA" para ativar validação)
+ * @param {Array<Object>} categoriasDeMedicao - Array com todas as categorias de medição disponíveis
+ * @param {Array<Object>} faixasEtarias - Array com todas as faixas etárias
+ * @param {string} faixasEtarias[].uuid - Identificador único de cada faixa etária
+ *
+ * @returns {boolean} `true` se o tooltip de alerta deve ser exibido, `false` caso contrário
+ *
+ * @description
+ * O tooltip é exibido quando TODAS as seguintes condições são atendidas:
+ * - Existe um valor preenchido no campo atual
+ * - O valor não é "Mês anterior" nem "Mês posterior"
+ * - O valor preenchido é diferente de zero
+ * - A categoria atual é de DIETA
+ * - A soma das frequências de alimentação de todas as faixas etárias é zero
+ * - O campo não é "dietas_autorizadas"
+ * - Não existe observação registrada para o dia/categoria
+ *
+ * // Retorna true se há dieta registrada mas alimentação zerada sem observação
+ */
+export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  categoriasDeMedicao,
+  faixasEtarias,
+) => {
+  if (!faixasEtarias || faixasEtarias.length === 0) return false;
+  const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
+    c.nome.includes("ALIMENTAÇÃO"),
+  );
+  let sumFrequenciasAlimentacao = 0;
+  for (const faixa of faixasEtarias) {
+    if (
+      Number(
+        formValuesAtualizados[
+          `matriculados__faixa_${faixa.uuid}__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`
+        ],
+      ) > 0
+    ) {
+      sumFrequenciasAlimentacao += Number(
+        formValuesAtualizados[
+          `frequencia__faixa_${faixa.uuid}__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`
+        ] ?? 1,
+      );
+    }
+  }
+
+  const value =
+    formValuesAtualizados[
+      `${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    !!value &&
+    !["Mês anterior", "Mês posterior"].includes(value) &&
+    Number(value) !== 0 &&
+    categoria.nome.includes("DIETA") &&
+    sumFrequenciasAlimentacao === 0 &&
+    row.name !== "dietas_autorizadas" &&
+    !formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ]
+  );
+};
+
+/**
+ * Esta função verifica se existem alunos com dieta especial frequentes em um dia onde
+ * a frequência de alimentação geral está zerada, sem uma observação que justifique essa situação.
+ *
+ * @param {Object} values - Objeto contendo todos os valores do formulário
+ * @param {string} dia - Dia do mês a ser validado (formato: "01", "02", etc.)
+ * @param {Object} categoria - Objeto da categoria de medição atual (categoria de dieta)
+ * @param {number} categoria.id - Identificador da categoria
+ * @param {string} categoria.nome - Nome da categoria (deve incluir "DIETA" para ativar validação)
+ * @param {Array<Object>} categorias - Array com todas as categorias de medição disponíveis
+ * @param {string} categorias[].nome - Nome da categoria (ex: "ALIMENTAÇÃO")
+ * @param {number} categorias[].id - Identificador da categoria
+ * @param {Array<Object>} faixasEtarias - Array com todas as faixas etárias
+ * @param {string} faixasEtarias[].uuid - Identificador único de cada faixa etária
+ *
+ * @returns {boolean} `true` se há erro (dietas com frequência mas alimentação zerada sem observação), `false` caso contrário
+ *
+ * @description
+ * A função executa a seguinte lógica:
+ * 1. Calcula a soma das frequências de alimentação geral (para faixas com matriculados > 0)
+ * 2. Calcula a soma das frequências de dietas (para faixas com dietas autorizadas > 0)
+ * 3. Retorna `true` quando TODAS as condições abaixo são atendidas:
+ *    - A categoria atual é de DIETA
+ *    - A soma das frequências de alimentação geral é zero
+ *    - A soma das frequências de dietas é maior que zero
+ *    - Não existe observação registrada para o dia/categoria
+ *
+ */
+export const alimentacoesFrequenciaZeroESemObservacaoCEI = (
+  values,
+  dia,
+  categoria,
+  categorias,
+  faixasEtarias,
+) => {
+  if (!faixasEtarias || faixasEtarias.length === 0) return false;
+  const categoriaAlimentacao = categorias.find(
+    (cat) => cat.nome === "ALIMENTAÇÃO",
+  );
+
+  if (!categoriaAlimentacao) return false;
+
+  let sumFrequenciasAlimentacao = 0;
+  for (const faixa of faixasEtarias) {
+    if (
+      Number(
+        values[
+          `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
+        ],
+      ) > 0
+    ) {
+      sumFrequenciasAlimentacao += Number(
+        values[
+          `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
+        ] ?? 1,
+      );
+    }
+  }
+
+  let sumFrequenciasAlimentacaoDietas = 0;
+  for (const faixa of faixasEtarias) {
+    if (
+      Number(
+        values[
+          `dietas_autorizadas__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`
+        ],
+      ) > 0
+    ) {
+      sumFrequenciasAlimentacaoDietas += Number(
+        values[
+          `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`
+        ] ?? 0,
+      );
+    }
+  }
+
+  return (
+    categoria.nome.includes("DIETA") &&
+    sumFrequenciasAlimentacao === 0 &&
+    sumFrequenciasAlimentacaoDietas > 0 &&
+    !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
+  );
+};
+
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
   dia,
@@ -246,6 +412,60 @@ export const validacoesTabelaAlimentacaoCEI = (
   }
 
   return undefined;
+};
+
+export const validacoesFaixasZeradasAlimentacao = (
+  rowName,
+  calendario,
+  feriadosNoMes,
+  categoria,
+  allValues,
+  faixaEtaria,
+) => {
+  if (rowName !== "frequencia" || categoria.nome !== "ALIMENTAÇÃO") {
+    return [];
+  }
+
+  const diasLetivos = calendario.filter(
+    (dia) => dia.dia_letivo === true && !feriadosNoMes.includes(dia.dia),
+  );
+
+  const diasZerado = diasLetivos.reduce((acumulador, diaLetivo) => {
+    const dia = diaLetivo.dia;
+
+    const faixasComMatriculados = faixaEtaria.filter((faixa) => {
+      const inputMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+      const valorMatriculados = allValues[inputMatriculados];
+      return valorMatriculados !== undefined && Number(valorMatriculados) > 0;
+    });
+
+    if (faixasComMatriculados.length === 0) {
+      return acumulador;
+    }
+
+    const diaZerado = faixasComMatriculados.every((faixa) => {
+      const inputFrequencia = `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+      return allValues[inputFrequencia] === "0";
+    });
+
+    const inputObservacao = `observacoes__dia_${dia}__categoria_${categoria.id}`;
+    const temObservacao =
+      allValues[inputObservacao] &&
+      allValues[inputObservacao] !== "" &&
+      allValues[inputObservacao] !== "<p></p>\n"
+        ? true
+        : false;
+
+    if (diaZerado) {
+      acumulador.push({
+        dia: dia,
+        tem_observacao: temObservacao,
+      });
+    }
+    return acumulador;
+  }, []);
+
+  return diasZerado;
 };
 
 export const validacoesTabelaAlimentacaoCEIRecreioNasFerias = (
@@ -723,6 +943,153 @@ export const frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao = (
       `observacoes__dia_${column.dia}__categoria_${categoria.id}`
     ]
   );
+};
+
+/**
+ * Verifica se existe algum campo de dieta com valor maior que zero em dias onde
+ * todas as frequências de alimentação das faixas etárias estão zeradas e sem observação registrada.
+ *
+ * Esta função percorre todos os dias da semana, faixas etárias e categorias de dieta,
+ * validando se há inconsistências entre os lançamentos de dieta e a frequência
+ * de alimentação. Utiliza o valor em tempo real (value_) para o campo sendo editado
+ * e os valores salvos (formValuesAtualizados) para os demais campos.
+ *
+ * @param {Object} formValuesAtualizados - Objeto com todos os valores do formulário
+ * @param {Array} categoriasDeMedicao - Lista de categorias de medição disponíveis
+ * @param {Array} weekColumns - Colunas representando os dias da semana atual
+ * @param {Array} faixasEtarias - Array com todas as faixas etárias
+ * @param {string} faixasEtarias[].uuid - Identificador único de cada faixa etária
+ * @param {Array} tabelaDietaCEIRows - Linhas da tabela de dieta comum CEI
+ * @param {Array} tabelaDietaEnteralRows - Linhas da tabela de dieta enteral
+ * @param {string|number} value_ - Valor em tempo real do campo sendo editado
+ * @param {Object} currentRow - Row do campo sendo editado (opcional)
+ * @param {string} currentRow.name - Nome do campo da linha
+ * @param {string} currentRow.uuid - UUID da faixa etária
+ * @param {Object} currentColumn - Column do campo sendo editado (opcional)
+ * @param {string} currentColumn.dia - Dia do mês
+ * @param {Object} currentCategoria - Categoria do campo sendo editado (opcional)
+ * @param {number} currentCategoria.id - ID da categoria
+ *
+ * @returns {boolean} `true` se encontrar algum campo de dieta com valor > 0 quando frequências de alimentação estão zeradas e sem observação
+ *
+ * @description
+ * A função executa a seguinte lógica para cada dia da semana:
+ * 1. Calcula a soma das frequências de alimentação de todas as faixas etárias (somente as que têm matriculados > 0)
+ * 2. Se a soma for diferente de zero, pula para o próximo dia
+ * 3. Para cada categoria de dieta:
+ *    - Se existe observação para o dia/categoria, pula para a próxima categoria
+ *    - Para cada campo de dieta (frequencia, lanche, etc) em cada faixa etária:
+ *      - Verifica se o campo tem valor > 0
+ *      - Se o campo for o campo atual sendo editado, usa value_ (valor em tempo real)
+ *      - Caso contrário, usa o valor de formValuesAtualizados
+ *      - Retorna true se encontrar valor > 0
+ */
+export const existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI = (
+  formValuesAtualizados,
+  categoriasDeMedicao,
+  weekColumns,
+  faixasEtarias,
+  tabelaDietaCEIRows,
+  tabelaDietaEnteralRows,
+  value_,
+  currentRow = null,
+  currentColumn = null,
+  currentCategoria = null,
+) => {
+  if (
+    !formValuesAtualizados ||
+    !categoriasDeMedicao ||
+    !weekColumns ||
+    !faixasEtarias
+  ) {
+    return false;
+  }
+
+  const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
+    c.nome.includes("ALIMENTAÇÃO"),
+  );
+
+  const categoriasDieta = categoriasDeMedicao.filter((c) =>
+    c.nome.includes("DIETA"),
+  );
+
+  if (!categoriaAlimentacao || !categoriasDieta.length) {
+    return false;
+  }
+
+  const camposDieta = [
+    ...(tabelaDietaCEIRows || []).filter(
+      (row) => row.name !== "dietas_autorizadas",
+    ),
+    ...(tabelaDietaEnteralRows || []).filter(
+      (row) => row.name !== "dietas_autorizadas",
+    ),
+  ];
+
+  for (const column of weekColumns) {
+    const dia = column.dia;
+
+    let sumFrequenciasAlimentacao = 0;
+    for (const faixa of faixasEtarias) {
+      if (
+        Number(
+          formValuesAtualizados[
+            `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
+          ],
+        ) > 0
+      ) {
+        sumFrequenciasAlimentacao += Number(
+          formValuesAtualizados[
+            `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
+          ] ?? 1,
+        );
+      }
+    }
+
+    if (sumFrequenciasAlimentacao !== 0) {
+      continue;
+    }
+
+    for (const categoriaDieta of categoriasDieta) {
+      const temObservacao =
+        formValuesAtualizados[
+          `observacoes__dia_${dia}__categoria_${categoriaDieta.id}`
+        ];
+
+      if (temObservacao) {
+        continue;
+      }
+
+      for (const campoDieta of camposDieta) {
+        for (const faixa of faixasEtarias) {
+          const ehCampoAtual =
+            currentRow &&
+            currentColumn &&
+            currentCategoria &&
+            currentRow.name === campoDieta.name &&
+            currentRow.uuid === faixa.uuid &&
+            currentColumn.dia === dia &&
+            currentCategoria.id === categoriaDieta.id;
+
+          const value = ehCampoAtual
+            ? value_
+            : formValuesAtualizados[
+                `${campoDieta.name}__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaDieta.id}`
+              ];
+
+          if (
+            value &&
+            !["Mês anterior", "Mês posterior"].includes(value) &&
+            Number(value) > 0
+          ) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+
+  return false;
 };
 
 export const verificarMesAnteriorOuPosterior = (column, mesAnoConsiderado) => {

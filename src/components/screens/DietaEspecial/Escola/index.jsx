@@ -149,7 +149,11 @@ class solicitacaoDietaEspecial extends Component {
       event.target.value.padStart(6, "0"),
     ).then((response) => {
       this.props.loadSolicitacoesVigentes(
-        formatarSolicitacoesVigentes(response.data.results.slice(0, 1)),
+        formatarSolicitacoesVigentes(
+          response.data.results
+            .filter((dieta) => dieta.tipo_solicitacao === "COMUM")
+            .splice(0, 1),
+        ),
       );
     });
 
@@ -257,6 +261,7 @@ class solicitacaoDietaEspecial extends Component {
       solicitacoesVigentes,
       codigo_eol,
     } = this.props;
+
     return (
       <form className="special-diet mt-3" onSubmit={handleSubmit}>
         <CardMatriculados numeroAlunos={quantidadeAlunos} />

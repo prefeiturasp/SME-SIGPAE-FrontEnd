@@ -7,18 +7,25 @@ import { stringDecimalToNumber } from "src/helpers/parsers";
 import { formataMilharDecimal } from "src/helpers/utilities";
 import { forwardRef, useImperativeHandle } from "react";
 import { TabelaAlimentacaoHandle } from "../../types";
+import { prioridadeAlimentacao } from "../../helpers";
+import { normalizar } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
 
 type Props = {
   tabelas: TabelaParametrizacao[];
   tiposAlimentacao: Array<TipoAlimentacao>;
   totaisConsumo?: any;
   ordem?: string;
+  cieja?: boolean;
 };
 
 export const TabelaAlimentacao = forwardRef<TabelaAlimentacaoHandle, Props>(
-  ({ tabelas, tiposAlimentacao, totaisConsumo, ordem }, ref) => {
+  ({ tabelas, tiposAlimentacao, totaisConsumo, ordem, cieja = false }, ref) => {
     let totalAtendimentosGeral = 0;
     let valorTotalGeral = 0;
+
+    const tiposOrdenados = [...tiposAlimentacao].sort(
+      (a, b) => prioridadeAlimentacao(a.nome) - prioridadeAlimentacao(b.nome),
+    );
 
     useImperativeHandle(ref, () => ({
       getTotais() {
@@ -42,10 +49,15 @@ export const TabelaAlimentacao = forwardRef<TabelaAlimentacaoHandle, Props>(
           </tr>
         </thead>
         <tbody>
-          {tiposAlimentacao.map((tipo) => {
+          {tiposOrdenados.map((tipo) => {
             const tabela = tabelas.find(
               (t) => t.nome === "Preço das Alimentações",
             );
+
+            const nomeExibicao =
+              cieja && normalizar(tipo.nome) === "refeicao"
+                ? "Refeição CIEJA e CMCT"
+                : tipo.nome;
 
             const valorUnitario = stringDecimalToNumber(
               tabela?.valores.find(
@@ -91,7 +103,7 @@ export const TabelaAlimentacao = forwardRef<TabelaAlimentacaoHandle, Props>(
             return (
               <tr key={tipo.uuid}>
                 <td className="col-tipo">
-                  <b>{tipo.nome.toUpperCase()}</b>
+                  <b>{nomeExibicao.toUpperCase()}</b>
                 </td>
                 <td className="col-unitario">
                   R$ {formataMilharDecimal(valorUnitario)}

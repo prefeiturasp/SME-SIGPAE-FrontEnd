@@ -12,6 +12,7 @@ type Props = {
   grupoSelecionado: string;
   periodo: string;
   pendencias: string[];
+  bloqueiaEdicao?: boolean;
 };
 
 interface RecordItem {
@@ -24,6 +25,7 @@ export function TabelaAlimentacaoCEI({
   grupoSelecionado,
   periodo,
   pendencias,
+  bloqueiaEdicao,
 }: Props) {
   const labelTabela = grupoSelecionado?.toLowerCase().includes("grupo 2")
     ? `CEI - Período ${periodo}`
@@ -125,6 +127,7 @@ export function TabelaAlimentacaoCEI({
                     "valor_unitario",
                   )
                 }
+                disabled={bloqueiaEdicao}
               />
             )}
           />
@@ -148,6 +151,7 @@ export function TabelaAlimentacaoCEI({
                     "valor_unitario_reajuste",
                   )
                 }
+                disabled={bloqueiaEdicao}
               />
             )}
           />

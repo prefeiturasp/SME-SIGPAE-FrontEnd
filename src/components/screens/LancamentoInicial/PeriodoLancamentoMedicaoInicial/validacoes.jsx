@@ -6,6 +6,35 @@ import { ALUNOS_EMEBS } from "../constants";
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { ehGrupoRecreioNasFerias } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import { format } from "date-fns";
+
+export const alimentacoesFrequenciaZeroESemObservacao = (
+  values,
+  dia,
+  categoria,
+  categorias,
+) => {
+  const categoriaAlimentacao = categorias.find(
+    (cat) => cat.nome === "ALIMENTAÇÃO",
+  );
+  const frequenciaAlimentacao =
+    values[`frequencia__dia_${dia}__categoria_${categoriaAlimentacao.id}`];
+
+  const alimentacoes = ["frequencia", "lanche_4h", "lanche", "refeicao"];
+  let erro = false;
+  alimentacoes.forEach((alimentacao) => {
+    if (
+      categoria.nome.includes("DIETA") &&
+      Number(values[`${alimentacao}__dia_${dia}__categoria_${categoria.id}`]) >
+        0 &&
+      Number(frequenciaAlimentacao) === 0 &&
+      !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
+    ) {
+      erro = true;
+    }
+  });
+  return erro;
+};
+
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
   dia,
@@ -119,8 +148,44 @@ export const campoLancheEmergencialSemAutorizacaoSemObservacao = (
   );
 };
 
-export const campoFrequenciaValor0ESemObservacao = (dia, categoria, values) => {
+export const campoFrequenciaValor0ESemObservacao = (
+  dia,
+  categoria,
+  values,
+  diasFrequenciaZerada,
+  grupo,
+  escolaEmebs = false,
+  alunosTabSelecionada = null,
+) => {
   let erro = false;
+  if (
+    grupo === "Programas e Projetos" &&
+    !categoria.nome.includes("SOLICITAÇÕES")
+  ) {
+    let tabSelecionada = null;
+    let diaIncluso = [];
+    const ehDietaEspecial = categoria.nome.includes("DIETA");
+    if (escolaEmebs === true) {
+      tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
+        ([, v]) => v.key === alunosTabSelecionada,
+      )[0][0];
+      diaIncluso = ehDietaEspecial
+        ? diasFrequenciaZerada?.dietas?.[categoria.nome]?.[tabSelecionada]
+        : diasFrequenciaZerada?.alimentacoes[tabSelecionada];
+    } else {
+      diaIncluso = ehDietaEspecial
+        ? diasFrequenciaZerada?.dietas?.[categoria.nome]
+        : diasFrequenciaZerada?.alimentacoes;
+    }
+    if (
+      diaIncluso?.includes(dia) &&
+      values[`frequencia__dia_${dia}__categoria_${categoria.id}`] &&
+      Number(values[`frequencia__dia_${dia}__categoria_${categoria.id}`]) === 0
+    ) {
+      return false;
+    }
+  }
+
   if (
     categoria.nome === "ALIMENTAÇÃO" &&
     values[`frequencia__dia_${dia}__categoria_${categoria.id}`] &&
@@ -335,6 +400,9 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   inclusoesEtecAutorizadas,
   ehGrupoETECUrlParam = false,
   feriadosNoMes,
+  diasFrequenciaZerada,
+  escolaEmebs,
+  alunosTabSelecionada,
 ) => {
   if (
     location.state.grupo === "Programas e Projetos" &&
@@ -354,6 +422,10 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         dia,
         categoria,
         formValuesAtualizados,
+        diasFrequenciaZerada,
+        location.state.grupo,
+        escolaEmebs,
+        alunosTabSelecionada,
       ) ||
       campoComSuspensaoAutorizadaESemObservacao(
         formValuesAtualizados,
@@ -391,6 +463,16 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         column,
         categoria,
         alteracoesAlimentacaoAutorizadas,
+      ) ||
+      habitarBotaoAdicionar(
+        "frequencia",
+        column.dia,
+        categoria,
+        formValuesAtualizados,
+        diasFrequenciaZerada,
+        location.state.grupo,
+        escolaEmebs,
+        alunosTabSelecionada,
       )
     );
   }
@@ -404,6 +486,10 @@ export const botaoAdicionarObrigatorio = (
   location,
   row,
   alteracoesAlimentacaoAutorizadas,
+  categorias,
+  diasFrequenciaZerada,
+  escolaEmebs,
+  alunosTabSelecionada,
 ) => {
   return (
     repeticaoSobremesaDoceComValorESemObservacao(
@@ -417,12 +503,32 @@ export const botaoAdicionarObrigatorio = (
       column.dia,
       categoria,
       formValuesAtualizados,
+      diasFrequenciaZerada,
+      location.state.grupo,
+      escolaEmebs,
+      alunosTabSelecionada,
     ) ||
     campoRefeicaoComRPLAutorizadaESemObservacao(
       formValuesAtualizados,
       column,
       categoria,
       alteracoesAlimentacaoAutorizadas,
+    ) ||
+    alimentacoesFrequenciaZeroESemObservacao(
+      formValuesAtualizados,
+      column.dia,
+      categoria,
+      categorias,
+    ) ||
+    habitarBotaoAdicionar(
+      "frequencia",
+      column.dia,
+      categoria,
+      formValuesAtualizados,
+      diasFrequenciaZerada,
+      location.state.grupo,
+      escolaEmebs,
+      alunosTabSelecionada,
     )
   );
 };
@@ -560,6 +666,8 @@ export const validacoesTabelaAlimentacao = (
           `${rowName}__dia_${dia}__categoria_${categoria}`
         ],
       ) &&
+    !existeAlteracaoAlimentacaoLPR &&
+    !existeAlteracaoAlimentacaoRPL &&
     !allValues[`observacoes__dia_${dia}__categoria_${categoria}`]
   ) {
     return `Número de alimentações é maior que a quantidade autorizada (${Number(
@@ -596,7 +704,9 @@ export const validacoesTabelaAlimentacao = (
   } else if (
     inputName in dadosValoresInclusoesAutorizadasState &&
     !escolaNaoPossuiAlunosRegulares(location.state.solicitacaoMedicaoInicial) &&
-    !location.state.periodoEspecifico
+    !location.state.periodoEspecifico &&
+    !existeAlteracaoAlimentacaoRPL &&
+    !existeAlteracaoAlimentacaoLPR
   ) {
     if (
       validacaoDiaLetivo(dia) &&
@@ -1129,6 +1239,146 @@ export const exibirTooltipRPLAutorizadas = (
       `observacoes__dia_${column.dia}__categoria_${categoria.id}`
     ]
   );
+};
+
+export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacao = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  categoriasDeMedicao,
+  value_,
+) => {
+  const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
+    c.nome.includes("ALIMENTAÇÃO"),
+  );
+  const frequenciaAlimentacao =
+    formValuesAtualizados[
+      `frequencia__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`
+    ];
+  const value =
+    value_ ??
+    formValuesAtualizados[
+      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    value &&
+    !["Mês anterior", "Mês posterior"].includes(value) &&
+    Number(value) !== 0 &&
+    categoria.nome.includes("DIETA") &&
+    frequenciaAlimentacao &&
+    Number(frequenciaAlimentacao) === 0 &&
+    row.name !== "dietas_autorizadas" &&
+    !formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ]
+  );
+};
+/**
+ * Verifica se existe algum campo de dieta com valor maior que zero em dias onde
+ * a frequência de alimentação é zero e sem observação registrada.
+ *
+ * Esta função percorre todos os dias da semana e todas as categorias de dieta,
+ * validando se há inconsistências entre os lançamentos de dieta e a frequência
+ * de alimentação. Utiliza o valor em tempo real (value_) para o campo sendo editado
+ * e os valores salvos (formValuesAtualizados) para os demais campos.
+ *
+ * @param {Object} formValuesAtualizados - Objeto com todos os valores do formulário
+ * @param {Array} categoriasDeMedicao - Lista de categorias de medição disponíveis
+ * @param {Array} weekColumns - Colunas representando os dias da semana atual
+ * @param {Array} tabelaDietaRows - Linhas da tabela de dieta comum
+ * @param {Array} tabelaDietaEnteralRows - Linhas da tabela de dieta enteral
+ * @param {string|number} value_ - Valor em tempo real do campo sendo editado
+ * @param {Object} currentRow - Row do campo sendo editado (opcional)
+ * @param {Object} currentColumn - Column do campo sendo editado (opcional)
+ * @param {Object} currentCategoria - Categoria do campo sendo editado (opcional)
+ * @returns {boolean} true se encontrar algum campo com valor > 0, frequência = 0 e sem observação
+ */
+export const existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao = (
+  formValuesAtualizados,
+  categoriasDeMedicao,
+  weekColumns,
+  tabelaDietaRows,
+  tabelaDietaEnteralRows,
+  value_,
+  currentRow = null,
+  currentColumn = null,
+  currentCategoria = null,
+) => {
+  if (!formValuesAtualizados || !categoriasDeMedicao || !weekColumns) {
+    return false;
+  }
+
+  const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
+    c.nome.includes("ALIMENTAÇÃO"),
+  );
+  const categoriasDieta = categoriasDeMedicao.filter((c) =>
+    c.nome.includes("DIETA"),
+  );
+
+  if (!categoriaAlimentacao || !categoriasDieta.length) {
+    return false;
+  }
+
+  const camposDieta = [
+    ...(tabelaDietaRows || []).filter(
+      (row) => row.name !== "dietas_autorizadas",
+    ),
+    ...(tabelaDietaEnteralRows || []).filter(
+      (row) => row.name !== "dietas_autorizadas",
+    ),
+  ];
+
+  for (const column of weekColumns) {
+    const dia = column.dia;
+
+    const frequenciaAlimentacao =
+      formValuesAtualizados[
+        `frequencia__dia_${dia}__categoria_${categoriaAlimentacao.id}`
+      ];
+
+    if (!frequenciaAlimentacao || Number(frequenciaAlimentacao) !== 0) {
+      continue;
+    }
+
+    for (const categoriaDieta of categoriasDieta) {
+      const temObservacao =
+        formValuesAtualizados[
+          `observacoes__dia_${dia}__categoria_${categoriaDieta.id}`
+        ];
+
+      if (temObservacao) {
+        continue;
+      }
+
+      for (const campoDieta of camposDieta) {
+        const ehCampoAtual =
+          currentRow &&
+          currentColumn &&
+          currentCategoria &&
+          currentRow.name === campoDieta.name &&
+          currentColumn.dia === dia &&
+          currentCategoria.id === categoriaDieta.id;
+
+        const value = ehCampoAtual
+          ? value_
+          : formValuesAtualizados[
+              `${campoDieta.name}__dia_${dia}__categoria_${categoriaDieta.id}`
+            ];
+
+        if (
+          value &&
+          !["Mês anterior", "Mês posterior"].includes(value) &&
+          Number(value) > 0
+        ) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 };
 
 export const exibirTooltipLPRAutorizadas = (
@@ -1820,4 +2070,171 @@ export const verificarMesAnteriorOuPosterior = (column, mesAnoConsiderado) => {
     }
   }
   return result;
+};
+
+export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
+  row,
+  dia,
+  categoria,
+  formValuesAtualizados,
+  diasFrequenciaZerada,
+  grupo,
+  escolaEmebs = false,
+  alunosTabSelecionada = null,
+) => {
+  if (
+    grupo !== "Programas e Projetos" ||
+    row !== "frequencia" ||
+    categoria.nome.includes("SOLICITAÇÕES") ||
+    !diasFrequenciaZerada
+  )
+    return false;
+
+  let diaIncluso = [];
+  const ehDietaEspecial = categoria.nome.includes("DIETA");
+
+  if (escolaEmebs === true) {
+    const tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
+      ([, v]) => v.key === alunosTabSelecionada,
+    )[0][0];
+
+    diaIncluso = ehDietaEspecial
+      ? diasFrequenciaZerada?.dietas?.[categoria.nome]?.[tabSelecionada]
+      : diasFrequenciaZerada?.alimentacoes[tabSelecionada];
+  } else {
+    diaIncluso = ehDietaEspecial
+      ? diasFrequenciaZerada?.dietas?.[categoria.nome]
+      : diasFrequenciaZerada?.alimentacoes;
+  }
+
+  if (!diaIncluso?.includes(dia)) return false;
+
+  const inputName = `${row}__dia_${dia}__categoria_${categoria.id}`;
+  const inputObservacao = `observacoes__dia_${dia}__categoria_${categoria.id}`;
+  const temObservacao =
+    formValuesAtualizados[inputObservacao] &&
+    formValuesAtualizados[inputObservacao] !== "" &&
+    formValuesAtualizados[inputObservacao] !== "<p></p>\n"
+      ? true
+      : false;
+
+  const value = formValuesAtualizados[inputName];
+  return value && Number(value) > 0 && !temObservacao;
+};
+
+export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
+  row,
+  dia,
+  categoriasDeMedicao,
+  formValuesAtualizados,
+  diasFrequenciaZerada,
+  grupo,
+  escolaEmebs,
+  alunosTabSelecionada,
+) => {
+  if (grupo !== "Programas e Projetos") return false;
+
+  const categoriaAlimentacao = categoriasDeMedicao.find(
+    (categoria) => categoria.nome === "ALIMENTAÇÃO",
+  );
+  const categoriasDietas = categoriasDeMedicao.filter((c) =>
+    c.nome.includes("DIETA"),
+  );
+
+  let diasInclusoAlimentacao = [];
+  let diasInclusoDietas = diasFrequenciaZerada?.dietas;
+  let tabSelecionada = null;
+  if (escolaEmebs === true) {
+    tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
+      ([, v]) => v.key === alunosTabSelecionada,
+    )[0][0];
+    diasInclusoAlimentacao = diasFrequenciaZerada.alimentacoes[tabSelecionada];
+  } else {
+    diasInclusoAlimentacao = diasFrequenciaZerada.alimentacoes;
+  }
+
+  const bloquerSalvarLancamentos = (diaZerado, idCategoria) => {
+    const inputName = `${row}__dia_${diaZerado}__categoria_${idCategoria}`;
+    const inputObservacao = `observacoes__dia_${diaZerado}__categoria_${idCategoria}`;
+
+    const value = formValuesAtualizados[inputName];
+    const temObservacao =
+      formValuesAtualizados[inputObservacao] &&
+      formValuesAtualizados[inputObservacao] !== "" &&
+      formValuesAtualizados[inputObservacao] !== "<p></p>\n"
+        ? true
+        : false;
+
+    return value && Number(value) > 0 && !temObservacao;
+  };
+
+  for (const diaZeradoAlimentacao of diasInclusoAlimentacao) {
+    if (
+      bloquerSalvarLancamentos(diaZeradoAlimentacao, categoriaAlimentacao.id)
+    ) {
+      return true;
+    }
+  }
+
+  for (const categoriaDieta of categoriasDietas) {
+    const diasDieta = escolaEmebs
+      ? diasInclusoDietas?.[categoriaDieta.nome]?.[tabSelecionada]
+      : diasInclusoDietas?.[categoriaDieta.nome];
+    for (const diaZeradoDieta of diasDieta) {
+      if (bloquerSalvarLancamentos(diaZeradoDieta, categoriaDieta.id)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+};
+
+export const habitarBotaoAdicionar = (
+  row,
+  dia,
+  categoria,
+  formValuesAtualizados,
+  diasFrequenciaZerada,
+  grupo,
+  escolaEmebs,
+  alunosTabSelecionada,
+) => {
+  if (
+    grupo !== "Programas e Projetos" ||
+    !diasFrequenciaZerada ||
+    categoria.nome.includes("SOLICITAÇÕES")
+  )
+    return false;
+
+  let diaIncluso = [];
+  const ehDietaEspecial = categoria.nome.includes("DIETA");
+
+  if (escolaEmebs === true) {
+    const tabSelecionada = Object.entries(ALUNOS_EMEBS).filter(
+      ([, v]) => v.key === alunosTabSelecionada,
+    )[0][0];
+
+    diaIncluso = ehDietaEspecial
+      ? diasFrequenciaZerada?.dietas?.[categoria.nome]?.[tabSelecionada]
+      : diasFrequenciaZerada?.alimentacoes[tabSelecionada];
+  } else {
+    diaIncluso = ehDietaEspecial
+      ? diasFrequenciaZerada?.dietas?.[categoria.nome]
+      : diasFrequenciaZerada?.alimentacoes;
+  }
+
+  if (!diaIncluso?.includes(dia)) return false;
+
+  const inputName = `${row}__dia_${dia}__categoria_${categoria.id}`;
+  const inputObservacao = `observacoes__dia_${dia}__categoria_${categoria.id}`;
+  const temObservacao =
+    formValuesAtualizados[inputObservacao] &&
+    formValuesAtualizados[inputObservacao] !== "" &&
+    formValuesAtualizados[inputObservacao] !== "<p></p>\n"
+      ? true
+      : false;
+
+  const value = formValuesAtualizados[inputName];
+  return value && Number(value) > 0 && !temObservacao;
 };

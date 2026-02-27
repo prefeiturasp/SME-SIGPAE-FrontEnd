@@ -49,15 +49,16 @@ import {
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
+  getDiasLetivosRecreio,
   getDiasParaCorrecao,
   getFeriadosNoMes,
   getLogDietasAutorizadasPeriodo,
+  getLogDietasAutorizadasRecreioNasFerias,
   getMatriculadosPeriodo,
   getValoresPeriodosLancamentos,
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
-  getDiasLetivosRecreio,
-  getLogDietasAutorizadasRecreioNasFerias,
+  getDiasFrequenciaZerada,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
@@ -92,6 +93,8 @@ import {
   campoComSuspensaoAutorizadaESemObservacao,
   campoFrequenciaValor0ESemObservacao,
   campoLancheComLPRAutorizadaESemObservacao,
+  carregarDiasCalendario,
+  exibirTooltipFrequenciaAlimentacaoZeroESemObservacao,
   exibirTooltipFrequenciaZeroTabelaEtec,
   exibirTooltipKitLancheSolAlimentacoes,
   exibirTooltipLancheEmergencialAutorizado,
@@ -106,12 +109,14 @@ import {
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
+  existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao,
   validacoesTabelaAlimentacao,
   validacoesTabelaEtecAlimentacao,
   validacoesTabelasDietas,
   validarFormulario,
-  carregarDiasCalendario,
   verificarMesAnteriorOuPosterior,
+  exibirTooltipPeriodosZeradosNoProgramasProjetos,
+  boqueaSalvamentoPeriodosZeradosNoProgramasProjetos,
 } from "./validacoes";
 
 export default () => {
@@ -212,6 +217,7 @@ export default () => {
   );
   const [msgModalErro, setMsgModalErro] = useState(null);
   const [previousValue, setPreviousValue] = useState(null);
+  const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -1054,6 +1060,15 @@ export default () => {
 
       setFeriadosNoMes(response_feriados_no_mes.data.results);
 
+      if (grupoMedicao === "Programas e Projetos") {
+        const response_dias = await getDiasFrequenciaZerada({
+          uuid_solicitacao: uuid,
+        });
+        if (response_dias.status === HTTP_STATUS.OK) {
+          setDiasFrequenciaZeradas(response_dias.data);
+        }
+      }
+
       await formatarDadosValoresMedicao(
         mesAnoFormatado,
         response_valores_periodos.data,
@@ -1675,6 +1690,24 @@ export default () => {
       ),
     );
     setExibirTooltip(false);
+    if (
+      valorPeriodoEscolar === "Programas e Projetos" &&
+      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+        "frequencia",
+        dia,
+        categoriasDeMedicao,
+        formValuesAtualizados,
+        diasFrequenciaZerada,
+        valorPeriodoEscolar,
+        escolaEhEMEBS(),
+        alunosTabSelecionada,
+      )
+    ) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    } else {
+      setDisableBotaoSalvarLancamentos(false);
+    }
   };
 
   const onSubmit = async (
@@ -2035,6 +2068,17 @@ export default () => {
       (ehZeroFrequencia &&
         !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]) ||
       campoFrequenciaValor0ESemObservacao(dia, categoria, values) ||
+      existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao(
+        formValuesAtualizados,
+        categoriasDeMedicao,
+        weekColumns,
+        tabelaDietaRows,
+        tabelaDietaEnteralRows,
+        value,
+        row,
+        column,
+        categoria,
+      ) ||
       campoComSuspensaoAutorizadaESemObservacao(
         formValuesAtualizados,
         column,
@@ -2117,7 +2161,17 @@ export default () => {
           categoria,
           ehGrupoETECUrlParam,
           inclusoesEtecAutorizadas,
-        ))
+        )) ||
+      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+        "frequencia",
+        dia,
+        categoriasDeMedicao,
+        values,
+        diasFrequenciaZerada,
+        location.state.grupo,
+        escolaEhEMEBS(),
+        alunosTabSelecionada,
+      )
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
@@ -2317,14 +2371,16 @@ export default () => {
         !escolaEhEMEBS()) ||
       (escolaEhEMEBS() &&
         !validacaoSemana(dia) &&
-        diasParaCorrecao?.find(
-          (diaParaCorrecao) =>
-            String(diaParaCorrecao.dia) === String(dia) &&
-            String(diaParaCorrecao.categoria_medicao) === String(categoriaId) &&
-            diaParaCorrecao.habilitado_correcao === true &&
-            ALUNOS_EMEBS[diaParaCorrecao.infantil_ou_fundamental].key ===
-              alunosTabSelecionada,
-        ))
+        (diasParaCorrecao?.length === 0 ||
+          diasParaCorrecao?.find(
+            (diaParaCorrecao) =>
+              String(diaParaCorrecao.dia) === String(dia) &&
+              String(diaParaCorrecao.categoria_medicao) ===
+                String(categoriaId) &&
+              diaParaCorrecao.habilitado_correcao === true &&
+              ALUNOS_EMEBS[diaParaCorrecao.infantil_ou_fundamental].key ===
+                alunosTabSelecionada,
+          )))
     );
   };
 
@@ -2883,6 +2939,7 @@ export default () => {
                                                           alunosTabSelecionada,
                                                           formValuesAtualizados,
                                                         )}
+                                                        dataTestId={`botao-observacao__dia_${column.dia}__categoria_${categoria.id}`}
                                                         disabled={desabilitarBotaoColunaObservacoes(
                                                           location,
                                                           valoresPeriodosLancamentos,
@@ -2906,6 +2963,10 @@ export default () => {
                                                             location,
                                                             row,
                                                             alteracoesAlimentacaoAutorizadas,
+                                                            categoriasDeMedicao,
+                                                            diasFrequenciaZerada,
+                                                            escolaEhEMEBS(),
+                                                            alunosTabSelecionada,
                                                           )
                                                             ? textoBotaoObservacao(
                                                                 formValuesAtualizados[
@@ -2964,6 +3025,13 @@ export default () => {
                                                           categoria,
                                                           alteracoesAlimentacaoAutorizadas,
                                                         )}
+                                                        exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacao(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          categoriasDeMedicao,
+                                                        )}
                                                         classNameToNextInput={getClassNameToNextInput(
                                                           row,
                                                           column,
@@ -3009,9 +3077,20 @@ export default () => {
                                                           ehUltimoDiaLetivoDoAno,
                                                         )}
                                                         dia={column.dia}
+                                                        maxFrequenciaAlimentacao
                                                         defaultValue={defaultValue(
                                                           column,
                                                           row,
+                                                        )}
+                                                        exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
+                                                          row.name,
+                                                          column.dia,
+                                                          categoria,
+                                                          formValuesAtualizados,
+                                                          diasFrequenciaZerada,
+                                                          location.state.grupo,
+                                                          escolaEhEMEBS(),
+                                                          alunosTabSelecionada,
                                                         )}
                                                         validate={fieldValidationsTabelasDietas(
                                                           row.name,
@@ -3108,6 +3187,7 @@ export default () => {
                                                             alunosTabSelecionada,
                                                             formValuesAtualizados,
                                                           )}
+                                                          dataTestId={`botao-observacao__dia_${column.dia}__categoria_${categoria.id}`}
                                                           disabled={desabilitarBotaoColunaObservacoes(
                                                             location,
                                                             valoresPeriodosLancamentos,
@@ -3139,6 +3219,9 @@ export default () => {
                                                               inclusoesEtecAutorizadas,
                                                               ehGrupoETECUrlParam,
                                                               feriadosNoMes,
+                                                              diasFrequenciaZerada,
+                                                              escolaEhEMEBS(),
+                                                              alunosTabSelecionada,
                                                             )
                                                               ? textoBotaoObservacao(
                                                                   formValuesAtualizados[
@@ -3348,6 +3431,17 @@ export default () => {
                                                             categoria,
                                                             ehGrupoETECUrlParam,
                                                             inclusoesEtecAutorizadas,
+                                                          )}
+                                                          exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
+                                                            row.name,
+                                                            column.dia,
+                                                            categoria,
+                                                            formValuesAtualizados,
+                                                            diasFrequenciaZerada,
+                                                            location.state
+                                                              .grupo,
+                                                            escolaEhEMEBS(),
+                                                            alunosTabSelecionada,
                                                           )}
                                                           ehGrupoETECUrlParam={
                                                             ehGrupoETECUrlParam
