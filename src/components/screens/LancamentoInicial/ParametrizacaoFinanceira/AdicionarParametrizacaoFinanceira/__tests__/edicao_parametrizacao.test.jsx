@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -18,6 +19,7 @@ import { mockListaNumeros } from "src/mocks/LancamentoInicial/CadastroDeClausula
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
 import { mockGetTiposUnidadeEscolarTiposAlimentacao } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolarTiposAlimentacao";
 import { mockGetDadosParametrizacaoFinanceira } from "src/mocks/services/parametrizacao_financeira.service/mockGetDadosParametrizacaoFinanceira";
+import { mockParametrizacoesFinanceiras } from "src/mocks/services/parametrizacao_financeira.service/mockGetParametrizacoesFinanceiras";
 import AdicionarParametrizacaoFinanceira from "../index";
 import mock from "src/services/_mock";
 
@@ -43,6 +45,9 @@ describe("Testes formulário de edição - Parametrização Financeira", () => {
         `/medicao-inicial/parametrizacao-financeira/dados-parametrizacao-financeira/${uuid}/`,
       )
       .reply(200, mockGetDadosParametrizacaoFinanceira);
+    mock
+      .onGet("/medicao-inicial/parametrizacao-financeira/")
+      .reply(200, mockParametrizacoesFinanceiras);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
@@ -93,5 +98,42 @@ describe("Testes formulário de edição - Parametrização Financeira", () => {
       const inputValorUnitario = screen.getByTestId(campo);
       expect(inputValorUnitario).toBeDisabled();
     });
+  });
+
+  it("deve exibir conflito ao tentar salvar copia sem modificar", async () => {
+    const botaoCriarCopia = screen.getByTestId("botao-criar-copia");
+    expect(botaoCriarCopia).toBeInTheDocument();
+    fireEvent.click(botaoCriarCopia);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Copiar Parametrização Financeira"),
+      ).toBeInTheDocument();
+    });
+
+    const botaoConfirmarCopia = screen.getByTestId("botao-confirmar-copia");
+    fireEvent.click(botaoConfirmarCopia);
+
+    const botaoSalvar = screen.getByTestId("botao-salvar");
+    fireEvent.click(botaoSalvar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Conflito no período de Vigência"),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(
+      screen.getByText(
+        "Encerrar parametrização anterior e cadastrar novos valores.",
+      ),
+    );
+    fireEvent.click(screen.getByText("Continuar"));
+
+    const botaoConflito = screen.getByTestId("botao-confirmar-conflito");
+    botaoConflito.click();
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText("Conflito no período de Vigência"),
+    );
   });
 });
