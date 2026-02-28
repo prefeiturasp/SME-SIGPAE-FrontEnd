@@ -4,7 +4,11 @@ import {
 } from "src/helpers/utilities";
 import { ALUNOS_EMEBS } from "../constants";
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
-import { ehGrupoRecreioNasFerias } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
+import {
+  ehGrupoRecreioNasFerias,
+  existeAlteracaoRPL,
+  existeAlteracaoLPR,
+} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import { format } from "date-fns";
 export const repeticaoSobremesaDoceComValorESemObservacao = (
   values,
@@ -527,17 +531,14 @@ export const validacoesTabelaAlimentacao = (
     }
   }
 
-  const existeAlteracaoAlimentacaoRPL =
-    alteracoesAlimentacaoAutorizadas &&
-    alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL"),
-    ).length > 0;
-
-  const existeAlteracaoAlimentacaoLPR =
-    alteracoesAlimentacaoAutorizadas &&
-    alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("LPR"),
-    ).length > 0;
+  const existeAlteracaoAlimentacaoRPL = existeAlteracaoRPL(
+    alteracoesAlimentacaoAutorizadas,
+    dia,
+  );
+  const existeAlteracaoAlimentacaoLPR = existeAlteracaoLPR(
+    alteracoesAlimentacaoAutorizadas,
+    dia,
+  );
 
   const prefixo = location.state.recreioNasFerias
     ? "participantes"
@@ -813,11 +814,10 @@ export const validacoesTabelasDietas = (
   const lanche_value = Number(
     allValues[`lanche__dia_${dia}__categoria_${categoria}`],
   );
-  const existeAlteracaoAlimentacaoRPL =
-    alteracoesAlimentacaoAutorizadas &&
-    alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL"),
-    ).length > 0;
+  const existeAlteracaoAlimentacaoRPL = existeAlteracaoRPL(
+    alteracoesAlimentacaoAutorizadas,
+    dia,
+  );
 
   const totalLanchesDieta = lanche_4h_value + lanche_value;
   const inputName = `${rowName}__dia_${dia}__categoria_${categoria}`;
@@ -1054,14 +1054,26 @@ export const exibeTooltipInclusoesAutorizadasComZero = (
   categoria,
   inclusoesAutorizadas,
   ehProgramasEProjetosLocation = false,
+  alteracoesAlimentacaoAutorizadas = null,
 ) => {
   const value =
     formValuesAtualizados[
       `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
     ];
 
+  const existeAlteracaoAlimentacaoRPL = existeAlteracaoRPL(
+    alteracoesAlimentacaoAutorizadas,
+    column.dia,
+  );
+  const existeAlteracaoAlimentacaoLPR = existeAlteracaoLPR(
+    alteracoesAlimentacaoAutorizadas,
+    column.dia,
+  );
+
   return (
     !ehProgramasEProjetosLocation &&
+    !existeAlteracaoAlimentacaoRPL &&
+    !existeAlteracaoAlimentacaoLPR &&
     inclusoesAutorizadas.some(
       (inclusao) => column.dia === String(inclusao.dia),
     ) &&
