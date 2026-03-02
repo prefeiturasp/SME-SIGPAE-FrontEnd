@@ -12,7 +12,7 @@ describe("Testes comportamento ModalConflito - Parametrização Financeira", () 
   const mockOnContinuar = jest.fn();
   const uuid = "123e4567-e89b-12d3-a456-426614174000";
 
-  const setup = async ({ conflito = uuid } = {}) => {
+  const setup = async ({ conflito } = {}) => {
     await act(async () => {
       render(
         <ModalConflito
@@ -99,5 +99,13 @@ describe("Testes comportamento ModalConflito - Parametrização Financeira", () 
     fireEvent.click(botao);
 
     expect(mockOnContinuar).not.toHaveBeenCalled();
+  });
+
+  it("não deve renderizar conteúdo quando não houver conflito", async () => {
+    await setup();
+
+    expect(
+      screen.queryByText("Conflito no período de Vigência"),
+    ).not.toBeInTheDocument();
   });
 });

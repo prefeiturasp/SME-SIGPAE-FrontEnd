@@ -1642,6 +1642,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
               categoria,
               inclusoesAutorizadas,
               ehProgramasEProjetosLocation,
+              alteracoesAlimentacaoAutorizadas,
             ) ||
             (ehEmeiDaCemeiLocation &&
               exibirTooltipSuspensoesAutorizadas(
@@ -2587,6 +2588,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                         categoria,
                                                         inclusoesAutorizadas,
                                                         ehProgramasEProjetosLocation,
+                                                        alteracoesAlimentacaoAutorizadas,
                                                       ) ||
                                                       campoLancheComLPRAutorizadaESemObservacao(
                                                         formValuesAtualizados,
@@ -2788,6 +2790,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           categoria,
                                                           inclusoesAutorizadas,
                                                           ehProgramasEProjetosLocation,
+                                                          alteracoesAlimentacaoAutorizadas,
                                                         )}
                                                         exibeTooltipRPLAutorizadas={exibirTooltipRPLAutorizadas(
                                                           formValuesAtualizados,

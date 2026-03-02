@@ -68,6 +68,7 @@ const ModalConflito = ({ conflito, setConflito, onContinuar }: Props) => {
 
       <Modal.Footer>
         <Botao
+          dataTestId="botao-confirmar-conflito"
           texto="Continuar"
           type={BUTTON_TYPE.BUTTON}
           onClick={handleContinuar}

@@ -1,5 +1,9 @@
 import { deepCopy } from "src/helpers/utilities";
 import { format } from "date-fns";
+import {
+  existeAlteracaoRPL,
+  existeAlteracaoLPR,
+} from "../PeriodoLancamentoMedicaoInicial/helper";
 
 /**
  * Verifica se deve exibir um tooltip de alerta quando há frequência de dieta registrada
@@ -273,10 +277,13 @@ export const campoComInclusaoAutorizadaValorZeroESemObservacao = (
   categoria,
   inclusoesAutorizadas,
   ehProgramasEProjetosLocation,
+  alteracoesAlimentacaoAutorizadas = null,
 ) => {
   let erro = false;
   if (
     !ehProgramasEProjetosLocation &&
+    !existeAlteracaoRPL(alteracoesAlimentacaoAutorizadas, column.dia) &&
+    !existeAlteracaoLPR(alteracoesAlimentacaoAutorizadas, column.dia) &&
     categoria.nome === "ALIMENTAÇÃO" &&
     inclusoesAutorizadas &&
     inclusoesAutorizadas.some(
@@ -549,6 +556,8 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
           `${rowName}__dia_${dia}__categoria_${categoria}`
         ],
       ) &&
+    !existeAlteracaoLPR(alteracoesAlimentacaoAutorizadas, dia) &&
+    !existeAlteracaoRPL(alteracoesAlimentacaoAutorizadas, dia) &&
     !allValues[`observacoes__dia_${dia}__categoria_${categoria}`]
   ) {
     return `Número de alimentações é maior que a quantidade autorizada (${Number(
@@ -565,18 +574,6 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
   ) {
     return "Há solicitação de alimentação autorizada para esta data. Insira o número de frequentes.";
   }
-
-  const existeAlteracaoAlimentacaoRPL =
-    alteracoesAlimentacaoAutorizadas &&
-    alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL"),
-    ).length > 0;
-
-  const existeAlteracaoAlimentacaoLPR =
-    alteracoesAlimentacaoAutorizadas &&
-    alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("LPR"),
-    ).length > 0;
 
   if (ehProgramasEProjetosLocation) {
     if (
@@ -603,7 +600,7 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
       : mensagemPadrao;
   } else if (
     value &&
-    existeAlteracaoAlimentacaoRPL &&
+    existeAlteracaoRPL(alteracoesAlimentacaoAutorizadas, dia) &&
     inputName.includes("lanche") &&
     !inputName.includes("emergencial") &&
     (!allValues[`refeicao__dia_${dia}__categoria_${categoria}`] ||
@@ -618,7 +615,7 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
     }
   } else if (
     value &&
-    existeAlteracaoAlimentacaoLPR &&
+    existeAlteracaoLPR(alteracoesAlimentacaoAutorizadas, dia) &&
     inputName.includes("refeicao") &&
     !inputName.includes("repeticao") &&
     (!allValues[`lanche__dia_${dia}__categoria_${categoria}`] ||
@@ -693,11 +690,10 @@ export const validacoesTabelasDietasEmeidaCemei = (
       );
       return total + (isNaN(valor) ? 0 : valor);
     }, 0);
-  const existeAlteracaoAlimentacaoRPL =
-    alteracoesAlimentacaoAutorizadas &&
-    alteracoesAlimentacaoAutorizadas.filter(
-      (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("RPL"),
-    ).length > 0;
+  const existeAlteracaoAlimentacaoRPL = existeAlteracaoRPL(
+    alteracoesAlimentacaoAutorizadas,
+    dia,
+  );
   const maxFrequenciaAlimentacao = Number(
     allValues[`frequencia__dia_${dia}__categoria_${idCategoriaAlimentacao}`],
   );

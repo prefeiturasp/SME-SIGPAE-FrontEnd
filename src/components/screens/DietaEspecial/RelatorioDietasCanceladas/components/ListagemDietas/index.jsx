@@ -81,9 +81,9 @@ export const ListagemDietas = ({ ...props }) => {
                     ? formataAlergias(dietaEspecial)
                         .map((a) => a.nome)
                         .join("; ")
-                    : (dietaEspecial.protocolo_padrao &&
-                        dietaEspecial.protocolo_padrao.nome_protocolo) ||
-                      dietaEspecial.nome_protocolo}
+                    : dietaEspecial.nome_protocolo ||
+                      (dietaEspecial.protocolo_padrao &&
+                        dietaEspecial.protocolo_padrao.nome_protocolo)}
                 </div>
                 {values.status_selecionado === "CANCELADAS" && (
                   <div>{dietaEspecial.data_ultimo_log}</div>

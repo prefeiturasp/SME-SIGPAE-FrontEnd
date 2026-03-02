@@ -1,6 +1,10 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import ModalCancelar from "../../components/ModalCancelar";
+import {
+  MEDICAO_INICIAL,
+  PARAMETRIZACAO_FINANCEIRA,
+} from "src/configs/constants";
 
 const mockNavigate = jest.fn();
 const mockUseSearchParams = jest.fn();
@@ -14,6 +18,7 @@ jest.mock("react-router-dom", () => ({
 describe("Testes comportamento ModalCancelar - Parametrização Financeira", () => {
   const mockSetShowModal = jest.fn();
   const mockOnCancelar = jest.fn();
+  const urlVolta = `/${MEDICAO_INICIAL}/${PARAMETRIZACAO_FINANCEIRA}/`;
 
   const setup = async ({
     showModal = true,
@@ -80,7 +85,7 @@ describe("Testes comportamento ModalCancelar - Parametrização Financeira", () 
     fireEvent.click(screen.getByText("Sim"));
 
     expect(mockOnCancelar).not.toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith(-1);
+    expect(mockNavigate).toHaveBeenCalledWith(urlVolta);
   });
 
   it('deve chamar onCancelar e navigate(-1) ao clicar em "Sim" com nova_uuid', async () => {
@@ -91,7 +96,7 @@ describe("Testes comportamento ModalCancelar - Parametrização Financeira", () 
     fireEvent.click(screen.getByText("Sim"));
 
     expect(mockOnCancelar).toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith(-1);
+    expect(mockNavigate).toHaveBeenCalledWith(urlVolta);
   });
 
   it("deve exibir aviso adicional quando fluxo existir", async () => {

@@ -38,6 +38,7 @@ const ModalCopiar = ({
           className="ms-3"
         />
         <Botao
+          dataTestId="botao-confirmar-copia"
           texto="Sim"
           type={BUTTON_TYPE.BUTTON}
           onClick={() => {

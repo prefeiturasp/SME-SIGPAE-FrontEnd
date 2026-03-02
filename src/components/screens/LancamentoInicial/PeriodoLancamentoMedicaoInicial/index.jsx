@@ -2066,8 +2066,17 @@ export default () => {
     const ehChangeInput = true;
     if (
       (ehZeroFrequencia &&
-        !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]) ||
-      campoFrequenciaValor0ESemObservacao(dia, categoria, values) ||
+        !values[`observacoes__dia_${dia}__categoria_${categoria.id}`] &&
+        location.state.grupo !== "Programas e Projetos") ||
+      campoFrequenciaValor0ESemObservacao(
+        dia,
+        categoria,
+        values,
+        diasFrequenciaZerada,
+        location.state.grupo,
+        escolaEhEMEBS(),
+        alunosTabSelecionada,
+      ) ||
       existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao(
         formValuesAtualizados,
         categoriasDeMedicao,
