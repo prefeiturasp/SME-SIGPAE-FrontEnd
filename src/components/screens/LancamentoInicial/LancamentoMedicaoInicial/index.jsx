@@ -478,6 +478,7 @@ export default () => {
     setAno(null);
     setNaoPodeFinalizar(true);
     setErrosAoSalvar([]);
+    setOpen(false);
     setLoadingSolicitacaoMedicaoInicial(true);
     setPeriodoSelecionado(value);
     const dataPeriodo = new Date(value);
@@ -485,45 +486,48 @@ export default () => {
       (o) => o.dataBRT.getTime() === dataPeriodo.getTime(),
     )?.recreio_nas_ferias;
 
-    await getSolicitacaoMedInicial(
-      value,
-      escolaInstituicao.uuid,
-      recreio_nas_ferias,
-    );
-    const mes = format(new Date(value), "MM").toString();
-    const ano = getYear(new Date(value)).toString();
-    setMes(mes);
-    setAno(ano);
-    const historicoEscola = await getHistoricoEscolaAsync(
-      escolaInstituicao.uuid,
-      { mes },
-      { ano },
-    );
-    const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
-      escolaInstituicao.uuid,
-      { ano },
-    );
-    setPeriodosEscolaSimples(response_vinculos.data.results);
-    await getPeriodosEscolaCemeiComAlunosEmeiAsync(
-      historicoEscola || escolaInstituicao,
-      mes,
-      ano,
-    );
-    await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
-      escolaInstituicao.uuid,
-      mes,
-      ano,
-    );
-    setLoadingSolicitacaoMedicaoInicial(false);
-    navigate(
-      {
-        pathname: location.pathname,
-        search: `?mes=${format(new Date(value), "MM").toString()}&ano=${getYear(
-          new Date(value),
-        ).toString()}${recreio_nas_ferias ? `&recreio_nas_ferias=${recreio_nas_ferias}` : ""}`,
-      },
-      { replace: true },
-    );
+    try {
+      await getSolicitacaoMedInicial(
+        value,
+        escolaInstituicao.uuid,
+        recreio_nas_ferias,
+      );
+      const mes = format(new Date(value), "MM").toString();
+      const ano = getYear(new Date(value)).toString();
+      setMes(mes);
+      setAno(ano);
+      const historicoEscola = await getHistoricoEscolaAsync(
+        escolaInstituicao.uuid,
+        { mes },
+        { ano },
+      );
+      const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
+        escolaInstituicao.uuid,
+        { ano },
+      );
+      setPeriodosEscolaSimples(response_vinculos.data.results);
+      await getPeriodosEscolaCemeiComAlunosEmeiAsync(
+        historicoEscola || escolaInstituicao,
+        mes,
+        ano,
+      );
+      await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
+        escolaInstituicao.uuid,
+        mes,
+        ano,
+      );
+      navigate(
+        {
+          pathname: location.pathname,
+          search: `?mes=${format(new Date(value), "MM").toString()}&ano=${getYear(
+            new Date(value),
+          ).toString()}${recreio_nas_ferias ? `&recreio_nas_ferias=${recreio_nas_ferias}` : ""}`,
+        },
+        { replace: true },
+      );
+    } finally {
+      setLoadingSolicitacaoMedicaoInicial(false);
+    }
   };
 
   const onClickInfoBasicas = async () => {
@@ -614,16 +618,23 @@ export default () => {
               {objectoPeriodos.length > 0 ? (
                 <Select
                   suffixIcon={
-                    <CaretDownOutlined onClick={() => setOpen(!open)} />
+                    <CaretDownOutlined
+                      onClick={() =>
+                        !loadingSolicitacaoMedInicial && setOpen(!open)
+                      }
+                    />
                   }
                   disabled={
+                    loadingSolicitacaoMedInicial ||
                     (location.state &&
                       location.state.status === "Aprovado pela DRE") ||
                     location.pathname.includes(DETALHAMENTO_DO_LANCAMENTO)
                   }
                   open={open}
                   data-testid="select-periodo-lancamento"
-                  onClick={() => setOpen(!open)}
+                  onClick={() =>
+                    !loadingSolicitacaoMedInicial && setOpen(!open)
+                  }
                   onBlur={() => setOpen(false)}
                   name="periodo_lancamento"
                   defaultValue={
