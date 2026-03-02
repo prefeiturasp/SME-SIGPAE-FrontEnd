@@ -54,15 +54,15 @@ const ModalConflito = ({ conflito, setConflito, onContinuar }: Props) => {
         >
           <Radio value="manter">Manter parametrização anterior vigente.</Radio>
 
+          <Radio value="encerrar_copiar">
+            Encerrar parametrização anterior e copiar valores para a nova.
+          </Radio>
+
           {!searchParams.get("uuid_origem") && (
-            <Radio value="encerrar_copiar">
-              Encerrar parametrização anterior e copiar valores para a nova.
+            <Radio value="encerrar_novo">
+              Encerrar parametrização anterior e cadastrar novos valores.
             </Radio>
           )}
-
-          <Radio value="encerrar_novo">
-            Encerrar parametrização anterior e cadastrar novos valores.
-          </Radio>
         </Radio.Group>
       </Modal.Body>
 
