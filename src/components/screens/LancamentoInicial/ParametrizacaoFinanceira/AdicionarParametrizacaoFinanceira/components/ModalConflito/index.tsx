@@ -7,27 +7,29 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import { useSearchParams } from "react-router-dom";
 
 type OpcaoConflito = "manter" | "encerrar_copiar" | "encerrar_novo" | null;
 
 type Props = {
-  conflito: boolean;
-  setConflito: (_e: boolean) => void;
+  conflito?: string;
+  setConflito: (_e: string | null) => void;
   onContinuar?: (_opcao: OpcaoConflito) => void;
 };
 
 const ModalConflito = ({ conflito, setConflito, onContinuar }: Props) => {
   const [opcaoSelecionada, setOpcaoSelecionada] =
     React.useState<OpcaoConflito>(null);
+  const [searchParams] = useSearchParams();
 
   const handleContinuar = () => {
     onContinuar?.(opcaoSelecionada);
-    setConflito(false);
+    setConflito(null);
   };
 
   return (
     <Modal
-      show={conflito}
+      show={!!conflito}
       onHide={() => {
         setConflito(null);
         setOpcaoSelecionada(null);
@@ -56,14 +58,17 @@ const ModalConflito = ({ conflito, setConflito, onContinuar }: Props) => {
             Encerrar parametrização anterior e copiar valores para a nova.
           </Radio>
 
-          <Radio value="encerrar_novo">
-            Encerrar parametrização anterior e cadastrar novos valores.
-          </Radio>
+          {!searchParams.get("uuid_origem") && (
+            <Radio value="encerrar_novo">
+              Encerrar parametrização anterior e cadastrar novos valores.
+            </Radio>
+          )}
         </Radio.Group>
       </Modal.Body>
 
       <Modal.Footer>
         <Botao
+          dataTestId="botao-confirmar-conflito"
           texto="Continuar"
           type={BUTTON_TYPE.BUTTON}
           onClick={handleContinuar}

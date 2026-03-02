@@ -2,10 +2,16 @@ import {
   CategoriaFichaTecnicaChoices,
   MecanismoControleChoices,
   ProgramaChoices,
+  TipoEntregaChoices,
 } from "src/interfaces/pre_recebimento.interface";
 
 export interface OptionsCategoria {
   uuid: CategoriaFichaTecnicaChoices;
+  nome: string;
+}
+
+export interface OptionsEntrega {
+  uuid: TipoEntregaChoices;
   nome: string;
 }
 
@@ -27,6 +33,7 @@ export interface FichaTecnicaPayload {
   produto?: string;
   marca?: string;
   categoria?: CategoriaFichaTecnicaChoices;
+  tipo_entrega?: TipoEntregaChoices;
   programa?: ProgramaChoices;
   empresa?: string;
   pregao_chamada_publica?: string;
@@ -36,6 +43,7 @@ export interface FichaTecnicaPayload {
   numero_registro?: string;
   organico?: boolean | string;
   mecanismo_controle?: MecanismoControleChoices;
+  especie_variedade?: string;
   componentes_produto?: string;
   alergenicos?: boolean | string;
   ingredientes_alergenicos?: string;

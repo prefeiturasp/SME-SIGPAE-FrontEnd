@@ -340,12 +340,7 @@ export const carregaListaCompletaInformacoesNutricionais = async (
 };
 
 export const validaRascunho = (values: FichaTecnicaPayload): boolean => {
-  return (
-    !values.produto ||
-    !values.marca ||
-    !values.categoria ||
-    !values.pregao_chamada_publica
-  );
+  return !values.produto || !values.categoria || !values.pregao_chamada_publica;
 };
 
 export const validaProximo = (
@@ -365,6 +360,8 @@ export const validaProximoIdentificacaoProduto = (
   values: FichaTecnicaPayload,
   errors: Record<string, string>,
 ): boolean => {
+  const ehFLV = values.categoria === "FLV";
+
   const campoAlergenicosValido =
     (values.alergenicos === "1" && values.ingredientes_alergenicos) ||
     values.alergenicos === "0";
@@ -377,10 +374,20 @@ export const validaProximoIdentificacaoProduto = (
     (values.organico === "1" && values.mecanismo_controle) ||
     values.organico === "0";
 
+  if (ehFLV) {
+    return (
+      Object.keys(errors).length !== 0 ||
+      !values.produto ||
+      !values.tipo_entrega ||
+      !values.programa ||
+      !values.pregao_chamada_publica ||
+      !campoOrganicoValido
+    );
+  }
+
   return (
     Object.keys(errors).length !== 0 ||
     !values.produto ||
-    !values.marca ||
     !values.categoria ||
     !values.pregao_chamada_publica ||
     !values.prazo_validade ||
@@ -410,6 +417,12 @@ export const validaAssinarEnviar = (
   errors: Record<string, string>,
   arquivo: ArquivoForm[],
 ): boolean => {
+  const ehFLV = values.categoria === "FLV";
+
+  if (ehFLV) {
+    return Object.keys(errors).length !== 0 || !arquivo.length;
+  }
+
   return (
     Object.keys(errors).length !== 0 ||
     !values.embalagens_de_acordo_com_anexo ||
@@ -462,6 +475,7 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
   const initialValues = {
     produto: ficha.produto?.nome,
     categoria: ficha.categoria as CategoriaFichaTecnicaChoices,
+    tipo_entrega: ficha.tipo_entrega,
     programa: ficha.programa,
     marca: ficha.marca?.uuid,
     pregao_chamada_publica: ficha.pregao_chamada_publica,
@@ -477,6 +491,7 @@ export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
     numero_registro: ficha.numero_registro,
     organico: booleanToString(ficha.organico),
     mecanismo_controle: ficha.mecanismo_controle,
+    especie_variedade: ficha.especie_variedade,
     componentes_produto: ficha.componentes_produto,
     alergenicos: booleanToString(ficha.alergenicos),
     ingredientes_alergenicos: ficha.ingredientes_alergenicos,
@@ -615,29 +630,53 @@ export const formataPayloadCadastroFichaTecnica = (
   password?: string,
 ) => {
   const ehPereciveis = values.categoria === "PERECIVEIS";
+  const ehFLV = values.categoria === "FLV";
 
-  let payload: FichaTecnicaPayload = {
-    ...gerarCamposObrigatoriosRascunho(values, produtosOptions),
-    programa: values.programa,
-    ...gerarCamposProponenteFabricante(
-      values,
-      proponente,
-      fabricantesOptions,
-      fabricantesCount,
-    ),
-    ...gerarCamposDetalhesProduto(values),
-    ...gerarCamposInformacoesNutricionais(values),
-    ...gerarCamposConservacao(values, ehPereciveis),
-    ...(ehPereciveis
-      ? gerarCamposTemperaturaTransporte(values, ehPereciveis)
-      : {}),
-    ...gerarCamposArmazenamento(values),
-    ...gerarCamposEmbalagemRotulagem(values, ehPereciveis),
-    ...gerarCamposResponsavelTecnico(values, arquivo),
-    ...gerarCamposModoPreparo(values),
-    ...gerarCamposOutrasInformacoes(values),
-    password: password,
-  };
+  let payload: FichaTecnicaPayload;
+
+  if (ehFLV) {
+    payload = {
+      ...gerarCamposObrigatoriosRascunho(values, produtosOptions),
+      marca: values.marca || undefined,
+      tipo_entrega: values.tipo_entrega,
+      programa: values.programa,
+      ...gerarCamposProponenteFabricante(
+        values,
+        proponente,
+        fabricantesOptions,
+        fabricantesCount,
+      ),
+      ...gerarCamposDetalhesProduto(values),
+      ...gerarCamposResponsavelTecnico(values, arquivo),
+      ...gerarCamposOutrasInformacoes(values),
+      password: password,
+    };
+  } else {
+    payload = {
+      ...gerarCamposObrigatoriosRascunho(values, produtosOptions),
+      marca: values.marca || undefined,
+      tipo_entrega: values.tipo_entrega,
+      programa: values.programa,
+      ...gerarCamposProponenteFabricante(
+        values,
+        proponente,
+        fabricantesOptions,
+        fabricantesCount,
+      ),
+      ...gerarCamposDetalhesProduto(values),
+      ...gerarCamposInformacoesNutricionais(values),
+      ...gerarCamposConservacao(values, ehPereciveis),
+      ...(ehPereciveis
+        ? gerarCamposTemperaturaTransporte(values, ehPereciveis)
+        : {}),
+      ...gerarCamposArmazenamento(values),
+      ...gerarCamposEmbalagemRotulagem(values, ehPereciveis),
+      ...gerarCamposResponsavelTecnico(values, arquivo),
+      ...gerarCamposModoPreparo(values),
+      ...gerarCamposOutrasInformacoes(values),
+      password: password,
+    };
+  }
 
   return payload;
 };
@@ -746,7 +785,6 @@ const gerarCamposObrigatoriosRascunho = (
 ) => {
   return {
     produto: produtosOptions.find((p) => p.nome === values.produto)?.uuid,
-    marca: values.marca,
     categoria: values.categoria,
     pregao_chamada_publica: values.pregao_chamada_publica,
   };
@@ -787,6 +825,17 @@ const gerarCamposProponenteFabricante = (
 };
 
 const gerarCamposDetalhesProduto = (values: Record<string, any>) => {
+  const ehFLV = values.categoria === "FLV";
+
+  if (ehFLV) {
+    return {
+      numero_registro: values.numero_registro || "",
+      organico: stringToBoolean(values.organico as string),
+      mecanismo_controle: values.mecanismo_controle || undefined,
+      especie_variedade: values.especie_variedade || "",
+    };
+  }
+
   return {
     prazo_validade: values.prazo_validade || "",
     numero_registro: values.numero_registro || "",

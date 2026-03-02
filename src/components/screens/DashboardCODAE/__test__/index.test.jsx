@@ -41,6 +41,20 @@ jest.mock("src/components/Shareable/Toast/dialogs", () => ({
 
 const mockStore = configureStore([]);
 
+const mockSolicitacoesComKitLancheUnificado = {
+  results: [
+    {
+      id: 300,
+      data_log: "13/10/2025",
+      descricao: "B1706 - 3567-2 - Kit Lanche Unificado",
+      escola_nome: "EMEBS NEUSA BASSETTO, PROFA.",
+      tipo_doc: "KIT_LANCHE_UNIFICADA",
+      desc_doc: "Kit Lanche Unificado",
+      prioridade: "REGULAR",
+    },
+  ],
+};
+
 const createMockResumoPendencias = () => {
   const resumo = {};
   TIPOS_SOLICITACAO_LISTA.forEach((card) => {
@@ -62,6 +76,15 @@ const mockSolicitacoes = {
   results: [
     {
       id: 196,
+      data_log: "22/10/2025",
+      descricao: "1FEEF - 3567-3 - Kit Lanche Passeio",
+      escola_nome: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+      tipo_doc: "KIT_LANCHE_AVULSA",
+      desc_doc: "Kit Lanche Passeio",
+      prioridade: "REGULAR",
+    },
+    {
+      id: 197,
       data_log: "22/10/2025",
       descricao: "1FEEF - 3567-3 - Kit Lanche Passeio",
       escola_nome: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
@@ -240,11 +263,36 @@ describe("Dashboard CODAE - Gestão Alimentação", () => {
     });
 
     await awaitServices();
+    const items = screen.getAllByText(
+      "1FEEF - 3567-3 - Kit Lanche Passeio / EMEF PERICLES EUGENIO DA SILVA RAMOS",
+    );
+    expect(items.length).toBeGreaterThan(0);
+  });
+
+  it("exibe Kit Lanche Unificado sem nome de escola", async () => {
+    // Sobrescreve o mock de autorizadas para retornar Kit Lanche Unificado
+    getSolicitacoesAutorizadasCodae.mockResolvedValue({
+      data: mockSolicitacoesComKitLancheUnificado,
+      status: 200,
+    });
+
+    await act(async () => {
+      renderComponent();
+    });
+
+    await awaitServices();
+
+    // Deve aparecer apenas a descrição, sem o nome da escola
     expect(
-      screen.getByText(
-        "1FEEF - 3567-3 - Kit Lanche Passeio / EMEF PERICLES EUGENIO DA SILVA RAMOS",
-      ),
+      screen.getByText("B1706 - 3567-2 - Kit Lanche Unificado"),
     ).toBeInTheDocument();
+
+    // Não deve aparecer o nome da escola concatenado
+    expect(
+      screen.queryByText(
+        "B1706 - 3567-2 - Kit Lanche Unificado / EMEBS NEUSA BASSETTO, PROFA.",
+      ),
+    ).not.toBeInTheDocument();
   });
 
   it("aplica filtro de busca", async () => {

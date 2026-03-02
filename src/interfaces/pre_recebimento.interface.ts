@@ -140,7 +140,12 @@ export interface OptionsGenerico {
   nome: string;
 }
 
-export type CategoriaFichaTecnicaChoices = "PERECIVEIS" | "NAO_PERECIVEIS";
+export type CategoriaFichaTecnicaChoices =
+  | "FLV"
+  | "PERECIVEIS"
+  | "NAO_PERECIVEIS";
+
+export type TipoEntregaChoices = "ARMAZEM" | "PONTO_A_PONTO";
 
 export interface ProdutoSimples {
   uuid: string;
@@ -167,6 +172,7 @@ export interface FichaTecnica {
   criado_em: string;
   status: string;
   programa: ProgramaChoices;
+  flv_ponto_a_ponto: boolean;
 }
 
 export interface InformacoesNutricionaisFichaTecnica {
@@ -184,6 +190,7 @@ export interface FichaTecnicaDetalhada {
   pregao_chamada_publica: string;
   marca: MarcaSimples;
   categoria: CategoriaFichaTecnicaChoices;
+  tipo_entrega: TipoEntregaChoices;
   programa: ProgramaChoices;
   status: string;
   criado_em: string;
@@ -194,6 +201,7 @@ export interface FichaTecnicaDetalhada {
   numero_registro: string;
   organico: boolean;
   mecanismo_controle: MecanismoControleChoices;
+  especie_variedade: string;
   componentes_produto: string;
   alergenicos: boolean;
   ingredientes_alergenicos: string;

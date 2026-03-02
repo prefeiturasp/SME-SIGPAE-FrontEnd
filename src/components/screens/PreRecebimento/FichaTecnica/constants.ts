@@ -1,6 +1,14 @@
-import { OptionsCategoria, OptionsPrograma } from "./interfaces";
+import {
+  OptionsCategoria,
+  OptionsEntrega,
+  OptionsPrograma,
+} from "./interfaces";
 
 export const CATEGORIA_OPTIONS: OptionsCategoria[] = [
+  {
+    uuid: "FLV",
+    nome: "FLV (Frutas, Legumes e Verduras)",
+  },
   {
     uuid: "PERECIVEIS",
     nome: "Perecíveis",
@@ -8,6 +16,17 @@ export const CATEGORIA_OPTIONS: OptionsCategoria[] = [
   {
     uuid: "NAO_PERECIVEIS",
     nome: "Não Perecíveis",
+  },
+];
+
+export const TIPO_ENTREGA_OPTIONS: OptionsEntrega[] = [
+  {
+    uuid: "ARMAZEM",
+    nome: "Armazém",
+  },
+  {
+    uuid: "PONTO_A_PONTO",
+    nome: "Ponto a Ponto",
   },
 ];
 

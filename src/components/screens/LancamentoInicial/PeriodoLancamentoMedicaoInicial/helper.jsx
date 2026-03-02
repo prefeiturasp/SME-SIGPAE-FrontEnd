@@ -189,6 +189,7 @@ export const valorZeroFrequencia = (
 
     linhasDaTabela.forEach((linha) => {
       ![
+        "matriculados",
         "participantes",
         "frequencia",
         "observacoes",

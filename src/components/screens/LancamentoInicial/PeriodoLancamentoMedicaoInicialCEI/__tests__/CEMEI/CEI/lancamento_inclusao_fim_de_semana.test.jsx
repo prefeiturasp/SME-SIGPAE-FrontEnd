@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -46,7 +47,7 @@ describe("Testes de inclusão de lançamento em fim de semana", () => {
       .onGet("/log-alunos-matriculados-faixa-etaria-dia/")
       .reply(
         200,
-        mockAlunosMatriculadosFaixaEtariaDiaCEMEICEIINTEGRALAgosto2025
+        mockAlunosMatriculadosFaixaEtariaDiaCEMEICEIINTEGRALAgosto2025,
       );
     mock
       .onGet("/log-quantidade-dietas-autorizadas-cei/")
@@ -83,7 +84,7 @@ describe("Testes de inclusão de lançamento em fim de semana", () => {
         >
           <PeriodoLancamentoMedicaoInicialCEIPage />
           <ToastContainer />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
 
@@ -115,14 +116,14 @@ describe("Testes de inclusão de lançamento em fim de semana", () => {
 
   it("renderiza input do dia 02/08/2025 como habilitado por ter inclusão autorizada", () => {
     const inputDiaFrequenciaDia2 = screen.getByTestId(
-      "frequencia__faixa_55f0af28-e1d5-43a0-a3f3-bbc453b784a5__dia_02__categoria_1"
+      "frequencia__faixa_55f0af28-e1d5-43a0-a3f3-bbc453b784a5__dia_02__categoria_1",
     );
     expect(inputDiaFrequenciaDia2).toBeEnabled();
   });
 
   it("renderiza input do dia 03/08/2025 como desabilitado por ter NÃO inclusão autorizada", () => {
     const inputDiaFrequenciaDia2 = screen.getByTestId(
-      "frequencia__faixa_55f0af28-e1d5-43a0-a3f3-bbc453b784a5__dia_03__categoria_1"
+      "frequencia__faixa_55f0af28-e1d5-43a0-a3f3-bbc453b784a5__dia_03__categoria_1",
     );
     expect(inputDiaFrequenciaDia2).toBeDisabled();
   });

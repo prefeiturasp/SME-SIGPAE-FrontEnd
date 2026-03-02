@@ -31,7 +31,10 @@ export const Container = () => {
   };
 
   const getNumerosEditaisAsync = async () => {
-    const response = await getNumerosEditais();
+    const response = await getNumerosEditais({
+      excluir_encerrados: true,
+      excluir_parceira: true,
+    });
     if (response.status === HTTP_STATUS.OK) {
       let editais = response.data.results.filter(
         (edital) => !EDITAIS_INVALIDOS.includes(edital.numero.toUpperCase()),

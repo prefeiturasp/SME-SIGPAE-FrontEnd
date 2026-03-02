@@ -15,6 +15,7 @@ export default () => {
   const [resultado, setResultado] = useState(undefined);
   const [listaProdutos, setListaProdutos] = useState(true);
   const [listaEditais, setListaEditais] = useState(undefined);
+  const [listaEditaisDestino, setListaEditaisDestino] = useState(undefined);
   const [listaTipos, setListaTipos] = useState(undefined);
   const [total, setTotal] = useState(0);
   const [filtros, setFiltros] = useState({});
@@ -26,12 +27,13 @@ export default () => {
       if (responseFiltros.status === HTTP_STATUS.OK) {
         setListaProdutos(responseFiltros.data.produtos);
         setListaEditais(responseFiltros.data.editais);
+        setListaEditaisDestino(responseFiltros.data.editais_destino);
         setListaTipos([
           { nome: "Comum", key: "Comum" },
           { nome: "Dieta Especial", key: "Dieta especial" },
         ]);
       }
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao carregar opções dos filtros");
     }
     setResultado(undefined);
@@ -54,7 +56,7 @@ export default () => {
         setResultado(response.data.results);
         setTotal(response.data.count);
       }
-    } catch (e) {
+    } catch {
       toastError("Houve um erro ao tentar trocar página");
     }
     setCarregando(false);
@@ -67,6 +69,7 @@ export default () => {
           setResultado={setResultado}
           listaProdutos={listaProdutos}
           listaEditais={listaEditais}
+          listaEditaisDestino={listaEditaisDestino}
           listaTipos={listaTipos}
           setCarregando={setCarregando}
           setTotal={setTotal}

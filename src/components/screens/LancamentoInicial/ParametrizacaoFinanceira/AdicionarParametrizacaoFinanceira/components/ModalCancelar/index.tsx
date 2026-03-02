@@ -5,6 +5,10 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import {
+  MEDICAO_INICIAL,
+  PARAMETRIZACAO_FINANCEIRA,
+} from "src/configs/constants";
 
 type Props = {
   showModal: boolean;
@@ -59,7 +63,7 @@ const ModalCancelar = ({
           type={BUTTON_TYPE.BUTTON}
           onClick={() => {
             if (conflitoUuid) onCancelar();
-            navigate(-1);
+            navigate(`/${MEDICAO_INICIAL}/${PARAMETRIZACAO_FINANCEIRA}/`);
           }}
           style={BUTTON_STYLE.GREEN}
           className="ms-3"

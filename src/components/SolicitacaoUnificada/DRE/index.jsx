@@ -402,7 +402,7 @@ const SolicitacaoUnificada = ({
                         htmlFor="unidades_escolares"
                         className="col-form-label"
                       >
-                        Unidades Escolares
+                        Unidades Educacionais
                       </label>
                       <Field
                         component={MultiselectRaw}
@@ -651,7 +651,7 @@ const SolicitacaoUnificada = ({
                                     </div>
                                     <div className="col-12 mt-3">
                                       <p>
-                                        Número de kits dessa escola:{" "}
+                                        Número de kits dessa UE:{" "}
                                         {!["", undefined].includes(
                                           ue.nmr_alunos,
                                         ) &&
@@ -675,7 +675,7 @@ const SolicitacaoUnificada = ({
                   <div className="row">
                     <div className="col-6">
                       <p>
-                        Total de Unidades Escolares:{" "}
+                        Total de Unidades Educacionais:{" "}
                         {unidadesEscolaresSelecionadas.length}
                       </p>
                     </div>

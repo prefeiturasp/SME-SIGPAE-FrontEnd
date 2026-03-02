@@ -17,6 +17,7 @@ const MaskedInputText = ({
   mask,
   disabled,
   inputOnChange,
+  dataTestId,
 }) => {
   return (
     <div className="input">
@@ -34,6 +35,7 @@ const MaskedInputText = ({
         {...input}
         name={name}
         id={id}
+        data-testid={dataTestId}
         mask={mask}
         className={`form-control ${className} ${
           meta &&

@@ -1,12 +1,45 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
-import { CalendarioCronograma } from "../index.tsx";
+import { CalendarioCronograma } from "../index";
 import { mockEtapasCalendario } from "src/mocks/Shareable/CalendarioCronograma/mockEtapasCalendario";
+import mock from "src/services/_mock";
 
-jest.mock("react-big-calendar", () => ({
-  ...jest.requireActual("react-big-calendar"),
-  Calendar: jest.fn(() => <div>Mocked Calendar</div>),
+jest.mock("react-big-calendar", () => {
+  const React = require("react");
+  return {
+    ...jest.requireActual("react-big-calendar"),
+    Calendar: jest.fn(({ onSelectEvent, events }) => {
+      const children = events
+        ? events.map((event, index) =>
+            React.createElement(
+              "button",
+              {
+                key: index,
+                "data-testid": `event-${index}`,
+                onClick: () => onSelectEvent(event),
+              },
+              event.title,
+            ),
+          )
+        : [];
+      return React.createElement(
+        "div",
+        { "data-testid": "mocked-calendar" },
+        children,
+      );
+    }),
+  };
+});
+
+jest.mock("../../Toast/dialogs", () => ({
+  toastError: jest.fn(),
+  toastSuccess: jest.fn(),
+}));
+
+jest.mock("../../../../helpers/utilities", () => ({
+  usuarioEhCronogramaOuCodae: jest.fn(() => true),
 }));
 
 describe("Teste para o componente <CalendarioCronograma>", () => {
@@ -207,6 +240,47 @@ describe("Teste para o componente <CalendarioCronograma>", () => {
       expect(eventPropGetter(eventos[0]).className).toBe("programa-leve-leite");
       expect(eventPropGetter(eventos[1]).className).toBe("interrupcao-entrega");
       expect(Object.keys(eventPropGetter(eventos[2])).length).toBe(0);
+    });
+
+    it("deve abrir o modal de detalhes ao selecionar um evento de interrupção", async () => {
+      const user = userEvent.setup();
+
+      // Criar um evento de interrupção simulado que o CalendarioCronograma carrega
+      const mockInterrupcao = {
+        uuid: "inter-123",
+        data: "17/02/2026",
+        motivo_display: "Feriado",
+        descricao_motivo: "Carnaval",
+        tipo_calendario: "ARMAZENAVEL",
+        tipo_calendario_display: "Armazenável",
+      };
+
+      // Simular a resposta do serviço de interrupções
+      mock.onGet(/\/interrupcao-programada-entrega\//).reply(200, {
+        results: [mockInterrupcao],
+      });
+
+      // Re-renderizar para capturar o novo mock de interrupção
+      render(
+        <CalendarioCronograma
+          getObjetos={getObjetosMock}
+          nomeObjeto="Cronogramas"
+          nomeObjetoMinusculo="cronogramas"
+        />,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("INTERRUPÇÃO DE ENTREGA")).toBeInTheDocument();
+      });
+
+      const eventBtn = screen.getByText("INTERRUPÇÃO DE ENTREGA");
+      await user.click(eventBtn);
+
+      await waitFor(() => {
+        expect(screen.getByText("Interrupção de Entrega")).toBeInTheDocument();
+        expect(screen.getByText("17/02/2026")).toBeInTheDocument();
+        expect(screen.getByText(/Feriado - Carnaval/i)).toBeInTheDocument();
+      });
     });
   });
 });

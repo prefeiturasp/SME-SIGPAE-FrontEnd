@@ -210,3 +210,6 @@ export const getDatasBloqueioCadastroEtapas = async () =>
   await axios.get(
     "/interrupcao-programada-entrega/datas-bloqueadas-armazenavel/",
   );
+
+export const deletaInterrupcaoProgramada = async (uuid) =>
+  await axios.delete(`/interrupcao-programada-entrega/${uuid}/`);

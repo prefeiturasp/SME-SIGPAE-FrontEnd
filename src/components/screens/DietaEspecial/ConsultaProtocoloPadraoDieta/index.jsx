@@ -18,13 +18,21 @@ export default () => {
   const [total, setTotal] = useState(0);
   const [filtros, setFiltros] = useState({});
   const [editais, setEditais] = useState(undefined);
+  const [editaisDestino, setEditaisDestino] = useState(undefined);
   const [erroAPI, setErroAPI] = useState(false);
   const [page, setPage] = useState(1);
 
   const getEditaisAsync = async () => {
     const response = await getNumerosEditais();
-    if (response.status === HTTP_STATUS.OK) {
+    const responseEditaisDestino = await getNumerosEditais({
+      excluir_encerrados: true,
+    });
+    if (
+      response.status === HTTP_STATUS.OK &&
+      responseEditaisDestino.status === HTTP_STATUS.OK
+    ) {
       setEditais(response.data.results);
+      setEditaisDestino(responseEditaisDestino.data.results);
     } else {
       setErroAPI(true);
     }
@@ -78,6 +86,7 @@ export default () => {
             setFiltros={setFiltros}
             setPage={setPage}
             editais={editais}
+            editaisDestino={editaisDestino}
             onChangePage={() => {
               changePage(page);
             }}
