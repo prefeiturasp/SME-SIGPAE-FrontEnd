@@ -6,6 +6,7 @@ import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import {
   toastError,
   toastSuccess,
+  toastInfo,
 } from "src/components/Shareable/Toast/dialogs";
 import {
   ParametrizacaoFinanceiraPayload,
@@ -56,7 +57,7 @@ export default ({
     string | null
   >(null);
 
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const getEditaisAsync = async () => {
@@ -376,13 +377,16 @@ export default ({
           );
 
         if (response.uuid) {
-          _form.change(
-            "tabelas",
-            carregarValores(
-              response.tabelas,
-              response.grupo_unidade_escolar.nome,
-            ),
-          );
+          const ehCopia = !!searchParams.get("uuid_origem");
+          if (!ehCopia) {
+            _form.change(
+              "tabelas",
+              carregarValores(
+                response.tabelas,
+                response.grupo_unidade_escolar.nome,
+              ),
+            );
+          }
           _form.change("data_inicial", moment().format("DD/MM/YYYY"));
           _form.change("data_final", null);
 
@@ -394,6 +398,11 @@ export default ({
             return params;
           });
           setParametrizacaoConflito(null);
+          if (ehCopia) {
+            toastInfo(
+              "Parametrização anterior encerrada. Revise as informações e clique em salvar para confirmar.",
+            );
+          }
         } else
           toastError(
             "Erro ao encerrar e criar nova parametrização financeira.",
