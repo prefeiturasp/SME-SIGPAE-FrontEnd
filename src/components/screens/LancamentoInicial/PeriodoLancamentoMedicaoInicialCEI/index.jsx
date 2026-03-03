@@ -1726,6 +1726,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           row,
           column,
           categoria,
+          ehRecreioNasFerias(),
         )) ||
       (ehEmeiDaCemeiLocation &&
         existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao(
@@ -2580,6 +2581,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                         categoria,
                                                         categoriasDeMedicao,
                                                         faixaEtaria,
+                                                        ehRecreioNasFerias(),
                                                       ) ||
                                                       campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao(
                                                         inclusoesAutorizadas,

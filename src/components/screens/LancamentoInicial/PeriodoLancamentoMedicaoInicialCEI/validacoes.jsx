@@ -122,6 +122,7 @@ export const alimentacoesFrequenciaZeroESemObservacaoCEI = (
   categoria,
   categorias,
   faixasEtarias,
+  ehRecreioNasFerias,
 ) => {
   if (!faixasEtarias || faixasEtarias.length === 0) return false;
   const categoriaAlimentacao = categorias.find(
@@ -132,13 +133,12 @@ export const alimentacoesFrequenciaZeroESemObservacaoCEI = (
 
   let sumFrequenciasAlimentacao = 0;
   for (const faixa of faixasEtarias) {
-    if (
-      Number(
-        values[
-          `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
-        ],
-      ) > 0
-    ) {
+    let campoMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
+    if (ehRecreioNasFerias) {
+      campoMatriculados = `participantes__faixa_null__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
+    }
+
+    if (Number(values[campoMatriculados]) > 0) {
       sumFrequenciasAlimentacao += Number(
         values[
           `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
@@ -992,6 +992,7 @@ export const existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI = (
   currentRow = null,
   currentColumn = null,
   currentCategoria = null,
+  ehRecreioNasFerias = false,
 ) => {
   if (
     !formValuesAtualizados ||
@@ -1028,13 +1029,12 @@ export const existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI = (
 
     let sumFrequenciasAlimentacao = 0;
     for (const faixa of faixasEtarias) {
-      if (
-        Number(
-          formValuesAtualizados[
-            `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
-          ],
-        ) > 0
-      ) {
+      let campoMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
+      if (ehRecreioNasFerias) {
+        campoMatriculados = `participantes__faixa_null__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
+      }
+
+      if (Number(formValuesAtualizados[campoMatriculados]) > 0) {
         sumFrequenciasAlimentacao += Number(
           formValuesAtualizados[
             `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
