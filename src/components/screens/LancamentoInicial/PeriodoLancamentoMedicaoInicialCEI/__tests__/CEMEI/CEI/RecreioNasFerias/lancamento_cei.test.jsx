@@ -19,6 +19,7 @@ import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamen
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import { mockLocationStateGrupoRecreioNasFerias } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockStateRecreio";
+import { mockDietasEspsciais } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockDietasEspeciais.jsx";
 import {
   getCategoriasDeMedicao,
   getDiasLetivosRecreio,
@@ -33,6 +34,7 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import mock from "src/services/_mock";
+import preview from "jest-preview";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -107,7 +109,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F�
     });
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     getLogDietasAutorizadasRecreioNasFeriasCEI.mockResolvedValue({
-      data: [],
+      data: mockDietasEspsciais,
       status: 200,
     });
 
@@ -220,6 +222,63 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F�
       );
       const allParticipantes = screen.getAllByText("Seg.");
       const specificParticipantes = allParticipantes.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `DIETA ESPECIAL - TIPO A`", async () => {
+      await awaitServices();
+      expect(screen.getByText("DIETA ESPECIAL - TIPO A")).toBeInTheDocument();
+    });
+
+    it("renderiza label `Dietas Autorizadas` dentro da seção `DIETA ESPECIAL - TIPO A`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "39cd2574-6d28-49bb-b628-ae538dc97791";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Dietas Autorizadas");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `Seg.` dentro da seção `DIETA ESPECIAL - TIPO A`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "39cd2574-6d28-49bb-b628-ae538dc97791";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Seg.");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `Dietas Autorizadas` dentro da seção `DIETA ESPECIAL - TIPO B`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "6ad79709-3611-4af3-a567-65fcf34b3d06";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Dietas Autorizadas");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `Seg.` dentro da seção `DIETA ESPECIAL - TIPO B`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "6ad79709-3611-4af3-a567-65fcf34b3d06";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Seg.");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
         myElement.contains(element),
       );
       expect(specificParticipantes).toBeInTheDocument();
@@ -431,6 +490,12 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F�
         const input = screen.getByTestId(`${testId}__dia_01__categoria_1`);
         expect(input).toHaveAttribute("value", valoresEsperados[testId]);
       });
+    });
+  });
+
+  describe("Testa a parte de DIETAS ESPECIAIS", () => {
+    it("ao clicar na tab `Semana 1`, exibe, nos dias 29 setembro a 05 de outubro, e verifica oa lançamentos", async () => {
+      preview.debug();
     });
   });
 });
