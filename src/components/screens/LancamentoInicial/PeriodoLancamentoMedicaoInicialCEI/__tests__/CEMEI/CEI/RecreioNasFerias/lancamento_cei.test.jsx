@@ -32,6 +32,7 @@ import {
   getSolicitacoesSuspensoesAutorizadasEscola,
   getValoresPeriodosLancamentos,
   updateValoresPeriodosLancamentos,
+  getLogDietasAutorizadasRecreioNasFeriasCEI,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import mock from "src/services/_mock";
@@ -54,6 +55,7 @@ const awaitServices = async () => {
     ).toHaveBeenCalled();
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
+    expect(getLogDietasAutorizadasRecreioNasFeriasCEI).toHaveBeenCalled;
   });
 };
 
@@ -114,6 +116,10 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     getDiasCalendario.mockResolvedValue({
       data: mockDiasCalendarioCEI,
+      status: 200,
+    });
+    getLogDietasAutorizadasRecreioNasFeriasCEI.mockResolvedValue({
+      data: [],
       status: 200,
     });
 
