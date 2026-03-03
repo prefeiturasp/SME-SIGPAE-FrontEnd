@@ -47,20 +47,21 @@ export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI = (
   categoria,
   categoriasDeMedicao,
   faixasEtarias,
+  ehRecreioNasFerias,
 ) => {
   if (!faixasEtarias || faixasEtarias.length === 0) return false;
   const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
     c.nome.includes("ALIMENTAÇÃO"),
   );
   let sumFrequenciasAlimentacao = 0;
+
   for (const faixa of faixasEtarias) {
-    if (
-      Number(
-        formValuesAtualizados[
-          `matriculados__faixa_${faixa.uuid}__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`
-        ],
-      ) > 0
-    ) {
+    let campoMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`;
+    if (ehRecreioNasFerias) {
+      campoMatriculados = `participantes__faixa_null__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`;
+    }
+
+    if (Number(formValuesAtualizados[campoMatriculados]) > 0) {
       sumFrequenciasAlimentacao += Number(
         formValuesAtualizados[
           `frequencia__faixa_${faixa.uuid}__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`

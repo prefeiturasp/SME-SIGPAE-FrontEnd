@@ -1360,6 +1360,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       ehProgramasEProjetosLocation,
       ehRecreioNasFerias(),
       ehGrupoColaboradores(),
+      location.state.grupo,
     );
     if (payload.valores_medicao.length === 0)
       return (
@@ -2994,6 +2995,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           categoria,
                                                           categoriasDeMedicao,
                                                           faixaEtaria,
+                                                          ehRecreioNasFerias(),
                                                         )}
                                                         exibeTooltipDietasInclusaoDiaNaoLetivoCEI={exibirTooltipDietasInclusaoDiaNaoLetivoCEI(
                                                           inclusoesAutorizadas,

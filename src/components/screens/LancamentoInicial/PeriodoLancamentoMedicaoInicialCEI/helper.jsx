@@ -26,6 +26,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   ehProgramasEProjetosLocation,
   ehRecreioNasFerias,
   ehGrupoColaboradores,
+  grupo,
 ) => {
   if (
     (ehEmeiDaCemeiLocation &&
@@ -37,7 +38,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
     values["periodo_escolar"] === "Programas e Projetos" ||
     ehRecreioNasFerias
   ) {
-    values["grupo"] = values["periodo_escolar"];
+    values["grupo"] = ehRecreioNasFerias ? grupo : values["periodo_escolar"];
     if (values["grupo"] && values["grupo"].includes("Solicitações")) {
       values["grupo"] = "Solicitações de Alimentação";
     }
