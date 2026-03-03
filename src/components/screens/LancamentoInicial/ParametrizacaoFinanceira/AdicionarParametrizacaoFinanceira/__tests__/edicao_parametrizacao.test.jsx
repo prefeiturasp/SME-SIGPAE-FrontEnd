@@ -125,7 +125,7 @@ describe("Testes formulário de edição - Parametrização Financeira", () => {
 
     fireEvent.click(
       screen.getByText(
-        "Encerrar parametrização anterior e cadastrar novos valores.",
+        "Encerrar parametrização anterior e copiar valores para a nova.",
       ),
     );
     fireEvent.click(screen.getByText("Continuar"));
