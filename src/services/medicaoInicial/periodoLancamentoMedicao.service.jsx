@@ -267,3 +267,12 @@ export const getDiasFrequenciaZerada = async (params) => {
     return data;
   }
 };
+
+export const getLogDietasAutorizadasRecreioNasFeriasCEI = async (params) => {
+  const url = "log-quantidade-dietas-autorizadas-recreio-nas-ferias-cei/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};

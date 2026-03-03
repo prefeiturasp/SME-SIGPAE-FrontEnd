@@ -52,6 +52,7 @@ import {
   setPeriodoLancamento,
   updateValoresPeriodosLancamentos,
   getDiasFrequenciaZerada,
+  getLogDietasAutorizadasRecreioNasFeriasCEI,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
@@ -492,10 +493,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           mes: mes,
           ano: ano,
         };
-        response_log_dietas_autorizadas_cei =
-          await getLogDietasAutorizadasCEIPeriodo(
-            params_dietas_autorizadas_cei,
-          );
+        response_log_dietas_autorizadas_cei = await obterLogsDietasEspeciais(
+          params_dietas_autorizadas_cei,
+        );
         setLogQtdDietasAutorizadasCEI(response_log_dietas_autorizadas_cei.data);
       }
 
@@ -2285,6 +2285,23 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         (item) => item.dia === dia && item.tem_observacao === false,
       );
     return estaZerado;
+  };
+
+  const obterLogsDietasEspeciais = async (params_dietas_autorizadas) => {
+    let response_log_dietas_autorizadas = [];
+    if (ehRecreioNasFerias() && !ehGrupoColaboradores()) {
+      response_log_dietas_autorizadas =
+        await getLogDietasAutorizadasRecreioNasFeriasCEI(
+          params_dietas_autorizadas,
+        );
+    }
+    if (!ehRecreioNasFerias()) {
+      response_log_dietas_autorizadas = await getLogDietasAutorizadasCEIPeriodo(
+        params_dietas_autorizadas,
+      );
+    }
+
+    return response_log_dietas_autorizadas;
   };
 
   return (
