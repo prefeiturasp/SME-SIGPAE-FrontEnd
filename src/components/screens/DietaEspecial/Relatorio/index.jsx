@@ -1,5 +1,6 @@
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
@@ -59,6 +60,7 @@ import {
 import "./style.scss";
 
 const Relatorio = ({ visao }) => {
+  const location = useLocation();
   const [dietaEspecial, setDietaEspecial] = useState(null);
   const [carregando, setCarregando] = useState(false);
   const [showNaoAprovaModal, setShowNaoAprovaModal] = useState(false);
@@ -116,7 +118,7 @@ const Relatorio = ({ visao }) => {
   };
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
     const uuid = urlParams.get("uuid");
     const card = urlParams.get("card");
     if (card) {
@@ -132,7 +134,7 @@ const Relatorio = ({ visao }) => {
         setUuidDieta,
         setDietasAbertas,
       );
-  }, []);
+  }, [location.search]);
 
   useEffect(() => {
     const intervalCall = setInterval(() => {
