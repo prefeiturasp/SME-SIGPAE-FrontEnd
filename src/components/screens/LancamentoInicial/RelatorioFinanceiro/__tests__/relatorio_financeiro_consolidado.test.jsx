@@ -13,6 +13,7 @@ import {
   mockTotaisAtendimentoTipoAlimentacao,
 } from "src/mocks/services/relatorioFinanceiro.service/mockGetTotaisConsumoAtendimento";
 import {
+  mockRelatorioFinanceiroCEMEI,
   mockRelatorioFinanceiroFaixaEtaria,
   mockRelatorioFinanceiroTipoAlimentacao,
 } from "src/mocks/services/relatorioFinanceiro.service/mockGetRelatorioFinanceiroConsolidado";
@@ -160,6 +161,42 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       headers.some((h) => h.textContent?.includes("DIETA ESPECIAL - TIPO B")),
     ).toBe(true);
   };
+
+  it("deve exibir tabelas e valores do grupo 2 - CEMEI", async () => {
+    mock
+      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
+      .reply(200, mockRelatorioFinanceiroCEMEI);
+
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, {
+        TIPO: mockTotaisAtendimentoTipoAlimentacao,
+        FAIXA: mockTotaisAtendimentoFaixaEtaria,
+      });
+
+    const grupoCEMEI = gruposUnidadeEscolar.find((grupo) =>
+      grupo.nome.includes("Grupo 2"),
+    );
+
+    await setup(grupoCEMEI.uuid);
+
+    for (const titulo of [
+      "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
+      "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
+      "VALOR UNITÁRIO",
+    ]) {
+      expect(
+        (
+          await screen.findAllByRole("columnheader", {
+            name: titulo,
+          })
+        ).length,
+      ).toBeGreaterThan(0);
+    }
+    expect(screen.getAllByText("TOTAL (A)")).toHaveLength(2);
+  });
 
   it("deve exibir tabelas e valores do grupo 3 - EMEI", async () => {
     const grupoEMEI = gruposUnidadeEscolar.find((grupo) =>
