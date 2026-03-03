@@ -1,5 +1,5 @@
 export const mockTotaisAtendimentoFaixaEtaria = {
-  INTEGRAL: {
+  "ALIMENTAÇÃO - INTEGRAL": {
     "00 meses": 6.0,
     "01 a 03 meses": 6.0,
     "04 a 05 meses": 6.0,
