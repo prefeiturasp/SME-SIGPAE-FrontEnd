@@ -17,6 +17,7 @@ import {
 import { API_URL } from "src/constants/config";
 import mock from "src/services/_mock";
 import { VISAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
+import { MemoryRouter } from "react-router-dom";
 
 const payload = {
   ...respostaApiCancelamentoporDataTermino(),
@@ -41,7 +42,7 @@ const server = setupServer(
     `${API_URL}/protocolo-padrao-dieta-especial/lista-protocolos-liberados/`,
     () => {
       return HttpResponse.json(listaProtocolosLiberados());
-    }
+    },
   ),
   http.get(`${API_URL}/alimentos/`, () => {
     return HttpResponse.json(alimentos());
@@ -53,17 +54,17 @@ const server = setupServer(
     `${API_URL}/protocolo-padrao-dieta-especial/${payload.protocolo_padrao}/`,
     () => {
       return HttpResponse.json(protocoloPadraoDietaEspecial());
-    }
+    },
   ),
   http.get(
     `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/7772877/`,
     () => {
       return HttpResponse.json(solicitacoesDietaEspecialDoAluno());
-    }
+    },
   ),
   http.get(`${API_URL}/alunos/7772877/ver-foto/`, () => {
     return HttpResponse(status(204));
-  })
+  }),
 );
 
 beforeAll(() => server.listen());
@@ -91,17 +92,24 @@ test("Relatório Inativas - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.CODAE} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.CODAE} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", TIPO_PERFIL.NUTRICAO_MANIFESTACAO);
 
   await waitFor(() => {
     expect(screen.getByText(/Dieta especial - Inativa/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Justificativa da Negação")
+      screen.queryByText("Justificativa da Negação"),
     ).not.toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -109,7 +117,7 @@ test("Relatório Inativas - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
@@ -150,17 +158,24 @@ test("Relatório Inativas - visão TERCEIRIZADA ADMINISTRADOR EMPRESA", async ()
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.TERCEIRIZADA} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
 
   await waitFor(() => {
     expect(screen.getByText(/Dieta especial - Inativa/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Justificativa da Negação")
+      screen.queryByText("Justificativa da Negação"),
     ).not.toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -168,7 +183,7 @@ test("Relatório Inativas - visão TERCEIRIZADA ADMINISTRADOR EMPRESA", async ()
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
@@ -212,17 +227,24 @@ test("Relatório Inativas - visão ESCOLA DIRETOR_UE", async () => {
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.ESCOLA} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.ESCOLA} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", PERFIL.DIRETOR_UE);
 
   await waitFor(() => {
     expect(screen.getByText(/Dieta especial - Inativa/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Justificativa da Negação")
+      screen.queryByText("Justificativa da Negação"),
     ).not.toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -230,7 +252,7 @@ test("Relatório Inativas - visão ESCOLA DIRETOR_UE", async () => {
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
