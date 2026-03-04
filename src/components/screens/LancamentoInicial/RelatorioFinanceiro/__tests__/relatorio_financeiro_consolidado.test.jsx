@@ -196,6 +196,13 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       ).toBeGreaterThan(0);
     }
     expect(screen.getAllByText("TOTAL (A)")).toHaveLength(2);
+    expect(screen.getAllByText("TOTAL (B)")).toHaveLength(2);
+    expect(screen.getAllByText("TOTAL (C)")).toHaveLength(2);
+
+    const headers = await screen.findAllByRole("columnheader", {
+      name: /DIETA ESPECIAL/i,
+    });
+    expect(headers).toHaveLength(4);
   });
 
   it("deve exibir tabelas e valores do grupo 3 - EMEI", async () => {
