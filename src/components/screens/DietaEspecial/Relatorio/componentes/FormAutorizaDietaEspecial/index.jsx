@@ -124,7 +124,7 @@ const FormAutorizaDietaEspecial = ({
       toastError("Houve um erro ao carregar Nomes dos Protocolos da Dieta");
     }
 
-    const respAlimentos = await getAlimentos();
+    const respAlimentos = await getAlimentos({ ativo: true });
     if (respAlimentos.status === HTTP_STATUS.OK) {
       setAlimentos(respAlimentos.data);
     } else {
