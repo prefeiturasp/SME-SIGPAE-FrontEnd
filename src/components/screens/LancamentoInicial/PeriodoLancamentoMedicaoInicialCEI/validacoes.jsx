@@ -429,6 +429,7 @@ export const validacoesFaixasZeradasAlimentacao = (
   categoria,
   allValues,
   faixaEtaria,
+  ehRecreioNasFerias,
 ) => {
   if (rowName !== "frequencia" || categoria.nome !== "ALIMENTAÇÃO") {
     return [];
@@ -442,7 +443,10 @@ export const validacoesFaixasZeradasAlimentacao = (
     const dia = diaLetivo.dia;
 
     const faixasComMatriculados = faixaEtaria.filter((faixa) => {
-      const inputMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+      let inputMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+      if (ehRecreioNasFerias) {
+        inputMatriculados = `participantes__faixa_null__dia_${dia}__categoria_${categoria.id}`;
+      }
       const valorMatriculados = allValues[inputMatriculados];
       return valorMatriculados !== undefined && Number(valorMatriculados) > 0;
     });

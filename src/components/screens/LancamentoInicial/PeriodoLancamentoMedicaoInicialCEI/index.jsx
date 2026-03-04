@@ -1133,7 +1133,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       faixaEtaria &&
       formValuesAtualizados &&
       categoriasDeMedicao.length > 0 &&
-      !ehRecreioNasFerias()
+      !ehGrupoColaboradores()
     ) {
       categoriasDeMedicao
         .filter((cat) => cat.nome === "ALIMENTAÇÃO")
@@ -1145,6 +1145,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             categoria,
             formValuesAtualizados,
             faixaEtaria,
+            ehRecreioNasFerias(),
           );
           const diasZeradosSemObservacao = diasZeradosEncontrados.filter(
             (dia) => !dia.tem_observacao,
@@ -1761,7 +1762,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       categoria.nome === "ALIMENTAÇÃO" &&
       calendarioMesConsiderado &&
       feriadosNoMes &&
-      !ehRecreioNasFerias()
+      !ehGrupoColaboradores()
     ) {
       const diasZeradosEncontrados = validacoesFaixasZeradasAlimentacao(
         "frequencia",
@@ -1770,6 +1771,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         categoria,
         formValuesAtualizados,
         faixaEtaria,
+        ehRecreioNasFerias(),
       );
 
       const diasZeradosSemObservacao = diasZeradosEncontrados.filter(
@@ -2312,12 +2314,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     return response_log_dietas_autorizadas;
   };
 
-  const exibeFaixaEtaria = (nomeCategoria, uuidFaixa) => {
+  const exibeFaixaEtaria = (nomeCategoria, linha) => {
     if (!ehRecreioNasFerias()) return true;
-    if (nomeCategoria === "ALIMENTAÇÃO") return true;
+    if (nomeCategoria === "ALIMENTAÇÃO" || linha.nome === "Observações")
+      return true;
 
     if (!ehGrupoColaboradores()) {
-      return faixasAtivasPorTipo?.[nomeCategoria]?.includes(uuidFaixa) ?? false;
+      return faixasAtivasPorTipo?.[nomeCategoria]?.includes(linha.uuid);
     }
 
     return true;
@@ -2502,9 +2505,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                       : tabelaDietaCEIRows
                                     : tabelaAlimentacaoCEIRows
                                   ).map((row, index) => {
-                                    if (
-                                      exibeFaixaEtaria(categoria.nome, row.uuid)
-                                    ) {
+                                    if (exibeFaixaEtaria(categoria.nome, row)) {
                                       return (
                                         <Fragment key={index}>
                                           <div
