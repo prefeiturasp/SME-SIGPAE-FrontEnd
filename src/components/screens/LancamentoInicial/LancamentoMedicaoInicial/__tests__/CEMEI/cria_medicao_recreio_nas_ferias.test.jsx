@@ -94,11 +94,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Cria Medição com
     });
 
     const search = `?mes=12&ano=2025`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);

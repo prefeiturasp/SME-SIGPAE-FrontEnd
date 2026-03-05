@@ -26,7 +26,7 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão DRE - EMEF", 
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onPatch(
-        `/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/diretoria-regional-nao-valida-pedido/`
+        `/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/diretoria-regional-nao-valida-pedido/`,
       )
       .reply(200, {});
 
@@ -35,11 +35,7 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão DRE - EMEF", 
     localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
 
     const search = `?uuid=${mockAlteracaoCardapioAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -50,20 +46,22 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão DRE - EMEF", 
           }}
         >
           <RelatoriosAlteracaoDoTipoDeAlimentacao.RelatorioDRE />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página `Alteração do Tipo de Alimentação - Solicitação # EF99C`", async () => {
     expect(
-      screen.getByText("Alteração do Tipo de Alimentação - Solicitação # EF99C")
+      screen.getByText(
+        "Alteração do Tipo de Alimentação - Solicitação # EF99C",
+      ),
     ).toBeInTheDocument();
   });
 
   it("renderiza label `Solicitação no prazo regular`", async () => {
     expect(
-      screen.getByText("Solicitação no prazo regular")
+      screen.getByText("Solicitação no prazo regular"),
     ).toBeInTheDocument();
   });
 
@@ -95,7 +93,7 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão DRE - EMEF", 
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
   });
@@ -106,7 +104,7 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão DRE - EMEF", 
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -115,7 +113,7 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão DRE - EMEF", 
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja não validar solicitação?")
+        screen.queryByText("Deseja não validar solicitação?"),
       ).not.toBeInTheDocument();
     });
   });
@@ -126,13 +124,13 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão DRE - EMEF", 
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
 
     const uuidMotivoEmDesacordoComContrato =
       mockMotivosDRENaoValida.results.find(
-        (motivo) => motivo.nome === "Em desacordo com o contrato"
+        (motivo) => motivo.nome === "Em desacordo com o contrato",
       ).uuid;
 
     const selectMotivo = screen.getByTestId("select-motivo-cancelamento");
@@ -155,7 +153,7 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão DRE - EMEF", 
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja não validar solicitação?")
+        screen.queryByText("Deseja não validar solicitação?"),
       ).not.toBeInTheDocument();
     });
 

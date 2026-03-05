@@ -48,41 +48,37 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/codae-cancela-pedido/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/codae-cancela-pedido/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoNegadaCEMEI);
 
     const search = `?uuid=${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     await act(async () => {
       ({ container } = render(
@@ -101,14 +97,14 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
             <InclusaoDeAlimentacaoCEMEIRelatorios.RelatorioCODAE />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       ));
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # 512C3`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # 512C3")
+      screen.getByText("Inclusão de Alimentação - Solicitação # 512C3"),
     ).toBeInTheDocument();
   });
 
@@ -120,7 +116,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
     expect(span).toHaveTextContent("CEMEI SUZANA CAMPOS TAUIL");
 
     expect(
-      screen.getByText("Solicitação de Inclusão de Alimentação")
+      screen.getByText("Solicitação de Inclusão de Alimentação"),
     ).toBeInTheDocument();
     expect(screen.getByText("Evento Específico")).toBeInTheDocument();
 
@@ -130,7 +126,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
   it("questiona a solicitação", async () => {
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/codae-questiona-pedido/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/codae-questiona-pedido/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoQuestionadaCEMEI);
 
@@ -140,8 +136,8 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
     await waitFor(() => {
       expect(
         screen.getByText(
-          "É possível atender a solicitação com todos os itens previstos no contrato?"
-        )
+          "É possível atender a solicitação com todos os itens previstos no contrato?",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -150,13 +146,13 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
 
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaPrazoLimiteCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoQuestionadaCEMEI);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Questionamento enviado com sucesso!")
+        screen.getByText("Questionamento enviado com sucesso!"),
       ).toBeInTheDocument();
     });
 

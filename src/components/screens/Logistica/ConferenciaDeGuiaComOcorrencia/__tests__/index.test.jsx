@@ -29,21 +29,16 @@ const setup = async (params = {}) => {
   }${params.editar ? "&editar=true" : ""}`;
   localStorage.setItem(
     "alimentosConferencia",
-    JSON.stringify(["COXAO DURO", "CONTRA FILE"])
+    JSON.stringify(["COXAO DURO", "CONTRA FILE"]),
   );
 
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-    writable: true,
-  });
+  window.history.pushState({}, "", search);
 
   await act(async () => {
     render(
       <MemoryRouter>
         <ConferenciaGuiaRemessaComOcorrencia />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -60,12 +55,12 @@ describe("Conferência de Guia com Ocorrência", () => {
 
     // Verifica elementos básicos
     expect(
-      screen.getByText("Conferência individual dos itens")
+      screen.getByText("Conferência individual dos itens"),
     ).toBeInTheDocument();
     expect(screen.getByText("Nº da Guia de Remessa")).toBeInTheDocument();
     expect(screen.getByText("Data de Entrega Prevista")).toBeInTheDocument();
     expect(
-      screen.getByText("Selecionar Data de Recebimento da UE")
+      screen.getByText("Selecionar Data de Recebimento da UE"),
     ).toBeInTheDocument();
     expect(screen.getByText("Finalizar Conferência")).toBeInTheDocument();
     expect(screen.getByText("Cancelar")).toBeInTheDocument();
@@ -108,10 +103,10 @@ describe("Conferência de Guia com Ocorrência", () => {
     // Verifica se os dados foram salvos no localStorage real
     await waitFor(() => {
       const valoresConferencia = JSON.parse(
-        localStorage.getItem("valoresConferencia")
+        localStorage.getItem("valoresConferencia"),
       );
       const guiaConferencia = JSON.parse(
-        localStorage.getItem("guiaConferencia")
+        localStorage.getItem("guiaConferencia"),
       );
 
       expect(valoresConferencia).toBeInstanceOf(Array);
@@ -132,7 +127,7 @@ describe("Conferência de Guia com Ocorrência", () => {
     // Verifica mensagem de informação
     await waitFor(() => {
       expect(
-        screen.getByText("Data posterior à prevista na guia!")
+        screen.getByText("Data posterior à prevista na guia!"),
       ).toBeInTheDocument();
     });
   });
@@ -177,11 +172,11 @@ describe("Conferência de Guia com Ocorrência", () => {
 
     localStorage.setItem(
       "valoresConferencia",
-      JSON.stringify(mockValoresConferencia)
+      JSON.stringify(mockValoresConferencia),
     );
     localStorage.setItem(
       "guiaConferencia",
-      JSON.stringify(mockGuiaParaConferencia)
+      JSON.stringify(mockGuiaParaConferencia),
     );
 
     await setup({ autofill: true });

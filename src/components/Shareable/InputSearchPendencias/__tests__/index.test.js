@@ -13,14 +13,6 @@ jest.mock("src/configs/constants", () => ({
   SOLICITACOES_NEGADAS: "NEGADAS",
 }));
 
-const mockLocation = {
-  pathname: "",
-};
-Object.defineProperty(window, "location", {
-  value: mockLocation,
-  writable: true,
-});
-
 describe("InputSearchPendencias", () => {
   const mockFilterList = jest.fn();
   const mockProps = {
@@ -44,7 +36,7 @@ describe("InputSearchPendencias", () => {
     render(
       <Form onSubmit={() => {}}>
         {() => <InputSearchPendencias {...mockProps} />}
-      </Form>
+      </Form>,
     );
     expect(screen.getByPlaceholderText("Pesquisar")).toBeInTheDocument();
   });
@@ -52,7 +44,7 @@ describe("InputSearchPendencias", () => {
   describe("quando o usuário NÃO é terceirizada", () => {
     beforeEach(() => {
       require("src/helpers/utilities").usuarioEhEmpresaTerceirizada.mockReturnValue(
-        false
+        false,
       );
     });
 
@@ -60,7 +52,7 @@ describe("InputSearchPendencias", () => {
       render(
         <Form onSubmit={() => {}}>
           {() => <InputSearchPendencias {...mockProps} />}
-        </Form>
+        </Form>,
       );
 
       expect(screen.getByPlaceholderText("Pesquisar")).toBeInTheDocument();
@@ -72,7 +64,7 @@ describe("InputSearchPendencias", () => {
       render(
         <Form onSubmit={() => {}}>
           {() => <InputSearchPendencias {...mockProps} />}
-        </Form>
+        </Form>,
       );
 
       const input = screen.getByPlaceholderText("Pesquisar");
@@ -85,12 +77,12 @@ describe("InputSearchPendencias", () => {
   describe("quando o usuário é terceirizada", () => {
     beforeEach(() => {
       require("src/helpers/utilities").usuarioEhEmpresaTerceirizada.mockReturnValue(
-        true
+        true,
       );
     });
 
     it("deve renderizar campos adicionais para terceirizada", () => {
-      mockLocation.pathname = "/solicitacoes-dieta-especial";
+      window.history.pushState({}, "", "/solicitacoes-dieta-especial");
       render(
         <Form onSubmit={() => {}}>
           {() => (
@@ -99,7 +91,7 @@ describe("InputSearchPendencias", () => {
               tipoSolicitacao="AUTORIZADAS"
             />
           )}
-        </Form>
+        </Form>,
       );
 
       expect(screen.getByPlaceholderText("Pesquisar")).toBeInTheDocument();
@@ -108,7 +100,7 @@ describe("InputSearchPendencias", () => {
     });
 
     it("deve chamar filterList ao selecionar status", () => {
-      mockLocation.pathname = "/solicitacoes-dieta-especial";
+      window.history.pushState({}, "", "/solicitacoes-dieta-especial");
       render(
         <Form onSubmit={() => {}}>
           {() => (
@@ -117,7 +109,7 @@ describe("InputSearchPendencias", () => {
               tipoSolicitacao="AUTORIZADAS"
             />
           )}
-        </Form>
+        </Form>,
       );
 
       const select = screen.getByText("Conferência Status").closest("select");
@@ -127,7 +119,7 @@ describe("InputSearchPendencias", () => {
     });
 
     it("deve chamar filterList ao selecionar lote", () => {
-      mockLocation.pathname = "/solicitacoes-dieta-especial";
+      window.history.pushState({}, "", "/solicitacoes-dieta-especial");
       render(
         <Form onSubmit={() => {}}>
           {() => (
@@ -136,7 +128,7 @@ describe("InputSearchPendencias", () => {
               tipoSolicitacao="AUTORIZADAS"
             />
           )}
-        </Form>
+        </Form>,
       );
 
       const select = screen.getByText("Selecione um Lote").closest("select");
@@ -146,13 +138,13 @@ describe("InputSearchPendencias", () => {
     });
 
     it("não deve renderizar campo de status quando tipoSolicitacao não está na lista permitida", () => {
-      mockLocation.pathname = "/solicitacoes-dieta-especial";
+      window.history.pushState({}, "", "/solicitacoes-dieta-especial");
       render(
         <Form onSubmit={() => {}}>
           {() => (
             <InputSearchPendencias {...mockProps} tipoSolicitacao="OUTRO" />
           )}
-        </Form>
+        </Form>,
       );
 
       expect(screen.queryByText("Conferência Status")).not.toBeInTheDocument();
@@ -161,14 +153,14 @@ describe("InputSearchPendencias", () => {
 
   describe("quando está na URL de gestão de produto", () => {
     beforeEach(() => {
-      mockLocation.pathname = "/gestao-produto";
+      window.history.pushState({}, "", "/gestao-produto");
     });
 
     it("deve renderizar campos específicos para gestão de produto", () => {
       render(
         <Form onSubmit={() => {}}>
           {() => <InputSearchPendencias {...mockProps} />}
-        </Form>
+        </Form>,
       );
 
       expect(screen.getByText("Número do Edital")).toBeInTheDocument();
@@ -181,7 +173,7 @@ describe("InputSearchPendencias", () => {
       render(
         <Form onSubmit={() => {}}>
           {() => <InputSearchPendencias {...mockProps} />}
-        </Form>
+        </Form>,
       );
 
       const select = screen
@@ -199,7 +191,7 @@ describe("InputSearchPendencias", () => {
       render(
         <Form onSubmit={() => {}}>
           {() => <InputSearchPendencias {...mockProps} />}
-        </Form>
+        </Form>,
       );
 
       const input = screen.getByPlaceholderText("Busca da Marca");
@@ -224,9 +216,9 @@ describe("InputSearchPendencias", () => {
       },
     };
 
-    mockLocation.pathname = "/gestao-produto";
+    window.history.pushState({}, "", "/gestao-produto");
     require("src/helpers/utilities").usuarioEhEmpresaTerceirizada.mockReturnValue(
-      true
+      true,
     );
 
     render(
@@ -237,7 +229,7 @@ describe("InputSearchPendencias", () => {
             tipoSolicitacao="AUTORIZADAS"
           />
         )}
-      </Form>
+      </Form>,
     );
 
     expect(screen.getByDisplayValue("Dieta Teste")).toBeInTheDocument();

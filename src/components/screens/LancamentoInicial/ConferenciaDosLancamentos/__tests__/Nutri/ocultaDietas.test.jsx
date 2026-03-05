@@ -148,11 +148,7 @@ describe("Teste de Filtragem de Tabelas de Dieta", () => {
     localStorage.setItem("perfil", PERFIL.NUTRI);
 
     const search = `?uuid=${solicitacaoUuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
   });
 
   afterEach(() => {

@@ -25,30 +25,26 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/grupos-inclusao-alimentacao-normal/${mockInclusaoAlimentacaoRegular.uuid}/`
+        `/grupos-inclusao-alimentacao-normal/${mockInclusaoAlimentacaoRegular.uuid}/`,
       )
       .replyOnce(200, mockInclusaoAlimentacaoRegular);
     mock
       .onPatch(
-        `/grupos-inclusao-alimentacao-normal/${mockInclusaoAlimentacaoRegular.uuid}/escola-cancela-pedido-48h-antes/`
+        `/grupos-inclusao-alimentacao-normal/${mockInclusaoAlimentacaoRegular.uuid}/escola-cancela-pedido-48h-antes/`,
       )
       .reply(200, mockInclusaoAlimentacaoRegularCancelada);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "nome_instituicao",
-      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
     );
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
 
     const search = `?uuid=${mockInclusaoAlimentacaoRegular.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -59,20 +55,20 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # D0F4F`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # D0F4F")
+      screen.getByText("Inclusão de Alimentação - Solicitação # D0F4F"),
     ).toBeInTheDocument();
   });
 
   it("renderiza label `Solicitação no prazo regular`", async () => {
     expect(
-      screen.getByText("Solicitação no prazo regular")
+      screen.getByText("Solicitação no prazo regular"),
     ).toBeInTheDocument();
   });
 
@@ -101,17 +97,17 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Esta solicitação está aguardando validação pela DRE. Deseja seguir em frente com o cancelamento?"
-        )
+          "Esta solicitação está aguardando validação pela DRE. Deseja seguir em frente com o cancelamento?",
+        ),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Selecione a(s) data(s) para solicitar o cancelamento:"
-        )
+          "Selecione a(s) data(s) para solicitar o cancelamento:",
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -122,7 +118,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
     });
 
@@ -131,7 +127,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação")
+        screen.queryByText("Cancelamento de Solicitação"),
       ).not.toBeInTheDocument();
     });
   });
@@ -142,12 +138,12 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
     });
 
     const inputDia02_04_2025 = screen.getByTestId(
-      "data_Reposição de aula_02/04/2025"
+      "data_Reposição de aula_02/04/2025",
     );
     fireEvent.click(inputDia02_04_2025);
 
@@ -161,13 +157,13 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
 
     mock
       .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/",
       )
       .replyOnce(200, mockInclusaoAlimentacaoRegularCancelada);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação")
+        screen.queryByText("Cancelamento de Solicitação"),
       ).not.toBeInTheDocument();
     });
 
@@ -176,7 +172,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
     expect(screen.getByText("Escola cancelou")).toBeInTheDocument();
     expect(screen.getByText("Histórico de cancelamento")).toBeInTheDocument();
     expect(
-      screen.getByText("02/04/2025 - justificativa: teste")
+      screen.getByText("02/04/2025 - justificativa: teste"),
     ).toBeInTheDocument();
   });
 });

@@ -29,27 +29,23 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Escola - Mo
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoAValidarCEMEI);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
 
     const search = `?uuid=${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);
@@ -75,20 +71,20 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Escola - Mo
             <InclusaoDeAlimentacaoCEMEIRelatorios.RelatorioEscola />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       ));
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # 5A120`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # 5A120")
+      screen.getByText("Inclusão de Alimentação - Solicitação # 5A120"),
     ).toBeInTheDocument();
   });
 
   it("renderiza dados da solicitação", async () => {
     expect(
-      screen.getByText("Solicitação no prazo regular")
+      screen.getByText("Solicitação no prazo regular"),
     ).toBeInTheDocument();
 
     const span = container.querySelector(".dre-name");
@@ -96,7 +92,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Escola - Mo
     expect(span).toHaveTextContent("CEMEI SUZANA CAMPOS TAUIL");
 
     expect(
-      screen.getByText("Solicitação de Inclusão de Alimentação")
+      screen.getByText("Solicitação de Inclusão de Alimentação"),
     ).toBeInTheDocument();
     expect(screen.getByText("Evento Específico")).toBeInTheDocument();
 
@@ -109,17 +105,17 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Escola - Mo
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
     });
 
     const inputDia30_07_2025 = screen.getByTestId(
-      "data_Evento Específico_30/07/2025"
+      "data_Evento Específico_30/07/2025",
     );
     fireEvent.click(inputDia30_07_2025);
 
     const inputDia31_07_2025 = screen.getByTestId(
-      "data_Evento Específico_31/07/2025"
+      "data_Evento Específico_31/07/2025",
     );
     fireEvent.click(inputDia31_07_2025);
 
@@ -130,7 +126,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Escola - Mo
 
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/escola-cancela-pedido-48h-antes/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/escola-cancela-pedido-48h-antes/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoCanceladaCEMEI);
 
@@ -139,13 +135,13 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Escola - Mo
 
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoCanceladaCEMEI);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação")
+        screen.queryByText("Cancelamento de Solicitação"),
       ).not.toBeInTheDocument();
     });
 
@@ -154,10 +150,10 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Escola - Mo
     expect(screen.getByText("Escola cancelou")).toBeInTheDocument();
     expect(screen.getByText("Histórico de cancelamento")).toBeInTheDocument();
     expect(
-      screen.getByText("30/07/2025 - justificativa: cancelada!")
+      screen.getByText("30/07/2025 - justificativa: cancelada!"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("31/07/2025 - justificativa: cancelada!")
+      screen.getByText("31/07/2025 - justificativa: cancelada!"),
     ).toBeInTheDocument();
   });
 });

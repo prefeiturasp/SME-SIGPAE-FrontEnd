@@ -28,17 +28,17 @@ describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/inclusoes-alimentacao-da-cei/${mockInclusaoAlimentacaoCEIAValidar.uuid}/`
+        `/inclusoes-alimentacao-da-cei/${mockInclusaoAlimentacaoCEIAValidar.uuid}/`,
       )
       .replyOnce(200, mockInclusaoAlimentacaoCEIAValidar);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarCEIComManhaTarde);
     mock
       .onPatch(
-        `/inclusoes-alimentacao-da-cei/${mockInclusaoAlimentacaoCEIAValidar.uuid}/escola-cancela-pedido-48h-antes/`
+        `/inclusoes-alimentacao-da-cei/${mockInclusaoAlimentacaoCEIAValidar.uuid}/escola-cancela-pedido-48h-antes/`,
       )
       .reply(200, mockInclusaoAlimentacaoCEICancelada);
 
@@ -50,11 +50,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
     localStorage.setItem("eh_cei", "true");
 
     const search = `?uuid=${mockInclusaoAlimentacaoCEIAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -65,20 +61,20 @@ describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # A38E6`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # A38E6")
+      screen.getByText("Inclusão de Alimentação - Solicitação # A38E6"),
     ).toBeInTheDocument();
   });
 
   it("renderiza label `Solicitação próxima ao prazo de vencimento`", async () => {
     expect(
-      screen.getByText("Solicitação próxima ao prazo de vencimento")
+      screen.getByText("Solicitação próxima ao prazo de vencimento"),
     ).toBeInTheDocument();
   });
 
@@ -94,16 +90,16 @@ describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
     expect(screen.getAllByText("INTEGRAL")).toHaveLength(2);
 
     expect(
-      screen.getByText("Tipos de alimentação no período integral:")
+      screen.getByText("Tipos de alimentação no período integral:"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Lanche, Desjejum, Almoço, Colação, Refeição da tarde")
+      screen.getByText("Lanche, Desjejum, Almoço, Colação, Refeição da tarde"),
     ).toBeInTheDocument();
 
     expect(screen.getByText("07 a 11 meses")).toBeInTheDocument();
 
     expect(
-      screen.getByText("Tipos de alimentação no período manha:")
+      screen.getByText("Tipos de alimentação no período manha:"),
     ).toBeInTheDocument();
     expect(screen.getByText("Desjejum, Almoço, Colação")).toBeInTheDocument();
 
@@ -116,17 +112,17 @@ describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Esta solicitação está aguardando validação pela DRE. Deseja seguir em frente com o cancelamento?"
-        )
+          "Esta solicitação está aguardando validação pela DRE. Deseja seguir em frente com o cancelamento?",
+        ),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Selecione a(s) data(s) para solicitar o cancelamento:"
-        )
+          "Selecione a(s) data(s) para solicitar o cancelamento:",
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -137,7 +133,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
     });
 
@@ -146,7 +142,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação")
+        screen.queryByText("Cancelamento de Solicitação"),
       ).not.toBeInTheDocument();
     });
   });
@@ -157,12 +153,12 @@ describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
     });
 
     const inputDia30_05_2025 = screen.getByTestId(
-      "data_Reposição de aula_30/05/2025"
+      "data_Reposição de aula_30/05/2025",
     );
     fireEvent.click(inputDia30_05_2025);
 
@@ -176,13 +172,13 @@ describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
 
     mock
       .onGet(
-        `/inclusoes-alimentacao-da-cei/${mockInclusaoAlimentacaoCEIAValidar.uuid}/`
+        `/inclusoes-alimentacao-da-cei/${mockInclusaoAlimentacaoCEIAValidar.uuid}/`,
       )
       .replyOnce(200, mockInclusaoAlimentacaoCEICancelada);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação")
+        screen.queryByText("Cancelamento de Solicitação"),
       ).not.toBeInTheDocument();
     });
 
@@ -191,7 +187,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola - CEI", () => {
     expect(screen.getByText("Escola cancelou")).toBeInTheDocument();
     expect(screen.getByText("Histórico de cancelamento")).toBeInTheDocument();
     expect(
-      screen.getByText("30/05/2025 - justificativa: teste")
+      screen.getByText("30/05/2025 - justificativa: teste"),
     ).toBeInTheDocument();
   });
 });
