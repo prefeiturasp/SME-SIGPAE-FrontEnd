@@ -2315,14 +2315,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const exibeFaixaEtaria = (nomeCategoria, linha) => {
-    if (!ehRecreioNasFerias()) return true;
-    if (nomeCategoria === "ALIMENTAÇÃO" || linha.nome === "Observações")
-      return true;
-
-    if (!ehGrupoColaboradores()) {
-      return faixasAtivasPorTipo?.[nomeCategoria]?.includes(linha.uuid);
+    if (
+      ehRecreioNasFerias() &&
+      !ehGrupoColaboradores() &&
+      !(nomeCategoria === "ALIMENTAÇÃO" || linha.nome === "Observações")
+    ) {
+      return (
+        faixasAtivasPorTipo?.[nomeCategoria]?.includes(linha.uuid) ?? false
+      );
     }
-
     return true;
   };
 
