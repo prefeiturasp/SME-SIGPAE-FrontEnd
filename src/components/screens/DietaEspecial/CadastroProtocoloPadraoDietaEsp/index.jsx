@@ -67,7 +67,6 @@ export default ({ uuid }) => {
   async function fetchData() {
     const respAlimentos = await getAlimentos({
       tipo: "E",
-      ativo: true,
     });
     setAlimentos(
       respAlimentos.data.filter((alimento) =>
