@@ -5,8 +5,8 @@ import { Form } from "react-final-form";
 import SubstituicoesField from "../../componentes/SubstituicoesField";
 
 const alimentos = [
-  { id: 648, nome: "AÇÚCAR REFINADO" },
-  { id: 489, nome: "ABACATE" },
+  { id: 648, nome: "AÇÚCAR REFINADO", ativo: true },
+  { id: 489, nome: "ABACATE", ativo: true },
 ];
 
 const produtos = [
@@ -14,11 +14,13 @@ const produtos = [
     id: 496,
     nome: "ACHOCOLATADO DIET",
     uuid: "cd5bc863-a165-401a-8fbc-e3ffff013b4f",
+    ativo: true,
   },
   {
     id: 722,
     nome: "ACHOCOLATADO LIGHT",
     uuid: "8bb2e937-a82c-4e97-bd9a-c54cfb7a1ce6",
+    ativo: true,
   },
 ];
 
@@ -61,7 +63,7 @@ function renderWithForm(children, values = initialValues) {
           })}
         </form>
       )}
-    />
+    />,
   );
 }
 
@@ -70,7 +72,7 @@ describe("SubstituicoesField", () => {
     renderWithForm(<SubstituicoesField />);
     expect(screen.getAllByText("AÇÚCAR REFINADO")).toHaveLength(2);
     expect(
-      screen.getAllByRole("button", { name: "Adicionar Item" })
+      screen.getAllByRole("button", { name: "Adicionar Item" }),
     ).toHaveLength(1);
   });
 
