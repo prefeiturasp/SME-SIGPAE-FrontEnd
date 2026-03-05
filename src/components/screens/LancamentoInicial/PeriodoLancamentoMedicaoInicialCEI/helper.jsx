@@ -1501,3 +1501,53 @@ export const getListaDiasSobremesaDoceAsync = async (escola_uuid, mes, ano) => {
     return [];
   }
 };
+
+export function verificaDietasPorFaixa(data) {
+  const tipoAClassificacoes = new Set([
+    "Tipo A RESTRIÇÃO DE AMINOÁCIDOS",
+    "Tipo A",
+    "Tipo A ENTERAL",
+  ]);
+
+  const acumulador = {};
+
+  for (const item of data) {
+    const uuid = item?.faixa_etaria?.uuid;
+    const classificacao = item?.classificacao;
+    const quantidade = Number(item?.quantidade) || 0;
+
+    if (!uuid) continue;
+
+    if (!acumulador[uuid]) {
+      acumulador[uuid] = {
+        tipoA: 0,
+        tipoB: 0,
+      };
+    }
+
+    if (tipoAClassificacoes.has(classificacao)) {
+      acumulador[uuid].tipoA += quantidade;
+    }
+
+    if (classificacao === "Tipo B") {
+      acumulador[uuid].tipoB += quantidade;
+    }
+  }
+
+  const resultado = {
+    "DIETA ESPECIAL - TIPO A": [],
+    "DIETA ESPECIAL - TIPO B": [],
+  };
+
+  for (const [uuid, valores] of Object.entries(acumulador)) {
+    if (valores.tipoA > 0) {
+      resultado["DIETA ESPECIAL - TIPO A"].push(uuid);
+    }
+
+    if (valores.tipoB > 0) {
+      resultado["DIETA ESPECIAL - TIPO B"].push(uuid);
+    }
+  }
+
+  return resultado;
+}
