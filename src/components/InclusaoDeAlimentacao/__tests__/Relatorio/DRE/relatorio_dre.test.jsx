@@ -24,17 +24,17 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/",
       )
       .replyOnce(200, mockInclusaoAlimentacaoRegular);
     mock
       .onPatch(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/diretoria-regional-nao-valida-pedido/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/diretoria-regional-nao-valida-pedido/",
       )
       .reply(200, {});
     mock
       .onPatch(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/diretoria-regional-valida-pedido/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/diretoria-regional-valida-pedido/",
       )
       .reply(200, {});
 
@@ -43,11 +43,7 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
     localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
 
     const search = `?uuid=d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -58,20 +54,20 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioDRE />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # D0F4F`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # D0F4F")
+      screen.getByText("Inclusão de Alimentação - Solicitação # D0F4F"),
     ).toBeInTheDocument();
   });
 
   it("renderiza label `Solicitação no prazo regular`", async () => {
     expect(
-      screen.getByText("Solicitação no prazo regular")
+      screen.getByText("Solicitação no prazo regular"),
     ).toBeInTheDocument();
   });
 
@@ -100,7 +96,7 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
   });
@@ -111,7 +107,7 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -120,7 +116,7 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja não validar solicitação?")
+        screen.queryByText("Deseja não validar solicitação?"),
       ).not.toBeInTheDocument();
     });
   });
@@ -131,13 +127,13 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
 
     const uuidMotivoEmDesacordoComContrato =
       mockMotivosDRENaoValida.results.find(
-        (motivo) => motivo.nome === "Em desacordo com o contrato"
+        (motivo) => motivo.nome === "Em desacordo com o contrato",
       ).uuid;
 
     const selectMotivo = screen.getByTestId("select-motivo-cancelamento");
@@ -156,13 +152,13 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
 
     mock
       .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/",
       )
       .replyOnce(200, mockInclusaoalimentacaoNaoValidada);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja não validar solicitação?")
+        screen.queryByText("Deseja não validar solicitação?"),
       ).not.toBeInTheDocument();
     });
 
@@ -178,7 +174,7 @@ describe("Relatório Inclusão de Alimentação - Visão DRE", () => {
 
     mock
       .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/",
       )
       .replyOnce(200, mockInclusaoAlimentacaoValidada);
 

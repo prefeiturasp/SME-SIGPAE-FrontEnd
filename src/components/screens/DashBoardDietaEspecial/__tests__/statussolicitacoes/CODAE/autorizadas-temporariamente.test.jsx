@@ -28,14 +28,11 @@ describe("Teste StatusSolicitacoes - Autorizadas Temporariamente - CODAE", () =>
       PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
-    Object.defineProperty(window, "location", {
-      value: {
-        href: "/solicitacoes-dieta-especial/solicitacoes-autorizadas-temporariamente",
-        pathname:
-          "/solicitacoes-dieta-especial/solicitacoes-autorizadas-temporariamente",
-      },
-      writable: true,
-    });
+    window.history.pushState(
+      {},
+      "",
+      "/solicitacoes-dieta-especial/solicitacoes-autorizadas-temporariamente",
+    );
 
     await act(async () => {
       renderWithProvider(

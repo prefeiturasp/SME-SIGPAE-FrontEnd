@@ -58,11 +58,7 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação sem 
     localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
 
     const search = `?uuid=${mockSolicitacaoMedicaoInicialSemLancamentoEMEFJunho2025.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

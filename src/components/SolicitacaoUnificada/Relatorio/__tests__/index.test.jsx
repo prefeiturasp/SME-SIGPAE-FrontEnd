@@ -32,7 +32,7 @@ const setup = async (visao) => {
       >
         <Relatorio visao={visao} />
       </MemoryRouter>,
-      {}
+      {},
     );
   });
 };
@@ -40,20 +40,16 @@ const setup = async (visao) => {
 describe("Carrega Relatório na visao CODAE", () => {
   it("carrega Kit Aprovado", async () => {
     const search = `?uuid=${mockKitLanche.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     window.localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await setup(CODAE);
     expect(
-      screen.getAllByText(new RegExp(mockKitLanche.id_externo))[0]
+      screen.getAllByText(new RegExp(mockKitLanche.id_externo))[0],
     ).toBeInTheDocument();
   });
 });
@@ -61,11 +57,7 @@ describe("Carrega Relatório na visao CODAE", () => {
 describe("Carrega Relatório na visão TERCEIRIZADA", () => {
   const carregaPagina = async () => {
     const search = `?uuid=${mockKitLanche.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
     window.localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
     await setup(TERCEIRIZADA);
   };
@@ -77,7 +69,7 @@ describe("Carrega Relatório na visão TERCEIRIZADA", () => {
     fireEvent.click(botaoMarcarConferencia);
 
     expect(
-      screen.getByText(/Marcar Conferência da Solicitação/i)
+      screen.getByText(/Marcar Conferência da Solicitação/i),
     ).toBeInTheDocument();
 
     const botaoConfirmar = screen.getByText("Confirmar").closest("button");
@@ -88,7 +80,7 @@ describe("Carrega Relatório na visão TERCEIRIZADA", () => {
     await carregaPagina();
 
     expect(
-      screen.getAllByText(new RegExp(mockKitLanche.id_externo))[0]
+      screen.getAllByText(new RegExp(mockKitLanche.id_externo))[0],
     ).toBeInTheDocument();
 
     terceirizadaMarcaConferencia.mockResolvedValue({
@@ -103,7 +95,7 @@ describe("Carrega Relatório na visão TERCEIRIZADA", () => {
     await carregaPagina();
 
     expect(
-      screen.getAllByText(new RegExp(mockKitLanche.id_externo))[0]
+      screen.getAllByText(new RegExp(mockKitLanche.id_externo))[0],
     ).toBeInTheDocument();
 
     terceirizadaMarcaConferencia.mockResolvedValue({
@@ -114,7 +106,7 @@ describe("Carrega Relatório na visão TERCEIRIZADA", () => {
     marcaConferencia();
 
     expect(
-      screen.getByText(/Marcar Conferência da Solicitação/i)
+      screen.getByText(/Marcar Conferência da Solicitação/i),
     ).toBeInTheDocument();
   });
 });
@@ -122,22 +114,18 @@ describe("Carrega Relatório na visão TERCEIRIZADA", () => {
 describe("Carrega Relatório na visao ESCOLA", () => {
   it("carrega Kit Aprovado", async () => {
     const search = `?uuid=${mockKitLanche.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     window.localStorage.setItem(
       "nome_instituicao",
-      `"${mockKitLanche.escolas_quantidades[0]?.escola.nome}"`
+      `"${mockKitLanche.escolas_quantidades[0]?.escola.nome}"`,
     );
     window.localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
 
     await setup(ESCOLA);
 
     expect(
-      screen.getAllByText(new RegExp(mockKitLanche.id_externo))[0]
+      screen.getAllByText(new RegExp(mockKitLanche.id_externo))[0],
     ).toBeInTheDocument();
   });
 });

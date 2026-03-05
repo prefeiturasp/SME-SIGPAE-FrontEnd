@@ -28,31 +28,27 @@ describe("Relatório Inclusão de Alimentação Contínua - Visão CODAE", () =>
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/"
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
       )
       .replyOnce(200, mockInclusaoContinuaValidada);
     mock
       .onPatch(
-        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/codae-questiona-pedido/"
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/codae-questiona-pedido/",
       )
       .reply(200, {});
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     const search = `?uuid=a64f5054-873c-46bc-aefa-43966029a1a4&ehInclusaoContinua=true&tipoSolicitacao=solicitacao-continua`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -63,14 +59,14 @@ describe("Relatório Inclusão de Alimentação Contínua - Visão CODAE", () =>
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioCODAE />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # A64F5`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # A64F5")
+      screen.getByText("Inclusão de Alimentação - Solicitação # A64F5"),
     ).toBeInTheDocument();
   });
 
@@ -81,7 +77,7 @@ describe("Relatório Inclusão de Alimentação Contínua - Visão CODAE", () =>
   it("renderiza motivo e data", async () => {
     expect(screen.getByText("Motivo")).toBeInTheDocument();
     expect(
-      screen.getByText("Programas/Projetos Contínuos")
+      screen.getByText("Programas/Projetos Contínuos"),
     ).toBeInTheDocument();
 
     expect(screen.getByText("De")).toBeInTheDocument();
@@ -125,7 +121,7 @@ describe("Relatório Inclusão de Alimentação Contínua - Visão CODAE", () =>
 
     mock
       .onGet(
-        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/"
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
       )
       .replyOnce(200, mockInclusaoContinuaQuestionada);
 
@@ -141,8 +137,8 @@ describe("Relatório Inclusão de Alimentação Contínua - Visão CODAE", () =>
     expect(screen.getByText("27/02/2025 16:42:03 - CODAE")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "É possível atender a solicitação com todos os itens previstos no contrato?"
-      )
+        "É possível atender a solicitação com todos os itens previstos no contrato?",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText("Observação da CODAE:")).toBeInTheDocument();
     expect(screen.getByText("da pra atender?")).toBeInTheDocument();

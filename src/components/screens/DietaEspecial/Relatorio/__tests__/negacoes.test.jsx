@@ -7,6 +7,7 @@ import { API_URL } from "src/constants/config";
 import { PERFIL, TIPO_PERFIL, VISAO } from "src/constants/shared";
 import mock from "src/services/_mock";
 import Relatorio from "../";
+import { MemoryRouter } from "react-router-dom";
 import {
   alergiasIntolerantes,
   alimentos,
@@ -40,7 +41,7 @@ const server = setupServer(
     `${API_URL}/protocolo-padrao-dieta-especial/lista-protocolos-liberados/`,
     () => {
       return HttpResponse.json(listaProtocolosLiberados());
-    }
+    },
   ),
   http.get(`${API_URL}/alimentos/`, () => {
     return HttpResponse.json(alimentos());
@@ -52,8 +53,8 @@ const server = setupServer(
     `${API_URL}/protocolo-padrao-dieta-especial/${payload.protocolo_padrao}/`,
     () => {
       return HttpResponse.json(protocoloPadraoDietaEspecial());
-    }
-  )
+    },
+  ),
 );
 
 beforeAll(() => server.listen());
@@ -65,20 +66,23 @@ afterAll(() => {
 
 test("Relatorio negadas para inclusão - visão CODADE NUTRI MANIFESTAÇÃO", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
-  render(<Relatorio visao={CODAE} />);
+  window.history.pushState({}, "", search);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={CODAE} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", TIPO_PERFIL.NUTRICAO_MANIFESTACAO);
 
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Negada a Inclusão/i)
+      screen.getByText(/dieta especial - Negada a Inclusão/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Motivo")).toBeInTheDocument();
     expect(screen.getByText("Justificativa da Negação")).toBeInTheDocument();
@@ -89,7 +93,7 @@ test("Relatorio negadas para inclusão - visão CODADE NUTRI MANIFESTAÇÃO", as
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
@@ -100,26 +104,26 @@ test("Relatorio negadas para inclusão - visão CODADE NUTRI MANIFESTAÇÃO", as
 
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Relação por Diagnóstico/i)
+      screen.queryByText(/Relação por Diagnóstico/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Classificação da Dieta/i)
+      screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i)
+      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Lista de Substituições/i)
+      screen.queryByText(/Lista de Substituições/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Período de Vigência/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Início/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Fim/i)).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Informações Adicionais/i)
+      screen.queryByText(/Informações Adicionais/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(/Identificação do Nutricionista/i)
+      screen.getByText(/Identificação do Nutricionista/i),
     ).toBeInTheDocument();
 
     const textoProtocolo = screen.queryAllByText("Gerar Protocolo");
@@ -135,11 +139,7 @@ test("Relatorio negadas para inclusão - visão CODADE NUTRI MANIFESTAÇÃO", as
 
 test("Relatorio negadas para inclusão - visão TERCEIRIZADA ADMINISTRADOR EMPRESA", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
   });
@@ -150,15 +150,22 @@ test("Relatorio negadas para inclusão - visão TERCEIRIZADA ADMINISTRADOR EMPRE
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.TERCEIRIZADA} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
 
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Negada a Inclusão/i)
+      screen.getByText(/dieta especial - Negada a Inclusão/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Motivo")).toBeInTheDocument();
     expect(screen.getByText("Justificativa da Negação")).toBeInTheDocument();
@@ -169,7 +176,7 @@ test("Relatorio negadas para inclusão - visão TERCEIRIZADA ADMINISTRADOR EMPRE
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
@@ -180,26 +187,26 @@ test("Relatorio negadas para inclusão - visão TERCEIRIZADA ADMINISTRADOR EMPRE
 
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Relação por Diagnóstico/i)
+      screen.queryByText(/Relação por Diagnóstico/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Classificação da Dieta/i)
+      screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i)
+      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Lista de Substituições/i)
+      screen.queryByText(/Lista de Substituições/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Período de Vigência/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Início/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Fim/i)).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Informações Adicionais/i)
+      screen.queryByText(/Informações Adicionais/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(/Identificação do Nutricionista/i)
+      screen.getByText(/Identificação do Nutricionista/i),
     ).toBeInTheDocument();
 
     const textoProtocolo = screen.queryAllByText("Gerar Protocolo");
@@ -218,11 +225,7 @@ test("Relatorio negadas para inclusão - visão TERCEIRIZADA ADMINISTRADOR EMPRE
 
 test("Relatorio negadas para inclusão - visão ESCOLA DIRETOR_UE", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
   });
@@ -233,15 +236,22 @@ test("Relatorio negadas para inclusão - visão ESCOLA DIRETOR_UE", async () => 
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.ESCOLA} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.ESCOLA} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", PERFIL.DIRETOR_UE);
 
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Negada a Inclusão/i)
+      screen.getByText(/dieta especial - Negada a Inclusão/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Motivo")).toBeInTheDocument();
     expect(screen.getByText("Justificativa da Negação")).toBeInTheDocument();
@@ -252,7 +262,7 @@ test("Relatorio negadas para inclusão - visão ESCOLA DIRETOR_UE", async () => 
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
     expect(screen.getByText("Nome")).toBeInTheDocument();
     expect(screen.getByText("Telefone")).toBeInTheDocument();
@@ -263,26 +273,26 @@ test("Relatorio negadas para inclusão - visão ESCOLA DIRETOR_UE", async () => 
 
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Relação por Diagnóstico/i)
+      screen.queryByText(/Relação por Diagnóstico/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Classificação da Dieta/i)
+      screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i)
+      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Lista de Substituições/i)
+      screen.queryByText(/Lista de Substituições/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/Período de Vigência/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Início/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Fim/i)).not.toBeInTheDocument();
     expect(
-      screen.queryByText(/Informações Adicionais/i)
+      screen.queryByText(/Informações Adicionais/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(/Identificação do Nutricionista/i)
+      screen.getByText(/Identificação do Nutricionista/i),
     ).toBeInTheDocument();
 
     const textoProtocolo = screen.queryAllByText("Gerar Protocolo");
@@ -301,20 +311,23 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão CODAD
   payload_alteracao.tipo_solicitacao = "ALTERACAO_UE";
 
   const search = `?uuid=${payload_alteracao.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
-  render(<Relatorio visao={CODAE} />);
+  window.history.pushState({}, "", search);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={CODAE} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", TIPO_PERFIL.NUTRICAO_MANIFESTACAO);
 
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Negada Alteração de UE/i)
+      screen.getByText(/dieta especial - Negada Alteração de UE/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Motivo")).toBeInTheDocument();
     expect(screen.getByText("Justificativa da Negação")).toBeInTheDocument();
@@ -325,20 +338,20 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão CODAD
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
 
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(screen.getByText(/Relação por Diagnóstico/i)).toBeInTheDocument();
     expect(screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i)
+      screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i),
     ).toBeInTheDocument();
     expect(screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
     expect(screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
     expect(screen.queryByText(/Informações Adicionais/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Identificação do Nutricionista/i)
+      screen.getByText(/Identificação do Nutricionista/i),
     ).toBeInTheDocument();
 
     const textoProtocolo = screen.queryAllByText("Gerar Protocolo");
@@ -357,11 +370,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão TERCE
   payload_alteracao.tipo_solicitacao = "ALTERACAO_UE";
 
   const search = `?uuid=${payload_alteracao.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -373,15 +382,22 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão TERCE
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.TERCEIRIZADA} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
 
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Negada Alteração de UE/i)
+      screen.getByText(/dieta especial - Negada Alteração de UE/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Motivo")).toBeInTheDocument();
     expect(screen.getByText("Justificativa da Negação")).toBeInTheDocument();
@@ -392,20 +408,20 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão TERCE
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
 
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(screen.getByText(/Relação por Diagnóstico/i)).toBeInTheDocument();
     expect(screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i)
+      screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i),
     ).toBeInTheDocument();
     expect(screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
     expect(screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
     expect(screen.queryByText(/Informações Adicionais/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Identificação do Nutricionista/i)
+      screen.getByText(/Identificação do Nutricionista/i),
     ).toBeInTheDocument();
 
     const textoProtocolo = screen.queryAllByText("Gerar Protocolo");
@@ -427,11 +443,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão ESCOL
   payload_alteracao.tipo_solicitacao = "ALTERACAO_UE";
 
   const search = `?uuid=${payload_alteracao.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -443,15 +455,22 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão ESCOL
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.ESCOLA} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.ESCOLA} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", PERFIL.DIRETOR_UE);
 
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Negada Alteração de UE/i)
+      screen.getByText(/dieta especial - Negada Alteração de UE/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Motivo")).toBeInTheDocument();
     expect(screen.getByText("Justificativa da Negação")).toBeInTheDocument();
@@ -462,20 +481,20 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão ESCOL
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
 
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(screen.getByText(/Relação por Diagnóstico/i)).toBeInTheDocument();
     expect(screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i)
+      screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i),
     ).toBeInTheDocument();
     expect(screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
     expect(screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
     expect(screen.queryByText(/Informações Adicionais/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Identificação do Nutricionista/i)
+      screen.getByText(/Identificação do Nutricionista/i),
     ).toBeInTheDocument();
 
     const textoProtocolo = screen.queryAllByText("Gerar Protocolo");

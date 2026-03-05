@@ -46,27 +46,23 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosTerceirizada);
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAutorizadaCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAutorizadaCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoAutorizadaCEMEI);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
 
     const search = `?uuid=${mockInclusaoMotivoEspecificoAutorizadaCEMEI.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
@@ -89,20 +85,20 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
             <InclusaoDeAlimentacaoCEMEIRelatorios.RelatorioTerceirizada />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       ));
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # 5A120`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # 5A120")
+      screen.getByText("Inclusão de Alimentação - Solicitação # 5A120"),
     ).toBeInTheDocument();
   });
 
   it("renderiza dados da solicitação", async () => {
     expect(
-      screen.getByText("Solicitação no prazo regular")
+      screen.getByText("Solicitação no prazo regular"),
     ).toBeInTheDocument();
 
     const span = container.querySelector(".dre-name");
@@ -110,7 +106,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
     expect(span).toHaveTextContent("CEMEI SUZANA CAMPOS TAUIL");
 
     expect(
-      screen.getByText("Solicitação de Inclusão de Alimentação")
+      screen.getByText("Solicitação de Inclusão de Alimentação"),
     ).toBeInTheDocument();
     expect(screen.getByText("Evento Específico")).toBeInTheDocument();
 
@@ -120,7 +116,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
   it("marca conferência", async () => {
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAutorizadaCEMEI.uuid}/marcar-conferida/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAutorizadaCEMEI.uuid}/marcar-conferida/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoConferidaCEMEI);
 
@@ -132,8 +128,8 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Deseja marcar essa solicitação como conferida? A ação não poderá ser desfeita."
-        )
+          "Deseja marcar essa solicitação como conferida? A ação não poderá ser desfeita.",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -142,7 +138,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
 
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAutorizadaCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAutorizadaCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoConferidaCEMEI);
 

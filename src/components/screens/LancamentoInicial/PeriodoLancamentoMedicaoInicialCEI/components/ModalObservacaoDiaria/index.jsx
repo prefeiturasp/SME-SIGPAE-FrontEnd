@@ -22,7 +22,7 @@ import {
 } from "src/helpers/fieldValidators";
 import { deleteObservacaoValoresPeriodosLancamentos } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import "./styles.scss";
-import strip_tags from "locutus/php/strings/strip_tags";
+import { strip_tags } from "locutus/php/strings/strip_tags";
 
 export default ({
   closeModal,

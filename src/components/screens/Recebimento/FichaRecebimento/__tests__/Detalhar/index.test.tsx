@@ -27,12 +27,11 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
         ],
       });
 
-    Object.defineProperty(window, "location", {
-      value: {
-        search: `?uuid=${mockGetFichaRecebimentoDetalhada.uuid}`,
-      },
-      writable: true,
-    });
+    window.history.pushState(
+      {},
+      "",
+      `?uuid=${mockGetFichaRecebimentoDetalhada.uuid}`,
+    );
 
     await act(async () => {
       render(
@@ -167,12 +166,7 @@ describe("Testes quando reposicao_cronograma.tipo é Credito", () => {
       .onGet(`/fichas-de-recebimento/${mockFichaComCredito.uuid}/`)
       .reply(200, mockFichaComCredito);
 
-    Object.defineProperty(window, "location", {
-      value: {
-        search: `?uuid=${mockFichaComCredito.uuid}`,
-      },
-      writable: true,
-    });
+    window.history.pushState({}, "", `?uuid=${mockFichaComCredito.uuid}`);
 
     await act(async () => {
       render(

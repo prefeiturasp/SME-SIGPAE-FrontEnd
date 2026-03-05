@@ -72,11 +72,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
       .reply(200, { results: ["18", "20", "21"] });
 
     const search = `?uuid=a0e68ec3-6fa9-4078-9e78-34f6a270d5ab&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

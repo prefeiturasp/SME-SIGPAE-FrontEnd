@@ -46,12 +46,12 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
       .reply(200, []);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
     mock
       .onGet(
-        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/"
+        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
       )
       .reply(200, { results: [] });
     mock
@@ -75,31 +75,27 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
       .reply(200, { results: [] });
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
       )
       .reply(200, []);
     mock
       .onGet(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/ceu-gestao-frequencias-dietas/`
+        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/ceu-gestao-frequencias-dietas/`,
       )
       .reply(200, []);
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/"
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
       .reply(200, quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025);
 
     const search = `?mes=05&ano=2025`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "nome_instituicao",
-      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
     );
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
@@ -122,7 +118,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
             <LancamentoMedicaoInicialPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -165,7 +161,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
 
     mock
       .onPatch(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/`
+        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/`,
       )
       .reply(400, [
         {
@@ -178,12 +174,12 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
 
     await waitFor(() => {
       expect(
-        screen.getByText("Não foi possível enviar a medição sem lançamentos!")
+        screen.getByText("Não foi possível enviar a medição sem lançamentos!"),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Existem solicitações de alimentações no período, adicione ao menos uma justificativa para finalizar"
-        )
+          "Existem solicitações de alimentações no período, adicione ao menos uma justificativa para finalizar",
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -208,7 +204,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
 
     mock
       .onPatch(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/`
+        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/`,
       )
       .reply(200, mockSolicitacaoMedicaoInicialEMEFMaio2025Enviada[0]);
 
@@ -220,7 +216,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
 
     await waitFor(() => {
       expect(
-        screen.getByText("Medição Inicial finalizada com sucesso!")
+        screen.getByText("Medição Inicial finalizada com sucesso!"),
       ).toBeInTheDocument();
     });
 
@@ -229,11 +225,11 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
 
   it("Exibe bloco de correção da CODAE", () => {
     expect(
-      screen.getByText("Solicitação de Correção da CODAE")
+      screen.getByText("Solicitação de Correção da CODAE"),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("Solicitação de Correção da CODAE")
+      screen.getByText("Solicitação de Correção da CODAE"),
     ).toBeInTheDocument("Não pode fazer sem lançamentos!");
   });
   it("Verifica a ordem dos cards", () => {
@@ -244,7 +240,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
     for (let i = 0; i < elementos.length - 1; i++) {
       const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
       expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
-        Node.DOCUMENT_POSITION_FOLLOWING
+        Node.DOCUMENT_POSITION_FOLLOWING,
       );
     }
   });

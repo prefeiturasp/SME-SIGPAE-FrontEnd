@@ -87,11 +87,7 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
     });
 
     const search = `?uuid=64c527a2-d724-4b8e-a3bf-c3815ff078b9`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
   });
 
   it("renderiza label `Mês do Lançamento`", async () => {

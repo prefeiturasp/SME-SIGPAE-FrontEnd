@@ -74,7 +74,9 @@ export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
               );
 
               const numeroAtendimentos =
-                totaisConsumo?.[periodo.value]?.[faixa.__str__] ?? 0;
+                totaisConsumo?.[`ALIMENTAÇÃO - ${periodo.value}`]?.[
+                  faixa.__str__
+                ] ?? 0;
 
               const totalUnitario = Number(
                 (valorUnitario + valorReajuste).toFixed(2),

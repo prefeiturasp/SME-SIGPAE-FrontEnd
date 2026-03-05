@@ -47,27 +47,23 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosTerceirizada);
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoQuestionadaCEMEI);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
 
     const search = `?uuid=${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
@@ -90,14 +86,14 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
             <InclusaoDeAlimentacaoCEMEIRelatorios.RelatorioTerceirizada />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       ));
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # 512C3`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # 512C3")
+      screen.getByText("Inclusão de Alimentação - Solicitação # 512C3"),
     ).toBeInTheDocument();
   });
 
@@ -109,7 +105,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
     expect(span).toHaveTextContent("CEMEI SUZANA CAMPOS TAUIL");
 
     expect(
-      screen.getByText("Solicitação de Inclusão de Alimentação")
+      screen.getByText("Solicitação de Inclusão de Alimentação"),
     ).toBeInTheDocument();
     expect(screen.getByText("Evento Específico")).toBeInTheDocument();
 
@@ -119,7 +115,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
   it("aceita a solicitação", async () => {
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}/terceirizada-responde-questionamento/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}/terceirizada-responde-questionamento/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoQuestionadaRespostaSimCEMEI);
 
@@ -144,13 +140,13 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
 
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoQuestionadaRespostaSimCEMEI);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Questionamento respondido com sucesso!")
+        screen.getByText("Questionamento respondido com sucesso!"),
       ).toBeInTheDocument();
     });
 
@@ -158,14 +154,14 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
     expect(screen.queryByText("Sim")).not.toBeInTheDocument();
 
     expect(
-      screen.getByText("Observação da Terceirizada: Aceito.")
+      screen.getByText("Observação da Terceirizada: Aceito."),
     ).toBeInTheDocument();
   });
 
   it("não aceita a solicitação", async () => {
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}/terceirizada-responde-questionamento/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}/terceirizada-responde-questionamento/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoQuestionadaRespostaNaoCEMEI);
 
@@ -190,13 +186,13 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
 
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoQuestionadaCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoQuestionadaRespostaNaoCEMEI);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Questionamento respondido com sucesso!")
+        screen.getByText("Questionamento respondido com sucesso!"),
       ).toBeInTheDocument();
     });
 
@@ -204,7 +200,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Terceirizad
     expect(screen.queryByText("Sim")).not.toBeInTheDocument();
 
     expect(
-      screen.getByText("Observação da Terceirizada: Não aceito.")
+      screen.getByText("Observação da Terceirizada: Não aceito."),
     ).toBeInTheDocument();
   });
 });

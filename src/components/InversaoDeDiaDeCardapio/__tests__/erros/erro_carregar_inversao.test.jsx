@@ -25,11 +25,7 @@ describe("Relatório Inversão - Visão Escola - Erro parâmetro UUID", () => {
     localStorage.setItem("eh_cemei", "true");
 
     const search = `?uuid=${uuidInversao}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -40,7 +36,7 @@ describe("Relatório Inversão - Visão Escola - Erro parâmetro UUID", () => {
           }}
         >
           <RelatoriosInversaoDiaCardapio.RelatorioEscola />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -48,8 +44,8 @@ describe("Relatório Inversão - Visão Escola - Erro parâmetro UUID", () => {
   it("renderiza erro `Erro ao carregar Inversão de dia de Cardápio. Tente novamente mais tarde.", async () => {
     expect(
       screen.getByText(
-        "Erro ao carregar Inversão de dia de Cardápio. Tente novamente mais tarde."
-      )
+        "Erro ao carregar Inversão de dia de Cardápio. Tente novamente mais tarde.",
+      ),
     ).toBeInTheDocument();
   });
 });
