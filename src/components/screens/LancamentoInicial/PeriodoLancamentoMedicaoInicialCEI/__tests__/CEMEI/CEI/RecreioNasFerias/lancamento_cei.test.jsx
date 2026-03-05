@@ -34,7 +34,6 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -542,10 +541,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F�
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
-      const faixasRenderizadas = [
-        "1b77202d-fd0b-46b7-b4ec-04eb262efece",
-        "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
-      ];
+      const faixasRenderizadas = ["1b77202d-fd0b-46b7-b4ec-04eb262efece"];
 
       mockFaixasEtarias.results.forEach((faixa) => {
         dias.forEach((dia) => {
@@ -562,10 +558,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F�
             expect(inputDietasAutorizadas).toBeDisabled();
             expect(inputFrequencia).toBeInTheDocument();
 
-            if (
-              diasDesabilitados.includes(dia) ||
-              faixa.uuid === "381aecc2-e1b2-4d26-a156-1834eec7f1dd"
-            ) {
+            if (diasDesabilitados.includes(dia)) {
               expect(inputFrequencia.disabled).toBe(true);
             } else {
               expect(inputFrequencia.disabled).toBe(false);
@@ -578,118 +571,138 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F�
       });
     });
 
-    it.only("ao clicar na tab `Semana 1`, exibe, nos dias 29 setembro a 05 de outubro, e verifica os lançamentos", async () => {
+    it("ao clicar na tab `Semana 1`, exibe, nos dias 29 setembro a 05 de outubro, e verifica os lançamentos", async () => {
       await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
-      const VALORES_ESPERADOS = {
+
+      const faixasPorCategoria = [
+        { uuid_faixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece", cateoria: "2" },
+        { uuid_faixa: "381aecc2-e1b2-4d26-a156-1834eec7f1dd", cateoria: "2" },
+        { uuid_faixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece", cateoria: "4" },
+      ];
+
+      const valoresExperados = {
         1: {
           dieta: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "6",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "2",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "6",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd-cat2": "2",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "2",
           },
           frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd-cat2": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "",
           },
         },
         2: {
           dieta: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "6",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "2",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "6",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd-cat2": "2",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "2",
           },
           frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd-cat2": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "",
           },
         },
         3: {
           dieta: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "6",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "2",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "6",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd-cat2": "2",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "2",
           },
           frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd-cat2": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "",
           },
         },
-        4: {
-          dieta: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
-          },
-          frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
-          },
-        },
-        5: {
-          dieta: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
-          },
-          frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
-          },
-        },
+        4: { dieta: {}, frequencia: {} },
+        5: { dieta: {}, frequencia: {} },
         29: {
           dieta: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "Mês anterior",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "Mês anterior",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd-cat2": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "Mês anterior",
           },
           frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "Mês anterior",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "Mês anterior",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd-cat2": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "Mês anterior",
           },
         },
         30: {
           dieta: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "Mês anterior",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "Mês anterior",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd-cat2": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "Mês anterior",
           },
           frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "Mês anterior",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "Mês anterior",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd-cat2": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "Mês anterior",
           },
         },
       };
+
+      Object.keys(valoresExperados).forEach((dia) => {
+        const valoresDia = valoresExperados[dia];
+        const diaFormatado = dia.toString().padStart(2, "0");
+
+        faixasPorCategoria.forEach(({ uuid_faixa, cateoria }) => {
+          const chaveBusca = `${uuid_faixa}-cat${cateoria}`;
+
+          const valorDietaEsperado = valoresDia.dieta[chaveBusca] || "";
+          const valorFreqEsperado = valoresDia.frequencia[chaveBusca] || "";
+
+          const inputDieta = screen.getByTestId(
+            `dietas_autorizadas__faixa_${uuid_faixa}__dia_${diaFormatado}__categoria_${cateoria}`,
+          );
+          expect(inputDieta).toHaveAttribute("value", valorDietaEsperado);
+
+          const inputFrequencia = screen.getByTestId(
+            `frequencia__faixa_${uuid_faixa}__dia_${diaFormatado}__categoria_${cateoria}`,
+          );
+          expect(inputFrequencia).toHaveAttribute("value", valorFreqEsperado);
+        });
+      });
+
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      await waitFor(() => {
+        expect(botao).not.toBeDisabled();
+      });
+    });
+
+    it("ao clicar na tab `Semana 1`, preencher frequencia maior que dietas autorizadas e exibe erro", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
 
       const faixasRenderizadas = [
         "1b77202d-fd0b-46b7-b4ec-04eb262efece",
         "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
       ];
 
-      await waitFor(() => {
-        expect(true).toBe(true);
+      const cenarios = [
+        { faixa: faixasRenderizadas[0], categoria: "2" },
+        { faixa: faixasRenderizadas[1], categoria: "2" },
+        { faixa: faixasRenderizadas[0], categoria: "4" },
+      ];
+
+      cenarios.forEach(({ faixa, categoria }) => {
+        const testId = `frequencia__faixa_${faixa}__dia_01__categoria_${categoria}`;
+        const input = screen.getByTestId(testId);
+
+        fireEvent.change(input, { target: { value: "10" } });
+        expect(input).toHaveClass("invalid-field");
+
+        const botao = screen.getByText("Salvar Lançamentos").closest("button");
+        expect(botao).toBeInTheDocument();
+        expect(botao).toBeDisabled();
       });
-
-      Object.keys(VALORES_ESPERADOS).forEach((dia) => {
-        const valoresDia = VALORES_ESPERADOS[dia];
-        const diaFormatado = dia.toString().padStart(2, "0");
-
-        faixasRenderizadas.forEach((faixa) => {
-          const inputDieta = screen.getByTestId(
-            `dietas_autorizadas__faixa_${faixa}__dia_${diaFormatado}__categoria_2`,
-          );
-          expect(inputDieta).toHaveAttribute("value", valoresDia.dieta[faixa]);
-
-          const inputFrequencia = screen.getByTestId(
-            `frequencia__faixa_${faixa}__dia_${diaFormatado}__categoria_2`,
-          );
-          expect(inputFrequencia).toHaveAttribute(
-            "value",
-            valoresDia.frequencia[faixa],
-          );
-        });
-      });
-      const botao = screen.getByText("Salvar Lançamentos").closest("button");
-      expect(botao).toBeInTheDocument();
-      await waitFor(() => {
-        expect(botao).not.toBeDisabled();
-      });
-
-      preview.debug();
     });
   });
 });
