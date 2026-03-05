@@ -97,11 +97,7 @@ describe("Lançamento de Medição Inicial - EMEI da CEMEI - Testes de Alteraç�
     });
 
     const search = `?uuid=33306018-2917-4ea2-8a17-98ffa1447848`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
   });
 
   it("renderiza label `Mês do Lançamento`", () => {

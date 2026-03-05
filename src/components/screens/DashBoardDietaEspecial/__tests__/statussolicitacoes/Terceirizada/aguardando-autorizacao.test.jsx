@@ -27,13 +27,11 @@ describe("Teste StatusSolicitacoes - Terceirizada - Aguardando Autorização", (
     localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
     localStorage.setItem("tipo_servico", TIPO_SERVICO.TERCEIRIZADA);
 
-    Object.defineProperty(window, "location", {
-      value: {
-        href: "/solicitacoes-dieta-especial/solicitacoes-pendentes",
-        pathname: "/solicitacoes-dieta-especial/solicitacoes-pendentes",
-      },
-      writable: true,
-    });
+    window.history.pushState(
+      {},
+      "",
+      "/solicitacoes-dieta-especial/solicitacoes-pendentes",
+    );
 
     await act(async () => {
       renderWithProvider(

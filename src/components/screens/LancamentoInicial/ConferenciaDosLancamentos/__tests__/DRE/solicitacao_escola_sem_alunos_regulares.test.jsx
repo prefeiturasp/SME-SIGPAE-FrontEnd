@@ -90,11 +90,7 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT
     localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
 
     const search = `?uuid=${solicitacaoUuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

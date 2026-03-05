@@ -89,11 +89,7 @@ describe("Testes de inclusão de lançamento em fim de semana", () => {
     });
 
     const search = `?uuid=$c9826df1-1c14-4748-b290-90d62658d013`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
   });
 
   it("renderiza label `Mês do Lançamento`", () => {

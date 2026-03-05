@@ -1193,14 +1193,20 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const keySplitted = key.split("__");
       const uuid_faixa_etaria = keySplitted[1].replace("faixa_", "");
       let nameMatriculadoInputField = null;
-      const prefixo = ehGrupoColaboradores() ? "participantes" : "matriculados";
+      const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
+      const sufixo = `__dia_${dia}__categoria_${categoria}`;
       if (ehEmeiDaCemeiLocation || ehGrupoColaboradores()) {
-        nameMatriculadoInputField = `${prefixo}__dia_${dia}__categoria_${categoria}`;
+        nameMatriculadoInputField = `${prefixo}${sufixo}`;
       } else {
-        nameMatriculadoInputField = `matriculados__faixa_${uuid_faixa_etaria}__dia_${dia}__categoria_${categoria}`;
+        const faixaId = ehRecreioNasFerias() ? "null" : uuid_faixa_etaria;
+        nameMatriculadoInputField = `${prefixo}__faixa_${faixaId}${sufixo}`;
       }
       if (
-        !(key.includes("observacoes") || key.includes("matriculados")) &&
+        !(
+          key.includes("observacoes") ||
+          key.includes("matriculados") ||
+          key.includes("participantes")
+        ) &&
         Number(value) >
           Number(valuesMesmoDiaDaObservacao[nameMatriculadoInputField])
       ) {

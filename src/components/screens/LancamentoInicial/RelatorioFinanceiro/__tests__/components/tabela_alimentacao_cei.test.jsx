@@ -59,12 +59,12 @@ const tabelas = [
 ];
 
 const totaisConsumo = {
-  INTEGRAL: {
+  "ALIMENTAÇÃO - INTEGRAL": {
     "00 meses": 6,
     "01 a 03 meses": 6,
     "04 anos a 06 anos": 6,
   },
-  PARCIAL: {
+  "ALIMENTAÇÃO - PARCIAL": {
     "00 meses": 6,
     "01 a 03 meses": 6,
     "04 anos a 06 anos": 6,

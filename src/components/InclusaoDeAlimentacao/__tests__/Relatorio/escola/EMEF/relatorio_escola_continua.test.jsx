@@ -25,12 +25,12 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/"
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
       )
       .replyOnce(200, mockInclusaoContinuaPrazoLimite);
     mock
       .onPatch(
-        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/escola-cancela-pedido-48h-antes/"
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/escola-cancela-pedido-48h-antes/",
       )
       .reply(200, mockInclusaoContinuaCancelada);
 
@@ -40,11 +40,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
 
     const search = `?uuid=a64f5054-873c-46bc-aefa-43966029a1a4&ehInclusaoContinua=true&tipoSolicitacao=solicitacao-continua`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -55,14 +51,14 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # A64F5`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # A64F5")
+      screen.getByText("Inclusão de Alimentação - Solicitação # A64F5"),
     ).toBeInTheDocument();
   });
 
@@ -73,7 +69,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
   it("renderiza motivo e data", async () => {
     expect(screen.getByText("Motivo")).toBeInTheDocument();
     expect(
-      screen.getByText("Programas/Projetos Contínuos")
+      screen.getByText("Programas/Projetos Contínuos"),
     ).toBeInTheDocument();
 
     expect(screen.getByText("De")).toBeInTheDocument();
@@ -105,12 +101,12 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Esta solicitação está aguardando validação pela DRE. Deseja seguir em frente com o cancelamento?"
-        )
+          "Esta solicitação está aguardando validação pela DRE. Deseja seguir em frente com o cancelamento?",
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -121,7 +117,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
     });
 
@@ -130,7 +126,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação")
+        screen.queryByText("Cancelamento de Solicitação"),
       ).not.toBeInTheDocument();
     });
   });
@@ -141,7 +137,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
     });
 
@@ -158,13 +154,13 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
 
     mock
       .onGet(
-        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/"
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
       )
       .replyOnce(200, mockInclusaoContinuaCancelada);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação")
+        screen.queryByText("Cancelamento de Solicitação"),
       ).not.toBeInTheDocument();
     });
 
@@ -173,7 +169,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
     expect(screen.getByText("Escola cancelou")).toBeInTheDocument();
     expect(screen.getByText("Histórico de cancelamento")).toBeInTheDocument();
     expect(
-      screen.getByText("MANHA - Lanche - 100 - justificativa: xablau")
+      screen.getByText("MANHA - Lanche - 100 - justificativa: xablau"),
     ).toBeInTheDocument();
   });
 });

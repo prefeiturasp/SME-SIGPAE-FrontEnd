@@ -84,11 +84,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Renderiza Mediçã
     });
 
     const search = `?mes=12&ano=2025&recreio_nas_ferias=cd27796f-9dbf-4e36-ac14-c44f23d41cd4`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);

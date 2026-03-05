@@ -19,12 +19,7 @@ import {
 } from "../../../../../mocks/cronograma.service/mockGetCronogramaDetalhar";
 
 const setWindowLocation = (search) => {
-  const newLocation = {
-    ...window.location,
-    search: search,
-  };
-  delete window.location;
-  window.location = newLocation;
+  window.history.pushState({}, "", `${window.location.pathname}${search}`);
 };
 
 const setup = async () => {

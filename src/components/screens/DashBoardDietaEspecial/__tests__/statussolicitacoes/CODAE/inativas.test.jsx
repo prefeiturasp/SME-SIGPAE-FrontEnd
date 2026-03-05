@@ -28,13 +28,11 @@ describe("Teste StatusSolicitacoes - Inativas - CODAE", () => {
       PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
-    Object.defineProperty(window, "location", {
-      value: {
-        href: "/solicitacoes-dieta-especial/solicitacoes-inativas",
-        pathname: "/solicitacoes-dieta-especial/solicitacoes-inativas",
-      },
-      writable: true,
-    });
+    window.history.pushState(
+      {},
+      "",
+      "/solicitacoes-dieta-especial/solicitacoes-inativas",
+    );
 
     await act(async () => {
       renderWithProvider(

@@ -51,11 +51,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - ETEC - Usuário CEU GESTAO",
       .reply(200, { results: [] });
 
     const search = `?uuid=1eb60064-a0e1-4778-a1ee-a64752ef6f1b&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=true&ehPeriodoEspecifico=false`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

@@ -54,13 +54,12 @@ export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI = (
     c.nome.includes("ALIMENTAÇÃO"),
   );
   let sumFrequenciasAlimentacao = 0;
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
+  const sufixo = `__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`;
 
   for (const faixa of faixasEtarias) {
-    let campoMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`;
-    if (ehRecreioNasFerias) {
-      campoMatriculados = `participantes__faixa_null__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`;
-    }
-
+    const uuidFaixa = ehRecreioNasFerias ? "null" : faixa.uuid;
+    let campoMatriculados = `${prefixo}__faixa_${uuidFaixa}${sufixo}`;
     if (Number(formValuesAtualizados[campoMatriculados]) > 0) {
       sumFrequenciasAlimentacao += Number(
         formValuesAtualizados[
@@ -132,12 +131,11 @@ export const alimentacoesFrequenciaZeroESemObservacaoCEI = (
   if (!categoriaAlimentacao) return false;
 
   let sumFrequenciasAlimentacao = 0;
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
+  const sufixo = `__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
   for (const faixa of faixasEtarias) {
-    let campoMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
-    if (ehRecreioNasFerias) {
-      campoMatriculados = `participantes__faixa_null__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
-    }
-
+    const uuidFaixa = ehRecreioNasFerias ? "null" : faixa.uuid;
+    let campoMatriculados = `${prefixo}__faixa_${uuidFaixa}${sufixo}`;
     if (Number(values[campoMatriculados]) > 0) {
       sumFrequenciasAlimentacao += Number(
         values[
@@ -438,15 +436,16 @@ export const validacoesFaixasZeradasAlimentacao = (
   const diasLetivos = calendario.filter(
     (dia) => dia.dia_letivo === true && !feriadosNoMes.includes(dia.dia),
   );
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
 
   const diasZerado = diasLetivos.reduce((acumulador, diaLetivo) => {
     const dia = diaLetivo.dia;
+    const sufixo = `__dia_${dia}__categoria_${categoria.id}`;
 
     const faixasComMatriculados = faixaEtaria.filter((faixa) => {
-      let inputMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
-      if (ehRecreioNasFerias) {
-        inputMatriculados = `participantes__faixa_null__dia_${dia}__categoria_${categoria.id}`;
-      }
+      const uuidFaixa = ehRecreioNasFerias ? "null" : faixa.uuid;
+      let inputMatriculados = `${prefixo}__faixa_${uuidFaixa}${sufixo}`;
+
       const valorMatriculados = allValues[inputMatriculados];
       return valorMatriculados !== undefined && Number(valorMatriculados) > 0;
     });
@@ -1027,17 +1026,15 @@ export const existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI = (
       (row) => row.name !== "dietas_autorizadas",
     ),
   ];
-
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
   for (const column of weekColumns) {
     const dia = column.dia;
+    const sufixo = `__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
 
     let sumFrequenciasAlimentacao = 0;
     for (const faixa of faixasEtarias) {
-      let campoMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
-      if (ehRecreioNasFerias) {
-        campoMatriculados = `participantes__faixa_null__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
-      }
-
+      const uuidFaixa = ehRecreioNasFerias ? "null" : faixa.uuid;
+      let campoMatriculados = `${prefixo}__faixa_${uuidFaixa}${sufixo}`;
       if (Number(formValuesAtualizados[campoMatriculados]) > 0) {
         sumFrequenciasAlimentacao += Number(
           formValuesAtualizados[

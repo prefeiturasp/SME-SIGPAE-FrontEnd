@@ -16,17 +16,13 @@ const setup = async (autofill = false) => {
   const search = `?uuid=${mockGuiaParaConferencia.uuid}${
     autofill ? "&autofill=true" : ""
   }`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   await act(async () => {
     render(
       <MemoryRouter>
         <ReposicaoDeGuia />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };

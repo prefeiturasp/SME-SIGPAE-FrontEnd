@@ -18,7 +18,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/",
       )
       .reply(200, mockInclusaoAlimentacaoRegular);
 
@@ -27,11 +27,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
 
     const search = `?uuid=d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64&ehInclusaoContinua=false`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -42,7 +38,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -50,8 +46,8 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
   it("renderiza erro `Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente.`", async () => {
     expect(
       screen.getByText(
-        "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente."
-      )
+        "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente.",
+      ),
     ).toBeInTheDocument();
   });
 });

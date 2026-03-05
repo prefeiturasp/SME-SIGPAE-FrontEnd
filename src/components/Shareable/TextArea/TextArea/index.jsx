@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import InputErroMensagem from "../../Input/InputErroMensagem";
 import { ContadorCaracteres } from "../../ContadorCaracteres";
+import TooltipIcone from "../../TooltipIcone";
 import "../style.scss";
 
 export const TextArea = (props) => {
@@ -21,6 +22,7 @@ export const TextArea = (props) => {
     height,
     inputOnChange,
     dataTestId,
+    tooltipText,
   } = props;
 
   const inputProps = {
@@ -43,6 +45,7 @@ export const TextArea = (props) => {
           {label}
         </label>,
       ]}
+      {tooltipText && <TooltipIcone tooltipText={tooltipText} />}
       <textarea
         style={height && { height: height + "px" }}
         {...input}
@@ -79,4 +82,5 @@ TextArea.propTypes = {
   required: PropTypes.bool,
   contador: PropTypes.number,
   valorInicial: PropTypes.string,
+  tooltipText: PropTypes.string,
 };

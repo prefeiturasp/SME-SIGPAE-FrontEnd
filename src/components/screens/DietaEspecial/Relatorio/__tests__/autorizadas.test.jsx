@@ -16,6 +16,7 @@ import {
 import { API_URL } from "src/constants/config";
 import mock from "src/services/_mock";
 import { VISAO, PERFIL } from "src/constants/shared";
+import { MemoryRouter } from "react-router-dom";
 
 const payload = {
   ...respostaApiCancelamentoporDataTermino(),
@@ -39,7 +40,7 @@ const server = setupServer(
     `${API_URL}/protocolo-padrao-dieta-especial/lista-protocolos-liberados/`,
     () => {
       return HttpResponse.json(listaProtocolosLiberados());
-    }
+    },
   ),
   http.get(`${API_URL}/alimentos/`, () => {
     return HttpResponse.json(alimentos());
@@ -51,8 +52,8 @@ const server = setupServer(
     `${API_URL}/protocolo-padrao-dieta-especial/${payload.protocolo_padrao}/`,
     () => {
       return HttpResponse.json(protocoloPadraoDietaEspecial());
-    }
-  )
+    },
+  ),
 );
 
 beforeAll(() => server.listen());
@@ -64,11 +65,7 @@ afterAll(() => {
 
 test("Relatório Autorizada Temporariamente - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -78,18 +75,25 @@ test("Relatório Autorizada Temporariamente - visão CODAE NUTRI MANIFESTAÇÃO"
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.CODAE} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.CODAE} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", PERFIL.NUTRICAO_MANIFESTACAO);
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Autorizada/i)
+      screen.getByText(/dieta especial - Autorizada/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Justificativa da Negação")
+      screen.queryByText("Justificativa da Negação"),
     ).not.toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -97,10 +101,10 @@ test("Relatório Autorizada Temporariamente - visão CODAE NUTRI MANIFESTAÇÃO"
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Dados da Escola de Destino/i)
+      screen.queryByText(/Dados da Escola de Destino/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
 
     expect(screen.getAllByText("Nome")).toHaveLength(1);
@@ -125,11 +129,7 @@ test("Relatório Autorizada Temporariamente - visão CODAE NUTRI MANIFESTAÇÃO"
 
 test("Relatório Autorizada - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -139,18 +139,25 @@ test("Relatório Autorizada - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.CODAE} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.CODAE} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", PERFIL.NUTRICAO_MANIFESTACAO);
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Autorizada/i)
+      screen.getByText(/dieta especial - Autorizada/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Justificativa da Negação")
+      screen.queryByText("Justificativa da Negação"),
     ).not.toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -158,10 +165,10 @@ test("Relatório Autorizada - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Dados da Escola de Destino/i)
+      screen.queryByText(/Dados da Escola de Destino/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
 
     expect(screen.getAllByText("Nome")).toHaveLength(1);
@@ -186,11 +193,7 @@ test("Relatório Autorizada - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
 
 test("Relatório Autorizada Temporariamente - visão TERCEIRIZADA", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -200,18 +203,25 @@ test("Relatório Autorizada Temporariamente - visão TERCEIRIZADA", async () => 
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.TERCEIRIZADA} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", PERFIL.ADMINISTRADOR_EMPRESA);
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Autorizada/i)
+      screen.getByText(/dieta especial - Autorizada/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Justificativa da Negação")
+      screen.queryByText("Justificativa da Negação"),
     ).not.toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -219,10 +229,10 @@ test("Relatório Autorizada Temporariamente - visão TERCEIRIZADA", async () => 
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Dados da Escola de Destino/i)
+      screen.queryByText(/Dados da Escola de Destino/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
 
     expect(screen.getAllByText("Nome")).toHaveLength(1);
@@ -250,11 +260,7 @@ test("Relatório Autorizada Temporariamente - visão TERCEIRIZADA", async () => 
 
 test("Relatório Autorizada - visão TERCEIRIZADA", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -264,18 +270,25 @@ test("Relatório Autorizada - visão TERCEIRIZADA", async () => {
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.TERCEIRIZADA} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", PERFIL.ADMINISTRADOR_EMPRESA);
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Autorizada/i)
+      screen.getByText(/dieta especial - Autorizada/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Justificativa da Negação")
+      screen.queryByText("Justificativa da Negação"),
     ).not.toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -283,10 +296,10 @@ test("Relatório Autorizada - visão TERCEIRIZADA", async () => {
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Dados da Escola de Destino/i)
+      screen.queryByText(/Dados da Escola de Destino/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
 
     expect(screen.getAllByText("Nome")).toHaveLength(1);
@@ -314,11 +327,7 @@ test("Relatório Autorizada - visão TERCEIRIZADA", async () => {
 
 test("Relatório Autorizada Temporariamente - visão CODAE COORDENADOR DIETA ESPECIAL", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -328,18 +337,25 @@ test("Relatório Autorizada Temporariamente - visão CODAE COORDENADOR DIETA ESP
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.CODAE} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.CODAE} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", PERFIL.COORDENADOR_DIETA_ESPECIAL);
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Autorizada/i)
+      screen.getByText(/dieta especial - Autorizada/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Justificativa da Negação")
+      screen.queryByText("Justificativa da Negação"),
     ).not.toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -347,10 +363,10 @@ test("Relatório Autorizada Temporariamente - visão CODAE COORDENADOR DIETA ESP
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Dados da Escola de Destino/i)
+      screen.queryByText(/Dados da Escola de Destino/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
 
     expect(screen.getAllByText("Nome")).toHaveLength(1);
@@ -378,11 +394,7 @@ test("Relatório Autorizada Temporariamente - visão CODAE COORDENADOR DIETA ESP
 
 test("Relatório Autorizada - visão CODAE COORDENADOR DIETA ESPECIAL", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -392,18 +404,25 @@ test("Relatório Autorizada - visão CODAE COORDENADOR DIETA ESPECIAL", async ()
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.CODAE} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.CODAE} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("perfil", PERFIL.COORDENADOR_DIETA_ESPECIAL);
   await waitFor(() => {
     expect(
-      screen.getByText(/dieta especial - Autorizada/i)
+      screen.getByText(/dieta especial - Autorizada/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /histórico/i })
+      screen.getByRole("button", { name: /histórico/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText("Motivo")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Justificativa da Negação")
+      screen.queryByText("Justificativa da Negação"),
     ).not.toBeInTheDocument();
 
     expect(screen.getByText(/dados do aluno/i)).toBeInTheDocument();
@@ -411,10 +430,10 @@ test("Relatório Autorizada - visão CODAE COORDENADOR DIETA ESPECIAL", async ()
     expect(screen.getByText(/data de nascimento/i)).toBeInTheDocument();
     expect(screen.getByText(/nome completo do aluno/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Dados da Escola de Destino/i)
+      screen.queryByText(/Dados da Escola de Destino/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(/dados da escola solicitante/i)
+      screen.getByText(/dados da escola solicitante/i),
     ).toBeInTheDocument();
 
     expect(screen.getAllByText("Nome")).toHaveLength(1);
