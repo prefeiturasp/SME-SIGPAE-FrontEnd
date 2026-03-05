@@ -199,9 +199,18 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
     navigate(link);
   };
 
-  const validaForm = (ehNaoPerecivel: boolean) => {
+  const validaForm = (ehNaoPerecivel: boolean, ehFLV: boolean) => {
     let conferidosFiltrados = conferidos;
     if (ehNaoPerecivel) {
+      delete conferidos.temperatura_e_transporte;
+    }
+
+    if (ehFLV) {
+      delete conferidos.armazenamento;
+      delete conferidos.conservacao;
+      delete conferidos.embalagem_e_rotulagem;
+      delete conferidos.informacoes_nutricionais;
+      delete conferidos.modo_preparo;
       delete conferidos.temperatura_e_transporte;
     }
 
@@ -510,7 +519,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                           style={BUTTON_STYLE.GREEN}
                           className="float-end ms-3"
                           onClick={() => salvarAnalise(values)}
-                          disabled={validaForm(ehNaoPerecivel)}
+                          disabled={validaForm(ehNaoPerecivel, ehFLV)}
                         />
                         <Botao
                           texto="Salvar Rascunho"
