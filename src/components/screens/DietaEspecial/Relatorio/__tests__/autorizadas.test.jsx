@@ -65,11 +65,7 @@ afterAll(() => {
 
 test("Relatório Autorizada Temporariamente - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -133,11 +129,7 @@ test("Relatório Autorizada Temporariamente - visão CODAE NUTRI MANIFESTAÇÃO"
 
 test("Relatório Autorizada - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -201,11 +193,7 @@ test("Relatório Autorizada - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
 
 test("Relatório Autorizada Temporariamente - visão TERCEIRIZADA", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -272,11 +260,7 @@ test("Relatório Autorizada Temporariamente - visão TERCEIRIZADA", async () => 
 
 test("Relatório Autorizada - visão TERCEIRIZADA", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -343,11 +327,7 @@ test("Relatório Autorizada - visão TERCEIRIZADA", async () => {
 
 test("Relatório Autorizada Temporariamente - visão CODAE COORDENADOR DIETA ESPECIAL", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas-temp`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -414,11 +394,7 @@ test("Relatório Autorizada Temporariamente - visão CODAE COORDENADOR DIETA ESP
 
 test("Relatório Autorizada - visão CODAE COORDENADOR DIETA ESPECIAL", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=autorizadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",

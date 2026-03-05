@@ -96,11 +96,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Cria Medição com 
       .reply(200, quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025);
 
     const search = `?mes=12&ano=2025`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(

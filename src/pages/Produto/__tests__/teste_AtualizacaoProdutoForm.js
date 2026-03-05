@@ -50,7 +50,7 @@ const renderWithReduxForm = (component, initialState = {}) => {
           {component}
         </MeusDadosContext.Provider>
       </MemoryRouter>
-    </Provider>
+    </Provider>,
   );
 };
 
@@ -61,11 +61,7 @@ describe("Acesso somente de Visualização - USUARIO_EMPRESA", () => {
     localStorage.setItem("perfil", PERFIL.USUARIO_EMPRESA);
 
     const search = `?uuid=${mockGetHomologacao.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosTerceirizada);
     mock.onGet("/marcas/").reply(200, mockGetMarcasProdutos);
@@ -105,10 +101,10 @@ describe("Acesso somente de Visualização - USUARIO_EMPRESA", () => {
 
     // Campo Fabricante
     const selectFabricanteProduto = screen.getByTestId(
-      "select-fabricante-produto"
+      "select-fabricante-produto",
     );
     const inputFabricante = within(selectFabricanteProduto).getByRole(
-      "combobox"
+      "combobox",
     );
     expect(inputFabricante).toBeDisabled();
 
@@ -150,12 +146,12 @@ describe("Acesso somente de Visualização - USUARIO_EMPRESA", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Informação do Produto (classificação)")
+        screen.getByText("Informação do Produto (classificação)"),
       ).toBeInTheDocument();
     });
 
     const inputPrazoValidade = screen.getByPlaceholderText(
-      "Digite o prazo da validade"
+      "Digite o prazo da validade",
     );
     expect(inputPrazoValidade).toBeDisabled();
 

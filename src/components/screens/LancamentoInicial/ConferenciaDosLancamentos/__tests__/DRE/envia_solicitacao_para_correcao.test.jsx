@@ -67,11 +67,7 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Envia para correç
     localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
 
     const search = `?uuid=${solicitacaoUuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

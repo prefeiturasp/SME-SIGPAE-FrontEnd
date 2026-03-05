@@ -27,13 +27,11 @@ describe("Teste StatusSolicitacoes - Terceirizada - Negadas", () => {
     localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
     localStorage.setItem("tipo_servico", TIPO_SERVICO.TERCEIRIZADA);
 
-    Object.defineProperty(window, "location", {
-      value: {
-        href: "/solicitacoes-dieta-especial/solicitacoes-negadas",
-        pathname: "/solicitacoes-dieta-especial/solicitacoes-negadas",
-      },
-      writable: true,
-    });
+    window.history.pushState(
+      {},
+      "",
+      "/solicitacoes-dieta-especial/solicitacoes-negadas",
+    );
 
     await act(async () => {
       renderWithProvider(

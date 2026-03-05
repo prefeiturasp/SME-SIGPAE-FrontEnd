@@ -28,37 +28,33 @@ describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/",
       )
       .replyOnce(200, mockInclusaoAlimentacaoValidada);
 
     mock
       .onPatch(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/codae-cancela-pedido/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/codae-cancela-pedido/",
       )
       .reply(200, {});
     mock
       .onPatch(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/codae-autoriza-pedido/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/codae-autoriza-pedido/",
       )
       .reply(200, {});
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     const search = `?uuid=d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -69,20 +65,20 @@ describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioCODAE />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # D0F4F`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # D0F4F")
+      screen.getByText("Inclusão de Alimentação - Solicitação # D0F4F"),
     ).toBeInTheDocument();
   });
 
   it("renderiza label `Solicitação no prazo regular`", async () => {
     expect(
-      screen.getByText("Solicitação no prazo regular")
+      screen.getByText("Solicitação no prazo regular"),
     ).toBeInTheDocument();
   });
 
@@ -111,7 +107,7 @@ describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja negar a solicitação?")
+        screen.getByText("Deseja negar a solicitação?"),
       ).toBeInTheDocument();
     });
   });
@@ -122,7 +118,7 @@ describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja negar a solicitação?")
+        screen.getByText("Deseja negar a solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -131,7 +127,7 @@ describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja negar a solicitação?")
+        screen.queryByText("Deseja negar a solicitação?"),
       ).not.toBeInTheDocument();
     });
   });
@@ -142,7 +138,7 @@ describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja negar a solicitação?")
+        screen.getByText("Deseja negar a solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -156,13 +152,13 @@ describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
 
     mock
       .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/",
       )
       .replyOnce(200, mockInclusaoAlimentacaoNegada);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja negar a solicitação?")
+        screen.queryByText("Deseja negar a solicitação?"),
       ).not.toBeInTheDocument();
     });
 
@@ -178,7 +174,7 @@ describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja autorizar a solicitação?")
+        screen.queryByText("Deseja autorizar a solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -192,13 +188,13 @@ describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
 
     mock
       .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/",
       )
       .replyOnce(200, mockInclusaoAlimentacaoAutorizada);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja autorizar a solicitação?")
+        screen.queryByText("Deseja autorizar a solicitação?"),
       ).not.toBeInTheDocument();
     });
 
@@ -207,7 +203,7 @@ describe("Relatório Inclusão de Alimentação - Visão CODAE", () => {
 
     expect(screen.getByText("CODAE autorizou")).toBeInTheDocument();
     expect(
-      screen.getByText("27/02/2025 13:37:34 - Informações da CODAE")
+      screen.getByText("27/02/2025 13:37:34 - Informações da CODAE"),
     ).toBeInTheDocument();
     expect(screen.getByText("sim, eu autorizo")).toBeInTheDocument();
   });

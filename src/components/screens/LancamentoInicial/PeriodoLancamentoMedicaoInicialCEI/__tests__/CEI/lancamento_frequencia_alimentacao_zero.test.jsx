@@ -55,11 +55,7 @@ describe("Teste de validação para frequência de alimentação zero e frequên
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
 
     const search = `?uuid=5501aa2a-6c48-4a5f-95d9-82b7599b0c24`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

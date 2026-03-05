@@ -52,11 +52,7 @@ beforeEach(() => {
 
 const setup = async () => {
   const search = `?uuid=${mockFichaTecnicaComDetalhe2.uuid}`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   await act(async () => {
     render(

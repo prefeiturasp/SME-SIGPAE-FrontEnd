@@ -18,11 +18,7 @@ import { mockGetNomesFabricantesReclamacao } from "../../../../../mocks/produto.
 const setup = async (uuid = null) => {
   if (uuid) {
     const search = `?uuid=${uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
   }
 
   await act(async () => {
@@ -38,7 +34,7 @@ const setup = async (uuid = null) => {
       {
         responderReclamacaoProduto: {},
         finalForm: {},
-      }
+      },
     );
   });
 };
@@ -71,8 +67,8 @@ describe("Teste <ResponderReclamacao>", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText("Veja os resultados para a busca:")
-      ).toBeInTheDocument()
+        screen.getByText("Veja os resultados para a busca:"),
+      ).toBeInTheDocument(),
     );
 
     const nextButton = screen.getByLabelText("right");
@@ -83,8 +79,8 @@ describe("Teste <ResponderReclamacao>", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText("Veja os resultados para a busca:")
-      ).toBeInTheDocument()
+        screen.getByText("Veja os resultados para a busca:"),
+      ).toBeInTheDocument(),
     );
   });
 
@@ -93,8 +89,8 @@ describe("Teste <ResponderReclamacao>", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText("Veja os resultados para a busca:")
-      ).toBeInTheDocument()
+        screen.getByText("Veja os resultados para a busca:"),
+      ).toBeInTheDocument(),
     );
     expect(screen.queryByText("Fabricante do Produto")).not.toBeInTheDocument();
     expect(screen.queryByText("Marca do Produto")).not.toBeInTheDocument();
@@ -103,15 +99,15 @@ describe("Teste <ResponderReclamacao>", () => {
   it("Carrega com parametro de uuid como CODAE", async () => {
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await setup(mockGetReclamacaoUnica.results[0].uuid);
 
     await waitFor(() =>
       expect(
-        screen.getByText("Veja os resultados para a busca:")
-      ).toBeInTheDocument()
+        screen.getByText("Veja os resultados para a busca:"),
+      ).toBeInTheDocument(),
     );
     expect(screen.queryByText("Fabricante do Produto")).not.toBeInTheDocument();
     expect(screen.queryByText("Marca do Produto")).not.toBeInTheDocument();

@@ -87,11 +87,7 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
 
     const search = `?uuid=0dc919b7-aa30-48a0-bdff-e72e448a5094&ehGrupoSolicitacoesDeAlimentacao=true&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

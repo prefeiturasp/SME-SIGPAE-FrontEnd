@@ -37,11 +37,7 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada - Prazo Limite"
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
 
     const search = `?uuid=${uuidInversao}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
@@ -64,7 +60,7 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada - Prazo Limite"
             <RelatoriosInversaoDiaCardapio.RelatorioTerceirizada />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -72,15 +68,15 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada - Prazo Limite"
   it("Renderiza título `Inversão de dia de Cardápio`", () => {
     expect(
       screen.getByText(
-        `Inversão de dia de Cardápio - Solicitação # ${mockInversaoDiaCardapioQuestionadaCEMEI.id_externo}`
-      )
+        `Inversão de dia de Cardápio - Solicitação # ${mockInversaoDiaCardapioQuestionadaCEMEI.id_externo}`,
+      ),
     ).toBeInTheDocument();
   });
 
   it("aceita a solicitação", async () => {
     mock
       .onPatch(
-        `/inversoes-dia-cardapio/${uuidInversao}/terceirizada-responde-questionamento/`
+        `/inversoes-dia-cardapio/${uuidInversao}/terceirizada-responde-questionamento/`,
       )
       .reply(200, mockInversaoDiaCardapioRespondidaSimCEMEI);
 
@@ -109,7 +105,7 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada - Prazo Limite"
 
     await waitFor(() => {
       expect(
-        screen.getByText("Questionamento respondido com sucesso!")
+        screen.getByText("Questionamento respondido com sucesso!"),
       ).toBeInTheDocument();
     });
 
@@ -117,14 +113,14 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada - Prazo Limite"
     expect(screen.queryByText("Sim")).not.toBeInTheDocument();
 
     expect(
-      screen.getByText("Observação da Terceirizada: Sim")
+      screen.getByText("Observação da Terceirizada: Sim"),
     ).toBeInTheDocument();
   });
 
   it("não aceita a solicitação", async () => {
     mock
       .onPatch(
-        `/inversoes-dia-cardapio/${uuidInversao}/terceirizada-responde-questionamento/`
+        `/inversoes-dia-cardapio/${uuidInversao}/terceirizada-responde-questionamento/`,
       )
       .reply(200, mockInversaoDiaCardapioRespondidaNaoCEMEI);
 
@@ -153,7 +149,7 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada - Prazo Limite"
 
     await waitFor(() => {
       expect(
-        screen.getByText("Questionamento respondido com sucesso!")
+        screen.getByText("Questionamento respondido com sucesso!"),
       ).toBeInTheDocument();
     });
 
@@ -161,7 +157,7 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada - Prazo Limite"
     expect(screen.queryByText("Sim")).not.toBeInTheDocument();
 
     expect(
-      screen.getByText("Observação da Terceirizada: Não aceito.")
+      screen.getByText("Observação da Terceirizada: Não aceito."),
     ).toBeInTheDocument();
   });
 });
