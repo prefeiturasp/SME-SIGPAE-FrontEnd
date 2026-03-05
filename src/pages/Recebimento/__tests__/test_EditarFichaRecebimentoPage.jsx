@@ -26,11 +26,7 @@ describe("Testar Edição de Fichas de Recebimento", () => {
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
 
     const search = `?uuid=${mockGetFichaRecebimentoDetalhadaAssinada.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     mock
       .onGet("/cronogramas/lista-cronogramas-ficha-recebimento/")
@@ -38,7 +34,7 @@ describe("Testar Edição de Fichas de Recebimento", () => {
 
     mock
       .onGet(
-        `/cronogramas/${mockListaCronogramasRecebimento.results[3].uuid}/dados-cronograma-ficha-recebimento/`
+        `/cronogramas/${mockListaCronogramasRecebimento.results[3].uuid}/dados-cronograma-ficha-recebimento/`,
       )
       .reply(200, mockCronogramaCadastroRecebimento2);
 
@@ -54,7 +50,7 @@ describe("Testar Edição de Fichas de Recebimento", () => {
 
     mock
       .onGet(
-        `/fichas-de-recebimento/${mockGetFichaRecebimentoDetalhadaAssinada.uuid}/`
+        `/fichas-de-recebimento/${mockGetFichaRecebimentoDetalhadaAssinada.uuid}/`,
       )
       .reply(200, mockGetFichaRecebimentoDetalhadaAssinada);
     mock.onPut("/rascunho-ficha-de-recebimento/").reply(200);
@@ -78,7 +74,7 @@ describe("Testar Edição de Fichas de Recebimento", () => {
           >
             <EditarFichaRecebimentoPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   };
@@ -89,8 +85,8 @@ describe("Testar Edição de Fichas de Recebimento", () => {
     await waitFor(() => {
       expect(
         screen.getByDisplayValue(
-          mockGetFichaRecebimentoDetalhadaAssinada.dados_cronograma.numero
-        )
+          mockGetFichaRecebimentoDetalhadaAssinada.dados_cronograma.numero,
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -121,7 +117,7 @@ describe("Testar Edição de Fichas de Recebimento", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja salvar o rascunho da Ficha de Recebimento?")
+        screen.getByText("Deseja salvar o rascunho da Ficha de Recebimento?"),
       ).toBeInTheDocument();
     });
 
@@ -131,8 +127,8 @@ describe("Testar Edição de Fichas de Recebimento", () => {
     await waitFor(() => {
       expect(
         mock.history.put.some((call) =>
-          call.url.includes("/rascunho-ficha-de-recebimento/")
-        )
+          call.url.includes("/rascunho-ficha-de-recebimento/"),
+        ),
       ).toBe(true);
     });
   });
@@ -165,12 +161,12 @@ describe("Testar Edição de Fichas de Recebimento", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Assinar Ficha de Recebimento")
+        screen.getByText("Assinar Ficha de Recebimento"),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Você confirma o preenchimento correto de todas as informações solicitadas na ficha de recebimento?"
-        )
+          "Você confirma o preenchimento correto de todas as informações solicitadas na ficha de recebimento?",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -186,8 +182,8 @@ describe("Testar Edição de Fichas de Recebimento", () => {
     await waitFor(() => {
       expect(
         mock.history.put.some((call) =>
-          call.url.includes("/fichas-de-recebimento/")
-        )
+          call.url.includes("/fichas-de-recebimento/"),
+        ),
       ).toBe(true);
     });
   });

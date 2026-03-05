@@ -67,11 +67,7 @@ describe("Lancamento de Dieta Especial com Frequência Zero na Alimentação - E
       .reply(200, { results: ["01", "25"] });
 
     const search = `?uuid=a2eed560-2255-4067-a803-4ad6b9f1d26a&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

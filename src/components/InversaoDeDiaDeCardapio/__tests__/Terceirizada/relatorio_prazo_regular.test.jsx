@@ -29,11 +29,7 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada", () => {
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
 
     const search = `?uuid=${uuidInversao}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
@@ -56,7 +52,7 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada", () => {
             <RelatoriosInversaoDiaCardapio.RelatorioTerceirizada />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -64,8 +60,8 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada", () => {
   it("Renderiza título `Inversão de dia de Cardápio`", () => {
     expect(
       screen.getByText(
-        `Inversão de dia de Cardápio - Solicitação # ${mockInversaoDiaCardapioAutorizadaCEMEI.id_externo}`
-      )
+        `Inversão de dia de Cardápio - Solicitação # ${mockInversaoDiaCardapioAutorizadaCEMEI.id_externo}`,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -82,8 +78,8 @@ describe("Teste Relatório Inversão CEMEI - Visão Terceirizada", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Deseja marcar essa solicitação como conferida? A ação não poderá ser desfeita."
-        )
+          "Deseja marcar essa solicitação como conferida? A ação não poderá ser desfeita.",
+        ),
       ).toBeInTheDocument();
     });
 

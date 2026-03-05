@@ -74,12 +74,7 @@ describe("Test <Relatorio> - Relatório de Dieta Especial - Pendente Autorizaç�
     localStorage.setItem("tipo_perfil", `"dieta_especial"`);
 
     const search = `?uuid=1e255cfc-81bb-4cec-a64c-64d7021bd81c&card=pendentes-aut`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-        href: "http://localhost:3000/dieta-especial/relatorio?uuid=1e255cfc-81bb-4cec-a64c-64d7021bd81c&ehInclusaoContinua=false&tipoSolicitacao=&card=pendentes-aut",
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -91,7 +86,7 @@ describe("Test <Relatorio> - Relatório de Dieta Especial - Pendente Autorizaç�
           }}
         >
           <Relatorio visao={ESCOLA} />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });

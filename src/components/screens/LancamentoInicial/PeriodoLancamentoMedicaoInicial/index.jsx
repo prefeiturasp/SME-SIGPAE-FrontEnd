@@ -72,6 +72,8 @@ import {
   desabilitarField,
   deveExistirObservacao,
   ehDiaParaCorrigir,
+  existeAlteracaoLPR,
+  existeAlteracaoRPL,
   formatarPayloadParaCorrecao,
   formatarPayloadPeriodoLancamento,
   getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync,
@@ -3359,7 +3361,15 @@ export default () => {
                                                             ) &&
                                                             !formValuesAtualizados[
                                                               `observacoes__dia_${column.dia}__categoria_${categoria.id}`
-                                                            ]
+                                                            ] &&
+                                                            !existeAlteracaoRPL(
+                                                              alteracoesAlimentacaoAutorizadas,
+                                                              column.dia,
+                                                            ) &&
+                                                            !existeAlteracaoLPR(
+                                                              alteracoesAlimentacaoAutorizadas,
+                                                              column.dia,
+                                                            )
                                                           }
                                                           exibeTooltipSuspensoesAutorizadas={exibirTooltipSuspensoesAutorizadas(
                                                             formValuesAtualizados,

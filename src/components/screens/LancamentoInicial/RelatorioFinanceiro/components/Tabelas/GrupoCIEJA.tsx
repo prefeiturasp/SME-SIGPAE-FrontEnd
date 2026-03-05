@@ -56,7 +56,7 @@ export default ({
         tiposAlimentacao={_TIPOS_COM_KIT_LANCHE}
         totaisConsumo={totaisConsumo}
         ordem="A"
-        cieja
+        unidade="CIEJA"
       />
       <TabelaDietas
         ref={refDietaA}
@@ -65,7 +65,7 @@ export default ({
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
         ordem="B"
-        cieja
+        unidade="CIEJA"
       />
       <TabelaDietas
         ref={refDietaB}
@@ -74,7 +74,7 @@ export default ({
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
         ordem="C"
-        cieja
+        unidade="CIEJA"
       />
       <ConsolidadoTotal
         titulo="CONSOLIDADO TOTAL (A + B + C)"

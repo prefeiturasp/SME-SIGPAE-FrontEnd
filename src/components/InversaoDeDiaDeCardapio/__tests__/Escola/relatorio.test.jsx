@@ -36,11 +36,7 @@ describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => 
     localStorage.setItem("eh_cemei", "true");
 
     const search = `?uuid=${uuidInversao}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -59,7 +55,7 @@ describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => 
             <RelatoriosInversaoDiaCardapio.RelatorioEscola />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -67,18 +63,18 @@ describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => 
   it("Renderiza título `Inversão de dia de Cardápio`", () => {
     expect(
       screen.getByText(
-        `Inversão de dia de Cardápio - Solicitação # ${mockInversaoDiaCardapioAValidarCEMEI.id_externo}`
-      )
+        `Inversão de dia de Cardápio - Solicitação # ${mockInversaoDiaCardapioAValidarCEMEI.id_externo}`,
+      ),
     ).toBeInTheDocument();
   });
 
   it("Renderiza dados da inversão", () => {
     expect(
-      screen.getByText(`Solicitação no prazo regular`)
+      screen.getByText(`Solicitação no prazo regular`),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText(`Tipos de Alimentação para inversão:`)
+      screen.getByText(`Tipos de Alimentação para inversão:`),
     ).toBeInTheDocument();
     expect(screen.getByText(`Lanche`)).toBeInTheDocument();
 
@@ -97,7 +93,7 @@ describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => 
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
     });
 
@@ -109,7 +105,7 @@ describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => 
 
     mock
       .onPatch(
-        `/inversoes-dia-cardapio/${uuidInversao}/escola-cancela-pedido-48h-antes/`
+        `/inversoes-dia-cardapio/${uuidInversao}/escola-cancela-pedido-48h-antes/`,
       )
       .reply(200, mockInversaoDiaCardapioCanceladaCEMEI);
 
@@ -122,7 +118,7 @@ describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => 
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação")
+        screen.queryByText("Cancelamento de Solicitação"),
       ).not.toBeInTheDocument();
     });
 
@@ -131,7 +127,7 @@ describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => 
     expect(screen.getByText("Escola cancelou")).toBeInTheDocument();
     expect(screen.getByText("Histórico de justificativas")).toBeInTheDocument();
     expect(
-      screen.getByText("08/09/2025 18:10:36 - ESCOLA CANCELOU")
+      screen.getByText("08/09/2025 18:10:36 - ESCOLA CANCELOU"),
     ).toBeInTheDocument();
   });
 
@@ -145,7 +141,7 @@ describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => 
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Houve um erro ao imprimir o relatório")
+        screen.queryByText("Houve um erro ao imprimir o relatório"),
       ).not.toBeInTheDocument();
     });
   });
@@ -160,7 +156,7 @@ describe("Teste Relatório Inversão de dia de Cardápio - Escola CEMEI", () => 
 
     await waitFor(() => {
       expect(
-        screen.getByText("Houve um erro ao imprimir o relatório")
+        screen.getByText("Houve um erro ao imprimir o relatório"),
       ).toBeInTheDocument();
     });
   });

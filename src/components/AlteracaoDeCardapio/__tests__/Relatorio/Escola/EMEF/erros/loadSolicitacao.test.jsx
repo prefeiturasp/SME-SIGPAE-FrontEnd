@@ -22,25 +22,21 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onPatch(
-        `/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/escola-cancela-pedido-48h-antes/`
+        `/alteracoes-cardapio/${mockAlteracaoCardapioAValidar.uuid}/escola-cancela-pedido-48h-antes/`,
       )
       .reply(200, mockAlteracaoCardapioCancelada);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "nome_instituicao",
-      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
     );
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
 
     const search = `?uuid=${mockAlteracaoCardapioAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -51,7 +47,7 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF
           }}
         >
           <RelatoriosAlteracaoDoTipoDeAlimentacao.RelatorioEscola />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -59,8 +55,8 @@ describe("Relatório Alteração do Tipo de Alimentação - Visão Escola - EMEF
   it("renderiza erro `Erro ao carregar Alteração do Tipo de Alimentação. Tente novamente mais tarde.`", async () => {
     expect(
       screen.getByText(
-        "Erro ao carregar Alteração do Tipo de Alimentação. Tente novamente mais tarde."
-      )
+        "Erro ao carregar Alteração do Tipo de Alimentação. Tente novamente mais tarde.",
+      ),
     ).toBeInTheDocument();
   });
 });

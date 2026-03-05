@@ -44,7 +44,7 @@ describe("Testes de inclusão de lançamento em fim de semana", () => {
       .reply(200, mockCategoriasMedicao);
     mock
       .onGet(
-        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/"
+        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
       )
       .reply(200, {
         results: {
@@ -91,16 +91,12 @@ describe("Testes de inclusão de lançamento em fim de semana", () => {
         >
           <PeriodoLancamentoMedicaoInicialCEIPage />
           <ToastContainer />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
 
     const search = `?uuid=$c9826df1-1c14-4748-b290-90d62658d013`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
   });
 
   it("renderiza label `Mês do Lançamento`", () => {
@@ -123,14 +119,14 @@ describe("Testes de inclusão de lançamento em fim de semana", () => {
 
   it("renderiza input do dia 02/08/2025 como habilitado por ter inclusão autorizada", () => {
     const inputDiaFrequenciaDia2 = screen.getByTestId(
-      "frequencia__dia_02__categoria_1"
+      "frequencia__dia_02__categoria_1",
     );
     expect(inputDiaFrequenciaDia2).toBeEnabled();
   });
 
   it("renderiza input do dia 03/08/2025 como desabilitado por ter NÃO inclusão autorizada", () => {
     const inputDiaFrequenciaDia2 = screen.getByTestId(
-      "frequencia__dia_03__categoria_1"
+      "frequencia__dia_03__categoria_1",
     );
     expect(inputDiaFrequenciaDia2).toBeDisabled();
   });

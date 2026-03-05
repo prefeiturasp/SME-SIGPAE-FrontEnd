@@ -28,14 +28,11 @@ describe("Teste StatusSolicitacoes - Inativas Temporariamente - CODAE", () => {
       PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
-    Object.defineProperty(window, "location", {
-      value: {
-        href: "/solicitacoes-dieta-especial/solicitacoes-inativas-temporariamente",
-        pathname:
-          "/solicitacoes-dieta-especial/solicitacoes-inativas-temporariamente",
-      },
-      writable: true,
-    });
+    window.history.pushState(
+      {},
+      "",
+      "/solicitacoes-dieta-especial/solicitacoes-inativas-temporariamente",
+    );
 
     await act(async () => {
       renderWithProvider(

@@ -17,7 +17,7 @@ type Props = {
   totaisConsumo?: any;
   ordem?: string;
   exibeNoturno?: boolean;
-  cieja?: boolean;
+  unidade?: string;
 };
 
 const _TIPO_CLASS = {
@@ -34,12 +34,14 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
       totaisConsumo,
       ordem,
       exibeNoturno,
-      cieja = false,
+      unidade,
     },
     ref,
   ) => {
     let totalConsumoGeral = 0;
     let valorTotalGeral = 0;
+    const ehCieja = unidade === "CIEJA";
+    const ehCemei = unidade === "CEMEI";
 
     useImperativeHandle(ref, () => ({
       getTotais: () => ({
@@ -49,7 +51,7 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
     }));
 
     const alimentacoes = useMemo(() => {
-      const lista = listaAlimentacoes(tipoDieta, cieja);
+      const lista = listaAlimentacoes(tipoDieta, ehCieja);
 
       return tiposAlimentacao
         .filter((t) => lista.includes(normalizar(t.nome)))
@@ -71,7 +73,7 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
           (a, b) =>
             prioridadeAlimentacao(a.nome) - prioridadeAlimentacao(b.nome),
         );
-    }, [tipoDieta, tiposAlimentacao, exibeNoturno, cieja]);
+    }, [tipoDieta, tiposAlimentacao, exibeNoturno, unidade]);
 
     return (
       <table className="tabela-relatorio">
@@ -94,12 +96,15 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
         <tbody>
           {alimentacoes.map((tipo) => {
             const nomeExibicao =
-              cieja && normalizar(tipo.nome) === "refeicao"
+              ehCieja && normalizar(tipo.nome) === "refeicao"
                 ? "Refeição CIEJA e CMCT"
                 : tipo.nome;
 
             const tabela = tabelas.find((tabela) =>
-              tabela.nome.toUpperCase().includes(tipoDieta),
+              ehCemei
+                ? tabela.nome ===
+                  "Dietas Tipo A e Tipo A Enteral - Turma Infantil - EMEI"
+                : tabela.nome.toUpperCase().includes(tipoDieta),
             );
 
             const valorUnitario = stringDecimalToNumber(
