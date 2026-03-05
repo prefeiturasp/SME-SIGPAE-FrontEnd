@@ -19,7 +19,7 @@ export const CardCronograma = ({
             <NavLink key={key} to={solicitation.link}>
               <p
                 key={key}
-                className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""}`}
+                className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""} ${solicitation.categoria === "FLV" && "categoria-flv"}`}
               >
                 {solicitation.text}
                 <span className="float-end">{solicitation.date}</span>
