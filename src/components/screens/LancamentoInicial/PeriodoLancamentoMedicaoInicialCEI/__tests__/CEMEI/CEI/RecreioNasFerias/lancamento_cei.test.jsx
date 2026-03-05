@@ -434,62 +434,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F�
       expect(botao).toBeInTheDocument();
       expect(botao).toBeDisabled();
     });
-
-    it("ao clicar na tab `Semana 1`, preenche dia 01 e salva lançamento", async () => {
-      await awaitServices();
-      const semana1Element = screen.getByText("Semana 1");
-      fireEvent.click(semana1Element);
-
-      const valores = {
-        "frequencia__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece": "14",
-        "frequencia__faixa_381aecc2-e1b2-4d26-a156-1834eec7f1dd": "14",
-        "frequencia__faixa_4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "14",
-        "frequencia__faixa_78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "14",
-        "frequencia__faixa_55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "14",
-        "frequencia__faixa_e3030bd1-2e85-4676-87b3-96b4032370d4": "14",
-        "frequencia__faixa_2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "14",
-      };
-
-      const campos = [
-        "frequencia__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece",
-        "frequencia__faixa_381aecc2-e1b2-4d26-a156-1834eec7f1dd",
-        "frequencia__faixa_4e60c819-4c0b-4d46-95c8-2e3b9674b40e",
-        "frequencia__faixa_78e4f4a6-ae04-42a6-9cc3-8f9813e98e66",
-        "frequencia__faixa_55f0af28-e1d5-43a0-a3f3-bbc453b784a5",
-        "frequencia__faixa_e3030bd1-2e85-4676-87b3-96b4032370d4",
-        "frequencia__faixa_2e14cd6e-33e6-4168-b1ce-449f686d1e7d",
-      ];
-
-      campos.forEach((frequenciaFaixaEtaria) => {
-        const input = screen.getByTestId(
-          `${frequenciaFaixaEtaria}__dia_01__categoria_1`,
-        );
-        fireEvent.change(input, {
-          target: { value: valores[frequenciaFaixaEtaria] },
-        });
-      });
-
-      const botao = screen.getByText("Salvar Lançamentos").closest("button");
-      expect(botao).toBeInTheDocument();
-      await waitFor(() => {
-        expect(botao).not.toBeDisabled();
-        fireEvent.click(botao);
-      });
-
-      await waitFor(() => {
-        expect(
-          screen.getByText("Lançamentos salvos com sucesso"),
-        ).toBeInTheDocument();
-      });
-
-      const valoresEsperados = { participantes__faixa_null: "100", ...valores };
-      const camposAtualizados = ["participantes__faixa_null", ...campos];
-
-      camposAtualizados.forEach((testId) => {
-        const input = screen.getByTestId(`${testId}__dia_01__categoria_1`);
-        expect(input).toHaveAttribute("value", valoresEsperados[testId]);
-      });
-    });
   });
 
   describe("Testa a parte de DIETAS ESPECIAIS", () => {
@@ -703,6 +647,115 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F�
         expect(botao).toBeInTheDocument();
         expect(botao).toBeDisabled();
       });
+    });
+  });
+
+  describe("Testa o Salvar Lançamentos", () => {
+    it("ao clicar na tab `Semana 1`, preenche dia 01 e salva lançamento", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const itensParaPreencher = [
+        {
+          uuidFaixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+          categoria: "1",
+          valor: "14",
+        },
+        {
+          uuidFaixa: "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
+          categoria: "1",
+          valor: "14",
+        },
+        {
+          uuidFaixa: "4e60c819-4c0b-4d46-95c8-2e3b9674b40e",
+          categoria: "1",
+          valor: "14",
+        },
+        {
+          uuidFaixa: "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66",
+          categoria: "1",
+          valor: "14",
+        },
+        {
+          uuidFaixa: "55f0af28-e1d5-43a0-a3f3-bbc453b784a5",
+          categoria: "1",
+          valor: "14",
+        },
+        {
+          uuidFaixa: "e3030bd1-2e85-4676-87b3-96b4032370d4",
+          categoria: "1",
+          valor: "14",
+        },
+        {
+          uuidFaixa: "2e14cd6e-33e6-4168-b1ce-449f686d1e7d",
+          categoria: "1",
+          valor: "14",
+        },
+        {
+          uuidFaixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+          categoria: "2",
+          valor: "4",
+        },
+        {
+          uuidFaixa: "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
+          categoria: "2",
+          valor: "1",
+        },
+        {
+          uuidFaixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+          categoria: "4",
+          valor: "2",
+        },
+      ];
+
+      itensParaPreencher.forEach(({ uuidFaixa, categoria, valor }) => {
+        const input = screen.getByTestId(
+          `frequencia__faixa_${uuidFaixa}__dia_01__categoria_${categoria}`,
+        );
+        fireEvent.change(input, { target: { value: valor } });
+      });
+
+      const botao = screen.getByRole("button", { name: /salvar lançamentos/i });
+      expect(botao).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(botao).not.toBeDisabled();
+        fireEvent.click(botao);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Lançamentos salvos com sucesso"),
+        ).toBeInTheDocument();
+      });
+
+      itensParaPreencher.forEach(({ uuidFaixa, categoria, valor }) => {
+        const input = screen.getByTestId(
+          `frequencia__faixa_${uuidFaixa}__dia_01__categoria_${categoria}`,
+        );
+        expect(input).toHaveAttribute("value", valor);
+      });
+
+      const inputParticipantes = screen.getByTestId(
+        "participantes__faixa_null__dia_01__categoria_1",
+      );
+      expect(inputParticipantes).toHaveAttribute("value", "100");
+
+      const inputDietasAutorizadaA1 = screen.getByTestId(
+        `dietas_autorizadas__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece__dia_01__categoria_2`,
+      );
+      expect(inputDietasAutorizadaA1).toHaveAttribute("value", "6");
+
+      const inputDietasAutorizadaA2 = screen.getByTestId(
+        `dietas_autorizadas__faixa_381aecc2-e1b2-4d26-a156-1834eec7f1dd__dia_01__categoria_2`,
+      );
+      expect(inputDietasAutorizadaA2).toHaveAttribute("value", "2");
+
+      const inputDietasAutorizadaB = screen.getByTestId(
+        `dietas_autorizadas__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece__dia_01__categoria_4`,
+      );
+      expect(inputDietasAutorizadaB).toHaveAttribute("value", "2");
     });
   });
 });
