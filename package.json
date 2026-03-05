@@ -102,7 +102,7 @@
     "bootstrap": "^5.3.6",
     "chart.js": "^4.5.0",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "ckeditor5": "^46.1.1",
+    "ckeditor5": "^47.6.0",
     "date-fns": "^4.1.0",
     "extenso": "^2.1.0",
     "file-saver": "^2.0.5",
