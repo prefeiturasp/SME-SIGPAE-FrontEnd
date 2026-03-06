@@ -707,7 +707,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       if (periodoEscolar === "Solicitações de Alimentação") {
         return "Solicitações de Alimentação - Infantil";
       } else if (periodoEscolar.includes("Recreio nas Férias")) {
-        return "Recreio nas Férias";
+        return ehRecreioCemei()
+          ? `${location.state.grupo}`
+          : "Recreio nas Férias";
       } else {
         return periodoEscolar;
       }
@@ -2398,7 +2400,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                         />
                       </div>
                       <div className="col-4">
-                        <b className="pb-2">Período de Lançamento</b>
+                        <b className="pb-2">
+                          {ehRecreioNasFerias()
+                            ? `Tipo de Lançamento`
+                            : `Período de Lançamento`}
+                        </b>
                         <Field
                           dataTestId={"input-periodo-lancamento"}
                           component={InputText}
