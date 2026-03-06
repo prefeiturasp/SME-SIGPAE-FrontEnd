@@ -158,11 +158,12 @@ export const CardLancamentoCEI = ({
             null,
             textoCabecalho,
           ),
-          ehEmeiDaCemei: ehEmeiDaCemei(
-            escolaInstituicao,
-            periodosEscolaCemeiComAlunosEmei,
-            textoCabecalho,
-          ),
+          ehEmeiDaCemei:
+            ehEmeiDaCemei(
+              escolaInstituicao,
+              periodosEscolaCemeiComAlunosEmei,
+              textoCabecalho,
+            ) || grupo === "Recreio nas Férias - 4 a 14 anos",
           uuidPeriodoEscolar: uuidPeriodoEscolar,
           tiposAlimentacao: tiposAlimentacao,
           periodosInclusaoContinua: periodosInclusaoContinua,
