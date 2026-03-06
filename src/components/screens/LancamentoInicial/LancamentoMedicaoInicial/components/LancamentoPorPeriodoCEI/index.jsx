@@ -412,6 +412,27 @@ export const LancamentoPorPeriodoCEI = ({
     }
   };
 
+  const tiposAlimentacao = () => {
+    const recreio = recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial);
+    if (ehEscolaTipoCEMEI(escolaInstituicao)) {
+      const tipoUnidade = recreioNasFeriasDaMedicaoEMEIdaCEMEI(
+        solicitacaoMedicaoInicial,
+      )
+        ? "EMEI"
+        : "CEI";
+      const tipos_alimentacao = recreio.unidades_participantes.find(
+        (up) => up.cei_ou_emei === tipoUnidade,
+      )?.tipos_alimentacao;
+      if (tipoUnidade === "CEI") {
+        return tipos_alimentacao.inscritos;
+      } else if (tipoUnidade === "EMEI") {
+        return tipos_alimentacao.infantil;
+      }
+    } else {
+      return recreio.unidades_participantes[0].tipos_alimentacao.inscritos;
+    }
+  };
+
   return (
     <div>
       {erroAPI && <div>{erroAPI}</div>}
@@ -524,11 +545,7 @@ export const LancamentoPorPeriodoCEI = ({
                     textoCabecalho={`Recreio nas Férias${ehEscolaTipoCEMEI(escolaInstituicao) ? " - de 0 a 3 anos e 11 meses" : ""}`}
                     cor={CORES[10]}
                     grupo="Recreio nas Férias - de 0 a 3 anos e 11 meses"
-                    tipos_alimentacao={recreioNasFeriasDaMedicao(
-                      solicitacaoMedicaoInicial,
-                    ).unidades_participantes[0].tipos_alimentacao.inscritos.map(
-                      (tpi) => tpi.nome,
-                    )}
+                    tipos_alimentacao={tiposAlimentacao()}
                     periodoSelecionado={periodoSelecionado}
                     solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                     ehGrupoSolicitacoesDeAlimentacao={true}
@@ -544,15 +561,7 @@ export const LancamentoPorPeriodoCEI = ({
                   <CardLancamentoCEI
                     textoCabecalho="Recreio nas Férias - 4 a 14 anos"
                     cor={CORES[12]}
-                    tiposAlimentacao={recreioNasFeriasDaMedicao(
-                      solicitacaoMedicaoInicial,
-                    )
-                      .unidades_participantes.find(
-                        (up) => up.cei_ou_emei === "EMEI",
-                      )
-                      ?.tipos_alimentacao.inscritos.map((tpi) => ({
-                        nome: tpi.nome,
-                      }))}
+                    tiposAlimentacao={tiposAlimentacao()}
                     periodoSelecionado={periodoSelecionado}
                     solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                     ehGrupoSolicitacoesDeAlimentacao={true}
@@ -560,6 +569,7 @@ export const LancamentoPorPeriodoCEI = ({
                       quantidadeAlimentacoesLancadas
                     }
                     errosAoSalvar={errosAoSalvar}
+                    grupo="Recreio nas Férias - 4 a 14 anos"
                   />
                 )}
                 {recreioNasFeriasComColaboradores(
