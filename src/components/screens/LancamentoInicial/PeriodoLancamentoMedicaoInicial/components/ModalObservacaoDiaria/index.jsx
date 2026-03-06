@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap";
 import { Field } from "react-final-form";
 import { Spin } from "antd";
 import { format, getYear } from "date-fns";
-import strip_tags from "locutus/php/strings/strip_tags";
+import { strip_tags } from "locutus/php/strings/strip_tags";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
@@ -62,14 +62,14 @@ export default ({
         .filter((valor) => valor.nome_campo === rowName)
         .filter((valor) => String(valor.dia) === String(dia))
         .filter(
-          (valor) => String(valor.categoria_medicao) === String(categoria)
+          (valor) => String(valor.categoria_medicao) === String(categoria),
         );
       let valorAtual = valoresObjs[0];
       if (escolaEhEMEBS) {
         valorAtual = valoresObjs.filter(
           (valor) =>
             ALUNOS_EMEBS[valor.infantil_ou_fundamental].key ===
-            alunosTabSelecionada
+            alunosTabSelecionada,
         )[0];
       }
       const uuidValor =
@@ -78,21 +78,20 @@ export default ({
           valoresObservacoes.find(
             (valor) =>
               String(valor.dia) === String(dia) &&
-              String(valor.categoria_medicao) === String(categoria)
+              String(valor.categoria_medicao) === String(categoria),
           ).uuid);
-      const response = await deleteObservacaoValoresPeriodosLancamentos(
-        uuidValor
-      );
+      const response =
+        await deleteObservacaoValoresPeriodosLancamentos(uuidValor);
       if (response.status === HTTP_STATUS.NO_CONTENT) {
         form.change(`${rowName}__dia_${dia}__categoria_${categoria}`, "");
         setValoresObservacoes(
-          valoresObservacoes.filter((v) => v.uuid !== uuidValor)
+          valoresObservacoes.filter((v) => v.uuid !== uuidValor),
         );
         valoresPeriodosLancamentos.splice(
           valoresPeriodosLancamentos.findIndex(
-            (valor) => valor.uuid === uuidValor
+            (valor) => valor.uuid === uuidValor,
           ),
-          1
+          1,
         );
         if (Object.keys(errors).length > 0) {
           setExibirTooltip(true);
@@ -103,7 +102,7 @@ export default ({
       } else {
         toastError(msgError);
       }
-    } catch (e) {
+    } catch {
       toastError(msgError);
     }
     closeModal();
@@ -115,7 +114,7 @@ export default ({
         .filter((valor) => valor.nome_campo === rowName)
         .filter((valor) => String(valor.dia) === String(dia))
         .filter(
-          (valor) => String(valor.categoria_medicao) === String(categoria)
+          (valor) => String(valor.categoria_medicao) === String(categoria),
         )
     ) {
       form.change(`${rowName}__dia_${dia}__categoria_${categoria}`, "");
@@ -124,13 +123,13 @@ export default ({
         (valor) =>
           valor.nome_campo === rowName &&
           String(valor.dia) === String(dia) &&
-          String(valor.categoria_medicao) === String(categoria)
+          String(valor.categoria_medicao) === String(categoria),
       );
       let valoresLancamentos = valoresPeriodosLancamentos.filter(
         (valor) =>
           valor.nome_campo === rowName &&
           String(valor.dia) === String(dia) &&
-          String(valor.categoria_medicao) === String(categoria)
+          String(valor.categoria_medicao) === String(categoria),
       );
       let valorObservacao = valueObs[0]?.valor
         ? valoresObservacoes
@@ -140,13 +139,13 @@ export default ({
           valorObservacao.filter(
             (valor) =>
               ALUNOS_EMEBS[valor.infantil_ou_fundamental].key ===
-              alunosTabSelecionada
-          )[0]?.valor
+              alunosTabSelecionada,
+          )[0]?.valor,
         );
       } else {
         form.change(
           `${rowName}__dia_${dia}__categoria_${categoria}`,
-          valueObs[0]?.valor || valoresLancamentos[0]?.valor
+          valueObs[0]?.valor || valoresLancamentos[0]?.valor,
         );
       }
     }
@@ -162,7 +161,7 @@ export default ({
       .filter((valor) => valor.nome_campo === rowName)
       .filter((valor) => String(valor.dia) === String(dia))
       .filter(
-        (valor) => String(valor.categoria_medicao) === String(categoria)
+        (valor) => String(valor.categoria_medicao) === String(categoria),
       )[0] && setShowBotaoExcluir(true);
 
     setDesabilitarBotaoSalvar(false);
@@ -171,7 +170,7 @@ export default ({
 
   const onHideModal = () => {
     const validation = peloMenosUmCaractere(
-      values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+      values[`${rowName}__dia_${dia}__categoria_${categoria}`],
     );
     validation &&
       form.change(`${rowName}__dia_${dia}__categoria_${categoria}`, "");
@@ -180,7 +179,7 @@ export default ({
         .filter((valor) => valor.nome_campo === rowName)
         .filter((valor) => String(valor.dia) === String(dia))
         .filter(
-          (valor) => String(valor.categoria_medicao) === String(categoria)
+          (valor) => String(valor.categoria_medicao) === String(categoria),
         )[0]
     ) {
       form.change(`${rowName}__dia_${dia}__categoria_${categoria}`, "");
@@ -189,7 +188,7 @@ export default ({
         (valor) =>
           valor.nome_campo === rowName &&
           String(valor.dia) === String(dia) &&
-          String(valor.categoria_medicao) === String(categoria)
+          String(valor.categoria_medicao) === String(categoria),
       );
       if (escolaEhEMEBS) {
         form.change(
@@ -197,13 +196,13 @@ export default ({
           valueObjs.filter(
             (valor) =>
               ALUNOS_EMEBS[valor.infantil_ou_fundamental].key ===
-              alunosTabSelecionada
-          )[0]?.valor
+              alunosTabSelecionada,
+          )[0]?.valor,
         );
       } else {
         form.change(
           `${rowName}__dia_${dia}__categoria_${categoria}`,
-          valueObjs[0].valor
+          valueObjs[0].valor,
         );
       }
     }
@@ -212,7 +211,7 @@ export default ({
       valoresObservacoes.find(
         (valor) =>
           String(valor.dia) === String(dia) &&
-          String(valor.categoria_medicao) === String(categoria)
+          String(valor.categoria_medicao) === String(categoria),
       )
     ) {
       if (escolaEhEMEBS) {
@@ -221,21 +220,21 @@ export default ({
             String(valor.dia) === String(dia) &&
             String(valor.categoria_medicao) === String(categoria) &&
             ALUNOS_EMEBS[valor.infantil_ou_fundamental].key ===
-              alunosTabSelecionada
+              alunosTabSelecionada,
         );
         updateObs[`${rowName}__dia_${dia}__categoria_${categoria}`] =
           valueObj[0]?.valor;
         setFormValuesAtualizados({ ...values, ...updateObs });
         form.change(
           `${rowName}__dia_${dia}__categoria_${categoria}`,
-          valueObj[0]?.valor
+          valueObj[0]?.valor,
         );
       } else {
         updateObs[`${rowName}__dia_${dia}__categoria_${categoria}`] =
           valoresObservacoes.find(
             (valor) =>
               String(valor.dia) === String(dia) &&
-              String(valor.categoria_medicao) === String(categoria)
+              String(valor.categoria_medicao) === String(categoria),
           ).valor;
         setFormValuesAtualizados({ ...values, ...updateObs });
         form.change(
@@ -243,8 +242,8 @@ export default ({
           valoresObservacoes.find(
             (valor) =>
               String(valor.dia) === String(dia) &&
-              String(valor.categoria_medicao) === String(categoria)
-          ).valor
+              String(valor.categoria_medicao) === String(categoria),
+          ).valor,
         );
       }
     }
@@ -260,7 +259,7 @@ export default ({
         valoresObservacoes.find(
           (valor) =>
             String(valor.dia) === String(dia) &&
-            String(valor.categoria_medicao) === String(categoria)
+            String(valor.categoria_medicao) === String(categoria),
         )
       ) {
         const updateObs = {};
@@ -268,7 +267,7 @@ export default ({
           valoresObservacoes.find(
             (valor) =>
               String(valor.dia) === String(dia) &&
-              String(valor.categoria_medicao) === String(categoria)
+              String(valor.categoria_medicao) === String(categoria),
           ).valor;
         setFormValuesAtualizados({ ...values, ...updateObs });
         form.change(
@@ -276,8 +275,8 @@ export default ({
           valoresObservacoes.find(
             (valor) =>
               String(valor.dia) === String(dia) &&
-              String(valor.categoria_medicao) === String(categoria)
-          ).valor
+              String(valor.categoria_medicao) === String(categoria),
+          ).valor,
         );
       }
       if (escolaEhEMEBS) {
@@ -288,7 +287,7 @@ export default ({
               String(valor.categoria_medicao) === String(categoria) &&
               String(valor.dia) === String(dia) &&
               ALUNOS_EMEBS[valor.infantil_ou_fundamental].key ===
-                alunosTabSelecionada
+                alunosTabSelecionada,
           ).length === 0 &&
           valoresObservacoes.filter(
             (valor) =>
@@ -296,7 +295,7 @@ export default ({
               String(valor.categoria_medicao) === String(categoria) &&
               String(valor.dia) === String(dia) &&
               ALUNOS_EMEBS[valor.infantil_ou_fundamental].key ===
-                alunosTabSelecionada
+                alunosTabSelecionada,
           ).length === 0
         ) {
           form.change(`observacoes__dia_${dia}__categoria_${categoria}`, null);
@@ -310,19 +309,19 @@ export default ({
       .filter((valor) => valor.nome_campo === rowName)
       .filter((valor) => String(valor.dia) === String(dia))
       .filter(
-        (valor) => String(valor.categoria_medicao) === String(categoria)
+        (valor) => String(valor.categoria_medicao) === String(categoria),
       )[0];
     if (value) {
       setDesabilitarBotaoSalvar(
         ((!["<p></p>\n", null, ""].includes(
-          values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+          values[`${rowName}__dia_${dia}__categoria_${categoria}`],
         ) ||
           !!peloMenosUmCaractere(
-            values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+            values[`${rowName}__dia_${dia}__categoria_${categoria}`],
           )) &&
           valorFiltered &&
           valorFiltered.valor === value) ||
-          strip_tags(value).length > 250
+          strip_tags(value).length > 250,
       );
 
       setShowBotaoExcluir(
@@ -330,8 +329,8 @@ export default ({
           .filter((valor) => valor.nome_campo === rowName)
           .filter((valor) => String(valor.dia) === String(dia))
           .filter(
-            (valor) => String(valor.categoria_medicao) === String(categoria)
-          ).length > 0
+            (valor) => String(valor.categoria_medicao) === String(categoria),
+          ).length > 0,
       );
 
       form.change(`${rowName}__dia_${dia}__categoria_${categoria}`, value);
@@ -386,7 +385,7 @@ export default ({
         <Modal.Footer className="botoes-modal-footer">
           {values &&
           !["<p></p>\n", null, ""].includes(
-            values[`${rowName}__dia_${dia}__categoria_${categoria}`]
+            values[`${rowName}__dia_${dia}__categoria_${categoria}`],
           ) &&
           valoresPeriodosLancamentos.length > 0 &&
           ((escolaEhEMEBS &&
@@ -396,7 +395,7 @@ export default ({
                 String(valor.categoria_medicao) === String(categoria) &&
                 String(valor.dia) === String(dia) &&
                 ALUNOS_EMEBS[valor.infantil_ou_fundamental].key ===
-                  alunosTabSelecionada
+                  alunosTabSelecionada,
             ).length !== 0 ||
               valoresObservacoes.filter(
                 (valor) =>
@@ -404,14 +403,14 @@ export default ({
                   String(valor.categoria_medicao) === String(categoria) &&
                   String(valor.dia) === String(dia) &&
                   ALUNOS_EMEBS[valor.infantil_ou_fundamental].key ===
-                    alunosTabSelecionada
+                    alunosTabSelecionada,
               ).length !== 0)) ||
             !escolaEhEMEBS) &&
           (showBotaoExcluir ||
             valoresObservacoes.find(
               (valor) =>
                 String(valor.dia) === String(dia) &&
-                String(valor.categoria_medicao) === String(categoria)
+                String(valor.categoria_medicao) === String(categoria),
             ) ||
             (!!dadosIniciais[
               `observacoes__dia_${dia}__categoria_${categoria}`

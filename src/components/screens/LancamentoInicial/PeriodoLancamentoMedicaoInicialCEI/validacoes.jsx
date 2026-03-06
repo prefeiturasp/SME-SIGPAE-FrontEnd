@@ -47,20 +47,20 @@ export const exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI = (
   categoria,
   categoriasDeMedicao,
   faixasEtarias,
+  ehRecreioNasFerias,
 ) => {
   if (!faixasEtarias || faixasEtarias.length === 0) return false;
   const categoriaAlimentacao = categoriasDeMedicao.find((c) =>
     c.nome.includes("ALIMENTAÇÃO"),
   );
   let sumFrequenciasAlimentacao = 0;
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
+  const sufixo = `__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`;
+
   for (const faixa of faixasEtarias) {
-    if (
-      Number(
-        formValuesAtualizados[
-          `matriculados__faixa_${faixa.uuid}__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`
-        ],
-      ) > 0
-    ) {
+    const uuidFaixa = ehRecreioNasFerias ? "null" : faixa.uuid;
+    let campoMatriculados = `${prefixo}__faixa_${uuidFaixa}${sufixo}`;
+    if (Number(formValuesAtualizados[campoMatriculados]) > 0) {
       sumFrequenciasAlimentacao += Number(
         formValuesAtualizados[
           `frequencia__faixa_${faixa.uuid}__dia_${column.dia}__categoria_${categoriaAlimentacao.id}`
@@ -121,6 +121,7 @@ export const alimentacoesFrequenciaZeroESemObservacaoCEI = (
   categoria,
   categorias,
   faixasEtarias,
+  ehRecreioNasFerias,
 ) => {
   if (!faixasEtarias || faixasEtarias.length === 0) return false;
   const categoriaAlimentacao = categorias.find(
@@ -130,14 +131,12 @@ export const alimentacoesFrequenciaZeroESemObservacaoCEI = (
   if (!categoriaAlimentacao) return false;
 
   let sumFrequenciasAlimentacao = 0;
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
+  const sufixo = `__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
   for (const faixa of faixasEtarias) {
-    if (
-      Number(
-        values[
-          `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
-        ],
-      ) > 0
-    ) {
+    const uuidFaixa = ehRecreioNasFerias ? "null" : faixa.uuid;
+    let campoMatriculados = `${prefixo}__faixa_${uuidFaixa}${sufixo}`;
+    if (Number(values[campoMatriculados]) > 0) {
       sumFrequenciasAlimentacao += Number(
         values[
           `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
@@ -428,6 +427,7 @@ export const validacoesFaixasZeradasAlimentacao = (
   categoria,
   allValues,
   faixaEtaria,
+  ehRecreioNasFerias,
 ) => {
   if (rowName !== "frequencia" || categoria.nome !== "ALIMENTAÇÃO") {
     return [];
@@ -436,12 +436,16 @@ export const validacoesFaixasZeradasAlimentacao = (
   const diasLetivos = calendario.filter(
     (dia) => dia.dia_letivo === true && !feriadosNoMes.includes(dia.dia),
   );
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
 
   const diasZerado = diasLetivos.reduce((acumulador, diaLetivo) => {
     const dia = diaLetivo.dia;
+    const sufixo = `__dia_${dia}__categoria_${categoria.id}`;
 
     const faixasComMatriculados = faixaEtaria.filter((faixa) => {
-      const inputMatriculados = `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoria.id}`;
+      const uuidFaixa = ehRecreioNasFerias ? "null" : faixa.uuid;
+      let inputMatriculados = `${prefixo}__faixa_${uuidFaixa}${sufixo}`;
+
       const valorMatriculados = allValues[inputMatriculados];
       return valorMatriculados !== undefined && Number(valorMatriculados) > 0;
     });
@@ -991,6 +995,7 @@ export const existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI = (
   currentRow = null,
   currentColumn = null,
   currentCategoria = null,
+  ehRecreioNasFerias = false,
 ) => {
   if (
     !formValuesAtualizados ||
@@ -1021,19 +1026,16 @@ export const existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacaoCEI = (
       (row) => row.name !== "dietas_autorizadas",
     ),
   ];
-
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
   for (const column of weekColumns) {
     const dia = column.dia;
+    const sufixo = `__dia_${dia}__categoria_${categoriaAlimentacao.id}`;
 
     let sumFrequenciasAlimentacao = 0;
     for (const faixa of faixasEtarias) {
-      if (
-        Number(
-          formValuesAtualizados[
-            `matriculados__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`
-          ],
-        ) > 0
-      ) {
+      const uuidFaixa = ehRecreioNasFerias ? "null" : faixa.uuid;
+      let campoMatriculados = `${prefixo}__faixa_${uuidFaixa}${sufixo}`;
+      if (Number(formValuesAtualizados[campoMatriculados]) > 0) {
         sumFrequenciasAlimentacao += Number(
           formValuesAtualizados[
             `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_${categoriaAlimentacao.id}`

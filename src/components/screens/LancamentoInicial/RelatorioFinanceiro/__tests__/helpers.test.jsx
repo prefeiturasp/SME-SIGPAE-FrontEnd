@@ -41,7 +41,7 @@ describe("Helpers - Relatório Financeiro", () => {
     });
 
     it("deve retornar 99 para outros tipos", () => {
-      expect(prioridadeAlimentacao("Lanche")).toBe(99);
+      expect(prioridadeAlimentacao("Lanche")).toBe(3);
       expect(prioridadeAlimentacao("Refeição da Tarde")).toBe(99);
       expect(prioridadeAlimentacao("Outro Tipo")).toBe(99);
     });

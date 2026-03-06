@@ -26,7 +26,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`,
       )
       .reply(200, mockAlteracaoCardapioCEMEIAValidar);
     mock
@@ -34,21 +34,17 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
       .reply(200, mockQuantidadeAlunoCEMEIporCEIEMEI);
     mock
       .onPatch(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/diretoria-regional-nao-valida-pedido/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/diretoria-regional-nao-valida-pedido/`,
       )
       .reply(200, mockAlteracaoCardapioCEMEINaoValidada);
     mock
       .onPatch(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/diretoria-regional-valida-pedido/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/diretoria-regional-valida-pedido/`,
       )
       .reply(200, mockAlteracaoCardapioCEMEIValidada);
 
     const search = `?uuid=${mockAlteracaoCardapioCEMEIAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
@@ -71,14 +67,16 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
             <RelatoriosAlteracaoDoTipoDeAlimentacaoCEMEI.RelatorioDRE />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página `Alteração do Tipo de Alimentação - Solicitação # 8AA0A`", async () => {
     expect(
-      screen.getByText("Alteração do Tipo de Alimentação - Solicitação # 8AA0A")
+      screen.getByText(
+        "Alteração do Tipo de Alimentação - Solicitação # 8AA0A",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -88,7 +86,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
   });
@@ -99,7 +97,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -108,7 +106,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja não validar solicitação?")
+        screen.queryByText("Deseja não validar solicitação?"),
       ).not.toBeInTheDocument();
     });
   });
@@ -119,13 +117,13 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
 
     const uuidMotivoEmDesacordoComContrato =
       mockMotivosDRENaoValida.results.find(
-        (motivo) => motivo.nome === "Em desacordo com o contrato"
+        (motivo) => motivo.nome === "Em desacordo com o contrato",
       ).uuid;
 
     const selectMotivo = screen.getByTestId("select-motivo-cancelamento");
@@ -141,7 +139,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
 
     mock
       .onGet(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`,
       )
       .reply(200, mockAlteracaoCardapioCEMEINaoValidada);
 
@@ -151,14 +149,14 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Alteração do Tipo de Alimentação não validada com sucesso!"
-        )
+          "Alteração do Tipo de Alimentação não validada com sucesso!",
+        ),
       ).toBeInTheDocument();
     });
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja não validar solicitação?")
+        screen.queryByText("Deseja não validar solicitação?"),
       ).not.toBeInTheDocument();
       expect(screen.queryByText("Não validar")).not.toBeInTheDocument();
       expect(screen.queryByText("Validar")).not.toBeInTheDocument();
@@ -170,7 +168,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
   it("erro ao não validar solicitação", async () => {
     mock
       .onPatch(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/diretoria-regional-nao-valida-pedido/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/diretoria-regional-nao-valida-pedido/`,
       )
       .reply(400, { detail: "erro ao não validar solicitação" });
 
@@ -179,13 +177,13 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
 
     const uuidMotivoEmDesacordoComContrato =
       mockMotivosDRENaoValida.results.find(
-        (motivo) => motivo.nome === "Em desacordo com o contrato"
+        (motivo) => motivo.nome === "Em desacordo com o contrato",
       ).uuid;
 
     const selectMotivo = screen.getByTestId("select-motivo-cancelamento");
@@ -205,8 +203,8 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Houve um erro ao não validar a Alteração do Tipo de Alimentação. Tente novamente mais tarde."
-        )
+          "Houve um erro ao não validar a Alteração do Tipo de Alimentação. Tente novamente mais tarde.",
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -218,14 +216,14 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Alteração do Tipo de Alimentação validada com sucesso!"
-        )
+          "Alteração do Tipo de Alimentação validada com sucesso!",
+        ),
       ).toBeInTheDocument();
     });
 
     mock
       .onGet(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`,
       )
       .replyOnce(200, mockAlteracaoCardapioCEMEIValidada);
 
@@ -239,7 +237,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
   it("erro ao validar solicitação", async () => {
     mock
       .onPatch(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/diretoria-regional-valida-pedido/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/diretoria-regional-valida-pedido/`,
       )
       .reply(400, { detail: "erro ao validar solicitação" });
 
@@ -249,8 +247,8 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão DRE", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Houve um erro ao validar a Alteração do Tipo de Alimentação. Tente novamente mais tarde."
-        )
+          "Houve um erro ao validar a Alteração do Tipo de Alimentação. Tente novamente mais tarde.",
+        ),
       ).toBeInTheDocument();
     });
   });

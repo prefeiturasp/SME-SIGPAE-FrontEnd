@@ -28,12 +28,7 @@ beforeEach(() => {
 
   const search = `?uuid=test-uuid`;
 
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-    writable: true,
-  });
+  window.history.pushState({}, "", search);
 });
 
 afterEach(() => {
@@ -47,7 +42,7 @@ const setupNotificarEmpresaPage = async () => {
       <MemoryRouter>
         <NotificarEmpresaPage />
         <ToastContainer />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -58,7 +53,7 @@ const setupDetalharNotificacaoPage = async () => {
       <MemoryRouter>
         <DetalharNotificacaoPage />
         <ToastContainer />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -69,7 +64,7 @@ const setupAnalisarAssinarPage = async () => {
       <MemoryRouter>
         <AnalisarAssinarPage />
         <ToastContainer />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -92,7 +87,7 @@ describe("Página: Notificar Empresa", () => {
       expect(screen.getByText("Cancelar")).toBeInTheDocument();
       expect(screen.getByText("Salvar Notificação")).toBeInTheDocument();
       expect(
-        screen.getByText("Salvar e Enviar Notificação")
+        screen.getByText("Salvar e Enviar Notificação"),
       ).toBeInTheDocument();
 
       // Verifica que botões do modo fiscal não existem
@@ -128,7 +123,7 @@ describe("Página: Notificar Empresa", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Erro ao salvar Notificação")
+          screen.getByText("Erro ao salvar Notificação"),
         ).toBeInTheDocument();
       });
     });
@@ -146,12 +141,12 @@ describe("Página: Notificar Empresa", () => {
 
       // Preenche campos obrigatórios
       const processoInput = screen.getByPlaceholderText(
-        "Digite o Nº do Processo SEI"
+        "Digite o Nº do Processo SEI",
       );
       fireEvent.change(processoInput, { target: { value: "12345" } });
 
       const previsaoInputs = screen.getAllByPlaceholderText(
-        "Descreva a Previsão contratual"
+        "Descreva a Previsão contratual",
       );
       previsaoInputs.forEach((input) => {
         fireEvent.change(input, { target: { value: "Previsão teste" } });
@@ -166,7 +161,7 @@ describe("Página: Notificar Empresa", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Erro ao enviar Notificação")
+          screen.getByText("Erro ao enviar Notificação"),
         ).toBeInTheDocument();
       });
     });
@@ -180,7 +175,7 @@ describe("Página: Detalhar Notificação", () => {
 
     await waitFor(() => {
       const detalharNotificacaoElements = screen.getAllByText(
-        "Detalhar Notificação"
+        "Detalhar Notificação",
       );
       expect(detalharNotificacaoElements.length).toBeGreaterThan(0);
       expect(screen.getByDisplayValue("NOT-001")).toBeInTheDocument();
@@ -189,12 +184,12 @@ describe("Página: Detalhar Notificação", () => {
 
     // Campos devem estar desabilitados no modo não editável
     const processoInput = screen.getByPlaceholderText(
-      "Digite o Nº do Processo SEI"
+      "Digite o Nº do Processo SEI",
     );
     expect(processoInput).toBeDisabled();
 
     const previsaoInputs = screen.getAllByPlaceholderText(
-      "Descreva a Previsão contratual"
+      "Descreva a Previsão contratual",
     );
     previsaoInputs.forEach((input) => {
       expect(input).toBeDisabled();
@@ -204,7 +199,7 @@ describe("Página: Detalhar Notificação", () => {
     expect(screen.queryByText("Cancelar")).not.toBeInTheDocument();
     expect(screen.queryByText("Salvar Notificação")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Salvar e Enviar Notificação")
+      screen.queryByText("Salvar e Enviar Notificação"),
     ).not.toBeInTheDocument();
   });
 });
@@ -231,12 +226,12 @@ describe("Página: Analisar e Assinar", () => {
 
       // Campos devem estar desabilitados no modo não editável
       const processoInput = screen.getByPlaceholderText(
-        "Digite o Nº do Processo SEI"
+        "Digite o Nº do Processo SEI",
       );
       expect(processoInput).toBeDisabled();
 
       const previsaoInputs = screen.getAllByPlaceholderText(
-        "Descreva a Previsão contratual"
+        "Descreva a Previsão contratual",
       );
       previsaoInputs.forEach((input) => {
         expect(input).toBeDisabled();
@@ -356,7 +351,7 @@ describe("Página: Analisar e Assinar", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Erro ao assinar notificação")
+          screen.getByText("Erro ao assinar notificação"),
         ).toBeInTheDocument();
       });
     });
@@ -398,7 +393,7 @@ describe("Comportamentos Compartilhados", () => {
     // Verifica se o modal de detalhes da guia é exibido
     await waitFor(() => {
       expect(
-        screen.getByText("Nº da Guia de Remessa: GUIA-001")
+        screen.getByText("Nº da Guia de Remessa: GUIA-001"),
       ).toBeInTheDocument();
     });
   });
@@ -420,7 +415,7 @@ describe("Validação de Formulário", () => {
 
     // Preenche apenas processo SEI
     const processoInput = screen.getByPlaceholderText(
-      "Digite o Nº do Processo SEI"
+      "Digite o Nº do Processo SEI",
     );
     fireEvent.change(processoInput, { target: { value: "12345" } });
 
@@ -428,7 +423,7 @@ describe("Validação de Formulário", () => {
 
     // Preenche previsão contratual
     const previsaoInputs = screen.getAllByPlaceholderText(
-      "Descreva a Previsão contratual"
+      "Descreva a Previsão contratual",
     );
     previsaoInputs.forEach((input) => {
       fireEvent.change(input, { target: { value: "Previsão teste" } });
@@ -445,7 +440,7 @@ describe("Agrupamento de Ocorrências", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Prazo de validade expirado")
+        screen.getByText("Prazo de validade expirado"),
       ).toBeInTheDocument();
     });
   });
@@ -465,7 +460,7 @@ describe("Interação com Modais", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Nº da Guia de Remessa: GUIA-001")
+        screen.getByText("Nº da Guia de Remessa: GUIA-001"),
       ).toBeInTheDocument();
     });
   });
@@ -516,7 +511,7 @@ describe("Controle de Aprovações", () => {
 
     // Preenche justificativa
     const justificativaInput = screen.getByPlaceholderText(
-      "Digite a justificativa"
+      "Digite a justificativa",
     );
     fireEvent.change(justificativaInput, {
       target: { value: "Justificativa teste" },
@@ -539,7 +534,7 @@ describe("Controle de Aprovações", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Erro ao solicitar alteração")
+        screen.getByText("Erro ao solicitar alteração"),
       ).toBeInTheDocument();
     });
   });
@@ -561,7 +556,7 @@ describe("Validação de Formulário", () => {
 
     // Preenche apenas processo SEI
     const processoInput = screen.getByPlaceholderText(
-      "Digite o Nº do Processo SEI"
+      "Digite o Nº do Processo SEI",
     );
     fireEvent.change(processoInput, { target: { value: "12345" } });
 
@@ -569,7 +564,7 @@ describe("Validação de Formulário", () => {
 
     // Preenche previsão contratual
     const previsaoInputs = screen.getAllByPlaceholderText(
-      "Descreva a Previsão contratual"
+      "Descreva a Previsão contratual",
     );
     previsaoInputs.forEach((input) => {
       fireEvent.change(input, { target: { value: "Previsão teste" } });
@@ -586,7 +581,7 @@ describe("Agrupamento de Ocorrências", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Prazo de validade expirado")
+        screen.getByText("Prazo de validade expirado"),
       ).toBeInTheDocument();
     });
   });
@@ -605,7 +600,7 @@ describe("Interação com Modais", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Nº da Guia de Remessa: GUIA-001")
+        screen.getByText("Nº da Guia de Remessa: GUIA-001"),
       ).toBeInTheDocument();
     });
   });

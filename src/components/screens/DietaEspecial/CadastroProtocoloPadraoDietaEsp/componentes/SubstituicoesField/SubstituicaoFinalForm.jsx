@@ -55,12 +55,27 @@ const SubstituicoesField = ({
     values &&
       values.forEach((value) => {
         const produtoSelecionado = produtos.find(
-          (al) => String(al.uuid) === value
+          (al) => String(al.uuid) === value,
         );
         listaSelecionados.push(`${produtoSelecionado.nome}, `);
         setValoresSelecionados(listaSelecionados);
       });
   };
+
+  const currentAlimento =
+    values.substituicoes && values.substituicoes[index]?.alimento;
+  const alimentosFiltrados = currentAlimento
+    ? alimentos.filter(
+        (a) => a.ativo || String(a.id) === String(currentAlimento),
+      )
+    : alimentos.filter((a) => a.ativo);
+
+  const currentSubstitutos =
+    (values.substituicoes && values.substituicoes[index]?.substitutos) || [];
+  const produtosFiltrados =
+    currentSubstitutos.length > 0
+      ? produtos.filter((p) => p.ativo || currentSubstitutos.includes(p.uuid))
+      : produtos.filter((p) => p.ativo);
 
   return (
     <>
@@ -81,7 +96,7 @@ const SubstituicoesField = ({
                 .indexOf(input.toLowerCase()) >= 0
             }
           >
-            {alimentos.map((a) => {
+            {alimentosFiltrados.map((a) => {
               return <Option key={a.id.toString()}>{a.nome}</Option>;
             })}
           </Field>
@@ -115,7 +130,7 @@ const SubstituicoesField = ({
                     values.substituicoes[index].substitutos) ||
                   []
                 }
-                options={produtos.map((produto) => ({
+                options={produtosFiltrados.map((produto) => ({
                   value: produto.uuid,
                   label: produto.nome,
                 }))}

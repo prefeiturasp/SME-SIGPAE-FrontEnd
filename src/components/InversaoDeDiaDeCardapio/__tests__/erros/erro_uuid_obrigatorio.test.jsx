@@ -27,11 +27,7 @@ describe("Relatório Inversão - Visão Escola - Erro parâmetro UUID", () => {
     localStorage.setItem("eh_cemei", "true");
 
     const search = `?ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -42,7 +38,7 @@ describe("Relatório Inversão - Visão Escola - Erro parâmetro UUID", () => {
           }}
         >
           <RelatoriosInversaoDiaCardapio.RelatorioEscola />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -50,8 +46,8 @@ describe("Relatório Inversão - Visão Escola - Erro parâmetro UUID", () => {
   it("renderiza erro `Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente.`", async () => {
     expect(
       screen.getByText(
-        "Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente."
-      )
+        "Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente.",
+      ),
     ).toBeInTheDocument();
   });
 });

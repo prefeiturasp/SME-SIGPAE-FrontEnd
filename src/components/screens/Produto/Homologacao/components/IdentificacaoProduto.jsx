@@ -1,4 +1,3 @@
-import React from "react";
 import { Field } from "react-final-form";
 import { InputText } from "src/components/Shareable/Input/InputText";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";

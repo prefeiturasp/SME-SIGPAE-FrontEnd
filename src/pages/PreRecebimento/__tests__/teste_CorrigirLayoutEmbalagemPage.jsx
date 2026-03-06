@@ -16,11 +16,7 @@ import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 
 const setupTest = async (mockData) => {
   const search = `?uuid=${mockData.uuid}`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   Object.defineProperty(global, "localStorage", { value: localStorageMock });
 
@@ -31,13 +27,13 @@ const setupTest = async (mockData) => {
 
   mock
     .onGet(
-      `http://localhost:8000/media/layouts_de_embalagens/a4e26aab-d35a-43ac-af1d-af3ae866984e.pdf`
+      `http://localhost:8000/media/layouts_de_embalagens/a4e26aab-d35a-43ac-af1d-af3ae866984e.pdf`,
     )
     .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
 
   mock
     .onGet(
-      `http://localhost:8000/media/layouts_de_embalagens/49023fda-3280-4bd8-ab04-569a3afa36bf.pdf`
+      `http://localhost:8000/media/layouts_de_embalagens/49023fda-3280-4bd8-ab04-569a3afa36bf.pdf`,
     )
     .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
 
@@ -57,7 +53,7 @@ const setupTest = async (mockData) => {
         >
           <CorrigirLayoutEmbalagemPage />
         </MeusDadosContext.Provider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -70,7 +66,7 @@ describe("Teste Layout Embalagem sem Terciária", () => {
   it("Testa a renderização da página quando embalagem terciária é null", async () => {
     await waitFor(() => {
       expect(
-        screen.getByText("FT023 - BOLACHINHA DE NATA")
+        screen.getByText("FT023 - BOLACHINHA DE NATA"),
       ).toBeInTheDocument();
       expect(screen.getByText("Teste 1")).toBeInTheDocument();
       expect(screen.getByText("Teste 2")).toBeInTheDocument();
@@ -88,7 +84,7 @@ describe("Teste Layout Embalagem sem Secundária", () => {
   it("Testa a renderização da página quando embalagens secundaria e terciaria são null", async () => {
     await waitFor(() => {
       expect(
-        screen.getByText("FT023 - BOLACHINHA DE NATA")
+        screen.getByText("FT023 - BOLACHINHA DE NATA"),
       ).toBeInTheDocument();
       expect(screen.getByText("Teste 1")).toBeInTheDocument();
     });

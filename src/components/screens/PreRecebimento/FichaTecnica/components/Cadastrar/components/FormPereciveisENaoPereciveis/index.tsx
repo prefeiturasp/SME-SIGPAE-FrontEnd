@@ -1,7 +1,8 @@
 import React from "react";
 import { Field } from "react-final-form";
-import { required } from "src/helpers/fieldValidators";
 import InputText from "src/components/Shareable/Input/InputText";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import { required } from "src/helpers/fieldValidators";
 
 interface Props {
   values: Record<string, any>;
@@ -136,7 +137,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
           <div className="row">
             <div className="col-12">
               <Field
-                component={InputText}
+                component={TextArea}
                 dataTestId={"componentes_produto"}
                 label="Componentes do Produto"
                 name={`componentes_produto`}
@@ -147,6 +148,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
                 tooltipText={
                   "Caso utilizado aditivos alimentares, deverá ser declarada a função principal, nome completo e número INS de todos."
                 }
+                height="150"
                 disabled={desabilitar && !atualizacao}
               />
             </div>

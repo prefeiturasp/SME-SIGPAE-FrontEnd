@@ -18,6 +18,7 @@ import {
   solicitacoesDietaEspecialDoAluno,
 } from "../dados";
 import { formataJustificativa } from "../helpers";
+import { MemoryRouter } from "react-router-dom";
 
 const cancelamento_data_termino = respostaApiCancelamentoporDataTermino();
 const logsAposAprovacao = [
@@ -179,12 +180,15 @@ afterAll(() => {
 
 test("Relatorio para cancelamento por atingir data termino - visão CODAE", async () => {
   const search = `?uuid=${cancelamento_data_termino.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
-  render(<Relatorio visao={VISAO.CODAE} />);
+  window.history.pushState({}, "", search);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.CODAE} />
+    </MemoryRouter>,
+  );
 
   await waitFor(() => {
     expect(
@@ -238,12 +242,15 @@ test("Relatorio para cancelamento para aluno não matriculado na rede - visão C
     "CANCELADO_ALUNO_NAO_PERTENCE_REDE";
 
   const search = `?uuid=${cancelamento_rede_municipal.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
-  render(<Relatorio visao={VISAO.CODAE} />);
+  window.history.pushState({}, "", search);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.CODAE} />
+    </MemoryRouter>,
+  );
 
   await waitFor(() => {
     expect(
@@ -304,12 +311,15 @@ test("Relatorio para cancelamento quando a escola cancela antes da aprovação p
   cancelamentoEscolaAntesAprovacao.logs = logsAntesAprovacao;
 
   const search = `?uuid=${cancelamentoEscolaAntesAprovacao.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
-  render(<Relatorio visao={VISAO.CODAE} />);
+  window.history.pushState({}, "", search);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.CODAE} />
+    </MemoryRouter>,
+  );
 
   await waitFor(() => {
     expect(
@@ -385,12 +395,15 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
   cancelamento_escola_apos_aprovacao.logs = logsAposAprovacao;
 
   const search = `?uuid=${cancelamento_escola_apos_aprovacao.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
-  render(<Relatorio visao={VISAO.CODAE} />);
+  window.history.pushState({}, "", search);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.CODAE} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("perfil", PERFIL.COORDENADOR_DIETA_ESPECIAL);
 
   await waitFor(() => {
@@ -444,11 +457,7 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
   cancelamento_escola_apos_aprovacao.logs = logsAposAprovacao;
 
   const search = `?uuid=${cancelamento_escola_apos_aprovacao.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
   });
@@ -459,7 +468,14 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.CODAE} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.CODAE} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("tipo_perfil", TIPO_PERFIL.NUTRICAO_MANIFESTACAO);
 
   await waitFor(() => {
@@ -516,11 +532,7 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
   cancelamento_escola_apos_aprovacao.logs = logsAposAprovacao;
 
   const search = `?uuid=${cancelamento_escola_apos_aprovacao.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
   });
@@ -531,7 +543,14 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
-  render(<Relatorio visao={VISAO.TERCEIRIZADA} />);
+  render(
+    <MemoryRouter
+      initialEntries={[{ pathname: "/", search: search }]}
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Relatorio visao={VISAO.TERCEIRIZADA} />
+    </MemoryRouter>,
+  );
   localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
 
   await waitFor(() => {
