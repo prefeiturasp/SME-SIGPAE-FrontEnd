@@ -54,7 +54,11 @@ import {
   stringToBoolean,
 } from "src/helpers/parsers";
 import { NavigateFunction } from "react-router-dom";
-import { CATEGORIA_OPTIONS } from "./constants";
+import {
+  CATEGORIA_OPTIONS,
+  PROGRAMA_OPTIONS,
+  TIPO_ENTREGA_OPTIONS,
+} from "./constants";
 
 export const cepCalculator = (
   setDesabilitaEndereco: React.Dispatch<React.SetStateAction<Array<boolean>>>,
@@ -565,6 +569,11 @@ export const geraInitialValuesDetalharEAnalisar = (
     ...geraInitialValuesCadastrar(ficha),
     marca: ficha.marca?.nome,
     categoria: CATEGORIA_OPTIONS.find(({ uuid }) => uuid === ficha.categoria)
+      ?.nome,
+    tipo_entrega: TIPO_ENTREGA_OPTIONS.find(
+      ({ uuid }) => uuid === ficha.tipo_entrega,
+    )?.nome,
+    programa: PROGRAMA_OPTIONS.find(({ uuid }) => uuid === ficha.programa)
       ?.nome,
     unidade_medida_porcao: ficha.unidade_medida_porcao?.nome,
     unidade_medida_volume_primaria: ficha.unidade_medida_volume_primaria?.nome,
