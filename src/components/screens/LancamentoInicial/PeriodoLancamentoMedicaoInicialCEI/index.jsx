@@ -2041,9 +2041,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     ehEmeiDaCemeiLocation,
   ) => {
     let response_matriculados = {};
-    const recreio = location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
+
     let numeroParticipantes = 0;
     if (ehRecreioNasFerias()) {
+      const recreio =
+        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
       const participantes = recreio.unidades_participantes;
 
       if (ehGrupoColaboradores()) {
