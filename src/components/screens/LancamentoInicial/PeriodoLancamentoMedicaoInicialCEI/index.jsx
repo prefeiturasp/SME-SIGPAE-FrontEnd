@@ -1149,7 +1149,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       formValuesAtualizados &&
       categoriasDeMedicao.length > 0 &&
       !ehGrupoColaboradores() &&
-      !ehRecreioEmeiDaCemei
+      !ehRecreioEmeiDaCemei()
     ) {
       categoriasDeMedicao
         .filter((cat) => cat.nome === "ALIMENTAÇÃO")
@@ -1784,7 +1784,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       categoria.nome === "ALIMENTAÇÃO" &&
       calendarioMesConsiderado &&
       feriadosNoMes &&
-      !ehGrupoColaboradores()
+      !ehGrupoColaboradores() &&
+      !ehRecreioEmeiDaCemei()
     ) {
       const diasZeradosEncontrados = validacoesFaixasZeradasAlimentacao(
         "frequencia",
