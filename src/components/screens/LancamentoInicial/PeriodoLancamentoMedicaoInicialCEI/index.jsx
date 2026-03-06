@@ -36,7 +36,11 @@ import {
   DETALHAMENTO_DO_LANCAMENTO,
   MEDICAO_INICIAL,
 } from "src/configs/constants";
-import { deepCopy, ehFimDeSemanaUTC } from "src/helpers/utilities";
+import {
+  deepCopy,
+  ehFimDeSemanaUTC,
+  escolaEhCEMEI,
+} from "src/helpers/utilities";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import {
   getCategoriasDeMedicao,
@@ -262,6 +266,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const ehGrupoColaboradores = () => {
     return location.state.grupo === "Colaboradores";
   };
+
+  const ehRecreioCemei = () => {
+    return ehRecreioNasFerias() && escolaEhCEMEI();
+  };
+
+  const ehRecreioEmeiDaCemei = () => {
+    return ehRecreioCemei() && ehEmeiDaCemeiLocation;
+  };
+
   let valuesInputArray = [];
 
   useEffect(() => {
@@ -512,7 +525,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
               response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais ||
                 [],
               ehProgramasEProjetosLocation,
-              ehGrupoColaboradores(),
+              ehRecreioNasFerias(),
             )
           : formatarLinhasTabelaAlimentacaoCEI(
               response_log_matriculados_por_faixa_etaria_dia,
@@ -1018,13 +1031,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       },
     );
 
-    const ehColaborador = ehGrupoColaboradores();
-    const prefixo = ehColaborador ? "participantes" : "matriculados";
-    const propriedadeQuantidade = ehColaborador
+    const ehRecreio = ehRecreioNasFerias();
+    const prefixo = ehRecreio ? "participantes" : "matriculados";
+    const propriedadeQuantidade = ehRecreio
       ? "quantidade"
       : "quantidade_alunos";
 
-    (ehEmeiDaCemeiLocation || ehGrupoColaboradores()) &&
+    (ehRecreioEmeiDaCemei() ||
+      ehEmeiDaCemeiLocation ||
+      ehGrupoColaboradores()) &&
       matriculadosEmeiDaCemei &&
       idCategoriaAlimentacao &&
       matriculadosEmeiDaCemei.forEach((objMatriculadoEmeiDaCemei) => {
@@ -1133,7 +1148,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       faixaEtaria &&
       formValuesAtualizados &&
       categoriasDeMedicao.length > 0 &&
-      !ehGrupoColaboradores()
+      !ehGrupoColaboradores() &&
+      !ehRecreioEmeiDaCemei
     ) {
       categoriasDeMedicao
         .filter((cat) => cat.nome === "ALIMENTAÇÃO")
@@ -1845,7 +1861,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           validacaoDiaLetivo,
           ehProgramasEProjetosLocation,
           dadosValoresInclusoesAutorizadasState,
-          ehGrupoColaboradores(),
+          ehRecreioNasFerias(),
         );
       } else if (nomeCategoria.includes("DIETA")) {
         return validacoesTabelasDietasEmeidaCemei(
@@ -2025,17 +2041,20 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     ehEmeiDaCemeiLocation,
   ) => {
     let response_matriculados = {};
-
+    const recreio = location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
     let numeroParticipantes = 0;
     if (ehRecreioNasFerias()) {
-      const participantes =
-        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias
-          .unidades_participantes[0];
+      const participantes = recreio.unidades_participantes;
 
       if (ehGrupoColaboradores()) {
-        numeroParticipantes = participantes.num_colaboradores;
+        numeroParticipantes = participantes[0].num_colaboradores;
+      } else if (ehRecreioCemei()) {
+        const tipoUnidade = ehEmeiDaCemeiLocation ? "EMEI" : "CEI";
+        numeroParticipantes = participantes.find(
+          (up) => up.cei_ou_emei === tipoUnidade,
+        )?.num_inscritos;
       } else {
-        numeroParticipantes = participantes.num_inscritos;
+        numeroParticipantes = participantes[0].num_inscritos;
       }
 
       response_matriculados = {
@@ -2914,7 +2933,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                           }
                                                           exibeTooltipRepeticao={
                                                             (ehProgramasEProjetosLocation ||
-                                                              ehGrupoColaboradores()) &&
+                                                              ehRecreioNasFerias) &&
                                                             exibirTooltipRepeticao(
                                                               formValuesAtualizados,
                                                               row,
