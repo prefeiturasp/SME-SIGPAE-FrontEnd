@@ -1,3 +1,4 @@
+import React from "react";
 import {
   render,
   screen,
@@ -14,12 +15,13 @@ import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 
 jest.mock("src/components/Shareable/DatePicker", () => ({
-  InputComData: ({ input, placeholder }) => (
+  InputComData: ({ input, placeholder, showMonthYearPicker }) => (
     <input
       data-testid={input.name}
       placeholder={placeholder}
       value={input.value}
       onChange={(e) => input.onChange(e.target.value)}
+      data-monthly={showMonthYearPicker ? "true" : "false"}
     />
   ),
 }));
@@ -135,5 +137,77 @@ describe("Testes no componente de FormEtapa - PreRecebimento", () => {
 
     fireEvent.click(botao);
     await waitFor(() => expect(setEtapas).toHaveBeenCalled());
+  });
+
+  describe("Testes do fluxo Ponto a Ponto no FormEtapa", () => {
+    const setEtapas = jest.fn();
+
+    const props = {
+      values: {
+        quantidade_total: "1.000,00",
+        quantidade_0: "500,00",
+        parte_0: "Parte 1",
+        etapa_0: "Etapa 1",
+      },
+      errors: {},
+      etapas: [{}],
+      setEtapas: setEtapas,
+      restante: 10,
+      duplicados: [],
+      ehAlteracao: false,
+      unidadeMedida: { nome: "UN" },
+      flv_ponto_a_ponto: true,
+    };
+
+    beforeEach(async () => {
+      mock
+        .onGet("/interrupcao-programada-entrega/datas-bloqueadas-armazenavel/")
+        .reply(200, { results: [] });
+      mock.onGet("/cronogramas/opcoes-etapas/").reply(200, mockGetOpcoesEtapas);
+
+      await act(async () => {
+        render(
+          <MemoryRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <MeusDadosContext.Provider
+              value={{
+                meusDados: mockMeusDadosDilogQualidade,
+                setMeusDados: jest.fn(),
+              }}
+            >
+              <Form
+                onSubmit={() => {}}
+                initialValues={props.values}
+                render={() => <FormEtapa {...props} />}
+              />
+            </MeusDadosContext.Provider>
+          </MemoryRouter>,
+        );
+      });
+    });
+
+    it("deve ocultar campos de empenho e total de embalagens no modo Ponto a Ponto", async () => {
+      expect(screen.queryByText("Nº do Empenho")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Qtde. Total do Empenho"),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText("Total de Embalagens")).not.toBeInTheDocument();
+    });
+
+    it("deve configurar o DatePicker para o modo mensal", async () => {
+      const dateInput = screen.getByTestId("data_programada_0");
+      expect(dateInput).toHaveAttribute("data-monthly", "true");
+    });
+
+    it("deve habilitar o botão de adicionar etapa mesmo sem campos de empenho", async () => {
+      // No modo Ponto a Ponto, os campos obrigatórios são reduzidos.
+      // Se os campos base estão preenchidos, o botão deve estar habilitado.
+      const botao = screen.getByTestId("adicionar-etapa");
+      expect(botao).not.toBeDisabled();
+    });
   });
 });
