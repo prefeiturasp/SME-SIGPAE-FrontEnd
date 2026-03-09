@@ -25,6 +25,7 @@ import { validaFormularioStep1, retornaPayloadDefault } from "./helpers";
 import { toastError, toastSuccess } from "../../../Shareable/Toast/dialogs";
 import { getError, deepCopy } from "../../../../helpers/utilities";
 import { Rascunhos } from "./Rascunhos";
+import { normalizarEspecificacoes } from "../helpers/normalizacaoEspecificacoes";
 import "./style.scss";
 
 class cadastroProduto extends Component {
@@ -302,7 +303,9 @@ class cadastroProduto extends Component {
     ) {
       payload["especificacoes"] = [];
     } else {
-      payload["especificacoes"] = values.especificacoes;
+      payload["especificacoes"] = normalizarEspecificacoes(
+        values.especificacoes,
+      );
     }
     if (!payload["tem_aditivos_alergenicos"]) {
       delete payload["aditivos"];
@@ -358,7 +361,9 @@ class cadastroProduto extends Component {
       if (Object.keys(values.especificacoes[0]).length === 0) {
         payload["especificacoes"] = [];
       } else {
-        payload["especificacoes"] = values.especificacoes;
+        payload["especificacoes"] = normalizarEspecificacoes(
+          values.especificacoes,
+        );
       }
     } else {
       payload["especificacoes"] = [];

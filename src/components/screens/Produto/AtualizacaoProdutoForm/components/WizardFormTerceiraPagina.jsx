@@ -30,6 +30,7 @@ import {
   getUnidadesDeMedidaProduto,
   getEmbalagensProduto,
 } from "src/services/produto.service";
+import { normalizarEspecificacoes } from "src/components/screens/Produto/helpers/normalizacaoEspecificacoes";
 
 class WizardFormTerceiraPagina extends Component {
   constructor(props) {
@@ -156,6 +157,7 @@ class WizardFormTerceiraPagina extends Component {
     }
     values["informacoes_nutricionais"] =
       valoresSegundoForm["informacoes_nutricionais"];
+    values["especificacoes"] = normalizarEspecificacoes(values.especificacoes);
     const arrayKeys = Object.keys(values);
     arrayKeys.forEach((item) => {
       item.includes("informacao=") && delete values[item];

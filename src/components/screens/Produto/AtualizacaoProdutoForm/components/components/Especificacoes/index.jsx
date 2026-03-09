@@ -29,7 +29,7 @@ const Especificaoes = ({
     ].concat(
       unidades_de_medida.map((unidade_de_medida) => {
         return { uuid: unidade_de_medida.uuid, nome: unidade_de_medida.nome };
-      })
+      }),
     );
 
   const opcoesEmbalagens =
@@ -42,7 +42,7 @@ const Especificaoes = ({
     ].concat(
       embalagens.map((embalagem) => {
         return { uuid: embalagem.uuid, nome: embalagem.nome };
-      })
+      }),
     );
 
   useEffect(() => {
@@ -80,7 +80,8 @@ const Especificaoes = ({
                 className={"select-form-produto"}
                 name={`${name}.volume`}
                 label="Volume"
-                type="number"
+                type="text"
+                inputMode="decimal"
                 step="0.01"
                 min={1}
                 tooltipText="Campo específico para inserir a quantidade em volumes Ex: 01"
