@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { TabelaAlimentacaoCEI } from "./TabelaAlimentacaoCEI";
 import {
   FaixaEtaria,
@@ -24,6 +24,16 @@ export default ({
   tiposAlimentacao,
   totaisConsumo,
 }: Props) => {
+  const [consolidadoCEI, setConsolidadoCEI] = useState({
+    quantidade: 0,
+    valor: 0,
+  });
+
+  const [consolidadoEMEI, setConsolidadoEMEI] = useState({
+    quantidade: 0,
+    valor: 0,
+  });
+
   const refAlimentacaoEMEI = useRef<TabelaAlimentacaoHandle>(null);
   const refDietaAEMEI = useRef<TabelaDietasHandle>(null);
   const refDietaBEMEI = useRef<TabelaDietasHandle>(null);
@@ -66,17 +76,22 @@ export default ({
     };
   };
 
-  const consolidadoCEI = useMemo(() => {
-    return calcularConsolidado(refAlimentacaoCEI, refDietaACEI, refDietaBCEI);
-  }, [relatorioConsolidado, faixasEtarias, totaisConsumo]);
+  useEffect(() => {
+    const cei = calcularConsolidado(
+      refAlimentacaoCEI,
+      refDietaACEI,
+      refDietaBCEI,
+    );
 
-  const consolidadoEMEI = useMemo(() => {
-    return calcularConsolidado(
+    const emei = calcularConsolidado(
       refAlimentacaoEMEI,
       refDietaAEMEI,
       refDietaBEMEI,
     );
-  }, [relatorioConsolidado, tiposAlimentacao, totaisConsumo]);
+
+    setConsolidadoCEI(cei);
+    setConsolidadoEMEI(emei);
+  }, [relatorioConsolidado, faixasEtarias, tiposAlimentacao, totaisConsumo]);
 
   const cards = useMemo(() => {
     return [
