@@ -412,7 +412,7 @@ export const LancamentoPorPeriodoCEI = ({
     }
   };
 
-  const tiposAlimentacao = () => {
+  const tiposAlimentacaoRecreio = () => {
     const recreio = recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial);
     if (ehEscolaTipoCEMEI(escolaInstituicao)) {
       const tipoUnidade = recreioNasFeriasDaMedicaoEMEIdaCEMEI(
@@ -426,7 +426,9 @@ export const LancamentoPorPeriodoCEI = ({
       if (tipoUnidade === "CEI") {
         return tipos_alimentacao.inscritos;
       } else if (tipoUnidade === "EMEI") {
-        return tipos_alimentacao.infantil;
+        return tipos_alimentacao.infantil.sort((a, b) =>
+          a.nome.localeCompare(b.nome),
+        );
       }
     } else {
       return recreio.unidades_participantes[0].tipos_alimentacao.inscritos;
@@ -545,7 +547,7 @@ export const LancamentoPorPeriodoCEI = ({
                     textoCabecalho={`Recreio nas Férias${ehEscolaTipoCEMEI(escolaInstituicao) ? " - de 0 a 3 anos e 11 meses" : ""}`}
                     cor={CORES[10]}
                     grupo="Recreio nas Férias - de 0 a 3 anos e 11 meses"
-                    tipos_alimentacao={tiposAlimentacao()}
+                    tipos_alimentacao={tiposAlimentacaoRecreio()}
                     periodoSelecionado={periodoSelecionado}
                     solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                     ehGrupoSolicitacoesDeAlimentacao={true}
@@ -561,7 +563,7 @@ export const LancamentoPorPeriodoCEI = ({
                   <CardLancamentoCEI
                     textoCabecalho="Recreio nas Férias - 4 a 14 anos"
                     cor={CORES[12]}
-                    tiposAlimentacao={tiposAlimentacao()}
+                    tiposAlimentacao={tiposAlimentacaoRecreio()}
                     periodoSelecionado={periodoSelecionado}
                     solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                     ehGrupoSolicitacoesDeAlimentacao={true}
