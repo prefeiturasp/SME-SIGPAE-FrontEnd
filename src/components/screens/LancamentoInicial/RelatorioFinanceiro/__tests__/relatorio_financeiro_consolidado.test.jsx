@@ -195,9 +195,12 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
         ).length,
       ).toBeGreaterThan(0);
     }
-    expect(screen.getAllByText("TOTAL (A)")).toHaveLength(2);
-    expect(screen.getAllByText("TOTAL (B)")).toHaveLength(2);
-    expect(screen.getAllByText("TOTAL (C)")).toHaveLength(2);
+    expect(screen.getByText("TOTAL (A)")).toBeInTheDocument();
+    expect(screen.getByText("TOTAL (INF. A)")).toBeInTheDocument();
+    expect(screen.getByText("TOTAL (B)")).toBeInTheDocument();
+    expect(screen.getByText("TOTAL (INF. B)")).toBeInTheDocument();
+    expect(screen.getByText("TOTAL (C)")).toBeInTheDocument();
+    expect(screen.getByText("TOTAL (INF. C)")).toBeInTheDocument();
 
     const headers = await screen.findAllByRole("columnheader", {
       name: /DIETA ESPECIAL/i,
