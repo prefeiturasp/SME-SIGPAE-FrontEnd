@@ -9,8 +9,9 @@ import { getMeusDados } from "src/services/perfil.service";
 import { mockMeusDadosEscolaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEMEI";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
 import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
-import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/diasLetivosRecreio";
+import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/diasLetivosRecreio";
 import { mockValoresMedicaoCeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockValoresMedicao";
+import { mockSalvaLancamentoSemana1CeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockSalvarLancamentos";
 import preview from "jest-preview";
 
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
@@ -26,6 +27,7 @@ import {
   updateValoresPeriodosLancamentos,
   getLogDietasAutorizadasRecreioNasFeriasCEI,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import mock from "src/services/_mock";
 
 jest.mock("src/services/perfil.service.jsx");
@@ -105,7 +107,12 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
     });
 
     updateValoresPeriodosLancamentos.mockResolvedValue({
-      data: [],
+      data: mockSalvaLancamentoSemana1CeiDaCEMEI,
+      status: 200,
+    });
+
+    getTiposDeAlimentacao.mockResolvedValue({
+      data: { data: { results: [] }, status: 200 },
       status: 200,
     });
 
@@ -132,8 +139,95 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
   describe("Testa conteúdo básico da tela", () => {
     it("renderiza label `Mês do Lançamento`", async () => {
       await awaitServices();
-      preview.debug();
       expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
+    });
+
+    it("renderiza valor `Recreio nas Férias - JAN 2026` Mês do Lançamento`", () => {
+      const inputElement = screen.getByTestId("input-mes-lancamento");
+      expect(inputElement).toHaveAttribute(
+        "value",
+        mockLocationStateGrupoCeiDaCEMEI.solicitacaoMedicaoInicial
+          .recreio_nas_ferias.titulo,
+      );
+    });
+
+    it("renderiza label `Tipo de Lançamento`", () => {
+      expect(screen.getByText("Tipo de Lançamento")).toBeInTheDocument();
+    });
+
+    it("renderiza valor `Recreio nas Férias` no input `Tipo de Lançamento`", () => {
+      const inputElement = screen.getByTestId("input-periodo-lancamento");
+      expect(inputElement).toHaveAttribute(
+        "value",
+        mockLocationStateGrupoCeiDaCEMEI.periodo,
+      );
+    });
+
+    it("renderiza quadro de legendas", () => {
+      expect(screen.getByText("Legenda das Informações:")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Há erros no lançamento. Corrija para conseguir salvar.",
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Há divergências no lançamento. Adicione uma observação.",
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Atenção! Verifique se está correto e prossiga os apontamentos.",
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
+      expect(
+        screen.getByText(
+          "Semanas do Período para Lançamento da Medição Inicial",
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it("renderiza as labels `Semana 1` e `Semana 2` e `Semana 3`", async () => {
+      expect(screen.getByText("Semana 1")).toBeInTheDocument();
+      expect(screen.getByText("Semana 2")).toBeInTheDocument();
+      expect(screen.getByText("Semana 3")).toBeInTheDocument();
+    });
+
+    it("não renderiza as labels  `Semana 4`, `Semana 5`", async () => {
+      expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
+      expect(screen.queryByText("Semana 5")).not.toBeInTheDocument();
+    });
+
+    it("renderiza label `ALIMENTAÇÃO`", async () => {
+      expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+    });
+
+    it("renderiza label `Participantes` dentro da seção `ALIMENTAÇÃO`", async () => {
+      const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
+      );
+      const allParticipantes = screen.getAllByText("Participantes");
+      const specificParticipantes = allParticipantes.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `Seg.` dentro da seção `ALIMENTAÇÃO`", async () => {
+      preview.debug();
+      const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
+      );
+      const allParticipantes = screen.getAllByText("Seg.");
+      const specificParticipantes = allParticipantes.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
     });
   });
 });
