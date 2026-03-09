@@ -103,12 +103,16 @@ export default ({
       {
         titulo: "CONSOLIDADO INFANTIL - EMEI (INF. A + INF. B + INF. C)",
         quantidade: consolidadoEMEI.quantidade,
+        tituloQuantidade: "QUANTIDADE SERVIDA (INF. A + INF. B + INF. C):",
         valor: consolidadoEMEI.valor,
+        tituloValor: "VALOR DO FATURAMENTO TOTAL (INF. A + INF. B + INF. C):",
       },
       {
         titulo: "CONSOLIDADO TOTAL (A + B + C + INF. A + INF. B + INF. C)",
         quantidade: consolidadoEMEI.quantidade + consolidadoCEI.quantidade,
+        tituloQuantidade: "QUANTIDADE SERVIDA:",
         valor: consolidadoEMEI.valor + consolidadoCEI.valor,
+        tituloValor: "VALOR DO FATURAMENTO TOTAL:",
       },
     ];
   }, [consolidadoCEI, consolidadoEMEI]);
@@ -183,7 +187,9 @@ export default ({
           <ConsolidadoTotal
             titulo={card.titulo}
             quantidade={card.quantidade}
+            tituloQuantidade={card.tituloQuantidade}
             valor={card.valor}
+            tituloValor={card.tituloValor}
           />
         </div>
       ))}
