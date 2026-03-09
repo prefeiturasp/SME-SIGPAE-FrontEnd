@@ -199,7 +199,7 @@ class cadastroProduto extends Component {
   };
 
   componentDidMount = async () => {
-    const infoAgrupada = await getInformacoesGrupo();
+    const infoAgrupada = await getInformacoesGrupo({ ativo: true });
     this.setState({
       informacoesAgrupadas: infoAgrupada.data.results,
     });
