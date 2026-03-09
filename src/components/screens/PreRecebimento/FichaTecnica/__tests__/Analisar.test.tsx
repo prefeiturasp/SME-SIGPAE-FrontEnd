@@ -15,6 +15,7 @@ import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockM
 import {
   mockFichaTecnicaComDetalhe,
   mockFichaTecnicaComDetalheSemAnalise,
+  mockFichaTecnicaComDetalheFLV,
 } from "src/mocks/services/fichaTecnica.service/mockGetFichaTecnicaComAnalise";
 import DetalharFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/DetalharFichaTecnicaPage";
 import AnalisarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/AnalisarFichaTecnicaPage";
@@ -47,6 +48,35 @@ beforeEach(() => {
 
 const setup = async (somenteLeitura = false) => {
   const search = `?uuid=${mockFichaTecnicaComDetalhe.uuid}`;
+  window.history.pushState({}, "", search);
+
+  await act(async () => {
+    render(
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <MeusDadosContext.Provider
+          value={{
+            meusDados: mockMeusDadosFornecedor,
+            setMeusDados: jest.fn(),
+          }}
+        >
+          {somenteLeitura ? (
+            <DetalharFichaTecnicaPage />
+          ) : (
+            <AnalisarFichaTecnicaPage />
+          )}
+        </MeusDadosContext.Provider>
+      </MemoryRouter>,
+    );
+  });
+};
+
+const setupFLV = async (somenteLeitura = false) => {
+  const search = `?uuid=${mockFichaTecnicaComDetalheFLV.uuid}`;
   window.history.pushState({}, "", search);
 
   await act(async () => {
@@ -162,6 +192,30 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     expect(
       screen.getAllByText(`Indicações de Correções CODAE`)[0],
     ).toBeInTheDocument();
+  });
+
+  it("carrega ficha FLV no modo Detalhar", async () => {
+    mock
+      .onGet(
+        `/ficha-tecnica/${mockFichaTecnicaComDetalheFLV.uuid}/detalhar-com-analise/`,
+      )
+      .reply(200, mockFichaTecnicaComDetalheFLV);
+
+    await setupFLV(true);
+
+    const tipoEntregaInput = screen.getByText("Tipo de Entrega");
+    expect(tipoEntregaInput).toBeInTheDocument();
+    expect(
+      screen.getByText("Espécie ou Variedade Cultivada"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText("Informações Nutricionais"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Conservação")).not.toBeInTheDocument();
+    expect(screen.queryByText("Armazenamento")).not.toBeInTheDocument();
+    expect(screen.queryByText("Embalagem e Rotulagem")).not.toBeInTheDocument();
+    expect(screen.queryByText("Modo de Preparo")).not.toBeInTheDocument();
   });
 
   it("carrega no modo Detalhar e imprime a ficha", async () => {

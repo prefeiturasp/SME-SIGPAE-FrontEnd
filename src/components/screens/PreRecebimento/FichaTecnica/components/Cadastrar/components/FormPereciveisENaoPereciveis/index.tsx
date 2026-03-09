@@ -15,7 +15,9 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
   desabilitar = false,
   atualizacao = false,
 }) => {
-  const ehFLV = values.categoria === "FLV";
+  const ehFLV =
+    values.categoria === "FLV" ||
+    values.categoria === "FLV (Frutas, Legumes e Verduras)";
 
   return (
     <>
