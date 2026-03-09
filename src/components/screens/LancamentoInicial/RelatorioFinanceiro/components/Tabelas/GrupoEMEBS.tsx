@@ -65,17 +65,12 @@ export default () => {
       {
         titulo: "CONSOLIDADO INFANTIL (INF. A + INF. B + INF. C)",
         quantidade: consolidadoInfantil.quantidade,
-        tituloQuantidade: "QUANTIDADE SERVIDA (INF. A + INF. B + INF. C):",
         valor: consolidadoInfantil.valor,
-        tituloValor: "VALOR DO FATURAMENTO TOTAL (INF. A + INF. B + INF. C):",
       },
       {
         titulo: "CONSOLIDADO FUNDAMENTAL (FUND. A + FUND. B + FUND. C)",
         quantidade: consolidadoFundamental.quantidade,
-        tituloQuantidade: "QUANTIDADE SERVIDA (FUND. A + FUND. B + FUND. C):",
         valor: consolidadoFundamental.valor,
-        tituloValor:
-          "VALOR DO FATURAMENTO TOTAL (FUND. A + FUND. B + FUND. C):",
       },
       {
         titulo:
