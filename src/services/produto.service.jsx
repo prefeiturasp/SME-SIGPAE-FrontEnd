@@ -48,8 +48,13 @@ export const getInformacoesNutricionais = () => {
     });
 };
 
-export const getInformacoesGrupo = async () => {
-  return await axios.get(`/informacoes-nutricionais/agrupadas/`);
+export const getInformacoesGrupo = async (params) => {
+  const url = "/informacoes-nutricionais/agrupadas/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getInformacoesNutricionaisOrdenadas = async () => {
@@ -344,7 +349,7 @@ export const CODAEAceitaReclamacao = async (uuid, payload) => {
 export const CODAEPedeAnaliseSensorialProduto = (
   uuid,
   justificativa,
-  uuidTerceirizada
+  uuidTerceirizada,
 ) => {
   const url = `${API_URL}/homologacoes-produtos/${uuid}/codae-pede-analise-sensorial/`;
   let status = 0;
@@ -424,7 +429,7 @@ export const CODAECancelaSoliticaoCorrecao = async (uuid, justificativa) => {
 
 export const TerceirizadaCancelaSoliticaoCorrecao = async (
   uuid,
-  justificativa
+  justificativa,
 ) => {
   const url = `${API_URL}/homologacoes-produtos/${uuid}/terceirizada-cancela-solicitacao-correcao/`;
   let status = 0;
@@ -464,7 +469,7 @@ export const CODAEPedeCorrecao = (uuid, justificativa) => {
 
 export const getRascunhosDeProduto = async () => {
   return await axios.get(
-    `/painel-gerencial-homologacoes-produtos/filtro-por-status/rascunho/`
+    `/painel-gerencial-homologacoes-produtos/filtro-por-status/rascunho/`,
   );
 };
 
@@ -487,7 +492,7 @@ export const getHomologacoesDeProdutoPorStatus = async (status, page = 0) => {
 
 export const getHomologacoesDeProdutoPorStatusTitulo = async (
   status,
-  params
+  params,
 ) => {
   const url = `/painel-gerencial-homologacoes-produtos/filtro-por-status/${status}/`;
   return await axios.get(url, { params });
@@ -504,7 +509,7 @@ export const excluirImagemDoProduto = async (uuid) => {
 export const escolaOuNutriReclamaDoProduto = async (uuid, payload) => {
   return await axios.patch(
     `/homologacoes-produtos/${uuid}/escola-ou-nutri-reclama/`,
-    payload
+    payload,
   );
 };
 
@@ -536,14 +541,14 @@ export const getReclamacaoDeProduto = async (uuid) => {
 
 export const getHomologacoesDeProdutoAnaliseSensorial = async () => {
   return await axios.get(
-    `/homologacoes-produtos/aguardando-analise-sensorial/`
+    `/homologacoes-produtos/aguardando-analise-sensorial/`,
   );
 };
 
 export const responderReclamacaoProduto = async (uuid, payload) => {
   return await axios.patch(
     `/reclamacoes-produtos/${uuid}/terceirizada-responde/`,
-    payload
+    payload,
   );
 };
 
@@ -576,7 +581,7 @@ export const getPDFRelatorioProdutosHomologados = async (params) => {
 export const getProdutosSuspensos = async (payload) => {
   return await axios.post(
     `/homologacoes-produtos/homologacoes_suspensas/`,
-    payload
+    payload,
   );
 };
 
@@ -603,7 +608,7 @@ export const getSolicitacoesCadastroProdutoDieta = async (params) =>
 export const updateSolicitacaoCadastroProdutoDieta = async (uuid, params) =>
   await axios.patch(
     `/solicitacao-cadastro-produto-dieta/${uuid}/confirma-previsao/`,
-    params
+    params,
   );
 
 export const getProdutosReclamacoes = async (params) => {
@@ -624,7 +629,7 @@ export const produtoJaExiste = async (params) =>
 export const cancelaHomologacao = async (uuid, payload) =>
   await axios.patch(
     `/homologacoes-produtos/${uuid}/cancela-solicitacao-homologacao/`,
-    payload
+    payload,
   );
 
 export const getNomesItems = async () =>
