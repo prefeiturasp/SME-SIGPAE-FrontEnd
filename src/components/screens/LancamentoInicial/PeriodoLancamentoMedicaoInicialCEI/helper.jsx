@@ -959,7 +959,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
 
   const matriculadosOuNumeroDeAlunos = () => {
     const name = ehRecreioNasFerias ? "participantes" : "matriculados";
-    const nome = ehRecreioNasFerias ? "Participantes" : "matriculados";
+    const nome = ehRecreioNasFerias ? "Participantes" : "Matriculados";
     return ehProgramasEProjetosLocation
       ? {
           nome: "Número de Alunos",
