@@ -18,12 +18,12 @@ type Props = {
   totaisConsumo: any;
 };
 
-export default function RelatorioFinanceiro({
+export default ({
   relatorioConsolidado,
   faixasEtarias,
   tiposAlimentacao,
   totaisConsumo,
-}: Props) {
+}: Props) => {
   const refAlimentacaoEMEI = useRef<TabelaAlimentacaoHandle>(null);
   const refDietaAEMEI = useRef<TabelaDietasHandle>(null);
   const refDietaBEMEI = useRef<TabelaDietasHandle>(null);
@@ -174,4 +174,4 @@ export default function RelatorioFinanceiro({
       ))}
     </div>
   );
-}
+};
