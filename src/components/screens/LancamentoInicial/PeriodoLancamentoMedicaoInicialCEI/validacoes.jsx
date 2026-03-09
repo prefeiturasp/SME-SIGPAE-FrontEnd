@@ -536,9 +536,9 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
   validacaoDiaLetivo,
   ehProgramasEProjetosLocation,
   dadosValoresInclusoesAutorizadasState,
-  ehGrupoColaboradores,
+  ehRecreioNasFerias,
 ) => {
-  const prefixo = ehGrupoColaboradores ? "participantes" : "matriculados";
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
 
   const maxFrequencia = Number(
     allValues[`frequencia__dia_${dia}__categoria_${categoria}`],
@@ -599,8 +599,8 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
   ) {
     const mensagemPadrao =
       "A quantidade de alunos frequentes não pode ser maior do que a quantidade de alunos matriculados no período.";
-    return ehGrupoColaboradores
-      ? "A frequência não pode ser maior do que o número de Participantes"
+    return ehRecreioNasFerias
+      ? "A frequência não pode ser maior do que o número de participantes"
       : mensagemPadrao;
   } else if (
     value &&
@@ -643,7 +643,7 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
     !inputName.includes("repeticao") &&
     !inputName.includes("emergencial")
   ) {
-    const nome = ehGrupoColaboradores ? "participantes" : "alunos";
+    const nome = ehRecreioNasFerias ? "participantes" : "alunos";
     return `Lançamento maior que a frequência de ${nome} no dia.`;
   }
 

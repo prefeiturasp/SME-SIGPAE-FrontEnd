@@ -499,7 +499,7 @@ export const desabilitarField = (
     }
     return false;
   }
-
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
   if (
     (location && location.state && location.state.ehEmeiDaCemei) ||
     ehSolicitacoesAlimentacaoLocation
@@ -520,15 +520,15 @@ export const desabilitarField = (
       return true;
     } else if (
       (nomeCategoria === "ALIMENTAÇÃO" &&
-        (rowName === "matriculados" ||
-          !values[`matriculados__dia_${dia}__categoria_${categoria}`])) ||
+        (rowName === prefixo ||
+          !values[`${prefixo}__dia_${dia}__categoria_${categoria}`])) ||
       (nomeCategoria.includes("DIETA") &&
         (rowName === "dietas_autorizadas" ||
           !values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`])) ||
       Number(
         values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
       ) === 0 ||
-      Number(values[`matriculados__dia_${dia}__categoria_${categoria}`]) === 0
+      Number(values[`${prefixo}__dia_${dia}__categoria_${categoria}`]) === 0
     ) {
       return true;
     } else if (rowName === "frequencia") {
@@ -897,7 +897,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   ehSolicitacoesAlimentacaoLocation,
   alimentacoesLancamentosEspeciais,
   ehProgramasEProjetosLocation,
-  ehGrupoColaboradores,
+  ehRecreioNasFerias,
 ) => {
   const tiposAlimentacaoFormatadas = tiposAlimentacao.map((alimentacao) => {
     return {
@@ -958,8 +958,8 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   }
 
   const matriculadosOuNumeroDeAlunos = () => {
-    const name = ehGrupoColaboradores ? "participantes" : "matriculados";
-    const nome = ehGrupoColaboradores ? "Participantes" : "matriculados";
+    const name = ehRecreioNasFerias ? "participantes" : "matriculados";
+    const nome = ehRecreioNasFerias ? "Participantes" : "Matriculados";
     return ehProgramasEProjetosLocation
       ? {
           nome: "Número de Alunos",

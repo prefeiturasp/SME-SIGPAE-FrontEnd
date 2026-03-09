@@ -135,11 +135,11 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Colaboradores 
     );
   });
 
-  it("renderiza label `Período de Lançamento`", () => {
-    expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
+  it("renderiza label `Tipo de Lançamento`", () => {
+    expect(screen.getByText("Tipo de Lançamento")).toBeInTheDocument();
   });
 
-  it("renderiza valor `Colaboradores` no input `Período de Lançamento`", () => {
+  it("renderiza valor `Colaboradores` no input `Tipo de Lançamento`", () => {
     const inputElement = screen.getByTestId("input-periodo-lancamento");
     expect(inputElement).toHaveAttribute(
       "value",
