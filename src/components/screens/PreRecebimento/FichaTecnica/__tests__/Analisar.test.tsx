@@ -288,3 +288,165 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     expect(screen.getByText("LEVE LEITE - PLL")).toBeInTheDocument();
   });
 });
+
+describe("Cenários FLV (Frutas, Legumes e Verduras)", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    mock
+      .onGet(
+        `/ficha-tecnica/${mockFichaTecnicaComDetalheFLV.uuid}/detalhar-com-analise/`,
+      )
+      .reply(200, mockFichaTecnicaComDetalheFLV);
+
+    mock
+      .onPost(
+        `/ficha-tecnica/${mockFichaTecnicaComDetalheFLV.uuid}/analise-gpcodae/`,
+      )
+      .reply(201);
+  });
+
+  const setupFLV = async (somenteLeitura = false) => {
+    const search = `?uuid=${mockFichaTecnicaComDetalheFLV.uuid}`;
+    Object.defineProperty(window, "location", {
+      value: { search },
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosFornecedor,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            {somenteLeitura ? (
+              <DetalharFichaTecnicaPage />
+            ) : (
+              <AnalisarFichaTecnicaPage />
+            )}
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  };
+
+  it("renderiza CollapsesFLV quando categoria é FLV", async () => {
+    await setupFLV();
+
+    // Collapses exclusivos do FLV devem estar presentes
+    expect(
+      screen.getByText("Fabricante, Produtor, Envasador ou Distribuidor"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Detalhes do Produto")).toBeInTheDocument();
+    expect(
+      screen.getByText("Responsável Técnico e Anexos"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Outras Informações")).toBeInTheDocument();
+
+    // Collapses que NÃO devem aparecer no FLV
+    expect(
+      screen.queryByText("Informações Nutricionais"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Conservação")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Temperatura e Transporte"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Armazenamento")).not.toBeInTheDocument();
+    expect(screen.queryByText("Embalagem e Rotulagem")).not.toBeInTheDocument();
+    expect(screen.queryByText("Modo de Preparo")).not.toBeInTheDocument();
+  });
+
+  it("botão 'Enviar Análise' fica desabilitado enquanto há collapses FLV pendentes", async () => {
+    await setupFLV();
+
+    const btnAnalise = screen.getByText("Enviar Análise").closest("button");
+    expect(btnAnalise).toBeDisabled();
+  });
+
+  it("botão 'Enviar Análise' é habilitado após conferir todos os collapses FLV", async () => {
+    await setupFLV();
+
+    const btnAnalise = screen.getByText("Enviar Análise").closest("button");
+    expect(btnAnalise).toBeDisabled();
+
+    // FLV tem apenas 4 collapses com tag: fabricante_envasador, detalhes_produto,
+    // responsavel_tecnico, outras_informacoes
+    const botoesCiente = screen.getAllByText("Ciente");
+    const botoesConferido = screen.getAllByText("Conferido");
+
+    [...botoesCiente, ...botoesConferido].forEach((span) => {
+      fireEvent.click(span.closest("button"));
+    });
+
+    expect(btnAnalise).not.toBeDisabled();
+  });
+
+  it("validaForm FLV ignora campos não aplicáveis (conservacao, armazenamento, etc.)", async () => {
+    await setupFLV();
+
+    const btnAnalise = screen.getByText("Enviar Análise").closest("button");
+
+    // Confere apenas os 4 collapses FLV — botão deve habilitar sem precisar
+    // conferir informacoes_nutricionais, conservacao, armazenamento, etc.
+    const botoesCiente = screen.getAllByText("Ciente");
+    const botoesConferido = screen.getAllByText("Conferido");
+
+    [...botoesCiente, ...botoesConferido].forEach((span) => {
+      fireEvent.click(span.closest("button"));
+    });
+
+    // Não deve exigir os campos removidos pelo ehFLV
+    expect(btnAnalise).not.toBeDisabled();
+  });
+
+  it("envia análise FLV com sucesso", async () => {
+    mock
+      .onPost(
+        `/ficha-tecnica/${mockFichaTecnicaComDetalheFLV.uuid}/analise-gpcodae/`,
+      )
+      .reply(201);
+
+    await setupFLV();
+
+    const botoesCiente = screen.getAllByText("Ciente");
+    const botoesConferido = screen.getAllByText("Conferido");
+
+    [...botoesCiente, ...botoesConferido].forEach((span) => {
+      fireEvent.click(span.closest("button"));
+    });
+
+    const btnAnalise = screen.getByText("Enviar Análise").closest("button");
+    expect(btnAnalise).not.toBeDisabled();
+    fireEvent.click(btnAnalise);
+
+    // Confirma que não exibiu erro
+    await waitFor(() => {
+      expect(toastError).not.toHaveBeenCalled();
+    });
+  });
+
+  it("salva rascunho de análise FLV", async () => {
+    mock
+      .onPost(
+        `/ficha-tecnica/${mockFichaTecnicaComDetalheFLV.uuid}/rascunho-analise-gpcodae/`,
+      )
+      .reply(201, {
+        ...mockFichaTecnicaComDetalheFLV,
+        ficha_tecnica: mockFichaTecnicaComDetalheFLV.uuid,
+      });
+
+    await setupFLV();
+
+    const btnRascunho = screen.getByText("Salvar Rascunho").closest("button");
+    expect(btnRascunho).not.toBeDisabled();
+    fireEvent.click(btnRascunho);
+
+    await waitFor(() => {
+      expect(toastError).not.toHaveBeenCalled();
+    });
+  });
+});
