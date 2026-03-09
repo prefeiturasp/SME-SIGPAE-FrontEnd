@@ -50,6 +50,7 @@ export const InputText = (props) => {
     onBlur,
     dataTestId,
     dataTestIdDiv,
+    inputMode,
   } = props;
 
   const inputProps = {
@@ -108,6 +109,7 @@ export const InputText = (props) => {
           placeholder={placeholder}
           required={required}
           type={input?.type || "text"}
+          inputMode={inputMode}
           title={title}
           pattern={pattern}
           maxLength={maxlength}
@@ -172,6 +174,7 @@ InputText.propTypes = {
   placeholder: PropTypes.string,
   required: PropTypes.bool,
   type: PropTypes.string,
+  inputMode: PropTypes.string,
   contador: PropTypes.number,
   valorInicial: PropTypes.string,
   prefix: PropTypes.node,

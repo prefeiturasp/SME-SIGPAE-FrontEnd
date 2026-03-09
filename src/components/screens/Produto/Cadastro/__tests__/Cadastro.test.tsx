@@ -202,4 +202,68 @@ describe("CadastroProduto - Submit", () => {
       expect(submitProduto).toHaveBeenCalledTimes(1);
     });
   });
+
+  it("deve normalizar volume com virgula antes de enviar para API", async () => {
+    const { container } = render(
+      <Provider store={store}>
+        <CadastroProduto />
+      </Provider>,
+    );
+
+    await waitFor(() => {
+      expect(container).toBeInTheDocument();
+    });
+
+    const instance = getComponentInstance(container.firstChild);
+    instance.setState({
+      payload: {
+        uuid: null,
+        nome: "Produto Teste",
+        marca: "marca-uuid",
+        fabricante: "fabricante-uuid",
+        componentes: "Componente A",
+        tem_gluten: false,
+        informacoes_nutricionais: [{ informacao_nutricional: "info-uuid" }],
+        tipo: "tipo_teste",
+        embalagem: "embalagem_teste",
+        prazo_validade: "30 dias",
+        info_armazenamento: "Local seco",
+        outras_informacoes: "Nenhuma",
+        numero_registro: "123456",
+        especificacoes: [],
+        tem_aditivos_alergenicos: false,
+      },
+      isSubmitting: false,
+    });
+
+    await instance.onSubmit({
+      nome: "Produto Teste+extra",
+      tipo: "tipo_teste",
+      embalagem: "embalagem_teste",
+      prazo_validade: "30 dias",
+      info_armazenamento: "Local seco",
+      outras_informacoes: "Nenhuma",
+      numero_registro: "123456",
+      componentes: "Componente A",
+      tem_gluten: false,
+      especificacoes: [
+        {
+          volume: "1,75",
+          unidade_de_medida: "u1",
+          embalagem_produto: "e1",
+        },
+      ],
+    });
+
+    expect(submitProduto).toHaveBeenCalledTimes(1);
+    expect(submitProduto).toHaveBeenCalledWith(
+      expect.objectContaining({
+        especificacoes: [
+          expect.objectContaining({
+            volume: 1.75,
+          }),
+        ],
+      }),
+    );
+  });
 });

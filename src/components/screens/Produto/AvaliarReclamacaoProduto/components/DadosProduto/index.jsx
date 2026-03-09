@@ -157,7 +157,7 @@ export class DadosProduto extends Component {
                                 </td>
                               </tr>
                             );
-                          }
+                          },
                         )}
                       </tbody>
                     </table>
