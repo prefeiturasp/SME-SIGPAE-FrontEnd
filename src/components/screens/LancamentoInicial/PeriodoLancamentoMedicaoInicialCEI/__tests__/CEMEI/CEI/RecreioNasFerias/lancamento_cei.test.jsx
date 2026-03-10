@@ -291,7 +291,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
       fireEvent.click(semana1Element);
       const VALORES_ESPERADOS = {
         1: {
-          participantes: "100",
+          participantes: "90",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "14",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "14",
@@ -303,7 +303,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
           },
         },
         2: {
-          participantes: "100",
+          participantes: "90",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -315,7 +315,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
           },
         },
         3: {
-          participantes: "100",
+          participantes: "90",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -740,7 +740,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
       const inputParticipantes = screen.getByTestId(
         "participantes__faixa_null__dia_01__categoria_1",
       );
-      expect(inputParticipantes).toHaveAttribute("value", "100");
+      expect(inputParticipantes).toHaveAttribute("value", "90");
 
       const inputDietasAutorizadaA1 = screen.getByTestId(
         `dietas_autorizadas__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece__dia_01__categoria_2`,
