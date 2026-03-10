@@ -712,38 +712,45 @@ export default () => {
                                 </>
                               )}
 
-                              <div className="col-3">
-                                <Field
-                                  className="input-cronograma"
-                                  component={InputText}
-                                  label="Quantidade Total Programada"
-                                  name="quantidade_total"
-                                  disabled={false}
-                                  agrupadorMilharComDecimal
-                                  required
-                                  placeholder="Informe a Quantidade Total"
-                                  validate={required}
-                                />
-                              </div>
-                              <div className="col-3">
-                                <Field
-                                  className="input-cronograma"
-                                  component={Select}
-                                  naoDesabilitarPrimeiraOpcao
-                                  options={[
-                                    { nome: "Selecione a Unidade", uuid: "" },
-                                    ...unidadesMedidaOptions,
-                                  ]}
-                                  label="Unidade de Medida"
-                                  name="unidade_medida"
-                                  required
-                                  validate={required}
-                                />
-                              </div>
+                              {!fichaTecnicaSelecionada?.flv_ponto_a_ponto ? (
+                                <>
+                                  <div className="col-3">
+                                    <Field
+                                      className="input-cronograma"
+                                      component={InputText}
+                                      label="Quantidade Total Programada"
+                                      name="quantidade_total"
+                                      disabled={false}
+                                      agrupadorMilharComDecimal
+                                      required
+                                      placeholder="Informe a Quantidade Total"
+                                      validate={required}
+                                    />
+                                  </div>
+                                  <div className="col-3">
+                                    <Field
+                                      className="input-cronograma"
+                                      component={Select}
+                                      naoDesabilitarPrimeiraOpcao
+                                      options={[
+                                        {
+                                          nome: "Selecione a Unidade",
+                                          uuid: "",
+                                        },
+                                        ...unidadesMedidaOptions,
+                                      ]}
+                                      label="Unidade de Medida"
+                                      name="unidade_medida"
+                                      required
+                                      validate={required}
+                                    />
+                                  </div>
+                                </>
+                              ) : null}
                             </div>
 
                             <div className="row mt-3">
-                              {!fichaTecnicaSelecionada?.flv_ponto_a_ponto && (
+                              {!fichaTecnicaSelecionada?.flv_ponto_a_ponto ? (
                                 <>
                                   <div className="col-4">
                                     <Field
@@ -763,95 +770,144 @@ export default () => {
                                       required
                                     />
                                   </div>
+                                  <div className="col-4">
+                                    <Field
+                                      className="input-cronograma"
+                                      component={InputText}
+                                      name={`custo_unitario_produto`}
+                                      label="Custo Unitário do Produto"
+                                      placeholder="Informe o Custo Unitário"
+                                      required
+                                      proibeLetras
+                                      prefix="R$"
+                                      validate={composeValidators(
+                                        required,
+                                        decimalMonetario,
+                                      )}
+                                    />
+                                  </div>
+
+                                  {values.volume_embalagem_primaria && (
+                                    <div className="col-8 mt-3">
+                                      <div className="row">
+                                        <div className="col">
+                                          <Label
+                                            content="Volume da Embalagem Primária"
+                                            required
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <div className="row">
+                                        <div className="col">
+                                          <Field
+                                            className="input-cronograma"
+                                            component={InputText}
+                                            name={`volume_embalagem_primaria`}
+                                            required
+                                            disabled
+                                          />
+                                        </div>
+
+                                        <div className="col">
+                                          <Field
+                                            className="input-cronograma"
+                                            component={Select}
+                                            options={unidadesMedidaOptions}
+                                            name={`unidade_medida_volume_primaria`}
+                                            required
+                                            disabled
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  <div className="col-4">
+                                    <Field
+                                      dataTestId="numero_empenho"
+                                      className="input-cronograma"
+                                      component={InputText}
+                                      label="Nº do Empenho"
+                                      name="numero_empenho"
+                                      placeholder="Informe o Nº do Empenho"
+                                      required
+                                      validate={required}
+                                      proibeLetras
+                                    />
+                                  </div>
+                                  <div className="col-4">
+                                    <Field
+                                      dataTestId="quantidade_empenho"
+                                      className="input-cronograma"
+                                      component={InputText}
+                                      label="Quantidade Total do Empenho"
+                                      name="qtd_total_empenho"
+                                      placeholder="Informe a Quantidade Total"
+                                      required
+                                      agrupadorMilharComDecimal
+                                      validate={required}
+                                      proibeLetras
+                                    />
+                                  </div>
+                                  <div className="col-4">
+                                    <Field
+                                      className="input-cronograma"
+                                      component={InputText}
+                                      name={`custo_unitario_produto`}
+                                      label="Custo Unitário do Produto"
+                                      placeholder="Informe o Custo Unitário"
+                                      required
+                                      proibeLetras
+                                      prefix="R$"
+                                      validate={composeValidators(
+                                        required,
+                                        decimalMonetario,
+                                      )}
+                                    />
+                                  </div>
                                 </>
                               )}
-                              <div className="col-4">
-                                <Field
-                                  className="input-cronograma"
-                                  component={InputText}
-                                  name={`custo_unitario_produto`}
-                                  label="Custo Unitário do Produto"
-                                  placeholder="Informe o Custo Unitário"
-                                  required
-                                  proibeLetras
-                                  prefix="R$"
-                                  validate={composeValidators(
-                                    required,
-                                    decimalMonetario,
-                                  )}
-                                />
-                              </div>
-                              {values.volume_embalagem_primaria &&
-                                !fichaTecnicaSelecionada?.flv_ponto_a_ponto && (
-                                  <div className="col-8">
-                                    <div className="row">
-                                      <div className="col">
-                                        <Label
-                                          content="Volume da Embalagem Primária"
-                                          required
-                                        />
-                                      </div>
-                                    </div>
-
-                                    <div className="row">
-                                      <div className="col">
-                                        <Field
-                                          className="input-cronograma"
-                                          component={InputText}
-                                          name={`volume_embalagem_primaria`}
-                                          required
-                                          disabled
-                                        />
-                                      </div>
-
-                                      <div className="col">
-                                        <Field
-                                          className="input-cronograma"
-                                          component={Select}
-                                          options={unidadesMedidaOptions}
-                                          name={`unidade_medida_volume_primaria`}
-                                          required
-                                          disabled
-                                        />
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                            </div>
-
-                            <div className="subtitulo">
-                              Cronograma das Entregas
                             </div>
 
                             {fichaTecnicaSelecionada?.flv_ponto_a_ponto && (
                               <div className="row mt-3">
-                                <div className="col-6">
+                                <div className="col-4">
                                   <Field
-                                    dataTestId="numero_empenho"
+                                    className="input-cronograma"
                                     component={InputText}
-                                    label="Nº do Empenho"
-                                    name="numero_empenho"
-                                    placeholder="Informe o Nº do Empenho"
+                                    label="Quantidade Total do Produto"
+                                    name="quantidade_total"
+                                    disabled={false}
+                                    agrupadorMilharComDecimal
                                     required
+                                    placeholder="Informe a Quantidade Total"
                                     validate={required}
-                                    proibeLetras
                                   />
                                 </div>
-                                <div className="col-6">
+                                <div className="col-4">
                                   <Field
-                                    dataTestId="quantidade_empenho"
-                                    component={InputText}
-                                    label="Qtde. Total do Empenho"
-                                    name="qtd_total_empenho"
-                                    placeholder="Informe a quantidade"
+                                    className="input-cronograma"
+                                    component={Select}
+                                    naoDesabilitarPrimeiraOpcao
+                                    options={[
+                                      { nome: "Selecione a Unidade", uuid: "" },
+                                      ...unidadesMedidaOptions,
+                                    ]}
+                                    label="Unidade de Medida"
+                                    name="unidade_medida"
                                     required
-                                    agrupadorMilharComDecimal
                                     validate={required}
-                                    proibeLetras
                                   />
                                 </div>
                               </div>
                             )}
+
+                            <div className="subtitulo">
+                              Cronograma das Entregas
+                            </div>
 
                             <hr className="linha-verde" />
 
