@@ -337,7 +337,6 @@ describe("Cenários FLV (Frutas, Legumes e Verduras)", () => {
   it("renderiza CollapsesFLV quando categoria é FLV", async () => {
     await setupFLV();
 
-    // Collapses exclusivos do FLV devem estar presentes
     expect(
       screen.getByText("Fabricante, Produtor, Envasador ou Distribuidor"),
     ).toBeInTheDocument();
@@ -347,7 +346,6 @@ describe("Cenários FLV (Frutas, Legumes e Verduras)", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Outras Informações")).toBeInTheDocument();
 
-    // Collapses que NÃO devem aparecer no FLV
     expect(
       screen.queryByText("Informações Nutricionais"),
     ).not.toBeInTheDocument();
@@ -373,8 +371,6 @@ describe("Cenários FLV (Frutas, Legumes e Verduras)", () => {
     const btnAnalise = screen.getByText("Enviar Análise").closest("button");
     expect(btnAnalise).toBeDisabled();
 
-    // FLV tem apenas 4 collapses com tag: fabricante_envasador, detalhes_produto,
-    // responsavel_tecnico, outras_informacoes
     const botoesCiente = screen.getAllByText("Ciente");
     const botoesConferido = screen.getAllByText("Conferido");
 
@@ -390,8 +386,6 @@ describe("Cenários FLV (Frutas, Legumes e Verduras)", () => {
 
     const btnAnalise = screen.getByText("Enviar Análise").closest("button");
 
-    // Confere apenas os 4 collapses FLV — botão deve habilitar sem precisar
-    // conferir informacoes_nutricionais, conservacao, armazenamento, etc.
     const botoesCiente = screen.getAllByText("Ciente");
     const botoesConferido = screen.getAllByText("Conferido");
 
@@ -399,7 +393,6 @@ describe("Cenários FLV (Frutas, Legumes e Verduras)", () => {
       fireEvent.click(span.closest("button"));
     });
 
-    // Não deve exigir os campos removidos pelo ehFLV
     expect(btnAnalise).not.toBeDisabled();
   });
 
@@ -423,7 +416,6 @@ describe("Cenários FLV (Frutas, Legumes e Verduras)", () => {
     expect(btnAnalise).not.toBeDisabled();
     fireEvent.click(btnAnalise);
 
-    // Confirma que não exibiu erro
     await waitFor(() => {
       expect(toastError).not.toHaveBeenCalled();
     });
