@@ -692,4 +692,83 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
       expect(botao).toBeDisabled();
     });
   });
+
+  describe("Testa o Salvar Lançamentos", () => {
+    it("ao clicar na tab `Semana 1`, preenche dia 02 e salva lançamento", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const itensParaPreencher = [
+        {
+          uuidFaixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+          categoria: "1",
+          valor: "7",
+        },
+        {
+          uuidFaixa: "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
+          categoria: "1",
+          valor: "4",
+        },
+        {
+          uuidFaixa: "4e60c819-4c0b-4d46-95c8-2e3b9674b40e",
+          categoria: "1",
+          valor: "10",
+        },
+        {
+          uuidFaixa: "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66",
+          categoria: "1",
+          valor: "2",
+        },
+        {
+          uuidFaixa: "55f0af28-e1d5-43a0-a3f3-bbc453b784a5",
+          categoria: "1",
+          valor: "13",
+        },
+        {
+          uuidFaixa: "e3030bd1-2e85-4676-87b3-96b4032370d4",
+          categoria: "1",
+          valor: "8",
+        },
+        {
+          uuidFaixa: "2e14cd6e-33e6-4168-b1ce-449f686d1e7d",
+          categoria: "1",
+          valor: "6",
+        },
+      ];
+
+      itensParaPreencher.forEach(({ uuidFaixa, categoria, valor }) => {
+        const input = screen.getByTestId(
+          `frequencia__faixa_${uuidFaixa}__dia_02__categoria_${categoria}`,
+        );
+        fireEvent.change(input, { target: { value: valor } });
+      });
+
+      const botao = screen.getByRole("button", { name: /salvar lançamentos/i });
+      expect(botao).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(botao).not.toBeDisabled();
+        fireEvent.click(botao);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Lançamentos salvos com sucesso"),
+        ).toBeInTheDocument();
+      });
+
+      itensParaPreencher.forEach(({ uuidFaixa, categoria, valor }) => {
+        const input = screen.getByTestId(
+          `frequencia__faixa_${uuidFaixa}__dia_02__categoria_${categoria}`,
+        );
+        expect(input).toHaveAttribute("value", valor);
+      });
+
+      const inputParticipantes = screen.getByTestId(
+        "participantes__faixa_null__dia_02__categoria_1",
+      );
+      expect(inputParticipantes).toHaveAttribute("value", "50");
+    });
+  });
 });
