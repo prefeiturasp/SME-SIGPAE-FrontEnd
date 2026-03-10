@@ -14,6 +14,7 @@ describe("CardCronograma", () => {
     fullText: "Texto completo FLV",
     programa_leve_leite: false,
     categoria: "FLV",
+    tipo_entrega: "PONTO_A_PONTO",
   };
 
   const solicitacaoNaoFLV = {
