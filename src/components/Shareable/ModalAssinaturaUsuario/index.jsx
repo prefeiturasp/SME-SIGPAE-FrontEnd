@@ -37,7 +37,9 @@ export const ModalAssinaturaUsuario = ({
       <Spin tip="Carregando..." spinning={loading}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {!concordaAssinar ? titulo : segundoTitulo ?? "Confirme sua senha"}
+            {!concordaAssinar
+              ? titulo
+              : (segundoTitulo ?? "Confirme sua senha")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -69,7 +71,7 @@ export const ModalAssinaturaUsuario = ({
                       <div className="col-4">
                         <Botao
                           texto="Confirmar"
-                          type={BUTTON_TYPE.SUBMIT}
+                          type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN}
                           className="btn-assinar"
                           icon={BUTTON_ICON.CHECK_NORMAL}
