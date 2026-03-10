@@ -341,6 +341,8 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
         expect(true).toBe(true);
       });
 
+      const diasBloqueados = [29, 30, 31, 1, 3, 4];
+
       Object.keys(VALORES_ESPERADOS).forEach((dia) => {
         const valoresDia = VALORES_ESPERADOS[dia];
         const diaFormatado = dia.toString().padStart(2, "0");
@@ -354,6 +356,16 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
         );
         expect(inputParticipantes.disabled).toBe(true);
 
+        const botaoAdicionarDivElement = screen.getByTestId(
+          `div-botao-add-obs-${diaFormatado}-1-observacoes`,
+        );
+        const botaoAdicionar = botaoAdicionarDivElement.querySelector("button");
+        if (diasBloqueados.includes(Number(dia))) {
+          expect(botaoAdicionar).not.toBeInTheDocument();
+        } else {
+          expect(botaoAdicionar).toHaveTextContent("Adicionar");
+        }
+
         mockFaixasEtarias.results.forEach((faixa) => {
           const inputFrequencia = screen.getByTestId(
             `frequencia__faixa_${faixa.uuid}__dia_${diaFormatado}__categoria_1`,
@@ -363,7 +375,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
             valoresDia.frequencia[faixa.uuid],
           );
 
-          if ([29, 30, 31, 1, 3, 4].includes(Number(dia))) {
+          if (diasBloqueados.includes(Number(dia))) {
             expect(inputFrequencia.disabled).toBe(true);
           } else {
             expect(inputFrequencia.disabled).toBe(false);
@@ -473,20 +485,28 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
         expect(true).toBe(true);
       });
 
+      const diasBloqueados = [10, 11];
       Object.keys(VALORES_ESPERADOS).forEach((dia) => {
         const valoresDia = VALORES_ESPERADOS[dia];
         const diaFormatado = dia.toString().padStart(2, "0");
         const inputParticipantes = screen.getByTestId(
           `participantes__faixa_null__dia_${diaFormatado}__categoria_1`,
         );
-        //verificar o botÃ£o div-botao-add-obs-08-1-observacoes
-
         expect(inputParticipantes).toHaveAttribute(
           "value",
           valoresDia.participantes,
         );
         expect(inputParticipantes.disabled).toBe(true);
 
+        const botaoAdicionarDivElement = screen.getByTestId(
+          `div-botao-add-obs-${diaFormatado}-1-observacoes`,
+        );
+        const botaoAdicionar = botaoAdicionarDivElement.querySelector("button");
+        if (diasBloqueados.includes(Number(dia))) {
+          expect(botaoAdicionar).not.toBeInTheDocument();
+        } else {
+          expect(botaoAdicionar).toHaveTextContent("Adicionar");
+        }
         mockFaixasEtarias.results.forEach((faixa) => {
           const inputFrequencia = screen.getByTestId(
             `frequencia__faixa_${faixa.uuid}__dia_${diaFormatado}__categoria_1`,
@@ -496,7 +516,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
             valoresDia.frequencia[faixa.uuid],
           );
 
-          if ([10, 11].includes(Number(dia))) {
+          if (diasBloqueados.includes(Number(dia))) {
             expect(inputFrequencia.disabled).toBe(true);
           } else {
             expect(inputFrequencia.disabled).toBe(false);
@@ -606,19 +626,29 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
         expect(true).toBe(true);
       });
 
+      const diasBloqueados = [16, 17, 18];
+
       Object.keys(VALORES_ESPERADOS).forEach((dia) => {
         const valoresDia = VALORES_ESPERADOS[dia];
         const diaFormatado = dia.toString().padStart(2, "0");
         const inputParticipantes = screen.getByTestId(
           `participantes__faixa_null__dia_${diaFormatado}__categoria_1`,
         );
-        //verificar o botÃ£o div-botao-add-obs-08-1-observacoes
-
         expect(inputParticipantes).toHaveAttribute(
           "value",
           valoresDia.participantes,
         );
         expect(inputParticipantes.disabled).toBe(true);
+
+        const botaoAdicionarDivElement = screen.getByTestId(
+          `div-botao-add-obs-${diaFormatado}-1-observacoes`,
+        );
+        const botaoAdicionar = botaoAdicionarDivElement.querySelector("button");
+        if (diasBloqueados.includes(Number(dia))) {
+          expect(botaoAdicionar).not.toBeInTheDocument();
+        } else {
+          expect(botaoAdicionar).toHaveTextContent("Adicionar");
+        }
 
         mockFaixasEtarias.results.forEach((faixa) => {
           const inputFrequencia = screen.getByTestId(
@@ -629,7 +659,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
             valoresDia.frequencia[faixa.uuid],
           );
 
-          if ([16, 17, 18].includes(Number(dia))) {
+          if (diasBloqueados.includes(Number(dia))) {
             expect(inputFrequencia.disabled).toBe(true);
           } else {
             expect(inputFrequencia.disabled).toBe(false);
