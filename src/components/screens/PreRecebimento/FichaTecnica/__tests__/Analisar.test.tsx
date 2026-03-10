@@ -308,9 +308,7 @@ describe("Cenários FLV (Frutas, Legumes e Verduras)", () => {
 
   const setupFLV = async (somenteLeitura = false) => {
     const search = `?uuid=${mockFichaTecnicaComDetalheFLV.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: { search },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
