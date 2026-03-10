@@ -133,12 +133,7 @@ export default ({
   const desativaAdicionarEtapa = () => {
     let index = etapas.length - 1;
     const camposObrigatorios = flv_ponto_a_ponto
-      ? [
-          `etapa_${index}`,
-          `parte_${index}`,
-          `data_programada_${index}`,
-          `quantidade_${index}`,
-        ]
+      ? [`etapa_${index}`, `data_programada_${index}`, `quantidade_${index}`]
       : [
           `empenho_${index}`,
           `qtd_total_empenho_${index}`,
@@ -262,45 +257,47 @@ export default ({
                   }}
                 />
               </div>
-              <div className="col">
-                <Field
-                  dataTestId={`parte_${index}`}
-                  component={Select}
-                  naoDesabilitarPrimeiraOpcao
-                  options={[
-                    {
-                      uuid: "",
-                      nome: "Selecione a Parte",
-                    },
-                    {
-                      uuid: "Parte 1",
-                      nome: "Parte 1",
-                    },
-                    {
-                      uuid: "Parte 2",
-                      nome: "Parte 2",
-                    },
-                    {
-                      uuid: "Parte 3",
-                      nome: "Parte 3",
-                    },
-                    {
-                      uuid: "Parte 4",
-                      nome: "Parte 4",
-                    },
-                    {
-                      uuid: "Parte 5",
-                      nome: "Parte 5",
-                    },
-                  ]}
-                  label="Parte"
-                  name={`parte_${index}`}
-                  validate={() =>
-                    duplicados.includes(index) && "Parte já selecionada"
-                  }
-                  disabled={desabilitar[index]}
-                />
-              </div>
+              {!flv_ponto_a_ponto && (
+                <div className="col">
+                  <Field
+                    dataTestId={`parte_${index}`}
+                    component={Select}
+                    naoDesabilitarPrimeiraOpcao
+                    options={[
+                      {
+                        uuid: "",
+                        nome: "Selecione a Parte",
+                      },
+                      {
+                        uuid: "Parte 1",
+                        nome: "Parte 1",
+                      },
+                      {
+                        uuid: "Parte 2",
+                        nome: "Parte 2",
+                      },
+                      {
+                        uuid: "Parte 3",
+                        nome: "Parte 3",
+                      },
+                      {
+                        uuid: "Parte 4",
+                        nome: "Parte 4",
+                      },
+                      {
+                        uuid: "Parte 5",
+                        nome: "Parte 5",
+                      },
+                    ]}
+                    label="Parte"
+                    name={`parte_${index}`}
+                    validate={() =>
+                      duplicados.includes(index) && "Parte já selecionada"
+                    }
+                    disabled={desabilitar[index]}
+                  />
+                </div>
+              )}
             </div>
             <div className="row">
               <div className="col-4">
