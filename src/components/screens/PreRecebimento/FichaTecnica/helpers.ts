@@ -364,7 +364,8 @@ export const validaProximoIdentificacaoProduto = (
   values: FichaTecnicaPayload,
   errors: Record<string, string>,
 ): boolean => {
-  const ehFLV = values.categoria === "FLV";
+  const ehFLV =
+    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
 
   const campoAlergenicosValido =
     (values.alergenicos === "1" && values.ingredientes_alergenicos) ||
@@ -421,7 +422,8 @@ export const validaAssinarEnviar = (
   errors: Record<string, string>,
   arquivo: ArquivoForm[],
 ): boolean => {
-  const ehFLV = values.categoria === "FLV";
+  const ehFLV =
+    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
 
   if (ehFLV) {
     return Object.keys(errors).length !== 0 || !arquivo.length;
@@ -639,7 +641,8 @@ export const formataPayloadCadastroFichaTecnica = (
   password?: string,
 ) => {
   const ehPereciveis = values.categoria === "PERECIVEIS";
-  const ehFLV = values.categoria === "FLV";
+  const ehFLV =
+    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
 
   let payload: FichaTecnicaPayload;
 
@@ -834,7 +837,8 @@ const gerarCamposProponenteFabricante = (
 };
 
 const gerarCamposDetalhesProduto = (values: Record<string, any>) => {
-  const ehFLV = values.categoria === "FLV";
+  const ehFLV =
+    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
 
   if (ehFLV) {
     return {
