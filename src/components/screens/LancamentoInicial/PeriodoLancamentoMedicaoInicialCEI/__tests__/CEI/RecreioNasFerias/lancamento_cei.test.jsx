@@ -34,6 +34,7 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import mock from "src/services/_mock";
+import { localStorageMock } from "src/mocks/localStorageMock";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -111,6 +112,9 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
       data: mockDietasEspsciais,
       status: 200,
     });
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("eh_cemei", "false");
 
     await act(async () => {
       render(
