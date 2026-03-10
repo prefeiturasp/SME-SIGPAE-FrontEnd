@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { render, screen, act, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  act,
+  fireEvent,
+  cleanup,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { mockCronogramaCadastroRecebimento } from "src/mocks/cronograma.service/mockGetCronogramaCadastroRecebimento";
 import { ToastContainer } from "react-toastify";
@@ -94,6 +100,53 @@ describe("Testes de pagína de Detalhes da Ficha de Recebimento", () => {
     expect(
       screen.getByText(mockCronogramaCadastroRecebimento.results.fornecedor),
     ).toBeInTheDocument();
+  });
+
+  it("Exibe numero_chamada_publica quando ata nao existe", async () => {
+    const mockCronogramaSemAta = {
+      ...mockCronogramaCadastroRecebimento,
+      results: {
+        ...mockCronogramaCadastroRecebimento.results,
+        ata: "",
+        numero_chamada_publica: "6364/SME/CODAE/3666",
+      },
+    };
+
+    cleanup();
+    mock.reset();
+    mock
+      .onGet(
+        `/cronogramas/${mockGetFichaRecebimentoDetalhada.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`,
+      )
+      .reply(200, mockCronogramaSemAta);
+    mock
+      .onGet(`/fichas-de-recebimento/${mockGetFichaRecebimentoDetalhada.uuid}/`)
+      .reply(200, {
+        ...mockGetFichaRecebimentoDetalhada,
+        arquivos: [
+          {
+            nome: "teste.pdf",
+            arquivo:
+              "http://teste/media/arquivos_fichas_de_recebimentos/ec5fd0b5-5238-4633-8da7-1ed52abbceee.pdf",
+          },
+        ],
+      });
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <Detalhar />
+          <ToastContainer />
+        </MemoryRouter>,
+      );
+    });
+
+    const collapseTitulo = screen.getByText("Dados do Cronograma de Entregas", {
+      selector: "span",
+    });
+    fireEvent.click(collapseTitulo);
+
+    expect(await screen.findByText("6364/SME/CODAE/3666")).toBeInTheDocument();
   });
 
   it("Abre o collapse 'Conferência das Rotulagens' e exibe observações", async () => {
