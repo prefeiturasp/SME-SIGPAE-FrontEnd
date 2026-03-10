@@ -40,11 +40,12 @@ export default ({
   unidadeMedida,
   ehAlteracao = false,
   form,
+  flv_ponto_a_ponto = false,
 }) => {
   const [etapasOptions, setEtapasOptions] = useState([{}]);
   const [desabilitar, setDesabilitar] = useState([]);
   const [desabilitarData, setDesabilitarData] = useState([]);
-  const [datasBloqueadas, setDatasBloqueadas] = useState([{}]);
+  const [datasBloqueadas, setDatasBloqueadas] = useState([]);
 
   const getEtapasFiltrado = (etapa) => {
     if (etapa) {
@@ -113,11 +114,11 @@ export default ({
   };
 
   const buscaDatasBloqueadas = async () => {
-    const response = await getDatasBloqueioCadastroEtapas();
-    const datas = response.data.results.map((dateString) =>
-      moment(dateString, "YYYY-MM-DD").toDate(),
+    const responseArmazenavel = await getDatasBloqueioCadastroEtapas();
+    const datasArmazenavel = responseArmazenavel.data.results.map(
+      (dateString) => moment(dateString, "YYYY-MM-DD").toDate(),
     );
-    setDatasBloqueadas(datas);
+    setDatasBloqueadas(datasArmazenavel);
   };
 
   const isWeekday = (date) => {
@@ -131,14 +132,16 @@ export default ({
 
   const desativaAdicionarEtapa = () => {
     let index = etapas.length - 1;
-    const camposObrigatorios = [
-      `empenho_${index}`,
-      `qtd_total_empenho_${index}`,
-      `etapa_${index}`,
-      `parte_${index}`,
-      `data_programada_${index}`,
-      `quantidade_${index}`,
-    ];
+    const camposObrigatorios = flv_ponto_a_ponto
+      ? [`etapa_${index}`, `data_programada_${index}`, `quantidade_${index}`]
+      : [
+          `empenho_${index}`,
+          `qtd_total_empenho_${index}`,
+          `etapa_${index}`,
+          `parte_${index}`,
+          `data_programada_${index}`,
+          `quantidade_${index}`,
+        ];
 
     return camposObrigatorios.some((campo) => Boolean(errors[campo]));
   };
@@ -203,37 +206,38 @@ export default ({
               </>
             )}
             <div className="row">
-              {(usuarioEhCronograma() || usuarioEhCodaeDilog()) && (
-                <>
-                  <div className="col">
-                    <Field
-                      dataTestId={`numero_empenho_${index}`}
-                      component={InputText}
-                      label="Nº do Empenho"
-                      name={`empenho_${index}`}
-                      placeholder="Informe o Nº do Empenho"
-                      required
-                      validate={required}
-                      proibeLetras
-                      disabled={desabilitar[index]}
-                    />
-                  </div>
-                  <div className="col">
-                    <Field
-                      dataTestId={`quantidade_empenho_${index}`}
-                      component={InputText}
-                      label="Qtde. Total do Empenho"
-                      name={`qtd_total_empenho_${index}`}
-                      placeholder="Informe a quantidade"
-                      required
-                      agrupadorMilharComDecimal
-                      validate={required}
-                      proibeLetras
-                      disabled={desabilitar[index]}
-                    />
-                  </div>
-                </>
-              )}
+              {(usuarioEhCronograma() || usuarioEhCodaeDilog()) &&
+                !flv_ponto_a_ponto && (
+                  <>
+                    <div className="col">
+                      <Field
+                        dataTestId={`numero_empenho_${index}`}
+                        component={InputText}
+                        label="Nº do Empenho"
+                        name={`empenho_${index}`}
+                        placeholder="Informe o Nº do Empenho"
+                        required
+                        validate={required}
+                        proibeLetras
+                        disabled={desabilitar[index]}
+                      />
+                    </div>
+                    <div className="col">
+                      <Field
+                        dataTestId={`quantidade_empenho_${index}`}
+                        component={InputText}
+                        label="Qtde. Total do Empenho"
+                        name={`qtd_total_empenho_${index}`}
+                        placeholder="Informe a quantidade"
+                        required
+                        agrupadorMilharComDecimal
+                        validate={required}
+                        proibeLetras
+                        disabled={desabilitar[index]}
+                      />
+                    </div>
+                  </>
+                )}
               <div className="col">
                 <Field
                   dataTestId={`etapa_${index}`}
@@ -253,45 +257,47 @@ export default ({
                   }}
                 />
               </div>
-              <div className="col">
-                <Field
-                  dataTestId={`parte_${index}`}
-                  component={Select}
-                  naoDesabilitarPrimeiraOpcao
-                  options={[
-                    {
-                      uuid: "",
-                      nome: "Selecione a Parte",
-                    },
-                    {
-                      uuid: "Parte 1",
-                      nome: "Parte 1",
-                    },
-                    {
-                      uuid: "Parte 2",
-                      nome: "Parte 2",
-                    },
-                    {
-                      uuid: "Parte 3",
-                      nome: "Parte 3",
-                    },
-                    {
-                      uuid: "Parte 4",
-                      nome: "Parte 4",
-                    },
-                    {
-                      uuid: "Parte 5",
-                      nome: "Parte 5",
-                    },
-                  ]}
-                  label="Parte"
-                  name={`parte_${index}`}
-                  validate={() =>
-                    duplicados.includes(index) && "Parte já selecionada"
-                  }
-                  disabled={desabilitar[index]}
-                />
-              </div>
+              {!flv_ponto_a_ponto && (
+                <div className="col">
+                  <Field
+                    dataTestId={`parte_${index}`}
+                    component={Select}
+                    naoDesabilitarPrimeiraOpcao
+                    options={[
+                      {
+                        uuid: "",
+                        nome: "Selecione a Parte",
+                      },
+                      {
+                        uuid: "Parte 1",
+                        nome: "Parte 1",
+                      },
+                      {
+                        uuid: "Parte 2",
+                        nome: "Parte 2",
+                      },
+                      {
+                        uuid: "Parte 3",
+                        nome: "Parte 3",
+                      },
+                      {
+                        uuid: "Parte 4",
+                        nome: "Parte 4",
+                      },
+                      {
+                        uuid: "Parte 5",
+                        nome: "Parte 5",
+                      },
+                    ]}
+                    label="Parte"
+                    name={`parte_${index}`}
+                    validate={() =>
+                      duplicados.includes(index) && "Parte já selecionada"
+                    }
+                    disabled={desabilitar[index]}
+                  />
+                </div>
+              )}
             </div>
             <div className="row">
               <div className="col-4">
@@ -304,14 +310,19 @@ export default ({
                   required
                   validate={required}
                   writable={false}
+                  showMonthYearPicker={flv_ponto_a_ponto}
+                  dateFormat={flv_ponto_a_ponto ? "MM/YYYY" : "DD/MM/YYYY"}
+                  dateFormatPicker={
+                    flv_ponto_a_ponto ? "MM/yyyy" : "dd/MM/yyyy"
+                  }
                   minDate={
                     ehAlteracao && usuarioEhCronogramaOuCodae()
                       ? null
                       : getAmanha()
                   }
                   disabled={desabilitar[index] && desabilitarData[index]}
-                  filterDate={isWeekday}
-                  excludeDates={datasBloqueadas}
+                  filterDate={flv_ponto_a_ponto ? undefined : isWeekday}
+                  excludeDates={flv_ponto_a_ponto ? undefined : datasBloqueadas}
                 />
               </div>
               <div className="col-4">
@@ -328,18 +339,20 @@ export default ({
                   disabled={desabilitar[index]}
                 />
               </div>
-              <div className="col-4">
-                <Field
-                  dataTestId={`total_embalagens_${index}`}
-                  component={InputText}
-                  label="Total de Embalagens"
-                  name={`total_embalagens_${index}`}
-                  required
-                  valorInicial={""}
-                  validate={required}
-                  agrupadorMilharComDecimal
-                />
-              </div>
+              {!flv_ponto_a_ponto && (
+                <div className="col-4">
+                  <Field
+                    dataTestId={`total_embalagens_${index}`}
+                    component={InputText}
+                    label="Total de Embalagens"
+                    name={`total_embalagens_${index}`}
+                    required
+                    valorInicial={""}
+                    validate={required}
+                    agrupadorMilharComDecimal
+                  />
+                </div>
+              )}
             </div>
           </>
         ))}
