@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -218,7 +224,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
     });
 
     it("renderiza label `Seg.` dentro da seção `ALIMENTAÇÃO`", async () => {
-      preview.debug();
       const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
       const myElement = screen.getByTestId(
         `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
@@ -228,6 +233,433 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
         myElement.contains(element),
       );
       expect(specificParticipantes).toBeInTheDocument();
+    });
+  });
+
+  describe("Testa a parte de ALIMENTAÇÃO", () => {
+    it("verificar se todas as faixas estão sendo renderizadas", async () => {
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      for (let faixa of mockFaixasEtarias.results) {
+        expect(screen.getByText(faixa.__str__)).toBeInTheDocument();
+      }
+    });
+
+    it("ao clicar na tab `Semana 1`, exibe, nos dias 29 dezembro a 04 de janeiro, e verifica os lançamentos", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+      const VALORES_ESPERADOS = {
+        1: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        2: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "50",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        3: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        4: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        29: {
+          participantes: "Mês anterior",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "Mês anterior",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "Mês anterior",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "Mês anterior",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "Mês anterior",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "Mês anterior",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "Mês anterior",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "Mês anterior",
+          },
+        },
+        30: {
+          participantes: "Mês anterior",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "Mês anterior",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "Mês anterior",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "Mês anterior",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "Mês anterior",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "Mês anterior",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "Mês anterior",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "Mês anterior",
+          },
+        },
+        31: {
+          participantes: "Mês anterior",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "Mês anterior",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "Mês anterior",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "Mês anterior",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "Mês anterior",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "Mês anterior",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "Mês anterior",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "Mês anterior",
+          },
+        },
+      };
+
+      await waitFor(() => {
+        expect(true).toBe(true);
+      });
+
+      Object.keys(VALORES_ESPERADOS).forEach((dia) => {
+        const valoresDia = VALORES_ESPERADOS[dia];
+        const diaFormatado = dia.toString().padStart(2, "0");
+        const inputParticipantes = screen.getByTestId(
+          `participantes__faixa_null__dia_${diaFormatado}__categoria_1`,
+        );
+
+        expect(inputParticipantes).toHaveAttribute(
+          "value",
+          valoresDia.participantes,
+        );
+        expect(inputParticipantes.disabled).toBe(true);
+
+        mockFaixasEtarias.results.forEach((faixa) => {
+          const inputFrequencia = screen.getByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${diaFormatado}__categoria_1`,
+          );
+          expect(inputFrequencia).toHaveAttribute(
+            "value",
+            valoresDia.frequencia[faixa.uuid],
+          );
+
+          if ([29, 30, 31, 1, 3, 4].includes(Number(dia))) {
+            expect(inputFrequencia.disabled).toBe(true);
+          } else {
+            expect(inputFrequencia.disabled).toBe(false);
+          }
+        });
+      });
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      await waitFor(() => {
+        expect(botao).not.toBeDisabled();
+      });
+    });
+
+    it("ao clicar na tab `Semana 2`, exibe, nos dias 05 a 11 de janeiro, e verifica os lançamentos", async () => {
+      await awaitServices();
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
+      preview.debug();
+      const VALORES_ESPERADOS = {
+        5: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        6: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        7: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        8: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        9: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        10: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        11: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+      };
+
+      await waitFor(() => {
+        expect(true).toBe(true);
+      });
+
+      Object.keys(VALORES_ESPERADOS).forEach((dia) => {
+        const valoresDia = VALORES_ESPERADOS[dia];
+        const diaFormatado = dia.toString().padStart(2, "0");
+        const inputParticipantes = screen.getByTestId(
+          `participantes__faixa_null__dia_${diaFormatado}__categoria_1`,
+        );
+        //verificar o botão div-botao-add-obs-08-1-observacoes
+
+        expect(inputParticipantes).toHaveAttribute(
+          "value",
+          valoresDia.participantes,
+        );
+        expect(inputParticipantes.disabled).toBe(true);
+
+        mockFaixasEtarias.results.forEach((faixa) => {
+          const inputFrequencia = screen.getByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${diaFormatado}__categoria_1`,
+          );
+          expect(inputFrequencia).toHaveAttribute(
+            "value",
+            valoresDia.frequencia[faixa.uuid],
+          );
+
+          if ([10, 11].includes(Number(dia))) {
+            expect(inputFrequencia.disabled).toBe(true);
+          } else {
+            expect(inputFrequencia.disabled).toBe(false);
+          }
+        });
+      });
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      await waitFor(() => {
+        expect(botao).not.toBeDisabled();
+      });
+    });
+
+    it("ao clicar na tab `Semana 3`, exibe, nos dias 12 a 18 de janeiro, e verifica os lançamentos", async () => {
+      await awaitServices();
+      const semana3Element = screen.getByText("Semana 3");
+      fireEvent.click(semana3Element);
+      preview.debug();
+      const VALORES_ESPERADOS = {
+        12: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        13: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        14: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        15: {
+          participantes: "50",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        16: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        17: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        18: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+      };
+
+      await waitFor(() => {
+        expect(true).toBe(true);
+      });
+
+      Object.keys(VALORES_ESPERADOS).forEach((dia) => {
+        const valoresDia = VALORES_ESPERADOS[dia];
+        const diaFormatado = dia.toString().padStart(2, "0");
+        const inputParticipantes = screen.getByTestId(
+          `participantes__faixa_null__dia_${diaFormatado}__categoria_1`,
+        );
+        //verificar o botão div-botao-add-obs-08-1-observacoes
+
+        expect(inputParticipantes).toHaveAttribute(
+          "value",
+          valoresDia.participantes,
+        );
+        expect(inputParticipantes.disabled).toBe(true);
+
+        mockFaixasEtarias.results.forEach((faixa) => {
+          const inputFrequencia = screen.getByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${diaFormatado}__categoria_1`,
+          );
+          expect(inputFrequencia).toHaveAttribute(
+            "value",
+            valoresDia.frequencia[faixa.uuid],
+          );
+
+          if ([16, 17, 18].includes(Number(dia))) {
+            expect(inputFrequencia.disabled).toBe(true);
+          } else {
+            expect(inputFrequencia.disabled).toBe(false);
+          }
+        });
+      });
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      await waitFor(() => {
+        expect(botao).not.toBeDisabled();
+      });
+    });
+
+    it("ao clicar na tab `Semana 1`, preencher frequencia maior que participantes e exibe erro", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const inputElementFrequenciaDia03 = screen.getByTestId(
+        "frequencia__faixa_4e60c819-4c0b-4d46-95c8-2e3b9674b40e__dia_01__categoria_1",
+      );
+      waitFor(() => {
+        fireEvent.change(inputElementFrequenciaDia03, {
+          target: { value: "110" },
+        });
+      });
+      expect(inputElementFrequenciaDia03).toHaveClass("invalid-field");
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      expect(botao).toBeDisabled();
     });
   });
 });
