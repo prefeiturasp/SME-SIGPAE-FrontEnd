@@ -456,7 +456,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           params_dietas_autorizadas_emei_da_cemei["cei_ou_emei"] = "EMEI";
         }
         response_log_dietas_autorizadas_emei_da_cemei =
-          await getLogDietasAutorizadasPeriodo(
+          await obterLogsDietasEspeciais(
             params_dietas_autorizadas_emei_da_cemei,
           );
         setLogQtdDietasAutorizadasEmeiDaCemei(
@@ -2343,9 +2343,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       setFaixasAtivasPorTipo(resultado);
     }
     if (!ehRecreioNasFerias()) {
-      response_log_dietas_autorizadas = await getLogDietasAutorizadasCEIPeriodo(
-        params_dietas_autorizadas,
-      );
+      response_log_dietas_autorizadas = ehEmeiDaCemeiLocation
+        ? await getLogDietasAutorizadasPeriodo(params_dietas_autorizadas)
+        : await getLogDietasAutorizadasCEIPeriodo(params_dietas_autorizadas);
     }
 
     return response_log_dietas_autorizadas;
