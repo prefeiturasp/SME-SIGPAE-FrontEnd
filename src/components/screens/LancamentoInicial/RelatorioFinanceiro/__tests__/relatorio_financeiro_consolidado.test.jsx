@@ -295,6 +295,34 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     ).toBeInTheDocument();
   });
 
+  it("deve exibir tabelas e valores do grupo 5 - EMEBS", async () => {
+    const grupoEMEBS = gruposUnidadeEscolar.find((grupo) =>
+      grupo.nome.includes("Grupo 5"),
+    );
+
+    mock
+      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
+      .reply(200, {
+        ...mockRelatorioFinanceiroTipoAlimentacao,
+        grupo_unidade_escolar: grupoEMEBS,
+      });
+
+    await setup(grupoEMEBS.uuid);
+
+    expect(
+      screen.getByText("CONSOLIDADO INFANTIL (INF. A + INF. B + INF. C)"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("CONSOLIDADO FUNDAMENTAL (FUND. A + FUND. B + FUND. C)"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "CONSOLIDADO TOTAL (INF. A + INF. B + INF. C + FUND. A + FUND. B + FUND. C)",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("(Zero centavos.)")).toHaveLength(3);
+  });
+
   it("deve exibir tabelas e valores do grupo 6 - CIEJA", async () => {
     const grupoCIEJA = gruposUnidadeEscolar.find((grupo) =>
       grupo.nome.includes("Grupo 6"),

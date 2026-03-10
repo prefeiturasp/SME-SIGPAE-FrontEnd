@@ -17,6 +17,7 @@ import { SelectOption } from "../types";
 import GrupoEMEF from "../components/Tabelas/GrupoEMEF";
 import GrupoCIEJA from "../components/Tabelas/GrupoCIEJA";
 import GrupoCEMEI from "../components/Tabelas/GrupoCEMEI";
+import GrupoEMEBS from "../components/Tabelas/GrupoEMEBS";
 
 type TotaisParams = {
   mes: string;
@@ -169,6 +170,7 @@ export function RelatorioFinanceiroConsolidado() {
         totaisConsumo={totaisConsumo}
       />
     ),
+    "grupo 5": <GrupoEMEBS />,
     "grupo 6": (
       <GrupoCIEJA
         relatorioConsolidado={relatorioConsolidado}

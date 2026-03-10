@@ -35,6 +35,24 @@ describe("WizardFormTerceiraPagina – proteção contra cliques múltiplos", ()
     alteracaoProdutoHomologado.mockResolvedValue({ status: 200 });
   });
 
+  const getComponentInstance = (element: any): any => {
+    for (const key in element) {
+      if (
+        key.startsWith("__reactFiber$") ||
+        key.startsWith("__reactInternalInstance$")
+      ) {
+        let node = element[key].return;
+        while (node) {
+          if (node.stateNode && node.stateNode.setState) {
+            return node.stateNode;
+          }
+          node = node.return;
+        }
+      }
+    }
+    throw new Error("Não foi possível acessar a instância do componente");
+  };
+
   const setup = () => {
     const defaultProps = {
       homologacao: { esta_homologado: false, uuid: "h123", status: "OK" },
@@ -126,5 +144,41 @@ describe("WizardFormTerceiraPagina – proteção contra cliques múltiplos", ()
     await waitFor(() => {
       expect(updateProduto).toHaveBeenCalledTimes(1);
     });
+  });
+
+  test("deve normalizar volume com virgula antes de enviar para API", async () => {
+    const { container } = setup();
+    const instance = getComponentInstance(container.firstChild);
+
+    await instance.enviaDados({
+      numero_registro: "123",
+      tipo: "tipo",
+      especificacoes: [
+        {
+          volume: "2,5",
+          unidade_de_medida: "u1",
+          embalagem_produto: "e1",
+        },
+      ],
+      prazo_validade: "10 dias",
+      info_armazenamento: "Local seco",
+      outras_informacoes: "",
+      anexos: [],
+      eh_para_alunos_com_dieta: "0",
+      tem_aditivos_alergenicos: "0",
+      aditivos: "",
+    });
+
+    expect(updateProduto).toHaveBeenCalledTimes(1);
+    expect(updateProduto).toHaveBeenCalledWith(
+      expect.objectContaining({
+        especificacoes: [
+          expect.objectContaining({
+            volume: 2.5,
+          }),
+        ],
+      }),
+      "h123",
+    );
   });
 });

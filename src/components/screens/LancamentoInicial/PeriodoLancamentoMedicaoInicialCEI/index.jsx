@@ -985,12 +985,19 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     matriculadosFaixaEtariaDia &&
       idCategoriaAlimentacao &&
       matriculadosFaixaEtariaDia.forEach((objMatriculado) => {
+        const diaPattern = `__dia_${objMatriculado.dia}`;
         const dietasMesmoDia = Object.fromEntries(
-          Object.entries(dadosValoresDietasAutorizadas).filter(([key]) =>
-            key.includes(
-              `dietas_autorizadas__faixa_${objMatriculado.faixa_etaria.uuid}__dia_${objMatriculado.dia}`,
-            ),
-          ),
+          Object.entries(dadosValoresDietasAutorizadas).filter(([key]) => {
+            if (ehRecreioNasFerias()) {
+              return (
+                key.includes("dietas_autorizadas__faixa_") &&
+                key.includes(diaPattern)
+              );
+            }
+            return key.includes(
+              `dietas_autorizadas__faixa_${objMatriculado.faixa_etaria.uuid}${diaPattern}`,
+            );
+          }),
         );
         const somaDietasMesmoDia = Object.values(dietasMesmoDia).reduce(
           (acc, value) => {

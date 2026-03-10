@@ -70,9 +70,9 @@ export class InputComData extends Component {
         ? this.props.writable
           ? date
           : moment(date).format(
-              this.props.dateFormat || this.defaultProps.dateFormat
+              this.props.dateFormat || this.defaultProps.dateFormat,
             )
-        : null
+        : null,
     );
     inputOnChange &&
       inputOnChange(
@@ -80,9 +80,9 @@ export class InputComData extends Component {
           ? this.props.writable
             ? date
             : moment(date).format(
-                this.props.dateFormat || this.defaultProps.dateFormat
+                this.props.dateFormat || this.defaultProps.dateFormat,
               )
-          : null
+          : null,
       );
   }
 
@@ -92,8 +92,14 @@ export class InputComData extends Component {
   };
 
   dataSelecionada(data) {
-    if (data.length !== 0) {
-      return moment(data, this.props.dateFormat)["_d"];
+    if (data && data.length !== 0) {
+      const parsed = moment(data, this.props.dateFormat, true);
+      if (parsed.isValid()) {
+        return parsed.toDate();
+      }
+      // Fallback para quando o moment falha no strict ou formato é diferente
+      const fallback = moment(data, this.props.dateFormat);
+      return fallback.isValid() ? fallback.toDate() : null;
     } else {
       return null;
     }
@@ -166,8 +172,8 @@ export class InputComData extends Component {
             activeCalendar
               ? "input-group active-calendar"
               : textoLabel
-              ? "input-group calendar"
-              : "input-group"
+                ? "input-group calendar"
+                : "input-group"
           }
         >
           {textoLabel && (

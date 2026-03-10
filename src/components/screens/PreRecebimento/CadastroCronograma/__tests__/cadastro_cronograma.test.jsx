@@ -6,6 +6,7 @@ import {
   fireEvent,
   waitFor,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import CadastroCronograma from "..";
@@ -20,9 +21,18 @@ import mock from "src/services/_mock";
 
 describe("Testes da interface de Cadastro de Cronograma", () => {
   beforeEach(async () => {
-    mock
-      .onGet("/ficha-tecnica/lista-simples-aprovadas/")
-      .reply(200, mockListaFichasTecnicasSimplesAprovadas);
+    mock.onGet("/ficha-tecnica/lista-simples-aprovadas/").reply(200, {
+      results: [
+        ...mockListaFichasTecnicasSimplesAprovadas.results,
+        {
+          uuid: "pp-uuid-123",
+          numero: "FT-PP-01",
+          produto: { nome: "LARANJA" },
+          flv_ponto_a_ponto: true,
+          uuid_empresa: mockListaEmpresas.results[7].uuid,
+        },
+      ],
+    });
     mock
       .onGet("/terceirizadas/lista-nomes-distribuidores/")
       .reply(200, mockListaDistribuidores);
@@ -289,5 +299,68 @@ describe("Testes da interface de Cadastro de Cronograma", () => {
       .getByText("Assinar e Enviar Cronograma")
       .closest("button");
     expect(botaoAssinar).toBeDisabled();
+  });
+
+  it("deve ocultar campos de Armazém e Embalagem Secundária ao selecionar Ficha Técnica Ponto a Ponto", async () => {
+    const user = userEvent.setup();
+    // Mock adicional para o cenário PP
+    const ftPP = {
+      uuid: "pp-uuid-123",
+      numero: "FT-PP-01",
+      produto: { nome: "LARANJA" },
+      flv_ponto_a_ponto: true,
+      marca: { nome: "Marca X" },
+    };
+
+    mock.onGet("/ficha-tecnica/pp-uuid-123/dados-cronograma/").reply(200, ftPP);
+
+    const empresa = screen.getByTestId("input-empresa").querySelector("input");
+    await user.type(empresa, "Empresa do Luis Zimmermann");
+
+    await act(async () => {
+      fireEvent.mouseDown(
+        screen
+          .getByTestId("select-contrato")
+          .querySelector(".ant-select-selection-search-input"),
+      );
+    });
+    const opcaoContrato = await screen.findByText(/LEVE LEITE - PLL/i);
+    await user.click(opcaoContrato);
+
+    // Abrir o collapse de Dados do Produto
+    const botaoExpandir = screen
+      .getByText("Dados do Produto")
+      .closest(".card-header")
+      .querySelector("button");
+    await user.click(botaoExpandir);
+
+    await waitFor(() => {
+      expect(screen.getByText("Ficha Técnica e Produto")).toBeInTheDocument();
+    });
+
+    const selectFT = screen
+      .getByTestId("select-div")
+      .querySelector(".ant-select-selection-search-input");
+    await act(async () => {
+      fireEvent.mouseDown(selectFT);
+    });
+
+    // Selecionar a FT Ponto a Ponto
+    const inputFT = screen.getByTestId("select-div").querySelector("input");
+    await user.type(inputFT, "FT-PP-01");
+
+    const itemsPP = await screen.findAllByText(/FT-PP-01/i);
+    await user.click(itemsPP[1]);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("marca")).toHaveValue("Marca X");
+      expect(screen.queryByText("Armazém")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Tipo de Embalagem Secundária"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Programação de Recebimento"),
+      ).not.toBeInTheDocument();
+    });
   });
 });

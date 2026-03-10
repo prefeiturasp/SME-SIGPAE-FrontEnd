@@ -235,6 +235,7 @@ export default () => {
     setEmpresaSelecionada(cronograma.empresa);
     setContratoSelecionado(cronograma.contrato);
     setFichaTecnicaSelecionada(cronograma.ficha_tecnica);
+    const isPontoAPonto = cronograma.ponto_a_ponto;
 
     const cronogramaValues = {};
     cronogramaValues["empresa"] = cronograma.empresa?.nome_fantasia;
@@ -288,14 +289,24 @@ export default () => {
       );
       etapaValues[`etapa_${i}`] = stringNaoVaziaOuUndefined(etapa.etapa);
       etapaValues[`parte_${i}`] = stringNaoVaziaOuUndefined(etapa.parte);
-      etapaValues[`data_programada_${i}`] = stringNaoVaziaOuUndefined(
-        etapa.data_programada,
-      );
+      etapaValues[`data_programada_${i}`] =
+        isPontoAPonto && etapa.data_programada
+          ? etapa.data_programada.substring(3)
+          : stringNaoVaziaOuUndefined(etapa.data_programada);
       etapaValues[`quantidade_${i}`] = formataMilharDecimal(etapa.quantidade);
       etapaValues[`total_embalagens_${i}`] = stringNaoVaziaOuUndefined(
         etapa.total_embalagens,
       );
     });
+
+    if (isPontoAPonto) {
+      cronogramaValues["numero_empenho"] = stringNaoVaziaOuUndefined(
+        cronograma.numero_empenho,
+      );
+      cronogramaValues["qtd_total_empenho"] = formataMilharDecimal(
+        cronograma.qtd_total_empenho,
+      );
+    }
 
     const recebimentoValues = {};
     programacoesDeRecebimento.forEach((recebimento, i) => {
@@ -358,7 +369,7 @@ export default () => {
   };
 
   const selecionaFichaTecnica = async (values, form) => {
-    const numeroFicha = values.ficha_tecnica?.split("-")[0].trim();
+    const numeroFicha = values.ficha_tecnica?.split(" - ")[0].trim();
     if (
       !fichaTecnicaSelecionada ||
       fichaTecnicaSelecionada.numero !== numeroFicha
@@ -562,7 +573,11 @@ export default () => {
                                   Ficha Técnica e Produto
                                 </label>
                                 <Field
-                                  className="input-cronograma"
+                                  className={`input-cronograma ${
+                                    fichaTecnicaSelecionada?.flv_ponto_a_ponto
+                                      ? "select-flv"
+                                      : ""
+                                  }`}
                                   component={ASelect}
                                   naoDesabilitarPrimeiraOpcao
                                   name="ficha_tecnica"
@@ -581,7 +596,15 @@ export default () => {
                                     fichasTecnicas,
                                     empresaSelecionada,
                                   )?.map((e) => (
-                                    <Option value={e.nome} key={e.uuid}>
+                                    <Option
+                                      value={e.nome}
+                                      key={e.uuid}
+                                      className={
+                                        e.flv_ponto_a_ponto
+                                          ? "verde font-weight-bold"
+                                          : ""
+                                      }
+                                    >
                                       <div className="d-flex justify-content-between align-items-center">
                                         {e.nome}
                                         {e.programa === "LEVE_LEITE" && (
@@ -596,6 +619,7 @@ export default () => {
                                 <Field
                                   className="input-cronograma"
                                   component={InputText}
+                                  dataTestId="marca"
                                   label="Marca"
                                   name="marca"
                                   required
@@ -603,185 +627,283 @@ export default () => {
                                 />
                               </div>
 
-                              <div className="row mt-3">
-                                <div className="row">
-                                  <div className="col-6">
-                                    <Label
-                                      content="Embalagem Primária"
-                                      required
-                                    />
+                              {!fichaTecnicaSelecionada?.flv_ponto_a_ponto && (
+                                <>
+                                  <div className="row mt-3">
+                                    <div className="row">
+                                      <div className="col-6">
+                                        <Label
+                                          content="Embalagem Primária"
+                                          required
+                                        />
+                                      </div>
+
+                                      <div className="col-6">
+                                        <Label
+                                          content="Embalagem Secundária"
+                                          required
+                                        />
+                                      </div>
+                                    </div>
+
+                                    <div className="row">
+                                      <div className="col-3">
+                                        <Field
+                                          className="input-cronograma"
+                                          component={InputText}
+                                          name={`peso_liquido_embalagem_primaria`}
+                                          required
+                                          disabled
+                                        />
+                                      </div>
+
+                                      <div className="col-3">
+                                        <Field
+                                          className="input-cronograma"
+                                          component={Select}
+                                          options={unidadesMedidaOptions}
+                                          name={`unidade_medida_primaria`}
+                                          required
+                                          disabled
+                                        />
+                                      </div>
+
+                                      <div className="col-3">
+                                        <Field
+                                          className="input-cronograma"
+                                          component={InputText}
+                                          name={`peso_liquido_embalagem_secundaria`}
+                                          required
+                                          disabled
+                                        />
+                                      </div>
+
+                                      <div className="col-3">
+                                        <Field
+                                          className="input-cronograma"
+                                          component={Select}
+                                          options={unidadesMedidaOptions}
+                                          name={`unidade_medida_secundaria`}
+                                          required
+                                          disabled
+                                        />
+                                      </div>
+                                    </div>
                                   </div>
 
                                   <div className="col-6">
-                                    <Label
-                                      content="Embalagem Secundária"
+                                    <Field
+                                      className="input-cronograma"
+                                      component={Select}
+                                      naoDesabilitarPrimeiraOpcao
+                                      options={[
+                                        {
+                                          nome: "Selecione o Armazém",
+                                          uuid: "",
+                                        },
+                                        ...armazens,
+                                      ]}
+                                      label="Armazém"
+                                      name="armazem"
                                       required
+                                      validate={required}
                                     />
                                   </div>
-                                </div>
+                                </>
+                              )}
 
-                                <div className="row">
+                              {!fichaTecnicaSelecionada?.flv_ponto_a_ponto ? (
+                                <>
                                   <div className="col-3">
                                     <Field
                                       className="input-cronograma"
                                       component={InputText}
-                                      name={`peso_liquido_embalagem_primaria`}
+                                      label="Quantidade Total Programada"
+                                      name="quantidade_total"
+                                      disabled={false}
+                                      agrupadorMilharComDecimal
                                       required
-                                      disabled
+                                      placeholder="Informe a Quantidade Total"
+                                      validate={required}
                                     />
                                   </div>
-
                                   <div className="col-3">
                                     <Field
                                       className="input-cronograma"
                                       component={Select}
-                                      options={unidadesMedidaOptions}
-                                      name={`unidade_medida_primaria`}
+                                      naoDesabilitarPrimeiraOpcao
+                                      options={[
+                                        {
+                                          nome: "Selecione a Unidade",
+                                          uuid: "",
+                                        },
+                                        ...unidadesMedidaOptions,
+                                      ]}
+                                      label="Unidade de Medida"
+                                      name="unidade_medida"
                                       required
-                                      disabled
+                                      validate={required}
                                     />
                                   </div>
-
-                                  <div className="col-3">
-                                    <Field
-                                      className="input-cronograma"
-                                      component={InputText}
-                                      name={`peso_liquido_embalagem_secundaria`}
-                                      required
-                                      disabled
-                                    />
-                                  </div>
-
-                                  <div className="col-3">
-                                    <Field
-                                      className="input-cronograma"
-                                      component={Select}
-                                      options={unidadesMedidaOptions}
-                                      name={`unidade_medida_secundaria`}
-                                      required
-                                      disabled
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="col-6">
-                                <Field
-                                  className="input-cronograma"
-                                  component={Select}
-                                  naoDesabilitarPrimeiraOpcao
-                                  options={[
-                                    { nome: "Selecione o Armazém", uuid: "" },
-                                    ...armazens,
-                                  ]}
-                                  label="Armazém"
-                                  name="armazem"
-                                  required
-                                  validate={required}
-                                />
-                              </div>
-
-                              <div className="col-3">
-                                <Field
-                                  className="input-cronograma"
-                                  component={InputText}
-                                  label="Quantidade Total Programada"
-                                  name="quantidade_total"
-                                  disabled={false}
-                                  agrupadorMilharComDecimal
-                                  required
-                                  placeholder="Informe a Quantidade Total"
-                                  validate={required}
-                                />
-                              </div>
-                              <div className="col-3">
-                                <Field
-                                  className="input-cronograma"
-                                  component={Select}
-                                  naoDesabilitarPrimeiraOpcao
-                                  options={[
-                                    { nome: "Selecione a Unidade", uuid: "" },
-                                    ...unidadesMedidaOptions,
-                                  ]}
-                                  label="Unidade de Medida"
-                                  name="unidade_medida"
-                                  required
-                                  validate={required}
-                                />
-                              </div>
+                                </>
+                              ) : null}
                             </div>
 
                             <div className="row mt-3">
-                              <div className="col-4">
-                                <Field
-                                  className="input-cronograma"
-                                  component={Select}
-                                  naoDesabilitarPrimeiraOpcao
-                                  options={[
-                                    {
-                                      nome: "Selecione a Embalagem",
-                                      uuid: "",
-                                    },
-                                    ...tiposEmbalagemOptions,
-                                  ]}
-                                  label="Tipo de Embalagem Secundária"
-                                  name={`tipo_embalagem_secundaria`}
-                                  validate={required}
-                                  required
-                                />
-                              </div>
-                              <div className="col-4">
-                                <Field
-                                  className="input-cronograma"
-                                  component={InputText}
-                                  name={`custo_unitario_produto`}
-                                  label="Custo Unitário do Produto"
-                                  placeholder="Informe o Custo Unitário"
-                                  required
-                                  proibeLetras
-                                  prefix="R$"
-                                  validate={composeValidators(
-                                    required,
-                                    decimalMonetario,
+                              {!fichaTecnicaSelecionada?.flv_ponto_a_ponto ? (
+                                <>
+                                  <div className="col-4">
+                                    <Field
+                                      className="input-cronograma"
+                                      component={Select}
+                                      naoDesabilitarPrimeiraOpcao
+                                      options={[
+                                        {
+                                          nome: "Selecione a Embalagem",
+                                          uuid: "",
+                                        },
+                                        ...tiposEmbalagemOptions,
+                                      ]}
+                                      label="Tipo de Embalagem Secundária"
+                                      name={`tipo_embalagem_secundaria`}
+                                      validate={required}
+                                      required
+                                    />
+                                  </div>
+                                  <div className="col-4">
+                                    <Field
+                                      className="input-cronograma"
+                                      component={InputText}
+                                      name={`custo_unitario_produto`}
+                                      label="Custo Unitário do Produto"
+                                      placeholder="Informe o Custo Unitário"
+                                      required
+                                      proibeLetras
+                                      prefix="R$"
+                                      validate={composeValidators(
+                                        required,
+                                        decimalMonetario,
+                                      )}
+                                    />
+                                  </div>
+
+                                  {values.volume_embalagem_primaria && (
+                                    <div className="col-8 mt-3">
+                                      <div className="row">
+                                        <div className="col">
+                                          <Label
+                                            content="Volume da Embalagem Primária"
+                                            required
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <div className="row">
+                                        <div className="col">
+                                          <Field
+                                            className="input-cronograma"
+                                            component={InputText}
+                                            name={`volume_embalagem_primaria`}
+                                            required
+                                            disabled
+                                          />
+                                        </div>
+
+                                        <div className="col">
+                                          <Field
+                                            className="input-cronograma"
+                                            component={Select}
+                                            options={unidadesMedidaOptions}
+                                            name={`unidade_medida_volume_primaria`}
+                                            required
+                                            disabled
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
                                   )}
-                                />
-                              </div>
-                              {values.volume_embalagem_primaria && (
-                                <div className="col-8">
-                                  <div className="row">
-                                    <div className="col">
-                                      <Label
-                                        content="Volume da Embalagem Primária"
-                                        required
-                                      />
-                                    </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="col-4">
+                                    <Field
+                                      dataTestId="numero_empenho"
+                                      className="input-cronograma"
+                                      component={InputText}
+                                      label="Nº do Empenho"
+                                      name="numero_empenho"
+                                      placeholder="Informe o Nº do Empenho"
+                                      required
+                                      validate={required}
+                                      proibeLetras
+                                    />
                                   </div>
-
-                                  <div className="row">
-                                    <div className="col">
-                                      <Field
-                                        className="input-cronograma"
-                                        component={InputText}
-                                        name={`volume_embalagem_primaria`}
-                                        required
-                                        disabled
-                                      />
-                                    </div>
-
-                                    <div className="col">
-                                      <Field
-                                        className="input-cronograma"
-                                        component={Select}
-                                        options={unidadesMedidaOptions}
-                                        name={`unidade_medida_volume_primaria`}
-                                        required
-                                        disabled
-                                      />
-                                    </div>
+                                  <div className="col-4">
+                                    <Field
+                                      dataTestId="quantidade_empenho"
+                                      className="input-cronograma"
+                                      component={InputText}
+                                      label="Quantidade Total do Empenho"
+                                      name="qtd_total_empenho"
+                                      placeholder="Informe a Quantidade Total"
+                                      required
+                                      agrupadorMilharComDecimal
+                                      validate={required}
+                                      proibeLetras
+                                    />
                                   </div>
-                                </div>
+                                  <div className="col-4">
+                                    <Field
+                                      className="input-cronograma"
+                                      component={InputText}
+                                      name={`custo_unitario_produto`}
+                                      label="Custo Unitário do Produto"
+                                      placeholder="Informe o Custo Unitário"
+                                      required
+                                      proibeLetras
+                                      prefix="R$"
+                                      validate={composeValidators(
+                                        required,
+                                        decimalMonetario,
+                                      )}
+                                    />
+                                  </div>
+                                </>
                               )}
                             </div>
+
+                            {fichaTecnicaSelecionada?.flv_ponto_a_ponto && (
+                              <div className="row mt-3">
+                                <div className="col-4">
+                                  <Field
+                                    className="input-cronograma"
+                                    component={InputText}
+                                    label="Quantidade Total do Produto"
+                                    name="quantidade_total"
+                                    disabled={false}
+                                    agrupadorMilharComDecimal
+                                    required
+                                    placeholder="Informe a Quantidade Total"
+                                    validate={required}
+                                  />
+                                </div>
+                                <div className="col-4">
+                                  <Field
+                                    className="input-cronograma"
+                                    component={Select}
+                                    naoDesabilitarPrimeiraOpcao
+                                    options={[
+                                      { nome: "Selecione a Unidade", uuid: "" },
+                                      ...unidadesMedidaOptions,
+                                    ]}
+                                    label="Unidade de Medida"
+                                    name="unidade_medida"
+                                    required
+                                    validate={required}
+                                  />
+                                </div>
+                              </div>
+                            )}
 
                             <div className="subtitulo">
                               Cronograma das Entregas
@@ -798,18 +920,23 @@ export default () => {
                               duplicados={duplicados}
                               restante={restante}
                               unidadeMedida={unidadeSelecionada}
+                              flv_ponto_a_ponto={
+                                fichaTecnicaSelecionada?.flv_ponto_a_ponto
+                              }
                             />
                           </div>
                         </div>
                       </div>
 
-                      <FormRecebimento
-                        values={values}
-                        form={form}
-                        etapas={etapas}
-                        recebimentos={recebimentos}
-                        setRecebimentos={setRecebimentos}
-                      />
+                      {!fichaTecnicaSelecionada?.flv_ponto_a_ponto && (
+                        <FormRecebimento
+                          values={values}
+                          form={form}
+                          etapas={etapas}
+                          recebimentos={recebimentos}
+                          setRecebimentos={setRecebimentos}
+                        />
+                      )}
                     </div>
                   )}
 
