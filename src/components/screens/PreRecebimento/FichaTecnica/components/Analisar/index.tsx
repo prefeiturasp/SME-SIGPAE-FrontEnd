@@ -255,7 +255,8 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
               const ehPerecivel = values["categoria"] === "Perecíveis";
               const ehNaoPerecivel = values["categoria"] === "Não Perecíveis";
               const ehFLV =
-                values["categoria"] === "FLV (Frutas, Legumes e Verduras)";
+                values["categoria"] === "FLV (Frutas, Legumes e Verduras)" &&
+                values["tipo_entrega"] === "Ponto a Ponto";
               const collapseConfigsFLV = [
                 {
                   titulo: <span className="verde-escuro">Proponente</span>,

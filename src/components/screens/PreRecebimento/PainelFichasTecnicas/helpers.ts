@@ -24,6 +24,7 @@ export const formatarCards = (items: FichaTecnicaDashboard[]): CardItem[] => {
     fullText: gerarTextoCompleto(item),
     programa_leve_leite: item.programa_leve_leite,
     categoria: item.categoria,
+    tipo_entrega: item.tipo_entrega,
   }));
 };
 
