@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
+import { ToastContainer } from "react-toastify";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { combineReducers, createStore } from "redux";
@@ -10,11 +11,6 @@ import {
   alteracaoProdutoHomologado,
   updateProduto,
 } from "src/services/produto.service";
-
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastSuccess: jest.fn(),
-  toastError: jest.fn(),
-}));
 
 jest.mock("src/services/produto.service", () => ({
   alteracaoProdutoHomologado: jest.fn(),
@@ -119,6 +115,7 @@ describe("WizardFormTerceiraPagina – proteção contra cliques múltiplos", ()
             submitting={false}
             {...defaultProps}
           />
+          <ToastContainer />
         </MemoryRouter>
       </Provider>,
     );

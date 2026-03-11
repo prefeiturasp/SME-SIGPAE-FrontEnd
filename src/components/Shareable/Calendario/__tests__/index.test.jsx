@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, screen, act, cleanup } from "@testing-library/react";
 import React from "react";
+import { ToastContainer } from "react-toastify";
 import mock from "src/services/_mock";
 import { MemoryRouter } from "react-router-dom";
 import { Calendario } from "src/components/Shareable/Calendario";
@@ -10,10 +11,6 @@ import { mockGetTiposUnidadeEscolar } from "src/mocks/cadastroTipoAlimentacao.se
 import { mockListaNumeros } from "src/mocks/LancamentoInicial/CadastroDeClausulas/listaDeNumeros";
 
 jest.mock("moment/dist/locale/pt-br", () => {});
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastSuccess: jest.fn(),
-}));
-
 describe("Integração Calendario", () => {
   const mockGetObjetos = jest.fn();
   const mockSetObjeto = jest.fn();
@@ -67,7 +64,8 @@ describe("Integração Calendario", () => {
           deleteObjeto={mockDeleteObjeto}
           podeEditar={true}
         />
-      </MemoryRouter>
+        <ToastContainer />
+      </MemoryRouter>,
     );
 
   it("renderiza corretamente após carregar dados", async () => {
@@ -76,11 +74,11 @@ describe("Integração Calendario", () => {
     });
 
     expect(
-      screen.getByText((content) => content.includes("sobremesa"))
+      screen.getByText((content) => content.includes("sobremesa")),
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/Para cadastrar um dia para sobremesa/i)
+      await screen.findByText(/Para cadastrar um dia para sobremesa/i),
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/julho 2025/i)).toBeInTheDocument();
