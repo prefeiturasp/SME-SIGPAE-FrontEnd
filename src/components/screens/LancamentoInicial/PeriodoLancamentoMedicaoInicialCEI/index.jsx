@@ -2052,40 +2052,44 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   ) => {
     let response_matriculados = {};
 
-    let numeroParticipantes = 0;
-    if (ehRecreioNasFerias()) {
-      const recreio =
-        location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
-      const participantes = recreio.unidades_participantes;
-
-      if (ehGrupoColaboradores()) {
-        numeroParticipantes = participantes[0].num_colaboradores;
-      } else if (ehRecreioCemei()) {
-        const tipoUnidade = ehEmeiDaCemeiLocation ? "EMEI" : "CEI";
-        numeroParticipantes = participantes.find(
-          (up) => up.cei_ou_emei === tipoUnidade,
-        )?.num_inscritos;
-      } else {
-        numeroParticipantes = participantes[0].num_inscritos;
-      }
-
-      response_matriculados = {
-        data: calendario
-          .filter((dia) => dia.dia_letivo === true)
-          .map((dia) => ({
-            dia: dia.dia,
-            quantidade: numeroParticipantes,
-            faixa_etaria: {
-              uuid: null,
-            },
-          })),
-      };
-    } else {
-      response_matriculados = ehEmeiDaCemeiLocation
+    if (!ehRecreioNasFerias()) {
+      return ehEmeiDaCemeiLocation
         ? await getMatriculadosPeriodo(params_matriculados)
         : await getLogMatriculadosPorFaixaEtariaDia(params_matriculados);
     }
+    const recreio = location.state.solicitacaoMedicaoInicial.recreio_nas_ferias;
+    const numeroParticipantes = obterParticipantesRecreio(
+      recreio.unidades_participantes,
+    );
+    response_matriculados = {
+      data: calendario
+        .filter((dia) => dia.dia_letivo === true)
+        .map((dia) => ({
+          dia: dia.dia,
+          quantidade: numeroParticipantes,
+          faixa_etaria: {
+            uuid: null,
+          },
+        })),
+    };
     return response_matriculados;
+  };
+
+  const obterParticipantesRecreio = (participantes) => {
+    if (!ehRecreioCemei()) {
+      return ehGrupoColaboradores()
+        ? participantes[0].num_colaboradores
+        : participantes[0].num_inscritos;
+    }
+    if (ehGrupoColaboradores()) {
+      return participantes.reduce(
+        (acc, item) => acc + item.num_colaboradores,
+        0,
+      );
+    }
+    const tipoUnidade = ehEmeiDaCemeiLocation ? "EMEI" : "CEI";
+    return participantes.find((up) => up.cei_ou_emei === tipoUnidade)
+      ?.num_inscritos;
   };
 
   const exibirAbaDasSemanas = (mesAnoSelecionado) => {
