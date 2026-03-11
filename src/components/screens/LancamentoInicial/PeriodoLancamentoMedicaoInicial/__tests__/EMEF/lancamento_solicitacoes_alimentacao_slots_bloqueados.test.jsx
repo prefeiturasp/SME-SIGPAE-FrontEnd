@@ -58,18 +58,17 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
         { dia: "06", numero_alunos: 10, kit_lanche_id_externo: "0B9FF" },
       ],
     });
+    mock.onGet("/medicao-inicial/lanches-emergenciais-diarios/").reply(200, [
+      {
+        escola_nome: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+        escola_uuid: escolaUuid,
+        data_inicial: "05/12/2025",
+        data_final: null,
+      },
+    ]);
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-      .reply(200, {
-        results: [
-          {
-            dia: "05",
-            numero_alunos: 12,
-            inclusao_id_externo: "4E398",
-            motivo: "Lanche Emergencial",
-          },
-        ],
-      });
+      .reply(200, { results: [] });
     mock
       .onGet("/dias-calendario/")
       .reply(200, mockDiasCalendarioEMEFDezembro2025);
@@ -144,6 +143,11 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
     expect(screen.getByText("Kit Lanche")).toBeInTheDocument();
 
     // ---- testa slots de Lanche Emergencial ----
+
+    const inputLancheEmergencialDia04 = screen.getByTestId(
+      "lanche_emergencial__dia_04__categoria_5",
+    );
+    expect(inputLancheEmergencialDia04).toBeDisabled();
 
     const inputLancheEmergencialDia05 = screen.getByTestId(
       "lanche_emergencial__dia_05__categoria_5",

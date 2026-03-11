@@ -283,6 +283,7 @@ export const desabilitarField = (
   categoriasDeMedicao,
   kitLanchesAutorizadas,
   alteracoesAlimentacaoAutorizadas,
+  diasLancheEmergencialDiarioAtivo,
   diasParaCorrecao,
   ehPeriodoEscolarSimples,
   permissoesLancamentosEspeciaisPorDia,
@@ -406,14 +407,22 @@ export const desabilitarField = (
   }).toString();
 
   if (nomeCategoria.includes("SOLICITAÇÕES")) {
-    if (
-      (!kitLanchesAutorizadas.filter((kitLanche) => kitLanche.dia === dia)
-        .length &&
-        rowName === "kit_lanche") ||
-      (!alteracoesAlimentacaoAutorizadas.filter(
+    const temKitLancheAutorizadoNoDia = kitLanchesAutorizadas.filter(
+      (kitLanche) => kitLanche.dia === dia,
+    ).length;
+    const temLancheEmergencialAutorizadoNoDia =
+      alteracoesAlimentacaoAutorizadas.filter(
         (lancheEmergencial) => lancheEmergencial.dia === dia,
-      ).length &&
+      ).length;
+    const temLancheEmergencialDiarioAtivoNoDia =
+      diasLancheEmergencialDiarioAtivo.includes(String(dia).padStart(2, "0"));
+
+    if (
+      (!temKitLancheAutorizadoNoDia && rowName === "kit_lanche") ||
+      (!temLancheEmergencialAutorizadoNoDia &&
+        !temLancheEmergencialDiarioAtivoNoDia &&
         rowName === "lanche_emergencial") ||
+      (!validacaoDiaLetivo(dia) && rowName === "lanche_emergencial") ||
       validacaoSemana(dia) ||
       (mesConsiderado === mesAtual &&
         Number(dia) >= format(mesAnoDefault, "dd") &&

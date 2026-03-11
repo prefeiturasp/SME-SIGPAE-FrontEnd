@@ -52,6 +52,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
         { dia: "24", numero_alunos: 100, kit_lanche_id_externo: "28125" },
       ],
     });
+    mock.onGet("/medicao-inicial/lanches-emergenciais-diarios/").reply(200, []);
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
       .reply(200, {
