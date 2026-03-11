@@ -164,8 +164,8 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
   describe("Testa conteúdo básico da tela", () => {
     it("renderiza label `Mês do Lançamento`", async () => {
       await awaitServices();
-      preview.debug();
       expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
+      preview.debug();
     });
 
     it("renderiza valor `Recreio nas Férias - JAN 2026` Mês do Lançamento`", () => {
@@ -762,7 +762,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
     });
 
     it("ao clicar na tab `Semana 1`, preencher lanche maior que frequencia e exibe erro", async () => {
-      await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
       const inputElementLancheDia03 = screen.getByTestId(
@@ -780,7 +779,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
     });
 
     it("ao clicar na tab `Semana 1`, preencher lanche 4h maior que frequencia e exibe erro", async () => {
-      await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
       const inputElementLanche4hDia03 = screen.getByTestId(
@@ -798,7 +796,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
     });
 
     it("ao clicar na tab `Semana 1`, preencher refeição maior que frequencia e exibe erro", async () => {
-      await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
       const inputElementRefeicaoDia03 = screen.getByTestId(
@@ -816,7 +813,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
     });
 
     it("ao clicar na tab `Semana 1`, preencher sobremesa maior que frequencia e exibe erro", async () => {
-      await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
       const inputElementSobremesaDia03 = screen.getByTestId(
@@ -834,7 +830,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
     });
 
     it("ao clicar na tab `Semana 1`, preencher repetição de refeição maior que refeição e exibe atenção", async () => {
-      await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
@@ -864,7 +859,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
     });
 
     it("ao clicar na tab `Semana 1`, preencher repetição de sobremesa maior que sobremesa e exibe atenção", async () => {
-      await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
@@ -893,6 +887,65 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
+    });
+  });
+
+  describe("Testa o Salvar Lançamentos", () => {
+    it("ao clicar na tab `Semana 1`, preenche dia 02 e salva lançamento", async () => {
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const valoresAlimentacao = {
+        frequencia: "150",
+        lanche_4h: "80",
+        lanche: "100",
+        refeicao: "120",
+        repeticao_refeicao: "114",
+        sobremesa: "148",
+        repeticao_sobremesa: "134",
+      };
+
+      const camposAlimentacao = [
+        { key: "frequencia", testId: "frequencia" },
+        { key: "lanche_4h", testId: "lanche_4h" },
+        { key: "lanche", testId: "lanche" },
+        { key: "refeicao", testId: "refeicao" },
+        { key: "repeticao_refeicao", testId: "repeticao_refeicao" },
+        { key: "sobremesa", testId: "sobremesa" },
+        { key: "repeticao_sobremesa", testId: "repeticao_sobremesa" },
+      ];
+
+      camposAlimentacao.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_02__categoria_1`);
+        fireEvent.change(input, { target: { value: valoresAlimentacao[key] } });
+      });
+
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      expect(botao).not.toBeDisabled();
+      fireEvent.click(botao);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Lançamentos salvos com sucesso"),
+        ).toBeInTheDocument();
+      });
+
+      const valoresEsperadosAlimentacao = {
+        participantes: "150",
+        ...valoresAlimentacao,
+      };
+      const camposAtualizadosAlimentacao = [
+        { key: "participantes", testId: "participantes" },
+        ...camposAlimentacao,
+      ];
+      camposAtualizadosAlimentacao.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_02__categoria_1`);
+        expect(input).toHaveAttribute(
+          "value",
+          valoresEsperadosAlimentacao[key],
+        );
+      });
     });
   });
 });
