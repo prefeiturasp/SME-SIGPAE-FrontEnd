@@ -170,7 +170,13 @@ export function RelatorioFinanceiroConsolidado() {
         totaisConsumo={totaisConsumo}
       />
     ),
-    "grupo 5": <GrupoEMEBS />,
+    "grupo 5": (
+      <GrupoEMEBS
+        relatorioConsolidado={relatorioConsolidado}
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+      />
+    ),
     "grupo 6": (
       <GrupoCIEJA
         relatorioConsolidado={relatorioConsolidado}
