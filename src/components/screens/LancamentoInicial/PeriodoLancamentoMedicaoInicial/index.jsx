@@ -2223,6 +2223,7 @@ export default () => {
             column,
             categoria,
             alteracoesAlimentacaoAutorizadas,
+            diasLancheEmergencialDiarioAtivo,
             value,
             ehChangeInput,
           )) &&
@@ -3480,6 +3481,7 @@ export default () => {
                                                             column,
                                                             categoria,
                                                             alteracoesAlimentacaoAutorizadas,
+                                                            diasLancheEmergencialDiarioAtivo,
                                                           )}
                                                           exibeTooltipLancheEmergencialAutorizado={exibirTooltipLancheEmergencialAutorizado(
                                                             formValuesAtualizados,
