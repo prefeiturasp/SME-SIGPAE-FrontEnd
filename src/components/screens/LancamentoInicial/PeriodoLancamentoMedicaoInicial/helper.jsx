@@ -271,6 +271,7 @@ export const desabilitarField = (
   mesAnoDefault,
   dadosValoresInclusoesAutorizadasState,
   validacaoDiaLetivo,
+  validacaoDiaLetivoLancheEmergencial,
   validacaoSemana,
   location,
   ehGrupoETECUrlParam = false,
@@ -422,7 +423,8 @@ export const desabilitarField = (
       (!temLancheEmergencialAutorizadoNoDia &&
         !temLancheEmergencialDiarioAtivoNoDia &&
         rowName === "lanche_emergencial") ||
-      (!validacaoDiaLetivo(dia) && rowName === "lanche_emergencial") ||
+      (!validacaoDiaLetivoLancheEmergencial(dia) &&
+        rowName === "lanche_emergencial") ||
       validacaoSemana(dia) ||
       (mesConsiderado === mesAtual &&
         Number(dia) >= format(mesAnoDefault, "dd") &&

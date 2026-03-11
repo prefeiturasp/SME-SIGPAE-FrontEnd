@@ -2007,6 +2007,24 @@ export default () => {
     return true;
   };
 
+  const validacaoDiaLetivoCalendario = (dia) => {
+    const objDia = calendarioMesConsiderado.find(
+      (objDia) => Number(objDia.dia) === Number(dia),
+    );
+    return Boolean(objDia?.dia_letivo);
+  };
+
+  const validacaoDiaLetivoLancheEmergencial = (dia) => {
+    const temLancheEmergencialDiarioAtivoNoDia =
+      diasLancheEmergencialDiarioAtivo.includes(String(dia).padStart(2, "0"));
+
+    if (temLancheEmergencialDiarioAtivoNoDia) {
+      return validacaoDiaLetivoCalendario(dia);
+    }
+
+    return validacaoDiaLetivo(dia);
+  };
+
   const classNameFieldTabelaDieta = (
     row,
     column,
@@ -2342,8 +2360,18 @@ export default () => {
     ) {
       return "";
     }
+    const temLancheEmergencialDiarioAtivoNoDia =
+      diasLancheEmergencialDiarioAtivo.includes(
+        String(column.dia).padStart(2, "0"),
+      );
+    const lancheEmergencialPodeSerLancadoNoDia =
+      row.name === "lanche_emergencial" &&
+      temLancheEmergencialDiarioAtivoNoDia &&
+      validacaoDiaLetivoCalendario(column.dia);
+
     return `${
       !validacaoDiaLetivo(column.dia) &&
+      !lancheEmergencialPodeSerLancadoNoDia &&
       !ehDiaParaCorrigir(
         column.dia,
         categoria.id,
@@ -3134,6 +3162,7 @@ export default () => {
                                                           mesAnoDefault,
                                                           dadosValoresInclusoesAutorizadasState,
                                                           validacaoDiaLetivo,
+                                                          validacaoDiaLetivoLancheEmergencial,
                                                           validacaoSemana,
                                                           location,
                                                           ehGrupoETECUrlParam,
@@ -3378,6 +3407,7 @@ export default () => {
                                                             mesAnoDefault,
                                                             dadosValoresInclusoesAutorizadasState,
                                                             validacaoDiaLetivo,
+                                                            validacaoDiaLetivoLancheEmergencial,
                                                             validacaoSemana,
                                                             location,
                                                             ehGrupoETECUrlParam,
