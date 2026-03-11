@@ -116,8 +116,10 @@ export default () => {
 
     try {
       let response = edicao
-        ? await editaCronograma(payload, cronograma.uuid)
-        : await cadastraCronograma(payload);
+        ? await editaCronograma(payload, cronograma.uuid, {
+            skipAuthRefresh: !rascunho,
+          })
+        : await cadastraCronograma(payload, { skipAuthRefresh: !rascunho });
       if (response.status === 201 || response.status === 200) {
         if (rascunho) {
           toastSuccess("Rascunho salvo com sucesso!");

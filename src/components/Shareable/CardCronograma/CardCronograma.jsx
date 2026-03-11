@@ -14,30 +14,44 @@ export const CardCronograma = ({
 }) => {
   const renderSolicitations = (solicitations, exibirTooltip) => {
     return exibirTooltip
-      ? solicitations.slice(0, 5).map((solicitation, key) => (
-          <Tooltip placement="topLeft" key={key} title={solicitation.fullText}>
+      ? solicitations.slice(0, 5).map((solicitation, key) => {
+          const ehFLV =
+            solicitation.categoria === "FLV" &&
+            solicitation.tipo_entrega === "PONTO_A_PONTO";
+          return (
+            <Tooltip
+              placement="topLeft"
+              key={key}
+              title={solicitation.fullText}
+            >
+              <NavLink key={key} to={solicitation.link}>
+                <p
+                  key={key}
+                  className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""} ${ehFLV && "categoria-flv"}`}
+                >
+                  {solicitation.text}
+                  <span className="float-end">{solicitation.date}</span>
+                </p>
+              </NavLink>
+            </Tooltip>
+          );
+        })
+      : solicitations.slice(0, 5).map((solicitation, key) => {
+          const ehFLV =
+            solicitation.categoria === "FLV" &&
+            solicitation.tipo_entrega === "PONTO_A_PONTO";
+          return (
             <NavLink key={key} to={solicitation.link}>
               <p
                 key={key}
-                className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""}`}
+                className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""} ${ehFLV && "categoria-flv"}`}
               >
                 {solicitation.text}
                 <span className="float-end">{solicitation.date}</span>
               </p>
             </NavLink>
-          </Tooltip>
-        ))
-      : solicitations.slice(0, 5).map((solicitation, key) => (
-          <NavLink key={key} to={solicitation.link}>
-            <p
-              key={key}
-              className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""}`}
-            >
-              {solicitation.text}
-              <span className="float-end">{solicitation.date}</span>
-            </p>
-          </NavLink>
-        ));
+          );
+        });
   };
 
   const renderVerMais = (solicitations) => {

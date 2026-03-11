@@ -12,11 +12,11 @@ export const getCronograma = async (uuid) =>
 export const getCronogramaDetalhar = async (uuid) =>
   await axios.get(`/cronogramas/${uuid}/detalhar-com-log/`);
 
-export const cadastraCronograma = async (payload) =>
-  await axios.post("/cronogramas/", payload);
+export const cadastraCronograma = async (payload, config = {}) =>
+  await axios.post("/cronogramas/", payload, config);
 
-export const editaCronograma = async (payload, uuid) =>
-  await axios.put(`/cronogramas/${uuid}/`, payload);
+export const editaCronograma = async (payload, uuid, config = {}) =>
+  await axios.put(`/cronogramas/${uuid}/`, payload, config);
 
 export const getRascunhos = async () =>
   await axios.get("/cronogramas/rascunhos/");
@@ -48,9 +48,13 @@ export const getListaCronogramasPraCadastro = async () => {
 
 export const fornecedorAssinaCronograma = async (uuid, password) => {
   const url = `/cronogramas/${uuid}/fornecedor-assina-cronograma/`;
-  return await axios.patch(url, {
-    password: password,
-  });
+  return await axios.patch(
+    url,
+    {
+      password: password,
+    },
+    { skipAuthRefresh: true },
+  );
 };
 
 export const cadastraSolicitacaoAlteracaoCronograma = async (payload) => {
@@ -99,23 +103,35 @@ export const getSolicitacaoAlteracaoCronograma = async (uuid) => {
 
 export const cronogramaAssina = async (uuid, password) => {
   const url = `/cronogramas/${uuid}/cronograma-assina/`;
-  return await axios.patch(url, {
-    password: password,
-  });
+  return await axios.patch(
+    url,
+    {
+      password: password,
+    },
+    { skipAuthRefresh: true },
+  );
 };
 
 export const abastecimentoAssinaCronograma = async (uuid, password) => {
   const url = `/cronogramas/${uuid}/abastecimento-assina/`;
-  return await axios.patch(url, {
-    password: password,
-  });
+  return await axios.patch(
+    url,
+    {
+      password: password,
+    },
+    { skipAuthRefresh: true },
+  );
 };
 
 export const codaeAssinaCronograma = async (uuid, password) => {
   const url = `/cronogramas/${uuid}/codae-assina/`;
-  return await axios.patch(url, {
-    password: password,
-  });
+  return await axios.patch(
+    url,
+    {
+      password: password,
+    },
+    { skipAuthRefresh: true },
+  );
 };
 
 export const fornecedorCienteAlteracaoCodae = async (uuid) => {

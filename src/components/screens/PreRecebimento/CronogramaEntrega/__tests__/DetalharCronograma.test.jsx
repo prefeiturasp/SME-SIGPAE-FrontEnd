@@ -1,22 +1,22 @@
-import React from "react";
+import "@testing-library/jest-dom";
 import {
+  act,
+  fireEvent,
   render,
   screen,
-  act,
   waitFor,
-  fireEvent,
 } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import mock from "src/services/_mock";
-import DetalharCronogramaPage from "src/pages/PreRecebimento/DetalharCronogramaPage";
-import { PERFIL, TIPO_SERVICO } from "../../../../../constants/shared";
+import { ToastContainer } from "react-toastify";
+import { PERFIL, TIPO_SERVICO } from "src/constants/shared";
 import {
   mockCronogramaAssinadoAbastecimento,
   mockCronogramaAssinadoCODAE,
   mockCronogramaAssinadoFornecedor,
   mockCronogramaEnviadoFornecedor,
-} from "../../../../../mocks/cronograma.service/mockGetCronogramaDetalhar";
+} from "src/mocks/cronograma.service/mockGetCronogramaDetalhar";
+import DetalharCronogramaPage from "src/pages/PreRecebimento/DetalharCronogramaPage";
+import mock from "src/services/_mock";
 
 const setWindowLocation = (search) => {
   window.history.pushState({}, "", `${window.location.pathname}${search}`);
@@ -32,12 +32,18 @@ const setup = async () => {
         }}
       >
         <DetalharCronogramaPage />
+        <ToastContainer />
       </MemoryRouter>,
     );
   });
 };
 
 describe("Testa página Detalhar Cronograma (Perfil Cronograma)", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mock.resetHistory();
+  });
+
   beforeAll(() => {
     localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
     mock
@@ -198,7 +204,19 @@ describe("Testa página de Detalhar Cronograma (Perfil Fornecedor)", () => {
     const btnConfirmar = screen.getByText("Confirmar").closest("button");
     fireEvent.click(btnConfirmar);
 
-    expect(btnConfirmar).toBeInTheDocument();
+    const requestsAssinatura = mock.history.patch.filter(
+      ({ url }) =>
+        url ===
+        `/cronogramas/${mockCronogramaEnviadoFornecedor.uuid}/fornecedor-assina-cronograma/`,
+    );
+
+    expect(requestsAssinatura.length).toBeGreaterThan(0);
+    requestsAssinatura.forEach((request) => {
+      expect(request.skipAuthRefresh).toBe(true);
+    });
+    expect(
+      await screen.findByText("Senha inválida, verifique e tente novamente."),
+    ).toBeInTheDocument();
   });
 });
 

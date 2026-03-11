@@ -1,14 +1,10 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockMeusDadosCODAEADMIN } from "src/mocks/meusDados/CODAE/admin";
 import { RecreioFeriasForm } from "../components/RecreioFeriasForm";
 import * as helper from "../helper";
-
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastSuccess: jest.fn(),
-  toastError: jest.fn(),
-}));
 
 jest.mock("../helper", () => ({
   buildPayload: jest.fn((v) => v),
@@ -46,8 +42,9 @@ const renderComponent = (props: any = {}) => {
           }}
         >
           <RecreioFeriasForm {...defaultProps} {...props} />
+          <ToastContainer />
         </MeusDadosContext.Provider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };

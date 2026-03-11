@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, render, screen, waitFor } from "@testing-library/react";
+import { ToastContainer } from "react-toastify";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -26,10 +27,6 @@ jest.mock("src/services/painelDRE.service");
 jest.mock("src/helpers/corrigeDadosDoDashboard", () => ({
   __esModule: true,
   default: jest.fn().mockReturnValue(true),
-}));
-
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastError: jest.fn(),
 }));
 
 const mockStore = configureStore([]);
@@ -96,6 +93,7 @@ const renderComponent = (props = {}) => {
       <MemoryRouter>
         <MeusDadosContext.Provider value={{ meusDados: mockMeusDadosDRE }}>
           <DashboardDRE {...defaultProps} />
+          <ToastContainer />
         </MeusDadosContext.Provider>
       </MemoryRouter>
     </Provider>,
