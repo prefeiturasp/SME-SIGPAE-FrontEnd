@@ -27,6 +27,7 @@ import { getEscolaSimples } from "src/services/escola.service";
 import {
   getDiasCalendario,
   getHistoricoEscola,
+  getLanchesEmergenciaisDiarios,
   getUltimoDiaComSolicitacaoAutorizadaNoMes,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getPeriodosPermissoesLancamentosEspeciaisMesAno } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
@@ -67,6 +68,8 @@ export default () => {
     periodosPermissoesLancamentosEspeciais,
     setPeriodosPermissoesLancamentosEspeciais,
   ] = useState(null);
+  const [temLancheEmergencialDiarioAtivo, setTemLancheEmergencialDiarioAtivo] =
+    useState(false);
   const [solicitacaoMedicaoInicial, setSolicitacaoMedicaoInicial] =
     useState(null);
   const [periodoFromSearchParam, setPeriodoFromSearchParam] = useState(null);
@@ -131,6 +134,20 @@ export default () => {
     } else {
       toastError("Erro ao obter períodos com Permissões de Lançamentos");
     }
+  };
+
+  const getLanchesEmergenciaisDiariosAsync = async (escola_uuid, mes, ano) => {
+    const payload = {
+      escola_uuid,
+      mes,
+      ano,
+    };
+    const response = await getLanchesEmergenciaisDiarios(payload);
+    if (response?.status === HTTP_STATUS.OK) {
+      setTemLancheEmergencialDiarioAtivo(response.data.length > 0);
+      return;
+    }
+    setTemLancheEmergencialDiarioAtivo(false);
   };
 
   const getUltimoDiaComSolicitacaoAutorizadaNoMesAsync = async (
@@ -348,6 +365,7 @@ export default () => {
         mes,
         ano,
       );
+      await getLanchesEmergenciaisDiariosAsync(escola.uuid, mes, ano);
 
       const urlParams = new URLSearchParams(window.location.search);
       const mesParam = urlParams.get("mes");
@@ -512,6 +530,11 @@ export default () => {
         ano,
       );
       await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
+        escolaInstituicao.uuid,
+        mes,
+        ano,
+      );
+      await getLanchesEmergenciaisDiariosAsync(
         escolaInstituicao.uuid,
         mes,
         ano,
@@ -755,6 +778,9 @@ export default () => {
                 periodosPermissoesLancamentosEspeciais={
                   periodosPermissoesLancamentosEspeciais
                 }
+                temLancheEmergencialDiarioAtivo={
+                  temLancheEmergencialDiarioAtivo
+                }
                 errosAoSalvar={errosAoSalvar}
                 setErrosAoSalvar={setErrosAoSalvar}
                 handleFinalizarMedicao={handleFinalizarMedicao}
@@ -786,6 +812,9 @@ export default () => {
                 }
                 periodosPermissoesLancamentosEspeciais={
                   periodosPermissoesLancamentosEspeciais
+                }
+                temLancheEmergencialDiarioAtivo={
+                  temLancheEmergencialDiarioAtivo
                 }
                 setSolicitacaoMedicaoInicial={setSolicitacaoMedicaoInicial}
                 naoPodeFinalizar={naoPodeFinalizar}
