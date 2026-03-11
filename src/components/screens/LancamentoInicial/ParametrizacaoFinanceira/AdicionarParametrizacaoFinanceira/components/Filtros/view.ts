@@ -24,6 +24,7 @@ import {
   MEDICAO_INICIAL,
   PARAMETRIZACAO_FINANCEIRA,
 } from "src/configs/constants";
+import { extrairConteudoEntreParenteses } from "src/helpers/utilities";
 
 type Props = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
@@ -223,7 +224,9 @@ export default ({
         (e) => e.uuid === grupo_unidade_escolar,
       ).nome;
 
-      const nomeSelecionado = grupoNome.replace(/\s*\(.*?\)\s*/g, "").trim();
+      const nomeSelecionado = grupoNome.includes("(")
+        ? grupoNome.substring(0, grupoNome.indexOf("(")).trim()
+        : grupoNome.trim();
 
       const novoInicio = parseDate(data_inicial);
       const novoFim = parseDate(data_final);
@@ -300,10 +303,10 @@ export default ({
     const selecionado = gruposUnidadesOpcoes.find((e) => e.uuid === grupo).nome;
     setGrupoSelecionado(selecionado);
 
-    const match = selecionado.match(/\((.*?)\)/);
+    const conteudoParenteses = extrairConteudoEntreParenteses(selecionado);
     let unidades: string[] = [];
-    if (match && match[1]) {
-      const tipos = match[1].split(",");
+    if (conteudoParenteses) {
+      const tipos = conteudoParenteses.split(",");
       unidades = tipos.map((item) => item.trim());
     }
 

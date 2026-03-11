@@ -18,6 +18,7 @@ import GrupoEMEF from "../components/Tabelas/GrupoEMEF";
 import GrupoCIEJA from "../components/Tabelas/GrupoCIEJA";
 import GrupoCEMEI from "../components/Tabelas/GrupoCEMEI";
 import GrupoEMEBS from "../components/Tabelas/GrupoEMEBS";
+import { extrairConteudoEntreParenteses } from "src/helpers/utilities";
 
 type TotaisParams = {
   mes: string;
@@ -88,10 +89,10 @@ export function RelatorioFinanceiroConsolidado() {
       (e) => e.value === state.grupo_unidade_escolar[0],
     )?.label;
 
-    const match = grupo.match(/\((.*?)\)/);
+    const conteudoParenteses = extrairConteudoEntreParenteses(grupo);
     let unidades: string[] = [];
-    if (match && match[1]) {
-      const tipos = match[1].split(",");
+    if (conteudoParenteses) {
+      const tipos = conteudoParenteses.split(",");
       unidades = tipos.map((item) => item.trim());
     }
 

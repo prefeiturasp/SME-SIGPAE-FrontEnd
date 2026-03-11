@@ -114,7 +114,7 @@ export const ModalAdicionarUnidadeEducacional = ({
         const unidade = unidadesFiltradas.find((u: any) => u.value === uuid);
 
         const base = {
-          id: `${Date.now()}-${Math.random()}`,
+          id: crypto.randomUUID(),
           uuid: null,
 
           loteUuid: lote?.uuid,
@@ -139,7 +139,7 @@ export const ModalAdicionarUnidadeEducacional = ({
         if (isCemei) {
           return ["CEI", "EMEI"].map((tipo) => ({
             ...base,
-            id: `${Date.now()}-${Math.random()}-${tipo}`,
+            id: `${crypto.randomUUID()}-${tipo}`,
             ceiOuEmei: tipo,
 
             alimentacaoInscritos: mapAlimentacoes(
