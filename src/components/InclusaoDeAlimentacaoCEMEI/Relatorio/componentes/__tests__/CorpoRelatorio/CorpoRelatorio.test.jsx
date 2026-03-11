@@ -1,6 +1,7 @@
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { ToastContainer } from "react-toastify";
 import { CorpoRelatorio } from "../../CorpoRelatorio";
 
 jest.mock("src/components/Shareable/FluxoDeStatus", () => ({
@@ -9,13 +10,14 @@ jest.mock("src/components/Shareable/FluxoDeStatus", () => ({
 
 jest.mock(
   "src/components/Shareable/RelatorioHistoricoQuestionamento",
-  () => () =>
+  () => () => (
     <div data-testid="historico-questionamento">HistoricoQuestionamento</div>
+  ),
 );
 
 jest.mock(
   "src/components/Shareable/RelatorioHistoricoJustificativaEscola",
-  () => () => <div data-testid="justificativa-escola">JustificativaEscola</div>
+  () => () => <div data-testid="justificativa-escola">JustificativaEscola</div>,
 );
 
 jest.mock("src/components/Shareable/SolicitacoesSimilaresInclusao", () => ({
@@ -26,10 +28,6 @@ jest.mock("src/components/Shareable/SolicitacoesSimilaresInclusao", () => ({
 
 jest.mock("src/services/relatorios", () => ({
   getRelatorioInclusaoAlimentacaoCEMEI: jest.fn(() => Promise.resolve()),
-}));
-
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastError: jest.fn(),
 }));
 
 jest.mock("src/helpers/utilities", () => ({
@@ -52,7 +50,7 @@ jest.mock(
   "src/components/InclusaoDeAlimentacao/Relatorio/componentes/helper",
   () => ({
     formataMotivosDiasComOutros: () => ({ MotivoX: ["2023-12-01"] }),
-  })
+  }),
 );
 
 jest.mock("src/components/Shareable/ToggleExpandir", () => ({
@@ -115,12 +113,15 @@ describe("CorpoRelatorio", () => {
 
   test("Renderiza corretamente o componente", async () => {
     render(
-      <CorpoRelatorio
-        solicitacao={solicitacaoMock}
-        vinculos={vinculosMock}
-        ehMotivoEspecifico={false}
-        solicitacoesSimilares={[]}
-      />
+      <>
+        <CorpoRelatorio
+          solicitacao={solicitacaoMock}
+          vinculos={vinculosMock}
+          ehMotivoEspecifico={false}
+          solicitacoesSimilares={[]}
+        />
+        <ToastContainer />
+      </>,
     );
 
     expect(screen.getByText("Mensagem de prazo")).toBeInTheDocument();

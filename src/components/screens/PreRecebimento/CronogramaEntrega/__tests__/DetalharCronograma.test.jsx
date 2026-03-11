@@ -7,7 +7,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_SERVICO } from "src/constants/shared";
 import {
   mockCronogramaAssinadoAbastecimento,
@@ -17,11 +17,6 @@ import {
 } from "src/mocks/cronograma.service/mockGetCronogramaDetalhar";
 import DetalharCronogramaPage from "src/pages/PreRecebimento/DetalharCronogramaPage";
 import mock from "src/services/_mock";
-
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastError: jest.fn(),
-  toastSuccess: jest.fn(),
-}));
 
 const setWindowLocation = (search) => {
   window.history.pushState({}, "", `${window.location.pathname}${search}`);
@@ -37,6 +32,7 @@ const setup = async () => {
         }}
       >
         <DetalharCronogramaPage />
+        <ToastContainer />
       </MemoryRouter>,
     );
   });
@@ -208,10 +204,6 @@ describe("Testa página de Detalhar Cronograma (Perfil Fornecedor)", () => {
     const btnConfirmar = screen.getByText("Confirmar").closest("button");
     fireEvent.click(btnConfirmar);
 
-    await waitFor(() => {
-      expect(toastError).toHaveBeenCalledTimes(1);
-    });
-
     const requestsAssinatura = mock.history.patch.filter(
       ({ url }) =>
         url ===
@@ -222,12 +214,8 @@ describe("Testa página de Detalhar Cronograma (Perfil Fornecedor)", () => {
     requestsAssinatura.forEach((request) => {
       expect(request.skipAuthRefresh).toBe(true);
     });
-
-    const MensagemSenhaInvalida = toastError.mock.calls[0][0];
-    render(<MensagemSenhaInvalida />);
-
     expect(
-      screen.getByText("Senha inválida, verifique e tente novamente."),
+      await screen.findByText("Senha inválida, verifique e tente novamente."),
     ).toBeInTheDocument();
   });
 });
