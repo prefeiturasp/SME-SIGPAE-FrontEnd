@@ -1,8 +1,21 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ConsolidadoTotal } from "../ConsolidadoTotal";
 import { TabelaAlimentacaoHandle, TabelaDietasHandle } from "../../types";
+import { TabelaAlimentacao } from "./TabelaAlimentacao";
+import { TipoAlimentacao } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import { RelatorioFinanceiroConsolidado } from "src/interfaces/relatorio_financeiro.interface";
 
-export default () => {
+type Props = {
+  relatorioConsolidado: RelatorioFinanceiroConsolidado;
+  tiposAlimentacao: Array<TipoAlimentacao>;
+  totaisConsumo: any;
+};
+
+export default ({
+  relatorioConsolidado,
+  tiposAlimentacao,
+  totaisConsumo,
+}: Props) => {
   const [consolidadoInfantil, setConsolidadoCEI] = useState({
     quantidade: 0,
     valor: 0,
@@ -13,13 +26,18 @@ export default () => {
     valor: 0,
   });
 
-  const refAlimentacaoEMEI = useRef<TabelaAlimentacaoHandle>(null);
-  const refDietaAEMEI = useRef<TabelaDietasHandle>(null);
-  const refDietaBEMEI = useRef<TabelaDietasHandle>(null);
+  const refAlimentacaoInfantil = useRef<TabelaAlimentacaoHandle>(null);
+  const refDietaAFundamental = useRef<TabelaDietasHandle>(null);
+  const refDietaBFundamental = useRef<TabelaDietasHandle>(null);
 
-  const refAlimentacaoCEI = useRef<TabelaAlimentacaoHandle>(null);
-  const refDietaACEI = useRef<TabelaDietasHandle>(null);
-  const refDietaBCEI = useRef<TabelaDietasHandle>(null);
+  const refAlimentacaoFundamental = useRef<TabelaAlimentacaoHandle>(null);
+  const refDietaAInfantil = useRef<TabelaDietasHandle>(null);
+  const refDietaBInfantil = useRef<TabelaDietasHandle>(null);
+
+  const _TIPOS_ALIMENTACAO = [
+    ...tiposAlimentacao,
+    { uuid: "Kit Lanche", nome: "Kit Lanche" },
+  ];
 
   const calcularConsolidado = (
     refAlimentacao: React.RefObject<TabelaAlimentacaoHandle>,
@@ -45,19 +63,20 @@ export default () => {
 
   useEffect(() => {
     const cei = calcularConsolidado(
-      refAlimentacaoCEI,
-      refDietaACEI,
-      refDietaBCEI,
+      refAlimentacaoFundamental,
+
+      refDietaAFundamental,
+      refDietaBFundamental,
     );
 
-    const emei = calcularConsolidado(
-      refAlimentacaoEMEI,
-      refDietaAEMEI,
-      refDietaBEMEI,
+    const fundamental = calcularConsolidado(
+      refAlimentacaoInfantil,
+      refDietaAInfantil,
+      refDietaBInfantil,
     );
 
     setConsolidadoCEI(cei);
-    setConsolidadoEMEI(emei);
+    setConsolidadoEMEI(fundamental);
   }, []);
 
   const cards = useMemo(() => {
@@ -86,6 +105,34 @@ export default () => {
 
   return (
     <div>
+      <h2 className="titulo-relatorio-financeiro">
+        Alimentações TURMA INFANTIL da EMEBS
+      </h2>
+      <div className="d-flex flex-column gap-4">
+        <TabelaAlimentacao
+          ref={refAlimentacaoInfantil}
+          tabelas={relatorioConsolidado.tabelas}
+          tiposAlimentacao={_TIPOS_ALIMENTACAO}
+          totaisConsumo={totaisConsumo["INFANTIL"]}
+          ordem="INF. A"
+          unidade="EMEBS Infantil"
+        />
+      </div>
+
+      <h2 className="titulo-relatorio-financeiro">
+        Alimentações TURMA FUNDAMENTAL da EMEBS
+      </h2>
+      <div className="d-flex flex-column gap-4">
+        <TabelaAlimentacao
+          ref={refAlimentacaoFundamental}
+          tabelas={relatorioConsolidado.tabelas}
+          tiposAlimentacao={_TIPOS_ALIMENTACAO}
+          totaisConsumo={totaisConsumo["FUNDAMENTAL"]}
+          ordem="FUND. A"
+          unidade="EMEBS Fundamental"
+        />
+      </div>
+
       {cards.map((card, index) => (
         <div className="mt-4" key={index}>
           <ConsolidadoTotal
