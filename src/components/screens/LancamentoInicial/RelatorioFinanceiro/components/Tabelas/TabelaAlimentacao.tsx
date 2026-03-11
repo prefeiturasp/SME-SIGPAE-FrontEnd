@@ -22,7 +22,7 @@ export const TabelaAlimentacao = forwardRef<TabelaAlimentacaoHandle, Props>(
   ({ tabelas, tiposAlimentacao, totaisConsumo, ordem, unidade }, ref) => {
     const ehCieja = unidade === "CIEJA";
     const ehCemei = unidade === "CEMEI";
-    const ehEmebs = unidade.includes("EMEBS");
+    const ehEmebs = unidade?.includes("EMEBS");
 
     let totalAtendimentosGeral = 0;
     let valorTotalGeral = 0;
