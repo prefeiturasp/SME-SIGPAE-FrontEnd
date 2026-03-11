@@ -4,6 +4,7 @@ import { TabelaAlimentacaoHandle, TabelaDietasHandle } from "../../types";
 import { TabelaAlimentacao } from "./TabelaAlimentacao";
 import { TipoAlimentacao } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { RelatorioFinanceiroConsolidado } from "src/interfaces/relatorio_financeiro.interface";
+import { TabelaDietas } from "./TabelaDietas";
 
 type Props = {
   relatorioConsolidado: RelatorioFinanceiroConsolidado;
@@ -84,12 +85,17 @@ export default ({
       {
         titulo: "CONSOLIDADO INFANTIL (INF. A + INF. B + INF. C)",
         quantidade: consolidadoInfantil.quantidade,
+        tituloQuantidade: "QUANTIDADE SERVIDA (INF. A + INF. B + INF. C):",
         valor: consolidadoInfantil.valor,
+        tituloValor: "VALOR DO FATURAMENTO TOTAL (INF. A + INF. B + INF. C):",
       },
       {
         titulo: "CONSOLIDADO FUNDAMENTAL (FUND. A + FUND. B + FUND. C)",
         quantidade: consolidadoFundamental.quantidade,
+        tituloQuantidade: "QUANTIDADE SERVIDA (FUND. A + FUND. B + FUND. C):",
         valor: consolidadoFundamental.valor,
+        tituloValor:
+          "VALOR DO FATURAMENTO TOTAL (FUND. A + FUND. B + FUND. C):",
       },
       {
         titulo:
@@ -117,6 +123,22 @@ export default ({
           ordem="INF. A"
           unidade="EMEBS Infantil"
         />
+        <TabelaDietas
+          ref={refDietaAInfantil}
+          tabelas={relatorioConsolidado.tabelas}
+          tipoDieta="TIPO A"
+          tiposAlimentacao={tiposAlimentacao}
+          totaisConsumo={totaisConsumo["INFANTIL"]}
+          ordem="INF. B"
+        />
+        <TabelaDietas
+          ref={refDietaBInfantil}
+          tabelas={relatorioConsolidado.tabelas}
+          tipoDieta="TIPO B"
+          tiposAlimentacao={tiposAlimentacao}
+          totaisConsumo={totaisConsumo["INFANTIL"]}
+          ordem="INF. C"
+        />
       </div>
 
       <h2 className="titulo-relatorio-financeiro">
@@ -130,6 +152,22 @@ export default ({
           totaisConsumo={totaisConsumo["FUNDAMENTAL"]}
           ordem="FUND. A"
           unidade="EMEBS Fundamental"
+        />
+        <TabelaDietas
+          ref={refDietaAFundamental}
+          tabelas={relatorioConsolidado.tabelas}
+          tipoDieta="TIPO A"
+          tiposAlimentacao={tiposAlimentacao}
+          totaisConsumo={totaisConsumo["FUNDAMENTAL"]}
+          ordem="FUND. B"
+        />
+        <TabelaDietas
+          ref={refDietaBFundamental}
+          tabelas={relatorioConsolidado.tabelas}
+          tipoDieta="TIPO B"
+          tiposAlimentacao={tiposAlimentacao}
+          totaisConsumo={totaisConsumo["FUNDAMENTAL"]}
+          ordem="FUND. C"
         />
       </div>
 
