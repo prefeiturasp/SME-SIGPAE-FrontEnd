@@ -18,7 +18,6 @@ import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancam
 import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/diasLetivosRecreio";
 import { mockValoresMedicaoEmeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockValoresMedicao";
 import { mockSalvaLancamentoSemana1EmeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockSalvarLancamentos";
-import preview from "jest-preview";
 
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
@@ -165,7 +164,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
     it("renderiza label `Mês do Lançamento`", async () => {
       await awaitServices();
       expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
-      preview.debug();
     });
 
     it("renderiza valor `Recreio nas Férias - JAN 2026` Mês do Lançamento`", () => {
