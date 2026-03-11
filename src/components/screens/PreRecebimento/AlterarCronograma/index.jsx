@@ -415,6 +415,10 @@ export default ({ analiseSolicitacao }) => {
                         <TabelaFormAlteracao
                           solicitacao={solicitacaoAlteracaoCronograma}
                           somenteLeitura={!analiseCronograma()}
+                          unidadeMedida={cronograma?.unidade_medida}
+                          tipoEmbalagemSecundaria={
+                            cronograma?.tipo_embalagem_secundaria
+                          }
                         />
                       </>
                     )}

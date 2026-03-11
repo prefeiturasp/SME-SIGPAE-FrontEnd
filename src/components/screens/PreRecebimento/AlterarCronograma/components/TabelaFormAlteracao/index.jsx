@@ -3,7 +3,6 @@ import { required } from "src/helpers/fieldValidators";
 import React, { useEffect } from "react";
 import { Field, useForm } from "react-final-form";
 import "./styles.scss";
-import { numberToStringDecimal } from "src/helpers/parsers";
 import { formataMilharDecimal } from "../../../../../../helpers/utilities";
 
 const pintaTabela = (campo, etapaAtual, etapasAntigas) => {
@@ -42,7 +41,12 @@ const preencherDadosEtapas = (etapasNovas, etapasAntigas, form) => {
   });
 };
 
-export default ({ solicitacao, somenteLeitura }) => {
+export default ({
+  solicitacao,
+  somenteLeitura,
+  unidadeMedida,
+  tipoEmbalagemSecundaria,
+}) => {
   const form = useForm();
 
   useEffect(() => {
@@ -112,7 +116,7 @@ export default ({ solicitacao, somenteLeitura }) => {
                       className={`borda-crono ${getClass("qtd_total_empenho")}`}
                     >
                       {etapa.qtd_total_empenho
-                        ? numberToStringDecimal(etapa.qtd_total_empenho)
+                        ? `${formataMilharDecimal(etapa.qtd_total_empenho)} ${unidadeMedida?.abreviacao || ""}`.trim()
                         : "----"}
                     </td>
                   ) : (
@@ -135,10 +139,10 @@ export default ({ solicitacao, somenteLeitura }) => {
                     {etapa.data_programada}
                   </td>
                   <td className={`borda-crono ${getClass("quantidade")}`}>
-                    {formataMilharDecimal(etapa.quantidade)}
+                    {`${formataMilharDecimal(etapa.quantidade)} ${unidadeMedida?.abreviacao || ""}`.trim()}
                   </td>
                   <td className={`borda-crono ${getClass("total_embalagens")}`}>
-                    {formataMilharDecimal(etapa.total_embalagens)}
+                    {`${formataMilharDecimal(etapa.total_embalagens)} ${tipoEmbalagemSecundaria?.abreviacao || ""}`.trim()}
                   </td>
                 </tr>
               );
