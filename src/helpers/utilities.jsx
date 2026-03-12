@@ -215,6 +215,14 @@ export const formataCPFCensurado = (cpf) => {
   return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.***.***-$4");
 };
 
+export const extrairConteudoEntreParenteses = (texto) => {
+  if (!texto) return "";
+  const inicio = texto.indexOf("(");
+  const fim = texto.indexOf(")");
+  if (inicio === -1 || fim === -1 || fim <= inicio) return "";
+  return texto.slice(inicio + 1, fim);
+};
+
 export const formataMilhar = (value) => {
   const valor = value?.toString().replace(/\D/g, "");
   if (!valor) return valor;
