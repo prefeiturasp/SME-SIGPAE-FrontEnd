@@ -16,6 +16,17 @@ import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTip
 import { SelectOption } from "../types";
 import GrupoEMEF from "../components/Tabelas/GrupoEMEF";
 import GrupoCIEJA from "../components/Tabelas/GrupoCIEJA";
+import GrupoCEMEI from "../components/Tabelas/GrupoCEMEI";
+import GrupoEMEBS from "../components/Tabelas/GrupoEMEBS";
+
+type TotaisParams = {
+  mes: string;
+  ano: string;
+  lote: string;
+  grupo_unidade_escolar: string;
+  status: string;
+  tipo_calculo?: string;
+};
 
 export function RelatorioFinanceiroConsolidado() {
   const [faixasEtarias, setFaixasEtarias] = useState<FaixaEtaria[]>([]);
@@ -48,17 +59,22 @@ export function RelatorioFinanceiroConsolidado() {
       (e) => e.value === state.grupo_unidade_escolar[0],
     )?.label;
 
-    setCarregando(true);
-    const response = await getTotaisAtendimentoConsumo({
+    const params: TotaisParams = {
       mes: mes,
       ano: ano,
       lote: lote[0],
       grupo_unidade_escolar: grupo_unidade_escolar[0],
       status: status[0],
-      tipo_calculo: grupo?.includes("CEI")
-        ? "faixa_etaria"
-        : "tipo_alimentacao",
-    });
+    };
+
+    if (grupo?.includes("CEI")) {
+      params.tipo_calculo = "faixa_etaria";
+    } else if (!grupo?.includes("CEMEI")) {
+      params.tipo_calculo = "tipo_alimentacao";
+    }
+
+    setCarregando(true);
+    const response = await getTotaisAtendimentoConsumo(params);
     setCarregando(false);
 
     if (response.status === HTTP_STATUS.OK) setTotaisConsumo(response.data);
@@ -132,6 +148,14 @@ export function RelatorioFinanceiroConsolidado() {
         totaisConsumo={totaisConsumo}
       />
     ),
+    "grupo 2": (
+      <GrupoCEMEI
+        relatorioConsolidado={relatorioConsolidado}
+        faixasEtarias={faixasEtarias}
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+      />
+    ),
     "grupo 3": (
       <GrupoEMEI
         relatorioConsolidado={relatorioConsolidado}
@@ -141,6 +165,13 @@ export function RelatorioFinanceiroConsolidado() {
     ),
     "grupo 4": (
       <GrupoEMEF
+        relatorioConsolidado={relatorioConsolidado}
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+      />
+    ),
+    "grupo 5": (
+      <GrupoEMEBS
         relatorioConsolidado={relatorioConsolidado}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}

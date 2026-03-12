@@ -23,6 +23,10 @@ export default ({
           <div className="card-listagem-solicitacoes">
             {solicitacoes &&
               solicitacoes.map((value, key) => {
+                const ehFLV =
+                  value.categoria === "FLV" &&
+                  value.tipo_entrega === "PONTO_A_PONTO";
+
                 return (
                   <div key={key} className="row">
                     <div className="col-9">
@@ -34,20 +38,20 @@ export default ({
                         >
                           <NavLink key={key} to={value.link}>
                             <p
-                              className={`data ms-4 ${value.programa_leve_leite ? "programa-leve-leite" : ""}`}
+                              className={`data ms-4 ${value.programa_leve_leite ? "programa-leve-leite" : ""} ${ehFLV && "categoria-flv"}`}
                             >{`${value.texto}`}</p>
                           </NavLink>
                         </Tooltip>
                       ) : (
                         <NavLink key={key} to={value.link}>
                           <p
-                            className={`data ms-4 ${value.programa_leve_leite ? "programa-leve-leite" : ""}`}
+                            className={`data ms-4 ${value.programa_leve_leite ? "programa-leve-leite" : ""} ${ehFLV && "categoria-flv"}`}
                           >{`${value.texto}`}</p>
                         </NavLink>
                       )}
                     </div>
                     <span
-                      className={`date-time col-3 text-end ${value.programa_leve_leite ? "programa-leve-leite" : ""}`}
+                      className={`date-time col-3 text-end ${value.programa_leve_leite ? "programa-leve-leite" : ""} ${ehFLV && "categoria-flv"}`}
                     >
                       {value.data}
                     </span>

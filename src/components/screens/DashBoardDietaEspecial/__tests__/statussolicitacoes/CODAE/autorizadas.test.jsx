@@ -30,13 +30,11 @@ describe("Teste StatusSolicitacoes - Autorizados - CODAE", () => {
       PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
-    Object.defineProperty(window, "location", {
-      value: {
-        href: "/solicitacoes-dieta-especial/solicitacoes-autorizadas",
-        pathname: "/solicitacoes-dieta-especial/solicitacoes-autorizadas",
-      },
-      writable: true,
-    });
+    window.history.pushState(
+      {},
+      "",
+      "/solicitacoes-dieta-especial/solicitacoes-autorizadas",
+    );
 
     await act(async () => {
       renderWithProvider(

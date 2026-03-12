@@ -51,6 +51,21 @@ export default class SubstituicoesField extends Component {
       deveHabilitarApagar,
     } = this.props;
 
+    const currentAlimento =
+      values.substituicoes && values.substituicoes[index]?.alimento;
+    const alimentosFiltrados = currentAlimento
+      ? alimentos.filter(
+          (a) => a.ativo || String(a.id) === String(currentAlimento),
+        )
+      : alimentos.filter((a) => a.ativo);
+
+    const currentSubstitutos =
+      (values.substituicoes && values.substituicoes[index]?.substitutos) || [];
+    const produtosFiltrados =
+      currentSubstitutos.length > 0
+        ? produtos.filter((p) => p.ativo || currentSubstitutos.includes(p.uuid))
+        : produtos.filter((p) => p.ativo);
+
     return (
       <>
         <div className="row">
@@ -70,13 +85,13 @@ export default class SubstituicoesField extends Component {
               onChange={(value) => {
                 this.setState({
                   valorSelecionado: alimentos.find(
-                    (al) => String(al.id) === value
+                    (al) => String(al.id) === value,
                   ),
                 });
                 form.change(`${name}.alimento`, value);
               }}
             >
-              {alimentos.map((a) => {
+              {alimentosFiltrados.map((a) => {
                 return <Option key={a.id.toString()}>{a.nome}</Option>;
               })}
             </Field>
@@ -101,7 +116,7 @@ export default class SubstituicoesField extends Component {
                   values.substituicoes[index].substitutos) ||
                 []
               }
-              options={produtos.map((produto) => ({
+              options={produtosFiltrados.map((produto) => ({
                 value: produto.uuid,
                 label: produto.nome,
               }))}
@@ -109,7 +124,7 @@ export default class SubstituicoesField extends Component {
                 form.change(
                   `substituicoes[
                 ${index}].substitutos`,
-                  values_
+                  values_,
                 )
               }
               disableSearch={false}

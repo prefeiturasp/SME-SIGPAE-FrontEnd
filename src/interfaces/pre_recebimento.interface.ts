@@ -124,6 +124,7 @@ export interface FichaTecnicaDashboard {
   numero_ficha: string;
   status: string;
   uuid: string;
+  categoria: string;
 }
 
 export interface FiltrosDashboardFichasTecnicas {

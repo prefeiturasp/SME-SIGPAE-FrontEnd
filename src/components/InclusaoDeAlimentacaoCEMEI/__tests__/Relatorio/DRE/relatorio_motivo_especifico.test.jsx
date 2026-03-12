@@ -30,27 +30,23 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão DRE - Motiv
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoAValidarCEMEI);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
 
     const search = `?uuid=${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
@@ -73,20 +69,20 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão DRE - Motiv
             <InclusaoDeAlimentacaoCEMEIRelatorios.RelatorioDRE />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       ));
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # 5A120`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # 5A120")
+      screen.getByText("Inclusão de Alimentação - Solicitação # 5A120"),
     ).toBeInTheDocument();
   });
 
   it("renderiza dados da solicitação", async () => {
     expect(
-      screen.getByText("Solicitação no prazo regular")
+      screen.getByText("Solicitação no prazo regular"),
     ).toBeInTheDocument();
 
     const span = container.querySelector(".dre-name");
@@ -94,7 +90,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão DRE - Motiv
     expect(span).toHaveTextContent("CEMEI SUZANA CAMPOS TAUIL");
 
     expect(
-      screen.getByText("Solicitação de Inclusão de Alimentação")
+      screen.getByText("Solicitação de Inclusão de Alimentação"),
     ).toBeInTheDocument();
     expect(screen.getByText("Evento Específico")).toBeInTheDocument();
 
@@ -104,7 +100,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão DRE - Motiv
   it("valida solicitação", async () => {
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/diretoria-regional-valida-pedido/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/diretoria-regional-valida-pedido/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoValidadaCEMEI);
 
@@ -113,13 +109,13 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão DRE - Motiv
 
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoValidadaCEMEI);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Inclusão de Alimentação validada com sucesso!")
+        screen.getByText("Inclusão de Alimentação validada com sucesso!"),
       ).toBeInTheDocument();
     });
 
@@ -132,13 +128,13 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão DRE - Motiv
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
 
     const uuidMotivoEmDesacordoComContrato =
       mockMotivosDRENaoValida.results.find(
-        (motivo) => motivo.nome === "Em desacordo com o contrato"
+        (motivo) => motivo.nome === "Em desacordo com o contrato",
       ).uuid;
 
     const selectMotivo = screen.getByTestId("select-motivo-cancelamento");
@@ -157,19 +153,19 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão DRE - Motiv
 
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoNaoValidadaCEMEI);
 
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/diretoria-regional-nao-valida-pedido/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/diretoria-regional-nao-valida-pedido/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoNaoValidadaCEMEI);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Solicitação não validada com sucesso!")
+        screen.getByText("Solicitação não validada com sucesso!"),
       ).toBeInTheDocument();
     });
 
@@ -180,7 +176,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão DRE - Motiv
   it("erro ao validar solicitação", async () => {
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/diretoria-regional-valida-pedido/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoAValidarCEMEI.uuid}/diretoria-regional-valida-pedido/`,
       )
       .reply(400, {});
 
@@ -190,8 +186,8 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão DRE - Motiv
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Houve um erro ao validar a Inclusão de Alimentação. Tente novamente mais tarde."
-        )
+          "Houve um erro ao validar a Inclusão de Alimentação. Tente novamente mais tarde.",
+        ),
       ).toBeInTheDocument();
     });
   });

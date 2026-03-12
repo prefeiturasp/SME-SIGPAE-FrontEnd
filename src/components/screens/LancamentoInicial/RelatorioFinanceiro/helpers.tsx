@@ -16,6 +16,7 @@ export const prioridadeAlimentacao = (nome: string) => {
   if (n === "refeicao") return 0;
   if (n.includes("refeicao cieja")) return 1;
   if (n.includes("refeicao eja")) return 2;
+  if (n === "lanche") return 3;
 
   return 99;
 };

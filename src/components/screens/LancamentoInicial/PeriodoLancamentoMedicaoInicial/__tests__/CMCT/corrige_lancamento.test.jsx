@@ -71,11 +71,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
     mock.onGet("/tipos-alimentacao/").reply(200, mockTipoAlimentacao);
 
     const search = `?uuid=bd69f3c8-33bb-42b2-86e8-db2f60d2a7d3&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

@@ -45,7 +45,7 @@ import { ModalFinalizarMedicao } from "../ModalFinalizarMedicao";
 import { ModalFinalizarMedicaoSemLancamentos } from "../ModalFinalizarSemLancamentos";
 import { ModalSemOcorrenciasIMR } from "../ModalSemOcorrenciasIMR";
 import { CardLancamentoCEI } from "./CardLancamentoCEI";
-import { ehEmeiDaCemei } from "./helpers";
+import { ehEmeiDaCemei, tiposAlimentacaoRecreio } from "./helpers";
 
 export const LancamentoPorPeriodoCEI = ({
   mes,
@@ -524,10 +524,9 @@ export const LancamentoPorPeriodoCEI = ({
                     textoCabecalho={`Recreio nas Férias${ehEscolaTipoCEMEI(escolaInstituicao) ? " - de 0 a 3 anos e 11 meses" : ""}`}
                     cor={CORES[10]}
                     grupo="Recreio nas Férias - de 0 a 3 anos e 11 meses"
-                    tipos_alimentacao={recreioNasFeriasDaMedicao(
+                    tipos_alimentacao={tiposAlimentacaoRecreio(
                       solicitacaoMedicaoInicial,
-                    ).unidades_participantes[0].tipos_alimentacao.inscritos.map(
-                      (tpi) => tpi.nome,
+                      escolaInstituicao,
                     )}
                     periodoSelecionado={periodoSelecionado}
                     solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
@@ -544,15 +543,10 @@ export const LancamentoPorPeriodoCEI = ({
                   <CardLancamentoCEI
                     textoCabecalho="Recreio nas Férias - 4 a 14 anos"
                     cor={CORES[12]}
-                    tiposAlimentacao={recreioNasFeriasDaMedicao(
+                    tiposAlimentacao={tiposAlimentacaoRecreio(
                       solicitacaoMedicaoInicial,
-                    )
-                      .unidades_participantes.find(
-                        (up) => up.cei_ou_emei === "EMEI",
-                      )
-                      ?.tipos_alimentacao.inscritos.map((tpi) => ({
-                        nome: tpi.nome,
-                      }))}
+                      escolaInstituicao,
+                    )}
                     periodoSelecionado={periodoSelecionado}
                     solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                     ehGrupoSolicitacoesDeAlimentacao={true}
@@ -560,6 +554,7 @@ export const LancamentoPorPeriodoCEI = ({
                       quantidadeAlimentacoesLancadas
                     }
                     errosAoSalvar={errosAoSalvar}
+                    grupo="Recreio nas Férias - 4 a 14 anos"
                   />
                 )}
                 {recreioNasFeriasComColaboradores(
@@ -568,11 +563,11 @@ export const LancamentoPorPeriodoCEI = ({
                   <CardLancamentoCEI
                     textoCabecalho="Colaboradores"
                     cor={CORES[11]}
-                    tiposAlimentacao={
-                      recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial)
-                        .unidades_participantes[0].tipos_alimentacao
-                        .colaboradores
-                    }
+                    tiposAlimentacao={tiposAlimentacaoRecreio(
+                      solicitacaoMedicaoInicial,
+                      escolaInstituicao,
+                      true,
+                    )}
                     periodoSelecionado={periodoSelecionado}
                     solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                     ehGrupoSolicitacoesDeAlimentacao={true}

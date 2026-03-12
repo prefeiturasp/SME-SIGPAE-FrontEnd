@@ -1,18 +1,27 @@
-import "./styles.scss";
-import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
-import {
-  BUTTON_TYPE,
-  BUTTON_STYLE,
-  BUTTON_ICON,
-} from "src/components/Shareable/Botao/constants";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
 import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
 import Collapse, { CollapseControl } from "src/components/Shareable/Collapse";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { FICHA_RECEBIMENTO, RECEBIMENTO } from "src/configs/constants";
+import {
+  formataData,
+  formataMilhar,
+  formataMilharDecimal,
+} from "src/helpers/utilities";
+import { getCronogramaPraCadastroRecebimento } from "src/services/cronograma.service";
 import {
   getFichaRecebimentoDetalhada,
   imprimirFichaRecebimento,
 } from "src/services/fichaRecebimento.service";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
   CronogramaFicha,
   EtapaFicha,
@@ -20,16 +29,7 @@ import {
   OcorrenciaFichaRecebimento,
   VeiculoPayload,
 } from "../../interfaces";
-import { getCronogramaPraCadastroRecebimento } from "src/services/cronograma.service";
-import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
-import {
-  formataData,
-  formataMilhar,
-  formataMilharDecimal,
-} from "src/helpers/utilities";
-import { NavLink } from "react-router-dom";
-import { FICHA_RECEBIMENTO, RECEBIMENTO } from "src/configs/constants";
-import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
+import "./styles.scss";
 
 const COLLAPSES_FICHA_RECEBIMENTO = [
   "Dados do Cronograma de Entregas",
@@ -139,7 +139,10 @@ export default () => {
                     </div>
                     <p>
                       Nº da Ata/Chamada Pública:{" "}
-                      <strong>{dadosCronograma?.ata}</strong>
+                      <strong>
+                        {dadosCronograma?.ata ||
+                          dadosCronograma?.numero_chamada_publica}
+                      </strong>
                     </p>
                     <p>
                       Fornecedor: <strong>{dadosCronograma?.fornecedor}</strong>

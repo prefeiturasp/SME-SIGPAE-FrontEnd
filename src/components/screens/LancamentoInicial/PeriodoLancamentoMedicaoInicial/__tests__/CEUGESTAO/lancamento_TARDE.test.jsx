@@ -122,11 +122,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO"
       .reply(200, []);
 
     const search = `?uuid=546505cb-eef1-4080-a8e8-7538faccf969&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

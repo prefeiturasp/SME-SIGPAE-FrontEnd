@@ -15,11 +15,15 @@ type Props = {
   tiposAlimentacao: Array<TipoAlimentacao>;
   totaisConsumo?: any;
   ordem?: string;
-  cieja?: boolean;
+  unidade?: string;
 };
 
 export const TabelaAlimentacao = forwardRef<TabelaAlimentacaoHandle, Props>(
-  ({ tabelas, tiposAlimentacao, totaisConsumo, ordem, cieja = false }, ref) => {
+  ({ tabelas, tiposAlimentacao, totaisConsumo, ordem, unidade }, ref) => {
+    const ehCieja = unidade === "CIEJA";
+    const ehCemei = unidade === "CEMEI";
+    const ehEmebs = unidade?.includes("EMEBS");
+
     let totalAtendimentosGeral = 0;
     let valorTotalGeral = 0;
 
@@ -36,6 +40,12 @@ export const TabelaAlimentacao = forwardRef<TabelaAlimentacaoHandle, Props>(
       },
     }));
 
+    const obterNomeTabela = () => {
+      if (ehEmebs) return `Preço das Alimentações - ${unidade}`;
+      if (ehCemei) return "Preço das Alimentações - Turma Infantil - EMEI";
+      return "Preço das Alimentações";
+    };
+
     return (
       <table className="tabela-relatorio">
         <thead>
@@ -50,12 +60,11 @@ export const TabelaAlimentacao = forwardRef<TabelaAlimentacaoHandle, Props>(
         </thead>
         <tbody>
           {tiposOrdenados.map((tipo) => {
-            const tabela = tabelas.find(
-              (t) => t.nome === "Preço das Alimentações",
-            );
+            const nomeTabela = obterNomeTabela();
+            const tabela = tabelas.find((t) => t.nome === nomeTabela);
 
             const nomeExibicao =
-              cieja && normalizar(tipo.nome) === "refeicao"
+              ehCieja && normalizar(tipo.nome) === "refeicao"
                 ? "Refeição CIEJA e CMCT"
                 : tipo.nome;
 

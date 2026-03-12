@@ -157,6 +157,7 @@ export interface CronogramaFicha {
   etapas: EtapaFicha[];
   fornecedor: string;
   marca: string;
+  numero_chamada_publica?: string;
   peso_liquido_embalagem_primaria: string;
   peso_liquido_embalagem_secundaria: string;
   pregao_chamada_publica: string;

@@ -31,7 +31,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaEMEBS);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaEMEBS);
     mock
@@ -72,11 +72,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
     });
 
     const search = `?uuid=916a9e70-d853-4c19-bbfb-63b35b66d185&ehGrupoSolicitacoesDeAlimentacao=true&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -101,7 +97,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
           >
             <PeriodoLancamentoMedicaoInicialPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -127,13 +123,13 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
     const inputElement = screen.getByTestId("input-periodo-lancamento");
     expect(inputElement).toHaveAttribute(
       "value",
-      "Solicitações de Alimentação"
+      "Solicitações de Alimentação",
     );
   });
 
   it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
     expect(
-      screen.getByText("Semanas do Período para Lançamento da Medição Inicial")
+      screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
     ).toBeInTheDocument();
   });
 

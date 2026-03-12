@@ -38,12 +38,12 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CIEJA", () => {
       .reply(200, []);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCIEJA);
     mock
       .onGet(
-        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/"
+        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
       )
       .reply(200, { results: [] });
     mock
@@ -67,29 +67,25 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CIEJA", () => {
       .reply(200, { results: [] });
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
       )
       .reply(200, []);
     mock
       .onGet(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialCIEJA[0].uuid}/ceu-gestao-frequencias-dietas/`
+        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialCIEJA[0].uuid}/ceu-gestao-frequencias-dietas/`,
       )
       .reply(200, []);
     mock
       .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/"
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
       .reply(
         200,
-        mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCIEJAAgosto2024
+        mockQuantidadesAlimentacaoesLancadasPeriodoGrupoCIEJAAgosto2024,
       );
 
     const search = `?mes=08&ano=2024`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CIEJA ROLANDO BOLDRIN"`);
@@ -114,7 +110,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CIEJA", () => {
           >
             <LancamentoMedicaoInicialPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -155,7 +151,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CIEJA", () => {
     for (let i = 0; i < elementos.length - 1; i++) {
       const posicao = elementos[i].compareDocumentPosition(elementos[i + 1]);
       expect(posicao & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
-        Node.DOCUMENT_POSITION_FOLLOWING
+        Node.DOCUMENT_POSITION_FOLLOWING,
       );
     }
   });

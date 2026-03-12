@@ -26,6 +26,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   ehProgramasEProjetosLocation,
   ehRecreioNasFerias,
   ehGrupoColaboradores,
+  grupo,
 ) => {
   if (
     (ehEmeiDaCemeiLocation &&
@@ -37,7 +38,7 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
     values["periodo_escolar"] === "Programas e Projetos" ||
     ehRecreioNasFerias
   ) {
-    values["grupo"] = values["periodo_escolar"];
+    values["grupo"] = ehRecreioNasFerias ? grupo : values["periodo_escolar"];
     if (values["grupo"] && values["grupo"].includes("Solicitações")) {
       values["grupo"] = "Solicitações de Alimentação";
     }
@@ -108,14 +109,21 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   });
 
   if (ehRecreioNasFerias) {
-    valoresMedicao = valoresMedicao.map((item) => {
-      if (item.nome_campo === "participantes") {
-        // eslint-disable-next-line no-unused-vars
-        const { faixa_etaria, ...resto } = item;
-        return resto;
-      }
-      return item;
-    });
+    valoresMedicao = valoresMedicao
+      .filter((item) => {
+        return !(
+          ["frequencia", "dietas_autorizadas"].includes(item.nome_campo) &&
+          (item.faixa_etaria === null || item.faixa_etaria === "null")
+        );
+      })
+      .map((item) => {
+        if (item.nome_campo === "participantes") {
+          // eslint-disable-next-line no-unused-vars
+          const { faixa_etaria, ...resto } = item;
+          return resto;
+        }
+        return item;
+      });
   }
 
   return { ...values, valores_medicao: valoresMedicao };
@@ -498,7 +506,7 @@ export const desabilitarField = (
     }
     return false;
   }
-
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
   if (
     (location && location.state && location.state.ehEmeiDaCemei) ||
     ehSolicitacoesAlimentacaoLocation
@@ -519,15 +527,15 @@ export const desabilitarField = (
       return true;
     } else if (
       (nomeCategoria === "ALIMENTAÇÃO" &&
-        (rowName === "matriculados" ||
-          !values[`matriculados__dia_${dia}__categoria_${categoria}`])) ||
+        (rowName === prefixo ||
+          !values[`${prefixo}__dia_${dia}__categoria_${categoria}`])) ||
       (nomeCategoria.includes("DIETA") &&
         (rowName === "dietas_autorizadas" ||
           !values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`])) ||
       Number(
         values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
       ) === 0 ||
-      Number(values[`matriculados__dia_${dia}__categoria_${categoria}`]) === 0
+      Number(values[`${prefixo}__dia_${dia}__categoria_${categoria}`]) === 0
     ) {
       return true;
     } else if (rowName === "frequencia") {
@@ -896,7 +904,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   ehSolicitacoesAlimentacaoLocation,
   alimentacoesLancamentosEspeciais,
   ehProgramasEProjetosLocation,
-  ehGrupoColaboradores,
+  ehRecreioNasFerias,
 ) => {
   const tiposAlimentacaoFormatadas = tiposAlimentacao.map((alimentacao) => {
     return {
@@ -957,8 +965,8 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   }
 
   const matriculadosOuNumeroDeAlunos = () => {
-    const name = ehGrupoColaboradores ? "participantes" : "matriculados";
-    const nome = ehGrupoColaboradores ? "Participantes" : "matriculados";
+    const name = ehRecreioNasFerias ? "participantes" : "matriculados";
+    const nome = ehRecreioNasFerias ? "Participantes" : "Matriculados";
     return ehProgramasEProjetosLocation
       ? {
           nome: "Número de Alunos",
@@ -1500,3 +1508,53 @@ export const getListaDiasSobremesaDoceAsync = async (escola_uuid, mes, ano) => {
     return [];
   }
 };
+
+export function verificaDietasPorFaixa(data) {
+  const tipoAClassificacoes = new Set([
+    "Tipo A RESTRIÇÃO DE AMINOÁCIDOS",
+    "Tipo A",
+    "Tipo A ENTERAL",
+  ]);
+
+  const acumulador = {};
+
+  for (const item of data) {
+    const uuid = item?.faixa_etaria?.uuid;
+    const classificacao = item?.classificacao;
+    const quantidade = Number(item?.quantidade) || 0;
+
+    if (!uuid) continue;
+
+    if (!acumulador[uuid]) {
+      acumulador[uuid] = {
+        tipoA: 0,
+        tipoB: 0,
+      };
+    }
+
+    if (tipoAClassificacoes.has(classificacao)) {
+      acumulador[uuid].tipoA += quantidade;
+    }
+
+    if (classificacao === "Tipo B") {
+      acumulador[uuid].tipoB += quantidade;
+    }
+  }
+
+  const resultado = {
+    "DIETA ESPECIAL - TIPO A": [],
+    "DIETA ESPECIAL - TIPO B": [],
+  };
+
+  for (const [uuid, valores] of Object.entries(acumulador)) {
+    if (valores.tipoA > 0) {
+      resultado["DIETA ESPECIAL - TIPO A"].push(uuid);
+    }
+
+    if (valores.tipoB > 0) {
+      resultado["DIETA ESPECIAL - TIPO B"].push(uuid);
+    }
+  }
+
+  return resultado;
+}

@@ -36,11 +36,11 @@ class Step2 extends Component {
       payload.informacoes_nutricionais.forEach((informacao) => {
         this.props.change(
           `porcao=${informacao.informacao_nutricional}`,
-          informacao.quantidade_porcao
+          informacao.quantidade_porcao,
         );
         this.props.change(
           `vd=${informacao.informacao_nutricional}`,
-          informacao.valor_diario
+          informacao.valor_diario,
         );
       });
     }
@@ -69,11 +69,11 @@ class Step2 extends Component {
       item.informacoes_nutricionais.forEach((informacao) => {
         const temPorcao = Object.prototype.hasOwnProperty.call(
           values,
-          `porcao=${informacao.uuid}`
+          `porcao=${informacao.uuid}`,
         );
         if (temPorcao) {
           let inf_nutr_atualizada = payload.informacoes_nutricionais.find(
-            (inf_nutr) => inf_nutr.informacao_nutricional === informacao.uuid
+            (inf_nutr) => inf_nutr.informacao_nutricional === informacao.uuid,
           );
           if (inf_nutr_atualizada) {
             inf_nutr_atualizada.quantidade_porcao =
@@ -202,13 +202,13 @@ class Step2 extends Component {
                                         validate={inteiroOuDecimal}
                                         onBlur={() => {
                                           this.setaInformacaoComoVisto(
-                                            informacaoNutricional
+                                            informacaoNutricional,
                                           );
                                         }}
                                         onChange={(e) => {
                                           this.changeFormValue(
                                             e,
-                                            `porcao=${informacaoNutricional.uuid}`
+                                            `porcao=${informacaoNutricional.uuid}`,
                                           );
                                           this.props.setBlockProximo();
                                         }}
@@ -229,7 +229,7 @@ class Step2 extends Component {
                                         validate={inteiroOuDecimal}
                                         onBlur={() => {
                                           this.setaInformacaoComoVisto(
-                                            informacaoNutricional
+                                            informacaoNutricional,
                                           );
                                         }}
                                       />
@@ -239,7 +239,7 @@ class Step2 extends Component {
                                 </td>
                               </tr>
                             );
-                          }
+                          },
                         )}
                       </tbody>
                     </table>
@@ -267,7 +267,7 @@ class Step2 extends Component {
                 onClick={handleSubmit((values) =>
                   this.onSubmit({
                     ...values,
-                  })
+                  }),
                 )}
               />
             </div>

@@ -79,11 +79,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Lançamento com Repetição 
       .reply(200, mockEscolaSimplesEMEF);
 
     const search = `?uuid=${escolaUuid}&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

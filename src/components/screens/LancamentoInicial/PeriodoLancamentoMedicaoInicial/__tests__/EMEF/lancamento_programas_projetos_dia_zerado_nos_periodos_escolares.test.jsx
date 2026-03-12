@@ -106,11 +106,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos com per
       });
 
     const search = `?uuid=b386231a-2a77-488b-b6d5-b016987e55c2&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(

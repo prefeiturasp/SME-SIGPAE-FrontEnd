@@ -47,44 +47,40 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Sol
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI.uuid}/`,
       )
       .replyOnce(
         200,
-        mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI
+        mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI,
       );
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI.uuid}/codae-cancela-pedido/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI.uuid}/codae-cancela-pedido/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoNegadaCEMEI);
 
     const search = `?uuid=${mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     await act(async () => {
       ({ container } = render(
@@ -103,20 +99,20 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Sol
             <InclusaoDeAlimentacaoCEMEIRelatorios.RelatorioCODAE />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       ));
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # E80EE`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # E80EE")
+      screen.getByText("Inclusão de Alimentação - Solicitação # E80EE"),
     ).toBeInTheDocument();
   });
 
   it("renderiza dados da solicitação", async () => {
     expect(
-      screen.getByText("Solicitação no prazo regular")
+      screen.getByText("Solicitação no prazo regular"),
     ).toBeInTheDocument();
 
     const span = container.querySelector(".dre-name");
@@ -124,7 +120,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Sol
     expect(span).toHaveTextContent("CEMEI SUZANA CAMPOS TAUIL");
 
     expect(
-      screen.getByText("Solicitação de Inclusão de Alimentação")
+      screen.getByText("Solicitação de Inclusão de Alimentação"),
     ).toBeInTheDocument();
     expect(screen.getByText("Dia da família")).toBeInTheDocument();
 
@@ -138,7 +134,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Sol
   it("download pdf", async () => {
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI.uuid}/relatorio/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI.uuid}/relatorio/`,
       )
       .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
 
@@ -147,7 +143,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Sol
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Houve um erro ao imprimir o relatório")
+        screen.queryByText("Houve um erro ao imprimir o relatório"),
       ).not.toBeInTheDocument();
     });
   });
@@ -155,7 +151,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Sol
   it("erro download pdf", async () => {
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI.uuid}/relatorio/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaSolicitacoesSimilaresCEMEI.uuid}/relatorio/`,
       )
       .reply(400, { detail: "Erro ao baixar PDF" });
 
@@ -164,7 +160,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Sol
 
     await waitFor(() => {
       expect(
-        screen.getByText("Houve um erro ao imprimir o relatório")
+        screen.getByText("Houve um erro ao imprimir o relatório"),
       ).toBeInTheDocument();
     });
   });

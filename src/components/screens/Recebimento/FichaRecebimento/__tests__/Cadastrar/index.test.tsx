@@ -449,11 +449,7 @@ describe("Cadastro de Ficha de Recebimento", () => {
       .reply(200, mockCronogramaCadastroRecebimento);
 
     const search = `?uuid=${mockGetFichaRecebimentoDetalhada.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await setup();
 
