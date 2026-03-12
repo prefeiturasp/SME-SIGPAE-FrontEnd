@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import moment from "moment";
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
 import "./styles.scss";
@@ -300,7 +301,11 @@ export default () => {
       etapaValues[`parte_${i}`] = stringNaoVaziaOuUndefined(etapa.parte);
       etapaValues[`data_programada_${i}`] =
         isPontoAPonto && etapa.data_programada
-          ? etapa.data_programada.substring(3)
+          ? moment(etapa.data_programada, [
+              "YYYY-MM-DD",
+              "DD/MM/YYYY",
+              "MM/YYYY",
+            ]).format("MM/YYYY")
           : stringNaoVaziaOuUndefined(etapa.data_programada);
       etapaValues[`quantidade_${i}`] = formataMilharDecimal(etapa.quantidade);
       etapaValues[`total_embalagens_${i}`] = stringNaoVaziaOuUndefined(
