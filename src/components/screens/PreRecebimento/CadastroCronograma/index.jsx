@@ -252,28 +252,35 @@ export default () => {
     );
     cronogramaValues["unidade_medida"] = cronograma.unidade_medida?.uuid;
     cronogramaValues["produto"] = cronograma.produto?.uuid;
-    cronogramaValues["armazem"] = cronograma.armazem?.uuid;
-    cronogramaValues["ficha_tecnica"] =
-      `${cronograma.ficha_tecnica?.numero} - ${cronograma.ficha_tecnica?.produto.nome}`;
-    cronogramaValues["marca"] = cronograma.ficha_tecnica?.marca.nome;
-    cronogramaValues["peso_liquido_embalagem_primaria"] = numberToStringDecimal(
-      cronograma.ficha_tecnica?.peso_liquido_embalagem_primaria,
-    );
-    cronogramaValues["unidade_medida_primaria"] =
-      cronograma.ficha_tecnica?.unidade_medida_primaria?.uuid;
-    cronogramaValues["peso_liquido_embalagem_secundaria"] =
-      numberToStringDecimal(
-        cronograma.ficha_tecnica?.peso_liquido_embalagem_secundaria,
+
+    cronogramaValues["ficha_tecnica"] = cronograma.ficha_tecnica
+      ? `${cronograma.ficha_tecnica.numero} - ${cronograma.ficha_tecnica.produto?.nome}`
+      : undefined;
+    cronogramaValues["marca"] = cronograma.ficha_tecnica?.marca?.nome;
+
+    if (!isPontoAPonto) {
+      cronogramaValues["armazem"] = cronograma.armazem?.uuid;
+      cronogramaValues["peso_liquido_embalagem_primaria"] =
+        numberToStringDecimal(
+          cronograma.ficha_tecnica?.peso_liquido_embalagem_primaria,
+        );
+      cronogramaValues["unidade_medida_primaria"] =
+        cronograma.ficha_tecnica?.unidade_medida_primaria?.uuid;
+      cronogramaValues["peso_liquido_embalagem_secundaria"] =
+        numberToStringDecimal(
+          cronograma.ficha_tecnica?.peso_liquido_embalagem_secundaria,
+        );
+      cronogramaValues["unidade_medida_secundaria"] =
+        cronograma.ficha_tecnica?.unidade_medida_secundaria?.uuid;
+      cronogramaValues["volume_embalagem_primaria"] = numberToStringDecimal(
+        cronograma.ficha_tecnica?.volume_embalagem_primaria,
       );
-    cronogramaValues["unidade_medida_secundaria"] =
-      cronograma.ficha_tecnica?.unidade_medida_secundaria?.uuid;
-    cronogramaValues["volume_embalagem_primaria"] = numberToStringDecimal(
-      cronograma.ficha_tecnica?.volume_embalagem_primaria,
-    );
-    cronogramaValues["unidade_medida_volume_primaria"] =
-      cronograma.ficha_tecnica?.unidade_medida_volume_primaria?.uuid;
-    cronogramaValues["tipo_embalagem_secundaria"] =
-      cronograma.tipo_embalagem_secundaria?.uuid;
+      cronogramaValues["unidade_medida_volume_primaria"] =
+        cronograma.ficha_tecnica?.unidade_medida_volume_primaria?.uuid;
+      cronogramaValues["tipo_embalagem_secundaria"] =
+        cronograma.tipo_embalagem_secundaria?.uuid;
+    }
+
     cronogramaValues["custo_unitario_produto"] = numberToStringDecimalMonetario(
       cronograma.custo_unitario_produto,
     );
