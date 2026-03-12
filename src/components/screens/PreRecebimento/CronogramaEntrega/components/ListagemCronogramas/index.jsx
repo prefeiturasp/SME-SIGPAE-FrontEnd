@@ -97,7 +97,11 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
               {((usuarioEhEmpresaFornecedor() &&
                 cronograma.status !== "Rascunho") ||
                 !usuarioEhEmpresaFornecedor()) && (
-                <div className="grid-table body-table">
+                <div
+                  className={`grid-table body-table ${
+                    cronograma.ponto_a_ponto ? "flv-ponto-a-ponto" : ""
+                  }`}
+                >
                   <div className={bordas}>{cronograma.numero}</div>
                   <div className="d-flex align-items-center justify-content-between">
                     <Tooltip
@@ -187,7 +191,10 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                               to={`/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA}/${EDITAR}?uuid=${cronograma.uuid}`}
                             >
                               <span className="link-acoes green">
-                                <i className="fas fa-edit" title="Editar" />
+                                <i
+                                  className="fas fa-edit"
+                                  title="Editar Rascunho"
+                                />
                               </span>
                             </NavLink>
                           )}
