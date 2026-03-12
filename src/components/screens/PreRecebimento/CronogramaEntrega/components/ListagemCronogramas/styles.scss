@@ -58,6 +58,10 @@
       font-weight: 500;
       color: #686868;
 
+      &.flv-ponto-a-ponto {
+        color: $green;
+      }
+
       .link-acoes {
         &:hover {
           cursor: pointer;
