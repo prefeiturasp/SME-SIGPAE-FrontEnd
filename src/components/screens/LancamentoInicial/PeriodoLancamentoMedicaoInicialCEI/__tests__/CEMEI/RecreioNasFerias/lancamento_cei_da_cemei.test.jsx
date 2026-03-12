@@ -997,6 +997,16 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           categoria: "1",
           valor: "6",
         },
+        {
+          uuidFaixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+          categoria: "2",
+          valor: "6",
+        },
+        {
+          uuidFaixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+          categoria: "4",
+          valor: "2",
+        },
       ];
 
       itensParaPreencher.forEach(({ uuidFaixa, categoria, valor }) => {
@@ -1031,6 +1041,16 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
         "participantes__faixa_null__dia_02__categoria_1",
       );
       expect(inputParticipantes).toHaveAttribute("value", "42");
+
+      const inputDietasAutorizadaA1 = screen.getByTestId(
+        `dietas_autorizadas__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece__dia_02__categoria_2`,
+      );
+      expect(inputDietasAutorizadaA1).toHaveAttribute("value", "6");
+
+      const inputDietasAutorizadaB = screen.getByTestId(
+        `dietas_autorizadas__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece__dia_02__categoria_4`,
+      );
+      expect(inputDietasAutorizadaB).toHaveAttribute("value", "2");
     });
   });
 });
