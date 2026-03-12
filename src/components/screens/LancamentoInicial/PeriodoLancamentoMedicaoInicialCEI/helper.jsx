@@ -109,14 +109,21 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   });
 
   if (ehRecreioNasFerias) {
-    valoresMedicao = valoresMedicao.map((item) => {
-      if (item.nome_campo === "participantes") {
-        // eslint-disable-next-line no-unused-vars
-        const { faixa_etaria, ...resto } = item;
-        return resto;
-      }
-      return item;
-    });
+    valoresMedicao = valoresMedicao
+      .filter((item) => {
+        return !(
+          ["frequencia", "dietas_autorizadas"].includes(item.nome_campo) &&
+          (item.faixa_etaria === null || item.faixa_etaria === "null")
+        );
+      })
+      .map((item) => {
+        if (item.nome_campo === "participantes") {
+          // eslint-disable-next-line no-unused-vars
+          const { faixa_etaria, ...resto } = item;
+          return resto;
+        }
+        return item;
+      });
   }
 
   return { ...values, valores_medicao: valoresMedicao };
