@@ -315,7 +315,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
       await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
-      preview.debug();
       const VALORES_ESPERADOS = {
         1: {
           participantes: "50",
@@ -754,6 +753,205 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();
       expect(botao).toBeDisabled();
+    });
+  });
+
+  describe("Testa a parte de DIETAS ESPECIAIS", () => {
+    const dias = [1, 2, 3, 4, 29, 30, 31].map((d) =>
+      String(d).padStart(2, "0"),
+    );
+    const diasDesabilitados = [29, 30, 31, 1, 3, 4].map((d) =>
+      String(d).padStart(2, "0"),
+    );
+
+    it("ao clicar na tab `Semana 1`, verifica as faixas existentes nas dietas especiais Tipo A", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const faixasRenderizadas = ["1b77202d-fd0b-46b7-b4ec-04eb262efece"];
+
+      mockFaixasEtarias.results.forEach((faixa) => {
+        dias.forEach((dia) => {
+          const inputDietasAutorizadas = screen.queryByTestId(
+            `dietas_autorizadas__faixa_${faixa.uuid}__dia_${dia}__categoria_2`,
+          );
+          const inputFrequencia = screen.queryByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_2`,
+          );
+
+          const deveExistir = faixasRenderizadas.includes(faixa.uuid);
+          if (deveExistir) {
+            expect(inputDietasAutorizadas).toBeInTheDocument();
+            expect(inputDietasAutorizadas).toBeDisabled();
+            expect(inputFrequencia).toBeInTheDocument();
+
+            if (diasDesabilitados.includes(dia)) {
+              expect(inputFrequencia.disabled).toBe(true);
+            } else {
+              expect(inputFrequencia.disabled).toBe(false);
+            }
+          } else {
+            expect(inputDietasAutorizadas).not.toBeInTheDocument();
+            expect(inputFrequencia).not.toBeInTheDocument();
+          }
+        });
+      });
+    });
+
+    it("ao clicar na tab `Semana 1`, verifica as faixas existentes nas dietas especiais Tipo B", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const faixasRenderizadas = ["1b77202d-fd0b-46b7-b4ec-04eb262efece"];
+
+      mockFaixasEtarias.results.forEach((faixa) => {
+        dias.forEach((dia) => {
+          const inputDietasAutorizadas = screen.queryByTestId(
+            `dietas_autorizadas__faixa_${faixa.uuid}__dia_${dia}__categoria_4`,
+          );
+          const inputFrequencia = screen.queryByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_4`,
+          );
+
+          const deveExistir = faixasRenderizadas.includes(faixa.uuid);
+          if (deveExistir) {
+            expect(inputDietasAutorizadas).toBeInTheDocument();
+            expect(inputDietasAutorizadas).toBeDisabled();
+            expect(inputFrequencia).toBeInTheDocument();
+
+            if (diasDesabilitados.includes(dia)) {
+              expect(inputFrequencia.disabled).toBe(true);
+            } else {
+              expect(inputFrequencia.disabled).toBe(false);
+            }
+          } else {
+            expect(inputDietasAutorizadas).not.toBeInTheDocument();
+            expect(inputFrequencia).not.toBeInTheDocument();
+          }
+        });
+      });
+    });
+
+    it("ao clicar na tab `Semana 1`, exibe, nos dias 29 setembro a 05 de outubro, e verifica os lançamentos", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+      preview.debug();
+
+      const faixasPorCategoria = [
+        { uuid_faixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece", cateoria: "2" },
+        { uuid_faixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece", cateoria: "4" },
+      ];
+
+      const valoresExperados = {
+        1: {
+          dieta: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "",
+          },
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "",
+          },
+        },
+        2: {
+          dieta: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "6",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "2",
+          },
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "",
+          },
+        },
+        3: { dieta: {}, frequencia: {} },
+        4: { dieta: {}, frequencia: {} },
+        29: {
+          dieta: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "Mês anterior",
+          },
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "Mês anterior",
+          },
+        },
+        30: {
+          dieta: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "Mês anterior",
+          },
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "Mês anterior",
+          },
+        },
+        31: {
+          dieta: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "Mês anterior",
+          },
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "Mês anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "Mês anterior",
+          },
+        },
+      };
+
+      Object.keys(valoresExperados).forEach((dia) => {
+        const valoresDia = valoresExperados[dia];
+        const diaFormatado = dia.toString().padStart(2, "0");
+
+        faixasPorCategoria.forEach(({ uuid_faixa, cateoria }) => {
+          const chaveBusca = `${uuid_faixa}-cat${cateoria}`;
+
+          const valorDietaEsperado = valoresDia.dieta[chaveBusca] || "";
+          const valorFreqEsperado = valoresDia.frequencia[chaveBusca] || "";
+
+          const inputDieta = screen.getByTestId(
+            `dietas_autorizadas__faixa_${uuid_faixa}__dia_${diaFormatado}__categoria_${cateoria}`,
+          );
+          expect(inputDieta).toHaveAttribute("value", valorDietaEsperado);
+
+          const inputFrequencia = screen.getByTestId(
+            `frequencia__faixa_${uuid_faixa}__dia_${diaFormatado}__categoria_${cateoria}`,
+          );
+          expect(inputFrequencia).toHaveAttribute("value", valorFreqEsperado);
+        });
+      });
+
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      await waitFor(() => {
+        expect(botao).not.toBeDisabled();
+      });
+    });
+
+    it("ao clicar na tab `Semana 1`, preencher frequencia maior que dietas autorizadas e exibe erro", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const faixasRenderizadas = ["1b77202d-fd0b-46b7-b4ec-04eb262efece"];
+
+      const cenarios = [
+        { faixa: faixasRenderizadas[0], categoria: "2" },
+        { faixa: faixasRenderizadas[0], categoria: "4" },
+      ];
+
+      cenarios.forEach(({ faixa, categoria }) => {
+        const testId = `frequencia__faixa_${faixa}__dia_01__categoria_${categoria}`;
+        const input = screen.getByTestId(testId);
+
+        fireEvent.change(input, { target: { value: "10" } });
+        expect(input).toHaveClass("invalid-field");
+
+        const botao = screen.getByText("Salvar Lançamentos").closest("button");
+        expect(botao).toBeInTheDocument();
+        expect(botao).toBeDisabled();
+      });
     });
   });
 
