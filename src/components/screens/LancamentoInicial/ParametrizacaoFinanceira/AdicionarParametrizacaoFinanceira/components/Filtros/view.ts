@@ -16,7 +16,13 @@ import {
 import { SelectOption } from "src/interfaces/option.interface";
 import { FormApi } from "final-form";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
-import { carregarValores, limparTabelas, parseDate } from "../../helpers";
+import {
+  carregarValores,
+  extrairConteudoEntreParenteses,
+  extrairTiposAlimentacaoDasUnidades,
+  limparTabelas,
+  parseDate,
+} from "../../helpers";
 import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import moment from "moment";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -24,7 +30,6 @@ import {
   MEDICAO_INICIAL,
   PARAMETRIZACAO_FINANCEIRA,
 } from "src/configs/constants";
-import { extrairConteudoEntreParenteses } from "src/helpers/utilities";
 
 type Props = {
   setGrupoSelecionado: Dispatch<SetStateAction<string>>;
@@ -155,16 +160,15 @@ export default ({
 
   const requisicoesPreRender = async (): Promise<void> => {
     setCarregando(true);
-    Promise.all([
+    await Promise.all([
       getEditaisAsync(),
       getLotesAsync(),
       getGrupoUnidadeEscolarAsync(),
       setFaixasEtarias && getFaixasEtariasAsync(),
       setTiposAlimentacao && getTiposUnidadeEscolarAsync(),
       uuidParametrizacao && getParametrizacao(uuidParametrizacao),
-    ]).then(() => {
-      setCarregando(false);
-    });
+    ]);
+    setCarregando(false);
   };
 
   const getParametrizacao = async (uuid: string) => {
@@ -224,9 +228,7 @@ export default ({
         (e) => e.uuid === grupo_unidade_escolar,
       ).nome;
 
-      const nomeSelecionado = grupoNome.includes("(")
-        ? grupoNome.substring(0, grupoNome.indexOf("(")).trim()
-        : grupoNome.trim();
+      const nomeSelecionado = grupoNome.replace(/\s*\(.*?\)\s*/g, "").trim();
 
       const novoInicio = parseDate(data_inicial);
       const novoFim = parseDate(data_final);
@@ -304,38 +306,13 @@ export default ({
     setGrupoSelecionado(selecionado);
 
     const conteudoParenteses = extrairConteudoEntreParenteses(selecionado);
-    let unidades: string[] = [];
-    if (conteudoParenteses) {
-      const tipos = conteudoParenteses.split(",");
-      unidades = tipos.map((item) => item.trim());
-    }
+    const unidades = conteudoParenteses
+      ? conteudoParenteses.split(",").map((item) => item.trim())
+      : [];
 
-    const tiposAlimentacaoUnidades: Array<SelectOption> = unidades.reduce(
-      (acc, tipoUnidade) => {
-        acc.push(
-          ...tiposUnidades
-            .find((t) => t.iniciais === tipoUnidade)
-            .periodos_escolares.reduce((acc, periodo) => {
-              acc.push(...periodo.tipos_alimentacao);
-              return acc;
-            }, []),
-        );
-        return acc;
-      },
-      [],
-    );
-
-    const tiposAlimentacaoUnicos = {};
-
-    tiposAlimentacaoUnidades.forEach((tipoAlimentacao) => {
-      tiposAlimentacaoUnicos[tipoAlimentacao.uuid] = tipoAlimentacao.nome;
-    });
-
-    const tiposAlimentacao = Object.entries(tiposAlimentacaoUnicos).map(
-      ([uuid, nome]) => ({
-        uuid,
-        nome,
-      }),
+    const tiposAlimentacao = extrairTiposAlimentacaoDasUnidades(
+      unidades,
+      tiposUnidades,
     );
 
     setTiposAlimentacao(tiposAlimentacao);
