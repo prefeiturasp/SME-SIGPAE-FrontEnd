@@ -9,16 +9,15 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { localStorageMock } from "src/mocks/localStorageMock";
-import { PeriodoLancamentoMedicaoInicialCEI } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI";
-import { mockLocationStateGrupoEmeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockStateRecreio";
-import { getMeusDados } from "src/services/perfil.service";
-import { mockMeusDadosEscolaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEMEI";
-import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
-import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
-import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/diasLetivosRecreio";
-import { mockValoresMedicaoEmeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockValoresMedicao";
-import { mockSalvaLancamentoSemana1EmeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockSalvarLancamentos";
 
+import { PeriodoLancamentoMedicaoInicialCEI } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI";
+import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
+import { mockSalvaLancamentoSemana1ColabordoresCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockSalvarLancamentos";
+import { mockLocationStateGrupoColaboradoresCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockStateRecreio";
+import { mockValoresMedicaoCEMEIColaboradores } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockValoresMedicao";
+import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/diasLetivosRecreio";
+import { mockMeusDadosEscolaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEMEI";
+import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
@@ -30,18 +29,13 @@ import {
   getSolicitacoesSuspensoesAutorizadasEscola,
   getValoresPeriodosLancamentos,
   updateValoresPeriodosLancamentos,
-  getLogDietasAutorizadasRecreioNasFeriasCEI,
-  getLogDietasAutorizadasPeriodo,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
-import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
-import mock from "src/services/_mock";
+import { getMeusDados } from "src/services/perfil.service";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
-jest.mock("src/services/medicaoInicial/permissaoLancamentosEspeciais.service");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -56,22 +50,39 @@ const awaitServices = async () => {
     ).toHaveBeenCalled();
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
-    expect(getLogDietasAutorizadasRecreioNasFeriasCEI).toHaveBeenCalled;
   });
 };
 
-describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ©rias - de 4 a 14 anos - CEMEI", () => {
+describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Colaboradores - CEMEI", () => {
   beforeEach(async () => {
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaCEMEI,
       status: 200,
     });
-    mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
-
     getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
-
     getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
       data: { results: [] },
+      status: 200,
+    });
+    getCategoriasDeMedicao.mockResolvedValue({
+      data: mockCategoriasMedicaoCEI,
+      status: 200,
+    });
+
+    getTiposDeAlimentacao.mockResolvedValue({
+      data: { data: { results: [] }, status: 200 },
+      status: 200,
+    });
+    getValoresPeriodosLancamentos.mockResolvedValue({
+      data: mockValoresMedicaoCEMEIColaboradores,
+      status: 200,
+    });
+    getDiasParaCorrecao.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    getSolicitacoesSuspensoesAutorizadasEscola.mockResolvedValue({
+      data: { data: { results: [] }, status: 200 },
       status: 200,
     });
 
@@ -80,63 +91,16 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       status: 200,
     });
 
-    getSolicitacoesSuspensoesAutorizadasEscola.mockResolvedValue({
-      data: { data: { results: [] }, status: 200 },
-      status: 200,
-    });
-
-    getCategoriasDeMedicao.mockResolvedValue({
-      data: mockCategoriasMedicaoCEI,
-      status: 200,
-    });
-
     getDiasLetivosRecreio.mockResolvedValue({
       data: mockDiasLetivosRecreio,
       status: 200,
     });
-    getLogDietasAutorizadasRecreioNasFeriasCEI.mockResolvedValue({
-      data: [],
-      status: 200,
-    });
-
-    getValoresPeriodosLancamentos.mockResolvedValue({
-      data: mockValoresMedicaoEmeiDaCEMEI,
-      status: 200,
-    });
-
-    getDiasParaCorrecao.mockResolvedValue({
-      data: [],
-      status: 200,
-    });
-
     getFeriadosNoMes.mockResolvedValue({
       data: { results: ["01", "25"] },
       status: 200,
     });
-
     updateValoresPeriodosLancamentos.mockResolvedValue({
-      data: mockSalvaLancamentoSemana1EmeiDaCEMEI,
-      status: 200,
-    });
-
-    getTiposDeAlimentacao.mockResolvedValue({
-      data: { data: { results: [] }, status: 200 },
-      status: 200,
-    });
-
-    getLogDietasAutorizadasPeriodo.mockResolvedValue({
-      data: [],
-      status: 200,
-    });
-
-    getPermissoesLancamentosEspeciaisMesAnoPorPeriodo.mockResolvedValue({
-      data: {
-        results: {
-          alimentacoes_lancamentos_especiais: [],
-          permissoes_por_dia: [],
-          data_inicio_permissoes: null,
-        },
-      },
+      data: mockSalvaLancamentoSemana1ColabordoresCEMEI,
       status: 200,
     });
 
@@ -146,7 +110,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       render(
         <MemoryRouter
           initialEntries={[
-            { pathname: "/", state: mockLocationStateGrupoEmeiDaCEMEI },
+            { pathname: "/", state: mockLocationStateGrupoColaboradoresCEMEI },
           ]}
           future={{
             v7_startTransition: true,
@@ -170,7 +134,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       const inputElement = screen.getByTestId("input-mes-lancamento");
       expect(inputElement).toHaveAttribute(
         "value",
-        mockLocationStateGrupoEmeiDaCEMEI.solicitacaoMedicaoInicial
+        mockLocationStateGrupoColaboradoresCEMEI.solicitacaoMedicaoInicial
           .recreio_nas_ferias.titulo,
       );
     });
@@ -179,11 +143,11 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       expect(screen.getByText("Tipo de LanÃ§amento")).toBeInTheDocument();
     });
 
-    it("renderiza valor `Recreio nas FÃ©rias` no input `Tipo de LanÃ§amento`", () => {
+    it("renderiza valor `Colaboradores` no input `Tipo de LanÃ§amento`", () => {
       const inputElement = screen.getByTestId("input-periodo-lancamento");
       expect(inputElement).toHaveAttribute(
         "value",
-        mockLocationStateGrupoEmeiDaCEMEI.periodo,
+        mockLocationStateGrupoColaboradoresCEMEI.periodo,
       );
     });
 
@@ -260,7 +224,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       fireEvent.click(semana1Element);
       const VALORES_ESPERADOS = {
         1: {
-          participantes: "150",
+          participantes: "27",
           frequencia: "",
           lanche: "",
           lanche4h: "",
@@ -270,14 +234,14 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           repeticao_sobremesa: "",
         },
         2: {
-          participantes: "150",
-          frequencia: "150",
-          lanche: "20",
-          lanche4h: "80",
-          refeicao: "10",
-          repeticao_refeicao: "10",
-          sobremesa: "30",
-          repeticao_sobremesa: "30",
+          participantes: "27",
+          frequencia: "7",
+          lanche: "7",
+          lanche4h: "7",
+          refeicao: "7",
+          repeticao_refeicao: "7",
+          sobremesa: "7",
+          repeticao_sobremesa: "7",
         },
         3: {
           participantes: "",
@@ -422,7 +386,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       fireEvent.click(semana2Element);
       const VALORES_ESPERADOS = {
         5: {
-          participantes: "150",
+          participantes: "27",
           frequencia: "",
           lanche: "",
           lanche4h: "",
@@ -432,7 +396,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           repeticao_sobremesa: "",
         },
         6: {
-          participantes: "150",
+          participantes: "27",
           frequencia: "",
           lanche: "",
           lanche4h: "",
@@ -442,7 +406,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           repeticao_sobremesa: "",
         },
         7: {
-          participantes: "150",
+          participantes: "27",
           frequencia: "",
           lanche: "",
           lanche4h: "",
@@ -452,7 +416,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           repeticao_sobremesa: "",
         },
         8: {
-          participantes: "150",
+          participantes: "27",
           frequencia: "",
           lanche: "",
           lanche4h: "",
@@ -462,7 +426,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           repeticao_sobremesa: "",
         },
         9: {
-          participantes: "150",
+          participantes: "27",
           frequencia: "",
           lanche: "",
           lanche4h: "",
@@ -584,7 +548,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       fireEvent.click(semana3Element);
       const VALORES_ESPERADOS = {
         12: {
-          participantes: "150",
+          participantes: "27",
           frequencia: "",
           lanche: "",
           lanche4h: "",
@@ -594,7 +558,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           repeticao_sobremesa: "",
         },
         13: {
-          participantes: "150",
+          participantes: "27",
           frequencia: "",
           lanche: "",
           lanche4h: "",
@@ -604,7 +568,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           repeticao_sobremesa: "",
         },
         14: {
-          participantes: "150",
+          participantes: "27",
           frequencia: "",
           lanche: "",
           lanche4h: "",
@@ -614,7 +578,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           repeticao_sobremesa: "",
         },
         15: {
-          participantes: "150",
+          participantes: "27",
           frequencia: "",
           lanche: "",
           lanche4h: "",
@@ -833,7 +797,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
 
       const inputRefeicao = screen.getByTestId("refeicao__dia_02__categoria_1");
       fireEvent.change(inputRefeicao, {
-        target: { value: "60" },
+        target: { value: "4" },
       });
 
       const inputRepeticaoRefeicao = screen.getByTestId(
@@ -841,7 +805,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       );
       waitFor(() => {
         fireEvent.change(inputRepeticaoRefeicao, {
-          target: { value: "170" },
+          target: { value: "5" },
         });
       });
 
@@ -864,7 +828,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
         "sobremesa__dia_02__categoria_1",
       );
       fireEvent.change(inputRefeicao, {
-        target: { value: "60" },
+        target: { value: "4" },
       });
 
       const inputRepeticaoRefeicao = screen.getByTestId(
@@ -872,7 +836,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       );
       waitFor(() => {
         fireEvent.change(inputRepeticaoRefeicao, {
-          target: { value: "170" },
+          target: { value: "5" },
         });
       });
 
@@ -894,13 +858,13 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       fireEvent.click(semana1Element);
 
       const valoresAlimentacao = {
-        frequencia: "150",
-        lanche_4h: "80",
-        lanche: "100",
-        refeicao: "120",
-        repeticao_refeicao: "114",
-        sobremesa: "148",
-        repeticao_sobremesa: "134",
+        frequencia: "25",
+        lanche_4h: "24",
+        lanche: "20",
+        refeicao: "23",
+        repeticao_refeicao: "15",
+        sobremesa: "24",
+        repeticao_sobremesa: "12",
       };
 
       const camposAlimentacao = [
@@ -930,7 +894,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       });
 
       const valoresEsperadosAlimentacao = {
-        participantes: "150",
+        participantes: "27",
         ...valoresAlimentacao,
       };
       const camposAtualizadosAlimentacao = [
