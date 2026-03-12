@@ -34,7 +34,6 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -838,7 +837,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
-      preview.debug();
 
       const faixasPorCategoria = [
         { uuid_faixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece", cateoria: "2" },
