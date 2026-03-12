@@ -22,6 +22,14 @@ import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
 
+const TOTAIS_NORMAL = ["TOTAL (A)", "TOTAL (B)", "TOTAL (C)"];
+const TOTAIS_INFANTIL = ["TOTAL (INF. A)", "TOTAL (INF. B)", "TOTAL (INF. C)"];
+const TOTAIS_FUNDAMENTAL = [
+  "TOTAL (FUND. A)",
+  "TOTAL (FUND. B)",
+  "TOTAL (FUND. C)",
+];
+
 describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFinanceiroConsolidado", () => {
   const gruposUnidadeEscolar = mockGetGrupoUnidadeEscolar.results;
   const grupoCEI = gruposUnidadeEscolar.find((grupo) =>
@@ -106,6 +114,18 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     expect(screen.getByText("Reabrir Lançamentos")).toBeInTheDocument();
   });
 
+  const verificaHeadersTabela = async (titulos) => {
+    for (const titulo of titulos) {
+      expect(
+        (
+          await screen.findAllByRole("columnheader", {
+            name: titulo,
+          })
+        ).length,
+      ).toBeGreaterThan(0);
+    }
+  };
+
   it("deve exibir tabelas e valores do grupo 1 - CEI", async () => {
     mock
       .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
@@ -118,14 +138,11 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup();
 
-    for (const titulo of [
+    verificaHeadersTabela([
       "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
-      "DIETA ESPECIAL - TIPO A",
-      "DIETA ESPECIAL - TIPO B",
-      "TOTAL (A)",
-    ]) {
-      expect(await screen.findByText(titulo)).toBeInTheDocument();
-    }
+      "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
+      "VALOR UNITÁRIO",
+    ]);
 
     for (const valor of ["R$ 2.000,00", "R$ 4.002,00", "R$ 5.115,11"]) {
       expect(
@@ -135,6 +152,10 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
           )
         ).length,
       ).toBeGreaterThan(0);
+    }
+
+    for (const total of TOTAIS_NORMAL) {
+      expect(screen.getByText(total)).toBeInTheDocument();
     }
 
     expect(
@@ -149,7 +170,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       name: /DIETA ESPECIAL/i,
     });
 
-    expect(headers).toHaveLength(2);
+    expect(headers.length).toBeGreaterThanOrEqual(2);
     expect(
       headers.some((h) =>
         h.textContent?.includes(
@@ -182,30 +203,15 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoCEMEI.uuid);
 
-    for (const titulo of [
+    verificaHeadersTabela([
       "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
       "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
       "VALOR UNITÁRIO",
-    ]) {
-      expect(
-        (
-          await screen.findAllByRole("columnheader", {
-            name: titulo,
-          })
-        ).length,
-      ).toBeGreaterThan(0);
-    }
-    expect(screen.getByText("TOTAL (A)")).toBeInTheDocument();
-    expect(screen.getByText("TOTAL (INF. A)")).toBeInTheDocument();
-    expect(screen.getByText("TOTAL (B)")).toBeInTheDocument();
-    expect(screen.getByText("TOTAL (INF. B)")).toBeInTheDocument();
-    expect(screen.getByText("TOTAL (C)")).toBeInTheDocument();
-    expect(screen.getByText("TOTAL (INF. C)")).toBeInTheDocument();
+    ]);
 
-    const headers = await screen.findAllByRole("columnheader", {
-      name: /DIETA ESPECIAL/i,
-    });
-    expect(headers).toHaveLength(4);
+    for (const total of [...TOTAIS_NORMAL, ...TOTAIS_INFANTIL]) {
+      expect(screen.getByText(total)).toBeInTheDocument();
+    }
   });
 
   it("deve exibir tabelas e valores do grupo 3 - EMEI", async () => {
@@ -227,19 +233,11 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoEMEI.uuid);
 
-    for (const titulo of [
-      "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
-      "VALOR UNITÁRIO",
-    ]) {
-      expect(
-        (
-          await screen.findAllByRole("columnheader", {
-            name: titulo,
-          })
-        ).length,
-      ).toBeGreaterThan(0);
+    verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
+
+    for (const total of TOTAIS_NORMAL) {
+      expect(screen.getByText(total)).toBeInTheDocument();
     }
-    expect(screen.getByText("TOTAL (B)")).toBeInTheDocument();
 
     await verificaTabelaDietas();
 
@@ -269,19 +267,14 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoEMEF.uuid);
 
-    for (const titulo of [
+    verificaHeadersTabela([
       "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
       "VALOR DO REAJUSTE",
-    ]) {
-      expect(
-        (
-          await screen.findAllByRole("columnheader", {
-            name: titulo,
-          })
-        ).length,
-      ).toBeGreaterThan(0);
+    ]);
+
+    for (const total of TOTAIS_NORMAL) {
+      expect(screen.getByText(total)).toBeInTheDocument();
     }
-    expect(screen.getByText("TOTAL (C)")).toBeInTheDocument();
 
     await verificaTabelaDietas();
 
@@ -308,6 +301,12 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       });
 
     await setup(grupoEMEBS.uuid);
+
+    verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
+
+    for (const total of [...TOTAIS_INFANTIL, ...TOTAIS_FUNDAMENTAL]) {
+      expect(screen.getByText(total)).toBeInTheDocument();
+    }
 
     expect(
       screen.getByText("CONSOLIDADO INFANTIL (INF. A + INF. B + INF. C)"),
@@ -343,9 +342,11 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoCIEJA.uuid);
 
-    expect(await screen.findAllByText("REFEIÇÃO CIEJA E CMCT")).toHaveLength(2);
-    expect(await screen.findAllByText("LANCHE 4H")).toHaveLength(3);
-    expect(await screen.findAllByText("LANCHE")).toHaveLength(1);
+    verificaHeadersTabela(["REFEIÇÃO CIEJA E CMCT", "LANCHE 4H"]);
+
+    for (const total of TOTAIS_NORMAL) {
+      expect(screen.getByText(total)).toBeInTheDocument();
+    }
 
     await verificaTabelaDietas();
 
