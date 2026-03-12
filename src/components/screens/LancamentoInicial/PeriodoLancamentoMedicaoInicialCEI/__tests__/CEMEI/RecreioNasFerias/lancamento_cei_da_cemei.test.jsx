@@ -18,7 +18,7 @@ import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancam
 import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/diasLetivosRecreio";
 import { mockValoresMedicaoCeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockValoresMedicao";
 import { mockSalvaLancamentoSemana1CeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockSalvarLancamentos";
-
+import { mockDietasEspeciasisCeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockDietasEspeciais";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
@@ -34,6 +34,7 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import mock from "src/services/_mock";
+import preview from "jest-preview";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -92,7 +93,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       status: 200,
     });
     getLogDietasAutorizadasRecreioNasFeriasCEI.mockResolvedValue({
-      data: [],
+      data: mockDietasEspeciasisCeiDaCEMEI,
       status: 200,
     });
 
@@ -240,8 +241,17 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
+      const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
+      );
+
       for (let faixa of mockFaixasEtarias.results) {
-        expect(screen.getByText(faixa.__str__)).toBeInTheDocument();
+        const allParticipantes = screen.getAllByText(faixa.__str__);
+        const specificParticipantes = allParticipantes.find((element) =>
+          myElement.contains(element),
+        );
+        expect(specificParticipantes).toBeInTheDocument();
       }
     });
 
@@ -249,6 +259,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
+      preview.debug();
       const VALORES_ESPERADOS = {
         1: {
           participantes: "50",
@@ -263,9 +274,9 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         2: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "50",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "42",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
             "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
             "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
@@ -394,7 +405,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       fireEvent.click(semana2Element);
       const VALORES_ESPERADOS = {
         5: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -406,7 +417,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         6: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -418,7 +429,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         7: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -430,7 +441,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         8: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -442,7 +453,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         9: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -534,7 +545,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       fireEvent.click(semana3Element);
       const VALORES_ESPERADOS = {
         12: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -546,7 +557,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         13: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -558,7 +569,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         14: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -570,7 +581,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         15: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -765,7 +776,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       const inputParticipantes = screen.getByTestId(
         "participantes__faixa_null__dia_02__categoria_1",
       );
-      expect(inputParticipantes).toHaveAttribute("value", "50");
+      expect(inputParticipantes).toHaveAttribute("value", "42");
     });
   });
 });
