@@ -36,7 +36,6 @@ import {
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -251,7 +250,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F√
 
     it("renderiza label `DIETA ESPECIAL - TIPO A`", async () => {
       await awaitServices();
-      preview.debug();
       expect(screen.getByText("DIETA ESPECIAL - TIPO A")).toBeInTheDocument();
     });
 
@@ -1212,6 +1210,23 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F√
         fireEvent.change(input, { target: { value: valoresAlimentacao[key] } });
       });
 
+      const valoresDieta = {
+        frequencia: "2",
+        lanche_4h: "2",
+        lanche: "0",
+      };
+
+      const camposDieta = [
+        { key: "frequencia", testId: "frequencia" },
+        { key: "lanche_4h", testId: "lanche_4h" },
+        { key: "lanche", testId: "lanche" },
+      ];
+
+      camposDieta.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_02__categoria_2`);
+        fireEvent.change(input, { target: { value: valoresDieta[key] } });
+      });
+
       const botao = screen.getByText("Salvar Lan√ßamentos").closest("button");
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
@@ -1237,6 +1252,20 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F√
           "value",
           valoresEsperadosAlimentacao[key],
         );
+      });
+
+      const valoresEsperadosDieta = {
+        dietas_autorizadas: "2",
+        ...valoresDieta,
+      };
+      const camposAtualizadosDieta = [
+        { key: "dietas_autorizadas", testId: "dietas_autorizadas" },
+        ...camposDieta,
+      ];
+
+      camposAtualizadosDieta.forEach(({ key, testId }) => {
+        const input = screen.getByTestId(`${testId}__dia_02__categoria_2`);
+        expect(input).toHaveAttribute("value", valoresEsperadosDieta[key]);
       });
     });
   });
