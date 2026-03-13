@@ -181,6 +181,41 @@ export default () => {
     }
   };
 
+  const getPeriodoInicialSelecionado = (
+    mesParam,
+    anoParam,
+    recreioNasFeriasParam,
+    periodos,
+    cadastrosRecreioPreparados,
+  ) => {
+    const semMesAno = !mesParam || !anoParam;
+    const comRecreio = !!recreioNasFeriasParam;
+
+    if (semMesAno) {
+      return periodos[0].dataBRT.toString();
+    }
+
+    if (comRecreio) {
+      const cadastro = cadastrosRecreioPreparados.find(
+        (c) =>
+          c.anoInicio === Number(anoParam) &&
+          c.mesInicio === Number(mesParam) &&
+          c.uuid === recreioNasFeriasParam,
+      );
+      return cadastro.dataInicio.toString();
+    }
+    const agora = new Date();
+    return new Date(
+      Number(anoParam),
+      Number(mesParam) - 1,
+      agora.getDate(),
+      agora.getHours(),
+      agora.getMinutes(),
+      agora.getSeconds(),
+      agora.getMilliseconds(),
+    );
+  };
+
   useEffect(() => {
     async function fetch() {
       const escola =
@@ -353,36 +388,13 @@ export default () => {
       const mesParam = urlParams.get("mes");
       const anoParam = urlParams.get("ano");
 
-      function getPeriodoInicialSelecionado() {
-        const semMesAno = !mesParam || !anoParam;
-        const comRecreio = !!recreioNasFeriasParam;
-
-        if (semMesAno) {
-          return periodos[0].dataBRT.toString();
-        }
-
-        if (comRecreio) {
-          const cadastro = cadastrosRecreioPreparados.find(
-            (c) =>
-              c.anoInicio === Number(anoParam) &&
-              c.mesInicio === Number(mesParam) &&
-              c.uuid === recreioNasFeriasParam,
-          );
-          return cadastro.dataInicio.toString();
-        }
-        const agora = new Date();
-        return new Date(
-          Number(anoParam),
-          Number(mesParam) - 1,
-          agora.getDate(),
-          agora.getHours(),
-          agora.getMinutes(),
-          agora.getSeconds(),
-          agora.getMilliseconds(),
-        );
-      }
-
-      const periodoInicialSelecionado = getPeriodoInicialSelecionado();
+      const periodoInicialSelecionado = getPeriodoInicialSelecionado(
+        mesParam,
+        anoParam,
+        recreioNasFeriasParam,
+        periodos,
+        cadastrosRecreioPreparados,
+      );
 
       setObjectoPeriodos(periodos);
       setPeriodoSelecionado(periodoInicialSelecionado);

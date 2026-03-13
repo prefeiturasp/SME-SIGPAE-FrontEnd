@@ -112,6 +112,11 @@ export const LancamentoPorPeriodoCEI = ({
     }
   };
 
+  const temAlunosNoPeriodo = (periodoComAlunos, periodo, periodoNormalizado) =>
+    periodoComAlunos.some(
+      (p) => p.nome === periodo || p.nome === periodoNormalizado,
+    );
+
   useEffect(() => {
     const fetchPeriodoMensal = async () => {
       const params_matriculados = {
@@ -186,8 +191,10 @@ export const LancamentoPorPeriodoCEI = ({
           }
 
           const periodoNormalizado = periodo.replace(/^Infantil\s+/i, "");
-          return periodoComAlunos.some(
-            (p) => p.nome === periodo || p.nome === periodoNormalizado,
+          return temAlunosNoPeriodo(
+            periodoComAlunos,
+            periodo,
+            periodoNormalizado,
           );
         });
       }
@@ -342,8 +349,8 @@ export const LancamentoPorPeriodoCEI = ({
         (alimentacao) => alimentacao.nome !== "Lanche Emergencial",
       );
     }
-
-    return tiposAlimentacao;
+    const ordenacao = (a, b) => a.nome.localeCompare(b.nome);
+    return tiposAlimentacao.sort(ordenacao);
   };
 
   const uuidPeriodoEscolar = (nomePeriodo) => {
