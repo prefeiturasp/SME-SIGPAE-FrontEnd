@@ -212,6 +212,16 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     for (const total of [...TOTAIS_NORMAL, ...TOTAIS_INFANTIL]) {
       expect(screen.getByText(total)).toBeInTheDocument();
     }
+
+    await verificaTabelaDietas();
+
+    for (const card of [
+      "CONSOLIDADO CEI (A + B + C)",
+      "CONSOLIDADO INFANTIL - EMEI (INF. A + INF. B + INF. C)",
+      "CONSOLIDADO TOTAL (A + B + C + INF. A + INF. B + INF. C)",
+    ]) {
+      expect(screen.getByText(card)).toBeInTheDocument();
+    }
   });
 
   it("deve exibir tabelas e valores do grupo 3 - EMEI", async () => {
@@ -299,6 +309,14 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
         ...mockRelatorioFinanceiroTipoAlimentacao,
         grupo_unidade_escolar: grupoEMEBS,
       });
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, {
+        INFANTIL: mockTotaisAtendimentoTipoAlimentacao,
+        FUNDAMENTAL: mockTotaisAtendimentoTipoAlimentacao,
+      });
 
     await setup(grupoEMEBS.uuid);
 
@@ -308,18 +326,22 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       expect(screen.getByText(total)).toBeInTheDocument();
     }
 
+    await verificaTabelaDietas();
+
+    for (const card of [
+      "CONSOLIDADO INFANTIL (INF. A + INF. B + INF. C)",
+      "CONSOLIDADO FUNDAMENTAL (FUND. A + FUND. B + FUND. C)",
+      "CONSOLIDADO TOTAL (INF. A + INF. B + INF. C + FUND. A + FUND. B + FUND. C)",
+    ]) {
+      expect(screen.getByText(card)).toBeInTheDocument();
+    }
+
     expect(
-      screen.getByText("CONSOLIDADO INFANTIL (INF. A + INF. B + INF. C)"),
-    ).toBeInTheDocument();
+      screen.getAllByText("(Quatrocentos e noventa reais e oito centavos.)"),
+    ).toHaveLength(2);
     expect(
-      screen.getByText("CONSOLIDADO FUNDAMENTAL (FUND. A + FUND. B + FUND. C)"),
+      screen.getByText("(Novecentos e oitenta reais e dezesseis centavos.)"),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "CONSOLIDADO TOTAL (INF. A + INF. B + INF. C + FUND. A + FUND. B + FUND. C)",
-      ),
-    ).toBeInTheDocument();
-    expect(screen.getAllByText("(Zero centavos.)")).toHaveLength(3);
   });
 
   it("deve exibir tabelas e valores do grupo 6 - CIEJA", async () => {
