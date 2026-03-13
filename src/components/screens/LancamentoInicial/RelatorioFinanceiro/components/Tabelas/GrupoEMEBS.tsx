@@ -17,12 +17,12 @@ export default ({
   tiposAlimentacao,
   totaisConsumo,
 }: Props) => {
-  const [consolidadoInfantil, setConsolidadoCEI] = useState({
+  const [consolidadoInfantil, setConsolidadoInfantil] = useState({
     quantidade: 0,
     valor: 0,
   });
 
-  const [consolidadoFundamental, setConsolidadoEMEI] = useState({
+  const [consolidadoFundamental, setConsolidadoFundamental] = useState({
     quantidade: 0,
     valor: 0,
   });
@@ -63,21 +63,20 @@ export default ({
   };
 
   useEffect(() => {
-    const cei = calcularConsolidado(
-      refAlimentacaoFundamental,
-
-      refDietaAFundamental,
-      refDietaBFundamental,
-    );
-
-    const fundamental = calcularConsolidado(
+    const infantil = calcularConsolidado(
       refAlimentacaoInfantil,
       refDietaAInfantil,
       refDietaBInfantil,
     );
 
-    setConsolidadoCEI(cei);
-    setConsolidadoEMEI(fundamental);
+    const fundamental = calcularConsolidado(
+      refAlimentacaoFundamental,
+      refDietaAFundamental,
+      refDietaBFundamental,
+    );
+
+    setConsolidadoInfantil(infantil);
+    setConsolidadoFundamental(fundamental);
   }, []);
 
   const cards = useMemo(() => {
