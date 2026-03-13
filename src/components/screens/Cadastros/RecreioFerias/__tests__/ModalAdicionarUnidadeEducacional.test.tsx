@@ -1,5 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
+import { ToastContainer } from "react-toastify";
 import { ModalAdicionarUnidadeEducacional } from "../components/ModalAdicionarUnidadeEducacional";
 import * as hooks from "../hooks/useModalUnidades";
 
@@ -36,11 +37,6 @@ jest.mock("react-final-form", () => {
     },
   };
 });
-
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastSuccess: jest.fn(),
-  toastError: jest.fn(),
-}));
 
 jest.mock("../hooks/useModalUnidades", () => ({
   useLotes: jest.fn(),
@@ -146,7 +142,12 @@ const renderComponent = (props: any = {}) => {
   };
 
   return act(async () => {
-    render(<ModalAdicionarUnidadeEducacional {...defaultProps} {...props} />);
+    render(
+      <>
+        <ModalAdicionarUnidadeEducacional {...defaultProps} {...props} />
+        <ToastContainer />
+      </>,
+    );
   });
 };
 

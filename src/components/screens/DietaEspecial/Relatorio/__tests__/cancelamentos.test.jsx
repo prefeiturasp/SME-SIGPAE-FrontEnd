@@ -180,11 +180,7 @@ afterAll(() => {
 
 test("Relatorio para cancelamento por atingir data termino - visão CODAE", async () => {
   const search = `?uuid=${cancelamento_data_termino.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   render(
     <MemoryRouter
       initialEntries={[{ pathname: "/", search: search }]}
@@ -246,11 +242,7 @@ test("Relatorio para cancelamento para aluno não matriculado na rede - visão C
     "CANCELADO_ALUNO_NAO_PERTENCE_REDE";
 
   const search = `?uuid=${cancelamento_rede_municipal.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   render(
     <MemoryRouter
       initialEntries={[{ pathname: "/", search: search }]}
@@ -319,11 +311,7 @@ test("Relatorio para cancelamento quando a escola cancela antes da aprovação p
   cancelamentoEscolaAntesAprovacao.logs = logsAntesAprovacao;
 
   const search = `?uuid=${cancelamentoEscolaAntesAprovacao.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   render(
     <MemoryRouter
       initialEntries={[{ pathname: "/", search: search }]}
@@ -407,11 +395,7 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
   cancelamento_escola_apos_aprovacao.logs = logsAposAprovacao;
 
   const search = `?uuid=${cancelamento_escola_apos_aprovacao.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   render(
     <MemoryRouter
       initialEntries={[{ pathname: "/", search: search }]}
@@ -473,11 +457,7 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
   cancelamento_escola_apos_aprovacao.logs = logsAposAprovacao;
 
   const search = `?uuid=${cancelamento_escola_apos_aprovacao.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
   });
@@ -552,11 +532,7 @@ test("Relatorio para cancelamento quando a escola cancela após da aprovação p
   cancelamento_escola_apos_aprovacao.logs = logsAposAprovacao;
 
   const search = `?uuid=${cancelamento_escola_apos_aprovacao.uuid}&ehInclusaoContinua=false&card=canceladas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
   });

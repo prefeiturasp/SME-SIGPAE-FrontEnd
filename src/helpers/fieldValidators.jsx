@@ -1,4 +1,4 @@
-import strip_tags from "locutus/php/strings/strip_tags";
+import { strip_tags } from "locutus/php/strings/strip_tags";
 import moment from "moment";
 import { TIPO_PERFIL } from "src/constants/shared";
 

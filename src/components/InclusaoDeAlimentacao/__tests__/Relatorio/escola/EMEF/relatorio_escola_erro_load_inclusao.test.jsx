@@ -17,7 +17,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/"
+        "/grupos-inclusao-alimentacao-normal/d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64/",
       )
       .reply(400, { detail: "erro ao carregar inclusão" });
 
@@ -26,11 +26,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
 
     const search = `?uuid=d0f4faf0-519b-4a1a-a1bf-ae39c45d1f64&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -41,7 +37,7 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -49,8 +45,8 @@ describe("Relatório Inclusão de Alimentação - Visão Escola", () => {
   it("renderiza erro `Erro ao carregar Inclusão de Alimentação. Tente novamente mais tarde.`", async () => {
     expect(
       screen.getByText(
-        "Erro ao carregar Inclusão de Alimentação. Tente novamente mais tarde."
-      )
+        "Erro ao carregar Inclusão de Alimentação. Tente novamente mais tarde.",
+      ),
     ).toBeInTheDocument();
   });
 });

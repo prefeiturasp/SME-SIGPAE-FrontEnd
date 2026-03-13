@@ -54,7 +54,11 @@ import {
   stringToBoolean,
 } from "src/helpers/parsers";
 import { NavigateFunction } from "react-router-dom";
-import { CATEGORIA_OPTIONS } from "./constants";
+import {
+  CATEGORIA_OPTIONS,
+  PROGRAMA_OPTIONS,
+  TIPO_ENTREGA_OPTIONS,
+} from "./constants";
 
 export const cepCalculator = (
   setDesabilitaEndereco: React.Dispatch<React.SetStateAction<Array<boolean>>>,
@@ -360,7 +364,8 @@ export const validaProximoIdentificacaoProduto = (
   values: FichaTecnicaPayload,
   errors: Record<string, string>,
 ): boolean => {
-  const ehFLV = values.categoria === "FLV";
+  const ehFLV =
+    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
 
   const campoAlergenicosValido =
     (values.alergenicos === "1" && values.ingredientes_alergenicos) ||
@@ -417,7 +422,8 @@ export const validaAssinarEnviar = (
   errors: Record<string, string>,
   arquivo: ArquivoForm[],
 ): boolean => {
-  const ehFLV = values.categoria === "FLV";
+  const ehFLV =
+    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
 
   if (ehFLV) {
     return Object.keys(errors).length !== 0 || !arquivo.length;
@@ -566,6 +572,11 @@ export const geraInitialValuesDetalharEAnalisar = (
     marca: ficha.marca?.nome,
     categoria: CATEGORIA_OPTIONS.find(({ uuid }) => uuid === ficha.categoria)
       ?.nome,
+    tipo_entrega: TIPO_ENTREGA_OPTIONS.find(
+      ({ uuid }) => uuid === ficha.tipo_entrega,
+    )?.nome,
+    programa: PROGRAMA_OPTIONS.find(({ uuid }) => uuid === ficha.programa)
+      ?.nome,
     unidade_medida_porcao: ficha.unidade_medida_porcao?.nome,
     unidade_medida_volume_primaria: ficha.unidade_medida_volume_primaria?.nome,
     unidade_medida_primaria: ficha.unidade_medida_primaria?.nome,
@@ -630,7 +641,8 @@ export const formataPayloadCadastroFichaTecnica = (
   password?: string,
 ) => {
   const ehPereciveis = values.categoria === "PERECIVEIS";
-  const ehFLV = values.categoria === "FLV";
+  const ehFLV =
+    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
 
   let payload: FichaTecnicaPayload;
 
@@ -825,7 +837,8 @@ const gerarCamposProponenteFabricante = (
 };
 
 const gerarCamposDetalhesProduto = (values: Record<string, any>) => {
-  const ehFLV = values.categoria === "FLV";
+  const ehFLV =
+    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
 
   if (ehFLV) {
     return {

@@ -193,11 +193,7 @@ describe("Teste ConferenciaDosLancamentos - Acessos CODAE Nutri Manifestação",
     );
 
     const search = `?uuid=${solicitacaoUuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
   });
 
   afterEach(() => {

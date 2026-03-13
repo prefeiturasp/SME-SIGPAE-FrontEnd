@@ -33,14 +33,11 @@ describe("Teste StatusSolicitacoes - Aguardando início da vigência - Terceiriz
       PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
-    Object.defineProperty(window, "location", {
-      value: {
-        href: "/solicitacoes-dieta-especial/solicitacoes-aguardando-inicio-vigencia",
-        pathname:
-          "/solicitacoes-dieta-especial/solicitacoes-aguardando-inicio-vigencia",
-      },
-      writable: true,
-    });
+    window.history.pushState(
+      {},
+      "",
+      "/solicitacoes-dieta-especial/solicitacoes-aguardando-inicio-vigencia",
+    );
 
     await act(async () => {
       renderWithProvider(

@@ -66,11 +66,7 @@ afterAll(() => {
 
 test("Relatorio negadas para inclusão - visão CODADE NUTRI MANIFESTAÇÃO", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   render(
     <MemoryRouter
       initialEntries={[{ pathname: "/", search: search }]}
@@ -143,11 +139,7 @@ test("Relatorio negadas para inclusão - visão CODADE NUTRI MANIFESTAÇÃO", as
 
 test("Relatorio negadas para inclusão - visão TERCEIRIZADA ADMINISTRADOR EMPRESA", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
   });
@@ -233,11 +225,7 @@ test("Relatorio negadas para inclusão - visão TERCEIRIZADA ADMINISTRADOR EMPRE
 
 test("Relatorio negadas para inclusão - visão ESCOLA DIRETOR_UE", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
   });
@@ -323,11 +311,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão CODAD
   payload_alteracao.tipo_solicitacao = "ALTERACAO_UE";
 
   const search = `?uuid=${payload_alteracao.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
   render(
     <MemoryRouter
       initialEntries={[{ pathname: "/", search: search }]}
@@ -386,11 +370,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão TERCE
   payload_alteracao.tipo_solicitacao = "ALTERACAO_UE";
 
   const search = `?uuid=${payload_alteracao.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -463,11 +443,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão ESCOL
   payload_alteracao.tipo_solicitacao = "ALTERACAO_UE";
 
   const search = `?uuid=${payload_alteracao.uuid}&ehInclusaoContinua=false&card=negadas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",

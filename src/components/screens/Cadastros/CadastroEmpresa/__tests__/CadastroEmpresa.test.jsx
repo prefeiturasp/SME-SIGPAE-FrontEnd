@@ -77,7 +77,7 @@ const setup = async () => {
       >
         <CadastroEmpresa />
       </MemoryRouter>,
-      {}
+      {},
     );
   });
 };
@@ -127,11 +127,7 @@ describe("Carrega página de Empresas visão Fornecedor", () => {
 
   it("carrega no modo Edição", async () => {
     const search = `?uuid=${mockEmpresa.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await setup();
 
@@ -154,11 +150,7 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
     });
 
     const search = `?uuid=${mockEmpresa.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await setup();
 

@@ -55,7 +55,7 @@ const renderWithReduxForm = (component, initialState = {}) => {
           {component}
         </MeusDadosContext.Provider>
       </MemoryRouter>
-    </Provider>
+    </Provider>,
   );
 };
 
@@ -66,11 +66,7 @@ describe("Testes na tela de Cadastro de Produto", () => {
     localStorage.setItem("perfil", PERFIL.USUARIO_EMPRESA);
 
     const search = `?uuid=${mockGetHomologacao.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosTerceirizada);
     mock
@@ -78,7 +74,7 @@ describe("Testes na tela de Cadastro de Produto", () => {
       .reply(200, mockGetInformacoesGrupo);
     mock
       .onGet(
-        "/painel-gerencial-homologacoes-produtos/filtro-por-status/rascunho/"
+        "/painel-gerencial-homologacoes-produtos/filtro-por-status/rascunho/",
       )
       .reply(200, mockGetRascunhosDeProduto);
     mock.onGet("/produtos/lista-nomes-unicos/").reply(200, mockListaProdutos);
@@ -96,13 +92,13 @@ describe("Testes na tela de Cadastro de Produto", () => {
   it("Verifica renderização dos elementos", async () => {
     await waitFor(() => {
       expect(
-        screen.getByText("Confira se produto já está cadastrado no sistema")
+        screen.getByText("Confira se produto já está cadastrado no sistema"),
       ).toBeInTheDocument();
     });
 
     const span = screen.getByText("Digite o nome do produto");
     const inputNome = within(span.closest(".ant-select-selector")).getByRole(
-      "combobox"
+      "combobox",
     );
 
     fireEvent.mouseDown(inputNome);
@@ -119,7 +115,7 @@ describe("Testes na tela de Cadastro de Produto", () => {
     fireEvent.click(angleDownIcon);
     const todosLinks = screen.getAllByRole("link");
     const linkEditar = todosLinks.find((link) =>
-      link.getAttribute("href").includes("/gestao-produto/editar")
+      link.getAttribute("href").includes("/gestao-produto/editar"),
     );
 
     expect(linkEditar).toBeInTheDocument();
@@ -135,7 +131,7 @@ describe("Testes na tela de Cadastro de Produto", () => {
     const linksEdicao = screen
       .queryAllByRole("link")
       .filter((link) =>
-        link.getAttribute("href")?.includes("/gestao-produto/editar")
+        link.getAttribute("href")?.includes("/gestao-produto/editar"),
       );
 
     expect(linksEdicao).toHaveLength(0);

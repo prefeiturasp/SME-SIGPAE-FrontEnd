@@ -530,7 +530,9 @@ export default () => {
                           style={BUTTON_STYLE.GREEN_OUTLINE}
                           className="float-end ms-3"
                           onClick={() => {
-                            const ehFLV = values["categoria"] === "FLV";
+                            const ehFLV =
+                              values["categoria"] === "FLV" &&
+                              values["tipo_entrega"] === "PONTO_A_PONTO";
                             const proximoStep =
                               ehFLV && stepAtual === 0 ? 2 : stepAtual + 1;
 
@@ -594,7 +596,9 @@ export default () => {
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                       className="float-end ms-3"
                       onClick={() => {
-                        const ehFLV = values["categoria"] === "FLV";
+                        const ehFLV =
+                          values["categoria"] === "FLV" &&
+                          values["tipo_entrega"] === "PONTO_A_PONTO";
                         const proximoStep =
                           ehFLV && stepAtual === 2 ? 0 : stepAtual - 1;
 

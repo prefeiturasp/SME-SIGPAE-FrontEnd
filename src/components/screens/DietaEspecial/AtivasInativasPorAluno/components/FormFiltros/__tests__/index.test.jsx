@@ -5,6 +5,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import { ToastContainer } from "react-toastify";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -30,7 +31,7 @@ jest.mock("src/helpers/dietaEspecial", () => ({
       setNomeEscolas([]);
       setEscolas([]);
       setDiretoriasRegionais([{ value: "123", label: "BUTANTA" }]);
-    }
+    },
   ),
   getDadosIniciais: jest.fn().mockResolvedValue({
     dre: ["uuid-dre"],
@@ -41,10 +42,6 @@ jest.mock("src/helpers/dietaEspecial", () => ({
 jest.mock("src/helpers/fieldValidators", () => ({
   length: () => undefined,
   requiredSearchSelectUnidEducDietas: () => () => undefined,
-}));
-
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastError: jest.fn(),
 }));
 
 jest.mock("src/components/Shareable/FinalFormToRedux", () => () => null);
@@ -93,9 +90,10 @@ describe("FormFiltros - Integração completa", () => {
                 setFiltros={setFiltros}
                 setDadosUsuario={jest.fn()}
               />
+              <ToastContainer />
             </MeusDadosContext.Provider>
           </Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });

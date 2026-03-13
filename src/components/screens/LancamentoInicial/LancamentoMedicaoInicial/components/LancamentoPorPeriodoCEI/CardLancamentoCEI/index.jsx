@@ -65,8 +65,7 @@ export const CardLancamentoCEI = ({
     if (textoCabecalho.includes("Recreio")) {
       return quantidadeAlimentacoesLancadas.filter(
         (qtdAlimentacaoPeriodo) =>
-          qtdAlimentacaoPeriodo.nome_periodo_grupo ===
-          "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+          qtdAlimentacaoPeriodo.nome_periodo_grupo === grupo,
       );
     }
 
@@ -158,11 +157,12 @@ export const CardLancamentoCEI = ({
             null,
             textoCabecalho,
           ),
-          ehEmeiDaCemei: ehEmeiDaCemei(
-            escolaInstituicao,
-            periodosEscolaCemeiComAlunosEmei,
-            textoCabecalho,
-          ),
+          ehEmeiDaCemei:
+            ehEmeiDaCemei(
+              escolaInstituicao,
+              periodosEscolaCemeiComAlunosEmei,
+              textoCabecalho,
+            ) || grupo === "Recreio nas Férias - 4 a 14 anos",
           uuidPeriodoEscolar: uuidPeriodoEscolar,
           tiposAlimentacao: tiposAlimentacao,
           periodosInclusaoContinua: periodosInclusaoContinua,

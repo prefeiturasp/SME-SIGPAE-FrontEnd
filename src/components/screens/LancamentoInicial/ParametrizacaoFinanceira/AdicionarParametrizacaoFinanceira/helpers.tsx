@@ -230,3 +230,37 @@ export const limparTabelas = (tabelas: Record<string, any>) => {
 
   return novasTabelas;
 };
+
+export const extrairConteudoEntreParenteses = (texto: string) => {
+  const match = texto.match(/\((.*?)\)/);
+  return match && match[1] ? match[1] : "";
+};
+
+export const extrairTiposAlimentacaoDasUnidades = (
+  unidades: string[],
+  tiposUnidades: any[],
+): Array<any> => {
+  const tiposAlimentacaoUnidades: Array<any> = unidades.reduce(
+    (acc, tipoUnidade) => {
+      const match = tiposUnidades.find((t) => t.iniciais === tipoUnidade);
+      if (match) {
+        match.periodos_escolares.forEach((periodo: any) => {
+          acc.push(...periodo.tipos_alimentacao);
+        });
+      }
+      return acc;
+    },
+    [] as any[],
+  );
+
+  const tiposAlimentacaoUnicos: Record<string, string> = {};
+
+  tiposAlimentacaoUnidades.forEach((tipoAlimentacao) => {
+    tiposAlimentacaoUnicos[tipoAlimentacao.uuid] = tipoAlimentacao.nome;
+  });
+
+  return Object.entries(tiposAlimentacaoUnicos).map(([uuid, nome]) => ({
+    uuid,
+    nome,
+  }));
+};

@@ -62,11 +62,7 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
     localStorage.setItem("eh_cemei", "true");
 
     const search = `?uuid=1cca86e3-b010-4643-bb89-9fa85f016c22`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
