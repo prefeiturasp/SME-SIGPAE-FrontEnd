@@ -112,6 +112,11 @@ export const LancamentoPorPeriodoCEI = ({
     }
   };
 
+  const temAlunosNoPeriodo = (periodoComAlunos, periodo, periodoNormalizado) =>
+    periodoComAlunos.some(
+      (p) => p.nome === periodo || p.nome === periodoNormalizado,
+    );
+
   useEffect(() => {
     const fetchPeriodoMensal = async () => {
       const params_matriculados = {
@@ -186,8 +191,10 @@ export const LancamentoPorPeriodoCEI = ({
           }
 
           const periodoNormalizado = periodo.replace(/^Infantil\s+/i, "");
-          return periodoComAlunos.some(
-            (p) => p.nome === periodo || p.nome === periodoNormalizado,
+          return temAlunosNoPeriodo(
+            periodoComAlunos,
+            periodo,
+            periodoNormalizado,
           );
         });
       }
