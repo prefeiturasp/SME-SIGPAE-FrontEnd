@@ -349,8 +349,8 @@ export const LancamentoPorPeriodoCEI = ({
         (alimentacao) => alimentacao.nome !== "Lanche Emergencial",
       );
     }
-
-    return tiposAlimentacao;
+    const ordenacao = (a, b) => a.nome.localeCompare(b.nome);
+    return tiposAlimentacao.sort(ordenacao);
   };
 
   const uuidPeriodoEscolar = (nomePeriodo) => {

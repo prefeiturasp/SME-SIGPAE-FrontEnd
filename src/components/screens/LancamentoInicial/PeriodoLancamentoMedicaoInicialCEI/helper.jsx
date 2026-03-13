@@ -1142,21 +1142,6 @@ export const formatarLinhasTabelasDietasEmeiDaCemei = (tiposAlimentacao) => {
     },
   );
 
-  const indexLanche4h = tiposAlimentacao.findIndex((ali) =>
-    ali.nome.includes("4h"),
-  );
-  if (indexLanche4h !== -1) {
-    linhasTabelasDietas.push({
-      nome: tiposAlimentacao[indexLanche4h].nome,
-      name: tiposAlimentacao[indexLanche4h].nome
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replaceAll(/ /g, "_"),
-      uuid: tiposAlimentacao[indexLanche4h].uuid,
-    });
-  }
-
   const indexLanche = tiposAlimentacao.findIndex(
     (ali) => ali.nome === "Lanche",
   );
@@ -1169,6 +1154,21 @@ export const formatarLinhasTabelasDietasEmeiDaCemei = (tiposAlimentacao) => {
         .toLowerCase()
         .replaceAll(/ /g, "_"),
       uuid: tiposAlimentacao[indexLanche].uuid,
+    });
+  }
+
+  const indexLanche4h = tiposAlimentacao.findIndex((ali) =>
+    ali.nome.includes("4h"),
+  );
+  if (indexLanche4h !== -1) {
+    linhasTabelasDietas.push({
+      nome: tiposAlimentacao[indexLanche4h].nome,
+      name: tiposAlimentacao[indexLanche4h].nome
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replaceAll(/ /g, "_"),
+      uuid: tiposAlimentacao[indexLanche4h].uuid,
     });
   }
 
