@@ -109,7 +109,7 @@ export const mapParticipanteApiToForm = (p: any) => {
   const colaboradoresUuids = (tipos.colaboradores || []).map((t) => t.uuid);
 
   return {
-    id: p.id || p.uuid || Date.now() + Math.random(),
+    id: p.id || p.uuid || crypto.randomUUID(),
     uuid: p.uuid,
 
     loteUuid: lote.uuid,

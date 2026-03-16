@@ -47,41 +47,37 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoValidadaCEMEI);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/codae-cancela-pedido/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/codae-cancela-pedido/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoNegadaCEMEI);
 
     const search = `?uuid=${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     await act(async () => {
       ({ container } = render(
@@ -100,20 +96,20 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
             <InclusaoDeAlimentacaoCEMEIRelatorios.RelatorioCODAE />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       ));
     });
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # 5A120`", async () => {
     expect(
-      screen.getByText("Inclusão de Alimentação - Solicitação # 5A120")
+      screen.getByText("Inclusão de Alimentação - Solicitação # 5A120"),
     ).toBeInTheDocument();
   });
 
   it("renderiza dados da solicitação", async () => {
     expect(
-      screen.getByText("Solicitação no prazo regular")
+      screen.getByText("Solicitação no prazo regular"),
     ).toBeInTheDocument();
 
     const span = container.querySelector(".dre-name");
@@ -121,7 +117,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
     expect(span).toHaveTextContent("CEMEI SUZANA CAMPOS TAUIL");
 
     expect(
-      screen.getByText("Solicitação de Inclusão de Alimentação")
+      screen.getByText("Solicitação de Inclusão de Alimentação"),
     ).toBeInTheDocument();
     expect(screen.getByText("Evento Específico")).toBeInTheDocument();
 
@@ -131,7 +127,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
   it("autoriza a solicitação", async () => {
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/codae-autoriza-pedido/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/codae-autoriza-pedido/`,
       )
       .reply(200, mockInclusaoMotivoEspecificoAutorizadaCEMEI);
 
@@ -140,7 +136,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja autorizar a solicitação?")
+        screen.queryByText("Deseja autorizar a solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -154,13 +150,13 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
 
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoAutorizadaCEMEI);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja autorizar a solicitação?")
+        screen.queryByText("Deseja autorizar a solicitação?"),
       ).not.toBeInTheDocument();
     });
 
@@ -169,7 +165,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
 
     expect(screen.getByText("CODAE autorizou")).toBeInTheDocument();
     expect(
-      screen.getByText("14/07/2025 13:45:55 - Informações da CODAE")
+      screen.getByText("14/07/2025 13:45:55 - Informações da CODAE"),
     ).toBeInTheDocument();
     expect(screen.getByText("sim, eu autorizo")).toBeInTheDocument();
   });
@@ -180,7 +176,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja negar a solicitação?")
+        screen.getByText("Deseja negar a solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -195,13 +191,13 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão CODAE - Mot
 
     mock
       .onGet(
-        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/`
+        `/inclusao-alimentacao-cemei/${mockInclusaoMotivoEspecificoValidadaCEMEI.uuid}/`,
       )
       .replyOnce(200, mockInclusaoMotivoEspecificoNegadaCEMEI);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Solicitação negada com sucesso!")
+        screen.getByText("Solicitação negada com sucesso!"),
       ).toBeInTheDocument();
     });
 

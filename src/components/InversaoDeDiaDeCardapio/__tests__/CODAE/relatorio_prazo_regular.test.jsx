@@ -37,20 +37,16 @@ describe("Teste Relatório Inversão CEMEI - Visão CODAE - Prazo Regular", () =
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
 
     const search = `?uuid=${uuidInversao}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     await act(async () => {
       render(
@@ -69,7 +65,7 @@ describe("Teste Relatório Inversão CEMEI - Visão CODAE - Prazo Regular", () =
             <RelatoriosInversaoDiaCardapio.RelatorioCODAE />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -77,8 +73,8 @@ describe("Teste Relatório Inversão CEMEI - Visão CODAE - Prazo Regular", () =
   it("Renderiza título `Inversão de dia de Cardápio`", () => {
     expect(
       screen.getByText(
-        `Inversão de dia de Cardápio - Solicitação # ${mockInversaoDiaCardapioValidadaCEMEI.id_externo}`
-      )
+        `Inversão de dia de Cardápio - Solicitação # ${mockInversaoDiaCardapioValidadaCEMEI.id_externo}`,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -92,7 +88,7 @@ describe("Teste Relatório Inversão CEMEI - Visão CODAE - Prazo Regular", () =
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja autorizar a solicitação?")
+        screen.getByText("Deseja autorizar a solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -110,7 +106,7 @@ describe("Teste Relatório Inversão CEMEI - Visão CODAE - Prazo Regular", () =
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja autorizar a solicitação?")
+        screen.queryByText("Deseja autorizar a solicitação?"),
       ).not.toBeInTheDocument();
     });
 
@@ -119,7 +115,7 @@ describe("Teste Relatório Inversão CEMEI - Visão CODAE - Prazo Regular", () =
 
     expect(screen.getByText("CODAE autorizou")).toBeInTheDocument();
     expect(
-      screen.getByText("09/09/2025 13:39:45 - Informações da CODAE")
+      screen.getByText("09/09/2025 13:39:45 - Informações da CODAE"),
     ).toBeInTheDocument();
   });
 
@@ -133,7 +129,7 @@ describe("Teste Relatório Inversão CEMEI - Visão CODAE - Prazo Regular", () =
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja negar a solicitação?")
+        screen.getByText("Deseja negar a solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -152,7 +148,7 @@ describe("Teste Relatório Inversão CEMEI - Visão CODAE - Prazo Regular", () =
 
     await waitFor(() => {
       expect(
-        screen.getByText("Solicitação negada com sucesso!")
+        screen.getByText("Solicitação negada com sucesso!"),
       ).toBeInTheDocument();
     });
 

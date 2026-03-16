@@ -17,6 +17,11 @@ export default ({
   tiposAlimentacao,
   totaisConsumo,
 }: Props) => {
+  const _TIPOS_ALIMENTACAO = [
+    ...tiposAlimentacao,
+    { uuid: "Kit Lanche", nome: "Kit Lanche" },
+  ];
+
   const [consolidado, setConsolidado] = useState({
     quantidade: 0,
     valor: 0,
@@ -49,7 +54,7 @@ export default ({
       <TabelaAlimentacao
         ref={refAlimentacao}
         tabelas={relatorioConsolidado.tabelas}
-        tiposAlimentacao={tiposAlimentacao}
+        tiposAlimentacao={_TIPOS_ALIMENTACAO}
         totaisConsumo={totaisConsumo}
         ordem="A"
       />

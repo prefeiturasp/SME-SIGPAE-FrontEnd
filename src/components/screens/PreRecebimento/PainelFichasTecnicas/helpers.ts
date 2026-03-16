@@ -23,6 +23,8 @@ export const formatarCards = (items: FichaTecnicaDashboard[]): CardItem[] => {
     status: item.status,
     fullText: gerarTextoCompleto(item),
     programa_leve_leite: item.programa_leve_leite,
+    categoria: item.categoria,
+    tipo_entrega: item.tipo_entrega,
   }));
 };
 
@@ -56,6 +58,8 @@ export const formataItensVerMais = (
     data: item.log_mais_recente.slice(0, 10),
     link: `${urlBaseItem}?uuid=${item.uuid}`,
     programa_leve_leite: item.programa_leve_leite,
+    categoria: item.categoria,
+    tipo_entrega: item.tipo_entrega,
   }));
 };
 

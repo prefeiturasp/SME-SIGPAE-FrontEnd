@@ -7,6 +7,7 @@ export const mockListaCronogramas = {
       uuid: "7dbdd253-a7c3-4bf7-965a-2183e8dd5f83",
       numero: "161/2024A",
       status: "Alteração CODAE",
+      ponto_a_ponto: false,
       criado_em: "13/03/2024 15:20:38",
       alterado_em: "30/04/2024 13:19:21",
       contrato: {
@@ -159,6 +160,7 @@ export const mockListaCronogramas = {
       uuid: "bf6718d4-878b-4572-9d3d-370ad29e843e",
       numero: "174/2024A",
       status: "Assinado e Enviado ao Fornecedor",
+      ponto_a_ponto: false,
       criado_em: "05/04/2024 11:04:34",
       alterado_em: "30/04/2024 13:18:22",
       contrato: {
@@ -1585,6 +1587,32 @@ export const mockListaCronogramas = {
       },
       custo_unitario_produto: 62.1,
       observacoes: "",
+      ponto_a_ponto: false,
+    },
+    {
+      uuid: "mock-flv-pp-rascunho",
+      numero: "200/2024A",
+      status: "Rascunho",
+      ponto_a_ponto: true,
+      criado_em: "09/03/2026 10:00:00",
+      alterado_em: "09/03/2026 11:00:00",
+      contrato: {
+        numero: "123456",
+        programa: "LEVE_LEITE",
+      },
+      empresa: {
+        uuid: "d0630b2b-8e45-472c-b9c6-90451b60b081",
+        nome_fantasia: "JP Alimentos",
+      },
+      qtd_total_programada: 1000.0,
+      unidade_medida: {
+        abreviacao: "kg",
+      },
+      ficha_tecnica: {
+        produto: {
+          nome: "LARANJA FLV PP",
+        },
+      },
     },
   ],
 };

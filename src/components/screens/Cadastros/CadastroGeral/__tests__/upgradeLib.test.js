@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import { ToastContainer } from "react-toastify";
 import CadastroGeral from "../index";
 
 jest.mock("antd", () => ({
@@ -19,7 +20,7 @@ jest.mock(
   () => ({
     __esModule: true,
     default: () => <div data-testid="filtros">Filtros mock</div>,
-  })
+  }),
 );
 
 jest.mock(
@@ -27,7 +28,7 @@ jest.mock(
   () => ({
     __esModule: true,
     default: () => <div data-testid="tabela">Tabela mock</div>,
-  })
+  }),
 );
 
 jest.mock("src/services/produto.service", () => ({
@@ -38,13 +39,14 @@ jest.mock("src/services/produto.service", () => ({
     .mockResolvedValue({ data: { results: [], count: 0 }, status: 200 }),
 }));
 
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastError: jest.fn(),
-}));
-
 describe("CadastroGeral", () => {
   it("deve renderizar sem erro e mostrar o Spin de carregamento inicialmente", async () => {
-    render(<CadastroGeral />);
+    render(
+      <>
+        <CadastroGeral />
+        <ToastContainer />
+      </>,
+    );
     expect(screen.getByTestId("spin")).toHaveTextContent("Loading");
     expect(screen.getByTestId("filtros")).toBeInTheDocument();
   });

@@ -9,12 +9,11 @@ import mock from "src/services/_mock";
 
 describe("Detalhes da Ficha de Recebimento - Erro ao carregar dados do cronograma", () => {
   beforeEach(async () => {
-    Object.defineProperty(window, "location", {
-      value: {
-        search: `?uuid=${mockGetFichaRecebimentoDetalhada.uuid}`,
-      },
-      writable: true,
-    });
+    window.history.pushState(
+      {},
+      "",
+      `?uuid=${mockGetFichaRecebimentoDetalhada.uuid}`,
+    );
   });
 
   const setup = async () => {
@@ -23,7 +22,7 @@ describe("Detalhes da Ficha de Recebimento - Erro ao carregar dados do cronogram
         <MemoryRouter>
           <Detalhar />
           <ToastContainer />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   };
@@ -34,21 +33,21 @@ describe("Detalhes da Ficha de Recebimento - Erro ao carregar dados do cronogram
       .reply(200, mockGetFichaRecebimentoDetalhada);
     mock
       .onGet(
-        `/cronogramas/${mockGetFichaRecebimentoDetalhada.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`
+        `/cronogramas/${mockGetFichaRecebimentoDetalhada.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`,
       )
       .reply(400, {});
 
     await setup();
 
     expect(
-      screen.getByText("Erro ao carregar dados do cronograma.")
+      screen.getByText("Erro ao carregar dados do cronograma."),
     ).toBeInTheDocument();
   });
 
   it("Recebe retorno de erro endpoint de ficha detalhada.", async () => {
     mock
       .onGet(
-        `/cronogramas/${mockGetFichaRecebimentoDetalhada.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`
+        `/cronogramas/${mockGetFichaRecebimentoDetalhada.dados_cronograma.uuid}/dados-cronograma-ficha-recebimento/`,
       )
       .reply(200, mockCronogramaCadastroRecebimento);
     mock
@@ -58,7 +57,7 @@ describe("Detalhes da Ficha de Recebimento - Erro ao carregar dados do cronogram
     await setup();
 
     expect(
-      screen.getByText("Erro ao carregar ficha de recebimento.")
+      screen.getByText("Erro ao carregar ficha de recebimento."),
     ).toBeInTheDocument();
   });
 });

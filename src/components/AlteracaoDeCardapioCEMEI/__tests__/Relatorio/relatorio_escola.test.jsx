@@ -25,7 +25,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão Escola", () =
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`,
       )
       .reply(200, mockAlteracaoCardapioCEMEIAValidar);
     mock
@@ -33,16 +33,12 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão Escola", () =
       .reply(200, mockQuantidadeAlunoCEMEIporCEIEMEI);
     mock
       .onPatch(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/escola-cancela-pedido-48h-antes/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/escola-cancela-pedido-48h-antes/`,
       )
       .reply(200, mockAlteracaoCardapioCEMEICancelada);
 
     const search = `?uuid=${mockAlteracaoCardapioCEMEIAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);
@@ -68,14 +64,16 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão Escola", () =
             <RelatoriosAlteracaoDoTipoDeAlimentacaoCEMEI.RelatorioEscola />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página `Alteração do Tipo de Alimentação - Solicitação # 8AA0A`", async () => {
     expect(
-      screen.getByText("Alteração do Tipo de Alimentação - Solicitação # 8AA0A")
+      screen.getByText(
+        "Alteração do Tipo de Alimentação - Solicitação # 8AA0A",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -119,12 +117,12 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão Escola", () =
     expect(screen.getByText("Alunos CEI")).toBeInTheDocument();
 
     expect(
-      screen.queryAllByText("Alteração do tipo de Alimentação de:")
+      screen.queryAllByText("Alteração do tipo de Alimentação de:"),
     ).toHaveLength(2);
     expect(screen.queryAllByText("Lanche")).toHaveLength(2);
 
     expect(screen.queryAllByText("Para o tipo de Alimentação:")).toHaveLength(
-      2
+      2,
     );
     expect(screen.getByText("Almoço")).toBeInTheDocument();
 
@@ -150,7 +148,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão Escola", () =
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação")
+        screen.getByText("Cancelamento de Solicitação"),
       ).toBeInTheDocument();
     });
 
@@ -167,13 +165,13 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão Escola", () =
 
     mock
       .onGet(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIAValidar.uuid}/`,
       )
       .reply(200, mockAlteracaoCardapioCEMEICancelada);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação")
+        screen.queryByText("Cancelamento de Solicitação"),
       ).not.toBeInTheDocument();
     });
 
@@ -183,8 +181,8 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão Escola", () =
     expect(screen.getByText("Histórico de cancelamento")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "29/05/2025 - justificativa: quero cancelar a solicitação."
-      )
+        "29/05/2025 - justificativa: quero cancelar a solicitação.",
+      ),
     ).toBeInTheDocument();
   });
 });

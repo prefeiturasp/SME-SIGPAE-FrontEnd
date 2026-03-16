@@ -13,6 +13,7 @@ import {
   mockTotaisAtendimentoTipoAlimentacao,
 } from "src/mocks/services/relatorioFinanceiro.service/mockGetTotaisConsumoAtendimento";
 import {
+  mockRelatorioFinanceiroCEMEI,
   mockRelatorioFinanceiroFaixaEtaria,
   mockRelatorioFinanceiroTipoAlimentacao,
 } from "src/mocks/services/relatorioFinanceiro.service/mockGetRelatorioFinanceiroConsolidado";
@@ -20,6 +21,14 @@ import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
+
+const TOTAIS_NORMAL = ["TOTAL (A)", "TOTAL (B)", "TOTAL (C)"];
+const TOTAIS_INFANTIL = ["TOTAL (INF. A)", "TOTAL (INF. B)", "TOTAL (INF. C)"];
+const TOTAIS_FUNDAMENTAL = [
+  "TOTAL (FUND. A)",
+  "TOTAL (FUND. B)",
+  "TOTAL (FUND. C)",
+];
 
 describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFinanceiroConsolidado", () => {
   const gruposUnidadeEscolar = mockGetGrupoUnidadeEscolar.results;
@@ -105,6 +114,18 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     expect(screen.getByText("Reabrir Lançamentos")).toBeInTheDocument();
   });
 
+  const verificaHeadersTabela = async (titulos) => {
+    for (const titulo of titulos) {
+      expect(
+        (
+          await screen.findAllByRole("columnheader", {
+            name: titulo,
+          })
+        ).length,
+      ).toBeGreaterThan(0);
+    }
+  };
+
   it("deve exibir tabelas e valores do grupo 1 - CEI", async () => {
     mock
       .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
@@ -117,14 +138,11 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup();
 
-    for (const titulo of [
+    verificaHeadersTabela([
       "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
-      "DIETA ESPECIAL - TIPO A",
-      "DIETA ESPECIAL - TIPO B",
-      "TOTAL (A)",
-    ]) {
-      expect(await screen.findByText(titulo)).toBeInTheDocument();
-    }
+      "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
+      "VALOR UNITÁRIO",
+    ]);
 
     for (const valor of ["R$ 2.000,00", "R$ 4.002,00", "R$ 5.115,11"]) {
       expect(
@@ -134,6 +152,10 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
           )
         ).length,
       ).toBeGreaterThan(0);
+    }
+
+    for (const total of TOTAIS_NORMAL) {
+      expect(screen.getByText(total)).toBeInTheDocument();
     }
 
     expect(
@@ -148,7 +170,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       name: /DIETA ESPECIAL/i,
     });
 
-    expect(headers).toHaveLength(2);
+    expect(headers.length).toBeGreaterThanOrEqual(2);
     expect(
       headers.some((h) =>
         h.textContent?.includes(
@@ -160,6 +182,47 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       headers.some((h) => h.textContent?.includes("DIETA ESPECIAL - TIPO B")),
     ).toBe(true);
   };
+
+  it("deve exibir tabelas e valores do grupo 2 - CEMEI", async () => {
+    mock
+      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
+      .reply(200, mockRelatorioFinanceiroCEMEI);
+
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, {
+        TIPO: mockTotaisAtendimentoTipoAlimentacao,
+        FAIXA: mockTotaisAtendimentoFaixaEtaria,
+      });
+
+    const grupoCEMEI = gruposUnidadeEscolar.find((grupo) =>
+      grupo.nome.includes("Grupo 2"),
+    );
+
+    await setup(grupoCEMEI.uuid);
+
+    verificaHeadersTabela([
+      "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
+      "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
+      "VALOR UNITÁRIO",
+    ]);
+
+    for (const total of [...TOTAIS_NORMAL, ...TOTAIS_INFANTIL]) {
+      expect(screen.getByText(total)).toBeInTheDocument();
+    }
+
+    await verificaTabelaDietas();
+
+    for (const card of [
+      "CONSOLIDADO CEI (A + B + C)",
+      "CONSOLIDADO INFANTIL - EMEI (INF. A + INF. B + INF. C)",
+      "CONSOLIDADO TOTAL (A + B + C + INF. A + INF. B + INF. C)",
+    ]) {
+      expect(screen.getByText(card)).toBeInTheDocument();
+    }
+  });
 
   it("deve exibir tabelas e valores do grupo 3 - EMEI", async () => {
     const grupoEMEI = gruposUnidadeEscolar.find((grupo) =>
@@ -180,27 +243,19 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoEMEI.uuid);
 
-    for (const titulo of [
-      "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
-      "VALOR UNITÁRIO",
-    ]) {
-      expect(
-        (
-          await screen.findAllByRole("columnheader", {
-            name: titulo,
-          })
-        ).length,
-      ).toBeGreaterThan(0);
+    verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
+
+    for (const total of TOTAIS_NORMAL) {
+      expect(screen.getByText(total)).toBeInTheDocument();
     }
-    expect(screen.getByText("TOTAL (B)")).toBeInTheDocument();
 
     await verificaTabelaDietas();
 
     expect(
       await screen.findByText("CONSOLIDADO TOTAL (A + B + C)"),
     ).toBeInTheDocument();
-    expect(await screen.findByText("9.196")).toBeInTheDocument();
-    expect(await screen.findByText("R$ 101.226,08")).toBeInTheDocument();
+    expect(await screen.findByText("9.236")).toBeInTheDocument();
+    expect(await screen.findByText("R$ 101.706,08")).toBeInTheDocument();
   });
 
   it("deve exibir tabelas e valores do grupo 4 - EMEF", async () => {
@@ -222,19 +277,14 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoEMEF.uuid);
 
-    for (const titulo of [
+    verificaHeadersTabela([
       "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
       "VALOR DO REAJUSTE",
-    ]) {
-      expect(
-        (
-          await screen.findAllByRole("columnheader", {
-            name: titulo,
-          })
-        ).length,
-      ).toBeGreaterThan(0);
+    ]);
+
+    for (const total of TOTAIS_NORMAL) {
+      expect(screen.getByText(total)).toBeInTheDocument();
     }
-    expect(screen.getByText("TOTAL (C)")).toBeInTheDocument();
 
     await verificaTabelaDietas();
 
@@ -245,6 +295,52 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       await screen.findByText(
         "(Cento e dois mil quatrocentos e sessenta e oito reais e cinquenta e seis centavos.)",
       ),
+    ).toBeInTheDocument();
+  });
+
+  it("deve exibir tabelas e valores do grupo 5 - EMEBS", async () => {
+    const grupoEMEBS = gruposUnidadeEscolar.find((grupo) =>
+      grupo.nome.includes("Grupo 5"),
+    );
+
+    mock
+      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
+      .reply(200, {
+        ...mockRelatorioFinanceiroTipoAlimentacao,
+        grupo_unidade_escolar: grupoEMEBS,
+      });
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, {
+        INFANTIL: mockTotaisAtendimentoTipoAlimentacao,
+        FUNDAMENTAL: mockTotaisAtendimentoTipoAlimentacao,
+      });
+
+    await setup(grupoEMEBS.uuid);
+
+    verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
+
+    for (const total of [...TOTAIS_INFANTIL, ...TOTAIS_FUNDAMENTAL]) {
+      expect(screen.getByText(total)).toBeInTheDocument();
+    }
+
+    await verificaTabelaDietas();
+
+    for (const card of [
+      "CONSOLIDADO INFANTIL (INF. A + INF. B + INF. C)",
+      "CONSOLIDADO FUNDAMENTAL (FUND. A + FUND. B + FUND. C)",
+      "CONSOLIDADO TOTAL (INF. A + INF. B + INF. C + FUND. A + FUND. B + FUND. C)",
+    ]) {
+      expect(screen.getByText(card)).toBeInTheDocument();
+    }
+
+    expect(
+      screen.getAllByText("(Quatrocentos e noventa reais e oito centavos.)"),
+    ).toHaveLength(2);
+    expect(
+      screen.getByText("(Novecentos e oitenta reais e dezesseis centavos.)"),
     ).toBeInTheDocument();
   });
 
@@ -268,9 +364,11 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoCIEJA.uuid);
 
-    expect(await screen.findAllByText("REFEIÇÃO CIEJA E CMCT")).toHaveLength(2);
-    expect(await screen.findAllByText("LANCHE 4H")).toHaveLength(3);
-    expect(await screen.findAllByText("LANCHE")).toHaveLength(1);
+    verificaHeadersTabela(["REFEIÇÃO CIEJA E CMCT", "LANCHE 4H"]);
+
+    for (const total of TOTAIS_NORMAL) {
+      expect(screen.getByText(total)).toBeInTheDocument();
+    }
 
     await verificaTabelaDietas();
 

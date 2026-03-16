@@ -76,11 +76,7 @@ afterAll(() => {
 
 test("Relatório Inativas - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=inativas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -142,11 +138,7 @@ test("Relatório Inativas - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
 
 test("Relatório Inativas - visão TERCEIRIZADA ADMINISTRADOR EMPRESA", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=inativas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",
@@ -211,11 +203,7 @@ test("Relatório Inativas - visão TERCEIRIZADA ADMINISTRADOR EMPRESA", async ()
 
 test("Relatório Inativas - visão ESCOLA DIRETOR_UE", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=inativas`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",

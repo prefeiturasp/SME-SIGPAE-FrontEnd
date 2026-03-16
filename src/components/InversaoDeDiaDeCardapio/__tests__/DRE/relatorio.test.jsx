@@ -30,11 +30,7 @@ describe("Teste Relatório Inversão de dia de Cardápio CEMEI - Visão DRE", ()
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
 
     const search = `?uuid=${uuidInversao}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-normal&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
@@ -57,7 +53,7 @@ describe("Teste Relatório Inversão de dia de Cardápio CEMEI - Visão DRE", ()
             <RelatoriosInversaoDiaCardapio.RelatorioDRE />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -65,15 +61,15 @@ describe("Teste Relatório Inversão de dia de Cardápio CEMEI - Visão DRE", ()
   it("Renderiza título `Inversão de dia de Cardápio`", () => {
     expect(
       screen.getByText(
-        `Inversão de dia de Cardápio - Solicitação # ${mockInversaoDiaCardapioAValidarCEMEI.id_externo}`
-      )
+        `Inversão de dia de Cardápio - Solicitação # ${mockInversaoDiaCardapioAValidarCEMEI.id_externo}`,
+      ),
     ).toBeInTheDocument();
   });
 
   it("valida solicitação", async () => {
     mock
       .onPatch(
-        `/inversoes-dia-cardapio/${uuidInversao}/diretoria-regional-valida-pedido/`
+        `/inversoes-dia-cardapio/${uuidInversao}/diretoria-regional-valida-pedido/`,
       )
       .reply(200, mockInversaoDiaCardapioValidadaCEMEI);
 
@@ -86,7 +82,7 @@ describe("Teste Relatório Inversão de dia de Cardápio CEMEI - Visão DRE", ()
 
     await waitFor(() => {
       expect(
-        screen.getByText("Inversão de dia de Cardápio validada com sucesso!")
+        screen.getByText("Inversão de dia de Cardápio validada com sucesso!"),
       ).toBeInTheDocument();
     });
 
@@ -99,13 +95,13 @@ describe("Teste Relatório Inversão de dia de Cardápio CEMEI - Visão DRE", ()
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja não validar solicitação?")
+        screen.getByText("Deseja não validar solicitação?"),
       ).toBeInTheDocument();
     });
 
     const uuidMotivoEmDesacordoComContrato =
       mockMotivosDRENaoValida.results.find(
-        (motivo) => motivo.nome === "Em desacordo com o contrato"
+        (motivo) => motivo.nome === "Em desacordo com o contrato",
       ).uuid;
 
     const selectMotivo = screen.getByTestId("select-motivo-cancelamento");
@@ -128,13 +124,13 @@ describe("Teste Relatório Inversão de dia de Cardápio CEMEI - Visão DRE", ()
 
     mock
       .onPatch(
-        `/inversoes-dia-cardapio/${uuidInversao}/diretoria-regional-nao-valida-pedido/`
+        `/inversoes-dia-cardapio/${uuidInversao}/diretoria-regional-nao-valida-pedido/`,
       )
       .reply(200, mockInversaoDiaCardapioNaoValidadaCEMEI);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Solicitação não validada com sucesso!")
+        screen.getByText("Solicitação não validada com sucesso!"),
       ).toBeInTheDocument();
     });
 
@@ -145,7 +141,7 @@ describe("Teste Relatório Inversão de dia de Cardápio CEMEI - Visão DRE", ()
   it("erro ao validar solicitação", async () => {
     mock
       .onPatch(
-        `/inversoes-dia-cardapio/${uuidInversao}/diretoria-regional-valida-pedido/`
+        `/inversoes-dia-cardapio/${uuidInversao}/diretoria-regional-valida-pedido/`,
       )
       .reply(400, {});
 
@@ -155,8 +151,8 @@ describe("Teste Relatório Inversão de dia de Cardápio CEMEI - Visão DRE", ()
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Houve um erro ao validar a Inversão de dia de Cardápio. Tente novamente mais tarde."
-        )
+          "Houve um erro ao validar a Inversão de dia de Cardápio. Tente novamente mais tarde.",
+        ),
       ).toBeInTheDocument();
     });
   });

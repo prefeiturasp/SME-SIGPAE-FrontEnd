@@ -101,11 +101,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
       .reply(200, { ultima_data: "2025-12-20" });
 
     const search = `?mes=12&ano=2025`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CEU GESTAO INACIO MONTEIRO"`);

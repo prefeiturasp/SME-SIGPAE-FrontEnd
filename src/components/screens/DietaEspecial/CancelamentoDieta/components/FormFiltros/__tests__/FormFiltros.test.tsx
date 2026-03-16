@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
+import { ToastContainer } from "react-toastify";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { combineReducers, createStore } from "redux";
@@ -17,10 +18,6 @@ import FormFiltros from "../index";
 
 jest.mock("src/services/perfil.service");
 jest.mock("src/helpers/dietaEspecial");
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastError: jest.fn(),
-}));
-
 const setLoading = jest.fn();
 const setFiltros = jest.fn();
 
@@ -40,8 +37,9 @@ function renderWithProviders({ store } = {}) {
         }}
       >
         <FormFiltros setLoading={setLoading} setFiltros={setFiltros} />
+        <ToastContainer />
       </MemoryRouter>
-    </Provider>
+    </Provider>,
   );
 }
 
@@ -66,7 +64,7 @@ describe("FormFiltros", () => {
     expect(screen.getByText(/Unidade Escolar/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Insira o Código/i)).toBeInTheDocument();
     expect(
-      screen.getByTestId("input-nome-aluno").querySelector("input")
+      screen.getByTestId("input-nome-aluno").querySelector("input"),
     ).toBeInTheDocument();
     expect(screen.getByText("Consultar")).toBeInTheDocument();
     expect(screen.getByText("Limpar Filtros")).toBeInTheDocument();
@@ -87,7 +85,7 @@ describe("FormFiltros", () => {
 
     await waitFor(() => {
       expect(setFiltros).toHaveBeenCalledWith(
-        expect.objectContaining({ nome_aluno: "João" })
+        expect.objectContaining({ nome_aluno: "João" }),
       );
     });
   });
