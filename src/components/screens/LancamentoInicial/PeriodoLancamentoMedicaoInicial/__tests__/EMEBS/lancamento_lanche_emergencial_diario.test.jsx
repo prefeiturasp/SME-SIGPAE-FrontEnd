@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockGetTipoAlimentacao } from "src/mocks/cadastroTipoAlimentacao.service/mockGetTipoAlimentacao";
@@ -102,5 +102,67 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
 
   it("renderiza label `Período de Lançamento`", () => {
     expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
+  });
+
+  it("renderiza valor `Solicitações de Alimentação` no input `Período de Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-periodo-lancamento");
+    expect(inputElement).toHaveAttribute(
+      "value",
+      "Solicitações de Alimentação",
+    );
+  });
+
+  it("renderiza label `Semanas do Período para Lançamento da Medição Inicial`", () => {
+    expect(
+      screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
+    ).toBeInTheDocument();
+  });
+
+  it("renderiza label `Semana 1`", async () => {
+    expect(screen.getByText("Semana 1")).toBeInTheDocument();
+  });
+
+  it("renderiza label `Semana 5`", async () => {
+    expect(screen.getByText("Semana 5")).toBeInTheDocument();
+  });
+
+  it("renderiza label `SOLICITAÇÕES DE ALIMENTAÇÃO`", async () => {
+    expect(screen.getByText("SOLICITAÇÕES DE ALIMENTAÇÃO")).toBeInTheDocument();
+  });
+
+  it("renderiza labels `Lanche Emergencial` e `Kit Lanche`", async () => {
+    expect(screen.getByText("Lanche Emergencial")).toBeInTheDocument();
+    expect(screen.getByText("Kit Lanche")).toBeInTheDocument();
+  });
+
+  it("Clica na semana 2 e campos estão desabilitados para lançamento de lanche emergencial", () => {
+    const semanaDois = screen.getByText("Semana 2");
+    fireEvent.click(semanaDois);
+
+    for (const dia of ["2", "3", "4", "5", "6", "7", "8"]) {
+      const inputLancheEmergencialPorDia = screen.getByTestId(
+        `lanche_emergencial__dia_0${dia}__categoria_5`,
+      );
+      expect(inputLancheEmergencialPorDia).toBeDisabled();
+    }
+  });
+
+  it("Clica na semana 3 e alguns campos estão habilitados para lançamento de lanche emergencial", () => {
+    const semanaTres = screen.getByText("Semana 3");
+    fireEvent.click(semanaTres);
+
+    for (const dia of ["10", "11", "12", "13"]) {
+      const inputLancheEmergencialPorDia = screen.getByTestId(
+        `lanche_emergencial__dia_${dia}__categoria_5`,
+      );
+      expect(inputLancheEmergencialPorDia).toBeEnabled();
+    }
+
+    for (const dia of ["14", "15"]) {
+      const inputLancheEmergencialPorDia = screen.getByTestId(
+        `lanche_emergencial__dia_${dia}__categoria_5`,
+      );
+      expect(inputLancheEmergencialPorDia).toBeDisabled();
+    }
   });
 });
