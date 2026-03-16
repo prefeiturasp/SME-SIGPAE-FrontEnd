@@ -7,7 +7,7 @@ import { conferidaClass } from "src/helpers/terceirizadas";
 import TooltipProdutos from "./tooltipProdutos";
 import { Websocket } from "src/services/websocket";
 import { TIPO_PERFIL } from "src/constants/shared";
-import { Tooltip } from "antd";
+import TooltipDietasSimultaneas from "./tooltipoDietas";
 
 export class CardListarSolicitacoes extends Component {
   constructor(props) {
@@ -103,24 +103,9 @@ export class CardListarSolicitacoes extends Component {
 
                                 {this.perfilDietaEspecial() &&
                                   this.qtdDietasAbertas(value) > 0 && (
-                                    <Tooltip
-                                      color="#686868"
-                                      overlayStyle={{
-                                        maxWidth: "140px",
-                                        fontSize: "12px",
-                                        fontWeight: "700",
-                                      }}
-                                      title="Usuários visualizando simultaneamente"
-                                    >
-                                      <span
-                                        className={` ms-2 dietas-abertas ${
-                                          this.qtdDietasAbertas(value) > 9 &&
-                                          "qtd-dois-digitos"
-                                        }`}
-                                      >
-                                        {this.qtdDietasAbertas(value)}
-                                      </span>
-                                    </Tooltip>
+                                    <TooltipDietasSimultaneas
+                                      quantidade={this.qtdDietasAbertas(value)}
+                                    />
                                   )}
                               </span>
                             )}
