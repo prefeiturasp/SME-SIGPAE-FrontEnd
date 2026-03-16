@@ -18,7 +18,7 @@ import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancam
 import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/diasLetivosRecreio";
 import { mockValoresMedicaoCeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockValoresMedicao";
 import { mockSalvaLancamentoSemana1CeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockSalvarLancamentos";
-
+import { mockDietasEspeciasisCeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockDietasEspeciais";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
@@ -92,7 +92,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       status: 200,
     });
     getLogDietasAutorizadasRecreioNasFeriasCEI.mockResolvedValue({
-      data: [],
+      data: mockDietasEspeciasisCeiDaCEMEI,
       status: 200,
     });
 
@@ -233,6 +233,62 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       );
       expect(specificParticipantes).toBeInTheDocument();
     });
+
+    it("renderiza label `DIETA ESPECIAL - TIPO A`", async () => {
+      await awaitServices();
+      expect(screen.getByText("DIETA ESPECIAL - TIPO A")).toBeInTheDocument();
+    });
+
+    it("renderiza label `Dietas Autorizadas` dentro da seÃ§Ã£o `DIETA ESPECIAL - TIPO A`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "39cd2574-6d28-49bb-b628-ae538dc97791";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Dietas Autorizadas");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+    it("renderiza label `Seg.` dentro da seÃ§Ã£o `DIETA ESPECIAL - TIPO A`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "39cd2574-6d28-49bb-b628-ae538dc97791";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Seg.");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `Dietas Autorizadas` dentro da seÃ§Ã£o `DIETA ESPECIAL - TIPO B`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "6ad79709-3611-4af3-a567-65fcf34b3d06";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Dietas Autorizadas");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
+
+    it("renderiza label `Seg.` dentro da seÃ§Ã£o `DIETA ESPECIAL - TIPO B`", async () => {
+      await awaitServices();
+      const categoriaDietaAUuid = "6ad79709-3611-4af3-a567-65fcf34b3d06";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaDietaAUuid}`,
+      );
+      const dietasAutorizadas = screen.getAllByText("Seg.");
+      const specificParticipantes = dietasAutorizadas.find((element) =>
+        myElement.contains(element),
+      );
+      expect(specificParticipantes).toBeInTheDocument();
+    });
   });
 
   describe("Testa a parte de ALIMENTAÃ‡ÃƒO", () => {
@@ -240,8 +296,17 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
+      const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
+      );
+
       for (let faixa of mockFaixasEtarias.results) {
-        expect(screen.getByText(faixa.__str__)).toBeInTheDocument();
+        const allParticipantes = screen.getAllByText(faixa.__str__);
+        const specificParticipantes = allParticipantes.find((element) =>
+          myElement.contains(element),
+        );
+        expect(specificParticipantes).toBeInTheDocument();
       }
     });
 
@@ -263,9 +328,9 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         2: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "50",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "42",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
             "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
             "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
@@ -394,7 +459,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       fireEvent.click(semana2Element);
       const VALORES_ESPERADOS = {
         5: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -406,7 +471,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         6: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -418,7 +483,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         7: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -430,7 +495,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         8: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -442,7 +507,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         9: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -534,7 +599,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       fireEvent.click(semana3Element);
       const VALORES_ESPERADOS = {
         12: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -546,7 +611,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         13: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -558,7 +623,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         14: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -570,7 +635,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           },
         },
         15: {
-          participantes: "50",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -690,6 +755,204 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
     });
   });
 
+  describe("Testa a parte de DIETAS ESPECIAIS", () => {
+    const dias = [1, 2, 3, 4, 29, 30, 31].map((d) =>
+      String(d).padStart(2, "0"),
+    );
+    const diasDesabilitados = [29, 30, 31, 1, 3, 4].map((d) =>
+      String(d).padStart(2, "0"),
+    );
+
+    it("ao clicar na tab `Semana 1`, verifica as faixas existentes nas dietas especiais Tipo A", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const faixasRenderizadas = ["1b77202d-fd0b-46b7-b4ec-04eb262efece"];
+
+      mockFaixasEtarias.results.forEach((faixa) => {
+        dias.forEach((dia) => {
+          const inputDietasAutorizadas = screen.queryByTestId(
+            `dietas_autorizadas__faixa_${faixa.uuid}__dia_${dia}__categoria_2`,
+          );
+          const inputFrequencia = screen.queryByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_2`,
+          );
+
+          const deveExistir = faixasRenderizadas.includes(faixa.uuid);
+          if (deveExistir) {
+            expect(inputDietasAutorizadas).toBeInTheDocument();
+            expect(inputDietasAutorizadas).toBeDisabled();
+            expect(inputFrequencia).toBeInTheDocument();
+
+            if (diasDesabilitados.includes(dia)) {
+              expect(inputFrequencia.disabled).toBe(true);
+            } else {
+              expect(inputFrequencia.disabled).toBe(false);
+            }
+          } else {
+            expect(inputDietasAutorizadas).not.toBeInTheDocument();
+            expect(inputFrequencia).not.toBeInTheDocument();
+          }
+        });
+      });
+    });
+
+    it("ao clicar na tab `Semana 1`, verifica as faixas existentes nas dietas especiais Tipo B", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const faixasRenderizadas = ["1b77202d-fd0b-46b7-b4ec-04eb262efece"];
+
+      mockFaixasEtarias.results.forEach((faixa) => {
+        dias.forEach((dia) => {
+          const inputDietasAutorizadas = screen.queryByTestId(
+            `dietas_autorizadas__faixa_${faixa.uuid}__dia_${dia}__categoria_4`,
+          );
+          const inputFrequencia = screen.queryByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_4`,
+          );
+
+          const deveExistir = faixasRenderizadas.includes(faixa.uuid);
+          if (deveExistir) {
+            expect(inputDietasAutorizadas).toBeInTheDocument();
+            expect(inputDietasAutorizadas).toBeDisabled();
+            expect(inputFrequencia).toBeInTheDocument();
+
+            if (diasDesabilitados.includes(dia)) {
+              expect(inputFrequencia.disabled).toBe(true);
+            } else {
+              expect(inputFrequencia.disabled).toBe(false);
+            }
+          } else {
+            expect(inputDietasAutorizadas).not.toBeInTheDocument();
+            expect(inputFrequencia).not.toBeInTheDocument();
+          }
+        });
+      });
+    });
+
+    it("ao clicar na tab `Semana 1`, exibe, nos dias 29 dezembro a 04 de janeiro, e verifica os lanÃ§amentos", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const faixasPorCategoria = [
+        { uuid_faixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece", cateoria: "2" },
+        { uuid_faixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece", cateoria: "4" },
+      ];
+
+      const valoresExperados = {
+        1: {
+          dieta: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "",
+          },
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "",
+          },
+        },
+        2: {
+          dieta: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "6",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "2",
+          },
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "",
+          },
+        },
+        3: { dieta: {}, frequencia: {} },
+        4: { dieta: {}, frequencia: {} },
+        29: {
+          dieta: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "MÃªs anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "MÃªs anterior",
+          },
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "MÃªs anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "MÃªs anterior",
+          },
+        },
+        30: {
+          dieta: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "MÃªs anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "MÃªs anterior",
+          },
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "MÃªs anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "MÃªs anterior",
+          },
+        },
+        31: {
+          dieta: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "MÃªs anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "MÃªs anterior",
+          },
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat2": "MÃªs anterior",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece-cat4": "MÃªs anterior",
+          },
+        },
+      };
+
+      Object.keys(valoresExperados).forEach((dia) => {
+        const valoresDia = valoresExperados[dia];
+        const diaFormatado = dia.toString().padStart(2, "0");
+
+        faixasPorCategoria.forEach(({ uuid_faixa, cateoria }) => {
+          const chaveBusca = `${uuid_faixa}-cat${cateoria}`;
+
+          const valorDietaEsperado = valoresDia.dieta[chaveBusca] || "";
+          const valorFreqEsperado = valoresDia.frequencia[chaveBusca] || "";
+
+          const inputDieta = screen.getByTestId(
+            `dietas_autorizadas__faixa_${uuid_faixa}__dia_${diaFormatado}__categoria_${cateoria}`,
+          );
+          expect(inputDieta).toHaveAttribute("value", valorDietaEsperado);
+
+          const inputFrequencia = screen.getByTestId(
+            `frequencia__faixa_${uuid_faixa}__dia_${diaFormatado}__categoria_${cateoria}`,
+          );
+          expect(inputFrequencia).toHaveAttribute("value", valorFreqEsperado);
+        });
+      });
+
+      const botao = screen.getByText("Salvar LanÃ§amentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      await waitFor(() => {
+        expect(botao).not.toBeDisabled();
+      });
+    });
+
+    it("ao clicar na tab `Semana 1`, preencher frequencia maior que dietas autorizadas e exibe erro", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const faixasRenderizadas = ["1b77202d-fd0b-46b7-b4ec-04eb262efece"];
+
+      const cenarios = [
+        { faixa: faixasRenderizadas[0], categoria: "2" },
+        { faixa: faixasRenderizadas[0], categoria: "4" },
+      ];
+
+      cenarios.forEach(({ faixa, categoria }) => {
+        const testId = `frequencia__faixa_${faixa}__dia_01__categoria_${categoria}`;
+        const input = screen.getByTestId(testId);
+
+        fireEvent.change(input, { target: { value: "10" } });
+        expect(input).toHaveClass("invalid-field");
+
+        const botao = screen.getByText("Salvar LanÃ§amentos").closest("button");
+        expect(botao).toBeInTheDocument();
+        expect(botao).toBeDisabled();
+      });
+    });
+  });
+
   describe("Testa o Salvar LanÃ§amentos", () => {
     it("ao clicar na tab `Semana 1`, preenche dia 02 e salva lanÃ§amento", async () => {
       await awaitServices();
@@ -732,6 +995,16 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
           categoria: "1",
           valor: "6",
         },
+        {
+          uuidFaixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+          categoria: "2",
+          valor: "6",
+        },
+        {
+          uuidFaixa: "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+          categoria: "4",
+          valor: "2",
+        },
       ];
 
       itensParaPreencher.forEach(({ uuidFaixa, categoria, valor }) => {
@@ -765,7 +1038,17 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
       const inputParticipantes = screen.getByTestId(
         "participantes__faixa_null__dia_02__categoria_1",
       );
-      expect(inputParticipantes).toHaveAttribute("value", "50");
+      expect(inputParticipantes).toHaveAttribute("value", "42");
+
+      const inputDietasAutorizadaA1 = screen.getByTestId(
+        `dietas_autorizadas__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece__dia_02__categoria_2`,
+      );
+      expect(inputDietasAutorizadaA1).toHaveAttribute("value", "6");
+
+      const inputDietasAutorizadaB = screen.getByTestId(
+        `dietas_autorizadas__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece__dia_02__categoria_4`,
+      );
+      expect(inputDietasAutorizadaB).toHaveAttribute("value", "2");
     });
   });
 });

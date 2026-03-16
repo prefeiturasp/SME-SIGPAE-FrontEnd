@@ -21,7 +21,9 @@ export const geraOptionsFichasTecnicas = (
       const nomeFormatado = formatarNumeroEProdutoFichaTecnica(ficha);
       return {
         uuid: ficha.uuid,
-        nome: nomeFormatado,
+        nome: ficha.flv_ponto_a_ponto
+          ? `${nomeFormatado} (PONTO A PONTO)`
+          : nomeFormatado,
         programa: ficha.programa,
         flv_ponto_a_ponto: ficha.flv_ponto_a_ponto,
       };

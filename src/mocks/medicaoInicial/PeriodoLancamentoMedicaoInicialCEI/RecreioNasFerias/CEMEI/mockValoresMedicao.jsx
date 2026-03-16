@@ -2,7 +2,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "participantes",
-    valor: "50",
+    valor: "42",
     dia: "12",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: null,
@@ -16,7 +16,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "participantes",
-    valor: "50",
+    valor: "42",
     dia: "13",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: null,
@@ -30,7 +30,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "participantes",
-    valor: "50",
+    valor: "42",
     dia: "14",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: null,
@@ -44,7 +44,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "participantes",
-    valor: "50",
+    valor: "42",
     dia: "15",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: null,
@@ -72,7 +72,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "participantes",
-    valor: "50",
+    valor: "42",
     dia: "02",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: null,
@@ -86,7 +86,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "frequencia",
-    valor: "50",
+    valor: "42",
     dia: "02",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: "1b77202d-fd0b-46b7-b4ec-04eb262efece",
@@ -100,7 +100,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "participantes",
-    valor: "50",
+    valor: "42",
     dia: "05",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: null,
@@ -114,7 +114,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "participantes",
-    valor: "50",
+    valor: "42",
     dia: "06",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: null,
@@ -128,7 +128,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "participantes",
-    valor: "50",
+    valor: "42",
     dia: "07",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: null,
@@ -142,7 +142,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "participantes",
-    valor: "50",
+    valor: "42",
     dia: "08",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: null,
@@ -156,7 +156,7 @@ export const mockValoresMedicaoCeiDaCEMEI = [
   {
     categoria_medicao: 1,
     nome_campo: "participantes",
-    valor: "50",
+    valor: "42",
     dia: "09",
     medicao_uuid: "68f54fa0-738c-472f-879d-15d679351d9e",
     faixa_etaria: null,

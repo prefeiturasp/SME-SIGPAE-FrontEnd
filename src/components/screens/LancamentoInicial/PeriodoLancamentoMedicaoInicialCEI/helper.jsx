@@ -109,14 +109,21 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   });
 
   if (ehRecreioNasFerias) {
-    valoresMedicao = valoresMedicao.map((item) => {
-      if (item.nome_campo === "participantes") {
-        // eslint-disable-next-line no-unused-vars
-        const { faixa_etaria, ...resto } = item;
-        return resto;
-      }
-      return item;
-    });
+    valoresMedicao = valoresMedicao
+      .filter((item) => {
+        return !(
+          ["frequencia", "dietas_autorizadas"].includes(item.nome_campo) &&
+          (item.faixa_etaria === null || item.faixa_etaria === "null")
+        );
+      })
+      .map((item) => {
+        if (item.nome_campo === "participantes") {
+          // eslint-disable-next-line no-unused-vars
+          const { faixa_etaria, ...resto } = item;
+          return resto;
+        }
+        return item;
+      });
   }
 
   return { ...values, valores_medicao: valoresMedicao };
@@ -1135,21 +1142,6 @@ export const formatarLinhasTabelasDietasEmeiDaCemei = (tiposAlimentacao) => {
     },
   );
 
-  const indexLanche4h = tiposAlimentacao.findIndex((ali) =>
-    ali.nome.includes("4h"),
-  );
-  if (indexLanche4h !== -1) {
-    linhasTabelasDietas.push({
-      nome: tiposAlimentacao[indexLanche4h].nome,
-      name: tiposAlimentacao[indexLanche4h].nome
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replaceAll(/ /g, "_"),
-      uuid: tiposAlimentacao[indexLanche4h].uuid,
-    });
-  }
-
   const indexLanche = tiposAlimentacao.findIndex(
     (ali) => ali.nome === "Lanche",
   );
@@ -1162,6 +1154,21 @@ export const formatarLinhasTabelasDietasEmeiDaCemei = (tiposAlimentacao) => {
         .toLowerCase()
         .replaceAll(/ /g, "_"),
       uuid: tiposAlimentacao[indexLanche].uuid,
+    });
+  }
+
+  const indexLanche4h = tiposAlimentacao.findIndex((ali) =>
+    ali.nome.includes("4h"),
+  );
+  if (indexLanche4h !== -1) {
+    linhasTabelasDietas.push({
+      nome: tiposAlimentacao[indexLanche4h].nome,
+      name: tiposAlimentacao[indexLanche4h].nome
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replaceAll(/ /g, "_"),
+      uuid: tiposAlimentacao[indexLanche4h].uuid,
     });
   }
 
