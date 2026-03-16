@@ -266,10 +266,7 @@ export const formatarPara4Digitos = (numero) => {
 };
 
 export const MSG_SENHA_INVALIDA = () => (
-  <>
-    <strong>Senha Inválida:</strong> Em caso de esquecimento de senha, solicite
-    a recuperação e tente novamente.
-  </>
+  <>Senha inválida, verifique e tente novamente.</>
 );
 
 export const formataValorDecimal = (value) => {

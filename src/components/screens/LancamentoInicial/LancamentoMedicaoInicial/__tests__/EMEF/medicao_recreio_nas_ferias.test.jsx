@@ -89,11 +89,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Medição
       .reply(200, quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025);
 
     const search = `?mes=12&ano=2025&recreio_nas_ferias=0e3cdb48-3a82-47e6-9263-300d478c6934`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(

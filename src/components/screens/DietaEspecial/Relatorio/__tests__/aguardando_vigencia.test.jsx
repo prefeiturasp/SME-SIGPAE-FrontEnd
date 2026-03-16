@@ -66,11 +66,7 @@ afterAll(() => {
 
 test("Relatório Aguardando Vigência -  visão Terceirizada", async () => {
   const search = `?uuid=${payload.uuid}&ehInclusaoContinua=false&card=aguardando-inicio-vigencia`;
-  Object.defineProperty(window, "location", {
-    value: {
-      search: search,
-    },
-  });
+  window.history.pushState({}, "", search);
 
   const mockPdfBlob = new Blob(["mocked PDF content"], {
     type: "application/pdf",

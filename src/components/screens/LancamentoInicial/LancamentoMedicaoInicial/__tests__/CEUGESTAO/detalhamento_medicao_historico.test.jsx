@@ -102,11 +102,7 @@ describe("Teste <LancamentoMedicaoInicial> - Histórico", () => {
       .reply(200, []);
 
     const search = `?mes=11&ano=2024`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
 

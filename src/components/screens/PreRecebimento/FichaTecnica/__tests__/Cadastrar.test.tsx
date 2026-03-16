@@ -447,11 +447,7 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     mock.onGet(mockFichaTecnica.arquivo).reply(200, new Blob());
 
     const search = `?uuid=${mockFichaTecnica.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await setup();
     expect(screen.getByText(/Informações Nutricionais/i)).toBeInTheDocument();
@@ -479,11 +475,7 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     mock.onGet(mockFichaTecnicaFLV.arquivo).reply(200, new Blob());
 
     const search = `?uuid=${mockFichaTecnicaFLV.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await setup();
 

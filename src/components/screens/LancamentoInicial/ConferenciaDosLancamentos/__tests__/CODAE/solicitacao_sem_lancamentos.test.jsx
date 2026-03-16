@@ -82,11 +82,7 @@ describe("Teste Conferência de Lançamentos - Usuário Medição - Solicitaçã
     localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
 
     const search = `?uuid=${mockSolicitacaoMedicaoInicialSemLancamentoEMEFJunho2025.uuid}`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(

@@ -74,12 +74,7 @@ describe("Test <Relatorio> - Relatório de Dieta Especial - Pendente Autorizaç�
     localStorage.setItem("perfil", `"COGESTOR_DRE"`);
 
     const search = `?uuid=073b72aa-c997-489e-a1f9-5f40fbbe5ec7&ehInclusaoContinua=false&tipoSolicitacao=&card=autorizadas`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-        href: "http://localhost:3000/dieta-especial/relatorio?uuid=073b72aa-c997-489e-a1f9-5f40fbbe5ec7&ehInclusaoContinua=false&tipoSolicitacao=&card=autorizadas",
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
@@ -91,7 +86,7 @@ describe("Test <Relatorio> - Relatório de Dieta Especial - Pendente Autorizaç�
           }}
         >
           <Relatorio visao={ESCOLA} />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });

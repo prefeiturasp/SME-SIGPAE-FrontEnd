@@ -16,7 +16,13 @@ import {
 import { SelectOption } from "src/interfaces/option.interface";
 import { FormApi } from "final-form";
 import ParametrizacaoFinanceiraService from "src/services/medicaoInicial/parametrizacao_financeira.service";
-import { carregarValores, limparTabelas, parseDate } from "../../helpers";
+import {
+  carregarValores,
+  extrairConteudoEntreParenteses,
+  extrairTiposAlimentacaoDasUnidades,
+  limparTabelas,
+  parseDate,
+} from "../../helpers";
 import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import moment from "moment";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -154,16 +160,15 @@ export default ({
 
   const requisicoesPreRender = async (): Promise<void> => {
     setCarregando(true);
-    Promise.all([
+    await Promise.all([
       getEditaisAsync(),
       getLotesAsync(),
       getGrupoUnidadeEscolarAsync(),
       setFaixasEtarias && getFaixasEtariasAsync(),
       setTiposAlimentacao && getTiposUnidadeEscolarAsync(),
       uuidParametrizacao && getParametrizacao(uuidParametrizacao),
-    ]).then(() => {
-      setCarregando(false);
-    });
+    ]);
+    setCarregando(false);
   };
 
   const getParametrizacao = async (uuid: string) => {
@@ -300,39 +305,14 @@ export default ({
     const selecionado = gruposUnidadesOpcoes.find((e) => e.uuid === grupo).nome;
     setGrupoSelecionado(selecionado);
 
-    const match = selecionado.match(/\((.*?)\)/);
-    let unidades: string[] = [];
-    if (match && match[1]) {
-      const tipos = match[1].split(",");
-      unidades = tipos.map((item) => item.trim());
-    }
+    const conteudoParenteses = extrairConteudoEntreParenteses(selecionado);
+    const unidades = conteudoParenteses
+      ? conteudoParenteses.split(",").map((item) => item.trim())
+      : [];
 
-    const tiposAlimentacaoUnidades: Array<SelectOption> = unidades.reduce(
-      (acc, tipoUnidade) => {
-        acc.push(
-          ...tiposUnidades
-            .find((t) => t.iniciais === tipoUnidade)
-            .periodos_escolares.reduce((acc, periodo) => {
-              acc.push(...periodo.tipos_alimentacao);
-              return acc;
-            }, []),
-        );
-        return acc;
-      },
-      [],
-    );
-
-    const tiposAlimentacaoUnicos = {};
-
-    tiposAlimentacaoUnidades.forEach((tipoAlimentacao) => {
-      tiposAlimentacaoUnicos[tipoAlimentacao.uuid] = tipoAlimentacao.nome;
-    });
-
-    const tiposAlimentacao = Object.entries(tiposAlimentacaoUnicos).map(
-      ([uuid, nome]) => ({
-        uuid,
-        nome,
-      }),
+    const tiposAlimentacao = extrairTiposAlimentacaoDasUnidades(
+      unidades,
+      tiposUnidades,
     );
 
     setTiposAlimentacao(tiposAlimentacao);

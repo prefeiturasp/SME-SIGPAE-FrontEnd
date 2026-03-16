@@ -46,11 +46,7 @@ describe("Teste <FormBuscaProduto> - Perfil Escola", () => {
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
 
     const search = `?nome_produto=COXA%20DE%20FRANGO&marca_produto=BIOLAC&fabricante_produto=ALCA%20FOODS%20SA`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     await act(async () => {
       renderWithProvider(

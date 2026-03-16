@@ -46,11 +46,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
       .reply(200, mockDiasCalendarioCEMEIOutubro2025);
 
     const search = `?uuid=76b0a901-2fba-4f46-817d-f0d7834bc0cd`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);

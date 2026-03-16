@@ -1,4 +1,8 @@
-import { ehEscolaTipoCEMEI } from "src/helpers/utilities";
+import {
+  ehEscolaTipoCEMEI,
+  recreioNasFeriasDaMedicao,
+  recreioNasFeriasDaMedicaoEMEIdaCEMEI,
+} from "src/helpers/utilities";
 
 export const ehEmeiDaCemei = (
   escolaInstituicao,
@@ -45,4 +49,33 @@ export const numeroRefeicoesDiarias = (textoCabecalho) => {
     default:
       return 2;
   }
+};
+
+export const tiposAlimentacaoRecreio = (
+  solicitacaoMedicaoInicial,
+  escolaInstituicao,
+  colaboradores = false,
+) => {
+  const recreio = recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial);
+  const tipos = recreio.unidades_participantes[0].tipos_alimentacao;
+  const ordenacao = (a, b) => a.nome.localeCompare(b.nome);
+
+  if (!ehEscolaTipoCEMEI(escolaInstituicao)) {
+    return colaboradores ? tipos.colaboradores : tipos.inscritos;
+  }
+
+  if (colaboradores) return tipos.colaboradores.sort(ordenacao);
+
+  const tipoUnidade = recreioNasFeriasDaMedicaoEMEIdaCEMEI(
+    solicitacaoMedicaoInicial,
+  )
+    ? "EMEI"
+    : "CEI";
+  const tipos_alimentacao = recreio.unidades_participantes.find(
+    (up) => up.cei_ou_emei === tipoUnidade,
+  )?.tipos_alimentacao;
+
+  return tipoUnidade === "CEI"
+    ? tipos_alimentacao.inscritos
+    : tipos_alimentacao.infantil.sort(ordenacao);
 };

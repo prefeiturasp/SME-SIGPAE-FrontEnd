@@ -163,6 +163,54 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
       ).toBeInTheDocument(),
     );
   });
+
+  it("deve exibir cronograma FLV Ponto a Ponto em verde na grid", async () => {
+    const mockFLV = {
+      ...mockListaCronogramas,
+      results: [
+        {
+          ...mockListaCronogramas.results[0],
+          uuid: "pp-verde-test",
+          ponto_a_ponto: true,
+          ficha_tecnica: {
+            produto: { nome: "PRODUTO VERDE PP" },
+          },
+        },
+      ],
+    };
+    mock.onGet(`/cronogramas/`).reply(200, mockFLV);
+
+    await setup();
+    filtrar();
+
+    await waitFor(() => {
+      const row = screen.getByText(/PRODUTO VERDE PP/i).closest(".body-table");
+      expect(row).toHaveClass("flv-ponto-a-ponto");
+    });
+  });
+
+  it("deve exibir o título 'Editar Rascunho' no ícone de edição de rascunhos", async () => {
+    const mockRascunho = {
+      ...mockListaCronogramas,
+      results: [
+        {
+          ...mockListaCronogramas.results[0],
+          uuid: "rascunho-test",
+          status: "Rascunho",
+          ponto_a_ponto: true,
+        },
+      ],
+    };
+    mock.onGet(`/cronogramas/`).reply(200, mockRascunho);
+
+    await setup();
+    filtrar();
+
+    await waitFor(() => {
+      const editIcon = screen.getByTitle("Editar Rascunho");
+      expect(editIcon).toBeInTheDocument();
+    });
+  });
 });
 
 describe("Testa página de Consulta de Cronogramas (Perfil Fornecedor)", () => {

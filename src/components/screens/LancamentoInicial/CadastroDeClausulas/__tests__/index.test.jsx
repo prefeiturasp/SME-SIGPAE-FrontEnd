@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
+import { ToastContainer } from "react-toastify";
 import { CadastroDeClausulas } from "../index";
 import mock from "src/services/_mock";
 import { mockListaNumeros } from "src/mocks/LancamentoInicial/CadastroDeClausulas/listaDeNumeros";
@@ -29,11 +30,6 @@ jest.mock("src/services/medicaoInicial/clausulasParaDescontos.service", () => ({
   editaClausulaParaDesconto: jest.fn(),
 }));
 
-jest.mock("src/components/Shareable/Toast/dialogs", () => ({
-  toastSuccess: jest.fn(),
-  toastError: jest.fn(),
-}));
-
 describe("Componente CadastroDeClausulas", () => {
   const mockNavigate = jest.fn();
   const mockSearchParams = new URLSearchParams();
@@ -49,7 +45,7 @@ describe("Componente CadastroDeClausulas", () => {
     mock.onGet("/editais/lista-numeros/").reply(200, mockListaNumeros);
     mock
       .onGet(
-        "/medicao-inicial/clausulas-de-descontos/3bf3c3c1-0651-48f9-ad53-73d8495d30c8/"
+        "/medicao-inicial/clausulas-de-descontos/3bf3c3c1-0651-48f9-ad53-73d8495d30c8/",
       )
       .reply(200, mockClausulaParaDesconto);
   });
@@ -59,7 +55,12 @@ describe("Componente CadastroDeClausulas", () => {
   });
 
   it("deve renderizar corretamente no modo de cadastro", async () => {
-    render(<CadastroDeClausulas />);
+    render(
+      <>
+        <CadastroDeClausulas />
+        <ToastContainer />
+      </>,
+    );
 
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
 
@@ -71,30 +72,35 @@ describe("Componente CadastroDeClausulas", () => {
       expect(screen.getByText("% de Desconto")).toBeInTheDocument();
       expect(screen.getByText("Descrição")).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Salvar" })
+        screen.getByRole("button", { name: "Salvar" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Cancelar" })
+        screen.getByRole("button", { name: "Cancelar" }),
       ).toBeInTheDocument();
     });
 
     expect(
       screen.queryByText(
-        "Erro ao carregar editais. Tente novamente mais tarde."
-      )
+        "Erro ao carregar editais. Tente novamente mais tarde.",
+      ),
     ).not.toBeInTheDocument();
   });
 
   it("deve dar erro ao carregar editais", async () => {
     mock.onGet("/editais/lista-numeros/").reply(500, []);
-    render(<CadastroDeClausulas />);
+    render(
+      <>
+        <CadastroDeClausulas />
+        <ToastContainer />
+      </>,
+    );
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument();
       expect(
         screen.queryByText(
-          "Erro ao carregar editais. Tente novamente mais tarde."
-        )
+          "Erro ao carregar editais. Tente novamente mais tarde.",
+        ),
       ).toBeInTheDocument();
     });
   });

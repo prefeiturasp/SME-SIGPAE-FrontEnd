@@ -46,7 +46,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
       .onGet(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/`,
       )
       .replyOnce(200, mockAlteracaoCardapioCEMEIValidada);
     mock
@@ -54,30 +54,26 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
       .reply(200, mockQuantidadeAlunoCEMEIporCEIEMEI);
     mock
       .onPatch(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/codae-cancela-pedido/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/codae-cancela-pedido/`,
       )
       .reply(200, mockAlteracaoCardapioCEMEINegada);
     mock
       .onPatch(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/codae-questiona-pedido/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/codae-questiona-pedido/`,
       )
       .reply(200, mockAlteracaoCardapioCEMEIQuestionado);
 
     const search = `?uuid=${mockAlteracaoCardapioCEMEIAValidar.uuid}&ehInclusaoContinua=false&tipoSolicitacao=solicitacao-cemei&card=undefined`;
-    Object.defineProperty(window, "location", {
-      value: {
-        search: search,
-      },
-    });
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await act(async () => {
@@ -97,14 +93,16 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
             <RelatoriosAlteracaoDoTipoDeAlimentacaoCEMEI.RelatorioCODAE />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página `Alteração do Tipo de Alimentação - Solicitação # 8AA0A`", async () => {
     expect(
-      screen.getByText("Alteração do Tipo de Alimentação - Solicitação # 8AA0A")
+      screen.getByText(
+        "Alteração do Tipo de Alimentação - Solicitação # 8AA0A",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -114,7 +112,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja negar a solicitação?")
+        screen.getByText("Deseja negar a solicitação?"),
       ).toBeInTheDocument();
     });
   });
@@ -125,7 +123,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja negar a solicitação?")
+        screen.getByText("Deseja negar a solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -134,7 +132,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja negar a solicitação?")
+        screen.queryByText("Deseja negar a solicitação?"),
       ).not.toBeInTheDocument();
     });
   });
@@ -145,7 +143,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
 
     await waitFor(() => {
       expect(
-        screen.getByText("Deseja negar a solicitação?")
+        screen.getByText("Deseja negar a solicitação?"),
       ).toBeInTheDocument();
     });
 
@@ -157,13 +155,13 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
 
     mock
       .onGet(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/`,
       )
       .replyOnce(200, mockAlteracaoCardapioCEMEINegada);
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Deseja negar a solicitação?")
+        screen.queryByText("Deseja negar a solicitação?"),
       ).not.toBeInTheDocument();
       expect(screen.queryByText("Negar")).not.toBeInTheDocument();
 
@@ -180,8 +178,8 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
     await waitFor(() => {
       expect(
         screen.getByText(
-          "É possível atender a solicitação com todos os itens previstos no contrato?"
-        )
+          "É possível atender a solicitação com todos os itens previstos no contrato?",
+        ),
       ).toBeInTheDocument();
     });
 
@@ -190,13 +188,13 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
 
     mock
       .onGet(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/`,
       )
       .replyOnce(200, mockAlteracaoCardapioCEMEIQuestionado);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Questionamento enviado com sucesso!")
+        screen.getByText("Questionamento enviado com sucesso!"),
       ).toBeInTheDocument();
 
       expect(screen.queryByText("Negar")).not.toBeInTheDocument();
@@ -210,7 +208,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
   it("download pdf", async () => {
     mock
       .onGet(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/relatorio/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/relatorio/`,
       )
       .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
 
@@ -219,7 +217,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Houve um erro ao imprimir o relatório")
+        screen.queryByText("Houve um erro ao imprimir o relatório"),
       ).not.toBeInTheDocument();
     });
   });
@@ -227,7 +225,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
   it("erro download pdf", async () => {
     mock
       .onGet(
-        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/relatorio/`
+        `/alteracoes-cardapio-cemei/${mockAlteracaoCardapioCEMEIValidada.uuid}/relatorio/`,
       )
       .reply(400, { detail: "Erro ao baixar PDF" });
 
@@ -236,7 +234,7 @@ describe("Teste Relatório Alteração de Cardápio CEMEI - Visão CODAE", () =>
 
     await waitFor(() => {
       expect(
-        screen.getByText("Houve um erro ao imprimir o relatório")
+        screen.getByText("Houve um erro ao imprimir o relatório"),
       ).toBeInTheDocument();
     });
   });
