@@ -151,14 +151,14 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
     const semanaTres = screen.getByText("Semana 3");
     fireEvent.click(semanaTres);
 
-    for (const dia of ["10", "11", "12", "13"]) {
+    for (const dia of ["10", "11", "12", "13", "14"]) {
       const inputLancheEmergencialPorDia = screen.getByTestId(
         `lanche_emergencial__dia_${dia}__categoria_5`,
       );
       expect(inputLancheEmergencialPorDia).toBeEnabled();
     }
 
-    for (const dia of ["14", "15"]) {
+    for (const dia of ["15"]) {
       const inputLancheEmergencialPorDia = screen.getByTestId(
         `lanche_emergencial__dia_${dia}__categoria_5`,
       );

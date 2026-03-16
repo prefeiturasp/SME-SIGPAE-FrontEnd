@@ -123,7 +123,7 @@ export const mockDiasCalendarioEMEBSFevereiro2026 = [
     criado_em: "23/10/2025 09:07:49",
     alterado_em: "19/02/2026 06:47:52",
     data: "14/02/2026",
-    dia_letivo: false,
+    dia_letivo: true,
   },
   {
     escola: "EMEBS HELEN KELLER",
