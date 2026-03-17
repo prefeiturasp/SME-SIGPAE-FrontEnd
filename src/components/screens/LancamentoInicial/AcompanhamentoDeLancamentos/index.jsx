@@ -640,29 +640,29 @@ export const AcompanhamentoDeLancamentos = () => {
                           options={[
                             { nome: "Selecione o mês", uuid: "" },
                           ].concat(
-                            mesesAnos.map((mesAno) => ({
-                              nome: `${MESES[parseInt(mesAno.mes) - 1]} - ${mesAno.ano}`,
-                              uuid: `${mesAno.mes}_${mesAno.ano}`,
+                            mesesAnos.map((mesAnoObj) => ({
+                              nome: `${MESES[parseInt(mesAnoObj.mes) - 1]} - ${mesAnoObj.ano}`,
+                              uuid: `${mesAnoObj.mes}_${mesAnoObj.ano}`,
                             })),
                           )}
                           naoDesabilitarPrimeiraOpcao
                           validate={required}
                           required
                           onChangeEffect={(e) => {
-                            const mesAno = e.target.value;
-                            setMesAno(mesAno);
+                            const mesAnoValue = e.target.value;
+                            setMesAno(mesAnoValue);
                             setStatusSelecionado(null);
                             setResultados(null);
 
-                            adicionaFiltroNaURL("mes_ano", mesAno);
+                            adicionaFiltroNaURL("mes_ano", mesAnoValue);
                             setInitialValues((prev) => ({
                               ...prev,
-                              mes_ano: mesAno,
+                              mes_ano: mesAnoValue,
                             }));
 
                             verificarEDispararBusca(
                               form.getState().values.diretoria_regional,
-                              mesAno,
+                              mesAnoValue,
                             );
                           }}
                         />
