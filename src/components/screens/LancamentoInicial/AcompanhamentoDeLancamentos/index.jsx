@@ -94,6 +94,7 @@ export const AcompanhamentoDeLancamentos = () => {
   );
   const [mesAno, setMesAno] = useState(searchParams.get("mes_ano"));
   const [mudancaDre, setMudancaDre] = useState(false);
+  const [mudancaMesAno, setMudancaMesAno] = useState(false);
 
   const [erroAPI, setErroAPI] = useState("");
   const [loadingComFiltros, setLoadingComFiltros] = useState(false);
@@ -138,6 +139,7 @@ export const AcompanhamentoDeLancamentos = () => {
     if (
       !dadosDashboard ||
       mudancaDre ||
+      mudancaMesAno ||
       (diretoriaRegional && mesAno) ||
       (usuarioEhDRE() && mesAno)
     ) {
@@ -196,6 +198,7 @@ export const AcompanhamentoDeLancamentos = () => {
     }
     setLoadingComFiltros(false);
     setMudancaDre(false);
+    setMudancaMesAno(false);
   };
 
   const atualizaSolicitacaoMedicaoInicial = async (solicitacao) => {
@@ -482,10 +485,10 @@ export const AcompanhamentoDeLancamentos = () => {
         usuarioEhCODAEGabinete()) &&
       loadingComFiltros
     ) {
-      return !mudancaDre;
+      return !mudancaDre && !mudancaMesAno;
     }
 
-    if (usuarioEhDRE()) return mesAno;
+    if (usuarioEhDRE()) return !mudancaMesAno;
 
     return true;
   };
@@ -653,6 +656,7 @@ export const AcompanhamentoDeLancamentos = () => {
                             setMesAno(mesAnoValue);
                             setStatusSelecionado(null);
                             setResultados(null);
+                            setMudancaMesAno(true);
 
                             adicionaFiltroNaURL("mes_ano", mesAnoValue);
                             setInitialValues((prev) => ({
