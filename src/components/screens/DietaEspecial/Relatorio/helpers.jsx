@@ -19,6 +19,8 @@ const DESCRICAO_SOLICITACAO = {
   CANCELADO_ALUNO_NAO_PERTENCE_REDE:
     "Cancelamento para aluno não matriculado na rede municipal",
   CODAE_NEGOU_CANCELAMENTO: "Negado o Cancelamento",
+  CANCELADO_ENCERRAMENTO_MATRICULA:
+    "Cancelamento por Encerramento de Matrícula",
 };
 
 export const cabecalhoDieta = (dietaEspecial, card) => {
@@ -52,6 +54,7 @@ export const ehSolicitacaoDeCancelamento = (status) => {
     "TERMINADA_AUTOMATICAMENTE_SISTEMA",
     "CANCELADO_ALUNO_MUDOU_ESCOLA",
     "CANCELADO_ALUNO_NAO_PERTENCE_REDE",
+    "CANCELADO_ENCERRAMENTO_MATRICULA",
   ].includes(status);
 };
 
@@ -59,7 +62,7 @@ export const formataJustificativa = (dietaEspecial) => {
   let justificativa = null;
   if (dietaEspecial.status_solicitacao === "ESCOLA_CANCELOU") {
     const log = dietaEspecial.logs.find(
-      (l) => l.status_evento_explicacao === "Escola cancelou"
+      (l) => l.status_evento_explicacao === "Escola cancelou",
     );
     if (log) {
       justificativa = log.justificativa;
@@ -67,11 +70,11 @@ export const formataJustificativa = (dietaEspecial) => {
   }
   if (
     ["ESCOLA_SOLICITOU_INATIVACAO", "CODAE_NEGOU_CANCELAMENTO"].includes(
-      dietaEspecial.status_solicitacao
+      dietaEspecial.status_solicitacao,
     )
   ) {
     justificativa = dietaEspecial.logs.filter(
-      (log) => log.status_evento_explicacao === "Escola solicitou cancelamento"
+      (log) => log.status_evento_explicacao === "Escola solicitou cancelamento",
     )[0].justificativa;
   }
   if (
@@ -141,7 +144,7 @@ export const ehAlunoNaoMatriculado = (tipoSolicitacao) => {
 
 export const setDadosDietaAbertaAsync = async (
   uuid_solicitacao,
-  setDadosDietaAberta
+  setDadosDietaAberta,
 ) => {
   const response = await createSolicitacaoAberta({ uuid_solicitacao });
   if (response.status === HTTP_STATUS.CREATED) {
@@ -164,7 +167,7 @@ const onClose = (
   dadosDietaAberta,
   setDadosDietaAberta,
   setUuidDieta,
-  setDietasAbertas
+  setDietasAbertas,
 ) => {
   if (dadosDietaAberta) {
     deleteSolicitacaoAberta(dadosDietaAberta.id);
@@ -184,7 +187,7 @@ export const initSocket = (
   dadosDietaAberta,
   setDadosDietaAberta,
   setUuidDieta,
-  setDietasAbertas
+  setDietasAbertas,
 ) => {
   return new Websocket(
     "solicitacoes-abertas/",
@@ -197,9 +200,9 @@ export const initSocket = (
         dadosDietaAberta,
         setDadosDietaAberta,
         setUuidDieta,
-        setDietasAbertas
+        setDietasAbertas,
       ),
-    () => onOpen(uuid, setDadosDietaAberta, setUuidDieta)
+    () => onOpen(uuid, setDadosDietaAberta, setUuidDieta),
   );
 };
 
