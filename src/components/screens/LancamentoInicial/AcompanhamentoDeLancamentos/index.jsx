@@ -765,25 +765,6 @@ export const AcompanhamentoDeLancamentos = () => {
                                 }}
                               />
                             </div>
-                          </div>
-                          <div
-                            className={`row ${resultados ? "" : "ue-botoes"}`}
-                          >
-                            <div className="col-8">
-                              <Field
-                                dataSource={getNomesItemsFiltrado(
-                                  values.escola,
-                                )}
-                                component={AutoCompleteField}
-                                name="escola"
-                                label="Unidade Educacional"
-                                placeholder={"Digite um nome"}
-                                className="input-busca-nome-item"
-                                onSelect={(value) => {
-                                  adicionaFiltroNaURL("escola", value);
-                                }}
-                              />
-                            </div>
                             <div className="col-4">
                               <Field
                                 dataTestId="div-select-ocorrencias"
@@ -805,6 +786,25 @@ export const AcompanhamentoDeLancamentos = () => {
                                     "ocorrencias",
                                     e.target.value,
                                   );
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div
+                            className={`row ${resultados ? "" : "ue-botoes"}`}
+                          >
+                            <div className="col-8">
+                              <Field
+                                dataSource={getNomesItemsFiltrado(
+                                  values.escola,
+                                )}
+                                component={AutoCompleteField}
+                                name="escola"
+                                label="Unidade Educacional"
+                                placeholder={"Digite um nome"}
+                                className="input-busca-nome-item"
+                                onSelect={(value) => {
+                                  adicionaFiltroNaURL("escola", value);
                                 }}
                               />
                             </div>
