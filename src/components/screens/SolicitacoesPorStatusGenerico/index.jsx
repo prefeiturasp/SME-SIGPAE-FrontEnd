@@ -399,7 +399,7 @@ function SolicitacoesPorStatusGenerico(props) {
                               component={Select}
                               options={agregarDefault(
                                 lotes || opcoesLotes,
-                                "Lote"
+                                "Lote",
                               )}
                               name="lote"
                               placeholder="Selecione um Lote"
@@ -484,5 +484,5 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(SolicitacoesPorStatusGenerico);

@@ -391,6 +391,10 @@ export const usuarioEhAdministradorNutriCODAE = () => {
   return localStorage.getItem("perfil") === PERFIL.ADMINISTRADOR_DIETA_ESPECIAL;
 };
 
+export const usuarioEhNutriCODAE = () => {
+  return usuarioEhCoordenadorNutriCODAE() || usuarioEhAdministradorNutriCODAE();
+};
+
 export const usuarioEhCoordenadorNutriSupervisao = () => {
   return (
     localStorage.getItem("perfil") === PERFIL.COORDENADOR_SUPERVISAO_NUTRICAO
