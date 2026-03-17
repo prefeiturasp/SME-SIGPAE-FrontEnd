@@ -61,6 +61,7 @@ export const LancamentoPorPeriodoCEI = ({
   setFinalizandoMedicao,
   naoPodeFinalizar,
   periodosPermissoesLancamentosEspeciais,
+  temLancheEmergencialDiarioAtivo,
   ehIMR,
   errosAoSalvar,
   setErrosAoSalvar,
@@ -488,7 +489,8 @@ export const LancamentoPorPeriodoCEI = ({
                   solicitacoesKitLanchesAutorizadas.length > 0) ||
                   (solicitacoesAlteracaoLancheEmergencialAutorizadas &&
                     solicitacoesAlteracaoLancheEmergencialAutorizadas.length >
-                      0)) && (
+                      0) ||
+                  temLancheEmergencialDiarioAtivo) && (
                   <CardLancamentoCEI
                     key={
                       periodosComAlunos.length +

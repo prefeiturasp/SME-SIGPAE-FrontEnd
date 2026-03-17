@@ -1638,6 +1638,7 @@ export const exibirTooltipLancheEmergencialNaoAutorizado = (
   column,
   categoria,
   alteracoesAlimentacaoAutorizadas,
+  diasLancheEmergencialDiarioAtivo = [],
   value_ = undefined,
   ehChangeInput = false,
 ) => {
@@ -1647,6 +1648,10 @@ export const exibirTooltipLancheEmergencialNaoAutorizado = (
     : formValuesAtualizados[
         `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
       ];
+  const temLancheEmergencialDiarioAtivoNoDia =
+    diasLancheEmergencialDiarioAtivo.includes(
+      String(column.dia).padStart(2, "0"),
+    );
 
   return (
     value &&
@@ -1655,6 +1660,7 @@ export const exibirTooltipLancheEmergencialNaoAutorizado = (
     ] &&
     categoria.nome.includes("SOLICITAÇÕES") &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
+    !temLancheEmergencialDiarioAtivoNoDia &&
     alteracoesAlimentacaoAutorizadas.filter(
       (alteracao) => alteracao.dia === column.dia,
     ).length === 0 &&

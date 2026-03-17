@@ -194,6 +194,15 @@ export const getAlimentacoesLancamentosEspeciais = async () => {
   }
 };
 
+export const getLanchesEmergenciaisDiarios = async (params) => {
+  const url = "medicao-inicial/lanches-emergenciais-diarios/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
 export const criarPermissaoLancamentoEspecial = async (payload) => {
   const url = "medicao-inicial/permissao-lancamentos-especiais/";
   const response = await axios.post(url, payload).catch(ErrorHandlerFunction);
