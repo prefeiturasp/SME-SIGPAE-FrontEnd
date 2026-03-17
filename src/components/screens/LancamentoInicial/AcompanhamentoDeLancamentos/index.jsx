@@ -656,8 +656,6 @@ export const AcompanhamentoDeLancamentos = () => {
                   <div className="card-body">
                     <div className="d-flex row row-cols-1">
                       {exibirDashboard() &&
-                        values.diretoria_regional &&
-                        values.mes_ano &&
                         dadosDashboard &&
                         dadosDashboard.map((dadosPorStatus, key) => {
                           return (
