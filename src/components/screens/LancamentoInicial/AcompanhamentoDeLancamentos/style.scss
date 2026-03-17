@@ -126,9 +126,23 @@ div.acompanhamento-de-lancamentos {
       }
     }
   }
+
+  .container-dre-mes {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .label-seletor-dre {
+    margin-top: 1em !important;
+    margin-left: 2em;
+    margin-right: 1em;
+    margin-bottom: calc(0.375rem + 1px);
+    width: 50%;
+  }
+
   .seletor-dre {
-    margin-top: 1em;
-    padding-left: 0.5em;
+    margin-top: 4px;
     .ant-select-selector {
       border-radius: 8px;
       font-weight: bolder;
@@ -140,9 +154,20 @@ div.acompanhamento-de-lancamentos {
     }
   }
 
+  .container-mes {
+    width: 50%;
+    margin-left: 1em;
+    margin-right: 2em;
+  }
+
   .botoes-relatorios {
     display: flex;
     gap: 15px;
     justify-content: flex-end;
+  }
+
+  .required-asterisk {
+    color: $red !important;
+    padding-right: 5px;
   }
 }
