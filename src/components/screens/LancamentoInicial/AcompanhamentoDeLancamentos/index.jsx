@@ -135,7 +135,12 @@ export const AcompanhamentoDeLancamentos = () => {
     if (!["true", "false"].includes(params.ocorrencias))
       delete params.ocorrencias;
 
-    if (!dadosDashboard || mudancaDre || (diretoriaRegional && mesAno)) {
+    if (
+      !dadosDashboard ||
+      mudancaDre ||
+      (diretoriaRegional && mesAno) ||
+      (usuarioEhDRE() && mesAno)
+    ) {
       const responseDre = await getDashboardMedicaoInicialTotalizadores({
         dre: diretoriaRegional,
         mes_ano: mesAno,
@@ -267,10 +272,17 @@ export const AcompanhamentoDeLancamentos = () => {
     if (!usuarioEhDRE() && !usuarioEhEscolaTerceirizadaQualquerPerfil()) {
       getDiretoriasRegionaisAsync();
     } else {
-      onPageChanged(1, { status: statusSelecionado, ...initialValues });
       setDiretoriasRegionais([]);
     }
   }, []);
+
+  useEffect(() => {
+    if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
+      onPageChanged(1, { status: statusSelecionado, ...initialValues });
+    } else if (usuarioEhDRE() && mesAno) {
+      onPageChanged(1, { status: statusSelecionado, ...initialValues });
+    }
+  }, [mesAno]);
 
   useEffect(() => {
     if (!usuarioEhEscolaTerceirizadaQualquerPerfil()) {
@@ -472,6 +484,9 @@ export const AcompanhamentoDeLancamentos = () => {
     ) {
       return !mudancaDre;
     }
+
+    if (usuarioEhDRE()) return mesAno;
+
     return true;
   };
 
@@ -555,15 +570,15 @@ export const AcompanhamentoDeLancamentos = () => {
             {({ handleSubmit, form, values }) => (
               <form onSubmit={handleSubmit}>
                 <div className="card mt-3">
-                  {usuarioEhMedicao() ||
-                  usuarioEhCODAENutriManifestacao() ||
-                  usuarioEhQualquerCODAE() ||
-                  usuarioEhDinutreDiretoria() ||
-                  usuarioEhCODAEGabinete() ||
-                  usuarioEhEmpresaTerceirizada() ||
-                  usuarioEhCoordenadorNutriSupervisao() ||
-                  usuarioEhAdministradorNutriSupervisao() ? (
-                    <div className="container-dre-mes">
+                  <div className="container-dre-mes">
+                    {usuarioEhMedicao() ||
+                    usuarioEhCODAENutriManifestacao() ||
+                    usuarioEhQualquerCODAE() ||
+                    usuarioEhDinutreDiretoria() ||
+                    usuarioEhCODAEGabinete() ||
+                    usuarioEhEmpresaTerceirizada() ||
+                    usuarioEhCoordenadorNutriSupervisao() ||
+                    usuarioEhAdministradorNutriSupervisao() ? (
                       <label className="label label-seletor-dre">
                         <span className="required-asterisk">* </span>
                         Diretorias Regionais de Educação
@@ -614,7 +629,8 @@ export const AcompanhamentoDeLancamentos = () => {
                           {diretoriasRegionais}
                         </Field>
                       </label>
-
+                    ) : null}
+                    {!usuarioEhEscolaTerceirizadaQualquerPerfil() && (
                       <div className="container-mes">
                         <Field
                           dataTestId="div-select-mes-referencia"
@@ -651,8 +667,8 @@ export const AcompanhamentoDeLancamentos = () => {
                           }}
                         />
                       </div>
-                    </div>
-                  ) : null}
+                    )}
+                  </div>
                   <div className="card-body">
                     <div className="d-flex row row-cols-1">
                       {exibirDashboard() &&
