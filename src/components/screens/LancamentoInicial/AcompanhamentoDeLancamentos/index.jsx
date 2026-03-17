@@ -84,7 +84,7 @@ export const AcompanhamentoDeLancamentos = () => {
     searchParams.get("status"),
   );
   const [resultados, setResultados] = useState(null);
-  const [mesesAnos, setMesesAnos] = useState(null);
+  const [mesesAnos, setMesesAnos] = useState([]);
   const [lotes, setLotes] = useState([]);
   const [tiposUnidades, setTiposUnidades] = useState(DEFAULT_STATE);
   const [nomesEscolas, setNomesEscolas] = useState(DEFAULT_STATE);
@@ -92,6 +92,7 @@ export const AcompanhamentoDeLancamentos = () => {
   const [diretoriaRegional, setDiretoriaRegional] = useState(
     searchParams.get("diretoria_regional"),
   );
+  const [mesAno, setMesAno] = useState(searchParams.get("mes_ano"));
   const [mudancaDre, setMudancaDre] = useState(false);
 
   const [erroAPI, setErroAPI] = useState("");
@@ -107,7 +108,7 @@ export const AcompanhamentoDeLancamentos = () => {
 
   const [initialValues, setInitialValues] = useState({
     diretoria_regional: diretoriaRegional,
-    mes_ano: searchParams.get("mes_ano"),
+    mes_ano: mesAno,
     lotes_selecionados: searchParams.get("lotes")
       ? searchParams.get("lotes").split(",")
       : null,
@@ -125,21 +126,19 @@ export const AcompanhamentoDeLancamentos = () => {
     }
 
     setLoadingComFiltros(true);
-    if (diretoriaRegional)
+    if (diretoriaRegional && mesAno)
       params = {
         ...params,
         dre: diretoriaRegional,
+        mes_ano: mesAno,
       };
     if (!["true", "false"].includes(params.ocorrencias))
       delete params.ocorrencias;
 
-    if (
-      !dadosDashboard ||
-      mudancaDre ||
-      (diretoriaRegional && !params.mes_ano)
-    ) {
+    if (!dadosDashboard || mudancaDre || (diretoriaRegional && mesAno)) {
       const responseDre = await getDashboardMedicaoInicialTotalizadores({
         dre: diretoriaRegional,
+        mes_ano: mesAno,
       });
       if (responseDre.status !== HTTP_STATUS.OK) {
         setErroAPI(
@@ -153,7 +152,7 @@ export const AcompanhamentoDeLancamentos = () => {
             !usuarioEhQualquerCODAE() &&
             !usuarioEhDinutreDiretoria() &&
             !usuarioEhCODAEGabinete()) ||
-          diretoriaRegional
+          (diretoriaRegional && mesAno)
         ) {
           let NovoDashboardResults = [...dashboardResults];
 
@@ -227,9 +226,9 @@ export const AcompanhamentoDeLancamentos = () => {
     );
   };
 
-  const getMesesAnosSolicitacoesMedicaoinicialAsync = async () => {
+  const getMesesAnosSolicitacoesMedicaoinicialAsync = async (dreUUID) => {
     const response = await getMesesAnosSolicitacoesMedicaoinicial({
-      dre: diretoriaRegional,
+      dre: dreUUID ?? diretoriaRegional,
     });
     if (response.status === HTTP_STATUS.OK) {
       setMesesAnos(response.data.results);
@@ -241,10 +240,10 @@ export const AcompanhamentoDeLancamentos = () => {
   };
 
   useEffect(() => {
-    if (diretoriasRegionais && mesesAnos && tiposUnidades) {
+    if (diretoriasRegionais && tiposUnidades) {
       setIsLoading(false);
     }
-  }, [diretoriasRegionais, mesesAnos, tiposUnidades]);
+  }, [diretoriasRegionais, tiposUnidades]);
 
   useEffect(() => {
     const getTiposUnidadeEscolarAsync = async () => {
@@ -306,14 +305,13 @@ export const AcompanhamentoDeLancamentos = () => {
       meusDados && uuid && getLotesAsync();
       meusDados && uuid && getEscolasTrecTotalAsync();
     }
-    if (diretoriaRegional) {
+    if (diretoriaRegional && mesAno) {
       onPageChanged(currentPage, {
         status: statusSelecionado,
         ...initialValues,
       });
-      getMesesAnosSolicitacoesMedicaoinicialAsync();
     }
-  }, [meusDados, diretoriaRegional]);
+  }, [meusDados, diretoriaRegional, mesAno]);
 
   useEffect(() => {
     if (usuarioEhDRE() && meusDados?.vinculo_atual?.instituicao?.uuid) {
@@ -353,7 +351,7 @@ export const AcompanhamentoDeLancamentos = () => {
       setDiretoriasRegionais(
         [
           <Option value="" key={0} hidden>
-            Selecione a DRE para visualizar os resultados
+            Selecione uma DRE
           </Option>,
         ].concat(dres),
       );
@@ -371,10 +369,12 @@ export const AcompanhamentoDeLancamentos = () => {
   const resetForm = (form) => {
     let diretoria_regional =
       form.getFieldState("diretoria_regional") || undefined;
+    let mes_ano = form.getFieldState("mes_ano") || undefined;
     form.reset();
-    resetURL(["mes_ano", "lotes", "tipo_unidade", "escola"]);
+    resetURL(["lotes", "tipo_unidade", "escola"]);
     setInitialValues({
       diretoria_regional: diretoria_regional?.value,
+      mes_ano: mes_ano?.value,
     });
     setResultados(undefined);
     diretoria_regional &&
@@ -536,12 +536,22 @@ export const AcompanhamentoDeLancamentos = () => {
     }
   };
 
+  const verificarEDispararBusca = (dre, mesAno) => {
+    if (dre && mesAno) {
+      buscarGruposPorDre(dre);
+    }
+  };
+
   return (
     <div className="acompanhamento-de-lancamentos">
       {erroAPI && <div>{erroAPI}</div>}
       <Spin tip="Carregando..." spinning={isLoading}>
         {!erroAPI && diretoriasRegionais && mesesAnos && tiposUnidades && (
-          <Form onSubmit={onSubmit} initialValues={initialValues}>
+          <Form
+            onSubmit={onSubmit}
+            initialValues={initialValues}
+            keepDirtyOnReinitialize
+          >
             {({ handleSubmit, form, values }) => (
               <form onSubmit={handleSubmit}>
                 <div className="card mt-3">
@@ -553,42 +563,101 @@ export const AcompanhamentoDeLancamentos = () => {
                   usuarioEhEmpresaTerceirizada() ||
                   usuarioEhCoordenadorNutriSupervisao() ||
                   usuarioEhAdministradorNutriSupervisao() ? (
-                    <div className="col-5">
-                      <Field
-                        component={ASelect}
-                        showSearch
-                        className="seletor-dre"
-                        onChange={(value) => {
-                          form.change(`diretoria_regional`, value || undefined);
-                          setDiretoriaRegional(value || undefined);
-                          setStatusSelecionado(null);
-                          setResultados(null);
-                          setMudancaDre(true);
-                          adicionaFiltroNaURL("diretoria_regional", value);
-                          setInitialValues((prev) => ({
-                            ...prev,
-                            diretoria_regional: value,
-                          }));
-                          buscarGruposPorDre(value);
-                        }}
-                        name="diretoria_regional"
-                        filterOption={(inputValue, option) =>
-                          option.props.children
-                            .toString()
-                            .toLowerCase()
-                            .includes(inputValue.toLowerCase())
-                        }
-                        naoDesabilitarPrimeiraOpcao
-                        disabled={!diretoriasRegionais || loadingComFiltros}
-                        dataTestId="select-diretoria-regional"
-                      >
-                        {diretoriasRegionais}
-                      </Field>
+                    <div className="container-dre-mes">
+                      <label className="label label-seletor-dre">
+                        <span className="required-asterisk">* </span>
+                        Diretorias Regionais de Educação
+                        <Field
+                          component={ASelect}
+                          showSearch
+                          className="seletor-dre"
+                          validate={required}
+                          required
+                          onChange={async (value) => {
+                            form.change(
+                              `diretoria_regional`,
+                              value || undefined,
+                            );
+                            setDiretoriaRegional(value || undefined);
+                            setStatusSelecionado(null);
+                            setResultados(null);
+                            setMudancaDre(true);
+                            adicionaFiltroNaURL("diretoria_regional", value);
+
+                            setInitialValues((prev) => ({
+                              ...prev,
+                              diretoria_regional: value,
+                            }));
+
+                            if (value) {
+                              await getMesesAnosSolicitacoesMedicaoinicialAsync(
+                                value,
+                              );
+                            }
+
+                            verificarEDispararBusca(
+                              value,
+                              form.getState().values.mes_ano,
+                            );
+                          }}
+                          name="diretoria_regional"
+                          filterOption={(inputValue, option) =>
+                            option.props.children
+                              .toString()
+                              .toLowerCase()
+                              .includes(inputValue.toLowerCase())
+                          }
+                          naoDesabilitarPrimeiraOpcao
+                          disabled={!diretoriasRegionais || loadingComFiltros}
+                          dataTestId="select-diretoria-regional"
+                        >
+                          {diretoriasRegionais}
+                        </Field>
+                      </label>
+
+                      <div className="container-mes">
+                        <Field
+                          dataTestId="div-select-mes-referencia"
+                          component={Select}
+                          name="mes_ano"
+                          label="Mês de referência"
+                          options={[
+                            { nome: "Selecione o mês", uuid: "" },
+                          ].concat(
+                            mesesAnos.map((mesAno) => ({
+                              nome: `${MESES[parseInt(mesAno.mes) - 1]} - ${mesAno.ano}`,
+                              uuid: `${mesAno.mes}_${mesAno.ano}`,
+                            })),
+                          )}
+                          naoDesabilitarPrimeiraOpcao
+                          validate={required}
+                          required
+                          onChangeEffect={(e) => {
+                            const mesAno = e.target.value;
+                            setMesAno(mesAno);
+                            setStatusSelecionado(null);
+                            setResultados(null);
+
+                            adicionaFiltroNaURL("mes_ano", mesAno);
+                            setInitialValues((prev) => ({
+                              ...prev,
+                              mes_ano: mesAno,
+                            }));
+
+                            verificarEDispararBusca(
+                              form.getState().values.diretoria_regional,
+                              mesAno,
+                            );
+                          }}
+                        />
+                      </div>
                     </div>
                   ) : null}
                   <div className="card-body">
                     <div className="d-flex row row-cols-1">
                       {exibirDashboard() &&
+                        values.diretoria_regional &&
+                        values.mes_ano &&
                         dadosDashboard &&
                         dadosDashboard.map((dadosPorStatus, key) => {
                           return (
@@ -651,42 +720,6 @@ export const AcompanhamentoDeLancamentos = () => {
                           <hr />
 
                           <div className="row">
-                            <div className="col-4">
-                              <Field
-                                dataTestId="div-select-mes-referencia"
-                                component={Select}
-                                name="mes_ano"
-                                label="Mês de referência"
-                                options={[
-                                  { nome: "Selecione o mês", uuid: "" },
-                                ].concat(
-                                  mesesAnos
-                                    .filter((mesAno) =>
-                                      statusSelecionado !==
-                                      "TODOS_OS_LANCAMENTOS"
-                                        ? mesAno.status.includes(
-                                            statusSelecionado,
-                                          )
-                                        : true,
-                                    )
-                                    .map((mesAno) => ({
-                                      nome: `${
-                                        MESES[parseInt(mesAno.mes) - 1]
-                                      } - ${mesAno.ano}`,
-                                      uuid: `${mesAno.mes}_${mesAno.ano}`,
-                                    })),
-                                )}
-                                naoDesabilitarPrimeiraOpcao
-                                validate={required}
-                                required
-                                onChangeEffect={(e) => {
-                                  adicionaFiltroNaURL(
-                                    "mes_ano",
-                                    e.target.value,
-                                  );
-                                }}
-                              />
-                            </div>
                             <div className="col-4">
                               <label className="mb-2">Lote</label>
                               <Field
