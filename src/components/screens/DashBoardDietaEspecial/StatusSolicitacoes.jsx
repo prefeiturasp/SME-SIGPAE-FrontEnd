@@ -20,7 +20,10 @@ import {
   SOLICITACOES_PENDENTES,
 } from "src/configs/constants";
 import { getNomeCardAguardandoAutorizacao } from "src/helpers/dietaEspecial";
-import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
+import {
+  usuarioEhEmpresaTerceirizada,
+  usuarioEhNutriCODAE,
+} from "src/helpers/utilities";
 import { resetCamposDieta } from "src/reducers/filtersDietaReducer";
 import { getMeusLotes } from "src/services/lote.service";
 import { meusDados } from "src/services/perfil.service";
@@ -306,6 +309,10 @@ function StatusSolicitacoes(props) {
             current={page}
             total={count}
             onChange={(page) => onPageChanged(page, 10)}
+            showQuickJumper={
+              tipoSolicitacao === "solicitacoes-pendentes" &&
+              usuarioEhNutriCODAE()
+            }
           />
         </Spin>
       </div>
