@@ -478,6 +478,13 @@ export const AcompanhamentoDeLancamentos = () => {
 
   const exibirDashboard = () => {
     if (
+      !usuarioEhEscolaTerceirizadaQualquerPerfil() &&
+      (mudancaDre || !mesAno)
+    ) {
+      return false;
+    }
+
+    if (
       (usuarioEhMedicao() ||
         usuarioEhCODAENutriManifestacao() ||
         usuarioEhQualquerCODAE() ||
@@ -602,6 +609,11 @@ export const AcompanhamentoDeLancamentos = () => {
                             setMudancaDre(true);
                             adicionaFiltroNaURL("diretoria_regional", value);
 
+                            setDadosDashboard(null);
+                            form.change("mes_ano", undefined);
+                            setMesAno(null);
+                            adicionaFiltroNaURL("mes_ano", null);
+
                             setInitialValues((prev) => ({
                               ...prev,
                               diretoria_regional: value,
@@ -654,6 +666,7 @@ export const AcompanhamentoDeLancamentos = () => {
                           onChangeEffect={(e) => {
                             const mesAnoValue = e.target.value;
                             setMesAno(mesAnoValue);
+                            setMudancaDre(false);
                             setStatusSelecionado(null);
                             setResultados(null);
                             setMudancaMesAno(true);
