@@ -386,7 +386,7 @@ export const AcompanhamentoDeLancamentos = () => {
       form.getFieldState("diretoria_regional") || undefined;
     let mes_ano = form.getFieldState("mes_ano") || undefined;
     form.reset();
-    resetURL(["lotes", "tipo_unidade", "escola"]);
+    resetURL(["lotes", "tipo_unidade", "escola", "ocorrencias"]);
     setInitialValues({
       diretoria_regional: diretoria_regional?.value,
       mes_ano: mes_ano?.value,
@@ -572,11 +572,7 @@ export const AcompanhamentoDeLancamentos = () => {
       {erroAPI && <div>{erroAPI}</div>}
       <Spin tip="Carregando..." spinning={isLoading}>
         {!erroAPI && diretoriasRegionais && mesesAnos && tiposUnidades && (
-          <Form
-            onSubmit={onSubmit}
-            initialValues={initialValues}
-            keepDirtyOnReinitialize
-          >
+          <Form onSubmit={onSubmit} initialValues={initialValues}>
             {({ handleSubmit, form, values }) => (
               <form onSubmit={handleSubmit}>
                 <div className="card mt-3">
@@ -663,6 +659,7 @@ export const AcompanhamentoDeLancamentos = () => {
                           naoDesabilitarPrimeiraOpcao
                           validate={required}
                           required
+                          disabled={loadingComFiltros}
                           onChangeEffect={(e) => {
                             const mesAnoValue = e.target.value;
                             setMesAno(mesAnoValue);
