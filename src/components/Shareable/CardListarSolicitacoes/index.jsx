@@ -5,14 +5,57 @@ import { GESTAO_PRODUTO_CARDS, RELATORIO } from "../../../configs/constants";
 import { caminhoURL } from "../CardStatusDeSolicitacao/helper";
 import { conferidaClass } from "src/helpers/terceirizadas";
 import TooltipProdutos from "./tooltipProdutos";
+import { Websocket } from "src/services/websocket";
+import { TIPO_PERFIL } from "src/constants/shared";
+import TooltipDietasSimultaneas from "./tooltipoDietas";
 
 export class CardListarSolicitacoes extends Component {
   constructor(props) {
     super(props);
     this.state = {
       solicitacoes: this.props.solicitacoes,
+      dietasAbertas: [],
     };
+
+    const tipoPerfil = localStorage.getItem("tipo_perfil");
+    if (
+      props.titulo.toString().includes("Recebidas") &&
+      tipoPerfil === TIPO_PERFIL.DIETA_ESPECIAL
+    ) {
+      this.initSocket();
+    }
   }
+
+  initSocket = () => {
+    return new Websocket(
+      "solicitacoes-abertas/",
+      ({ data }) => {
+        this.getDietasEspeciaisAbertas(JSON.parse(data));
+      },
+      () => this.initSocket(),
+    );
+  };
+
+  getDietasEspeciaisAbertas = (content) => {
+    content && this.setState({ dietasAbertas: content.message });
+  };
+
+  perfilDietaEspecial = () => {
+    const tipoPerfil = localStorage.getItem("tipo_perfil");
+    return tipoPerfil === TIPO_PERFIL.DIETA_ESPECIAL;
+  };
+
+  dietasFiltradas = (solicitacao) => {
+    const { dietasAbertas } = this.state;
+
+    return dietasAbertas.filter((dieta) =>
+      solicitacao.link.includes(dieta.uuid_solicitacao),
+    );
+  };
+
+  qtdDietasAbertas = (solicitacao) => {
+    return this.dietasFiltradas(solicitacao).length;
+  };
 
   render() {
     const { titulo, tipo, solicitacoes, icone } = this.props;
@@ -54,8 +97,17 @@ export class CardListarSolicitacoes extends Component {
                                 solicitacao={value}
                               />
                             ) : (
-                              value.text ||
-                              `${value.descricao} / ${value.escola_nome}`
+                              <span style={{ fontWeight: "bold" }}>
+                                {value.text ||
+                                  `${value.descricao} / ${value.escola_nome}`}
+
+                                {this.perfilDietaEspecial() &&
+                                  this.qtdDietasAbertas(value) > 0 && (
+                                    <TooltipDietasSimultaneas
+                                      quantidade={this.qtdDietasAbertas(value)}
+                                    />
+                                  )}
+                              </span>
                             )}
                           </p>
                         </NavLink>
