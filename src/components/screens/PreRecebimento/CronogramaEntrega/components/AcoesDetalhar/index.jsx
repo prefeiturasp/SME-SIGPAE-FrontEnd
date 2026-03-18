@@ -50,7 +50,9 @@ export default ({ cronograma }) => {
 
   return (
     <>
-      {cronograma.status === "Assinado e Enviado ao Fornecedor" && (
+      {["Assinado e Enviado ao Fornecedor", "Recebido"].includes(
+        cronograma.status,
+      ) && (
         <Botao
           texto="Assinar Cronograma"
           type={BUTTON_TYPE.BUTTON}
