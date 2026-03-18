@@ -34,6 +34,7 @@ const CorpoRelatorio = ({
   card,
   solicitacaoVigenteAtiva,
   editar,
+  onPreencherDieta,
 }) => {
   const onSubmit = () => {
     // será desenvolvido na história 41937
@@ -417,6 +418,7 @@ const CorpoRelatorio = ({
             dietaEspecial.status_solicitacao === "CODAE_A_AUTORIZAR" && (
               <SolicitacaoVigente
                 solicitacoesVigentes={solicitacaoVigenteAtiva}
+                onPreencherDieta={onPreencherDieta}
               />
             )}
           <hr />

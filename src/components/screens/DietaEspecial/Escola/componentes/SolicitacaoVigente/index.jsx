@@ -14,7 +14,10 @@ import {
   toastSuccess,
   toastError,
 } from "../../../../../Shareable/Toast/dialogs";
-import { getError } from "../../../../../../helpers/utilities";
+import {
+  getError,
+  usuarioEhNutriCODAE,
+} from "../../../../../../helpers/utilities";
 import { escolaInativaDietaEspecial } from "../../../../../../services/dietaEspecial.service";
 
 export class SolicitacaoVigente extends Component {
@@ -62,6 +65,12 @@ export class SolicitacaoVigente extends Component {
     let solicitacoesVigentes = this.state.solicitacoesVigentes;
     solicitacoesVigentes[key].toggled = !solicitacoesVigentes[key].toggled;
     this.setState({ solicitacoesVigentes });
+  }
+
+  preencherDieta(solicitacaoVigente) {
+    if (this.props.onPreencherDieta) {
+      this.props.onPreencherDieta(solicitacaoVigente);
+    }
   }
 
   onSubmit(values) {
@@ -178,6 +187,19 @@ export class SolicitacaoVigente extends Component {
                                 icon={BUTTON_ICON.FILE_ALT}
                                 className="me-3"
                               />
+                              {usuarioEhNutriCODAE() && (
+                                <Botao
+                                  tabindex="-1"
+                                  onClick={() =>
+                                    this.preencherDieta(solicitacaoVigente)
+                                  }
+                                  texto="Copiar Dados desta Solicitação"
+                                  style={BUTTON_STYLE.BLUE_OUTLINE}
+                                  type={BUTTON_TYPE.BUTTON}
+                                  icon={BUTTON_ICON.FILE_ALT}
+                                  className="me-3"
+                                />
+                              )}
                             </div>
                           </div>
                         </div>
