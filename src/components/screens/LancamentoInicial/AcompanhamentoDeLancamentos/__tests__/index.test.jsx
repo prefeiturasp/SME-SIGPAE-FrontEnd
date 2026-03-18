@@ -280,11 +280,13 @@ describe("AcompanhamentoDeLancamentos", () => {
 
     it("deve exibir o modal filtragem com resultados", async () => {
       await selecionarDRE();
+      setMesReferencia();
 
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
-
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
@@ -298,11 +300,13 @@ describe("AcompanhamentoDeLancamentos", () => {
 
     it("deve exibir o modal filtragem sem resultados", async () => {
       await selecionarDRE();
+      setMesReferencia();
 
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
-
-      setMesReferencia();
 
       mock
         .onGet(
@@ -326,20 +330,22 @@ describe("AcompanhamentoDeLancamentos", () => {
       ).toBeInTheDocument();
     });
 
-    it("deve limpar os filtros ao clicar no botão Limpar", async () => {
+    it("nao deve limpar o mes_ano ao clicar no botão Limpar", async () => {
       await selecionarDRE();
+      const selectMes = setMesReferencia();
 
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
-
-      const selectMes = setMesReferencia();
 
       const botaoLimpar = screen.getByText("Limpar");
       await act(async () => {
         fireEvent.click(botaoLimpar);
       });
 
-      expect(selectMes.value).toBe("");
+      expect(selectMes.value).toBe("03_2025");
     });
 
     const setOcorrencias = (value = "true") => {
@@ -351,7 +357,11 @@ describe("AcompanhamentoDeLancamentos", () => {
 
     it("deve selecionar 'Com ocorrências' e depois limpar o campo", async () => {
       await selecionarDRE();
+      setMesReferencia();
 
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
 
@@ -377,11 +387,13 @@ describe("AcompanhamentoDeLancamentos", () => {
 
     it("deve preencher mes e ocorrencias, filtrar e verificar resultados", async () => {
       await selecionarDRE();
+      setMesReferencia();
 
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
-
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
