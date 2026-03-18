@@ -227,23 +227,17 @@ describe("AcompanhamentoDeLancamentos", () => {
             localStorage.setItem(key, value),
           );
           await renderComponent();
-
           await selecionarDRE();
 
-          // Terceirizada não tem filtro de mes_ano, dashboard já aparece
-          // Para os demais perfis, precisa selecionar o mes_ano
-          if (ls.tipo_perfil !== TIPO_PERFIL.TERCEIRIZADA) {
-            const divMesReferencia = screen.getByTestId(
-              "div-select-mes-referencia",
-            );
-            const selectMesReferencia =
-              divMesReferencia.querySelector("select");
-            await act(async () => {
-              fireEvent.change(selectMesReferencia, {
-                target: { value: "03_2025" },
-              });
+          const divMesReferencia = screen.getByTestId(
+            "div-select-mes-referencia",
+          );
+          const selectMesReferencia = divMesReferencia.querySelector("select");
+          await act(async () => {
+            fireEvent.change(selectMesReferencia, {
+              target: { value: "03_2025" },
             });
-          }
+          });
 
           await waitFor(() =>
             expect(screen.getByText("Aprovado pela DRE")).toBeInTheDocument(),
