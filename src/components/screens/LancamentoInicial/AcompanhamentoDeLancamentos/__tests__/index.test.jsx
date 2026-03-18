@@ -172,6 +172,14 @@ describe("AcompanhamentoDeLancamentos", () => {
 
       await selecionarDRE();
 
+      const divMesReferencia = screen.getByTestId("div-select-mes-referencia");
+      const selectMesReferencia = divMesReferencia.querySelector("select");
+      await act(async () => {
+        fireEvent.change(selectMesReferencia, {
+          target: { value: "03_2025" },
+        });
+      });
+
       await waitFor(() =>
         screen.getByText(
           /Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde./,
