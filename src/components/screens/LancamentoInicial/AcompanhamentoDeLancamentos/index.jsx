@@ -608,7 +608,6 @@ export const AcompanhamentoDeLancamentos = () => {
                             setDadosDashboard(null);
                             form.change("mes_ano", undefined);
                             setMesAno(null);
-                            adicionaFiltroNaURL("mes_ano", null);
 
                             setInitialValues((prev) => ({
                               ...prev,
