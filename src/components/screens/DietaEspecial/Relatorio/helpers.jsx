@@ -1,7 +1,9 @@
-import { statusEnum } from "src/constants/shared";
-import { createSolicitacaoAberta } from "src/services/dietaEspecial.service";
 import HTTP_STATUS from "http-status-codes";
-import { deleteSolicitacaoAberta } from "src/services/dietaEspecial.service";
+import { statusEnum } from "src/constants/shared";
+import {
+  createSolicitacaoAberta,
+  deleteSolicitacaoAberta,
+} from "src/services/dietaEspecial.service";
 import { Websocket } from "src/services/websocket";
 
 const DESCRICAO_SOLICITACAO = {
