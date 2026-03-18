@@ -1,24 +1,21 @@
-import React, { Component } from "react";
 import HTTP_STATUS from "http-status-codes";
+import { Component } from "react";
 import { Collapse } from "react-collapse";
 import { reduxForm } from "redux-form";
-import { ToggleExpandir } from "../../../../../Shareable/ToggleExpandir";
-import { Botao } from "../../../../../Shareable/Botao";
+import { Botao } from "src/components/Shareable/Botao";
 import {
+  BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
-  BUTTON_ICON,
-} from "../../../../../Shareable/Botao/constants";
-import withNavigate from "src/components/Shareable/withNavigate";
+} from "src/components/Shareable/Botao/constants";
 import {
-  toastSuccess,
   toastError,
-} from "../../../../../Shareable/Toast/dialogs";
-import {
-  getError,
-  usuarioEhNutriCODAE,
-} from "../../../../../../helpers/utilities";
-import { escolaInativaDietaEspecial } from "../../../../../../services/dietaEspecial.service";
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
+import withNavigate from "src/components/Shareable/withNavigate";
+import { getError, usuarioEhNutriCODAE } from "src/helpers/utilities";
+import { escolaInativaDietaEspecial } from "src/services/dietaEspecial.service";
 
 export class SolicitacaoVigente extends Component {
   constructor(props) {
