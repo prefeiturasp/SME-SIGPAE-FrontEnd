@@ -266,8 +266,6 @@ export const AcompanhamentoDeLancamentos = () => {
     };
     setCurrentPage(1);
 
-    getMesesAnosSolicitacoesMedicaoinicialAsync();
-
     if (!usuarioEhEscolaTerceirizadaQualquerPerfil()) {
       getTiposUnidadeEscolarAsync();
     }
@@ -275,6 +273,7 @@ export const AcompanhamentoDeLancamentos = () => {
     if (!usuarioEhDRE() && !usuarioEhEscolaTerceirizadaQualquerPerfil()) {
       getDiretoriasRegionaisAsync();
     } else {
+      getMesesAnosSolicitacoesMedicaoinicialAsync();
       setDiretoriasRegionais([]);
     }
   }, []);
