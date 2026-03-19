@@ -12,12 +12,9 @@ import { required, requiredMultiselect } from "src/helpers/fieldValidators";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import InputText from "src/components/Shareable/Input/InputText";
 import arrayMutators from "final-form-arrays";
-type Props = {
-  showModal: boolean;
-  setShowModal: (_e: boolean) => void;
-};
 
 type Empenho = {
+  uuid?: string;
   numero_empenho: string;
   tipo_empenho: string;
   unidades_educacionais_selecionadas: string[];
@@ -29,7 +26,13 @@ const DEFAULT_EMPENHO: Empenho = {
   unidades_educacionais_selecionadas: [],
 };
 
-const ModalEditarEmpenhos = ({ showModal, setShowModal }: Props) => {
+type Props = {
+  showModal: boolean;
+  setShowModal: (_e: boolean) => void;
+  empenhos?: Empenho[];
+};
+
+const ModalEditarEmpenhos = ({ showModal, setShowModal, empenhos }: Props) => {
   const onSubmit = (values: { cadastros_empenho: Empenho[] }) => {
     const payload = values?.cadastros_empenho ?? [];
     if (payload) toastSuccess("Empenhos cadastrados com sucesso");
@@ -45,7 +48,8 @@ const ModalEditarEmpenhos = ({ showModal, setShowModal }: Props) => {
       <Form
         onSubmit={onSubmit}
         initialValues={{
-          cadastros_empenho: [DEFAULT_EMPENHO],
+          cadastros_empenho:
+            empenhos?.length > 0 ? empenhos : [DEFAULT_EMPENHO],
         }}
         mutators={{
           ...arrayMutators,
@@ -53,11 +57,13 @@ const ModalEditarEmpenhos = ({ showModal, setShowModal }: Props) => {
         render={({ handleSubmit, submitting, values, form }) => (
           <form onSubmit={handleSubmit}>
             <Modal.Body>
-              <label>
-                Não encontramos empenhos cadastrados para este relatório
-                financeiro, para prosseguir é necessário relacionar ao menos um
-                empenho a este relatório.
-              </label>
+              {empenhos?.length === 0 && (
+                <label>
+                  Não encontramos empenhos cadastrados para este relatório
+                  financeiro, para prosseguir é necessário relacionar ao menos
+                  um empenho a este relatório.
+                </label>
+              )}
 
               <FieldArray name="cadastros_empenho">
                 {({ fields }) => (
