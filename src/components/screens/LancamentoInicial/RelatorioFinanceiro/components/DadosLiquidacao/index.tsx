@@ -1,19 +1,13 @@
+import { DadosLiquidacaoEmpenho } from "src/interfaces/relatorio_financeiro.interface";
 import "./styles.scss";
 import { formataMilharDecimal } from "src/helpers/utilities";
 
-interface DadosLiquidacaoItem {
-  numero_empenho: string;
-  tipo_empenho: string;
-  unidades_educacionais: number | string;
-  total_pagamento: string;
+interface Props {
+  dados?: DadosLiquidacaoEmpenho[];
 }
 
-interface DadosLiquidacaoProps {
-  dados?: DadosLiquidacaoItem[];
-}
-
-const DadosLiquidacao = ({ dados = [] }: DadosLiquidacaoProps) => {
-  const linhas = dados.length > 0 ? dados : [{} as DadosLiquidacaoItem];
+const DadosLiquidacao = ({ dados = [] }: Props) => {
+  const linhas = dados.length > 0 ? dados : [{} as DadosLiquidacaoEmpenho];
   return (
     <div className="dados-liquidacao-relatorio">
       <table className="tabela">

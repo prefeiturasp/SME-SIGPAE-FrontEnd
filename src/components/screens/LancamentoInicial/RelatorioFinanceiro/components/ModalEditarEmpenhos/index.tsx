@@ -12,28 +12,24 @@ import { required, requiredMultiselect } from "src/helpers/fieldValidators";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import InputText from "src/components/Shareable/Input/InputText";
 import arrayMutators from "final-form-arrays";
+import { DadosLiquidacaoEmpenho } from "src/interfaces/relatorio_financeiro.interface";
 
-type Empenho = {
-  uuid?: string;
-  numero_empenho: string;
-  tipo_empenho: string;
-  unidades_educacionais_selecionadas: string[];
-};
-
-const DEFAULT_EMPENHO: Empenho = {
+const DEFAULT_EMPENHO: DadosLiquidacaoEmpenho = {
   numero_empenho: "",
   tipo_empenho: "",
-  unidades_educacionais_selecionadas: [],
+  unidades_educacionais: [],
 };
 
 type Props = {
   showModal: boolean;
   setShowModal: (_e: boolean) => void;
-  empenhos?: Empenho[];
+  empenhos?: DadosLiquidacaoEmpenho[];
 };
 
 const ModalEditarEmpenhos = ({ showModal, setShowModal, empenhos }: Props) => {
-  const onSubmit = (values: { cadastros_empenho: Empenho[] }) => {
+  const onSubmit = (values: {
+    cadastros_empenho: DadosLiquidacaoEmpenho[];
+  }) => {
     const payload = values?.cadastros_empenho ?? [];
     if (payload) toastSuccess("Empenhos cadastrados com sucesso");
     setShowModal(false);
@@ -123,7 +119,7 @@ const ModalEditarEmpenhos = ({ showModal, setShowModal, empenhos }: Props) => {
                               label="Unidades Educacionais para pagamento neste empenho"
                               component={MultiselectRaw}
                               validate={requiredMultiselect}
-                              name={`${name}.unidades_educacionais_selecionadas`}
+                              name={`${name}.unidades_educacionais`}
                               placeholder="Selecione as Unidades"
                               options={[]}
                               selected={
