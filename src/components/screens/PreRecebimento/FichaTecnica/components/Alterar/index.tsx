@@ -119,7 +119,7 @@ export default () => {
     {
       titulo: (
         <span className="verde-escuro">
-          Fabricante e ou Envasador/Distribuidor
+          Fabricante, Produtor, Envasador ou Distribuidor
         </span>
       ),
       tag: true,
@@ -170,6 +170,34 @@ export default () => {
     },
   ];
 
+  const obterCollapseConfigsFLV = () => [
+    {
+      titulo: <span className="verde-escuro">Proponente</span>,
+    },
+    {
+      titulo: (
+        <span className="verde-escuro">
+          Fabricante, Produtor, Envasador ou Distribuidor
+        </span>
+      ),
+      tag: true,
+    },
+    {
+      titulo: <span className="verde-escuro">Detalhes do Produto</span>,
+      tag: true,
+    },
+    {
+      titulo: (
+        <span className="verde-escuro">Responsável Técnico e Anexos</span>
+      ),
+      tag: true,
+    },
+    {
+      titulo: <span className="verde-escuro">Outras Informações</span>,
+      tag: true,
+    },
+  ];
+
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       <div className="card mt-3 card-alterar-ficha-tecnica">
@@ -181,6 +209,9 @@ export default () => {
             render={({ handleSubmit, values, errors }) => {
               const ehPerecivel = values["categoria"] === "Perecíveis";
               const ehNaoPerecivel = values["categoria"] === "Não Perecíveis";
+              const ehFLV =
+                values["categoria"] === "FLV (Frutas, Legumes e Verduras)" &&
+                values["tipo_entrega"] === "Ponto a Ponto";
 
               return (
                 <form onSubmit={handleSubmit}>
@@ -192,59 +223,81 @@ export default () => {
                       <i className="fas fa-exclamation-triangle" />
                       Solicitada Alteração em {ficha.log_mais_recente}
                     </div>
-                  </div>
+                    <div className="row mt-4">
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label="Categoria"
+                          name={`categoria`}
+                          className="input-ficha-tecnica"
+                          disabled
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label="Tipo de Entrega"
+                          name={`tipo_entrega`}
+                          className="input-ficha-tecnica"
+                          disabled
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label="Para qual Programa o Produto é Destinado"
+                          name={`programa`}
+                          className="input-ficha-tecnica"
+                          disabled
+                        />
+                      </div>
+                    </div>
 
-                  <div className="row mt-4">
-                    <div className="col-8">
-                      <Field
-                        component={InputText}
-                        label="Produto"
-                        name={`produto`}
-                        className="input-ficha-tecnica"
-                        disabled
-                        suffix={
-                          ficha.programa === "LEVE_LEITE" ? (
-                            <TagLeveLeite />
-                          ) : null
-                        }
-                      />
-                    </div>
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        label="Categoria"
-                        name={`categoria`}
-                        className="input-ficha-tecnica"
-                        disabled
-                      />
-                    </div>
-                    <div className="col-8">
-                      <Field
-                        component={InputText}
-                        naoDesabilitarPrimeiraOpcao
-                        label="Marca"
-                        name={`marca`}
-                        className="input-ficha-tecnica"
-                        disabled
-                      />
-                    </div>
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        label="Nº do Pregão/Chamada Pública"
-                        name={`pregao_chamada_publica`}
-                        className="input-ficha-tecnica"
-                        disabled
-                      />
+                    <div className="row mt-4">
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label="Produto"
+                          name={`produto`}
+                          className="input-ficha-tecnica"
+                          disabled
+                          suffix={
+                            ficha.programa === "LEVE_LEITE" ? (
+                              <TagLeveLeite />
+                            ) : null
+                          }
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          naoDesabilitarPrimeiraOpcao
+                          label="Marca"
+                          name={`marca`}
+                          className="input-ficha-tecnica"
+                          disabled
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label="Nº do Pregão/Chamada Pública"
+                          name={`pregao_chamada_publica`}
+                          className="input-ficha-tecnica"
+                          disabled
+                        />
+                      </div>
                     </div>
                   </div>
-
-                  <hr />
 
                   <Collapse
                     collapse={collapse}
                     setCollapse={setCollapse}
-                    collapseConfigs={obterCollapseConfigs(ehPerecivel)}
+                    collapseConfigs={
+                      ehFLV
+                        ? obterCollapseConfigsFLV()
+                        : obterCollapseConfigs(ehPerecivel)
+                    }
                     id={idCollapse}
                     state={conferidos}
                   >
@@ -278,7 +331,7 @@ export default () => {
                         somenteLeitura={conferidos.fabricante_envasador}
                         ocultarBotaoCadastroFabricante={true}
                       />
-                      {fabricantesCount === 1 && (
+                      {!ehFLV && fabricantesCount === 1 && (
                         <div className="row mt-3">
                           <div className="col-12 d-flex justify-content-center">
                             <Tooltip
@@ -322,360 +375,577 @@ export default () => {
                       />
                     </section>
 
-                    <section id="informacoes_nutricionais">
-                      {!conferidos.informacoes_nutricionais && (
-                        <div className="row campo-correcao mb-4">
-                          <div className="col-12">
-                            <TextArea
-                              label="Indicações de Correções CODAE"
-                              valorInicial={
-                                ficha?.analise
-                                  ?.informacoes_nutricionais_correcoes
-                              }
-                              disabled={true}
-                            />
+                    {!ehFLV && (
+                      <>
+                        <section id="informacoes_nutricionais">
+                          {!conferidos.informacoes_nutricionais && (
+                            <div className="row campo-correcao mb-4">
+                              <div className="col-12">
+                                <TextArea
+                                  label="Indicações de Correções CODAE"
+                                  valorInicial={
+                                    ficha?.analise
+                                      ?.informacoes_nutricionais_correcoes
+                                  }
+                                  disabled={true}
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="row">
+                            <div className="col-6">
+                              <Label content="Porção" required />
+                            </div>
+                            <div className="col-6">
+                              <Label content="Unidade Caseira" required />
+                            </div>
                           </div>
-                        </div>
-                      )}
 
-                      <div className="row">
-                        <div className="col-6">
-                          <Label content="Porção" required />
-                        </div>
-                        <div className="col-6">
-                          <Label content="Unidade Caseira" required />
-                        </div>
-                      </div>
-
-                      <div className="row">
-                        <div className="col-3">
-                          <Field
-                            component={InputText}
-                            name={`porcao`}
-                            placeholder="Quantidade Numérica"
-                            className="input-ficha-tecnica"
-                            required
-                            validate={required}
-                            disabled={conferidos.informacoes_nutricionais}
-                          />
-                        </div>
-                        <div className="col-3">
-                          <Field
-                            component={Select}
-                            naoDesabilitarPrimeiraOpcao
-                            options={[
-                              { nome: "Unidade de Medida", uuid: "" },
-                              ...unidadesMedidaOptions,
-                            ]}
-                            name={`unidade_medida_porcao`}
-                            className="input-ficha-tecnica"
-                            required
-                            validate={required}
-                            disabled={conferidos.informacoes_nutricionais}
-                          />
-                        </div>
-                        <div className="col-3">
-                          <Field
-                            component={InputText}
-                            name={`valor_unidade_caseira`}
-                            placeholder="Quantidade Numérica"
-                            className="input-ficha-tecnica"
-                            required
-                            validate={required}
-                            disabled={conferidos.informacoes_nutricionais}
-                          />
-                        </div>
-                        <div className="col-3">
-                          <Field
-                            component={InputText}
-                            name={`unidade_medida_caseira`}
-                            placeholder="Unidade de Medida"
-                            className="input-ficha-tecnica"
-                            required
-                            validate={required}
-                            disabled={conferidos.informacoes_nutricionais}
-                          />
-                        </div>
-                      </div>
-                      <TabelaNutricional
-                        values={values}
-                        listaCompletaInformacoesNutricionais={
-                          listaCompletaInformacoesNutricionais.current
-                        }
-                        informacoesNutricionaisCarregadas={
-                          listaInformacoesNutricionaisFichaTecnica.current
-                        }
-                        desabilitar={conferidos.informacoes_nutricionais}
-                      />
-                    </section>
-
-                    <section id="conservacao">
-                      {!conferidos.conservacao && (
-                        <div className="row campo-correcao mb-4">
-                          <div className="col-12">
-                            <TextArea
-                              label="Indicações de Correções CODAE"
-                              valorInicial={
-                                ficha?.analise?.conservacao_correcoes
-                              }
-                              disabled={true}
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {ehPerecivel && (
-                        <div className="row">
-                          <div className="col">
-                            <Field
-                              component={InputText}
-                              label="Prazo de Validade após o descongelamento e mantido sob refrigeração:"
-                              name={`prazo_validade_descongelamento`}
-                              placeholder="Digite o prazo de validade"
-                              className="input-ficha-tecnica"
-                              required
-                              validate={required}
-                              disabled={conferidos.conservacao}
-                            />
-                          </div>
-                        </div>
-                      )}
-                      <div className="row mt-3">
-                        <div className="col">
-                          <Field
-                            component={TextArea}
-                            label="Condições de conservação e Prazo máximo para consumo após a abertura da embalagem primária:"
-                            name={`condicoes_de_conservacao`}
-                            placeholder="Descreva as condições de conservação e o prazo máximo de consumo"
-                            className="textarea-ficha-tecnica"
-                            required
-                            validate={required}
-                            disabled={conferidos.conservacao}
-                          />
-                        </div>
-                      </div>
-                    </section>
-
-                    {ehPerecivel && (
-                      <section id="temperatura_e_transporte">
-                        {!conferidos.temperatura_e_transporte && (
-                          <div className="row campo-correcao mb-4">
-                            <div className="col-12">
-                              <TextArea
-                                label="Indicações de Correções CODAE"
-                                valorInicial={
-                                  ficha?.analise
-                                    ?.temperatura_e_transporte_correcoes
-                                }
-                                disabled={true}
+                          <div className="row">
+                            <div className="col-3">
+                              <Field
+                                component={InputText}
+                                name={`porcao`}
+                                placeholder="Quantidade Numérica"
+                                className="input-ficha-tecnica"
+                                required
+                                validate={required}
+                                disabled={conferidos.informacoes_nutricionais}
+                              />
+                            </div>
+                            <div className="col-3">
+                              <Field
+                                component={Select}
+                                naoDesabilitarPrimeiraOpcao
+                                options={[
+                                  { nome: "Unidade de Medida", uuid: "" },
+                                  ...unidadesMedidaOptions,
+                                ]}
+                                name={`unidade_medida_porcao`}
+                                className="input-ficha-tecnica"
+                                required
+                                validate={required}
+                                disabled={conferidos.informacoes_nutricionais}
+                              />
+                            </div>
+                            <div className="col-3">
+                              <Field
+                                component={InputText}
+                                name={`valor_unidade_caseira`}
+                                placeholder="Quantidade Numérica"
+                                className="input-ficha-tecnica"
+                                required
+                                validate={required}
+                                disabled={conferidos.informacoes_nutricionais}
+                              />
+                            </div>
+                            <div className="col-3">
+                              <Field
+                                component={InputText}
+                                name={`unidade_medida_caseira`}
+                                placeholder="Unidade de Medida"
+                                className="input-ficha-tecnica"
+                                required
+                                validate={required}
+                                disabled={conferidos.informacoes_nutricionais}
                               />
                             </div>
                           </div>
+                          <TabelaNutricional
+                            values={values}
+                            listaCompletaInformacoesNutricionais={
+                              listaCompletaInformacoesNutricionais.current
+                            }
+                            informacoesNutricionaisCarregadas={
+                              listaInformacoesNutricionaisFichaTecnica.current
+                            }
+                            desabilitar={conferidos.informacoes_nutricionais}
+                          />
+                        </section>
+
+                        <section id="conservacao">
+                          {!conferidos.conservacao && (
+                            <div className="row campo-correcao mb-4">
+                              <div className="col-12">
+                                <TextArea
+                                  label="Indicações de Correções CODAE"
+                                  valorInicial={
+                                    ficha?.analise?.conservacao_correcoes
+                                  }
+                                  disabled={true}
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          {ehPerecivel && (
+                            <div className="row">
+                              <div className="col">
+                                <Field
+                                  component={InputText}
+                                  label="Prazo de Validade após o descongelamento e mantido sob refrigeração:"
+                                  name={`prazo_validade_descongelamento`}
+                                  placeholder="Digite o prazo de validade"
+                                  className="input-ficha-tecnica"
+                                  required
+                                  validate={required}
+                                  disabled={conferidos.conservacao}
+                                />
+                              </div>
+                            </div>
+                          )}
+                          <div className="row mt-3">
+                            <div className="col">
+                              <Field
+                                component={TextArea}
+                                label="Condições de conservação e Prazo máximo para consumo após a abertura da embalagem primária:"
+                                name={`condicoes_de_conservacao`}
+                                placeholder="Descreva as condições de conservação e o prazo máximo de consumo"
+                                className="textarea-ficha-tecnica"
+                                required
+                                validate={required}
+                                disabled={conferidos.conservacao}
+                              />
+                            </div>
+                          </div>
+                        </section>
+
+                        {ehPerecivel && (
+                          <section id="temperatura_e_transporte">
+                            {!conferidos.temperatura_e_transporte && (
+                              <div className="row campo-correcao mb-4">
+                                <div className="col-12">
+                                  <TextArea
+                                    label="Indicações de Correções CODAE"
+                                    valorInicial={
+                                      ficha?.analise
+                                        ?.temperatura_e_transporte_correcoes
+                                    }
+                                    disabled={true}
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="row">
+                              <div className="col-5">
+                                <Field
+                                  component={InputText}
+                                  label="Temperatura de Congelamento do Produto:"
+                                  name={`temperatura_congelamento`}
+                                  placeholder="Digite a temperatura de congelamento"
+                                  className="input-ficha-tecnica"
+                                  tooltipText="No processo de fabricação"
+                                  required
+                                  validate={composeValidators(
+                                    required,
+                                    inteiroOuDecimalPositivoOuNegativo,
+                                  )}
+                                  disabled={conferidos.temperatura_e_transporte}
+                                />
+                              </div>
+                              <div className="col-1 label-unidade-medida label-unidade-medida-bottom">
+                                <span>ºC</span>
+                              </div>
+                              <div className="col-5">
+                                <Field
+                                  component={InputText}
+                                  label="Temperatura Interna do Veículo para Transporte:"
+                                  name={`temperatura_veiculo`}
+                                  placeholder="Digite a temperatura de transporte"
+                                  className="input-ficha-tecnica"
+                                  required
+                                  validate={composeValidators(
+                                    required,
+                                    inteiroOuDecimalPositivoOuNegativo,
+                                  )}
+                                  disabled={conferidos.temperatura_e_transporte}
+                                />
+                              </div>
+                              <div className="col-1 label-unidade-medida label-unidade-medida-bottom">
+                                <span>ºC</span>
+                              </div>
+                            </div>
+                            <div className="row mt-3">
+                              <div className="col">
+                                <Field
+                                  component={TextArea}
+                                  label="Condições de Transporte:"
+                                  name={`condicoes_de_transporte`}
+                                  className="textarea-ficha-tecnica"
+                                  required
+                                  validate={required}
+                                  disabled={conferidos.temperatura_e_transporte}
+                                />
+                              </div>
+                            </div>
+                          </section>
                         )}
 
-                        <div className="row">
-                          <div className="col-5">
-                            <Field
-                              component={InputText}
-                              label="Temperatura de Congelamento do Produto:"
-                              name={`temperatura_congelamento`}
-                              placeholder="Digite a temperatura de congelamento"
-                              className="input-ficha-tecnica"
-                              tooltipText="No processo de fabricação"
-                              required
-                              validate={composeValidators(
-                                required,
-                                inteiroOuDecimalPositivoOuNegativo,
-                              )}
-                              disabled={conferidos.temperatura_e_transporte}
-                            />
-                          </div>
-                          <div className="col-1 label-unidade-medida label-unidade-medida-bottom">
-                            <span>ºC</span>
-                          </div>
-                          <div className="col-5">
-                            <Field
-                              component={InputText}
-                              label="Temperatura Interna do Veículo para Transporte:"
-                              name={`temperatura_veiculo`}
-                              placeholder="Digite a temperatura de transporte"
-                              className="input-ficha-tecnica"
-                              required
-                              validate={composeValidators(
-                                required,
-                                inteiroOuDecimalPositivoOuNegativo,
-                              )}
-                              disabled={conferidos.temperatura_e_transporte}
-                            />
-                          </div>
-                          <div className="col-1 label-unidade-medida label-unidade-medida-bottom">
-                            <span>ºC</span>
-                          </div>
-                        </div>
-                        <div className="row mt-3">
-                          <div className="col">
-                            <Field
-                              component={TextArea}
-                              label="Condições de Transporte:"
-                              name={`condicoes_de_transporte`}
-                              className="textarea-ficha-tecnica"
-                              required
-                              validate={required}
-                              disabled={conferidos.temperatura_e_transporte}
-                            />
-                          </div>
-                        </div>
-                      </section>
-                    )}
+                        <section id="armazenamento">
+                          {!conferidos.armazenamento && (
+                            <div className="row campo-correcao mb-4">
+                              <div className="col-12">
+                                <TextArea
+                                  label="Indicações de Correções CODAE"
+                                  valorInicial={
+                                    ficha?.analise?.armazenamento_correcoes
+                                  }
+                                  disabled={true}
+                                />
+                              </div>
+                            </div>
+                          )}
 
-                    <section id="armazenamento">
-                      {!conferidos.armazenamento && (
-                        <div className="row campo-correcao mb-4">
-                          <div className="col-12">
-                            <TextArea
-                              label="Indicações de Correções CODAE"
-                              valorInicial={
-                                ficha?.analise?.armazenamento_correcoes
-                              }
-                              disabled={true}
-                            />
+                          <div className="row">
+                            <div className="col">
+                              Informações que constarão da rotulagem das
+                              embalagens primária e secundária, fechadas.
+                            </div>
                           </div>
-                        </div>
-                      )}
-
-                      <div className="row">
-                        <div className="col">
-                          Informações que constarão da rotulagem das embalagens
-                          primária e secundária, fechadas.
-                        </div>
-                      </div>
-                      <div className="row mt-3">
-                        <div className="col">
-                          <Field
-                            component={TextArea}
-                            label="Informações de Armazenamento que deverão constar na embalagem Primária:"
-                            name={`embalagem_primaria`}
-                            className="textarea-ficha-tecnica"
-                            placeholder="Digite as informações de armazenamento para embalagem primária"
-                            required
-                            validate={required}
-                            disabled={conferidos.armazenamento}
-                          />
-                        </div>
-                      </div>
-                      <div className="row mt-3">
-                        <div className="col">
-                          <Field
-                            component={TextArea}
-                            label="Informações de Armazenamento que deverão constar na embalagem Secundária:"
-                            name={`embalagem_secundaria`}
-                            className="textarea-ficha-tecnica"
-                            placeholder="Digite as informações de armazenamento para embalagem secundária"
-                            required
-                            validate={required}
-                            disabled={conferidos.armazenamento}
-                          />
-                        </div>
-                      </div>
-                    </section>
-
-                    <section id="embalagem_e_rotulagem">
-                      {!conferidos.embalagem_e_rotulagem && (
-                        <div className="row campo-correcao mb-4">
-                          <div className="col-12">
-                            <TextArea
-                              label="Indicações de Correções CODAE"
-                              valorInicial={
-                                ficha?.analise?.embalagem_e_rotulagem_correcoes
-                              }
-                              disabled={true}
-                            />
+                          <div className="row mt-3">
+                            <div className="col">
+                              <Field
+                                component={TextArea}
+                                label="Informações de Armazenamento que deverão constar na embalagem Primária:"
+                                name={`embalagem_primaria`}
+                                className="textarea-ficha-tecnica"
+                                placeholder="Digite as informações de armazenamento para embalagem primária"
+                                required
+                                validate={required}
+                                disabled={conferidos.armazenamento}
+                              />
+                            </div>
                           </div>
-                        </div>
-                      )}
+                          <div className="row mt-3">
+                            <div className="col">
+                              <Field
+                                component={TextArea}
+                                label="Informações de Armazenamento que deverão constar na embalagem Secundária:"
+                                name={`embalagem_secundaria`}
+                                className="textarea-ficha-tecnica"
+                                placeholder="Digite as informações de armazenamento para embalagem secundária"
+                                required
+                                validate={required}
+                                disabled={conferidos.armazenamento}
+                              />
+                            </div>
+                          </div>
+                        </section>
 
-                      <div className="row">
-                        <div className="subtitulo">Embalagem</div>
-                      </div>
+                        <section id="embalagem_e_rotulagem">
+                          {!conferidos.embalagem_e_rotulagem && (
+                            <div className="row campo-correcao mb-4">
+                              <div className="col-12">
+                                <TextArea
+                                  label="Indicações de Correções CODAE"
+                                  valorInicial={
+                                    ficha?.analise
+                                      ?.embalagem_e_rotulagem_correcoes
+                                  }
+                                  disabled={true}
+                                />
+                              </div>
+                            </div>
+                          )}
 
-                      <div className="row mt-3">
-                        <div className="col">
-                          <Field
-                            name={`embalagens_de_acordo_com_anexo`}
-                            component={CheckboxComBorda}
-                            label="Declaro que as embalagens primária e secundária em que
+                          <div className="row">
+                            <div className="subtitulo">Embalagem</div>
+                          </div>
+
+                          <div className="row mt-3">
+                            <div className="col">
+                              <Field
+                                name={`embalagens_de_acordo_com_anexo`}
+                                component={CheckboxComBorda}
+                                label="Declaro que as embalagens primária e secundária em que
                             serão entregues o produto estarão de acordo com as
                             especificações do Anexo I do Edital."
-                            disabled
-                          />
-                        </div>
-                      </div>
+                                disabled
+                              />
+                            </div>
+                          </div>
 
-                      <div className="row mt-3">
-                        <div className="col">
-                          <Field
-                            component={TextArea}
-                            label="Descreva o material de embalagem primária:"
-                            name={`material_embalagem_primaria`}
-                            className="textarea-ficha-tecnica"
-                            placeholder="Digite as informações da embalagem primária"
-                            required
-                            validate={required}
-                            disabled={conferidos.embalagem_e_rotulagem}
-                          />
-                        </div>
-                      </div>
+                          <div className="row mt-3">
+                            <div className="col">
+                              <Field
+                                component={TextArea}
+                                label="Descreva o material de embalagem primária:"
+                                name={`material_embalagem_primaria`}
+                                className="textarea-ficha-tecnica"
+                                placeholder="Digite as informações da embalagem primária"
+                                required
+                                validate={required}
+                                disabled={conferidos.embalagem_e_rotulagem}
+                              />
+                            </div>
+                          </div>
 
-                      {ehNaoPerecivel && (
-                        <div className="row mt-3">
-                          <div className="col-6 px-0">
+                          {ehNaoPerecivel && (
+                            <div className="row mt-3">
+                              <div className="col-6 px-0">
+                                <div className="row">
+                                  <Label
+                                    content="O produto é líquido?"
+                                    disabled
+                                  />
+                                </div>
+
+                                <div className="row">
+                                  <div className="col-2">
+                                    <label className="container-radio">
+                                      Não
+                                      <Field
+                                        component="input"
+                                        type="radio"
+                                        value="0"
+                                        name={`produto_eh_liquido`}
+                                        validate={required}
+                                        disabled={
+                                          conferidos.embalagem_e_rotulagem
+                                        }
+                                      />
+                                      <span className="checkmark" />
+                                    </label>
+                                  </div>
+                                  <div className="col-2">
+                                    <label className="container-radio">
+                                      Sim
+                                      <Field
+                                        component="input"
+                                        type="radio"
+                                        value="1"
+                                        name={`produto_eh_liquido`}
+                                        validate={required}
+                                        disabled={
+                                          conferidos.embalagem_e_rotulagem
+                                        }
+                                      />
+                                      <span className="checkmark" />
+                                    </label>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {values.produto_eh_liquido === "1" && (
+                                <div className="col-6 px-0">
+                                  <div className="row">
+                                    <Label content="Volume do Produto na Embalagem Primária:" />
+                                  </div>
+                                  <div className="row">
+                                    <div className="col">
+                                      <Field
+                                        component={InputText}
+                                        name={`volume_embalagem_primaria`}
+                                        placeholder="Digite o Volume"
+                                        className="input-ficha-tecnica"
+                                        required
+                                        validate={composeValidators(
+                                          required,
+                                          inteiroOuDecimalComVirgula,
+                                        )}
+                                        disabled={
+                                          conferidos.embalagem_e_rotulagem
+                                        }
+                                      />
+                                    </div>
+
+                                    <div className="col">
+                                      <Field
+                                        component={Select}
+                                        naoDesabilitarPrimeiraOpcao
+                                        options={[
+                                          {
+                                            nome: "Unidade de Medida",
+                                            uuid: "",
+                                          },
+                                          ...unidadesMedidaOptions,
+                                        ]}
+                                        name={`unidade_medida_volume_primaria`}
+                                        className="input-ficha-tecnica"
+                                        required
+                                        validate={required}
+                                        disabled={
+                                          conferidos.embalagem_e_rotulagem
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          <div className="row mt-3">
                             <div className="row">
-                              <Label content="O produto é líquido?" disabled />
+                              <div className="col-6">
+                                <Label content="Peso Líquido do Produto na Embalagem Primária:" />
+                              </div>
+
+                              <div className="col-6">
+                                <Label content="Peso Líquido do Produto na Embalagem Secundária:" />
+                              </div>
                             </div>
 
                             <div className="row">
-                              <div className="col-2">
-                                <label className="container-radio">
-                                  Não
-                                  <Field
-                                    component="input"
-                                    type="radio"
-                                    value="0"
-                                    name={`produto_eh_liquido`}
-                                    validate={required}
-                                    disabled={conferidos.embalagem_e_rotulagem}
-                                  />
-                                  <span className="checkmark" />
-                                </label>
+                              <div className="col-3">
+                                <Field
+                                  component={InputText}
+                                  name={`peso_liquido_embalagem_primaria`}
+                                  placeholder="Digite o Peso"
+                                  className="input-ficha-tecnica"
+                                  required
+                                  validate={composeValidators(
+                                    required,
+                                    inteiroOuDecimalComVirgula,
+                                  )}
+                                  disabled={conferidos.embalagem_e_rotulagem}
+                                />
                               </div>
-                              <div className="col-2">
-                                <label className="container-radio">
-                                  Sim
-                                  <Field
-                                    component="input"
-                                    type="radio"
-                                    value="1"
-                                    name={`produto_eh_liquido`}
-                                    validate={required}
-                                    disabled={conferidos.embalagem_e_rotulagem}
-                                  />
-                                  <span className="checkmark" />
-                                </label>
+
+                              <div className="col-3">
+                                <Field
+                                  component={Select}
+                                  naoDesabilitarPrimeiraOpcao
+                                  options={[
+                                    { nome: "Unidade de Medida", uuid: "" },
+                                    ...unidadesMedidaOptions,
+                                  ]}
+                                  name={`unidade_medida_primaria`}
+                                  className="input-ficha-tecnica"
+                                  required
+                                  validate={required}
+                                  disabled={conferidos.embalagem_e_rotulagem}
+                                />
+                              </div>
+
+                              <div className="col-3">
+                                <Field
+                                  component={InputText}
+                                  name={`peso_liquido_embalagem_secundaria`}
+                                  placeholder="Digite o Peso"
+                                  className="input-ficha-tecnica"
+                                  required
+                                  validate={composeValidators(
+                                    required,
+                                    inteiroOuDecimalComVirgula,
+                                  )}
+                                  disabled={conferidos.embalagem_e_rotulagem}
+                                />
+                              </div>
+
+                              <div className="col-3">
+                                <Field
+                                  component={Select}
+                                  naoDesabilitarPrimeiraOpcao
+                                  options={[
+                                    { nome: "Unidade de Medida", uuid: "" },
+                                    ...unidadesMedidaOptions,
+                                  ]}
+                                  name={`unidade_medida_secundaria`}
+                                  className="input-ficha-tecnica"
+                                  required
+                                  validate={required}
+                                  disabled={conferidos.embalagem_e_rotulagem}
+                                />
                               </div>
                             </div>
                           </div>
 
-                          {values.produto_eh_liquido === "1" && (
-                            <div className="col-6 px-0">
-                              <div className="row">
-                                <Label content="Volume do Produto na Embalagem Primária:" />
+                          <div className="row mt-3">
+                            <div className="row">
+                              <div className="col-6">
+                                <Label content="Peso da Embalagem Primária Vazia:" />
                               </div>
+
+                              <div className="col-6">
+                                <Label content="Peso da Embalagem Secundária Vazia:" />
+                              </div>
+                            </div>
+
+                            <div className="row">
+                              <div className="col-3">
+                                <Field
+                                  component={InputText}
+                                  name={`peso_embalagem_primaria_vazia`}
+                                  placeholder="Digite o Peso"
+                                  className="input-ficha-tecnica"
+                                  required
+                                  validate={composeValidators(
+                                    required,
+                                    inteiroOuDecimalComVirgula,
+                                  )}
+                                  disabled={conferidos.embalagem_e_rotulagem}
+                                />
+                              </div>
+
+                              <div className="col-3">
+                                <Field
+                                  component={Select}
+                                  naoDesabilitarPrimeiraOpcao
+                                  options={[
+                                    { nome: "Unidade de Medida", uuid: "" },
+                                    ...unidadesMedidaOptions,
+                                  ]}
+                                  name={`unidade_medida_primaria_vazia`}
+                                  className="input-ficha-tecnica"
+                                  required
+                                  validate={required}
+                                  disabled={conferidos.embalagem_e_rotulagem}
+                                />
+                              </div>
+
+                              <div className="col-3">
+                                <Field
+                                  component={InputText}
+                                  name={`peso_embalagem_secundaria_vazia`}
+                                  placeholder="Digite o Peso"
+                                  className="input-ficha-tecnica"
+                                  required
+                                  validate={composeValidators(
+                                    required,
+                                    inteiroOuDecimalComVirgula,
+                                  )}
+                                  disabled={conferidos.embalagem_e_rotulagem}
+                                />
+                              </div>
+
+                              <div className="col-3">
+                                <Field
+                                  component={Select}
+                                  naoDesabilitarPrimeiraOpcao
+                                  options={[
+                                    { nome: "Unidade de Medida", uuid: "" },
+                                    ...unidadesMedidaOptions,
+                                  ]}
+                                  name={`unidade_medida_secundaria_vazia`}
+                                  className="input-ficha-tecnica"
+                                  required
+                                  validate={required}
+                                  disabled={conferidos.embalagem_e_rotulagem}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {ehPerecivel && (
+                            <div className="row mt-3">
                               <div className="row">
-                                <div className="col">
+                                <div className="col-6">
+                                  <Label
+                                    content="Variação Porcentual do Peso do Produto ao Descongelar:"
+                                    disabled
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="row">
+                                <div className="col-2">
                                   <Field
                                     component={InputText}
-                                    name={`volume_embalagem_primaria`}
-                                    placeholder="Digite o Volume"
+                                    name={`variacao_percentual`}
+                                    placeholder="Digite % do Peso"
                                     className="input-ficha-tecnica"
                                     required
                                     validate={composeValidators(
@@ -686,247 +956,49 @@ export default () => {
                                   />
                                 </div>
 
-                                <div className="col">
-                                  <Field
-                                    component={Select}
-                                    naoDesabilitarPrimeiraOpcao
-                                    options={[
-                                      { nome: "Unidade de Medida", uuid: "" },
-                                      ...unidadesMedidaOptions,
-                                    ]}
-                                    name={`unidade_medida_volume_primaria`}
-                                    className="input-ficha-tecnica"
-                                    required
-                                    validate={required}
-                                    disabled={conferidos.embalagem_e_rotulagem}
-                                  />
+                                <div className="col-1 label-unidade-medida label-unidade-medida-top">
+                                  <span>%</span>
                                 </div>
                               </div>
                             </div>
                           )}
-                        </div>
-                      )}
 
-                      <div className="row mt-3">
-                        <div className="row">
-                          <div className="col-6">
-                            <Label content="Peso Líquido do Produto na Embalagem Primária:" />
+                          <div className="row mt-3">
+                            <div className="col">
+                              <Field
+                                component={TextArea}
+                                label="Descrever o Material e o Sistema de Vedação da Embalagem Secundária:"
+                                name={`sistema_vedacao_embalagem_secundaria`}
+                                className="textarea-ficha-tecnica"
+                                placeholder="Digite as informações da embalagem secundária"
+                                required
+                                validate={required}
+                                disabled={conferidos.embalagem_e_rotulagem}
+                              />
+                            </div>
                           </div>
 
-                          <div className="col-6">
-                            <Label content="Peso Líquido do Produto na Embalagem Secundária:" />
-                          </div>
-                        </div>
+                          <hr />
 
-                        <div className="row">
-                          <div className="col-3">
-                            <Field
-                              component={InputText}
-                              name={`peso_liquido_embalagem_primaria`}
-                              placeholder="Digite o Peso"
-                              className="input-ficha-tecnica"
-                              required
-                              validate={composeValidators(
-                                required,
-                                inteiroOuDecimalComVirgula,
-                              )}
-                              disabled={conferidos.embalagem_e_rotulagem}
-                            />
-                          </div>
-
-                          <div className="col-3">
-                            <Field
-                              component={Select}
-                              naoDesabilitarPrimeiraOpcao
-                              options={[
-                                { nome: "Unidade de Medida", uuid: "" },
-                                ...unidadesMedidaOptions,
-                              ]}
-                              name={`unidade_medida_primaria`}
-                              className="input-ficha-tecnica"
-                              required
-                              validate={required}
-                              disabled={conferidos.embalagem_e_rotulagem}
-                            />
-                          </div>
-
-                          <div className="col-3">
-                            <Field
-                              component={InputText}
-                              name={`peso_liquido_embalagem_secundaria`}
-                              placeholder="Digite o Peso"
-                              className="input-ficha-tecnica"
-                              required
-                              validate={composeValidators(
-                                required,
-                                inteiroOuDecimalComVirgula,
-                              )}
-                              disabled={conferidos.embalagem_e_rotulagem}
-                            />
-                          </div>
-
-                          <div className="col-3">
-                            <Field
-                              component={Select}
-                              naoDesabilitarPrimeiraOpcao
-                              options={[
-                                { nome: "Unidade de Medida", uuid: "" },
-                                ...unidadesMedidaOptions,
-                              ]}
-                              name={`unidade_medida_secundaria`}
-                              className="input-ficha-tecnica"
-                              required
-                              validate={required}
-                              disabled={conferidos.embalagem_e_rotulagem}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="row mt-3">
-                        <div className="row">
-                          <div className="col-6">
-                            <Label content="Peso da Embalagem Primária Vazia:" />
-                          </div>
-
-                          <div className="col-6">
-                            <Label content="Peso da Embalagem Secundária Vazia:" />
-                          </div>
-                        </div>
-
-                        <div className="row">
-                          <div className="col-3">
-                            <Field
-                              component={InputText}
-                              name={`peso_embalagem_primaria_vazia`}
-                              placeholder="Digite o Peso"
-                              className="input-ficha-tecnica"
-                              required
-                              validate={composeValidators(
-                                required,
-                                inteiroOuDecimalComVirgula,
-                              )}
-                              disabled={conferidos.embalagem_e_rotulagem}
-                            />
-                          </div>
-
-                          <div className="col-3">
-                            <Field
-                              component={Select}
-                              naoDesabilitarPrimeiraOpcao
-                              options={[
-                                { nome: "Unidade de Medida", uuid: "" },
-                                ...unidadesMedidaOptions,
-                              ]}
-                              name={`unidade_medida_primaria_vazia`}
-                              className="input-ficha-tecnica"
-                              required
-                              validate={required}
-                              disabled={conferidos.embalagem_e_rotulagem}
-                            />
-                          </div>
-
-                          <div className="col-3">
-                            <Field
-                              component={InputText}
-                              name={`peso_embalagem_secundaria_vazia`}
-                              placeholder="Digite o Peso"
-                              className="input-ficha-tecnica"
-                              required
-                              validate={composeValidators(
-                                required,
-                                inteiroOuDecimalComVirgula,
-                              )}
-                              disabled={conferidos.embalagem_e_rotulagem}
-                            />
-                          </div>
-
-                          <div className="col-3">
-                            <Field
-                              component={Select}
-                              naoDesabilitarPrimeiraOpcao
-                              options={[
-                                { nome: "Unidade de Medida", uuid: "" },
-                                ...unidadesMedidaOptions,
-                              ]}
-                              name={`unidade_medida_secundaria_vazia`}
-                              className="input-ficha-tecnica"
-                              required
-                              validate={required}
-                              disabled={conferidos.embalagem_e_rotulagem}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {ehPerecivel && (
-                        <div className="row mt-3">
                           <div className="row">
-                            <div className="col-6">
-                              <Label
-                                content="Variação Porcentual do Peso do Produto ao Descongelar:"
+                            <div className="subtitulo">Rotulagem</div>
+                          </div>
+
+                          <div className="row mt-3">
+                            <div className="col">
+                              <Field
+                                name={`rotulo_legivel`}
+                                component={CheckboxComBorda}
+                                label="Declaro que no rótulo da embalagem primária e, se for o
+                            caso, da secundária, constarão, de forma legível e indelével,
+                            todas as informações solicitadas do Anexo I do Edital."
                                 disabled
                               />
                             </div>
                           </div>
-
-                          <div className="row">
-                            <div className="col-2">
-                              <Field
-                                component={InputText}
-                                name={`variacao_percentual`}
-                                placeholder="Digite % do Peso"
-                                className="input-ficha-tecnica"
-                                required
-                                validate={composeValidators(
-                                  required,
-                                  inteiroOuDecimalComVirgula,
-                                )}
-                                disabled={conferidos.embalagem_e_rotulagem}
-                              />
-                            </div>
-
-                            <div className="col-1 label-unidade-medida label-unidade-medida-top">
-                              <span>%</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="row mt-3">
-                        <div className="col">
-                          <Field
-                            component={TextArea}
-                            label="Descrever o Material e o Sistema de Vedação da Embalagem Secundária:"
-                            name={`sistema_vedacao_embalagem_secundaria`}
-                            className="textarea-ficha-tecnica"
-                            placeholder="Digite as informações da embalagem secundária"
-                            required
-                            validate={required}
-                            disabled={conferidos.embalagem_e_rotulagem}
-                          />
-                        </div>
-                      </div>
-
-                      <hr />
-
-                      <div className="row">
-                        <div className="subtitulo">Rotulagem</div>
-                      </div>
-
-                      <div className="row mt-3">
-                        <div className="col">
-                          <Field
-                            name={`rotulo_legivel`}
-                            component={CheckboxComBorda}
-                            label="Declaro que no rótulo da embalagem primária e, se for o
-                            caso, da secundária, constarão, de forma legível e indelével,
-                            todas as informações solicitadas do Anexo I do Edital."
-                            disabled
-                          />
-                        </div>
-                      </div>
-                    </section>
+                        </section>
+                      </>
+                    )}
 
                     <section id="responsavel_tecnico">
                       {!conferidos.responsavel_tecnico && (
@@ -1022,32 +1094,34 @@ export default () => {
                       </div>
                     </section>
 
-                    <section id="modo_preparo">
-                      {!conferidos.modo_preparo && (
-                        <div className="row campo-correcao mb-4">
-                          <div className="col-12">
-                            <TextArea
-                              label="Indicações de Correções CODAE"
-                              valorInicial={
-                                ficha?.analise?.modo_preparo_correcoes
-                              }
-                              disabled={true}
+                    {!ehFLV && (
+                      <section id="modo_preparo">
+                        {!conferidos.modo_preparo && (
+                          <div className="row campo-correcao mb-4">
+                            <div className="col-12">
+                              <TextArea
+                                label="Indicações de Correções CODAE"
+                                valorInicial={
+                                  ficha?.analise?.modo_preparo_correcoes
+                                }
+                                disabled={true}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        <div className="row">
+                          <div className="col">
+                            <Field
+                              component={TextArea}
+                              label="Descreva o modo de preparo do produto:"
+                              name={`modo_de_preparo`}
+                              className="textarea-ficha-tecnica"
+                              disabled={conferidos.modo_preparo}
                             />
                           </div>
                         </div>
-                      )}
-                      <div className="row">
-                        <div className="col">
-                          <Field
-                            component={TextArea}
-                            label="Descreva o modo de preparo do produto:"
-                            name={`modo_de_preparo`}
-                            className="textarea-ficha-tecnica"
-                            disabled={conferidos.modo_preparo}
-                          />
-                        </div>
-                      </div>
-                    </section>
+                      </section>
+                    )}
 
                     <section id="outras_informacoes">
                       <div className="row">
@@ -1097,6 +1171,7 @@ export default () => {
                         arquivo,
                         ficha.categoria === "PERECIVEIS",
                         password,
+                        ehFLV,
                       );
 
                       assinarCorrigirFichaTecnica(
@@ -1116,6 +1191,7 @@ export default () => {
                     modalVoltar={showModalVoltar}
                     voltarPara={`/${PRE_RECEBIMENTO}/${FICHA_TECNICA}`}
                     setModalVoltar={setShowModalVoltar}
+                    textoModalVoltar="Deseja realmente voltar? As alterações não salvas serão perdidas."
                   />
                 </form>
               );
