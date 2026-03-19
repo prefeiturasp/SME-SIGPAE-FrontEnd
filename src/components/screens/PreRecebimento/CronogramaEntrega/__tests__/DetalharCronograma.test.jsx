@@ -464,8 +464,8 @@ describe("Testa página Detalhar Cronograma FLV Ponto a Ponto", () => {
 
     // Verifica conteúdo da tabela
     expect(screen.getByText(/Etapa 1/i)).toBeInTheDocument();
-    expect(screen.getByText(/07\/2026/i)).toBeInTheDocument();
-    expect(screen.getByText(/10\/2026/i)).toBeInTheDocument();
+    expect(screen.getByText(/Julho\/2026/i)).toBeInTheDocument();
+    expect(screen.getByText(/Outubro\/2026/i)).toBeInTheDocument();
 
     // Verifica que a seção de Armazém está oculta
     expect(screen.queryByText("Armazém")).not.toBeInTheDocument();

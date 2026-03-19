@@ -23,10 +23,10 @@ export default ({
   const formatarDataFLV = (data) => {
     if (!data) return "";
     const partes = data.split("/");
-    if (partes.length < 3) return data;
-    const mes = partes[1];
-    const ano = partes[2];
-    return `${formataMesNome(mes)} ${ano}`;
+    if (partes.length < 2) return data;
+    const mes = partes.length === 3 ? partes[1] : partes[0];
+    const ano = partes.length === 3 ? partes[2] : partes[1];
+    return `${formataMesNome(mes)}/${ano}`;
   };
 
   return (
@@ -409,7 +409,9 @@ export default ({
                         </div>
                       </td>
                       <td className="borda-crono text-center">
-                        {etapa.data_programada}
+                        {ehFLVPontoAPonto
+                          ? formatarDataFLV(etapa.data_programada)
+                          : etapa.data_programada}
                       </td>
                       <td className="borda-crono text-center">{etapa.etapa}</td>
                       <td className="borda-crono text-center">{etapa.parte}</td>
