@@ -1,20 +1,19 @@
-import React from "react";
 import "./styles.scss";
+import { formataMilharDecimal } from "src/helpers/utilities";
 
 interface DadosLiquidacaoItem {
-  numeroEmpenho: string;
-  tipoEmpenho: string;
-  unidadesPagamento: number | string;
-  totalPagamento: string;
+  numero_empenho: string;
+  tipo_empenho: string;
+  unidades_educacionais: number | string;
+  total_pagamento: string;
 }
 
 interface DadosLiquidacaoProps {
   dados?: DadosLiquidacaoItem[];
 }
 
-const DadosLiquidacao: React.FC<DadosLiquidacaoProps> = ({ dados = [] }) => {
+const DadosLiquidacao = ({ dados = [] }: DadosLiquidacaoProps) => {
   const linhas = dados.length > 0 ? dados : [{} as DadosLiquidacaoItem];
-
   return (
     <div className="dados-liquidacao-relatorio">
       <table className="tabela">
@@ -35,10 +34,10 @@ const DadosLiquidacao: React.FC<DadosLiquidacaoProps> = ({ dados = [] }) => {
         <tbody>
           {linhas.map((item, index) => (
             <tr key={index}>
-              <td>{item.numeroEmpenho ?? ""}</td>
-              <td>{item.tipoEmpenho ?? ""}</td>
-              <td>{item.unidadesPagamento ?? ""}</td>
-              <td>{item.totalPagamento ?? ""}</td>
+              <td>{item.numero_empenho ?? ""}</td>
+              <td>{item.tipo_empenho ?? ""}</td>
+              <td>Visualizar Unidades</td>
+              <td>R$ {formataMilharDecimal(0)}</td>
             </tr>
           ))}
         </tbody>
