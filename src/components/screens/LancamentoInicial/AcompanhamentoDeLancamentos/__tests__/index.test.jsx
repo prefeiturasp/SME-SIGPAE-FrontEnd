@@ -119,10 +119,12 @@ describe("AcompanhamentoDeLancamentos", () => {
     });
 
     it("deve retornar erro quando falhar ao obter meses e anos para solicitação de medição inicial", async () => {
+      cleanup();
       setupErrorMocks(
         "/medicao-inicial/solicitacao-medicao-inicial/meses-anos/",
       );
       await renderComponent();
+      await selecionarDRE();
       await waitFor(() =>
         screen.getByText(
           "Erro ao carregar meses/anos das solicitações de medição inicial. Tente novamente mais tarde.",
