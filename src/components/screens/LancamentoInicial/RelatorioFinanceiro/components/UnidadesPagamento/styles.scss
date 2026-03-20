@@ -1,0 +1,39 @@
+.unidades-pagamento {
+  .cabecalho-informacoes {
+    display: flex;
+    border: 1px solid #cfcfcf;
+    background: #e9e9e9;
+
+    .col {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+      border-right: 1px solid #cfcfcf;
+    }
+
+    .col:last-child {
+      border-right: none;
+    }
+
+    .col-titulo {
+      color: #2f7d59;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+  }
+
+  .lista-unidades {
+    border: 1px solid #cfcfcf;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding: 10px;
+  }
+
+  .item {
+    white-space: nowrap;
+    font-size: 14px;
+    padding: 4px 0;
+  }
+}
