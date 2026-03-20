@@ -62,10 +62,10 @@ export const ListagemDietas = ({ ...props }) => {
           <div>
             {!usuarioEhEmpresaTerceirizada()
               ? "Relação por Diagnóstico"
-              : "Protocolo Padrão"}
+              : "Protocolo"}
           </div>
           {values.status_selecionado === "AUTORIZADAS" &&
-            !usuarioEhEmpresaTerceirizada() && <div>Protocolo Padrão</div>}
+            !usuarioEhEmpresaTerceirizada() && <div>Protocolo</div>}
           {values.status_selecionado === "CANCELADAS" && (
             <div>Data de cancelamento</div>
           )}
