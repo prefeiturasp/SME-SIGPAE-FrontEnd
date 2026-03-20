@@ -21,7 +21,7 @@ jest.mock("src/components/Shareable/CollapseFiltros", () => ({
   ),
 }));
 
-describe("Componente Filtros", () => {
+describe("Componente Filtros da Clausula de Descontos", () => {
   const mockEditais = [
     { uuid: "1", numero: "Edital 01/2024" },
     { uuid: "2", numero: "Edital 02/2024" },
