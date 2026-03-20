@@ -12,7 +12,7 @@ type Props = {
   numeroEmpenho: string;
   tipoEmpenho: string;
   totalUes: number;
-  unidades: string[];
+  unidades: any[];
 };
 
 const UnidadesPagamento = ({
@@ -46,7 +46,7 @@ const UnidadesPagamento = ({
           <div className="lista-unidades">
             {unidades.map((unidade, index) => (
               <div key={index} className="item">
-                {unidade}
+                {unidade.nome}
               </div>
             ))}
           </div>
