@@ -30,4 +30,15 @@
     padding: 12px;
     color: #777;
   }
+
+  .visualizar-unidades {
+    color: #0b8a5a;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
 }
