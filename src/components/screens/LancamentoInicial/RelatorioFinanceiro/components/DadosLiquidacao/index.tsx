@@ -43,13 +43,20 @@ const DadosLiquidacao = ({ dados = [] }: Props) => {
               <tr key={index}>
                 <td>{item.numero_empenho ?? ""}</td>
                 <td>{item.tipo_empenho ?? ""}</td>
-                <td
-                  className="visualizar-unidades"
-                  onClick={() => onVisualizarUnidades(item)}
-                >
-                  Visualizar Unidades
+                {item.numero_empenho ? (
+                  <td
+                    className="visualizar-unidades"
+                    onClick={() => onVisualizarUnidades(item)}
+                  >
+                    Visualizar Unidades
+                  </td>
+                ) : (
+                  <td></td>
+                )}
+
+                <td>
+                  {item.numero_empenho ? `R$ ${formataMilharDecimal(0)}` : ""}
                 </td>
-                <td>R$ {formataMilharDecimal(0)}</td>
               </tr>
             ))}
           </tbody>
