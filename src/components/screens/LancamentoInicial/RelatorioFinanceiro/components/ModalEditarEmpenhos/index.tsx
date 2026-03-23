@@ -7,12 +7,19 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { Form, Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
-import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
-import { required, requiredMultiselect } from "src/helpers/fieldValidators";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { required } from "src/helpers/fieldValidators";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import { DadosLiquidacaoEmpenho } from "src/interfaces/relatorio_financeiro.interface";
+import { cadastroDadosEmpenho } from "src/services/medicaoInicial/relatorioFinanceiro.service";
+import { useEffect, useState } from "react";
+import { getEscolasTercTotal } from "src/services/escola.service";
 import InputText from "src/components/Shareable/Input/InputText";
 import arrayMutators from "final-form-arrays";
-import { DadosLiquidacaoEmpenho } from "src/interfaces/relatorio_financeiro.interface";
+import HTTP_STATUS from "http-status-codes";
 
 const DEFAULT_EMPENHO: DadosLiquidacaoEmpenho = {
   numero_empenho: "",
@@ -24,16 +31,52 @@ type Props = {
   showModal: boolean;
   setShowModal: (_e: boolean) => void;
   empenhos?: DadosLiquidacaoEmpenho[];
+  lote: string;
+  relatorioFinanceiro: string;
+  onSave?: () => void;
 };
 
-const ModalEditarEmpenhos = ({ showModal, setShowModal, empenhos }: Props) => {
-  const onSubmit = (values: {
+const ModalEditarEmpenhos = ({
+  showModal,
+  setShowModal,
+  empenhos,
+  lote,
+  relatorioFinanceiro,
+  onSave,
+}: Props) => {
+  const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
+
+  const onSubmit = async (values: {
     cadastros_empenho: DadosLiquidacaoEmpenho[];
   }) => {
     const payload = values?.cadastros_empenho ?? [];
-    if (payload) toastSuccess("Empenhos cadastrados com sucesso");
-    setShowModal(false);
+    const response = await cadastroDadosEmpenho(payload, relatorioFinanceiro);
+    if (response.status === HTTP_STATUS.OK) {
+      toastSuccess("Empenhos registrados com sucesso");
+      if (typeof onSave === "function") onSave();
+      setShowModal(false);
+    } else toastError("Falha ao registrar empenhos.");
   };
+
+  const getEscolasTercTotalAsync = async (): Promise<void> => {
+    const response = await getEscolasTercTotal({
+      lote: lote,
+    });
+    if (response.status === HTTP_STATUS.OK) {
+      setUnidadesEducacionais(
+        response.data.map((escola: any) => {
+          return {
+            label: `${escola.codigo_eol} - ${escola.nome}`,
+            value: escola.uuid,
+          };
+        }),
+      );
+    }
+  };
+
+  useEffect(() => {
+    getEscolasTercTotalAsync();
+  }, [lote]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
@@ -45,7 +88,16 @@ const ModalEditarEmpenhos = ({ showModal, setShowModal, empenhos }: Props) => {
         onSubmit={onSubmit}
         initialValues={{
           cadastros_empenho:
-            empenhos?.length > 0 ? empenhos : [DEFAULT_EMPENHO],
+            empenhos?.length > 0
+              ? empenhos.map((empenho) => {
+                  return {
+                    ...empenho,
+                    unidades_educacionais: empenho.unidades_educacionais.map(
+                      ({ uuid }) => uuid,
+                    ),
+                  };
+                })
+              : [DEFAULT_EMPENHO],
         }}
         mutators={{
           ...arrayMutators,
@@ -118,17 +170,16 @@ const ModalEditarEmpenhos = ({ showModal, setShowModal, empenhos }: Props) => {
                             <Field
                               label="Unidades Educacionais para pagamento neste empenho"
                               component={MultiselectRaw}
-                              validate={requiredMultiselect}
                               name={`${name}.unidades_educacionais`}
                               placeholder="Selecione as Unidades"
-                              options={[]}
+                              options={unidadesEducacionais}
                               selected={
                                 values.cadastros_empenho?.[index]
-                                  ?.unidades_educacionais_selecionadas || []
+                                  ?.unidades_educacionais || []
                               }
                               onSelectedChanged={(values_: any) => {
                                 form.change(
-                                  `${name}.unidades_educacionais_selecionadas`,
+                                  `${name}.unidades_educacionais`,
                                   values_.map((v: any) => v.value),
                                 );
                               }}

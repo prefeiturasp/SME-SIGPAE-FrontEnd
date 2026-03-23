@@ -147,6 +147,7 @@ export function RelatorioFinanceiroConsolidado() {
     const response = await getRelatorioDadosLiquidacao({
       relatorio_financeiro: uuidRelatorioFinanceiro,
     });
+
     if (response.status === HTTP_STATUS.OK)
       setDadosLiquidacao(response.data.results);
     else toastError("Erro ao carregar dados para liquidação.");
@@ -263,6 +264,9 @@ export function RelatorioFinanceiroConsolidado() {
         showModal={editarEmpenhos}
         setShowModal={setEditarEmpenhos}
         empenhos={dadosLiquidacao}
+        lote={state?.lote[0]}
+        relatorioFinanceiro={uuidRelatorioFinanceiro}
+        onSave={getDadosLiquidacao}
       />
     </div>
   );

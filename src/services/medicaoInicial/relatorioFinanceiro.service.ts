@@ -35,9 +35,13 @@ export const getRelatorioDadosLiquidacao = async (params) => {
 
 export const cadastroDadosEmpenho = async (
   payload: Partial<DadosLiquidacaoEmpenho[]>,
+  relatorioFinanceiro: string,
 ) => {
   const response = await axios
-    .post("/medicao-inicial/dados-liquidacao/", payload)
+    .put(
+      `/medicao-inicial/dados-liquidacao/registrar-empenhos/${relatorioFinanceiro}/`,
+      payload,
+    )
     .catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
