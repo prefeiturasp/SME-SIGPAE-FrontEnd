@@ -1,12 +1,12 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import AlimentosConsolidado from "src/components/screens/Logistica/ConsultaSolicitacaoAlteracao/components/AlimentosConsolidado"; // Ajuste o nome do import
+import AlimentosConsolidado from "src/components/screens/Logistica/ConsultaSolicitacaoAlteracao/components/AlimentosConsolidado";
 import { getConsolidadoAlimentos } from "src/services/logistica.service";
 
 jest.mock("src/services/logistica.service");
 
 const mockSolicitacao = {
-  requisicao: { uuid: "123-uuid" },
+  requisicao: { uuid: "499670b2-3915-40e2-b775-cb913de7c43d" },
 };
 
 const mockData = [
@@ -36,7 +36,7 @@ const mockData = [
   },
 ];
 
-describe("Componente Consolidado de Alimentos", () => {
+describe("Componente Consolidado de Alimentos - Consulta", () => {
   const renderComponent = () => {
     return render(<AlimentosConsolidado solicitacao={mockSolicitacao} />);
   };
