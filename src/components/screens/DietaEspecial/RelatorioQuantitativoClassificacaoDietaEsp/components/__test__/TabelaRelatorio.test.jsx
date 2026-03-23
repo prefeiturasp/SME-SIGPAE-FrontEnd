@@ -15,7 +15,7 @@ const mockDados = [
   },
 ];
 
-describe("TabelaRelatorio Quantitativo Dieta - Testes por Perfil", () => {
+describe("TabelaRelatorio Quantitativo Classificação Dieta - Testes por Perfil", () => {
   const renderComponent = (dadosRelatorio, filtros) => {
     return render(
       <TabelaRelatorio dadosRelatorio={dadosRelatorio} filtros={filtros} />,
