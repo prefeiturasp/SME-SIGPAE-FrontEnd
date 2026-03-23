@@ -1,10 +1,12 @@
 import {
+  DadosLiquidacaoEmpenho,
   DadosLiquidacaoResponse,
   FiltrosInterface,
   RelatorioFinanceiroConsolidado,
   RelatorioFinanceiroResponse,
 } from "src/interfaces/relatorio_financeiro.interface";
 import axios from "../_base";
+import { ErrorHandlerFunction } from "../service-helpers";
 
 export const getRelatoriosFinanceiros = async (
   page: number,
@@ -29,4 +31,16 @@ export const getRelatorioDadosLiquidacao = async (params) => {
       params: params,
     },
   );
+};
+
+export const cadastroDadosEmpenho = async (
+  payload: Partial<DadosLiquidacaoEmpenho[]>,
+) => {
+  const response = await axios
+    .post("/medicao-inicial/dados-liquidacao/", payload)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
