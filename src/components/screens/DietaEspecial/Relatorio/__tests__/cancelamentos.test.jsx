@@ -368,9 +368,7 @@ test("Relatorio para cancelamento quando a escola cancela antes da aprovação p
     expect(
       screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Protocolo Padrão/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Lista de Substituições/i),
