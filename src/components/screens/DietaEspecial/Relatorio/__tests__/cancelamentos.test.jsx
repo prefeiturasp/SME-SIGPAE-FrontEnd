@@ -172,6 +172,13 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen());
+beforeEach(() => {
+  mock
+    .onGet(
+      `/protocolo-padrao-dieta-especial/${cancelamento_data_termino.protocolo_padrao}/`,
+    )
+    .reply(200, protocoloPadraoDietaEspecial());
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => {
   server.close();
@@ -361,9 +368,7 @@ test("Relatorio para cancelamento quando a escola cancela antes da aprovação p
     expect(
       screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Protocolo Padrão/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Lista de Substituições/i),
