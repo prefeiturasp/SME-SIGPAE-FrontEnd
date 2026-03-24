@@ -13,13 +13,17 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import { required } from "src/helpers/fieldValidators";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
-import { DadosLiquidacaoEmpenho } from "src/interfaces/relatorio_financeiro.interface";
+import {
+  DadosLiquidacaoEmpenho,
+  Escola,
+} from "src/interfaces/relatorio_financeiro.interface";
 import { cadastroDadosEmpenho } from "src/services/medicaoInicial/relatorioFinanceiro.service";
 import { useEffect, useMemo, useState } from "react";
 import { getEscolasParaFiltros } from "src/services/escola.service";
 import InputText from "src/components/Shareable/Input/InputText";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
+import { MultiSelectOption } from "../../types";
 
 const DEFAULT_EMPENHO: DadosLiquidacaoEmpenho = {
   numero_empenho: "",
@@ -76,7 +80,7 @@ const ModalEditarEmpenhos = ({
 
     if (response.status === HTTP_STATUS.OK) {
       setUnidadesEducacionais(
-        response.data.map((escola: any) => ({
+        response.data.map((escola: Escola) => ({
           label: escola.nome,
           value: escola.uuid,
         })),
@@ -112,18 +116,19 @@ const ModalEditarEmpenhos = ({
         render={({ handleSubmit, submitting, values, form }) => {
           const getUnidadesValidadas = (index: number) => {
             const unidadesSelecionadasOutros =
-              values.cadastros_empenho?.flatMap((item: any, i: number) =>
-                i !== index ? item.unidades_educacionais || [] : [],
+              values.cadastros_empenho?.flatMap(
+                (item: DadosLiquidacaoEmpenho, i: number) =>
+                  i !== index ? item.unidades_educacionais || [] : [],
               ) || [];
 
-            return unidadesEducacionais.filter((opt: any) => {
+            return unidadesEducacionais.filter((obj: MultiSelectOption) => {
               const selecionadaOutro = unidadesSelecionadasOutros.includes(
-                opt.value,
+                obj.value,
               );
 
               const selecionadaAtual = values.cadastros_empenho?.[
                 index
-              ]?.unidades_educacionais?.includes(opt.value);
+              ]?.unidades_educacionais?.includes(obj.value);
 
               return !selecionadaOutro || selecionadaAtual;
             });
