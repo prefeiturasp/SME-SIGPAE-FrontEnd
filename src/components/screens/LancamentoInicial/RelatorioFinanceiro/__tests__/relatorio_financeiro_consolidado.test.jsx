@@ -53,8 +53,8 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     mock
       .onGet("/tipos-unidade-escolar-agrupados/")
       .reply(200, mockGetTiposUnidadeEscolarTiposAlimentacao);
-
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
+    mock.onGet("/medicao-inicial/dados-liquidacao/").reply(200, []);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
