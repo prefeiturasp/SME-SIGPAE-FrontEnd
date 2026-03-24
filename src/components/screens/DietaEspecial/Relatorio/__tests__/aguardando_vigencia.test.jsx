@@ -76,6 +76,10 @@ test("Relatório Aguardando Vigência -  visão Terceirizada", async () => {
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
 
+  mock
+    .onGet(`/protocolo-padrao-dieta-especial/${payload.protocolo_padrao}/`)
+    .reply(200, protocoloPadraoDietaEspecial());
+
   render(
     <MemoryRouter
       initialEntries={[{ pathname: "/", search: search }]}

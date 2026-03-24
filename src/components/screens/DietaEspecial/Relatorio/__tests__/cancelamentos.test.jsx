@@ -172,6 +172,13 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen());
+beforeEach(() => {
+  mock
+    .onGet(
+      `/protocolo-padrao-dieta-especial/${cancelamento_data_termino.protocolo_padrao}/`,
+    )
+    .reply(200, protocoloPadraoDietaEspecial());
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => {
   server.close();
