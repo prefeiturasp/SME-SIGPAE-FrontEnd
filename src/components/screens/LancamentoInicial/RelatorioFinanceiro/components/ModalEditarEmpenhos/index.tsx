@@ -67,7 +67,7 @@ const ModalEditarEmpenhos = ({
 
   const getEscolasAsync = async (): Promise<void> => {
     const response = await getEscolasParaFiltros({
-      lote,
+      lote__uid: lote,
       tipo_unidade__uuid__in: unidadesUuid,
     });
 
