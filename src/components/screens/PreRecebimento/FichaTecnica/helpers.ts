@@ -247,8 +247,10 @@ export const carregarDadosCorrgir = async (
       setArquivo(arquivo);
     }
 
-    const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
-    setProponente(response.data);
+    if (fichaTecnica.empresa?.uuid) {
+      const response = await getTerceirizadaUUID(fichaTecnica.empresa.uuid);
+      setProponente(response.data);
+    }
   } finally {
     setCarregando(false);
   }
@@ -663,7 +665,7 @@ export const formataPayloadCadastroFichaTecnica = (
         fabricantesOptions,
         fabricantesCount,
       ),
-      ...gerarCamposDetalhesProduto(values),
+      ...gerarCamposDetalhesProduto(values, ehFLV),
       ...gerarCamposResponsavelTecnico(values, arquivo),
       ...gerarCamposOutrasInformacoes(values),
       password: password,
@@ -680,7 +682,7 @@ export const formataPayloadCadastroFichaTecnica = (
         fabricantesOptions,
         fabricantesCount,
       ),
-      ...gerarCamposDetalhesProduto(values),
+      ...gerarCamposDetalhesProduto(values, ehFLV),
       ...gerarCamposInformacoesNutricionais(values),
       ...gerarCamposConservacao(values, ehPereciveis),
       ...(ehPereciveis
@@ -719,7 +721,9 @@ export const formataPayloadCorrecaoFichaTecnica = (
           true,
         )
       : {}),
-    ...(!conferidos.detalhes_produto ? gerarCamposDetalhesProduto(values) : {}),
+    ...(!conferidos.detalhes_produto
+      ? gerarCamposDetalhesProduto(values, ehFLV)
+      : {}),
     ...(!conferidos.responsavel_tecnico
       ? gerarCamposResponsavelTecnico(values, arquivo)
       : {}),
@@ -848,10 +852,10 @@ const gerarCamposProponenteFabricante = (
   };
 };
 
-const gerarCamposDetalhesProduto = (values: Record<string, any>) => {
-  const ehFLV =
-    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
-
+const gerarCamposDetalhesProduto = (
+  values: Record<string, any>,
+  ehFLV: boolean = false,
+) => {
   if (ehFLV) {
     return {
       numero_registro: values.numero_registro || "",
