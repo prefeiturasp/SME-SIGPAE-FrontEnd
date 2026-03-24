@@ -1,4 +1,6 @@
 .unidades-pagamento {
+  color: #000;
+
   .cabecalho-informacoes {
     display: flex;
     border: 1px solid #cfcfcf;
@@ -25,8 +27,8 @@
   .lista-unidades {
     border: 1px solid #cfcfcf;
     border-top: none;
-    max-height: 200px;
-    overflow-y: auto;
+    max-height: 250px;
+    overflow-y: scroll;
     overflow-x: auto;
     padding: 10px;
   }
