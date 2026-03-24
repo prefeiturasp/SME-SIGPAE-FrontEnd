@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import ListagemLayouts from "src/components/screens/PreRecebimento/LayoutEmbalagem/components/Listagem";
 
 jest.mock("src/helpers/utilities.jsx", () => ({
@@ -43,9 +43,9 @@ const mockObjetos = [
 describe("Componente Listagem Layouts de Embalagens", () => {
   const renderComponent = (props = {}) => {
     return render(
-      <BrowserRouter>
+      <MemoryRouter>
         <ListagemLayouts objetos={mockObjetos} {...props} />
-      </BrowserRouter>,
+      </MemoryRouter>,
     );
   };
 
