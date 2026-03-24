@@ -78,3 +78,12 @@ export interface DadosLiquidacaoResponse {
   page_size: number;
   results: DadosLiquidacaoEmpenho[];
 }
+
+export type Escola = {
+  uuid: string;
+  nome: string;
+  codigo_eol: string;
+  diretoria_regional: DiretoriaRegional;
+  tipo_unidade: TipoUnidade;
+  lote: Lote;
+};
