@@ -372,8 +372,8 @@ const CorpoRelatorio = ({
     )
       ? ""
       : dietaEspecial.classificacao.nome;
-    dietaEspecial.nome_protocolo_padrao = protocoloPadrao.nome_protocolo || "";
-    dietaEspecial.nome_protocolo = dietaEspecial.nome_protocolo || "";
+    dietaEspecial.nome_protocolo_padrao = protocoloPadrao?.nome_protocolo || "";
+    dietaEspecial.nome_protocolo = dietaEspecial?.nome_protocolo || "";
     dietaEspecial.data_inicio = [undefined, null].includes(
       dietaEspecial.data_inicio,
     )
@@ -388,8 +388,6 @@ const CorpoRelatorio = ({
       dietaEspecial.motivo_alteracao = "Dieta Especial - Recreio nas Férias";
     return dietaEspecial;
   };
-
-  if (!protocoloPadrao) return null;
 
   return (
     <Form
