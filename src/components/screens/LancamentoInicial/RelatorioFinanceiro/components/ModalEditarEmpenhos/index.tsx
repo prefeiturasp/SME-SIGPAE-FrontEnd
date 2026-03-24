@@ -15,8 +15,8 @@ import { required } from "src/helpers/fieldValidators";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import { DadosLiquidacaoEmpenho } from "src/interfaces/relatorio_financeiro.interface";
 import { cadastroDadosEmpenho } from "src/services/medicaoInicial/relatorioFinanceiro.service";
-import { useEffect, useState } from "react";
-import { getEscolasTercTotal } from "src/services/escola.service";
+import { useEffect, useMemo, useState } from "react";
+import { getEscolasParaFiltros } from "src/services/escola.service";
 import InputText from "src/components/Shareable/Input/InputText";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
@@ -34,6 +34,7 @@ type Props = {
   lote: string;
   relatorioFinanceiro: string;
   onSave?: () => void;
+  tiposUnidades: string[];
 };
 
 const ModalEditarEmpenhos = ({
@@ -43,8 +44,14 @@ const ModalEditarEmpenhos = ({
   lote,
   relatorioFinanceiro,
   onSave,
+  tiposUnidades,
 }: Props) => {
   const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
+
+  const unidadesUuid = useMemo(
+    () => tiposUnidades.join(","),
+    [JSON.stringify(tiposUnidades)],
+  );
 
   const onSubmit = async (values: {
     cadastros_empenho: DadosLiquidacaoEmpenho[];
@@ -58,25 +65,27 @@ const ModalEditarEmpenhos = ({
     } else toastError("Falha ao registrar empenhos.");
   };
 
-  const getEscolasTercTotalAsync = async (): Promise<void> => {
-    const response = await getEscolasTercTotal({
-      lote: lote,
+  const getEscolasAsync = async (): Promise<void> => {
+    const response = await getEscolasParaFiltros({
+      lote,
+      tipo_unidade__uuid__in: unidadesUuid,
     });
+
     if (response.status === HTTP_STATUS.OK) {
       setUnidadesEducacionais(
         response.data.map((escola: any) => {
           return {
-            label: `${escola.codigo_eol} - ${escola.nome}`,
+            label: escola.nome,
             value: escola.uuid,
           };
         }),
       );
     }
   };
-
   useEffect(() => {
-    getEscolasTercTotalAsync();
-  }, [lote]);
+    if (!lote || !unidadesUuid) return;
+    getEscolasAsync();
+  }, [lote, unidadesUuid]);
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
