@@ -10,7 +10,6 @@ import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { FaixaEtaria } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { getTotaisAtendimentoConsumo } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
-import { extrairConteudoEntreParenteses } from "src/helpers/utilities";
 import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import { SelectOption } from "../types";
 import GrupoCEI from "../components/Tabelas/GrupoCEI";
@@ -98,25 +97,23 @@ export function RelatorioFinanceiroConsolidado() {
     else toastError("Erro ao carregar totais de atendimento e consumo.");
   };
 
+  const getTiposUuid = () => {
+    const grupo = gruposUnidadeEscolar.find(
+      (e) => e.value === state.grupo_unidade_escolar[0],
+    );
+    if (grupo) return grupo.tipos_unidades.map(({ uuid }) => uuid);
+    return [];
+  };
+
   const getTiposUnidades = async () => {
     const { data } = await getTiposUnidadeEscolarTiposAlimentacao();
 
-    const grupo = gruposUnidadeEscolar.find(
-      (e) => e.value === state.grupo_unidade_escolar[0],
-    )?.label;
-
-    const conteudoParenteses = extrairConteudoEntreParenteses(grupo);
-    let unidades: string[] = [];
-    if (conteudoParenteses) {
-      const tipos = conteudoParenteses.split(",");
-      unidades = tipos.map((item) => item.trim());
-    }
-
+    const unidades = getTiposUuid();
     const tiposAlimentacaoUnidades: Array<SelectOption> = unidades.reduce(
       (acc, tipoUnidade) => {
         acc.push(
           ...data.results
-            .find((t) => t.iniciais === tipoUnidade)
+            .find((t) => t.uuid === tipoUnidade)
             .periodos_escolares.reduce((acc, periodo) => {
               acc.push(...periodo.tipos_alimentacao);
               return acc;
@@ -267,6 +264,7 @@ export function RelatorioFinanceiroConsolidado() {
         lote={state?.lote[0]}
         relatorioFinanceiro={uuidRelatorioFinanceiro}
         onSave={getDadosLiquidacao}
+        tiposUnidades={getTiposUuid()}
       />
     </div>
   );

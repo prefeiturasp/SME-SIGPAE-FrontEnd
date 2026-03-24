@@ -52,13 +52,13 @@ type DiretoriaRegional = {
   nome: string;
 };
 
-type GrupoUnidadeEscolar = {
+export type GrupoUnidadeEscolar = {
   uuid: string;
   nome: string;
   tipos_unidades: TipoUnidade[];
 };
 
-type TipoUnidade = {
+export type TipoUnidade = {
   uuid: string;
   iniciais: string;
 };
