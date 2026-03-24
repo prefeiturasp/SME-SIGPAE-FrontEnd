@@ -101,22 +101,22 @@ class Cadastros extends Component {
           </div>
         )}
 
-        {usuarioEhEscolaTerceirizada() ||
-          (usuarioEhEscolaTerceirizadaDiretor() && (
-            <div className="row mt-3">
-              <div
-                onMouseEnter={() => this.setState({ hoverHorarios: true })}
-                onMouseLeave={() => this.setState({ hoverHorarios: false })}
-                className="linked-card col-4"
-              >
-                <Link to="/configuracoes/cadastros/horario-combos-alimentacao">
-                  <CardLogo titulo={"Horários de alimentações"}>
-                    <IconeHorarioCombo hover={hoverHorarios} />
-                  </CardLogo>
-                </Link>
-              </div>
+        {(usuarioEhEscolaTerceirizada() ||
+          usuarioEhEscolaTerceirizadaDiretor()) && (
+          <div className="row mt-3">
+            <div
+              onMouseEnter={() => this.setState({ hoverHorarios: true })}
+              onMouseLeave={() => this.setState({ hoverHorarios: false })}
+              className="linked-card col-4"
+            >
+              <Link to="/configuracoes/cadastros/horario-combos-alimentacao">
+                <CardLogo titulo={"Horários de alimentações"}>
+                  <IconeHorarioCombo hover={hoverHorarios} />
+                </CardLogo>
+              </Link>
             </div>
-          ))}
+          </div>
+        )}
       </div>
     );
   }
