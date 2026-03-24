@@ -391,6 +391,7 @@ const CorpoRelatorio = ({
 
   return (
     <Form
+      key={protocoloPadrao?.nome_protocolo || "sem-protocolo"}
       onSubmit={onSubmit}
       initialValues={initialValues()}
       mutators={{ ...arrayMutators }}
