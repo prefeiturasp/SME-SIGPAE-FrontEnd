@@ -23,7 +23,6 @@ import { getEscolasParaFiltros } from "src/services/escola.service";
 import InputText from "src/components/Shareable/Input/InputText";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
-import { MultiSelectOption } from "../../types";
 
 const DEFAULT_EMPENHO: DadosLiquidacaoEmpenho = {
   numero_empenho: "",
@@ -93,6 +92,20 @@ const ModalEditarEmpenhos = ({
     getEscolasAsync();
   }, [lote, unidadesUuid]);
 
+  const initialValues = useMemo(() => {
+    return {
+      cadastros_empenho:
+        empenhos?.length > 0
+          ? empenhos.map((empenho) => ({
+              ...empenho,
+              unidades_educacionais: empenho.unidades_educacionais.map(
+                ({ uuid }) => uuid,
+              ),
+            }))
+          : [DEFAULT_EMPENHO],
+    };
+  }, [empenhos]);
+
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
       <Modal.Header closeButton>
@@ -101,39 +114,9 @@ const ModalEditarEmpenhos = ({
 
       <Form
         onSubmit={onSubmit}
-        initialValues={{
-          cadastros_empenho:
-            empenhos?.length > 0
-              ? empenhos.map((empenho) => ({
-                  ...empenho,
-                  unidades_educacionais: empenho.unidades_educacionais.map(
-                    ({ uuid }) => uuid,
-                  ),
-                }))
-              : [DEFAULT_EMPENHO],
-        }}
+        initialValues={initialValues}
         mutators={{ ...arrayMutators }}
         render={({ handleSubmit, submitting, values, form }) => {
-          const getUnidadesValidadas = (index: number) => {
-            const unidadesSelecionadasOutros =
-              values.cadastros_empenho?.flatMap(
-                (item: DadosLiquidacaoEmpenho, i: number) =>
-                  i !== index ? item.unidades_educacionais || [] : [],
-              ) || [];
-
-            return unidadesEducacionais.filter((obj: MultiSelectOption) => {
-              const selecionadaOutro = unidadesSelecionadasOutros.includes(
-                obj.value,
-              );
-
-              const selecionadaAtual = values.cadastros_empenho?.[
-                index
-              ]?.unidades_educacionais?.includes(obj.value);
-
-              return !selecionadaOutro || selecionadaAtual;
-            });
-          };
-
           return (
             <form onSubmit={handleSubmit}>
               <Modal.Body>
@@ -163,6 +146,7 @@ const ModalEditarEmpenhos = ({
                                 }}
                               >
                                 <Botao
+                                  dataTestId={`botao_remover_${index}`}
                                   icon={BUTTON_ICON.TRASH}
                                   style={BUTTON_STYLE.GREEN_OUTLINE}
                                   type={BUTTON_TYPE.BUTTON}
@@ -175,6 +159,7 @@ const ModalEditarEmpenhos = ({
                           <div className="row mt-2">
                             <div className="col-5">
                               <Field
+                                dataTestId={`numero_empenho_${index}`}
                                 name={`${name}.numero_empenho`}
                                 label="Nº do Empenho"
                                 component={InputText}
@@ -186,6 +171,7 @@ const ModalEditarEmpenhos = ({
 
                             <div className="col-7">
                               <Field
+                                dataTestId={`tipo_empenho_${index}`}
                                 name={`${name}.tipo_empenho`}
                                 label="Tipo de Empenho"
                                 component={InputText}
@@ -199,11 +185,12 @@ const ModalEditarEmpenhos = ({
                           <div className="row mt-2">
                             <div className="col-12">
                               <Field
+                                dataTestId={`unidades_educacionais_${index}`}
                                 label="Unidades Educacionais para pagamento neste empenho"
                                 component={MultiselectRaw}
                                 name={`${name}.unidades_educacionais`}
                                 placeholder="Selecione as Unidades"
-                                options={getUnidadesValidadas(index)}
+                                options={unidadesEducacionais}
                                 selected={
                                   values.cadastros_empenho?.[index]
                                     ?.unidades_educacionais || []
@@ -239,6 +226,7 @@ const ModalEditarEmpenhos = ({
 
               <Modal.Footer>
                 <Botao
+                  dataTestId="botao-cancelar"
                   texto="Cancelar"
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
@@ -247,6 +235,7 @@ const ModalEditarEmpenhos = ({
                 />
 
                 <Botao
+                  dataTestId="botao-salvar"
                   texto="Salvar Empenhos"
                   type={BUTTON_TYPE.SUBMIT}
                   style={BUTTON_STYLE.GREEN}
