@@ -17,6 +17,7 @@ import {
   protocoloPadraoDietaEspecial,
   respostaApiCancelamentoporDataTermino,
   solicitacoesDietaEspecial,
+  solicitacoesDietaEspecialDoAluno,
 } from "../dados";
 
 const payload = {
@@ -59,6 +60,14 @@ const server = setupServer(
 
 beforeAll(() => server.listen());
 beforeEach(() => {
+  mock
+    .onGet(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`)
+    .reply(200, payload);
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/${payload.aluno.codigo_eol}/`,
+    )
+    .reply(200, solicitacoesDietaEspecialDoAluno());
   mock
     .onGet(`/protocolo-padrao-dieta-especial/${payload.protocolo_padrao}/`)
     .reply(200, protocoloPadraoDietaEspecial());
@@ -316,6 +325,14 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão CODAD
     ...payload,
     tipo_solicitacao: "ALTERACAO_UE",
   };
+  mock
+    .onGet(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`)
+    .reply(200, payload_alteracao);
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/${payload_alteracao.aluno.codigo_eol}/`,
+    )
+    .reply(200, solicitacoesDietaEspecialDoAluno());
   server.use(
     http.get(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`, () => {
       return HttpResponse.json(payload_alteracao);
@@ -380,6 +397,14 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão TERCE
     ...payload,
     tipo_solicitacao: "ALTERACAO_UE",
   };
+  mock
+    .onGet(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`)
+    .reply(200, payload_alteracao);
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/${payload_alteracao.aluno.codigo_eol}/`,
+    )
+    .reply(200, solicitacoesDietaEspecialDoAluno());
   server.use(
     http.get(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`, () => {
       return HttpResponse.json(payload_alteracao);
@@ -458,6 +483,14 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão ESCOL
     ...payload,
     tipo_solicitacao: "ALTERACAO_UE",
   };
+  mock
+    .onGet(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`)
+    .reply(200, payload_alteracao);
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/${payload_alteracao.aluno.codigo_eol}/`,
+    )
+    .reply(200, solicitacoesDietaEspecialDoAluno());
   server.use(
     http.get(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`, () => {
       return HttpResponse.json(payload_alteracao);
