@@ -130,9 +130,15 @@ describe("Permissão Relatório Consolidado no módulo de Medição", () => {
     it("Tipo Perfil MEDICAO", async () => {
       await setup({ tipo_perfil: TIPO_PERFIL.MEDICAO });
       await selecionarDRE();
+      setMesReferencia();
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"),
+        ).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
       fireEvent.click(statusCard);
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
@@ -150,9 +156,15 @@ describe("Permissão Relatório Consolidado no módulo de Medição", () => {
     it("Tipo Perfil GESTAO_ALIMENTACAO_TERCEIRIZADA", async () => {
       await setup({ tipo_perfil: TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA });
       await selecionarDRE();
+      setMesReferencia();
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"),
+        ).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
       fireEvent.click(statusCard);
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
@@ -173,9 +185,15 @@ describe("Permissão Relatório Consolidado no módulo de Medição", () => {
         tipo_servico: TIPO_SERVICO.TERCEIRIZADA,
       });
       await selecionarDRE();
+      setMesReferencia();
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"),
+        ).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
       fireEvent.click(statusCard);
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
@@ -193,9 +211,15 @@ describe("Permissão Relatório Consolidado no módulo de Medição", () => {
     it("Tipo Perfil NUTRICAO_MANIFESTACAO", async () => {
       await setup({ tipo_perfil: TIPO_PERFIL.NUTRICAO_MANIFESTACAO });
       await selecionarDRE();
+      setMesReferencia();
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"),
+        ).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
       fireEvent.click(statusCard);
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
@@ -213,9 +237,15 @@ describe("Permissão Relatório Consolidado no módulo de Medição", () => {
     it("Perfil DINUTRE_DIRETORIA", async () => {
       await setup({ perfil: PERFIL.DINUTRE_DIRETORIA });
       await selecionarDRE();
+      setMesReferencia();
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"),
+        ).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
       fireEvent.click(statusCard);
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
@@ -233,9 +263,15 @@ describe("Permissão Relatório Consolidado no módulo de Medição", () => {
     it("Perfil ADMINISTRADOR_CODAE_GABINETE", async () => {
       await setup({ perfil: PERFIL.ADMINISTRADOR_CODAE_GABINETE });
       await selecionarDRE();
+      setMesReferencia();
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"),
+        ).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
       fireEvent.click(statusCard);
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
@@ -258,9 +294,15 @@ describe("Permissão Relatório Consolidado no módulo de Medição", () => {
         tipo_servico: TIPO_SERVICO.TERCEIRIZADA,
       });
       await selecionarDRE();
+      setMesReferencia();
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"),
+        ).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
       fireEvent.click(statusCard);
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {

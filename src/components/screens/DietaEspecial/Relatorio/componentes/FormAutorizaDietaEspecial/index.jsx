@@ -72,7 +72,7 @@ const FormAutorizaDietaEspecial = ({
   const [alergias, setAlergias] = useState(undefined);
   const [classificacoesDieta, setClassificacoesDieta] = useState(undefined);
   const [protocolos, setProtocolos] = useState(undefined);
-  const [protocoloPadrao, setProtocoloPadrao] = useState(undefined);
+  const [, setProtocoloPadrao] = useState(undefined);
   const [alimentos, setAlimentos] = useState(undefined);
   const [produtos, setProdutos] = useState(undefined);
   const [showModalNegaDieta, setShowModalNegaDieta] = useState(false);
@@ -183,9 +183,7 @@ const FormAutorizaDietaEspecial = ({
     }
 
     values.alergias_intolerancias = diagnosticosSelecionados;
-    if (protocoloPadrao) {
-      values.nome_protocolo = protocoloPadrao.nome_protocolo;
-    } else {
+    if (!values.nome_protocolo) {
       values.nome_protocolo = dietaEspecial.nome_protocolo;
     }
     if (!values.protocolo_padrao) {
@@ -223,9 +221,7 @@ const FormAutorizaDietaEspecial = ({
     if (!diagnosticosSelecionados.length) {
       return;
     }
-    if (protocoloPadrao) {
-      values.nome_protocolo = protocoloPadrao.nome_protocolo;
-    } else {
+    if (!values.nome_protocolo) {
       values.nome_protocolo = dietaEspecial.nome_protocolo;
     }
     if (
@@ -301,6 +297,7 @@ const FormAutorizaDietaEspecial = ({
         ? dietaEspecial.classificacao.id.toString()
         : undefined,
       protocolo_padrao: dietaEspecial.protocolo_padrao,
+      nome_protocolo: dietaEspecial.nome_protocolo,
       orientacoes_gerais: dietaEspecial.orientacoes_gerais,
       substituicoes: substituicoes,
       data_termino:

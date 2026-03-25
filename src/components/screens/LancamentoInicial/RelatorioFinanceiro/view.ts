@@ -14,6 +14,8 @@ import {
   RelatorioFinanceiroConsolidado,
   RelatorioFinanceiroInterface,
   RelatorioFinanceiroResponse,
+  GrupoUnidadeEscolar,
+  TipoUnidade,
 } from "src/interfaces/relatorio_financeiro.interface";
 
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -28,10 +30,14 @@ const VALORES_INICIAIS = {
   mes_ano: "",
 };
 
+type GrupoUnidadeEscolarOption = MultiSelectOption<{
+  tipos_unidades: TipoUnidade[];
+}>;
+
 export function useRelatorioFinanceiro(filtrosIniciais?: FiltrosInterface) {
   const [lotes, setLotes] = useState<MultiSelectOption[]>([]);
   const [gruposUnidadeEscolar, setGruposUnidadeEscolar] = useState<
-    MultiSelectOption[]
+    GrupoUnidadeEscolarOption[]
   >([]);
   const [mesesAnos, setMesesAnos] = useState<SelectOption[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -71,11 +77,12 @@ export function useRelatorioFinanceiro(filtrosIniciais?: FiltrosInterface) {
   const getGruposUnidadesAsync = async () => {
     const { data } = await getGrupoUnidadeEscolar();
     setGruposUnidadeEscolar(
-      data.results.map((grupo) => ({
+      data.results.map((grupo: GrupoUnidadeEscolar) => ({
         value: grupo.uuid,
         label: `${grupo.nome} (${grupo.tipos_unidades
           ?.map((u) => u.iniciais)
           .join(", ")})`,
+        tipos_unidades: grupo.tipos_unidades,
       })),
     );
   };
