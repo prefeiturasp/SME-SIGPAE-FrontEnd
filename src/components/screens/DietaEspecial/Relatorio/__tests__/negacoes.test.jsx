@@ -120,7 +120,7 @@ test("Relatorio negadas para inclusão - visão CODADE NUTRI MANIFESTAÇÃO", as
     expect(
       screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
-    expect(screen.queryByText(/Protocolo Padrão/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Nome do Protocolo/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Lista de Substituições/i),
@@ -201,7 +201,7 @@ test("Relatorio negadas para inclusão - visão TERCEIRIZADA ADMINISTRADOR EMPRE
     expect(
       screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
-    expect(screen.queryByText(/Protocolo Padrão/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Nome do Protocolo/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Lista de Substituições/i),
@@ -285,7 +285,7 @@ test("Relatorio negadas para inclusão - visão ESCOLA DIRETOR_UE", async () => 
     expect(
       screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
-    expect(screen.queryByText(/Protocolo Padrão/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Nome do Protocolo/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Lista de Substituições/i),
@@ -356,7 +356,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão CODAD
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(screen.getByText(/Relação por Diagnóstico/i)).toBeInTheDocument();
     expect(screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
-    expect(screen.getByText(/Protocolo Padrão/i)).toBeInTheDocument();
+    expect(screen.getByText(/Nome do Protocolo/i)).toBeInTheDocument();
     expect(screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
     expect(screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
     expect(screen.queryByText(/Informações Adicionais/i)).toBeInTheDocument();
@@ -431,7 +431,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão TERCE
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(screen.getByText(/Relação por Diagnóstico/i)).toBeInTheDocument();
     expect(screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
-    expect(screen.getByText(/Protocolo Padrão/i)).toBeInTheDocument();
+    expect(screen.getByText(/Nome do Protocolo/i)).toBeInTheDocument();
     expect(screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
     expect(screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
     expect(screen.queryByText(/Informações Adicionais/i)).toBeInTheDocument();
@@ -488,7 +488,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão ESCOL
   localStorage.setItem("tipo_perfil", PERFIL.DIRETOR_UE);
 
   await waitFor(() => {
-    expect(screen.getByText(/Protocolo Padrão/i)).toBeInTheDocument();
+    expect(screen.getByText(/Nome do Protocolo/i)).toBeInTheDocument();
   });
 
   await waitFor(() => {
@@ -513,7 +513,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão ESCOL
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(screen.getByText(/Relação por Diagnóstico/i)).toBeInTheDocument();
     expect(screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
-    expect(screen.getByText(/Protocolo Padrão/i)).toBeInTheDocument();
+    expect(screen.getByText(/Nome do Protocolo/i)).toBeInTheDocument();
     expect(screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
     expect(screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
     expect(screen.queryByText(/Informações Adicionais/i)).toBeInTheDocument();
