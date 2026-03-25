@@ -375,6 +375,7 @@ const FormAutorizaDietaEspecial = ({
         : undefined,
     );
     form.change("protocolo_padrao", dietaCopiada.protocolo_padrao || undefined);
+    form.change("nome_protocolo", dietaCopiada.nome_protocolo || undefined);
     form.change("orientacoes_gerais", dietaCopiada.orientacoes_gerais);
     form.change(
       "substituicoes",
