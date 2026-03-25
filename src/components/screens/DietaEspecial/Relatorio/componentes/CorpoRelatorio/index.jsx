@@ -56,7 +56,7 @@ const CorpoRelatorio = ({
     };
 
     setProtocoloDaDieta();
-  }, []);
+  }, [dietaEspecial?.protocolo_padrao]);
 
   const onSubmit = () => {
     // será desenvolvido na história 41937
