@@ -127,7 +127,7 @@ export const SolicitacaoVigente = (props) => {
                               icon={BUTTON_ICON.FILE_ALT}
                               className="me-3"
                             />
-                            {usuarioEhNutriCODAE() && (
+                            {usuarioEhNutriCODAE() && key === 0 && (
                               <Botao
                                 tabindex="-1"
                                 onClick={() =>
