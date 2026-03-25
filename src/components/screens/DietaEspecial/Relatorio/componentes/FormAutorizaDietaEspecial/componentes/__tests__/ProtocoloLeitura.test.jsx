@@ -27,7 +27,7 @@ describe("Componente ProtocoloLeitura", () => {
 
     renderWithForm();
 
-    expect(screen.getByText("Protocolo Padrão")).toBeInTheDocument();
-    expect(screen.queryByText("Nome do Protocolo")).not.toBeInTheDocument();
+    expect(screen.queryByText("Protocolo Padrão")).not.toBeInTheDocument();
+    expect(screen.getByText("Nome do Protocolo")).toBeInTheDocument();
   });
 });
