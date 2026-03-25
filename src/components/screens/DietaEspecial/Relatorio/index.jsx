@@ -77,6 +77,7 @@ const Relatorio = ({ visao }) => {
   const [dadosDietaAberta, setDadosDietaAberta] = useState(null);
   const [editar, setEditar] = useState(false);
   const [motivosNegacao, setMotivosNegacao] = useState();
+  const [dietaCopiada, setDietaCopiada] = useState(null);
 
   const dietaCancelada = status ? ehSolicitacaoDeCancelamento(status) : false;
   const tipoPerfil = localStorage.getItem("tipo_perfil");
@@ -442,6 +443,9 @@ const Relatorio = ({ visao }) => {
                 card={card}
                 solicitacaoVigenteAtiva={solicitacaoVigenteAtiva}
                 editar={editar}
+                onPreencherDieta={(solicitacao) =>
+                  setDietaCopiada({ ...solicitacao })
+                }
               />
               {[
                 statusEnum.CODAE_A_AUTORIZAR,
@@ -468,6 +472,7 @@ const Relatorio = ({ visao }) => {
             visao === CODAE && (
               <FormAutorizaDietaEspecial
                 dietaEspecial={dietaEspecial}
+                dietaCopiada={dietaCopiada}
                 onAutorizarOuNegar={(setDietaNull = false) =>
                   loadSolicitacao(dietaEspecial.uuid, setDietaNull)
                 }

@@ -38,6 +38,7 @@ const CorpoRelatorio = ({
   card,
   solicitacaoVigenteAtiva,
   editar,
+  onPreencherDieta,
 }) => {
   const [protocoloPadrao, setProtocoloPadrao] = useState(null);
 
@@ -438,6 +439,7 @@ const CorpoRelatorio = ({
             dietaEspecial.status_solicitacao === "CODAE_A_AUTORIZAR" && (
               <SolicitacaoVigente
                 solicitacoesVigentes={solicitacaoVigenteAtiva}
+                onPreencherDieta={onPreencherDieta}
               />
             )}
           <hr />
