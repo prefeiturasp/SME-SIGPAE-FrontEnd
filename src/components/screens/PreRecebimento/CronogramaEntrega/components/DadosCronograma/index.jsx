@@ -2,6 +2,7 @@ import { deParaStatusAltCronograma } from "src/components/screens/helper";
 import {
   usuarioEhEmpresaFornecedor,
   formataMilharDecimal,
+  formataMesNome,
 } from "src/helpers/utilities";
 import React from "react";
 import "./styles.scss";
@@ -12,10 +13,21 @@ export default ({
   esconderInformacoesAdicionais,
   solicitacaoAlteracaoCronograma,
 }) => {
+  const ehFLVPontoAPonto = cronograma.ficha_tecnica?.flv_ponto_a_ponto;
+
   const enderecoFormatado = (armazem) =>
-    armazem.endereco
+    armazem?.endereco
       ? `${armazem.endereco} ${armazem.numero}, ${armazem.bairro}, ${armazem.estado} - CEP: ${armazem.cep}`
       : "";
+
+  const formatarDataFLV = (data) => {
+    if (!data) return "";
+    const partes = data.split("/");
+    if (partes.length < 2) return data;
+    const mes = partes.length === 3 ? partes[1] : partes[0];
+    const ano = partes.length === 3 ? partes[2] : partes[1];
+    return `${formataMesNome(mes)}/${ano}`;
+  };
 
   return (
     <>
@@ -138,89 +150,162 @@ export default ({
             <p className="head-green">
               {solicitacaoAlteracaoCronograma
                 ? "Dados do Produto"
-                : "Dados do produto e datas das entregas"}
+                : ehFLVPontoAPonto
+                  ? "Dados do Produto e Data de Entrega"
+                  : "Dados do produto e datas das entregas"}
             </p>
           </div>
 
-          <div className="row mb-4">
-            <div className="col-4">
-              <p>Marca:</p>
-              <p>
-                <b>{cronograma.ficha_tecnica?.marca.nome}</b>
-              </p>
-            </div>
-            <div className="col-4">
-              <p>Quantidade Total Programada:</p>
-              <p>
-                <b>
-                  {formataMilharDecimal(cronograma.qtd_total_programada)}{" "}
-                  {cronograma.unidade_medida?.abreviacao}
-                </b>
-              </p>
-            </div>
-            <div className="col-4">
-              <p>Custo Unitário do Produto:</p>
-              <p>
-                <b>
-                  R$
-                  {cronograma.custo_unitario_produto
-                    ?.toFixed(2)
-                    .replace(".", ",")}
-                </b>
-              </p>
-            </div>
-          </div>
-
-          <div className="row mb-4">
-            <div className="col-4">
-              <p>Embalagem Primária:</p>
-              <p>
-                <b>
-                  {cronograma.ficha_tecnica?.peso_liquido_embalagem_primaria}{" "}
-                  {
-                    cronograma.ficha_tecnica?.unidade_medida_primaria
-                      ?.abreviacao
-                  }
-                </b>
-              </p>
-            </div>
-            <div className="col-4">
-              <p>Embalagem Secundária:</p>
-              <p>
-                <b>
-                  {cronograma.ficha_tecnica?.peso_liquido_embalagem_secundaria}{" "}
-                  {
-                    cronograma.ficha_tecnica?.unidade_medida_secundaria
-                      ?.abreviacao
-                  }
-                </b>
-              </p>
-            </div>
-            {cronograma.ficha_tecnica?.volume_embalagem_primaria && (
-              <div className="col-4">
-                <p>Volume da Embalagem Primária:</p>
-                <p>
-                  <b>{cronograma.ficha_tecnica?.volume_embalagem_primaria}</b>
-                </p>
+          {!ehFLVPontoAPonto ? (
+            <>
+              <div className="row mb-4">
+                <div className="col-4">
+                  <p>Marca:</p>
+                  <p>
+                    <b>{cronograma.ficha_tecnica?.marca.nome}</b>
+                  </p>
+                </div>
+                <div className="col-4">
+                  <p>Quantidade Total Programada:</p>
+                  <p>
+                    <b>
+                      {formataMilharDecimal(cronograma.qtd_total_programada)}{" "}
+                      {cronograma.unidade_medida?.abreviacao}
+                    </b>
+                  </p>
+                </div>
+                <div className="col-4">
+                  <p>Custo Unitário do Produto:</p>
+                  <p>
+                    <b>
+                      R$
+                      {cronograma.custo_unitario_produto
+                        ?.toFixed(2)
+                        .replace(".", ",")}
+                    </b>
+                  </p>
+                </div>
               </div>
-            )}
-          </div>
+
+              <div className="row mb-4">
+                <div className="col-4">
+                  <p>Embalagem Primária:</p>
+                  <p>
+                    <b>
+                      {
+                        cronograma.ficha_tecnica
+                          ?.peso_liquido_embalagem_primaria
+                      }{" "}
+                      {
+                        cronograma.ficha_tecnica?.unidade_medida_primaria
+                          ?.abreviacao
+                      }
+                    </b>
+                  </p>
+                </div>
+                <div className="col-4">
+                  <p>Embalagem Secundária:</p>
+                  <p>
+                    <b>
+                      {
+                        cronograma.ficha_tecnica
+                          ?.peso_liquido_embalagem_secundaria
+                      }{" "}
+                      {
+                        cronograma.ficha_tecnica?.unidade_medida_secundaria
+                          ?.abreviacao
+                      }
+                    </b>
+                  </p>
+                </div>
+                {cronograma.ficha_tecnica?.volume_embalagem_primaria && (
+                  <div className="col-4">
+                    <p>Volume da Embalagem Primária:</p>
+                    <p>
+                      <b>
+                        {cronograma.ficha_tecnica?.volume_embalagem_primaria}
+                      </b>
+                    </p>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="row mb-4">
+                <div className="col-4">
+                  <p>Nº do Empenho:</p>
+                  <p>
+                    <b>
+                      {cronograma.etapas?.[0]?.numero_empenho ||
+                        cronograma.numero_empenho}
+                    </b>
+                  </p>
+                </div>
+                <div className="col-4">
+                  <p>Quantidade total do empenho:</p>
+                  <p>
+                    <b>
+                      {formataMilharDecimal(
+                        cronograma.etapas?.[0]?.qtd_total_empenho ||
+                          cronograma.qtd_total_empenho,
+                      )}{" "}
+                      {cronograma.unidade_medida?.abreviacao}
+                    </b>
+                  </p>
+                </div>
+                <div className="col-4">
+                  <p>Custo unitário do produto:</p>
+                  <p>
+                    <b>
+                      R${" "}
+                      {formataMilharDecimal(cronograma.custo_unitario_produto)}
+                    </b>
+                  </p>
+                </div>
+              </div>
+              <div className="row mb-4">
+                <div className="col-4">
+                  <p>Quantidade total do produto:</p>
+                  <p>
+                    <b>
+                      {formataMilharDecimal(cronograma.qtd_total_programada)}{" "}
+                      {cronograma.unidade_medida?.abreviacao}
+                    </b>
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="row mb-4">
             <div className="col">
+              {ehFLVPontoAPonto ? (
+                <p className="head-green mb-3">
+                  <b>Tabela de Distribuição de Etapas</b>
+                </p>
+              ) : null}
               <table className="table tabela-dados-cronograma">
                 <thead className="head-crono">
-                  <th className="borda-crono text-center">N° do Empenho</th>
-                  <th className="borda-crono text-center">
-                    Qtde. Total do Empenho
-                  </th>
+                  {!ehFLVPontoAPonto && (
+                    <th className="borda-crono text-center">N° do Empenho</th>
+                  )}
+                  {!ehFLVPontoAPonto && (
+                    <th className="borda-crono text-center">
+                      Qtde. Total do Empenho
+                    </th>
+                  )}
                   <th className="borda-crono text-center">Etapa</th>
-                  <th className="borda-crono text-center">Parte</th>
+                  {!ehFLVPontoAPonto && (
+                    <th className="borda-crono text-center">Parte</th>
+                  )}
                   <th className="borda-crono text-center">Data Programada</th>
                   <th className="borda-crono text-center">Quantidade</th>
-                  <th className="borda-crono text-center">
-                    Total de Embalagens
-                  </th>
+                  {!ehFLVPontoAPonto && (
+                    <th className="borda-crono text-center">
+                      Total de Embalagens
+                    </th>
+                  )}
                 </thead>
                 <tbody>
                   {(() => {
@@ -230,30 +315,42 @@ export default ({
                     return etapas.map((etapa, key) => {
                       return (
                         <tr key={key}>
+                          {!ehFLVPontoAPonto && (
+                            <td className="borda-crono text-center">
+                              {etapa.numero_empenho}
+                            </td>
+                          )}
+                          {!ehFLVPontoAPonto && (
+                            <td className="borda-crono text-center">
+                              {formataMilharDecimal(etapa.qtd_total_empenho)}{" "}
+                              {cronograma.unidade_medida?.abreviacao}
+                            </td>
+                          )}
                           <td className="borda-crono text-center">
-                            {etapa.numero_empenho}
+                            {ehFLVPontoAPonto
+                              ? `Etapa ${key + 1}`
+                              : etapa.etapa}
                           </td>
+                          {!ehFLVPontoAPonto && (
+                            <td className="borda-crono text-center">
+                              {etapa.parte}
+                            </td>
+                          )}
                           <td className="borda-crono text-center">
-                            {formataMilharDecimal(etapa.qtd_total_empenho)}{" "}
-                            {cronograma.unidade_medida?.abreviacao}
-                          </td>
-                          <td className="borda-crono text-center">
-                            {etapa.etapa}
-                          </td>
-                          <td className="borda-crono text-center">
-                            {etapa.parte}
-                          </td>
-                          <td className="borda-crono text-center">
-                            {etapa.data_programada}
+                            {ehFLVPontoAPonto
+                              ? formatarDataFLV(etapa.data_programada)
+                              : etapa.data_programada}
                           </td>
                           <td className="borda-crono text-center">
                             {formataMilharDecimal(etapa.quantidade)}{" "}
                             {cronograma.unidade_medida?.abreviacao}
                           </td>
-                          <td className="borda-crono text-center">
-                            {formataMilharDecimal(etapa.total_embalagens)}{" "}
-                            {cronograma.tipo_embalagem_secundaria?.abreviacao}
-                          </td>
+                          {!ehFLVPontoAPonto && (
+                            <td className="borda-crono text-center">
+                              {formataMilharDecimal(etapa.total_embalagens)}{" "}
+                              {cronograma.tipo_embalagem_secundaria?.abreviacao}
+                            </td>
+                          )}
                         </tr>
                       );
                     });
@@ -265,16 +362,20 @@ export default ({
 
           <hr />
 
-          <div className="row head-green my-3">
-            <div className="col">Armazém</div>
-          </div>
-          <div className="row">
-            <p>
-              <b>{cronograma.armazem?.nome_fantasia}</b>{" "}
-              <span className="mx-2">|</span>
-              {enderecoFormatado(cronograma.armazem)}
-            </p>
-          </div>
+          {!ehFLVPontoAPonto && (
+            <>
+              <div className="row head-green my-3">
+                <div className="col">Armazém</div>
+              </div>
+              <div className="row">
+                <p>
+                  <b>{cronograma.armazem?.nome_fantasia}</b>{" "}
+                  <span className="mx-2">|</span>
+                  {enderecoFormatado(cronograma.armazem)}
+                </p>
+              </div>
+            </>
+          )}
         </>
       ) : (
         <>
@@ -308,7 +409,9 @@ export default ({
                         </div>
                       </td>
                       <td className="borda-crono text-center">
-                        {etapa.data_programada}
+                        {ehFLVPontoAPonto
+                          ? formatarDataFLV(etapa.data_programada)
+                          : etapa.data_programada}
                       </td>
                       <td className="borda-crono text-center">{etapa.etapa}</td>
                       <td className="borda-crono text-center">{etapa.parte}</td>

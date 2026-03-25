@@ -14,6 +14,7 @@ import {
   mockCronogramaAssinadoCODAE,
   mockCronogramaAssinadoFornecedor,
   mockCronogramaEnviadoFornecedor,
+  mockCronogramaFLVPontoAPonto,
 } from "src/mocks/cronograma.service/mockGetCronogramaDetalhar";
 import DetalharCronogramaPage from "src/pages/PreRecebimento/DetalharCronogramaPage";
 import mock from "src/services/_mock";
@@ -403,5 +404,80 @@ describe("Testa página de Detalhar Cronograma (Perfil Dilog Diretoria)", () => 
     fireEvent.click(btnConfirmar);
 
     expect(btnConfirmar).toBeInTheDocument();
+  });
+});
+
+describe("Testa página Detalhar Cronograma FLV Ponto a Ponto", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mock.resetHistory();
+  });
+
+  beforeAll(() => {
+    localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
+    localStorage.setItem(
+      "tipo_servico",
+      TIPO_SERVICO.FORNECEDOR_E_DISTRIBUIDOR,
+    );
+    mock
+      .onGet(
+        `/cronogramas/${mockCronogramaFLVPontoAPonto.uuid}/detalhar-com-log/`,
+      )
+      .reply(200, mockCronogramaFLVPontoAPonto);
+
+    setWindowLocation(`?uuid=${mockCronogramaFLVPontoAPonto.uuid}`);
+  });
+
+  it("verifica exibição de campos específicos de FLV Ponto a Ponto", async () => {
+    await setup();
+    await waitFor(() =>
+      expect(screen.getByText(`Status do Cronograma`)).toBeInTheDocument(),
+    );
+
+    // Verifica título adaptado
+    expect(
+      screen.getByText(/Dados do Produto e Data de Entrega/i),
+    ).toBeInTheDocument();
+
+    // Verifica campos de empenho no cabeçalho
+    expect(screen.getByText(/Nº do Empenho:/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(mockCronogramaFLVPontoAPonto.numero_empenho),
+    ).toBeInTheDocument();
+
+    // Verifica que campos tradicionais estão ocultos
+    expect(screen.queryByText("Embalagem Primária:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Embalagem Secundária:")).not.toBeInTheDocument();
+
+    // Verifica Tabela de Etapas
+    expect(
+      screen.getByText("Tabela de Distribuição de Etapas"),
+    ).toBeInTheDocument();
+
+    // Verifica cabeçalhos da tabela (campos removidos não devem aparecer)
+    const tableHeaders = screen.getAllByRole("columnheader");
+    const headerTexts = tableHeaders.map((h) => h.textContent);
+    expect(headerTexts).not.toContain("N° do Empenho");
+    expect(headerTexts).not.toContain("Qtde. Total do Empenho");
+    expect(headerTexts).not.toContain("Parte");
+    expect(headerTexts).not.toContain("Total de Embalagens");
+
+    // Verifica conteúdo da tabela
+    expect(screen.getByText(/Etapa 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Julho\/2026/i)).toBeInTheDocument();
+    expect(screen.getByText(/Outubro\/2026/i)).toBeInTheDocument();
+
+    // Verifica que a seção de Armazém está oculta
+    expect(screen.queryByText("Armazém")).not.toBeInTheDocument();
+  });
+
+  it("verifica exibição do botão de Assinar Cronograma para Fornecedor", async () => {
+    await setup();
+    await waitFor(() =>
+      expect(screen.getByText(`Status do Cronograma`)).toBeInTheDocument(),
+    );
+
+    const btnAssinar = screen.queryByText("Assinar Cronograma");
+    expect(btnAssinar).toBeInTheDocument();
   });
 });

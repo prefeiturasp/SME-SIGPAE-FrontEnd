@@ -23,6 +23,7 @@ export const ModalAlunoParcial = ({ ...props }) => {
     dataAdicionado,
   } = props;
   const [dataAlunoParcial, setDataAlunoParcial] = useState(null);
+  const mesReferencia = new Date(Number(ano), Number(mes) - 1, 1);
 
   const onClickSim = async () => {
     if (dataAlunoParcial) {
@@ -30,7 +31,7 @@ export const ModalAlunoParcial = ({ ...props }) => {
       toastSuccess(
         `Aluno ${
           adicionarOuExcluir === "Adicionar" ? "adicionado" : "removido"
-        } com Sucesso!`
+        } com Sucesso!`,
       );
       closeModal();
       setAlunosParcialAlterado(true);
@@ -72,20 +73,21 @@ export const ModalAlunoParcial = ({ ...props }) => {
                 required
                 validate={required}
                 usarDirty={true}
+                openToDate={mesReferencia}
                 minDate={
                   adicionarOuExcluir === "Adicionar"
-                    ? new Date(ano, mes - 1, 1)
+                    ? mesReferencia
                     : new Date(
-                        ano,
-                        mes - 1,
-                        Number(dataAdicionado.substring(0, 2))
+                        Number(ano),
+                        Number(mes) - 1,
+                        Number(dataAdicionado.substring(0, 2)),
                       )
                 }
                 maxDate={
                   new Date(
-                    ano,
-                    mes - 1,
-                    lastDayOfMonth(new Date(ano, mes - 1, 1)).getUTCDate()
+                    Number(ano),
+                    Number(mes) - 1,
+                    lastDayOfMonth(mesReferencia).getUTCDate(),
                   )
                 }
               />

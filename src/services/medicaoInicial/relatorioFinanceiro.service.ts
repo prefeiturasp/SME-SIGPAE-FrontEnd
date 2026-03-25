@@ -1,13 +1,16 @@
 import {
+  DadosLiquidacaoEmpenho,
+  DadosLiquidacaoResponse,
   FiltrosInterface,
   RelatorioFinanceiroConsolidado,
   RelatorioFinanceiroResponse,
 } from "src/interfaces/relatorio_financeiro.interface";
 import axios from "../_base";
+import { ErrorHandlerFunction } from "../service-helpers";
 
 export const getRelatoriosFinanceiros = async (
   page: number,
-  filtros: FiltrosInterface
+  filtros: FiltrosInterface,
 ) => {
   let url = "/medicao-inicial/relatorio-financeiro/";
   const params = { page, ...filtros };
@@ -17,6 +20,31 @@ export const getRelatoriosFinanceiros = async (
 
 export const getRelatorioFinanceiroConsolidado = async (uuid: string) => {
   return await axios.get<RelatorioFinanceiroConsolidado>(
-    `/medicao-inicial/relatorio-financeiro/relatorio-consolidado/${uuid}/`
+    `/medicao-inicial/relatorio-financeiro/relatorio-consolidado/${uuid}/`,
   );
+};
+
+export const getRelatorioDadosLiquidacao = async (params) => {
+  return await axios.get<DadosLiquidacaoResponse>(
+    "/medicao-inicial/dados-liquidacao/",
+    {
+      params: params,
+    },
+  );
+};
+
+export const cadastroDadosEmpenho = async (
+  payload: Partial<DadosLiquidacaoEmpenho[]>,
+  relatorioFinanceiro: string,
+) => {
+  const response = await axios
+    .put(
+      `/medicao-inicial/dados-liquidacao/registrar-empenhos/${relatorioFinanceiro}/`,
+      payload,
+    )
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
