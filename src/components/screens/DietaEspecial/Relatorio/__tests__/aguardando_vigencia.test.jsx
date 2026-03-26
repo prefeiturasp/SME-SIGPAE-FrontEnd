@@ -12,6 +12,7 @@ import {
   alimentos,
   solicitacoesDietaEspecial,
   protocoloPadraoDietaEspecial,
+  solicitacoesDietaEspecialDoAluno,
 } from "../dados";
 import { API_URL } from "src/constants/config";
 import mock from "src/services/_mock";
@@ -58,6 +59,16 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen());
+beforeEach(() => {
+  mock
+    .onGet(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`)
+    .reply(200, payload);
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/${payload.aluno.codigo_eol}/`,
+    )
+    .reply(200, solicitacoesDietaEspecialDoAluno());
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => {
   server.close();
@@ -75,6 +86,10 @@ test("Relatório Aguardando Vigência -  visão Terceirizada", async () => {
   mock
     .onGet(/\/solicitacoes-dieta-especial\/[^/]+\/protocolo\//)
     .reply(200, mockPdfBlob);
+
+  mock
+    .onGet(`/protocolo-padrao-dieta-especial/${payload.protocolo_padrao}/`)
+    .reply(200, protocoloPadraoDietaEspecial());
 
   render(
     <MemoryRouter

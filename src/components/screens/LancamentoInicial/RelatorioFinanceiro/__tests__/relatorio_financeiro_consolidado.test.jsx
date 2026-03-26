@@ -6,6 +6,7 @@ import { mockMeusDadosSuperUsuarioMedicao } from "src/mocks/meusDados/superUsuar
 import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockRelatoriosFinanceiro } from "src/mocks/services/relatorioFinanceiro.service/mockGetRelatoriosFinanceiro";
+import { mockDadosLiquidacao } from "src/mocks/services/relatorioFinanceiro.service/mockGetDadosLiquidacao";
 import { mockGetMesesAnosMedicaoInicial } from "src/mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
 import { mockGetTiposUnidadeEscolarTiposAlimentacao } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolarTiposAlimentacao";
 import {
@@ -19,8 +20,8 @@ import {
 } from "src/mocks/services/relatorioFinanceiro.service/mockGetRelatorioFinanceiroConsolidado";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MemoryRouter } from "react-router-dom";
-import mock from "src/services/_mock";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
+import mock from "src/services/_mock";
 
 const TOTAIS_NORMAL = ["TOTAL (A)", "TOTAL (B)", "TOTAL (C)"];
 const TOTAIS_INFANTIL = ["TOTAL (INF. A)", "TOTAL (INF. B)", "TOTAL (INF. C)"];
@@ -53,8 +54,10 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     mock
       .onGet("/tipos-unidade-escolar-agrupados/")
       .reply(200, mockGetTiposUnidadeEscolarTiposAlimentacao);
-
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
+    mock
+      .onGet("/medicao-inicial/dados-liquidacao/")
+      .reply(200, mockDadosLiquidacao);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);

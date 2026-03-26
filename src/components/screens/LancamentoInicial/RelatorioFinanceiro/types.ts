@@ -3,10 +3,10 @@ export type SelectOption = {
   nome: string;
 };
 
-export type MultiSelectOption = {
+export type MultiSelectOption<T = {}> = {
   value: string;
   label: string;
-};
+} & T;
 
 export type TabelaAlimentacaoHandle = {
   getTotais: () => {

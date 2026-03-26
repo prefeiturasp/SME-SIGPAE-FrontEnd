@@ -172,6 +172,23 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen());
+beforeEach(() => {
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/${cancelamento_data_termino.uuid}/`,
+    )
+    .reply(200, cancelamento_data_termino);
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/${cancelamento_data_termino.aluno.codigo_eol}/`,
+    )
+    .reply(200, solicitacoesDietaEspecialDoAluno());
+  mock
+    .onGet(
+      `/protocolo-padrao-dieta-especial/${cancelamento_data_termino.protocolo_padrao}/`,
+    )
+    .reply(200, protocoloPadraoDietaEspecial());
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => {
   server.close();
@@ -361,9 +378,7 @@ test("Relatorio para cancelamento quando a escola cancela antes da aprovação p
     expect(
       screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Protocolo Padrão/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Lista de Substituições/i),

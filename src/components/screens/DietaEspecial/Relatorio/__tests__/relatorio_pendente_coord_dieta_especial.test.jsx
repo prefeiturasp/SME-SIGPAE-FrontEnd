@@ -6,7 +6,10 @@ import { mockDietaEspecialLevi } from "src/mocks/DietaEspecial/Relatorio/mockDie
 import { mockMotivosNegarCancelamento } from "src/mocks/DietaEspecial/Relatorio/mockMotivosNegarCancelamento";
 import { mockSolicitacoesAbertas } from "src/mocks/DietaEspecial/Relatorio/mockSolicitacoesAbertas";
 import { localStorageMock } from "src/mocks/localStorageMock";
-import { getDietaEspecial } from "src/services/dietaEspecial.service";
+import {
+  getDietaEspecial,
+  getProtocoloPadrao,
+} from "src/services/dietaEspecial.service";
 import { getMotivosNegacaoDietaEspecial } from "src/services/painelNutricionista.service";
 import Relatorio from "..";
 
@@ -59,10 +62,22 @@ const awaitServices = async () => {
   });
 };
 
+const mockDietaEspecialLeviComProtocolo = {
+  ...mockDietaEspecialLevi,
+  protocolo_padrao: {
+    nome_protocolo: "ALERGIA A CAMARÃO",
+    uuid: "1234123-1234-1234-1234-123412341234",
+  },
+};
+
 describe("Test <Relatorio> - Relatório de Dieta Especial - Pendente Autorização - Visão Coordenador Dieta Especial", () => {
   beforeEach(async () => {
     getDietaEspecial.mockResolvedValue({
-      data: mockDietaEspecialLevi,
+      data: mockDietaEspecialLeviComProtocolo,
+      status: 200,
+    });
+    getProtocoloPadrao.mockResolvedValue({
+      data: {},
       status: 200,
     });
     getMotivosNegacaoDietaEspecial.mockResolvedValue({
@@ -93,6 +108,6 @@ describe("Test <Relatorio> - Relatório de Dieta Especial - Pendente Autorizaç�
 
   it("exibe label `Dados do aluno`", async () => {
     await awaitServices();
-    expect(screen.getByText("Dados do aluno")).toBeInTheDocument();
+    expect(await screen.findByText("Dados do aluno")).toBeInTheDocument();
   });
 });

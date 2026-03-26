@@ -57,9 +57,6 @@ describe("Teste da página de Verificar Solicitações de Alteração de Cronogr
       ).toBeInTheDocument();
     });
 
-    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
-    fireEvent.click(botaoFiltrar);
-
     await waitFor(() => {
       expect(screen.getByText("Resultados da Pesquisa")).toBeInTheDocument();
     });
@@ -76,5 +73,33 @@ describe("Teste da página de Verificar Solicitações de Alteração de Cronogr
 
     const todasTagsLeveLeite = document.querySelectorAll("span.tag-leve-leite");
     expect(todasTagsLeveLeite.length).toBe(1);
+  });
+
+  it("testa o funcionamento do filtro por numero de cronograma", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByPlaceholderText("Digite o n° do Cronograma"),
+      ).toBeInTheDocument();
+    });
+
+    const input = screen.getByPlaceholderText("Digite o n° do Cronograma");
+    fireEvent.change(input, { target: { value: "151" } });
+
+    const mockFiltrado = {
+      count: 1,
+      results: [mockGetListagemSolicitacaoAlteracaoCronograma.results[0]],
+    };
+
+    mock
+      .onGet("/solicitacao-de-alteracao-de-cronograma/")
+      .reply(200, mockFiltrado);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(screen.getByText("00000102-ALT")).toBeInTheDocument();
+      expect(screen.queryByText("00000101-ALT")).not.toBeInTheDocument();
+    });
   });
 });

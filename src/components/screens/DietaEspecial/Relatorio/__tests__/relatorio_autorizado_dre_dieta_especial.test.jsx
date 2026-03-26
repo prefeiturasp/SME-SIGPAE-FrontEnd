@@ -6,7 +6,10 @@ import { mockDietaEspecialVictorAutorizada } from "src/mocks/DietaEspecial/Relat
 import { mockMotivosNegarCancelamento } from "src/mocks/DietaEspecial/Relatorio/mockMotivosNegarCancelamento";
 import { mockSolicitacoesAbertas } from "src/mocks/DietaEspecial/Relatorio/mockSolicitacoesAbertas";
 import { localStorageMock } from "src/mocks/localStorageMock";
-import { getDietaEspecial } from "src/services/dietaEspecial.service";
+import {
+  getDietaEspecial,
+  getProtocoloPadrao,
+} from "src/services/dietaEspecial.service";
 import { getMotivosNegacaoDietaEspecial } from "src/services/painelNutricionista.service";
 import Relatorio from "..";
 
@@ -63,6 +66,10 @@ describe("Test <Relatorio> - Relatório de Dieta Especial - Pendente Autorizaç�
   beforeEach(async () => {
     getDietaEspecial.mockResolvedValue({
       data: mockDietaEspecialVictorAutorizada,
+      status: 200,
+    });
+    getProtocoloPadrao.mockResolvedValue({
+      data: {},
       status: 200,
     });
     getMotivosNegacaoDietaEspecial.mockResolvedValue({
