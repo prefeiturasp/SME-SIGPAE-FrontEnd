@@ -119,10 +119,12 @@ describe("AcompanhamentoDeLancamentos", () => {
     });
 
     it("deve retornar erro quando falhar ao obter meses e anos para solicitação de medição inicial", async () => {
+      cleanup();
       setupErrorMocks(
         "/medicao-inicial/solicitacao-medicao-inicial/meses-anos/",
       );
       await renderComponent();
+      await selecionarDRE();
       await waitFor(() =>
         screen.getByText(
           "Erro ao carregar meses/anos das solicitações de medição inicial. Tente novamente mais tarde.",
@@ -172,6 +174,14 @@ describe("AcompanhamentoDeLancamentos", () => {
 
       await selecionarDRE();
 
+      const divMesReferencia = screen.getByTestId("div-select-mes-referencia");
+      const selectMesReferencia = divMesReferencia.querySelector("select");
+      await act(async () => {
+        fireEvent.change(selectMesReferencia, {
+          target: { value: "03_2025" },
+        });
+      });
+
       await waitFor(() =>
         screen.getByText(
           /Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde./,
@@ -219,10 +229,21 @@ describe("AcompanhamentoDeLancamentos", () => {
             localStorage.setItem(key, value),
           );
           await renderComponent();
-
           await selecionarDRE();
 
-          expect(screen.getByText("Aprovado pela DRE")).toBeInTheDocument();
+          const divMesReferencia = screen.getByTestId(
+            "div-select-mes-referencia",
+          );
+          const selectMesReferencia = divMesReferencia.querySelector("select");
+          await act(async () => {
+            fireEvent.change(selectMesReferencia, {
+              target: { value: "03_2025" },
+            });
+          });
+
+          await waitFor(() =>
+            expect(screen.getByText("Aprovado pela DRE")).toBeInTheDocument(),
+          );
           expect(
             screen.getByText(
               "Selecione os status acima para visualizar a listagem detalhada",
@@ -255,11 +276,13 @@ describe("AcompanhamentoDeLancamentos", () => {
 
     it("deve exibir o modal filtragem com resultados", async () => {
       await selecionarDRE();
+      setMesReferencia();
 
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
-
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
@@ -273,11 +296,13 @@ describe("AcompanhamentoDeLancamentos", () => {
 
     it("deve exibir o modal filtragem sem resultados", async () => {
       await selecionarDRE();
+      setMesReferencia();
 
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
-
-      setMesReferencia();
 
       mock
         .onGet(
@@ -301,20 +326,22 @@ describe("AcompanhamentoDeLancamentos", () => {
       ).toBeInTheDocument();
     });
 
-    it("deve limpar os filtros ao clicar no botão Limpar", async () => {
+    it("nao deve limpar o mes_ano ao clicar no botão Limpar", async () => {
       await selecionarDRE();
+      const selectMes = setMesReferencia();
 
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
-
-      const selectMes = setMesReferencia();
 
       const botaoLimpar = screen.getByText("Limpar");
       await act(async () => {
         fireEvent.click(botaoLimpar);
       });
 
-      expect(selectMes.value).toBe("");
+      expect(selectMes.value).toBe("03_2025");
     });
 
     const setOcorrencias = (value = "true") => {
@@ -326,7 +353,11 @@ describe("AcompanhamentoDeLancamentos", () => {
 
     it("deve selecionar 'Com ocorrências' e depois limpar o campo", async () => {
       await selecionarDRE();
+      setMesReferencia();
 
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
 
@@ -352,11 +383,13 @@ describe("AcompanhamentoDeLancamentos", () => {
 
     it("deve preencher mes e ocorrencias, filtrar e verificar resultados", async () => {
       await selecionarDRE();
+      setMesReferencia();
 
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
-
-      setMesReferencia();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {

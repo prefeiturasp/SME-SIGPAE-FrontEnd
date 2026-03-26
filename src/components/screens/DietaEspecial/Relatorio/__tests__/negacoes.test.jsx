@@ -2,12 +2,12 @@ import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
+import { MemoryRouter } from "react-router-dom";
 import { CODAE } from "src/configs/constants";
 import { API_URL } from "src/constants/config";
 import { PERFIL, TIPO_PERFIL, VISAO } from "src/constants/shared";
 import mock from "src/services/_mock";
 import Relatorio from "../";
-import { MemoryRouter } from "react-router-dom";
 import {
   alergiasIntolerantes,
   alimentos,
@@ -17,6 +17,7 @@ import {
   protocoloPadraoDietaEspecial,
   respostaApiCancelamentoporDataTermino,
   solicitacoesDietaEspecial,
+  solicitacoesDietaEspecialDoAluno,
 } from "../dados";
 
 const payload = {
@@ -58,6 +59,25 @@ const server = setupServer(
 );
 
 beforeAll(() => server.listen());
+beforeEach(() => {
+  mock
+    .onGet(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`)
+    .reply(200, payload);
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/${payload.aluno.codigo_eol}/`,
+    )
+    .reply(200, solicitacoesDietaEspecialDoAluno());
+  mock
+    .onGet(`/protocolo-padrao-dieta-especial/${payload.protocolo_padrao}/`)
+    .reply(200, protocoloPadraoDietaEspecial());
+  // Para os testes de ALTERACAO_UE:
+  mock
+    .onGet(
+      `/protocolo-padrao-dieta-especial/e2612937-bbbb-bbbb-bbbb-0f2d85794b50/`,
+    )
+    .reply(200, protocoloPadraoDietaEspecial());
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => {
   server.close();
@@ -109,9 +129,7 @@ test("Relatorio negadas para inclusão - visão CODADE NUTRI MANIFESTAÇÃO", as
     expect(
       screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Nome do Protocolo/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Lista de Substituições/i),
@@ -192,9 +210,7 @@ test("Relatorio negadas para inclusão - visão TERCEIRIZADA ADMINISTRADOR EMPRE
     expect(
       screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Nome do Protocolo/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Lista de Substituições/i),
@@ -278,9 +294,7 @@ test("Relatorio negadas para inclusão - visão ESCOLA DIRETOR_UE", async () => 
     expect(
       screen.queryByText(/Classificação da Dieta/i),
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(/Nome do Protocolo Padrão de Dieta Especial/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Nome do Protocolo/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Orientações Gerais/i)).not.toBeInTheDocument();
     expect(
       screen.queryByText(/Lista de Substituições/i),
@@ -307,8 +321,23 @@ test("Relatorio negadas para inclusão - visão ESCOLA DIRETOR_UE", async () => 
 });
 
 test("Relatorio negadas para solicitação de alteração de U.E. - visão CODADE NUTRI MANIFESTAÇÃO", async () => {
-  let payload_alteracao = payload;
-  payload_alteracao.tipo_solicitacao = "ALTERACAO_UE";
+  let payload_alteracao = {
+    ...payload,
+    tipo_solicitacao: "ALTERACAO_UE",
+  };
+  mock
+    .onGet(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`)
+    .reply(200, payload_alteracao);
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/${payload_alteracao.aluno.codigo_eol}/`,
+    )
+    .reply(200, solicitacoesDietaEspecialDoAluno());
+  server.use(
+    http.get(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`, () => {
+      return HttpResponse.json(payload_alteracao);
+    }),
+  );
 
   const search = `?uuid=${payload_alteracao.uuid}&ehInclusaoContinua=false&card=negadas`;
   window.history.pushState({}, "", search);
@@ -344,9 +373,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão CODAD
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(screen.getByText(/Relação por Diagnóstico/i)).toBeInTheDocument();
     expect(screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Nome do Protocolo/i)).toBeInTheDocument();
     expect(screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
     expect(screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
     expect(screen.queryByText(/Informações Adicionais/i)).toBeInTheDocument();
@@ -366,8 +393,23 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão CODAD
 });
 
 test("Relatorio negadas para solicitação de alteração de U.E. - visão TERCEIRIZADA ADMINISTRADOR EMPRESA", async () => {
-  let payload_alteracao = payload;
-  payload_alteracao.tipo_solicitacao = "ALTERACAO_UE";
+  let payload_alteracao = {
+    ...payload,
+    tipo_solicitacao: "ALTERACAO_UE",
+  };
+  mock
+    .onGet(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`)
+    .reply(200, payload_alteracao);
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/${payload_alteracao.aluno.codigo_eol}/`,
+    )
+    .reply(200, solicitacoesDietaEspecialDoAluno());
+  server.use(
+    http.get(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`, () => {
+      return HttpResponse.json(payload_alteracao);
+    }),
+  );
 
   const search = `?uuid=${payload_alteracao.uuid}&ehInclusaoContinua=false&card=negadas`;
   window.history.pushState({}, "", search);
@@ -414,9 +456,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão TERCE
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(screen.getByText(/Relação por Diagnóstico/i)).toBeInTheDocument();
     expect(screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Nome do Protocolo/i)).toBeInTheDocument();
     expect(screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
     expect(screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
     expect(screen.queryByText(/Informações Adicionais/i)).toBeInTheDocument();
@@ -439,8 +479,23 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão TERCE
 });
 
 test("Relatorio negadas para solicitação de alteração de U.E. - visão ESCOLA DIRETOR_UE", async () => {
-  let payload_alteracao = payload;
-  payload_alteracao.tipo_solicitacao = "ALTERACAO_UE";
+  let payload_alteracao = {
+    ...payload,
+    tipo_solicitacao: "ALTERACAO_UE",
+  };
+  mock
+    .onGet(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`)
+    .reply(200, payload_alteracao);
+  mock
+    .onGet(
+      `${API_URL}/solicitacoes-dieta-especial/solicitacoes-aluno/${payload_alteracao.aluno.codigo_eol}/`,
+    )
+    .reply(200, solicitacoesDietaEspecialDoAluno());
+  server.use(
+    http.get(`${API_URL}/solicitacoes-dieta-especial/${payload.uuid}/`, () => {
+      return HttpResponse.json(payload_alteracao);
+    }),
+  );
 
   const search = `?uuid=${payload_alteracao.uuid}&ehInclusaoContinua=false&card=negadas`;
   window.history.pushState({}, "", search);
@@ -466,6 +521,10 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão ESCOL
   localStorage.setItem("tipo_perfil", PERFIL.DIRETOR_UE);
 
   await waitFor(() => {
+    expect(screen.getByText(/Nome do Protocolo/i)).toBeInTheDocument();
+  });
+
+  await waitFor(() => {
     expect(
       screen.getByText(/dieta especial - Negada Alteração de UE/i),
     ).toBeInTheDocument();
@@ -487,9 +546,7 @@ test("Relatorio negadas para solicitação de alteração de U.E. - visão ESCOL
     expect(screen.getByText(/Observações/i)).toBeInTheDocument();
     expect(screen.getByText(/Relação por Diagnóstico/i)).toBeInTheDocument();
     expect(screen.getByText(/Classificação da Dieta/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/Nome do Protocolo Padrão de Dieta Especial/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Nome do Protocolo/i)).toBeInTheDocument();
     expect(screen.getByText(/Orientações Gerais/i)).toBeInTheDocument();
     expect(screen.getByText(/Lista de Substituições/i)).toBeInTheDocument();
     expect(screen.queryByText(/Informações Adicionais/i)).toBeInTheDocument();

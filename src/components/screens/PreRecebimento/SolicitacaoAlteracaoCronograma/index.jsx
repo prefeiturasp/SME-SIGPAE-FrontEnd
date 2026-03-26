@@ -10,7 +10,7 @@ import { Paginacao } from "src/components/Shareable/Paginacao/index.jsx";
 export default ({ fornecedor }) => {
   const [carregando, setCarregando] = useState(false);
   const [alteracoesCronogramas, setAlteracoesCronogramas] = useState();
-  const [filtros, setFiltros] = useState();
+  const [filtros, setFiltros] = useState({});
   const [total, setTotal] = useState();
   const [page, setPage] = useState();
   const [buscaPorParametro, setBuscaPorParametro] = useState(false);

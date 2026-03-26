@@ -18,6 +18,9 @@ import "./style.scss";
 
 registerLocale("pt-BR", ptBR);
 
+const isValidDate = (value) =>
+  value instanceof Date && !Number.isNaN(value.getTime());
+
 export class InputComData extends Component {
   // Thanks community :D
   // https://github.com/Hacker0x01/react-datepicker/issues/543
@@ -42,6 +45,7 @@ export class InputComData extends Component {
     writable: PropTypes.bool,
     minDate: PropTypes.instanceOf(Date),
     maxDate: PropTypes.instanceOf(Date),
+    openToDate: PropTypes.instanceOf(Date),
   };
 
   static defaultProps = {
@@ -92,6 +96,10 @@ export class InputComData extends Component {
   };
 
   dataSelecionada(data) {
+    if (isValidDate(data)) {
+      return data;
+    }
+
     if (data && data.length !== 0) {
       const parsed = moment(data, this.props.dateFormat, true);
       if (parsed.isValid()) {
@@ -103,6 +111,28 @@ export class InputComData extends Component {
     } else {
       return null;
     }
+  }
+
+  dataAbertura(selectedDate) {
+    const { maxDate, minDate, openToDate } = this.props;
+
+    if (isValidDate(openToDate)) {
+      return openToDate;
+    }
+
+    if (isValidDate(selectedDate)) {
+      return selectedDate;
+    }
+
+    if (isValidDate(minDate)) {
+      return minDate;
+    }
+
+    if (isValidDate(maxDate)) {
+      return maxDate;
+    }
+
+    return new Date();
   }
 
   render() {
@@ -140,6 +170,8 @@ export class InputComData extends Component {
       form,
       dataTestId,
     } = this.props;
+    const selectedDate = this.dataSelecionada(input.value);
+    const openToDate = this.dataAbertura(selectedDate);
 
     return (
       <div className="datepicker" data-testid={dataTestId}>
@@ -196,8 +228,9 @@ export class InputComData extends Component {
             inline={inline}
             minDate={minDate}
             maxDate={maxDate}
+            openToDate={openToDate}
             disabled={disabled}
-            selected={this.dataSelecionada(input.value)}
+            selected={selectedDate}
             className={`form-control ${className} ${
               meta &&
               (usarDirty ? meta.dirty : meta.touched) &&
