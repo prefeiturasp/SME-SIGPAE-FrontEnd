@@ -44,11 +44,14 @@ const UnidadesPagamento = ({
           </div>
 
           <div className="lista-unidades">
-            {unidades.map((unidade, index) => (
-              <div key={index} className="item">
-                {unidade.nome}
-              </div>
-            ))}
+            {unidades
+              .slice()
+              .sort((a, b) => a.nome.localeCompare(b.nome))
+              .map((unidade, index) => (
+                <div key={index} className="item">
+                  {unidade.nome}
+                </div>
+              ))}
           </div>
         </div>
       </Modal.Body>
