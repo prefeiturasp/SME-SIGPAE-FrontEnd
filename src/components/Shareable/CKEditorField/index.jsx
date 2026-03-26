@@ -1,6 +1,8 @@
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import {
   Alignment,
+  AutoImage,
+  Base64UploadAdapter,
   Bold,
   ClassicEditor,
   Essentials,
@@ -8,6 +10,12 @@ import {
   FontBackgroundColor,
   FontColor,
   FontFamily,
+  Image,
+  ImageCaption,
+  ImageInsert,
+  ImageStyle,
+  ImageToolbar,
+  ImageUpload,
   Italic,
   List,
   Paragraph,
@@ -35,6 +43,7 @@ export const CKEditorField = (props) => {
     placeholder,
     dataTestId,
     toolbar,
+    allowImages = false,
     ...rest
   } = props;
 
@@ -59,6 +68,18 @@ export const CKEditorField = (props) => {
       TableCellProperties,
       Alignment,
       TableColumnResize,
+      ...(allowImages
+        ? [
+            Image,
+            ImageCaption,
+            ImageStyle,
+            ImageToolbar,
+            ImageUpload,
+            ImageInsert,
+            AutoImage,
+            Base64UploadAdapter,
+          ]
+        : []),
     ],
     toolbar:
       toolbar === false
@@ -83,7 +104,23 @@ export const CKEditorField = (props) => {
             "|",
             "undo",
             "redo",
+            ...(allowImages ? ["|", "insertImage"] : []),
           ],
+    ...(allowImages && {
+      image: {
+        insert: {
+          type: "inline",
+        },
+        toolbar: [
+          "imageStyle:inline",
+          "imageStyle:block",
+          "imageStyle:side",
+          "|",
+          "toggleImageCaption",
+          "imageTextAlternative",
+        ],
+      },
+    }),
     table: {
       contentToolbar: [
         "tableColumn",
