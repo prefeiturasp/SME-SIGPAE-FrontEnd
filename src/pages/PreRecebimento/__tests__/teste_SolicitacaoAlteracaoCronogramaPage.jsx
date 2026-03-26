@@ -16,8 +16,6 @@ import { mockMeusDadosCoordCodaeDilogLogistica } from "src/mocks/meusDados/CODAE
 
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 
-import { debug } from "jest-preview";
-
 const setupTest = async () => {
   localStorage.setItem("perfil", PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA);
   localStorage.setItem("tipo_perfil", TIPO_PERFIL.LOGISTICA);
@@ -103,7 +101,5 @@ describe("Teste da página de Verificar Solicitações de Alteração de Cronogr
       expect(screen.getByText("00000102-ALT")).toBeInTheDocument();
       expect(screen.queryByText("00000101-ALT")).not.toBeInTheDocument();
     });
-
-    debug();
   });
 });
