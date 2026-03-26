@@ -1,11 +1,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ToastContainer } from "react-toastify";
+import { MemoryRouter } from "react-router-dom";
+import HTTP_STATUS from "http-status-codes";
 import UnidadeMedidaForm from "../index";
 import mock from "src/services/_mock";
-import HTTP_STATUS from "http-status-codes";
-import { MemoryRouter } from "react-router-dom";
 
-// mock navigate
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
