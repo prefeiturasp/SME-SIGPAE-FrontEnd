@@ -83,7 +83,10 @@
     "jest-preview": {
       "got": "14.4.7"
     },
-    "jest-watch-typeahead": "2.2.2"
+    "jest-watch-typeahead": "2.2.2",
+    "minimatch": {
+      "brace-expansion": "5.0.5"
+    }
   },
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^11.0.0",
