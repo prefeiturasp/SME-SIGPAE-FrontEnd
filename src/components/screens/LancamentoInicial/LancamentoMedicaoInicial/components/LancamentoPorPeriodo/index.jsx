@@ -60,6 +60,7 @@ export const LancamentoPorPeriodo = ({
   objSolicitacaoMIFinalizada,
   setObjSolicitacaoMIFinalizada,
   periodosPermissoesLancamentosEspeciais,
+  temLancheEmergencialDiarioAtivo,
   setSolicitacaoMedicaoInicial,
   naoPodeFinalizar,
   setFinalizandoMedicao,
@@ -567,7 +568,8 @@ export const LancamentoPorPeriodo = ({
                 solicitacoesKitLanchesAutorizadas.length > 0) ||
                 (solicitacoesAlteracaoLancheEmergencialAutorizadas &&
                   solicitacoesAlteracaoLancheEmergencialAutorizadas.length >
-                    0)) && (
+                    0) ||
+                temLancheEmergencialDiarioAtivo) && (
                 <CardLancamento
                   grupo="Solicitações de Alimentação"
                   cor={CORES[5]}

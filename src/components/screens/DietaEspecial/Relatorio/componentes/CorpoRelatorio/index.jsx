@@ -6,6 +6,7 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import HTTP_STATUS from "http-status-codes";
 import SolicitacaoVigente from "../../../Escola/componentes/SolicitacaoVigente";
 import { ehCanceladaSegundoStep } from "../../helpers";
 import ClassificacaoDaDietaLeitura from "../FormAutorizaDietaEspecial/componentes/ClassificacaoDaDieta/ClassificacaoDietaLeitura";
@@ -27,6 +28,9 @@ import JustificativaNegacao from "./JustificativaNegacao";
 import MotivoNegacao from "./MotivoNegacao";
 import "./styles.scss";
 import InputText from "src/components/Shareable/Input/InputText";
+import { useEffect, useState } from "react";
+import { getProtocoloPadrao } from "src/services/dietaEspecial.service";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 const CorpoRelatorio = ({
   dietaEspecial,
@@ -34,7 +38,27 @@ const CorpoRelatorio = ({
   card,
   solicitacaoVigenteAtiva,
   editar,
+  onPreencherDieta,
 }) => {
+  const [protocoloPadrao, setProtocoloPadrao] = useState(null);
+
+  useEffect(() => {
+    const setProtocoloDaDieta = async () => {
+      if (dietaEspecial.protocolo_padrao) {
+        const respProtocoloPadrao = await getProtocoloPadrao(
+          dietaEspecial.protocolo_padrao,
+        );
+        if (respProtocoloPadrao.status === HTTP_STATUS.OK) {
+          setProtocoloPadrao(respProtocoloPadrao.data);
+        } else {
+          toastError("Houve um erro ao carregar Protocolo Padrão");
+        }
+      }
+    };
+
+    setProtocoloDaDieta();
+  }, [dietaEspecial?.protocolo_padrao]);
+
   const onSubmit = () => {
     // será desenvolvido na história 41937
   };
@@ -349,11 +373,8 @@ const CorpoRelatorio = ({
     )
       ? ""
       : dietaEspecial.classificacao.nome;
-    dietaEspecial.nome_protocolo_padrao =
-      dietaEspecial.nome_protocolo ||
-      (dietaEspecial.protocolo_padrao &&
-        dietaEspecial.protocolo_padrao.nome_protocolo) ||
-      "";
+    dietaEspecial.nome_protocolo_padrao = protocoloPadrao?.nome_protocolo || "";
+    dietaEspecial.nome_protocolo = dietaEspecial?.nome_protocolo || "";
     dietaEspecial.data_inicio = [undefined, null].includes(
       dietaEspecial.data_inicio,
     )
@@ -371,6 +392,7 @@ const CorpoRelatorio = ({
 
   return (
     <Form
+      key={protocoloPadrao?.nome_protocolo || "sem-protocolo"}
       onSubmit={onSubmit}
       initialValues={initialValues()}
       mutators={{ ...arrayMutators }}
@@ -417,6 +439,7 @@ const CorpoRelatorio = ({
             dietaEspecial.status_solicitacao === "CODAE_A_AUTORIZAR" && (
               <SolicitacaoVigente
                 solicitacoesVigentes={solicitacaoVigenteAtiva}
+                onPreencherDieta={onPreencherDieta}
               />
             )}
           <hr />

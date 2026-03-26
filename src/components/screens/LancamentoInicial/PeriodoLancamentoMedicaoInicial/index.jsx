@@ -52,6 +52,7 @@ import {
   getDiasLetivosRecreio,
   getDiasParaCorrecao,
   getFeriadosNoMes,
+  getLanchesEmergenciaisDiarios,
   getLogDietasAutorizadasPeriodo,
   getLogDietasAutorizadasRecreioNasFerias,
   getMatriculadosPeriodo,
@@ -211,6 +212,10 @@ export default () => {
   const [valoresObservacoes, setValoresObservacoes] = useState([]);
   const [periodoGrupo, setPeriodoGrupo] = useState(null);
   const [diasParaCorrecao, setDiasParaCorrecao] = useState();
+  const [
+    diasLancheEmergencialDiarioAtivo,
+    setDiasLancheEmergencialDiarioAtivo,
+  ] = useState([]);
   const [ehPeriodoEscolarSimples, setEhPeriodoEscolarSimples] = useState(null);
   const [tabItemsSemanas, setTabItemsSemanas] = useState(null);
   const [tabItemsAlunosEmebs, setTabItemsAlunosEmebs] = useState(null);
@@ -256,6 +261,63 @@ export default () => {
       });
     });
     return tiposAlimentacao;
+  };
+
+  const getDiasLancheEmergencialDiarioAtivoAsync = async (
+    escolaUuid,
+    mesAnoSelecionado,
+  ) => {
+    const params = {
+      escola_uuid: escolaUuid,
+      mes: format(mesAnoSelecionado, "MM"),
+      ano: getYear(mesAnoSelecionado).toString(),
+    };
+    const response = await getLanchesEmergenciaisDiarios(params);
+
+    if (response?.status !== HTTP_STATUS.OK) {
+      setDiasLancheEmergencialDiarioAtivo([]);
+      return;
+    }
+
+    const inicioMes = startOfMonth(mesAnoSelecionado);
+    const fimMes = lastDayOfMonth(mesAnoSelecionado);
+    const diasAtivos = response.data.flatMap((lancheEmergencialDiario) => {
+      const dataInicial = parse(
+        lancheEmergencialDiario.data_inicial,
+        "dd/MM/yyyy",
+        new Date(),
+      );
+      const dataFinal = lancheEmergencialDiario.data_final
+        ? parse(lancheEmergencialDiario.data_final, "dd/MM/yyyy", new Date())
+        : fimMes;
+
+      if (dataInicial > fimMes || dataFinal < inicioMes) {
+        return [];
+      }
+
+      const inicioIntervalo = dataInicial < inicioMes ? inicioMes : dataInicial;
+      const fimIntervalo = dataFinal > fimMes ? fimMes : dataFinal;
+      const dias = [];
+
+      for (
+        let diaAtual = inicioIntervalo;
+        diaAtual <= fimIntervalo;
+        diaAtual = addDays(diaAtual, 1)
+      ) {
+        if (
+          isWithinInterval(diaAtual, {
+            start: inicioIntervalo,
+            end: fimIntervalo,
+          })
+        ) {
+          dias.push(format(diaAtual, "dd"));
+        }
+      }
+
+      return dias;
+    });
+
+    setDiasLancheEmergencialDiarioAtivo([...new Set(diasAtivos)]);
   };
 
   const trataTabelaAlimentacaoEscolaSemAlunosRegulares = (
@@ -404,6 +466,10 @@ export default () => {
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
         escola.uuid,
         { ano: getYear(mesAnoSelecionado).toString() },
+      );
+      await getDiasLancheEmergencialDiarioAtivoAsync(
+        escola.uuid,
+        mesAnoSelecionado,
       );
 
       getListaDiasSobremesaDoceAsync(escola.uuid);
@@ -1941,6 +2007,24 @@ export default () => {
     return true;
   };
 
+  const validacaoDiaLetivoCalendario = (dia) => {
+    const objDia = calendarioMesConsiderado.find(
+      (objDia) => Number(objDia.dia) === Number(dia),
+    );
+    return Boolean(objDia?.dia_letivo);
+  };
+
+  const validacaoDiaLetivoLancheEmergencial = (dia) => {
+    const temLancheEmergencialDiarioAtivoNoDia =
+      diasLancheEmergencialDiarioAtivo.includes(String(dia).padStart(2, "0"));
+
+    if (temLancheEmergencialDiarioAtivoNoDia) {
+      return validacaoDiaLetivoCalendario(dia);
+    }
+
+    return validacaoDiaLetivo(dia);
+  };
+
   const classNameFieldTabelaDieta = (
     row,
     column,
@@ -2157,6 +2241,7 @@ export default () => {
             column,
             categoria,
             alteracoesAlimentacaoAutorizadas,
+            diasLancheEmergencialDiarioAtivo,
             value,
             ehChangeInput,
           )) &&
@@ -2275,8 +2360,18 @@ export default () => {
     ) {
       return "";
     }
+    const temLancheEmergencialDiarioAtivoNoDia =
+      diasLancheEmergencialDiarioAtivo.includes(
+        String(column.dia).padStart(2, "0"),
+      );
+    const lancheEmergencialPodeSerLancadoNoDia =
+      row.name === "lanche_emergencial" &&
+      temLancheEmergencialDiarioAtivoNoDia &&
+      validacaoDiaLetivoCalendario(column.dia);
+
     return `${
       !validacaoDiaLetivo(column.dia) &&
+      !lancheEmergencialPodeSerLancadoNoDia &&
       !ehDiaParaCorrigir(
         column.dia,
         categoria.id,
@@ -3067,6 +3162,7 @@ export default () => {
                                                           mesAnoDefault,
                                                           dadosValoresInclusoesAutorizadasState,
                                                           validacaoDiaLetivo,
+                                                          validacaoDiaLetivoLancheEmergencial,
                                                           validacaoSemana,
                                                           location,
                                                           ehGrupoETECUrlParam,
@@ -3079,6 +3175,7 @@ export default () => {
                                                           categoriasDeMedicao,
                                                           kitLanchesAutorizadas,
                                                           alteracoesAlimentacaoAutorizadas,
+                                                          diasLancheEmergencialDiarioAtivo,
                                                           diasParaCorrecao,
                                                           ehPeriodoEscolarSimples,
                                                           permissoesLancamentosEspeciaisPorDia,
@@ -3310,6 +3407,7 @@ export default () => {
                                                             mesAnoDefault,
                                                             dadosValoresInclusoesAutorizadasState,
                                                             validacaoDiaLetivo,
+                                                            validacaoDiaLetivoLancheEmergencial,
                                                             validacaoSemana,
                                                             location,
                                                             ehGrupoETECUrlParam,
@@ -3322,6 +3420,7 @@ export default () => {
                                                             categoriasDeMedicao,
                                                             kitLanchesAutorizadas,
                                                             alteracoesAlimentacaoAutorizadas,
+                                                            diasLancheEmergencialDiarioAtivo,
                                                             diasParaCorrecao,
                                                             ehPeriodoEscolarSimples,
                                                             permissoesLancamentosEspeciaisPorDia,
@@ -3412,6 +3511,7 @@ export default () => {
                                                             column,
                                                             categoria,
                                                             alteracoesAlimentacaoAutorizadas,
+                                                            diasLancheEmergencialDiarioAtivo,
                                                           )}
                                                           exibeTooltipLancheEmergencialAutorizado={exibirTooltipLancheEmergencialAutorizado(
                                                             formValuesAtualizados,

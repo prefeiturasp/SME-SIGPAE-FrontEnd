@@ -1,0 +1,47 @@
+.dados-liquidacao-relatorio {
+  width: 100%;
+
+  .tabela {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
+
+  th,
+  td {
+    border: 1px solid #bfbfbf;
+    padding: 8px;
+    text-align: center;
+  }
+
+  thead th {
+    font-weight: 600;
+  }
+
+  thead tr:first-child th {
+    background-color: #e9e9e9;
+  }
+
+  .titulo {
+    background-color: #e1e1e1;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .vazio {
+    padding: 12px;
+    color: #777;
+  }
+
+  .visualizar-unidades {
+    color: #0b8a5a;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 500;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}

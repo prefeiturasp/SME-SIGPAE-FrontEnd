@@ -1,6 +1,4 @@
 import "@testing-library/jest-dom";
-import { APIMockVersion } from "src/mocks/apiVersionMock";
-import React from "react";
 import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -17,17 +15,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
   const escolaUuid = mockMeusDadosEscolaEMEBS.vinculo_atual.instituicao.uuid;
 
   beforeEach(async () => {
-    mock.onGet("/api-version/").reply(200, APIMockVersion);
-    mock.onGet("/notificacoes/").reply(200, {
-      next: null,
-      previous: null,
-      count: 0,
-      page_size: 4,
-      results: [],
-    });
-    mock
-      .onGet("/notificacoes/quantidade-nao-lidos/")
-      .reply(200, { quantidade_nao_lidos: 0 });
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaEMEBS);
     mock
       .onGet(
@@ -52,6 +39,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
         { dia: "24", numero_alunos: 100, kit_lanche_id_externo: "28125" },
       ],
     });
+    mock.onGet("/medicao-inicial/lanches-emergenciais-diarios/").reply(200, []);
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
       .reply(200, {
