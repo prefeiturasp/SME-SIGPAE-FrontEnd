@@ -280,31 +280,36 @@ export default () => {
 
   return (
     <Spin tip="Carregando..." spinning={carregando}>
-      <div className="card mt-3 card-corrigir-documentos-recebimento">
+      <div
+        className="card mt-3 card-corrigir-documentos-recebimento"
+        data-testid="atualizar-documentos-card"
+      >
         <div className="card-body corrigir-documentos-recebimento">
           {objeto.logs && (
-            <div className="row my-4">
+            <div className="row my-4" data-testid="logs-section">
               <FluxoDeStatusPreRecebimento listaDeStatus={objeto.logs} />
             </div>
           )}
 
-          <div className="row">
-            <div className="col-6">
+          <div className="row" data-testid="data-status-section">
+            <div className="col-6" data-testid="data-criacao">
               Data da Criação:
               <span className="green-bold"> {objeto?.criado_em}</span>
             </div>
 
-            <div className="col-6">
+            <div className="col-6" data-testid="status-documento">
               Status:
               <span className="green-bold"> {objeto?.status}</span>
             </div>
           </div>
 
-          <hr />
+          <hr data-testid="divider" />
 
-          <div className="subtitulo">Dados do Laudo</div>
+          <div className="subtitulo" data-testid="dados-laudo-title">
+            Dados do Laudo
+          </div>
 
-          <div className="row">
+          <div className="row" data-testid="dados-laudo-fields">
             <div className="col-6">
               <InputText
                 label="Nº do Cronograma"
@@ -342,26 +347,35 @@ export default () => {
             </div>
           </div>
 
-          <ArquivosTipoRecebimento lista={laudo} />
+          <ArquivosTipoRecebimento lista={laudo} data-testid="arquivos-laudo" />
 
-          <hr />
+          <hr data-testid="divider-2" />
 
           <Form
             onSubmit={() => setShowModal(true)}
             initialValues={initialValues.current}
             render={({ handleSubmit, values, errors }) => (
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} data-testid="documentos-form">
                 <ModalConfirmarEnvio
                   show={showModal}
                   handleClose={() => setShowModal(false)}
                   loading={carregando}
                   handleSim={() => atualizarDocumentosRecebimento(values)}
                   correcao
+                  data-testid="modal-confirmar-envio"
                 />
 
-                <div className="subtitulo">Outros Documentos</div>
+                <div
+                  className="subtitulo"
+                  data-testid="outros-documentos-title"
+                >
+                  Outros Documentos
+                </div>
 
-                <div className="row mb-3">
+                <div
+                  className="row mb-3"
+                  data-testid="documentos-select-section"
+                >
                   <div className="col-12">
                     <Field
                       label="Selecione o documento"
@@ -384,6 +398,7 @@ export default () => {
                     (tipoDocumento: TiposDocumentoChoices) => (
                       <InserirDocumento
                         key={tipoDocumento}
+                        dataTestId={`inserir-documento-${tipoDocumento}`}
                         setFiles={(files) =>
                           setFilesDocumentos(files, tipoDocumento)
                         }
@@ -399,12 +414,13 @@ export default () => {
                     ),
                   )}
 
-                <div className="my-5">
+                <div className="my-5" data-testid="botoes-section">
                   <Botao
                     texto="Salvar e Enviar"
                     type={BUTTON_TYPE.SUBMIT}
                     style={BUTTON_STYLE.GREEN}
                     className="float-end ms-3"
+                    data-testid="botao-salvar-enviar"
                     disabled={
                       Object.keys(errors).length > 0 ||
                       desabilitarBotaoSalvar(values)
@@ -415,6 +431,7 @@ export default () => {
                     type={BUTTON_TYPE.BUTTON}
                     style={BUTTON_STYLE.GREEN_OUTLINE}
                     className="float-end ms-3"
+                    data-testid="botao-cancelar"
                     onClick={() => voltarPagina()}
                   />
                 </div>

@@ -13,6 +13,7 @@ interface Props {
   loading: boolean;
   handleSim(): void;
   correcao?: boolean;
+  dataTestId?: string;
 }
 
 const ModalConfirmarEnvio: React.FC<Props> = ({
@@ -21,9 +22,15 @@ const ModalConfirmarEnvio: React.FC<Props> = ({
   loading,
   handleSim,
   correcao,
+  dataTestId,
 }) => {
   return (
-    <Modal show={show} onHide={handleClose} backdrop={"static"}>
+    <Modal
+      show={show}
+      onHide={handleClose}
+      backdrop={"static"}
+      data-testid={dataTestId}
+    >
       <Spin tip="Carregando..." spinning={loading}>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -50,6 +57,7 @@ const ModalConfirmarEnvio: React.FC<Props> = ({
             onClick={() => handleClose()}
             style={BUTTON_STYLE.GREEN_OUTLINE}
             className="ms-3"
+            data-testid="botao-nao"
           />
           <Botao
             texto="Sim"
@@ -57,6 +65,7 @@ const ModalConfirmarEnvio: React.FC<Props> = ({
             style={BUTTON_STYLE.GREEN}
             className="ms-3"
             onClick={() => handleSim()}
+            data-testid="botao-sim"
           />
         </Modal.Footer>
       </Spin>
