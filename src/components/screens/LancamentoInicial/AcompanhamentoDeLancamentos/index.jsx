@@ -1,6 +1,7 @@
 import StatefulMultiSelect from "@khanacademy/react-multi-select";
 import { Select as SelectAntd, Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
+import moment from "moment";
 import { useContext, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -444,6 +445,8 @@ export const AcompanhamentoDeLancamentos = () => {
   const handleSubmitRelatorio = async (
     values,
     grupoSelecionado,
+    data_inicial,
+    data_final,
     nomeRelatorio,
   ) => {
     const dre = usuarioEhDRE()
@@ -452,6 +455,12 @@ export const AcompanhamentoDeLancamentos = () => {
     const [mes, ano] = values.mes_ano ? values.mes_ano.split("_") : "";
 
     const lotes = values.lotes_selecionados;
+    const dataInicialFormatada = data_inicial
+      ? moment(data_inicial, "DD/MM/YYYY").format("YYYY-MM-DD")
+      : null;
+    const dataFinalFormatada = data_final
+      ? moment(data_final, "DD/MM/YYYY").format("YYYY-MM-DD")
+      : null;
 
     const payload = {
       dre,
@@ -460,6 +469,8 @@ export const AcompanhamentoDeLancamentos = () => {
       mes,
       ano,
       lotes,
+      data_inicial: dataInicialFormatada,
+      data_final: dataFinalFormatada,
     };
 
     const funcExportarRelatorio = {
@@ -1051,6 +1062,8 @@ export const AcompanhamentoDeLancamentos = () => {
                                   handleSubmitRelatorio(
                                     values,
                                     grupoSelecionado,
+                                    null,
+                                    null,
                                     "Relatório Unificado",
                                   )
                                 }
@@ -1058,6 +1071,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                 gruposHabilitadosPorDre={
                                   gruposHabilitadosPorDre
                                 }
+                                mesAnoSelecionado={values.mes_ano}
                               />
 
                               <ModalRelatorio
@@ -1065,14 +1079,21 @@ export const AcompanhamentoDeLancamentos = () => {
                                 onClose={() =>
                                   setExibirModalRelatorioConsolidado(false)
                                 }
-                                onSubmit={({ grupoSelecionado }) =>
+                                onSubmit={({
+                                  grupoSelecionado,
+                                  data_inicial,
+                                  data_final,
+                                }) =>
                                   handleSubmitRelatorio(
                                     values,
                                     grupoSelecionado,
+                                    data_inicial,
+                                    data_final,
                                     "Relatório Consolidado",
                                   )
                                 }
                                 nomeRelatorio="Relatório Consolidado"
+                                mesAnoSelecionado={values.mes_ano}
                               />
                             </>
                           )}

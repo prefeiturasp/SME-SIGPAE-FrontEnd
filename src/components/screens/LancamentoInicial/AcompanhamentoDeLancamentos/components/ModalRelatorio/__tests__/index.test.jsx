@@ -1,5 +1,12 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  act,
+  cleanup,
+  waitFor,
+} from "@testing-library/react";
 import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import { ToastContainer } from "react-toastify";
 import { MemoryRouter } from "react-router-dom";
@@ -8,11 +15,29 @@ import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mo
 import ModalRelatorio from "../index";
 import mock from "src/services/_mock";
 
+jest.mock("src/components/Shareable/DatePicker", () => ({
+  InputComData: ({ input, placeholder, label, meta }) => (
+    <div>
+      {label && <label>{label}</label>}
+      <input
+        aria-label={placeholder}
+        placeholder={placeholder}
+        value={input.value || ""}
+        onChange={(event) => input.onChange(event.target.value || null)}
+      />
+      {meta?.error && <span>{meta.error}</span>}
+    </div>
+  ),
+}));
+
 describe("Testes de comportamento para componente - ModalRelatorio", () => {
   const mockOnClose = jest.fn();
   const mockOnSubmit = jest.fn();
 
   beforeEach(async () => {
+    mockOnClose.mockClear();
+    mockOnSubmit.mockClear();
+
     const gruposHabilitadosDRE = {
       "Grupo 1": false,
       "Grupo 2": true,
@@ -45,6 +70,7 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
               onSubmit={mockOnSubmit}
               nomeRelatorio="Relatório Unificado"
               gruposHabilitadosPorDre={gruposHabilitadosDRE}
+              mesAnoSelecionado="3_2026"
             />
             <ToastContainer />
           </MeusDadosContext.Provider>
@@ -133,5 +159,180 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
     fireEvent.click(botaoCancelar);
 
     expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  it("exibe os campos de período apenas no relatório consolidado", async () => {
+    cleanup();
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosCODAEGA,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <ModalRelatorio
+              show={true}
+              onClose={mockOnClose}
+              onSubmit={mockOnSubmit}
+              nomeRelatorio="Relatório Consolidado"
+              mesAnoSelecionado="3_2026"
+            />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    expect(
+      screen.getByText("Selecione o período de lançamento (opcional)"),
+    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Data inicial")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Data final")).toBeInTheDocument();
+  });
+
+  it("mantém o botão desabilitado se data inicial for preenchida sem data final no relatório consolidado", async () => {
+    cleanup();
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosCODAEGA,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <ModalRelatorio
+              show={true}
+              onClose={mockOnClose}
+              onSubmit={mockOnSubmit}
+              nomeRelatorio="Relatório Consolidado"
+              mesAnoSelecionado="3_2026"
+            />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    const radio = await screen.findByLabelText("Grupo 3 (CEU EMEI, EMEI)");
+    fireEvent.click(radio);
+    fireEvent.change(screen.getByPlaceholderText("Data inicial"), {
+      target: { value: "01/03/2026" },
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Gerar Relatório" }),
+      ).toBeDisabled();
+    });
+  });
+
+  it("envia grupo e período ao gerar relatório consolidado", async () => {
+    cleanup();
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosCODAEGA,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <ModalRelatorio
+              show={true}
+              onClose={mockOnClose}
+              onSubmit={mockOnSubmit}
+              nomeRelatorio="Relatório Consolidado"
+              mesAnoSelecionado="3_2026"
+            />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    const radio = await screen.findByLabelText("Grupo 3 (CEU EMEI, EMEI)");
+    fireEvent.click(radio);
+    fireEvent.change(screen.getByPlaceholderText("Data inicial"), {
+      target: { value: "01/03/2026" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Data final"), {
+      target: { value: "31/03/2026" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Gerar Relatório" }));
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith({
+        grupoSelecionado: "743ed59c-9861-4230-860e-e01e2e080327",
+        data_inicial: "01/03/2026",
+        data_final: "31/03/2026",
+      });
+    });
+  });
+
+  it("bloqueia datas fora do mês de referência selecionado", async () => {
+    cleanup();
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosCODAEGA,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <ModalRelatorio
+              show={true}
+              onClose={mockOnClose}
+              onSubmit={mockOnSubmit}
+              nomeRelatorio="Relatório Consolidado"
+              mesAnoSelecionado="3_2026"
+            />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    const radio = await screen.findByLabelText("Grupo 3 (CEU EMEI, EMEI)");
+    fireEvent.click(radio);
+    fireEvent.change(screen.getByPlaceholderText("Data inicial"), {
+      target: { value: "01/04/2026" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Data final"), {
+      target: { value: "10/04/2026" },
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getAllByText("Informe uma data dentro do mês de referência."),
+      ).toHaveLength(2);
+      expect(
+        screen.getByRole("button", { name: "Gerar Relatório" }),
+      ).toBeDisabled();
+    });
   });
 });
