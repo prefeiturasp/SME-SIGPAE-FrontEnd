@@ -191,7 +191,7 @@ describe("Testes de comportamento para componente - ModalRelatorio", () => {
     });
 
     expect(
-      screen.getByText("Selecione o período de lançamento (opcional)"),
+      screen.getByText("Selecione o período de lançamento:"),
     ).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Data inicial")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Data final")).toBeInTheDocument();
