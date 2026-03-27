@@ -14,17 +14,15 @@ import { mockListaCronogramas } from "../../../../../mocks/cronograma.service/mo
 import { mockListaNomesDistribuidores } from "../../../../../mocks/logistica.service/mockGetNomesDistribuidores";
 import { PERFIL, TIPO_SERVICO } from "../../../../../constants/shared";
 
-beforeEach(() => {
-  let scrollIntoViewMock = jest.fn();
-  window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
-
+const setupMocks = () => {
+  window.HTMLElement.prototype.scrollIntoView = jest.fn();
   mock.onGet(`/cronogramas/`).reply(200, mockListaCronogramas);
   mock
     .onGet(`/terceirizadas/lista-nomes-distribuidores/`)
     .reply(200, mockListaNomesDistribuidores);
-});
+};
 
-const setup = async () => {
+const renderPage = async () => {
   await act(async () => {
     render(
       <MemoryRouter
@@ -39,126 +37,133 @@ const setup = async () => {
   });
 };
 
-const filtrar = () => {
+const esperarCarregamento = async () => {
+  await waitFor(() =>
+    expect(screen.getByText("Filtrar Cadastros")).toBeInTheDocument(),
+  );
+};
+
+const clicarFiltrar = () => {
   const btnFiltrar = screen.getByText("Filtrar").closest("button");
   expect(btnFiltrar).not.toBeDisabled();
   fireEvent.click(btnFiltrar);
 };
 
+const limparLocalStorage = () => {
+  localStorage.removeItem("perfil");
+  localStorage.removeItem("tipo_servico");
+};
+
 describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mock.resetHistory();
+    setupMocks();
+  });
+
   beforeAll(() => {
     localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
   });
 
-  it("exibe botao Cadastrar Cronograma", async () => {
-    await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
-    );
+  afterAll(() => {
+    limparLocalStorage();
+  });
 
-    const btnFiltrar = screen
+  it("exibe botao Cadastrar Cronograma", async () => {
+    await renderPage();
+    await esperarCarregamento();
+
+    const btnCadastrar = screen
       .getByText("Cadastrar Cronograma")
       .closest("button");
-    expect(btnFiltrar).not.toBeDisabled();
-    fireEvent.click(btnFiltrar);
+    expect(btnCadastrar).not.toBeDisabled();
+    fireEvent.click(btnCadastrar);
   });
 
   it("carrega a página com requisições", async () => {
-    await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
-    );
+    await renderPage();
+    await esperarCarregamento();
 
-    filtrar();
+    clicarFiltrar();
     await waitFor(() =>
-      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
+      expect(screen.getByText("Resultados da Pesquisa")).toBeInTheDocument(),
     );
   });
 
   it("preenche campos e Limpa Filtros", async () => {
-    await setup();
+    await renderPage();
     await waitFor(() =>
       expect(
-        screen.getByText(`Filtrar por Nome do Produto`),
+        screen.getByText("Filtrar por Nome do Produto"),
       ).toBeInTheDocument(),
     );
 
-    let inputNumeroFicha = screen.getByTestId("nome_produto");
-    fireEvent.change(inputNumeroFicha, {
-      target: { value: "FORMIGA" },
-    });
+    const inputNomeProduto = screen.getByTestId("nome_produto");
+    fireEvent.change(inputNomeProduto, { target: { value: "FORMIGA" } });
 
-    expect(inputNumeroFicha).toHaveValue("FORMIGA");
+    expect(inputNomeProduto).toHaveValue("FORMIGA");
 
     const btnLimpar = screen.getByText("Limpar Filtros").closest("button");
     expect(btnLimpar).not.toBeDisabled();
     fireEvent.click(btnLimpar);
 
-    expect(inputNumeroFicha).not.toHaveValue("FORMIGA");
+    expect(inputNomeProduto).not.toHaveValue("FORMIGA");
   });
 
   it("carrega a próxima página de requisições", async () => {
-    await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
-    );
+    await renderPage();
+    await esperarCarregamento();
 
-    filtrar();
+    clicarFiltrar();
 
     await waitFor(() =>
-      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
+      expect(screen.getByText("Resultados da Pesquisa")).toBeInTheDocument(),
     );
 
     const nextButton = screen.getByLabelText("right");
     fireEvent.click(nextButton);
 
     await waitFor(() =>
-      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
+      expect(screen.getByText("Resultados da Pesquisa")).toBeInTheDocument(),
     );
   });
 
   it("baixa pdf do cronograma", async () => {
-    let createObjectURL = jest.fn();
+    const createObjectURL = jest.fn();
     window.URL.createObjectURL = createObjectURL;
-    await setup();
+    await renderPage();
+    await esperarCarregamento();
+
+    clicarFiltrar();
     await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
+      expect(screen.getByText("Resultados da Pesquisa")).toBeInTheDocument(),
     );
 
-    filtrar();
-    await waitFor(() =>
-      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
-    );
-
+    const cronogramaPdf = mockListaCronogramas.results[3];
     mock
-      .onGet(
-        `/cronogramas/${mockListaCronogramas.results[3].uuid}/gerar-pdf-cronograma/`,
-      )
+      .onGet(`/cronogramas/${cronogramaPdf.uuid}/gerar-pdf-cronograma/`)
       .reply(200, new Blob());
 
     const btnImprimir = screen.getByTestId("imprimir_3");
     fireEvent.click(btnImprimir);
 
-    expect(screen.getAllByText(`Castilho Perez`)[0]).toBeInTheDocument();
+    await waitFor(() => {
+      expect(createObjectURL).toHaveBeenCalled();
+    });
   });
 
   it("exibe mensagem pra resultado de busca vazio", async () => {
-    await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
-    );
+    await renderPage();
+    await esperarCarregamento();
 
-    const btnFiltrar = screen.getByText("Filtrar").closest("button");
-    expect(btnFiltrar).not.toBeDisabled();
+    mock.onGet(`/cronogramas/`).reply(200, { count: 0, results: [] });
 
-    mock.onGet(`/cronogramas/`).reply(200, { count: 0 });
-
-    fireEvent.click(btnFiltrar);
+    clicarFiltrar();
 
     await waitFor(() =>
       expect(
         screen.getByText(
-          `Não existe informação para os critérios de busca utilizados.`,
+          "Não existe informação para os critérios de busca utilizados.",
         ),
       ).toBeInTheDocument(),
     );
@@ -180,8 +185,8 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
     };
     mock.onGet(`/cronogramas/`).reply(200, mockFLV);
 
-    await setup();
-    filtrar();
+    await renderPage();
+    clicarFiltrar();
 
     await waitFor(() => {
       const row = screen.getByText(/PRODUTO VERDE PP/i).closest(".body-table");
@@ -203,8 +208,8 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
     };
     mock.onGet(`/cronogramas/`).reply(200, mockRascunho);
 
-    await setup();
-    filtrar();
+    await renderPage();
+    clicarFiltrar();
 
     await waitFor(() => {
       const editIcon = screen.getByTitle("Editar Rascunho");
@@ -214,6 +219,12 @@ describe("Testa página de Consulta de Cronogramas (Perfil Cronograma)", () => {
 });
 
 describe("Testa página de Consulta de Cronogramas (Perfil Fornecedor)", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mock.resetHistory();
+    setupMocks();
+  });
+
   beforeAll(() => {
     localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
     localStorage.setItem(
@@ -222,19 +233,21 @@ describe("Testa página de Consulta de Cronogramas (Perfil Fornecedor)", () => {
     );
   });
 
+  afterAll(() => {
+    limparLocalStorage();
+  });
+
   it("atualmente carrega a página com requisições automaticamente", async () => {
-    await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Filtrar Cadastros`)).toBeInTheDocument(),
-    );
+    await renderPage();
+    await esperarCarregamento();
 
     await waitFor(() =>
-      expect(screen.getByText(`Resultados da Pesquisa`)).toBeInTheDocument(),
+      expect(screen.getByText("Resultados da Pesquisa")).toBeInTheDocument(),
     );
   });
 
   it("verifica exibição de tag PLL nos resultados", async () => {
-    await setup();
+    await renderPage();
 
     await waitFor(() =>
       expect(screen.getByText(/LEVE LEITE - PLL/i)).toBeInTheDocument(),
