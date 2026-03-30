@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -202,6 +203,107 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       await awaitServices();
       expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
       expect(screen.queryByText("Semana 5")).not.toBeInTheDocument();
+    });
+
+    it("renderiza somente duas semanas quando o recreio cobre dois blocos de 7 dias", async () => {
+      cleanup();
+
+      const mockLocationStateGrupoRecreioDuasSemanas = {
+        ...mockLocationStateGrupoRecreioNasFerias,
+        mesAnoSelecionado:
+          "Mon Mar 23 2026 00:00:00 GMT-0300 (Horário Padrão de Brasília)",
+        solicitacaoMedicaoInicial: {
+          ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial,
+          recreio_nas_ferias: {
+            ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial
+              .recreio_nas_ferias,
+            titulo: "Recreio nas Férias - MAR 2026",
+            data_inicio: "23/03/2026",
+            data_fim: "30/03/2026",
+          },
+        },
+      };
+
+      await act(async () => {
+        render(
+          <MemoryRouter
+            initialEntries={[
+              {
+                pathname: "/",
+                state: mockLocationStateGrupoRecreioDuasSemanas,
+              },
+            ]}
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <PeriodoLancamentoMedicaoInicial />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await awaitServices();
+
+      expect(screen.getByText("Semana 1")).toBeInTheDocument();
+      expect(screen.getByText("Semana 2")).toBeInTheDocument();
+      expect(screen.queryByText("Semana 3")).not.toBeInTheDocument();
+    });
+
+    it("mantem a semana unica do recreio habilitada quando o periodo e de 23 a 29", async () => {
+      cleanup();
+
+      const mockLocationStateGrupoRecreioUmaSemana = {
+        ...mockLocationStateGrupoRecreioNasFerias,
+        mesAnoSelecionado:
+          "Mon Mar 23 2026 00:00:00 GMT-0300 (Horário Padrão de Brasília)",
+        solicitacaoMedicaoInicial: {
+          ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial,
+          recreio_nas_ferias: {
+            ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial
+              .recreio_nas_ferias,
+            titulo: "Recreio nas Férias - MAR 2026",
+            data_inicio: "23/03/2026",
+            data_fim: "29/03/2026",
+          },
+        },
+      };
+
+      await act(async () => {
+        render(
+          <MemoryRouter
+            initialEntries={[
+              {
+                pathname: "/",
+                state: mockLocationStateGrupoRecreioUmaSemana,
+              },
+            ]}
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <PeriodoLancamentoMedicaoInicial />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await awaitServices();
+
+      expect(screen.getByText("Semana 1")).toBeInTheDocument();
+      expect(screen.queryByText("Semana 2")).not.toBeInTheDocument();
+
+      const inputFrequenciaDia23 = screen.getByTestId(
+        "frequencia__dia_23__categoria_1",
+      );
+      const inputFrequenciaDia24 = screen.getByTestId(
+        "frequencia__dia_24__categoria_1",
+      );
+
+      expect(inputFrequenciaDia23).not.toBeDisabled();
+      expect(inputFrequenciaDia24).not.toBeDisabled();
     });
 
     it("renderiza label `ALIMENTAÇÃO`", async () => {

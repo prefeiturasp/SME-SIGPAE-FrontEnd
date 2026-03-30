@@ -1,6 +1,7 @@
 import { Spin, Tabs } from "antd";
 import {
   addDays,
+  differenceInCalendarDays,
   format,
   getDay,
   getWeeksInMonth,
@@ -1968,6 +1969,7 @@ export default () => {
   };
 
   const validacaoSemana = (dia) => {
+    if (ehRecreioNasFerias()) return false;
     // valida se é mês anterior ou mês posterior e desabilita
     return (
       (Number(semanaSelecionada) === 1 && Number(dia) > 20) ||
@@ -2577,6 +2579,16 @@ export default () => {
       dataFimRecreio = parse(dataRecreio.data_fim, "dd/MM/yyyy", new Date(), {
         locale: ptBR,
       });
+
+      const totalSemanasRecreio =
+        Math.ceil(
+          (differenceInCalendarDays(dataFimRecreio, dataInicoRecreio) + 1) / 7,
+        ) || 1;
+
+      return Array.from({ length: totalSemanasRecreio }, (_, index) => ({
+        key: `${index + 1}`,
+        label: `Semana ${index + 1}`,
+      }));
     }
 
     const totalSemanas = isSunday(lastDayOfMonth(mesAnoSelecionado))
