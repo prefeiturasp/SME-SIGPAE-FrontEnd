@@ -453,14 +453,38 @@ export default () => {
 
   const getDiasCalendarioAsync = async (payload, solicitacao) => {
     const response = await getDiasCalendario(payload);
-    const ultimoDiaComSolicitacaoAutorizada_ =
-      await getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
-        payload["escola_uuid"],
-        payload["mes"],
-        payload["ano"],
-      );
 
     if (response.status === HTTP_STATUS.OK) {
+      const recreioNasFerias =
+        solicitacao?.recreio_nas_ferias ||
+        (payload["recreio_nas_ferias"]
+          ? cadastrosRecreioNasFerias?.find(
+              (cadastro) => cadastro.uuid === payload["recreio_nas_ferias"],
+            )
+          : null);
+
+      if (recreioNasFerias?.data_fim) {
+        const [diaFim, mesFim, anoFim] = recreioNasFerias.data_fim
+          .split("/")
+          .map(Number);
+        const dataFimRecreioNasFerias = new Date(anoFim, mesFim - 1, diaFim);
+        dataFimRecreioNasFerias.setHours(23, 59, 59, 999);
+
+        const naoPodeFinalizarSeAindaNaoPassouDataFimRecreioNasFerias =
+          new Date().getTime() <= dataFimRecreioNasFerias.getTime();
+
+        setNaoPodeFinalizar(
+          naoPodeFinalizarSeAindaNaoPassouDataFimRecreioNasFerias,
+        );
+        return;
+      }
+
+      const ultimoDiaComSolicitacaoAutorizada_ =
+        await getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
+          payload["escola_uuid"],
+          payload["mes"],
+          payload["ano"],
+        );
       const listaDiasLetivos = response.data.filter(
         (dia) => dia.dia_letivo === true,
       );
