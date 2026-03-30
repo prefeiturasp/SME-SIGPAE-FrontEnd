@@ -41,7 +41,7 @@ export default () => {
   const esconderLogFornecedor = (logs) => {
     return logs.filter(
       (log) =>
-        !["Assinado Abastecimento"].includes(log.status_evento_explicacao)
+        !["Assinado Abastecimento"].includes(log.status_evento_explicacao),
     );
   };
 
@@ -51,7 +51,7 @@ export default () => {
       if (responseCronograma.status === HTTP_STATUS.OK) {
         if (usuarioEhEmpresaFornecedor()) {
           responseCronograma.data.logs = esconderLogFornecedor(
-            responseCronograma.data.logs
+            responseCronograma.data.logs,
           );
         }
         setCronograma(responseCronograma.data);
@@ -98,7 +98,7 @@ export default () => {
       <div className="card mt-3 card-detalhar-cronograma">
         <div className="card-body">
           {cronograma && (
-            <>
+            <div>
               {cronograma.logs && (
                 <>
                   <div className="row pb-3">
@@ -116,33 +116,37 @@ export default () => {
 
               <hr className="hr-detalhar" />
 
-              <div className="row mt-3">
-                <div className="col">
-                  <p className="head-green">Dados do Recebimento</p>
-                </div>
-              </div>
+              {!cronograma.ficha_tecnica?.flv_ponto_a_ponto && (
+                <>
+                  <div className="row mt-3">
+                    <div className="col">
+                      <p className="head-green">Dados do Recebimento</p>
+                    </div>
+                  </div>
 
-              {cronograma.programacoes_de_recebimento.length > 0 &&
-                cronograma.programacoes_de_recebimento
-                  .reverse()
-                  .map((programacao, key) => {
-                    return (
-                      <div key={key} className="row mb-3">
-                        <div className="col-3">
-                          <p>Data Programada:</p>
-                          <p>
-                            <b>{programacao.data_programada}</b>
-                          </p>
-                        </div>
-                        <div className="col-3">
-                          <p>Tipo de Carga:</p>
-                          <p>
-                            <b>{TIPO_CARGA_MAP[programacao.tipo_carga]}</b>
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {cronograma.programacoes_de_recebimento.length > 0 &&
+                    cronograma.programacoes_de_recebimento
+                      .reverse()
+                      .map((programacao, key) => {
+                        return (
+                          <div key={key} className="row mb-3">
+                            <div className="col-3">
+                              <p>Data Programada:</p>
+                              <p>
+                                <b>{programacao.data_programada}</b>
+                              </p>
+                            </div>
+                            <div className="col-3">
+                              <p>Tipo de Carga:</p>
+                              <p>
+                                <b>{TIPO_CARGA_MAP[programacao.tipo_carga]}</b>
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                </>
+              )}
               {cronograma?.observacoes && (
                 <>
                   <hr className="hr-detalhar" />
@@ -182,7 +186,7 @@ export default () => {
                 />
                 {botaoImprimir}
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>

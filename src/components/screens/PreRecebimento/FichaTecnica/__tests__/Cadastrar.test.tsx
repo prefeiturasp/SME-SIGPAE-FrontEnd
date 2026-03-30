@@ -510,4 +510,22 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     expect(screen.queryByTestId("gluten-nao")).not.toBeInTheDocument();
     expect(screen.queryByTestId("alergenicos-nao")).not.toBeInTheDocument();
   });
+
+  it("valida que campo 'Componentes do Produto' é um textarea", async () => {
+    await setup();
+
+    // Seleciona a categoria para que o campo apareça
+    let selectCategoria = screen
+      .getByTestId("categoria")
+      .querySelector("select");
+    fireEvent.change(selectCategoria, {
+      target: { value: CATEGORIA_OPTIONS[1].uuid },
+    });
+
+    await waitFor(() => {
+      const componentesProduto = screen.getByTestId("componentes_produto");
+      expect(componentesProduto).toBeInTheDocument();
+      expect(componentesProduto.tagName).toBe("TEXTAREA");
+    });
+  });
 });

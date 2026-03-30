@@ -208,6 +208,7 @@ export default () => {
                   <div className="col-6">
                     <Field
                       component={AutoCompleteSelectField}
+                      dataTestId="cronograma"
                       options={optionsCronograma(values)}
                       label="Nº do Cronograma"
                       name={`cronograma`}
@@ -223,6 +224,7 @@ export default () => {
                   <div className="col-6">
                     <Field
                       component={InputText}
+                      dataTestId="pregao"
                       label="Nº do Pregão/Chamada Pública"
                       name={`pregao`}
                       placeholder="Nº do Pregão/Chamada Pública"
@@ -233,6 +235,7 @@ export default () => {
                   <div className="col-6">
                     <Field
                       component={InputText}
+                      dataTestId="nome-produto"
                       label="Nome do Produto"
                       name={`nome_produto`}
                       placeholder="Nome do Produto"
@@ -244,6 +247,7 @@ export default () => {
                   <div className="col-6">
                     <Field
                       component={InputText}
+                      dataTestId="numero-laudo"
                       label="Nº do Laudo"
                       name={`numero_laudo`}
                       placeholder="Digite o Nº do Laudo"
@@ -254,6 +258,7 @@ export default () => {
                 </div>
                 <div>
                   <InserirDocumento
+                    dataTestId="laudo"
                     setFiles={setFilesLaudo}
                     removeFile={removeFileLaudo}
                     formatosAceitos="PDF"

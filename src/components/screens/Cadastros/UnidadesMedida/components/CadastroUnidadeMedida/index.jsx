@@ -98,7 +98,7 @@ export default () => {
 
   const erroCadastroOuEdicaoRepetido = (error) => {
     return error.response.data.non_field_errors.includes(
-      "Os campos nome devem criar um set único."
+      "Os campos nome devem criar um set único.",
     );
   };
 
@@ -114,7 +114,7 @@ export default () => {
         });
         setCarregando(false);
       }
-    } catch (e) {
+    } catch {
       toastError("Ocorreu um erro ao carregar dados da Unidade de Medida");
       setCarregando(false);
     }
@@ -162,7 +162,7 @@ export default () => {
                       validate={composeValidators(
                         required,
                         alphaNumericAndSingleSpaceBetweenCharacters,
-                        noSpaceStartOrEnd
+                        noSpaceStartOrEnd,
                       )}
                       required
                       toUppercaseActive
@@ -177,7 +177,7 @@ export default () => {
                       validate={composeValidators(
                         required,
                         alphaNumericAndSingleSpaceBetweenCharacters,
-                        noSpaceStartOrEnd
+                        noSpaceStartOrEnd,
                       )}
                       required
                       toLowerCaseActive
@@ -246,7 +246,7 @@ export default () => {
                       onClick={() => {
                         setShowModalCancelar(false);
                         navigate(
-                          `/${CONFIGURACOES}/${CADASTROS}/${UNIDADES_MEDIDA}`
+                          `/${CONFIGURACOES}/${CADASTROS}/${UNIDADES_MEDIDA}`,
                         );
                       }}
                       style={BUTTON_STYLE.GREEN}

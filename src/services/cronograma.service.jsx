@@ -27,15 +27,10 @@ export const getListagemCronogramas = async (params) => {
 };
 
 export const getListagemRelatorioCronogramas = async (params) => {
-  try {
-    const response = await axios.get("/cronogramas/listagem-relatorio/", {
-      params,
-    });
-    return response;
-  } catch (error) {
-    toastError(getMensagemDeErro(error.response?.status));
-    throw error;
-  }
+  const response = await axios.get("/cronogramas/listagem-relatorio/", {
+    params,
+  });
+  return response;
 };
 
 export const getListaCronogramasPraCadastro = async () => {

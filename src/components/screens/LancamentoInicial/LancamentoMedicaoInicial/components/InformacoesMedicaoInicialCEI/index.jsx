@@ -77,6 +77,7 @@ export const InformacoesMedicaoInicialCEI = ({
   );
   const [alunosParcialAlterado, setAlunosParcialAlterado] = useState(false);
   const [loadingInfoBasicas, setLoadingInfoBasicas] = useState(false);
+  const [salvando, setSalvando] = useState(false);
 
   const { Panel } = Collapse;
 
@@ -147,15 +148,20 @@ export const InformacoesMedicaoInicialCEI = ({
   const handleClickSalvar = async () => {
     if (!validarDados()) return;
 
-    if (solicitacaoMedicaoInicial) {
-      await atualizarSolicitacaoExistente();
-    } else {
-      await criarNovaSolicitacao();
-    }
+    setSalvando(true);
+    try {
+      if (solicitacaoMedicaoInicial) {
+        await atualizarSolicitacaoExistente();
+      } else {
+        await criarNovaSolicitacao();
+      }
 
-    setEmEdicao(false);
-    await onClickInfoBasicas();
-    setLoadingInfoBasicas(false);
+      setEmEdicao(false);
+      await onClickInfoBasicas();
+      setLoadingInfoBasicas(false);
+    } finally {
+      setSalvando(false);
+    }
   };
 
   const validarDados = () => {
@@ -333,6 +339,7 @@ export const InformacoesMedicaoInicialCEI = ({
     );
 
     if (response.status === HTTP_STATUS.OK) {
+      setAlunosParcialAlterado(false);
       mostrarMensagemSucessoAtualizacao(getResponsaveisPayload());
     } else {
       toastError("Não foi possível salvar as alterações!");
@@ -344,6 +351,7 @@ export const InformacoesMedicaoInicialCEI = ({
     const response = await setSolicitacaoMedicaoInicial(payload);
 
     if (response.status === HTTP_STATUS.CREATED) {
+      setAlunosParcialAlterado(false);
       toastSuccess("Medição Inicial criada com sucesso");
     } else {
       const errorMessage = Object.values(response.data).join("; ");
@@ -541,11 +549,20 @@ export const InformacoesMedicaoInicialCEI = ({
                     !location.pathname.includes(DETALHAMENTO_DO_LANCAMENTO) && (
                       <div className="mt-3 pe-2">
                         <Botao
-                          texto="Salvar"
+                          texto={
+                            salvando ? (
+                              <img
+                                src="/assets/image/ajax-loader.gif"
+                                alt="carregando"
+                              />
+                            ) : (
+                              "Salvar"
+                            )
+                          }
                           style={BUTTON_STYLE.GREEN}
                           className="float-end ms-3"
                           onClick={() => handleClickSalvar()}
-                          disabled={!emEdicao}
+                          disabled={!emEdicao || salvando}
                         />
                         <Botao
                           texto="Editar"

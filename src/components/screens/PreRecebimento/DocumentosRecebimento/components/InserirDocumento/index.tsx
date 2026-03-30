@@ -15,6 +15,7 @@ interface Props {
   formatosAceitos?: string;
   multiplosArquivos?: boolean;
   concatenarNovosArquivos?: boolean;
+  dataTestId?: string;
 }
 
 const InserirDocumento: React.FC<Props> = ({
@@ -25,17 +26,18 @@ const InserirDocumento: React.FC<Props> = ({
   formatosAceitos = "PDF, PNG, JPG ou JPEG",
   multiplosArquivos = true,
   concatenarNovosArquivos = true,
+  dataTestId,
 }) => {
   const titulo = OUTROS_DOCUMENTOS_OPTIONS.find(
-    (obj) => obj.value === tipoDocumento
+    (obj) => obj.value === tipoDocumento,
   )?.label;
 
   return (
     <>
       {titulo && (
-        <div className="row mt-3">
+        <div className="row mt-3" data-testid="documento-titulo-section">
           <div className="col">
-            <div className="subtitulo mb-0">
+            <div className="subtitulo mb-0" data-testid="documento-titulo">
               <span className="asterisco">* </span>
               {titulo}
             </div>
@@ -44,7 +46,7 @@ const InserirDocumento: React.FC<Props> = ({
       )}
 
       {tipoDocumento === "OUTROS" && (
-        <div className="mt-1">
+        <div className="mt-1" data-testid="descricao-documento-section">
           <Field
             component={TextArea}
             label="Descrição dos Documentos"
@@ -56,11 +58,12 @@ const InserirDocumento: React.FC<Props> = ({
         </div>
       )}
 
-      <div className="row">
+      <div className="row" data-testid="upload-section">
         <Field
           component={InputFile}
           arquivosPreCarregados={arquivosIniciais}
           className="inputfile"
+          dataTestId={dataTestId ? `input-file-${dataTestId}` : "input-file"}
           texto={titulo ? "Anexar Documentos" : "Anexar Laudo"}
           name={"files"}
           accept={formatosAceitos}
@@ -73,7 +76,7 @@ const InserirDocumento: React.FC<Props> = ({
           concatenarNovosArquivos={concatenarNovosArquivos}
         />
 
-        <label className="col-12 label-imagem">
+        <label className="col-12 label-imagem" data-testid="label-arquivo">
           <span className="red">* Campo Obrigatório: &nbsp;</span>
           {titulo
             ? "Envie um arquivo nos formatos: " +

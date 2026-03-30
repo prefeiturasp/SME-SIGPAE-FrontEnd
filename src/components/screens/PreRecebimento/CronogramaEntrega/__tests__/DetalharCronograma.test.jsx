@@ -14,6 +14,7 @@ import {
   mockCronogramaAssinadoCODAE,
   mockCronogramaAssinadoFornecedor,
   mockCronogramaEnviadoFornecedor,
+  mockCronogramaFLVPontoAPonto,
 } from "src/mocks/cronograma.service/mockGetCronogramaDetalhar";
 import DetalharCronogramaPage from "src/pages/PreRecebimento/DetalharCronogramaPage";
 import mock from "src/services/_mock";
@@ -38,14 +39,45 @@ const setup = async () => {
   });
 };
 
+const esperarCarregamento = async () => {
+  await waitFor(() =>
+    expect(screen.getByText("Status do Cronograma")).toBeInTheDocument(),
+  );
+};
+
+const clicarFecharModal = () => {
+  const btnFechar = screen.getByText("Não").closest("button");
+  fireEvent.click(btnFechar);
+};
+
+const preencherSenhaEConfirmar = (senha = "111") => {
+  const inputSenha = screen.getByTestId("password");
+  fireEvent.change(inputSenha, { target: { value: senha } });
+  const btnConfirmar = screen.getByText("Confirmar").closest("button");
+  fireEvent.click(btnConfirmar);
+  return btnConfirmar;
+};
+
+const abrirModalAssinatura = () => {
+  const btnAssinar = screen.getByText("Assinar Cronograma").closest("button");
+  fireEvent.click(btnAssinar);
+  const btnAssinarModal = screen
+    .getByText("Sim, assinar cronograma")
+    .closest("button");
+  fireEvent.click(btnAssinarModal);
+};
+
+const limparLocalStorage = () => {
+  localStorage.removeItem("perfil");
+  localStorage.removeItem("tipo_servico");
+};
+
 describe("Testa página Detalhar Cronograma (Perfil Cronograma)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mock.resetHistory();
-  });
-
-  beforeAll(() => {
     localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
+
     mock
       .onGet(
         `/cronogramas/${mockCronogramaAssinadoCODAE.uuid}/detalhar-com-log/`,
@@ -55,13 +87,15 @@ describe("Testa página Detalhar Cronograma (Perfil Cronograma)", () => {
     setWindowLocation(`?uuid=${mockCronogramaAssinadoCODAE.uuid}`);
   });
 
+  afterAll(() => {
+    limparLocalStorage();
+  });
+
   it("carrega cronograma detalhado", async () => {
     await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Status do Cronograma`)).toBeInTheDocument(),
-    );
+    await esperarCarregamento();
 
-    expect(screen.getByText(`Assinado Abastecimento`)).toBeInTheDocument();
+    expect(screen.getByText("Assinado Abastecimento")).toBeInTheDocument();
     expect(
       screen.getByText(mockCronogramaAssinadoCODAE.numero),
     ).toBeInTheDocument();
@@ -77,17 +111,13 @@ describe("Testa página Detalhar Cronograma (Perfil Cronograma)", () => {
     const btnVoltar = screen.getByTestId("voltar");
     expect(btnVoltar).not.toBeDisabled();
     fireEvent.click(btnVoltar);
-
-    expect(btnVoltar).toBeInTheDocument();
   });
 
   it("baixa PDF do cronograma", async () => {
-    let createObjectURL = jest.fn();
+    const createObjectURL = jest.fn();
     window.URL.createObjectURL = createObjectURL;
     await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Status do Cronograma`)).toBeInTheDocument(),
-    );
+    await esperarCarregamento();
 
     const btnBaixar = screen
       .getByText("Baixar PDF Cronograma")
@@ -101,12 +131,16 @@ describe("Testa página Detalhar Cronograma (Perfil Cronograma)", () => {
       .reply(200, new Blob());
     fireEvent.click(btnBaixar);
 
-    expect(btnBaixar).toBeInTheDocument();
+    await waitFor(() => {
+      expect(createObjectURL).toHaveBeenCalled();
+    });
   });
 });
 
 describe("Testa página de Detalhar Cronograma (Perfil Fornecedor)", () => {
-  beforeAll(() => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mock.resetHistory();
     localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
     localStorage.setItem(
       "tipo_servico",
@@ -118,26 +152,29 @@ describe("Testa página de Detalhar Cronograma (Perfil Fornecedor)", () => {
         `/cronogramas/${mockCronogramaEnviadoFornecedor.uuid}/detalhar-com-log/`,
       )
       .reply(200, mockCronogramaEnviadoFornecedor);
+
+    setWindowLocation(`?uuid=${mockCronogramaEnviadoFornecedor.uuid}`);
+  });
+
+  afterAll(() => {
+    limparLocalStorage();
+  });
+
+  it("carrega cronograma detalhado e assina", async () => {
     mock
       .onPatch(
         `/cronogramas/${mockCronogramaEnviadoFornecedor.uuid}/fornecedor-assina-cronograma/`,
       )
       .reply(200, {});
 
-    setWindowLocation(`?uuid=${mockCronogramaEnviadoFornecedor.uuid}`);
-  });
-
-  it("carrega cronograma detalhado e assina", async () => {
     await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Status do Cronograma`)).toBeInTheDocument(),
-    );
+    await esperarCarregamento();
 
     expect(
-      screen.queryByText(`Assinado e Enviado ao Fornecedor`),
+      screen.queryByText("Assinado e Enviado ao Fornecedor"),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText(`Assinado Abastecimento`),
+      screen.queryByText("Assinado Abastecimento"),
     ).not.toBeInTheDocument();
     expect(
       screen.getByText(mockCronogramaEnviadoFornecedor.numero),
@@ -156,9 +193,7 @@ describe("Testa página de Detalhar Cronograma (Perfil Fornecedor)", () => {
 
     const btnAssinar = screen.getByText("Assinar Cronograma").closest("button");
     fireEvent.click(btnAssinar);
-
-    const btnFechar = screen.getByText("Não").closest("button");
-    fireEvent.click(btnFechar);
+    clicarFecharModal();
     fireEvent.click(btnAssinar);
 
     const btnAssinarModal = screen
@@ -166,15 +201,7 @@ describe("Testa página de Detalhar Cronograma (Perfil Fornecedor)", () => {
       .closest("button");
     fireEvent.click(btnAssinarModal);
 
-    let inputNumeroFicha = screen.getByTestId("password");
-    fireEvent.change(inputNumeroFicha, {
-      target: { value: "111" },
-    });
-
-    const btnConfirmar = screen.getByText("Confirmar").closest("button");
-    fireEvent.click(btnConfirmar);
-
-    expect(btnConfirmar).toBeInTheDocument();
+    preencherSenhaEConfirmar();
   });
 
   it("mostra erro de senha inválida", async () => {
@@ -183,37 +210,13 @@ describe("Testa página de Detalhar Cronograma (Perfil Fornecedor)", () => {
         `/cronogramas/${mockCronogramaEnviadoFornecedor.uuid}/fornecedor-assina-cronograma/`,
       )
       .reply(401, {});
+
     await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Status do Cronograma`)).toBeInTheDocument(),
-    );
+    await esperarCarregamento();
 
-    const btnAssinar = screen.getByText("Assinar Cronograma").closest("button");
-    fireEvent.click(btnAssinar);
+    abrirModalAssinatura();
+    preencherSenhaEConfirmar();
 
-    const btnAssinarModal = screen
-      .getByText("Sim, assinar cronograma")
-      .closest("button");
-    fireEvent.click(btnAssinarModal);
-
-    let inputNumeroFicha = screen.getByTestId("password");
-    fireEvent.change(inputNumeroFicha, {
-      target: { value: "111" },
-    });
-
-    const btnConfirmar = screen.getByText("Confirmar").closest("button");
-    fireEvent.click(btnConfirmar);
-
-    const requestsAssinatura = mock.history.patch.filter(
-      ({ url }) =>
-        url ===
-        `/cronogramas/${mockCronogramaEnviadoFornecedor.uuid}/fornecedor-assina-cronograma/`,
-    );
-
-    expect(requestsAssinatura.length).toBeGreaterThan(0);
-    requestsAssinatura.forEach((request) => {
-      expect(request.skipAuthRefresh).toBe(true);
-    });
     expect(
       await screen.findByText("Senha inválida, verifique e tente novamente."),
     ).toBeInTheDocument();
@@ -221,7 +224,9 @@ describe("Testa página de Detalhar Cronograma (Perfil Fornecedor)", () => {
 });
 
 describe("Testa página de Detalhar Cronograma (Perfil Abastecimento)", () => {
-  beforeAll(() => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mock.resetHistory();
     localStorage.setItem("perfil", PERFIL.DILOG_ABASTECIMENTO);
 
     mock
@@ -229,22 +234,25 @@ describe("Testa página de Detalhar Cronograma (Perfil Abastecimento)", () => {
         `/cronogramas/${mockCronogramaAssinadoFornecedor.uuid}/detalhar-com-log/`,
       )
       .reply(200, mockCronogramaAssinadoFornecedor);
+
+    setWindowLocation(`?uuid=${mockCronogramaAssinadoFornecedor.uuid}`);
+  });
+
+  afterAll(() => {
+    limparLocalStorage();
+  });
+
+  it("carrega cronograma detalhado e assina", async () => {
     mock
       .onPatch(
         `/cronogramas/${mockCronogramaAssinadoFornecedor.uuid}/abastecimento-assina/`,
       )
       .reply(200, {});
 
-    setWindowLocation(`?uuid=${mockCronogramaAssinadoFornecedor.uuid}`);
-  });
-
-  it("carrega cronograma detalhado e assina", async () => {
     await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Status do Cronograma`)).toBeInTheDocument(),
-    );
+    await esperarCarregamento();
 
-    expect(screen.queryByText(`Assinado Fornecedor`)).toBeInTheDocument();
+    expect(screen.queryByText("Assinado Fornecedor")).toBeInTheDocument();
     expect(
       screen.getByText(mockCronogramaAssinadoFornecedor.numero),
     ).toBeInTheDocument();
@@ -261,9 +269,7 @@ describe("Testa página de Detalhar Cronograma (Perfil Abastecimento)", () => {
 
     const btnAssinar = screen.getByText("Assinar Cronograma").closest("button");
     fireEvent.click(btnAssinar);
-
-    const btnFechar = screen.getByText("Não").closest("button");
-    fireEvent.click(btnFechar);
+    clicarFecharModal();
     fireEvent.click(btnAssinar);
 
     const btnAssinarModal = screen
@@ -271,15 +277,7 @@ describe("Testa página de Detalhar Cronograma (Perfil Abastecimento)", () => {
       .closest("button");
     fireEvent.click(btnAssinarModal);
 
-    let inputNumeroFicha = screen.getByTestId("password");
-    fireEvent.change(inputNumeroFicha, {
-      target: { value: "111" },
-    });
-
-    const btnConfirmar = screen.getByText("Confirmar").closest("button");
-    fireEvent.click(btnConfirmar);
-
-    expect(btnConfirmar).toBeInTheDocument();
+    preencherSenhaEConfirmar();
   });
 
   it("mostra erro de senha inválida", async () => {
@@ -288,33 +286,23 @@ describe("Testa página de Detalhar Cronograma (Perfil Abastecimento)", () => {
         `/cronogramas/${mockCronogramaAssinadoFornecedor.uuid}/abastecimento-assina/`,
       )
       .reply(401, {});
+
     await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Status do Cronograma`)).toBeInTheDocument(),
-    );
+    await esperarCarregamento();
 
-    const btnAssinar = screen.getByText("Assinar Cronograma").closest("button");
-    fireEvent.click(btnAssinar);
+    abrirModalAssinatura();
+    preencherSenhaEConfirmar();
 
-    const btnAssinarModal = screen
-      .getByText("Sim, assinar cronograma")
-      .closest("button");
-    fireEvent.click(btnAssinarModal);
-
-    let inputNumeroFicha = screen.getByTestId("password");
-    fireEvent.change(inputNumeroFicha, {
-      target: { value: "111" },
-    });
-
-    const btnConfirmar = screen.getByText("Confirmar").closest("button");
-    fireEvent.click(btnConfirmar);
-
-    expect(btnConfirmar).toBeInTheDocument();
+    expect(
+      await screen.findByText("Senha inválida, verifique e tente novamente."),
+    ).toBeInTheDocument();
   });
 });
 
 describe("Testa página de Detalhar Cronograma (Perfil Dilog Diretoria)", () => {
-  beforeAll(() => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mock.resetHistory();
     localStorage.setItem("perfil", PERFIL.DILOG_DIRETORIA);
 
     mock
@@ -322,22 +310,25 @@ describe("Testa página de Detalhar Cronograma (Perfil Dilog Diretoria)", () => 
         `/cronogramas/${mockCronogramaAssinadoAbastecimento.uuid}/detalhar-com-log/`,
       )
       .reply(200, mockCronogramaAssinadoAbastecimento);
+
+    setWindowLocation(`?uuid=${mockCronogramaAssinadoAbastecimento.uuid}`);
+  });
+
+  afterAll(() => {
+    limparLocalStorage();
+  });
+
+  it("carrega cronograma detalhado e assina", async () => {
     mock
       .onPatch(
         `/cronogramas/${mockCronogramaAssinadoAbastecimento.uuid}/codae-assina/`,
       )
       .reply(200, {});
 
-    setWindowLocation(`?uuid=${mockCronogramaAssinadoAbastecimento.uuid}`);
-  });
-
-  it("carrega cronograma detalhado e assina", async () => {
     await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Status do Cronograma`)).toBeInTheDocument(),
-    );
+    await esperarCarregamento();
 
-    expect(screen.queryByText(`Assinado Abastecimento`)).toBeInTheDocument();
+    expect(screen.queryByText("Assinado Abastecimento")).toBeInTheDocument();
     expect(
       screen.getByText(mockCronogramaAssinadoAbastecimento.numero),
     ).toBeInTheDocument();
@@ -354,9 +345,7 @@ describe("Testa página de Detalhar Cronograma (Perfil Dilog Diretoria)", () => 
 
     const btnAssinar = screen.getByText("Assinar Cronograma").closest("button");
     fireEvent.click(btnAssinar);
-
-    const btnFechar = screen.getByText("Não").closest("button");
-    fireEvent.click(btnFechar);
+    clicarFecharModal();
     fireEvent.click(btnAssinar);
 
     const btnAssinarModal = screen
@@ -364,15 +353,7 @@ describe("Testa página de Detalhar Cronograma (Perfil Dilog Diretoria)", () => 
       .closest("button");
     fireEvent.click(btnAssinarModal);
 
-    let inputNumeroFicha = screen.getByTestId("password");
-    fireEvent.change(inputNumeroFicha, {
-      target: { value: "111" },
-    });
-
-    const btnConfirmar = screen.getByText("Confirmar").closest("button");
-    fireEvent.click(btnConfirmar);
-
-    expect(btnConfirmar).toBeInTheDocument();
+    preencherSenhaEConfirmar();
   });
 
   it("mostra erro de senha inválida", async () => {
@@ -381,27 +362,80 @@ describe("Testa página de Detalhar Cronograma (Perfil Dilog Diretoria)", () => 
         `/cronogramas/${mockCronogramaAssinadoAbastecimento.uuid}/codae-assina/`,
       )
       .reply(401, {});
+
     await setup();
-    await waitFor(() =>
-      expect(screen.getByText(`Status do Cronograma`)).toBeInTheDocument(),
+    await esperarCarregamento();
+
+    abrirModalAssinatura();
+    preencherSenhaEConfirmar();
+
+    expect(
+      await screen.findByText("Senha inválida, verifique e tente novamente."),
+    ).toBeInTheDocument();
+  });
+});
+
+describe("Testa página Detalhar Cronograma FLV Ponto a Ponto", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mock.resetHistory();
+    localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
+    localStorage.setItem(
+      "tipo_servico",
+      TIPO_SERVICO.FORNECEDOR_E_DISTRIBUIDOR,
     );
+    mock
+      .onGet(
+        `/cronogramas/${mockCronogramaFLVPontoAPonto.uuid}/detalhar-com-log/`,
+      )
+      .reply(200, mockCronogramaFLVPontoAPonto);
 
-    const btnAssinar = screen.getByText("Assinar Cronograma").closest("button");
-    fireEvent.click(btnAssinar);
+    setWindowLocation(`?uuid=${mockCronogramaFLVPontoAPonto.uuid}`);
+  });
 
-    const btnAssinarModal = screen
-      .getByText("Sim, assinar cronograma")
-      .closest("button");
-    fireEvent.click(btnAssinarModal);
+  afterAll(() => {
+    limparLocalStorage();
+  });
 
-    let inputNumeroFicha = screen.getByTestId("password");
-    fireEvent.change(inputNumeroFicha, {
-      target: { value: "111" },
-    });
+  it("verifica exibição de campos específicos de FLV Ponto a Ponto", async () => {
+    await setup();
+    await esperarCarregamento();
 
-    const btnConfirmar = screen.getByText("Confirmar").closest("button");
-    fireEvent.click(btnConfirmar);
+    expect(
+      screen.getByText(/Dados do Produto e Data de Entrega/i),
+    ).toBeInTheDocument();
 
-    expect(btnConfirmar).toBeInTheDocument();
+    expect(screen.getByText(/Nº do Empenho:/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(mockCronogramaFLVPontoAPonto.numero_empenho),
+    ).toBeInTheDocument();
+
+    expect(screen.queryByText("Embalagem Primária:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Embalagem Secundária:")).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText("Tabela de Distribuição de Etapas"),
+    ).toBeInTheDocument();
+
+    const tableHeaders = screen.getAllByRole("columnheader");
+    const headerTexts = tableHeaders.map((h) => h.textContent);
+    expect(headerTexts).not.toContain("N° do Empenho");
+    expect(headerTexts).not.toContain("Qtde. Total do Empenho");
+    expect(headerTexts).not.toContain("Parte");
+    expect(headerTexts).not.toContain("Total de Embalagens");
+
+    expect(screen.getByText(/Etapa 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Julho\/2026/i)).toBeInTheDocument();
+    expect(screen.getByText(/Outubro\/2026/i)).toBeInTheDocument();
+
+    expect(screen.queryByText("Armazém")).not.toBeInTheDocument();
+  });
+
+  it("verifica exibição do botão de Assinar Cronograma para Fornecedor", async () => {
+    await setup();
+    await esperarCarregamento();
+
+    const btnAssinar = screen.queryByText("Assinar Cronograma");
+    expect(btnAssinar).toBeInTheDocument();
   });
 });

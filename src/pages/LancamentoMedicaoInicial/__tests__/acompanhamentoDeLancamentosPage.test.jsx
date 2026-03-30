@@ -99,11 +99,19 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
     });
   });
 
+  async function selecionaMesReferencia(value = "06_2023") {
+    const divMesReferencia = screen.getByTestId("div-select-mes-referencia");
+    const selectMesReferencia = divMesReferencia.querySelector("select");
+    await act(async () => {
+      fireEvent.change(selectMesReferencia, {
+        target: { value },
+      });
+    });
+  }
+
   async function selecionaDRE() {
     await waitFor(() => {
-      expect(
-        screen.getByText("Selecione a DRE para visualizar os resultados"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Selecione uma DRE")).toBeInTheDocument();
     });
 
     await act(async () => {
@@ -126,6 +134,7 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
 
   it("Testa a renderização inicial da tela", async () => {
     await selecionaDRE();
+    await selecionaMesReferencia();
 
     await waitFor(() =>
       expect(
@@ -136,19 +145,12 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
 
   it("Testa a seleção de mês de referência e se os grupos corretos estão habilitados no modal de Relatório Consolidado", async () => {
     await selecionaDRE();
+    await selecionaMesReferencia();
 
     await waitFor(() => screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"));
     const cardAprovadoCODAE = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
     await act(async () => {
       fireEvent.click(cardAprovadoCODAE);
-    });
-
-    const labelSelect = screen.getByText("Mês de referência");
-    const selectElement = labelSelect.nextElementSibling;
-    selectElement.value = "Junho - 2023";
-
-    fireEvent.change(selectElement, {
-      target: { value: "06_2023" },
     });
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -209,19 +211,12 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
 
   it("Verifica os grupos habilitados no modal de Relatório Unificado", async () => {
     await selecionaDRE();
+    await selecionaMesReferencia();
 
     await waitFor(() => screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE"));
     const cardAprovadoCODAE = screen.getByTestId("MEDICAO_APROVADA_PELA_CODAE");
     await act(async () => {
       fireEvent.click(cardAprovadoCODAE);
-    });
-
-    const labelSelect = screen.getByText("Mês de referência");
-    const selectElement = labelSelect.nextElementSibling;
-    selectElement.value = "Junho - 2023";
-
-    fireEvent.change(selectElement, {
-      target: { value: "06_2023" },
     });
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");

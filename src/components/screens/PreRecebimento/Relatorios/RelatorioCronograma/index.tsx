@@ -21,6 +21,7 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { getMensagemDeErro } from "src/helpers/statusErrors";
 
 export default () => {
   const [carregando, setCarregando] = useState<boolean>(false);
@@ -40,16 +41,21 @@ export default () => {
   const buscarResultados = async (page) => {
     setCarregando(true);
     const params = gerarParametrosConsulta({ page: page, ...filtros });
-    const response = await getListagemRelatorioCronogramas(params);
-    setAtivos([]);
-    setCronogramas(response.data.results);
-    setTotalizadores({
-      "Total de Cronogramas Criados": response.data.count,
-      ...response.data.totalizadores,
-    });
-    setTotalResultados(response.data.count);
-    setConsultaRealizada(true);
-    setCarregando(false);
+    try {
+      const response = await getListagemRelatorioCronogramas(params);
+      setAtivos([]);
+      setCronogramas(response.data.results);
+      setTotalizadores({
+        "Total de Cronogramas Criados": response.data.count,
+        ...response.data.totalizadores,
+      });
+      setTotalResultados(response.data.count);
+      setConsultaRealizada(true);
+    } catch (error) {
+      toastError(getMensagemDeErro(error.response?.status));
+    } finally {
+      setCarregando(false);
+    }
   };
 
   const nextPage = (page: number) => {

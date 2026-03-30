@@ -1,4 +1,3 @@
-import React from "react";
 import { Field } from "react-final-form";
 import CKEditorField from "src/components/Shareable/CKEditorField";
 import {
@@ -16,6 +15,7 @@ const Orientacoes = () => {
           name="orientacoes_gerais"
           validate={(textAreaRequired, peloMenosUmCaractere)}
           required
+          allowImages
         />
       </div>
     </div>

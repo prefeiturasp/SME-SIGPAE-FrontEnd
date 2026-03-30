@@ -48,6 +48,7 @@ export default ({
   ]);
   const [emEdicao, setEmEdicao] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [salvando, setSalvando] = useState(false);
   const { Panel } = Collapse;
 
   const location = useLocation();
@@ -143,15 +144,20 @@ export default ({
   const handleClickSalvar = async () => {
     if (!validarResponsaveis()) return;
 
-    if (solicitacaoMedicaoInicial) {
-      await atualizarSolicitacaoExistente();
-    } else {
-      await criarNovaSolicitacao();
-    }
+    setSalvando(true);
+    try {
+      if (solicitacaoMedicaoInicial) {
+        await atualizarSolicitacaoExistente();
+      } else {
+        await criarNovaSolicitacao();
+      }
 
-    setIsOpen(false);
-    setEmEdicao(false);
-    onClickInfoBasicas();
+      setIsOpen(false);
+      setEmEdicao(false);
+      await onClickInfoBasicas();
+    } finally {
+      setSalvando(false);
+    }
   };
 
   const validarResponsaveis = () => {
@@ -337,11 +343,20 @@ export default ({
                   !location.pathname.includes(DETALHAMENTO_DO_LANCAMENTO) && (
                     <div className="mt-3 pe-2">
                       <Botao
-                        texto="Salvar"
+                        texto={
+                          salvando ? (
+                            <img
+                              src="/assets/image/ajax-loader.gif"
+                              alt="carregando"
+                            />
+                          ) : (
+                            "Salvar"
+                          )
+                        }
                         style={BUTTON_STYLE.GREEN}
                         className="float-end ms-3"
                         onClick={() => handleClickSalvar()}
-                        disabled={!emEdicao}
+                        disabled={!emEdicao || salvando}
                       />
                       <Botao
                         texto="Editar"

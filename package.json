@@ -83,7 +83,10 @@
     "jest-preview": {
       "got": "14.4.7"
     },
-    "jest-watch-typeahead": "2.2.2"
+    "jest-watch-typeahead": "2.2.2",
+    "minimatch": {
+      "brace-expansion": "5.0.5"
+    }
   },
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^11.0.0",
@@ -114,7 +117,7 @@
     "jquery.easing": "^1.4.1",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
-    "locutus": "^3.0.14",
+    "locutus": "^3.0.25",
     "moment": "^2.30.1",
     "multiselect-react-dropdown": "^2.0.25",
     "react": "^18.3.1",
@@ -196,7 +199,7 @@
     "@vitejs/plugin-react": "^4.5.0",
     "babel-jest": "^29.7.0",
     "babel-plugin-transform-import-meta": "^2.3.2",
-    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",
     "husky": "^9.1.7",
     "identity-obj-proxy": "^3.0.0",
