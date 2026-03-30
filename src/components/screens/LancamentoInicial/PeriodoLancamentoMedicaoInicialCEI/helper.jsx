@@ -221,6 +221,15 @@ export const desabilitarField = (
   ehRecreioNasFerias,
 ) => {
   let alimentacoesLancamentosEspeciaisDia = [];
+  const valorAtual =
+    values[`${rowName}__dia_${dia}__categoria_${categoria}`] ??
+    values[
+      `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+    ];
+
+  if (["Mês anterior", "Mês posterior"].includes(valorAtual)) {
+    return true;
+  }
 
   const statusDeBloqueio = () => {
     return (
@@ -584,7 +593,8 @@ export const desabilitarField = (
           `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
         ],
       ) ||
-      (mesConsiderado === mesAtual &&
+      (!ehRecreioNasFerias &&
+        mesConsiderado === mesAtual &&
         Number(dia) >= format(mesAnoDefault, "dd") &&
         !ehUltimoDiaLetivoDoAno(
           dia,

@@ -26,6 +26,74 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     mockMeusDadosEscolaCEUGESTAO.vinculo_atual.instituicao.uuid;
   const solicitacaoMedicaoInicialUUID =
     mockGetSolicitacaoMedicaoInicialCEUGESTAO[0].uuid;
+  const mockRecreioNasFeriasCEUGESTAO = {
+    count: 1,
+    next: null,
+    previous: null,
+    results: [
+      {
+        uuid: "recreio-ceugestao-uuid",
+        id: 1,
+        titulo: "Recreio nas Férias - Dez 25",
+        data_inicio: "08/12/2025",
+        data_fim: "25/12/2025",
+        unidades_participantes: [
+          {
+            uuid: escolaUuid,
+            tipos_alimentacao: {
+              inscritos: [
+                {
+                  uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+                  nome: "Lanche",
+                },
+                {
+                  uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+                  nome: "Refeição",
+                },
+              ],
+              colaboradores: [
+                {
+                  uuid: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+                  nome: "Lanche",
+                },
+              ],
+            },
+          },
+        ],
+      },
+    ],
+  };
+  const mockGetSolicitacaoMedicaoInicialRecreioCEUGESTAO = [
+    {
+      ...mockGetSolicitacaoMedicaoInicialCEUGESTAO[0],
+      ano: "2025",
+      mes: "12",
+      recreio_nas_ferias: mockRecreioNasFeriasCEUGESTAO.results[0],
+    },
+  ];
+
+  const renderPage = async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaCEUGESTAO,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  };
 
   beforeEach(async () => {
     mock
@@ -37,6 +105,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
       .reply(200, mockGetEscolaSimplesCEUGESTAO);
+    mock
+      .onGet("/medicao-inicial/recreio-nas-ferias/")
+      .reply(200, mockRecreioNasFeriasCEUGESTAO);
     mock
       .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
       .reply(200, []);
@@ -119,26 +190,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     jest.setSystemTime(new Date("2025-12-01T10:00:00Z"));
     jest.clearAllMocks();
 
-    await act(async () => {
-      render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <MeusDadosContext.Provider
-            value={{
-              meusDados: mockMeusDadosEscolaCEUGESTAO,
-              setMeusDados: jest.fn(),
-            }}
-          >
-            <LancamentoMedicaoInicialPage />
-            <ToastContainer />
-          </MeusDadosContext.Provider>
-        </MemoryRouter>,
-      );
-    });
+    await renderPage();
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).toBeDisabled();
@@ -149,26 +201,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     jest.setSystemTime(new Date("2025-12-18T10:00:00Z"));
     jest.clearAllMocks();
 
-    await act(async () => {
-      render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <MeusDadosContext.Provider
-            value={{
-              meusDados: mockMeusDadosEscolaCEUGESTAO,
-              setMeusDados: jest.fn(),
-            }}
-          >
-            <LancamentoMedicaoInicialPage />
-            <ToastContainer />
-          </MeusDadosContext.Provider>
-        </MemoryRouter>,
-      );
-    });
+    await renderPage();
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).toBeDisabled();
@@ -179,26 +212,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     jest.setSystemTime(new Date("2025-12-19T10:00:00Z"));
     jest.clearAllMocks();
 
-    await act(async () => {
-      render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <MeusDadosContext.Provider
-            value={{
-              meusDados: mockMeusDadosEscolaCEUGESTAO,
-              setMeusDados: jest.fn(),
-            }}
-          >
-            <LancamentoMedicaoInicialPage />
-            <ToastContainer />
-          </MeusDadosContext.Provider>
-        </MemoryRouter>,
-      );
-    });
+    await renderPage();
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).toBeDisabled();
@@ -209,26 +223,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     jest.setSystemTime(new Date("2025-12-20T10:00:00Z"));
     jest.clearAllMocks();
 
-    await act(async () => {
-      render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <MeusDadosContext.Provider
-            value={{
-              meusDados: mockMeusDadosEscolaCEUGESTAO,
-              setMeusDados: jest.fn(),
-            }}
-          >
-            <LancamentoMedicaoInicialPage />
-            <ToastContainer />
-          </MeusDadosContext.Provider>
-        </MemoryRouter>,
-      );
-    });
+    await renderPage();
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).toBeDisabled();
@@ -239,26 +234,45 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     jest.setSystemTime(new Date("2025-12-21T10:00:00Z"));
     jest.clearAllMocks();
 
-    await act(async () => {
-      render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <MeusDadosContext.Provider
-            value={{
-              meusDados: mockMeusDadosEscolaCEUGESTAO,
-              setMeusDados: jest.fn(),
-            }}
-          >
-            <LancamentoMedicaoInicialPage />
-            <ToastContainer />
-          </MeusDadosContext.Provider>
-        </MemoryRouter>,
-      );
-    });
+    await renderPage();
+
+    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
+    expect(botaoFinalizar).not.toBeDisabled();
+  });
+
+  it("Finaliza - botao bloqueado até a data fim do recreio nas férias", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2025, 11, 25, 10, 0, 0));
+    jest.clearAllMocks();
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .reply(200, mockGetSolicitacaoMedicaoInicialRecreioCEUGESTAO);
+    window.history.pushState(
+      {},
+      "",
+      "?mes=12&ano=2025&recreio_nas_ferias=recreio-ceugestao-uuid",
+    );
+
+    await renderPage();
+
+    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
+    expect(botaoFinalizar).toBeDisabled();
+  });
+
+  it("Finaliza - botao habilitado um dia após a data fim do recreio nas férias", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2025, 11, 26, 10, 0, 0));
+    jest.clearAllMocks();
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .reply(200, mockGetSolicitacaoMedicaoInicialRecreioCEUGESTAO);
+    window.history.pushState(
+      {},
+      "",
+      "?mes=12&ano=2025&recreio_nas_ferias=recreio-ceugestao-uuid",
+    );
+
+    await renderPage();
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).not.toBeDisabled();

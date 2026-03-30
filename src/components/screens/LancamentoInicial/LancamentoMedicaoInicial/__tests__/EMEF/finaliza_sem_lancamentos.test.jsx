@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -23,6 +24,7 @@ import { quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025 } from "src/mo
 import { mockPanoramaEscolaEMEF } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/panoramaEscola";
 import { mockSolicitacaoMedicaoInicialEMEFMaio2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/solicitacaoMedicaoInicialMaio2025";
 import { mockSolicitacaoMedicaoInicialEMEFMaio2025Enviada } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/solicitacaoMedicaoInicialMaio2025Enviada";
+import { mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Dezembro2025/solicitacaoRecreioNasFerias";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
@@ -221,6 +223,58 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
     });
 
     expect(screen.queryByText("Export PDF")).not.toBeInTheDocument();
+  });
+
+  it("Não renderiza botão Finalizar sem lançamentos para Recreio nas Férias", async () => {
+    cleanup();
+
+    const mockSolicitacaoMedicaoInicialEMEFMaio2025RecreioNasFerias = [
+      {
+        ...mockSolicitacaoMedicaoInicialEMEFMaio2025[0],
+        recreio_nas_ferias:
+          mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0]
+            .recreio_nas_ferias,
+      },
+    ];
+
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .replyOnce(
+        200,
+        mockSolicitacaoMedicaoInicialEMEFMaio2025RecreioNasFerias,
+      );
+
+    window.history.pushState({}, "", "?mes=05&ano=2025");
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Recreio nas Férias")).toBeInTheDocument();
+    });
+
+    expect(
+      screen.queryByText("Finalizar sem lançamentos"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Finalizar")).toBeInTheDocument();
   });
 
   it("Exibe bloco de correção da CODAE", () => {

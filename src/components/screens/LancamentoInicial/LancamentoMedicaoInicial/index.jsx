@@ -451,51 +451,104 @@ export default () => {
       })
     : [];
 
-  const getDiasCalendarioAsync = async (payload, solicitacao) => {
-    const response = await getDiasCalendario(payload);
+  const getRecreioNasFerias = (payload, solicitacao) => {
+    return (
+      solicitacao?.recreio_nas_ferias ||
+      (payload["recreio_nas_ferias"]
+        ? cadastrosRecreioNasFerias?.find(
+            (cadastro) => cadastro.uuid === payload["recreio_nas_ferias"],
+          )
+        : null)
+    );
+  };
+
+  const validarFinalizacaoRecreioNasFerias = (payload, solicitacao) => {
+    const recreioNasFerias = getRecreioNasFerias(payload, solicitacao);
+
+    if (!recreioNasFerias?.data_fim) {
+      return false;
+    }
+
+    const [diaFim, mesFim, anoFim] = recreioNasFerias.data_fim
+      .split("/")
+      .map(Number);
+    const dataFimRecreioNasFerias = new Date(anoFim, mesFim - 1, diaFim);
+    dataFimRecreioNasFerias.setHours(23, 59, 59, 999);
+
+    const naoPodeFinalizarSeAindaNaoPassouDataFimRecreioNasFerias =
+      new Date().getTime() <= dataFimRecreioNasFerias.getTime();
+
+    setNaoPodeFinalizar(
+      naoPodeFinalizarSeAindaNaoPassouDataFimRecreioNasFerias,
+    );
+    return true;
+  };
+
+  const validarFinalizacaoLancamentoComum = async (
+    payload,
+    solicitacao,
+    diasCalendario,
+  ) => {
     const ultimoDiaComSolicitacaoAutorizada_ =
       await getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
         payload["escola_uuid"],
         payload["mes"],
         payload["ano"],
       );
+    const listaDiasLetivos = diasCalendario.filter(
+      (dia) => dia.dia_letivo === true,
+    );
+
+    if (!listaDiasLetivos.length) {
+      setNaoPodeFinalizar(false);
+      return;
+    }
+
+    let diasParaDescontar = 1;
+    if (payload["mes"] === DEZEMBRO && listaDiasLetivos.length > 1) {
+      diasParaDescontar += 1;
+    }
+
+    const ultimoDiaLetivo =
+      listaDiasLetivos[listaDiasLetivos.length - diasParaDescontar];
+    let dataUltimoDia = new Date(
+      `${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`,
+    );
+
+    if (
+      ultimoDiaComSolicitacaoAutorizada_ &&
+      solicitacao &&
+      escolaNaoPossuiAlunosRegulares(solicitacao)
+    ) {
+      dataUltimoDia = new Date(
+        Math.max(
+          dataUltimoDia.getTime(),
+          new Date(ultimoDiaComSolicitacaoAutorizada_ + "T00:00:00").getTime(),
+        ),
+      );
+    }
+
+    dataUltimoDia.setHours(23, 59, 59, 999);
+    const dataHoje = new Date();
+    const naoPodeFinalizarSeAindaNaoPassouOUltimoDia =
+      dataHoje.getTime() <= dataUltimoDia.getTime();
+
+    setNaoPodeFinalizar(naoPodeFinalizarSeAindaNaoPassouOUltimoDia);
+  };
+
+  const getDiasCalendarioAsync = async (payload, solicitacao) => {
+    const response = await getDiasCalendario(payload);
 
     if (response.status === HTTP_STATUS.OK) {
-      const listaDiasLetivos = response.data.filter(
-        (dia) => dia.dia_letivo === true,
-      );
-      if (listaDiasLetivos.length) {
-        let diasParaDescontar = 1;
-        if (payload["mes"] === DEZEMBRO && listaDiasLetivos.length > 1) {
-          diasParaDescontar += 1;
-        }
-        const ultimoDiaLetivo =
-          listaDiasLetivos[listaDiasLetivos.length - diasParaDescontar];
-        let dataUltimoDia = new Date(
-          `${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`,
-        );
-        if (
-          ultimoDiaComSolicitacaoAutorizada_ &&
-          solicitacao &&
-          escolaNaoPossuiAlunosRegulares(solicitacao)
-        ) {
-          dataUltimoDia = new Date(
-            Math.max(
-              dataUltimoDia.getTime(),
-              new Date(
-                ultimoDiaComSolicitacaoAutorizada_ + "T00:00:00",
-              ).getTime(),
-            ),
-          );
-        }
-        dataUltimoDia.setHours(23, 59, 59, 999);
-        const dataHoje = new Date();
-        const naoPodeFinalizarSeAindaNaoPassouOUltimoDia =
-          dataHoje.getTime() <= dataUltimoDia.getTime();
-        setNaoPodeFinalizar(naoPodeFinalizarSeAindaNaoPassouOUltimoDia);
-      } else {
-        setNaoPodeFinalizar(false);
+      if (validarFinalizacaoRecreioNasFerias(payload, solicitacao)) {
+        return;
       }
+
+      await validarFinalizacaoLancamentoComum(
+        payload,
+        solicitacao,
+        response.data,
+      );
     } else {
       toastError(
         "Erro ao carregar calendário do mês. Tente novamente mais tarde.",

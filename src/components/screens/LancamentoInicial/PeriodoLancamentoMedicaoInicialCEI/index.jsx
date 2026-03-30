@@ -1,6 +1,7 @@
 import { Spin, Tabs } from "antd";
 import {
   addDays,
+  differenceInCalendarDays,
   format,
   getDay,
   getWeeksInMonth,
@@ -1500,9 +1501,17 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const validacaoSemana = (dia) => {
+    if (ehRecreioNasFerias()) return false;
     return (
       (Number(semanaSelecionada) === 1 && Number(dia) > 20) ||
       ([4, 5, 6].includes(Number(semanaSelecionada)) && Number(dia) < 10)
+    );
+  };
+
+  const colunaDesabilitada = (column) => {
+    return (
+      validacaoSemana(column.dia) ||
+      Boolean(verificarMesAnteriorOuPosterior(column, mesAnoConsiderado))
     );
   };
 
@@ -2109,6 +2118,28 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       dataFimRecreio = parse(dataRecreio.data_fim, "dd/MM/yyyy", new Date(), {
         locale: ptBR,
       });
+
+      const diaSemanaInicio = getDay(dataInicoRecreio);
+      const deslocamentoInicio =
+        diaSemanaInicio === 0 ? 6 : diaSemanaInicio - 1;
+      const inicioPrimeiraSemana = subDays(
+        dataInicoRecreio,
+        deslocamentoInicio,
+      );
+
+      const diaSemanaFim = getDay(dataFimRecreio);
+      const deslocamentoFim = diaSemanaFim === 0 ? 0 : 7 - diaSemanaFim;
+      const fimUltimaSemana = addDays(dataFimRecreio, deslocamentoFim);
+
+      const totalSemanasRecreio =
+        Math.floor(
+          differenceInCalendarDays(fimUltimaSemana, inicioPrimeiraSemana) / 7,
+        ) + 1;
+
+      return Array.from({ length: totalSemanasRecreio }, (_, index) => ({
+        key: `${index + 1}`,
+        label: `Semana ${index + 1}`,
+      }));
     }
 
     const totalSemanas = isSunday(lastDayOfMonth(mesAnoSelecionado))
@@ -2600,7 +2631,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                 data-testid={`div-botao-add-obs-${column.dia}-${categoria.id}-${row.name}`}
                                                 key={column.dia}
                                                 className={`${
-                                                  validacaoSemana(column.dia)
+                                                  colunaDesabilitada(column)
                                                     ? "input-desabilitado"
                                                     : row.name === "observacoes"
                                                       ? "input-habilitado-observacoes"
@@ -2608,6 +2639,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                 }`}
                                               >
                                                 {row.name === "observacoes" ? (
+                                                  !colunaDesabilitada(column) &&
                                                   exibeBotaoAdicionarObservacao(
                                                     column.dia,
                                                   ) && (
