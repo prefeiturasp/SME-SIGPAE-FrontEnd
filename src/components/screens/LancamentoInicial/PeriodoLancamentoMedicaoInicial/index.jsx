@@ -1977,6 +1977,13 @@ export default () => {
     );
   };
 
+  const colunaDesabilitada = (column) => {
+    return (
+      validacaoSemana(column.dia) ||
+      Boolean(verificarMesAnteriorOuPosterior(column, mesAnoConsiderado))
+    );
+  };
+
   const ehUltimoDiaLetivoDoAno = (dia, mesConsiderado) => {
     if (mesConsiderado !== "dezembro") return false;
     const ultimoDia = calendarioMesConsiderado
@@ -2580,10 +2587,22 @@ export default () => {
         locale: ptBR,
       });
 
+      const diaSemanaInicio = getDay(dataInicoRecreio);
+      const deslocamentoInicio =
+        diaSemanaInicio === 0 ? 6 : diaSemanaInicio - 1;
+      const inicioPrimeiraSemana = subDays(
+        dataInicoRecreio,
+        deslocamentoInicio,
+      );
+
+      const diaSemanaFim = getDay(dataFimRecreio);
+      const deslocamentoFim = diaSemanaFim === 0 ? 0 : 7 - diaSemanaFim;
+      const fimUltimaSemana = addDays(dataFimRecreio, deslocamentoFim);
+
       const totalSemanasRecreio =
-        Math.ceil(
-          (differenceInCalendarDays(dataFimRecreio, dataInicoRecreio) + 1) / 7,
-        ) || 1;
+        Math.floor(
+          differenceInCalendarDays(fimUltimaSemana, inicioPrimeiraSemana) / 7,
+        ) + 1;
 
       return Array.from({ length: totalSemanasRecreio }, (_, index) => ({
         key: `${index + 1}`,
@@ -3031,7 +3050,7 @@ export default () => {
                                                 <div
                                                   key={column.dia}
                                                   className={`${
-                                                    validacaoSemana(column.dia)
+                                                    colunaDesabilitada(column)
                                                       ? "input-desabilitado"
                                                       : row.name ===
                                                           "observacoes"
@@ -3041,6 +3060,9 @@ export default () => {
                                                 >
                                                   {row.name ===
                                                   "observacoes" ? (
+                                                    !colunaDesabilitada(
+                                                      column,
+                                                    ) &&
                                                     exibeBotaoAdicionarObservacao(
                                                       column.dia,
                                                       categoria.id,
@@ -3273,9 +3295,7 @@ export default () => {
                                                   <div
                                                     key={column.dia}
                                                     className={`${
-                                                      validacaoSemana(
-                                                        column.dia,
-                                                      )
+                                                      colunaDesabilitada(column)
                                                         ? "input-desabilitado"
                                                         : row.name ===
                                                             "observacoes"
@@ -3291,6 +3311,9 @@ export default () => {
                                                   >
                                                     {row.name ===
                                                     "observacoes" ? (
+                                                      !colunaDesabilitada(
+                                                        column,
+                                                      ) &&
                                                       exibeBotaoAdicionarObservacao(
                                                         column.dia,
                                                         categoria.id,

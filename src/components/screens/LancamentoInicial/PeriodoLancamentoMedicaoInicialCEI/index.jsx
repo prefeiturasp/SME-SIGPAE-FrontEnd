@@ -1508,6 +1508,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     );
   };
 
+  const colunaDesabilitada = (column) => {
+    return (
+      validacaoSemana(column.dia) ||
+      Boolean(verificarMesAnteriorOuPosterior(column, mesAnoConsiderado))
+    );
+  };
+
   const validacaoDiaLetivo = (dia) => {
     const diaCalendario = calendarioMesConsiderado.find(
       (item) => Number(item.dia) === Number(dia),
@@ -2112,10 +2119,22 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         locale: ptBR,
       });
 
+      const diaSemanaInicio = getDay(dataInicoRecreio);
+      const deslocamentoInicio =
+        diaSemanaInicio === 0 ? 6 : diaSemanaInicio - 1;
+      const inicioPrimeiraSemana = subDays(
+        dataInicoRecreio,
+        deslocamentoInicio,
+      );
+
+      const diaSemanaFim = getDay(dataFimRecreio);
+      const deslocamentoFim = diaSemanaFim === 0 ? 0 : 7 - diaSemanaFim;
+      const fimUltimaSemana = addDays(dataFimRecreio, deslocamentoFim);
+
       const totalSemanasRecreio =
-        Math.ceil(
-          (differenceInCalendarDays(dataFimRecreio, dataInicoRecreio) + 1) / 7,
-        ) || 1;
+        Math.floor(
+          differenceInCalendarDays(fimUltimaSemana, inicioPrimeiraSemana) / 7,
+        ) + 1;
 
       return Array.from({ length: totalSemanasRecreio }, (_, index) => ({
         key: `${index + 1}`,
@@ -2612,7 +2631,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                 data-testid={`div-botao-add-obs-${column.dia}-${categoria.id}-${row.name}`}
                                                 key={column.dia}
                                                 className={`${
-                                                  validacaoSemana(column.dia)
+                                                  colunaDesabilitada(column)
                                                     ? "input-desabilitado"
                                                     : row.name === "observacoes"
                                                       ? "input-habilitado-observacoes"
@@ -2620,6 +2639,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                 }`}
                                               >
                                                 {row.name === "observacoes" ? (
+                                                  !colunaDesabilitada(column) &&
                                                   exibeBotaoAdicionarObservacao(
                                                     column.dia,
                                                   ) && (
