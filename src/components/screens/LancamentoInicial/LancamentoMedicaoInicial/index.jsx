@@ -91,6 +91,7 @@ export default () => {
   const [opcaoSelecionada, setOpcaoSelecionada] = useState(null);
   const [arquivo, setArquivo] = useState([]);
   const [historicoEscola, setHistoricoEscola] = useState();
+  const [recreiosLancados, setRecreiosLancados] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -233,6 +234,44 @@ export default () => {
     );
   };
 
+  const ehSolicitacaoLancadaDoMesAno = (solicitacao, mes, ano) => {
+    return (
+      Number(solicitacao.mes) === mes &&
+      Number(solicitacao.ano) === ano &&
+      !solicitacao.recreio_nas_ferias
+    );
+  };
+
+  const ehSolicitacaoLancadaDoRecreio = (solicitacao, cadastroRecreio) => {
+    const recreioLancadoUuid =
+      typeof solicitacao.recreio_nas_ferias === "string"
+        ? solicitacao.recreio_nas_ferias
+        : solicitacao.recreio_nas_ferias?.uuid;
+    const recreioLancadoTitulo =
+      typeof solicitacao.recreio_nas_ferias === "string"
+        ? null
+        : solicitacao.recreio_nas_ferias?.titulo;
+
+    return (
+      Number(solicitacao.mes) === cadastroRecreio.mesInicio &&
+      Number(solicitacao.ano) === cadastroRecreio.anoInicio &&
+      !!solicitacao.recreio_nas_ferias &&
+      (recreioLancadoUuid === cadastroRecreio.uuid ||
+        recreioLancadoTitulo === cadastroRecreio.titulo)
+    );
+  };
+
+  const ehOpcaoDeRecreioLancado = (periodo) => {
+    return (
+      !!periodo.recreio_nas_ferias &&
+      recreiosLancados.some(
+        (recreioLancado) =>
+          recreioLancado.uuid === periodo.recreio_nas_ferias ||
+          recreioLancado.titulo === periodo.periodo,
+      )
+    );
+  };
+
   useEffect(() => {
     async function fetch() {
       const escola =
@@ -267,6 +306,22 @@ export default () => {
       }
 
       let cadastrosRecreioPreparados = [];
+      const solicitacoesLancadasResultados = solicitacoesLancadas.data || [];
+
+      setRecreiosLancados(
+        solicitacoesLancadasResultados
+          .filter((solicitacao) => !!solicitacao.recreio_nas_ferias)
+          .map((solicitacao) => ({
+            uuid:
+              typeof solicitacao.recreio_nas_ferias === "string"
+                ? solicitacao.recreio_nas_ferias
+                : solicitacao.recreio_nas_ferias?.uuid,
+            titulo:
+              typeof solicitacao.recreio_nas_ferias === "string"
+                ? null
+                : solicitacao.recreio_nas_ferias?.titulo,
+          })),
+      );
 
       cadastrosRecreioPreparados = (
         cadastrosRecreioNasFerias || cadastrosRecreioNasFerias_
@@ -294,11 +349,10 @@ export default () => {
           mesString.charAt(0).toUpperCase() + mesString.slice(1) + " / " + ano;
 
         if (location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL)) {
-          const temSolicitacaoLancada = solicitacoesLancadas.data.filter(
+          const temSolicitacaoLancada = solicitacoesLancadasResultados.some(
             (solicitacao) =>
-              Number(solicitacao.mes) === mes &&
-              Number(solicitacao.ano) === ano,
-          ).length;
+              ehSolicitacaoLancadaDoMesAno(solicitacao, mes, ano),
+          );
 
           if (!temSolicitacaoLancada) {
             periodos.push({
@@ -324,7 +378,16 @@ export default () => {
         }
 
         cadastrosRecreioPreparados?.forEach((cad) => {
-          if (cad.mesInicio === mes && cad.anoInicio === ano) {
+          const temSolicitacaoRecreioLancada =
+            solicitacoesLancadasResultados.some((solicitacao) =>
+              ehSolicitacaoLancadaDoRecreio(solicitacao, cad),
+            );
+
+          if (
+            cad.mesInicio === mes &&
+            cad.anoInicio === ano &&
+            !temSolicitacaoRecreioLancada
+          ) {
             periodos.push({
               dataBRT: cad.dataInicio,
               periodo: cad.titulo,
@@ -446,9 +509,11 @@ export default () => {
   const { Option } = Select;
 
   const opcoesPeriodos = objectoPeriodos
-    ? objectoPeriodos.map((periodo) => {
-        return <Option key={periodo.dataBRT}>{periodo.periodo}</Option>;
-      })
+    ? objectoPeriodos
+        .filter((periodo) => !ehOpcaoDeRecreioLancado(periodo))
+        .map((periodo) => {
+          return <Option key={periodo.dataBRT}>{periodo.periodo}</Option>;
+        })
     : [];
 
   const getRecreioNasFerias = (payload, solicitacao) => {

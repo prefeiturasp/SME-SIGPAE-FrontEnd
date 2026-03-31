@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -10,6 +11,7 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import {
+  LANCAMENTO_MEDICAO_INICIAL,
   PANORAMA_ESCOLA,
   SOLICITACOES_DIETA_ESPECIAL,
 } from "src/configs/constants";
@@ -34,10 +36,28 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Cria Medição com 
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
 
-  beforeEach(async () => {
+  const renderPage = async ({
+    recreioNasFerias = mockRecreioNasFeriasEMEFDezembro2025,
+    solicitacoesLancadas = [],
+    solicitacaoMedicaoInicial = mockSolicitacaoMedicaoInicialEMEFMaio2025,
+    search = "?mes=12&ano=2025",
+  } = {}) => {
+    cleanup();
+    mock.reset();
+
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/notificacoes/").reply(200, {
+      next: null,
+      previous: null,
+      count: 0,
+      page_size: 4,
+      results: [],
+    });
+    mock
+      .onGet("/notificacoes/quantidade-nao-lidos/")
+      .reply(200, { quantidade_nao_lidos: 0 });
     mock
       .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
       .reply(200, mockPanoramaEscolaEMEF);
@@ -46,10 +66,15 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Cria Medição com 
       .reply(200, mockEscolaSimplesEMEF);
     mock
       .onGet("/medicao-inicial/recreio-nas-ferias/")
-      .reply(200, mockRecreioNasFeriasEMEFDezembro2025);
+      .reply(200, recreioNasFerias);
     mock
       .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
-      .reply(200, []);
+      .reply(200, solicitacoesLancadas);
+    mock
+      .onGet(
+        "medicao-inicial/solicitacao-medicao-inicial/solicitacoes-lancadas/",
+      )
+      .reply(200, solicitacoesLancadas);
     mock
       .onGet(
         `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
@@ -62,7 +87,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Cria Medição com 
       .reply(200, { results: [] });
     mock
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-      .replyOnce(200, mockSolicitacaoMedicaoInicialEMEFMaio2025);
+      .replyOnce(200, solicitacaoMedicaoInicial);
     mock.onGet("/dias-calendario/").reply(200, mockDiasCalendarioEMEFMaio2025);
     mock
       .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
@@ -84,19 +109,23 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Cria Medição com 
         "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
       )
       .reply(200, []);
-    mock
-      .onGet(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/ceu-gestao-frequencias-dietas/`,
-      )
-      .reply(200, []);
+
+    if (solicitacaoMedicaoInicial[0]?.uuid) {
+      mock
+        .onGet(
+          `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoMedicaoInicial[0].uuid}/ceu-gestao-frequencias-dietas/`,
+        )
+        .reply(200, []);
+    }
+
     mock
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
       .reply(200, quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025);
 
-    const search = `?mes=12&ano=2025`;
-    window.history.pushState({}, "", search);
+    const route = `/${LANCAMENTO_MEDICAO_INICIAL}${search}`;
+    window.history.pushState({}, "", route);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
@@ -110,6 +139,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Cria Medição com 
     await act(async () => {
       render(
         <MemoryRouter
+          initialEntries={[route]}
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true,
@@ -127,6 +157,18 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Cria Medição com 
         </MemoryRouter>,
       );
     });
+  };
+
+  beforeEach(async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
+
+    await renderPage();
+  });
+
+  afterEach(() => {
+    cleanup();
+    jest.useRealTimers();
   });
 
   it("Renderiza título da página `Lançamento Medição Inicial`", () => {
@@ -209,5 +251,53 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Cria Medição com 
         screen.getByText("Medição Inicial criada com sucesso!"),
       ).toBeInTheDocument();
     });
+  });
+
+  it("Mantém mês/ano e oculta recreio já lançado no dropdown", async () => {
+    await renderPage({
+      solicitacoesLancadas: [
+        {
+          uuid: mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0].uuid,
+          mes: mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0].mes,
+          ano: mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0].ano,
+          escola:
+            mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0].escola,
+          escola_uuid:
+            mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0]
+              .escola_uuid,
+          escola_cei_com_inclusao_parcial_autorizada:
+            mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0]
+              .escola_cei_com_inclusao_parcial_autorizada,
+          recreio_nas_ferias:
+            mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0]
+              .recreio_nas_ferias,
+        },
+      ],
+      solicitacaoMedicaoInicial: [],
+    });
+
+    await waitFor(() => {
+      expect(
+        mock.history.get.some((request) =>
+          request.url.includes("solicitacoes-lancadas"),
+        ),
+      ).toBe(true);
+    });
+
+    await act(async () => {
+      const select = screen.getByTestId("select-periodo-lancamento");
+      fireEvent.click(select);
+      fireEvent.mouseDown(
+        select.querySelector(".ant-select-selection-search-input"),
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Dezembro / 2025").length).toBeGreaterThan(0);
+    });
+
+    expect(
+      screen.queryByText("Recreio nas Férias - Dez 25"),
+    ).not.toBeInTheDocument();
   });
 });
