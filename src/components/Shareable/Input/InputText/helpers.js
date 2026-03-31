@@ -21,6 +21,35 @@ export const agruparMilharDecimal = (valor) => {
   return resultado + "," + decimais;
 };
 
+export const agruparMilharDecimalModificado = (valor) => {
+  if (valor === null || valor === undefined) return "";
+
+  let valorStr = valor.toString();
+  const partes = valorStr.split(/[,.]/);
+  if (partes.length === 2 && partes[1].length === 1) {
+    valorStr = partes[0] + partes[1] + "0";
+  }
+
+  const nums = valorStr.replace(/\D/g, "");
+  if (nums.length <= 2) return nums;
+
+  const decimais = nums.slice(-2);
+  const inteiros = nums.slice(0, -2) || "0";
+
+  let resultado = "";
+  let contador = 0;
+
+  for (let i = inteiros.length - 1; i >= 0; i--) {
+    resultado = inteiros[i] + resultado;
+    contador++;
+    if (contador % 3 === 0 && i > 0) {
+      resultado = "." + resultado;
+    }
+  }
+
+  return resultado + "," + decimais;
+};
+
 export const agruparMilharInteirosPositivos = (valor) => {
   if (valor === null || valor === undefined) return "";
 
