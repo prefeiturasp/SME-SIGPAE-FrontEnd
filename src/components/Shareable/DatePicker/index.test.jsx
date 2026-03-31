@@ -22,6 +22,10 @@ describe("InputComData", () => {
     mockDatePicker.mockClear();
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("abre no openToDate informado quando nao ha data selecionada", () => {
     const openToDate = new Date(2026, 2, 1);
 
@@ -37,5 +41,23 @@ describe("InputComData", () => {
 
     expect(props.selected).toBeNull();
     expect(props.openToDate).toEqual(openToDate);
+  });
+
+  it("abre no mes atual quando nao ha data selecionada e maxDate esta no futuro", () => {
+    const today = new Date(2026, 2, 31);
+    jest.useFakeTimers().setSystemTime(today);
+
+    render(
+      <InputComData
+        input={{ name: "data", onChange: jest.fn(), value: "" }}
+        minDate={null}
+        maxDate={new Date(2027, 2, 26)}
+      />,
+    );
+
+    const props = mockDatePicker.mock.calls.at(-1)[0];
+
+    expect(props.selected).toBeNull();
+    expect(props.openToDate).toEqual(today);
   });
 });

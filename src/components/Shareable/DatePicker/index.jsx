@@ -124,15 +124,17 @@ export class InputComData extends Component {
       return selectedDate;
     }
 
-    if (isValidDate(minDate)) {
+    const today = new Date();
+
+    if (isValidDate(minDate) && today < minDate) {
       return minDate;
     }
 
-    if (isValidDate(maxDate)) {
+    if (isValidDate(maxDate) && today > maxDate) {
       return maxDate;
     }
 
-    return new Date();
+    return today;
   }
 
   render() {
