@@ -571,6 +571,7 @@ export default () => {
       mes: format(new Date(periodo), "MM").toString(),
       ano: getYear(new Date(periodo)).toString(),
       recreio_nas_ferias,
+      voltar_unico_registro: true,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
@@ -767,6 +768,7 @@ export default () => {
       mes: mes.toString(),
       ano: ano.toString(),
       recreio_nas_ferias,
+      voltar_unico_registro: true,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);

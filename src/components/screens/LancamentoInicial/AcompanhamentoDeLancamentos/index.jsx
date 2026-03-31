@@ -402,12 +402,21 @@ export const AcompanhamentoDeLancamentos = () => {
     mes,
     ano,
     status,
+    recreioNasFerias,
   ) => {
+    const searchParams = new URLSearchParams();
+
     if (usuarioEhEscolaTerceirizada() || usuarioEhEscolaTerceirizadaDiretor()) {
+      searchParams.set("mes", mes);
+      searchParams.set("ano", ano);
+      if (recreioNasFerias?.uuid) {
+        searchParams.set("recreio_nas_ferias", recreioNasFerias.uuid);
+      }
+
       navigate(
         {
           pathname: `/${MEDICAO_INICIAL}/${DETALHAMENTO_DO_LANCAMENTO}`,
-          search: `mes=${mes}&ano=${ano}`,
+          search: searchParams.toString(),
         },
         {
           state: {
@@ -417,10 +426,15 @@ export const AcompanhamentoDeLancamentos = () => {
         },
       );
     } else {
+      searchParams.set("uuid", uuidSolicitacaoMedicao);
+      if (recreioNasFerias?.uuid) {
+        searchParams.set("recreio_nas_ferias", recreioNasFerias.uuid);
+      }
+
       navigate(
         {
           pathname: `/${MEDICAO_INICIAL}/${CONFERENCIA_DOS_LANCAMENTOS}`,
-          search: `uuid=${uuidSolicitacaoMedicao}`,
+          search: searchParams.toString(),
         },
         {
           state: {
@@ -909,7 +923,8 @@ export const AcompanhamentoDeLancamentos = () => {
                                       <tr key={key} className="row">
                                         <td className="col-5 ps-2 pt-3">
                                           {usuarioEhEscolaTerceirizadaQualquerPerfil()
-                                            ? dado.mes_ano
+                                            ? dado.recreio_nas_ferias?.titulo ||
+                                              dado.mes_ano
                                             : dado.escola}
                                         </td>
                                         {!usuarioEhEscolaTerceirizadaQualquerPerfil() && (
@@ -944,6 +959,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                                 dado.mes,
                                                 dado.ano,
                                                 dado.status,
+                                                dado.recreio_nas_ferias,
                                               )
                                             }
                                             disabled={
