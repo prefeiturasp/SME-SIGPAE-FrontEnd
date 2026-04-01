@@ -29,12 +29,21 @@ import {
   getValoresPeriodosLancamentos,
   updateValoresPeriodosLancamentos,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
+
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
+jest.mock("src/services/medicaoInicial/solicitacaoMedicaoInicial.service");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -54,6 +63,7 @@ const awaitServices = async () => {
 
 describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Colaboradores - CEI", () => {
   beforeEach(async () => {
+    mockNavigate.mockClear();
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaCEI,
       status: 200,
@@ -793,6 +803,13 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para correção do Grupo Co
   };
 
   beforeEach(async () => {
+    mockNavigate.mockClear();
+    window.history.pushState(
+      {},
+      "",
+      "?uuid=test-medicao&recreio_nas_ferias=88244981-e695-4dcc-8919-8bf7e3a146c5",
+    );
+
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaCEI,
       status: 200,
@@ -851,6 +868,9 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para correção do Grupo Co
       data: mockSalvaLancamentoSemana1Colaboradores,
       status: 200,
     });
+    escolaCorrigeMedicao.mockResolvedValue({
+      status: 200,
+    });
 
     await act(async () => {
       render(
@@ -907,5 +927,29 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para correção do Grupo Co
     expect(inputLancheDia14).not.toBeDisabled();
     expect(inputLancheDia15).toBeDisabled();
     expect(inputFrequenciaDia16).toBeDisabled();
+  });
+
+  it("ao salvar correções no recreio nas ferias, navega preservando o parametro recreio_nas_ferias", async () => {
+    await awaitServices();
+
+    fireEvent.click(screen.getByText("Semana 3"));
+    fireEvent.change(screen.getByTestId("frequencia__dia_14__categoria_1"), {
+      target: { value: "12" },
+    });
+
+    const botaoSalvarCorrecoes = screen
+      .getByText("Salvar Correções")
+      .closest("button");
+    expect(botaoSalvarCorrecoes).toBeEnabled();
+
+    fireEvent.click(botaoSalvarCorrecoes);
+    fireEvent.click(screen.getByText("Sim"));
+
+    await waitFor(() => {
+      expect(escolaCorrigeMedicao).toHaveBeenCalled();
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/medicao-inicial/detalhamento-do-lancamento?mes=10&ano=2025&recreio_nas_ferias=88244981-e695-4dcc-8919-8bf7e3a146c5",
+      );
+    });
   });
 });
