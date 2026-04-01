@@ -536,7 +536,11 @@ export const LancamentoPorPeriodoCEI = ({
                   <CardLancamentoCEI
                     textoCabecalho={`Recreio nas Férias${ehEscolaTipoCEMEI(escolaInstituicao) ? " - de 0 a 3 anos e 11 meses" : ""}`}
                     cor={CORES[10]}
-                    grupo="Recreio nas Férias - de 0 a 3 anos e 11 meses"
+                    grupo={
+                      ehEscolaTipoCEMEI(escolaInstituicao)
+                        ? "Recreio nas Férias - de 0 a 3 anos e 11 meses"
+                        : "Recreio nas Férias"
+                    }
                     tipos_alimentacao={tiposAlimentacaoRecreio(
                       solicitacaoMedicaoInicial,
                       escolaInstituicao,
