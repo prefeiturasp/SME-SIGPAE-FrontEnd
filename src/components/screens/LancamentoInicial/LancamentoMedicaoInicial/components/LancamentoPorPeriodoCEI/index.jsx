@@ -393,6 +393,10 @@ export const LancamentoPorPeriodoCEI = ({
     );
   };
 
+  const renderBotaoFinalizarSemLancamentos = () => {
+    return !recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial);
+  };
+
   const onClickFinalizarMedicaoSemLancamentos = () => {
     setShowModalFinalizarMedicaoSemLancamentos(true);
   };
@@ -593,19 +597,21 @@ export const LancamentoPorPeriodoCEI = ({
               {renderBotaoFinalizar() ? (
                 <div className="row">
                   <div className="col-12 text-end">
-                    <Botao
-                      texto="Finalizar sem lançamentos"
-                      style={BUTTON_STYLE.GREEN_OUTLINE}
-                      disabled={
-                        !usuarioEhEscolaTerceirizadaDiretor() ||
-                        comOcorrencias === "true" ||
-                        naoPodeFinalizar
-                      }
-                      exibirTooltip={comOcorrencias === "true"}
-                      tooltipTitulo="Você avaliou o serviço com ocorrências, não é possível finalizar a medição sem lançamentos."
-                      classTooltip="icone-info-invalid"
-                      onClick={() => onClickFinalizarMedicaoSemLancamentos()}
-                    />
+                    {renderBotaoFinalizarSemLancamentos() && (
+                      <Botao
+                        texto="Finalizar sem lançamentos"
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                        disabled={
+                          !usuarioEhEscolaTerceirizadaDiretor() ||
+                          comOcorrencias === "true" ||
+                          naoPodeFinalizar
+                        }
+                        exibirTooltip={comOcorrencias === "true"}
+                        tooltipTitulo="Você avaliou o serviço com ocorrências, não é possível finalizar a medição sem lançamentos."
+                        classTooltip="icone-info-invalid"
+                        onClick={() => onClickFinalizarMedicaoSemLancamentos()}
+                      />
+                    )}
                     <Botao
                       texto="Finalizar"
                       style={BUTTON_STYLE.GREEN}
