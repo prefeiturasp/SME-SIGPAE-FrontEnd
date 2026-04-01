@@ -325,6 +325,10 @@ export const desabilitarField = (
           return true;
         }
 
+        if (statusDeCorrecao()) {
+          return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
+        }
+
         return false;
       }
     } else {
