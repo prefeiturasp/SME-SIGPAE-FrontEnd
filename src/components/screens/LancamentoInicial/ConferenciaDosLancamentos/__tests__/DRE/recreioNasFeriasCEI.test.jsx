@@ -50,7 +50,7 @@ const mockPeriodosGruposMedicaoRecreioCEI = {
   results: [
     {
       uuid_medicao_periodo_grupo: "recre12345-1111-2222-3333-444444444444",
-      nome_periodo_grupo: "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+      nome_periodo_grupo: "Recreio nas Férias",
       periodo_escolar: "INTEGRAL",
       status: "MEDICAO_ENVIADA_PELA_UE",
       logs: [],
@@ -193,7 +193,7 @@ describe("Teste Conferência de Lançamentos - CEI - Recreio nas Férias", () =>
       valoresMedicao: mockValoresMedicaoCEIRecreio,
     });
 
-    await abrirLancamento("Recreio nas Férias - de 0 a 3 anos e 11 meses");
+    await abrirLancamento("Recreio nas Férias");
 
     expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
     expect(screen.getByText("Participantes")).toBeInTheDocument();
