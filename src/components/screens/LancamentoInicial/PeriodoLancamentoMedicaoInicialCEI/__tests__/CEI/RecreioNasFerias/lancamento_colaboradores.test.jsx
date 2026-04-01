@@ -780,3 +780,132 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Colaboradores 
     });
   });
 });
+
+describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para correção do Grupo Colaboradores - CEI", () => {
+  const mockLocationStateGrupoColaboradoresCorrecao = {
+    ...mockLocationStateGrupoColaboradores,
+    status_periodo: "MEDICAO_CORRECAO_SOLICITADA",
+    status_solicitacao: "MEDICAO_CORRECAO_SOLICITADA",
+    solicitacaoMedicaoInicial: {
+      ...mockLocationStateGrupoColaboradores.solicitacaoMedicaoInicial,
+      status: "MEDICAO_CORRECAO_SOLICITADA",
+    },
+  };
+
+  beforeEach(async () => {
+    getMeusDados.mockResolvedValue({
+      data: mockMeusDadosEscolaCEI,
+      status: 200,
+    });
+    getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
+    getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
+      data: { results: [] },
+      status: 200,
+    });
+    getCategoriasDeMedicao.mockResolvedValue({
+      data: mockCategoriasMedicaoCEI,
+      status: 200,
+    });
+
+    getTiposDeAlimentacao.mockResolvedValue({
+      data: { data: { results: [] }, status: 200 },
+      status: 200,
+    });
+    getValoresPeriodosLancamentos.mockResolvedValue({
+      data: mockValoresMedicaoCEIColaboradores,
+      status: 200,
+    });
+    getDiasParaCorrecao.mockResolvedValue({
+      data: [
+        {
+          medicao: "95073d55-26c3-4e65-98ae-84fdbd48bcb6",
+          criado_em: "01/04/2026 14:51:44",
+          uuid: "66899d46-9a22-4086-8087-860f808aa0ca",
+          dia: "14",
+          habilitado_correcao: true,
+          infantil_ou_fundamental: "N/A",
+          categoria_medicao: 1,
+        },
+      ],
+      status: 200,
+    });
+    getSolicitacoesSuspensoesAutorizadasEscola.mockResolvedValue({
+      data: { data: { results: [] }, status: 200 },
+      status: 200,
+    });
+
+    getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola.mockResolvedValue({
+      data: { results: [] },
+      status: 200,
+    });
+
+    getDiasLetivosRecreio.mockResolvedValue({
+      data: mockDiasLetivosColaboradores,
+      status: 200,
+    });
+    getFeriadosNoMes.mockResolvedValue({
+      data: { results: ["12"] },
+      status: 200,
+    });
+    updateValoresPeriodosLancamentos.mockResolvedValue({
+      data: mockSalvaLancamentoSemana1Colaboradores,
+      status: 200,
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: "/",
+              state: mockLocationStateGrupoColaboradoresCorrecao,
+            },
+          ]}
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <PeriodoLancamentoMedicaoInicialCEI />
+          <ToastContainer />
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("na correção, libera apenas o dia retornado em diasParaCorrecao para a categoria alimentacao", async () => {
+    await awaitServices();
+
+    fireEvent.click(screen.getByText("Semana 3"));
+
+    const inputParticipantesDia14 = screen.getByTestId(
+      "participantes__dia_14__categoria_1",
+    );
+    const inputFrequenciaDia13 = screen.getByTestId(
+      "frequencia__dia_13__categoria_1",
+    );
+    const inputFrequenciaDia14 = screen.getByTestId(
+      "frequencia__dia_14__categoria_1",
+    );
+    const inputFrequenciaDia15 = screen.getByTestId(
+      "frequencia__dia_15__categoria_1",
+    );
+    const inputLanche4hDia14 = screen.getByTestId(
+      "lanche_4h__dia_14__categoria_1",
+    );
+    const inputLancheDia14 = screen.getByTestId("lanche__dia_14__categoria_1");
+    const inputLancheDia15 = screen.getByTestId("lanche__dia_15__categoria_1");
+    const inputFrequenciaDia16 = screen.getByTestId(
+      "frequencia__dia_16__categoria_1",
+    );
+
+    expect(inputParticipantesDia14).toBeDisabled();
+    expect(inputFrequenciaDia13).toBeDisabled();
+    expect(inputFrequenciaDia14).not.toBeDisabled();
+    expect(inputFrequenciaDia15).toBeDisabled();
+    expect(inputLanche4hDia14).not.toBeDisabled();
+    expect(inputLancheDia14).not.toBeDisabled();
+    expect(inputLancheDia15).toBeDisabled();
+    expect(inputFrequenciaDia16).toBeDisabled();
+  });
+});
