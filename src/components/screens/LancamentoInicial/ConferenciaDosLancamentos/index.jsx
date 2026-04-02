@@ -335,9 +335,13 @@ export const ConferenciaDosLancamentos = () => {
         locale: ptBR,
       }).toString();
       mesString = mesString.charAt(0).toUpperCase() + mesString.slice(1);
+      const recreioNasFeriasTitulo =
+        typeof response.data.recreio_nas_ferias === "string"
+          ? response.data.recreio_nas_ferias
+          : response.data.recreio_nas_ferias?.titulo;
       escola = response.data.escola;
       dados_iniciais = {
-        mes_lancamento: `${mesString} / ${ano}`,
+        mes_lancamento: recreioNasFeriasTitulo || `${mesString} / ${ano}`,
         unidade_educacional: escola,
       };
       setSolicitacao(response.data);

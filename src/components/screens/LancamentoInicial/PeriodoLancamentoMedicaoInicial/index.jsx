@@ -1,6 +1,7 @@
 import { Spin, Tabs } from "antd";
 import {
   addDays,
+  differenceInCalendarDays,
   format,
   getDay,
   getWeeksInMonth,
@@ -1968,10 +1969,18 @@ export default () => {
   };
 
   const validacaoSemana = (dia) => {
+    if (ehRecreioNasFerias()) return false;
     // valida se é mês anterior ou mês posterior e desabilita
     return (
       (Number(semanaSelecionada) === 1 && Number(dia) > 20) ||
       ([4, 5, 6].includes(Number(semanaSelecionada)) && Number(dia) < 10)
+    );
+  };
+
+  const colunaDesabilitada = (column) => {
+    return (
+      validacaoSemana(column.dia) ||
+      Boolean(verificarMesAnteriorOuPosterior(column, mesAnoConsiderado))
     );
   };
 
@@ -2577,6 +2586,28 @@ export default () => {
       dataFimRecreio = parse(dataRecreio.data_fim, "dd/MM/yyyy", new Date(), {
         locale: ptBR,
       });
+
+      const diaSemanaInicio = getDay(dataInicoRecreio);
+      const deslocamentoInicio =
+        diaSemanaInicio === 0 ? 6 : diaSemanaInicio - 1;
+      const inicioPrimeiraSemana = subDays(
+        dataInicoRecreio,
+        deslocamentoInicio,
+      );
+
+      const diaSemanaFim = getDay(dataFimRecreio);
+      const deslocamentoFim = diaSemanaFim === 0 ? 0 : 7 - diaSemanaFim;
+      const fimUltimaSemana = addDays(dataFimRecreio, deslocamentoFim);
+
+      const totalSemanasRecreio =
+        Math.floor(
+          differenceInCalendarDays(fimUltimaSemana, inicioPrimeiraSemana) / 7,
+        ) + 1;
+
+      return Array.from({ length: totalSemanasRecreio }, (_, index) => ({
+        key: `${index + 1}`,
+        label: `Semana ${index + 1}`,
+      }));
     }
 
     const totalSemanas = isSunday(lastDayOfMonth(mesAnoSelecionado))
@@ -3019,7 +3050,7 @@ export default () => {
                                                 <div
                                                   key={column.dia}
                                                   className={`${
-                                                    validacaoSemana(column.dia)
+                                                    colunaDesabilitada(column)
                                                       ? "input-desabilitado"
                                                       : row.name ===
                                                           "observacoes"
@@ -3029,6 +3060,9 @@ export default () => {
                                                 >
                                                   {row.name ===
                                                   "observacoes" ? (
+                                                    !colunaDesabilitada(
+                                                      column,
+                                                    ) &&
                                                     exibeBotaoAdicionarObservacao(
                                                       column.dia,
                                                       categoria.id,
@@ -3261,9 +3295,7 @@ export default () => {
                                                   <div
                                                     key={column.dia}
                                                     className={`${
-                                                      validacaoSemana(
-                                                        column.dia,
-                                                      )
+                                                      colunaDesabilitada(column)
                                                         ? "input-desabilitado"
                                                         : row.name ===
                                                             "observacoes"
@@ -3279,6 +3311,9 @@ export default () => {
                                                   >
                                                     {row.name ===
                                                     "observacoes" ? (
+                                                      !colunaDesabilitada(
+                                                        column,
+                                                      ) &&
                                                       exibeBotaoAdicionarObservacao(
                                                         column.dia,
                                                         categoria.id,

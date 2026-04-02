@@ -69,6 +69,7 @@ export type DadosLiquidacaoEmpenho = {
   numero_empenho: string;
   tipo_empenho: string;
   unidades_educacionais: any[];
+  total_pagamento?: number;
 };
 
 export interface DadosLiquidacaoResponse {
