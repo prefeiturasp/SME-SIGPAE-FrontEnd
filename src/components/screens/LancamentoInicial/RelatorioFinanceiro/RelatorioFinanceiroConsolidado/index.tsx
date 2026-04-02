@@ -263,7 +263,7 @@ export function RelatorioFinanceiroConsolidado() {
         empenhos={dadosLiquidacao}
         lote={state?.lote[0]}
         relatorioFinanceiro={uuidRelatorioFinanceiro}
-        onSave={getDadosLiquidacao}
+        onSave={(e) => setDadosLiquidacao(e)}
         tiposUnidades={getTiposUuid()}
       />
     </div>
