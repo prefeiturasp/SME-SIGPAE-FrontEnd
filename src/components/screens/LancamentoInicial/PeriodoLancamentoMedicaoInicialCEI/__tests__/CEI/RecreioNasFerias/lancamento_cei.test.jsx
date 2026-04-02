@@ -135,6 +135,21 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas F�
   });
 
   describe("Testa conteúdo básico da tela", () => {
+    it("consulta os valores do recreio com o grupo simples de CEI", async () => {
+      await awaitServices();
+
+      expect(getValoresPeriodosLancamentos).toHaveBeenCalledWith(
+        expect.objectContaining({
+          nome_grupo: "Recreio nas Férias",
+        }),
+      );
+      expect(getDiasParaCorrecao).toHaveBeenCalledWith(
+        expect.objectContaining({
+          nome_grupo: "Recreio nas Férias",
+        }),
+      );
+    });
+
     it("renderiza label `Mês do Lançamento`", async () => {
       await awaitServices();
       expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();

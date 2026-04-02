@@ -7,7 +7,7 @@ export const mockLocationStateGrupoRecreioNasFerias = {
   escola: "CEI DIRET JOAQUIM GOUVEIA FRANCO JR., VER.",
   justificativa_periodo: null,
   ehEmeiDaCemei: false,
-  grupo: "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+  grupo: "Recreio nas Férias",
   solicitacaoMedicaoInicial: {
     escola: "CEI DIRET JOAQUIM GOUVEIA FRANCO JR., VER.",
     escola_uuid: "939243aa-95d4-432f-8f21-1fafd8f3284d",

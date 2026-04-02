@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import {
   PANORAMA_ESCOLA,
@@ -31,6 +31,10 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Medição
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/notificacoes/").reply(200, { results: [] });
+    mock
+      .onGet("/notificacoes/quantidade-nao-lidos/")
+      .reply(200, { quantidade_nao_lidos: 0 });
     mock
       .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
       .reply(200, mockPanoramaEscolaEMEF);
@@ -133,5 +137,173 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Medição
   it("Renderiza períodos Recreio nas Férias e Colaboradores", () => {
     expect(screen.getByText("Recreio nas Férias")).toBeInTheDocument();
     expect(screen.getByText("Colaboradores")).toBeInTheDocument();
+  });
+});
+
+describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Default recreio nas férias sem query string", () => {
+  const escolaUuid =
+    mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
+
+  beforeEach(() => {
+    mock.reset();
+
+    if (!global.localStorage) {
+      Object.defineProperty(global, "localStorage", {
+        value: localStorageMock,
+      });
+    }
+
+    localStorage.clear();
+    localStorage.setItem(
+      "nome_instituicao",
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
+    );
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+  });
+
+  it("Sincroniza a URL com mês, ano e recreio quando o recreio é o default", async () => {
+    const dataAtual = new Date();
+    const mesAtual = String(dataAtual.getMonth() + 1).padStart(2, "0");
+    const anoAtual = String(dataAtual.getFullYear());
+    const recreioUuid = "recreio-default-uuid";
+    const recreioTitulo = `Recreio ${mesAtual}/${anoAtual}`;
+    const dataInicioRecreio = `02/${mesAtual}/${anoAtual}`;
+    const dataFimRecreio = `20/${mesAtual}/${anoAtual}`;
+
+    const mockRecreioDefault = {
+      ...mockRecreioNasFeriasEMEFDezembro2025,
+      results: [
+        {
+          ...mockRecreioNasFeriasEMEFDezembro2025.results[0],
+          uuid: recreioUuid,
+          titulo: recreioTitulo,
+          data_inicio: dataInicioRecreio,
+          data_fim: dataFimRecreio,
+        },
+      ],
+    };
+
+    const mockSolicitacaoRecreioDefault = [
+      {
+        ...mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0],
+        mes: mesAtual,
+        ano: anoAtual,
+        recreio_nas_ferias: {
+          ...mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0]
+            .recreio_nas_ferias,
+          uuid: recreioUuid,
+          titulo: recreioTitulo,
+          data_inicio: dataInicioRecreio,
+          data_fim: dataFimRecreio,
+        },
+      },
+    ];
+
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/notificacoes/").reply(200, { results: [] });
+    mock
+      .onGet("/notificacoes/quantidade-nao-lidos/")
+      .reply(200, { quantidade_nao_lidos: 0 });
+    mock
+      .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
+      .reply(200, mockPanoramaEscolaEMEF);
+    mock
+      .onGet(`/escolas-simples/${escolaUuid}/`)
+      .reply(200, mockEscolaSimplesEMEF);
+    mock
+      .onGet("/medicao-inicial/recreio-nas-ferias/")
+      .reply(200, mockRecreioDefault);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/solicitacoes-lancadas/",
+      )
+      .reply(200, [
+        {
+          uuid: "solicitacao-mes-atual-lancada",
+          mes: mesAtual,
+          ano: anoAtual,
+          recreio_nas_ferias: null,
+        },
+      ]);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
+      )
+      .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
+    mock.onGet(`/historico-escola/${escolaUuid}/`).reply(200, {
+      nome: mockEscolaSimplesEMEF.nome,
+      tipo_unidade: mockEscolaSimplesEMEF.tipo_unidade,
+    });
+    mock
+      .onGet(
+        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
+      )
+      .reply(200, { results: [] });
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .replyOnce(200, mockSolicitacaoRecreioDefault);
+    mock.onGet("/dias-calendario/").reply(200, mockDiasCalendarioEMEFMaio2025);
+    mock
+      .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
+      .reply(200, mockGetTiposDeContagemAlimentacao);
+    mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
+      periodos: { MANHA: "5067e137-e5f3-4876-a63f-7f58cce93f33" },
+    });
+    mock
+      .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet("/escola-solicitacoes/inclusoes-etec-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet(
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
+      )
+      .reply(200, []);
+    mock
+      .onGet(
+        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoRecreioDefault[0].uuid}/ceu-gestao-frequencias-dietas/`,
+      )
+      .reply(200, []);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
+      )
+      .reply(200, quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025);
+
+    window.history.pushState(
+      {},
+      "",
+      "/lancamento-inicial/lancamento-medicao-inicial",
+    );
+
+    await act(async () => {
+      render(
+        <BrowserRouter>
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </BrowserRouter>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(window.location.search).toBe(
+        `?mes=${mesAtual}&ano=${anoAtual}&recreio_nas_ferias=${recreioUuid}`,
+      );
+    });
   });
 });

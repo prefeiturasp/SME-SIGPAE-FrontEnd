@@ -1412,9 +1412,19 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       if (response.status === HTTP_STATUS.OK) {
         let mes = new Date(location.state.mesAnoSelecionado).getMonth() + 1;
         const ano = new Date(location.state.mesAnoSelecionado).getFullYear();
+        const searchParams = new URLSearchParams();
         mes = String(mes).length === 1 ? "0" + String(mes) : String(mes);
+        searchParams.set("mes", mes);
+        searchParams.set("ano", String(ano));
+
+        const recreioNasFeriasUuid =
+          location.state?.solicitacaoMedicaoInicial?.recreio_nas_ferias?.uuid;
+        if (recreioNasFeriasUuid) {
+          searchParams.set("recreio_nas_ferias", recreioNasFeriasUuid);
+        }
+
         navigate(
-          `/${MEDICAO_INICIAL}/${DETALHAMENTO_DO_LANCAMENTO}?mes=${mes}&ano=${ano}`,
+          `/${MEDICAO_INICIAL}/${DETALHAMENTO_DO_LANCAMENTO}?${searchParams.toString()}`,
         );
         return toastSuccess("Correções salvas com sucesso!");
       } else {

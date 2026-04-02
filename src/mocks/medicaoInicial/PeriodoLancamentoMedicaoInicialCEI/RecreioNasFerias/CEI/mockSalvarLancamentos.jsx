@@ -1,7 +1,7 @@
 export const mockSalvaLancamentoSemana1 = {
   solicitacao_medicao_inicial: "d1031e15-e191-4bf6-9350-cf9ab688d64d",
   periodo_escolar: null,
-  grupo: "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+  grupo: "Recreio nas Férias",
   valores_medicao: [
     {
       dia: "01",

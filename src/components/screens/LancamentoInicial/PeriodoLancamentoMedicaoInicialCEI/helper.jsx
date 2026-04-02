@@ -325,6 +325,10 @@ export const desabilitarField = (
           return true;
         }
 
+        if (statusDeCorrecao()) {
+          return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
+        }
+
         return false;
       }
     } else {
@@ -861,6 +865,11 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
   }
 
   if (ehRecreioNasFerias) {
+    const faixasEtariasRecreio =
+      faixasEtarias?.length > 0
+        ? faixasEtarias
+        : faixas_etarias_objs_alimentacao;
+
     linhasTabelaAlimentacaoCEI.push({
       nome: "Participantes",
       name: "participantes",
@@ -868,7 +877,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
       faixa_etaria: null,
     });
 
-    faixasEtarias
+    faixasEtariasRecreio
       .sort((a, b) => a.inicio - b.inicio)
       .forEach((faixa_obj) => {
         linhasTabelaAlimentacaoCEI.push({

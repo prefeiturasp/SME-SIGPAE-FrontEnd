@@ -1157,11 +1157,13 @@ export const defaultValue = (
   periodoGrupo,
   solicitacao,
   alunosTabSelecionada = null,
+  usaEstruturaCeiComFaixaEtaria = true,
 ) => {
   let result = null;
   let valorLancamento = null;
 
   if (
+    usaEstruturaCeiComFaixaEtaria &&
     solicitacao &&
     (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
       (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
@@ -1210,6 +1212,7 @@ export const defaultValue = (
 
   if (form && periodoGrupo) {
     if (
+      usaEstruturaCeiComFaixaEtaria &&
       solicitacao &&
       (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
         (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
