@@ -454,6 +454,19 @@ export const AcompanhamentoDeLancamentos = () => {
   }, [meusDados, diretoriaRegional, mesAno, recreioNasFerias]);
 
   useEffect(() => {
+    if (
+      usuarioEhDRE() ||
+      usuarioEhEscolaTerceirizadaQualquerPerfil() ||
+      !diretoriaRegional ||
+      mesesAnos.length
+    ) {
+      return;
+    }
+
+    getMesesAnosSolicitacoesMedicaoinicialAsync(diretoriaRegional);
+  }, [diretoriaRegional, mesesAnos.length]);
+
+  useEffect(() => {
     if (usuarioEhDRE() && meusDados?.vinculo_atual?.instituicao?.uuid) {
       const dreUUID = meusDados.vinculo_atual.instituicao.uuid;
       buscarGruposPorDre(dreUUID);
@@ -526,6 +539,57 @@ export const AcompanhamentoDeLancamentos = () => {
       form.change("diretoria_regional", diretoria_regional.value);
   };
 
+  const getUrlAcompanhamentoComFiltros = (values = {}) => {
+    const params = new URLSearchParams();
+    const {
+      mesAno: mesAnoSelecionado,
+      recreioNasFerias: recreioSelecionadoDoValor,
+    } = extrairFiltrosMesReferencia(values.mes_ano);
+
+    const diretoriaRegionalSelecionada =
+      values.diretoria_regional || diretoriaRegional;
+    const mesAnoSelecionadoFinal = mesAnoSelecionado || mesAno;
+    const recreioNasFeriasSelecionado =
+      values.recreio_nas_ferias ||
+      recreioSelecionadoDoValor ||
+      recreioNasFerias;
+
+    if (diretoriaRegionalSelecionada) {
+      params.set("diretoria_regional", diretoriaRegionalSelecionada);
+    }
+
+    if (mesAnoSelecionadoFinal) {
+      params.set("mes_ano", mesAnoSelecionadoFinal);
+    }
+
+    if (recreioNasFeriasSelecionado) {
+      params.set("recreio_nas_ferias", recreioNasFeriasSelecionado);
+    }
+
+    if (statusSelecionado) {
+      params.set("status", statusSelecionado);
+    }
+
+    if (values.lotes_selecionados?.length) {
+      params.set("lotes", values.lotes_selecionados.join(","));
+    }
+
+    if (values.tipo_unidade) {
+      params.set("tipo_unidade", values.tipo_unidade);
+    }
+
+    if (values.escola) {
+      params.set("escola", values.escola);
+    }
+
+    if (["true", "false"].includes(String(values.ocorrencias))) {
+      params.set("ocorrencias", values.ocorrencias);
+    }
+
+    const search = params.toString();
+    return search ? `${location.pathname}?${search}` : location.pathname;
+  };
+
   const handleClickVisualizar = (
     uuidSolicitacaoMedicao,
     escolaUuid,
@@ -533,9 +597,10 @@ export const AcompanhamentoDeLancamentos = () => {
     ano,
     status,
     recreioNasFerias,
+    values,
   ) => {
     const searchParams = new URLSearchParams();
-    const voltarPara = `${location.pathname}${location.search}`;
+    const voltarPara = getUrlAcompanhamentoComFiltros(values);
 
     if (usuarioEhEscolaTerceirizada() || usuarioEhEscolaTerceirizadaDiretor()) {
       searchParams.set("mes", mes);
@@ -1109,6 +1174,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                                 dado.ano,
                                                 dado.status,
                                                 dado.recreio_nas_ferias,
+                                                values,
                                               )
                                             }
                                             disabled={
