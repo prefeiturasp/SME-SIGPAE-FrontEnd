@@ -13,6 +13,7 @@ import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
+import { mockMeusDadosSuperUsuarioMedicao } from "src/mocks/meusDados/superUsuarioMedicao";
 import { mockGetTiposUnidadeEscolar } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
 import { mockGetDashboardMedicaoInicial } from "src/mocks/services/dashboard.service/mockGetDashboardMedicaoInicial";
 import { mockGetMesesAnosMedicaoInicial } from "src/mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
@@ -195,5 +196,197 @@ describe("Medição Inicial - Retorno da Conferência para Acompanhamento", () =
     expect(
       screen.getByText("EMEF PERICLES EUGENIO DA SILVA RAMOS"),
     ).toBeInTheDocument();
+  });
+
+  it("preserva a diretoria regional no voltarPara quando o usuário tem seletor de DRE", async () => {
+    mock.reset();
+    mockNavigate.mockClear();
+
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/meses-anos/")
+      .reply(200, mockGetMesesAnosMedicaoInicialComRecreio);
+    mock
+      .onGet("/diretorias-regionais-simplissima/")
+      .reply(200, mockGetDiretoriaRegionalSimplissima);
+    mock
+      .onGet("/tipos-unidade-escolar/")
+      .reply(200, mockGetTiposUnidadeEscolar);
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosSuperUsuarioMedicao);
+    mock.onGet("/notificacoes/").reply(200, { results: [] });
+    mock.onGet("/notificacoes/quantidade-nao-lidos/").reply(200, {
+      quantidade_nao_lidos: 0,
+    });
+    mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
+    mock
+      .onGet("/escolas-simplissima-com-dre-unpaginated/terc-total/")
+      .reply(200, mockGetEscolaTercTotal);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/dashboard-totalizadores/",
+      )
+      .reply(200, mockGetDashboardMedicaoInicial);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/",
+      )
+      .reply(200, {
+        results: {
+          total: 1,
+          dados: [
+            {
+              uuid: "cc078b30-09e2-43ca-a3bc-657d5529897f",
+              escola: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+              escola_uuid: "3c32be8e-f191-468d-a4e2-3dd8751e5e7a",
+              mes: "01",
+              ano: "2026",
+              mes_ano: "Janeiro 2026",
+              tipo_unidade: "EMEF",
+              status: "Aprovado pela DRE",
+              log_mais_recente: "14/12/2023 09:58",
+              dre_ciencia_correcao_data: null,
+              todas_medicoes_e_ocorrencia_aprovados_por_medicao: false,
+              escola_cei_com_inclusao_parcial_autorizada: false,
+              sem_lancamentos: false,
+              recreio_nas_ferias: {
+                uuid: "recreio-uuid",
+                titulo: "Recreio nas Férias - JAN 2026",
+              },
+            },
+          ],
+        },
+      });
+    mock
+      .onGet("/grupos-unidade-escolar/")
+      .reply(200, mockGetGrupoUnidadeEscolar);
+    mock
+      .onGet("/grupos-unidade-escolar/por-dre/")
+      .reply(200, mockGetGrupoUnidadeEscolarPorDRE);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.MEDICAO);
+    localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          initialEntries={[
+            "/medicao-inicial/acompanhamento-de-lancamentos?diretoria_regional=108600&mes_ano=01_2026&recreio_nas_ferias=recreio-uuid&status=MEDICAO_APROVADA_PELA_DRE",
+          ]}
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <AcompanhamentoDeLancamentosPage />
+        </MemoryRouter>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Resultados")).toBeInTheDocument();
+    });
+
+    const linhaResultado = screen
+      .getByText("EMEF PERICLES EUGENIO DA SILVA RAMOS")
+      .closest("tr");
+
+    await act(async () => {
+      fireEvent.click(within(linhaResultado).getAllByRole("button")[0]);
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        state: expect.objectContaining({
+          voltarPara:
+            "/medicao-inicial/acompanhamento-de-lancamentos?diretoria_regional=108600&mes_ano=01_2026&recreio_nas_ferias=recreio-uuid&status=MEDICAO_APROVADA_PELA_DRE",
+        }),
+      }),
+    );
+  });
+
+  it("restaura o mês de referência quando o usuário tem seletor de DRE", async () => {
+    mock.reset();
+    mockNavigate.mockClear();
+
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/meses-anos/")
+      .reply(200, {
+        results: [
+          {
+            mes: "01",
+            ano: "2026",
+            status: ["MEDICAO_APROVADA_PELA_DRE"],
+            recreio_nas_ferias: {
+              uuid: "recreio-uuid",
+              titulo: "Recreio nas Férias - JAN 2026",
+            },
+          },
+        ],
+      });
+    mock
+      .onGet("/diretorias-regionais-simplissima/")
+      .reply(200, mockGetDiretoriaRegionalSimplissima);
+    mock
+      .onGet("/tipos-unidade-escolar/")
+      .reply(200, mockGetTiposUnidadeEscolar);
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosSuperUsuarioMedicao);
+    mock.onGet("/notificacoes/").reply(200, { results: [] });
+    mock.onGet("/notificacoes/quantidade-nao-lidos/").reply(200, {
+      quantidade_nao_lidos: 0,
+    });
+    mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
+    mock
+      .onGet("/escolas-simplissima-com-dre-unpaginated/terc-total/")
+      .reply(200, mockGetEscolaTercTotal);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/dashboard-totalizadores/",
+      )
+      .reply(200, mockGetDashboardMedicaoInicial);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/",
+      )
+      .reply(200, {
+        results: { total: 0, dados: [] },
+      });
+    mock
+      .onGet("/grupos-unidade-escolar/")
+      .reply(200, mockGetGrupoUnidadeEscolar);
+    mock
+      .onGet("/grupos-unidade-escolar/por-dre/")
+      .reply(200, mockGetGrupoUnidadeEscolarPorDRE);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.MEDICAO);
+    localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          initialEntries={[
+            "/medicao-inicial/acompanhamento-de-lancamentos?diretoria_regional=680b362b-8f4c-4932-9fd2-6b0aa122fc43&mes_ano=01_2026&recreio_nas_ferias=recreio-uuid&status=MEDICAO_APROVADA_PELA_DRE",
+          ]}
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <AcompanhamentoDeLancamentosPage />
+        </MemoryRouter>,
+      );
+    });
+
+    await waitFor(() => {
+      const selectMesReferencia = screen
+        .getByTestId("div-select-mes-referencia")
+        .querySelector("select");
+      expect(selectMesReferencia).toHaveValue("01_2026|recreio-uuid");
+    });
   });
 });
