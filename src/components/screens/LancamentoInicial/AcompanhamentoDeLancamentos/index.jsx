@@ -4,7 +4,7 @@ import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import { useContext, useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { MEDICAO_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
 import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import Botao from "src/components/Shareable/Botao";
@@ -75,7 +75,27 @@ import "./style.scss";
 
 export const AcompanhamentoDeLancamentos = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const atualizarFiltrosNaURL = (filtros) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+
+      Object.entries(filtros).forEach(([nome, valor]) => {
+        if (
+          (typeof valor !== "object" && valor) ||
+          (Array.isArray(valor) && valor.length > 0)
+        ) {
+          next.set(nome, valor);
+        } else {
+          next.delete(nome);
+        }
+      });
+
+      return next;
+    });
+  };
 
   const formatarValorMesReferencia = (mesAnoValue, recreioNasFeriasUuid) => {
     if (!mesAnoValue) {
@@ -150,7 +170,7 @@ export const AcompanhamentoDeLancamentos = () => {
       : null,
     tipo_unidade: searchParams.get("tipo_unidade"),
     escola: searchParams.get("escola"),
-    ocorrencias: null,
+    ocorrencias: searchParams.get("ocorrencias"),
   });
 
   const [gruposHabilitadosPorDre, setGruposHabilitadosPorDre] = useState({});
@@ -362,6 +382,37 @@ export const AcompanhamentoDeLancamentos = () => {
   }, [mesAno, recreioNasFerias]);
 
   useEffect(() => {
+    if (mesAno || !recreioNasFerias || !mesesAnos.length) {
+      return;
+    }
+
+    const mesAnoRecreio = mesesAnos.find(
+      (mesAnoObj) => mesAnoObj.recreio_nas_ferias?.uuid === recreioNasFerias,
+    );
+
+    if (!mesAnoRecreio) {
+      return;
+    }
+
+    const mesAnoReconstruido = `${mesAnoRecreio.mes}_${mesAnoRecreio.ano}`;
+    const valorMesReferencia = formatarValorMesReferencia(
+      mesAnoReconstruido,
+      recreioNasFerias,
+    );
+
+    setMesAno(mesAnoReconstruido);
+    setInitialValues((prev) => ({
+      ...prev,
+      mes_ano: valorMesReferencia,
+      recreio_nas_ferias: recreioNasFerias,
+    }));
+    atualizarFiltrosNaURL({
+      mes_ano: mesAnoReconstruido,
+      recreio_nas_ferias: recreioNasFerias,
+    });
+  }, [mesesAnos, mesAno, recreioNasFerias]);
+
+  useEffect(() => {
     if (!usuarioEhEscolaTerceirizadaQualquerPerfil()) {
       const uuid = usuarioEhDRE()
         ? meusDados && meusDados.vinculo_atual.instituicao.uuid
@@ -484,6 +535,7 @@ export const AcompanhamentoDeLancamentos = () => {
     recreioNasFerias,
   ) => {
     const searchParams = new URLSearchParams();
+    const voltarPara = `${location.pathname}${location.search}`;
 
     if (usuarioEhEscolaTerceirizada() || usuarioEhEscolaTerceirizadaDiretor()) {
       searchParams.set("mes", mes);
@@ -501,6 +553,7 @@ export const AcompanhamentoDeLancamentos = () => {
           state: {
             veioDoAcompanhamentoDeLancamentos: true,
             status,
+            voltarPara,
           },
         },
       );
@@ -520,6 +573,7 @@ export const AcompanhamentoDeLancamentos = () => {
             escolaUuid: escolaUuid,
             mes: mes,
             ano: ano,
+            voltarPara,
           },
         },
       );
@@ -625,10 +679,11 @@ export const AcompanhamentoDeLancamentos = () => {
 
   const resetURL = (nomes) => {
     setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
       nomes.forEach((nome) => {
-        prev.delete(nome);
+        next.delete(nome);
       });
-      return prev;
+      return next;
     });
   };
 
@@ -637,17 +692,7 @@ export const AcompanhamentoDeLancamentos = () => {
   };
 
   const adicionaFiltroNaURL = (nome, valor) => {
-    setSearchParams((prev) => {
-      if (
-        (typeof valor !== "object" && valor) ||
-        (Array.isArray(valor) && valor.length > 0)
-      ) {
-        prev.set(nome, valor);
-      } else {
-        prev.delete(nome);
-      }
-      return prev;
-    });
+    atualizarFiltrosNaURL({ [nome]: valor });
   };
 
   const formatarGrupos = (lista) => {
@@ -791,11 +836,10 @@ export const AcompanhamentoDeLancamentos = () => {
                             setResultados(null);
                             setMudancaMesAno(true);
 
-                            adicionaFiltroNaURL("mes_ano", mesAnoValue);
-                            adicionaFiltroNaURL(
-                              "recreio_nas_ferias",
-                              recreioSelecionado,
-                            );
+                            atualizarFiltrosNaURL({
+                              mes_ano: mesAnoValue,
+                              recreio_nas_ferias: recreioSelecionado,
+                            });
                             setInitialValues((prev) => ({
                               ...prev,
                               mes_ano: valorMesReferencia,
