@@ -288,6 +288,8 @@ describe("Teste Conferência de Lançamentos - EMEF - Recreio nas Férias", () =
     expect(screen.getByText("Semana 1")).toBeInTheDocument();
     expect(screen.getByText("Semana 2")).toBeInTheDocument();
     expect(screen.getByText("Semana 3")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Mês anterior")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Mês posterior")).not.toBeInTheDocument();
   });
 
   it("mantém o comportamento de EMEF normal com a linha de matriculados", async () => {
