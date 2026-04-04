@@ -241,10 +241,17 @@ export const LancamentoPorPeriodoCEI = ({
   };
 
   const getSolicitacaoMedicaoInicialAsync = async () => {
+    const recreioNasFeriasUuid =
+      typeof solicitacaoMedicaoInicial?.recreio_nas_ferias === "string"
+        ? solicitacaoMedicaoInicial.recreio_nas_ferias
+        : solicitacaoMedicaoInicial?.recreio_nas_ferias?.uuid ||
+          new URLSearchParams(window.location.search).get("recreio_nas_ferias");
+
     const payload = {
       escola_uuid: escolaInstituicao.uuid,
       mes: mes,
       ano: ano,
+      recreio_nas_ferias: recreioNasFeriasUuid,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
