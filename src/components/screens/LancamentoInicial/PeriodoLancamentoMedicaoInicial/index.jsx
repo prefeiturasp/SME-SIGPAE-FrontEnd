@@ -39,6 +39,7 @@ import {
 } from "src/configs/constants";
 import {
   deepCopy,
+  ehEscolaTipoCEUGESTAO,
   ehFimDeSemanaUTC,
   escolaEhEMEBS,
   tiposAlimentacaoETEC,
@@ -2020,6 +2021,7 @@ export default () => {
     if (
       ehRecreioNasFerias() &&
       !ehGrupoColaboradores() &&
+      !ehEscolaTipoCEUGESTAO(location.state.solicitacaoMedicaoInicial.escola) &&
       !logQtdDietasAutorizadas.some(
         (logDieta) =>
           Number(logDieta.dia) === Number(dia) &&
