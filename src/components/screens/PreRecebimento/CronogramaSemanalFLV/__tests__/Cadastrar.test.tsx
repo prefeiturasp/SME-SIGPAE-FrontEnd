@@ -97,10 +97,8 @@ const preencherProgramacao = async () => {
   await selecionarCronograma();
 
   await waitFor(() => {
-    expect(screen.getByText("+ Adicionar Programação")).toBeInTheDocument();
+    expect(screen.getByText("Mês Programado")).toBeInTheDocument();
   });
-
-  fireEvent.click(screen.getByText("+ Adicionar Programação"));
 
   await waitFor(() => {
     expect(screen.getByText("Mês Programado")).toBeInTheDocument();
@@ -233,7 +231,7 @@ describe("CadastrarCronogramaSemanal", () => {
   describe("Salvar Rascunho - Submit", () => {
     it("salva rascunho com sucesso", async () => {
       await setup();
-      await selecionarCronograma();
+      await preencherProgramacao();
 
       // Aguardar botão estar disponível
       await waitFor(() => {
@@ -262,7 +260,7 @@ describe("CadastrarCronogramaSemanal", () => {
 
     it("exibe toast de sucesso ao salvar", async () => {
       await setup();
-      await selecionarCronograma();
+      await preencherProgramacao();
 
       await waitFor(() => {
         expect(screen.getByTestId("botao-salvar-rascunho")).toBeInTheDocument();
@@ -424,12 +422,6 @@ describe("CadastrarCronogramaSemanal", () => {
       await selecionarCronograma();
 
       await waitFor(() => {
-        expect(screen.getByText("+ Adicionar Programação")).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText("+ Adicionar Programação"));
-
-      await waitFor(() => {
         expect(screen.getByText("Quantidade da Entrega")).toBeInTheDocument();
       });
 
@@ -463,12 +455,6 @@ describe("CadastrarCronogramaSemanal", () => {
       await selecionarCronograma();
 
       await waitFor(() => {
-        expect(screen.getByText("+ Adicionar Programação")).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText("+ Adicionar Programação"));
-
-      await waitFor(() => {
         expect(screen.getByText(/Faltam/i)).toBeInTheDocument();
       });
 
@@ -490,12 +476,7 @@ describe("CadastrarCronogramaSemanal", () => {
         expect(screen.getByText("+ Adicionar Programação")).toBeInTheDocument();
       });
 
-      // Adicionar duas programações
-      fireEvent.click(screen.getByText("+ Adicionar Programação"));
-      await waitFor(() => {
-        expect(screen.getByText("Mês Programado")).toBeInTheDocument();
-      });
-
+      // Adicionar mais uma programação (totalizando 2)
       fireEvent.click(screen.getByText("+ Adicionar Programação"));
 
       await waitFor(() => {
@@ -522,12 +503,6 @@ describe("CadastrarCronogramaSemanal", () => {
     it("limpa campos de data ao mudar mês programado", async () => {
       await setup();
       await selecionarCronograma();
-
-      await waitFor(() => {
-        expect(screen.getByText("+ Adicionar Programação")).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText("+ Adicionar Programação"));
 
       await waitFor(() => {
         expect(screen.getByText("Mês Programado")).toBeInTheDocument();
@@ -644,6 +619,23 @@ describe("CadastrarCronogramaSemanal", () => {
       await waitFor(() => {
         expect(screen.getByDisplayValue("Alface Crespa")).toBeInTheDocument();
       });
+
+      // Preencher a programação para que o form fique válido
+      await waitFor(() => {
+        expect(screen.getByText("Mês Programado")).toBeInTheDocument();
+      });
+
+      const selectMes = screen
+        .getByText("Mês Programado")
+        .closest(".row")
+        ?.querySelector("select");
+
+      if (selectMes) {
+        fireEvent.change(selectMes, { target: { value: "03/2026" } });
+      }
+
+      const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
+      fireEvent.change(inputQtd, { target: { value: "1000" } });
 
       await act(async () => {
         await new Promise((resolve) => setTimeout(resolve, 100));

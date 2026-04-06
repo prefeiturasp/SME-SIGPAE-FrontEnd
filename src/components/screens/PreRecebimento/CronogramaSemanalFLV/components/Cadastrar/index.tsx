@@ -85,7 +85,16 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       }
     } catch {
       toastError("Erro ao carregar cronogramas mensal");
+    } finally {
+      setCarregando(false);
     }
+  };
+
+  const programacaoPadrao = {
+    mes_programado: "",
+    data_inicio: "",
+    data_fim: "",
+    quantidade: "",
   };
 
   const [valoresCronogramaMensal, setValoresCronogramaMensal] =
@@ -141,6 +150,14 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
             `R$ ${formataMilharDecimal(data.custo_unitario_produto)}`,
           );
 
+          const programacoesAtuais = form.getState().values.programacoes;
+          const programacoesIniciais =
+            programacoesAtuais && programacoesAtuais.length > 0
+              ? programacoesAtuais
+              : [programacaoPadrao];
+
+          form.change("programacoes", programacoesIniciais);
+
           const novosValores = {
             ...form.getState().values,
             produto: data.ficha_tecnica?.produto?.nome || "",
@@ -157,6 +174,7 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
             qtd_total_empenho:
               formataMilharDecimal(data.qtd_total_empenho) || "",
             custo_unitario_produto: `R$ ${formataMilharDecimal(data.custo_unitario_produto)}`,
+            programacoes: programacoesIniciais,
           };
 
           setValoresCronogramaMensal(novosValores);
