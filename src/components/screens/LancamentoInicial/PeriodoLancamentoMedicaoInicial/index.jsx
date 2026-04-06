@@ -2016,6 +2016,19 @@ export default () => {
     );
     const ehDiaLetivo = objDia && objDia.dia_letivo;
     if (!ehDiaLetivo) return false;
+
+    if (
+      ehRecreioNasFerias() &&
+      !ehGrupoColaboradores() &&
+      !logQtdDietasAutorizadas.some(
+        (logDieta) =>
+          Number(logDieta.dia) === Number(dia) &&
+          Number(logDieta.quantidade) > 0,
+      )
+    ) {
+      return false;
+    }
+
     const dateObj = new Date(
       mesAnoConsiderado.getFullYear(),
       mesAnoConsiderado.getMonth(),
