@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import {
@@ -304,6 +310,205 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Default recreio nas
       expect(window.location.search).toBe(
         `?mes=${mesAtual}&ano=${anoAtual}&recreio_nas_ferias=${recreioUuid}`,
       );
+    });
+  });
+});
+
+describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Envia correção no recreio nas férias", () => {
+  const escolaUuid =
+    mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
+  const recreioUuid =
+    mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0].recreio_nas_ferias
+      .uuid;
+  let ultimaQuerySolicitacao;
+  let chamadasSolicitacao;
+  const solicitacaoCorrigidaRecreio = [
+    {
+      ...mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0],
+      status: "MEDICAO_CORRIGIDA_PELA_UE",
+    },
+  ];
+  const solicitacaoCorrecaoSolicitadaRecreio = [
+    {
+      ...mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0],
+      status: "MEDICAO_CORRECAO_SOLICITADA",
+    },
+  ];
+  const solicitacaoCorrigidaComum = [
+    {
+      ...mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0],
+      status: "MEDICAO_CORRIGIDA_PELA_UE",
+      recreio_nas_ferias: null,
+    },
+  ];
+  const quantidadesRecreio = {
+    results: [
+      {
+        nome_periodo_grupo: "Recreio nas Férias",
+        status: "MEDICAO_CORRIGIDA_PELA_UE",
+        justificativa: null,
+        valores: [
+          { nome_campo: "lanche", valor: 45 },
+          { nome_campo: "refeicao", valor: 72 },
+        ],
+        valor_total: 117,
+      },
+      {
+        nome_periodo_grupo: "Colaboradores",
+        status: "MEDICAO_CORRIGIDA_PELA_UE",
+        justificativa: null,
+        valores: [
+          { nome_campo: "lanche", valor: 26 },
+          { nome_campo: "refeicao", valor: 52 },
+        ],
+        valor_total: 78,
+      },
+    ],
+  };
+
+  beforeEach(async () => {
+    mock.reset();
+    chamadasSolicitacao = 0;
+
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/notificacoes/").reply(200, { results: [] });
+    mock
+      .onGet("/notificacoes/quantidade-nao-lidos/")
+      .reply(200, { quantidade_nao_lidos: 0 });
+    mock
+      .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
+      .reply(200, mockPanoramaEscolaEMEF);
+    mock
+      .onGet(`/escolas-simples/${escolaUuid}/`)
+      .reply(200, mockEscolaSimplesEMEF);
+    mock
+      .onGet("/medicao-inicial/recreio-nas-ferias/")
+      .reply(200, mockRecreioNasFeriasEMEFDezembro2025);
+    mock
+      .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
+      .reply(200, []);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
+      )
+      .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
+    mock
+      .onGet(
+        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
+      )
+      .reply(200, { results: [] });
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .reply((config) => {
+        chamadasSolicitacao += 1;
+
+        if (chamadasSolicitacao === 1) {
+          return [200, solicitacaoCorrecaoSolicitadaRecreio];
+        }
+
+        ultimaQuerySolicitacao = config.params;
+        const { recreio_nas_ferias } = config.params || {};
+
+        if (recreio_nas_ferias === recreioUuid) {
+          return [200, solicitacaoCorrigidaRecreio];
+        }
+
+        return [200, solicitacaoCorrigidaComum];
+      });
+    mock.onGet("/dias-calendario/").reply(200, mockDiasCalendarioEMEFMaio2025);
+    mock
+      .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
+      .reply(200, mockGetTiposDeContagemAlimentacao);
+    mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
+      periodos: { MANHA: "5067e137-e5f3-4876-a63f-7f58cce93f33" },
+    });
+    mock
+      .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet("/escola-solicitacoes/inclusoes-etec-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet(
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
+      )
+      .reply(200, []);
+    mock
+      .onGet(
+        `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoCorrigidaRecreio[0].uuid}/ceu-gestao-frequencias-dietas/`,
+      )
+      .reply(200, []);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
+      )
+      .reply(200, quantidadesRecreio);
+    mock
+      .onPatch(
+        `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoCorrigidaRecreio[0].uuid}/escola-corrige-medicao-para-dre/`,
+      )
+      .reply(200, {});
+
+    const search = `?mes=12&ano=2025&recreio_nas_ferias=${recreioUuid}`;
+    window.history.pushState({}, "", search);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem(
+      "nome_instituicao",
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
+    );
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("mantém os períodos de recreio ao enviar correção", async () => {
+    await waitFor(() => {
+      expect(screen.getByText("Recreio nas Férias")).toBeInTheDocument();
+      expect(screen.getByText("Colaboradores")).toBeInTheDocument();
+      expect(screen.getByText("Enviar Correção")).toBeEnabled();
+    });
+
+    fireEvent.click(screen.getByText("Enviar Correção"));
+    fireEvent.click(screen.getByText("Sim"));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Correção da Medição Inicial enviada com sucesso!"),
+      ).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(ultimaQuerySolicitacao?.recreio_nas_ferias).toBe(recreioUuid);
+      expect(screen.getByText("Recreio nas Férias")).toBeInTheDocument();
+      expect(screen.getByText("Colaboradores")).toBeInTheDocument();
+      expect(screen.queryByText("Manhã")).not.toBeInTheDocument();
     });
   });
 });
