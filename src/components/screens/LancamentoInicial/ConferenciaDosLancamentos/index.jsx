@@ -48,6 +48,7 @@ import {
   medicaoInicialExportarOcorrenciasPDF,
   medicaoInicialExportarOcorrenciasXLSX,
   relatorioMedicaoInicialPDF,
+  relatorioHistoricoOcorrenciasMedicaoInicialPDF,
 } from "src/services/relatorios";
 import { ModalEnviarParaCodaeECodaeAprovar } from "./components/ModalEnviarParaCodaeECodaeAprovar";
 import { ModalHistoricoCorrecoesPeriodo } from "./components/ModalHistoricoCorrecoesPeriodo";
@@ -713,6 +714,19 @@ export const ConferenciaDosLancamentos = () => {
     return historico;
   };
 
+  const printHistorico = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const uuidSolicitacaoMedicao = urlParams.get("uuid");
+    const response = await relatorioHistoricoOcorrenciasMedicaoInicialPDF(
+      uuidSolicitacaoMedicao,
+    );
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao exportar pdf. Tente novamente mais tarde.");
+    }
+  };
+
   return (
     <div className="conferencia-dos-lancamentos">
       {solicitacao && solicitacao.ocorrencia && (
@@ -724,6 +738,7 @@ export const ConferenciaDosLancamentos = () => {
           solicitacaoMedicaoInicial={solicitacao.ocorrencia}
           titulo="Histórico do Formulário de Ocorrências"
           getHistorico={getHistorico}
+          printHistorico={printHistorico}
         />
       )}
       {erroAPI && <div>{erroAPI}</div>}

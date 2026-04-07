@@ -133,7 +133,8 @@ div.acompanhamento-de-lancamentos {
     width: 100%;
   }
 
-  .label-seletor-dre {
+  .label-seletor-dre,
+  .container-mes {
     margin-top: 1em !important;
     margin-left: 2em;
     margin-right: 2em;
@@ -155,9 +156,7 @@ div.acompanhamento-de-lancamentos {
   }
 
   .container-mes {
-    width: 50%;
-    margin-left: 2em;
-    margin-right: 2em;
+    margin-bottom: calc(0.7rem + 1px);
   }
 
   .botoes-relatorios {
