@@ -19,7 +19,11 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { required } from "src/helpers/fieldValidators";
-import { exibeError, formataMilharDecimal } from "src/helpers/utilities";
+import {
+  exibeError,
+  formataMilharDecimal,
+  getDataObj,
+} from "src/helpers/utilities";
 import {
   getCronogramasMensalAssinados,
   getCronogramaMensalDetalhado,
@@ -112,8 +116,6 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       return;
     }
 
-    // IMPORTANTE: Atualizar o campo cronograma_mensal manualmente
-    // pois o AutoCompleteField não está atualizando o form corretamente em testes
     form.change("cronograma_mensal", numeroCronograma);
 
     setCarregando(true);
@@ -122,8 +124,6 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
         if (response && response.data) {
           const data = response.data;
 
-          // Usar form.change() para atualizar cada campo individualmente
-          // Isso evita reinicializar o form e perder o valor de cronograma_mensal
           form.change("produto", data.ficha_tecnica?.produto?.nome || "");
           form.change("fornecedor", data.empresa?.nome_fantasia || "");
           form.change("numero_contrato", data.contrato?.numero || "");
@@ -183,7 +183,6 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
             const meses: { [key: string]: number } = {};
             data.etapas.forEach((etapa: any) => {
               if (etapa.data_programada) {
-                // data_programada já vem no formato MM/YYYY
                 const mesAno = etapa.data_programada;
                 if (!meses[mesAno]) {
                   meses[mesAno] = 0;
@@ -223,14 +222,18 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       return 0;
     }
 
-    return programacoes.reduce((total, prog) => {
-      if (!prog.mes_programado) return total;
+    // Obter meses únicos selecionados nas programações
+    const mesesSelecionados = Array.from(
+      new Set(
+        (programacoes || []).map((p) => p.mes_programado).filter((m) => !!m),
+      ),
+    );
 
+    return mesesSelecionados.reduce((total, mesProgramado) => {
       const etapasDoMes = cronogramaMensalSelecionado.etapas.filter(
         (etapa: any) => {
           if (!etapa.data_programada) return false;
-          // data_programada já está no formato MM/YYYY
-          return etapa.data_programada === prog.mes_programado;
+          return etapa.data_programada === mesProgramado;
         },
       );
 
@@ -384,7 +387,6 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                               (o) => o.value === value,
                             );
                             if (option && option.uuid) {
-                              // Chamar selecionarCronogramaMensal que vai atualizar o form com form.change
                               selecionarCronogramaMensal(
                                 option.uuid,
                                 option.value,
@@ -547,6 +549,12 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                         ).minDate
                                       }
                                       maxDate={
+                                        (values.programacoes?.[index]
+                                          ?.data_fim &&
+                                          getDataObj(
+                                            values.programacoes?.[index]
+                                              ?.data_fim,
+                                          )) ||
                                         obterLimitesMes(
                                           values.programacoes?.[index]
                                             ?.mes_programado || "",
@@ -566,6 +574,12 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                       dateFormat="DD/MM/YYYY"
                                       dateFormatPicker="dd/MM/yyyy"
                                       minDate={
+                                        (values.programacoes?.[index]
+                                          ?.data_inicio &&
+                                          getDataObj(
+                                            values.programacoes?.[index]
+                                              ?.data_inicio,
+                                          )) ||
                                         obterLimitesMes(
                                           values.programacoes?.[index]
                                             ?.mes_programado || "",
