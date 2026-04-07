@@ -1190,6 +1190,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     categoriasDeMedicao,
   ]);
 
+  const temDiaZeradoNaSemana =
+    diasZerados &&
+    diasDaSemanaSelecionada &&
+    listaDiasZerados.some((diaZerado) =>
+      diasDaSemanaSelecionada.some(
+        (diaSemana) => diaSemana.dia === diaZerado.dia,
+      ),
+    );
+
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
     let valoresMedicao = [];
     const valuesMesmoDiaDaObservacao = Object.fromEntries(
@@ -1485,7 +1494,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const onChangeSemana = async (values, key) => {
-    if (exibirTooltip) {
+    if (exibirTooltip || temDiaZeradoNaSemana) {
       setShowModalErro(true);
     } else {
       setSemanaSelecionada(key);
@@ -3248,9 +3257,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                               "MEDICAO_APROVADA_PELA_DRE") ||
                           disableBotaoSalvarLancamentos ||
                           !calendarioMesConsiderado ||
-                          diasZerados
+                          temDiaZeradoNaSemana
                         }
-                        exibirTooltip={exibirTooltip || diasZerados}
+                        exibirTooltip={exibirTooltip || temDiaZeradoNaSemana}
                         tooltipTitulo="Existem campos a serem corrigidos. Realize as correções para salvar."
                         classTooltip="icone-info-invalid"
                       />
