@@ -1,0 +1,34 @@
+.card-cadastro-cronograma-semanal {
+  .cadastro-cronograma-semanal {
+    .subtitulo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #198459;
+      margin-bottom: 10px;
+    }
+
+    .linha-verde {
+      border-top: 2px solid #198459;
+      margin: 10px 0 20px 0;
+    }
+  }
+}
+
+.texto-alimento-faltante {
+  text-align: right;
+  font-size: 15px;
+}
+
+.mensagem-verde {
+  color: #198459 !important;
+  font-weight: bold;
+}
+
+.mensagem-vermelho {
+  color: #b40c02;
+}
+
+.required-asterisk {
+  color: #a50e05;
+  font-weight: 700;
+}
