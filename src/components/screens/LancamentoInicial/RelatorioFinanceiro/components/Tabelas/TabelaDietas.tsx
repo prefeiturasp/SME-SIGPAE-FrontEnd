@@ -104,7 +104,7 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
               if (ehCemei) {
                 return (
                   tabela.nome ===
-                  "Dietas Tipo A e Tipo A Enteral - Turma Infantil - EMEI"
+                  `Dietas ${tipoDieta === "TIPO A" ? "Tipo A e Tipo A Enteral" : "Tipo B"} - Turma Infantil - EMEI`
                 );
               }
 
