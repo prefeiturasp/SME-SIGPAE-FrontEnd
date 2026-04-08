@@ -29,6 +29,10 @@ import mock from "src/services/_mock";
 
 describe("Teste <LancamentoMedicaoInicial> - Finaliza Lançamento com Ocorrências", () => {
   beforeEach(async () => {
+    // Mock da data atual para 01/01/2025
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-01-01T10:00:00.000Z"));
+
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaCEUGESTAO);
@@ -92,9 +96,31 @@ describe("Teste <LancamentoMedicaoInicial> - Finaliza Lançamento com Ocorrênci
         "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/",
       )
       .reply(200, []);
-
-    const search = `?mes=11&ano=2024`;
-    window.history.pushState({}, "", search);
+    mock
+      .onGet("/medicao-inicial/solicitacoes-lancadas/")
+      .reply(200, { data: [] });
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/ultimo-dia-com-solicitacao-autorizada-no-mes/",
+      )
+      .reply(200, { ultima_data: null });
+    mock
+      .onGet(
+        "/escola-simples/b11a2964-c9e0-488a-bb7f-6e11df2c903b/historico-escola/",
+      )
+      .reply(200, mockGetEscolaSimplesCEUGESTAO);
+    mock
+      .onGet("/medicao-inicial/recreio-nas-ferias/")
+      .reply(200, { results: [] });
+    mock
+      .onGet(
+        "/medicao-inicial/permissoes-lancamentos-especiais/periodos-mes-ano/",
+      )
+      .reply(200, { results: [] });
+    mock.onGet("/medicao-inicial/lanches-emergenciais/").reply(200, []);
+    mock
+      .onGet("/medicao-inicial/periodos-grupo/cemei-com-alunos-emei/")
+      .reply(200, { results: [] });
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
 
@@ -121,7 +147,32 @@ describe("Teste <LancamentoMedicaoInicial> - Finaliza Lançamento com Ocorrênci
     });
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+    mock.reset();
+  });
+
   it("Deve finalizar lançamento com ocorrências", async () => {
+    await waitFor(() => {
+      const selectPeriodo = screen.getByTestId("select-periodo-lancamento");
+      expect(selectPeriodo).toBeInTheDocument();
+    });
+
+    const selectPeriodo = screen.getByTestId("select-periodo-lancamento");
+    fireEvent.click(selectPeriodo);
+
+    const opcaoNovembro = screen.getByText("Novembro / 2024");
+    fireEvent.click(opcaoNovembro);
+
+    // Simula a atualização da URL após selecionar o período
+    const search = `?mes=11&ano=2024`;
+    window.history.pushState({}, "", search);
+
+    await waitFor(() => {
+      const botaoFinalizar = screen.queryByText("Finalizar");
+      expect(botaoFinalizar).toBeInTheDocument();
+    });
+
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).not.toBeDisabled();
     fireEvent.click(botaoFinalizar);
@@ -188,6 +239,26 @@ describe("Teste <LancamentoMedicaoInicial> - Finaliza Lançamento com Ocorrênci
   });
 
   it("Remove arquivo e exibe erro", async () => {
+    await waitFor(() => {
+      const selectPeriodo = screen.getByTestId("select-periodo-lancamento");
+      expect(selectPeriodo).toBeInTheDocument();
+    });
+
+    const selectPeriodo = screen.getByTestId("select-periodo-lancamento");
+    fireEvent.click(selectPeriodo);
+
+    const opcaoNovembro = screen.getByText("Novembro / 2024");
+    fireEvent.click(opcaoNovembro);
+
+    // Simula a atualização da URL após selecionar o período
+    const search = `?mes=11&ano=2024`;
+    window.history.pushState({}, "", search);
+
+    await waitFor(() => {
+      const botaoFinalizar = screen.queryByText("Finalizar");
+      expect(botaoFinalizar).toBeInTheDocument();
+    });
+
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).not.toBeDisabled();
     fireEvent.click(botaoFinalizar);
