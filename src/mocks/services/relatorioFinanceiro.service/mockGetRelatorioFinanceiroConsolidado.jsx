@@ -1315,6 +1315,7 @@ export const mockRelatorioFinanceiroTipoAlimentacao = {
   ],
   mes_ano: "09_2025",
 };
+
 export const mockRelatorioFinanceiroCEMEI = {
   uuid: "a9e2fc34-3e8b-4409-b69a-c9961ce94375",
   edital: {
