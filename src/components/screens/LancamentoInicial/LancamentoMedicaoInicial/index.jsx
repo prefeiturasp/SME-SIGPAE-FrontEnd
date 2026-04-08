@@ -305,16 +305,6 @@ export default () => {
               dataBRT,
               periodo: periodoFormatado,
             });
-
-            if (!location.search && periodos.length === 1) {
-              navigate(
-                {
-                  pathname: location.pathname,
-                  search: `mes=${String(mes).padStart(2, "0")}&ano=${ano}`,
-                },
-                { replace: true },
-              );
-            }
           }
         } else {
           periodos.push({
@@ -339,21 +329,12 @@ export default () => {
       let ano = params.get("ano");
       const recreioNasFeriasParam = params.get("recreio_nas_ferias");
 
-      setMes(mes);
-      setAno(ano);
+      setObjectoPeriodos(periodos);
 
-      const responseHistoricoEscola = await getHistoricoEscolaAsync(
-        escola.uuid,
-        { mes },
-        { ano },
-      );
+      if (mes && ano) {
+        setMes(mes);
+        setAno(ano);
 
-      const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
-        escola.uuid,
-        { ano },
-      );
-      setPeriodosEscolaSimples(response_vinculos.data.results);
-      if (location.search || (mes && ano)) {
         if (mes <= 0 || mes > 12) {
           mes = format(new Date(), "MM");
         }
@@ -375,6 +356,7 @@ export default () => {
         ) {
           mes = format(new Date(), "MM");
         }
+
         const dataFromSearch = new Date(ano, mes - 1, 1);
         const mesStringFromSearch = format(dataFromSearch, "LLLL", {
           locale: ptBR,
@@ -388,39 +370,47 @@ export default () => {
             " / " +
             getYear(dataFromSearch).toString();
         setPeriodoFromSearchParam(periodoFromSearch);
+
+        const responseHistoricoEscola = await getHistoricoEscolaAsync(
+          escola.uuid,
+          { mes },
+          { ano },
+        );
+
+        const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
+          escola.uuid,
+          { ano },
+        );
+        setPeriodosEscolaSimples(response_vinculos.data.results);
+
+        await getPeriodosEscolaCemeiComAlunosEmeiAsync(
+          responseHistoricoEscola,
+          mes,
+          ano,
+        );
+        await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
+          escola.uuid,
+          mes,
+          ano,
+        );
+        await getLanchesEmergenciaisDiariosAsync(escola.uuid, mes, ano);
+
+        const periodoInicialSelecionado = getPeriodoInicialSelecionado(
+          mes,
+          ano,
+          recreioNasFeriasParam,
+          periodos,
+          cadastrosRecreioPreparados,
+        );
+
+        setPeriodoSelecionado(periodoInicialSelecionado);
+        await getSolicitacaoMedInicial(
+          periodoInicialSelecionado,
+          escola.uuid,
+          recreioNasFeriasParam,
+        );
       }
 
-      await getPeriodosEscolaCemeiComAlunosEmeiAsync(
-        responseHistoricoEscola,
-        mes,
-        ano,
-      );
-      await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
-        escola.uuid,
-        mes,
-        ano,
-      );
-      await getLanchesEmergenciaisDiariosAsync(escola.uuid, mes, ano);
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const mesParam = urlParams.get("mes");
-      const anoParam = urlParams.get("ano");
-
-      const periodoInicialSelecionado = getPeriodoInicialSelecionado(
-        mesParam,
-        anoParam,
-        recreioNasFeriasParam,
-        periodos,
-        cadastrosRecreioPreparados,
-      );
-
-      setObjectoPeriodos(periodos);
-      setPeriodoSelecionado(periodoInicialSelecionado);
-      await getSolicitacaoMedInicial(
-        periodoInicialSelecionado,
-        escola.uuid,
-        recreioNasFeriasParam,
-      );
       setLoadingSolicitacaoMedicaoInicial(false);
     }
     if (meusDados) fetch();
@@ -672,8 +662,11 @@ export default () => {
                   }
                   onBlur={() => setOpen(false)}
                   name="periodo_lancamento"
-                  defaultValue={
-                    periodoFromSearchParam || objectoPeriodos[0].periodo
+                  placeholder="Selecione..."
+                  value={
+                    location.pathname.includes(DETALHAMENTO_DO_LANCAMENTO)
+                      ? periodoFromSearchParam
+                      : periodoSelecionado
                   }
                   onChange={(value) => handleChangeSelectPeriodo(value)}
                 >
