@@ -11,7 +11,7 @@ import { combineReducers, createStore } from "redux";
 import { reducer as formReducer } from "redux-form";
 import * as toastDialogs from "src/components/Shareable/Toast/dialogs";
 import * as logisticaService from "src/services/logistica.service";
-import ConferenciaGuia from "../ConferenciaDeGuia";
+import ConferenciaGuia from "..";
 
 jest.mock("src/services/logistica.service");
 jest.mock("src/components/Shareable/Toast/dialogs");
