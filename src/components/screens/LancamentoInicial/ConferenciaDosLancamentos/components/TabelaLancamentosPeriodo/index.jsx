@@ -717,6 +717,39 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                   setTabelaDietaRows,
                   setTabelaDietaEnteralRows,
                 );
+              } else if (ehRecreioNasFerias()) {
+                const tiposAlimentacaoRecreio = ehGrupoColaboradores()
+                  ? getTiposAlimentacaoColaboradoresRecreio()
+                  : solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
+                      ?.tipos_alimentacao?.inscritos || [];
+                const tiposAlimentacaoFormatadas =
+                  formatarLinhasTabelaAlimentacao(
+                    tiposAlimentacaoRecreio,
+                    periodoGrupo,
+                    solicitacao,
+                  );
+                const indexMatriculados = tiposAlimentacaoFormatadas.findIndex(
+                  (row) => row.name === "matriculados",
+                );
+                if (indexMatriculados !== -1) {
+                  tiposAlimentacaoFormatadas[indexMatriculados] = {
+                    nome: "Participantes",
+                    name: "participantes",
+                    uuid: null,
+                  };
+                }
+                setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
+                const linhasTabelasDietas = formatarLinhasTabelasDietas(
+                  tiposAlimentacaoRecreio,
+                );
+                setTabelaDietaRows(linhasTabelasDietas);
+                const cloneLinhasTabelasDietas = deepCopy(linhasTabelasDietas);
+                const linhasTabelaDietaEnteral =
+                  formatarLinhasTabelaDietaEnteral(
+                    tiposAlimentacaoRecreio,
+                    cloneLinhasTabelasDietas,
+                  );
+                setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
               } else {
                 let periodo;
                 if (periodoGrupo.nome_periodo_grupo.includes("Infantil")) {

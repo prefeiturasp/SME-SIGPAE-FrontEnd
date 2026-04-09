@@ -1200,10 +1200,15 @@ export const defaultValue = (
   if (valorLancamento) {
     result = valorLancamento.valor;
   }
-  if (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) {
+  if (
+    !solicitacao?.recreio_nas_ferias &&
+    Number(semanaSelecionada) === 1 &&
+    Number(column.dia) > 20
+  ) {
     result = "Mês anterior";
   }
   if (
+    !solicitacao?.recreio_nas_ferias &&
     [4, 5, 6].includes(Number(semanaSelecionada)) &&
     Number(column.dia) < 10
   ) {

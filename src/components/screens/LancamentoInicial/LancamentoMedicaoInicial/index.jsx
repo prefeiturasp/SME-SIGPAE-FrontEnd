@@ -442,16 +442,6 @@ export default () => {
               dataBRT,
               periodo: periodoFormatado,
             });
-
-            if (!location.search && periodos.length === 1) {
-              navigate(
-                {
-                  pathname: location.pathname,
-                  search: `mes=${String(mes).padStart(2, "0")}&ano=${ano}`,
-                },
-                { replace: true },
-              );
-            }
           }
         } else {
           periodos.push({
@@ -485,84 +475,88 @@ export default () => {
       const anoParamOriginal = params.get("ano");
       const recreioNasFeriasParam = params.get("recreio_nas_ferias");
 
-      const { mes: mesParam, ano: anoParam } = normalizarMesEAno(
-        mesParamOriginal,
-        anoParamOriginal,
-      );
+      setObjectoPeriodos(periodos);
 
-      const periodoInicialSelecionado = getPeriodoInicialSelecionado(
-        mesParam,
-        anoParam,
-        recreioNasFeriasParam,
-        periodos,
-        cadastrosRecreioPreparados,
-      );
+      if (mes && ano) {
+        setMes(mes);
+        setAno(ano);
 
-      const dadosPeriodoInicial = getDadosPeriodoSelecionado(
-        periodoInicialSelecionado,
-        periodos,
-        recreioNasFeriasParam,
-      );
+        if (mes <= 0 || mes > 12) {
+          mes = format(new Date(), "MM");
+        }
+        if (isNaN(ano)) {
+          ano = getYear(new Date());
+        }
+        if (ano > getYear(new Date()) || ano < getYear(new Date()) - 1) {
+          ano = getYear(new Date());
+        }
+        if (
+          mes > format(new Date(), "MM") &&
+          Number(ano) === getYear(new Date())
+        ) {
+          mes = format(new Date(), "MM");
+        }
+        if (
+          mes < format(new Date(), "MM") &&
+          Number(ano) === getYear(new Date()) - 1
+        ) {
+          mes = format(new Date(), "MM");
+        }
 
-      if (!dadosPeriodoInicial.mes || !dadosPeriodoInicial.ano) {
-        setObjectoPeriodos(periodos);
-        setLoadingSolicitacaoMedicaoInicial(false);
-        return;
-      }
+        const dataFromSearch = new Date(ano, mes - 1, 1);
+        const mesStringFromSearch = format(dataFromSearch, "LLLL", {
+          locale: ptBR,
+        }).toString();
+        const periodoFromSearch = recreioNasFeriasParam
+          ? cadastrosRecreioPreparados.find(
+              (c) => c.uuid === recreioNasFeriasParam,
+            )?.titulo
+          : mesStringFromSearch.charAt(0).toUpperCase() +
+            mesStringFromSearch.slice(1) +
+            " / " +
+            getYear(dataFromSearch).toString();
+        setPeriodoFromSearchParam(periodoFromSearch);
 
-      setMes(dadosPeriodoInicial.mes);
-      setAno(dadosPeriodoInicial.ano);
-      setPeriodoFromSearchParam(
-        dadosPeriodoInicial.periodoLabel || periodos[0]?.periodo,
-      );
+        const responseHistoricoEscola = await getHistoricoEscolaAsync(
+          escola.uuid,
+          { mes },
+          { ano },
+        );
 
-      const searchParams = `?mes=${dadosPeriodoInicial.mes}&ano=${dadosPeriodoInicial.ano}${dadosPeriodoInicial.recreio_nas_ferias ? `&recreio_nas_ferias=${dadosPeriodoInicial.recreio_nas_ferias}` : ""}`;
+        const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
+          escola.uuid,
+          { ano },
+        );
+        setPeriodosEscolaSimples(response_vinculos.data.results);
 
-      if (location.search !== searchParams) {
-        navigate(
-          {
-            pathname: location.pathname,
-            search: searchParams,
-          },
-          { replace: true },
+        await getPeriodosEscolaCemeiComAlunosEmeiAsync(
+          responseHistoricoEscola,
+          mes,
+          ano,
+        );
+        await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
+          escola.uuid,
+          mes,
+          ano,
+        );
+        await getLanchesEmergenciaisDiariosAsync(escola.uuid, mes, ano);
+
+        const periodoInicialSelecionado = getPeriodoInicialSelecionado(
+          mes,
+          ano,
+          recreioNasFeriasParam,
+          periodos,
+          cadastrosRecreioPreparados,
+        );
+
+        setPeriodoSelecionado(periodoInicialSelecionado);
+        await getSolicitacaoMedInicial(
+          periodoInicialSelecionado,
+          escola.uuid,
+          recreioNasFeriasParam,
         );
       }
 
-      const responseHistoricoEscola = await getHistoricoEscolaAsync(
-        escola.uuid,
-        { mes: dadosPeriodoInicial.mes },
-        { ano: dadosPeriodoInicial.ano },
-      );
-
-      const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
-        escola.uuid,
-        { ano: dadosPeriodoInicial.ano },
-      );
-      setPeriodosEscolaSimples(response_vinculos.data.results);
-
-      await getPeriodosEscolaCemeiComAlunosEmeiAsync(
-        responseHistoricoEscola,
-        dadosPeriodoInicial.mes,
-        dadosPeriodoInicial.ano,
-      );
-      await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
-        escola.uuid,
-        dadosPeriodoInicial.mes,
-        dadosPeriodoInicial.ano,
-      );
-      await getLanchesEmergenciaisDiariosAsync(
-        escola.uuid,
-        dadosPeriodoInicial.mes,
-        dadosPeriodoInicial.ano,
-      );
-
-      setObjectoPeriodos(periodos);
-      setPeriodoSelecionado(periodoInicialSelecionado);
-      await getSolicitacaoMedInicial(
-        periodoInicialSelecionado,
-        escola.uuid,
-        dadosPeriodoInicial.recreio_nas_ferias,
-      );
       setLoadingSolicitacaoMedicaoInicial(false);
     }
     if (meusDados) fetch();
@@ -871,8 +865,11 @@ export default () => {
                   }
                   onBlur={() => setOpen(false)}
                   name="periodo_lancamento"
-                  defaultValue={
-                    periodoFromSearchParam || objectoPeriodos[0].periodo
+                  placeholder="Selecione..."
+                  value={
+                    location.pathname.includes(DETALHAMENTO_DO_LANCAMENTO)
+                      ? periodoFromSearchParam
+                      : periodoSelecionado
                   }
                   onChange={(value) => handleChangeSelectPeriodo(value)}
                 >
