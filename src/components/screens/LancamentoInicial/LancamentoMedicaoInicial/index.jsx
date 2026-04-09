@@ -72,7 +72,6 @@ export default () => {
     useState(false);
   const [solicitacaoMedicaoInicial, setSolicitacaoMedicaoInicial] =
     useState(null);
-  const [periodoFromSearchParam, setPeriodoFromSearchParam] = useState(null);
   const [loadingSolicitacaoMedInicial, setLoadingSolicitacaoMedicaoInicial] =
     useState(true);
   const [objSolicitacaoMIFinalizada, setObjSolicitacaoMIFinalizada] = useState({
@@ -471,6 +470,21 @@ export default () => {
       const mesParamOriginal = params.get("mes");
       const anoParamOriginal = params.get("ano");
       const recreioNasFeriasParam = params.get("recreio_nas_ferias");
+
+      if (
+        location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL) &&
+        !mesParamOriginal &&
+        !anoParamOriginal &&
+        !recreioNasFeriasParam
+      ) {
+        setMes(null);
+        setAno(null);
+        setPeriodoSelecionado(null);
+        setObjectoPeriodos(periodos);
+        setLoadingSolicitacaoMedicaoInicial(false);
+        return;
+      }
+
       const { mes: mesParam, ano: anoParam } = normalizarMesEAno(
         mesParamOriginal,
         anoParamOriginal,
@@ -498,9 +512,6 @@ export default () => {
 
       setMes(dadosPeriodoInicial.mes);
       setAno(dadosPeriodoInicial.ano);
-      setPeriodoFromSearchParam(
-        dadosPeriodoInicial.periodoLabel || periodos[0]?.periodo,
-      );
 
       const searchParams = `?mes=${dadosPeriodoInicial.mes}&ano=${dadosPeriodoInicial.ano}${dadosPeriodoInicial.recreio_nas_ferias ? `&recreio_nas_ferias=${dadosPeriodoInicial.recreio_nas_ferias}` : ""}`;
 
@@ -858,11 +869,7 @@ export default () => {
                   onBlur={() => setOpen(false)}
                   name="periodo_lancamento"
                   placeholder="Selecione..."
-                  value={
-                    location.pathname.includes(DETALHAMENTO_DO_LANCAMENTO)
-                      ? periodoFromSearchParam
-                      : periodoSelecionado
-                  }
+                  value={periodoSelecionado}
                   onChange={(value) => handleChangeSelectPeriodo(value)}
                 >
                   {opcoesPeriodos}

@@ -146,7 +146,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Medição
   });
 });
 
-describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Default recreio nas férias sem query string", () => {
+describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Sem query string", () => {
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
 
@@ -169,7 +169,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Default recreio nas
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
   });
 
-  it("Sincroniza a URL com mês, ano e recreio quando o recreio é o default", async () => {
+  it("Mantém a URL sem mês e ano e não seleciona período automaticamente", async () => {
     const dataAtual = new Date();
     const mesAtual = String(dataAtual.getMonth() + 1).padStart(2, "0");
     const anoAtual = String(dataAtual.getFullYear());
@@ -190,22 +190,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Default recreio nas
         },
       ],
     };
-
-    const mockSolicitacaoRecreioDefault = [
-      {
-        ...mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0],
-        mes: mesAtual,
-        ano: anoAtual,
-        recreio_nas_ferias: {
-          ...mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0]
-            .recreio_nas_ferias,
-          uuid: recreioUuid,
-          titulo: recreioTitulo,
-          data_inicio: dataInicioRecreio,
-          data_fim: dataFimRecreio,
-        },
-      },
-    ];
 
     mock
       .onGet("/usuarios/meus-dados/")
@@ -249,9 +233,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Default recreio nas
         "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
       )
       .reply(200, { results: [] });
-    mock
-      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-      .replyOnce(200, mockSolicitacaoRecreioDefault);
     mock.onGet("/dias-calendario/").reply(200, mockDiasCalendarioEMEFMaio2025);
     mock
       .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
@@ -271,11 +252,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Default recreio nas
     mock
       .onGet(
         "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
-      )
-      .reply(200, []);
-    mock
-      .onGet(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoRecreioDefault[0].uuid}/ceu-gestao-frequencias-dietas/`,
       )
       .reply(200, []);
     mock
@@ -307,10 +283,16 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Default recreio nas
     });
 
     await waitFor(() => {
-      expect(window.location.search).toBe(
-        `?mes=${mesAtual}&ano=${anoAtual}&recreio_nas_ferias=${recreioUuid}`,
-      );
+      expect(window.location.search).toBe("");
     });
+
+    expect(screen.getByText("Selecione...")).toBeInTheDocument();
+    expect(
+      mock.history.get.filter(
+        (request) =>
+          request.url === "/medicao-inicial/solicitacao-medicao-inicial/",
+      ),
+    ).toHaveLength(0);
   });
 });
 
