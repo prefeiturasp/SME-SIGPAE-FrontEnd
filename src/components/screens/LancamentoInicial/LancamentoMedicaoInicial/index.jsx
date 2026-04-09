@@ -45,6 +45,9 @@ import { InformacoesMedicaoInicialCEI } from "./components/InformacoesMedicaoIni
 import { LancamentoPorPeriodo } from "./components/LancamentoPorPeriodo";
 import { LancamentoPorPeriodoCEI } from "./components/LancamentoPorPeriodoCEI";
 import Ocorrencias from "./components/Ocorrencias";
+import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
+import Botao from "src/components/Shareable/Botao";
+import { ModalHistoricoCorrecoesPeriodo } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/components/ModalHistoricoCorrecoesPeriodo/index.jsx";
 import "./styles.scss";
 
 export default () => {
@@ -92,6 +95,10 @@ export default () => {
   const [arquivo, setArquivo] = useState([]);
   const [historicoEscola, setHistoricoEscola] = useState();
   const [recreiosLancados, setRecreiosLancados] = useState([]);
+  const [
+    showModalHistoricoCorrecoesPeriodo,
+    setShowModalHistoricoCorrecoesPeriodo,
+  ] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -950,6 +957,30 @@ export default () => {
           spinning={finalizandoMedicao}
           tip="Finalizando medição inicial. Pode demorar um pouco. Aguarde..."
         >
+          <div className="col-12 mt-4">
+            {solicitacaoMedicaoInicial &&
+              solicitacaoMedicaoInicial.historico &&
+              solicitacaoMedicaoInicial.historico !== "" &&
+              solicitacaoMedicaoInicial.status !==
+                "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE" && (
+                <>
+                  <Botao
+                    className="float-end"
+                    texto="Histórico de correções"
+                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                    onClick={() => setShowModalHistoricoCorrecoesPeriodo(true)}
+                  />
+                  <ModalHistoricoCorrecoesPeriodo
+                    showModal={showModalHistoricoCorrecoesPeriodo}
+                    setShowModal={(value) =>
+                      setShowModalHistoricoCorrecoesPeriodo(value)
+                    }
+                    solicitacao={solicitacaoMedicaoInicial}
+                    historicos={solicitacaoMedicaoInicial.historico}
+                  />
+                </>
+              )}
+          </div>
           {mes &&
             ano &&
             periodosEscolaSimples &&
