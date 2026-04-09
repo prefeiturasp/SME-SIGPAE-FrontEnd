@@ -293,6 +293,12 @@ export const desabilitarField = (
   alunosTabSelecionada = null,
   ehUltimoDiaLetivoDoAno,
 ) => {
+  const valorAtual = values[`${rowName}__dia_${dia}__categoria_${categoria}`];
+
+  if (["Mês anterior", "Mês posterior"].includes(valorAtual)) {
+    return true;
+  }
+
   const EH_INCLUSAO_SOMENTE_SOBREMESA =
     inclusoesAutorizadas.length &&
     inclusoesAutorizadas.every((i) => i.alimentacoes === "sobremesa");
@@ -565,11 +571,7 @@ export const desabilitarField = (
     if (nomeCategoria === "ALIMENTAÇÃO" || nomeCategoria.includes("DIETA")) {
       if (rowName === "participantes") {
         return true;
-      } else if (
-        validacaoSemana(dia) ||
-        (mesConsiderado === mesAtual &&
-          Number(dia) >= format(mesAnoDefault, "dd"))
-      ) {
+      } else if (validacaoSemana(dia)) {
         return true;
       } else if (validacaoDiaLetivo(dia)) {
         return false;
@@ -1155,11 +1157,13 @@ export const defaultValue = (
   periodoGrupo,
   solicitacao,
   alunosTabSelecionada = null,
+  usaEstruturaCeiComFaixaEtaria = true,
 ) => {
   let result = null;
   let valorLancamento = null;
 
   if (
+    usaEstruturaCeiComFaixaEtaria &&
     solicitacao &&
     (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
       (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
@@ -1196,10 +1200,15 @@ export const defaultValue = (
   if (valorLancamento) {
     result = valorLancamento.valor;
   }
-  if (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) {
+  if (
+    !solicitacao?.recreio_nas_ferias &&
+    Number(semanaSelecionada) === 1 &&
+    Number(column.dia) > 20
+  ) {
     result = "Mês anterior";
   }
   if (
+    !solicitacao?.recreio_nas_ferias &&
     [4, 5, 6].includes(Number(semanaSelecionada)) &&
     Number(column.dia) < 10
   ) {
@@ -1208,6 +1217,7 @@ export const defaultValue = (
 
   if (form && periodoGrupo) {
     if (
+      usaEstruturaCeiComFaixaEtaria &&
       solicitacao &&
       (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
         (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&

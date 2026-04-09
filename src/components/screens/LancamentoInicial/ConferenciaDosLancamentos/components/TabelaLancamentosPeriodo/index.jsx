@@ -1,11 +1,13 @@
 import { Spin, Tabs } from "antd";
 import {
   addDays,
+  differenceInCalendarDays,
   format,
   getDay,
   getWeeksInMonth,
   isSunday,
   lastDayOfMonth,
+  parse,
   startOfMonth,
   subDays,
 } from "date-fns";
@@ -44,6 +46,7 @@ import {
 } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import {
   formatarLinhasTabelaAlimentacaoCEI,
+  formatarLinhasTabelaAlimentacaoEmeiDaCemei,
   formatarLinhasTabelasDietasCEI,
 } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/helper";
 import {
@@ -229,6 +232,97 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     (log) => log.status_evento_explicacao === "Correção solicitada pela CODAE",
   );
 
+  const ehRecreioNasFerias = () => Boolean(solicitacao?.recreio_nas_ferias);
+
+  const ehGrupoColaboradores = () =>
+    periodoGrupo?.nome_periodo_grupo === "Colaboradores";
+
+  const getTiposAlimentacaoColaboradoresRecreio = () =>
+    solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
+      ?.tipos_alimentacao?.colaboradores || [];
+
+  const usaEstruturaCeiComFaixaEtaria = () =>
+    (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+      (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
+        ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo))) &&
+    !(ehRecreioNasFerias() && ehGrupoColaboradores());
+
+  const getFaixasEtariasRecreio = (valoresCategoria) => {
+    const faixasPorUuid = new Map();
+
+    valoresCategoria.forEach((valor) => {
+      if (valor.faixa_etaria && valor.faixa_etaria_str) {
+        faixasPorUuid.set(valor.faixa_etaria, {
+          inicio: valor.faixa_etaria_inicio,
+          __str__: valor.faixa_etaria_str,
+          uuid: valor.faixa_etaria,
+        });
+      }
+    });
+
+    return Array.from(faixasPorUuid.values());
+  };
+
+  const getDataReferencia = () => {
+    if (ehRecreioNasFerias()) {
+      return parse(
+        solicitacao.recreio_nas_ferias.data_inicio,
+        "dd/MM/yyyy",
+        new Date(),
+      );
+    }
+
+    return new Date(`${mesSolicitacao}/01/${anoSolicitacao}`);
+  };
+
+  const getTabItemsSemanas = (dataReferencia) => {
+    if (ehRecreioNasFerias()) {
+      const dataInicioRecreio = parse(
+        solicitacao.recreio_nas_ferias.data_inicio,
+        "dd/MM/yyyy",
+        new Date(),
+      );
+      const dataFimRecreio = parse(
+        solicitacao.recreio_nas_ferias.data_fim,
+        "dd/MM/yyyy",
+        new Date(),
+      );
+
+      const diaSemanaInicio = getDay(dataInicioRecreio);
+      const deslocamentoInicio =
+        diaSemanaInicio === 0 ? 6 : diaSemanaInicio - 1;
+      const inicioPrimeiraSemana = subDays(
+        dataInicioRecreio,
+        deslocamentoInicio,
+      );
+
+      const diaSemanaFim = getDay(dataFimRecreio);
+      const deslocamentoFim = diaSemanaFim === 0 ? 0 : 7 - diaSemanaFim;
+      const fimUltimaSemana = addDays(dataFimRecreio, deslocamentoFim);
+
+      const totalSemanasRecreio =
+        Math.floor(
+          differenceInCalendarDays(fimUltimaSemana, inicioPrimeiraSemana) / 7,
+        ) + 1;
+
+      return Array.from({ length: totalSemanasRecreio }, (_, index) => ({
+        key: `${index + 1}`,
+        label: `Semana ${index + 1}`,
+      }));
+    }
+
+    const totalSemanas = isSunday(lastDayOfMonth(dataReferencia))
+      ? getWeeksInMonth(dataReferencia) - 1
+      : getDay(startOfMonth(dataReferencia)) === 0
+        ? getWeeksInMonth(dataReferencia) + 1
+        : getWeeksInMonth(dataReferencia);
+
+    return Array.from({ length: totalSemanas }, (_, index) => ({
+      key: `${index + 1}`,
+      label: `Semana ${index + 1}`,
+    }));
+  };
+
   const getCategoriasDeMedicaoAsyncHelper = async (
     categoriasDeMedicao,
     setCategoriasDeMedicao,
@@ -293,24 +387,39 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
         categoria.nome.includes("ALIMENTAÇÃO"),
       ).id;
 
-    const linhasTabelaAlimentacaoCEI = formatarLinhasTabelaAlimentacaoCEI(
-      [],
-      periodoGrupo.nome_periodo_grupo,
-      null,
-      null,
-      response_valores_periodos.data.filter(
-        (valor) => valor.categoria_medicao === idCategoriaAlimentacao,
-      ),
+    const valoresCategoriaAlimentacao = response_valores_periodos.data.filter(
+      (valor) => valor.categoria_medicao === idCategoriaAlimentacao,
     );
+
+    const linhasTabelaAlimentacaoCEI =
+      ehRecreioNasFerias() && ehGrupoColaboradores()
+        ? formatarLinhasTabelaAlimentacaoEmeiDaCemei(
+            getTiposAlimentacaoColaboradoresRecreio(),
+            false,
+            [],
+            false,
+            true,
+          )
+        : formatarLinhasTabelaAlimentacaoCEI(
+            [],
+            periodoGrupo.nome_periodo_grupo,
+            getFaixasEtariasRecreio(valoresCategoriaAlimentacao),
+            null,
+            valoresCategoriaAlimentacao,
+            ehRecreioNasFerias(),
+          );
     setTabelaAlimentacaoRows(linhasTabelaAlimentacaoCEI);
 
-    let linhasTabelasDietasCEI = formatarLinhasTabelasDietasCEI(
-      [],
-      periodoGrupo,
-      response_valores_periodos.data.filter(
-        (valor) => valor.categoria_medicao !== idCategoriaAlimentacao,
-      ),
-    );
+    let linhasTabelasDietasCEI = [];
+    if (!ehGrupoColaboradores()) {
+      linhasTabelasDietasCEI = formatarLinhasTabelasDietasCEI(
+        [],
+        periodoGrupo,
+        response_valores_periodos.data.filter(
+          (valor) => valor.categoria_medicao !== idCategoriaAlimentacao,
+        ),
+      );
+    }
     setTabelaDietaRows(linhasTabelasDietasCEI);
 
     let categoriasParaDeletar = [];
@@ -508,6 +617,8 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
       const formatarTabelasAsync = async () => {
         try {
           setLoading(true);
+          const dataReferencia = getDataReferencia();
+          setData(dataReferencia);
           const params_get_valores_periodos = {
             uuid_medicao_periodo_grupo: periodoGrupo.uuid_medicao_periodo_grupo,
           };
@@ -544,21 +655,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
             solicitacao,
             somaPorCategoria,
           );
-
-          let items = [];
-          Array.apply(null, {
-            length: isSunday(lastDayOfMonth(data))
-              ? getWeeksInMonth(data) - 1
-              : getDay(startOfMonth(data)) === 0
-                ? getWeeksInMonth(data) + 1
-                : getWeeksInMonth(data),
-          }).map((e, i) =>
-            items.push({
-              key: `${i + 1}`,
-              label: `Semana ${i + 1}`,
-            }),
-          );
-          setTabItemsSemanas(items);
+          setTabItemsSemanas(getTabItemsSemanas(dataReferencia));
 
           const valoresMatriculados = response_valores_periodos?.data.filter(
             (valor) => valor.nome_campo === "matriculados",
@@ -620,6 +717,39 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                   setTabelaDietaRows,
                   setTabelaDietaEnteralRows,
                 );
+              } else if (ehRecreioNasFerias()) {
+                const tiposAlimentacaoRecreio = ehGrupoColaboradores()
+                  ? getTiposAlimentacaoColaboradoresRecreio()
+                  : solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
+                      ?.tipos_alimentacao?.inscritos || [];
+                const tiposAlimentacaoFormatadas =
+                  formatarLinhasTabelaAlimentacao(
+                    tiposAlimentacaoRecreio,
+                    periodoGrupo,
+                    solicitacao,
+                  );
+                const indexMatriculados = tiposAlimentacaoFormatadas.findIndex(
+                  (row) => row.name === "matriculados",
+                );
+                if (indexMatriculados !== -1) {
+                  tiposAlimentacaoFormatadas[indexMatriculados] = {
+                    nome: "Participantes",
+                    name: "participantes",
+                    uuid: null,
+                  };
+                }
+                setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
+                const linhasTabelasDietas = formatarLinhasTabelasDietas(
+                  tiposAlimentacaoRecreio,
+                );
+                setTabelaDietaRows(linhasTabelasDietas);
+                const cloneLinhasTabelasDietas = deepCopy(linhasTabelasDietas);
+                const linhasTabelaDietaEnteral =
+                  formatarLinhasTabelaDietaEnteral(
+                    tiposAlimentacaoRecreio,
+                    cloneLinhasTabelasDietas,
+                  );
+                setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
               } else {
                 let periodo;
                 if (periodoGrupo.nome_periodo_grupo.includes("Infantil")) {
@@ -740,14 +870,45 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
       };
       formatarTabelasAsync();
     }
-
-    setData(new Date(`${mesSolicitacao}/01/${anoSolicitacao}`));
   }, [showTabelaLancamentosPeriodo]);
 
   useEffect(() => {
     let diasSemana = [];
-    let diaDaSemanaNumerico = getDay(startOfMonth(data)); // 0 representa Domingo
     let week = [];
+
+    if (!data) {
+      return;
+    }
+
+    if (ehRecreioNasFerias()) {
+      const dataInicioRecreio = parse(
+        solicitacao.recreio_nas_ferias.data_inicio,
+        "dd/MM/yyyy",
+        new Date(),
+      );
+      const diaSemanaInicio = getDay(dataInicioRecreio);
+      const deslocamentoInicio =
+        diaSemanaInicio === 0 ? 6 : diaSemanaInicio - 1;
+      const inicioPrimeiraSemana = subDays(
+        dataInicioRecreio,
+        deslocamentoInicio,
+      );
+      const inicioSemanaSelecionada = addDays(
+        inicioPrimeiraSemana,
+        7 * (Number(semanaSelecionada) - 1),
+      );
+
+      diasSemana = Array.from({ length: 7 }, (_, index) =>
+        format(addDays(inicioSemanaSelecionada, index), "dd"),
+      );
+      week = weekColumns.map((column) => {
+        return { ...column, dia: diasSemana[column.position] };
+      });
+      setWeekColumns(week);
+      return;
+    }
+
+    let diaDaSemanaNumerico = getDay(startOfMonth(data)); // 0 representa Domingo
 
     if (diaDaSemanaNumerico === 0) {
       diaDaSemanaNumerico = 7;
@@ -964,10 +1125,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
 
   const salvarCorrecao = async (uuidMedicaoPeriodoGrupo) => {
     let uuidsValoresMedicaoParaCorrecao = [];
-    if (
-      !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
-      !ehEscolaTipoCEMEI({ nome: solicitacao.escola })
-    ) {
+    if (!usaEstruturaCeiComFaixaEtaria()) {
       Object.keys(valoresParaCorrecao).forEach((key) => {
         const keySplitted = key.split("__");
         const nome_campo = keySplitted[0];
@@ -983,11 +1141,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
         const uuidValorMedicao = lancamento.uuid;
         uuidsValoresMedicaoParaCorrecao.push(uuidValorMedicao);
       });
-    } else if (
-      ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
-      (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-        ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo))
-    ) {
+    } else {
       Object.keys(valoresParaCorrecao).forEach((key) => {
         const keySplitted = key.split("__");
         const nome_campo = keySplitted[0];
@@ -1157,11 +1311,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
   };
 
   const getNameFieldInputValueMedicao = (row, column, categoria) => {
-    if (
-      ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
-      (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-        ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo))
-    ) {
+    if (usaEstruturaCeiComFaixaEtaria()) {
       return `${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${
         categoria.id
       }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
@@ -1180,14 +1330,14 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
 
   const linhaCeiFrequencia = (rowName) => {
     const ehCEIFrequencia =
-      ehEscolaTipoCEI({ nome: solicitacao.escola }) && rowName === "frequencia";
+      usaEstruturaCeiComFaixaEtaria() && rowName === "frequencia";
     return `${ehCEIFrequencia ? "linha-cei-frequencia" : ""}`;
   };
 
   const linhaCeiMatriculados = (rowName) => {
     const ehCEIMatriculados =
-      ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
-      (rowName === "matriculados" || rowName === "dietas_autorizadas");
+      usaEstruturaCeiComFaixaEtaria() &&
+      ["matriculados", "participantes", "dietas_autorizadas"].includes(rowName);
     return `${ehCEIMatriculados ? "linha-cei-matriculado" : ""}`;
   };
 
@@ -1380,15 +1530,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                               <div
                                 className={`grid-table-tipos-alimentacao body-table-alimentacao`}
                               >
-                                {ehEscolaTipoCEI({
-                                  nome: solicitacao.escola,
-                                }) ||
-                                (ehEscolaTipoCEMEI({
-                                  nome: solicitacao.escola,
-                                }) &&
-                                  ["INTEGRAL", "PARCIAL"].includes(
-                                    periodoGrupo.nome_periodo_grupo,
-                                  )) ? (
+                                {usaEstruturaCeiComFaixaEtaria() ? (
                                   <div
                                     className={`linha-cei ${linhaCeiFrequencia(row.name)} ${linhaCeiMatriculados(row.name)}`}
                                   >
@@ -1536,6 +1678,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                                             periodoGrupo,
                                             solicitacao,
                                             alunosTabSelecionada,
+                                            usaEstruturaCeiComFaixaEtaria(),
                                           )}
                                           exibeTooltipPadraoRepeticaoDiasSobremesaDoce={
                                             !ehEscolaTipoCEI({

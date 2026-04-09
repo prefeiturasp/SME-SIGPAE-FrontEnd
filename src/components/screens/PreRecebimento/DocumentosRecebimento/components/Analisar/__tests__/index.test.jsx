@@ -340,6 +340,49 @@ describe("AnaliseDocumentosRecebimento - Testes Completos", () => {
         expect(btnEnviar).not.toBeDisabled();
       });
     });
+
+    it("habilita botão Enviar no modal de correção mesmo com campos do formulário principal vazios", async () => {
+      await setup();
+
+      // Verifica que o botão principal Solicitar Correção está habilitado mesmo com campos vazios
+      const btnSolicitarCorrecao = screen
+        .getByText("Solicitar Correção")
+        .closest("button");
+      expect(btnSolicitarCorrecao).not.toBeDisabled();
+
+      await clicarBotao("Solicitar Correção");
+
+      // No modal, o botão Enviar deve estar desabilitado inicialmente
+      await waitFor(() => {
+        const btnEnviar = screen.getByText("Enviar").closest("button");
+        expect(btnEnviar).toBeDisabled();
+      });
+
+      // Preenche o campo de correção
+      preencheTextArea(
+        "Informe aqui as correções necessárias",
+        "Correções necessárias",
+      );
+
+      // Agora o botão Enviar deve estar habilitado, ignorando que o form principal está vazio
+      await waitFor(() => {
+        const btnEnviar = screen.getByText("Enviar").closest("button");
+        expect(btnEnviar).not.toBeDisabled();
+      });
+    });
+
+    it("habilita botão Solicitar Correção mesmo com campos obrigatórios vazios", async () => {
+      await setup();
+
+      await waitFor(() => {
+        expect(screen.getByText("Solicitar Correção")).toBeInTheDocument();
+      });
+
+      const btnSolicitarCorrecao = screen
+        .getByText("Solicitar Correção")
+        .closest("button");
+      expect(btnSolicitarCorrecao).not.toBeDisabled();
+    });
   });
 
   describe("Fluxo de Envio", () => {

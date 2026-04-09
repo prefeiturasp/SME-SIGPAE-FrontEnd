@@ -324,10 +324,17 @@ export const LancamentoPorPeriodo = ({
   };
 
   const getSolicitacaoMedicaoInicialAsync = async () => {
+    const recreioNasFeriasUuid =
+      typeof solicitacaoMedicaoInicial?.recreio_nas_ferias === "string"
+        ? solicitacaoMedicaoInicial.recreio_nas_ferias
+        : solicitacaoMedicaoInicial?.recreio_nas_ferias?.uuid ||
+          new URLSearchParams(window.location.search).get("recreio_nas_ferias");
+
     const payload = {
       escola_uuid: escolaInstituicao.uuid,
       mes: mes,
       ano: ano,
+      recreio_nas_ferias: recreioNasFeriasUuid,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
@@ -356,6 +363,10 @@ export const LancamentoPorPeriodo = ({
       solicitacaoMedicaoInicial.status ===
       "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE"
     );
+  };
+
+  const renderBotaoFinalizarSemLancamentos = () => {
+    return !recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial);
   };
 
   const escolaEnviaCorrecaoDreCodae = async () => {
@@ -625,22 +636,24 @@ export const LancamentoPorPeriodo = ({
             {renderBotaoFinalizar() ? (
               <div className="row">
                 <div className="col-12 text-end">
-                  <Botao
-                    texto="Finalizar sem lançamentos"
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                    disabled={
-                      (!usuarioEhEscolaTerceirizadaDiretor() &&
-                        !escolaNaoPossuiAlunosRegulares(
-                          solicitacaoMedicaoInicial,
-                        )) ||
-                      comOcorrencias === "true" ||
-                      naoPodeFinalizar
-                    }
-                    exibirTooltip={comOcorrencias === "true"}
-                    tooltipTitulo="Você avaliou o serviço com ocorrências, não é possível finalizar a medição sem lançamentos."
-                    classTooltip="icone-info-invalid"
-                    onClick={() => onClickFinalizarMedicaoSemLancamentos()}
-                  />
+                  {renderBotaoFinalizarSemLancamentos() && (
+                    <Botao
+                      texto="Finalizar sem lançamentos"
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                      disabled={
+                        (!usuarioEhEscolaTerceirizadaDiretor() &&
+                          !escolaNaoPossuiAlunosRegulares(
+                            solicitacaoMedicaoInicial,
+                          )) ||
+                        comOcorrencias === "true" ||
+                        naoPodeFinalizar
+                      }
+                      exibirTooltip={comOcorrencias === "true"}
+                      tooltipTitulo="Você avaliou o serviço com ocorrências, não é possível finalizar a medição sem lançamentos."
+                      classTooltip="icone-info-invalid"
+                      onClick={() => onClickFinalizarMedicaoSemLancamentos()}
+                    />
+                  )}
                   <Botao
                     texto="Finalizar"
                     style={BUTTON_STYLE.GREEN}

@@ -1,6 +1,7 @@
 import {
   CALENDARIO_CRONOGRAMA,
   CRONOGRAMA_ENTREGA,
+  CRONOGRAMA_SEMANAL_FLV,
   DOCUMENTOS_RECEBIMENTO,
   FICHA_TECNICA,
   LAYOUT_EMBALAGEM,
@@ -49,6 +50,11 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
         usuarioEhCODAEGabinete()) && (
         <LeafItem to={`/${PRE_RECEBIMENTO}/${CRONOGRAMA_ENTREGA}`}>
           Cronograma de Entrega
+        </LeafItem>
+      )}
+      {(usuarioEhCronograma() || usuarioEhCodaeDilog()) && (
+        <LeafItem to={`/${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`}>
+          Cronograma Semanal FLV
         </LeafItem>
       )}
       {(usuarioEhCronograma() ||

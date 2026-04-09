@@ -306,11 +306,22 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       grupo.nome.includes("Grupo 5"),
     );
 
+    const tabelaInfantil = mockRelatorioFinanceiroTipoAlimentacao.tabelas.map(
+      (tabela) => ({ ...tabela, nome: `${tabela.nome} - EMEBS INFANTIL` }),
+    );
+
+    const tabelaFundamental =
+      mockRelatorioFinanceiroTipoAlimentacao.tabelas.map((tabela) => ({
+        ...tabela,
+        nome: `${tabela.nome} - EMEBS FUNDAMENTAL`,
+      }));
+
     mock
       .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
       .reply(200, {
         ...mockRelatorioFinanceiroTipoAlimentacao,
         grupo_unidade_escolar: grupoEMEBS,
+        tabelas: [...tabelaInfantil, ...tabelaFundamental],
       });
     mock
       .onGet(

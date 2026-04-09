@@ -24,6 +24,8 @@ import { mockGetDashboardMedicaoInicialNoresults } from "src/mocks/services/medi
 import { mockGetMesesAnosSolicitacoesMedicaoinicial } from "src/mocks/services/medicaoInicial/dashboard.service/mockGetMesesAnosSolicitacoesMedicaoinicial";
 import mock from "src/services/_mock";
 
+const RECREIO_MARCO_UUID = "04753691-d8a3-40ce-a133-ee975115f258";
+
 const renderComponent = async (
   mockMeusDados = mockMeusDadosSuperUsuarioMedicao,
 ) => {
@@ -404,6 +406,85 @@ describe("AcompanhamentoDeLancamentos", () => {
           1,
         );
       });
+    });
+
+    it("deve exibir o título do recreio nas férias no dropdown de mês de referência", async () => {
+      await selecionarDRE();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("option", { name: "recreio março" }),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("deve requisitar o dashboard com recreio_nas_ferias e manter o recreio selecionado", async () => {
+      await selecionarDRE();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("option", { name: "recreio março" }),
+        ).toBeInTheDocument();
+      });
+
+      const divMesReferencia = screen.getByTestId("div-select-mes-referencia");
+      const selectMesReferencia = divMesReferencia.querySelector("select");
+
+      mock.resetHistory();
+
+      await act(async () => {
+        fireEvent.change(selectMesReferencia, {
+          target: { value: `03_2025|${RECREIO_MARCO_UUID}` },
+        });
+      });
+
+      await waitFor(() => {
+        const requisicaoTotalizadores = mock.history.get.find((request) =>
+          request.url.includes(
+            "medicao-inicial/solicitacao-medicao-inicial/dashboard-totalizadores/",
+          ),
+        );
+        const requisicaoResultados = mock.history.get.find((request) =>
+          request.url.includes(
+            "medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/",
+          ),
+        );
+
+        expect(requisicaoTotalizadores).toBeDefined();
+        expect(requisicaoResultados).toBeDefined();
+      });
+
+      const requisicaoTotalizadores = mock.history.get.find((request) =>
+        request.url.includes(
+          "medicao-inicial/solicitacao-medicao-inicial/dashboard-totalizadores/",
+        ),
+      );
+      const requisicaoResultados = mock.history.get.find((request) =>
+        request.url.includes(
+          "medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/",
+        ),
+      );
+
+      expect(requisicaoTotalizadores.params).toEqual(
+        expect.objectContaining({
+          dre: "3972e0e9-2d8e-472a-9dfa-30cd219a6d9a",
+          mes_ano: "03_2025",
+          recreio_nas_ferias: RECREIO_MARCO_UUID,
+        }),
+      );
+      expect(requisicaoResultados.params).toEqual(
+        expect.objectContaining({
+          dre: "3972e0e9-2d8e-472a-9dfa-30cd219a6d9a",
+          mes_ano: "03_2025",
+          recreio_nas_ferias: RECREIO_MARCO_UUID,
+        }),
+      );
+      expect(selectMesReferencia.value).toBe(`03_2025|${RECREIO_MARCO_UUID}`);
+      expect(
+        within(selectMesReferencia).getByRole("option", {
+          name: "recreio março",
+        }).selected,
+      ).toBe(true);
     });
   });
 });

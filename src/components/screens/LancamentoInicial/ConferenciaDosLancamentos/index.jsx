@@ -48,6 +48,7 @@ import {
   medicaoInicialExportarOcorrenciasPDF,
   medicaoInicialExportarOcorrenciasXLSX,
   relatorioMedicaoInicialPDF,
+  relatorioHistoricoOcorrenciasMedicaoInicialPDF,
 } from "src/services/relatorios";
 import { ModalEnviarParaCodaeECodaeAprovar } from "./components/ModalEnviarParaCodaeECodaeAprovar";
 import { ModalHistoricoCorrecoesPeriodo } from "./components/ModalHistoricoCorrecoesPeriodo";
@@ -335,9 +336,13 @@ export const ConferenciaDosLancamentos = () => {
         locale: ptBR,
       }).toString();
       mesString = mesString.charAt(0).toUpperCase() + mesString.slice(1);
+      const recreioNasFeriasTitulo =
+        typeof response.data.recreio_nas_ferias === "string"
+          ? response.data.recreio_nas_ferias
+          : response.data.recreio_nas_ferias?.titulo;
       escola = response.data.escola;
       dados_iniciais = {
-        mes_lancamento: `${mesString} / ${ano}`,
+        mes_lancamento: recreioNasFeriasTitulo || `${mesString} / ${ano}`,
         unidade_educacional: escola,
       };
       setSolicitacao(response.data);
@@ -709,6 +714,19 @@ export const ConferenciaDosLancamentos = () => {
     return historico;
   };
 
+  const printHistorico = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const uuidSolicitacaoMedicao = urlParams.get("uuid");
+    const response = await relatorioHistoricoOcorrenciasMedicaoInicialPDF(
+      uuidSolicitacaoMedicao,
+    );
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao exportar pdf. Tente novamente mais tarde.");
+    }
+  };
+
   return (
     <div className="conferencia-dos-lancamentos">
       {solicitacao && solicitacao.ocorrencia && (
@@ -720,6 +738,7 @@ export const ConferenciaDosLancamentos = () => {
           solicitacaoMedicaoInicial={solicitacao.ocorrencia}
           titulo="Histórico do Formulário de Ocorrências"
           getHistorico={getHistorico}
+          printHistorico={printHistorico}
         />
       )}
       {erroAPI && <div>{erroAPI}</div>}
