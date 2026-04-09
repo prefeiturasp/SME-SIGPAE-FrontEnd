@@ -10,7 +10,7 @@ import { MemoryRouter } from "react-router-dom";
 import * as toastDialogs from "src/components/Shareable/Toast/dialogs";
 import * as utilities from "src/helpers/utilities";
 import * as logisticaService from "src/services/logistica.service";
-import GuiasNotificacoes from "../index";
+import GuiasNotificacoes from "../CadastroNotificacao/index";
 
 const mockNavigate = jest.fn();
 
@@ -22,7 +22,7 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-jest.mock("../components/Filtros", () => (props) => (
+jest.mock("../CadastroNotificacao/components/Filtros", () => (props) => (
   <div>
     <button onClick={() => props.setFiltros({ empresa: "Empresa X" })}>
       aplicar-filtro
