@@ -901,6 +901,28 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
   });
 
   describe("Testa a parte de DIETAS ESPECIAIS", () => {
+    it("exibe o botão Adicionar na alimentação dos dias com participantes no recreio", async () => {
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      expect(
+        screen.getByTestId("botao-observacao__dia_15__categoria_1"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId("botao-observacao__dia_17__categoria_1"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId("botao-observacao__dia_18__categoria_1"),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("botao-observacao__dia_20__categoria_1"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("botao-observacao__dia_21__categoria_1"),
+      ).not.toBeInTheDocument();
+    });
+
     it("ao clicar na tab `Semana 1`, exibe, nos dias 15 a 21, e verifica os lançamentos", async () => {
       await awaitServices();
       const semana1Element = screen.getByText("Semana 1");

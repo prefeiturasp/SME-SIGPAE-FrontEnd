@@ -271,6 +271,7 @@ export const desabilitarField = (
   mesAnoDefault,
   dadosValoresInclusoesAutorizadasState,
   validacaoDiaLetivo,
+  validacaoDiaLetivoCalendario,
   validacaoDiaLetivoLancheEmergencial,
   validacaoSemana,
   location,
@@ -569,19 +570,33 @@ export const desabilitarField = (
       return true;
     }
     if (nomeCategoria === "ALIMENTAÇÃO" || nomeCategoria.includes("DIETA")) {
-      if (rowName === "participantes") {
-        return true;
-      } else if (validacaoSemana(dia)) {
-        return true;
-      } else if (validacaoDiaLetivo(dia)) {
-        return false;
-      } else if (
-        !Object.keys(values).some((key) => key.includes(`__dia_${dia}`))
-      ) {
-        return true;
-      } else {
+      const categoriaAlimentacao = categoriasDeMedicao.find(
+        (cat) => cat.nome === "ALIMENTAÇÃO",
+      );
+      const chaveDietasAutorizadasNoDia = `dietas_autorizadas__dia_${dia}__categoria_${categoria}`;
+      const participantesNoDia = Number(
+        values[
+          `participantes__dia_${dia}__categoria_${categoriaAlimentacao?.id}`
+        ],
+      );
+      const temLogDietaNoDia =
+        Object.prototype.hasOwnProperty.call(
+          values,
+          chaveDietasAutorizadasNoDia,
+        ) &&
+        values[chaveDietasAutorizadasNoDia] !== undefined &&
+        values[chaveDietasAutorizadasNoDia] !== null &&
+        values[chaveDietasAutorizadasNoDia] !== "";
+
+      if (validacaoSemana(dia) || !validacaoDiaLetivoCalendario(dia)) {
         return true;
       }
+
+      if (nomeCategoria === "ALIMENTAÇÃO") {
+        return !(participantesNoDia > 0);
+      }
+
+      return !(participantesNoDia > 0 && temLogDietaNoDia);
     } else {
       return false;
     }

@@ -2490,6 +2490,48 @@ export default () => {
       ].includes(location.state.status_periodo)
     )
       return true;
+
+    const categoriaAtual = categoriasDeMedicao?.find(
+      (categoria) => categoria.id === categoriaId,
+    );
+    const categoriaAlimentacao = categoriasDeMedicao?.find(
+      (categoria) => categoria.nome === "ALIMENTAÇÃO",
+    );
+
+    if (ehRecreioNasFerias() && categoriaAtual) {
+      const participantesNoDia = Number(
+        formValuesAtualizados[
+          `participantes__dia_${dia}__categoria_${categoriaAlimentacao?.id}`
+        ],
+      );
+      const temLogDietaNoDia =
+        Object.prototype.hasOwnProperty.call(
+          formValuesAtualizados,
+          `dietas_autorizadas__dia_${dia}__categoria_${categoriaId}`,
+        ) &&
+        formValuesAtualizados[
+          `dietas_autorizadas__dia_${dia}__categoria_${categoriaId}`
+        ] !== undefined &&
+        formValuesAtualizados[
+          `dietas_autorizadas__dia_${dia}__categoria_${categoriaId}`
+        ] !== null &&
+        formValuesAtualizados[
+          `dietas_autorizadas__dia_${dia}__categoria_${categoriaId}`
+        ] !== "";
+
+      if (validacaoSemana(dia) || !validacaoDiaLetivoCalendario(dia)) {
+        return false;
+      }
+
+      if (categoriaAtual.nome === "ALIMENTAÇÃO") {
+        return participantesNoDia > 0;
+      }
+
+      if (categoriaAtual.nome.includes("DIETA")) {
+        return participantesNoDia > 0 && temLogDietaNoDia;
+      }
+    }
+
     const temInclusaoAutorizadaNoDia = inclusoesAutorizadas.some(
       (inclusao) => inclusao.dia === dia,
     );
@@ -3227,6 +3269,7 @@ export default () => {
                                                           mesAnoDefault,
                                                           dadosValoresInclusoesAutorizadasState,
                                                           validacaoDiaLetivo,
+                                                          validacaoDiaLetivoCalendario,
                                                           validacaoDiaLetivoLancheEmergencial,
                                                           validacaoSemana,
                                                           location,
@@ -3473,6 +3516,7 @@ export default () => {
                                                             mesAnoDefault,
                                                             dadosValoresInclusoesAutorizadasState,
                                                             validacaoDiaLetivo,
+                                                            validacaoDiaLetivoCalendario,
                                                             validacaoDiaLetivoLancheEmergencial,
                                                             validacaoSemana,
                                                             location,
