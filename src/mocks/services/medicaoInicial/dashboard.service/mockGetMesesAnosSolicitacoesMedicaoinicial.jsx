@@ -6,6 +6,15 @@ export const mockGetMesesAnosSolicitacoesMedicaoinicial = {
       status: ["MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE"],
     },
     {
+      mes: "03",
+      ano: "2025",
+      recreio_nas_ferias: {
+        titulo: "recreio março",
+        uuid: "04753691-d8a3-40ce-a133-ee975115f258",
+      },
+      status: ["MEDICAO_ENVIADA_PELA_UE"],
+    },
+    {
       mes: "02",
       ano: "2025",
       status: ["MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE"],

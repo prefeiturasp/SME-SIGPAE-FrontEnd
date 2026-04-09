@@ -91,6 +91,7 @@ export default () => {
   const [opcaoSelecionada, setOpcaoSelecionada] = useState(null);
   const [arquivo, setArquivo] = useState([]);
   const [historicoEscola, setHistoricoEscola] = useState();
+  const [recreiosLancados, setRecreiosLancados] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -205,6 +206,10 @@ export default () => {
     periodos,
     cadastrosRecreioPreparados,
   ) => {
+    if (!periodos.length) {
+      return null;
+    }
+
     const semMesAno = !mesParam || !anoParam;
     const comRecreio = !!recreioNasFeriasParam;
 
@@ -219,17 +224,127 @@ export default () => {
           c.mesInicio === Number(mesParam) &&
           c.uuid === recreioNasFeriasParam,
       );
-      return cadastro.dataInicio.toString();
+      return cadastro?.dataInicio?.toString() || periodos[0].dataBRT.toString();
     }
-    const agora = new Date();
-    return new Date(
-      Number(anoParam),
-      Number(mesParam) - 1,
-      agora.getDate(),
-      agora.getHours(),
-      agora.getMinutes(),
-      agora.getSeconds(),
-      agora.getMilliseconds(),
+
+    const periodoMesAno = periodos.find(
+      (periodo) =>
+        format(periodo.dataBRT, "MM") === String(mesParam).padStart(2, "0") &&
+        getYear(periodo.dataBRT).toString() === String(anoParam) &&
+        !periodo.recreio_nas_ferias,
+    );
+
+    return periodoMesAno?.dataBRT.toString() || periodos[0].dataBRT.toString();
+  };
+
+  const normalizarMesEAno = (mesParam, anoParam) => {
+    if (!mesParam || !anoParam) {
+      return {
+        mes: mesParam,
+        ano: anoParam,
+      };
+    }
+
+    const mesAtual = Number(format(new Date(), "MM"));
+    const anoAtual = getYear(new Date());
+    let mesNormalizado = Number(mesParam);
+    let anoNormalizado = Number(anoParam);
+
+    if (
+      Number.isNaN(mesNormalizado) ||
+      mesNormalizado < 1 ||
+      mesNormalizado > 12
+    ) {
+      mesNormalizado = mesAtual;
+    }
+    if (Number.isNaN(anoNormalizado)) {
+      anoNormalizado = anoAtual;
+    }
+    if (anoNormalizado > anoAtual || anoNormalizado < anoAtual - 1) {
+      anoNormalizado = anoAtual;
+    }
+    if (mesNormalizado > mesAtual && anoNormalizado === anoAtual) {
+      mesNormalizado = mesAtual;
+    }
+    if (mesNormalizado < mesAtual && anoNormalizado === anoAtual - 1) {
+      mesNormalizado = mesAtual;
+    }
+
+    return {
+      mes: String(mesNormalizado).padStart(2, "0"),
+      ano: String(anoNormalizado),
+    };
+  };
+
+  const getDadosPeriodoSelecionado = (
+    periodoSelecionado,
+    periodosDisponiveis,
+    recreioNasFeriasParam = null,
+  ) => {
+    if (!periodoSelecionado) {
+      return {
+        mes: null,
+        ano: null,
+        periodoLabel: null,
+        recreio_nas_ferias: recreioNasFeriasParam,
+      };
+    }
+
+    const dataPeriodoSelecionado = new Date(periodoSelecionado);
+    const periodoEncontrado = periodosDisponiveis.find((periodoDisponivel) => {
+      if (recreioNasFeriasParam) {
+        return periodoDisponivel.recreio_nas_ferias === recreioNasFeriasParam;
+      }
+
+      return (
+        periodoDisponivel.dataBRT.getTime() === dataPeriodoSelecionado.getTime()
+      );
+    });
+
+    return {
+      mes: format(dataPeriodoSelecionado, "MM").toString(),
+      ano: getYear(dataPeriodoSelecionado).toString(),
+      periodoLabel: periodoEncontrado?.periodo || null,
+      recreio_nas_ferias:
+        periodoEncontrado?.recreio_nas_ferias || recreioNasFeriasParam || null,
+    };
+  };
+
+  const ehSolicitacaoLancadaDoMesAno = (solicitacao, mes, ano) => {
+    return (
+      Number(solicitacao.mes) === mes &&
+      Number(solicitacao.ano) === ano &&
+      !solicitacao.recreio_nas_ferias
+    );
+  };
+
+  const ehSolicitacaoLancadaDoRecreio = (solicitacao, cadastroRecreio) => {
+    const recreioLancadoUuid =
+      typeof solicitacao.recreio_nas_ferias === "string"
+        ? solicitacao.recreio_nas_ferias
+        : solicitacao.recreio_nas_ferias?.uuid;
+    const recreioLancadoTitulo =
+      typeof solicitacao.recreio_nas_ferias === "string"
+        ? null
+        : solicitacao.recreio_nas_ferias?.titulo;
+
+    return (
+      Number(solicitacao.mes) === cadastroRecreio.mesInicio &&
+      Number(solicitacao.ano) === cadastroRecreio.anoInicio &&
+      !!solicitacao.recreio_nas_ferias &&
+      (recreioLancadoUuid === cadastroRecreio.uuid ||
+        recreioLancadoTitulo === cadastroRecreio.titulo)
+    );
+  };
+
+  const ehOpcaoDeRecreioLancado = (periodo) => {
+    return (
+      !!periodo.recreio_nas_ferias &&
+      recreiosLancados.some(
+        (recreioLancado) =>
+          recreioLancado.uuid === periodo.recreio_nas_ferias ||
+          recreioLancado.titulo === periodo.periodo,
+      )
     );
   };
 
@@ -267,6 +382,22 @@ export default () => {
       }
 
       let cadastrosRecreioPreparados = [];
+      const solicitacoesLancadasResultados = solicitacoesLancadas.data || [];
+
+      setRecreiosLancados(
+        solicitacoesLancadasResultados
+          .filter((solicitacao) => !!solicitacao.recreio_nas_ferias)
+          .map((solicitacao) => ({
+            uuid:
+              typeof solicitacao.recreio_nas_ferias === "string"
+                ? solicitacao.recreio_nas_ferias
+                : solicitacao.recreio_nas_ferias?.uuid,
+            titulo:
+              typeof solicitacao.recreio_nas_ferias === "string"
+                ? null
+                : solicitacao.recreio_nas_ferias?.titulo,
+          })),
+      );
 
       cadastrosRecreioPreparados = (
         cadastrosRecreioNasFerias || cadastrosRecreioNasFerias_
@@ -294,11 +425,10 @@ export default () => {
           mesString.charAt(0).toUpperCase() + mesString.slice(1) + " / " + ano;
 
         if (location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL)) {
-          const temSolicitacaoLancada = solicitacoesLancadas.data.filter(
+          const temSolicitacaoLancada = solicitacoesLancadasResultados.some(
             (solicitacao) =>
-              Number(solicitacao.mes) === mes &&
-              Number(solicitacao.ano) === ano,
-          ).length;
+              ehSolicitacaoLancadaDoMesAno(solicitacao, mes, ano),
+          );
 
           if (!temSolicitacaoLancada) {
             periodos.push({
@@ -314,7 +444,16 @@ export default () => {
         }
 
         cadastrosRecreioPreparados?.forEach((cad) => {
-          if (cad.mesInicio === mes && cad.anoInicio === ano) {
+          const temSolicitacaoRecreioLancada =
+            solicitacoesLancadasResultados.some((solicitacao) =>
+              ehSolicitacaoLancadaDoRecreio(solicitacao, cad),
+            );
+
+          if (
+            cad.mesInicio === mes &&
+            cad.anoInicio === ano &&
+            !temSolicitacaoRecreioLancada
+          ) {
             periodos.push({
               dataBRT: cad.dataInicio,
               periodo: cad.titulo,
@@ -324,9 +463,9 @@ export default () => {
         });
       }
 
-      const params = new URLSearchParams(window.location.search);
-      let mes = params.get("mes");
-      let ano = params.get("ano");
+      const params = new URLSearchParams(location.search);
+      const mesParamOriginal = params.get("mes");
+      const anoParamOriginal = params.get("ano");
       const recreioNasFeriasParam = params.get("recreio_nas_ferias");
 
       setObjectoPeriodos(periodos);
@@ -426,6 +565,7 @@ export default () => {
       mes: format(new Date(periodo), "MM").toString(),
       ano: getYear(new Date(periodo)).toString(),
       recreio_nas_ferias,
+      voltar_unico_registro: true,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
@@ -436,56 +576,111 @@ export default () => {
   const { Option } = Select;
 
   const opcoesPeriodos = objectoPeriodos
-    ? objectoPeriodos.map((periodo) => {
-        return <Option key={periodo.dataBRT}>{periodo.periodo}</Option>;
-      })
+    ? objectoPeriodos
+        .filter((periodo) => !ehOpcaoDeRecreioLancado(periodo))
+        .map((periodo) => {
+          return <Option key={periodo.dataBRT}>{periodo.periodo}</Option>;
+        })
     : [];
 
-  const getDiasCalendarioAsync = async (payload, solicitacao) => {
-    const response = await getDiasCalendario(payload);
+  const getRecreioNasFerias = (payload, solicitacao) => {
+    return (
+      solicitacao?.recreio_nas_ferias ||
+      (payload["recreio_nas_ferias"]
+        ? cadastrosRecreioNasFerias?.find(
+            (cadastro) => cadastro.uuid === payload["recreio_nas_ferias"],
+          )
+        : null)
+    );
+  };
+
+  const validarFinalizacaoRecreioNasFerias = (payload, solicitacao) => {
+    const recreioNasFerias = getRecreioNasFerias(payload, solicitacao);
+
+    if (!recreioNasFerias?.data_fim) {
+      return false;
+    }
+
+    const [diaFim, mesFim, anoFim] = recreioNasFerias.data_fim
+      .split("/")
+      .map(Number);
+    const dataFimRecreioNasFerias = new Date(anoFim, mesFim - 1, diaFim);
+    dataFimRecreioNasFerias.setHours(23, 59, 59, 999);
+
+    const naoPodeFinalizarSeAindaNaoPassouDataFimRecreioNasFerias =
+      new Date().getTime() <= dataFimRecreioNasFerias.getTime();
+
+    setNaoPodeFinalizar(
+      naoPodeFinalizarSeAindaNaoPassouDataFimRecreioNasFerias,
+    );
+    return true;
+  };
+
+  const validarFinalizacaoLancamentoComum = async (
+    payload,
+    solicitacao,
+    diasCalendario,
+  ) => {
     const ultimoDiaComSolicitacaoAutorizada_ =
       await getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
         payload["escola_uuid"],
         payload["mes"],
         payload["ano"],
       );
+    const listaDiasLetivos = diasCalendario.filter(
+      (dia) => dia.dia_letivo === true,
+    );
+
+    if (!listaDiasLetivos.length) {
+      setNaoPodeFinalizar(false);
+      return;
+    }
+
+    let diasParaDescontar = 1;
+    if (payload["mes"] === DEZEMBRO && listaDiasLetivos.length > 1) {
+      diasParaDescontar += 1;
+    }
+
+    const ultimoDiaLetivo =
+      listaDiasLetivos[listaDiasLetivos.length - diasParaDescontar];
+    let dataUltimoDia = new Date(
+      `${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`,
+    );
+
+    if (
+      ultimoDiaComSolicitacaoAutorizada_ &&
+      solicitacao &&
+      escolaNaoPossuiAlunosRegulares(solicitacao)
+    ) {
+      dataUltimoDia = new Date(
+        Math.max(
+          dataUltimoDia.getTime(),
+          new Date(ultimoDiaComSolicitacaoAutorizada_ + "T00:00:00").getTime(),
+        ),
+      );
+    }
+
+    dataUltimoDia.setHours(23, 59, 59, 999);
+    const dataHoje = new Date();
+    const naoPodeFinalizarSeAindaNaoPassouOUltimoDia =
+      dataHoje.getTime() <= dataUltimoDia.getTime();
+
+    setNaoPodeFinalizar(naoPodeFinalizarSeAindaNaoPassouOUltimoDia);
+  };
+
+  const getDiasCalendarioAsync = async (payload, solicitacao) => {
+    const response = await getDiasCalendario(payload);
 
     if (response.status === HTTP_STATUS.OK) {
-      const listaDiasLetivos = response.data.filter(
-        (dia) => dia.dia_letivo === true,
-      );
-      if (listaDiasLetivos.length) {
-        let diasParaDescontar = 1;
-        if (payload["mes"] === DEZEMBRO && listaDiasLetivos.length > 1) {
-          diasParaDescontar += 1;
-        }
-        const ultimoDiaLetivo =
-          listaDiasLetivos[listaDiasLetivos.length - diasParaDescontar];
-        let dataUltimoDia = new Date(
-          `${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`,
-        );
-        if (
-          ultimoDiaComSolicitacaoAutorizada_ &&
-          solicitacao &&
-          escolaNaoPossuiAlunosRegulares(solicitacao)
-        ) {
-          dataUltimoDia = new Date(
-            Math.max(
-              dataUltimoDia.getTime(),
-              new Date(
-                ultimoDiaComSolicitacaoAutorizada_ + "T00:00:00",
-              ).getTime(),
-            ),
-          );
-        }
-        dataUltimoDia.setHours(23, 59, 59, 999);
-        const dataHoje = new Date();
-        const naoPodeFinalizarSeAindaNaoPassouOUltimoDia =
-          dataHoje.getTime() <= dataUltimoDia.getTime();
-        setNaoPodeFinalizar(naoPodeFinalizarSeAindaNaoPassouOUltimoDia);
-      } else {
-        setNaoPodeFinalizar(false);
+      if (validarFinalizacaoRecreioNasFerias(payload, solicitacao)) {
+        return;
       }
+
+      await validarFinalizacaoLancamentoComum(
+        payload,
+        solicitacao,
+        response.data,
+      );
     } else {
       toastError(
         "Erro ao carregar calendário do mês. Tente novamente mais tarde.",
@@ -567,6 +762,7 @@ export default () => {
       mes: mes.toString(),
       ano: ano.toString(),
       recreio_nas_ferias,
+      voltar_unico_registro: true,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);

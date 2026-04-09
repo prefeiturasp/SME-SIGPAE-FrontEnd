@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -31,14 +32,23 @@ import {
   getTiposDeAlimentacao,
   getVinculosTipoAlimentacaoPorEscola,
 } from "src/services/cadastroTipoAlimentacao.service";
+import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
 import { ToastContainer } from "react-toastify";
+
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+}));
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
+jest.mock("src/services/medicaoInicial/solicitacaoMedicaoInicial.service");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -59,6 +69,7 @@ const awaitServices = async () => {
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - EMEF", () => {
   beforeEach(async () => {
+    mockNavigate.mockClear();
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaEMEFPericles,
       status: 200,
@@ -786,6 +797,74 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - E
     camposAtualizados.forEach(({ key, testId }) => {
       const input = screen.getByTestId(`${testId}__dia_09__categoria_1`);
       expect(input).toHaveAttribute("value", valoresEsperados[key]);
+    });
+  });
+
+  it("ao salvar correções no recreio nas ferias, navega preservando o parametro recreio_nas_ferias", async () => {
+    cleanup();
+
+    getDiasParaCorrecao.mockResolvedValue({
+      data: [
+        {
+          medicao: "ba4d34eb-eb38-4a31-8801-796964e1fde9",
+          criado_em: "17/12/2025 09:35:33",
+          uuid: "07a0db76-761f-4852-969a-552b9782580e",
+          dia: "03",
+          habilitado_correcao: true,
+          infantil_ou_fundamental: "N/A",
+          categoria_medicao: 1,
+        },
+      ],
+      status: 200,
+    });
+
+    const locationStateCorrecao = {
+      ...mockLocationStateGrupoColaboradores,
+      status_periodo: "MEDICAO_CORRECAO_SOLICITADA",
+      status_solicitacao: "MEDICAO_CORRECAO_SOLICITADA",
+    };
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          initialEntries={[{ pathname: "/", state: locationStateCorrecao }]}
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <PeriodoLancamentoMedicaoInicial />
+          <ToastContainer />
+        </MemoryRouter>,
+      );
+    });
+
+    await awaitServices();
+
+    const inputFrequenciaDia03 = screen.getByTestId(
+      "frequencia__dia_03__categoria_1",
+    );
+    fireEvent.change(inputFrequenciaDia03, {
+      target: { value: "40" },
+    });
+
+    const botaoSalvarCorrecoes = screen
+      .getByText("Salvar Correções")
+      .closest("button");
+    expect(botaoSalvarCorrecoes).toBeEnabled();
+
+    escolaCorrigeMedicao.mockResolvedValue({
+      status: 200,
+    });
+
+    fireEvent.click(botaoSalvarCorrecoes);
+    fireEvent.click(screen.getByText("Sim"));
+
+    await waitFor(() => {
+      expect(escolaCorrigeMedicao).toHaveBeenCalled();
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/medicao-inicial/detalhamento-do-lancamento?mes=12&ano=2025&recreio_nas_ferias=69835919-9807-4496-9910-369f45aceaf0",
+      );
     });
   });
 });

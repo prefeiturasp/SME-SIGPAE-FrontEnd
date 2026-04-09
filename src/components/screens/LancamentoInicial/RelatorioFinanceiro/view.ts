@@ -137,7 +137,9 @@ export function useRelatorioFinanceiro(filtrosIniciais?: FiltrosInterface) {
         mes_ano: data.mes_ano,
       });
     } catch ({ response }: any) {
-      toastError(getError(response.data));
+      toastError(
+        `Erro ao carregar relatório consolidado. ${getError(response.data)}`,
+      );
     }
   };
 

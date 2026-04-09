@@ -42,6 +42,7 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
     let valorTotalGeral = 0;
     const ehCieja = unidade === "CIEJA";
     const ehCemei = unidade === "CEMEI";
+    const ehEmebs = unidade?.includes("EMEBS");
 
     useImperativeHandle(ref, () => ({
       getTotais: () => ({
@@ -74,7 +75,6 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
             prioridadeAlimentacao(a.nome) - prioridadeAlimentacao(b.nome),
         );
     }, [tipoDieta, tiposAlimentacao, exibeNoturno, unidade]);
-
     return (
       <table className="tabela-relatorio">
         <thead>
@@ -100,12 +100,20 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
                 ? "Refeição CIEJA e CMCT"
                 : tipo.nome;
 
-            const tabela = tabelas.find((tabela) =>
-              ehCemei
-                ? tabela.nome ===
-                  "Dietas Tipo A e Tipo A Enteral - Turma Infantil - EMEI"
-                : tabela.nome.toUpperCase().includes(tipoDieta),
-            );
+            const tabela = tabelas.find((tabela) => {
+              if (ehCemei) {
+                return (
+                  tabela.nome ===
+                  `Dietas ${tipoDieta === "TIPO A" ? "Tipo A e Tipo A Enteral" : "Tipo B"} - Turma Infantil - EMEI`
+                );
+              }
+
+              if (ehEmebs) {
+                return tabela.nome === `${tabela.nome} - ${unidade}`;
+              }
+
+              return tabela.nome.toUpperCase().includes(tipoDieta);
+            });
 
             const valorUnitario = stringDecimalToNumber(
               tabela?.valores.find(

@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -202,6 +203,269 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       await awaitServices();
       expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
       expect(screen.queryByText("Semana 5")).not.toBeInTheDocument();
+    });
+
+    it("renderiza somente duas semanas quando o recreio cobre dois blocos de 7 dias", async () => {
+      cleanup();
+
+      const mockLocationStateGrupoRecreioDuasSemanas = {
+        ...mockLocationStateGrupoRecreioNasFerias,
+        mesAnoSelecionado:
+          "Mon Mar 23 2026 00:00:00 GMT-0300 (Horário Padrão de Brasília)",
+        solicitacaoMedicaoInicial: {
+          ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial,
+          recreio_nas_ferias: {
+            ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial
+              .recreio_nas_ferias,
+            titulo: "Recreio nas Férias - MAR 2026",
+            data_inicio: "23/03/2026",
+            data_fim: "30/03/2026",
+          },
+        },
+      };
+
+      await act(async () => {
+        render(
+          <MemoryRouter
+            initialEntries={[
+              {
+                pathname: "/",
+                state: mockLocationStateGrupoRecreioDuasSemanas,
+              },
+            ]}
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <PeriodoLancamentoMedicaoInicial />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await awaitServices();
+
+      expect(screen.getByText("Semana 1")).toBeInTheDocument();
+      expect(screen.getByText("Semana 2")).toBeInTheDocument();
+      expect(screen.queryByText("Semana 3")).not.toBeInTheDocument();
+    });
+
+    it("mantem a semana unica do recreio habilitada quando o periodo e de 23 a 29", async () => {
+      cleanup();
+
+      const mockLocationStateGrupoRecreioUmaSemana = {
+        ...mockLocationStateGrupoRecreioNasFerias,
+        mesAnoSelecionado:
+          "Mon Mar 23 2026 00:00:00 GMT-0300 (Horário Padrão de Brasília)",
+        solicitacaoMedicaoInicial: {
+          ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial,
+          recreio_nas_ferias: {
+            ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial
+              .recreio_nas_ferias,
+            titulo: "Recreio nas Férias - MAR 2026",
+            data_inicio: "23/03/2026",
+            data_fim: "29/03/2026",
+          },
+        },
+      };
+
+      await act(async () => {
+        render(
+          <MemoryRouter
+            initialEntries={[
+              {
+                pathname: "/",
+                state: mockLocationStateGrupoRecreioUmaSemana,
+              },
+            ]}
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <PeriodoLancamentoMedicaoInicial />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await awaitServices();
+
+      expect(screen.getByText("Semana 1")).toBeInTheDocument();
+      expect(screen.queryByText("Semana 2")).not.toBeInTheDocument();
+
+      const inputFrequenciaDia23 = screen.getByTestId(
+        "frequencia__dia_23__categoria_1",
+      );
+      const inputFrequenciaDia24 = screen.getByTestId(
+        "frequencia__dia_24__categoria_1",
+      );
+
+      expect(inputFrequenciaDia23).not.toBeDisabled();
+      expect(inputFrequenciaDia24).not.toBeDisabled();
+    });
+
+    it("bloqueia e aplica estilo de desabilitado para dias de mes anterior no inicio do recreio", async () => {
+      cleanup();
+
+      const mockLocationStateGrupoRecreioComMesAnterior = {
+        ...mockLocationStateGrupoRecreioNasFerias,
+        mesAnoSelecionado:
+          "Sun Mar 01 2026 00:00:00 GMT-0300 (Horário Padrão de Brasília)",
+        solicitacaoMedicaoInicial: {
+          ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial,
+          recreio_nas_ferias: {
+            ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial
+              .recreio_nas_ferias,
+            titulo: "Recreio nas Férias - MAR 2026",
+            data_inicio: "01/03/2026",
+            data_fim: "10/03/2026",
+          },
+        },
+      };
+
+      getDiasLetivosRecreio.mockResolvedValue({
+        data: [
+          { dia: "01", data: "01/03/2026", dia_letivo: false },
+          { dia: "02", data: "02/03/2026", dia_letivo: true },
+          { dia: "03", data: "03/03/2026", dia_letivo: true },
+          { dia: "04", data: "04/03/2026", dia_letivo: true },
+          { dia: "05", data: "05/03/2026", dia_letivo: true },
+          { dia: "06", data: "06/03/2026", dia_letivo: true },
+          { dia: "07", data: "07/03/2026", dia_letivo: false },
+          { dia: "08", data: "08/03/2026", dia_letivo: false },
+          { dia: "09", data: "09/03/2026", dia_letivo: true },
+          { dia: "10", data: "10/03/2026", dia_letivo: true },
+        ],
+        status: 200,
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter
+            initialEntries={[
+              {
+                pathname: "/",
+                state: mockLocationStateGrupoRecreioComMesAnterior,
+              },
+            ]}
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <PeriodoLancamentoMedicaoInicial />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await awaitServices();
+
+      const inputFrequenciaDia23 = screen.getByTestId(
+        "frequencia__dia_23__categoria_1",
+      );
+
+      expect(inputFrequenciaDia23).toHaveAttribute("value", "Mês anterior");
+      expect(inputFrequenciaDia23).toBeDisabled();
+      expect(
+        inputFrequenciaDia23.closest(".input-desabilitado"),
+      ).not.toBeNull();
+    });
+
+    it("renderiza a semana 6 quando o recreio cobre todo o mes de marco", async () => {
+      cleanup();
+
+      const mockLocationStateGrupoRecreioMesCompleto = {
+        ...mockLocationStateGrupoRecreioNasFerias,
+        mesAnoSelecionado:
+          "Sun Mar 01 2026 00:00:00 GMT-0300 (Horário Padrão de Brasília)",
+        solicitacaoMedicaoInicial: {
+          ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial,
+          recreio_nas_ferias: {
+            ...mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial
+              .recreio_nas_ferias,
+            titulo: "Recreio nas Férias - MAR 2026",
+            data_inicio: "01/03/2026",
+            data_fim: "31/03/2026",
+          },
+        },
+      };
+
+      getDiasLetivosRecreio.mockResolvedValue({
+        data: [
+          { dia: "01", data: "01/03/2026", dia_letivo: false },
+          { dia: "02", data: "02/03/2026", dia_letivo: true },
+          { dia: "03", data: "03/03/2026", dia_letivo: true },
+          { dia: "04", data: "04/03/2026", dia_letivo: true },
+          { dia: "05", data: "05/03/2026", dia_letivo: true },
+          { dia: "06", data: "06/03/2026", dia_letivo: true },
+          { dia: "07", data: "07/03/2026", dia_letivo: false },
+          { dia: "08", data: "08/03/2026", dia_letivo: false },
+          { dia: "09", data: "09/03/2026", dia_letivo: true },
+          { dia: "10", data: "10/03/2026", dia_letivo: true },
+          { dia: "11", data: "11/03/2026", dia_letivo: true },
+          { dia: "12", data: "12/03/2026", dia_letivo: true },
+          { dia: "13", data: "13/03/2026", dia_letivo: true },
+          { dia: "14", data: "14/03/2026", dia_letivo: false },
+          { dia: "15", data: "15/03/2026", dia_letivo: false },
+          { dia: "16", data: "16/03/2026", dia_letivo: true },
+          { dia: "17", data: "17/03/2026", dia_letivo: true },
+          { dia: "18", data: "18/03/2026", dia_letivo: true },
+          { dia: "19", data: "19/03/2026", dia_letivo: true },
+          { dia: "20", data: "20/03/2026", dia_letivo: true },
+          { dia: "21", data: "21/03/2026", dia_letivo: false },
+          { dia: "22", data: "22/03/2026", dia_letivo: false },
+          { dia: "23", data: "23/03/2026", dia_letivo: true },
+          { dia: "24", data: "24/03/2026", dia_letivo: true },
+          { dia: "25", data: "25/03/2026", dia_letivo: true },
+          { dia: "26", data: "26/03/2026", dia_letivo: true },
+          { dia: "27", data: "27/03/2026", dia_letivo: true },
+          { dia: "28", data: "28/03/2026", dia_letivo: false },
+          { dia: "29", data: "29/03/2026", dia_letivo: false },
+          { dia: "30", data: "30/03/2026", dia_letivo: true },
+          { dia: "31", data: "31/03/2026", dia_letivo: true },
+        ],
+        status: 200,
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter
+            initialEntries={[
+              {
+                pathname: "/",
+                state: mockLocationStateGrupoRecreioMesCompleto,
+              },
+            ]}
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <PeriodoLancamentoMedicaoInicial />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await awaitServices();
+
+      expect(screen.getByText("Semana 1")).toBeInTheDocument();
+      expect(screen.getByText("Semana 6")).toBeInTheDocument();
+
+      fireEvent.click(screen.getByText("Semana 6"));
+
+      const inputFrequenciaDia30 = screen.getByTestId(
+        "frequencia__dia_30__categoria_1",
+      );
+      const inputFrequenciaDia31 = screen.getByTestId(
+        "frequencia__dia_31__categoria_1",
+      );
+
+      expect(inputFrequenciaDia30).not.toBeDisabled();
+      expect(inputFrequenciaDia31).not.toBeDisabled();
     });
 
     it("renderiza label `ALIMENTAÇÃO`", async () => {
