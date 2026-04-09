@@ -72,7 +72,6 @@ export default () => {
     useState(false);
   const [solicitacaoMedicaoInicial, setSolicitacaoMedicaoInicial] =
     useState(null);
-  const [periodoFromSearchParam, setPeriodoFromSearchParam] = useState(null);
   const [loadingSolicitacaoMedInicial, setLoadingSolicitacaoMedicaoInicial] =
     useState(true);
   const [objSolicitacaoMIFinalizada, setObjSolicitacaoMIFinalizada] = useState({
@@ -213,10 +212,6 @@ export default () => {
     const semMesAno = !mesParam || !anoParam;
     const comRecreio = !!recreioNasFeriasParam;
 
-    if (semMesAno) {
-      return periodos[0].dataBRT.toString();
-    }
-
     if (comRecreio) {
       const cadastro = cadastrosRecreioPreparados.find(
         (c) =>
@@ -225,6 +220,10 @@ export default () => {
           c.uuid === recreioNasFeriasParam,
       );
       return cadastro?.dataInicio?.toString() || periodos[0].dataBRT.toString();
+    }
+
+    if (semMesAno) {
+      return periodos[0].dataBRT.toString();
     }
 
     const periodoMesAno = periodos.find(
@@ -301,9 +300,13 @@ export default () => {
       );
     });
 
+    const dataPeriodoReferencia = periodoEncontrado?.dataBRT
+      ? new Date(periodoEncontrado.dataBRT)
+      : new Date(periodoSelecionado);
+
     return {
-      mes: format(dataPeriodoSelecionado, "MM").toString(),
-      ano: getYear(dataPeriodoSelecionado).toString(),
+      mes: format(dataPeriodoReferencia, "MM").toString(),
+      ano: getYear(dataPeriodoReferencia).toString(),
       periodoLabel: periodoEncontrado?.periodo || null,
       recreio_nas_ferias:
         periodoEncontrado?.recreio_nas_ferias || recreioNasFeriasParam || null,
@@ -435,16 +438,6 @@ export default () => {
               dataBRT,
               periodo: periodoFormatado,
             });
-
-            if (!location.search && periodos.length === 1) {
-              navigate(
-                {
-                  pathname: location.pathname,
-                  search: `mes=${String(mes).padStart(2, "0")}&ano=${ano}`,
-                },
-                { replace: true },
-              );
-            }
           }
         } else {
           periodos.push({
@@ -478,6 +471,20 @@ export default () => {
       const anoParamOriginal = params.get("ano");
       const recreioNasFeriasParam = params.get("recreio_nas_ferias");
 
+      if (
+        location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL) &&
+        !mesParamOriginal &&
+        !anoParamOriginal &&
+        !recreioNasFeriasParam
+      ) {
+        setMes(null);
+        setAno(null);
+        setPeriodoSelecionado(null);
+        setObjectoPeriodos(periodos);
+        setLoadingSolicitacaoMedicaoInicial(false);
+        return;
+      }
+
       const { mes: mesParam, ano: anoParam } = normalizarMesEAno(
         mesParamOriginal,
         anoParamOriginal,
@@ -505,9 +512,6 @@ export default () => {
 
       setMes(dadosPeriodoInicial.mes);
       setAno(dadosPeriodoInicial.ano);
-      setPeriodoFromSearchParam(
-        dadosPeriodoInicial.periodoLabel || periodos[0]?.periodo,
-      );
 
       const searchParams = `?mes=${dadosPeriodoInicial.mes}&ano=${dadosPeriodoInicial.ano}${dadosPeriodoInicial.recreio_nas_ferias ? `&recreio_nas_ferias=${dadosPeriodoInicial.recreio_nas_ferias}` : ""}`;
 
@@ -864,9 +868,8 @@ export default () => {
                   }
                   onBlur={() => setOpen(false)}
                   name="periodo_lancamento"
-                  defaultValue={
-                    periodoFromSearchParam || objectoPeriodos[0].periodo
-                  }
+                  placeholder="Selecione..."
+                  value={periodoSelecionado}
                   onChange={(value) => handleChangeSelectPeriodo(value)}
                 >
                   {opcoesPeriodos}
