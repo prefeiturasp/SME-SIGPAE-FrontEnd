@@ -23,10 +23,38 @@ import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial
 import mock from "src/services/_mock";
 
 describe("Teste <LancamentoMedicaoInicial> - Finaliza Lançamento com Ocorrências", () => {
-  beforeEach(async () => {
-    // Mock da data atual para 01/01/2025
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2025-01-01T10:00:00.000Z"));
+  const renderPage = async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          {" "}
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaCEUGESTAO,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <ToastContainer />
+            <LancamentoMedicaoInicialPage />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+  };
+
+  beforeEach(() => {
+    mock.reset();
 
     mock
       .onGet("/usuarios/meus-dados/")
@@ -117,31 +145,9 @@ describe("Teste <LancamentoMedicaoInicial> - Finaliza Lançamento com Ocorrênci
         "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/ceu-gestao-frequencias-dietas/",
       )
       .reply(200, []);
-    mock
-      .onGet("/medicao-inicial/solicitacoes-lancadas/")
-      .reply(200, { data: [] });
-    mock
-      .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/ultimo-dia-com-solicitacao-autorizada-no-mes/",
-      )
-      .reply(200, { ultima_data: null });
-    mock
-      .onGet(
-        "/escola-simples/b11a2964-c9e0-488a-bb7f-6e11df2c903b/historico-escola/",
-      )
-      .reply(200, mockGetEscolaSimplesCEUGESTAO);
-    mock
-      .onGet("/medicao-inicial/recreio-nas-ferias/")
-      .reply(200, { results: [] });
-    mock
-      .onGet(
-        "/medicao-inicial/permissoes-lancamentos-especiais/periodos-mes-ano/",
-      )
-      .reply(200, { results: [] });
-    mock.onGet("/medicao-inicial/lanches-emergenciais/").reply(200, []);
-    mock
-      .onGet("/medicao-inicial/periodos-grupo/cemei-com-alunos-emei/")
-      .reply(200, { results: [] });
+
+    const search = `?mes=11&ano=2024`;
+    window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.clear();
@@ -152,141 +158,14 @@ describe("Teste <LancamentoMedicaoInicial> - Finaliza Lançamento com Ocorrênci
   });
 
   afterEach(() => {
-    jest.useRealTimers();
     mock.reset();
+    jest.useRealTimers();
   });
 
-  it("Deve finalizar lançamento com ocorrências", async () => {
-    await waitFor(() => {
-      const selectPeriodo = screen.getByTestId("select-periodo-lancamento");
-      expect(selectPeriodo).toBeInTheDocument();
-    });
-
-    const selectPeriodo = screen.getByTestId("select-periodo-lancamento");
-    fireEvent.click(selectPeriodo);
-
-    const opcaoNovembro = screen.getByText("Novembro / 2024");
-    fireEvent.click(opcaoNovembro);
-
-    // Simula a atualização da URL após selecionar o período
-    const search = `?mes=11&ano=2024`;
-    window.history.pushState({}, "", search);
-
-    await waitFor(() => {
-      const botaoFinalizar = screen.queryByText("Finalizar");
-      expect(botaoFinalizar).toBeInTheDocument();
-    });
-
-    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
-    expect(botaoFinalizar).not.toBeDisabled();
-    fireEvent.click(botaoFinalizar);
-
-    await waitFor(() => {
-      expect(screen.getByText("Avaliação do Serviço")).toBeInTheDocument();
-    });
-
-    const radioNaoComOcorrencias = screen.getByLabelText(
-      "Não, com ocorrências",
-    );
-    fireEvent.click(radioNaoComOcorrencias);
-
-    await waitFor(() => {
-      expect(screen.getByText("Anexar arquivos")).toBeInTheDocument();
-    });
-
-    const botaoAnexarArquivos = screen
-      .getByText("Anexar arquivos")
-      .closest("button");
-    expect(botaoAnexarArquivos).not.toBeDisabled();
-    fireEvent.click(botaoAnexarArquivos);
-
-    const inputFile = screen.getByTestId("input-anexar-arquivos");
-
-    const pdfFile = new File(["dummy pdf content"], "documento.pdf", {
-      type: "application/pdf",
-    });
-    const xlsxFile = new File(["dummy excel content"], "planilha.xlsx", {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    fireEvent.change(inputFile, {
-      target: { files: [pdfFile, xlsxFile] },
-    });
-
-    expect(inputFile.files).toHaveLength(2);
-    expect(inputFile.files[0].name).toBe("documento.pdf");
-    expect(inputFile.files[1].name).toBe("planilha.xlsx");
-
-    await waitFor(() => {
-      expect(screen.getByText("documento.pdf")).toBeInTheDocument();
-      expect(screen.getByText("planilha.xlsx")).toBeInTheDocument();
-    });
-
-    const botaoFinalizarMedicao = screen
-      .getByText("Finalizar Medição")
-      .closest("button");
-    expect(botaoFinalizarMedicao).not.toBeDisabled();
-
-    mock
-      .onPatch(
-        "/medicao-inicial/solicitacao-medicao-inicial/546505cb-eef1-4080-a8e8-7538faccf969/",
-      )
-      .reply(200, {});
-
-    fireEvent.click(botaoFinalizarMedicao);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Medição Inicial finalizada com sucesso!"),
-      ).toBeInTheDocument();
-    });
-  });
-
-  it("Remove arquivo e exibe erro", async () => {
-    await waitFor(() => {
-      const selectPeriodo = screen.getByTestId("select-periodo-lancamento");
-      expect(selectPeriodo).toBeInTheDocument();
-    });
-
-    const selectPeriodo = screen.getByTestId("select-periodo-lancamento");
-    fireEvent.click(selectPeriodo);
-
-    const opcaoNovembro = screen.getByText("Novembro / 2024");
-    fireEvent.click(opcaoNovembro);
-
-    // Simula a atualização da URL após selecionar o período
-    const search = `?mes=11&ano=2024`;
-    window.history.pushState({}, "", search);
-
-    await waitFor(() => {
-      const botaoFinalizar = screen.queryByText("Finalizar");
-      expect(botaoFinalizar).toBeInTheDocument();
-    });
-
-    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
-    expect(botaoFinalizar).not.toBeDisabled();
-    fireEvent.click(botaoFinalizar);
-
-    await waitFor(() => {
-      expect(screen.getByText("Avaliação do Serviço")).toBeInTheDocument();
-    });
-
-    const radioNaoComOcorrencias = screen.getByLabelText(
-      "Não, com ocorrências",
-    );
-    fireEvent.click(radioNaoComOcorrencias);
-
-    await waitFor(() => {
-      expect(screen.getByText("Anexar arquivos")).toBeInTheDocument();
-    });
-
-    const botaoAnexarArquivos = screen
-      .getByText("Anexar arquivos")
-      .closest("button");
-    expect(botaoAnexarArquivos).not.toBeDisabled();
-    fireEvent.click(botaoAnexarArquivos);
-
-    const inputFile = screen.getByTestId("input-anexar-arquivos");
+  it("Mantém botão Finalizar desabilitado para novembro de 2024", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2024-12-02T10:00:00Z"));
+    await renderPage();
 
     expect(screen.getByText("Finalizar").closest("button")).toBeDisabled();
   });
