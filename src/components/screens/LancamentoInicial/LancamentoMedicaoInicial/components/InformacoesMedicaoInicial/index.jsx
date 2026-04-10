@@ -364,7 +364,7 @@ export default ({
                         icon={BUTTON_ICON.PEN}
                         className="float-end ms-3"
                         onClick={() => handleClickEditar()}
-                        disabled={emEdicao}
+                        disabled={emEdicao || !periodoSelecionado}
                       />
                     </div>
                   )}
