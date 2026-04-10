@@ -266,13 +266,10 @@ export default () => {
     if (Number.isNaN(anoNormalizado)) {
       anoNormalizado = anoAtual;
     }
-    if (anoNormalizado > anoAtual || anoNormalizado < anoAtual - 1) {
+    if (anoNormalizado > anoAtual) {
       anoNormalizado = anoAtual;
     }
     if (mesNormalizado > mesAtual && anoNormalizado === anoAtual) {
-      mesNormalizado = mesAtual;
-    }
-    if (mesNormalizado < mesAtual && anoNormalizado === anoAtual - 1) {
       mesNormalizado = mesAtual;
     }
 
@@ -280,6 +277,68 @@ export default () => {
       mes: String(mesNormalizado).padStart(2, "0"),
       ano: String(anoNormalizado),
     };
+  };
+
+  const adicionarPeriodoDaURLSeNecessario = (
+    periodosDisponiveis,
+    mesParam,
+    anoParam,
+    recreioNasFeriasParam,
+    cadastrosRecreioPreparados,
+  ) => {
+    if (!mesParam || !anoParam) {
+      return;
+    }
+
+    const periodoJaExiste = periodosDisponiveis.some((periodoDisponivel) => {
+      const mesmoMesAno =
+        format(periodoDisponivel.dataBRT, "MM") ===
+          String(mesParam).padStart(2, "0") &&
+        getYear(periodoDisponivel.dataBRT).toString() === String(anoParam);
+
+      if (!mesmoMesAno) {
+        return false;
+      }
+
+      return recreioNasFeriasParam
+        ? periodoDisponivel.recreio_nas_ferias === recreioNasFeriasParam
+        : !periodoDisponivel.recreio_nas_ferias;
+    });
+
+    if (periodoJaExiste) {
+      return;
+    }
+
+    if (recreioNasFeriasParam) {
+      const cadastroRecreio = cadastrosRecreioPreparados?.find(
+        (cadastro) =>
+          cadastro.uuid === recreioNasFeriasParam &&
+          cadastro.anoInicio === Number(anoParam) &&
+          cadastro.mesInicio === Number(mesParam),
+      );
+
+      if (cadastroRecreio) {
+        periodosDisponiveis.push({
+          dataBRT: cadastroRecreio.dataInicio,
+          periodo: cadastroRecreio.titulo,
+          recreio_nas_ferias: cadastroRecreio.uuid,
+        });
+        return;
+      }
+    }
+
+    const dataPeriodo = new Date(Number(anoParam), Number(mesParam) - 1, 1);
+    const mesString = format(dataPeriodo, "LLLL", { locale: ptBR });
+
+    periodosDisponiveis.push({
+      dataBRT: dataPeriodo,
+      periodo:
+        mesString.charAt(0).toUpperCase() +
+        mesString.slice(1) +
+        " / " +
+        anoParam,
+      recreio_nas_ferias: recreioNasFeriasParam || undefined,
+    });
   };
 
   const getDadosPeriodoSelecionado = (
@@ -445,16 +504,6 @@ export default () => {
               dataBRT,
               periodo: periodoFormatado,
             });
-
-            if (!location.search && periodos.length === 1) {
-              navigate(
-                {
-                  pathname: location.pathname,
-                  search: `mes=${String(mes).padStart(2, "0")}&ano=${ano}`,
-                },
-                { replace: true },
-              );
-            }
           }
         } else {
           periodos.push({
@@ -505,6 +554,14 @@ export default () => {
       const { mes: mesParam, ano: anoParam } = normalizarMesEAno(
         mesParamOriginal,
         anoParamOriginal,
+      );
+
+      adicionarPeriodoDaURLSeNecessario(
+        periodos,
+        mesParam,
+        anoParam,
+        recreioNasFeriasParam,
+        cadastrosRecreioPreparados,
       );
 
       const periodoInicialSelecionado = getPeriodoInicialSelecionado(
