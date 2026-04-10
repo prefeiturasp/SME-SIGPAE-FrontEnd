@@ -36,7 +36,7 @@ type Props = {
   empenhos?: DadosLiquidacaoEmpenho[];
   lote: string;
   relatorioFinanceiro: string;
-  onSave?: () => void;
+  onSave?: (_e: DadosLiquidacaoEmpenho[]) => void;
   tiposUnidades: string[];
 };
 
@@ -64,7 +64,7 @@ const ModalEditarEmpenhos = ({
 
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Empenhos registrados com sucesso");
-      if (typeof onSave === "function") onSave();
+      if (typeof onSave === "function") onSave(response.data);
       setShowModal(false);
     } else {
       toastError("Falha ao registrar empenhos.");

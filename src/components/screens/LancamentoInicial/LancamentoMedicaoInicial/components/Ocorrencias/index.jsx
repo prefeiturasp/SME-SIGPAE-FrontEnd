@@ -1,5 +1,6 @@
 import { Fragment, useState } from "react";
 import Botao from "src/components/Shareable/Botao";
+import HTTP_STATUS from "http-status-codes";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
@@ -7,8 +8,13 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import ModalHistorico from "src/components/Shareable/ModalHistorico";
 import { OCORRENCIA_STATUS_DE_PROGRESSO } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/constants";
-import { medicaoInicialExportarOcorrenciasPDF } from "src/services/relatorios";
+import {
+  medicaoInicialExportarOcorrenciasPDF,
+  relatorioHistoricoOcorrenciasMedicaoInicialPDF,
+} from "src/services/relatorios";
 import { ModalAtualizarOcorrencia } from "../ModalAtualizarOcorrencia";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 export default ({
   solicitacaoMedicaoInicial,
@@ -18,6 +24,8 @@ export default ({
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [showModalHistorico, setShowModalHistorico] = useState(false);
+  const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
+    useState(false);
 
   const ocorrenciaExcluida = () => {
     return (
@@ -44,6 +52,18 @@ export default ({
       statusPermitidos.includes(statusSolicitacao) &&
       statusOcorrencia === statusSolicitacao
     );
+  };
+
+  const printHistorico = async () => {
+    const uuidSolicitacaoMedicao = solicitacaoMedicaoInicial.uuid;
+    const response = await relatorioHistoricoOcorrenciasMedicaoInicialPDF(
+      uuidSolicitacaoMedicao,
+    );
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao exportar pdf. Tente novamente mais tarde.");
+    }
   };
 
   return (
@@ -173,6 +193,7 @@ export default ({
           titulo="Histórico do Formulário de Ocorrências"
           getHistorico={() => solicitacaoMedicaoInicial.ocorrencia.logs}
           getOcorrencia={() => solicitacaoMedicaoInicial.ocorrencia}
+          printHistorico={printHistorico}
         />
       )}
       <ModalAtualizarOcorrencia
@@ -184,6 +205,10 @@ export default ({
           setObjSolicitacaoMIFinalizada(value)
         }
         setFinalizandoMedicao={setFinalizandoMedicao}
+      />
+      <ModalSolicitacaoDownload
+        show={exibirModalCentralDownloads}
+        setShow={setExibirModalCentralDownloads}
       />
     </>
   );

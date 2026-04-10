@@ -57,9 +57,9 @@ export function ControleDeFrequencia() {
     try {
       const { data } = await getMesesAnos();
       setMesesAnos(data.results);
-    } catch (error) {
+    } catch {
       setErroAPI(
-        "Erro ao carregar meses de referência. Tente novamente mais tarde."
+        "Erro ao carregar meses de referência. Tente novamente mais tarde.",
       );
     } finally {
       setCarregando(false);
@@ -75,7 +75,7 @@ export function ControleDeFrequencia() {
       setPeriodos(data.periodos);
       setDataInicial(data.data_inicial);
       setDataFinal(data.data_final);
-    } catch (error) {
+    } catch {
       setErroAPI("Erro ao carregar períodos. Tente novamente mais tarde.");
     } finally {
       setCarregando(false);
@@ -125,9 +125,9 @@ export function ControleDeFrequencia() {
       const { data } = await getTotalAlunosMatriculados(params);
       setTotalAlunosPorPeriodo(data.periodos);
       setTotalMatriculados(data.total_matriculados);
-    } catch (error) {
+    } catch {
       setErroAPI(
-        "Erro ao carregar os dados dos alunos matriculados. Tente novamente mais tarde."
+        "Erro ao carregar os dados dos alunos matriculados. Tente novamente mais tarde.",
       );
     } finally {
       setCarregando(false);
@@ -185,7 +185,7 @@ export function ControleDeFrequencia() {
       };
       await imprimirRelatorioControleFrequencia(params);
       setExibirModalCentralDownloads(true);
-    } catch (e) {
+    } catch {
       toastError("Erro ao imprimir pdf. Tente novamente mais tarde.");
     }
     setImprimindo(false);
@@ -244,6 +244,8 @@ export function ControleDeFrequencia() {
 
                     {Object.entries(totalAlunosPorPeriodo).map(
                       ([index, valor]) => {
+                        const apenasUmPeriodo =
+                          Object.keys(totalAlunosPorPeriodo).length === 1;
                         return (
                           <div key={index} className="row container-cards mb-4">
                             <div
@@ -252,7 +254,9 @@ export function ControleDeFrequencia() {
                               <p>
                                 MATRICULADOS <strong>PERÍODO {index}</strong>
                               </p>
-                              <span className="card-total">{valor}</span>
+                              {!apenasUmPeriodo && (
+                                <span className="card-total">{valor}</span>
+                              )}
                             </div>
 
                             <div className="mes-ano">
@@ -262,7 +266,7 @@ export function ControleDeFrequencia() {
                             </div>
                           </div>
                         );
-                      }
+                      },
                     )}
                   </div>
                 )}

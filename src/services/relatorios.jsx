@@ -352,6 +352,17 @@ export const relatorioMedicaoInicialPDF = async (uuid) => {
   }
 };
 
+export const relatorioHistoricoOcorrenciasMedicaoInicialPDF = async (uuid) => {
+  const url = `medicao-inicial/solicitacao-medicao-inicial/historico-ocorrencias-pdf/`;
+  const response = await axios
+    .get(url, { params: { uuid: uuid } })
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
 export const relatorioUnificadoMedicaoInicialPDF = async (payload) => {
   const url =
     "medicao-inicial/solicitacao-medicao-inicial/relatorio-unificado/";

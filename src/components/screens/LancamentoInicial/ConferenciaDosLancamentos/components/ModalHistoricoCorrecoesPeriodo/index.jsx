@@ -10,11 +10,18 @@ import { HistoricoCorrecaoSolicitada } from "./HistoricoCorrecaoSolicitada";
 import { HistoricoCorrecaoEscola } from "./HistoricoCorrecaoEscola";
 import { HistoricoAprovacao } from "./HistoricoAprovacao";
 import { Tooltip } from "antd";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import HTTP_STATUS from "http-status-codes";
+import { gerarRelatorioHistorioCorrecoes } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service.jsx";
 
 export const ModalHistoricoCorrecoesPeriodo = ({ ...props }) => {
   const { showModal, setShowModal, solicitacao, historicos } = props;
   const [detalhesHistoricoAtivo, setDetalhesHistoricoAtivo] = useState(<p />);
   const [activeIdx, setActiveIdx] = useState(undefined);
+  const [imprimindoPdf, setImprimindoPdf] = useState(false);
+  const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
+    useState(false);
 
   const formatarTitulo = (acao) => {
     switch (acao) {
@@ -67,7 +74,7 @@ export const ModalHistoricoCorrecoesPeriodo = ({ ...props }) => {
             retornaIniciais={retornaIniciais}
             solicitacao={solicitacao}
             formatarTitulo={(acao) => formatarTitulo(acao)}
-          />
+          />,
         );
         break;
       case "MEDICAO_CORRIGIDA_PELA_UE":
@@ -78,7 +85,7 @@ export const ModalHistoricoCorrecoesPeriodo = ({ ...props }) => {
             retornaIniciais={retornaIniciais}
             solicitacao={solicitacao}
             formatarTitulo={(acao) => formatarTitulo(acao)}
-          />
+          />,
         );
         break;
       case "MEDICAO_APROVADA_PELA_DRE":
@@ -90,7 +97,7 @@ export const ModalHistoricoCorrecoesPeriodo = ({ ...props }) => {
             solicitacao={solicitacao}
             formatarTitulo={(acao) => formatarTitulo(acao)}
             instituicao={(acao) => instituicao(acao)}
-          />
+          />,
         );
         break;
       default:
@@ -103,6 +110,17 @@ export const ModalHistoricoCorrecoesPeriodo = ({ ...props }) => {
     setDetalhesHistoricoAtivo(<p />);
     setActiveIdx(undefined);
     setShowModal(false);
+  };
+
+  const exportarPDF = async (solicitacao) => {
+    setImprimindoPdf(true);
+    const response = await gerarRelatorioHistorioCorrecoes(solicitacao.uuid);
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao baixar PDF. Tente novamente mais tarde");
+    }
+    setImprimindoPdf(false);
   };
 
   return (
@@ -146,7 +164,7 @@ export const ModalHistoricoCorrecoesPeriodo = ({ ...props }) => {
                               {formatarTitulo(historico.acao).length > 23
                                 ? `${formatarTitulo(historico.acao).substr(
                                     0,
-                                    23
+                                    23,
                                   )}...`
                                 : formatarTitulo(historico.acao)}
                             </b>
@@ -184,11 +202,27 @@ export const ModalHistoricoCorrecoesPeriodo = ({ ...props }) => {
       <Modal.Footer>
         <Botao
           className="float-end"
+          texto="Imprimir"
+          type={BUTTON_TYPE.BUTTON}
+          style={
+            imprimindoPdf ? BUTTON_STYLE.GREEN_OUTLINE : BUTTON_STYLE.GREEN
+          }
+          onClick={() => exportarPDF(solicitacao)}
+          disabled={imprimindoPdf}
+        />
+        <Botao
+          className="float-end"
           texto="Fechar"
           type={BUTTON_TYPE.BUTTON}
           onClick={() => closeModal()}
           style={BUTTON_STYLE.GREEN}
         />
+        {exibirModalCentralDownloads && (
+          <ModalSolicitacaoDownload
+            show={exibirModalCentralDownloads}
+            setShow={setExibirModalCentralDownloads}
+          />
+        )}
       </Modal.Footer>
     </Modal>
   );

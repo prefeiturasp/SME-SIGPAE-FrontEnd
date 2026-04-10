@@ -300,4 +300,27 @@ describe("InformacoesBasicas", () => {
       "Pelo menos um responsável deve ser cadastrado",
     );
   });
+
+  it("deve desabilitar o botão Editar quando não há período selecionado", async () => {
+    const propsComPeriodoNulo = {
+      ...defaultProps,
+      periodoSelecionado: null,
+    };
+
+    await act(async () => {
+      render(<InformacoesBasicas {...propsComPeriodoNulo} />);
+    });
+
+    const botaoEditar = screen.getByText("Editar").closest("button");
+    expect(botaoEditar).toBeDisabled();
+  });
+
+  it("deve habilitar o botão Editar quando há período selecionado", async () => {
+    await act(async () => {
+      render(<InformacoesBasicas {...defaultProps} />);
+    });
+
+    const botaoEditar = screen.getByText("Editar").closest("button");
+    expect(botaoEditar).not.toBeDisabled();
+  });
 });

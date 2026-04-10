@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -19,10 +20,11 @@ import { mockDiasCalendarioEMEFMaio2025 } from "src/mocks/medicaoInicial/Periodo
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
 import { mockEscolaSimplesEMEF } from "src/mocks/services/escola.service/EMEF/escolaSimples";
+import { mockRecreioNasFeriasEMEFDezembro2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Dezembro2025/recreioNasFerias";
 import { quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Maio2025/quantidadesAlimentacaoesLancadasPeriodoGrupo";
 import { mockPanoramaEscolaEMEF } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/panoramaEscola";
 import { mockSolicitacaoMedicaoInicialEMEFMaio2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/solicitacaoMedicaoInicialMaio2025";
-import { mockSolicitacaoMedicaoInicialEMEFMaio2025Enviada } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/solicitacaoMedicaoInicialMaio2025Enviada";
+import { mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Dezembro2025/solicitacaoRecreioNasFerias";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
@@ -31,19 +33,61 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
 
-  beforeEach(async () => {
+  const renderPage = async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+  };
+
+  beforeEach(() => {
+    mock.reset();
+
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/notificacoes/").reply(200, { results: [] });
+    mock
+      .onGet("/notificacoes/quantidade-nao-lidos/")
+      .reply(200, { quantidade_nao_lidos: 0 });
     mock
       .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
       .reply(200, mockPanoramaEscolaEMEF);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
       .reply(200, mockEscolaSimplesEMEF);
+    mock.onGet(`/historico-escola/${escolaUuid}/`).reply(200, {});
     mock
       .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
       .reply(200, []);
+    mock.onGet("/medicao-inicial/recreio-nas-ferias/").reply(200, {
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    });
     mock
       .onGet(
         `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
@@ -54,6 +98,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
         "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
       )
       .reply(200, { results: [] });
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .replyOnce(200, mockSolicitacaoMedicaoInicialEMEFMaio2025);
     mock
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
       .replyOnce(200, mockSolicitacaoMedicaoInicialEMEFMaio2025);
@@ -88,11 +135,17 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
         "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
       )
       .reply(200, quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025);
+    mock
+      .onGet(
+        "/escola-solicitacoes/ultimo-dia-com-solicitacao-autorizada-no-mes/",
+      )
+      .reply(200, { ultima_data: null });
 
     const search = `?mes=05&ano=2025`;
     window.history.pushState({}, "", search);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.clear();
     localStorage.setItem(
       "nome_instituicao",
       `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
@@ -100,6 +153,148 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+  });
+
+  afterEach(() => {
+    mock.reset();
+    jest.useRealTimers();
+  });
+
+  it("Renderiza título da página `Lançamento Medição Inicial`", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-06-01T10:00:00Z"));
+    await renderPage();
+
+    expect(screen.getAllByText("Lançamento Medição Inicial").length).toBe(2);
+  });
+
+  it("Renderiza label `Período de Lançamento`", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-06-01T10:00:00Z"));
+    await renderPage();
+
+    expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
+  });
+
+  it("Renderiza períodos escolares de EMEF", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-06-01T10:00:00Z"));
+    await renderPage();
+
+    expect(screen.getByText("Manhã")).toBeInTheDocument();
+    expect(screen.getByText("Tarde")).toBeInTheDocument();
+    expect(screen.getByText("Programas e Projetos")).toBeInTheDocument();
+  });
+
+  it("Mantém botão Finalizar sem lançamentos desabilitado para maio de 2025", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-06-01T10:00:00Z"));
+    await renderPage();
+
+    expect(
+      screen.getByText("Finalizar sem lançamentos").closest("button"),
+    ).toBeDisabled();
+  });
+
+  it("Não abre modal quando Finalizar sem lançamentos está desabilitado", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-06-01T10:00:00Z"));
+    await renderPage();
+
+    const botaoFinalizarSemLancamentos = screen
+      .getByText("Finalizar sem lançamentos")
+      .closest("button");
+    expect(botaoFinalizarSemLancamentos).toBeDisabled();
+
+    fireEvent.click(botaoFinalizarSemLancamentos);
+
+    expect(
+      screen.queryByText("Finalizar Medição Inicial sem Lançamentos"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("Não renderiza botão Finalizar sem lançamentos para Recreio nas Férias", async () => {
+    cleanup();
+
+    mock.reset();
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-26T10:00:00Z"));
+
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/notificacoes/").reply(200, { results: [] });
+    mock
+      .onGet("/notificacoes/quantidade-nao-lidos/")
+      .reply(200, { quantidade_nao_lidos: 0 });
+    mock
+      .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
+      .reply(200, mockPanoramaEscolaEMEF);
+    mock
+      .onGet(`/escolas-simples/${escolaUuid}/`)
+      .reply(200, mockEscolaSimplesEMEF);
+    mock.onGet(`/historico-escola/${escolaUuid}/`).reply(200, {});
+    mock
+      .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
+      .reply(200, []);
+    mock
+      .onGet("/medicao-inicial/recreio-nas-ferias/")
+      .reply(200, mockRecreioNasFeriasEMEFDezembro2025);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
+      )
+      .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
+    mock
+      .onGet(
+        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
+      )
+      .reply(200, { results: [] });
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .replyOnce(200, mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF);
+    mock.onGet("/dias-calendario/").reply(200, mockDiasCalendarioEMEFMaio2025);
+    mock
+      .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
+      .reply(200, mockGetTiposDeContagemAlimentacao);
+    mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
+      periodos: { MANHA: "5067e137-e5f3-4876-a63f-7f58cce93f33" },
+    });
+    mock
+      .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet("/escola-solicitacoes/inclusoes-etec-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet(
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
+      )
+      .reply(200, []);
+    mock
+      .onGet(
+        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0].uuid}/ceu-gestao-frequencias-dietas/`,
+      )
+      .reply(200, []);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
+      )
+      .reply(200, quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025);
+    mock
+      .onGet(
+        "/escola-solicitacoes/ultimo-dia-com-solicitacao-autorizada-no-mes/",
+      )
+      .reply(200, { ultima_data: null });
+
+    window.history.pushState(
+      {},
+      "",
+      "?mes=12&ano=2025&recreio_nas_ferias=0e3cdb48-3a82-47e6-9263-300d478c6934",
+    );
 
     await act(async () => {
       render(
@@ -121,109 +316,24 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
         </MemoryRouter>,
       );
     });
-  });
 
-  it("Renderiza título da página `Lançamento Medição Inicial`", () => {
-    expect(screen.getAllByText("Lançamento Medição Inicial").length).toBe(2);
-  });
-
-  it("Renderiza label `Período de Lançamento`", () => {
-    expect(screen.getByText("Período de Lançamento")).toBeInTheDocument();
-  });
-
-  it("Renderiza períodos escolares de EMEF", () => {
-    expect(screen.getByText("Manhã")).toBeInTheDocument();
-    expect(screen.getByText("Tarde")).toBeInTheDocument();
-    expect(screen.getByText("Programas e Projetos")).toBeInTheDocument();
-  });
-
-  it("Finaliza sem lançamentos - erro programas e projetos", async () => {
-    const botaoFinalizarSemLancamentos = screen
-      .getByText("Finalizar sem lançamentos")
-      .closest("button");
-    expect(botaoFinalizarSemLancamentos).not.toBeDisabled();
-    fireEvent.click(botaoFinalizarSemLancamentos);
+    jest.useRealTimers();
 
     await waitFor(() => {
-      expect(screen.getByText("Finalizar Medição Inicial sem Lançamentos"));
+      expect(screen.getByText("Recreio nas Férias")).toBeInTheDocument();
     });
 
-    const textarea = screen.getByTestId("textarea-justificativa");
-    fireEvent.change(textarea, {
-      target: { value: "Não teve aula." },
-    });
-
-    const botaoFinalizarModal = screen.getByTestId("botao-finalizar-modal");
-
-    mock
-      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-      .replyOnce(200, mockSolicitacaoMedicaoInicialEMEFMaio2025);
-
-    mock
-      .onPatch(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/`,
-      )
-      .reply(400, [
-        {
-          periodo_escolar: "Programas e Projetos",
-          erro: "Existem solicitações de alimentações no período, adicione ao menos uma justificativa para finalizar",
-        },
-      ]);
-
-    fireEvent.click(botaoFinalizarModal);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Não foi possível enviar a medição sem lançamentos!"),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          "Existem solicitações de alimentações no período, adicione ao menos uma justificativa para finalizar",
-        ),
-      ).toBeInTheDocument();
-    });
+    expect(
+      screen.queryByText("Finalizar sem lançamentos"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Finalizar")).toBeInTheDocument();
   });
 
-  it("Finaliza sem lançamentos com sucesso - programas e projetos possui justificativa", async () => {
-    const botaoFinalizarSemLancamentos = screen
-      .getByText("Finalizar sem lançamentos")
-      .closest("button");
-    expect(botaoFinalizarSemLancamentos).not.toBeDisabled();
-    fireEvent.click(botaoFinalizarSemLancamentos);
+  it("Exibe bloco de correção da CODAE", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-06-01T10:00:00Z"));
+    await renderPage();
 
-    await waitFor(() => {
-      expect(screen.getByText("Finalizar Medição Inicial sem Lançamentos"));
-    });
-
-    const textarea = screen.getByTestId("textarea-justificativa");
-    fireEvent.change(textarea, {
-      target: { value: "Não teve aula." },
-    });
-
-    const botaoFinalizarModal = screen.getByTestId("botao-finalizar-modal");
-
-    mock
-      .onPatch(
-        `/medicao-inicial/solicitacao-medicao-inicial/${mockSolicitacaoMedicaoInicialEMEFMaio2025[0].uuid}/`,
-      )
-      .reply(200, mockSolicitacaoMedicaoInicialEMEFMaio2025Enviada[0]);
-
-    fireEvent.click(botaoFinalizarModal);
-
-    mock
-      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
-      .replyOnce(200, mockSolicitacaoMedicaoInicialEMEFMaio2025Enviada);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Medição Inicial finalizada com sucesso!"),
-      ).toBeInTheDocument();
-    });
-
-    expect(screen.queryByText("Export PDF")).not.toBeInTheDocument();
-  });
-
-  it("Exibe bloco de correção da CODAE", () => {
     expect(
       screen.getByText("Solicitação de Correção da CODAE"),
     ).toBeInTheDocument();
@@ -232,7 +342,11 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Finaliza Medição 
       screen.getByText("Solicitação de Correção da CODAE"),
     ).toBeInTheDocument("Não pode fazer sem lançamentos!");
   });
-  it("Verifica a ordem dos cards", () => {
+  it("Verifica a ordem dos cards", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-06-01T10:00:00Z"));
+    await renderPage();
+
     const textos = ["Manhã", "Tarde", "Programas e Projetos"];
 
     const elementos = textos.map((texto) => screen.getByText(texto));
