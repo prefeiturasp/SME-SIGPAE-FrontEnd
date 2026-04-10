@@ -48,3 +48,14 @@ export const cadastroDadosEmpenho = async (
     return data;
   }
 };
+
+export const exportarPDFAsyncRelatorioAtesteFinanceiro = async (
+  relatorioFinanceiro: string,
+) => {
+  const url = `/medicao-inicial/relatorio-financeiro/exportar-pdf/${relatorioFinanceiro}/`;
+  const response = await axios.post(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
