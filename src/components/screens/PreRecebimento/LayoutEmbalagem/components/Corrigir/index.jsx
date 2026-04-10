@@ -393,7 +393,11 @@ export default ({ atualizar }) => {
 
     payload.tipos_de_embalagens = [];
 
-    if (layoutEmbalagensPrimarias.status === "REPROVADO" || atualizar) {
+    if (
+      (layoutEmbalagensPrimarias.status === "REPROVADO" || atualizar) &&
+      arquivosLayoutsPrimarios &&
+      arquivosLayoutsPrimarios.length > 0
+    ) {
       payload.tipos_de_embalagens.push({
         uuid: layoutEmbalagensPrimarias.uuid,
         tipo_embalagem: layoutEmbalagensPrimarias.tipo_embalagem,
@@ -404,9 +408,11 @@ export default ({ atualizar }) => {
     }
 
     if (
-      (layoutEmbalagensSecundarias &&
+      ((layoutEmbalagensSecundarias &&
         layoutEmbalagensSecundarias.status === "REPROVADO") ||
-      atualizar
+        atualizar) &&
+      arquivosLayoutsSecundarios &&
+      arquivosLayoutsSecundarios.length > 0
     ) {
       payload.tipos_de_embalagens.push({
         uuid: layoutEmbalagensSecundarias.uuid,
@@ -419,7 +425,9 @@ export default ({ atualizar }) => {
 
     if (
       layoutEmbalagensTerciarias &&
-      (layoutEmbalagensTerciarias.status === "REPROVADO" || atualizar)
+      (layoutEmbalagensTerciarias.status === "REPROVADO" || atualizar) &&
+      arquivosLayoutsTerciarios &&
+      arquivosLayoutsTerciarios.length > 0
     ) {
       payload.tipos_de_embalagens.push({
         uuid: layoutEmbalagensTerciarias.uuid,
