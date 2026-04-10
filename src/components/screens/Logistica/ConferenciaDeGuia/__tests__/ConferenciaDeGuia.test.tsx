@@ -65,7 +65,7 @@ const mockEdicao = {
   guia: { ...mockGuia, status: "Recebida" },
 };
 
-describe("ConferenciaGuia", () => {
+describe("ConferenciaDeGuia", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
@@ -133,7 +133,7 @@ describe("ConferenciaGuia", () => {
     });
   });
 
-  it("deve exibir campos de sucesso quando Radio for 'Sim'", async () => {
+  it("deve exibir campos de sucesso quando for 'Sim'", async () => {
     (logisticaService.getGuiaParaConferencia as jest.Mock).mockResolvedValue({
       data: mockGuia,
     });
