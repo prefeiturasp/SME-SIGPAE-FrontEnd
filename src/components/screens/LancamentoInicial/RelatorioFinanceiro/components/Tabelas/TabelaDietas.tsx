@@ -140,13 +140,9 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
                   .toLowerCase()
               ] ?? 0;
 
-            const totalUnitario = Number(
-              (valorUnitario * (1 + valorAcrescimo / 100)).toFixed(2),
-            );
+            const totalUnitario = valorUnitario * (1 + valorAcrescimo / 100);
 
-            const valorTotal = Number(
-              (totalUnitario * numeroConsumo).toFixed(2),
-            );
+            const valorTotal = totalUnitario * numeroConsumo;
 
             totalConsumoGeral += numeroConsumo;
             valorTotalGeral += valorTotal;
