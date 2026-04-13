@@ -1,6 +1,7 @@
 import { Spin, Tabs } from "antd";
 import {
   addDays,
+  differenceInCalendarDays,
   format,
   getDay,
   getWeeksInMonth,
@@ -38,6 +39,7 @@ import {
 } from "src/configs/constants";
 import {
   deepCopy,
+  ehEscolaTipoCEUGESTAO,
   ehFimDeSemanaUTC,
   escolaEhEMEBS,
   tiposAlimentacaoETEC,
@@ -1859,9 +1861,25 @@ export default () => {
       if (response.status === HTTP_STATUS.OK) {
         let mes = new Date(location.state.mesAnoSelecionado).getMonth() + 1;
         const ano = new Date(location.state.mesAnoSelecionado).getFullYear();
+        const searchParams = new URLSearchParams();
         mes = String(mes).length === 1 ? "0" + String(mes) : String(mes);
+
+        searchParams.set("mes", mes);
+        searchParams.set("ano", String(ano));
+
+        const recreioNasFeriasUuid =
+          typeof location.state?.solicitacaoMedicaoInicial
+            ?.recreio_nas_ferias === "string"
+            ? location.state?.solicitacaoMedicaoInicial?.recreio_nas_ferias
+            : location.state?.solicitacaoMedicaoInicial?.recreio_nas_ferias
+                ?.uuid;
+
+        if (recreioNasFeriasUuid) {
+          searchParams.set("recreio_nas_ferias", recreioNasFeriasUuid);
+        }
+
         navigate(
-          `/${MEDICAO_INICIAL}/${DETALHAMENTO_DO_LANCAMENTO}?mes=${mes}&ano=${ano}`,
+          `/${MEDICAO_INICIAL}/${DETALHAMENTO_DO_LANCAMENTO}?${searchParams.toString()}`,
         );
         return toastSuccess("Correções salvas com sucesso!");
       } else {
@@ -1968,10 +1986,18 @@ export default () => {
   };
 
   const validacaoSemana = (dia) => {
+    if (ehRecreioNasFerias()) return false;
     // valida se é mês anterior ou mês posterior e desabilita
     return (
       (Number(semanaSelecionada) === 1 && Number(dia) > 20) ||
       ([4, 5, 6].includes(Number(semanaSelecionada)) && Number(dia) < 10)
+    );
+  };
+
+  const colunaDesabilitada = (column) => {
+    return (
+      validacaoSemana(column.dia) ||
+      Boolean(verificarMesAnteriorOuPosterior(column, mesAnoConsiderado))
     );
   };
 
@@ -1991,6 +2017,20 @@ export default () => {
     );
     const ehDiaLetivo = objDia && objDia.dia_letivo;
     if (!ehDiaLetivo) return false;
+
+    if (
+      ehRecreioNasFerias() &&
+      !ehGrupoColaboradores() &&
+      !ehEscolaTipoCEUGESTAO(location.state.solicitacaoMedicaoInicial.escola) &&
+      !logQtdDietasAutorizadas.some(
+        (logDieta) =>
+          Number(logDieta.dia) === Number(dia) &&
+          Number(logDieta.quantidade) > 0,
+      )
+    ) {
+      return false;
+    }
+
     const dateObj = new Date(
       mesAnoConsiderado.getFullYear(),
       mesAnoConsiderado.getMonth(),
@@ -2450,6 +2490,48 @@ export default () => {
       ].includes(location.state.status_periodo)
     )
       return true;
+
+    const categoriaAtual = categoriasDeMedicao?.find(
+      (categoria) => categoria.id === categoriaId,
+    );
+    const categoriaAlimentacao = categoriasDeMedicao?.find(
+      (categoria) => categoria.nome === "ALIMENTAÇÃO",
+    );
+
+    if (ehRecreioNasFerias() && categoriaAtual) {
+      const participantesNoDia = Number(
+        formValuesAtualizados[
+          `participantes__dia_${dia}__categoria_${categoriaAlimentacao?.id}`
+        ],
+      );
+      const temLogDietaNoDia =
+        Object.prototype.hasOwnProperty.call(
+          formValuesAtualizados,
+          `dietas_autorizadas__dia_${dia}__categoria_${categoriaId}`,
+        ) &&
+        formValuesAtualizados[
+          `dietas_autorizadas__dia_${dia}__categoria_${categoriaId}`
+        ] !== undefined &&
+        formValuesAtualizados[
+          `dietas_autorizadas__dia_${dia}__categoria_${categoriaId}`
+        ] !== null &&
+        formValuesAtualizados[
+          `dietas_autorizadas__dia_${dia}__categoria_${categoriaId}`
+        ] !== "";
+
+      if (validacaoSemana(dia) || !validacaoDiaLetivoCalendario(dia)) {
+        return false;
+      }
+
+      if (categoriaAtual.nome === "ALIMENTAÇÃO") {
+        return participantesNoDia > 0;
+      }
+
+      if (categoriaAtual.nome.includes("DIETA")) {
+        return participantesNoDia > 0 && temLogDietaNoDia;
+      }
+    }
+
     const temInclusaoAutorizadaNoDia = inclusoesAutorizadas.some(
       (inclusao) => inclusao.dia === dia,
     );
@@ -2577,6 +2659,28 @@ export default () => {
       dataFimRecreio = parse(dataRecreio.data_fim, "dd/MM/yyyy", new Date(), {
         locale: ptBR,
       });
+
+      const diaSemanaInicio = getDay(dataInicoRecreio);
+      const deslocamentoInicio =
+        diaSemanaInicio === 0 ? 6 : diaSemanaInicio - 1;
+      const inicioPrimeiraSemana = subDays(
+        dataInicoRecreio,
+        deslocamentoInicio,
+      );
+
+      const diaSemanaFim = getDay(dataFimRecreio);
+      const deslocamentoFim = diaSemanaFim === 0 ? 0 : 7 - diaSemanaFim;
+      const fimUltimaSemana = addDays(dataFimRecreio, deslocamentoFim);
+
+      const totalSemanasRecreio =
+        Math.floor(
+          differenceInCalendarDays(fimUltimaSemana, inicioPrimeiraSemana) / 7,
+        ) + 1;
+
+      return Array.from({ length: totalSemanasRecreio }, (_, index) => ({
+        key: `${index + 1}`,
+        label: `Semana ${index + 1}`,
+      }));
     }
 
     const totalSemanas = isSunday(lastDayOfMonth(mesAnoSelecionado))
@@ -3019,7 +3123,7 @@ export default () => {
                                                 <div
                                                   key={column.dia}
                                                   className={`${
-                                                    validacaoSemana(column.dia)
+                                                    colunaDesabilitada(column)
                                                       ? "input-desabilitado"
                                                       : row.name ===
                                                           "observacoes"
@@ -3029,6 +3133,9 @@ export default () => {
                                                 >
                                                   {row.name ===
                                                   "observacoes" ? (
+                                                    !colunaDesabilitada(
+                                                      column,
+                                                    ) &&
                                                     exibeBotaoAdicionarObservacao(
                                                       column.dia,
                                                       categoria.id,
@@ -3162,6 +3269,7 @@ export default () => {
                                                           mesAnoDefault,
                                                           dadosValoresInclusoesAutorizadasState,
                                                           validacaoDiaLetivo,
+                                                          validacaoDiaLetivoCalendario,
                                                           validacaoDiaLetivoLancheEmergencial,
                                                           validacaoSemana,
                                                           location,
@@ -3261,9 +3369,7 @@ export default () => {
                                                   <div
                                                     key={column.dia}
                                                     className={`${
-                                                      validacaoSemana(
-                                                        column.dia,
-                                                      )
+                                                      colunaDesabilitada(column)
                                                         ? "input-desabilitado"
                                                         : row.name ===
                                                             "observacoes"
@@ -3279,6 +3385,9 @@ export default () => {
                                                   >
                                                     {row.name ===
                                                     "observacoes" ? (
+                                                      !colunaDesabilitada(
+                                                        column,
+                                                      ) &&
                                                       exibeBotaoAdicionarObservacao(
                                                         column.dia,
                                                         categoria.id,
@@ -3407,6 +3516,7 @@ export default () => {
                                                             mesAnoDefault,
                                                             dadosValoresInclusoesAutorizadasState,
                                                             validacaoDiaLetivo,
+                                                            validacaoDiaLetivoCalendario,
                                                             validacaoDiaLetivoLancheEmergencial,
                                                             validacaoSemana,
                                                             location,

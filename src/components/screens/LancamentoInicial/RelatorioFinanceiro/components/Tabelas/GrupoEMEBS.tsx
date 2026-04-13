@@ -40,6 +40,14 @@ export default ({
     { uuid: "Kit Lanche", nome: "Kit Lanche" },
   ];
 
+  const _TABELAS_INFANTIL = relatorioConsolidado.tabelas.filter((t) =>
+    t.nome.toUpperCase().includes("INFANTIL"),
+  );
+
+  const _TABELAS_FUNDAMENTAL = relatorioConsolidado.tabelas.filter((t) =>
+    t.nome.toUpperCase().includes("FUNDAMENTAL"),
+  );
+
   const calcularConsolidado = (
     refAlimentacao: React.RefObject<TabelaAlimentacaoHandle>,
     refDietaA: React.RefObject<TabelaDietasHandle>,
@@ -116,7 +124,7 @@ export default ({
       <div className="d-flex flex-column gap-4">
         <TabelaAlimentacao
           ref={refAlimentacaoInfantil}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_INFANTIL}
           tiposAlimentacao={_TIPOS_ALIMENTACAO}
           totaisConsumo={totaisConsumo["INFANTIL"]}
           ordem="INF. A"
@@ -124,7 +132,7 @@ export default ({
         />
         <TabelaDietas
           ref={refDietaAInfantil}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_INFANTIL}
           tipoDieta="TIPO A"
           tiposAlimentacao={tiposAlimentacao}
           totaisConsumo={totaisConsumo["INFANTIL"]}
@@ -132,7 +140,7 @@ export default ({
         />
         <TabelaDietas
           ref={refDietaBInfantil}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_INFANTIL}
           tipoDieta="TIPO B"
           tiposAlimentacao={tiposAlimentacao}
           totaisConsumo={totaisConsumo["INFANTIL"]}
@@ -146,7 +154,7 @@ export default ({
       <div className="d-flex flex-column gap-4">
         <TabelaAlimentacao
           ref={refAlimentacaoFundamental}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_FUNDAMENTAL}
           tiposAlimentacao={_TIPOS_ALIMENTACAO}
           totaisConsumo={totaisConsumo["FUNDAMENTAL"]}
           ordem="FUND. A"
@@ -154,7 +162,7 @@ export default ({
         />
         <TabelaDietas
           ref={refDietaAFundamental}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_FUNDAMENTAL}
           tipoDieta="TIPO A"
           tiposAlimentacao={tiposAlimentacao}
           totaisConsumo={totaisConsumo["FUNDAMENTAL"]}
@@ -162,7 +170,7 @@ export default ({
         />
         <TabelaDietas
           ref={refDietaBFundamental}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_FUNDAMENTAL}
           tipoDieta="TIPO B"
           tiposAlimentacao={tiposAlimentacao}
           totaisConsumo={totaisConsumo["FUNDAMENTAL"]}

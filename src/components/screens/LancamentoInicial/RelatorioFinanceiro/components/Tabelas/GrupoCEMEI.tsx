@@ -54,6 +54,14 @@ export default ({
     return totaisConsumo?.["TIPO"] || {};
   }, [totaisConsumo]);
 
+  const _TABELAS_EMEI = relatorioConsolidado.tabelas.filter((t) =>
+    t.nome.toUpperCase().includes("EMEI"),
+  );
+
+  const _TABELAS_CEI = relatorioConsolidado.tabelas.filter(
+    (t) => !t.nome.toUpperCase().includes("EMEI"),
+  );
+
   const calcularConsolidado = (
     refAlimentacao: React.RefObject<TabelaAlimentacaoHandle>,
     refDietaA: React.RefObject<TabelaDietasHandle>,
@@ -122,7 +130,7 @@ export default ({
       <div className="d-flex flex-column gap-4">
         <TabelaAlimentacaoCEI
           ref={refAlimentacaoCEI}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_CEI}
           faixasEtarias={faixasEtarias}
           totaisConsumo={_TOTAIS_CONSUMO_POR_FAIXA_ETARIA}
           ordem="A"
@@ -130,7 +138,7 @@ export default ({
 
         <TabelaDietasCEI
           ref={refDietaACEI}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_CEI}
           tipoDieta="TIPO A"
           faixasEtarias={faixasEtarias}
           totaisConsumo={_TOTAIS_CONSUMO_POR_FAIXA_ETARIA}
@@ -139,7 +147,7 @@ export default ({
 
         <TabelaDietasCEI
           ref={refDietaBCEI}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_CEI}
           tipoDieta="TIPO B"
           faixasEtarias={faixasEtarias}
           totaisConsumo={_TOTAIS_CONSUMO_POR_FAIXA_ETARIA}
@@ -154,7 +162,7 @@ export default ({
       <div className="d-flex flex-column gap-4">
         <TabelaAlimentacao
           ref={refAlimentacaoEMEI}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_EMEI}
           tiposAlimentacao={_TIPOS_ALIMENTACAO}
           totaisConsumo={_TOTAIS_CONSUMO_POR_ALIMENTACAO}
           ordem="INF. A"
@@ -163,7 +171,7 @@ export default ({
 
         <TabelaDietas
           ref={refDietaAEMEI}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_EMEI}
           tipoDieta="TIPO A"
           tiposAlimentacao={tiposAlimentacao}
           totaisConsumo={_TOTAIS_CONSUMO_POR_ALIMENTACAO}
@@ -173,7 +181,7 @@ export default ({
 
         <TabelaDietas
           ref={refDietaBEMEI}
-          tabelas={relatorioConsolidado.tabelas}
+          tabelas={_TABELAS_EMEI}
           tipoDieta="TIPO B"
           tiposAlimentacao={tiposAlimentacao}
           totaisConsumo={_TOTAIS_CONSUMO_POR_ALIMENTACAO}

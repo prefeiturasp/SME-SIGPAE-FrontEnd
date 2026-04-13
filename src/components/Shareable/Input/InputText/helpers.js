@@ -21,6 +21,18 @@ export const agruparMilharDecimal = (valor) => {
   return resultado + "," + decimais;
 };
 
+export const agruparMilharDecimalModificado = (valor) => {
+  if (valor === null || valor === undefined) return "";
+
+  const numero = parseFloat(valor.toString().replace(",", "."));
+  if (isNaN(numero)) return "";
+
+  return numero.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
 export const agruparMilharInteirosPositivos = (valor) => {
   if (valor === null || valor === undefined) return "";
 

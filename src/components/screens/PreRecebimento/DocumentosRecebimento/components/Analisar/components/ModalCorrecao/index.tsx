@@ -58,7 +58,7 @@ const ModalCorrecao: React.FC<Props> = ({
             style={BUTTON_STYLE.GREEN}
             className="ms-3"
             onClick={() => handleSim()}
-            disabled={Object.keys(errors).length > 0}
+            disabled={!!errors?.correcao_solicitada}
           />
         </Modal.Footer>
       </Spin>

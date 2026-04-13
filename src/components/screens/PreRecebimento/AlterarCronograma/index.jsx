@@ -14,13 +14,13 @@ import DadosCronograma from "../CronogramaEntrega/components/DadosCronograma";
 import AnaliseDilogDiretoria from "./components/AnaliseDilogDiretoria";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { InputText } from "src/components/Shareable/Input/InputText";
+import { agruparMilharDecimalModificado } from "src/components/Shareable/Input/InputText/helpers";
 import "./styles.scss";
 import AcoesAlterar from "./components/AcoesAlterar";
 import {
   prepararPayloadAnaliseCronograma,
   prepararPayloadCronograma,
 } from "./helpers";
-import { formataMilhar } from "src/helpers/utilities";
 import { required } from "src/helpers/fieldValidators";
 import {
   toastError,
@@ -132,7 +132,7 @@ export default ({ analiseSolicitacao }) => {
         solicitacao.logs,
         "dilog",
       ),
-      quantidade_total: formataMilhar(
+      quantidade_total: agruparMilharDecimalModificado(
         solicitacao.cronograma.qtd_total_programada,
       ),
     };
@@ -142,7 +142,9 @@ export default ({ analiseSolicitacao }) => {
       );
       values[`etapa_${index}`] = etapa.etapa;
       values[`parte_${index}`] = etapa.parte;
-      values[`quantidade_${index}`] = formataMilhar(etapa.quantidade);
+      values[`quantidade_${index}`] = agruparMilharDecimalModificado(
+        etapa.quantidade,
+      );
       values[`data_programada_${index}`] = etapa.data_programada;
     });
     setInitialValues(values);
@@ -155,7 +157,9 @@ export default ({ analiseSolicitacao }) => {
       values[`etapa_${index}`] = etapa.etapa;
       values[`parte_${index}`] = etapa.parte;
       values[`data_programada_${index}`] = etapa.data_programada;
-      values[`quantidade_${index}`] = formataMilhar(etapa.quantidade);
+      values[`quantidade_${index}`] = agruparMilharDecimalModificado(
+        etapa.quantidade,
+      );
       values[`total_embalagens_${index}`] = numberToStringDecimal(
         etapa.total_embalagens,
       );
@@ -163,7 +167,9 @@ export default ({ analiseSolicitacao }) => {
         etapa.qtd_total_empenho,
       );
     });
-    values.quantidade_total = formataMilhar(cronograma.qtd_total_programada);
+    values.quantidade_total = agruparMilharDecimalModificado(
+      cronograma.qtd_total_programada,
+    );
     values.unidade_medida = cronograma.unidade_medida;
     values.peso_liquido_embalagem_secundaria =
       cronograma.ficha_tecnica?.peso_liquido_embalagem_secundaria?.toString();
