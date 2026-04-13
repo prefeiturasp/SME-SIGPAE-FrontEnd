@@ -78,12 +78,9 @@ export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
                   faixa.__str__
                 ] ?? 0;
 
-              const totalUnitario = Number(
-                (valorUnitario + valorReajuste).toFixed(2),
-              );
-              const valorTotal = Number(
-                (totalUnitario * numeroAtendimentos).toFixed(2),
-              );
+              const totalUnitario = valorUnitario + valorReajuste;
+
+              const valorTotal = totalUnitario * numeroAtendimentos;
 
               totalAtendimentosGeral += numeroAtendimentos;
               valorTotalGeral += valorTotal;
