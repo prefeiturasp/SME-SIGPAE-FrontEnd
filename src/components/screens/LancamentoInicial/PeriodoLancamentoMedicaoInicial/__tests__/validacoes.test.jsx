@@ -546,15 +546,18 @@ describe("boqueaSalvamentoPeriodosZeradosNoProgramasProjetos", () => {
     },
   };
 
+  const weekColumns = [{ dia: "01" }, { dia: "02" }, { dia: "03" }];
+
   it("não deve bloquear salvamento se o grupo não for Programas e Projetos", () => {
     const result = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
       "frequencia",
-      "01",
       categorias,
       {},
       {},
       "MANHA",
       false,
+      null,
+      weekColumns,
     );
 
     expect(result).toBe(false);
@@ -567,12 +570,13 @@ describe("boqueaSalvamentoPeriodosZeradosNoProgramasProjetos", () => {
 
     const result = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
       "frequencia",
-      "01",
       categorias,
       formValues,
       diasFrequenciaZerada,
       grupoValido,
       false,
+      null,
+      weekColumns,
     );
 
     expect(result).toBe(true);
@@ -586,12 +590,13 @@ describe("boqueaSalvamentoPeriodosZeradosNoProgramasProjetos", () => {
 
     const result = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
       "frequencia",
-      "01",
       categorias,
       formValues,
       diasFrequenciaZerada,
       grupoValido,
       false,
+      null,
+      weekColumns,
     );
 
     expect(result).toBe(false);
@@ -604,12 +609,13 @@ describe("boqueaSalvamentoPeriodosZeradosNoProgramasProjetos", () => {
 
     const result = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
       "frequencia",
-      "02",
       categorias,
       formValues,
       diasFrequenciaZerada,
       grupoValido,
       false,
+      null,
+      weekColumns,
     );
 
     expect(result).toBe(true);
@@ -622,12 +628,13 @@ describe("boqueaSalvamentoPeriodosZeradosNoProgramasProjetos", () => {
 
     const result = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
       "frequencia",
-      "01",
       categorias,
       formValues,
       diasFrequenciaZerada,
       grupoValido,
       false,
+      null,
+      weekColumns,
     );
 
     expect(result).toBe(false);
@@ -648,13 +655,13 @@ describe("boqueaSalvamentoPeriodosZeradosNoProgramasProjetos", () => {
 
     const result = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
       "frequencia",
-      "01",
       categorias,
       formValues,
       diasFrequenciaZerada,
       grupoValido,
       true,
       "infantil",
+      weekColumns,
     );
 
     expect(result).toBe(true);
@@ -687,7 +694,6 @@ describe("boqueaSalvamentoPeriodosZeradosNoProgramasProjetos", () => {
 
     const result = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
       "frequencia",
-      "01",
       categorias,
       formValues,
       diasFrequenciaZerada,
@@ -727,13 +733,13 @@ describe("boqueaSalvamentoPeriodosZeradosNoProgramasProjetos", () => {
 
     const result = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
       "frequencia",
-      "01",
       categorias,
       formValues,
       diasFrequenciaZerada,
       grupoValido,
       true,
       "fundamental",
+      weekColumns,
     );
 
     expect(result).toBe(false);
@@ -746,12 +752,13 @@ describe("boqueaSalvamentoPeriodosZeradosNoProgramasProjetos", () => {
 
     const result = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
       "frequencia",
-      "03",
       categorias,
       formValues,
       diasFrequenciaZerada,
       grupoValido,
       false,
+      null,
+      weekColumns,
     );
 
     expect(result).toBe(true);
