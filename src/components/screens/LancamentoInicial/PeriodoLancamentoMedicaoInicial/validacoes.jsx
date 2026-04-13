@@ -2142,15 +2142,17 @@ export const exibirTooltipPeriodosZeradosNoProgramasProjetos = (
 
 export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
   row,
-  dia,
   categoriasDeMedicao,
   formValuesAtualizados,
   diasFrequenciaZerada,
   grupo,
   escolaEmebs,
   alunosTabSelecionada,
+  weekColumns,
 ) => {
   if (grupo !== "Programas e Projetos") return false;
+
+  if (!weekColumns || weekColumns.length === 0) return false;
 
   const categoriaAlimentacao = categoriasDeMedicao.find(
     (categoria) => categoria.nome === "ALIMENTAÇÃO",
@@ -2171,6 +2173,8 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
     diasInclusoAlimentacao = diasFrequenciaZerada.alimentacoes;
   }
 
+  const diasSemanaAtual = weekColumns.map((col) => col.dia);
+
   const bloquerSalvarLancamentos = (diaZerado, idCategoria) => {
     const inputName = `${row}__dia_${diaZerado}__categoria_${idCategoria}`;
     const inputObservacao = `observacoes__dia_${diaZerado}__categoria_${idCategoria}`;
@@ -2188,6 +2192,7 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
 
   for (const diaZeradoAlimentacao of diasInclusoAlimentacao) {
     if (
+      diasSemanaAtual.includes(diaZeradoAlimentacao) &&
       bloquerSalvarLancamentos(diaZeradoAlimentacao, categoriaAlimentacao.id)
     ) {
       return true;
@@ -2199,7 +2204,10 @@ export const boqueaSalvamentoPeriodosZeradosNoProgramasProjetos = (
       ? diasInclusoDietas?.[categoriaDieta.nome]?.[tabSelecionada]
       : diasInclusoDietas?.[categoriaDieta.nome];
     for (const diaZeradoDieta of diasDieta) {
-      if (bloquerSalvarLancamentos(diaZeradoDieta, categoriaDieta.id)) {
+      if (
+        diasSemanaAtual.includes(diaZeradoDieta) &&
+        bloquerSalvarLancamentos(diaZeradoDieta, categoriaDieta.id)
+      ) {
         return true;
       }
     }
