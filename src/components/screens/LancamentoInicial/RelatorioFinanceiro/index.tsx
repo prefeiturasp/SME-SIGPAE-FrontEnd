@@ -20,6 +20,7 @@ interface RelatorioSelecionado {
   grupo_unidade_escolar: string[];
   status: string[];
   mes_ano: string;
+  visualizar?: boolean;
 }
 
 export function RelatorioFinanceiro() {
@@ -39,6 +40,15 @@ export function RelatorioFinanceiro() {
     paginaAtual,
     relatoriosFinanceirosResponse,
   } = useRelatorioFinanceiro();
+
+  const onPageRelatorio = (relatorio: RelatorioSelecionado) => {
+    navigate(
+      `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${ANALISAR_RELATORIO_FINANCEIRO}/?uuid=${relatorio?.uuid}`,
+      {
+        state: relatorio,
+      },
+    );
+  };
 
   return (
     <div className="relatorio-financeiro">
@@ -101,7 +111,21 @@ export function RelatorioFinanceiro() {
                             {relatorio.status !==
                             "RELATORIO_FINANCEIRO_GERADO" ? (
                               <>
-                                <span className="px-2">
+                                <span
+                                  className="px-2"
+                                  onClick={() => {
+                                    onPageRelatorio({
+                                      uuid: relatorio.uuid,
+                                      mes_ano: `${relatorio.mes}_${relatorio.ano}`,
+                                      lote: [relatorio.lote.uuid],
+                                      grupo_unidade_escolar: [
+                                        relatorio.grupo_unidade_escolar.uuid,
+                                      ],
+                                      status: [relatorio.status],
+                                      visualizar: true,
+                                    });
+                                  }}
+                                >
                                   <i
                                     title="Visualizar"
                                     className="fas fa-eye green"
@@ -162,14 +186,10 @@ export function RelatorioFinanceiro() {
               showModal={showAnalisar}
               setShowModal={setShowAnalisar}
               uuidRelatorio={relatorioSelecionado?.uuid}
-              onAnalisar={() =>
-                navigate(
-                  `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${ANALISAR_RELATORIO_FINANCEIRO}/?uuid=${relatorioSelecionado.uuid}`,
-                  {
-                    state: relatorioSelecionado,
-                  },
-                )
+              onVisualizar={() =>
+                onPageRelatorio({ ...relatorioSelecionado, visualizar: true })
               }
+              onAnalisar={() => onPageRelatorio(relatorioSelecionado)}
             />
           </div>
         </div>
