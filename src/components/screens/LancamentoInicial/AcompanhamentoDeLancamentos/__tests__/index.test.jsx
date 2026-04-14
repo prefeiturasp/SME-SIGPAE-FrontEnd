@@ -10,10 +10,16 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { AcompanhamentoDeLancamentos } from "src/components/screens/LancamentoInicial/AcompanhamentoDeLancamentos";
-import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
+import {
+  MODULO_GESTAO,
+  PERFIL,
+  TIPO_PERFIL,
+  TIPO_SERVICO,
+} from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
 import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockMeusDadosSuperUsuarioMedicao } from "src/mocks/meusDados/superUsuarioMedicao";
 import { mockGetTiposUnidadeEscolar } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
 import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
@@ -72,6 +78,9 @@ const setupMocks = () => {
     )
     .reply(200, mockGetDashboardMedicaoInicial);
   mock
+    .onGet("/medicao-inicial/historico-acesso-ue/total-por-dre/")
+    .reply(200, 100);
+  mock
     .onGet("/medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/")
     .reply(200, mockDashboardResultados);
   mock
@@ -88,12 +97,14 @@ describe("AcompanhamentoDeLancamentos", () => {
   beforeEach(async () => {
     setupMocks();
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.clear();
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.MEDICAO);
     await renderComponent();
   });
 
   afterEach(() => {
     mock.reset();
+    localStorage.clear();
     cleanup();
   });
 
@@ -265,6 +276,45 @@ describe("AcompanhamentoDeLancamentos", () => {
       const seletor = screen.queryByTestId("select-diretoria-regional");
 
       expect(seletor).not.toBeInTheDocument();
+    });
+
+    it("deve exibir a label com total de unidades da DRE ao selecionar DRE e mês", async () => {
+      await selecionarDRE();
+      setMesReferencia();
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Total de Unidades da DRE: 100"),
+        ).toBeInTheDocument(),
+      );
+    });
+
+    it("não deve requisitar total de unidades da DRE para usuário escola sem seletor de DRE", async () => {
+      cleanup();
+      mock.reset();
+      setupMocks();
+      localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+      localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+      localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+
+      await renderComponent(mockMeusDadosEscolaEMEFPericles);
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId("MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE"),
+        ).toBeInTheDocument(),
+      );
+
+      expect(
+        screen.queryByText(/Total de Unidades da DRE:/),
+      ).not.toBeInTheDocument();
+      expect(
+        mock.history.get.filter((request) =>
+          request.url.includes(
+            "/medicao-inicial/historico-acesso-ue/total-por-dre/",
+          ),
+        ),
+      ).toHaveLength(0);
     });
 
     const setMesReferencia = () => {
