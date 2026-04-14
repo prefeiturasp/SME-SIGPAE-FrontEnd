@@ -58,6 +58,7 @@ import {
   getDashboardMedicaoInicialResultados,
   getDashboardMedicaoInicialTotalizadores,
   getMesesAnosSolicitacoesMedicaoinicial,
+  getTotalUnidadesDRE,
 } from "src/services/medicaoInicial/dashboard.service";
 import { updateSolicitacaoMedicaoInicial } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import {
@@ -129,8 +130,18 @@ export const AcompanhamentoDeLancamentos = () => {
 
   const { meusDados } = useContext(MeusDadosContext);
   const DEFAULT_STATE = usuarioEhEscolaTerceirizadaQualquerPerfil() ? [] : null;
+  const usuarioPossuiSeletorDRE =
+    usuarioEhMedicao() ||
+    usuarioEhCODAENutriManifestacao() ||
+    usuarioEhQualquerCODAE() ||
+    usuarioEhDinutreDiretoria() ||
+    usuarioEhCODAEGabinete() ||
+    usuarioEhEmpresaTerceirizada() ||
+    usuarioEhCoordenadorNutriSupervisao() ||
+    usuarioEhAdministradorNutriSupervisao();
 
   const [dadosDashboard, setDadosDashboard] = useState(null);
+  const [totalUnidadesDRE, setTotalUnidadesDRE] = useState(null);
   const [statusSelecionado, setStatusSelecionado] = useState(
     searchParams.get("status"),
   );
@@ -238,6 +249,21 @@ export const AcompanhamentoDeLancamentos = () => {
 
       if (recreioNasFeriasFiltro) {
         filtrosDashboard.recreio_nas_ferias = recreioNasFeriasFiltro;
+      }
+
+      if (usuarioPossuiSeletorDRE && diretoriaRegional && mesAnoFiltro) {
+        const [mesSelecionado, anoSelecionado] = mesAnoFiltro.split("_");
+        const responseTotalUnidadesDRE = await getTotalUnidadesDRE({
+          mes: mesSelecionado,
+          ano: anoSelecionado,
+          dre_uuid: diretoriaRegional,
+        });
+
+        if (responseTotalUnidadesDRE?.status === HTTP_STATUS.OK) {
+          setTotalUnidadesDRE(responseTotalUnidadesDRE.data);
+        } else {
+          setTotalUnidadesDRE(null);
+        }
       }
 
       const responseDre =
@@ -793,14 +819,7 @@ export const AcompanhamentoDeLancamentos = () => {
               <form onSubmit={handleSubmit}>
                 <div className="card mt-3">
                   <div className="container-dre-mes mt-3">
-                    {usuarioEhMedicao() ||
-                    usuarioEhCODAENutriManifestacao() ||
-                    usuarioEhQualquerCODAE() ||
-                    usuarioEhDinutreDiretoria() ||
-                    usuarioEhCODAEGabinete() ||
-                    usuarioEhEmpresaTerceirizada() ||
-                    usuarioEhCoordenadorNutriSupervisao() ||
-                    usuarioEhAdministradorNutriSupervisao() ? (
+                    {usuarioPossuiSeletorDRE ? (
                       <label className="label label-seletor-dre">
                         <span className="required-asterisk">* </span>
                         Diretorias Regionais de Educação
@@ -816,6 +835,7 @@ export const AcompanhamentoDeLancamentos = () => {
                               value || undefined,
                             );
                             setDiretoriaRegional(value || undefined);
+                            setTotalUnidadesDRE(null);
                             setStatusSelecionado(null);
                             setResultados(null);
                             setMudancaDre(true);
@@ -896,6 +916,7 @@ export const AcompanhamentoDeLancamentos = () => {
                             );
                             setMesAno(mesAnoValue);
                             setRecreioNasFerias(recreioSelecionado);
+                            setTotalUnidadesDRE(null);
                             setMudancaDre(false);
                             setStatusSelecionado(null);
                             setResultados(null);
@@ -921,6 +942,11 @@ export const AcompanhamentoDeLancamentos = () => {
                     )}
                   </div>
                   <div className="card-body">
+                    {usuarioPossuiSeletorDRE && totalUnidadesDRE !== null && (
+                      <div className="mb-3 fw-bold">
+                        Total de Unidades da DRE: {totalUnidadesDRE}
+                      </div>
+                    )}
                     <div className="d-flex row row-cols-1">
                       {exibirDashboard() &&
                         dadosDashboard &&
