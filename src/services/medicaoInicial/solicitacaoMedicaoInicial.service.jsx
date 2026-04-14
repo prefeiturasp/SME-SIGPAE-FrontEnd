@@ -285,3 +285,14 @@ export const getTotaisAtendimentoConsumo = async (params) => {
     return data;
   }
 };
+
+export const gerarRelatorioHistorioCorrecoes = async (uuid) => {
+  const url = `medicao-inicial/solicitacao-medicao-inicial/${uuid}/relatorio-historio-correcoes/`;
+  const response = await axios
+    .get(url, { responseType: "blob" })
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};

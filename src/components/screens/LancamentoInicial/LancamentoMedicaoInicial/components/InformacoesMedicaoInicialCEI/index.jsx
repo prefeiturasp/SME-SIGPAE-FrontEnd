@@ -506,7 +506,11 @@ export const InformacoesMedicaoInicialCEI = ({
                         value={option.value}
                         checked={uePossuiAlunosPeriodoParcial === option.value}
                         onChange={onChange}
-                        disabled={!emEdicao || recreioNasFeriasUuid}
+                        disabled={
+                          !emEdicao ||
+                          recreioNasFeriasUuid ||
+                          !periodoSelecionado
+                        }
                       >
                         {option.label}
                       </Checkbox>
@@ -562,7 +566,9 @@ export const InformacoesMedicaoInicialCEI = ({
                           style={BUTTON_STYLE.GREEN}
                           className="float-end ms-3"
                           onClick={() => handleClickSalvar()}
-                          disabled={!emEdicao || salvando}
+                          disabled={
+                            !emEdicao || salvando || !periodoSelecionado
+                          }
                         />
                         <Botao
                           texto="Editar"

@@ -644,7 +644,6 @@ export default () => {
                     style={BUTTON_STYLE.ORANGE_OUTLINE}
                     icon="fas fa-pen"
                     className="float-end ms-3"
-                    disabled={Object.keys(errors).length > 0}
                     onClick={() => setShowModalCorrecao(true)}
                   />
                   <Botao

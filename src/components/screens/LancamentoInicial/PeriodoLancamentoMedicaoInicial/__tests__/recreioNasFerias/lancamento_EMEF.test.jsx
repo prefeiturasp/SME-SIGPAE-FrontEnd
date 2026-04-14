@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -481,6 +482,79 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
+    });
+
+    it("mantém alimentação aberta e fecha dieta especial no dia sem log do recreio nas férias", async () => {
+      cleanup();
+      jest.clearAllMocks();
+
+      getLogDietasAutorizadasRecreioNasFerias.mockResolvedValueOnce({
+        data: mockLogQuantidadeDietasAutorizadasRecreio.filter(
+          (log) => !["09", "10"].includes(log.dia),
+        ),
+        status: 200,
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter
+            initialEntries={[
+              { pathname: "/", state: mockLocationStateGrupoRecreioNasFerias },
+            ]}
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <PeriodoLancamentoMedicaoInicial />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await awaitServices();
+
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
+
+      expect(
+        screen.getByTestId("frequencia__dia_08__categoria_1").disabled,
+      ).toBe(false);
+      expect(screen.getByTestId("lanche__dia_08__categoria_1").disabled).toBe(
+        false,
+      );
+      expect(
+        screen.getByTestId("frequencia__dia_08__categoria_2").disabled,
+      ).toBe(false);
+
+      expect(
+        screen.getByTestId("frequencia__dia_09__categoria_1").disabled,
+      ).toBe(false);
+      expect(screen.getByTestId("lanche__dia_09__categoria_1").disabled).toBe(
+        false,
+      );
+      expect(
+        screen.getByTestId("frequencia__dia_09__categoria_2").disabled,
+      ).toBe(true);
+      expect(
+        screen.getByTestId("frequencia__dia_09__categoria_3").disabled,
+      ).toBe(true);
+      expect(
+        screen.getByTestId("frequencia__dia_09__categoria_4").disabled,
+      ).toBe(true);
+
+      expect(
+        screen.getByTestId("botao-observacao__dia_08__categoria_1"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId("botao-observacao__dia_08__categoria_2"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId("botao-observacao__dia_09__categoria_1"),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("botao-observacao__dia_09__categoria_2"),
+      ).not.toBeInTheDocument();
     });
 
     it("ao clicar na tab `Semana 1`, preencher frequencia maior que participantes e exibe erro", async () => {

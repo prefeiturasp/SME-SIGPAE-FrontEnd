@@ -221,6 +221,15 @@ export const desabilitarField = (
   ehRecreioNasFerias,
 ) => {
   let alimentacoesLancamentosEspeciaisDia = [];
+  const valorAtual =
+    values[`${rowName}__dia_${dia}__categoria_${categoria}`] ??
+    values[
+      `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+    ];
+
+  if (["Mês anterior", "Mês posterior"].includes(valorAtual)) {
+    return true;
+  }
 
   const statusDeBloqueio = () => {
     return (
@@ -314,6 +323,10 @@ export const desabilitarField = (
         );
         if (!diaEncontrado) {
           return true;
+        }
+
+        if (statusDeCorrecao()) {
+          return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
         }
 
         return false;
@@ -584,7 +597,8 @@ export const desabilitarField = (
           `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
         ],
       ) ||
-      (mesConsiderado === mesAtual &&
+      (!ehRecreioNasFerias &&
+        mesConsiderado === mesAtual &&
         Number(dia) >= format(mesAnoDefault, "dd") &&
         !ehUltimoDiaLetivoDoAno(
           dia,
@@ -851,6 +865,11 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
   }
 
   if (ehRecreioNasFerias) {
+    const faixasEtariasRecreio =
+      faixasEtarias?.length > 0
+        ? faixasEtarias
+        : faixas_etarias_objs_alimentacao;
+
     linhasTabelaAlimentacaoCEI.push({
       nome: "Participantes",
       name: "participantes",
@@ -858,7 +877,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
       faixa_etaria: null,
     });
 
-    faixasEtarias
+    faixasEtariasRecreio
       .sort((a, b) => a.inicio - b.inicio)
       .forEach((faixa_obj) => {
         linhasTabelaAlimentacaoCEI.push({

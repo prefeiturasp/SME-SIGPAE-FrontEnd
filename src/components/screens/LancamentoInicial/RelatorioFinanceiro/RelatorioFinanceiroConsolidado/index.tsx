@@ -20,13 +20,18 @@ import GrupoCEMEI from "../components/Tabelas/GrupoCEMEI";
 import GrupoEMEBS from "../components/Tabelas/GrupoEMEBS";
 import DadosLiquidacao from "../components/DadosLiquidacao";
 import {
+  BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
 import Botao from "src/components/Shareable/Botao";
 import ModalEditarEmpenhos from "../components/ModalEditarEmpenhos";
-import { getRelatorioDadosLiquidacao } from "src/services/medicaoInicial/relatorioFinanceiro.service";
+import {
+  exportarPDFAsyncRelatorioAtesteFinanceiro,
+  getRelatorioDadosLiquidacao,
+} from "src/services/medicaoInicial/relatorioFinanceiro.service";
 import { DadosLiquidacaoEmpenho } from "src/interfaces/relatorio_financeiro.interface";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 
 type TotaisParams = {
   mes: string;
@@ -46,6 +51,9 @@ export function RelatorioFinanceiroConsolidado() {
   const [tiposAlimentacao, setTiposAlimentacao] = useState<any[]>([]);
   const [carregando, setCarregando] = useState<boolean>(false);
   const [editarEmpenhos, setEditarEmpenhos] = useState<boolean>(false);
+  const [exportando, setExportando] = useState<boolean>(false);
+  const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
+    useState<boolean>(false);
 
   const [searchParams] = useSearchParams();
   const uuidRelatorioFinanceiro = searchParams.get("uuid");
@@ -59,6 +67,19 @@ export function RelatorioFinanceiroConsolidado() {
   } = useRelatorioFinanceiro();
 
   const { state } = useLocation();
+
+  const exportarPDF = async () => {
+    setExportando(true);
+    const response = await exportarPDFAsyncRelatorioAtesteFinanceiro(
+      uuidRelatorioFinanceiro,
+    );
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao exportar PDF. Tente novamente mais tarde.");
+    }
+    setExportando(false);
+  };
 
   const getTodasFaixasEtarias = async () => {
     const response = await getFaixasEtarias();
@@ -254,6 +275,17 @@ export function RelatorioFinanceiroConsolidado() {
                 )}
               </div>
             )}
+            <div className="col-12 text-end">
+              <Botao
+                dataTestId="botao-pdf"
+                texto="Exportar PDF"
+                style={BUTTON_STYLE.GREEN_OUTLINE}
+                type={BUTTON_TYPE.BUTTON}
+                icon={BUTTON_ICON.FILE_PDF}
+                onClick={async () => await exportarPDF()}
+                disabled={exportando}
+              />
+            </div>
           </div>
         </div>
       </Spin>
@@ -263,8 +295,13 @@ export function RelatorioFinanceiroConsolidado() {
         empenhos={dadosLiquidacao}
         lote={state?.lote[0]}
         relatorioFinanceiro={uuidRelatorioFinanceiro}
-        onSave={getDadosLiquidacao}
+        onSave={(e) => setDadosLiquidacao(e)}
         tiposUnidades={getTiposUuid()}
+      />
+      <ModalSolicitacaoDownload
+        show={exibirModalCentralDownloads}
+        setShow={setExibirModalCentralDownloads}
+        callbackClose={() => ""}
       />
     </div>
   );

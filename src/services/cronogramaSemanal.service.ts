@@ -1,0 +1,46 @@
+import axios from "./_base";
+import { getMensagemDeErro } from "../helpers/statusErrors";
+import { toastError } from "../components/Shareable/Toast/dialogs";
+import {
+  CronogramaSemanalCreate,
+  CronogramaMensalSimples,
+} from "src/interfaces/cronograma_semanal.interface";
+
+export const getCronogramaSemanal = async (uuid: string) => {
+  return await axios.get(`/cronogramas-semanais/${uuid}/`);
+};
+
+export const criarCronogramaSemanalRascunho = async (
+  payload: CronogramaSemanalCreate,
+  config = {},
+) => {
+  return await axios.post("/cronogramas-semanais/rascunho/", payload, config);
+};
+
+export const atualizarCronogramaSemanalRascunho = async (
+  uuid: string,
+  payload: CronogramaSemanalCreate,
+  config = {},
+) => {
+  return await axios.patch(`/cronogramas-semanais/${uuid}/`, payload, config);
+};
+
+export const getCronogramasMensalAssinados = async (): Promise<{
+  data: CronogramaMensalSimples[];
+}> => {
+  try {
+    return await axios.get(
+      "/cronogramas-semanais/cronogramas-mensal-assinados/",
+    );
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
+};
+
+export const getCronogramaMensalDetalhado = async (uuid: string) => {
+  try {
+    return await axios.get(`/cronogramas/${uuid}/`);
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
+};

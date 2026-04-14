@@ -180,3 +180,93 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Envia para correç
     });
   });
 });
+
+describe("Teste Conferência de Lançamentos - Usuário DRE - Recreio nas férias", () => {
+  const solicitacaoComRecreioNasFerias = {
+    ...mockSolicitacaoMedicaoInicialCMCTSetembro2025,
+    recreio_nas_ferias: {
+      uuid: "33cf7ef0-86ea-458c-b85f-3d5a96d7f111",
+      titulo: "Recreio nas Férias Janeiro/2026",
+    },
+  };
+
+  beforeEach(async () => {
+    process.env.IS_TEST = true;
+
+    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/periodos-grupos-medicao/",
+      )
+      .reply(200, mockPeriodosGruposMedicaoSolicitarCorrecaoCMCTSetembro2025);
+    mock
+      .onGet(
+        `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoComRecreioNasFerias.uuid}/`,
+      )
+      .reply(200, solicitacaoComRecreioNasFerias);
+    mock
+      .onGet("/medicao-inicial/medicao/feriados-no-mes-com-nome/")
+      .reply(200, {
+        results: [{ dia: "07", feriado: "Dia da Independência do Brasil" }],
+      });
+    mock
+      .onGet("/dias-calendario/")
+      .reply(200, mockDiasCalendarioSetembro2025CMCT);
+    mock
+      .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
+      .reply(200, ["2025-09-02"]);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${solicitacaoComRecreioNasFerias.escola_uuid}/`,
+      )
+      .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCMCT);
+    mock
+      .onGet(
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
+      )
+      .reply(200, []);
+
+    mock
+      .onGet("/medicao-inicial/categorias-medicao/")
+      .reply(200, mockCategoriasMedicao);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
+    localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
+
+    const search = `?uuid=${solicitacaoComRecreioNasFerias.uuid}`;
+    window.history.pushState({}, "", search);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: "/",
+              state: {
+                ano: "2025",
+                escolaUuid: solicitacaoComRecreioNasFerias.escola_uuid,
+                mes: "09",
+              },
+            },
+          ]}
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <ToastContainer />
+          <ConferenciaDosLancamentosPage />
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("renderiza o título do recreio nas férias no input `Mês do Lançamento`", () => {
+    const inputElement = screen.getByTestId("input-mes-lancamento");
+    expect(inputElement).toHaveAttribute(
+      "value",
+      "Recreio nas Férias Janeiro/2026",
+    );
+  });
+});

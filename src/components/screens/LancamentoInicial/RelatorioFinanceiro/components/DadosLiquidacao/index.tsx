@@ -55,7 +55,9 @@ const DadosLiquidacao = ({ dados = [] }: Props) => {
                 )}
 
                 <td>
-                  {item.numero_empenho ? `R$ ${formataMilharDecimal(0)}` : ""}
+                  {item.numero_empenho
+                    ? `R$ ${formataMilharDecimal(item.total_pagamento)}`
+                    : ""}
                 </td>
               </tr>
             ))}
