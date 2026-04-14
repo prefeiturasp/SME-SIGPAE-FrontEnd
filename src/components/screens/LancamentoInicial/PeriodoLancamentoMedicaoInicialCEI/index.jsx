@@ -86,7 +86,6 @@ import {
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
   exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
-  exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
@@ -3035,16 +3034,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               categoria,
                                                               diasSobremesaDoce,
                                                               location,
-                                                            )
-                                                          }
-                                                          exibeTooltipRepeticao={
-                                                            (ehProgramasEProjetosLocation ||
-                                                              ehRecreioNasFerias) &&
-                                                            exibirTooltipRepeticao(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
                                                             )
                                                           }
                                                           exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(

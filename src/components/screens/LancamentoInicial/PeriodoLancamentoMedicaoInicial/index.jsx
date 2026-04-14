@@ -110,7 +110,6 @@ import {
   exibirTooltipLPRAutorizadas,
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
-  exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
@@ -3582,13 +3581,6 @@ export default () => {
                                                             categoria,
                                                             diasSobremesaDoce,
                                                             location,
-                                                          )}
-                                                          exibeTooltipRepeticao={exibirTooltipRepeticao(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            diasSobremesaDoce,
                                                           )}
                                                           exibeTooltipAlimentacoesAutorizadasDiaNaoLetivo={
                                                             `${row.name}__dia_${column.dia}__categoria_${categoria.id}` in
