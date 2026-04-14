@@ -277,6 +277,7 @@ export function RelatorioFinanceiroConsolidado() {
             )}
             <div className="col-12 text-end">
               <Botao
+                dataTestId="botao-pdf"
                 texto="Exportar PDF"
                 style={BUTTON_STYLE.GREEN_OUTLINE}
                 type={BUTTON_TYPE.BUTTON}
