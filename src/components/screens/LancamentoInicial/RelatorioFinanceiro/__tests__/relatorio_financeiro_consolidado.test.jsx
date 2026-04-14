@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { RelatorioFinanceiroConsolidado } from "../RelatorioFinanceiroConsolidado";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -391,5 +391,33 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
         "(Cento e um mil quatrocentos e setenta e quatro reais e trinta e seis centavos.)",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("deve verificar botão exportar PDF e excutar ação", async () => {
+    mock
+      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
+      .reply(200, mockRelatorioFinanceiroFaixaEtaria);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, mockTotaisAtendimentoFaixaEtaria);
+    mock
+      .onPost(`/medicao-inicial/relatorio-financeiro/exportar-pdf/123/`)
+      .reply(200, {});
+
+    await setup();
+
+    const botaoPDF = screen.getByTestId("botao-pdf");
+    expect(botaoPDF).toBeInTheDocument();
+    expect(botaoPDF).toBeVisible();
+
+    botaoPDF.click();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Geração solicitada com sucesso."),
+      ).toBeInTheDocument();
+    });
   });
 });
