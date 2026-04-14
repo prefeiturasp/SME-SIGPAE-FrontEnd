@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -13,6 +19,7 @@ import { mockMatriculadosNoMesCEMEIEMEIINTEGRALAgosto2025 } from "src/mocks/medi
 import { mockMeusDadosEscolaCEMEI } from "src/mocks/meusDados/escola/CEMEI";
 import { PeriodoLancamentoMedicaoInicialCEIPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialCEIPage";
 import mock from "src/services/_mock";
+import preview from "jest-preview";
 
 describe("Testes de inclusão de lançamento em fim de semana", () => {
   beforeEach(async () => {
@@ -129,5 +136,58 @@ describe("Testes de inclusão de lançamento em fim de semana", () => {
       "frequencia__dia_03__categoria_1",
     );
     expect(inputDiaFrequenciaDia2).toBeDisabled();
+    preview.debug();
+  });
+
+  it("renderiza input do dia 01/08/2025, preencher repetição de refeição maior que refeição no dia 27, e NÃO exibe tooltip verde", async () => {
+    const inputElementFrequenciaDia1 = screen.getByTestId(
+      "frequencia__dia_01__categoria_1",
+    );
+    fireEvent.change(inputElementFrequenciaDia1, {
+      target: { value: "50" },
+    });
+
+    const inputRefeicaoDia1 = screen.getByTestId(
+      "refeicao__dia_01__categoria_1",
+    );
+
+    fireEvent.change(inputRefeicaoDia1, {
+      target: { value: "45" },
+    });
+    const inputRepeticaoRefeicaoDia1 = screen.getByTestId(
+      "repeticao_refeicao__dia_01__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputRepeticaoRefeicaoDia1, {
+        target: { value: "48" },
+      });
+    });
+    expect(inputRepeticaoRefeicaoDia1).not.toHaveClass("icone-info-success");
+  });
+
+  it("renderiza input do dia 01/08/2025, preencher repetição de sobremesa maior que sobremesa no dia 27, e NÃO exibe tooltip verde", async () => {
+    const inputElementFrequenciaDia1 = screen.getByTestId(
+      "frequencia__dia_01__categoria_1",
+    );
+    fireEvent.change(inputElementFrequenciaDia1, {
+      target: { value: "68" },
+    });
+
+    const inputRefeicaoDia1 = screen.getByTestId(
+      "sobremesa__dia_01__categoria_1",
+    );
+
+    fireEvent.change(inputRefeicaoDia1, {
+      target: { value: "53" },
+    });
+    const inputRepeticaoRefeicaoDia1 = screen.getByTestId(
+      "repeticao_sobremesa__dia_01__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputRepeticaoRefeicaoDia1, {
+        target: { value: "62" },
+      });
+    });
+    expect(inputRepeticaoRefeicaoDia1).not.toHaveClass("icone-info-success");
   });
 });
