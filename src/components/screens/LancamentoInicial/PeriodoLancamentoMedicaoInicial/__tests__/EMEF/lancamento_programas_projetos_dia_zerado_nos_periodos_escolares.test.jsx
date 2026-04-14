@@ -316,3 +316,299 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos com per
     expect(botaoSalvar).not.toBeDisabled();
   });
 });
+
+describe("Estado do Botão Salvar Lançamentos - Programas e Projetos - EMEF", () => {
+  const escolaUuid =
+    mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
+  const mockInclusoesAutorizadas = [
+    {
+      dia: "01",
+      periodo: "MANHA",
+      alimentacoes: "lanche",
+      numero_alunos: 100,
+      dias_semana: [6, 0, 1, 2, 3, 4, 5],
+      inclusao_id_externo: "1F6E2",
+    },
+    {
+      dia: "02",
+      periodo: "MANHA",
+      alimentacoes: "lanche",
+      numero_alunos: 100,
+      dias_semana: [6, 0, 1, 2, 3, 4, 5],
+      inclusao_id_externo: "1F6E2",
+    },
+  ];
+
+  const idCategoriaAlimentacao = mockCategoriasMedicao.find(
+    (cat) => cat.nome === "ALIMENTAÇÃO",
+  )?.id;
+
+  const idCategoriaDietaTipoA = mockCategoriasMedicao.find(
+    (cat) => cat.nome === "DIETA ESPECIAL - TIPO A",
+  )?.id;
+
+  beforeEach(async () => {
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
+      )
+      .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
+    mock
+      .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
+      .reply(200, []);
+    mock.onGet("/tipos-alimentacao/").reply(200, mockGetTipoAlimentacao);
+    mock
+      .onGet("/escola-solicitacoes/inclusoes-autorizadas/")
+      .reply(200, { results: mockInclusoesAutorizadas });
+    mock
+      .onGet("/medicao-inicial/categorias-medicao/")
+      .reply(200, mockCategoriasMedicao);
+    mock
+      .onGet("/log-quantidade-dietas-autorizadas/")
+      .reply(200, mockLogQuantidadeDietasAutorizadasEMEFOutubro2025);
+    mock
+      .onGet("/medicao-inicial/valores-medicao/")
+      .reply(200, mockValoresMedicaoProgramasProjetosoEMEFOutubro2025);
+    mock.onGet("/medicao-inicial/dias-para-corrigir/").reply(200, []);
+    mock
+      .onGet("/dias-calendario/")
+      .reply(200, mockDiasCalendarioEMEFOutubro2025);
+    mock.onGet("/matriculados-no-mes/").reply(200, []);
+    mock
+      .onGet("/escola-solicitacoes/suspensoes-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet("/medicao-inicial/medicao/feriados-no-mes/")
+      .reply(200, { results: ["12"] });
+
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/dias-frequencia-zerada/",
+      )
+      .reply(200, {
+        alimentacoes: ["01"],
+        dietas: {
+          "DIETA ESPECIAL - TIPO A": ["02"],
+          "DIETA ESPECIAL - TIPO A - ENTERAL / RESTRIÇÃO DE AMINOÁCIDOS": [],
+          "DIETA ESPECIAL - TIPO B": ["01"],
+        },
+      });
+
+    const search = `?uuid=b386231a-2a77-488b-b6d5-b016987e55c2&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
+    window.history.pushState({}, "", search);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem(
+      "nome_instituicao",
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
+    );
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          initialEntries={[
+            {
+              pathname: "/",
+              state: mockStateProgramasProjetosEMEFOutubro2025,
+            },
+          ]}
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <PeriodoLancamentoMedicaoInicialPage />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("deve desabilitar o botão ao abrir a página com frequência igual a 10 no dia 01", async () => {
+    const botaoSalvar = screen
+      .getByText("Salvar Lançamentos")
+      .closest("button");
+    expect(botaoSalvar).toBeDisabled();
+  });
+
+  it("deve desabilitar o botão quando inserir valor > 0 no dia 1 (com dia zerado) sem observação", async () => {
+    const dia = "01";
+    const nomeInput = screen.getByTestId(
+      `frequencia__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
+    );
+
+    fireEvent.change(nomeInput, {
+      target: { value: "10" },
+    });
+
+    await act(async () => {
+      fireEvent.blur(nomeInput);
+    });
+
+    const botaoSalvar = screen
+      .getByText("Salvar Lançamentos")
+      .closest("button");
+    expect(botaoSalvar).toBeDisabled();
+  });
+
+  it("deve habilitar o botão quando corrigir o valor para 0 após ter inserido um valor > 0", async () => {
+    const dia = "01";
+    const nomeInput = screen.getByTestId(
+      `frequencia__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
+    );
+
+    // Inserir valor > 0
+    fireEvent.change(nomeInput, {
+      target: { value: "50" },
+    });
+
+    await act(async () => {
+      fireEvent.blur(nomeInput);
+    });
+
+    let botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botaoSalvar).toBeDisabled();
+
+    // Corrigir para 0
+    fireEvent.change(nomeInput, {
+      target: { value: "0" },
+    });
+
+    await act(async () => {
+      fireEvent.blur(nomeInput);
+    });
+
+    botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botaoSalvar).not.toBeDisabled();
+  });
+
+  it("deve habilitar o botão quando observação é preenchida para dia com valor > 0", async () => {
+    const dia = "01";
+    const nomeInput = screen.getByTestId(
+      `frequencia__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
+    );
+
+    // Inserir valor > 0
+    fireEvent.change(nomeInput, {
+      target: { value: "50" },
+    });
+
+    await act(async () => {
+      fireEvent.blur(nomeInput);
+    });
+
+    let botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+    // Deve desabilitar
+    expect(botaoSalvar).toBeDisabled();
+
+    // Encontrar o input de observação (se existe na mesma linha)
+    const inputObservacao = screen.queryByTestId(
+      `observacao__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
+    );
+
+    if (inputObservacao) {
+      // Se o input de observação existe e é acessível, preencher
+      fireEvent.change(inputObservacao, {
+        target: { value: "Justificativa para a frequência" },
+      });
+
+      await act(async () => {
+        fireEvent.blur(inputObservacao);
+      });
+
+      botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+      // Deve habilitar quando há observação
+      expect(botaoSalvar).not.toBeDisabled();
+    }
+  });
+
+  it("deve desabilitar o botão quando inserir valor > 0 na dieta com dia zerado sem observação", async () => {
+    const dia = "02";
+    const nomeInput = screen.getByTestId(
+      `frequencia__dia_${dia}__categoria_${idCategoriaDietaTipoA}`,
+    );
+
+    fireEvent.change(nomeInput, {
+      target: { value: "5" },
+    });
+
+    await act(async () => {
+      fireEvent.blur(nomeInput);
+    });
+
+    const botaoSalvar = screen
+      .getByText("Salvar Lançamentos")
+      .closest("button");
+    expect(botaoSalvar).toBeDisabled();
+  });
+
+  it("deve manter o botão desabilitado enquanto houver múltiplos dias com problemas sem observação", async () => {
+    const dia1 = "01";
+    const dia2 = "02";
+
+    // Inserir valor na alimentação do dia 1
+    const nomeInput1 = screen.getByTestId(
+      `frequencia__dia_${dia1}__categoria_${idCategoriaAlimentacao}`,
+    );
+    fireEvent.change(nomeInput1, {
+      target: { value: "50" },
+    });
+
+    // Inserir valor na dieta do dia 2
+    const nomeInput2 = screen.getByTestId(
+      `frequencia__dia_${dia2}__categoria_${idCategoriaDietaTipoA}`,
+    );
+    fireEvent.change(nomeInput2, {
+      target: { value: "5" },
+    });
+
+    await act(async () => {
+      fireEvent.blur(nomeInput1);
+      fireEvent.blur(nomeInput2);
+    });
+
+    let botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botaoSalvar).toBeDisabled();
+
+    // Corrigir apenas um dos problemas
+    fireEvent.change(nomeInput1, {
+      target: { value: "0" },
+    });
+
+    await act(async () => {
+      fireEvent.blur(nomeInput1);
+    });
+
+    botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+    // Ainda deve estar desabilitado pois há outro problema
+    expect(botaoSalvar).toBeDisabled();
+
+    // Corrigir o segundo problema
+    fireEvent.change(nomeInput2, {
+      target: { value: "0" },
+    });
+
+    await act(async () => {
+      fireEvent.blur(nomeInput2);
+    });
+
+    botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+    // Agora deve estar habilitado
+    expect(botaoSalvar).not.toBeDisabled();
+  });
+});

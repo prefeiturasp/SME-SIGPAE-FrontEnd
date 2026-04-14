@@ -44,7 +44,7 @@ export const mockValoresMedicaoProgramasProjetosoEMEFOutubro2025 = [
   {
     categoria_medicao: 1,
     nome_campo: "frequencia",
-    valor: "120",
+    valor: "10",
     dia: "01",
     medicao_uuid: "e565fe26-e4b3-4a60-a9dc-7549548f0dc1",
     faixa_etaria: null,

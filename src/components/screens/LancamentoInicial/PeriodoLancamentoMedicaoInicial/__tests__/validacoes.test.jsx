@@ -700,6 +700,7 @@ describe("boqueaSalvamentoPeriodosZeradosNoProgramasProjetos", () => {
       grupoValido,
       true,
       "fundamental",
+      weekColumns,
     );
 
     expect(result).toBe(false);
