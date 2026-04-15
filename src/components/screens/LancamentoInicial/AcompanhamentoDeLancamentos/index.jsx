@@ -943,7 +943,7 @@ export const AcompanhamentoDeLancamentos = () => {
                   </div>
                   <div className="card-body">
                     {usuarioPossuiSeletorDRE && totalUnidadesDRE !== null && (
-                      <div className="mb-3 fw-bold">
+                      <div className="label-unidades-dre mb-3 fw-bold">
                         Total de Unidades da DRE: {totalUnidadesDRE}
                       </div>
                     )}
