@@ -959,7 +959,10 @@ export const AcompanhamentoDeLancamentos = () => {
                   <div className="card-body">
                     {usuarioPossuiSeletorDRE && totalUnidadesDRE > 0 && (
                       <div className="label-unidades-dre mb-3 fw-bold">
-                        Total de Unidades da DRE: {totalUnidadesDRE}
+                        {recreioNasFerias
+                          ? "Total de Unidades com Recreio nas Férias da DRE"
+                          : "Total de Unidades da DRE"}
+                        : {totalUnidadesDRE}
                       </div>
                     )}
                     <div className="d-flex row row-cols-1">

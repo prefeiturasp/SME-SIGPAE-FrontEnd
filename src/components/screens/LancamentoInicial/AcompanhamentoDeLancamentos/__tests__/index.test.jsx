@@ -292,7 +292,7 @@ describe("AcompanhamentoDeLancamentos", () => {
       );
     });
 
-    it("deve exibir a label com total de unidades da DRE para recreio nas férias", async () => {
+    it("deve exibir a label com total de unidades com recreio nas férias da DRE", async () => {
       await selecionarDRE();
 
       await waitFor(() => {
@@ -314,7 +314,9 @@ describe("AcompanhamentoDeLancamentos", () => {
 
       await waitFor(() =>
         expect(
-          screen.getByText("Total de Unidades da DRE: 7"),
+          screen.getByText(
+            "Total de Unidades com Recreio nas Férias da DRE: 7",
+          ),
         ).toBeInTheDocument(),
       );
 
