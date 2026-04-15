@@ -13,6 +13,7 @@ import {
 } from "src/configs/constants";
 import { useRelatorioFinanceiro } from "./view";
 import ModalAnalisar from "./components/ModalAnalisar";
+import { usuarioEhMedicao } from "src/helpers/utilities";
 
 interface RelatorioSelecionado {
   uuid: string;
@@ -109,7 +110,8 @@ export function RelatorioFinanceiro() {
                           </td>
                           <td className="col-2 text-center">
                             {relatorio.status !==
-                            "RELATORIO_FINANCEIRO_GERADO" ? (
+                              "RELATORIO_FINANCEIRO_GERADO" ||
+                            !usuarioEhMedicao() ? (
                               <>
                                 <span
                                   className="px-2"

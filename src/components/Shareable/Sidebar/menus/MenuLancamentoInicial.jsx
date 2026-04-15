@@ -63,7 +63,11 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
             Acompanhamento de Lançamentos
           </LeafItem>
         )}
-        {usuarioEhMedicao() && (
+        {(usuarioEhMedicao() ||
+          usuarioEhCODAEGestaoAlimentacao() ||
+          usuarioEhCODAEGabinete() ||
+          usuarioEhCODAENutriManifestacao() ||
+          usuarioEhDinutreDiretoria()) && (
           <LeafItem to={`/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}`}>
             Relatório Financeiro
           </LeafItem>
