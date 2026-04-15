@@ -61,7 +61,7 @@ const selecionarDRE = async () => {
   });
 };
 
-const setupMocks = () => {
+const setupMocks = ({ totalHistorico = 100, totalRecreio = 7 } = {}) => {
   mock
     .onGet("/diretorias-regionais-simplissima/")
     .reply(200, mockDiretoriaRegionalSimplissima);
@@ -79,7 +79,10 @@ const setupMocks = () => {
     .reply(200, mockGetDashboardMedicaoInicial);
   mock
     .onGet("/medicao-inicial/historico-acesso-ue/total-por-dre/")
-    .reply(200, 100);
+    .reply(200, totalHistorico);
+  mock
+    .onGet("/medicao-inicial/recreio-nas-ferias/total-por-dre/")
+    .reply(200, totalRecreio);
   mock
     .onGet("/medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/")
     .reply(200, mockDashboardResultados);
@@ -287,6 +290,85 @@ describe("AcompanhamentoDeLancamentos", () => {
           screen.getByText("Total de Unidades da DRE: 100"),
         ).toBeInTheDocument(),
       );
+    });
+
+    it("deve exibir a label com total de unidades da DRE para recreio nas férias", async () => {
+      await selecionarDRE();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("option", { name: "recreio março" }),
+        ).toBeInTheDocument();
+      });
+
+      const divMesReferencia = screen.getByTestId("div-select-mes-referencia");
+      const selectMesReferencia = divMesReferencia.querySelector("select");
+
+      mock.resetHistory();
+
+      await act(async () => {
+        fireEvent.change(selectMesReferencia, {
+          target: { value: `03_2025|${RECREIO_MARCO_UUID}` },
+        });
+      });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Total de Unidades da DRE: 7"),
+        ).toBeInTheDocument(),
+      );
+
+      const requisicoesTotalRecreio = mock.history.get.filter((request) =>
+        request.url.includes(
+          "medicao-inicial/recreio-nas-ferias/total-por-dre/",
+        ),
+      );
+      const requisicoesTotalHistorico = mock.history.get.filter((request) =>
+        request.url.includes(
+          "medicao-inicial/historico-acesso-ue/total-por-dre/",
+        ),
+      );
+
+      expect(requisicoesTotalRecreio).toHaveLength(1);
+      expect(requisicoesTotalHistorico).toHaveLength(0);
+      expect(requisicoesTotalRecreio[0].params).toEqual(
+        expect.objectContaining({
+          recreio_nas_ferias_uuid: RECREIO_MARCO_UUID,
+          dre_uuid: "3972e0e9-2d8e-472a-9dfa-30cd219a6d9a",
+        }),
+      );
+    });
+
+    it("não deve exibir a label quando o total do recreio nas férias for zero", async () => {
+      cleanup();
+      mock.reset();
+      setupMocks({ totalRecreio: 0 });
+      await renderComponent();
+
+      await selecionarDRE();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("option", { name: "recreio março" }),
+        ).toBeInTheDocument();
+      });
+
+      const divMesReferencia = screen.getByTestId("div-select-mes-referencia");
+      const selectMesReferencia = divMesReferencia.querySelector("select");
+
+      await act(async () => {
+        fireEvent.change(selectMesReferencia, {
+          target: { value: `03_2025|${RECREIO_MARCO_UUID}` },
+        });
+      });
+
+      await waitFor(() =>
+        expect(screen.getByTestId("TODOS_OS_LANCAMENTOS")).toBeInTheDocument(),
+      );
+
+      expect(
+        screen.queryByText(/Total de Unidades da DRE:/),
+      ).not.toBeInTheDocument();
     });
 
     it("não deve requisitar total de unidades da DRE para usuário escola sem seletor de DRE", async () => {
