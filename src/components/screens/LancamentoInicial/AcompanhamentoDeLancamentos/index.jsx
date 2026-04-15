@@ -59,6 +59,7 @@ import {
   getDashboardMedicaoInicialTotalizadores,
   getMesesAnosSolicitacoesMedicaoinicial,
   getTotalUnidadesDRE,
+  getTotalUnidadesDRERecreioNasFerias,
 } from "src/services/medicaoInicial/dashboard.service";
 import { updateSolicitacaoMedicaoInicial } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import {
@@ -195,6 +196,33 @@ export const AcompanhamentoDeLancamentos = () => {
     return `${MESES[parseInt(mesAnoObj.mes, 10) - 1]} - ${mesAnoObj.ano}`;
   };
 
+  const getTotalUnidadesDREAsync = async (
+    mesAnoFiltro,
+    recreioNasFeriasFiltro,
+  ) => {
+    if (!(usuarioPossuiSeletorDRE && diretoriaRegional && mesAnoFiltro)) {
+      return;
+    }
+
+    const [mesSelecionado, anoSelecionado] = mesAnoFiltro.split("_");
+    const responseTotalUnidadesDRE = recreioNasFeriasFiltro
+      ? await getTotalUnidadesDRERecreioNasFerias({
+          recreio_nas_ferias_uuid: recreioNasFeriasFiltro,
+          dre_uuid: diretoriaRegional,
+        })
+      : await getTotalUnidadesDRE({
+          mes: mesSelecionado,
+          ano: anoSelecionado,
+          dre_uuid: diretoriaRegional,
+        });
+
+    if (responseTotalUnidadesDRE?.status === HTTP_STATUS.OK) {
+      setTotalUnidadesDRE(responseTotalUnidadesDRE.data);
+    } else {
+      setTotalUnidadesDRE(null);
+    }
+  };
+
   const getDashboardMedicaoInicialAsync = async (params = {}) => {
     if (Object.keys(params).length === 0) {
       params = initialValues;
@@ -251,20 +279,7 @@ export const AcompanhamentoDeLancamentos = () => {
         filtrosDashboard.recreio_nas_ferias = recreioNasFeriasFiltro;
       }
 
-      if (usuarioPossuiSeletorDRE && diretoriaRegional && mesAnoFiltro) {
-        const [mesSelecionado, anoSelecionado] = mesAnoFiltro.split("_");
-        const responseTotalUnidadesDRE = await getTotalUnidadesDRE({
-          mes: mesSelecionado,
-          ano: anoSelecionado,
-          dre_uuid: diretoriaRegional,
-        });
-
-        if (responseTotalUnidadesDRE?.status === HTTP_STATUS.OK) {
-          setTotalUnidadesDRE(responseTotalUnidadesDRE.data);
-        } else {
-          setTotalUnidadesDRE(null);
-        }
-      }
+      await getTotalUnidadesDREAsync(mesAnoFiltro, recreioNasFeriasFiltro);
 
       const responseDre =
         await getDashboardMedicaoInicialTotalizadores(filtrosDashboard);
@@ -942,7 +957,7 @@ export const AcompanhamentoDeLancamentos = () => {
                     )}
                   </div>
                   <div className="card-body">
-                    {usuarioPossuiSeletorDRE && totalUnidadesDRE !== null && (
+                    {usuarioPossuiSeletorDRE && totalUnidadesDRE > 0 && (
                       <div className="label-unidades-dre mb-3 fw-bold">
                         Total de Unidades da DRE: {totalUnidadesDRE}
                       </div>
