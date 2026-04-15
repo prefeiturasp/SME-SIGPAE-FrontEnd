@@ -114,7 +114,7 @@ export function RelatorioFinanceiro() {
                             !usuarioEhMedicao() ? (
                               <>
                                 <span
-                                  className="px-2"
+                                  className="px-2 cursor-pointer"
                                   onClick={() => {
                                     onPageRelatorio({
                                       uuid: relatorio.uuid,
@@ -133,13 +133,13 @@ export function RelatorioFinanceiro() {
                                     className="fas fa-eye green"
                                   />
                                 </span>
-                                <span className="px-2">
+                                <span className="px-2 cursor-pointer">
                                   <i
                                     title="Lançamentos Consolidados"
                                     className="fas fa-file-excel green"
                                   />
                                 </span>
-                                <span className="px-2">
+                                <span className="px-2 cursor-pointer">
                                   <i
                                     title="Ateste Financeiro"
                                     className="fas fa-file-pdf red"
@@ -148,7 +148,7 @@ export function RelatorioFinanceiro() {
                               </>
                             ) : (
                               <span
-                                className="px-2"
+                                className="px-2 cursor-pointer"
                                 onClick={() => {
                                   setRelatorioSelecionado({
                                     uuid: relatorio.uuid,
