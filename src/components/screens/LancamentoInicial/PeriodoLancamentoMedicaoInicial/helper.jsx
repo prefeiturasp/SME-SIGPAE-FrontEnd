@@ -301,6 +301,23 @@ export const desabilitarField = (
     return true;
   }
 
+  if (nomeCategoria.includes("DIETA") && rowName !== "dietas_autorizadas") {
+    const categoriaAlimentacao = categoriasDeMedicao.find(
+      (cat) => cat.nome === "ALIMENTAÇÃO",
+    );
+    const prefixo = grupoRecreio
+      ? "participantes"
+      : ehPeriodoEscolarSimples
+        ? "matriculados"
+        : "numero_de_alunos";
+
+    const alunosDoDia = `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
+    const valorAlimentacao = values[alunosDoDia];
+    if ([undefined, null, ""].includes(valorAlimentacao)) {
+      return true;
+    }
+  }
+
   const EH_INCLUSAO_SOMENTE_SOBREMESA =
     inclusoesAutorizadas.length &&
     inclusoesAutorizadas.every((i) => i.alimentacoes === "sobremesa");
