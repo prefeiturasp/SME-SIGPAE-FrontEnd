@@ -242,10 +242,12 @@ export const desabilitarField = (
         ? "numero_de_alunos"
         : "matriculados";
 
+    const faixa = ehRecreioNasFerias ? null : uuidFaixaEtaria;
+
     const alunosDoDia =
       ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation
         ? `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`
-        : `${prefixo}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
+        : `${prefixo}__faixa_${faixa}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
     const valorAlimentacao = values[alunosDoDia];
     if (
       [undefined, null, ""].includes(valorAlimentacao) ||
