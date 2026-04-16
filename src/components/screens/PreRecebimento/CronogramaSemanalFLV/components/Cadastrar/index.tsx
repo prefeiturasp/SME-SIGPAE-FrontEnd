@@ -4,6 +4,7 @@ import { AxiosResponse } from "axios";
 import { Field, Form } from "react-final-form";
 import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
+import { useNavigate } from "react-router-dom";
 import InputText from "src/components/Shareable/Input/InputText";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
@@ -29,6 +30,7 @@ import {
   getCronogramaMensalDetalhado,
   criarCronogramaSemanalRascunho,
   atualizarCronogramaSemanalRascunho,
+  assinarEEnviarCronogramaSemanal,
 } from "src/services/cronogramaSemanal.service";
 import {
   CronogramaMensalSimples,
@@ -36,6 +38,8 @@ import {
   EtapaMes,
 } from "src/interfaces/cronograma_semanal.interface";
 import { obterLimitesMes } from "./helpers";
+import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
+import { PRE_RECEBIMENTO, CRONOGRAMA_SEMANAL_FLV } from "src/configs/constants";
 import "./styles.scss";
 
 interface FormValues {
@@ -60,20 +64,22 @@ interface FormValues {
 
 interface CadastrarCronogramaSemanalProps {
   uuid?: string;
-  edicao?: boolean;
 }
 
 const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
   uuid,
-  edicao = false,
 }) => {
+  const navigate = useNavigate();
   const [carregando, setCarregando] = useState(false);
+  const [showModalAssinatura, setShowModalAssinatura] = useState(false);
+  const [loadingAssinatura, setLoadingAssinatura] = useState(false);
   const [cronogramasMensal, setCronogramasMensal] = useState<
     CronogramaMensalSimples[]
   >([]);
   const [cronogramaMensalSelecionado, setCronogramaMensalSelecionado] =
     useState<CronogramaMensalDetalhado | null>(null);
   const [etapasMeses, setEtapasMeses] = useState<EtapaMes[]>([]);
+  const [rascunhoUuid, setRascunhoUuid] = useState<string | undefined>(uuid);
   const formRef = useRef<any>(null);
 
   useEffect(() => {
@@ -292,14 +298,21 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       };
 
       let response;
-      if (edicao && uuid) {
-        response = await atualizarCronogramaSemanalRascunho(uuid, payload, {
-          skipAuthRefresh: true,
-        });
+      if (rascunhoUuid) {
+        response = await atualizarCronogramaSemanalRascunho(
+          rascunhoUuid,
+          payload,
+          {
+            skipAuthRefresh: true,
+          },
+        );
       } else {
         response = await criarCronogramaSemanalRascunho(payload, {
           skipAuthRefresh: true,
         });
+        if (response && response.data && response.data.uuid) {
+          setRascunhoUuid(response.data.uuid);
+        }
       }
 
       if (response && (response.status === 200 || response.status === 201)) {
@@ -309,6 +322,74 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       exibeError(error, "Erro ao salvar cronograma semanal");
     } finally {
       setCarregando(false);
+    }
+  };
+
+  const handleAssinarEEnviar = async (values: FormValues, password: string) => {
+    if (!values.cronograma_mensal) {
+      toastError("Selecione um Cronograma Mensal");
+      return;
+    }
+
+    try {
+      setLoadingAssinatura(true);
+
+      const option = optionsCronogramasMensal.find(
+        (o) => o.value === values.cronograma_mensal,
+      );
+      const uuidCronograma = option?.uuid;
+
+      const payload = {
+        cronograma_mensal: uuidCronograma,
+        observacoes: values.observacoes || "",
+        programacoes: (values.programacoes || [])
+          .filter(
+            (p) =>
+              p.mes_programado && p.data_inicio && p.data_fim && p.quantidade,
+          )
+          .map((p) => ({
+            mes_programado: p.mes_programado,
+            data_inicio: p.data_inicio,
+            data_fim: p.data_fim,
+            quantidade: parseFloat(
+              p.quantidade.replace(/\./g, "").replace(",", "."),
+            ),
+          })),
+      };
+
+      let response;
+      let cronogramaUuid = rascunhoUuid;
+
+      if (!rascunhoUuid) {
+        const rascunhoResponse = await criarCronogramaSemanalRascunho(payload, {
+          skipAuthRefresh: true,
+        });
+        if (rascunhoResponse && rascunhoResponse.data) {
+          cronogramaUuid = rascunhoResponse.data.uuid;
+          setRascunhoUuid(rascunhoResponse.data.uuid);
+        }
+      }
+
+      response = await assinarEEnviarCronogramaSemanal(
+        cronogramaUuid,
+        payload,
+        password,
+        { skipAuthRefresh: true },
+      );
+
+      if (response && response.status === 200) {
+        toastSuccess("Cronograma criado e enviado ao fornecedor com sucesso!");
+        setShowModalAssinatura(false);
+        navigate(`/${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`);
+      }
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toastError("Senha inválida");
+      } else {
+        exibeError(error, "Erro ao assinar e enviar cronograma semanal");
+      }
+    } finally {
+      setLoadingAssinatura(false);
     }
   };
 
@@ -353,313 +434,354 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
     );
   };
 
+  const formularioValido = (values: FormValues, errors: any): boolean => {
+    if (errors && Object.keys(errors).length > 0) {
+      return false;
+    }
+
+    const diferenca = calcularDiferenca(values.programacoes);
+    if (diferenca !== 0) {
+      return false;
+    }
+
+    return true;
+  };
+
   return (
-    <Spin tip="Carregando..." spinning={carregando}>
-      <div className="card mt-3 card-cadastro-cronograma-semanal">
-        <div className="card-body cadastro-cronograma-semanal">
-          <Form
-            onSubmit={onSubmit}
-            initialValues={valoresCronogramaMensal}
-            mutators={{ ...arrayMutators }}
-            render={({ form, handleSubmit, values }) => {
-              formRef.current = form;
+    <>
+      <Spin tip="Carregando..." spinning={carregando}>
+        <div className="card mt-3 card-cadastro-cronograma-semanal">
+          <div className="card-body cadastro-cronograma-semanal">
+            <Form
+              onSubmit={onSubmit}
+              initialValues={valoresCronogramaMensal}
+              mutators={{ ...arrayMutators }}
+              render={({ form, handleSubmit, values, errors }) => {
+                formRef.current = form;
 
-              return (
-                <form
-                  onSubmit={handleSubmit}
-                  data-testid="form-cronograma-semanal"
-                >
-                  {/* Linha 1: Cronograma Mensal (1/3) + Produto (2/3) */}
-                  <div className="row">
-                    <div className="col-4">
-                      <Field
-                        component={AutoCompleteField}
-                        options={optionsCronogramasMensal}
-                        label="Cronograma Mensal Cadastrado"
-                        name="cronograma_mensal"
-                        required
-                        validate={required}
-                        placeholder="Selecione um Cronograma Mensal"
-                        dataTestId="select-cronograma-mensal"
-                        inputOnChange={(value: string) => {
-                          if (value) {
-                            const option = optionsCronogramasMensal.find(
-                              (o) => o.value === value,
-                            );
-                            if (option && option.uuid) {
-                              selecionarCronogramaMensal(
-                                option.uuid,
-                                option.value,
+                return (
+                  <form
+                    onSubmit={handleSubmit}
+                    data-testid="form-cronograma-semanal"
+                  >
+                    {/* Linha 1: Cronograma Mensal (1/3) + Produto (2/3) */}
+                    <div className="row">
+                      <div className="col-4">
+                        <Field
+                          component={AutoCompleteField}
+                          options={optionsCronogramasMensal}
+                          label="Cronograma Mensal Cadastrado"
+                          name="cronograma_mensal"
+                          required
+                          validate={required}
+                          placeholder="Selecione um Cronograma Mensal"
+                          dataTestId="select-cronograma-mensal"
+                          inputOnChange={(value: string) => {
+                            if (value) {
+                              const option = optionsCronogramasMensal.find(
+                                (o) => o.value === value,
                               );
+                              if (option && option.uuid) {
+                                selecionarCronogramaMensal(
+                                  option.uuid,
+                                  option.value,
+                                );
+                              }
                             }
-                          }
-                        }}
-                      />
-                    </div>
-                    <div className="col-8">
-                      <Field
-                        component={InputText}
-                        label="Produto"
-                        name="produto"
-                        disabled
-                      />
-                    </div>
-                  </div>
-
-                  {/* Linha 2: Fornecedor (inteira) */}
-                  <div className="row">
-                    <div className="col-12">
-                      <Field
-                        component={InputText}
-                        label="Fornecedor"
-                        name="fornecedor"
-                        disabled
-                      />
-                    </div>
-                  </div>
-
-                  {/* Linha 3: Nº Contrato + Nº Processo SEI + Nº Empenho */}
-                  <div className="row">
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        label="Nº do Contrato"
-                        name="numero_contrato"
-                        disabled
-                      />
-                    </div>
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        label="Nº do Processo SEI - Contratos"
-                        name="numero_processo_sei"
-                        disabled
-                      />
-                    </div>
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        label="Nº do Empenho"
-                        name="numero_empenho"
-                        disabled
-                      />
-                    </div>
-                  </div>
-
-                  {/* Linha 4: Chamada/Ata + Qtd Total + Custo Unitário */}
-                  <div className="row">
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        label={
-                          values.tipo_documento || "Nº da Chamada Pública/Ata"
-                        }
-                        name="numero_chamada_publica_ou_ata"
-                        disabled
-                      />
-                    </div>
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        label="Quantidade Total do Empenho"
-                        name="qtd_total_empenho"
-                        disabled
-                      />
-                    </div>
-                    <div className="col-4">
-                      <Field
-                        component={InputText}
-                        label="Custo Unitário do Produto"
-                        name="custo_unitario_produto"
-                        disabled
-                      />
-                    </div>
-                  </div>
-
-                  {values.cronograma_mensal && (
-                    <>
-                      <div className="subtitulo mt-4">
-                        Programação de Entrega
-                      </div>
-                      <hr className="linha-verde" />
-
-                      <FieldArray name="programacoes">
-                        {({ fields }) => (
-                          <>
-                            {fields.map((name, index) => (
-                              <React.Fragment key={name}>
-                                {index !== 0 && (
-                                  <>
-                                    <hr />
-                                    <div className="row">
-                                      <div className="w-100">
-                                        <Botao
-                                          texto=""
-                                          type={BUTTON_TYPE.BUTTON}
-                                          style={BUTTON_STYLE.GREEN_OUTLINE}
-                                          icon="fas fa-trash"
-                                          className="float-end ms-3"
-                                          onClick={() => fields.remove(index)}
-                                          tooltipExterno="Remover Programação"
-                                        />
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
-
-                                <div className="row">
-                                  <div className="col-3">
-                                    <Field
-                                      component={Select}
-                                      name={`${name}.mes_programado`}
-                                      options={[
-                                        { nome: "Selecione o Mês", uuid: "" },
-                                        ...optionsMeses,
-                                      ]}
-                                      label="Mês Programado"
-                                      required
-                                      validate={required}
-                                      onChange={() => {
-                                        form.change(
-                                          `${name}.data_inicio` as keyof FormValues,
-                                          "",
-                                        );
-                                        form.change(
-                                          `${name}.data_fim` as keyof FormValues,
-                                          "",
-                                        );
-                                      }}
-                                    />
-                                  </div>
-
-                                  <div className="col-3">
-                                    <Field
-                                      component={InputComData}
-                                      label="Período Programado para Entrega"
-                                      name={`${name}.data_inicio`}
-                                      placeholder=""
-                                      writable={false}
-                                      showMonthYearPicker={false}
-                                      dateFormat="DD/MM/YYYY"
-                                      dateFormatPicker="dd/MM/yyyy"
-                                      minDate={
-                                        obterLimitesMes(
-                                          values.programacoes?.[index]
-                                            ?.mes_programado || "",
-                                        ).minDate
-                                      }
-                                      maxDate={
-                                        (values.programacoes?.[index]
-                                          ?.data_fim &&
-                                          getDataObj(
-                                            values.programacoes?.[index]
-                                              ?.data_fim,
-                                          )) ||
-                                        obterLimitesMes(
-                                          values.programacoes?.[index]
-                                            ?.mes_programado || "",
-                                        ).maxDate
-                                      }
-                                    />
-                                  </div>
-
-                                  <div className="col-3">
-                                    <Field
-                                      component={InputComData}
-                                      label="Até"
-                                      name={`${name}.data_fim`}
-                                      placeholder=""
-                                      writable={false}
-                                      showMonthYearPicker={false}
-                                      dateFormat="DD/MM/YYYY"
-                                      dateFormatPicker="dd/MM/yyyy"
-                                      minDate={
-                                        (values.programacoes?.[index]
-                                          ?.data_inicio &&
-                                          getDataObj(
-                                            values.programacoes?.[index]
-                                              ?.data_inicio,
-                                          )) ||
-                                        obterLimitesMes(
-                                          values.programacoes?.[index]
-                                            ?.mes_programado || "",
-                                        ).minDate
-                                      }
-                                      maxDate={
-                                        obterLimitesMes(
-                                          values.programacoes?.[index]
-                                            ?.mes_programado || "",
-                                        ).maxDate
-                                      }
-                                    />
-                                  </div>
-
-                                  <div className="col-3">
-                                    <Field
-                                      component={InputText}
-                                      label="Quantidade da Entrega"
-                                      name={`${name}.quantidade`}
-                                      placeholder="Informe a quantidade"
-                                      agrupadorMilharComDecimal
-                                    />
-                                  </div>
-                                </div>
-
-                                {textoFaltante(values.programacoes)}
-                              </React.Fragment>
-                            ))}
-
-                            <div className="text-center mb-2 mt-2">
-                              <Botao
-                                texto="+ Adicionar Programação"
-                                type={BUTTON_TYPE.BUTTON}
-                                style={BUTTON_STYLE.GREEN_OUTLINE}
-                                onClick={() =>
-                                  fields.push({
-                                    mes_programado: "",
-                                    data_inicio: "",
-                                    data_fim: "",
-                                    quantidade: "",
-                                  })
-                                }
-                              />
-                            </div>
-                          </>
-                        )}
-                      </FieldArray>
-
-                      <div className="row mt-4">
-                        <div className="col-12">
-                          <Field
-                            component={TextArea}
-                            label="Observações"
-                            name="observacoes"
-                            placeholder="Digite suas observações..."
-                          />
-                        </div>
-                      </div>
-
-                      <hr />
-
-                      <div className="mt-4 mb-4">
-                        <Botao
-                          texto="Salvar Rascunho"
-                          type={BUTTON_TYPE.SUBMIT}
-                          style={BUTTON_STYLE.GREEN_OUTLINE}
-                          className="float-end"
-                          disabled={!values.cronograma_mensal}
-                          dataTestId="botao-salvar-rascunho"
+                          }}
                         />
                       </div>
-                    </>
-                  )}
-                </form>
-              );
-            }}
-          />
+                      <div className="col-8">
+                        <Field
+                          component={InputText}
+                          label="Produto"
+                          name="produto"
+                          disabled
+                        />
+                      </div>
+                    </div>
+
+                    {/* Linha 2: Fornecedor (inteira) */}
+                    <div className="row">
+                      <div className="col-12">
+                        <Field
+                          component={InputText}
+                          label="Fornecedor"
+                          name="fornecedor"
+                          disabled
+                        />
+                      </div>
+                    </div>
+
+                    {/* Linha 3: Nº Contrato + Nº Processo SEI + Nº Empenho */}
+                    <div className="row">
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label="Nº do Contrato"
+                          name="numero_contrato"
+                          disabled
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label="Nº do Processo SEI - Contratos"
+                          name="numero_processo_sei"
+                          disabled
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label="Nº do Empenho"
+                          name="numero_empenho"
+                          disabled
+                        />
+                      </div>
+                    </div>
+
+                    {/* Linha 4: Chamada/Ata + Qtd Total + Custo Unitário */}
+                    <div className="row">
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label={
+                            values.tipo_documento || "Nº da Chamada Pública/Ata"
+                          }
+                          name="numero_chamada_publica_ou_ata"
+                          disabled
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label="Quantidade Total do Empenho"
+                          name="qtd_total_empenho"
+                          disabled
+                        />
+                      </div>
+                      <div className="col-4">
+                        <Field
+                          component={InputText}
+                          label="Custo Unitário do Produto"
+                          name="custo_unitario_produto"
+                          disabled
+                        />
+                      </div>
+                    </div>
+
+                    {values.cronograma_mensal && (
+                      <>
+                        <div className="subtitulo mt-4">
+                          Programação de Entrega
+                        </div>
+                        <hr className="linha-verde" />
+
+                        <FieldArray name="programacoes">
+                          {({ fields }) => (
+                            <>
+                              {fields.map((name, index) => (
+                                <React.Fragment key={name}>
+                                  {index !== 0 && (
+                                    <>
+                                      <hr />
+                                      <div className="row">
+                                        <div className="w-100">
+                                          <Botao
+                                            texto=""
+                                            type={BUTTON_TYPE.BUTTON}
+                                            style={BUTTON_STYLE.GREEN_OUTLINE}
+                                            icon="fas fa-trash"
+                                            className="float-end ms-3"
+                                            onClick={() => fields.remove(index)}
+                                            tooltipExterno="Remover Programação"
+                                          />
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
+
+                                  <div className="row">
+                                    <div className="col-3">
+                                      <Field
+                                        component={Select}
+                                        name={`${name}.mes_programado`}
+                                        options={[
+                                          { nome: "Selecione o Mês", uuid: "" },
+                                          ...optionsMeses,
+                                        ]}
+                                        label="Mês Programado"
+                                        required
+                                        validate={required}
+                                        onChange={() => {
+                                          form.change(
+                                            `${name}.data_inicio` as keyof FormValues,
+                                            "",
+                                          );
+                                          form.change(
+                                            `${name}.data_fim` as keyof FormValues,
+                                            "",
+                                          );
+                                        }}
+                                      />
+                                    </div>
+
+                                    <div className="col-3">
+                                      <Field
+                                        component={InputComData}
+                                        label="Período Programado para Entrega"
+                                        name={`${name}.data_inicio`}
+                                        placeholder=""
+                                        writable={false}
+                                        showMonthYearPicker={false}
+                                        dateFormat="DD/MM/YYYY"
+                                        dateFormatPicker="dd/MM/yyyy"
+                                        minDate={
+                                          obterLimitesMes(
+                                            values.programacoes?.[index]
+                                              ?.mes_programado || "",
+                                          ).minDate
+                                        }
+                                        maxDate={
+                                          (values.programacoes?.[index]
+                                            ?.data_fim &&
+                                            getDataObj(
+                                              values.programacoes?.[index]
+                                                ?.data_fim,
+                                            )) ||
+                                          obterLimitesMes(
+                                            values.programacoes?.[index]
+                                              ?.mes_programado || "",
+                                          ).maxDate
+                                        }
+                                      />
+                                    </div>
+
+                                    <div className="col-3">
+                                      <Field
+                                        component={InputComData}
+                                        label="Até"
+                                        name={`${name}.data_fim`}
+                                        placeholder=""
+                                        writable={false}
+                                        showMonthYearPicker={false}
+                                        dateFormat="DD/MM/YYYY"
+                                        dateFormatPicker="dd/MM/yyyy"
+                                        minDate={
+                                          (values.programacoes?.[index]
+                                            ?.data_inicio &&
+                                            getDataObj(
+                                              values.programacoes?.[index]
+                                                ?.data_inicio,
+                                            )) ||
+                                          obterLimitesMes(
+                                            values.programacoes?.[index]
+                                              ?.mes_programado || "",
+                                          ).minDate
+                                        }
+                                        maxDate={
+                                          obterLimitesMes(
+                                            values.programacoes?.[index]
+                                              ?.mes_programado || "",
+                                          ).maxDate
+                                        }
+                                      />
+                                    </div>
+
+                                    <div className="col-3">
+                                      <Field
+                                        component={InputText}
+                                        label="Quantidade da Entrega"
+                                        name={`${name}.quantidade`}
+                                        placeholder="Informe a quantidade"
+                                        agrupadorMilharComDecimal
+                                      />
+                                    </div>
+                                  </div>
+
+                                  {textoFaltante(values.programacoes)}
+                                </React.Fragment>
+                              ))}
+
+                              <div className="text-center mb-2 mt-2">
+                                <Botao
+                                  texto="+ Adicionar Programação"
+                                  type={BUTTON_TYPE.BUTTON}
+                                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                                  onClick={() =>
+                                    fields.push({
+                                      mes_programado: "",
+                                      data_inicio: "",
+                                      data_fim: "",
+                                      quantidade: "",
+                                    })
+                                  }
+                                />
+                              </div>
+                            </>
+                          )}
+                        </FieldArray>
+
+                        <div className="row mt-4">
+                          <div className="col-12">
+                            <Field
+                              component={TextArea}
+                              label="Observações"
+                              name="observacoes"
+                              placeholder="Digite suas observações..."
+                            />
+                          </div>
+                        </div>
+
+                        <hr />
+
+                        <div className="mt-4 mb-4">
+                          <Botao
+                            texto="Assinar e Enviar"
+                            type={BUTTON_TYPE.BUTTON}
+                            style={BUTTON_STYLE.GREEN}
+                            className="float-end"
+                            disabled={!formularioValido(values, errors)}
+                            onClick={() => setShowModalAssinatura(true)}
+                            dataTestId="botao-assinar-enviar"
+                          />
+                          <Botao
+                            texto="Salvar Rascunho"
+                            type={BUTTON_TYPE.BUTTON}
+                            style={BUTTON_STYLE.GREEN_OUTLINE}
+                            className="float-end me-3"
+                            disabled={!values.cronograma_mensal}
+                            onClick={() => onSubmit(values)}
+                            dataTestId="botao-salvar-rascunho"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </form>
+                );
+              }}
+            />
+          </div>
         </div>
-      </div>
-    </Spin>
+      </Spin>
+
+      <ModalAssinaturaUsuario
+        show={showModalAssinatura}
+        handleClose={() => setShowModalAssinatura(false)}
+        handleSim={(password: string) => {
+          const form = formRef.current;
+          if (form) {
+            const values = form.getState().values;
+            handleAssinarEEnviar(values, password);
+          }
+        }}
+        loading={loadingAssinatura}
+        titulo="Assinar Cronograma"
+        texto="Deseja salvar o Cadastro do Cronograma e enviar para aprovação?"
+        textoBotao="Salvar e Enviar"
+      />
+    </>
   );
 };
 
