@@ -1055,7 +1055,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       matriculadosEmeiDaCemei.forEach((objMatriculadoEmeiDaCemei) => {
         const chave = `${prefixo}__dia_${objMatriculadoEmeiDaCemei.dia}__categoria_${idCategoriaAlimentacao}`;
         dadosValoresMatriculadosEmeiDaCemei[chave] =
-          objMatriculadoEmeiDaCemei[propriedadeQuantidade];
+          `${objMatriculadoEmeiDaCemei[propriedadeQuantidade]}`;
       });
 
     valoresMedicao &&
@@ -2927,6 +2927,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                             ehUltimoDiaLetivoDoAno,
                                                             calendarioMesConsiderado,
                                                             ehRecreioNasFerias(),
+                                                            categoriasDeMedicao,
                                                           )}
                                                           defaultValue={defaultValue(
                                                             column,
@@ -3129,6 +3130,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                             ehUltimoDiaLetivoDoAno,
                                                             calendarioMesConsiderado,
                                                             ehRecreioNasFerias(),
+                                                            categoriasDeMedicao,
                                                           )}
                                                           defaultValue={defaultValue(
                                                             column,
