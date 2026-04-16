@@ -1,0 +1,32 @@
+.filtros-cronograma-de-entrega {
+  .data-field-cronograma {
+    label {
+      font-weight: 500 !important;
+      color: #686868 !important;
+    }
+    height: 40px !important;
+  }
+
+  .input-busca-cronograma {
+    height: 40px !important;
+  }
+
+  .dropdown-heading {
+    height: 40px !important;
+
+    .dropdown-heading-dropdown-arrow {
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  .botoes {
+    display: flex;
+    justify-content: space-between;
+
+    .botoes-form {
+      align-self: flex-end;
+    }
+  }
+}

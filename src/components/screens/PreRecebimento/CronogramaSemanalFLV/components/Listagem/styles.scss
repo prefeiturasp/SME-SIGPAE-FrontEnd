@@ -1,0 +1,113 @@
+@use "src/styles/variables.scss" as *;
+
+.resultado-cronograma-semanal {
+  margin-top: 10px;
+
+  header {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+    color: $green;
+  }
+
+  article {
+    border-radius: 4px 4px 0px 0px;
+    border: 1px solid #e9eaea;
+    box-sizing: border-box;
+    margin: 10px 0 15px 0;
+
+    .grid-table {
+      height: 48px;
+      font-size: 14px;
+      line-height: 16px;
+      align-items: center;
+      text-align: center;
+      display: grid;
+      grid-template-columns: 1.5fr 2.0fr 1.5fr 2.0fr 2.0fr 1fr !important;
+    }
+
+    .header-table {
+      background: #f5f6f8;
+      color: #42474a;
+      font-weight: bold;
+      div {
+        text-align: left;
+        display: grid;
+        align-items: center;
+        height: 100%;
+        padding-left: 8px;
+        &:not(:last-child) {
+          border-right: 1px solid #e9eaea;
+        }
+
+        &:last-child {
+          border-right: 0px solid #e9eaea;
+        }
+      }
+    }
+
+    .body-table {
+      font-weight: 500;
+      color: #686868;
+
+      &.flv-ponto-a-ponto {
+        color: $green;
+      }
+
+      .link-acoes {
+        &:hover {
+          cursor: pointer;
+          text-decoration: underline;
+        }
+      }
+
+      .desativar-borda {
+        border-left: 0px solid #e9eaea;
+        color: #42474a;
+        font-weight: 900;
+      }
+
+      .fas {
+        cursor: pointer;
+        font-weight: 900;
+        font-size: 16px;
+        line-height: 18px;
+        padding-right: 4px;
+        padding-left: 4px;
+        align-items: center;
+        text-align: center;
+        letter-spacing: 0.01em;
+      }
+
+      div {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #e9eaea;
+        text-align: left;
+        padding-left: 8px;
+        &:not(:last-child) {
+          border-right: 1px solid #e9eaea;
+        }
+      }
+
+      div:last-child {
+        border-right: 0px solid #e9eaea;
+      }
+    }
+
+    .acoes {
+      font-size: 14px !important;
+      display: inline-block;
+    }
+
+    .verde {
+      color: $green;
+    }
+
+    .laranja {
+      color: $orange;
+    }
+  }
+}
