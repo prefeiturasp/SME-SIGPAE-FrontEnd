@@ -232,11 +232,7 @@ export const desabilitarField = (
     return true;
   }
 
-  if (
-    ehEmeiDaCemeiLocation &&
-    nomeCategoria.includes("DIETA") &&
-    rowName !== "dietas_autorizadas"
-  ) {
+  if (nomeCategoria.includes("DIETA") && rowName !== "dietas_autorizadas") {
     const categoriaAlimentacao = categoriasDeMedicao.find(
       (cat) => cat.nome === "ALIMENTAÇÃO",
     );
@@ -246,7 +242,10 @@ export const desabilitarField = (
         ? "numero_de_alunos"
         : "matriculados";
 
-    const alunosDoDia = `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
+    const alunosDoDia =
+      ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation
+        ? `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`
+        : `${prefixo}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
     const valorAlimentacao = values[alunosDoDia];
     if (
       [undefined, null, ""].includes(valorAlimentacao) ||
