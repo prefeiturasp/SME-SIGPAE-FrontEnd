@@ -64,7 +64,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.MEDICAO);
   });
 
-  const setup = async (grupo = grupoCEI) => {
+  const setup = async (grupo = grupoCEI, visualizar = false) => {
     await act(async () => {
       render(
         <MemoryRouter
@@ -81,6 +81,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
                 lote: ["1f06b334-cbd1-40c5-85c4-6a3d1926805b"],
                 grupo_unidade_escolar: [grupo],
                 status: ["RELATORIO_FINANCEIRO_GERADO"],
+                visualizar,
               },
             },
           ]}
@@ -419,5 +420,27 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
         screen.getByText("Geração solicitada com sucesso."),
       ).toBeInTheDocument();
     });
+  });
+
+  it("deve ocultar ações de edição no modo visualização", async () => {
+    mock
+      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
+      .reply(200, mockRelatorioFinanceiroFaixaEtaria);
+
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, mockTotaisAtendimentoFaixaEtaria);
+
+    await setup(grupoCEI, true);
+
+    await screen.findByText("Lote e DRE");
+
+    expect(screen.queryByText("Editar Empenhos")).not.toBeInTheDocument();
+    expect(screen.queryByText("Aplicar Descontos")).not.toBeInTheDocument();
+    expect(screen.queryByText("Finalizar Análise")).not.toBeInTheDocument();
+    expect(screen.getByTestId("botao-pdf")).toBeInTheDocument();
+    expect(screen.queryByText("Reabrir Lançamentos")).not.toBeInTheDocument();
   });
 });
