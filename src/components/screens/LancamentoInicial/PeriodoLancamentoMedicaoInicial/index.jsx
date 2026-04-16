@@ -114,6 +114,7 @@ import {
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
+  existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao,
   existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao,
   validacoesTabelaAlimentacao,
   validacoesTabelaEtecAlimentacao,
@@ -441,6 +442,17 @@ export default () => {
 
   const ehGrupoColaboradores = () => {
     return location.state.grupo === "Colaboradores";
+  };
+
+  const existeWarningLancheEmergencialAutorizadoTipoAlimentacao = (
+    values = formValuesAtualizados,
+  ) => {
+    return existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao(
+      values,
+      categoriasDeMedicao,
+      weekColumns,
+      alteracoesLancheEmergencialAutorizadas,
+    );
   };
 
   useEffect(() => {
@@ -1665,6 +1677,23 @@ export default () => {
     categoriasDeMedicao,
   ]);
 
+  useEffect(() => {
+    if (
+      formValuesAtualizados &&
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(
+        formValuesAtualizados,
+      )
+    ) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    }
+  }, [
+    formValuesAtualizados,
+    weekColumns,
+    categoriasDeMedicao,
+    alteracoesLancheEmergencialAutorizadas,
+  ]);
+
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
     const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     let valoresMedicao = [];
@@ -1804,24 +1833,27 @@ export default () => {
         (valor) => valor.nome_campo === "observacoes",
       ),
     );
-    setExibirTooltip(false);
+    const bloquearBotaoLancheEmergencial =
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values);
     if (
-      valorPeriodoEscolar === "Programas e Projetos" &&
-      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
-        "frequencia",
-        categoriasDeMedicao,
-        formValuesAtualizados,
-        diasFrequenciaZerada,
-        valorPeriodoEscolar,
-        escolaEhEMEBS(),
-        alunosTabSelecionada,
-        weekColumns,
-      )
+      bloquearBotaoLancheEmergencial ||
+      (valorPeriodoEscolar === "Programas e Projetos" &&
+        boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+          "frequencia",
+          categoriasDeMedicao,
+          values,
+          diasFrequenciaZerada,
+          valorPeriodoEscolar,
+          escolaEhEMEBS(),
+          alunosTabSelecionada,
+          weekColumns,
+        ))
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
     } else {
       setDisableBotaoSalvarLancamentos(false);
+      setExibirTooltip(false);
     }
   };
 
@@ -2166,7 +2198,10 @@ export default () => {
       weekColumns,
       feriadosNoMes,
     );
-    if (erro) {
+    if (
+      erro ||
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values)
+    ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
     }
@@ -2233,6 +2268,8 @@ export default () => {
       }
     }
     desabilitaTooltip(values);
+    const existeWarningLancheEmergencial =
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values);
 
     const ehChangeInput = true;
     if (
@@ -2343,6 +2380,7 @@ export default () => {
           ehGrupoETECUrlParam,
           inclusoesEtecAutorizadas,
         )) ||
+      existeWarningLancheEmergencial ||
       boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
         "frequencia",
         categoriasDeMedicao,
@@ -2398,12 +2436,14 @@ export default () => {
           dadosValoresInclusoesAutorizadasState,
           suspensoesAutorizadas,
           alteracoesAlimentacaoAutorizadas,
+          alteracoesLancheEmergencialAutorizadas,
           validacaoDiaLetivo,
           location,
           feriadosNoMes,
           valoresPeriodosLancamentos,
           escolaEhEMEBS(),
           alunosTabSelecionada,
+          nomeCategoria,
         );
       }
     };
@@ -3477,6 +3517,7 @@ export default () => {
                                                               column,
                                                               suspensoesAutorizadas,
                                                               alteracoesAlimentacaoAutorizadas,
+                                                              alteracoesLancheEmergencialAutorizadas,
                                                               kitLanchesAutorizadas,
                                                               inclusoesEtecAutorizadas,
                                                               ehGrupoETECUrlParam,
