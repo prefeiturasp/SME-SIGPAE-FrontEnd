@@ -313,7 +313,10 @@ export const desabilitarField = (
 
     const alunosDoDia = `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
     const valorAlimentacao = values[alunosDoDia];
-    if ([undefined, null, ""].includes(valorAlimentacao)) {
+    if (
+      [undefined, null, ""].includes(valorAlimentacao) ||
+      Number(valorAlimentacao) === 0
+    ) {
       return true;
     }
   }
