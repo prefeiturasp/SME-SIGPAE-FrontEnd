@@ -42,6 +42,7 @@ export const InputText = (props) => {
     exibeTooltipQtdLancheEmergencialDiferenteSolAlimentacoesAutorizadas,
     exibeTooltipLancheEmergencialNaoAutorizado,
     exibeTooltipLancheEmergencialAutorizado,
+    exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao,
     exibeTooltipLancheEmergencialZeroAutorizado,
     exibeTooltipLancheEmergencialZeroAutorizadoJustificado,
     exibeTooltipFrequenciaZeroTabelaEtec,
@@ -268,6 +269,14 @@ export const InputText = (props) => {
           }
         >
           <i className="fas fa-info icone-info-warning" />
+        </Tooltip>
+      )}
+      {exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao && (
+        <Tooltip title={"Lanche Emergencial autorizado"}>
+          <i
+            data-testid={`tooltip-lanche-emergencial-autorizado_${input.name}`}
+            className="fas fa-info icone-info-success"
+          />
         </Tooltip>
       )}
       {exibeTooltipFrequenciaZeroTabelaEtec && (

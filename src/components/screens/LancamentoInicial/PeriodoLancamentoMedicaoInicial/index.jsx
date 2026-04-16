@@ -103,6 +103,7 @@ import {
   exibirTooltipFrequenciaZeroTabelaEtec,
   exibirTooltipKitLancheSolAlimentacoes,
   exibirTooltipLancheEmergencialAutorizado,
+  exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao,
   exibirTooltipLancheEmergencialNaoAutorizado,
   exibirTooltipLancheEmergencialZeroAutorizado,
   exibirTooltipLancheEmergencialZeroAutorizadoJustificado,
@@ -161,6 +162,10 @@ export default () => {
   const [
     alteracoesAlimentacaoAutorizadas,
     setAlteracoesAlimentacaoAutorizadas,
+  ] = useState(null);
+  const [
+    alteracoesLancheEmergencialAutorizadas,
+    setAlteracoesLancheEmergencialAutorizadas,
   ] = useState(null);
   const [kitLanchesAutorizadas, setKitLanchesAutorizadas] = useState(null);
   const [
@@ -975,6 +980,7 @@ export default () => {
       let response_kit_lanches_autorizadas = [];
       let response_suspensoes_autorizadas = [];
       let response_alteracoes_alimentacao_autorizadas = [];
+      let response_alteracoes_lanche_emergencial_autorizadas = [];
       let response_permissoes_lancamentos_especiais_mes_ano_por_periodo = [];
 
       const calendario = await obterDiasLetivosCorretos(
@@ -1017,6 +1023,18 @@ export default () => {
           );
         setAlteracoesAlimentacaoAutorizadas(
           response_alteracoes_alimentacao_autorizadas,
+        );
+
+        response_alteracoes_lanche_emergencial_autorizadas =
+          await getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync(
+            escola.uuid,
+            mes,
+            ano,
+            periodo.periodo_escolar.nome,
+            true,
+          );
+        setAlteracoesLancheEmergencialAutorizadas(
+          response_alteracoes_lanche_emergencial_autorizadas,
         );
 
         if (ehPeriodoSimples) {
@@ -3620,6 +3638,13 @@ export default () => {
                                                             column,
                                                             categoria,
                                                             alteracoesAlimentacaoAutorizadas,
+                                                          )}
+                                                          exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao={exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao(
+                                                            formValuesAtualizados,
+                                                            row,
+                                                            column,
+                                                            categoria,
+                                                            alteracoesLancheEmergencialAutorizadas,
                                                           )}
                                                           exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
                                                             formValuesAtualizados,

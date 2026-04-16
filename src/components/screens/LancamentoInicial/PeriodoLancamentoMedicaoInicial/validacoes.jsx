@@ -1694,6 +1694,43 @@ export const exibirTooltipLancheEmergencialAutorizado = (
   );
 };
 
+const normalizarTipoAlimentacaoLancheEmergencial = (tipoAlimentacao) => {
+  return tipoAlimentacao
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replaceAll(/ /g, "_");
+};
+
+const ehValorZeroDigitado = (value) => value === "0" || value === 0;
+
+export const exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  alteracoesLancheEmergencialAutorizadas,
+) => {
+  const value =
+    formValuesAtualizados[
+      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    categoria.nome === "ALIMENTAÇÃO" &&
+    !ehValorZeroDigitado(value) &&
+    alteracoesLancheEmergencialAutorizadas?.some(
+      (alteracao) =>
+        alteracao.dia === column.dia &&
+        alteracao.tipos_alimentacao_de?.some(
+          (tipoAlimentacao) =>
+            normalizarTipoAlimentacaoLancheEmergencial(tipoAlimentacao) ===
+            row.name,
+        ),
+    )
+  );
+};
+
 export const exibirTooltipLancheEmergencialZeroAutorizado = (
   formValuesAtualizados,
   row,
