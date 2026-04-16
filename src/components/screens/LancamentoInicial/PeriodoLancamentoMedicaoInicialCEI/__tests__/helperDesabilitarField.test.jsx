@@ -37,6 +37,7 @@ describe("desabilitarField CEI/CEMEI", () => {
     ehUltimoDiaLetivoDoAno: jest.fn(() => false),
     calendarioMesConsiderado: [{ dia: 1 }],
     ehRecreioNasFerias: false,
+    categoriasDeMedicao: [{ id: 1, nome: "ALIMENTAÇÃO" }],
   });
 
   const call = (a) =>
@@ -67,6 +68,7 @@ describe("desabilitarField CEI/CEMEI", () => {
       a.ehUltimoDiaLetivoDoAno,
       a.calendarioMesConsiderado,
       a.ehRecreioNasFerias,
+      a.categoriasDeMedicao,
     );
 
   it("deve desabilitar quando valor é mês anterior", () => {
