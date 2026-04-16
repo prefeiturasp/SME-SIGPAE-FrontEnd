@@ -70,230 +70,343 @@ describe("desabilitarField CEI/CEMEI", () => {
       a.ehRecreioNasFerias,
       a.categoriasDeMedicao,
     );
+  describe("Regras gerais", () => {
+    it("deve desabilitar quando valor é mês anterior", () => {
+      // cenário: bloqueio direto por mês anterior
+      const a = baseArgs();
+      a.values["frequencia__dia_1__categoria_1"] = "Mês anterior";
+      expect(call(a)).toBe(true);
+    });
 
-  it("deve desabilitar quando valor é mês anterior", () => {
-    // cenário: bloqueio direto por mês anterior
-    const a = baseArgs();
-    a.values["frequencia__dia_1__categoria_1"] = "Mês anterior";
-    expect(call(a)).toBe(true);
+    it("deve desabilitar por status aprovado", () => {
+      // cenário: status bloqueado
+      const a = baseArgs();
+      a.location.state.status_periodo = "MEDICAO_APROVADA_PELA_DRE";
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve permitir quando inclusão válida alimentação", () => {
+      // cenário: inclusão autorizada válida
+      const a = baseArgs();
+      expect(call(a)).toBe(false);
+    });
+
+    it("deve desabilitar quando recreio e fim de semana sem inclusão", () => {
+      // cenário: recreio + fim de semana
+      const a = baseArgs();
+      a.ehRecreioNasFerias = true;
+      a.inclusoesAutorizadas = [];
+      a.feriadosNoMes = [1];
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve desabilitar dieta quando não há valor", () => {
+      // cenário: dieta sem valor
+      const a = baseArgs();
+      a.nomeCategoria = "DIETA ESPECIAL";
+      a.values["dietas_autorizadas__faixa_1__dia_1__categoria_1"] = 0;
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve bloquear quando não há inclusão em programas", () => {
+      // cenário: programas sem inclusão
+      const a = baseArgs();
+      a.ehProgramasEProjetosLocation = true;
+      a.inclusoesAutorizadas = [];
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve permitir alimentação especial válida", () => {
+      // cenário: alimentação especial permitida
+      const a = baseArgs();
+      a.permissoesLancamentosEspeciaisPorDia = [
+        { dia: 1, alimentacoes: ["frequencia"] },
+      ];
+      a.alimentacoesLancamentosEspeciais = ["frequencia"];
+      expect(call(a)).toBe(false);
+    });
+
+    it("deve bloquear alimentação especial fora do dia", () => {
+      // cenário: alimentação especial não permitida
+      const a = baseArgs();
+
+      a.nomeCategoria = "ALIMENTAÇÃO";
+      a.rowName = "frequencia";
+
+      a.ehProgramasEProjetosLocation = true;
+
+      a.permissoesLancamentosEspeciaisPorDia = [{ dia: 1, alimentacoes: [] }];
+
+      a.alimentacoesLancamentosEspeciais = ["frequencia"];
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve desabilitar solicitações sem autorização", () => {
+      // cenário: kit_lanche não autorizado
+      const a = baseArgs();
+      a.nomeCategoria = "SOLICITAÇÕES";
+      a.rowName = "kit_lanche";
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve permitir solicitações quando autorizado", () => {
+      // cenário: kit autorizado
+      const a = baseArgs();
+      a.nomeCategoria = "SOLICITAÇÕES";
+      a.rowName = "kit_lanche";
+      a.kitLanchesAutorizadas = [{ dia: 1 }];
+      expect(call(a)).toBe(false);
+    });
+
+    it("deve desabilitar quando não é dia letivo", () => {
+      // cenário: dia inválido
+      const a = baseArgs();
+
+      a.validacaoDiaLetivo = jest.fn(() => false);
+      a.inclusoesAutorizadas = [];
+      a.permissoesLancamentosEspeciaisPorDia = null;
+      a.alimentacoesLancamentosEspeciais = [];
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve permitir frequência no fluxo final", () => {
+      // cenário: fluxo final válido
+      const a = baseArgs();
+      expect(call(a)).toBe(false);
+    });
+
+    it("deve desabilitar quando está em correção e dia não pode corrigir", () => {
+      // cenário: correção ativa mas dia inválido
+      const a = baseArgs();
+
+      a.location.state.status_periodo = "MEDICAO_CORRECAO_SOLICITADA";
+      a.diasParaCorrecao = []; // força false
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve desabilitar em escola CEMEI sem valores obrigatórios", () => {
+      // cenário: escola tipo CEMEI sem matriculados
+      const a = baseArgs();
+
+      a.location.state = {
+        ...a.location.state,
+        escola: "CEMEI TESTE",
+        periodo: "INTEGRAL",
+      };
+
+      a.values["matriculados__faixa_1__dia_1__categoria_1"] = null;
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve desabilitar quando rowName é numero_de_alunos no bloco final", () => {
+      // cenário: campo explicitamente bloqueado
+      const a = baseArgs();
+
+      a.rowName = "numero_de_alunos";
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve desabilitar lanche emergencial quando não autorizado", () => {
+      // cenário: lanche emergencial não autorizado
+      const a = baseArgs();
+
+      a.nomeCategoria = "SOLICITAÇÕES";
+      a.rowName = "lanche_emergencial";
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve desabilitar dieta em programas quando valor é nulo", () => {
+      // cenário: dieta sem valor
+      const a = baseArgs();
+
+      a.ehProgramasEProjetosLocation = true;
+      a.nomeCategoria = "DIETA ESPECIAL";
+
+      a.values["dietas_autorizadas__dia_1__categoria_1"] = null;
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve permitir quando está em correção e dia pode corrigir", () => {
+      // cenário: correção ativa com dia válido
+      const a = baseArgs();
+
+      a.location.state.status_periodo = "MEDICAO_CORRECAO_SOLICITADA";
+
+      a.diasParaCorrecao = [
+        { dia: 1, categoria_medicao: 1, habilitado_correcao: true },
+      ];
+
+      expect(call(a)).toBe(false);
+    });
+
+    it("deve desabilitar solicitações quando dia é futuro no mês atual", () => {
+      // cenário: dia futuro no mesmo mês
+      const a = baseArgs();
+
+      a.nomeCategoria = "SOLICITAÇÕES";
+      a.rowName = "kit_lanche";
+
+      a.mesAnoConsiderado = new Date(); // mesmo mês
+      a.mesAnoDefault = new Date();
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve desabilitar em programas quando resultado é falso mesmo com dados no state", () => {
+      // cenário real do código: resultado falso bloqueia antes
+      const a = baseArgs();
+
+      a.ehProgramasEProjetosLocation = true;
+
+      a.dadosValoresInclusoesAutorizadasState = {
+        frequencia__dia_1__categoria_1: true,
+      };
+
+      a.inclusoesAutorizadas = [];
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve usar valor da faixa etária quando valor padrão não existe", () => {
+      // cenário: fallback para faixa etária
+      const a = baseArgs();
+
+      delete a.values["frequencia__dia_1__categoria_1"];
+
+      a.values["frequencia__faixa_1__dia_1__categoria_1"] = "Mês anterior";
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve desabilitar repeticao_refeicao em programas quando não há dados no state", () => {
+      // cenário: repetição não influencia sem dados autorizados
+      const a = baseArgs();
+
+      a.ehProgramasEProjetosLocation = true;
+      a.rowName = "repeticao_refeicao";
+
+      a.dadosValoresInclusoesAutorizadasState = {};
+
+      expect(call(a)).toBe(true);
+    });
   });
 
-  it("deve desabilitar por status aprovado", () => {
-    // cenário: status bloqueado
-    const a = baseArgs();
-    a.location.state.status_periodo = "MEDICAO_APROVADA_PELA_DRE";
-    expect(call(a)).toBe(true);
-  });
+  describe("Regras dietas especias bloquedas quando não existe log de matriculados", () => {
+    it("deve desabilitar DIETA quando valorAlimentacao é undefined", () => {
+      const a = baseArgs();
 
-  it("deve permitir quando inclusão válida alimentação", () => {
-    // cenário: inclusão autorizada válida
-    const a = baseArgs();
-    expect(call(a)).toBe(false);
-  });
+      a.nomeCategoria = "DIETA ESPECIAL";
+      delete a.values["matriculados__faixa_1__dia_1__categoria_1"];
 
-  it("deve desabilitar quando recreio e fim de semana sem inclusão", () => {
-    // cenário: recreio + fim de semana
-    const a = baseArgs();
-    a.ehRecreioNasFerias = true;
-    a.inclusoesAutorizadas = [];
-    a.feriadosNoMes = [1];
-    expect(call(a)).toBe(true);
-  });
+      expect(call(a)).toBe(true);
+    });
 
-  it("deve desabilitar dieta quando não há valor", () => {
-    // cenário: dieta sem valor
-    const a = baseArgs();
-    a.nomeCategoria = "DIETA ESPECIAL";
-    a.values["dietas_autorizadas__faixa_1__dia_1__categoria_1"] = 0;
-    expect(call(a)).toBe(true);
-  });
+    it("deve desabilitar DIETA quando valorAlimentacao é null", () => {
+      const a = baseArgs();
 
-  it("deve bloquear quando não há inclusão em programas", () => {
-    // cenário: programas sem inclusão
-    const a = baseArgs();
-    a.ehProgramasEProjetosLocation = true;
-    a.inclusoesAutorizadas = [];
-    expect(call(a)).toBe(true);
-  });
+      a.nomeCategoria = "DIETA ESPECIAL";
+      a.values["matriculados__faixa_1__dia_1__categoria_1"] = null;
 
-  it("deve permitir alimentação especial válida", () => {
-    // cenário: alimentação especial permitida
-    const a = baseArgs();
-    a.permissoesLancamentosEspeciaisPorDia = [
-      { dia: 1, alimentacoes: ["frequencia"] },
-    ];
-    a.alimentacoesLancamentosEspeciais = ["frequencia"];
-    expect(call(a)).toBe(false);
-  });
+      expect(call(a)).toBe(true);
+    });
 
-  it("deve bloquear alimentação especial fora do dia", () => {
-    // cenário: alimentação especial não permitida
-    const a = baseArgs();
+    it("deve desabilitar DIETA quando valorAlimentacao é string vazia", () => {
+      const a = baseArgs();
 
-    a.nomeCategoria = "ALIMENTAÇÃO";
-    a.rowName = "frequencia";
+      a.nomeCategoria = "DIETA ESPECIAL";
+      a.values["matriculados__faixa_1__dia_1__categoria_1"] = "";
 
-    a.ehProgramasEProjetosLocation = true;
+      expect(call(a)).toBe(true);
+    });
 
-    a.permissoesLancamentosEspeciaisPorDia = [{ dia: 1, alimentacoes: [] }];
+    it("deve desabilitar DIETA quando valorAlimentacao é 0", () => {
+      const a = baseArgs();
 
-    a.alimentacoesLancamentosEspeciais = ["frequencia"];
+      a.nomeCategoria = "DIETA ESPECIAL";
+      a.values["matriculados__faixa_1__dia_1__categoria_1"] = 0;
 
-    expect(call(a)).toBe(true);
-  });
+      expect(call(a)).toBe(true);
+    });
 
-  it("deve desabilitar solicitações sem autorização", () => {
-    // cenário: kit_lanche não autorizado
-    const a = baseArgs();
-    a.nomeCategoria = "SOLICITAÇÕES";
-    a.rowName = "kit_lanche";
-    expect(call(a)).toBe(true);
-  });
+    it("não deve desabilitar DIETA quando valorAlimentacao > 0", () => {
+      const a = baseArgs();
 
-  it("deve permitir solicitações quando autorizado", () => {
-    // cenário: kit autorizado
-    const a = baseArgs();
-    a.nomeCategoria = "SOLICITAÇÕES";
-    a.rowName = "kit_lanche";
-    a.kitLanchesAutorizadas = [{ dia: 1 }];
-    expect(call(a)).toBe(false);
-  });
+      a.nomeCategoria = "DIETA ESPECIAL";
+      a.values["matriculados__faixa_1__dia_1__categoria_1"] = 10;
 
-  it("deve desabilitar quando não é dia letivo", () => {
-    // cenário: dia inválido
-    const a = baseArgs();
+      expect(call(a)).toBe(false);
+    });
 
-    a.validacaoDiaLetivo = jest.fn(() => false);
-    a.inclusoesAutorizadas = [];
-    a.permissoesLancamentosEspeciaisPorDia = null;
-    a.alimentacoesLancamentosEspeciais = [];
+    it("deve usar prefixo 'participantes' quando ehRecreioNasFerias = true", () => {
+      const a = baseArgs();
 
-    expect(call(a)).toBe(true);
-  });
+      a.nomeCategoria = "DIETA ESPECIAL";
+      a.ehRecreioNasFerias = true;
 
-  it("deve permitir frequência no fluxo final", () => {
-    // cenário: fluxo final válido
-    const a = baseArgs();
-    expect(call(a)).toBe(false);
-  });
+      delete a.values["participantes__faixa_1__dia_1__categoria_1"];
 
-  it("deve desabilitar quando está em correção e dia não pode corrigir", () => {
-    // cenário: correção ativa mas dia inválido
-    const a = baseArgs();
+      expect(call(a)).toBe(true);
+    });
 
-    a.location.state.status_periodo = "MEDICAO_CORRECAO_SOLICITADA";
-    a.diasParaCorrecao = []; // força false
+    it("deve usar prefixo 'numero_de_alunos' quando ehProgramasEProjetosLocation = true", () => {
+      const a = baseArgs();
 
-    expect(call(a)).toBe(true);
-  });
+      a.nomeCategoria = "DIETA ESPECIAL";
+      a.ehProgramasEProjetosLocation = true;
 
-  it("deve desabilitar em escola CEMEI sem valores obrigatórios", () => {
-    // cenário: escola tipo CEMEI sem matriculados
-    const a = baseArgs();
+      a.values["numero_de_alunos__dia_1__categoria_1"] = 0;
 
-    a.location.state = {
-      ...a.location.state,
-      escola: "CEMEI TESTE",
-      periodo: "INTEGRAL",
-    };
+      expect(call(a)).toBe(true);
+    });
 
-    a.values["matriculados__faixa_1__dia_1__categoria_1"] = null;
+    it("deve ignorar bloco DIETA e seguir fluxo normal quando rowName = dietas_autorizadas", () => {
+      const a = baseArgs();
 
-    expect(call(a)).toBe(true);
-  });
+      a.nomeCategoria = "DIETA ESPECIAL";
+      a.rowName = "dietas_autorizadas";
 
-  it("deve desabilitar quando rowName é numero_de_alunos no bloco final", () => {
-    // cenário: campo explicitamente bloqueado
-    const a = baseArgs();
+      // força cenário que bloquearia no bloco DIETA
+      a.values["matriculados__faixa_1__dia_1__categoria_1"] = 0;
 
-    a.rowName = "numero_de_alunos";
+      // mas aqui ele NÃO entra no if → cai no fluxo geral → que bloqueia
+      expect(call(a)).toBe(true);
+    });
 
-    expect(call(a)).toBe(true);
-  });
+    it("deve usar faixa_null quando ehRecreioNasFerias = true e bloquear DIETA quando valorAlimentacao inválido", () => {
+      const a = baseArgs();
 
-  it("deve desabilitar lanche emergencial quando não autorizado", () => {
-    // cenário: lanche emergencial não autorizado
-    const a = baseArgs();
+      a.dia = 1;
+      a.nomeCategoria = "DIETA ESPECIAL";
+      a.ehRecreioNasFerias = true;
 
-    a.nomeCategoria = "SOLICITAÇÕES";
-    a.rowName = "lanche_emergencial";
+      // remove chave padrão para garantir que só a nova estrutura será usada
+      delete a.values["matriculados__faixa_1__dia_1__categoria_1"];
+      // chave esperada com faixa_null
+      a.values["participantes__faixa_null__dia_1__categoria_1"] = 0;
 
-    expect(call(a)).toBe(true);
-  });
+      expect(call(a)).toBe(true);
+    });
 
-  it("deve desabilitar dieta em programas quando valor é nulo", () => {
-    // cenário: dieta sem valor
-    const a = baseArgs();
+    it("deve usar faixa_null quando ehRecreioNasFerias = true e permitir DIETA quando valorAlimentacao válido", () => {
+      const a = baseArgs();
 
-    a.ehProgramasEProjetosLocation = true;
-    a.nomeCategoria = "DIETA ESPECIAL";
+      a.dia = 1;
+      a.nomeCategoria = "DIETA ESPECIAL";
+      a.ehRecreioNasFerias = true;
 
-    a.values["dietas_autorizadas__dia_1__categoria_1"] = null;
+      delete a.values["matriculados__faixa_1__dia_01__categoria_1"];
 
-    expect(call(a)).toBe(true);
-  });
+      a.values["participantes__faixa_null__dia_1__categoria_1"] = 10;
+      a.values["dietas_autorizadas__faixa_1__dia_1__categoria_1"] = 1;
 
-  it("deve permitir quando está em correção e dia pode corrigir", () => {
-    // cenário: correção ativa com dia válido
-    const a = baseArgs();
-
-    a.location.state.status_periodo = "MEDICAO_CORRECAO_SOLICITADA";
-
-    a.diasParaCorrecao = [
-      { dia: 1, categoria_medicao: 1, habilitado_correcao: true },
-    ];
-
-    expect(call(a)).toBe(false);
-  });
-
-  it("deve desabilitar solicitações quando dia é futuro no mês atual", () => {
-    // cenário: dia futuro no mesmo mês
-    const a = baseArgs();
-
-    a.nomeCategoria = "SOLICITAÇÕES";
-    a.rowName = "kit_lanche";
-
-    a.mesAnoConsiderado = new Date(); // mesmo mês
-    a.mesAnoDefault = new Date();
-
-    expect(call(a)).toBe(true);
-  });
-
-  it("deve desabilitar em programas quando resultado é falso mesmo com dados no state", () => {
-    // cenário real do código: resultado falso bloqueia antes
-    const a = baseArgs();
-
-    a.ehProgramasEProjetosLocation = true;
-
-    a.dadosValoresInclusoesAutorizadasState = {
-      frequencia__dia_1__categoria_1: true,
-    };
-
-    a.inclusoesAutorizadas = [];
-
-    expect(call(a)).toBe(true);
-  });
-
-  it("deve usar valor da faixa etária quando valor padrão não existe", () => {
-    // cenário: fallback para faixa etária
-    const a = baseArgs();
-
-    delete a.values["frequencia__dia_1__categoria_1"];
-
-    a.values["frequencia__faixa_1__dia_1__categoria_1"] = "Mês anterior";
-
-    expect(call(a)).toBe(true);
-  });
-
-  it("deve desabilitar repeticao_refeicao em programas quando não há dados no state", () => {
-    // cenário: repetição não influencia sem dados autorizados
-    const a = baseArgs();
-
-    a.ehProgramasEProjetosLocation = true;
-    a.rowName = "repeticao_refeicao";
-
-    a.dadosValoresInclusoesAutorizadasState = {};
-
-    expect(call(a)).toBe(true);
+      expect(call(a)).toBe(false);
+    });
   });
 });
