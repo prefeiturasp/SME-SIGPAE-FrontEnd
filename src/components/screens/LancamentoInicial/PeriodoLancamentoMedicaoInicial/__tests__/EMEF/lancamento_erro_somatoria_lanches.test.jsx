@@ -197,12 +197,34 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
     );
   });
 
-  it("exibe tooltip verde nos tipos de alimentação autorizados e remove ao digitar 0", async () => {
+  it("exibe warning laranja para lanche emergencial sem observação e desbloqueia ao digitar 0", async () => {
+    const inputElementLancheDia01 = screen.getByTestId(
+      "lanche__dia_01__categoria_1",
+    );
+    expect(inputElementLancheDia01).toHaveClass("border-warning");
+    expect(inputElementLancheDia01).not.toHaveClass("invalid-field");
+
+    const iconeWarning = screen.getByTestId(
+      "tooltip-lanche-emergencial-warning_lanche__dia_01__categoria_1",
+    );
+    expect(iconeWarning).toBeInTheDocument();
+    fireEvent.mouseOver(iconeWarning);
     expect(
-      screen.getByTestId(
-        "tooltip-lanche-emergencial-autorizado_lanche__dia_01__categoria_1",
+      await screen.findByText(
+        "Há lanche emergencial autorizado. Justifique o apontamento da alimentação",
       ),
     ).toBeInTheDocument();
+
+    const botaoAdicionarObservacao = screen.getByTestId(
+      "botao-observacao__dia_01__categoria_1",
+    );
+    expect(botaoAdicionarObservacao).toHaveClass("red-button-outline");
+
+    const botaoSalvarLancamentos = screen
+      .getByText("Salvar Lançamentos")
+      .closest("button");
+    expect(botaoSalvarLancamentos).toBeDisabled();
+
     expect(
       screen.getByTestId(
         "tooltip-lanche-emergencial-autorizado_refeicao__dia_01__categoria_1",
@@ -214,24 +236,26 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
       ),
     ).not.toBeInTheDocument();
 
-    const inputElementLancheDia01 = screen.getByTestId(
-      "lanche__dia_01__categoria_1",
-    );
-
-    await waitFor(() => {
-      fireEvent.change(inputElementLancheDia01, {
-        target: { value: "0" },
-      });
+    fireEvent.change(inputElementLancheDia01, {
+      target: { value: "0" },
     });
 
     await waitFor(() => {
+      expect(inputElementLancheDia01).not.toHaveClass("border-warning");
       expect(
         screen.queryByTestId(
-          "tooltip-lanche-emergencial-autorizado_lanche__dia_01__categoria_1",
+          "tooltip-lanche-emergencial-warning_lanche__dia_01__categoria_1",
         ),
       ).not.toBeInTheDocument();
     });
 
+    expect(
+      screen.queryByTestId(
+        "tooltip-lanche-emergencial-autorizado_lanche__dia_01__categoria_1",
+      ),
+    ).not.toBeInTheDocument();
+    expect(botaoAdicionarObservacao).not.toHaveClass("red-button-outline");
+    expect(botaoSalvarLancamentos).not.toBeDisabled();
     expect(
       screen.getByTestId(
         "tooltip-lanche-emergencial-autorizado_refeicao__dia_01__categoria_1",
