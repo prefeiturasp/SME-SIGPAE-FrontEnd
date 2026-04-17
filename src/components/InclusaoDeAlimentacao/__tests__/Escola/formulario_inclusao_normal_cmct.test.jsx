@@ -27,17 +27,17 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       .reply(200, mockMotivosInclusaoContinua);
     mock
       .onGet(
-        "/quantidade-alunos-por-periodo/escola/f206b315-fa30-4768-9fa6-07b952800284/"
+        "/quantidade-alunos-por-periodo/escola/f206b315-fa30-4768-9fa6-07b952800284/",
       )
       .reply(200, mockQuantidadeAlunosPorPeriodoCMCT);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/f206b315-fa30-4768-9fa6-07b952800284/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/f206b315-fa30-4768-9fa6-07b952800284/",
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCMCT);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoInclusaoEspecificoCMCT);
     mock.onGet("/dias-uteis/").reply(200, mockDiasUteis);
@@ -48,13 +48,15 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       .onGet("/inclusoes-alimentacao-continua/minhas-solicitacoes/")
       .reply(200, mockObterMinhasSolicitacoesDeInclusaoDeAlimentacaoCMCT);
     mock.onGet("/dias-uteis/").reply(200, mockDiasUteis);
-
+    mock
+      .onGet("/relatorio-alunos-matriculados/filtrar/")
+      .reply(200, { data: { results: [] } });
     mock
       .onPost("/grupos-inclusao-alimentacao-normal/")
       .reply(201, mockCreateInclusaoAlimentacaoCMCT);
     mock
       .onPatch(
-        "/grupos-inclusao-alimentacao-normal/dbaf2a79-a251-4fb3-8576-ef5384b19c3e/inicio-pedido/"
+        "/grupos-inclusao-alimentacao-normal/dbaf2a79-a251-4fb3-8576-ef5384b19c3e/inicio-pedido/",
       )
       .reply(200, mockIniciaFluxoInclusaoAlimentacaoCMCT);
 
@@ -67,7 +69,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
           value={{ meusDados: mockMeusDadosEscolaCMCT }}
         >
           <Container />
-        </MeusDadosContext.Provider>
+        </MeusDadosContext.Provider>,
       );
     });
   });
@@ -75,11 +77,11 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Inclusão de Alimentação # 43029")
+      screen.getByText("Inclusão de Alimentação # 43029"),
     ).toBeInTheDocument();
     expect(screen.getByText("1 dia(s)")).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 10/03/2025 14:54:30")
+      screen.getByText("Criado em: 10/03/2025 14:54:30"),
     ).toBeInTheDocument();
   });
 
@@ -91,7 +93,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     const selectMotivo = screen.getByTestId("select-motivo-0");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoReposicaoDeAula = mockMotivosInclusaoNormal.results.find(
-      (motivo) => motivo.nome === "Reposição de aula"
+      (motivo) => motivo.nome === "Reposição de aula",
     ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoReposicaoDeAula },
@@ -130,7 +132,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.queryAllByText("Refeição").length).toBeGreaterThan(0);
     expect(screen.queryAllByText("Sobremesa").length).toBeGreaterThan(0);
     expect(
-      screen.queryAllByText("Refeição e Sobremesa").length
+      screen.queryAllByText("Refeição e Sobremesa").length,
     ).toBeGreaterThan(0);
 
     fireEvent.change(selectElementTipoAlimentacao, {
