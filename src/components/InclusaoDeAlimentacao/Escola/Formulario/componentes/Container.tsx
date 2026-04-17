@@ -37,6 +37,7 @@ import {
 } from "src/interfaces/responses.interface";
 import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { filtrarAlunosMatriculados } from "src/services/alunosMatriculados.service";
 
 export const Container = () => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -48,6 +49,7 @@ export const Container = () => {
   >(escolaEhCei() ? [] : undefined);
   const [periodos, setPeriodos] =
     useState<Array<PeriodosInclusaoInterface>>(undefined);
+  const [periodosProgramas, setPeriodosProgramas] = useState([]);
   const [periodosMotivoEspecifico, setPeriodosMotivoEspecifico] =
     useState<Array<PeriodosInclusaoInterface>>(undefined);
   const [proximosDoisDiasUteis, setProximosDoisDiasUteis] =
@@ -97,6 +99,13 @@ export const Container = () => {
         "Erro ao carregar quantidade de alunos da escola. Tente novamente mais tarde.",
       );
     }
+  };
+
+  const getAlunosMatriculadosProgramas = async () => {
+    const response = await filtrarAlunosMatriculados({
+      tipo_turmas: ["PROGRAMAS"],
+    });
+    setPeriodosProgramas(response.data.results);
   };
 
   const getMotivosInclusaoContinuaAsync = async (): Promise<void> => {
@@ -186,6 +195,7 @@ export const Container = () => {
       getVinculosTipoAlimentacaoMotivoInclusaoEspecifico({
         tipo_unidade_escolar_iniciais,
       }),
+      getAlunosMatriculadosProgramas(),
     ]).then(([, vinculosTipoAlimentacaoMotivoInclusaoEspecifico]) => {
       let periodosMotivoInclusaoEspecifico = [];
       vinculosTipoAlimentacaoMotivoInclusaoEspecifico.data.forEach(
@@ -232,6 +242,7 @@ export const Container = () => {
           motivosSimples={motivosSimples}
           motivosContinuos={motivosContinuos}
           periodos={periodos}
+          periodosProgramas={periodosProgramas}
           proximosCincoDiasUteis={proximosCincoDiasUteis}
           proximosDoisDiasUteis={proximosDoisDiasUteis}
           periodoNoite={periodoNoite}
