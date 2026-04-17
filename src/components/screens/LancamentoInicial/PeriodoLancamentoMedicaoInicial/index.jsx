@@ -110,7 +110,6 @@ import {
   exibirTooltipLPRAutorizadas,
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
-  exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
@@ -1620,6 +1619,34 @@ export default () => {
     disableBotaoSalvarLancamentos,
   ]);
 
+  useEffect(() => {
+    if (
+      formValuesAtualizados &&
+      formValuesAtualizados["periodo_escolar"] === "Programas e Projetos" &&
+      diasFrequenciaZerada &&
+      weekColumns
+    ) {
+      const bloquearBotao = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+        "frequencia",
+        categoriasDeMedicao,
+        formValuesAtualizados,
+        diasFrequenciaZerada,
+        formValuesAtualizados["periodo_escolar"],
+        escolaEhEMEBS(),
+        alunosTabSelecionada,
+        weekColumns,
+      );
+      setDisableBotaoSalvarLancamentos(bloquearBotao);
+      setExibirTooltip(bloquearBotao);
+    }
+  }, [
+    formValuesAtualizados,
+    diasFrequenciaZerada,
+    weekColumns,
+    alunosTabSelecionada,
+    categoriasDeMedicao,
+  ]);
+
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
     const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     let valoresMedicao = [];
@@ -1764,13 +1791,13 @@ export default () => {
       valorPeriodoEscolar === "Programas e Projetos" &&
       boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
         "frequencia",
-        dia,
         categoriasDeMedicao,
         formValuesAtualizados,
         diasFrequenciaZerada,
         valorPeriodoEscolar,
         escolaEhEMEBS(),
         alunosTabSelecionada,
+        weekColumns,
       )
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -2300,13 +2327,13 @@ export default () => {
         )) ||
       boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
         "frequencia",
-        dia,
         categoriasDeMedicao,
         values,
         diasFrequenciaZerada,
         location.state.grupo,
         escolaEhEMEBS(),
         alunosTabSelecionada,
+        weekColumns,
       )
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -3554,13 +3581,6 @@ export default () => {
                                                             categoria,
                                                             diasSobremesaDoce,
                                                             location,
-                                                          )}
-                                                          exibeTooltipRepeticao={exibirTooltipRepeticao(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            diasSobremesaDoce,
                                                           )}
                                                           exibeTooltipAlimentacoesAutorizadasDiaNaoLetivo={
                                                             `${row.name}__dia_${column.dia}__categoria_${categoria.id}` in

@@ -13,6 +13,7 @@ import {
 } from "src/configs/constants";
 import { useRelatorioFinanceiro } from "./view";
 import ModalAnalisar from "./components/ModalAnalisar";
+import { usuarioEhMedicao } from "src/helpers/utilities";
 
 interface RelatorioSelecionado {
   uuid: string;
@@ -20,6 +21,7 @@ interface RelatorioSelecionado {
   grupo_unidade_escolar: string[];
   status: string[];
   mes_ano: string;
+  visualizar?: boolean;
 }
 
 export function RelatorioFinanceiro() {
@@ -39,6 +41,15 @@ export function RelatorioFinanceiro() {
     paginaAtual,
     relatoriosFinanceirosResponse,
   } = useRelatorioFinanceiro();
+
+  const onPageRelatorio = (relatorio: RelatorioSelecionado) => {
+    navigate(
+      `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${ANALISAR_RELATORIO_FINANCEIRO}/?uuid=${relatorio?.uuid}`,
+      {
+        state: relatorio,
+      },
+    );
+  };
 
   return (
     <div className="relatorio-financeiro">
@@ -99,21 +110,36 @@ export function RelatorioFinanceiro() {
                           </td>
                           <td className="col-2 text-center">
                             {relatorio.status !==
-                            "RELATORIO_FINANCEIRO_GERADO" ? (
+                              "RELATORIO_FINANCEIRO_GERADO" ||
+                            !usuarioEhMedicao() ? (
                               <>
-                                <span className="px-2">
+                                <span
+                                  className="px-2 cursor-pointer"
+                                  onClick={() => {
+                                    onPageRelatorio({
+                                      uuid: relatorio.uuid,
+                                      mes_ano: `${relatorio.mes}_${relatorio.ano}`,
+                                      lote: [relatorio.lote.uuid],
+                                      grupo_unidade_escolar: [
+                                        relatorio.grupo_unidade_escolar.uuid,
+                                      ],
+                                      status: [relatorio.status],
+                                      visualizar: true,
+                                    });
+                                  }}
+                                >
                                   <i
                                     title="Visualizar"
                                     className="fas fa-eye green"
                                   />
                                 </span>
-                                <span className="px-2">
+                                <span className="px-2 cursor-pointer">
                                   <i
                                     title="Lançamentos Consolidados"
                                     className="fas fa-file-excel green"
                                   />
                                 </span>
-                                <span className="px-2">
+                                <span className="px-2 cursor-pointer">
                                   <i
                                     title="Ateste Financeiro"
                                     className="fas fa-file-pdf red"
@@ -122,7 +148,7 @@ export function RelatorioFinanceiro() {
                               </>
                             ) : (
                               <span
-                                className="px-2"
+                                className="px-2 cursor-pointer"
                                 onClick={() => {
                                   setRelatorioSelecionado({
                                     uuid: relatorio.uuid,
@@ -162,14 +188,10 @@ export function RelatorioFinanceiro() {
               showModal={showAnalisar}
               setShowModal={setShowAnalisar}
               uuidRelatorio={relatorioSelecionado?.uuid}
-              onAnalisar={() =>
-                navigate(
-                  `/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/${ANALISAR_RELATORIO_FINANCEIRO}/?uuid=${relatorioSelecionado.uuid}`,
-                  {
-                    state: relatorioSelecionado,
-                  },
-                )
+              onVisualizar={() =>
+                onPageRelatorio({ ...relatorioSelecionado, visualizar: true })
               }
+              onAnalisar={() => onPageRelatorio(relatorioSelecionado)}
             />
           </div>
         </div>

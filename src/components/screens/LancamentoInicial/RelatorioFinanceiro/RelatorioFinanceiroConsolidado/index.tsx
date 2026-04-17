@@ -67,6 +67,7 @@ export function RelatorioFinanceiroConsolidado() {
   } = useRelatorioFinanceiro();
 
   const { state } = useLocation();
+  const modoVisualizacao = state?.visualizar || false;
 
   const exportarPDF = async () => {
     setExportando(true);
@@ -247,7 +248,7 @@ export function RelatorioFinanceiroConsolidado() {
                     lotes={lotes}
                     gruposUnidadeEscolar={gruposUnidadeEscolar}
                     mesesAnos={mesesAnos}
-                    exibirReabrirLancamentos
+                    exibirReabrirLancamentos={!modoVisualizacao}
                   />
                 </form>
               )}
@@ -256,14 +257,23 @@ export function RelatorioFinanceiroConsolidado() {
               <div className="col-8">
                 <DadosLiquidacao dados={dadosLiquidacao} />
               </div>
-              <div className="col-4">
-                <Botao
-                  texto="Editar Empenhos"
-                  type={BUTTON_TYPE.BUTTON}
-                  style={BUTTON_STYLE.GREEN_OUTLINE}
-                  onClick={() => setEditarEmpenhos(true)}
-                />
-              </div>
+
+              {!modoVisualizacao && (
+                <div className="col-4 d-flex gap-3">
+                  <Botao
+                    texto="Editar Empenhos"
+                    type={BUTTON_TYPE.BUTTON}
+                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                    onClick={() => setEditarEmpenhos(true)}
+                  />
+                  <Botao
+                    texto="Aplicar Descontos"
+                    type={BUTTON_TYPE.BUTTON}
+                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                    disabled
+                  />
+                </div>
+              )}
             </div>
             {!carregando && relatorioConsolidado && (
               <div className="tabelas-relatorio-consolidado mt-5 mb-4">
@@ -275,8 +285,9 @@ export function RelatorioFinanceiroConsolidado() {
                 )}
               </div>
             )}
-            <div className="col-12 text-end">
+            <div className="col-12 d-flex justify-content-end gap-3">
               <Botao
+                dataTestId="botao-pdf"
                 texto="Exportar PDF"
                 style={BUTTON_STYLE.GREEN_OUTLINE}
                 type={BUTTON_TYPE.BUTTON}
@@ -284,6 +295,14 @@ export function RelatorioFinanceiroConsolidado() {
                 onClick={async () => await exportarPDF()}
                 disabled={exportando}
               />
+              {!modoVisualizacao && (
+                <Botao
+                  texto="Finalizar Análise"
+                  style={BUTTON_STYLE.GREEN}
+                  type={BUTTON_TYPE.BUTTON}
+                  disabled
+                />
+              )}
             </div>
           </div>
         </div>

@@ -49,3 +49,16 @@ export const getCronogramaMensalDetalhado = async (uuid: string) => {
     toastError(getMensagemDeErro(error.response?.status));
   }
 };
+
+export const assinarEEnviarCronogramaSemanal = async (
+  uuid: string,
+  payload: CronogramaSemanalCreate,
+  password: string,
+  config = {},
+) => {
+  return await axios.patch(
+    `/cronogramas-semanais/${uuid}/assinar-e-enviar/`,
+    { ...payload, password },
+    config,
+  );
+};

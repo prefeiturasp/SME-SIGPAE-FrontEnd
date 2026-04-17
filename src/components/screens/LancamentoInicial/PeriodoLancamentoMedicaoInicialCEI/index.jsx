@@ -86,7 +86,6 @@ import {
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
   exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
-  exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
@@ -1190,6 +1189,33 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     categoriasDeMedicao,
   ]);
 
+  useEffect(() => {
+    if (
+      formValuesAtualizados &&
+      formValuesAtualizados["periodo_escolar"] === "Programas e Projetos" &&
+      diasFrequenciaZerada &&
+      weekColumns
+    ) {
+      const bloquearBotao = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+        "frequencia",
+        categoriasDeMedicao,
+        formValuesAtualizados,
+        diasFrequenciaZerada,
+        formValuesAtualizados["periodo_escolar"],
+        false,
+        null,
+        weekColumns,
+      );
+      setDisableBotaoSalvarLancamentos(bloquearBotao);
+      setExibirTooltip(bloquearBotao);
+    }
+  }, [
+    formValuesAtualizados,
+    diasFrequenciaZerada,
+    weekColumns,
+    categoriasDeMedicao,
+  ]);
+
   const temDiaZeradoNaSemana =
     diasZerados &&
     diasDaSemanaSelecionada &&
@@ -1348,11 +1374,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       values["periodo_escolar"] === "Programas e Projetos" &&
       boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
         "frequencia",
-        dia,
         categoriasDeMedicao,
         formValuesAtualizados,
         diasFrequenciaZerada,
         values["periodo_escolar"],
+        false,
+        null,
+        weekColumns,
       )
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -3006,16 +3034,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               categoria,
                                                               diasSobremesaDoce,
                                                               location,
-                                                            )
-                                                          }
-                                                          exibeTooltipRepeticao={
-                                                            (ehProgramasEProjetosLocation ||
-                                                              ehRecreioNasFerias) &&
-                                                            exibirTooltipRepeticao(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
                                                             )
                                                           }
                                                           exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(

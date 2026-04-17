@@ -285,4 +285,94 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
 
     expect(inputElementLancheDia31).not.toHaveClass("border-warning");
   });
+
+  it("ao clicar na tab `Semana 5`, preencher repetição de refeição maior que refeição no dia 27, e NÃO exibe tooltip verde", async () => {
+    await awaitServices();
+    const semana5Element = screen.getByText("Semana 5");
+    fireEvent.click(semana5Element);
+
+    const inputElementFrequenciaDia27 = screen.getByTestId(
+      "frequencia__dia_27__categoria_1",
+    );
+    fireEvent.change(inputElementFrequenciaDia27, {
+      target: { value: "50" },
+    });
+
+    const inputRefeicaoDia27 = screen.getByTestId(
+      "refeicao__dia_27__categoria_1",
+    );
+
+    fireEvent.change(inputRefeicaoDia27, {
+      target: { value: "45" },
+    });
+    const inputRepeticaoRefeicaoDia27 = screen.getByTestId(
+      "repeticao_refeicao__dia_27__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputRepeticaoRefeicaoDia27, {
+        target: { value: "48" },
+      });
+    });
+    expect(inputRepeticaoRefeicaoDia27).not.toHaveClass("icone-info-success");
+  });
+
+  it("ao clicar na tab `Semana 5`, preencher repetição de sobremesa maior que sobremesa no dia 27, e NÃO exibe tooltip verde", async () => {
+    await awaitServices();
+    const semana5Element = screen.getByText("Semana 5");
+    fireEvent.click(semana5Element);
+
+    const inputElementFrequenciaDia27 = screen.getByTestId(
+      "frequencia__dia_27__categoria_1",
+    );
+    fireEvent.change(inputElementFrequenciaDia27, {
+      target: { value: "68" },
+    });
+
+    const inputRefeicaoDia27 = screen.getByTestId(
+      "sobremesa__dia_27__categoria_1",
+    );
+
+    fireEvent.change(inputRefeicaoDia27, {
+      target: { value: "53" },
+    });
+    const inputRepeticaoRefeicaoDia27 = screen.getByTestId(
+      "repeticao_sobremesa__dia_27__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputRepeticaoRefeicaoDia27, {
+        target: { value: "62" },
+      });
+    });
+    expect(inputRepeticaoRefeicaoDia27).not.toHaveClass("icone-info-success");
+  });
+
+  it("ao clicar na tab `Semana 5`, preencher repetição 2ª refeição maior que 2ª refeição  no dia 27, e NÃO exibe tooltip verde", async () => {
+    await awaitServices();
+    const semana5Element = screen.getByText("Semana 5");
+    fireEvent.click(semana5Element);
+
+    const inputElementFrequenciaDia27 = screen.getByTestId(
+      "frequencia__dia_27__categoria_1",
+    );
+    fireEvent.change(inputElementFrequenciaDia27, {
+      target: { value: "30" },
+    });
+
+    const inputRefeicaoDia27 = screen.getByTestId(
+      "2_refeicao_1_oferta__dia_27__categoria_1",
+    );
+
+    fireEvent.change(inputRefeicaoDia27, {
+      target: { value: "23" },
+    });
+    const inputRepeticaoRefeicaoDia27 = screen.getByTestId(
+      "repeticao_2_refeicao__dia_27__categoria_1",
+    );
+    waitFor(() => {
+      fireEvent.change(inputRepeticaoRefeicaoDia27, {
+        target: { value: "29" },
+      });
+    });
+    expect(inputRepeticaoRefeicaoDia27).not.toHaveClass("icone-info-success");
+  });
 });

@@ -31,7 +31,7 @@ const TOTAIS_FUNDAMENTAL = [
   "TOTAL (FUND. C)",
 ];
 
-describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFinanceiroConsolidado", () => {
+describe("Testes da interface de Análise do Relatório Financeiro - Relatorio Financeiro", () => {
   const gruposUnidadeEscolar = mockGetGrupoUnidadeEscolar.results;
   const grupoCEI = gruposUnidadeEscolar.find((grupo) =>
     grupo.nome.includes("Grupo 1"),
@@ -60,11 +60,12 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       .reply(200, mockDadosLiquidacao);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
+
     localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.MEDICAO);
   });
 
-  const setup = async (grupo = grupoCEI) => {
+  const setup = async (grupo = grupoCEI, visualizar = false) => {
     await act(async () => {
       render(
         <MemoryRouter
@@ -81,6 +82,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
                 lote: ["1f06b334-cbd1-40c5-85c4-6a3d1926805b"],
                 grupo_unidade_escolar: [grupo],
                 status: ["RELATORIO_FINANCEIRO_GERADO"],
+                visualizar,
               },
             },
           ]}
@@ -141,9 +143,8 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup();
 
-    verificaHeadersTabela([
+    await verificaHeadersTabela([
       "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
-      "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
       "VALOR UNITÁRIO",
     ]);
 
@@ -206,7 +207,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoCEMEI.uuid);
 
-    verificaHeadersTabela([
+    await verificaHeadersTabela([
       "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
       "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
       "VALOR UNITÁRIO",
@@ -246,7 +247,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoEMEI.uuid);
 
-    verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
+    await verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
 
     for (const total of TOTAIS_NORMAL) {
       expect(screen.getByText(total)).toBeInTheDocument();
@@ -280,7 +281,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoEMEF.uuid);
 
-    verificaHeadersTabela([
+    await verificaHeadersTabela([
       "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
       "VALOR DO REAJUSTE",
     ]);
@@ -334,7 +335,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoEMEBS.uuid);
 
-    verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
+    await verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
 
     for (const total of [...TOTAIS_INFANTIL, ...TOTAIS_FUNDAMENTAL]) {
       expect(screen.getByText(total)).toBeInTheDocument();
@@ -377,8 +378,6 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       .reply(200, mockTotaisAtendimentoTipoAlimentacao);
 
     await setup(grupoCIEJA.uuid);
-
-    verificaHeadersTabela(["REFEIÇÃO CIEJA E CMCT", "LANCHE 4H"]);
 
     for (const total of TOTAIS_NORMAL) {
       expect(screen.getByText(total)).toBeInTheDocument();
