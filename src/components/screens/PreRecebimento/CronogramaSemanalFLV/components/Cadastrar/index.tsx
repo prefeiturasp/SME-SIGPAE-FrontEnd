@@ -262,7 +262,7 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
         ) || 0;
       return total + qtd;
     }, 0);
-    return quantidadeEstimada - quantidadeEntregue;
+    return Math.round((quantidadeEstimada - quantidadeEntregue) * 100) / 100;
   };
 
   const onSubmit = async (values: FormValues) => {
