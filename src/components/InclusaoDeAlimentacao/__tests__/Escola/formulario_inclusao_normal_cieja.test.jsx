@@ -25,22 +25,25 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       .reply(200, mockMotivosInclusaoContinua);
     mock
       .onGet(
-        "/quantidade-alunos-por-periodo/escola/673744fa-1767-4efe-8df2-bcaa6d47223f/"
+        "/quantidade-alunos-por-periodo/escola/673744fa-1767-4efe-8df2-bcaa6d47223f/",
       )
       .reply(200, mockQuantidadeAlunosPorPeriodoCIEJA);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/673744fa-1767-4efe-8df2-bcaa6d47223f/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/673744fa-1767-4efe-8df2-bcaa6d47223f/",
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCIEJA);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCIEJA);
     mock
       .onGet("/grupos-inclusao-alimentacao-normal/minhas-solicitacoes/")
       .reply(200, mockObterMinhasSolicitacoesNormalCIEJA);
+    mock
+      .onGet("/relatorio-alunos-matriculados/filtrar/")
+      .reply(200, { data: { results: [] } });
     mock
       .onGet("/inclusoes-alimentacao-continua/minhas-solicitacoes/")
       .reply(200, mockObterMinhasSolicitacoesNormalCIEJA);
@@ -52,14 +55,14 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       .reply(201, mockCreateInclusaoAlimentacaoCMCT);
     mock
       .onPatch(
-        "/grupos-inclusao-alimentacao-normal/dbaf2a79-a251-4fb3-8576-ef5384b19c3e/inicio-pedido/"
+        "/grupos-inclusao-alimentacao-normal/dbaf2a79-a251-4fb3-8576-ef5384b19c3e/inicio-pedido/",
       )
       .reply(200, mockIniciaFluxoInclusaoAlimentacaoCMCT);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "nome_instituicao",
-      `"CIEJA ROSA KAZUE INAKAKE DE SOUZA, PROFA"`
+      `"CIEJA ROSA KAZUE INAKAKE DE SOUZA, PROFA"`,
     );
 
     await act(async () => {
@@ -68,7 +71,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
           value={{ meusDados: mockMeusDadosEscolaCIEJA }}
         >
           <Container />
-        </MeusDadosContext.Provider>
+        </MeusDadosContext.Provider>,
       );
     });
   });
@@ -81,7 +84,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     const selectMotivo = screen.getByTestId("select-motivo-0");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoReposicaoDeAula = mockMotivosInclusaoNormal.results.find(
-      (motivo) => motivo.nome === "Reposição de aula"
+      (motivo) => motivo.nome === "Reposição de aula",
     ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoReposicaoDeAula },
@@ -120,7 +123,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(screen.queryAllByText("Refeição").length).toBeGreaterThan(0);
     expect(screen.queryAllByText("Sobremesa").length).toBeGreaterThan(0);
     expect(
-      screen.queryAllByText("Refeição e Sobremesa").length
+      screen.queryAllByText("Refeição e Sobremesa").length,
     ).toBeGreaterThan(0);
 
     fireEvent.change(selectElementTipoAlimentacao, {
