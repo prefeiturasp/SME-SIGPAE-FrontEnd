@@ -10,6 +10,11 @@ export const getCronogramaSemanal = async (uuid: string) => {
   return await axios.get(`/cronogramas-semanais/${uuid}/`);
 };
 
+export const getListagemCronogramasSemanal = async (params) => {
+  const url = `/cronogramas-semanais/`;
+  return await axios.get(url, { params });
+};
+
 export const criarCronogramaSemanalRascunho = async (
   payload: CronogramaSemanalCreate,
   config = {},
