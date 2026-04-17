@@ -3,7 +3,7 @@ import React from "react";
 import "./styles.scss";
 import {
   usuarioEhEmpresaFornecedor,
-  formataMilhar,
+  formataMilharDecimal,
 } from "src/helpers/utilities";
 import { Tooltip } from "antd";
 import { formataNome } from "./helpers";
@@ -62,7 +62,7 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
                 </div>
                 <div className={bordas}>
                   {cronograma.quantidade_total &&
-                    formataMilhar(cronograma.quantidade_total)}{" "}
+                    formataMilharDecimal(cronograma.quantidade_total)}{" "}
                   {cronograma.unidade_medida}
                 </div>
                 <div className={bordas}>
