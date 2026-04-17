@@ -266,7 +266,7 @@ export const Recorrencia = ({
           numericInteger,
           maxValue(periodoRegular.maximo_alunos),
         )
-      : composeValidators(naoPodeSerZero, numericInteger);
+      : null;
   };
 
   const optionsTiposAlimentacao = () => {
