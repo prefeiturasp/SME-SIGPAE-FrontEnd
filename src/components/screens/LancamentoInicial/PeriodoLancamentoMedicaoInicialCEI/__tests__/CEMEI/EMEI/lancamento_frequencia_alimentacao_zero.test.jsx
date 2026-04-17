@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -15,7 +21,10 @@ import { PeriodoLancamentoMedicaoInicialCEIPage } from "src/pages/LancamentoMedi
 import mock from "src/services/_mock";
 
 describe("Teste de lançamento de frequência de alimentação zero - EMEI da CEMEI", () => {
+  const alteracoesAlimentacaoParams = [];
+
   beforeEach(async () => {
+    alteracoesAlimentacaoParams.length = 0;
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     mock
@@ -26,7 +35,29 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
     });
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-      .reply(200, { results: [] });
+      .reply((config) => {
+        alteracoesAlimentacaoParams.push(config.params);
+
+        if (config.params?.eh_lanche_emergencial) {
+          return [
+            200,
+            {
+              results: [
+                {
+                  dia: "12",
+                  numero_alunos: 100,
+                  inclusao_id_externo: "8C896",
+                  motivo: "Lanche Emergencial",
+                  periodos_escolares: ["Infantil INTEGRAL"],
+                  tipos_alimentacao_de: ["Lanche", "Refeição"],
+                },
+              ],
+            },
+          ];
+        }
+
+        return [200, { results: [] }];
+      });
     mock
       .onGet("/escolas-solicitacoes/suspensoes-autorizadas/")
       .reply(200, { results: [] });
@@ -112,6 +143,107 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
     expect(
       screen.getByText("Semanas do Período para Lançamento da Medição Inicial"),
     ).toBeInTheDocument();
+  });
+
+  it("consulta as alterações autorizadas com e sem lanche emergencial para Infantil INTEGRAL", async () => {
+    expect(alteracoesAlimentacaoParams).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          eh_lanche_emergencial: false,
+          nome_periodo_escolar: "Infantil INTEGRAL",
+        }),
+        expect.objectContaining({
+          eh_lanche_emergencial: true,
+          nome_periodo_escolar: "Infantil INTEGRAL",
+        }),
+      ]),
+    );
+  });
+
+  it("exibe tooltip verde por tipo autorizado e warning laranja ao preencher apontamento", async () => {
+    const semanaTres = screen.getByText("Semana 3");
+    fireEvent.click(semanaTres);
+
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_lanche__dia_12__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_refeicao__dia_12__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId(
+        "tooltip-lanche-emergencial-autorizado_sobremesa__dia_12__categoria_1",
+      ),
+    ).not.toBeInTheDocument();
+
+    const inputFrequenciaDia12 = screen.getByTestId(
+      "frequencia__dia_12__categoria_1",
+    );
+    fireEvent.change(inputFrequenciaDia12, {
+      target: { value: "10" },
+    });
+
+    const inputLancheDia12 = screen.getByTestId("lanche__dia_12__categoria_1");
+    fireEvent.change(inputLancheDia12, {
+      target: { value: "1" },
+    });
+
+    await waitFor(() => {
+      expect(inputLancheDia12).toHaveClass("border-warning");
+      expect(inputLancheDia12).not.toHaveClass("invalid-field");
+    });
+
+    const iconeWarning = screen.getByTestId(
+      "tooltip-lanche-emergencial-warning_lanche__dia_12__categoria_1",
+    );
+    fireEvent.mouseOver(iconeWarning);
+    expect(
+      await screen.findByText(
+        "Há lanche emergencial autorizado. Justifique o apontamento da alimentação",
+      ),
+    ).toBeInTheDocument();
+
+    const botaoAdicionarObservacao = screen
+      .getByTestId("div-botao-add-obs-12-1-observacoes")
+      .querySelector("button");
+    expect(botaoAdicionarObservacao).toHaveClass("red-button-outline");
+
+    const botaoSalvarLancamentos = screen
+      .getByText("Salvar Lançamentos")
+      .closest("button");
+    await waitFor(() => {
+      expect(botaoSalvarLancamentos).toBeDisabled();
+    });
+
+    fireEvent.change(inputLancheDia12, {
+      target: { value: "0" },
+    });
+
+    await waitFor(() => {
+      expect(inputLancheDia12).not.toHaveClass("border-warning");
+      expect(
+        screen.queryByTestId(
+          "tooltip-lanche-emergencial-warning_lanche__dia_12__categoria_1",
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    expect(
+      screen.queryByTestId(
+        "tooltip-lanche-emergencial-autorizado_lanche__dia_12__categoria_1",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_refeicao__dia_12__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(botaoAdicionarObservacao).not.toHaveClass("red-button-outline");
+    expect(botaoSalvarLancamentos).not.toBeDisabled();
   });
 
   it("Exibe mensagem de erro ao tentar lançar dieta especial com frequência zero na alimentação", async () => {

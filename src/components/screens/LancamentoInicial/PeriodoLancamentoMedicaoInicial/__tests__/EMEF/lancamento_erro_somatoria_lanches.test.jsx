@@ -23,8 +23,10 @@ import mock from "src/services/_mock";
 describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () => {
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
+  const alteracoesAlimentacaoParams = [];
 
   beforeEach(async () => {
+    alteracoesAlimentacaoParams.length = 0;
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
@@ -57,7 +59,29 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
       .reply(200, { results: [] });
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-      .reply(200, { results: [] });
+      .reply((config) => {
+        alteracoesAlimentacaoParams.push(config.params);
+
+        if (config.params?.eh_lanche_emergencial) {
+          return [
+            200,
+            {
+              results: [
+                {
+                  dia: "01",
+                  numero_alunos: 100,
+                  inclusao_id_externo: "8C896",
+                  motivo: "Lanche Emergencial",
+                  periodos_escolares: ["MANHA"],
+                  tipos_alimentacao_de: ["Lanche", "Refeição"],
+                },
+              ],
+            },
+          ];
+        }
+
+        return [200, { results: [] }];
+      });
     mock
       .onGet(
         "/medicao-inicial/permissao-lancamentos-especiais/permissoes-lancamentos-especiais-mes-ano-por-periodo/",
@@ -156,6 +180,87 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
       "lanche__dia_01__categoria_1",
     );
     expect(inputElementLancheDia01).toHaveAttribute("value", "299");
+  });
+
+  it("consulta as alterações autorizadas com e sem lanche emergencial para o mesmo período escolar", async () => {
+    expect(alteracoesAlimentacaoParams).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          eh_lanche_emergencial: false,
+          nome_periodo_escolar: "MANHA",
+        }),
+        expect.objectContaining({
+          eh_lanche_emergencial: true,
+          nome_periodo_escolar: "MANHA",
+        }),
+      ]),
+    );
+  });
+
+  it("exibe warning laranja para lanche emergencial sem observação e desbloqueia ao digitar 0", async () => {
+    const inputElementLancheDia01 = screen.getByTestId(
+      "lanche__dia_01__categoria_1",
+    );
+    expect(inputElementLancheDia01).toHaveClass("border-warning");
+    expect(inputElementLancheDia01).not.toHaveClass("invalid-field");
+
+    const iconeWarning = screen.getByTestId(
+      "tooltip-lanche-emergencial-warning_lanche__dia_01__categoria_1",
+    );
+    expect(iconeWarning).toBeInTheDocument();
+    fireEvent.mouseOver(iconeWarning);
+    expect(
+      await screen.findByText(
+        "Há lanche emergencial autorizado. Justifique o apontamento da alimentação",
+      ),
+    ).toBeInTheDocument();
+
+    const botaoAdicionarObservacao = screen.getByTestId(
+      "botao-observacao__dia_01__categoria_1",
+    );
+    expect(botaoAdicionarObservacao).toHaveClass("red-button-outline");
+
+    const botaoSalvarLancamentos = screen
+      .getByText("Salvar Lançamentos")
+      .closest("button");
+    expect(botaoSalvarLancamentos).toBeDisabled();
+
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_refeicao__dia_01__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId(
+        "tooltip-lanche-emergencial-autorizado_sobremesa__dia_01__categoria_1",
+      ),
+    ).not.toBeInTheDocument();
+
+    fireEvent.change(inputElementLancheDia01, {
+      target: { value: "0" },
+    });
+
+    await waitFor(() => {
+      expect(inputElementLancheDia01).not.toHaveClass("border-warning");
+      expect(
+        screen.queryByTestId(
+          "tooltip-lanche-emergencial-warning_lanche__dia_01__categoria_1",
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    expect(
+      screen.queryByTestId(
+        "tooltip-lanche-emergencial-autorizado_lanche__dia_01__categoria_1",
+      ),
+    ).not.toBeInTheDocument();
+    expect(botaoAdicionarObservacao).not.toHaveClass("red-button-outline");
+    expect(botaoSalvarLancamentos).not.toBeDisabled();
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_refeicao__dia_01__categoria_1",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("exibe borda vermelha (erro) nos lanches das dietas", async () => {

@@ -388,6 +388,118 @@ export const camposLancheEmergTabelaEtec = (
   return erro;
 };
 
+export const WARNING_LANCHE_EMERGENCIAL_AUTORIZADO =
+  "Há lanche emergencial autorizado. Justifique o apontamento da alimentação";
+
+const campoTemValorPreenchido = (value) => {
+  return (
+    ![undefined, null, ""].includes(value) &&
+    !["Mês anterior", "Mês posterior"].includes(value)
+  );
+};
+
+const normalizarTipoAlimentacaoLancheEmergencial = (tipoAlimentacao) => {
+  return tipoAlimentacao
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replaceAll(/ /g, "_");
+};
+
+const ehValorZeroDigitado = (value) => value === "0" || value === 0;
+
+const slotEhLancheEmergencialAutorizadoTipoAlimentacao = (
+  rowName,
+  dia,
+  alteracoesLancheEmergencialAutorizadas = [],
+) => {
+  return alteracoesLancheEmergencialAutorizadas?.some(
+    (alteracao) =>
+      alteracao.dia === dia &&
+      alteracao.tipos_alimentacao_de?.some(
+        (tipoAlimentacao) =>
+          normalizarTipoAlimentacaoLancheEmergencial(tipoAlimentacao) ===
+          rowName,
+      ),
+  );
+};
+
+export const campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao =
+  (
+    rowName,
+    dia,
+    categoriaId,
+    values,
+    alteracoesLancheEmergencialAutorizadas = [],
+  ) => {
+    const value = values[`${rowName}__dia_${dia}__categoria_${categoriaId}`];
+
+    return (
+      campoTemValorPreenchido(value) &&
+      Number(value) > 0 &&
+      !values[`observacoes__dia_${dia}__categoria_${categoriaId}`] &&
+      slotEhLancheEmergencialAutorizadoTipoAlimentacao(
+        rowName,
+        dia,
+        alteracoesLancheEmergencialAutorizadas,
+      )
+    );
+  };
+
+export const existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao =
+  (dia, categoria, values, alteracoesLancheEmergencialAutorizadas = []) => {
+    if (categoria.nome !== "ALIMENTAÇÃO") return false;
+
+    const tiposAutorizadosNoDia = [
+      ...new Set(
+        alteracoesLancheEmergencialAutorizadas
+          .filter((alteracao) => alteracao.dia === dia)
+          .flatMap((alteracao) => alteracao.tipos_alimentacao_de || [])
+          .map(normalizarTipoAlimentacaoLancheEmergencial),
+      ),
+    ];
+
+    return tiposAutorizadosNoDia.some((rowName) =>
+      campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao(
+        rowName,
+        dia,
+        categoria.id,
+        values,
+        alteracoesLancheEmergencialAutorizadas,
+      ),
+    );
+  };
+
+export const existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao =
+  (
+    values,
+    categoriasDeMedicao,
+    weekColumns,
+    alteracoesLancheEmergencialAutorizadas = [],
+  ) => {
+    const categoriaAlimentacao = categoriasDeMedicao.find(
+      (categoria) => categoria.nome === "ALIMENTAÇÃO",
+    );
+
+    if (
+      !values ||
+      !categoriaAlimentacao ||
+      !weekColumns?.length ||
+      !alteracoesLancheEmergencialAutorizadas?.length
+    ) {
+      return false;
+    }
+
+    return weekColumns.some(({ dia }) =>
+      existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
+        dia,
+        categoriaAlimentacao,
+        values,
+        alteracoesLancheEmergencialAutorizadas,
+      ),
+    );
+  };
+
 export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   formValuesAtualizados,
   dia,
@@ -400,6 +512,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   column,
   suspensoesAutorizadas,
   alteracoesAlimentacaoAutorizadas,
+  alteracoesLancheEmergencialAutorizadas,
   kitLanchesAutorizadas,
   inclusoesEtecAutorizadas,
   ehGrupoETECUrlParam = false,
@@ -467,6 +580,12 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         column,
         categoria,
         alteracoesAlimentacaoAutorizadas,
+      ) ||
+      existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
+        dia,
+        categoria,
+        formValuesAtualizados,
+        alteracoesLancheEmergencialAutorizadas,
       ) ||
       habitarBotaoAdicionar(
         "frequencia",
@@ -611,12 +730,14 @@ export const validacoesTabelaAlimentacao = (
   dadosValoresInclusoesAutorizadasState,
   suspensoesAutorizadas,
   alteracoesAlimentacaoAutorizadas,
+  alteracoesLancheEmergencialAutorizadas,
   validacaoDiaLetivo,
   location,
   feriadosNoMes,
   valoresPeriodosLancamentos,
   escolaEhEMEBS,
   alunosTabSelecionada,
+  nomeCategoria,
 ) => {
   const maxFrequencia = Number(
     allValues[`frequencia__dia_${dia}__categoria_${categoria}`],
@@ -826,6 +947,17 @@ export const validacoesTabelaAlimentacao = (
     Number(value) > maxMatriculados
   ) {
     return `A frequência não pode ser maior que o número de participantes.`;
+  } else if (
+    nomeCategoria === "ALIMENTAÇÃO" &&
+    campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao(
+      rowName,
+      dia,
+      categoria,
+      allValues,
+      alteracoesLancheEmergencialAutorizadas,
+    )
+  ) {
+    return WARNING_LANCHE_EMERGENCIAL_AUTORIZADO;
   }
   return undefined;
 };
@@ -1691,6 +1823,35 @@ export const exibirTooltipLancheEmergencialAutorizado = (
     alteracoesAlimentacaoAutorizadas.filter(
       (alteracao) => alteracao.dia === column.dia,
     ).length > 0
+  );
+};
+
+export const exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  alteracoesLancheEmergencialAutorizadas,
+) => {
+  const value =
+    formValuesAtualizados[
+      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+  const temObservacao =
+    formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    categoria.nome === "ALIMENTAÇÃO" &&
+    !temObservacao &&
+    !campoTemValorPreenchido(value) &&
+    !ehValorZeroDigitado(value) &&
+    slotEhLancheEmergencialAutorizadoTipoAlimentacao(
+      row.name,
+      column.dia,
+      alteracoesLancheEmergencialAutorizadas,
+    )
   );
 };
 

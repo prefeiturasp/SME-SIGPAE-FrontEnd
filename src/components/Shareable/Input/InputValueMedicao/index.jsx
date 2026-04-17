@@ -3,6 +3,9 @@ import { Tooltip } from "antd";
 import PropTypes from "prop-types";
 import "../style.scss";
 
+const WARNING_LANCHE_EMERGENCIAL_AUTORIZADO =
+  "Há lanche emergencial autorizado. Justifique o apontamento da alimentação";
+
 export const InputText = (props) => {
   const {
     classNameToNextInput,
@@ -42,6 +45,7 @@ export const InputText = (props) => {
     exibeTooltipQtdLancheEmergencialDiferenteSolAlimentacoesAutorizadas,
     exibeTooltipLancheEmergencialNaoAutorizado,
     exibeTooltipLancheEmergencialAutorizado,
+    exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao,
     exibeTooltipLancheEmergencialZeroAutorizado,
     exibeTooltipLancheEmergencialZeroAutorizadoJustificado,
     exibeTooltipFrequenciaZeroTabelaEtec,
@@ -75,7 +79,11 @@ export const InputText = (props) => {
   };
 
   const validacaoFrequencia = () => {
-    if (validacaoMeta() && input.name.includes("frequencia")) {
+    if (
+      validacaoMeta() &&
+      meta?.error !== WARNING_LANCHE_EMERGENCIAL_AUTORIZADO &&
+      input.name.includes("frequencia")
+    ) {
       msgTooltip = meta.error;
       return true;
     }
@@ -85,6 +93,7 @@ export const InputText = (props) => {
   const validacaoLancheRefeicaoSobremesa1Oferta = () => {
     let validacao =
       validacaoMeta() &&
+      meta?.error !== WARNING_LANCHE_EMERGENCIAL_AUTORIZADO &&
       (input.name.includes("refeicao") ||
         input.name.includes("sobremesa") ||
         input.name.includes("lanche") ||
@@ -100,6 +109,44 @@ export const InputText = (props) => {
     return (
       exibeTooltipAlimentacoesAutorizadasDiaNaoLetivo &&
       Number(input.value) > Number(numeroDeInclusoesAutorizadas)
+    );
+  };
+
+  const validacaoWarningLancheEmergencialAutorizadoTipoAlimentacao = () => {
+    if (meta?.error === WARNING_LANCHE_EMERGENCIAL_AUTORIZADO) {
+      msgTooltip = meta.error;
+      return true;
+    }
+    return false;
+  };
+
+  const exibeBorderWarning = () => {
+    const exibeWarningLancheEmergencialAutorizadoTipoAlimentacao =
+      validacaoWarningLancheEmergencialAutorizadoTipoAlimentacao();
+
+    return (
+      (!meta.error || exibeWarningLancheEmergencialAutorizadoTipoAlimentacao) &&
+      (exibeWarningLancheEmergencialAutorizadoTipoAlimentacao ||
+        exibirTooltipAlimentacoesAutorizadasDiaNaoLetivo() ||
+        exibeTooltipFrequenciaAlimentacaoZero ||
+        exibeTooltipErroQtdMaiorQueAutorizado ||
+        exibeTooltipSuspensoesAutorizadas ||
+        exibeTooltipRPLAutorizadas ||
+        exibeTooltipLPRAutorizadas ||
+        exibeTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas ||
+        exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas ||
+        exibeTooltipKitLancheSolAlimentacoes ||
+        exibeTooltipQtdLancheEmergencialDiferenteSolAlimentacoesAutorizadas ||
+        exibeTooltipLancheEmergencialNaoAutorizado ||
+        exibeTooltipLancheEmergencialAutorizado ||
+        exibeTooltipFrequenciaZeroTabelaEtec ||
+        exibeTooltipLancheEmergTabelaEtec ||
+        exibeTooltipInclusoesAutorizadasComZero ||
+        exibeTooltipRepeticaoDiasSobremesaDoceDiferenteZero ||
+        exibeTooltipDietasInclusaoDiaNaoLetivoCEI ||
+        exibeTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI ||
+        exibirTooltipPeriodosZeradosNoProgramasProjetos ||
+        exibeTooltipSuspensoesAutorizadasCEI)
     );
   };
 
@@ -270,6 +317,14 @@ export const InputText = (props) => {
           <i className="fas fa-info icone-info-warning" />
         </Tooltip>
       )}
+      {exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao && (
+        <Tooltip title={"Lanche Emergencial autorizado"}>
+          <i
+            data-testid={`tooltip-lanche-emergencial-autorizado_${input.name}`}
+            className="fas fa-info icone-info-success"
+          />
+        </Tooltip>
+      )}
       {exibeTooltipFrequenciaZeroTabelaEtec && (
         <Tooltip
           title={
@@ -286,6 +341,14 @@ export const InputText = (props) => {
           }
         >
           <i className="fas fa-info icone-info-warning" />
+        </Tooltip>
+      )}
+      {validacaoWarningLancheEmergencialAutorizadoTipoAlimentacao() && (
+        <Tooltip title={msgTooltip}>
+          <i
+            data-testid={`tooltip-lanche-emergencial-warning_${input.name}`}
+            className="fas fa-info icone-info-warning"
+          />
         </Tooltip>
       )}
       {(validacaoFrequencia() || validacaoLancheRefeicaoSobremesa1Oferta()) && (
@@ -374,31 +437,7 @@ export const InputText = (props) => {
           validacaoFrequencia() || validacaoLancheRefeicaoSobremesa1Oferta()
             ? "invalid-field"
             : ""
-        } ${
-          !meta.error &&
-          (exibirTooltipAlimentacoesAutorizadasDiaNaoLetivo() ||
-            exibeTooltipFrequenciaAlimentacaoZero ||
-            exibeTooltipErroQtdMaiorQueAutorizado ||
-            exibeTooltipSuspensoesAutorizadas ||
-            exibeTooltipRPLAutorizadas ||
-            exibeTooltipLPRAutorizadas ||
-            exibeTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas ||
-            exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas ||
-            exibeTooltipKitLancheSolAlimentacoes ||
-            exibeTooltipQtdLancheEmergencialDiferenteSolAlimentacoesAutorizadas ||
-            exibeTooltipLancheEmergencialNaoAutorizado ||
-            exibeTooltipLancheEmergencialAutorizado ||
-            exibeTooltipFrequenciaZeroTabelaEtec ||
-            exibeTooltipLancheEmergTabelaEtec ||
-            exibeTooltipInclusoesAutorizadasComZero ||
-            exibeTooltipRepeticaoDiasSobremesaDoceDiferenteZero ||
-            exibeTooltipDietasInclusaoDiaNaoLetivoCEI ||
-            exibeTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI ||
-            exibirTooltipPeriodosZeradosNoProgramasProjetos ||
-            exibeTooltipSuspensoesAutorizadasCEI)
-            ? "border-warning"
-            : ""
-        }`}
+        } ${exibeBorderWarning() ? "border-warning" : ""}`}
         disabled={disabled}
         min={min}
         max={max}
