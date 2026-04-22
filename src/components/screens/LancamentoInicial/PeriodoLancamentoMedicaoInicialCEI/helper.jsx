@@ -219,6 +219,7 @@ export const desabilitarField = (
   ehUltimoDiaLetivoDoAno,
   calendarioMesConsiderado,
   ehRecreioNasFerias,
+  categoriasDeMedicao,
 ) => {
   let alimentacoesLancamentosEspeciaisDia = [];
   const valorAtual =
@@ -229,6 +230,31 @@ export const desabilitarField = (
 
   if (["Mês anterior", "Mês posterior"].includes(valorAtual)) {
     return true;
+  }
+
+  if (nomeCategoria.includes("DIETA") && rowName !== "dietas_autorizadas") {
+    const categoriaAlimentacao = categoriasDeMedicao.find(
+      (cat) => cat.nome === "ALIMENTAÇÃO",
+    );
+    const prefixo = ehRecreioNasFerias
+      ? "participantes"
+      : ehProgramasEProjetosLocation
+        ? "numero_de_alunos"
+        : "matriculados";
+
+    const faixa = ehRecreioNasFerias ? null : uuidFaixaEtaria;
+
+    const alunosDoDia =
+      ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation
+        ? `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`
+        : `${prefixo}__faixa_${faixa}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
+    const valorAlimentacao = values[alunosDoDia];
+    if (
+      [undefined, null, ""].includes(valorAlimentacao) ||
+      Number(valorAlimentacao) === 0
+    ) {
+      return true;
+    }
   }
 
   const statusDeBloqueio = () => {

@@ -294,10 +294,31 @@ export const desabilitarField = (
   alunosTabSelecionada = null,
   ehUltimoDiaLetivoDoAno,
 ) => {
+  const grupoRecreio = ehGrupoRecreioNasFerias(grupoLocation);
   const valorAtual = values[`${rowName}__dia_${dia}__categoria_${categoria}`];
 
   if (["Mês anterior", "Mês posterior"].includes(valorAtual)) {
     return true;
+  }
+
+  if (nomeCategoria.includes("DIETA") && rowName !== "dietas_autorizadas") {
+    const categoriaAlimentacao = categoriasDeMedicao.find(
+      (cat) => cat.nome === "ALIMENTAÇÃO",
+    );
+    const prefixo = grupoRecreio
+      ? "participantes"
+      : ehPeriodoEscolarSimples
+        ? "matriculados"
+        : "numero_de_alunos";
+
+    const alunosDoDia = `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
+    const valorAlimentacao = values[alunosDoDia];
+    if (
+      [undefined, null, ""].includes(valorAlimentacao) ||
+      Number(valorAlimentacao) === 0
+    ) {
+      return true;
+    }
   }
 
   const EH_INCLUSAO_SOMENTE_SOBREMESA =
@@ -494,7 +515,7 @@ export const desabilitarField = (
   }
   if (
     grupoLocation === "Programas e Projetos" ||
-    location.state.periodoEspecifico
+    location.state?.periodoEspecifico
   ) {
     return (
       validacaoSemana(dia) ||
@@ -565,7 +586,7 @@ export const desabilitarField = (
     }
   }
 
-  if (ehGrupoRecreioNasFerias(grupoLocation)) {
+  if (grupoRecreio) {
     if (feriadosNoMes.includes(dia)) {
       return true;
     }
@@ -625,15 +646,16 @@ export const desabilitarField = (
       return true;
     }
   }
+
   if (
-    !location.state.ehPeriodoEspecifico &&
+    !location.state?.ehPeriodoEspecifico &&
     !values[`matriculados__dia_${dia}__categoria_${categoria}`] &&
     !nomeCategoria.includes("DIETA ESPECIAL")
   ) {
     return true;
   }
   if (
-    location.state.ehPeriodoEspecifico &&
+    location.state?.ehPeriodoEspecifico &&
     !values[`numero_de_alunos__dia_${dia}__categoria_${categoria}`] &&
     !nomeCategoria.includes("DIETA ESPECIAL")
   ) {
@@ -646,7 +668,7 @@ export const desabilitarField = (
     return true;
   }
   if (
-    (location.state.ehPeriodoEspecifico ||
+    (location.state?.ehPeriodoEspecifico ||
       grupoLocation === "Programas e Projetos") &&
     inclusoesAutorizadas?.length > 0 &&
     nomeCategoria.includes("DIETA ESPECIAL") &&
@@ -703,7 +725,7 @@ export const desabilitarField = (
       ((!values[`matriculados__dia_${dia}__categoria_${categoria}`] ||
         Number(values[`matriculados__dia_${dia}__categoria_${categoria}`]) ===
           0) &&
-        !location.state.ehPeriodoEspecifico &&
+        !location.state?.ehPeriodoEspecifico &&
         grupoLocation !== "Programas e Projetos" &&
         !nomeCategoria.includes("DIETA ESPECIAL")) ||
       Number(
