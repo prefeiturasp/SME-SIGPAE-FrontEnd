@@ -43,6 +43,7 @@ import {
   ehFimDeSemanaUTC,
   escolaEhEMEBS,
   tiposAlimentacaoETEC,
+  usuarioEhEscolaCIEJA,
 } from "src/helpers/utilities";
 import {
   getTiposDeAlimentacao,
@@ -123,6 +124,7 @@ import {
   verificarMesAnteriorOuPosterior,
   exibirTooltipPeriodosZeradosNoProgramasProjetos,
   boqueaSalvamentoPeriodosZeradosNoProgramasProjetos,
+  exibirTooltipRefeicaoSimultanea,
 } from "./validacoes";
 
 export default () => {
@@ -3757,6 +3759,15 @@ export default () => {
                                                               .grupo,
                                                             escolaEhEMEBS(),
                                                             alunosTabSelecionada,
+                                                          )}
+                                                          exibirTooltipRefeicaoSimultanea={exibirTooltipRefeicaoSimultanea(
+                                                            formValuesAtualizados,
+                                                            row,
+                                                            column,
+                                                            categoria,
+                                                            usuarioEhEscolaCIEJA(),
+                                                            location.state
+                                                              .periodo,
                                                           )}
                                                           ehGrupoETECUrlParam={
                                                             ehGrupoETECUrlParam
