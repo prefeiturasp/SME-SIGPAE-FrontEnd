@@ -1323,7 +1323,7 @@ export const validacoesTabelaEtecAlimentacao = (
   categoria,
   value,
   allValues,
-  validacaoDiaLetivo,
+  validacaoDiaLancamentoETEC,
   validacaoSemana,
 ) => {
   const maxNumeroAlunos = Number(
@@ -1337,7 +1337,7 @@ export const validacoesTabelaEtecAlimentacao = (
     rowName === "frequencia" &&
     !allValues[`frequencia__dia_${dia}__categoria_${categoria}`] &&
     allValues[`numero_de_alunos__dia_${dia}__categoria_${categoria}`] &&
-    validacaoDiaLetivo(dia) &&
+    validacaoDiaLancamentoETEC(dia, categoria) &&
     !validacaoSemana(dia)
   ) {
     return "Há solicitação de alimentação autorizada para esta data. Insira o número de frequentes.";
