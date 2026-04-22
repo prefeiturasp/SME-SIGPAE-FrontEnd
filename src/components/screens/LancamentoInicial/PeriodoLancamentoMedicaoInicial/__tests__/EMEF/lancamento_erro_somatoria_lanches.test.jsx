@@ -20,6 +20,37 @@ import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "src/mocks/service
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
+const mockPermissoesLancamentosEspeciaisLancheEmergencialEMEF = {
+  results: {
+    ...mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025.results,
+    alimentacoes_lancamentos_especiais: [
+      ...mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025.results
+        .alimentacoes_lancamentos_especiais,
+      {
+        nome: "2o Lanche 5h",
+        name: "2_lanche_5h",
+        uuid: null,
+      },
+    ],
+    permissoes_por_dia:
+      mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025.results.permissoes_por_dia.map(
+        (permissao) =>
+          permissao.dia === "01"
+            ? {
+                ...permissao,
+                alimentacoes: [
+                  ...new Set([
+                    ...permissao.alimentacoes,
+                    "2_lanche_5h",
+                    "lanche_extra",
+                  ]),
+                ],
+              }
+            : permissao,
+      ),
+  },
+};
+
 describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () => {
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
@@ -73,7 +104,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
                   inclusao_id_externo: "8C896",
                   motivo: "Lanche Emergencial",
                   periodos_escolares: ["MANHA"],
-                  tipos_alimentacao_de: ["Lanche", "Refeição"],
+                  tipos_alimentacao_de: ["Lanche", "Refeição", "Sobremesa"],
                 },
               ],
             },
@@ -86,10 +117,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
       .onGet(
         "/medicao-inicial/permissao-lancamentos-especiais/permissoes-lancamentos-especiais-mes-ano-por-periodo/",
       )
-      .reply(
-        200,
-        mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEFAbril2025,
-      );
+      .reply(200, mockPermissoesLancamentosEspeciaisLancheEmergencialEMEF);
     mock.onGet("/dias-calendario/").reply(200, mockDiasCalendarioEMEFAbril2025);
     mock
       .onGet("/medicao-inicial/medicao/feriados-no-mes/")
@@ -197,7 +225,38 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
     );
   });
 
-  it("exibe warning laranja para lanche emergencial sem observação e desbloqueia ao digitar 0", async () => {
+  it("aplica tooltip e warning de lanche emergencial nas linhas especiais permitidas", async () => {
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_2_refeicao_1_oferta__dia_01__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_2_sobremesa_1_oferta__dia_01__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_2_lanche_5h__dia_01__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_lanche_extra__dia_01__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId(
+        "tooltip-lanche-emergencial-autorizado_repeticao_2_refeicao__dia_01__categoria_1",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId(
+        "tooltip-lanche-emergencial-autorizado_repeticao_2_sobremesa__dia_01__categoria_1",
+      ),
+    ).not.toBeInTheDocument();
+
     const inputElementLancheDia01 = screen.getByTestId(
       "lanche__dia_01__categoria_1",
     );
@@ -230,11 +289,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
         "tooltip-lanche-emergencial-autorizado_refeicao__dia_01__categoria_1",
       ),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId(
-        "tooltip-lanche-emergencial-autorizado_sobremesa__dia_01__categoria_1",
-      ),
-    ).not.toBeInTheDocument();
 
     fireEvent.change(inputElementLancheDia01, {
       target: { value: "0" },
@@ -258,7 +312,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
     expect(botaoSalvarLancamentos).not.toBeDisabled();
     expect(
       screen.getByTestId(
-        "tooltip-lanche-emergencial-autorizado_refeicao__dia_01__categoria_1",
+        "tooltip-lanche-emergencial-autorizado_2_refeicao_1_oferta__dia_01__categoria_1",
       ),
     ).toBeInTheDocument();
   });
