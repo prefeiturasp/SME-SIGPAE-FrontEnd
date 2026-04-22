@@ -9,6 +9,10 @@ div.acompanhamento-de-lancamentos {
     color: $gray;
   }
 
+  div.label-unidades-dre {
+    font-size: 14px;
+  }
+
   div.card-body {
     padding-bottom: 50px !important;
 
@@ -136,7 +140,7 @@ div.acompanhamento-de-lancamentos {
   .label-seletor-dre,
   .container-mes {
     margin-top: 1em !important;
-    margin-left: 2em;
+    margin-left: 1.5em;
     margin-right: 2em;
     margin-bottom: calc(0.375rem + 1px);
     width: 50%;

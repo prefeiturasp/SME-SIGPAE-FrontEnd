@@ -275,8 +275,6 @@ export const getSolicitacaoDietaEspecialListagem = async (filtros, params) => {
 export const getPanoramaEscola = async (filtros) =>
   axios.post(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`, filtros);
 
-export const getTiposDeContagem = async () => axios.get("/tipo-contagem/");
-
 export const getSolicitacoesDietaEspecial = async (params) => {
   return axios.get(`/${SOLICITACOES_DIETA_ESPECIAL}/`, { params });
 };

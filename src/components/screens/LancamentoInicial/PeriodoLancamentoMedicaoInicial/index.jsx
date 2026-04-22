@@ -103,6 +103,7 @@ import {
   exibirTooltipFrequenciaZeroTabelaEtec,
   exibirTooltipKitLancheSolAlimentacoes,
   exibirTooltipLancheEmergencialAutorizado,
+  exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao,
   exibirTooltipLancheEmergencialNaoAutorizado,
   exibirTooltipLancheEmergencialZeroAutorizado,
   exibirTooltipLancheEmergencialZeroAutorizadoJustificado,
@@ -113,6 +114,7 @@ import {
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
+  existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao,
   existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao,
   validacoesTabelaAlimentacao,
   validacoesTabelaEtecAlimentacao,
@@ -161,6 +163,10 @@ export default () => {
   const [
     alteracoesAlimentacaoAutorizadas,
     setAlteracoesAlimentacaoAutorizadas,
+  ] = useState(null);
+  const [
+    alteracoesLancheEmergencialAutorizadas,
+    setAlteracoesLancheEmergencialAutorizadas,
   ] = useState(null);
   const [kitLanchesAutorizadas, setKitLanchesAutorizadas] = useState(null);
   const [
@@ -436,6 +442,17 @@ export default () => {
 
   const ehGrupoColaboradores = () => {
     return location.state.grupo === "Colaboradores";
+  };
+
+  const existeWarningLancheEmergencialAutorizadoTipoAlimentacao = (
+    values = formValuesAtualizados,
+  ) => {
+    return existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao(
+      values,
+      categoriasDeMedicao,
+      weekColumns,
+      alteracoesLancheEmergencialAutorizadas,
+    );
   };
 
   useEffect(() => {
@@ -975,6 +992,7 @@ export default () => {
       let response_kit_lanches_autorizadas = [];
       let response_suspensoes_autorizadas = [];
       let response_alteracoes_alimentacao_autorizadas = [];
+      let response_alteracoes_lanche_emergencial_autorizadas = [];
       let response_permissoes_lancamentos_especiais_mes_ano_por_periodo = [];
 
       const calendario = await obterDiasLetivosCorretos(
@@ -1017,6 +1035,18 @@ export default () => {
           );
         setAlteracoesAlimentacaoAutorizadas(
           response_alteracoes_alimentacao_autorizadas,
+        );
+
+        response_alteracoes_lanche_emergencial_autorizadas =
+          await getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync(
+            escola.uuid,
+            mes,
+            ano,
+            periodo.periodo_escolar.nome,
+            true,
+          );
+        setAlteracoesLancheEmergencialAutorizadas(
+          response_alteracoes_lanche_emergencial_autorizadas,
         );
 
         if (ehPeriodoSimples) {
@@ -1647,6 +1677,23 @@ export default () => {
     categoriasDeMedicao,
   ]);
 
+  useEffect(() => {
+    if (
+      formValuesAtualizados &&
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(
+        formValuesAtualizados,
+      )
+    ) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    }
+  }, [
+    formValuesAtualizados,
+    weekColumns,
+    categoriasDeMedicao,
+    alteracoesLancheEmergencialAutorizadas,
+  ]);
+
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
     const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     let valoresMedicao = [];
@@ -1786,24 +1833,27 @@ export default () => {
         (valor) => valor.nome_campo === "observacoes",
       ),
     );
-    setExibirTooltip(false);
+    const bloquearBotaoLancheEmergencial =
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values);
     if (
-      valorPeriodoEscolar === "Programas e Projetos" &&
-      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
-        "frequencia",
-        categoriasDeMedicao,
-        formValuesAtualizados,
-        diasFrequenciaZerada,
-        valorPeriodoEscolar,
-        escolaEhEMEBS(),
-        alunosTabSelecionada,
-        weekColumns,
-      )
+      bloquearBotaoLancheEmergencial ||
+      (valorPeriodoEscolar === "Programas e Projetos" &&
+        boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+          "frequencia",
+          categoriasDeMedicao,
+          values,
+          diasFrequenciaZerada,
+          valorPeriodoEscolar,
+          escolaEhEMEBS(),
+          alunosTabSelecionada,
+          weekColumns,
+        ))
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
     } else {
       setDisableBotaoSalvarLancamentos(false);
+      setExibirTooltip(false);
     }
   };
 
@@ -2148,7 +2198,10 @@ export default () => {
       weekColumns,
       feriadosNoMes,
     );
-    if (erro) {
+    if (
+      erro ||
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values)
+    ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
     }
@@ -2215,6 +2268,8 @@ export default () => {
       }
     }
     desabilitaTooltip(values);
+    const existeWarningLancheEmergencial =
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values);
 
     const ehChangeInput = true;
     if (
@@ -2325,6 +2380,7 @@ export default () => {
           ehGrupoETECUrlParam,
           inclusoesEtecAutorizadas,
         )) ||
+      existeWarningLancheEmergencial ||
       boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
         "frequencia",
         categoriasDeMedicao,
@@ -2380,12 +2436,14 @@ export default () => {
           dadosValoresInclusoesAutorizadasState,
           suspensoesAutorizadas,
           alteracoesAlimentacaoAutorizadas,
+          alteracoesLancheEmergencialAutorizadas,
           validacaoDiaLetivo,
           location,
           feriadosNoMes,
           valoresPeriodosLancamentos,
           escolaEhEMEBS(),
           alunosTabSelecionada,
+          nomeCategoria,
         );
       }
     };
@@ -3459,6 +3517,7 @@ export default () => {
                                                               column,
                                                               suspensoesAutorizadas,
                                                               alteracoesAlimentacaoAutorizadas,
+                                                              alteracoesLancheEmergencialAutorizadas,
                                                               kitLanchesAutorizadas,
                                                               inclusoesEtecAutorizadas,
                                                               ehGrupoETECUrlParam,
@@ -3620,6 +3679,13 @@ export default () => {
                                                             column,
                                                             categoria,
                                                             alteracoesAlimentacaoAutorizadas,
+                                                          )}
+                                                          exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao={exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao(
+                                                            formValuesAtualizados,
+                                                            row,
+                                                            column,
+                                                            categoria,
+                                                            alteracoesLancheEmergencialAutorizadas,
                                                           )}
                                                           exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
                                                             formValuesAtualizados,

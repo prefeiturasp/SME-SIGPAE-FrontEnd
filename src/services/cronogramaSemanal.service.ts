@@ -10,6 +10,11 @@ export const getCronogramaSemanal = async (uuid: string) => {
   return await axios.get(`/cronogramas-semanais/${uuid}/`);
 };
 
+export const getListagemCronogramasSemanal = async (params) => {
+  const url = `/cronogramas-semanais/`;
+  return await axios.get(url, { params });
+};
+
 export const criarCronogramaSemanalRascunho = async (
   payload: CronogramaSemanalCreate,
   config = {},
@@ -43,4 +48,17 @@ export const getCronogramaMensalDetalhado = async (uuid: string) => {
   } catch (error) {
     toastError(getMensagemDeErro(error.response?.status));
   }
+};
+
+export const assinarEEnviarCronogramaSemanal = async (
+  uuid: string,
+  payload: CronogramaSemanalCreate,
+  password: string,
+  config = {},
+) => {
+  return await axios.patch(
+    `/cronogramas-semanais/${uuid}/assinar-e-enviar/`,
+    { ...payload, password },
+    config,
+  );
 };

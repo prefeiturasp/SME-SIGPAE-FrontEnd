@@ -27,6 +27,7 @@ import {
   getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
   getVinculosTipoAlimentacaoPorEscola,
 } from "src/services/cadastroTipoAlimentacao.service";
+import { filtrarAlunosMatriculados } from "src/services/alunosMatriculados.service";
 import { getDiasUteis } from "src/services/diasUteis.service";
 import {
   buscaPeriodosEscolares,
@@ -43,6 +44,7 @@ import {
 
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/escola.service");
+jest.mock("src/services/alunosMatriculados.service");
 jest.mock("src/services/diasUteis.service");
 jest.mock("src/services/inclusaoDeAlimentacao");
 
@@ -53,6 +55,7 @@ const awaitServices = async () => {
     expect(getMotivosInclusaoContinua).toHaveBeenCalled();
     expect(buscaPeriodosEscolares).toHaveBeenCalled();
     expect(getQuantidaDeAlunosPorPeriodoEEscola).toHaveBeenCalled();
+    expect(filtrarAlunosMatriculados).toHaveBeenCalled();
     expect(getVinculosTipoAlimentacaoPorEscola).toHaveBeenCalled();
     expect(
       getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
@@ -82,6 +85,10 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     });
     getVinculosTipoAlimentacaoPorEscola.mockResolvedValue({
       data: mockVinculosTipoAlimentacaoEPeriodoEscolar,
+      status: 200,
+    });
+    filtrarAlunosMatriculados.mockResolvedValue({
+      data: { results: [] },
       status: 200,
     });
     getVinculosTipoAlimentacaoMotivoInclusaoEspecifico.mockResolvedValue({
