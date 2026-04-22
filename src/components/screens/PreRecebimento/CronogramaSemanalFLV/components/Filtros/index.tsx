@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Field } from "react-final-form";
 import { NavLink } from "react-router-dom";
 
+import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
@@ -13,6 +14,9 @@ import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import { InputText } from "src/components/Shareable/Input/InputText";
 import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
+import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
+import { getCronogramasMensalAssinados } from "src/services/cronogramaSemanal.service";
+import { listaSimplesTerceirizadas } from "src/services/terceirizada.service";
 import {
   PRE_RECEBIMENTO,
   CADASTRO_CRONOGRAMA_SEMANAL,
@@ -24,8 +28,30 @@ import {
   usuarioEhCodaeDilog,
   usuarioEhCronograma,
 } from "../../../../../../helpers/utilities";
+import { TerceirizadaSimplesInterface } from "src/interfaces/terceirizada.interface";
+
+type ProdutoSimples = {
+  nome: string;
+};
 
 export default ({ setFiltros, setCronogramas, setTotal, inicioResultado }) => {
+  const [produtos, setProdutos] = useState<ProdutoSimples[]>([]);
+  const [empresas, setEmpresas] = useState<TerceirizadaSimplesInterface[]>([]);
+
+  const buscarListaProdutos = async (): Promise<void> => {
+    const response = await getCronogramasMensalAssinados();
+    const produtosUnicos = response.data
+      .map((cronograma) => cronograma.produto_nome)
+      .filter((nome, index, self) => nome && self.indexOf(nome) === index)
+      .map((nome) => ({ nome }));
+    setProdutos(produtosUnicos);
+  };
+
+  const buscarListaEmpresas = async (): Promise<void> => {
+    const response = await listaSimplesTerceirizadas();
+    setEmpresas(response.data.results);
+  };
+
   const onSubmit = async (values) => {
     const filtros = { ...values };
     if (filtros?.status) filtros.status = filtros.status.flat();
@@ -37,6 +63,25 @@ export default ({ setFiltros, setCronogramas, setTotal, inicioResultado }) => {
     setTotal(undefined);
   };
 
+  const optionsCampoProdutos = (values) =>
+    getListaFiltradaAutoCompleteSelect(
+      produtos.map((e) => e.nome),
+      values.nome_produto,
+      true,
+    );
+
+  const optionsCampoEmpresa = (values: Record<string, any>) =>
+    getListaFiltradaAutoCompleteSelect(
+      empresas.map((e) => e.nome_fantasia),
+      values.nome_empresa,
+      true,
+    );
+
+  useEffect(() => {
+    buscarListaProdutos();
+    buscarListaEmpresas();
+  }, []);
+
   return (
     <div className="filtros-cronograma-de-entrega">
       <CollapseFiltros onSubmit={onSubmit} onClear={onClear}>
@@ -46,12 +91,11 @@ export default ({ setFiltros, setCronogramas, setTotal, inicioResultado }) => {
               <div className="row">
                 <div className="col-6">
                   <Field
-                    component={InputText}
-                    label="Filtrar por Nome do Produto"
-                    dataTestId="nome_produto"
+                    component={AutoCompleteSelectField}
+                    options={optionsCampoProdutos(values)}
+                    label="Filtrar por Produto"
                     name="nome_produto"
-                    placeholder="Digite o produto"
-                    className="input-busca-cronograma"
+                    placeholder="Selecione um Produto"
                   />
                 </div>
                 <div className="col-6">
@@ -68,21 +112,20 @@ export default ({ setFiltros, setCronogramas, setTotal, inicioResultado }) => {
               <div className="row">
                 <div className="col-6">
                   <Field
-                    component={InputText}
-                    label="Filtrar por Nome do Produto"
-                    dataTestId="nome_produto"
+                    component={AutoCompleteSelectField}
+                    options={optionsCampoProdutos(values)}
+                    label="Filtrar por Produto"
                     name="nome_produto"
-                    placeholder="Digite o produto"
-                    className="input-busca-cronograma"
+                    placeholder="Selecione um Produto"
                   />
                 </div>
                 <div className="col-6">
                   <Field
-                    component={InputText}
-                    label="Filtrar por Nome da Empresa"
+                    component={AutoCompleteSelectField}
+                    options={optionsCampoEmpresa(values)}
+                    label="Filtrar por Empresa"
                     name="nome_empresa"
-                    placeholder="Digite o nome da empresa"
-                    className="input-busca-cronograma"
+                    placeholder="Selecione uma Empresa"
                   />
                 </div>
               </div>
