@@ -452,6 +452,7 @@ export default () => {
       categoriasDeMedicao,
       weekColumns,
       alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
     );
   };
 
@@ -1692,6 +1693,7 @@ export default () => {
     weekColumns,
     categoriasDeMedicao,
     alteracoesLancheEmergencialAutorizadas,
+    permissoesLancamentosEspeciaisPorDia,
   ]);
 
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
@@ -2437,6 +2439,7 @@ export default () => {
           suspensoesAutorizadas,
           alteracoesAlimentacaoAutorizadas,
           alteracoesLancheEmergencialAutorizadas,
+          permissoesLancamentosEspeciaisPorDia,
           validacaoDiaLetivo,
           location,
           feriadosNoMes,
@@ -3518,6 +3521,7 @@ export default () => {
                                                               suspensoesAutorizadas,
                                                               alteracoesAlimentacaoAutorizadas,
                                                               alteracoesLancheEmergencialAutorizadas,
+                                                              permissoesLancamentosEspeciaisPorDia,
                                                               kitLanchesAutorizadas,
                                                               inclusoesEtecAutorizadas,
                                                               ehGrupoETECUrlParam,
@@ -3686,6 +3690,7 @@ export default () => {
                                                             column,
                                                             categoria,
                                                             alteracoesLancheEmergencialAutorizadas,
+                                                            permissoesLancamentosEspeciaisPorDia,
                                                           )}
                                                           exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
                                                             formValuesAtualizados,

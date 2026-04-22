@@ -413,13 +413,19 @@ const TIPOS_ALIMENTACAO_ESPECIAIS_LANCHE_EMERGENCIAL = {
   lanche_4h: ["2_lanche_4h"],
 };
 
+const garantirArray = (value) => {
+  return Array.isArray(value) ? value : [];
+};
+
 const getAlimentacoesLancamentosEspeciaisPorDia = (
   dia,
   permissoesLancamentosEspeciaisPorDia = [],
 ) => {
+  const permissoes = garantirArray(permissoesLancamentosEspeciaisPorDia);
+
   return [
     ...new Set(
-      permissoesLancamentosEspeciaisPorDia
+      permissoes
         .filter((permissao) => Number(permissao.dia) === Number(dia))
         .flatMap((permissao) => permissao.alimentacoes || []),
     ),
@@ -430,9 +436,11 @@ const getTiposAlimentacaoLancheEmergencialAutorizadosNoDia = (
   dia,
   alteracoesLancheEmergencialAutorizadas = [],
 ) => {
+  const alteracoes = garantirArray(alteracoesLancheEmergencialAutorizadas);
+
   return [
     ...new Set(
-      alteracoesLancheEmergencialAutorizadas
+      alteracoes
         .filter((alteracao) => Number(alteracao.dia) === Number(dia))
         .flatMap((alteracao) => alteracao.tipos_alimentacao_de || [])
         .map(normalizarTipoAlimentacaoLancheEmergencial),
