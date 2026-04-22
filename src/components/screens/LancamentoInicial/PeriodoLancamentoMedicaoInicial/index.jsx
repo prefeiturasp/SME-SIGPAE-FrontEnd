@@ -1133,7 +1133,7 @@ export default () => {
             escola.uuid,
             mes,
             ano,
-            periodo.periodo_escolar.nome,
+            undefined,
             true,
           );
         setAlteracoesAlimentacaoAutorizadas(
