@@ -2425,3 +2425,45 @@ export const habitarBotaoAdicionar = (
   const value = formValuesAtualizados[inputName];
   return value && Number(value) > 0 && !temObservacao;
 };
+
+export const exibirTooltipRefeicaoSimultanea = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  ehEscolaCieja,
+  periodoEscolar,
+) => {
+  if (!periodoEscolar === "NOITE" || !ehEscolaCieja) return false;
+  const value =
+    formValuesAtualizados[
+      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+  const lanche =
+    formValuesAtualizados[
+      `lanche__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+  const lanche_4h =
+    formValuesAtualizados[
+      `lanche_4h__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+  const refeicao =
+    formValuesAtualizados[
+      `refeicao__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  if (
+    row.name.includes("lanche") &&
+    value &&
+    Number(value) > 0 &&
+    value === lanche
+  ) {
+    if (
+      (refeicao && Number(refeicao) > 0) ||
+      (lanche_4h && Number(lanche_4h) > 0)
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
