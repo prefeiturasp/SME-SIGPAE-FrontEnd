@@ -17,6 +17,7 @@ import { mockMotivosInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockM
 import { mockMotivosInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockMotivosInclusaoNormal";
 import { mockPeriodosEscolaresNoite } from "src/mocks/InclusaoAlimentacao/mockPeriodosEscolaresNoite";
 import { mockQuantidadeAlunosPorPeriodo } from "src/mocks/InclusaoAlimentacao/mockQuantidadeAlunosPorPeriodo";
+import { mockMatriculadosProgramas } from "src/mocks/InclusaoAlimentacao/mockMatriculadosProgramas";
 import { mockTiposAlimentacao } from "src/mocks/InclusaoAlimentacao/mockTiposAlimentacao";
 import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "src/mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
 import { mockDiasUteis } from "src/mocks/diasUseisMock";
@@ -83,18 +84,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       status: 200,
     });
     filtrarAlunosMatriculados.mockResolvedValue({
-      data: {
-        results: [
-          {
-            periodo_escolar: {
-              nome: "MANHA",
-              uuid: "5067e137-e5f3-4876-a63f-7f58cce93f33",
-            },
-            quantidade_alunos: 10,
-            tipo_turma: "PROGRAMAS",
-          },
-        ],
-      },
+      data: mockMatriculadosProgramas,
       status: 200,
     });
     getVinculosTipoAlimentacaoPorEscola.mockResolvedValue({
@@ -246,7 +236,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Não pode ser maior que 10")).toBeInTheDocument();
+      expect(screen.getByText("Não pode ser maior que 25")).toBeInTheDocument();
     });
   });
 
