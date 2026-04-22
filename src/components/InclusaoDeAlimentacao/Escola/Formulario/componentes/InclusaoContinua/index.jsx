@@ -137,12 +137,7 @@ export const Recorrencia = ({
     if (ehMotivoInclusaoEspecifico) return null;
 
     if (ehMotivoInclusaoProgramasContinuos) {
-      const periodoPrograma = periodosProgramas.find(
-        (p) =>
-          p.tipo_turma === "PROGRAMAS" &&
-          p.periodo_escolar?.uuid === values.periodo_escolar,
-      );
-      return periodoPrograma?.quantidade_alunos ?? 0;
+      return getTotalProgramas();
     }
 
     return periodos.find((p) => p.uuid === values.periodo_escolar)
@@ -237,22 +232,33 @@ export const Recorrencia = ({
     }
   };
 
+  const getTotalProgramas = () => {
+    const totalProgramas = periodosProgramas
+      .filter((p) => p.tipo_turma === "PROGRAMAS")
+      .reduce((acc, p) => acc + (p.quantidade_alunos ?? 0), 0);
+
+    const totalJaAdicionado = (values.quantidades_periodo ?? []).reduce(
+      (acc, qp) => {
+        if (!qp || !qp.numero_alunos) return acc;
+        return acc + Number(qp.numero_alunos);
+      },
+      0,
+    );
+
+    return totalProgramas - totalJaAdicionado;
+  };
+
   const validacaoNumeroAlunos = () => {
     if (ehMotivoInclusaoEspecifico) {
       return composeValidators(naoPodeSerZero, numericInteger);
     }
 
     if (ehMotivoInclusaoProgramasContinuos) {
-      const periodoPrograma = periodosProgramas.find(
-        (p) =>
-          p.tipo_turma === "PROGRAMAS" &&
-          p.periodo_escolar?.uuid === values.periodo_escolar,
-      );
-
+      const maximo = getTotalProgramas();
       return composeValidators(
         naoPodeSerZero,
         numericInteger,
-        maxValue(periodoPrograma?.quantidade_alunos ?? 0),
+        maxValue(maximo),
       );
     }
 
