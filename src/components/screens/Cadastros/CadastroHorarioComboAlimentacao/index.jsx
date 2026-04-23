@@ -1,23 +1,29 @@
-import React, { Component, Fragment } from "react";
+import HTTP_STATUS from "http-status-codes";
+import moment from "moment";
+import { Component, Fragment } from "react";
 import { Field, reduxForm } from "redux-form";
-import { InputHorario } from "../../../Shareable/Input/InputHorario";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import { InputHorario } from "src/components/Shareable/Input/InputHorario";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import Wizard from "src/components/Shareable/Wizard";
+import { getError } from "src/helpers/utilities";
+import {
+  postHorariosCombosPorEscola,
+  putHorariosCombosPorEscola,
+} from "src/services/cadastroTipoAlimentacao.service";
 import {
   todosOsCamposValidos,
   ultimoHorarioDisponivel,
   ultimoPeriodoDaEscola,
 } from "./helper";
-import HTTP_STATUS from "http-status-codes";
-import Wizard from "../../../Shareable/Wizard";
-import Botao from "../../../Shareable/Botao";
-import { BUTTON_TYPE, BUTTON_STYLE } from "../../../Shareable/Botao/constants";
 import "./style.scss";
-import moment from "moment";
-import { toastError, toastSuccess } from "../../../Shareable/Toast/dialogs";
-import {
-  postHorariosCombosPorEscola,
-  putHorariosCombosPorEscola,
-} from "../../../../services/cadastroTipoAlimentacao.service";
-import { getError } from "../../../../helpers/utilities";
 
 class CadastroHorarioComboAlimentacao extends Component {
   constructor(props) {
@@ -123,8 +129,8 @@ class CadastroHorarioComboAlimentacao extends Component {
         } else {
           toastError(
             `Erro ao salvar horário do tipo de alimentação ${getError(
-              response.data
-            )}`
+              response.data,
+            )}`,
           );
         }
       });
@@ -139,8 +145,8 @@ class CadastroHorarioComboAlimentacao extends Component {
         } else {
           toastError(
             `Erro ao alterar horário do tipo de alimentação ${getError(
-              response.data
-            )}`
+              response.data,
+            )}`,
           );
         }
       });
@@ -177,8 +183,8 @@ class CadastroHorarioComboAlimentacao extends Component {
         } else {
           toastError(
             `Erro ao salvar horário do tipo de alimentação ${getError(
-              response.data
-            )}`
+              response.data,
+            )}`,
           );
         }
       });
@@ -195,8 +201,8 @@ class CadastroHorarioComboAlimentacao extends Component {
         } else {
           toastError(
             `Erro ao alterar horário do tipo de alimentação ${getError(
-              response.data
-            )}`
+              response.data,
+            )}`,
           );
         }
       });
@@ -230,8 +236,8 @@ class CadastroHorarioComboAlimentacao extends Component {
         } else {
           toastError(
             `Erro ao salvar horário do tipo de alimentação ${getError(
-              response.data
-            )}`
+              response.data,
+            )}`,
           );
         }
       });
@@ -245,8 +251,8 @@ class CadastroHorarioComboAlimentacao extends Component {
         } else {
           toastError(
             `Erro ao alterar horário do tipo de alimentação ${getError(
-              response.data
-            )}`
+              response.data,
+            )}`,
           );
         }
       });
@@ -256,7 +262,7 @@ class CadastroHorarioComboAlimentacao extends Component {
   salvaComboEHorarios = (
     vinculosDeHorarios,
     periodoEscolar,
-    horarioAlimentacaoAtual
+    horarioAlimentacaoAtual,
   ) => {
     const comboHorario =
       vinculosDeHorarios[periodoEscolar].horarios_alimentacao[
@@ -310,7 +316,7 @@ class CadastroHorarioComboAlimentacao extends Component {
       ultimoHorarioDisponivel(
         vinculosDeHorarios,
         periodoEscolar,
-        horarioAlimentacaoAtual
+        horarioAlimentacaoAtual,
       );
     const { naoPermitido } = this.props;
     return !vinculosDeHorarios ? (
@@ -424,8 +430,8 @@ class CadastroHorarioComboAlimentacao extends Component {
                           horarioAlimentacaoAtual === index
                             ? "combo-atual"
                             : horarioAlimentacaoAtual > index
-                            ? "combo-passado"
-                            : "proximo-combo"
+                              ? "combo-passado"
+                              : "proximo-combo"
                         }`}
                       >
                         <nav>{horario.label}</nav>{" "}
@@ -447,8 +453,8 @@ class CadastroHorarioComboAlimentacao extends Component {
                           horarioAlimentacaoAtual === index
                             ? "combo-ativo"
                             : horarioAlimentacaoAtual > index
-                            ? "combo-inativo horario-confirmado"
-                            : "combo-inativo"
+                              ? "combo-inativo horario-confirmado"
+                              : "combo-inativo"
                         }`}
                         placeholder={"Hora Inicial"}
                         horaAtual={horario.hora_inicial}
@@ -464,8 +470,8 @@ class CadastroHorarioComboAlimentacao extends Component {
                           horarioAlimentacaoAtual === index
                             ? "combo-ativo"
                             : horarioAlimentacaoAtual > index
-                            ? "combo-inativo horario-confirmado"
-                            : "combo-inativo"
+                              ? "combo-inativo horario-confirmado"
+                              : "combo-inativo"
                         }`}
                         placeholder={"Hora Término"}
                         horaAtual={horario.hora_final}
@@ -477,7 +483,7 @@ class CadastroHorarioComboAlimentacao extends Component {
                       />
                     </Fragment>
                   );
-                }
+                },
               )}
             </article>
           </section>
@@ -485,12 +491,12 @@ class CadastroHorarioComboAlimentacao extends Component {
             {todosOsCamposValidos(
               vinculosDeHorarios,
               periodoEscolar,
-              horarioAlimentacaoAtual
+              horarioAlimentacaoAtual,
             ) ? (
               ultimoHorarioDisponivel(
                 vinculosDeHorarios,
                 periodoEscolar,
-                horarioAlimentacaoAtual
+                horarioAlimentacaoAtual,
               ) ? (
                 ultimoPeriodoDaEscola(vinculosDeHorarios, periodoEscolar) ? (
                   <Botao
