@@ -2434,35 +2434,61 @@ export const exibirTooltipRefeicaoSimultanea = (
   ehEscolaCieja,
   periodoEscolar,
 ) => {
-  if (!periodoEscolar === "NOITE" || !ehEscolaCieja) return false;
-  const value =
-    formValuesAtualizados[
-      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-    ];
-  const lanche =
-    formValuesAtualizados[
-      `lanche__dia_${column.dia}__categoria_${categoria.id}`
-    ];
-  const lanche_4h =
-    formValuesAtualizados[
-      `lanche_4h__dia_${column.dia}__categoria_${categoria.id}`
-    ];
-  const refeicao =
-    formValuesAtualizados[
-      `refeicao__dia_${column.dia}__categoria_${categoria.id}`
-    ];
+  if (!(periodoEscolar === "NOITE" || ehEscolaCieja)) return false;
 
-  if (
-    row.name.includes("lanche") &&
-    value &&
-    Number(value) > 0 &&
-    value === lanche
-  ) {
-    if (
-      (refeicao && Number(refeicao) > 0) ||
-      (lanche_4h && Number(lanche_4h) > 0)
-    ) {
-      return true;
+  const base = `__dia_${column.dia}__categoria_${categoria.id}`;
+  const lanche = Number(formValuesAtualizados[`lanche${base}`]) || 0;
+  const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
+  const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+  const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+  const temObservacao = formValuesAtualizados[`observacoes${base}`];
+
+  const temRefeicao = refeicao > 0;
+  const temSobremesa = sobremesa > 0;
+  const temLanche = lanche > 0;
+  const temLanche4h = lanche4h > 0;
+  const ativos = [temLanche, temLanche4h, temRefeicao, temSobremesa].filter(
+    Boolean,
+  ).length;
+
+  if (ativos <= 1 || temObservacao) return false;
+
+  const rowValue = Number(formValuesAtualizados[`${row.name}${base}`]) || 0;
+
+  return row.name === "lanche_4h" && rowValue > 0;
+};
+
+export const bloquearSalvamentoRefeicaoSimultanea = (
+  formValuesAtualizados,
+  weekColumns,
+  categoriasDeMedicao,
+  ehEscolaCieja,
+  periodoEscolar,
+) => {
+  if (!(periodoEscolar === "NOITE" || ehEscolaCieja)) return false;
+
+  for (const categoria of categoriasDeMedicao) {
+    for (const column of weekColumns) {
+      const base = `__dia_${column.dia}__categoria_${categoria.id}`;
+      const lanche = Number(formValuesAtualizados[`lanche${base}`]) || 0;
+      const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
+      const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+      const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+      const temObservacao = formValuesAtualizados[`observacoes${base}`];
+
+      const temRefeicao = refeicao > 0;
+      const temSobremesa = sobremesa > 0;
+      const temLanche = lanche > 0;
+      const temLanche4h = lanche4h > 0;
+
+      const ativos = [temLanche, temLanche4h, temRefeicao, temSobremesa].filter(
+        Boolean,
+      ).length;
+      if (ativos <= 1 || temObservacao) continue;
+
+      const lanche4hValue =
+        Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
+      if (lanche4hValue > 0) return true;
     }
   }
   return false;
