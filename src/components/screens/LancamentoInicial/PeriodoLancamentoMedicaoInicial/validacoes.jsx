@@ -10,6 +10,7 @@ import {
   existeAlteracaoLPR,
 } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import { format } from "date-fns";
+import { usuarioEhEscolaCIEJA } from "src/helpers/utilities.jsx";
 
 export const alimentacoesFrequenciaZeroESemObservacao = (
   values,
@@ -596,6 +597,14 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         location.state.grupo,
         escolaEmebs,
         alunosTabSelecionada,
+      ) ||
+      refeicaoSimultaneaESemObservacao(
+        formValuesAtualizados,
+        row,
+        column,
+        categoria,
+        usuarioEhEscolaCIEJA(),
+        location.state.periodo,
       )
     );
   }
@@ -652,6 +661,14 @@ export const botaoAdicionarObrigatorio = (
       location.state.grupo,
       escolaEmebs,
       alunosTabSelecionada,
+    ) ||
+    refeicaoSimultaneaESemObservacao(
+      formValuesAtualizados,
+      row,
+      column,
+      categoria,
+      usuarioEhEscolaCIEJA(),
+      location.state.periodo,
     )
   );
 };
@@ -2437,7 +2454,6 @@ export const exibirTooltipRefeicaoSimultanea = (
   if (!(periodoEscolar === "NOITE" || ehEscolaCieja)) return false;
 
   const base = `__dia_${column.dia}__categoria_${categoria.id}`;
-  const lanche = Number(formValuesAtualizados[`lanche${base}`]) || 0;
   const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
   const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
   const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
@@ -2445,9 +2461,8 @@ export const exibirTooltipRefeicaoSimultanea = (
 
   const temRefeicao = refeicao > 0;
   const temSobremesa = sobremesa > 0;
-  const temLanche = lanche > 0;
   const temLanche4h = lanche4h > 0;
-  const ativos = [temLanche, temLanche4h, temRefeicao, temSobremesa].filter(
+  const ativos = [temLanche4h, temRefeicao, temSobremesa].filter(
     Boolean,
   ).length;
 
@@ -2470,7 +2485,6 @@ export const bloquearSalvamentoRefeicaoSimultanea = (
   for (const categoria of categoriasDeMedicao) {
     for (const column of weekColumns) {
       const base = `__dia_${column.dia}__categoria_${categoria.id}`;
-      const lanche = Number(formValuesAtualizados[`lanche${base}`]) || 0;
       const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
       const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
       const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
@@ -2478,10 +2492,9 @@ export const bloquearSalvamentoRefeicaoSimultanea = (
 
       const temRefeicao = refeicao > 0;
       const temSobremesa = sobremesa > 0;
-      const temLanche = lanche > 0;
       const temLanche4h = lanche4h > 0;
 
-      const ativos = [temLanche, temLanche4h, temRefeicao, temSobremesa].filter(
+      const ativos = [temLanche4h, temRefeicao, temSobremesa].filter(
         Boolean,
       ).length;
       if (ativos <= 1 || temObservacao) continue;
@@ -2492,4 +2505,28 @@ export const bloquearSalvamentoRefeicaoSimultanea = (
     }
   }
   return false;
+};
+
+export const refeicaoSimultaneaESemObservacao = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  ehEscolaCieja,
+  periodoEscolar,
+) => {
+  if (!(periodoEscolar === "NOITE" || ehEscolaCieja)) return false;
+
+  const base = `__dia_${column.dia}__categoria_${categoria.id}`;
+  const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
+  const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+  const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+  const temObservacao = formValuesAtualizados[`observacoes${base}`];
+
+  const temRefeicao = refeicao > 0;
+  const temSobremesa = sobremesa > 0;
+  const temLanche4h = lanche4h > 0;
+  const temRefeicaoOuSobremesa = temRefeicao || temSobremesa;
+  if (!temRefeicaoOuSobremesa || !temLanche4h || temObservacao) return false;
+  return true;
 };
