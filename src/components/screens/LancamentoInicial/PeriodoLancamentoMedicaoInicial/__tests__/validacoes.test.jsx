@@ -1,6 +1,7 @@
 import {
   exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
+  exibirTooltipRefeicaoSimultanea,
 } from "../validacoes";
 
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
@@ -960,5 +961,322 @@ describe("habitarBotaoAdicionar", () => {
     );
 
     expect(result).toBe(false);
+  });
+});
+
+describe("Testes de Refeicao Simultanea em período noturno e unidades CEIJA", () => {
+  describe("exibirTooltipRefeicaoSimultanea", () => {
+    const column = { dia: 1 };
+    const categoria = { id: 1 };
+
+    const buildBase = () => `__dia_${column.dia}__categoria_${categoria.id}`;
+
+    const defaultRow = { name: "lanche_4h" };
+
+    const buildFormValues = ({
+      lanche_4h = 0,
+      refeicao = 0,
+      sobremesa = 0,
+      observacoes = "",
+      rowValue = 0,
+    } = {}) => {
+      const base = buildBase();
+
+      return {
+        [`refeicao${base}`]: refeicao,
+        [`sobremesa${base}`]: sobremesa,
+        [`observacoes${base}`]: observacoes,
+        [`lanche_4h${base}`]: rowValue ?? lanche_4h,
+      };
+    };
+
+    test("retorna false quando não é NOITE nem CIEJA", () => {
+      const form = buildFormValues({ lanche_4h: 1, refeicao: 1 });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        false,
+        "MANHA",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false quando apenas 1 item ativo", () => {
+      const form = buildFormValues({ lanche_4h: 1 });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false quando há observação", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+        observacoes: "texto",
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false quando row.name não é lanche_4h", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        { name: "refeicao" },
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false quando lanche_4h é 0 no row", () => {
+      const form = buildFormValues({
+        lanche_4h: 0,
+        refeicao: 1,
+        sobremesa: 1,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna true quando condições são atendidas (NOITE)", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+        rowValue: null,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(true);
+    });
+
+    test("retorna true quando é escola CIEJA mesmo fora de NOITE", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        sobremesa: 1,
+        rowValue: null,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        true,
+        "MANHA",
+      );
+
+      expect(result).toBe(true);
+    });
+
+    test("trata valores undefined como 0", () => {
+      const form = {};
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false com 2 ativos sem lanche_4h", () => {
+      const form = buildFormValues({
+        refeicao: 1,
+        sobremesa: 1,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna true com 3 ativos", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+        sobremesa: 1,
+        rowValue: null,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(true);
+    });
+
+    test("retorna false quando rowValue = 0 mesmo com ativos", () => {
+      const form = buildFormValues({
+        refeicao: 1,
+        rowValue: 0,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("não bloqueia quando observação é null", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+        observacoes: null,
+        rowValue: null,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        defaultRow,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(true);
+    });
+
+    test("retorna false mesmo com cenário válido", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        { name: "matriculados" },
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+      expect(result).toBe(false);
+    });
+
+    test("retorna false com 3 ativos", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+        sobremesa: 1,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        { name: "frequencia" },
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false com CIEJA e cenário válido", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        sobremesa: 1,
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        { name: "refeicao" },
+        column,
+        categoria,
+        true,
+        "MANHA",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false mesmo sem observação e múltiplos ativos", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+        sobremesa: 1,
+        observacoes: "",
+      });
+
+      const result = exibirTooltipRefeicaoSimultanea(
+        form,
+        { name: "sobremesa" },
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
   });
 });
