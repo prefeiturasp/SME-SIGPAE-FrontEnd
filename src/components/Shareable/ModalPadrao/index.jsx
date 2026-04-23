@@ -1,18 +1,23 @@
 import HTTP_STATUS from "http-status-codes";
-import React from "react";
 import { Modal } from "react-bootstrap";
-import { Form, Field } from "react-final-form";
-import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
-
-import Botao from "../Botao";
-import { BUTTON_STYLE, BUTTON_TYPE } from "../Botao/constants";
-import CKEditorField from "../CKEditorField";
-import { toastError, toastSuccess } from "../Toast/dialogs";
-import { textAreaRequiredAndAtLeastOneCharacter } from "../../../helpers/fieldValidators";
-import "./style.scss";
-import InputText from "../Input/InputText";
-import { PAINEL_GESTAO_PRODUTO } from "src/configs/constants";
+import { Field, Form } from "react-final-form";
 import { useNavigate } from "react-router-dom";
+import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
+import {
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import CKEditorField from "src/components/Shareable/CKEditorField";
+import InputText from "src/components/Shareable/Input/InputText";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { PAINEL_GESTAO_PRODUTO } from "src/configs/constants";
+import { textAreaRequiredAndAtLeastOneCharacter } from "src/helpers/fieldValidators";
+import { getError } from "src/helpers/utilities";
+import Botao from "../Botao";
+import "./style.scss";
 
 export const ModalPadrao = ({ ...props }) => {
   const {
@@ -43,7 +48,7 @@ export const ModalPadrao = ({ ...props }) => {
     let resp = undefined;
     if (eAnalise) {
       const terceirizada = terceirizadas.find(
-        (t) => t.nome_fantasia === formValues.nome_terceirizada
+        (t) => t.nome_fantasia === formValues.nome_terceirizada,
       );
       resp = await endpoint(uuid, justificativa, terceirizada.uuid);
     } else {
@@ -58,7 +63,7 @@ export const ModalPadrao = ({ ...props }) => {
       }
       toastSuccess(toastSuccessMessage);
     } else {
-      toastError(resp.data.detail);
+      toastError(getError(resp.data));
     }
   };
 
@@ -134,7 +139,7 @@ export const ModalPadrao = ({ ...props }) => {
                     <Field
                       component={AutoCompleteField}
                       dataSource={getTerceirizadasFiltrado(
-                        values.nome_terceirizada
+                        values.nome_terceirizada,
                       )}
                       label="Nome da empresa solicitante (Terceirizada)"
                       placeholder="Digite nome da terceirizada"
