@@ -3,6 +3,7 @@ import {
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
   exibirTooltipRefeicaoSimultanea,
   bloquearSalvamentoRefeicaoSimultanea,
+  refeicaoSimultaneaESemObservacao,
 } from "../validacoes";
 
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
@@ -985,10 +986,10 @@ describe("Testes de Refeicao Simultanea em período noturno e unidades CEIJA", (
       const base = buildBase();
 
       return {
-        [`refeicao${base}`]: refeicao,
-        [`sobremesa${base}`]: sobremesa,
+        [`refeicao${base}`]: String(refeicao),
+        [`sobremesa${base}`]: String(sobremesa),
         [`observacoes${base}`]: observacoes,
-        [`lanche_4h${base}`]: rowValue ?? lanche_4h,
+        [`lanche_4h${base}`]: String(rowValue ?? lanche_4h),
       };
     };
 
@@ -1026,7 +1027,7 @@ describe("Testes de Refeicao Simultanea em período noturno e unidades CEIJA", (
       const form = buildFormValues({
         lanche_4h: 1,
         refeicao: 1,
-        observacoes: "texto",
+        observacoes: "Observação preenchida",
       });
 
       const result = exibirTooltipRefeicaoSimultanea(
@@ -1307,9 +1308,9 @@ describe("Testes de Refeicao Simultanea em período noturno e unidades CEIJA", (
         }) => {
           const base = buildBase(dia, categoriaId);
 
-          form[`lanche_4h${base}`] = lanche_4h;
-          form[`refeicao${base}`] = refeicao;
-          form[`sobremesa${base}`] = sobremesa;
+          form[`lanche_4h${base}`] = String(lanche_4h);
+          form[`refeicao${base}`] = String(refeicao);
+          form[`sobremesa${base}`] = String(sobremesa);
           form[`observacoes${base}`] = observacoes;
         },
       );
@@ -1357,7 +1358,7 @@ describe("Testes de Refeicao Simultanea em período noturno e unidades CEIJA", (
           categoriaId: 1,
           lanche_4h: 1,
           refeicao: 1,
-          observacoes: "obs",
+          observacoes: "Observação preenchida",
         },
       ]);
 
@@ -1439,7 +1440,13 @@ describe("Testes de Refeicao Simultanea em período noturno e unidades CEIJA", (
     test("retorna false quando nenhum caso válido em múltiplas iterações", () => {
       const form = buildFormValues([
         { dia: 1, categoriaId: 1, lanche_4h: 1 }, // inválido
-        { dia: 2, categoriaId: 2, refeicao: 1, sobremesa: 1, observacoes: "x" }, // ignorado
+        {
+          dia: 2,
+          categoriaId: 2,
+          refeicao: 1,
+          sobremesa: 1,
+          observacoes: "Observação preenchida",
+        }, // ignorado
       ]);
 
       const result = bloquearSalvamentoRefeicaoSimultanea(
@@ -1466,6 +1473,7 @@ describe("Testes de Refeicao Simultanea em período noturno e unidades CEIJA", (
 
       expect(result).toBe(false);
     });
+
     test("para no primeiro caso válido", () => {
       const form = buildFormValues([
         { dia: 1, categoriaId: 1, lanche_4h: 1, refeicao: 1 }, // válido
@@ -1476,6 +1484,214 @@ describe("Testes de Refeicao Simultanea em período noturno e unidades CEIJA", (
         form,
         weekColumns,
         categorias,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(true);
+    });
+  });
+
+  describe("refeicaoSimultaneaESemObservacao", () => {
+    const column = { dia: 1 };
+    const categoria = { id: 1 };
+    const row = { name: "lanche_4h" };
+
+    const buildBase = () => `__dia_${column.dia}__categoria_${categoria.id}`;
+
+    const buildFormValues = ({
+      lanche_4h = 0,
+      refeicao = 0,
+      sobremesa = 0,
+      observacoes = "",
+    } = {}) => {
+      const base = buildBase();
+
+      return {
+        [`lanche_4h${base}`]: lanche_4h,
+        [`refeicao${base}`]: refeicao,
+        [`sobremesa${base}`]: sobremesa,
+        [`observacoes${base}`]: observacoes,
+      };
+    };
+
+    test("retorna false quando não é NOITE nem CIEJA", () => {
+      const form = buildFormValues({ lanche_4h: 1, refeicao: 1 });
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
+        false,
+        "MANHA",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false quando não tem refeição nem sobremesa", () => {
+      const form = buildFormValues({ lanche_4h: 1 });
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false quando não tem lanche_4h", () => {
+      const form = buildFormValues({ refeicao: 1 });
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false quando há observação", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+        observacoes: "Observação preenchida",
+      });
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna true com lanche_4h + refeição", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+      });
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(true);
+    });
+
+    test("retorna true com lanche_4h + sobremesa", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        sobremesa: 1,
+      });
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(true);
+    });
+
+    test("retorna true com CIEJA fora de NOITE", () => {
+      const form = buildFormValues({
+        lanche_4h: 1,
+        refeicao: 1,
+      });
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
+        true,
+        "MANHA",
+      );
+
+      expect(result).toBe(true);
+    });
+
+    test("trata valores undefined como 0", () => {
+      const form = {};
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("retorna false com apenas lanche_4h", () => {
+      const form = buildFormValues({ lanche_4h: 1 });
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("valores negativos não contam como ativos", () => {
+      const form = buildFormValues({
+        lanche_4h: -1,
+        refeicao: 1,
+      });
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
+        false,
+        "NOITE",
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test("funciona com valores string numéricos", () => {
+      const form = buildFormValues({
+        lanche_4h: "1",
+        refeicao: "1",
+      });
+
+      const result = refeicaoSimultaneaESemObservacao(
+        form,
+        row,
+        column,
+        categoria,
         false,
         "NOITE",
       );
