@@ -154,7 +154,7 @@ const DetalharCronogramaSemanal: React.FC = () => {
               <div className="row my-3">
                 <p>Local de Entrega:</p>
                 <p>
-                  <b>Unidade Escolar (a ser preenchido pelo backend)</b>
+                  <b>UNIDADE EDUCACIONAL DA RME - PONTO A PONTO</b>
                 </p>
               </div>
 
