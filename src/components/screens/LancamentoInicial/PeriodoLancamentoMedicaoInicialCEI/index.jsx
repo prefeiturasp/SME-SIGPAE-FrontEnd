@@ -386,7 +386,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           escola.uuid,
           mes,
           ano,
-          periodo,
+          ehSolicitacoesAlimentacaoLocation ? undefined : periodo,
         );
       setAlteracoesAlimentacaoAutorizadas(
         response_alteracoes_alimentacao_autorizadas,
@@ -398,7 +398,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             escola.uuid,
             mes,
             ano,
-            periodo,
+            ehSolicitacoesAlimentacaoLocation ? undefined : periodo,
             true,
           );
         setAlteracoesLancheEmergencialAutorizadas(
@@ -431,7 +431,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             escola.uuid,
             mes,
             ano,
-            periodo,
+            undefined,
             true,
           );
         setAlteracoesAlimentacaoAutorizadas(

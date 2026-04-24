@@ -93,6 +93,21 @@ describe("desabilitarField EMEF/EMEI/CMCT/CIEJA/EMEBS", () => {
       args.alunosTabSelecionada,
       args.ehUltimoDiaLetivoDoAno,
     );
+
+  const configurarDiaEtec = (args, dia) => {
+    args.dia = dia;
+    args.values = {
+      [`frequencia__dia_${dia}__categoria_1`]: "10",
+      [`matriculados__dia_${dia}__categoria_1`]: "20",
+      [`numero_de_alunos__dia_${dia}__categoria_1`]: "20",
+      [`dietas_autorizadas__dia_${dia}__categoria_1`]: "5",
+      [`observacoes__dia_${dia}__categoria_1`]: "obs",
+    };
+    args.dadosValoresInclusoesEtecAutorizadasState = {
+      [`numero_de_alunos__dia_${dia}__categoria_1`]: true,
+    };
+  };
+
   describe("Regras gerais", () => {
     it('deve retornar true quando valorAtual for "Mês anterior"', () => {
       const args = baseArgs();
@@ -147,9 +162,10 @@ describe("desabilitarField EMEF/EMEI/CMCT/CIEJA/EMEBS", () => {
       args.location.state.status_periodo =
         "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE";
       args.ehGrupoETECUrlParam = true;
-      args.dadosValoresInclusoesEtecAutorizadasState = {
-        frequencia__dia_1__categoria_1: true,
-      };
+      args.validacaoDiaLetivo = jest.fn(() => false);
+      args.mesAnoConsiderado = new Date(2023, 4, 1);
+      args.mesAnoDefault = new Date(2023, 4, 1);
+      configurarDiaEtec(args, 1);
       expect(callDesabilitarField(args)).toBe(false);
     });
 
@@ -246,7 +262,10 @@ describe("desabilitarField EMEF/EMEI/CMCT/CIEJA/EMEBS", () => {
       args.location.state.status_periodo =
         "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE";
       args.ehGrupoETECUrlParam = true;
+      args.mesAnoConsiderado = new Date(2023, 4, 1);
+      args.mesAnoDefault = new Date(2023, 4, 1);
       args.rowName = "repeticao_refeicao";
+      configurarDiaEtec(args, 1);
       args.inclusoesEtecAutorizadas = [{ dia: 1, alimentacoes: "refeicao" }];
       expect(callDesabilitarField(args)).toBe(false);
     });
@@ -347,11 +366,14 @@ describe("desabilitarField EMEF/EMEI/CMCT/CIEJA/EMEBS", () => {
       expect(callDesabilitarField(args)).toBe(true);
     });
 
-    it("deve retornar true para ETEC quando fallback de validação de dia letivo falha", () => {
+    it("deve ignorar dia_letivo do calendário para ETEC quando o dia está autorizado", () => {
       const args = baseArgs();
       args.ehGrupoETECUrlParam = true;
+      args.mesAnoConsiderado = new Date(2023, 4, 1);
+      args.mesAnoDefault = new Date(2023, 4, 1);
       args.validacaoDiaLetivo = jest.fn(() => false);
-      expect(callDesabilitarField(args)).toBe(true);
+      configurarDiaEtec(args, 1);
+      expect(callDesabilitarField(args)).toBe(false);
     });
 
     it("deve retornar false para SOLICITAÇÕES quando kit_lanche está autorizado", () => {
@@ -425,6 +447,29 @@ describe("desabilitarField EMEF/EMEI/CMCT/CIEJA/EMEBS", () => {
       expect(callDesabilitarField(args)).toBe(true);
     });
 
+    it("deve retornar true para ETEC quando o dia é feriado mesmo com inclusão autorizada", () => {
+      const args = baseArgs();
+
+      args.ehGrupoETECUrlParam = true;
+      args.mesAnoConsiderado = new Date(2023, 4, 1);
+      args.mesAnoDefault = new Date(2023, 4, 1);
+      args.feriadosNoMes = [1];
+      configurarDiaEtec(args, 1);
+
+      expect(callDesabilitarField(args)).toBe(true);
+    });
+
+    it("deve retornar true para ETEC quando o dia é fim de semana mesmo com inclusão autorizada", () => {
+      const args = baseArgs();
+
+      args.ehGrupoETECUrlParam = true;
+      args.mesAnoConsiderado = new Date(2023, 9, 1);
+      args.mesAnoDefault = new Date(2023, 9, 1);
+      configurarDiaEtec(args, 1);
+
+      expect(callDesabilitarField(args)).toBe(true);
+    });
+
     it("deve desabilitar quando alimentação especial não está permitida no dia", () => {
       // cenário: alimentação especial existe, mas não está liberada no dia
       const args = baseArgs();
@@ -474,6 +519,8 @@ describe("desabilitarField EMEF/EMEI/CMCT/CIEJA/EMEBS", () => {
 
       args.ehGrupoETECUrlParam = true;
       args.validacaoDiaLetivo = jest.fn(() => false);
+      args.mesAnoConsiderado = new Date(2023, 4, 1);
+      args.mesAnoDefault = new Date(2023, 4, 1);
 
       expect(callDesabilitarField(args)).toBe(true);
     });
