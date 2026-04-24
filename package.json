@@ -22,8 +22,7 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-      "^src/(.*)$": "<rootDir>/src/$1",
-      "^uuid$": "<rootDir>/node_modules/uuid/dist/cjs/index.js"
+      "^src/(.*)$": "<rootDir>/src/$1"
     },
     "watchPathIgnorePatterns": [
       "src/components/Shareable/Avatar"
