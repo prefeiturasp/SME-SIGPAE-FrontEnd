@@ -18,6 +18,7 @@ import {
 
 import CadastroCronogramaSemanalPage from "src/pages/PreRecebimento/CadastroCronogramaSemanalPage";
 import CronogramaSemanalFLVPage from "src/pages/PreRecebimento/CronogramaSemanalFLVPage";
+import DetalharCronogramaSemanalPage from "src/pages/PreRecebimento/DetalharCronogramaSemanalPage";
 import StatusAguardandoAssinaturasCronograma from "src/pages/Dinutre/Cronogramas/StatusAguardandoAssinaturasCronograma";
 import StatusCronogramasAguardandoDilog from "src/pages/Dinutre/Cronogramas/StatusCronogramasAguardandoDilog";
 import StatusCronogramasAssinadoCODAE from "src/pages/Dinutre/Cronogramas/StatusCronogramasAssinadoCODAE";
@@ -436,6 +437,11 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.CADASTRO_CRONOGRAMA_SEMANAL}`,
     component: CadastroCronogramaSemanalPage,
+    tipoUsuario: usuarioEhCronograma() || usuarioEhCodaeDilog(),
+  },
+  {
+    path: `/${constants.PRE_RECEBIMENTO}/${constants.DETALHE_CRONOGRAMA_SEMANAL}`,
+    component: DetalharCronogramaSemanalPage,
     tipoUsuario: usuarioEhCronograma() || usuarioEhCodaeDilog(),
   },
 ];

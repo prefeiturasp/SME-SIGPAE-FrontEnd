@@ -1,12 +1,17 @@
 import React from "react";
 
 import "./styles.scss";
+import { NavLink } from "react-router-dom";
 import {
   usuarioEhEmpresaFornecedor,
   formataMilharDecimal,
 } from "src/helpers/utilities";
 import { Tooltip } from "antd";
 import { formataNome } from "./helpers";
+import {
+  PRE_RECEBIMENTO,
+  DETALHE_CRONOGRAMA_SEMANAL,
+} from "src/configs/constants";
 
 const ListagemCronogramas = ({ cronogramas, ativos }) => {
   const statusValue = (status) => {
@@ -70,7 +75,18 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
                 </div>
                 <div className={bordas}>{statusValue(cronograma.status)}</div>
 
-                <div className={bordas}></div>
+                <div className={bordas}>
+                  {cronograma.status !== "Rascunho" && (
+                    <NavLink
+                      className="float-start"
+                      to={`/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
+                    >
+                      <span className="link-acoes green">
+                        <i className="fas fa-eye" title="Detalhar" />
+                      </span>
+                    </NavLink>
+                  )}
+                </div>
               </div>
             </div>
           );
