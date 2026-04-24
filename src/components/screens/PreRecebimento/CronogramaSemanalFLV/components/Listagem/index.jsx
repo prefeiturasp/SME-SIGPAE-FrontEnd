@@ -9,11 +9,10 @@ import { Tooltip } from "antd";
 import { formataNome } from "./helpers";
 
 const ListagemCronogramas = ({ cronogramas, ativos }) => {
+  const ehFornecedor = usuarioEhEmpresaFornecedor();
+
   const statusValue = (status) => {
-    if (
-      status === "Assinado e Enviado ao Fornecedor" &&
-      usuarioEhEmpresaFornecedor()
-    ) {
+    if (status === "Enviado ao Fornecedor" && ehFornecedor) {
       return "Recebido";
     } else {
       return status;
@@ -32,11 +31,13 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
         </div>
       </header>
       <article>
-        <div className="grid-table header-table">
+        <div
+          className={`grid-table header-table ${ehFornecedor ? "sem-fornecedor" : ""}`}
+        >
           <div>N° do Cronograma Ponto a Ponto</div>
           <div>Nome do Produto</div>
           <div>Quantidade</div>
-          <div>Fornecedor</div>
+          {!ehFornecedor && <div>Fornecedor</div>}
           <div>Status</div>
           <div>Ações</div>
         </div>
@@ -45,7 +46,9 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
             ativos && ativos.includes(cronograma.uuid) ? "desativar-borda" : "";
           return (
             <div key={`${cronograma.numero}_${index}`}>
-              <div className="grid-table body-table">
+              <div
+                className={`grid-table body-table ${ehFornecedor ? "sem-fornecedor" : ""}`}
+              >
                 <div className={bordas}>{cronograma.numero}</div>
                 <div className="d-flex align-items-center justify-content-between">
                   <Tooltip
@@ -65,9 +68,11 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
                     formataMilharDecimal(cronograma.quantidade_total)}{" "}
                   {cronograma.unidade_medida}
                 </div>
-                <div className={bordas}>
-                  {cronograma.empresa ? cronograma.empresa : undefined}
-                </div>
+                {!ehFornecedor && (
+                  <div className={bordas}>
+                    {cronograma.empresa ? cronograma.empresa : undefined}
+                  </div>
+                )}
                 <div className={bordas}>{statusValue(cronograma.status)}</div>
 
                 <div className={bordas}></div>

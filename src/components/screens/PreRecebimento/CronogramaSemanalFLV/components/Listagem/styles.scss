@@ -24,7 +24,11 @@
       align-items: center;
       text-align: center;
       display: grid;
-      grid-template-columns: 1.5fr 2.0fr 1.5fr 2.0fr 2.0fr 1fr !important;
+      grid-template-columns: 1.5fr 2.5fr 1.5fr 2.5fr 1fr 1fr !important;
+
+      &.sem-fornecedor {
+        grid-template-columns: 2fr 2.5fr 1.5fr 2fr 1fr !important;
+      }
     }
 
     .header-table {
