@@ -751,7 +751,7 @@ describe("CadastrarCronogramaSemanal", () => {
         expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
       });
 
-      const botaoContinuar = screen.getByText("Não");
+      const botaoContinuar = screen.getByText("Continuar Editando");
       fireEvent.click(botaoContinuar);
 
       await waitFor(() => {
