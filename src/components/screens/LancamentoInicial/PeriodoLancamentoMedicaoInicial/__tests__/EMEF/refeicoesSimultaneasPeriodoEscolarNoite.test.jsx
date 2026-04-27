@@ -20,9 +20,7 @@ import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFP
 import { mockVinculosTipoAlimentacaoPeriodoEscolarEMEF } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEF/vinculosTipoAlimentacaoPeriodoEscolar";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
-
 import preview from "jest-preview";
-
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
   default: ({ input, onChange }) => (
@@ -762,7 +760,6 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
         await waitFor(() => {
           expect(modal).not.toBeInTheDocument();
         });
-        preview.debug();
       });
     });
   });
