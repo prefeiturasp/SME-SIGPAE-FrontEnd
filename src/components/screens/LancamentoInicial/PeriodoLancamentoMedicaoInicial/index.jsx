@@ -43,6 +43,7 @@ import {
   ehFimDeSemanaUTC,
   escolaEhEMEBS,
   tiposAlimentacaoETEC,
+  usuarioEhEscolaCIEJA,
 } from "src/helpers/utilities";
 import {
   getTiposDeAlimentacao,
@@ -124,6 +125,8 @@ import {
   verificarMesAnteriorOuPosterior,
   exibirTooltipPeriodosZeradosNoProgramasProjetos,
   boqueaSalvamentoPeriodosZeradosNoProgramasProjetos,
+  exibirTooltipRefeicaoSimultanea,
+  bloquearSalvamentoRefeicaoSimultanea,
 } from "./validacoes";
 
 export default () => {
@@ -1671,6 +1674,23 @@ export default () => {
       setDisableBotaoSalvarLancamentos(bloquearBotao);
       setExibirTooltip(bloquearBotao);
     }
+
+    if (
+      formValuesAtualizados &&
+      weekColumns &&
+      (usuarioEhEscolaCIEJA() ||
+        formValuesAtualizados["periodo_escolar"] === "NOITE")
+    ) {
+      const bloquearBotao = bloquearSalvamentoRefeicaoSimultanea(
+        formValuesAtualizados,
+        weekColumns,
+        categoriasDeMedicao,
+        usuarioEhEscolaCIEJA(),
+        location.state.periodo,
+      );
+      setDisableBotaoSalvarLancamentos(bloquearBotao);
+      setExibirTooltip(bloquearBotao);
+    }
   }, [
     formValuesAtualizados,
     diasFrequenciaZerada,
@@ -1853,7 +1873,14 @@ export default () => {
           escolaEhEMEBS(),
           alunosTabSelecionada,
           weekColumns,
-        ))
+        )) ||
+      bloquearSalvamentoRefeicaoSimultanea(
+        formValuesAtualizados,
+        weekColumns,
+        categoriasDeMedicao,
+        usuarioEhEscolaCIEJA(),
+        location.state.periodo,
+      )
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
@@ -2406,6 +2433,13 @@ export default () => {
         escolaEhEMEBS(),
         alunosTabSelecionada,
         weekColumns,
+      ) ||
+      bloquearSalvamentoRefeicaoSimultanea(
+        formValuesAtualizados,
+        weekColumns,
+        categoriasDeMedicao,
+        usuarioEhEscolaCIEJA(),
+        location.state.periodo,
       )
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -3415,6 +3449,15 @@ export default () => {
                                                           escolaEhEMEBS(),
                                                           alunosTabSelecionada,
                                                         )}
+                                                        exibirTooltipRefeicaoSimultanea={exibirTooltipRefeicaoSimultanea(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          usuarioEhEscolaCIEJA(),
+                                                          location.state
+                                                            .periodo,
+                                                        )}
                                                         validate={fieldValidationsTabelasDietas(
                                                           row.name,
                                                           column.dia,
@@ -3781,6 +3824,15 @@ export default () => {
                                                               .grupo,
                                                             escolaEhEMEBS(),
                                                             alunosTabSelecionada,
+                                                          )}
+                                                          exibirTooltipRefeicaoSimultanea={exibirTooltipRefeicaoSimultanea(
+                                                            formValuesAtualizados,
+                                                            row,
+                                                            column,
+                                                            categoria,
+                                                            usuarioEhEscolaCIEJA(),
+                                                            location.state
+                                                              .periodo,
                                                           )}
                                                           ehGrupoETECUrlParam={
                                                             ehGrupoETECUrlParam

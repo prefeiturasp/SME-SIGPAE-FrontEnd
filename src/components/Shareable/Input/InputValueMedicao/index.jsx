@@ -62,6 +62,7 @@ export const InputText = (props) => {
     inputOnChange,
     exibeTooltipFrequenciaAlimentacaoZero,
     exibirTooltipPeriodosZeradosNoProgramasProjetos,
+    exibirTooltipRefeicaoSimultanea,
   } = props;
 
   const inputProps = {
@@ -421,6 +422,18 @@ export const InputText = (props) => {
         <Tooltip
           title={
             "Não há apontamento de estudantes nos demais períodos. Justifique a frequência nos Programas e Projetos."
+          }
+        >
+          <i
+            data-testid="icone-tooltip-warning"
+            className="fas fa-info icone-info-warning"
+          />
+        </Tooltip>
+      )}
+      {exibirTooltipRefeicaoSimultanea && (
+        <Tooltip
+          title={
+            "Justifique o apontamento de lanche concomitante ao registro de refeição, uma vez que o aluno deve receber apenas um tipo de alimentação."
           }
         >
           <i
