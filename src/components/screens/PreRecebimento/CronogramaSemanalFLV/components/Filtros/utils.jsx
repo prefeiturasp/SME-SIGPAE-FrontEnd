@@ -11,17 +11,27 @@ export const options_status = [
     value: "RASCUNHO",
     label: "Rascunho",
   },
+  {
+    value: "ENVIADO_AO_FORNECEDOR",
+    label: "Enviado ao Fornecedor",
+  },
+  {
+    value: "FORNECEDOR_CIENTE",
+    label: "Fornecedor Ciente",
+  },
 ];
 
 export const options_status_fornecedor = [
   {
-    value: "ASSINADO_E_ENVIADO_AO_FORNECEDOR",
+    value: "RASCUNHO",
+    label: "Rascunho",
+  },
+  {
+    value: "ENVIADO_AO_FORNECEDOR",
     label: "Recebido",
   },
+  {
+    value: "FORNECEDOR_CIENTE",
+    label: "Fornecedor Ciente",
+  },
 ];
-
-export const deParaStatusCronograma = (status) =>
-  ["Assinado Fornecedor", "Assinado Abastecimento"].includes(status) &&
-  usuarioEhEmpresaFornecedor()
-    ? "Aguardando CODAE"
-    : status;
