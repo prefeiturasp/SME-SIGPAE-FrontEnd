@@ -339,7 +339,6 @@ describe("Teste Refeições Simultâneas - CIEJA", () => {
     });
 
     it("Refeição e lanche 4h preenchidos com observação - Verifica botão visualizar", async () => {
-      preview.debug();
       const dia = "02";
       const botaoSalvar = screen
         .getByText("Salvar Lançamentos")
@@ -395,6 +394,207 @@ describe("Teste Refeições Simultâneas - CIEJA", () => {
       await waitFor(() => {
         expect(modal).not.toBeInTheDocument();
       });
+    });
+  });
+
+  describe("Testa a Dieta Especial", () => {
+    it("Preenche refeição - deve exibir warning, destacar botão de observação e desabilitar o botão salvar quando refeicao for diferente de 0(zero)", async () => {
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
+
+      const dia = "05";
+      await preencherCampo("frequencia", dia, 3, 1);
+      await preencherCampo("lanche_4h", dia, 3, 1);
+      await preencherCampo("refeicao", dia, 3, 1);
+
+      const iconeTooltip = screen.getByTestId("icone-tooltip-warning");
+      expect(iconeTooltip).toBeInTheDocument();
+      expect(iconeTooltip).toHaveClass("icone-info-warning");
+
+      fireEvent.mouseOver(iconeTooltip);
+      const mensagemTooltip = await screen.findByText(
+        "Justifique o apontamento de lanche concomitante ao registro de refeição, uma vez que o aluno deve receber apenas um tipo de alimentação.",
+      );
+      expect(mensagemTooltip).toBeInTheDocument();
+
+      const botaoObservacao = screen.getByTestId(
+        `botao-observacao__dia_${dia}__categoria_3`,
+      );
+      expect(botaoObservacao).toBeInTheDocument();
+      expect(botaoObservacao).toHaveClass("red-button-outline");
+      expect(botaoObservacao).toHaveTextContent("Adicionar");
+
+      const botaoSalvar = screen
+        .getByText("Salvar Lançamentos")
+        .closest("button");
+      expect(botaoSalvar).toBeDisabled();
+    });
+
+    it("Preenche refeição - não deve exigir justificativa quando a o valor de refeicao for zero", async () => {
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
+
+      const dia = "05";
+      await preencherCampo("frequencia", dia, 1);
+      await preencherCampo("lanche_4h", dia, 1);
+      await preencherCampo("refeicao", dia, 1, 0);
+
+      await preencherCampo("frequencia", dia, 3, 1);
+      await preencherCampo("lanche_4h", dia, 3, 1);
+      await preencherCampo("refeicao", dia, 3, 0);
+
+      const iconeTooltip = screen.queryByTestId("icone-tooltip-warning");
+      expect(iconeTooltip).not.toBeInTheDocument();
+      const botaoObservacao = screen.getByTestId(
+        `botao-observacao__dia_${dia}__categoria_3`,
+      );
+      expect(botaoObservacao).toBeInTheDocument();
+      expect(botaoObservacao).toHaveClass("green-button-outline-white");
+      expect(botaoObservacao).toHaveTextContent("Adicionar");
+
+      const botaoSalvar = screen
+        .getByText("Salvar Lançamentos")
+        .closest("button");
+      expect(botaoSalvar).not.toBeDisabled();
+    });
+
+    it("Preenche refeição - não deve exigir justificativa quando a o valor de lanche 4h for zero", async () => {
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
+
+      const dia = "05";
+      await preencherCampo("frequencia", dia, 1);
+      await preencherCampo("lanche_4h", dia, 1, 0);
+      await preencherCampo("refeicao", dia, 1);
+
+      await preencherCampo("frequencia", dia, 3, 1);
+      await preencherCampo("lanche_4h", dia, 3, 0);
+      await preencherCampo("refeicao", dia, 3, 1);
+
+      const iconeTooltip = screen.queryByTestId("icone-tooltip-warning");
+      expect(iconeTooltip).not.toBeInTheDocument();
+      const botaoObservacao = screen.getByTestId(
+        `botao-observacao__dia_${dia}__categoria_3`,
+      );
+      expect(botaoObservacao).toBeInTheDocument();
+      expect(botaoObservacao).toHaveClass("green-button-outline-white");
+      expect(botaoObservacao).toHaveTextContent("Adicionar");
+
+      const botaoSalvar = screen
+        .getByText("Salvar Lançamentos")
+        .closest("button");
+      expect(botaoSalvar).not.toBeDisabled();
+    });
+
+    it("Preenche refeição - e inclui observação", async () => {
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
+      const dia = "05";
+      await preencherCampo("frequencia", dia, 3, 1);
+      await preencherCampo("lanche_4h", dia, 3, 1);
+      await preencherCampo("refeicao", dia, 3, 1);
+
+      const botaoSalvar = screen
+        .getByText("Salvar Lançamentos")
+        .closest("button");
+      await waitFor(() => {
+        expect(botaoSalvar).toBeDisabled();
+      });
+
+      const botaoObservacao = screen.getByTestId(
+        `botao-observacao__dia_${dia}__categoria_3`,
+      );
+      expect(botaoObservacao).toHaveTextContent("Adicionar");
+      fireEvent.click(botaoObservacao);
+
+      const modal = await screen.findByRole("dialog");
+      expect(modal).toBeInTheDocument();
+
+      expect(screen.getByText("Observação Diária")).toBeInTheDocument();
+      expect(screen.getByText("Data do Lançamento")).toBeInTheDocument();
+      expect(
+        within(modal).getByPlaceholderText("05/05/2025"),
+      ).toBeInTheDocument();
+
+      const btnSalvarObservacao = screen.getByTestId("botao-salvar");
+      expect(btnSalvarObservacao).toBeDisabled();
+      const btnVoltar = screen.getByTestId("botao-voltar");
+      expect(btnVoltar).not.toBeDisabled();
+      const btnExcluir = screen.queryByTestId("botao-excluir");
+      expect(btnExcluir).not.toBeInTheDocument();
+
+      const mensagem = "Minha justificativa para dietas simultâneas.";
+      const ckEditor = screen.getByTestId("ckeditor-mock");
+      fireEvent.change(ckEditor, { target: { value: mensagem } });
+
+      await waitFor(() => {
+        expect(ckEditor.value).toBe(mensagem);
+        expect(btnSalvarObservacao).not.toBeDisabled();
+      });
+
+      fireEvent.click(btnSalvarObservacao);
+
+      await waitFor(() => {
+        expect(modal).not.toBeInTheDocument();
+      });
+    });
+
+    it("Refeição e lanche 4h preenchidos com observação - Verifica botão visualizar", async () => {
+      const dia = "02";
+      const botaoSalvar = screen
+        .getByText("Salvar Lançamentos")
+        .closest("button");
+
+      await waitFor(() => {
+        expect(botaoSalvar).not.toBeDisabled();
+      });
+
+      const frequencia = obterValorDoCampo("frequencia", dia, 3);
+      expect(frequencia).toBe("4");
+
+      const lanche4h = obterValorDoCampo("lanche_4h", dia, 3);
+      expect(lanche4h).toBe("4");
+
+      const refeicao = obterValorDoCampo("refeicao", dia, 3);
+      expect(refeicao).toBe("4");
+
+      const botaoObservacao = screen.getByTestId(
+        `botao-observacao__dia_${dia}__categoria_3`,
+      );
+      expect(botaoObservacao).toHaveClass("green-button");
+      expect(botaoObservacao).toHaveTextContent("Visualizar");
+      fireEvent.click(botaoObservacao);
+
+      const modal = await screen.findByRole("dialog");
+      expect(modal).toBeInTheDocument();
+
+      expect(screen.getByText("Observação Diária")).toBeInTheDocument();
+      expect(screen.getByText("Data do Lançamento")).toBeInTheDocument();
+      expect(
+        within(modal).getByPlaceholderText("02/05/2025"),
+      ).toBeInTheDocument();
+
+      const btnSalvarObservacao = screen.getByTestId("botao-salvar");
+      expect(btnSalvarObservacao).toBeDisabled();
+      const btnVoltar = screen.getByTestId("botao-voltar");
+      expect(btnVoltar).not.toBeDisabled();
+      const btnExcluir = screen.queryByTestId("botao-excluir");
+      expect(btnExcluir).not.toBeInTheDocument();
+
+      const mensagem = "<p>Minha justificativa para dietas simultâneas.</p>";
+      const ckEditor = screen.getByTestId("ckeditor-mock");
+
+      await waitFor(() => {
+        expect(ckEditor.value).toBe(mensagem);
+        expect(btnSalvarObservacao).toBeDisabled();
+      });
+
+      fireEvent.click(btnVoltar);
+
+      await waitFor(() => {
+        expect(modal).not.toBeInTheDocument();
+      });
+      preview.debug();
     });
   });
 });
