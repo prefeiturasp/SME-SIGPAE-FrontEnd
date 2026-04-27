@@ -22,8 +22,7 @@
     ],
     "moduleNameMapper": {
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-      "^src/(.*)$": "<rootDir>/src/$1",
-      "^uuid$": "<rootDir>/node_modules/uuid/dist/cjs/index.js"
+      "^src/(.*)$": "<rootDir>/src/$1"
     },
     "watchPathIgnorePatterns": [
       "src/components/Shareable/Avatar"
@@ -143,7 +142,7 @@
     "redux-thunk": "^2.4.2",
     "startbootstrap-sb-admin-2": "^4.1.4",
     "typescript": "^5.9.2",
-    "uuid": "^11.1.0"
+    "uuid": "^14.0.0"
   },
   "scripts": {
     "start": "vite",

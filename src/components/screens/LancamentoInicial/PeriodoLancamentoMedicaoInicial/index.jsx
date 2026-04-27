@@ -75,6 +75,7 @@ import {
   desabilitarBotaoColunaObservacoes,
   desabilitarField,
   deveExistirObservacao,
+  ehDiaHabilitadoParaLancamentoETEC,
   ehDiaParaCorrigir,
   existeAlteracaoLPR,
   existeAlteracaoRPL,
@@ -455,6 +456,7 @@ export default () => {
       categoriasDeMedicao,
       weekColumns,
       alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
     );
   };
 
@@ -1134,7 +1136,7 @@ export default () => {
             escola.uuid,
             mes,
             ano,
-            periodo.periodo_escolar.nome,
+            undefined,
             true,
           );
         setAlteracoesAlimentacaoAutorizadas(
@@ -1712,11 +1714,15 @@ export default () => {
     weekColumns,
     categoriasDeMedicao,
     alteracoesLancheEmergencialAutorizadas,
+    permissoesLancamentosEspeciaisPorDia,
   ]);
 
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
     const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     let valoresMedicao = [];
+    const diaHabilitadoParaObservacao = ehGrupoETECUrlParam
+      ? validacaoDiaLancamentoETEC(dia, categoria)
+      : validacaoDiaLetivo(dia);
     const valuesMesmoDiaDaObservacao = Object.fromEntries(
       Object.entries(values).filter(([key]) =>
         key.includes(`__dia_${dia}__categoria_${categoria}`),
@@ -1728,7 +1734,7 @@ export default () => {
           key.includes(prefixo) ||
           key.includes("dietas_autorizadas") ||
           key.includes("numero_de_alunos") ||
-          (!validacaoDiaLetivo(dia) &&
+          (!diaHabilitadoParaObservacao &&
             (key.includes("repeticao") || key.includes("emergencial")))) &&
         delete valuesMesmoDiaDaObservacao[key]
       );
@@ -2151,6 +2157,16 @@ export default () => {
     return true;
   };
 
+  const validacaoDiaLancamentoETEC = (dia, categoriaId) => {
+    return ehDiaHabilitadoParaLancamentoETEC(
+      dia,
+      categoriaId,
+      mesAnoConsiderado,
+      feriadosNoMes || [],
+      dadosValoresInclusoesEtecAutorizadasState || {},
+    );
+  };
+
   const validacaoDiaLetivoCalendario = (dia) => {
     const objDia = calendarioMesConsiderado.find(
       (objDia) => Number(objDia.dia) === Number(dia),
@@ -2457,7 +2473,7 @@ export default () => {
           idCategoria,
           value,
           allValues,
-          validacaoDiaLetivo,
+          validacaoDiaLancamentoETEC,
           validacaoSemana,
         );
       } else {
@@ -2471,6 +2487,7 @@ export default () => {
           suspensoesAutorizadas,
           alteracoesAlimentacaoAutorizadas,
           alteracoesLancheEmergencialAutorizadas,
+          permissoesLancamentosEspeciaisPorDia,
           validacaoDiaLetivo,
           location,
           feriadosNoMes,
@@ -2666,10 +2683,15 @@ export default () => {
       alteracoesAlimentacaoAutorizadas?.some(
         (alteracao) => alteracao.dia === dia,
       );
+    const temDiaHabilitadoParaLancamentoETEC =
+      ehGrupoETECUrlParam &&
+      categoriaAtual?.nome === "ALIMENTAÇÃO" &&
+      validacaoDiaLancamentoETEC(dia, categoriaId);
 
     return (
       (!validacaoSemana(dia) &&
-        (validacaoDiaLetivo(dia) ||
+        (temDiaHabilitadoParaLancamentoETEC ||
+          validacaoDiaLetivo(dia) ||
           temInclusaoAutorizadaNoDia ||
           (temKitLancheAutorizadoNoDia &&
             ehCategoriaSolicitacoesDeAlimentacao) ||
@@ -3561,6 +3583,7 @@ export default () => {
                                                               suspensoesAutorizadas,
                                                               alteracoesAlimentacaoAutorizadas,
                                                               alteracoesLancheEmergencialAutorizadas,
+                                                              permissoesLancamentosEspeciaisPorDia,
                                                               kitLanchesAutorizadas,
                                                               inclusoesEtecAutorizadas,
                                                               ehGrupoETECUrlParam,
@@ -3729,6 +3752,7 @@ export default () => {
                                                             column,
                                                             categoria,
                                                             alteracoesLancheEmergencialAutorizadas,
+                                                            permissoesLancamentosEspeciaisPorDia,
                                                           )}
                                                           exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
                                                             formValuesAtualizados,

@@ -301,6 +301,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       categoriasDeMedicao,
       weekColumns,
       alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
     );
   };
 
@@ -385,7 +386,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           escola.uuid,
           mes,
           ano,
-          periodo,
+          ehSolicitacoesAlimentacaoLocation ? undefined : periodo,
         );
       setAlteracoesAlimentacaoAutorizadas(
         response_alteracoes_alimentacao_autorizadas,
@@ -397,7 +398,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             escola.uuid,
             mes,
             ano,
-            periodo,
+            ehSolicitacoesAlimentacaoLocation ? undefined : periodo,
             true,
           );
         setAlteracoesLancheEmergencialAutorizadas(
@@ -430,7 +431,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             escola.uuid,
             mes,
             ano,
-            periodo,
+            undefined,
             true,
           );
         setAlteracoesAlimentacaoAutorizadas(
@@ -1246,6 +1247,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     weekColumns,
     categoriasDeMedicao,
     alteracoesLancheEmergencialAutorizadas,
+    permissoesLancamentosEspeciaisPorDia,
   ]);
 
   useEffect(() => {
@@ -2001,6 +2003,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           value,
           alteracoesAlimentacaoAutorizadas,
           alteracoesLancheEmergencialAutorizadas,
+          permissoesLancamentosEspeciaisPorDia,
           inclusoesAutorizadas,
           validacaoDiaLetivo,
           ehProgramasEProjetosLocation,
@@ -2810,6 +2813,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                             categoria,
                                                             formValuesAtualizados,
                                                             alteracoesLancheEmergencialAutorizadas,
+                                                            permissoesLancamentosEspeciaisPorDia,
                                                           )) ||
                                                         alimentacoesFrequenciaZeroESemObservacaoCEI(
                                                           formValuesAtualizados,
@@ -3078,6 +3082,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               column,
                                                               categoria,
                                                               alteracoesLancheEmergencialAutorizadas,
+                                                              permissoesLancamentosEspeciaisPorDia,
                                                             )
                                                           }
                                                           exibeTooltipLancheEmergencialNaoAutorizado={exibirTooltipLancheEmergencialNaoAutorizado(
