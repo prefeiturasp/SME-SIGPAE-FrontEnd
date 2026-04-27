@@ -87,13 +87,19 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
     ),
   };
 
-  const observacao = [
-    ...mockValoresMedicaoEMEFJaneiro2026,
+  const mockValoresMedicaoEMEFJaneiro2026Atualizado =
+    mockValoresMedicaoEMEFJaneiro2026.map((item) => ({
+      ...item,
+      nome_campo: item.nome === "lanche" ? "lanche_4h" : item.nome,
+    }));
+
+  const mockValoresMedicaoComObservacao = [
+    ...mockValoresMedicaoEMEFJaneiro2026Atualizado,
     {
       categoria_medicao: 1,
       nome_campo: "observacoes",
       valor: "<p>Minha justificativa para alimentações simultâneas.</p>",
-      dia: "05",
+      dia: "02",
       medicao_uuid: "640b0475-9df1-4530-8113-769395d47c7d",
       faixa_etaria: null,
       faixa_etaria_str: null,
@@ -106,8 +112,8 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
     {
       categoria_medicao: 1,
       nome_campo: "frequencia",
-      valor: "4",
-      dia: "05",
+      valor: "200",
+      dia: "02",
       medicao_uuid: "640b0475-9df1-4530-8113-769395d47c7d",
       faixa_etaria: null,
       faixa_etaria_str: null,
@@ -120,8 +126,8 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
     {
       categoria_medicao: 1,
       nome_campo: "lanche_4h",
-      valor: "4",
-      dia: "05",
+      valor: "200",
+      dia: "02",
       medicao_uuid: "640b0475-9df1-4530-8113-769395d47c7d",
       faixa_etaria: null,
       faixa_etaria_str: null,
@@ -134,8 +140,8 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
     {
       categoria_medicao: 1,
       nome_campo: "refeicao",
-      valor: "4",
-      dia: "05",
+      valor: "200",
+      dia: "02",
       medicao_uuid: "640b0475-9df1-4530-8113-769395d47c7d",
       faixa_etaria: null,
       faixa_etaria_str: null,
@@ -146,19 +152,6 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
       infantil_ou_fundamental: "N/A",
     },
   ];
-  // eslint-disable-next-line no-unused-vars
-  const mockComObservacao = {
-    solicitacao_medicao_inicial: "a2eed560-2255-4067-a803-4ad6b9f1d26a",
-    periodo_escolar: "NOITE",
-    grupo: null,
-    valores_medicao: observacao,
-    criado_em: "16/04/2026 08:38:00",
-    uuid: "640b0475-9df1-4530-8113-769395d47c7d",
-    status: "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE",
-    alterado_em: "24/04/2026 16:19:27",
-    rastro_lote: null,
-    rastro_terceirizada: null,
-  };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -185,7 +178,7 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
       .reply(200, mockLogQuantidadeDietasAutorizadasEMEFJaneiro2026);
     mock
       .onGet("/medicao-inicial/valores-medicao/")
-      .reply(200, mockValoresMedicaoEMEFJaneiro2026);
+      .reply(200, mockValoresMedicaoComObservacao);
     mock.onGet("/medicao-inicial/dias-para-corrigir/").reply(200, []);
     mock.onGet("/dias-calendario/").reply(200, diasCalendario);
     mock.onGet("/matriculados-no-mes/").reply(200, mockmatriculados);
@@ -299,7 +292,7 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
       campo,
       dia,
       idCategoriaAlimentacao,
-      valor = "300",
+      valor = "100",
     ) => {
       const nomeInput = screen.getByTestId(
         `${campo}__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
@@ -313,6 +306,13 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
           },
         });
       });
+    };
+
+    const obterValorDoCampo = (campo, dia, idCategoriaAlimentacao) => {
+      const nomeInput = screen.getByTestId(
+        `${campo}__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
+      );
+      return nomeInput.value;
     };
 
     describe("Testa a Alimentação", () => {
@@ -346,7 +346,6 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
           .getByText("Salvar Lançamentos")
           .closest("button");
         expect(botaoSalvar).toBeDisabled();
-        preview.debug();
       });
 
       it("Preenche refeição - não deve exigir justificativa quando a o valor de refeicao for zero", async () => {
@@ -373,7 +372,31 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
         expect(botaoSalvar).not.toBeDisabled();
       });
 
-      it("Preenche refeição - inclui observação e habilitar botão salvar quando refeicao for diferente de 0(zero)", async () => {
+      it("Preenche refeição - não deve exigir justificativa quando a o valor de lanche 4h for zero", async () => {
+        const semana2Element = screen.getByText("Semana 2");
+        fireEvent.click(semana2Element);
+
+        const dia = "05";
+        await preencherCampo("frequencia", "05", 1);
+        await preencherCampo("lanche_4h", "05", 1, 0);
+        await preencherCampo("refeicao", "05", 1);
+
+        const iconeTooltip = screen.queryByTestId("icone-tooltip-warning");
+        expect(iconeTooltip).not.toBeInTheDocument();
+        const botaoObservacao = screen.getByTestId(
+          `botao-observacao__dia_${dia}__categoria_1`,
+        );
+        expect(botaoObservacao).toBeInTheDocument();
+        expect(botaoObservacao).toHaveClass("green-button-outline-white");
+        expect(botaoObservacao).toHaveTextContent("Adicionar");
+
+        const botaoSalvar = screen
+          .getByText("Salvar Lançamentos")
+          .closest("button");
+        expect(botaoSalvar).not.toBeDisabled();
+      });
+
+      it("Preenche refeição - e inclui observação", async () => {
         const semana2Element = screen.getByText("Semana 2");
         fireEvent.click(semana2Element);
         const dia = "05";
@@ -387,7 +410,6 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
         await waitFor(() => {
           expect(botaoSalvar).toBeDisabled();
         });
-        expect(botaoSalvar).toBeDisabled();
 
         const botaoObservacao = screen.getByTestId(
           `botao-observacao__dia_${dia}__categoria_1`,
@@ -425,7 +447,63 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
         await waitFor(() => {
           expect(modal).not.toBeInTheDocument();
         });
+      });
 
+      it("Refeição e lanche 4h preenchidos com observação - Verifica botão visualizar", async () => {
+        const dia = "02";
+        const botaoSalvar = screen
+          .getByText("Salvar Lançamentos")
+          .closest("button");
+
+        await waitFor(() => {
+          expect(botaoSalvar).not.toBeDisabled();
+        });
+
+        const frequencia = obterValorDoCampo("frequencia", dia, 1);
+        expect(frequencia).toBe("200");
+
+        const lanche4h = obterValorDoCampo("lanche_4h", dia, 1);
+        expect(lanche4h).toBe("200");
+
+        const refeicao = obterValorDoCampo("refeicao", dia, 1);
+        expect(refeicao).toBe("200");
+
+        const botaoObservacao = screen.getByTestId(
+          `botao-observacao__dia_${dia}__categoria_1`,
+        );
+        expect(botaoObservacao).toHaveTextContent("Visualizar");
+        fireEvent.click(botaoObservacao);
+
+        const modal = await screen.findByRole("dialog");
+        expect(modal).toBeInTheDocument();
+
+        expect(screen.getByText("Observação Diária")).toBeInTheDocument();
+        expect(screen.getByText("Data do Lançamento")).toBeInTheDocument();
+        expect(
+          within(modal).getByPlaceholderText("02/01/2026"),
+        ).toBeInTheDocument();
+
+        const btnSalvarObservacao = screen.getByTestId("botao-salvar");
+        expect(btnSalvarObservacao).toBeDisabled();
+        const btnVoltar = screen.getByTestId("botao-voltar");
+        expect(btnVoltar).not.toBeDisabled();
+        const btnExcluir = screen.queryByTestId("botao-excluir");
+        expect(btnExcluir).not.toBeInTheDocument();
+
+        const mensagem =
+          "<p>Minha justificativa para alimentações simultâneas.</p>";
+        const ckEditor = screen.getByTestId("ckeditor-mock");
+
+        await waitFor(() => {
+          expect(ckEditor.value).toBe(mensagem);
+          expect(btnSalvarObservacao).toBeDisabled();
+        });
+
+        fireEvent.click(btnVoltar);
+
+        await waitFor(() => {
+          expect(modal).not.toBeInTheDocument();
+        });
         preview.debug();
       });
     });
