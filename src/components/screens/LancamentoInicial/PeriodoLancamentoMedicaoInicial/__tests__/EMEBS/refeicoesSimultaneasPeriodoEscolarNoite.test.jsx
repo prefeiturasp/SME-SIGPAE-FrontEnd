@@ -22,8 +22,6 @@ import { mockStateMANHAFevereiro2026 } from "src/mocks/medicaoInicial/PeriodoLan
 import { localStorageMock } from "src/mocks/localStorageMock";
 import mock from "src/services/_mock";
 
-import preview from "jest-preview";
-
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
   default: ({ input, onChange }) => (
@@ -566,7 +564,6 @@ describe("Teste Refeições Simultâneas período NOITE - EMEBS", () => {
           expect(ckEditor.value).toBe(mensagem);
           expect(btnSalvarObservacao).toBeDisabled();
         });
-        preview.debug();
         fireEvent.click(btnVoltar);
         await waitFor(() => {
           expect(modal).not.toBeInTheDocument();
@@ -724,7 +721,6 @@ describe("Teste Refeições Simultâneas período NOITE - EMEBS", () => {
       it("Refeição e lanche 4h preenchidos com observação - Verifica botão visualizar", async () => {
         const semana2Element = screen.getByText("Semana 2");
         fireEvent.click(semana2Element);
-        preview.debug();
         const dia = "02";
         const botaoSalvar = screen
           .getByText("Salvar Lançamentos")

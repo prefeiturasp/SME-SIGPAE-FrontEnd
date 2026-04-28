@@ -22,8 +22,6 @@ import { matriculadosMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamento
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import { stateManhaMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/stateManhaMaio2025";
 
-import preview from "jest-preview";
-
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
   default: ({ input, onChange }) => (
@@ -594,7 +592,6 @@ describe("Teste Refeições Simultâneas - CIEJA", () => {
       await waitFor(() => {
         expect(modal).not.toBeInTheDocument();
       });
-      preview.debug();
     });
   });
 });

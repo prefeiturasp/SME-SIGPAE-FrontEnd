@@ -35,6 +35,33 @@ jest.mock("src/components/Shareable/CKEditorField", () => ({
   ),
 }));
 
+const preencherCampo = async (
+  campo,
+  dia,
+  idCategoriaAlimentacao,
+  valor = "100",
+) => {
+  const nomeInput = screen.getByTestId(
+    `${campo}__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
+  );
+
+  await act(async () => {
+    fireEvent.change(nomeInput, {
+      target: {
+        name: nomeInput.getAttribute("name"),
+        value: valor,
+      },
+    });
+  });
+};
+
+const obterValorDoCampo = (campo, dia, idCategoriaAlimentacao) => {
+  const nomeInput = screen.getByTestId(
+    `${campo}__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
+  );
+  return nomeInput.value;
+};
+
 describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
@@ -342,33 +369,6 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
   });
 
   describe("Testa o lançamntos do período NOITE", () => {
-    const preencherCampo = async (
-      campo,
-      dia,
-      idCategoriaAlimentacao,
-      valor = "100",
-    ) => {
-      const nomeInput = screen.getByTestId(
-        `${campo}__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
-      );
-
-      await act(async () => {
-        fireEvent.change(nomeInput, {
-          target: {
-            name: nomeInput.getAttribute("name"),
-            value: valor,
-          },
-        });
-      });
-    };
-
-    const obterValorDoCampo = (campo, dia, idCategoriaAlimentacao) => {
-      const nomeInput = screen.getByTestId(
-        `${campo}__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
-      );
-      return nomeInput.value;
-    };
-
     describe("Testa a Alimentação", () => {
       it("Preenche refeição - deve exibir warning, destacar botão de observação e desabilitar o botão salvar quando refeicao for diferente de 0(zero)", async () => {
         const semana2Element = screen.getByText("Semana 2");
@@ -1029,33 +1029,6 @@ describe("Teste Refeições Simultâneas período MANHA - EMEF", () => {
   });
 
   describe("Testa o lançamntos do período MANHA", () => {
-    const preencherCampo = async (
-      campo,
-      dia,
-      idCategoriaAlimentacao,
-      valor = "100",
-    ) => {
-      const nomeInput = screen.getByTestId(
-        `${campo}__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
-      );
-
-      await act(async () => {
-        fireEvent.change(nomeInput, {
-          target: {
-            name: nomeInput.getAttribute("name"),
-            value: valor,
-          },
-        });
-      });
-    };
-
-    const obterValorDoCampo = (campo, dia, idCategoriaAlimentacao) => {
-      const nomeInput = screen.getByTestId(
-        `${campo}__dia_${dia}__categoria_${idCategoriaAlimentacao}`,
-      );
-      return nomeInput.value;
-    };
-
     describe("Testa a Alimentação", () => {
       it("Preenche refeição - não deve exibir warning, não destacar botão de observação e não desabilitar o botão salvar quando refeicao for diferente de 0(zero)", async () => {
         const semana2Element = screen.getByText("Semana 2");
