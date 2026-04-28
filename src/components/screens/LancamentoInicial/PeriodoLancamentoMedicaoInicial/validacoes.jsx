@@ -2541,15 +2541,26 @@ export const exibirTooltipRefeicaoSimultanea = (
   const base = `__dia_${column.dia}__categoria_${categoria.id}`;
   const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
   const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+  const repeticaoRefeicao =
+    Number(formValuesAtualizados[`repeticao_refeicao${base}`]) || 0;
   const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+  const repeticaoSobremesa =
+    Number(formValuesAtualizados[`repeticao_sobremesa${base}`]) || 0;
   const temObservacao = formValuesAtualizados[`observacoes${base}`];
 
   const temRefeicao = refeicao > 0;
+  const temRepeticaoRefeicao = repeticaoRefeicao > 0;
   const temSobremesa = sobremesa > 0;
+  const temRepeticaoSobremesa = repeticaoSobremesa > 0;
   const temLanche4h = lanche4h > 0;
-  const ativos = [temLanche4h, temRefeicao, temSobremesa].filter(
-    Boolean,
-  ).length;
+
+  const ativos = [
+    temLanche4h,
+    temRefeicao,
+    temSobremesa,
+    temRepeticaoRefeicao,
+    temRepeticaoSobremesa,
+  ].filter(Boolean).length;
 
   if (ativos <= 1 || temObservacao) return false;
 
@@ -2572,16 +2583,26 @@ export const bloquearSalvamentoRefeicaoSimultanea = (
       const base = `__dia_${column.dia}__categoria_${categoria.id}`;
       const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
       const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+      const repeticaoRefeicao =
+        Number(formValuesAtualizados[`repeticao_refeicao${base}`]) || 0;
       const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+      const repeticaoSobremesa =
+        Number(formValuesAtualizados[`repeticao_sobremesa${base}`]) || 0;
       const temObservacao = formValuesAtualizados[`observacoes${base}`];
 
       const temRefeicao = refeicao > 0;
+      const temRepeticaoRefeicao = repeticaoRefeicao > 0;
       const temSobremesa = sobremesa > 0;
+      const temRepeticaoSobremesa = repeticaoSobremesa > 0;
       const temLanche4h = lanche4h > 0;
 
-      const ativos = [temLanche4h, temRefeicao, temSobremesa].filter(
-        Boolean,
-      ).length;
+      const ativos = [
+        temLanche4h,
+        temRefeicao,
+        temSobremesa,
+        temRepeticaoRefeicao,
+        temRepeticaoSobremesa,
+      ].filter(Boolean).length;
       if (ativos <= 1 || temObservacao) continue;
 
       const lanche4hValue =
@@ -2605,13 +2626,24 @@ export const refeicaoSimultaneaESemObservacao = (
   const base = `__dia_${column.dia}__categoria_${categoria.id}`;
   const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
   const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+  const repeticaoRefeicao =
+    Number(formValuesAtualizados[`repeticao_refeicao${base}`]) || 0;
   const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+  const repeticaoSobremesa =
+    Number(formValuesAtualizados[`repeticao_sobremesa${base}`]) || 0;
   const temObservacao = formValuesAtualizados[`observacoes${base}`];
 
   const temRefeicao = refeicao > 0;
+  const temRepeticaoRefeicao = repeticaoRefeicao > 0;
   const temSobremesa = sobremesa > 0;
+  const temRepeticaoSobremesa = repeticaoSobremesa > 0;
   const temLanche4h = lanche4h > 0;
-  const temRefeicaoOuSobremesa = temRefeicao || temSobremesa;
+  const temRefeicaoOuSobremesa =
+    temRefeicao ||
+    temSobremesa ||
+    temRepeticaoRefeicao ||
+    temRepeticaoSobremesa;
+
   if (!temRefeicaoOuSobremesa || !temLanche4h || temObservacao) return false;
   return true;
 };
