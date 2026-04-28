@@ -54,6 +54,7 @@ const ModalAnalisar = ({
       </Modal.Body>
       <Modal.Footer>
         <Botao
+          dataTestId="botao-visualizar"
           texto="Apenas Visualizar"
           type={BUTTON_TYPE.BUTTON}
           style={BUTTON_STYLE.GREEN_OUTLINE}
@@ -61,6 +62,7 @@ const ModalAnalisar = ({
           onClick={() => onVisualizar()}
         />
         <Botao
+          dataTestId="botao-analisar"
           texto="Analisar Ateste Financeiro"
           type={BUTTON_TYPE.BUTTON}
           style={BUTTON_STYLE.GREEN}
