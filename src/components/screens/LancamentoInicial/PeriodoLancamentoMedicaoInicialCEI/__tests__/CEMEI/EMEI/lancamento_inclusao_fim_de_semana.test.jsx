@@ -19,7 +19,6 @@ import { mockMatriculadosNoMesCEMEIEMEIINTEGRALAgosto2025 } from "src/mocks/medi
 import { mockMeusDadosEscolaCEMEI } from "src/mocks/meusDados/escola/CEMEI";
 import { PeriodoLancamentoMedicaoInicialCEIPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialCEIPage";
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 describe("Testes de inclusão de lançamento em fim de semana", () => {
   beforeEach(async () => {
@@ -136,7 +135,6 @@ describe("Testes de inclusão de lançamento em fim de semana", () => {
       "frequencia__dia_03__categoria_1",
     );
     expect(inputDiaFrequenciaDia2).toBeDisabled();
-    preview.debug();
   });
 
   it("renderiza input do dia 01/08/2025, preencher repetição de refeição maior que refeição no dia 27, e NÃO exibe tooltip verde", async () => {

@@ -441,6 +441,7 @@ export default ({
               type={BUTTON_TYPE.BUTTON}
               onClick={() => onClickVoltar()}
               style={BUTTON_STYLE.GREEN_OUTLINE}
+              dataTestId="botao-voltar"
             />
             <Botao
               className="ms-3 me-3"
@@ -449,6 +450,7 @@ export default ({
               style={BUTTON_STYLE.GREEN}
               disabled={desabilitarBotaoSalvar}
               onClick={() => onClickSalvar()}
+              dataTestId="botao-salvar"
             />
           </div>
         </Modal.Footer>
