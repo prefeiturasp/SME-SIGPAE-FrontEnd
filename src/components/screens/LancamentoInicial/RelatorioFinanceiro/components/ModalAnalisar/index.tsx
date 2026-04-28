@@ -4,6 +4,8 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { editarRelatorioFinanceiro } from "src/services/medicaoInicial/relatorioFinanceiro.service";
 
 type Props = {
   showModal: boolean;
@@ -18,7 +20,23 @@ const ModalAnalisar = ({
   onVisualizar,
   showModal,
   setShowModal,
+  uuidRelatorio,
 }: Props) => {
+  const handleAnalisar = async () => {
+    if (uuidRelatorio) {
+      const response = await editarRelatorioFinanceiro(uuidRelatorio, {
+        status: "EM_ANALISE",
+      });
+      if (response.status === 200) {
+        setShowModal(false);
+        onAnalisar();
+      } else
+        toastError(
+          "Ocorreu um erro ao tentar analisar o relatório financeiro.",
+        );
+    } else onAnalisar();
+  };
+
   return (
     <Modal
       show={showModal}
@@ -47,7 +65,7 @@ const ModalAnalisar = ({
           type={BUTTON_TYPE.BUTTON}
           style={BUTTON_STYLE.GREEN}
           className="ms-3"
-          onClick={() => onAnalisar()}
+          onClick={() => handleAnalisar()}
         />
       </Modal.Footer>
     </Modal>
