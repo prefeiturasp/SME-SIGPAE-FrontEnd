@@ -37,6 +37,9 @@ beforeEach(() => {
   mock
     .onPatch("/cronogramas-semanais/rascunho/uuid-edicao-123/")
     .reply(200, { uuid: "uuid-edicao-123" });
+  mock
+    .onPatch(/\/cronogramas-semanais\/.+\/assinar-e-enviar\//)
+    .reply(200, { uuid: "novo-uuid-123", status: "ENVIADO_AO_FORNECEDOR" });
 });
 
 afterEach(() => {
@@ -113,8 +116,27 @@ const preencherProgramacao = async () => {
     fireEvent.change(selectMes, { target: { value: "03/2026" } });
   }
 
+  // Preencher datas
+  const inputsDataInicio = screen.getAllByPlaceholderText("");
+  const dataInicioInput = inputsDataInicio.find(
+    (input: any) => input.getAttribute("type") === "text" && !input.value,
+  );
+  if (dataInicioInput) {
+    fireEvent.change(dataInicioInput, { target: { value: "01/03/2026" } });
+  }
+
+  const dataFimInput = inputsDataInicio.find(
+    (input: any) =>
+      input !== dataInicioInput &&
+      input.getAttribute("type") === "text" &&
+      !input.value,
+  );
+  if (dataFimInput) {
+    fireEvent.change(dataFimInput, { target: { value: "31/03/2026" } });
+  }
+
   const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
-  fireEvent.change(inputQtd, { target: { value: "1000" } });
+  fireEvent.change(inputQtd, { target: { value: "500" } });
 };
 
 describe("CadastrarCronogramaSemanal", () => {
@@ -648,6 +670,210 @@ describe("CadastrarCronogramaSemanal", () => {
       await waitFor(
         () => {
           expect(mock.history.post.length).toBeGreaterThan(0);
+        },
+        { timeout: 5000 },
+      );
+    });
+  });
+
+  describe("Botão Assinar e Enviar", () => {
+    it("não exibe botão assinar e enviar sem cronograma mensal", async () => {
+      await setup();
+      expect(screen.queryByText("Assinar e Enviar")).not.toBeInTheDocument();
+    });
+
+    it("exibe botão assinar e enviar após selecionar cronograma", async () => {
+      await setup();
+      await selecionarCronograma();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+    });
+
+    it("botão assinar e enviar desabilitado após selecionar cronograma sem programação completa", async () => {
+      await setup();
+      await selecionarCronograma();
+
+      await waitFor(() => {
+        const botaoAssinar = screen
+          .getByText("Assinar e Enviar")
+          .closest("button");
+        expect(botaoAssinar).toBeDisabled();
+      });
+    });
+
+    it("botão assinar e enviar habilitado após preencher programação completa com quantidade correta", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        const botaoAssinar = screen
+          .getByText("Assinar e Enviar")
+          .closest("button");
+        expect(botaoAssinar).not.toBeDisabled();
+      });
+    });
+
+    it("clicar no botão abre modal de confirmação", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            "Deseja salvar o Cadastro do Cronograma e enviar para aprovação?",
+          ),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("botão Continuar Editando fecha modal", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
+      });
+
+      const botaoContinuar = screen.getByText("Continuar Editando");
+      fireEvent.click(botaoContinuar);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Assinar Cronograma"),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it("botão Salvar e Enviar abre tela de senha", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
+      });
+
+      const botaoSalvarEnviar = screen.getByText("Salvar e Enviar");
+      fireEvent.click(botaoSalvarEnviar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Confirme sua senha")).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText("Digite sua senha"),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("confirma senha com sucesso redireciona para listagem", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Salvar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoSalvarEnviar = screen.getByText("Salvar e Enviar");
+      fireEvent.click(botaoSalvarEnviar);
+
+      await waitFor(() => {
+        expect(
+          screen.getByPlaceholderText("Digite sua senha"),
+        ).toBeInTheDocument();
+      });
+
+      const senhaInput = screen.getByPlaceholderText("Digite sua senha");
+      fireEvent.change(senhaInput, { target: { value: "senha123" } });
+
+      const botaoConfirmar = screen.getByText("Confirmar");
+      fireEvent.click(botaoConfirmar);
+
+      await waitFor(
+        () => {
+          expect(mockNavigate).toHaveBeenCalledWith(
+            "/pre-recebimento/cronograma-semanal-flv",
+          );
+        },
+        { timeout: 5000 },
+      );
+    });
+
+    it("senha inválida exibe toast de erro", async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock
+        .onGet("/cronogramas/cronograma-uuid-1/")
+        .reply(200, mockCronogramaMensalDetalhado);
+      mock
+        .onPost("/cronogramas-semanais/rascunho/")
+        .reply(201, { uuid: "novo-uuid-123" });
+      mock
+        .onPatch(/\/cronogramas-semanais\/.+\/assinar-e-enviar\//)
+        .reply(401, { detail: "Assinatura do cronograma não foi validada." });
+
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Salvar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoSalvarEnviar = screen.getByText("Salvar e Enviar");
+      fireEvent.click(botaoSalvarEnviar);
+
+      await waitFor(() => {
+        expect(
+          screen.getByPlaceholderText("Digite sua senha"),
+        ).toBeInTheDocument();
+      });
+
+      const senhaInput = screen.getByPlaceholderText("Digite sua senha");
+      fireEvent.change(senhaInput, { target: { value: "senha_errada" } });
+
+      const botaoConfirmar = screen.getByText("Confirmar");
+      fireEvent.click(botaoConfirmar);
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("Senha inválida")).toBeInTheDocument();
         },
         { timeout: 5000 },
       );

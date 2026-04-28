@@ -32,6 +32,14 @@ export default ({
   const onSubmit = async (values) => {
     const filtros = { ...values };
     if (filtros?.status) filtros.status = filtros.status.flat();
+
+    if (!filtros.data_inicial) {
+      delete filtros.data_inicial;
+    }
+    if (!filtros.data_final) {
+      delete filtros.data_final;
+    }
+
     setFiltros({ ...filtros });
   };
 

@@ -10,6 +10,7 @@ import {
   existeAlteracaoLPR,
 } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import { format } from "date-fns";
+import { usuarioEhEscolaCIEJA } from "src/helpers/utilities.jsx";
 
 export const alimentacoesFrequenciaZeroESemObservacao = (
   values,
@@ -388,6 +389,197 @@ export const camposLancheEmergTabelaEtec = (
   return erro;
 };
 
+export const WARNING_LANCHE_EMERGENCIAL_AUTORIZADO =
+  "Há lanche emergencial autorizado. Justifique o apontamento da alimentação";
+
+const campoTemValorPreenchido = (value) => {
+  return (
+    ![undefined, null, ""].includes(value) &&
+    !["Mês anterior", "Mês posterior"].includes(value)
+  );
+};
+
+const normalizarTipoAlimentacaoLancheEmergencial = (tipoAlimentacao) => {
+  return tipoAlimentacao
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replaceAll(/ /g, "_");
+};
+
+const TIPOS_ALIMENTACAO_ESPECIAIS_LANCHE_EMERGENCIAL = {
+  refeicao: ["2_refeicao_1_oferta"],
+  sobremesa: ["2_sobremesa_1_oferta"],
+  lanche: ["2_lanche_5h", "lanche_extra"],
+  lanche_4h: ["2_lanche_4h"],
+};
+
+const garantirArray = (value) => {
+  return Array.isArray(value) ? value : [];
+};
+
+const getAlimentacoesLancamentosEspeciaisPorDia = (
+  dia,
+  permissoesLancamentosEspeciaisPorDia = [],
+) => {
+  const permissoes = garantirArray(permissoesLancamentosEspeciaisPorDia);
+
+  return [
+    ...new Set(
+      permissoes
+        .filter((permissao) => Number(permissao.dia) === Number(dia))
+        .flatMap((permissao) => permissao.alimentacoes || []),
+    ),
+  ];
+};
+
+const getTiposAlimentacaoLancheEmergencialAutorizadosNoDia = (
+  dia,
+  alteracoesLancheEmergencialAutorizadas = [],
+) => {
+  const alteracoes = garantirArray(alteracoesLancheEmergencialAutorizadas);
+
+  return [
+    ...new Set(
+      alteracoes
+        .filter((alteracao) => Number(alteracao.dia) === Number(dia))
+        .flatMap((alteracao) => alteracao.tipos_alimentacao_de || [])
+        .map(normalizarTipoAlimentacaoLancheEmergencial),
+    ),
+  ];
+};
+
+const getRowsLancheEmergencialAutorizadosNoDia = (
+  dia,
+  alteracoesLancheEmergencialAutorizadas = [],
+  permissoesLancamentosEspeciaisPorDia = [],
+) => {
+  const alimentacoesLancamentosEspeciaisPorDia =
+    getAlimentacoesLancamentosEspeciaisPorDia(
+      dia,
+      permissoesLancamentosEspeciaisPorDia,
+    );
+
+  return [
+    ...new Set(
+      getTiposAlimentacaoLancheEmergencialAutorizadosNoDia(
+        dia,
+        alteracoesLancheEmergencialAutorizadas,
+      ).flatMap((tipoAlimentacao) => [
+        tipoAlimentacao,
+        ...(
+          TIPOS_ALIMENTACAO_ESPECIAIS_LANCHE_EMERGENCIAL[tipoAlimentacao] || []
+        ).filter((alimentacao) =>
+          alimentacoesLancamentosEspeciaisPorDia.includes(alimentacao),
+        ),
+      ]),
+    ),
+  ];
+};
+
+const ehValorZeroDigitado = (value) => value === "0" || value === 0;
+
+const slotEhLancheEmergencialAutorizadoTipoAlimentacao = (
+  rowName,
+  dia,
+  alteracoesLancheEmergencialAutorizadas = [],
+  permissoesLancamentosEspeciaisPorDia = [],
+) => {
+  return getRowsLancheEmergencialAutorizadosNoDia(
+    dia,
+    alteracoesLancheEmergencialAutorizadas,
+    permissoesLancamentosEspeciaisPorDia,
+  ).includes(rowName);
+};
+
+export const campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao =
+  (
+    rowName,
+    dia,
+    categoriaId,
+    values,
+    alteracoesLancheEmergencialAutorizadas = [],
+    permissoesLancamentosEspeciaisPorDia = [],
+  ) => {
+    const value = values[`${rowName}__dia_${dia}__categoria_${categoriaId}`];
+
+    return (
+      campoTemValorPreenchido(value) &&
+      Number(value) > 0 &&
+      !values[`observacoes__dia_${dia}__categoria_${categoriaId}`] &&
+      slotEhLancheEmergencialAutorizadoTipoAlimentacao(
+        rowName,
+        dia,
+        alteracoesLancheEmergencialAutorizadas,
+        permissoesLancamentosEspeciaisPorDia,
+      )
+    );
+  };
+
+export const existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao =
+  (
+    dia,
+    categoria,
+    values,
+    alteracoesLancheEmergencialAutorizadas = [],
+    permissoesLancamentosEspeciaisPorDia = [],
+  ) => {
+    if (
+      categoria.nome !== "ALIMENTAÇÃO" ||
+      !alteracoesLancheEmergencialAutorizadas
+    )
+      return false;
+
+    const tiposAutorizadosNoDia = getRowsLancheEmergencialAutorizadosNoDia(
+      dia,
+      alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
+    );
+
+    return tiposAutorizadosNoDia.some((rowName) =>
+      campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao(
+        rowName,
+        dia,
+        categoria.id,
+        values,
+        alteracoesLancheEmergencialAutorizadas,
+        permissoesLancamentosEspeciaisPorDia,
+      ),
+    );
+  };
+
+export const existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao =
+  (
+    values,
+    categoriasDeMedicao,
+    weekColumns,
+    alteracoesLancheEmergencialAutorizadas = [],
+    permissoesLancamentosEspeciaisPorDia = [],
+  ) => {
+    const categoriaAlimentacao = categoriasDeMedicao.find(
+      (categoria) => categoria.nome === "ALIMENTAÇÃO",
+    );
+
+    if (
+      !values ||
+      !categoriaAlimentacao ||
+      !weekColumns?.length ||
+      !alteracoesLancheEmergencialAutorizadas?.length
+    ) {
+      return false;
+    }
+
+    return weekColumns.some(({ dia }) =>
+      existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
+        dia,
+        categoriaAlimentacao,
+        values,
+        alteracoesLancheEmergencialAutorizadas,
+        permissoesLancamentosEspeciaisPorDia,
+      ),
+    );
+  };
+
 export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   formValuesAtualizados,
   dia,
@@ -400,6 +592,8 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   column,
   suspensoesAutorizadas,
   alteracoesAlimentacaoAutorizadas,
+  alteracoesLancheEmergencialAutorizadas,
+  permissoesLancamentosEspeciaisPorDia,
   kitLanchesAutorizadas,
   inclusoesEtecAutorizadas,
   ehGrupoETECUrlParam = false,
@@ -468,6 +662,13 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         categoria,
         alteracoesAlimentacaoAutorizadas,
       ) ||
+      existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
+        dia,
+        categoria,
+        formValuesAtualizados,
+        alteracoesLancheEmergencialAutorizadas,
+        permissoesLancamentosEspeciaisPorDia,
+      ) ||
       habitarBotaoAdicionar(
         "frequencia",
         column.dia,
@@ -477,6 +678,14 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         location.state.grupo,
         escolaEmebs,
         alunosTabSelecionada,
+      ) ||
+      refeicaoSimultaneaESemObservacao(
+        formValuesAtualizados,
+        row,
+        column,
+        categoria,
+        usuarioEhEscolaCIEJA(),
+        location.state.periodo,
       )
     );
   }
@@ -533,6 +742,14 @@ export const botaoAdicionarObrigatorio = (
       location.state.grupo,
       escolaEmebs,
       alunosTabSelecionada,
+    ) ||
+    refeicaoSimultaneaESemObservacao(
+      formValuesAtualizados,
+      row,
+      column,
+      categoria,
+      usuarioEhEscolaCIEJA(),
+      location.state.periodo,
     )
   );
 };
@@ -611,12 +828,15 @@ export const validacoesTabelaAlimentacao = (
   dadosValoresInclusoesAutorizadasState,
   suspensoesAutorizadas,
   alteracoesAlimentacaoAutorizadas,
+  alteracoesLancheEmergencialAutorizadas,
+  permissoesLancamentosEspeciaisPorDia,
   validacaoDiaLetivo,
   location,
   feriadosNoMes,
   valoresPeriodosLancamentos,
   escolaEhEMEBS,
   alunosTabSelecionada,
+  nomeCategoria,
 ) => {
   const maxFrequencia = Number(
     allValues[`frequencia__dia_${dia}__categoria_${categoria}`],
@@ -826,6 +1046,18 @@ export const validacoesTabelaAlimentacao = (
     Number(value) > maxMatriculados
   ) {
     return `A frequência não pode ser maior que o número de participantes.`;
+  } else if (
+    nomeCategoria === "ALIMENTAÇÃO" &&
+    campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao(
+      rowName,
+      dia,
+      categoria,
+      allValues,
+      alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
+    )
+  ) {
+    return WARNING_LANCHE_EMERGENCIAL_AUTORIZADO;
   }
   return undefined;
 };
@@ -1108,7 +1340,7 @@ export const validacoesTabelaEtecAlimentacao = (
   categoria,
   value,
   allValues,
-  validacaoDiaLetivo,
+  validacaoDiaLancamentoETEC,
   validacaoSemana,
 ) => {
   const maxNumeroAlunos = Number(
@@ -1122,7 +1354,7 @@ export const validacoesTabelaEtecAlimentacao = (
     rowName === "frequencia" &&
     !allValues[`frequencia__dia_${dia}__categoria_${categoria}`] &&
     allValues[`numero_de_alunos__dia_${dia}__categoria_${categoria}`] &&
-    validacaoDiaLetivo(dia) &&
+    validacaoDiaLancamentoETEC(dia, categoria) &&
     !validacaoSemana(dia)
   ) {
     return "Há solicitação de alimentação autorizada para esta data. Insira o número de frequentes.";
@@ -1691,6 +1923,37 @@ export const exibirTooltipLancheEmergencialAutorizado = (
     alteracoesAlimentacaoAutorizadas.filter(
       (alteracao) => alteracao.dia === column.dia,
     ).length > 0
+  );
+};
+
+export const exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  alteracoesLancheEmergencialAutorizadas,
+  permissoesLancamentosEspeciaisPorDia,
+) => {
+  const value =
+    formValuesAtualizados[
+      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+  const temObservacao =
+    formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    categoria.nome === "ALIMENTAÇÃO" &&
+    !temObservacao &&
+    !campoTemValorPreenchido(value) &&
+    !ehValorZeroDigitado(value) &&
+    slotEhLancheEmergencialAutorizadoTipoAlimentacao(
+      row.name,
+      column.dia,
+      alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
+    )
   );
 };
 
@@ -2263,4 +2526,124 @@ export const habitarBotaoAdicionar = (
 
   const value = formValuesAtualizados[inputName];
   return value && Number(value) > 0 && !temObservacao;
+};
+
+export const exibirTooltipRefeicaoSimultanea = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  ehEscolaCieja,
+  periodoEscolar,
+) => {
+  if (!(periodoEscolar === "NOITE" || ehEscolaCieja)) return false;
+
+  const base = `__dia_${column.dia}__categoria_${categoria.id}`;
+  const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
+  const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+  const repeticaoRefeicao =
+    Number(formValuesAtualizados[`repeticao_refeicao${base}`]) || 0;
+  const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+  const repeticaoSobremesa =
+    Number(formValuesAtualizados[`repeticao_sobremesa${base}`]) || 0;
+  const temObservacao = formValuesAtualizados[`observacoes${base}`];
+
+  const temRefeicao = refeicao > 0;
+  const temRepeticaoRefeicao = repeticaoRefeicao > 0;
+  const temSobremesa = sobremesa > 0;
+  const temRepeticaoSobremesa = repeticaoSobremesa > 0;
+  const temLanche4h = lanche4h > 0;
+
+  const ativos = [
+    temLanche4h,
+    temRefeicao,
+    temSobremesa,
+    temRepeticaoRefeicao,
+    temRepeticaoSobremesa,
+  ].filter(Boolean).length;
+
+  if (ativos <= 1 || temObservacao) return false;
+
+  const rowValue = Number(formValuesAtualizados[`${row.name}${base}`]) || 0;
+
+  return row.name === "lanche_4h" && rowValue > 0;
+};
+
+export const bloquearSalvamentoRefeicaoSimultanea = (
+  formValuesAtualizados,
+  weekColumns,
+  categoriasDeMedicao,
+  ehEscolaCieja,
+  periodoEscolar,
+) => {
+  if (!(periodoEscolar === "NOITE" || ehEscolaCieja)) return false;
+
+  for (const categoria of categoriasDeMedicao) {
+    for (const column of weekColumns) {
+      const base = `__dia_${column.dia}__categoria_${categoria.id}`;
+      const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
+      const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+      const repeticaoRefeicao =
+        Number(formValuesAtualizados[`repeticao_refeicao${base}`]) || 0;
+      const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+      const repeticaoSobremesa =
+        Number(formValuesAtualizados[`repeticao_sobremesa${base}`]) || 0;
+      const temObservacao = formValuesAtualizados[`observacoes${base}`];
+
+      const temRefeicao = refeicao > 0;
+      const temRepeticaoRefeicao = repeticaoRefeicao > 0;
+      const temSobremesa = sobremesa > 0;
+      const temRepeticaoSobremesa = repeticaoSobremesa > 0;
+      const temLanche4h = lanche4h > 0;
+
+      const ativos = [
+        temLanche4h,
+        temRefeicao,
+        temSobremesa,
+        temRepeticaoRefeicao,
+        temRepeticaoSobremesa,
+      ].filter(Boolean).length;
+      if (ativos <= 1 || temObservacao) continue;
+
+      const lanche4hValue =
+        Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
+      if (lanche4hValue > 0) return true;
+    }
+  }
+  return false;
+};
+
+export const refeicaoSimultaneaESemObservacao = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  ehEscolaCieja,
+  periodoEscolar,
+) => {
+  if (!(periodoEscolar === "NOITE" || ehEscolaCieja)) return false;
+
+  const base = `__dia_${column.dia}__categoria_${categoria.id}`;
+  const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
+  const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+  const repeticaoRefeicao =
+    Number(formValuesAtualizados[`repeticao_refeicao${base}`]) || 0;
+  const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+  const repeticaoSobremesa =
+    Number(formValuesAtualizados[`repeticao_sobremesa${base}`]) || 0;
+  const temObservacao = formValuesAtualizados[`observacoes${base}`];
+
+  const temRefeicao = refeicao > 0;
+  const temRepeticaoRefeicao = repeticaoRefeicao > 0;
+  const temSobremesa = sobremesa > 0;
+  const temRepeticaoSobremesa = repeticaoSobremesa > 0;
+  const temLanche4h = lanche4h > 0;
+  const temRefeicaoOuSobremesa =
+    temRefeicao ||
+    temSobremesa ||
+    temRepeticaoRefeicao ||
+    temRepeticaoSobremesa;
+
+  if (!temRefeicaoOuSobremesa || !temLanche4h || temObservacao) return false;
+  return true;
 };

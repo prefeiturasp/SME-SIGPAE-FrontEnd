@@ -17,6 +17,7 @@ import { mockMotivosInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockM
 import { mockMotivosInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockMotivosInclusaoNormal";
 import { mockPeriodosEscolaresNoite } from "src/mocks/InclusaoAlimentacao/mockPeriodosEscolaresNoite";
 import { mockQuantidadeAlunosPorPeriodo } from "src/mocks/InclusaoAlimentacao/mockQuantidadeAlunosPorPeriodo";
+import { mockMatriculadosProgramas } from "src/mocks/InclusaoAlimentacao/mockMatriculadosProgramas";
 import { mockTiposAlimentacao } from "src/mocks/InclusaoAlimentacao/mockTiposAlimentacao";
 import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "src/mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
 import { mockDiasUteis } from "src/mocks/diasUseisMock";
@@ -28,6 +29,7 @@ import {
   getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
   getVinculosTipoAlimentacaoPorEscola,
 } from "src/services/cadastroTipoAlimentacao.service";
+import { filtrarAlunosMatriculados } from "src/services/alunosMatriculados.service";
 import { getDiasUteis } from "src/services/diasUteis.service";
 import {
   buscaPeriodosEscolares,
@@ -44,6 +46,7 @@ import {
 
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/escola.service");
+jest.mock("src/services/alunosMatriculados.service");
 jest.mock("src/services/diasUteis.service");
 jest.mock("src/services/inclusaoDeAlimentacao");
 
@@ -55,6 +58,7 @@ const awaitServices = async () => {
     expect(buscaPeriodosEscolares).toHaveBeenCalled();
     expect(getQuantidaDeAlunosPorPeriodoEEscola).toHaveBeenCalled();
     expect(getVinculosTipoAlimentacaoPorEscola).toHaveBeenCalled();
+    expect(filtrarAlunosMatriculados).toHaveBeenCalled();
     expect(
       getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
     ).toHaveBeenCalled();
@@ -77,6 +81,10 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     });
     getQuantidaDeAlunosPorPeriodoEEscola.mockResolvedValue({
       data: mockQuantidadeAlunosPorPeriodo,
+      status: 200,
+    });
+    filtrarAlunosMatriculados.mockResolvedValue({
+      data: mockMatriculadosProgramas,
       status: 200,
     });
     getVinculosTipoAlimentacaoPorEscola.mockResolvedValue({
@@ -171,6 +179,65 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     expect(
       screen.getByText("Criado em: 27/01/2025 16:34:09"),
     ).toBeInTheDocument();
+  });
+
+  it("valida número de alunos para Programas Contínuos", async () => {
+    await awaitServices();
+    setMotivoValueProgramasProjetosContinuos();
+
+    await waitFor(() => {
+      expect(screen.getByText("Recorrência e detalhes")).toBeInTheDocument();
+    });
+
+    fireEvent.change(
+      screen.getByTestId("data-inicial-div").querySelector("input"),
+      { target: { value: "30/01/2025" } },
+    );
+
+    fireEvent.change(
+      screen.getByTestId("data-final-div").querySelector("input"),
+      { target: { value: "01/12/2025" } },
+    );
+
+    await waitFor(() => {
+      expect(getTiposDeAlimentacao).toHaveBeenCalled();
+    });
+
+    fireEvent.click(screen.getByTestId("dias-semana-0"));
+
+    fireEvent.change(
+      screen.getByTestId("div-select-periodo-escolar").querySelector("select"),
+      {
+        target: {
+          value: "5067e137-e5f3-4876-a63f-7f58cce93f33",
+        },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByTestId("div-select-tipo-alimentacao").querySelector("select"),
+      {
+        target: { value: "Refeição e Sobremesa" },
+      },
+    );
+
+    const inputNumeroAlunos = screen
+      .getByTestId("numero-alunos")
+      .querySelector("input");
+
+    await act(async () => {
+      fireEvent.change(inputNumeroAlunos, {
+        target: { value: "55" },
+      });
+    });
+
+    await act(async () => {
+      fireEvent.blur(inputNumeroAlunos);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Não pode ser maior que 25")).toBeInTheDocument();
+    });
   });
 
   it("renderiza label `Motivo`", async () => {

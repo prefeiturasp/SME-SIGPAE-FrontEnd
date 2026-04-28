@@ -261,6 +261,40 @@ const validaAlimentacoesEDietasEscolaSemAlunosRegulares = (
   return !tiposAlimentacaoExistentes.includes(tipoAlimentacao);
 };
 
+export const ehDiaHabilitadoParaLancamentoETEC = (
+  dia,
+  categoria,
+  mesAnoConsiderado,
+  feriadosNoMes = [],
+  dadosValoresInclusoesEtecAutorizadasState = {},
+) => {
+  const diaNormalizado = String(dia).padStart(2, "0");
+  const temNumeroDeAlunosEtecNoDia = Object.keys(
+    dadosValoresInclusoesEtecAutorizadasState || {},
+  ).some((key) => {
+    return (
+      String(key).includes(`__dia_${dia}__categoria_${categoria}`) ||
+      String(key).includes(`__dia_${diaNormalizado}__categoria_${categoria}`)
+    );
+  });
+
+  if (!temNumeroDeAlunosEtecNoDia || !mesAnoConsiderado) {
+    return false;
+  }
+
+  const dateObj = new Date(
+    mesAnoConsiderado.getFullYear(),
+    mesAnoConsiderado.getMonth(),
+    Number(dia),
+  );
+  const ehFimDeSemanaNoDia = dateObj.getDay() % 6 === 0;
+  const ehFeriadoNoDia = feriadosNoMes.some(
+    (feriado) => Number(feriado) === Number(dia),
+  );
+
+  return !ehFimDeSemanaNoDia && !ehFeriadoNoDia;
+};
+
 export const desabilitarField = (
   dia,
   rowName,
@@ -294,10 +328,31 @@ export const desabilitarField = (
   alunosTabSelecionada = null,
   ehUltimoDiaLetivoDoAno,
 ) => {
+  const grupoRecreio = ehGrupoRecreioNasFerias(grupoLocation);
   const valorAtual = values[`${rowName}__dia_${dia}__categoria_${categoria}`];
 
   if (["Mês anterior", "Mês posterior"].includes(valorAtual)) {
     return true;
+  }
+
+  if (nomeCategoria.includes("DIETA") && rowName !== "dietas_autorizadas") {
+    const categoriaAlimentacao = categoriasDeMedicao.find(
+      (cat) => cat.nome === "ALIMENTAÇÃO",
+    );
+    const prefixo = grupoRecreio
+      ? "participantes"
+      : ehPeriodoEscolarSimples
+        ? "matriculados"
+        : "numero_de_alunos";
+
+    const alunosDoDia = `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
+    const valorAlimentacao = values[alunosDoDia];
+    if (
+      [undefined, null, ""].includes(valorAlimentacao) ||
+      Number(valorAlimentacao) === 0
+    ) {
+      return true;
+    }
   }
 
   const EH_INCLUSAO_SOMENTE_SOBREMESA =
@@ -445,24 +500,38 @@ export const desabilitarField = (
     return false;
   }
   if (ehGrupoETECUrlParam && nomeCategoria === "ALIMENTAÇÃO") {
+    const temNumeroDeAlunosEtecNoDia = Object.keys(
+      dadosValoresInclusoesEtecAutorizadasState || {},
+    ).some((key) => {
+      const diaNormalizado = String(dia).padStart(2, "0");
+      return (
+        String(key).includes(`__dia_${dia}__categoria_${categoria}`) ||
+        String(key).includes(`__dia_${diaNormalizado}__categoria_${categoria}`)
+      );
+    });
+    const diaHabilitadoParaLancamentoETEC = ehDiaHabilitadoParaLancamentoETEC(
+      dia,
+      categoria,
+      mesAnoConsiderado,
+      feriadosNoMes,
+      dadosValoresInclusoesEtecAutorizadasState,
+    );
     const inclusao = inclusoesEtecAutorizadas.filter(
       (inclusao) => Number(inclusao.dia) === Number(dia),
     );
     if (
       rowName === "frequencia" &&
-      validacaoDiaLetivo(dia) &&
+      diaHabilitadoParaLancamentoETEC &&
       !validacaoSemana(dia) &&
       !["Mês anterior", "Mês posterior"].includes(
         values[`frequencia__dia_${dia}__categoria_${categoria}`],
       ) &&
-      Object.keys(dadosValoresInclusoesEtecAutorizadasState).some((key) =>
-        String(key).includes(`__dia_${dia}__categoria_${categoria}`),
-      )
+      temNumeroDeAlunosEtecNoDia
     ) {
       return false;
     } else if (
       rowName === "repeticao_refeicao" &&
-      validacaoDiaLetivo(dia) &&
+      diaHabilitadoParaLancamentoETEC &&
       !validacaoSemana(dia) &&
       inclusao.length &&
       inclusao[0].alimentacoes.includes("refeicao")
@@ -471,7 +540,7 @@ export const desabilitarField = (
     } else if (
       (rowName === "repeticao_sobremesa" ||
         rowName === "repeticao_2_sobremesa") &&
-      validacaoDiaLetivo(dia) &&
+      diaHabilitadoParaLancamentoETEC &&
       !validacaoSemana(dia) &&
       inclusao.length &&
       inclusao[0].alimentacoes.includes("sobremesa")
@@ -479,12 +548,10 @@ export const desabilitarField = (
       return false;
     } else {
       return (
-        !validacaoDiaLetivo(dia) ||
+        !diaHabilitadoParaLancamentoETEC ||
         validacaoSemana(dia) ||
         rowName === "numero_de_alunos" ||
-        !Object.keys(dadosValoresInclusoesEtecAutorizadasState).some((key) =>
-          String(key).includes(`__dia_${dia}__categoria_${categoria}`),
-        ) ||
+        !temNumeroDeAlunosEtecNoDia ||
         (inclusao.length && !inclusao[0].alimentacoes.includes(rowName)) ||
         (mesConsiderado === mesAtual &&
           Number(dia) >= format(mesAnoDefault, "dd") &&
@@ -494,7 +561,7 @@ export const desabilitarField = (
   }
   if (
     grupoLocation === "Programas e Projetos" ||
-    location.state.periodoEspecifico
+    location.state?.periodoEspecifico
   ) {
     return (
       validacaoSemana(dia) ||
@@ -565,7 +632,7 @@ export const desabilitarField = (
     }
   }
 
-  if (ehGrupoRecreioNasFerias(grupoLocation)) {
+  if (grupoRecreio) {
     if (feriadosNoMes.includes(dia)) {
       return true;
     }
@@ -625,15 +692,16 @@ export const desabilitarField = (
       return true;
     }
   }
+
   if (
-    !location.state.ehPeriodoEspecifico &&
+    !location.state?.ehPeriodoEspecifico &&
     !values[`matriculados__dia_${dia}__categoria_${categoria}`] &&
     !nomeCategoria.includes("DIETA ESPECIAL")
   ) {
     return true;
   }
   if (
-    location.state.ehPeriodoEspecifico &&
+    location.state?.ehPeriodoEspecifico &&
     !values[`numero_de_alunos__dia_${dia}__categoria_${categoria}`] &&
     !nomeCategoria.includes("DIETA ESPECIAL")
   ) {
@@ -646,7 +714,7 @@ export const desabilitarField = (
     return true;
   }
   if (
-    (location.state.ehPeriodoEspecifico ||
+    (location.state?.ehPeriodoEspecifico ||
       grupoLocation === "Programas e Projetos") &&
     inclusoesAutorizadas?.length > 0 &&
     nomeCategoria.includes("DIETA ESPECIAL") &&
@@ -703,7 +771,7 @@ export const desabilitarField = (
       ((!values[`matriculados__dia_${dia}__categoria_${categoria}`] ||
         Number(values[`matriculados__dia_${dia}__categoria_${categoria}`]) ===
           0) &&
-        !location.state.ehPeriodoEspecifico &&
+        !location.state?.ehPeriodoEspecifico &&
         grupoLocation !== "Programas e Projetos" &&
         !nomeCategoria.includes("DIETA ESPECIAL")) ||
       Number(
@@ -836,7 +904,7 @@ export const getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync = async (
   params["mes"] = mes;
   params["ano"] = ano;
   params["eh_lanche_emergencial"] = ehLancheEmergencial;
-  if (!ehLancheEmergencial) {
+  if (nomePeriodoEscolar) {
     params["nome_periodo_escolar"] = nomePeriodoEscolar;
   }
   const responseAlteracoesAlimentacaoAutorizadas =
