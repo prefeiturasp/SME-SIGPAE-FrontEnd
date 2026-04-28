@@ -105,7 +105,15 @@ export function RelatorioFinanceiro() {
                               relatorio.ano
                             }`}
                           </td>
-                          <td className="col-2 text-center">
+                          <td
+                            className={`col-2 text-center ${
+                              relatorio.status === "EM_ANALISE"
+                                ? "fw-bold text-warning"
+                                : relatorio.status === "GERADA_MEDICAO_FINAL"
+                                  ? "fw-bold text-success"
+                                  : ""
+                            }`}
+                          >
                             {STATUS_RELATORIO_FINANCEIRO[relatorio.status]}
                           </td>
                           <td className="col-2 text-center">
@@ -124,7 +132,9 @@ export function RelatorioFinanceiro() {
                                         relatorio.grupo_unidade_escolar.uuid,
                                       ],
                                       status: [relatorio.status],
-                                      visualizar: true,
+                                      visualizar: !usuarioEhMedicao()
+                                        ? true
+                                        : relatorio.status !== "EM_ANALISE",
                                     });
                                   }}
                                 >
@@ -191,7 +201,12 @@ export function RelatorioFinanceiro() {
               onVisualizar={() =>
                 onPageRelatorio({ ...relatorioSelecionado, visualizar: true })
               }
-              onAnalisar={() => onPageRelatorio(relatorioSelecionado)}
+              onAnalisar={() =>
+                onPageRelatorio({
+                  ...relatorioSelecionado,
+                  status: ["EM_ANALISE"],
+                })
+              }
             />
           </div>
         </div>
