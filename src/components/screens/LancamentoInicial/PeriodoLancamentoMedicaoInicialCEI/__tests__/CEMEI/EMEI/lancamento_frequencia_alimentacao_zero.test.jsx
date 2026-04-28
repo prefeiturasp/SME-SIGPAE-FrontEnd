@@ -20,6 +20,65 @@ import { mockMeusDadosEscolaCEMEI } from "src/mocks/meusDados/escola/CEMEI";
 import { PeriodoLancamentoMedicaoInicialCEIPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialCEIPage";
 import mock from "src/services/_mock";
 
+const mockPermissoesLancamentosEspeciaisLancheEmergencialCEMEI = {
+  results: {
+    alimentacoes_lancamentos_especiais: [
+      {
+        nome: "2o Lanche 4h",
+        name: "2_lanche_4h",
+        uuid: null,
+      },
+      {
+        nome: "2o Lanche 5h",
+        name: "2_lanche_5h",
+        uuid: null,
+      },
+      {
+        nome: "Lanche Extra",
+        name: "lanche_extra",
+        uuid: null,
+      },
+      {
+        nome: "2a Refeição 1a oferta",
+        name: "2_refeicao_1_oferta",
+        uuid: null,
+      },
+      {
+        nome: "Repetição 2a Refeição",
+        name: "repeticao_2_refeicao",
+        uuid: null,
+      },
+      {
+        nome: "2a Sobremesa 1a oferta",
+        name: "2_sobremesa_1_oferta",
+        uuid: null,
+      },
+      {
+        nome: "Repetição 2a Sobremesa",
+        name: "repeticao_2_sobremesa",
+        uuid: null,
+      },
+    ],
+    permissoes_por_dia: [
+      {
+        dia: "12",
+        periodo: "INTEGRAL",
+        alimentacoes: [
+          "2_lanche_4h",
+          "2_lanche_5h",
+          "lanche_extra",
+          "2_refeicao_1_oferta",
+          "repeticao_2_refeicao",
+          "2_sobremesa_1_oferta",
+          "repeticao_2_sobremesa",
+        ],
+        permissao_id_externo: "30603",
+      },
+    ],
+    data_inicio_permissoes: null,
+  },
+};
+
 describe("Teste de lançamento de frequência de alimentação zero - EMEI da CEMEI", () => {
   const alteracoesAlimentacaoParams = [];
 
@@ -49,7 +108,12 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
                   inclusao_id_externo: "8C896",
                   motivo: "Lanche Emergencial",
                   periodos_escolares: ["Infantil INTEGRAL"],
-                  tipos_alimentacao_de: ["Lanche", "Refeição"],
+                  tipos_alimentacao_de: [
+                    "Lanche",
+                    "Lanche 4h",
+                    "Refeição",
+                    "Sobremesa",
+                  ],
                 },
               ],
             },
@@ -78,6 +142,11 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
           data_inicio_permissoes: null,
         },
       });
+    mock
+      .onGet(
+        "/medicao-inicial/permissao-lancamentos-especiais/permissoes-lancamentos-especiais-mes-ano-por-periodo/",
+      )
+      .reply(200, mockPermissoesLancamentosEspeciaisLancheEmergencialCEMEI);
     mock
       .onGet("/matriculados-no-mes/")
       .reply(200, mockMatriculadosNoMesCEMEINovembro2025);
@@ -160,7 +229,7 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
     );
   });
 
-  it("exibe tooltip verde por tipo autorizado e warning laranja ao preencher apontamento", async () => {
+  it("aplica tooltip e warning de lanche emergencial nas linhas especiais permitidas", async () => {
     const semanaTres = screen.getByText("Semana 3");
     fireEvent.click(semanaTres);
 
@@ -175,8 +244,38 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
       ),
     ).toBeInTheDocument();
     expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_2_lanche_4h__dia_12__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_2_lanche_5h__dia_12__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_lanche_extra__dia_12__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_2_refeicao_1_oferta__dia_12__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId(
+        "tooltip-lanche-emergencial-autorizado_2_sobremesa_1_oferta__dia_12__categoria_1",
+      ),
+    ).toBeInTheDocument();
+    expect(
       screen.queryByTestId(
-        "tooltip-lanche-emergencial-autorizado_sobremesa__dia_12__categoria_1",
+        "tooltip-lanche-emergencial-autorizado_repeticao_2_refeicao__dia_12__categoria_1",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId(
+        "tooltip-lanche-emergencial-autorizado_repeticao_2_sobremesa__dia_12__categoria_1",
       ),
     ).not.toBeInTheDocument();
 
@@ -187,7 +286,9 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
       target: { value: "10" },
     });
 
-    const inputLancheDia12 = screen.getByTestId("lanche__dia_12__categoria_1");
+    const inputLancheDia12 = screen.getByTestId(
+      "2_lanche_4h__dia_12__categoria_1",
+    );
     fireEvent.change(inputLancheDia12, {
       target: { value: "1" },
     });
@@ -198,7 +299,7 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
     });
 
     const iconeWarning = screen.getByTestId(
-      "tooltip-lanche-emergencial-warning_lanche__dia_12__categoria_1",
+      "tooltip-lanche-emergencial-warning_2_lanche_4h__dia_12__categoria_1",
     );
     fireEvent.mouseOver(iconeWarning);
     expect(
@@ -227,19 +328,19 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
       expect(inputLancheDia12).not.toHaveClass("border-warning");
       expect(
         screen.queryByTestId(
-          "tooltip-lanche-emergencial-warning_lanche__dia_12__categoria_1",
+          "tooltip-lanche-emergencial-warning_2_lanche_4h__dia_12__categoria_1",
         ),
       ).not.toBeInTheDocument();
     });
 
     expect(
       screen.queryByTestId(
-        "tooltip-lanche-emergencial-autorizado_lanche__dia_12__categoria_1",
+        "tooltip-lanche-emergencial-autorizado_2_lanche_4h__dia_12__categoria_1",
       ),
     ).not.toBeInTheDocument();
     expect(
       screen.getByTestId(
-        "tooltip-lanche-emergencial-autorizado_refeicao__dia_12__categoria_1",
+        "tooltip-lanche-emergencial-autorizado_2_refeicao_1_oferta__dia_12__categoria_1",
       ),
     ).toBeInTheDocument();
     expect(botaoAdicionarObservacao).not.toHaveClass("red-button-outline");

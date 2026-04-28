@@ -537,6 +537,7 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
   value,
   alteracoesAlimentacaoAutorizadas,
   alteracoesLancheEmergencialAutorizadas,
+  permissoesLancamentosEspeciaisPorDia,
   inclusoesAutorizadas,
   validacaoDiaLetivo,
   ehProgramasEProjetosLocation,
@@ -657,6 +658,7 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
       categoria,
       allValues,
       alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
     )
   ) {
     return WARNING_LANCHE_EMERGENCIAL_AUTORIZADO;

@@ -1,6 +1,7 @@
 import axios from "./_base";
 import { API_URL } from "../constants/config";
 import authService from "./auth";
+import { ErrorHandlerFunction } from "./service-helpers";
 
 const authToken = {
   Authorization: `JWT ${authService.getToken()}`,
@@ -16,44 +17,37 @@ export const CODAERecusaReclamacao = async (uuid, params) =>
 export const CODAEQuestionaTerceirizada = async (uuid, params) =>
   await axios.patch(
     `/reclamacoes-produtos/${uuid}/codae-questiona-terceirizada/`,
-    params
+    params,
   );
 
 export const CODAEQuestionaUE = async (uuid, params) =>
   await axios.patch(
     `/reclamacoes-produtos/${uuid}/codae-questiona-ue/`,
-    params
+    params,
   );
 
 export const CODAEQuestionaNutrisupervisor = async (uuid, params) =>
   await axios.patch(
     `/reclamacoes-produtos/${uuid}/codae-questiona-nutrisupervisor/`,
-    params
+    params,
   );
 
 export const CODAERespondeReclamante = async (uuid, params) =>
   await axios.patch(`/reclamacoes-produtos/${uuid}/codae-responde/`, params);
 
-export const CODAEPedeAnaliseSensorialProdutoReclamacao = (
+export const CODAEPedeAnaliseSensorialProdutoReclamacao = async (
   uuid,
   justificativa,
-  uuidTerceirizada
+  uuidTerceirizada,
 ) => {
   const url = `/reclamacoes-produtos/${uuid}/codae-pede-analise-sensorial/`;
-  let status = 0;
-  const params = JSON.stringify({ justificativa, uuidTerceirizada });
-  return axios
-    .patch(url, params)
-    .then((res) => {
-      status = res.status;
-      return res;
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error;
-    });
+  const response = await axios
+    .patch(url, { justificativa, uuidTerceirizada })
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getNomesProdutos = async () =>
@@ -85,7 +79,7 @@ export const responderQuestionamentoUE = (params, uuid) =>
 
 export const getNomesProdutosNutrisupervisor = async () =>
   await axios.get(
-    `/produtos/lista-nomes-responder-reclamacao-nutrisupervisor/`
+    `/produtos/lista-nomes-responder-reclamacao-nutrisupervisor/`,
   );
 
 export const getMarcasNutrisupervisor = async () =>
@@ -93,7 +87,7 @@ export const getMarcasNutrisupervisor = async () =>
 
 export const getFabricantesNutrisupervisor = async () =>
   await axios.get(
-    `/fabricantes/lista-nomes-responder-reclamacao-nutrisupervisor/`
+    `/fabricantes/lista-nomes-responder-reclamacao-nutrisupervisor/`,
   );
 
 export const filtrarReclamacoesNutrisupervisor = async (params) => {
@@ -114,5 +108,5 @@ export const filtrarReclamacoesNutrisupervisor = async (params) => {
 export const responderQuestionamentoNutrisupervisor = (params, uuid) =>
   axios.patch(
     `/reclamacoes-produtos/${uuid}/nutrisupervisor-responde/`,
-    params
+    params,
   );

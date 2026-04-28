@@ -407,22 +407,89 @@ const normalizarTipoAlimentacaoLancheEmergencial = (tipoAlimentacao) => {
     .replaceAll(/ /g, "_");
 };
 
+const TIPOS_ALIMENTACAO_ESPECIAIS_LANCHE_EMERGENCIAL = {
+  refeicao: ["2_refeicao_1_oferta"],
+  sobremesa: ["2_sobremesa_1_oferta"],
+  lanche: ["2_lanche_5h", "lanche_extra"],
+  lanche_4h: ["2_lanche_4h"],
+};
+
+const garantirArray = (value) => {
+  return Array.isArray(value) ? value : [];
+};
+
+const getAlimentacoesLancamentosEspeciaisPorDia = (
+  dia,
+  permissoesLancamentosEspeciaisPorDia = [],
+) => {
+  const permissoes = garantirArray(permissoesLancamentosEspeciaisPorDia);
+
+  return [
+    ...new Set(
+      permissoes
+        .filter((permissao) => Number(permissao.dia) === Number(dia))
+        .flatMap((permissao) => permissao.alimentacoes || []),
+    ),
+  ];
+};
+
+const getTiposAlimentacaoLancheEmergencialAutorizadosNoDia = (
+  dia,
+  alteracoesLancheEmergencialAutorizadas = [],
+) => {
+  const alteracoes = garantirArray(alteracoesLancheEmergencialAutorizadas);
+
+  return [
+    ...new Set(
+      alteracoes
+        .filter((alteracao) => Number(alteracao.dia) === Number(dia))
+        .flatMap((alteracao) => alteracao.tipos_alimentacao_de || [])
+        .map(normalizarTipoAlimentacaoLancheEmergencial),
+    ),
+  ];
+};
+
+const getRowsLancheEmergencialAutorizadosNoDia = (
+  dia,
+  alteracoesLancheEmergencialAutorizadas = [],
+  permissoesLancamentosEspeciaisPorDia = [],
+) => {
+  const alimentacoesLancamentosEspeciaisPorDia =
+    getAlimentacoesLancamentosEspeciaisPorDia(
+      dia,
+      permissoesLancamentosEspeciaisPorDia,
+    );
+
+  return [
+    ...new Set(
+      getTiposAlimentacaoLancheEmergencialAutorizadosNoDia(
+        dia,
+        alteracoesLancheEmergencialAutorizadas,
+      ).flatMap((tipoAlimentacao) => [
+        tipoAlimentacao,
+        ...(
+          TIPOS_ALIMENTACAO_ESPECIAIS_LANCHE_EMERGENCIAL[tipoAlimentacao] || []
+        ).filter((alimentacao) =>
+          alimentacoesLancamentosEspeciaisPorDia.includes(alimentacao),
+        ),
+      ]),
+    ),
+  ];
+};
+
 const ehValorZeroDigitado = (value) => value === "0" || value === 0;
 
 const slotEhLancheEmergencialAutorizadoTipoAlimentacao = (
   rowName,
   dia,
   alteracoesLancheEmergencialAutorizadas = [],
+  permissoesLancamentosEspeciaisPorDia = [],
 ) => {
-  return alteracoesLancheEmergencialAutorizadas?.some(
-    (alteracao) =>
-      alteracao.dia === dia &&
-      alteracao.tipos_alimentacao_de?.some(
-        (tipoAlimentacao) =>
-          normalizarTipoAlimentacaoLancheEmergencial(tipoAlimentacao) ===
-          rowName,
-      ),
-  );
+  return getRowsLancheEmergencialAutorizadosNoDia(
+    dia,
+    alteracoesLancheEmergencialAutorizadas,
+    permissoesLancamentosEspeciaisPorDia,
+  ).includes(rowName);
 };
 
 export const campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao =
@@ -432,6 +499,7 @@ export const campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObs
     categoriaId,
     values,
     alteracoesLancheEmergencialAutorizadas = [],
+    permissoesLancamentosEspeciaisPorDia = [],
   ) => {
     const value = values[`${rowName}__dia_${dia}__categoria_${categoriaId}`];
 
@@ -443,22 +511,30 @@ export const campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObs
         rowName,
         dia,
         alteracoesLancheEmergencialAutorizadas,
+        permissoesLancamentosEspeciaisPorDia,
       )
     );
   };
 
 export const existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao =
-  (dia, categoria, values, alteracoesLancheEmergencialAutorizadas = []) => {
-    if (categoria.nome !== "ALIMENTAÇÃO") return false;
+  (
+    dia,
+    categoria,
+    values,
+    alteracoesLancheEmergencialAutorizadas = [],
+    permissoesLancamentosEspeciaisPorDia = [],
+  ) => {
+    if (
+      categoria.nome !== "ALIMENTAÇÃO" ||
+      !alteracoesLancheEmergencialAutorizadas
+    )
+      return false;
 
-    const tiposAutorizadosNoDia = [
-      ...new Set(
-        alteracoesLancheEmergencialAutorizadas
-          .filter((alteracao) => alteracao.dia === dia)
-          .flatMap((alteracao) => alteracao.tipos_alimentacao_de || [])
-          .map(normalizarTipoAlimentacaoLancheEmergencial),
-      ),
-    ];
+    const tiposAutorizadosNoDia = getRowsLancheEmergencialAutorizadosNoDia(
+      dia,
+      alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
+    );
 
     return tiposAutorizadosNoDia.some((rowName) =>
       campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao(
@@ -467,6 +543,7 @@ export const existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObserv
         categoria.id,
         values,
         alteracoesLancheEmergencialAutorizadas,
+        permissoesLancamentosEspeciaisPorDia,
       ),
     );
   };
@@ -477,6 +554,7 @@ export const existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObs
     categoriasDeMedicao,
     weekColumns,
     alteracoesLancheEmergencialAutorizadas = [],
+    permissoesLancamentosEspeciaisPorDia = [],
   ) => {
     const categoriaAlimentacao = categoriasDeMedicao.find(
       (categoria) => categoria.nome === "ALIMENTAÇÃO",
@@ -497,6 +575,7 @@ export const existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObs
         categoriaAlimentacao,
         values,
         alteracoesLancheEmergencialAutorizadas,
+        permissoesLancamentosEspeciaisPorDia,
       ),
     );
   };
@@ -514,6 +593,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   suspensoesAutorizadas,
   alteracoesAlimentacaoAutorizadas,
   alteracoesLancheEmergencialAutorizadas,
+  permissoesLancamentosEspeciaisPorDia,
   kitLanchesAutorizadas,
   inclusoesEtecAutorizadas,
   ehGrupoETECUrlParam = false,
@@ -587,6 +667,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
         categoria,
         formValuesAtualizados,
         alteracoesLancheEmergencialAutorizadas,
+        permissoesLancamentosEspeciaisPorDia,
       ) ||
       habitarBotaoAdicionar(
         "frequencia",
@@ -748,6 +829,7 @@ export const validacoesTabelaAlimentacao = (
   suspensoesAutorizadas,
   alteracoesAlimentacaoAutorizadas,
   alteracoesLancheEmergencialAutorizadas,
+  permissoesLancamentosEspeciaisPorDia,
   validacaoDiaLetivo,
   location,
   feriadosNoMes,
@@ -972,6 +1054,7 @@ export const validacoesTabelaAlimentacao = (
       categoria,
       allValues,
       alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
     )
   ) {
     return WARNING_LANCHE_EMERGENCIAL_AUTORIZADO;
@@ -1257,7 +1340,7 @@ export const validacoesTabelaEtecAlimentacao = (
   categoria,
   value,
   allValues,
-  validacaoDiaLetivo,
+  validacaoDiaLancamentoETEC,
   validacaoSemana,
 ) => {
   const maxNumeroAlunos = Number(
@@ -1271,7 +1354,7 @@ export const validacoesTabelaEtecAlimentacao = (
     rowName === "frequencia" &&
     !allValues[`frequencia__dia_${dia}__categoria_${categoria}`] &&
     allValues[`numero_de_alunos__dia_${dia}__categoria_${categoria}`] &&
-    validacaoDiaLetivo(dia) &&
+    validacaoDiaLancamentoETEC(dia, categoria) &&
     !validacaoSemana(dia)
   ) {
     return "Há solicitação de alimentação autorizada para esta data. Insira o número de frequentes.";
@@ -1849,6 +1932,7 @@ export const exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao = (
   column,
   categoria,
   alteracoesLancheEmergencialAutorizadas,
+  permissoesLancamentosEspeciaisPorDia,
 ) => {
   const value =
     formValuesAtualizados[
@@ -1868,6 +1952,7 @@ export const exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao = (
       row.name,
       column.dia,
       alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
     )
   );
 };
@@ -2456,15 +2541,26 @@ export const exibirTooltipRefeicaoSimultanea = (
   const base = `__dia_${column.dia}__categoria_${categoria.id}`;
   const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
   const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+  const repeticaoRefeicao =
+    Number(formValuesAtualizados[`repeticao_refeicao${base}`]) || 0;
   const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+  const repeticaoSobremesa =
+    Number(formValuesAtualizados[`repeticao_sobremesa${base}`]) || 0;
   const temObservacao = formValuesAtualizados[`observacoes${base}`];
 
   const temRefeicao = refeicao > 0;
+  const temRepeticaoRefeicao = repeticaoRefeicao > 0;
   const temSobremesa = sobremesa > 0;
+  const temRepeticaoSobremesa = repeticaoSobremesa > 0;
   const temLanche4h = lanche4h > 0;
-  const ativos = [temLanche4h, temRefeicao, temSobremesa].filter(
-    Boolean,
-  ).length;
+
+  const ativos = [
+    temLanche4h,
+    temRefeicao,
+    temSobremesa,
+    temRepeticaoRefeicao,
+    temRepeticaoSobremesa,
+  ].filter(Boolean).length;
 
   if (ativos <= 1 || temObservacao) return false;
 
@@ -2487,16 +2583,26 @@ export const bloquearSalvamentoRefeicaoSimultanea = (
       const base = `__dia_${column.dia}__categoria_${categoria.id}`;
       const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
       const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+      const repeticaoRefeicao =
+        Number(formValuesAtualizados[`repeticao_refeicao${base}`]) || 0;
       const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+      const repeticaoSobremesa =
+        Number(formValuesAtualizados[`repeticao_sobremesa${base}`]) || 0;
       const temObservacao = formValuesAtualizados[`observacoes${base}`];
 
       const temRefeicao = refeicao > 0;
+      const temRepeticaoRefeicao = repeticaoRefeicao > 0;
       const temSobremesa = sobremesa > 0;
+      const temRepeticaoSobremesa = repeticaoSobremesa > 0;
       const temLanche4h = lanche4h > 0;
 
-      const ativos = [temLanche4h, temRefeicao, temSobremesa].filter(
-        Boolean,
-      ).length;
+      const ativos = [
+        temLanche4h,
+        temRefeicao,
+        temSobremesa,
+        temRepeticaoRefeicao,
+        temRepeticaoSobremesa,
+      ].filter(Boolean).length;
       if (ativos <= 1 || temObservacao) continue;
 
       const lanche4hValue =
@@ -2520,13 +2626,24 @@ export const refeicaoSimultaneaESemObservacao = (
   const base = `__dia_${column.dia}__categoria_${categoria.id}`;
   const lanche4h = Number(formValuesAtualizados[`lanche_4h${base}`]) || 0;
   const refeicao = Number(formValuesAtualizados[`refeicao${base}`]) || 0;
+  const repeticaoRefeicao =
+    Number(formValuesAtualizados[`repeticao_refeicao${base}`]) || 0;
   const sobremesa = Number(formValuesAtualizados[`sobremesa${base}`]) || 0;
+  const repeticaoSobremesa =
+    Number(formValuesAtualizados[`repeticao_sobremesa${base}`]) || 0;
   const temObservacao = formValuesAtualizados[`observacoes${base}`];
 
   const temRefeicao = refeicao > 0;
+  const temRepeticaoRefeicao = repeticaoRefeicao > 0;
   const temSobremesa = sobremesa > 0;
+  const temRepeticaoSobremesa = repeticaoSobremesa > 0;
   const temLanche4h = lanche4h > 0;
-  const temRefeicaoOuSobremesa = temRefeicao || temSobremesa;
+  const temRefeicaoOuSobremesa =
+    temRefeicao ||
+    temSobremesa ||
+    temRepeticaoRefeicao ||
+    temRepeticaoSobremesa;
+
   if (!temRefeicaoOuSobremesa || !temLanche4h || temObservacao) return false;
   return true;
 };

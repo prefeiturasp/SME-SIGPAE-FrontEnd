@@ -261,6 +261,40 @@ const validaAlimentacoesEDietasEscolaSemAlunosRegulares = (
   return !tiposAlimentacaoExistentes.includes(tipoAlimentacao);
 };
 
+export const ehDiaHabilitadoParaLancamentoETEC = (
+  dia,
+  categoria,
+  mesAnoConsiderado,
+  feriadosNoMes = [],
+  dadosValoresInclusoesEtecAutorizadasState = {},
+) => {
+  const diaNormalizado = String(dia).padStart(2, "0");
+  const temNumeroDeAlunosEtecNoDia = Object.keys(
+    dadosValoresInclusoesEtecAutorizadasState || {},
+  ).some((key) => {
+    return (
+      String(key).includes(`__dia_${dia}__categoria_${categoria}`) ||
+      String(key).includes(`__dia_${diaNormalizado}__categoria_${categoria}`)
+    );
+  });
+
+  if (!temNumeroDeAlunosEtecNoDia || !mesAnoConsiderado) {
+    return false;
+  }
+
+  const dateObj = new Date(
+    mesAnoConsiderado.getFullYear(),
+    mesAnoConsiderado.getMonth(),
+    Number(dia),
+  );
+  const ehFimDeSemanaNoDia = dateObj.getDay() % 6 === 0;
+  const ehFeriadoNoDia = feriadosNoMes.some(
+    (feriado) => Number(feriado) === Number(dia),
+  );
+
+  return !ehFimDeSemanaNoDia && !ehFeriadoNoDia;
+};
+
 export const desabilitarField = (
   dia,
   rowName,
@@ -466,24 +500,38 @@ export const desabilitarField = (
     return false;
   }
   if (ehGrupoETECUrlParam && nomeCategoria === "ALIMENTAÇÃO") {
+    const temNumeroDeAlunosEtecNoDia = Object.keys(
+      dadosValoresInclusoesEtecAutorizadasState || {},
+    ).some((key) => {
+      const diaNormalizado = String(dia).padStart(2, "0");
+      return (
+        String(key).includes(`__dia_${dia}__categoria_${categoria}`) ||
+        String(key).includes(`__dia_${diaNormalizado}__categoria_${categoria}`)
+      );
+    });
+    const diaHabilitadoParaLancamentoETEC = ehDiaHabilitadoParaLancamentoETEC(
+      dia,
+      categoria,
+      mesAnoConsiderado,
+      feriadosNoMes,
+      dadosValoresInclusoesEtecAutorizadasState,
+    );
     const inclusao = inclusoesEtecAutorizadas.filter(
       (inclusao) => Number(inclusao.dia) === Number(dia),
     );
     if (
       rowName === "frequencia" &&
-      validacaoDiaLetivo(dia) &&
+      diaHabilitadoParaLancamentoETEC &&
       !validacaoSemana(dia) &&
       !["Mês anterior", "Mês posterior"].includes(
         values[`frequencia__dia_${dia}__categoria_${categoria}`],
       ) &&
-      Object.keys(dadosValoresInclusoesEtecAutorizadasState).some((key) =>
-        String(key).includes(`__dia_${dia}__categoria_${categoria}`),
-      )
+      temNumeroDeAlunosEtecNoDia
     ) {
       return false;
     } else if (
       rowName === "repeticao_refeicao" &&
-      validacaoDiaLetivo(dia) &&
+      diaHabilitadoParaLancamentoETEC &&
       !validacaoSemana(dia) &&
       inclusao.length &&
       inclusao[0].alimentacoes.includes("refeicao")
@@ -492,7 +540,7 @@ export const desabilitarField = (
     } else if (
       (rowName === "repeticao_sobremesa" ||
         rowName === "repeticao_2_sobremesa") &&
-      validacaoDiaLetivo(dia) &&
+      diaHabilitadoParaLancamentoETEC &&
       !validacaoSemana(dia) &&
       inclusao.length &&
       inclusao[0].alimentacoes.includes("sobremesa")
@@ -500,12 +548,10 @@ export const desabilitarField = (
       return false;
     } else {
       return (
-        !validacaoDiaLetivo(dia) ||
+        !diaHabilitadoParaLancamentoETEC ||
         validacaoSemana(dia) ||
         rowName === "numero_de_alunos" ||
-        !Object.keys(dadosValoresInclusoesEtecAutorizadasState).some((key) =>
-          String(key).includes(`__dia_${dia}__categoria_${categoria}`),
-        ) ||
+        !temNumeroDeAlunosEtecNoDia ||
         (inclusao.length && !inclusao[0].alimentacoes.includes(rowName)) ||
         (mesConsiderado === mesAtual &&
           Number(dia) >= format(mesAnoDefault, "dd") &&

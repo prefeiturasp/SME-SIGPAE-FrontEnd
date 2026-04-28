@@ -346,28 +346,19 @@ export const CODAEAceitaReclamacao = async (uuid, payload) => {
   }
 };
 
-export const CODAEPedeAnaliseSensorialProduto = (
+export const CODAEPedeAnaliseSensorialProduto = async (
   uuid,
   justificativa,
   uuidTerceirizada,
 ) => {
   const url = `${API_URL}/homologacoes-produtos/${uuid}/codae-pede-analise-sensorial/`;
-  let status = 0;
-  return fetch(url, {
-    method: "PATCH",
-    headers: authToken,
-    body: JSON.stringify({ justificativa, uuidTerceirizada }),
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error;
-    });
+  const response = await axios
+    .patch(url, { justificativa, uuidTerceirizada })
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const CODAECancelaAnaliseSensorialProduto = (uuid, justificativa) => {

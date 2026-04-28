@@ -780,6 +780,7 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
         titulo="Assinar Cronograma"
         texto="Deseja salvar o Cadastro do Cronograma e enviar para aprovação?"
         textoBotao="Salvar e Enviar"
+        textoBotaoNao="Continuar Editando"
       />
     </>
   );
