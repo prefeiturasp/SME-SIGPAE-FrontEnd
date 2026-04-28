@@ -3,6 +3,7 @@ import {
   DadosLiquidacaoResponse,
   FiltrosInterface,
   RelatorioFinanceiroConsolidado,
+  PayloadRelatorioFinanceiro,
   RelatorioFinanceiroResponse,
 } from "src/interfaces/relatorio_financeiro.interface";
 import axios from "../_base";
@@ -16,6 +17,22 @@ export const getRelatoriosFinanceiros = async (
   const params = { page, ...filtros };
 
   return await axios.get<RelatorioFinanceiroResponse>(url, { params });
+};
+
+export const editarRelatorioFinanceiro = async (
+  uuid: string,
+  payload: Partial<PayloadRelatorioFinanceiro>,
+) => {
+  const response = await axios
+    .patch<RelatorioFinanceiroResponse>(
+      `/medicao-inicial/relatorio-financeiro/${uuid}/`,
+      payload,
+    )
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getRelatorioFinanceiroConsolidado = async (uuid: string) => {
