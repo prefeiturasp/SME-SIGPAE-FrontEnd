@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Spin } from "antd";
-import { AxiosResponse } from "axios";
 import { Field, Form } from "react-final-form";
 import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
@@ -28,6 +27,7 @@ import {
 import {
   getCronogramasMensalAssinados,
   getCronogramaMensalDetalhado,
+  getCronogramaSemanal,
   criarCronogramaSemanalRascunho,
   atualizarCronogramaSemanalRascunho,
   assinarEEnviarCronogramaSemanal,
@@ -35,9 +35,10 @@ import {
 import {
   CronogramaMensalSimples,
   CronogramaMensalDetalhado,
+  CronogramaSemanalDetalhado,
   EtapaMes,
 } from "src/interfaces/cronograma_semanal.interface";
-import { obterLimitesMes } from "./helpers";
+import { obterLimitesMes, formataDataISOparaDDMMYYYY } from "./helpers";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 import { PRE_RECEBIMENTO, CRONOGRAMA_SEMANAL_FLV } from "src/configs/constants";
 import "./styles.scss";
@@ -80,23 +81,63 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
     useState<CronogramaMensalDetalhado | null>(null);
   const [etapasMeses, setEtapasMeses] = useState<EtapaMes[]>([]);
   const [rascunhoUuid, setRascunhoUuid] = useState<string | undefined>(uuid);
+  const [numeroCronograma, setNumeroCronograma] = useState<string | undefined>(
+    undefined,
+  );
   const formRef = useRef<any>(null);
 
   useEffect(() => {
-    carregarCronogramasMensal();
+    const urlParams = new URLSearchParams(window.location.search);
+    const uuidFromUrl = urlParams.get("uuid");
+    if (uuidFromUrl) {
+      setRascunhoUuid(uuidFromUrl);
+    }
+    carregarCronogramasMensal(uuidFromUrl);
   }, []);
 
-  const carregarCronogramasMensal = async () => {
+  const carregarCronogramasMensal = async (uuidExistente?: string | null) => {
     try {
       setCarregando(true);
       const response = await getCronogramasMensalAssinados();
       if (response && response.data) {
         setCronogramasMensal(response.data);
+        if (uuidExistente) {
+          await carregarCronogramaExistente(uuidExistente, response.data);
+        }
       }
     } catch {
       toastError("Erro ao carregar cronogramas mensal");
     } finally {
       setCarregando(false);
+    }
+  };
+
+  const carregarCronogramaExistente = async (
+    uuidCronograma: string,
+    listaCronogramasMensal?: CronogramaMensalSimples[],
+  ) => {
+    try {
+      const response = await getCronogramaSemanal(uuidCronograma);
+      if (response && response.data) {
+        const cronograma = response.data as CronogramaSemanalDetalhado;
+        setNumeroCronograma(cronograma.numero);
+
+        const cronogramaMensal = cronograma.cronograma_mensal;
+        if (cronogramaMensal) {
+          const option = listaCronogramasMensal?.find(
+            (c) => c.uuid === cronogramaMensal.uuid,
+          );
+          if (option) {
+            await selecionarCronogramaMensal(
+              option.uuid,
+              option.numero,
+              cronograma,
+            );
+          }
+        }
+      }
+    } catch {
+      toastError("Erro ao carregar cronograma semanal");
     }
   };
 
@@ -113,9 +154,10 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       programacoes: [],
     });
 
-  const selecionarCronogramaMensal = (
+  const selecionarCronogramaMensal = async (
     uuidCronograma: string,
     numeroCronograma: string,
+    cronogramaSemanalExistente?: CronogramaSemanalDetalhado,
   ) => {
     const form = formRef.current;
     if (!form) {
@@ -125,96 +167,108 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
     form.change("cronograma_mensal", numeroCronograma);
 
     setCarregando(true);
-    getCronogramaMensalDetalhado(uuidCronograma)
-      .then((response: AxiosResponse<CronogramaMensalDetalhado>) => {
-        if (response && response.data) {
-          const data = response.data;
+    try {
+      const response = await getCronogramaMensalDetalhado(uuidCronograma);
+      if (response && response.data) {
+        const data = response.data;
 
-          form.change("produto", data.ficha_tecnica?.produto?.nome || "");
-          form.change("fornecedor", data.empresa?.nome_fantasia || "");
-          form.change("numero_contrato", data.contrato?.numero || "");
-          form.change("numero_processo_sei", data.contrato?.processo || "");
-          form.change(
-            "numero_chamada_publica_ou_ata",
-            data.contrato?.numero_pregao
-              ? data.contrato?.ata || ""
-              : data.contrato?.numero_chamada_publica || "",
-          );
-          form.change(
-            "tipo_documento",
-            data.contrato?.numero_pregao
-              ? "Nº da Ata"
-              : "Nº da Chamada Pública",
-          );
-          form.change("numero_empenho", data.numero_empenho || "");
-          form.change(
-            "qtd_total_empenho",
-            formataMilharDecimal(data.qtd_total_empenho) || "",
-          );
-          form.change(
-            "custo_unitario_produto",
-            `R$ ${formataMilharDecimal(data.custo_unitario_produto)}`,
-          );
+        form.change("produto", data.ficha_tecnica?.produto?.nome || "");
+        form.change("fornecedor", data.empresa?.nome_fantasia || "");
+        form.change("numero_contrato", data.contrato?.numero || "");
+        form.change("numero_processo_sei", data.contrato?.processo || "");
+        form.change(
+          "numero_chamada_publica_ou_ata",
+          data.contrato?.numero_pregao
+            ? data.contrato?.ata || ""
+            : data.contrato?.numero_chamada_publica || "",
+        );
+        form.change(
+          "tipo_documento",
+          data.contrato?.numero_pregao ? "Nº da Ata" : "Nº da Chamada Pública",
+        );
+        form.change("numero_empenho", data.numero_empenho || "");
+        form.change(
+          "qtd_total_empenho",
+          formataMilharDecimal(data.qtd_total_empenho) || "",
+        );
+        form.change(
+          "custo_unitario_produto",
+          `R$ ${formataMilharDecimal(data.custo_unitario_produto)}`,
+        );
 
+        let programacoesIniciais;
+        if (cronogramaSemanalExistente?.programacoes) {
+          programacoesIniciais = cronogramaSemanalExistente.programacoes.map(
+            (p) => ({
+              mes_programado: p.mes_programado,
+              data_inicio: formataDataISOparaDDMMYYYY(p.data_inicio) || "",
+              data_fim: formataDataISOparaDDMMYYYY(p.data_fim) || "",
+              quantidade: formataMilharDecimal(p.quantidade),
+            }),
+          );
+          form.change(
+            "observacoes",
+            cronogramaSemanalExistente.observacoes || "",
+          );
+        } else {
           const programacoesAtuais = form.getState().values.programacoes;
-          const programacoesIniciais =
+          programacoesIniciais =
             programacoesAtuais && programacoesAtuais.length > 0
               ? programacoesAtuais
               : [programacaoPadrao];
-
-          form.change("programacoes", programacoesIniciais);
-
-          const novosValores = {
-            ...form.getState().values,
-            produto: data.ficha_tecnica?.produto?.nome || "",
-            fornecedor: data.empresa?.nome_fantasia || "",
-            numero_contrato: data.contrato?.numero || "",
-            numero_processo_sei: data.contrato?.processo || "",
-            numero_chamada_publica_ou_ata: data.contrato?.numero_pregao
-              ? data.contrato?.ata || ""
-              : data.contrato?.numero_chamada_publica || "",
-            tipo_documento: data.contrato?.numero_pregao
-              ? "Nº da Ata"
-              : "Nº da Chamada Pública",
-            numero_empenho: data.numero_empenho || "",
-            qtd_total_empenho:
-              formataMilharDecimal(data.qtd_total_empenho) || "",
-            custo_unitario_produto: `R$ ${formataMilharDecimal(data.custo_unitario_produto)}`,
-            programacoes: programacoesIniciais,
-          };
-
-          setValoresCronogramaMensal(novosValores);
-
-          if (data.etapas && data.etapas.length > 0) {
-            const meses: { [key: string]: number } = {};
-            data.etapas.forEach((etapa: any) => {
-              if (etapa.data_programada) {
-                const mesAno = etapa.data_programada;
-                if (!meses[mesAno]) {
-                  meses[mesAno] = 0;
-                }
-                meses[mesAno] += etapa.quantidade || 0;
-              }
-            });
-
-            const etapasMesesList: EtapaMes[] = Object.entries(meses).map(
-              ([mes_ano, quantidade_total]) => ({
-                mes_ano,
-                quantidade_total,
-              }),
-            );
-            setEtapasMeses(etapasMesesList);
-          }
-
-          setCronogramaMensalSelecionado(data);
         }
-      })
-      .catch(() => {
-        toastError("Erro ao carregar dados do cronograma mensal");
-      })
-      .finally(() => {
-        setCarregando(false);
-      });
+
+        form.change("programacoes", programacoesIniciais);
+
+        const novosValores = {
+          ...form.getState().values,
+          produto: data.ficha_tecnica?.produto?.nome || "",
+          fornecedor: data.empresa?.nome_fantasia || "",
+          numero_contrato: data.contrato?.numero || "",
+          numero_processo_sei: data.contrato?.processo || "",
+          numero_chamada_publica_ou_ata: data.contrato?.numero_pregao
+            ? data.contrato?.ata || ""
+            : data.contrato?.numero_chamada_publica || "",
+          tipo_documento: data.contrato?.numero_pregao
+            ? "Nº da Ata"
+            : "Nº da Chamada Pública",
+          numero_empenho: data.numero_empenho || "",
+          qtd_total_empenho: formataMilharDecimal(data.qtd_total_empenho) || "",
+          custo_unitario_produto: `R$ ${formataMilharDecimal(data.custo_unitario_produto)}`,
+          programacoes: programacoesIniciais,
+          observacoes: cronogramaSemanalExistente?.observacoes || "",
+        };
+
+        setValoresCronogramaMensal(novosValores);
+
+        if (data.etapas && data.etapas.length > 0) {
+          const meses: { [key: string]: number } = {};
+          data.etapas.forEach((etapa: any) => {
+            if (etapa.data_programada) {
+              const mesAno = etapa.data_programada;
+              if (!meses[mesAno]) {
+                meses[mesAno] = 0;
+              }
+              meses[mesAno] += etapa.quantidade || 0;
+            }
+          });
+
+          const etapasMesesList: EtapaMes[] = Object.entries(meses).map(
+            ([mes_ano, quantidade_total]) => ({
+              mes_ano,
+              quantidade_total,
+            }),
+          );
+          setEtapasMeses(etapasMesesList);
+        }
+
+        setCronogramaMensalSelecionado(data);
+      }
+    } catch {
+      toastError("Erro ao carregar dados do cronograma mensal");
+    } finally {
+      setCarregando(false);
+    }
   };
 
   const calcularQuantidadeEstimada = (
@@ -282,19 +336,14 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       const payload = {
         cronograma_mensal: uuidCronograma,
         observacoes: values.observacoes || "",
-        programacoes: (values.programacoes || [])
-          .filter(
-            (p) =>
-              p.mes_programado && p.data_inicio && p.data_fim && p.quantidade,
-          )
-          .map((p) => ({
-            mes_programado: p.mes_programado,
-            data_inicio: p.data_inicio,
-            data_fim: p.data_fim,
-            quantidade: parseFloat(
-              p.quantidade.replace(/\./g, "").replace(",", "."),
-            ),
-          })),
+        programacoes: (values.programacoes || []).map((p) => ({
+          mes_programado: p.mes_programado || "",
+          data_inicio: p.data_inicio || "",
+          data_fim: p.data_fim || "",
+          quantidade: p.quantidade
+            ? parseFloat(p.quantidade.replace(/\./g, "").replace(",", "."))
+            : null,
+        })),
       };
 
       let response;
@@ -464,6 +513,18 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                     onSubmit={handleSubmit}
                     data-testid="form-cronograma-semanal"
                   >
+                    {numeroCronograma && (
+                      <div className="row">
+                        <div className="col text-end">
+                          <p>
+                            <b>Nº do Cronograma: </b>
+                            <span className="head-green">
+                              {numeroCronograma}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     {/* Linha 1: Cronograma Mensal (1/3) + Produto (2/3) */}
                     <div className="row">
                       <div className="col-4">
