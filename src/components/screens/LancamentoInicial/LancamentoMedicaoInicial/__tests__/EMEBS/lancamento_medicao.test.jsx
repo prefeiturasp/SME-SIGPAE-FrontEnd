@@ -1,9 +1,5 @@
 import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
-import {
-  PANORAMA_ESCOLA,
-  SOLICITACOES_DIETA_ESPECIAL,
-} from "src/configs/constants";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -12,7 +8,6 @@ import { mockMeusDadosEscolaEMEBS } from "src/mocks/meusDados/escola/EMEBS";
 import { mockGetVinculosTipoAlimentacaoPorEscolaEMEBS } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEBS/vinculosTipoAlimentacaoPeriodoEscolar";
 import { mockEscolaSimplesEMEBS } from "src/mocks/services/escola.service/EMEBS/escolaSimples";
 import { mockQuantidadesAlimentacaoesLancadasPeriodoGrupoMarco2025EMEBS } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEBS/quantidadesAlimentacaoesLancadasPeriodoGrupoAgosto2024";
-import { mockPanoramaEscolaEMEBS } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEBS/panoramaEscola";
 import { mockSolicitacaoMedicaoInicialEMEBS } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEBS/solicitacaoMedicaoInicial";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
@@ -38,9 +33,6 @@ const renderLancamentoMedicaoEMEBS = async ({
   mock.onGet("/notificacoes/quantidade-nao-lidos/").reply(200, {
     quantidade_nao_lidos: 0,
   });
-  mock
-    .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
-    .reply(200, mockPanoramaEscolaEMEBS);
   mock
     .onGet(`/escolas-simples/${escolaUuid}/`)
     .reply(200, mockEscolaSimplesEMEBS);
