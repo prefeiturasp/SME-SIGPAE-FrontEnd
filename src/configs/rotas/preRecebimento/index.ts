@@ -445,6 +445,9 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.DETALHE_CRONOGRAMA_SEMANAL}`,
     component: DetalharCronogramaSemanalPage,
-    tipoUsuario: usuarioEhCronograma() || usuarioEhCodaeDilog(),
+    tipoUsuario:
+      usuarioEhEmpresaFornecedor() ||
+      usuarioEhCronograma() ||
+      usuarioEhCodaeDilog(),
   },
 ];

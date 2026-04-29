@@ -116,6 +116,114 @@ describe("CronogramaSemanalFLV - Component", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("exibe ícone de editar apenas para cronogramas em rascunho", async () => {
+    await setup();
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Rascunho")).toHaveLength(10);
+    });
+
+    const editIcons = screen.getAllByTitle("Editar");
+    expect(editIcons).toHaveLength(10);
+  });
+
+  it("exibe ícone de visualizar para cronogramas não-rascunho", async () => {
+    const mockComStatusEnviado = {
+      count: 2,
+      results: [
+        {
+          uuid: "cronograma-enviado-1",
+          numero: "999/2026P",
+          produto: "PRODUTO TESTE",
+          quantidade_total: "500.00",
+          unidade_medida: "kg",
+          empresa: "JP Alimentos",
+          status: "Enviado ao Fornecedor",
+        },
+        {
+          uuid: "cronograma-enviado-2",
+          numero: "998/2026P",
+          produto: "PRODUTO TESTE 2",
+          quantidade_total: "300.00",
+          unidade_medida: "kg",
+          empresa: "JP Alimentos",
+          status: "Assinado e Enviado ao Fornecedor",
+        },
+      ],
+    };
+
+    mock.reset();
+    mock.onGet("/cronogramas-semanais/").reply(200, mockComStatusEnviado);
+    mock
+      .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+      .reply(200, mockGetCronogramasMensalAssinados2);
+    mock
+      .onGet("/terceirizadas/lista-simples/")
+      .reply(200, mockListaSimplesTerceirizadas);
+
+    await setup();
+
+    await waitFor(() => {
+      expect(screen.getByText("999/2026P")).toBeInTheDocument();
+      expect(screen.getByText("998/2026P")).toBeInTheDocument();
+    });
+
+    const viewIcons = screen.getAllByTitle("Detalhar");
+    expect(viewIcons).toHaveLength(2);
+  });
+
+  it("link de editar redireciona para página de cadastro com uuid", async () => {
+    await setup();
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Rascunho")).toHaveLength(10);
+    });
+
+    const editLink = screen.getAllByTitle("Editar")[0].closest("a");
+    expect(editLink).toHaveAttribute("href");
+    expect(editLink?.getAttribute("href")).toContain(
+      "/pre-recebimento/cadastro-cronograma-semanal?uuid=",
+    );
+  });
+
+  it("link de detalhar redireciona para página de detalhe com uuid", async () => {
+    const mockComStatusEnviado = {
+      count: 1,
+      results: [
+        {
+          uuid: "cronograma-enviado-1",
+          numero: "999/2026P",
+          produto: "PRODUTO TESTE",
+          quantidade_total: "500.00",
+          unidade_medida: "kg",
+          empresa: "JP Alimentos",
+          status: "Enviado ao Fornecedor",
+        },
+      ],
+    };
+
+    mock.reset();
+    mock.onGet("/cronogramas-semanais/").reply(200, mockComStatusEnviado);
+    mock
+      .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+      .reply(200, mockGetCronogramasMensalAssinados2);
+    mock
+      .onGet("/terceirizadas/lista-simples/")
+      .reply(200, mockListaSimplesTerceirizadas);
+
+    await setup();
+
+    await waitFor(() => {
+      expect(screen.getByText("999/2026P")).toBeInTheDocument();
+    });
+
+    const viewLink = screen.getByTitle("Detalhar").closest("a");
+    expect(viewLink).toHaveAttribute("href");
+    expect(viewLink?.getAttribute("href")).toContain(
+      "/pre-recebimento/detalhe-cronograma-semanal?uuid=cronograma-enviado-1",
+    );
+  });
 });
 
 describe("CronogramaSemanalFLV - Component - Usuário Fornecedor", () => {
