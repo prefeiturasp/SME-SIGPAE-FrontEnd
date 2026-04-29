@@ -30,6 +30,14 @@ export const atualizarCronogramaSemanalRascunho = async (
   return await axios.patch(`/cronogramas-semanais/${uuid}/`, payload, config);
 };
 
+export const darCienciaCronogramaSemanal = async (
+  uuid: string,
+  config = {},
+) => {
+  const url = `/cronogramas-semanais/${uuid}/fornecedor-ciente/`;
+  return axios.patch(url, config);
+};
+
 export const getCronogramasMensalAssinados = async (): Promise<{
   data: CronogramaMensalSimples[];
 }> => {
