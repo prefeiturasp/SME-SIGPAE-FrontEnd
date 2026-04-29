@@ -82,14 +82,24 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
 
                 <div className={bordas}>
                   {cronograma.status !== "Rascunho" && (
-                    <NavLink
-                      className="float-start"
-                      to={`/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
-                    >
-                      <span className="link-acoes green">
-                        <i className="fas fa-eye" title="Detalhar" />
-                      </span>
-                    </NavLink>
+                    <>
+                      <NavLink
+                        className="float-start"
+                        to={`/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
+                      >
+                        <span className="link-acoes green">
+                          {ehFornecedor &&
+                          cronograma.status === "Enviado ao Fornecedor" ? (
+                            <i
+                              className="fas fa-file-signature"
+                              title="Assinar"
+                            />
+                          ) : (
+                            <i className="fas fa-eye" title="Detalhar" />
+                          )}
+                        </span>
+                      </NavLink>
+                    </>
                   )}
                 </div>
               </div>
