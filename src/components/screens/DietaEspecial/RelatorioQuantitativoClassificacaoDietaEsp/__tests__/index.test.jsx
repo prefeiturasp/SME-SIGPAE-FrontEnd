@@ -13,6 +13,7 @@ import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockGetClassificacaoDieta } from "src/mocks/services/dietaEspecial.service/mockGetClassificacoesDietas";
+import { mockMeusDadosDRE } from "src/mocks/meusDados/diretoria_regional";
 import RelatorioQuantitativoClassificacaoDietaEsp from "src/components/screens/DietaEspecial/RelatorioQuantitativoClassificacaoDietaEsp";
 import mock from "src/services/_mock";
 import { renderWithProvider } from "src/utils/test-utils";
@@ -229,6 +230,253 @@ describe("Testa Relatório Quantitativo por Classificação da Dieta Especia", (
       });
     });
 
+    it("deve limpar os filtros ao clicar em Limpar Filtros", async () => {
+      await selectClassificacaoDieta();
+      const selectClassificacao = screen.getByTestId(
+        "multiselect-Classificação",
+      );
+      fireEvent.click(screen.getByText(/Limpar Filtros/i));
+      await waitFor(() => {
+        expect(selectClassificacao.value).toBe("1");
+      });
+    });
+
+    it("deve enviar payload correto na requisição", async () => {
+      selectDRE(dreUuid);
+      selectEscola(escolaUuid);
+      await selectClassificacaoDieta("7");
+      await selectStatus("inativas");
+      preencherPeriodo("04/05/2025", "28/03/2026");
+      mock
+        .onPost(
+          "/solicitacoes-dieta-especial/relatorio-quantitativo-classificacao-dieta-esp/",
+        )
+        .reply((config) => {
+          const payload = JSON.parse(config.data);
+
+          expect(payload.classificacao).toEqual(["7"]);
+          expect(payload.status).toBe("inativas");
+          expect(payload.data_inicial).toBe("04/05/2025");
+          expect(payload.data_final).toBe("28/03/2026");
+
+          return [200, { count: 1, results: [] }];
+        });
+
+      fireEvent.click(screen.getByText(/Consultar/i));
+    });
+
+    it("deve exibir loading enquanto carrega", async () => {
+      selectDRE(dreUuid);
+      selectEscola(escolaUuid);
+      await selectClassificacaoDieta();
+      await selectStatus();
+      preencherPeriodo();
+      mock
+        .onPost(
+          "/solicitacoes-dieta-especial/relatorio-quantitativo-classificacao-dieta-esp/",
+        )
+        .reply(() => {
+          return new Promise((resolve) =>
+            setTimeout(() => resolve([200, { count: 0, results: [] }]), 100),
+          );
+        });
+
+      fireEvent.click(screen.getByText(/Consultar/i));
+      expect(await screen.findByText(/Carregando/i)).toBeInTheDocument();
+    });
+
+    it("deve mudar página ao usar paginação", async () => {
+      selectDRE(dreUuid);
+      selectEscola(escolaUuid);
+      await selectClassificacaoDieta();
+      await selectStatus();
+      preencherPeriodo();
+      mock
+        .onPost(
+          "/solicitacoes-dieta-especial/relatorio-quantitativo-classificacao-dieta-esp/",
+        )
+        .reply(200, {
+          count: 20,
+          results: [{ classificacao: "Tipo A", qtde_ativas: 4 }],
+        });
+
+      fireEvent.click(screen.getByText(/Consultar/i));
+
+      await waitFor(() => {
+        expect(screen.getByText("4")).toBeInTheDocument();
+      });
+
+      const nextPage = screen.getByText("2");
+      fireEvent.click(nextPage);
+
+      await waitFor(() => {
+        expect(mock.history.post.length).toBeGreaterThan(1);
+      });
+    });
+
+    it("deve chamar função de impressão", async () => {
+      const {
+        imprimeRelatorioQuantitativoClassificacaoDietaEsp,
+      } = require("src/services/relatorios");
+
+      selectDRE(dreUuid);
+      selectEscola(escolaUuid);
+      await selectClassificacaoDieta();
+      await selectStatus();
+      preencherPeriodo();
+      mock
+        .onPost(
+          "/solicitacoes-dieta-especial/relatorio-quantitativo-classificacao-dieta-esp/",
+        )
+        .reply(200, {
+          count: 1,
+          results: [{ classificacao: "Tipo A", qtde_ativas: 4 }],
+        });
+      fireEvent.click(screen.getByText(/Consultar/i));
+      await waitFor(() => {
+        expect(screen.getByText(/Imprimir/i)).toBeInTheDocument();
+      });
+      fireEvent.click(screen.getByText(/Imprimir/i));
+      expect(
+        imprimeRelatorioQuantitativoClassificacaoDietaEsp,
+      ).toHaveBeenCalled();
+    });
+  });
+
+  describe("Visão COGESTOR - DIRETORIA REGIONAL", () => {
+    const diretoriaRegional = {
+      uuid: "3972e0e9-2d8e-472a-9dfa-30cd219a6d9a",
+      nome: "IPIRANGA",
+      codigo_eol: "108600",
+      iniciais: "IP",
+      acesso_modulo_medicao_inicial: false,
+    };
+
+    afterEach(() => {
+      mock.reset();
+      mock.resetHistory();
+      cleanup();
+    });
+    beforeEach(async () => {
+      mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosDRE);
+
+      mock.onGet(`/escolas-simplissima/${dreUuid}/`).reply(200, [
+        {
+          nome: "EMEI ANTONIO RUBBO MULLER, PROF.",
+          uuid: "2b7a2217-1743-4bcd-8879-cf8e16e34fa6",
+          diretoria_regional: diretoriaRegional,
+        },
+        {
+          nome: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+          uuid: "3c32be8e-f191-468d-a4e2-3dd8751e5e7a",
+          diretoria_regional: diretoriaRegional,
+        },
+      ]);
+
+      mock
+        .onGet(`/classificacoes-dieta/`)
+        .reply(200, mockGetClassificacaoDieta);
+
+      Object.defineProperty(global, "localStorage", {
+        value: localStorageMock,
+      });
+      localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
+
+      await act(async () => {
+        renderWithProvider(
+          <MemoryRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <MeusDadosContext.Provider
+              value={{
+                meusDados: mockMeusDadosEscolaEMEFPericles,
+                setMeusDados: jest.fn(),
+              }}
+            >
+              <ToastContainer />
+              <RelatorioQuantitativoClassificacaoDietaEsp />
+            </MeusDadosContext.Provider>
+          </MemoryRouter>,
+        );
+      });
+    });
+
+    it("renderiza dados iniciais", () => {
+      expect(
+        screen.getByText(/Diretoria Regional de Educação/i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/IPIRANGA/i)).toBeInTheDocument();
+      expect(screen.getByText(/Unidade Escolar/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/EMEI ANTONIO RUBBO MULLER, PROF./i),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Classificação/i)).toBeInTheDocument();
+      expect(screen.getByText(/Status/i)).toBeInTheDocument();
+      expect(screen.getByText(/Data da solicitação/i)).toBeInTheDocument();
+      expect(screen.getByText(/Limpar Filtros/i)).toBeInTheDocument();
+      expect(screen.getByText(/Consultar/i)).toBeInTheDocument();
+    });
+
+    it("deve consultar relatório quantitativo com todos os filtros preenchidos", async () => {
+      selectDRE(dreUuid);
+      selectEscola(escolaUuid);
+      selectClassificacaoDieta();
+      selectStatus();
+      preencherPeriodo();
+
+      mock
+        .onPost(
+          "/solicitacoes-dieta-especial/relatorio-quantitativo-classificacao-dieta-esp/",
+        )
+        .reply(200, {
+          count: 1,
+          results: [
+            {
+              dre: "IPIRANGA",
+              escola: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+              classificacao: "Tipo A",
+              qtde_ativas: 4,
+              qtde_pendentes: 0,
+              qtde_inativas: 0,
+            },
+          ],
+        });
+
+      const botaoConsultar = screen.getByText(/Consultar/i);
+
+      await act(async () => {
+        fireEvent.click(botaoConsultar);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Veja os resultados para a busca/i),
+        ).toBeInTheDocument();
+        expect(screen.getByText("4")).toBeInTheDocument();
+      });
+    });
+
+    it("deve exibir mensagem quando não houver resultados", async () => {
+      selectDRE(dreUuid);
+      selectEscola(escolaUuid);
+      preencherPeriodo();
+      mock.onPost(/relatorio-quantitativo-classificacao-dieta-esp/).reply(200, {
+        count: 0,
+        results: [],
+      });
+
+      fireEvent.click(screen.getByText(/Consultar/i));
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            /Não foi encontrado dieta especial para filtragem realizada/i,
+          ),
+        ).toBeInTheDocument();
+      });
+    });
     it("deve limpar os filtros ao clicar em Limpar Filtros", async () => {
       await selectClassificacaoDieta();
       const selectClassificacao = screen.getByTestId(
