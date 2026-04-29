@@ -1,5 +1,4 @@
 import {
-  PANORAMA_ESCOLA,
   RELATORIO_QUANTITATIVO_CLASSIFICACAO_DIETA_ESP,
   RELATORIO_QUANTITATIVO_DIAG_DIETA_ESP,
   RELATORIO_QUANTITATIVO_SOLIC_DIETA_ESP,
@@ -7,10 +6,10 @@ import {
 } from "src/configs/constants";
 import { API_URL } from "../constants/config";
 import { ENDPOINT } from "../constants/shared";
+import axios from "./_base";
 import authService from "./auth";
 import { SOLICITACOES_DIETA } from "./constants";
 import { ErrorHandlerFunction } from "./service-helpers";
-import axios from "./_base";
 
 const authToken = {
   Authorization: `JWT ${authService.getToken()}`,
@@ -271,9 +270,6 @@ export const getSolicitacaoDietaEspecialListagem = async (filtros, params) => {
     },
   );
 };
-
-export const getPanoramaEscola = async (filtros) =>
-  axios.post(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`, filtros);
 
 export const getSolicitacoesDietaEspecial = async (params) => {
   return axios.get(`/${SOLICITACOES_DIETA_ESPECIAL}/`, { params });

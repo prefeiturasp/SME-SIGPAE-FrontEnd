@@ -1,10 +1,6 @@
 import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import {
-  PANORAMA_ESCOLA,
-  SOLICITACOES_DIETA_ESPECIAL,
-} from "src/configs/constants";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockDiasCalendarioSetembro2025CMCT } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CMCT/Setembro2025/diasCalendario";
@@ -12,7 +8,6 @@ import { mockMeusDadosEscolaCMCT } from "src/mocks/meusDados/escolaCMCT";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCMCT } from "src/mocks/services/cadastroTipoAlimentacao.service/CMCT/mockGetVinculosTipoAlimentacaoPorEscolaCMCT";
 import { mockEscolaSimplesCMCT } from "src/mocks/services/escola.service/CMCT/escolaSimples";
 import { mockEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscolaCMCT } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CMCT/periodosSolicitacoesAutorizadasEscola";
-import { mockPanoramaEscolaCMCTSetembro2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/CMCT/Setembro2025/panoramaEscola";
 import { mockSolicitacaoMedicaoInicialCMCTSetembro2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/CMCT/Setembro2025/solicitacaoMedicaoInicial";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
@@ -25,9 +20,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CMCT", () => {
 
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCMCT);
-    mock
-      .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
-      .reply(200, mockPanoramaEscolaCMCTSetembro2025);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
       .reply(200, mockEscolaSimplesCMCT);
