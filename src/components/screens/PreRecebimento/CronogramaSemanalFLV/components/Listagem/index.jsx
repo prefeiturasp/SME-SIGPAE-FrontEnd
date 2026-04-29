@@ -11,6 +11,7 @@ import { formataNome } from "./helpers";
 import {
   PRE_RECEBIMENTO,
   DETALHE_CRONOGRAMA_SEMANAL,
+  CADASTRO_CRONOGRAMA_SEMANAL,
 } from "src/configs/constants";
 
 const ListagemCronogramas = ({ cronogramas, ativos }) => {
@@ -81,25 +82,32 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
                 <div className={bordas}>{statusValue(cronograma.status)}</div>
 
                 <div className={bordas}>
-                  {cronograma.status !== "Rascunho" && (
-                    <>
-                      <NavLink
-                        className="float-start"
-                        to={`/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
-                      >
-                        <span className="link-acoes green">
-                          {ehFornecedor &&
-                          cronograma.status === "Enviado ao Fornecedor" ? (
-                            <i
-                              className="fas fa-file-signature"
-                              title="Assinar"
-                            />
-                          ) : (
-                            <i className="fas fa-eye" title="Detalhar" />
-                          )}
-                        </span>
-                      </NavLink>
-                    </>
+                  {cronograma.status === "Rascunho" ? (
+                    <NavLink
+                      className="float-start"
+                      to={`/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
+                    >
+                      <span className="link-acoes green">
+                        <i className="fas fa-edit" title="Editar" />
+                      </span>
+                    </NavLink>
+                  ) : (
+                    <NavLink
+                      className="float-start"
+                      to={`/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
+                    >
+                      <span className="link-acoes green">
+                        {ehFornecedor &&
+                        cronograma.status === "Enviado ao Fornecedor" ? (
+                          <i
+                            className="fas fa-file-signature"
+                            title="Assinar"
+                          />
+                        ) : (
+                          <i className="fas fa-eye" title="Detalhar" />
+                        )}
+                      </span>
+                    </NavLink>
                   )}
                 </div>
               </div>
