@@ -923,12 +923,13 @@ describe("CadastrarCronogramaSemanal", () => {
           status: "ENVIADO_AO_FORNECEDOR",
         });
 
-      // Simular uuid na URL
-      const originalSearch = window.location.search;
-      Object.defineProperty(window, "location", {
-        writable: true,
-        value: { ...window.location, search: "?uuid=uuid-edicao-123" },
-      });
+      // Simular uuid na URL usando jest.spyOn
+      const locationSpy = jest
+        .spyOn(window, "location", "get")
+        .mockReturnValue({
+          ...window.location,
+          search: "?uuid=uuid-edicao-123",
+        } as any);
 
       await act(async () => {
         render(
@@ -939,11 +940,7 @@ describe("CadastrarCronogramaSemanal", () => {
         );
       });
 
-      // Restaurar location
-      Object.defineProperty(window, "location", {
-        writable: true,
-        value: { ...window.location, search: originalSearch },
-      });
+      locationSpy.mockRestore();
 
       await waitFor(() => {
         expect(
