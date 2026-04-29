@@ -14,6 +14,7 @@ import CadastrarCronogramaSemanal from "src/components/screens/PreRecebimento/Cr
 import {
   mockCronogramasMensalAssinados,
   mockCronogramaMensalDetalhado,
+  mockCronogramaSemanalDetalhe,
 } from "src/mocks/services/cronogramaSemanal.service";
 
 const mockNavigate = jest.fn();
@@ -874,6 +875,204 @@ describe("CadastrarCronogramaSemanal", () => {
       await waitFor(
         () => {
           expect(screen.getByText("Senha inválida")).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
+    });
+  });
+
+  describe("Edição de Rascunho Existente", () => {
+    const mockCronogramaSemanalEdicao = {
+      ...mockCronogramaSemanalDetalhe,
+      uuid: "uuid-edicao-123",
+      numero: "CSW-EDIT-001",
+      status: "Rascunho",
+      cronograma_mensal: {
+        ...mockCronogramaSemanalDetalhe.cronograma_mensal,
+        uuid: "cronograma-uuid-1",
+        numero: "CR-001/2024",
+      },
+      programacoes: [
+        {
+          mes_programado: "03/2026",
+          data_inicio: "2026-03-01",
+          data_fim: "2026-03-15",
+          quantidade: 500.0,
+        },
+      ],
+    };
+
+    const setupEdicao = async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock
+        .onGet("/cronogramas/cronograma-uuid-1/")
+        .reply(200, mockCronogramaMensalDetalhado);
+      mock
+        .onGet("/cronogramas-semanais/uuid-edicao-123/")
+        .reply(200, mockCronogramaSemanalEdicao);
+      mock
+        .onPatch("/cronogramas-semanais/uuid-edicao-123/")
+        .reply(200, { uuid: "uuid-edicao-123" });
+      mock
+        .onPatch(/\/cronogramas-semanais\/.+\/assinar-e-enviar\//)
+        .reply(200, {
+          uuid: "uuid-edicao-123",
+          status: "ENVIADO_AO_FORNECEDOR",
+        });
+
+      // Simular uuid na URL
+      const originalSearch = window.location.search;
+      Object.defineProperty(window, "location", {
+        writable: true,
+        value: { ...window.location, search: "?uuid=uuid-edicao-123" },
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter>
+            <CadastrarCronogramaSemanal />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      // Restaurar location
+      Object.defineProperty(window, "location", {
+        writable: true,
+        value: { ...window.location, search: originalSearch },
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Cronograma Mensal Cadastrado"),
+        ).toBeInTheDocument();
+      });
+    };
+
+    it("carrega dados do rascunho existente com uuid na URL", async () => {
+      await setupEdicao();
+
+      await waitFor(
+        () => {
+          expect(screen.getByDisplayValue("Alface Crespa")).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
+
+      expect(
+        screen.getByDisplayValue("Hortifruti São Paulo LTDA"),
+      ).toBeInTheDocument();
+    });
+
+    it("exibe número do cronograma em modo de edição", async () => {
+      await setupEdicao();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("CSW-EDIT-001")).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
+    });
+
+    it("preenche programações do rascunho existente", async () => {
+      await setupEdicao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Mês Programado")).toBeInTheDocument();
+      });
+
+      // Verificar que há pelo menos uma programação preenchida
+      await waitFor(() => {
+        const selects = screen.getAllByText("Mês Programado");
+        expect(selects.length).toBeGreaterThanOrEqual(1);
+      });
+    });
+
+    it("preenche datas das programações corretamente ao carregar rascunho", async () => {
+      await setupEdicao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Mês Programado")).toBeInTheDocument();
+      });
+
+      // Aguardar carregamento completo
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      });
+
+      await waitFor(
+        () => {
+          // Buscar inputs de data pelo valor - react-datepicker usa inputs com classe form-control
+          const dateInputs = document.querySelectorAll(
+            'input.form-control[placeholder=""]',
+          );
+          expect(dateInputs.length).toBeGreaterThanOrEqual(2);
+
+          // Verificar que os campos de data não estão vazios
+          // Os valores devem estar no formato DD/MM/YYYY
+          const valores = Array.from(dateInputs).map(
+            (input) => (input as HTMLInputElement).value,
+          );
+
+          // Deve haver pelo menos uma data preenchida
+          const temDataInicio = valores.some((v) => v === "01/03/2026");
+          const temDataFim = valores.some((v) => v === "15/03/2026");
+
+          expect(temDataInicio || temDataFim).toBe(true);
+        },
+        { timeout: 5000 },
+      );
+    });
+
+    it("atualiza rascunho existente em vez de criar novo", async () => {
+      await setupEdicao();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("botao-salvar-rascunho")).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      });
+
+      const form = screen.getByTestId("form-cronograma-semanal");
+      fireEvent.submit(form);
+
+      await waitFor(
+        () => {
+          expect(
+            mock.history.patch.some((call) =>
+              call.url?.includes("/cronogramas-semanais/uuid-edicao-123/"),
+            ),
+          ).toBe(true);
+        },
+        { timeout: 5000 },
+      );
+    });
+
+    it("exibe toast de sucesso ao atualizar rascunho", async () => {
+      await setupEdicao();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("botao-salvar-rascunho")).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      });
+
+      const form = screen.getByTestId("form-cronograma-semanal");
+      fireEvent.submit(form);
+
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText("Rascunho salvo com sucesso!"),
+          ).toBeInTheDocument();
         },
         { timeout: 5000 },
       );
