@@ -1,11 +1,8 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
 import {
   getRequisicoesListagem,
   gerarExcelSolicitacoes,
-  arquivaGuias,
-  desarquivaGuias,
 } from "../../../../services/logistica.service";
 import ListagemSolicitacoes from "./components/ListagemSolicitacoes";
 import "./styles.scss";
@@ -17,18 +14,18 @@ import {
   BUTTON_STYLE,
   BUTTON_ICON,
 } from "src/components/Shareable/Botao/constants";
-import { enviaSolicitacoesDaGrade } from "../../../../services/disponibilizacaoDeSolicitacoes.service";
-import {
-  toastError,
-  toastInfo,
-  toastSuccess,
-} from "src/components/Shareable/Toast/dialogs";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { Modal } from "react-bootstrap";
 import { CentralDeDownloadContext } from "src/context/CentralDeDownloads/index";
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload/index.jsx";
 import { Paginacao } from "src/components/Shareable/Paginacao/index.jsx";
 import useSomenteLeitura from "src/hooks/useSomenteLeitura";
 import { PERFIL } from "../../../../constants/shared";
+import {
+  confereSolicitacoesSelecionadas,
+  arquivaDesarquivaGuias,
+  enviarSolicitacoesMarcadas,
+} from "./utils";
 
 export default () => {
   const [carregando, setCarregando] = useState(false);
@@ -85,80 +82,8 @@ export default () => {
     setCarregando(false);
   };
 
-  const enviarSolicitacoesMarcadas = async () => {
-    setCarregandoModal(true);
-    let payload = selecionados.map((x) => x.uuid);
-    const response = await enviaSolicitacoesDaGrade(payload);
-    if (response.status === HTTP_STATUS.OK && response.data.length === 0) {
-      atualizaTabela();
-      setShowModal(false);
-      response.status = 428;
-    } else if (response.status === HTTP_STATUS.OK && response.data.length > 0) {
-      atualizaTabela();
-      setShowModal(false);
-    }
-    setCarregandoModal(false);
-    exibeToastPeloStatus(response.status, response.data);
-  };
-
-  const exibeToastPeloStatus = (status, data) => {
-    if (status === HTTP_STATUS.OK) {
-      toastSuccess("Requisições de entrega enviadas com sucesso");
-    } else if (status === HTTP_STATUS.BAD_REQUEST) {
-      if (data.detail.includes("transição de estado")) {
-        toastError("Erro de transição de estado");
-      } else {
-        toastError(data.detail);
-      }
-    } else if (status === HTTP_STATUS.PRECONDITION_REQUIRED) {
-      toastInfo("Nenhuma requisição de entrega a enviar");
-    } else {
-      if (data.detail && data.detail.length > 0) {
-        toastError(data.detail);
-      } else {
-        toastError("Erro do Servidor Interno");
-      }
-    }
-  };
-
   const atualizaTabela = () => {
     buscarSolicitacoes(page ? page : 1);
-  };
-
-  const confereSolicitacoesSelecionadas = () => {
-    return (
-      selecionados.find(
-        (selecionado) => selecionado.status !== "Aguardando envio"
-      ) !== undefined || selecionados.length === 0
-    );
-  };
-
-  const arquivaDesarquivaGuias = async (
-    selecionadas,
-    numero_requisicao,
-    situacao,
-    setModal,
-    setCarregando
-  ) => {
-    setCarregando(true);
-    let guias = selecionadas.map((x) => x.numero_guia);
-    const payload = { guias, numero_requisicao };
-    let textoToast =
-      situacao === "ATIVA"
-        ? "Guia(s) de Remessa arquivada(s) com sucesso"
-        : "Guia(s) de Remessa desarquivada(s) com sucesso";
-    let response =
-      situacao === "ATIVA"
-        ? await arquivaGuias(payload)
-        : await desarquivaGuias(payload);
-    if (response.status === HTTP_STATUS.OK) {
-      atualizaTabela();
-      toastSuccess(textoToast);
-      setModal(false);
-    } else {
-      toastError("Erro ao arquivar a guia");
-    }
-    setCarregando(false);
   };
 
   const solicitaExcelGuias = () => {
@@ -218,7 +143,22 @@ export default () => {
                 setSelecionados={setSelecionados}
                 ativos={ativos}
                 setAtivos={setAtivos}
-                arquivaDesarquivaGuias={arquivaDesarquivaGuias}
+                arquivaDesarquivaGuias={(
+                  selecionadas,
+                  numero_requisicao,
+                  situacao,
+                  setModal,
+                  setCarregando,
+                ) =>
+                  arquivaDesarquivaGuias(
+                    selecionadas,
+                    numero_requisicao,
+                    situacao,
+                    atualizaTabela,
+                    setModal,
+                    setCarregando,
+                  )
+                }
                 setShowDownload={setShowDownload}
                 somenteLeitura={somenteLeitura}
               />
@@ -243,7 +183,8 @@ export default () => {
                       setShowModal(true);
                     }}
                     disabled={
-                      somenteLeitura || confereSolicitacoesSelecionadas()
+                      somenteLeitura ||
+                      confereSolicitacoesSelecionadas(selecionados)
                     }
                   />
                   <Spin size="small" spinning={carregandoExcel}>
@@ -291,7 +232,12 @@ export default () => {
               texto="SIM"
               type={BUTTON_TYPE.BUTTON}
               onClick={() => {
-                enviarSolicitacoesMarcadas();
+                enviarSolicitacoesMarcadas(
+                  selecionados,
+                  setCarregandoModal,
+                  atualizaTabela,
+                  setShowModal,
+                );
               }}
               style={BUTTON_STYLE.GREEN}
               className="ms-3"

@@ -23,10 +23,6 @@ export const options_status = [
 
 export const options_status_fornecedor = [
   {
-    value: "RASCUNHO",
-    label: "Rascunho",
-  },
-  {
     value: "ENVIADO_AO_FORNECEDOR",
     label: "Recebido",
   },

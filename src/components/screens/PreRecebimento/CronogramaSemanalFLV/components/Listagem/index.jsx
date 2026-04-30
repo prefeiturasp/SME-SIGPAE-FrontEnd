@@ -97,7 +97,15 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
                       to={`/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
                     >
                       <span className="link-acoes green">
-                        <i className="fas fa-eye" title="Detalhar" />
+                        {ehFornecedor &&
+                        cronograma.status === "Enviado ao Fornecedor" ? (
+                          <i
+                            className="fas fa-file-signature"
+                            title="Assinar"
+                          />
+                        ) : (
+                          <i className="fas fa-eye" title="Detalhar" />
+                        )}
                       </span>
                     </NavLink>
                   )}
