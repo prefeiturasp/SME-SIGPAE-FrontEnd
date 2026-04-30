@@ -6,11 +6,20 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { getCronogramaSemanal } from "src/services/cronogramaSemanal.service";
+import {
+  getCronogramaSemanal,
+  darCienciaCronogramaSemanal,
+} from "src/services/cronogramaSemanal.service";
 import { CronogramaSemanalDetalhado } from "src/interfaces/cronograma_semanal.interface";
 import { PRE_RECEBIMENTO, CRONOGRAMA_SEMANAL_FLV } from "src/configs/constants";
 import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 import { formataMilharDecimal } from "src/helpers/utilities";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import "./styles.scss";
 
@@ -21,6 +30,9 @@ const DetalharCronogramaSemanal: React.FC = () => {
   const [cronograma, setCronograma] =
     useState<CronogramaSemanalDetalhado | null>(null);
   const [carregando, setCarregando] = useState(false);
+  const [showModalCiente, setShowModalCiente] = useState(false);
+
+  const ehFornecedor = usuarioEhEmpresaFornecedor();
 
   const getDetalhes = async () => {
     if (uuid) {
@@ -54,208 +66,257 @@ const DetalharCronogramaSemanal: React.FC = () => {
     return "Nº da Chamada Pública";
   };
 
+  const darCienciaCronograma = async () => {
+    if (!uuid) return;
+
+    setCarregando(true);
+    try {
+      const response = await darCienciaCronogramaSemanal(uuid);
+      if (response.status === HTTP_STATUS.OK) {
+        toastSuccess("Ciência registrada com sucesso!");
+        await getDetalhes();
+      } else {
+        toastError("Erro ao registrar ciência do cronograma");
+      }
+    } catch (error) {
+      toastError("Erro: " + error);
+    } finally {
+      setCarregando(false);
+      setShowModalCiente(false);
+      getDetalhes();
+    }
+  };
+
   return (
-    <Spin tip="Carregando..." spinning={!cronograma || carregando}>
-      <div className="card mt-3 card-detalhar-cronograma-semanal">
-        <div className="card-body">
-          {cronograma && (
-            <div>
-              {/* Status do Cronograma */}
-              {cronograma.logs && cronograma.logs.length > 0 && (
-                <>
-                  <div className="row pb-3">
-                    <div className="col-10">
-                      <p className="head-green mt-3 mb-5">
-                        Status do Cronograma
-                      </p>
+    <>
+      <Spin tip="Carregando..." spinning={!cronograma || carregando}>
+        <div className="card mt-3 card-detalhar-cronograma-semanal">
+          <div className="card-body">
+            {cronograma && (
+              <div>
+                {/* Status do Cronograma */}
+                {cronograma.logs && cronograma.logs.length > 0 && (
+                  <>
+                    <div className="row pb-3">
+                      <div className="col-10">
+                        <p className="head-green mt-3 mb-5">
+                          Status do Cronograma
+                        </p>
+                      </div>
+                      <div className="col-2 text-end">
+                        <Botao
+                          texto="Histórico"
+                          type={BUTTON_TYPE.BUTTON}
+                          style={BUTTON_STYLE.GREEN_OUTLINE}
+                          className="ms-3"
+                          onClick={() => {}}
+                          tooltipExterno="Funcionalidade em desenvolvimento"
+                        />
+                      </div>
                     </div>
-                    <div className="col-2 text-end">
-                      <Botao
-                        texto="Histórico"
-                        type={BUTTON_TYPE.BUTTON}
-                        style={BUTTON_STYLE.GREEN_OUTLINE}
-                        className="ms-3"
-                        onClick={() => {}}
-                        tooltipExterno="Funcionalidade em desenvolvimento"
-                      />
-                    </div>
+                    <FluxoDeStatusPreRecebimento
+                      listaDeStatus={cronograma.logs}
+                    />
+                    <hr className="hr-detalhar" />
+                  </>
+                )}
+
+                {/* Dados Gerais */}
+                <div className="row my-3">
+                  <p className="head-green">Dados Gerais</p>
+                </div>
+                <div className="row detalhar-head">
+                  <div className="col-4">
+                    <p>
+                      <b>Nº do Cronograma Semanal:</b>
+                    </p>
+                    <p className="head-green">{cronograma.numero}</p>
                   </div>
-                  <FluxoDeStatusPreRecebimento
-                    listaDeStatus={cronograma.logs}
+                  <div className="col-4">
+                    <p>
+                      <b>{getRotuloChamadaAta()}:</b>
+                    </p>
+                    <p className="head-green">
+                      {cronograma.cronograma_mensal.contrato?.ata ||
+                        cronograma.cronograma_mensal.contrato
+                          ?.numero_chamada_publica}
+                    </p>
+                  </div>
+                  <div className="col-4">
+                    <p>
+                      <b>Nº do Contrato:</b>
+                    </p>
+                    <p className="head-green">
+                      {cronograma.cronograma_mensal.contrato?.numero}
+                    </p>
+                  </div>
+                </div>
+                <div className="row detalhar-head mt-4">
+                  <div className="col-4">
+                    <p>
+                      <b>Nº do Processo SEI - Contratos:</b>
+                    </p>
+                    <p className="head-green">
+                      {cronograma.cronograma_mensal.contrato?.processo}
+                    </p>
+                  </div>
+                </div>
+
+                <hr />
+
+                <div className="row my-3">
+                  <p>Empresa Contratada:</p>
+                  <p>
+                    <b>
+                      {cronograma.cronograma_mensal.empresa?.nome_fantasia} /{" "}
+                      {cronograma.cronograma_mensal.empresa?.razao_social}
+                    </b>
+                  </p>
+                </div>
+
+                <hr />
+
+                <div className="row my-3">
+                  <p>Produto:</p>
+                  <p>
+                    <b>{cronograma.cronograma_mensal?.produto?.nome}</b>
+                  </p>
+                </div>
+
+                <hr />
+
+                <div className="row my-3">
+                  <p>Local de Entrega:</p>
+                  <p>
+                    <b>UNIDADE EDUCACIONAL DA RME - PONTO A PONTO</b>
+                  </p>
+                </div>
+
+                <hr />
+
+                {/* Dados do Produto e Datas das Entregas */}
+                <div className="row my-3">
+                  <p className="head-green">
+                    Dados do Produto e Datas das Entregas
+                  </p>
+                </div>
+
+                <div className="row mb-4">
+                  <div className="col-4">
+                    <p>Nº do Empenho:</p>
+                    <p>
+                      <b>{cronograma.cronograma_mensal.numero_empenho}</b>
+                    </p>
+                  </div>
+                  <div className="col-4">
+                    <p>Quantidade Total do Empenho:</p>
+                    <p>
+                      <b>
+                        {formataMilharDecimal(
+                          cronograma.cronograma_mensal.qtd_total_empenho?.toString() ||
+                            "0",
+                        )}{" "}
+                        {
+                          cronograma.cronograma_mensal.unidade_medida
+                            ?.abreviacao
+                        }
+                      </b>
+                    </p>
+                  </div>
+                  <div className="col-4">
+                    <p>Custo Unitário do Produto:</p>
+                    <p>
+                      <b>
+                        R${" "}
+                        {formataMilharDecimal(
+                          cronograma.cronograma_mensal.custo_unitario_produto?.toString() ||
+                            "0",
+                        )}
+                      </b>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Tabela de Entregas Programadas */}
+                <div className="row mb-4">
+                  <div className="col">
+                    <table className="table tabela-dados-cronograma">
+                      <thead className="head-crono">
+                        <th className="borda-crono text-center">Quantidade</th>
+                        <th className="borda-crono text-center">
+                          Data Programada
+                        </th>
+                      </thead>
+                      <tbody>
+                        {cronograma.programacoes.map((programacao, key) => (
+                          <tr key={key}>
+                            <td className="borda-crono text-center">
+                              {formataMilharDecimal(
+                                programacao.quantidade.toString(),
+                              )}{" "}
+                              {
+                                cronograma.cronograma_mensal.unidade_medida
+                                  ?.abreviacao
+                              }
+                            </td>
+                            <td className="borda-crono text-center">
+                              {programacao.data_inicio} a {programacao.data_fim}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <br />
+                <div className="mt-4 mb-4">
+                  {cronograma.status === "Enviado ao Fornecedor" &&
+                    ehFornecedor && (
+                      <Botao
+                        texto="Ciente da Programação"
+                        type={BUTTON_TYPE.BUTTON}
+                        style={BUTTON_STYLE.GREEN}
+                        className="float-end ms-3"
+                        onClick={() => setShowModalCiente(true)}
+                      />
+                    )}
+                  {cronograma.status === "Fornecedor Ciente" && (
+                    <Botao
+                      texto="Baixar PDF"
+                      type={BUTTON_TYPE.BUTTON}
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                      className="float-end ms-3"
+                      onClick={() => {}}
+                      tooltipExterno="Funcionalidade em desenvolvimento"
+                    />
+                  )}
+                  <Botao
+                    texto="Voltar"
+                    dataTestId="voltar"
+                    type={BUTTON_TYPE.BUTTON}
+                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                    className="float-end"
+                    onClick={() => handleBack()}
                   />
-                  <hr className="hr-detalhar" />
-                </>
-              )}
-
-              {/* Dados Gerais */}
-              <div className="row my-3">
-                <p className="head-green">Dados Gerais</p>
-              </div>
-              <div className="row detalhar-head">
-                <div className="col-4">
-                  <p>
-                    <b>Nº do Cronograma Semanal:</b>
-                  </p>
-                  <p className="head-green">{cronograma.numero}</p>
-                </div>
-                <div className="col-4">
-                  <p>
-                    <b>{getRotuloChamadaAta()}:</b>
-                  </p>
-                  <p className="head-green">
-                    {cronograma.cronograma_mensal.contrato?.ata ||
-                      cronograma.cronograma_mensal.contrato
-                        ?.numero_chamada_publica}
-                  </p>
-                </div>
-                <div className="col-4">
-                  <p>
-                    <b>Nº do Contrato:</b>
-                  </p>
-                  <p className="head-green">
-                    {cronograma.cronograma_mensal.contrato?.numero}
-                  </p>
                 </div>
               </div>
-              <div className="row detalhar-head mt-4">
-                <div className="col-4">
-                  <p>
-                    <b>Nº do Processo SEI - Contratos:</b>
-                  </p>
-                  <p className="head-green">
-                    {cronograma.cronograma_mensal.contrato?.processo}
-                  </p>
-                </div>
-              </div>
-
-              <hr />
-
-              <div className="row my-3">
-                <p>Empresa Contratada:</p>
-                <p>
-                  <b>
-                    {cronograma.cronograma_mensal.empresa?.nome_fantasia} /{" "}
-                    {cronograma.cronograma_mensal.empresa?.razao_social}
-                  </b>
-                </p>
-              </div>
-
-              <hr />
-
-              <div className="row my-3">
-                <p>Produto:</p>
-                <p>
-                  <b>{cronograma.cronograma_mensal?.produto?.nome}</b>
-                </p>
-              </div>
-
-              <hr />
-
-              <div className="row my-3">
-                <p>Local de Entrega:</p>
-                <p>
-                  <b>UNIDADE EDUCACIONAL DA RME - PONTO A PONTO</b>
-                </p>
-              </div>
-
-              <hr />
-
-              {/* Dados do Produto e Datas das Entregas */}
-              <div className="row my-3">
-                <p className="head-green">
-                  Dados do Produto e Datas das Entregas
-                </p>
-              </div>
-
-              <div className="row mb-4">
-                <div className="col-4">
-                  <p>Nº do Empenho:</p>
-                  <p>
-                    <b>{cronograma.cronograma_mensal.numero_empenho}</b>
-                  </p>
-                </div>
-                <div className="col-4">
-                  <p>Quantidade Total do Empenho:</p>
-                  <p>
-                    <b>
-                      {formataMilharDecimal(
-                        cronograma.cronograma_mensal.qtd_total_empenho?.toString() ||
-                          "0",
-                      )}{" "}
-                      {cronograma.cronograma_mensal.unidade_medida?.abreviacao}
-                    </b>
-                  </p>
-                </div>
-                <div className="col-4">
-                  <p>Custo Unitário do Produto:</p>
-                  <p>
-                    <b>
-                      R${" "}
-                      {formataMilharDecimal(
-                        cronograma.cronograma_mensal.custo_unitario_produto?.toString() ||
-                          "0",
-                      )}
-                    </b>
-                  </p>
-                </div>
-              </div>
-
-              {/* Tabela de Entregas Programadas */}
-              <div className="row mb-4">
-                <div className="col">
-                  <table className="table tabela-dados-cronograma">
-                    <thead className="head-crono">
-                      <th className="borda-crono text-center">Quantidade</th>
-                      <th className="borda-crono text-center">
-                        Data Programada
-                      </th>
-                    </thead>
-                    <tbody>
-                      {cronograma.programacoes.map((programacao, key) => (
-                        <tr key={key}>
-                          <td className="borda-crono text-center">
-                            {formataMilharDecimal(
-                              programacao.quantidade.toString(),
-                            )}{" "}
-                            {
-                              cronograma.cronograma_mensal.unidade_medida
-                                ?.abreviacao
-                            }
-                          </td>
-                          <td className="borda-crono text-center">
-                            {programacao.data_inicio} a {programacao.data_fim}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              <br />
-              <div className="mt-4 mb-4">
-                <Botao
-                  texto="Baixar PDF"
-                  type={BUTTON_TYPE.BUTTON}
-                  style={BUTTON_STYLE.GREEN_OUTLINE}
-                  className="float-end ms-3"
-                  onClick={() => {}}
-                  tooltipExterno="Funcionalidade em desenvolvimento"
-                />
-                <Botao
-                  texto="Voltar"
-                  dataTestId="voltar"
-                  type={BUTTON_TYPE.BUTTON}
-                  style={BUTTON_STYLE.GREEN_OUTLINE}
-                  className="float-end"
-                  onClick={() => handleBack()}
-                />
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
-    </Spin>
+      </Spin>
+
+      <ModalGenerico
+        show={showModalCiente}
+        titulo="Dar ciência das informações"
+        texto="Você confirma a ciência das datas e quantidades programadas para entrega?"
+        handleClose={() => setShowModalCiente(false)}
+        handleSim={darCienciaCronograma}
+        textoBotaoClose="Não"
+        textoBotaoSim="Sim, confirmo"
+        loading={carregando}
+      />
+    </>
   );
 };
 

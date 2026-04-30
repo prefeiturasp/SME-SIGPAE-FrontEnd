@@ -2,10 +2,6 @@ import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import {
-  PANORAMA_ESCOLA,
-  SOLICITACOES_DIETA_ESPECIAL,
-} from "src/configs/constants";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -16,7 +12,6 @@ import { mockGetEscolaSimplesCEUGESTAO } from "src/mocks/services/escola.service
 import { mockgetEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscola } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEUGESTAO/getEscolaSemAlunosRegularesPeriodosSolicitacoesAutorizadasEscolaCEUGESTAO";
 import { mockGetQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEUGESTAO/getQuantidadeAlimentacoesLancadasPeriodoGrupoCEUGESTAO";
 import { mockGetSolicitacaoMedicaoInicialCEUGESTAO } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEUGESTAO/getSolicitacaoMedicaoInicialCEUGESTAO";
-import { mockPanoramaEscolaEMEF } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/panoramaEscola";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
@@ -99,9 +94,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaCEUGESTAO);
-    mock
-      .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
-      .reply(200, mockPanoramaEscolaEMEF);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
       .reply(200, mockGetEscolaSimplesCEUGESTAO);
