@@ -45,7 +45,7 @@ export default ({ onSubmit, loading, setLoading }) => {
       const promiseDreEscolas = formFiltrosObtemDreEEscolasNovo(
         setEscolas,
         setDiretoriasRegionais,
-        dadosUsuario
+        dadosUsuario,
       );
       const promiseDadosIniciais = getDadosIniciais(dadosUsuario);
       const promiseClassificacoes = getClassificacoesDietaEspecial();
@@ -62,7 +62,7 @@ export default ({ onSubmit, loading, setLoading }) => {
             value: d.id,
             label: d.nome,
           };
-        })
+        }),
       );
       setLoading(false);
     }
@@ -174,6 +174,7 @@ export default ({ onSubmit, loading, setLoading }) => {
                     { uuid: "pendentes", nome: "Pendente de aprovação" },
                   ]}
                   naoDesabilitarPrimeiraOpcao
+                  dataTestId="select-status"
                 />
               </div>
               <div className="col-3">
