@@ -41,6 +41,7 @@ beforeEach(() => {
   mock
     .onPatch(/\/cronogramas-semanais\/.+\/assinar-e-enviar\//)
     .reply(200, { uuid: "novo-uuid-123", status: "ENVIADO_AO_FORNECEDOR" });
+  mock.onGet("/cronogramas-semanais/rascunhos/").reply(200, { results: [] });
 });
 
 afterEach(() => {
@@ -336,6 +337,9 @@ describe("CadastrarCronogramaSemanal", () => {
       mock
         .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
         .reply(500);
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
@@ -358,6 +362,9 @@ describe("CadastrarCronogramaSemanal", () => {
       mock
         .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
         .timeout();
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
@@ -379,6 +386,9 @@ describe("CadastrarCronogramaSemanal", () => {
       mock
         .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
         .networkError();
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
@@ -556,6 +566,9 @@ describe("CadastrarCronogramaSemanal", () => {
         .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
         .reply(200, mockCronogramasMensalAssinados);
       mock.onGet("/cronogramas/cronograma-uuid-1/").reply(500);
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
@@ -608,6 +621,9 @@ describe("CadastrarCronogramaSemanal", () => {
         .onGet("/cronogramas/cronograma-uuid-1/")
         .reply(200, mockCronogramaMensalDetalhado);
       mock.onPost("/cronogramas-semanais/rascunho/").reply(500);
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
@@ -922,22 +938,18 @@ describe("CadastrarCronogramaSemanal", () => {
           uuid: "uuid-edicao-123",
           status: "ENVIADO_AO_FORNECEDOR",
         });
-
-      const originalURLSearchParams = global.URLSearchParams;
-      global.URLSearchParams = jest.fn().mockImplementation(() => ({
-        get: jest.fn().mockReturnValue("uuid-edicao-123"),
-      })) as any;
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
-          <MemoryRouter>
+          <MemoryRouter initialEntries={["/?uuid=uuid-edicao-123"]}>
             <CadastrarCronogramaSemanal />
             <ToastContainer />
           </MemoryRouter>,
         );
       });
-
-      global.URLSearchParams = originalURLSearchParams;
 
       await waitFor(() => {
         expect(
@@ -1069,6 +1081,140 @@ describe("CadastrarCronogramaSemanal", () => {
           ).toBeInTheDocument();
         },
         { timeout: 5000 },
+      );
+    });
+  });
+
+  describe("Seção Rascunhos", () => {
+    it("não exibe seção Rascunhos quando não há rascunhos", async () => {
+      await setup();
+      expect(screen.queryByText("Rascunhos")).not.toBeInTheDocument();
+    });
+
+    it("exibe seção Rascunhos quando há rascunhos salvos", async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock.onGet("/cronogramas-semanais/rascunhos/").reply(200, {
+        results: [
+          {
+            uuid: "rascunho-uuid-1",
+            numero: "001/2025P",
+            alterado_em: "2025-04-30T10:30:00",
+          },
+        ],
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter>
+            <CadastrarCronogramaSemanal />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Rascunhos")).toBeInTheDocument();
+      });
+    });
+
+    it("exibe seção Rascunhos quando está editando rascunho existente", async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock.onGet("/cronogramas-semanais/rascunhos/").reply(200, {
+        results: [
+          {
+            uuid: "rascunho-uuid-1",
+            numero: "001/2025P",
+            alterado_em: "2025-04-30T10:30:00",
+          },
+        ],
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter initialEntries={["/?uuid=uuid-edicao-123"]}>
+            <CadastrarCronogramaSemanal />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Rascunhos")).toBeInTheDocument();
+      });
+    });
+
+    it("exibe número do rascunho e data de salvamento", async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock.onGet("/cronogramas-semanais/rascunhos/").reply(200, {
+        results: [
+          {
+            uuid: "rascunho-uuid-1",
+            numero: "001/2025P",
+            alterado_em: "2025-04-30T10:30:00",
+          },
+        ],
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter>
+            <CadastrarCronogramaSemanal />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Rascunhos")).toBeInTheDocument();
+      });
+
+      expect(screen.getByText("Cronograma #001/2025P")).toBeInTheDocument();
+      expect(screen.getByText(/Rascunho salvo em/)).toBeInTheDocument();
+    });
+
+    it("clicar no ícone de editar navega para edição", async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock.onGet("/cronogramas-semanais/rascunhos/").reply(200, {
+        results: [
+          {
+            uuid: "rascunho-uuid-1",
+            numero: "001/2025P",
+            alterado_em: "2025-04-30T10:30:00",
+          },
+        ],
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter>
+            <CadastrarCronogramaSemanal />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Rascunhos")).toBeInTheDocument();
+      });
+
+      const editIcon = document.querySelector(".fa-edit");
+      expect(editIcon).toBeInTheDocument();
+      const editLink = editIcon?.closest("a");
+      expect(editLink).toHaveAttribute(
+        "href",
+        "/pre-recebimento/cadastro-cronograma-semanal?uuid=rascunho-uuid-1",
       );
     });
   });

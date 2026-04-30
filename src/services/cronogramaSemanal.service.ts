@@ -70,3 +70,6 @@ export const assinarEEnviarCronogramaSemanal = async (
     config,
   );
 };
+
+export const getRascunhosCronogramaSemanal = async () =>
+  await axios.get("/cronogramas-semanais/rascunhos/");

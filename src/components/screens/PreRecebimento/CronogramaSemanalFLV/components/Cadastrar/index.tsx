@@ -3,7 +3,7 @@ import { Spin } from "antd";
 import { Field, Form } from "react-final-form";
 import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import InputText from "src/components/Shareable/Input/InputText";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
@@ -31,6 +31,7 @@ import {
   criarCronogramaSemanalRascunho,
   atualizarCronogramaSemanalRascunho,
   assinarEEnviarCronogramaSemanal,
+  getRascunhosCronogramaSemanal,
 } from "src/services/cronogramaSemanal.service";
 import {
   CronogramaMensalSimples,
@@ -40,7 +41,12 @@ import {
 } from "src/interfaces/cronograma_semanal.interface";
 import { obterLimitesMes, formataDataISOparaDDMMYYYY } from "./helpers";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
-import { PRE_RECEBIMENTO, CRONOGRAMA_SEMANAL_FLV } from "src/configs/constants";
+import {
+  PRE_RECEBIMENTO,
+  CRONOGRAMA_SEMANAL_FLV,
+  CADASTRO_CRONOGRAMA_SEMANAL,
+} from "src/configs/constants";
+import Rascunhos from "../../../RascunhosCronograma";
 import "./styles.scss";
 
 interface FormValues {
@@ -71,6 +77,7 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
   uuid,
 }) => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [carregando, setCarregando] = useState(false);
   const [showModalAssinatura, setShowModalAssinatura] = useState(false);
   const [loadingAssinatura, setLoadingAssinatura] = useState(false);
@@ -84,16 +91,16 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
   const [numeroCronograma, setNumeroCronograma] = useState<string | undefined>(
     undefined,
   );
+  const [listaRascunhos, setListaRascunhos] = useState<any[]>([]);
   const formRef = useRef<any>(null);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const uuidFromUrl = urlParams.get("uuid");
+    const uuidFromUrl = searchParams.get("uuid");
     if (uuidFromUrl) {
       setRascunhoUuid(uuidFromUrl);
     }
     carregarCronogramasMensal(uuidFromUrl);
-  }, []);
+  }, [searchParams]);
 
   const carregarCronogramasMensal = async (uuidExistente?: string | null) => {
     try {
@@ -105,10 +112,22 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
           await carregarCronogramaExistente(uuidExistente, response.data);
         }
       }
+      await buscaRascunhos();
     } catch {
       toastError("Erro ao carregar cronogramas mensal");
     } finally {
       setCarregando(false);
+    }
+  };
+
+  const buscaRascunhos = async () => {
+    try {
+      const response = await getRascunhosCronogramaSemanal();
+      if (response && response.data && response.data.results) {
+        setListaRascunhos(response.data.results);
+      }
+    } catch {
+      toastError("Erro ao carregar rascunhos");
     }
   };
 
@@ -498,6 +517,10 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
 
   return (
     <>
+      <Rascunhos
+        listaRascunhos={listaRascunhos}
+        editarRoute={`/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA_SEMANAL}`}
+      />
       <Spin tip="Carregando..." spinning={carregando}>
         <div className="card mt-3 card-cadastro-cronograma-semanal">
           <div className="card-body cadastro-cronograma-semanal">
