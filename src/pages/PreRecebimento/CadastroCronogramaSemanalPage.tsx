@@ -16,8 +16,12 @@ const atual = {
 
 const anteriores = [
   {
+    href: `/`,
+    titulo: "Pré-Recebimento",
+  },
+  {
     href: `/${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`,
-    titulo: "Cronograma Semanal FLV",
+    titulo: "Cronograma Semanal - FLV",
   },
 ];
 

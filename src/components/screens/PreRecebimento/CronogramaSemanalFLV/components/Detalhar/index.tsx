@@ -59,13 +59,6 @@ const DetalharCronogramaSemanal: React.FC = () => {
     navigate(`/${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`);
   };
 
-  const getRotuloChamadaAta = () => {
-    if (cronograma?.cronograma_mensal?.contrato?.numero_pregao) {
-      return "Nº da Ata";
-    }
-    return "Nº da Chamada Pública";
-  };
-
   const darCienciaCronograma = async () => {
     if (!uuid) return;
 
@@ -134,12 +127,12 @@ const DetalharCronogramaSemanal: React.FC = () => {
                   </div>
                   <div className="col-4">
                     <p>
-                      <b>{getRotuloChamadaAta()}:</b>
+                      <b>Nº do Pregão Eletrônico/Chamada Pública</b>
                     </p>
                     <p className="head-green">
-                      {cronograma.cronograma_mensal.contrato?.ata ||
-                        cronograma.cronograma_mensal.contrato
-                          ?.numero_chamada_publica}
+                      {cronograma.cronograma_mensal.contrato
+                        ?.numero_chamada_publica ||
+                        cronograma.cronograma_mensal.contrato?.numero_pregao}
                     </p>
                   </div>
                   <div className="col-4">
@@ -158,6 +151,14 @@ const DetalharCronogramaSemanal: React.FC = () => {
                     </p>
                     <p className="head-green">
                       {cronograma.cronograma_mensal.contrato?.processo}
+                    </p>
+                  </div>
+                  <div className="col-4">
+                    <p>
+                      <b>Nº da Ata:</b>
+                    </p>
+                    <p className="head-green">
+                      {cronograma.cronograma_mensal.contrato?.ata}
                     </p>
                   </div>
                 </div>
