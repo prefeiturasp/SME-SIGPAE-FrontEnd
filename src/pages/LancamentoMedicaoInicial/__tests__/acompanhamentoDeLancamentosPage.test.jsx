@@ -48,6 +48,9 @@ describe("Medição Inicial - Página de Acompanhamento de Lançamentos", () => 
       )
       .reply(200, mockGetDashboardMedicaoInicial);
     mock
+      .onGet("/medicao-inicial/historico-acesso-ue/total-por-dre/")
+      .reply(200, 100);
+    mock
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/",
       )

@@ -648,7 +648,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(botao).toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 1`, preencher repetição de refeição maior que refeição e exibe atenção", async () => {
+    it("ao clicar na tab `Semana 1`, preencher repetição de refeição maior que refeição e não exibe tooltip verde", async () => {
       await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
@@ -670,15 +670,14 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       const tooltip = document.querySelector(
         '[data-test-id="tooltip_repeticao_refeicao__dia_05__categoria_1"]',
       );
-      expect(tooltip).not.toBeNull();
-      expect(tooltip).toHaveClass("icone-info-success");
+      expect(tooltip).toBeNull();
 
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 1`, preencher repetição de sobremesa maior que sobremesa e exibe atenção", async () => {
+    it("ao clicar na tab `Semana 1`, preencher repetição de sobremesa maior que sobremesa e não exibe tooltip verde", async () => {
       await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
@@ -702,8 +701,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       const tooltip = document.querySelector(
         '[data-test-id="tooltip_repeticao_sobremesa__dia_05__categoria_1"]',
       );
-      expect(tooltip).not.toBeNull();
-      expect(tooltip).toHaveClass("icone-info-success");
+      expect(tooltip).toBeNull();
 
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();
@@ -949,7 +947,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       expect(botao).toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 2`, preencher repetição de refeição maior que refeição e exibe atenção", async () => {
+    it("ao clicar na tab `Semana 2`, preencher repetição de refeição maior que refeição e não exibe tooltip verde", async () => {
       await awaitServices();
       const semana2Element = screen.getByText("Semana 2");
       fireEvent.click(semana2Element);
@@ -978,15 +976,14 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       const tooltip = document.querySelector(
         '[data-test-id="tooltip_repeticao_refeicao__dia_08__categoria_1"]',
       );
-      expect(tooltip).not.toBeNull();
-      expect(tooltip).toHaveClass("icone-info-success");
+      expect(tooltip).toBeNull();
 
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 2`, preencher repetição de sobremesa maior que sobremesa e exibe atenção", async () => {
+    it("ao clicar na tab `Semana 2`, preencher repetição de sobremesa maior que sobremesa e não exibe tooltip verde", async () => {
       await awaitServices();
       const semana2Element = screen.getByText("Semana 2");
       fireEvent.click(semana2Element);
@@ -1017,8 +1014,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       const tooltip = document.querySelector(
         '[data-test-id="tooltip_repeticao_sobremesa__dia_08__categoria_1"]',
       );
-      expect(tooltip).not.toBeNull();
-      expect(tooltip).toHaveClass("icone-info-success");
+      expect(tooltip).toBeNull();
 
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();

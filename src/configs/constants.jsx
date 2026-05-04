@@ -143,7 +143,6 @@ export const RELATORIO_QUANTITATIVO_DIAG_DIETA_ESP =
   "relatorio-quantitativo-diag-dieta-esp";
 export const RELATORIO_SOLICITACOES_ALIMENTACAO = `${RELATORIO}/solicitacoes-alimentacao`;
 export const RELATORIO_ALUNOS_MATRICULADOS = `${RELATORIO}/alunos-matriculados`;
-export const PANORAMA_ESCOLA = "panorama-escola";
 export const HOMOLOGACAO_PRODUTO = "homologacao-produto";
 export const RECLAMACAO_DE_PRODUTO = "nova-reclamacao-de-produto";
 export const SUSPENSAO_DE_PRODUTO = "relatorio-produtos-suspensos";
@@ -266,6 +265,7 @@ export const CALENDARIO_CRONOGRAMA = "calendario-cronograma";
 export const RELATORIO_CRONOGRAMA = "relatorio-cronograma";
 export const CRONOGRAMA_SEMANAL_FLV = "cronograma-semanal-flv";
 export const CADASTRO_CRONOGRAMA_SEMANAL = "cadastro-cronograma-semanal";
+export const DETALHE_CRONOGRAMA_SEMANAL = "detalhe-cronograma-semanal";
 
 export const LAYOUT_EMBALAGEM = "layout-embalagem";
 export const CADASTRO_LAYOUT_EMBALAGEM = "cadastro-layout-embalagem";

@@ -108,6 +108,9 @@ describe("Medição Inicial - Retorno da Conferência para Acompanhamento", () =
           ],
         },
       });
+    mock
+      .onGet("/medicao-inicial/historico-acesso-ue/total-por-dre/")
+      .reply(200, 100);
 
     mock
       .onGet("/grupos-unidade-escolar/")
@@ -258,6 +261,9 @@ describe("Medição Inicial - Retorno da Conferência para Acompanhamento", () =
         },
       });
     mock
+      .onGet("/medicao-inicial/historico-acesso-ue/total-por-dre/")
+      .reply(200, 100);
+    mock
       .onGet("/grupos-unidade-escolar/")
       .reply(200, mockGetGrupoUnidadeEscolar);
     mock
@@ -355,6 +361,9 @@ describe("Medição Inicial - Retorno da Conferência para Acompanhamento", () =
       .reply(200, {
         results: { total: 0, dados: [] },
       });
+    mock
+      .onGet("/medicao-inicial/historico-acesso-ue/total-por-dre/")
+      .reply(200, 100);
     mock
       .onGet("/grupos-unidade-escolar/")
       .reply(200, mockGetGrupoUnidadeEscolar);

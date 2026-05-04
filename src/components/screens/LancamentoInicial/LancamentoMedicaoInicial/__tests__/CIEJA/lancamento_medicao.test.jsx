@@ -1,9 +1,5 @@
 import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
-import {
-  PANORAMA_ESCOLA,
-  SOLICITACOES_DIETA_ESPECIAL,
-} from "src/configs/constants";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -27,9 +23,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CIEJA", () => {
 
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCIEJA);
-    mock
-      .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
-      .reply(200, []);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
       .reply(200, mockEscolaSimplesCIEJA);

@@ -16,6 +16,14 @@ export interface RelatorioFinanceiroInterface {
   grupo_unidade_escolar: GrupoUnidadeEscolar;
 }
 
+export interface PayloadRelatorioFinanceiro {
+  status?: string;
+  mes?: string;
+  ano?: string;
+  lote?: string;
+  grupo_unidade_escolar?: string;
+}
+
 export interface RelatorioFinanceiroResponse {
   next: string | null;
   previous: string | null;

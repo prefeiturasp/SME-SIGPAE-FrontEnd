@@ -4,6 +4,10 @@ import {
   existeAlteracaoRPL,
   existeAlteracaoLPR,
 } from "../PeriodoLancamentoMedicaoInicial/helper";
+import {
+  WARNING_LANCHE_EMERGENCIAL_AUTORIZADO,
+  campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao,
+} from "../PeriodoLancamentoMedicaoInicial/validacoes";
 
 /**
  * Verifica se deve exibir um tooltip de alerta quando há frequência de dieta registrada
@@ -532,6 +536,8 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
   allValues,
   value,
   alteracoesAlimentacaoAutorizadas,
+  alteracoesLancheEmergencialAutorizadas,
+  permissoesLancamentosEspeciaisPorDia,
   inclusoesAutorizadas,
   validacaoDiaLetivo,
   ehProgramasEProjetosLocation,
@@ -645,6 +651,17 @@ export const validacoesTabelaAlimentacaoEmeidaCemei = (
   ) {
     const nome = ehRecreioNasFerias ? "participantes" : "alunos";
     return `Lançamento maior que a frequência de ${nome} no dia.`;
+  } else if (
+    campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao(
+      rowName,
+      dia,
+      categoria,
+      allValues,
+      alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
+    )
+  ) {
+    return WARNING_LANCHE_EMERGENCIAL_AUTORIZADO;
   }
 
   return undefined;

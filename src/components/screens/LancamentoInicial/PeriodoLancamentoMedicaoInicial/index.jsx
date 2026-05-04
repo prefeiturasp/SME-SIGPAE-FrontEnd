@@ -43,6 +43,7 @@ import {
   ehFimDeSemanaUTC,
   escolaEhEMEBS,
   tiposAlimentacaoETEC,
+  usuarioEhEscolaCIEJA,
 } from "src/helpers/utilities";
 import {
   getTiposDeAlimentacao,
@@ -74,6 +75,7 @@ import {
   desabilitarBotaoColunaObservacoes,
   desabilitarField,
   deveExistirObservacao,
+  ehDiaHabilitadoParaLancamentoETEC,
   ehDiaParaCorrigir,
   existeAlteracaoLPR,
   existeAlteracaoRPL,
@@ -103,6 +105,7 @@ import {
   exibirTooltipFrequenciaZeroTabelaEtec,
   exibirTooltipKitLancheSolAlimentacoes,
   exibirTooltipLancheEmergencialAutorizado,
+  exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao,
   exibirTooltipLancheEmergencialNaoAutorizado,
   exibirTooltipLancheEmergencialZeroAutorizado,
   exibirTooltipLancheEmergencialZeroAutorizadoJustificado,
@@ -110,10 +113,10 @@ import {
   exibirTooltipLPRAutorizadas,
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
-  exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
+  existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao,
   existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao,
   validacoesTabelaAlimentacao,
   validacoesTabelaEtecAlimentacao,
@@ -122,6 +125,8 @@ import {
   verificarMesAnteriorOuPosterior,
   exibirTooltipPeriodosZeradosNoProgramasProjetos,
   boqueaSalvamentoPeriodosZeradosNoProgramasProjetos,
+  exibirTooltipRefeicaoSimultanea,
+  bloquearSalvamentoRefeicaoSimultanea,
 } from "./validacoes";
 
 export default () => {
@@ -162,6 +167,10 @@ export default () => {
   const [
     alteracoesAlimentacaoAutorizadas,
     setAlteracoesAlimentacaoAutorizadas,
+  ] = useState(null);
+  const [
+    alteracoesLancheEmergencialAutorizadas,
+    setAlteracoesLancheEmergencialAutorizadas,
   ] = useState(null);
   const [kitLanchesAutorizadas, setKitLanchesAutorizadas] = useState(null);
   const [
@@ -437,6 +446,18 @@ export default () => {
 
   const ehGrupoColaboradores = () => {
     return location.state.grupo === "Colaboradores";
+  };
+
+  const existeWarningLancheEmergencialAutorizadoTipoAlimentacao = (
+    values = formValuesAtualizados,
+  ) => {
+    return existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao(
+      values,
+      categoriasDeMedicao,
+      weekColumns,
+      alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
+    );
   };
 
   useEffect(() => {
@@ -976,6 +997,7 @@ export default () => {
       let response_kit_lanches_autorizadas = [];
       let response_suspensoes_autorizadas = [];
       let response_alteracoes_alimentacao_autorizadas = [];
+      let response_alteracoes_lanche_emergencial_autorizadas = [];
       let response_permissoes_lancamentos_especiais_mes_ano_por_periodo = [];
 
       const calendario = await obterDiasLetivosCorretos(
@@ -1018,6 +1040,18 @@ export default () => {
           );
         setAlteracoesAlimentacaoAutorizadas(
           response_alteracoes_alimentacao_autorizadas,
+        );
+
+        response_alteracoes_lanche_emergencial_autorizadas =
+          await getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync(
+            escola.uuid,
+            mes,
+            ano,
+            periodo.periodo_escolar.nome,
+            true,
+          );
+        setAlteracoesLancheEmergencialAutorizadas(
+          response_alteracoes_lanche_emergencial_autorizadas,
         );
 
         if (ehPeriodoSimples) {
@@ -1102,7 +1136,7 @@ export default () => {
             escola.uuid,
             mes,
             ano,
-            periodo.periodo_escolar.nome,
+            undefined,
             true,
           );
         setAlteracoesAlimentacaoAutorizadas(
@@ -1640,6 +1674,23 @@ export default () => {
       setDisableBotaoSalvarLancamentos(bloquearBotao);
       setExibirTooltip(bloquearBotao);
     }
+
+    if (
+      formValuesAtualizados &&
+      weekColumns &&
+      (usuarioEhEscolaCIEJA() ||
+        formValuesAtualizados["periodo_escolar"] === "NOITE")
+    ) {
+      const bloquearBotao = bloquearSalvamentoRefeicaoSimultanea(
+        formValuesAtualizados,
+        weekColumns,
+        categoriasDeMedicao,
+        usuarioEhEscolaCIEJA(),
+        location.state.periodo,
+      );
+      setDisableBotaoSalvarLancamentos(bloquearBotao);
+      setExibirTooltip(bloquearBotao);
+    }
   }, [
     formValuesAtualizados,
     diasFrequenciaZerada,
@@ -1648,9 +1699,30 @@ export default () => {
     categoriasDeMedicao,
   ]);
 
+  useEffect(() => {
+    if (
+      formValuesAtualizados &&
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(
+        formValuesAtualizados,
+      )
+    ) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    }
+  }, [
+    formValuesAtualizados,
+    weekColumns,
+    categoriasDeMedicao,
+    alteracoesLancheEmergencialAutorizadas,
+    permissoesLancamentosEspeciaisPorDia,
+  ]);
+
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
     const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
     let valoresMedicao = [];
+    const diaHabilitadoParaObservacao = ehGrupoETECUrlParam
+      ? validacaoDiaLancamentoETEC(dia, categoria)
+      : validacaoDiaLetivo(dia);
     const valuesMesmoDiaDaObservacao = Object.fromEntries(
       Object.entries(values).filter(([key]) =>
         key.includes(`__dia_${dia}__categoria_${categoria}`),
@@ -1662,7 +1734,7 @@ export default () => {
           key.includes(prefixo) ||
           key.includes("dietas_autorizadas") ||
           key.includes("numero_de_alunos") ||
-          (!validacaoDiaLetivo(dia) &&
+          (!diaHabilitadoParaObservacao &&
             (key.includes("repeticao") || key.includes("emergencial")))) &&
         delete valuesMesmoDiaDaObservacao[key]
       );
@@ -1787,24 +1859,34 @@ export default () => {
         (valor) => valor.nome_campo === "observacoes",
       ),
     );
-    setExibirTooltip(false);
+    const bloquearBotaoLancheEmergencial =
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values);
     if (
-      valorPeriodoEscolar === "Programas e Projetos" &&
-      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
-        "frequencia",
-        categoriasDeMedicao,
+      bloquearBotaoLancheEmergencial ||
+      (valorPeriodoEscolar === "Programas e Projetos" &&
+        boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+          "frequencia",
+          categoriasDeMedicao,
+          values,
+          diasFrequenciaZerada,
+          valorPeriodoEscolar,
+          escolaEhEMEBS(),
+          alunosTabSelecionada,
+          weekColumns,
+        )) ||
+      bloquearSalvamentoRefeicaoSimultanea(
         formValuesAtualizados,
-        diasFrequenciaZerada,
-        valorPeriodoEscolar,
-        escolaEhEMEBS(),
-        alunosTabSelecionada,
         weekColumns,
+        categoriasDeMedicao,
+        usuarioEhEscolaCIEJA(),
+        location.state.periodo,
       )
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
     } else {
       setDisableBotaoSalvarLancamentos(false);
+      setExibirTooltip(false);
     }
   };
 
@@ -2075,6 +2157,16 @@ export default () => {
     return true;
   };
 
+  const validacaoDiaLancamentoETEC = (dia, categoriaId) => {
+    return ehDiaHabilitadoParaLancamentoETEC(
+      dia,
+      categoriaId,
+      mesAnoConsiderado,
+      feriadosNoMes || [],
+      dadosValoresInclusoesEtecAutorizadasState || {},
+    );
+  };
+
   const validacaoDiaLetivoCalendario = (dia) => {
     const objDia = calendarioMesConsiderado.find(
       (objDia) => Number(objDia.dia) === Number(dia),
@@ -2149,7 +2241,10 @@ export default () => {
       weekColumns,
       feriadosNoMes,
     );
-    if (erro) {
+    if (
+      erro ||
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values)
+    ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
     }
@@ -2216,6 +2311,8 @@ export default () => {
       }
     }
     desabilitaTooltip(values);
+    const existeWarningLancheEmergencial =
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values);
 
     const ehChangeInput = true;
     if (
@@ -2326,6 +2423,7 @@ export default () => {
           ehGrupoETECUrlParam,
           inclusoesEtecAutorizadas,
         )) ||
+      existeWarningLancheEmergencial ||
       boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
         "frequencia",
         categoriasDeMedicao,
@@ -2335,6 +2433,13 @@ export default () => {
         escolaEhEMEBS(),
         alunosTabSelecionada,
         weekColumns,
+      ) ||
+      bloquearSalvamentoRefeicaoSimultanea(
+        formValuesAtualizados,
+        weekColumns,
+        categoriasDeMedicao,
+        usuarioEhEscolaCIEJA(),
+        location.state.periodo,
       )
     ) {
       setDisableBotaoSalvarLancamentos(true);
@@ -2368,7 +2473,7 @@ export default () => {
           idCategoria,
           value,
           allValues,
-          validacaoDiaLetivo,
+          validacaoDiaLancamentoETEC,
           validacaoSemana,
         );
       } else {
@@ -2381,12 +2486,15 @@ export default () => {
           dadosValoresInclusoesAutorizadasState,
           suspensoesAutorizadas,
           alteracoesAlimentacaoAutorizadas,
+          alteracoesLancheEmergencialAutorizadas,
+          permissoesLancamentosEspeciaisPorDia,
           validacaoDiaLetivo,
           location,
           feriadosNoMes,
           valoresPeriodosLancamentos,
           escolaEhEMEBS(),
           alunosTabSelecionada,
+          nomeCategoria,
         );
       }
     };
@@ -2575,10 +2683,15 @@ export default () => {
       alteracoesAlimentacaoAutorizadas?.some(
         (alteracao) => alteracao.dia === dia,
       );
+    const temDiaHabilitadoParaLancamentoETEC =
+      ehGrupoETECUrlParam &&
+      categoriaAtual?.nome === "ALIMENTAÇÃO" &&
+      validacaoDiaLancamentoETEC(dia, categoriaId);
 
     return (
       (!validacaoSemana(dia) &&
-        (validacaoDiaLetivo(dia) ||
+        (temDiaHabilitadoParaLancamentoETEC ||
+          validacaoDiaLetivo(dia) ||
           temInclusaoAutorizadaNoDia ||
           (temKitLancheAutorizadoNoDia &&
             ehCategoriaSolicitacoesDeAlimentacao) ||
@@ -3336,6 +3449,15 @@ export default () => {
                                                           escolaEhEMEBS(),
                                                           alunosTabSelecionada,
                                                         )}
+                                                        exibirTooltipRefeicaoSimultanea={exibirTooltipRefeicaoSimultanea(
+                                                          formValuesAtualizados,
+                                                          row,
+                                                          column,
+                                                          categoria,
+                                                          usuarioEhEscolaCIEJA(),
+                                                          location.state
+                                                            .periodo,
+                                                        )}
                                                         validate={fieldValidationsTabelasDietas(
                                                           row.name,
                                                           column.dia,
@@ -3460,6 +3582,8 @@ export default () => {
                                                               column,
                                                               suspensoesAutorizadas,
                                                               alteracoesAlimentacaoAutorizadas,
+                                                              alteracoesLancheEmergencialAutorizadas,
+                                                              permissoesLancamentosEspeciaisPorDia,
                                                               kitLanchesAutorizadas,
                                                               inclusoesEtecAutorizadas,
                                                               ehGrupoETECUrlParam,
@@ -3583,13 +3707,6 @@ export default () => {
                                                             diasSobremesaDoce,
                                                             location,
                                                           )}
-                                                          exibeTooltipRepeticao={exibirTooltipRepeticao(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            diasSobremesaDoce,
-                                                          )}
                                                           exibeTooltipAlimentacoesAutorizadasDiaNaoLetivo={
                                                             `${row.name}__dia_${column.dia}__categoria_${categoria.id}` in
                                                               dadosValoresInclusoesAutorizadasState &&
@@ -3628,6 +3745,14 @@ export default () => {
                                                             column,
                                                             categoria,
                                                             alteracoesAlimentacaoAutorizadas,
+                                                          )}
+                                                          exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao={exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao(
+                                                            formValuesAtualizados,
+                                                            row,
+                                                            column,
+                                                            categoria,
+                                                            alteracoesLancheEmergencialAutorizadas,
+                                                            permissoesLancamentosEspeciaisPorDia,
                                                           )}
                                                           exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
                                                             formValuesAtualizados,
@@ -3699,6 +3824,15 @@ export default () => {
                                                               .grupo,
                                                             escolaEhEMEBS(),
                                                             alunosTabSelecionada,
+                                                          )}
+                                                          exibirTooltipRefeicaoSimultanea={exibirTooltipRefeicaoSimultanea(
+                                                            formValuesAtualizados,
+                                                            row,
+                                                            column,
+                                                            categoria,
+                                                            usuarioEhEscolaCIEJA(),
+                                                            location.state
+                                                              .periodo,
                                                           )}
                                                           ehGrupoETECUrlParam={
                                                             ehGrupoETECUrlParam

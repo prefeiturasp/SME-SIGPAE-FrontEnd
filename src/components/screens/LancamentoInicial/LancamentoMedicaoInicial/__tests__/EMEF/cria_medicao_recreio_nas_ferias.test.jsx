@@ -10,11 +10,7 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import {
-  LANCAMENTO_MEDICAO_INICIAL,
-  PANORAMA_ESCOLA,
-  SOLICITACOES_DIETA_ESPECIAL,
-} from "src/configs/constants";
+import { LANCAMENTO_MEDICAO_INICIAL } from "src/configs/constants";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -26,7 +22,6 @@ import { mockRecreioNasFeriasEMEFDezembro2025 } from "src/mocks/services/medicao
 import { mockSolicitacaoComRecreioNasFeriasCriadaDezembro2025EMEF } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Dezembro2025/solicitacaoRecreioNasFeriasCriada";
 import { mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Dezembro2025/solicitacaoRecreioNasFerias";
 import { quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/EMEF/Maio2025/quantidadesAlimentacaoesLancadasPeriodoGrupo";
-import { mockPanoramaEscolaEMEF } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/panoramaEscola";
 import { mockSolicitacaoMedicaoInicialEMEFMaio2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/EMEF/solicitacaoMedicaoInicialMaio2025";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
@@ -58,9 +53,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Cria Medição com 
     mock
       .onGet("/notificacoes/quantidade-nao-lidos/")
       .reply(200, { quantidade_nao_lidos: 0 });
-    mock
-      .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
-      .reply(200, mockPanoramaEscolaEMEF);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
       .reply(200, mockEscolaSimplesEMEF);

@@ -8,7 +8,9 @@ import {
   PRE_RECEBIMENTO,
 } from "src/configs/constants";
 
-export default ({ listaRascunhos }) => {
+export default ({ listaRascunhos, editarRoute }) => {
+  const rotaEdicao =
+    editarRoute || `/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA}/${EDITAR}`;
   const so_data = (data) => {
     if (data) {
       return data.slice(0, 10);
@@ -33,12 +35,10 @@ export default ({ listaRascunhos }) => {
                       <div className="col-5 numero-rascunho">{`Cronograma #${rascunho.numero}`}</div>
                       <div className="col-7 data-rascunho ">
                         {`Rascunho salvo em ${so_data(
-                          rascunho.alterado_em
+                          rascunho.alterado_em,
                         )} às ${so_hora(rascunho.alterado_em)}`}
 
-                        <NavLink
-                          to={`/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA}/${EDITAR}?uuid=${rascunho.uuid}`}
-                        >
+                        <NavLink to={`${rotaEdicao}?uuid=${rascunho.uuid}`}>
                           <span className="icon-editar-rascunho">
                             <i title="Editar" className="fas fa-edit" />
                           </span>

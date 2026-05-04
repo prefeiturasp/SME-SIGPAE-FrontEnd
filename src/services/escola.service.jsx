@@ -82,19 +82,14 @@ export const getEscolasTercTotal = async (params = {}) => {
   }
 };
 
-export const getEscolasSimplissimaPorDiretoriaRegional = (dre_uuid) => {
+export const getEscolasSimplissimaPorDiretoriaRegional = async (dre_uuid) => {
   const url = `${API_URL}/escolas-simplissima/${dre_uuid}/`;
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error.json();
-    });
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    return error.response?.data;
+  }
 };
 
 export const getTiposGestao = async () => {

@@ -52,7 +52,9 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
           Cronograma de Entrega
         </LeafItem>
       )}
-      {(usuarioEhCronograma() || usuarioEhCodaeDilog()) && (
+      {(usuarioEhCronograma() ||
+        usuarioEhCodaeDilog() ||
+        usuarioEhEmpresaFornecedor()) && (
         <LeafItem to={`/${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`}>
           Cronograma Semanal FLV
         </LeafItem>

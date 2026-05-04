@@ -16,8 +16,10 @@ import mock from "src/services/_mock";
 describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - EMEF", () => {
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
+  const alteracoesAlimentacaoParams = [];
 
   beforeEach(async () => {
+    alteracoesAlimentacaoParams.length = 0;
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
@@ -68,7 +70,10 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
     ]);
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-      .reply(200, { results: [] });
+      .reply((config) => {
+        alteracoesAlimentacaoParams.push(config.params);
+        return [200, { results: [] }];
+      });
     mock
       .onGet("/dias-calendario/")
       .reply(200, mockDiasCalendarioEMEFDezembro2025);
@@ -170,5 +175,21 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
       "kit_lanche__dia_06__categoria_5",
     );
     expect(inputKitLancheDia06).not.toBeDisabled();
+  });
+
+  it("consulta lanche emergencial sem filtrar por nome do período escolar", () => {
+    expect(alteracoesAlimentacaoParams.length).toBeGreaterThan(0);
+    expect(alteracoesAlimentacaoParams).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          eh_lanche_emergencial: true,
+        }),
+      ]),
+    );
+    expect(
+      alteracoesAlimentacaoParams.every(
+        (params) => !("nome_periodo_escolar" in params),
+      ),
+    ).toBe(true);
   });
 });

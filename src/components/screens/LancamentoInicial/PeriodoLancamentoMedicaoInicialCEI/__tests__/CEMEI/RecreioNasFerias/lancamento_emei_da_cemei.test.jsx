@@ -919,7 +919,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
       expect(botao).toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 1`, preencher repetição de refeição maior que refeição e exibe atenção", async () => {
+    it("ao clicar na tab `Semana 1`, preencher repetição de refeição maior que refeição e não exibe tooltip verde", async () => {
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
@@ -940,15 +940,14 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
       const tooltip = document.querySelector(
         '[data-test-id="tooltip_repeticao_refeicao__dia_02__categoria_1"]',
       );
-      expect(tooltip).not.toBeNull();
-      expect(tooltip).toHaveClass("icone-info-success");
+      expect(tooltip).toBeNull();
 
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
     });
 
-    it("ao clicar na tab `Semana 1`, preencher repetição de sobremesa maior que sobremesa e exibe atenção", async () => {
+    it("ao clicar na tab `Semana 1`, preencher repetição de sobremesa maior que sobremesa e não exibe tooltip verde", async () => {
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
@@ -971,8 +970,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas F�
       const tooltip = document.querySelector(
         '[data-test-id="tooltip_repeticao_sobremesa__dia_02__categoria_1"]',
       );
-      expect(tooltip).not.toBeNull();
-      expect(tooltip).toHaveClass("icone-info-success");
+      expect(tooltip).toBeNull();
 
       const botao = screen.getByText("Salvar Lançamentos").closest("button");
       expect(botao).toBeInTheDocument();

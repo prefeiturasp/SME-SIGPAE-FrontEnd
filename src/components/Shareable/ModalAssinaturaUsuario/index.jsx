@@ -21,6 +21,7 @@ export const ModalAssinaturaUsuario = ({
   segundoTitulo = undefined,
   texto,
   textoBotao = "Sim, assinar cronograma",
+  textoBotaoNao = "Não",
 }) => {
   const [concordaAssinar, setConcordaAssinar] = useState(false);
 
@@ -91,7 +92,7 @@ export const ModalAssinaturaUsuario = ({
           <>
             <Modal.Footer>
               <Botao
-                texto="Não"
+                texto={textoBotaoNao}
                 type={BUTTON_TYPE.BUTTON}
                 onClick={() => {
                   handleClose();

@@ -23,3 +23,13 @@ export const mockCronogramasMensalAssinados: CronogramaMensalSimples[] = [
     numero_contrato: "0001/2024",
   },
 ];
+
+export const mockGetCronogramasMensalAssinados2 = [
+  {
+    uuid: "e10b7e33-7763-42da-8071-d9a06ec04849",
+    numero: "001/2026P",
+    produto_nome: "DOCE DE BANANA",
+    fornecedor_nome: "JP Alimentos",
+    numero_contrato: "837834",
+  },
+];

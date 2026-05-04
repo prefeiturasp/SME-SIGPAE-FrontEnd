@@ -2,10 +2,6 @@ import "@testing-library/jest-dom";
 import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import {
-  PANORAMA_ESCOLA,
-  SOLICITACOES_DIETA_ESPECIAL,
-} from "src/configs/constants";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -15,7 +11,6 @@ import { mockEscolaSimplesCEMEI } from "src/mocks/services/escola.service/CEMEI/
 import { mockDiasCalendarioDezembro2025CEMEI } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/Dezembro2025/diasCalendario";
 import { mockRecreioNasFeriasCEMEIDezembro2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/Dezembro2025/recreioNasFerias";
 import { mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025CEMEI } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/Dezembro2025/solicitacaoRecreioNasFerias";
-import { mockPanoramaEscolaCEMEIDezembro2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEMEI/Dezembro2025/panoramaEscola";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
@@ -25,9 +20,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Renderiza Mediçã
 
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
-    mock
-      .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
-      .reply(200, mockPanoramaEscolaCEMEIDezembro2025);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
       .reply(200, mockEscolaSimplesCEMEI);

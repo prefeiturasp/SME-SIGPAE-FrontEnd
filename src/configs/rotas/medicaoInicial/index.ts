@@ -162,11 +162,21 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.RELATORIO_FINANCEIRO}`,
     component: RelatorioFinanceiroPage,
-    tipoUsuario: usuarioEhMedicao(),
+    tipoUsuario:
+      usuarioEhMedicao() ||
+      usuarioEhCODAEGestaoAlimentacao() ||
+      usuarioEhCODAEGabinete() ||
+      usuarioEhCODAENutriManifestacao() ||
+      usuarioEhDinutreDiretoria(),
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.RELATORIO_FINANCEIRO}/${constants.ANALISAR_RELATORIO_FINANCEIRO}`,
     component: RelatorioFinanceiroConsolidadoPage,
-    tipoUsuario: usuarioEhMedicao(),
+    tipoUsuario:
+      usuarioEhMedicao() ||
+      usuarioEhCODAEGestaoAlimentacao() ||
+      usuarioEhCODAEGabinete() ||
+      usuarioEhCODAENutriManifestacao() ||
+      usuarioEhDinutreDiretoria(),
   },
 ];

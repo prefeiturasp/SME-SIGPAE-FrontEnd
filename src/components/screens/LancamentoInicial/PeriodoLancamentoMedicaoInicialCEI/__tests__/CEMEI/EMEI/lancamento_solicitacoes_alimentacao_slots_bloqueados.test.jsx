@@ -13,7 +13,10 @@ import { PeriodoLancamentoMedicaoInicialCEIPage } from "src/pages/LancamentoMedi
 import mock from "src/services/_mock";
 
 describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - EMEI da CEMEI", () => {
+  const alteracoesAlimentacaoParams = [];
+
   beforeEach(async () => {
+    alteracoesAlimentacaoParams.length = 0;
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     mock
@@ -32,15 +35,21 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
     });
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-      .reply(200, {
-        results: [
+      .reply((config) => {
+        alteracoesAlimentacaoParams.push(config.params);
+        return [
+          200,
           {
-            dia: "01",
-            numero_alunos: 12,
-            inclusao_id_externo: "DAC2D",
-            motivo: "Lanche Emergencial",
+            results: [
+              {
+                dia: "01",
+                numero_alunos: 12,
+                inclusao_id_externo: "DAC2D",
+                motivo: "Lanche Emergencial",
+              },
+            ],
           },
-        ],
+        ];
       });
     mock
       .onGet("/medicao-inicial/categorias-medicao/")
@@ -136,5 +145,21 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
       "kit_lanche__dia_02__categoria_5",
     );
     expect(inputKitLancheDia02).toBeDisabled();
+  });
+
+  it("consulta alterações autorizadas sem filtrar por nome do período escolar", () => {
+    expect(alteracoesAlimentacaoParams.length).toBeGreaterThan(0);
+    expect(alteracoesAlimentacaoParams).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          eh_lanche_emergencial: true,
+        }),
+      ]),
+    );
+    expect(
+      alteracoesAlimentacaoParams.every(
+        (params) => !("nome_periodo_escolar" in params),
+      ),
+    ).toBe(true);
   });
 });

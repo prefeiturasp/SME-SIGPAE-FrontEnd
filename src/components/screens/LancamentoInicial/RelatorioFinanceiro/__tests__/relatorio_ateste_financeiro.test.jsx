@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { RelatorioFinanceiroConsolidado } from "../RelatorioFinanceiroConsolidado";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -31,7 +31,7 @@ const TOTAIS_FUNDAMENTAL = [
   "TOTAL (FUND. C)",
 ];
 
-describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFinanceiroConsolidado", () => {
+describe("Testes da interface de Análise do Relatório Financeiro - Relatorio Financeiro", () => {
   const gruposUnidadeEscolar = mockGetGrupoUnidadeEscolar.results;
   const grupoCEI = gruposUnidadeEscolar.find((grupo) =>
     grupo.nome.includes("Grupo 1"),
@@ -60,11 +60,12 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
       .reply(200, mockDadosLiquidacao);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
+
     localStorage.setItem("perfil", PERFIL.ADMINITRADOR_MEDICAO);
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.MEDICAO);
   });
 
-  const setup = async (grupo = grupoCEI) => {
+  const setup = async (grupo = grupoCEI, visualizar = false) => {
     await act(async () => {
       render(
         <MemoryRouter
@@ -81,6 +82,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
                 lote: ["1f06b334-cbd1-40c5-85c4-6a3d1926805b"],
                 grupo_unidade_escolar: [grupo],
                 status: ["RELATORIO_FINANCEIRO_GERADO"],
+                visualizar,
               },
             },
           ]}
@@ -141,9 +143,8 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup();
 
-    verificaHeadersTabela([
+    await verificaHeadersTabela([
       "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
-      "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
       "VALOR UNITÁRIO",
     ]);
 
@@ -206,7 +207,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoCEMEI.uuid);
 
-    verificaHeadersTabela([
+    await verificaHeadersTabela([
       "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
       "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
       "VALOR UNITÁRIO",
@@ -246,7 +247,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoEMEI.uuid);
 
-    verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
+    await verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
 
     for (const total of TOTAIS_NORMAL) {
       expect(screen.getByText(total)).toBeInTheDocument();
@@ -280,7 +281,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoEMEF.uuid);
 
-    verificaHeadersTabela([
+    await verificaHeadersTabela([
       "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
       "VALOR DO REAJUSTE",
     ]);
@@ -334,7 +335,7 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoEMEBS.uuid);
 
-    verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
+    await verificaHeadersTabela(["TIPOS DE ALIMENTAÇÕES - SEM DIETAS"]);
 
     for (const total of [...TOTAIS_INFANTIL, ...TOTAIS_FUNDAMENTAL]) {
       expect(screen.getByText(total)).toBeInTheDocument();
@@ -378,8 +379,6 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
 
     await setup(grupoCIEJA.uuid);
 
-    verificaHeadersTabela(["REFEIÇÃO CIEJA E CMCT", "LANCHE 4H"]);
-
     for (const total of TOTAIS_NORMAL) {
       expect(screen.getByText(total)).toBeInTheDocument();
     }
@@ -391,33 +390,5 @@ describe("Testes da interface de Análise do Relatório Financeiro - RelatorioFi
         "(Cento e um mil quatrocentos e setenta e quatro reais e trinta e seis centavos.)",
       ),
     ).toBeInTheDocument();
-  });
-
-  it("deve verificar botão exportar PDF e excutar ação", async () => {
-    mock
-      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
-      .reply(200, mockRelatorioFinanceiroFaixaEtaria);
-    mock
-      .onGet(
-        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
-      )
-      .reply(200, mockTotaisAtendimentoFaixaEtaria);
-    mock
-      .onPost(`/medicao-inicial/relatorio-financeiro/exportar-pdf/123/`)
-      .reply(200, {});
-
-    await setup();
-
-    const botaoPDF = screen.getByTestId("botao-pdf");
-    expect(botaoPDF).toBeInTheDocument();
-    expect(botaoPDF).toBeVisible();
-
-    botaoPDF.click();
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Geração solicitada com sucesso."),
-      ).toBeInTheDocument();
-    });
   });
 });

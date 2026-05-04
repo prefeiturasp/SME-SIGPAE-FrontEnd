@@ -3,3 +3,7 @@ export {
   mockCronogramaMensalDetalhado,
   mockCronogramaMensalDetalhadoComEtapasMultiplas,
 } from "./mockGetCronogramaMensalDetalhado";
+export {
+  mockCronogramaSemanalDetalhe,
+  mockCronogramaSemanalDetalheEnviado,
+} from "./mockGetCronogramaSemanalDetalhe";

@@ -9,10 +9,6 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import {
-  PANORAMA_ESCOLA,
-  SOLICITACOES_DIETA_ESPECIAL,
-} from "src/configs/constants";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -24,7 +20,6 @@ import { mockRecreioNasFeriasCEMEIDezembro2025 } from "src/mocks/services/medica
 import { mockSolicitacaoMedicaoInicialCEMEIDezembro2025 } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/Dezembro2025/solicitacaoMedicaoInicial";
 import { mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025CEMEI } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/Dezembro2025/solicitacaoRecreioNasFerias";
 import { mockSolicitacaoComRecreioNasFeriasCriadaDezembro2025CEMEI } from "src/mocks/services/medicaoInicial/solicitacaoMedicaoinicial.service/CEMEI/Dezembro2025/solicitacaoRecreioNasFeriasCriada";
-import { mockPanoramaEscolaCEMEIDezembro2025 } from "src/mocks/services/solicitacaoMedicaoInicial.service/CEMEI/Dezembro2025/panoramaEscola";
 import { mockGetTiposDeContagemAlimentacao } from "src/mocks/services/solicitacaoMedicaoInicial.service/getTiposDeContagemAlimentacao";
 import { mockGetMatriculadosPeriodo } from "src/mocks/services/medicaoInicial/periodoLancamentoMedicao.service/CEMEI/mockGetMatriculadosPeriodo";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
@@ -35,9 +30,6 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Cria Medição com
 
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
-    mock
-      .onPost(`/${SOLICITACOES_DIETA_ESPECIAL}/${PANORAMA_ESCOLA}/`)
-      .reply(200, mockPanoramaEscolaCEMEIDezembro2025);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
       .reply(200, mockEscolaSimplesCEMEI);

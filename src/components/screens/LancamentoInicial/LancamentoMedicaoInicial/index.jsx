@@ -22,7 +22,6 @@ import {
   escolaNaoPossuiAlunosRegulares,
 } from "src/helpers/utilities";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
-import { getPanoramaEscola } from "src/services/dietaEspecial.service";
 import { getEscolaSimples } from "src/services/escola.service";
 import {
   getDiasCalendario,
@@ -55,7 +54,6 @@ export default () => {
   const [ano, setAno] = useState(null);
   const [mes, setMes] = useState(null);
   const [cadastrosRecreioNasFerias, setCadastrosRecreioNasFerias] = useState();
-  const [panoramaGeral, setPanoramaGeral] = useState();
   const [nomeTerceirizada, setNomeTerceirizada] = useState();
   const [objectoPeriodos, setObjectoPeriodos] = useState([]);
   const [periodoSelecionado, setPeriodoSelecionado] = useState(null);
@@ -421,7 +419,6 @@ export default () => {
     async function fetch() {
       const escola =
         meusDados.vinculo_atual && meusDados.vinculo_atual.instituicao;
-      const respostaPanorama = await getPanoramaEscola({ escola: escola.uuid });
       const respostaEscolaSimples = await getEscolaSimples(escola.uuid);
       setEscolaSimples(respostaEscolaSimples.data);
 
@@ -429,7 +426,6 @@ export default () => {
         respostaEscolaSimples.data.lote.terceirizada.nome_fantasia,
       );
 
-      setPanoramaGeral(respostaPanorama.data);
       setEscolaInstituicao(escola);
       setLoteEscolaSimples(respostaEscolaSimples.data.lote.nome);
       setEhIMR(
@@ -1058,7 +1054,6 @@ export default () => {
             (ehEscolaTipoCEI(historicoEscola || escolaInstituicao) ||
             ehEscolaTipoCEMEI(historicoEscola) ? (
               <LancamentoPorPeriodoCEI
-                panoramaGeral={panoramaGeral}
                 mes={mes}
                 ano={ano}
                 ehIMR={ehIMR}
@@ -1099,7 +1094,6 @@ export default () => {
               />
             ) : (
               <LancamentoPorPeriodo
-                panoramaGeral={panoramaGeral}
                 mes={mes}
                 ano={ano}
                 ehIMR={ehIMR}

@@ -80,16 +80,18 @@ import {
   exibirTooltipFrequenciaAlimentacaoZeroESemObservacao,
   exibirTooltipKitLancheSolAlimentacoes,
   exibirTooltipLancheEmergencialAutorizado,
+  exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao,
   exibirTooltipLancheEmergencialNaoAutorizado,
   exibirTooltipLancheEmergencialZeroAutorizadoJustificado,
   exibirTooltipLPRAutorizadas,
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
   exibirTooltipQtdKitLancheDiferenteSolAlimentacoesAutorizadas,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
-  exibirTooltipRepeticao,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
+  existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao,
+  existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao,
   existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao,
   exibirTooltipPeriodosZeradosNoProgramasProjetos,
   habitarBotaoAdicionar,
@@ -173,6 +175,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [
     alteracoesAlimentacaoAutorizadas,
     setAlteracoesAlimentacaoAutorizadas,
+  ] = useState(null);
+  const [
+    alteracoesLancheEmergencialAutorizadas,
+    setAlteracoesLancheEmergencialAutorizadas,
   ] = useState(null);
   const [kitLanchesAutorizadas, setKitLanchesAutorizadas] = useState(null);
   const [exibirTooltipAoSalvar] = useState(false);
@@ -277,6 +283,28 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     return ehRecreioCemei() && ehEmeiDaCemeiLocation;
   };
 
+  const ehPeriodoInfantilEmeiDaCemei = () => {
+    return (
+      ehEmeiDaCemeiLocation && location?.state?.periodo?.includes("Infantil")
+    );
+  };
+
+  const existeWarningLancheEmergencialAutorizadoTipoAlimentacao = (
+    values = formValuesAtualizados,
+  ) => {
+    if (!ehPeriodoInfantilEmeiDaCemei()) {
+      return false;
+    }
+
+    return existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao(
+      values,
+      categoriasDeMedicao,
+      weekColumns,
+      alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
+    );
+  };
+
   let valuesInputArray = [];
 
   useEffect(() => {
@@ -358,11 +386,25 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           escola.uuid,
           mes,
           ano,
-          periodo,
+          ehSolicitacoesAlimentacaoLocation ? undefined : periodo,
         );
       setAlteracoesAlimentacaoAutorizadas(
         response_alteracoes_alimentacao_autorizadas,
       );
+
+      if (ehPeriodoInfantilEmeiDaCemei()) {
+        const response_alteracoes_lanche_emergencial_autorizadas =
+          await getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync(
+            escola.uuid,
+            mes,
+            ano,
+            ehSolicitacoesAlimentacaoLocation ? undefined : periodo,
+            true,
+          );
+        setAlteracoesLancheEmergencialAutorizadas(
+          response_alteracoes_lanche_emergencial_autorizadas,
+        );
+      }
 
       let response_suspensoes_autorizadas = [];
       response_suspensoes_autorizadas =
@@ -389,7 +431,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             escola.uuid,
             mes,
             ano,
-            periodo,
+            undefined,
             true,
           );
         setAlteracoesAlimentacaoAutorizadas(
@@ -1056,7 +1098,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       matriculadosEmeiDaCemei.forEach((objMatriculadoEmeiDaCemei) => {
         const chave = `${prefixo}__dia_${objMatriculadoEmeiDaCemei.dia}__categoria_${idCategoriaAlimentacao}`;
         dadosValoresMatriculadosEmeiDaCemei[chave] =
-          objMatriculadoEmeiDaCemei[propriedadeQuantidade];
+          `${objMatriculadoEmeiDaCemei[propriedadeQuantidade]}`;
       });
 
     valoresMedicao &&
@@ -1193,6 +1235,24 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   useEffect(() => {
     if (
       formValuesAtualizados &&
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(
+        formValuesAtualizados,
+      )
+    ) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    }
+  }, [
+    formValuesAtualizados,
+    weekColumns,
+    categoriasDeMedicao,
+    alteracoesLancheEmergencialAutorizadas,
+    permissoesLancamentosEspeciaisPorDia,
+  ]);
+
+  useEffect(() => {
+    if (
+      formValuesAtualizados &&
       formValuesAtualizados["periodo_escolar"] === "Programas e Projetos" &&
       diasFrequenciaZerada &&
       weekColumns
@@ -1227,6 +1287,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     );
 
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
+    const valorPeriodoEscolar = values["periodo_escolar"];
     let valoresMedicao = [];
     const valuesMesmoDiaDaObservacao = Object.fromEntries(
       Object.entries(values).filter(([key]) =>
@@ -1370,24 +1431,28 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         (valor) => valor.nome_campo === "observacoes",
       ),
     );
+    const bloquearBotaoLancheEmergencial =
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values);
     setExibirTooltip(false);
     if (
-      values["periodo_escolar"] === "Programas e Projetos" &&
-      boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
-        "frequencia",
-        categoriasDeMedicao,
-        formValuesAtualizados,
-        diasFrequenciaZerada,
-        values["periodo_escolar"],
-        false,
-        null,
-        weekColumns,
-      )
+      bloquearBotaoLancheEmergencial ||
+      (valorPeriodoEscolar === "Programas e Projetos" &&
+        boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+          "frequencia",
+          categoriasDeMedicao,
+          values,
+          diasFrequenciaZerada,
+          valorPeriodoEscolar,
+          false,
+          null,
+          weekColumns,
+        ))
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
     } else {
       setDisableBotaoSalvarLancamentos(false);
+      setExibirTooltip(false);
     }
   };
 
@@ -1613,7 +1678,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       weekColumns,
       feriadosNoMes,
     );
-    if (erro) {
+    if (
+      erro ||
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values)
+    ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
     }
@@ -1682,6 +1750,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       }
     }
     desabilitaTooltip(formValuesAtualizados);
+    const existeWarningLancheEmergencial =
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(
+        formValuesAtualizados,
+      );
+
+    if (existeWarningLancheEmergencial) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    }
 
     if (
       (exibirTooltipRPLAutorizadas(
@@ -1925,6 +2002,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           allValues,
           value,
           alteracoesAlimentacaoAutorizadas,
+          alteracoesLancheEmergencialAutorizadas,
+          permissoesLancamentosEspeciaisPorDia,
           inclusoesAutorizadas,
           validacaoDiaLetivo,
           ehProgramasEProjetosLocation,
@@ -2728,6 +2807,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                             ],
                                                             formValuesAtualizados,
                                                           )) ||
+                                                        (ehPeriodoInfantilEmeiDaCemei() &&
+                                                          existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
+                                                            column.dia,
+                                                            categoria,
+                                                            formValuesAtualizados,
+                                                            alteracoesLancheEmergencialAutorizadas,
+                                                            permissoesLancamentosEspeciaisPorDia,
+                                                          )) ||
                                                         alimentacoesFrequenciaZeroESemObservacaoCEI(
                                                           formValuesAtualizados,
                                                           column.dia,
@@ -2928,6 +3015,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                             ehUltimoDiaLetivoDoAno,
                                                             calendarioMesConsiderado,
                                                             ehRecreioNasFerias(),
+                                                            categoriasDeMedicao,
                                                           )}
                                                           defaultValue={defaultValue(
                                                             column,
@@ -2986,6 +3074,17 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                             categoria,
                                                             alteracoesAlimentacaoAutorizadas,
                                                           )}
+                                                          exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao={
+                                                            ehPeriodoInfantilEmeiDaCemei() &&
+                                                            exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              alteracoesLancheEmergencialAutorizadas,
+                                                              permissoesLancamentosEspeciaisPorDia,
+                                                            )
+                                                          }
                                                           exibeTooltipLancheEmergencialNaoAutorizado={exibirTooltipLancheEmergencialNaoAutorizado(
                                                             formValuesAtualizados,
                                                             row,
@@ -3035,16 +3134,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               categoria,
                                                               diasSobremesaDoce,
                                                               location,
-                                                            )
-                                                          }
-                                                          exibeTooltipRepeticao={
-                                                            (ehProgramasEProjetosLocation ||
-                                                              ehRecreioNasFerias) &&
-                                                            exibirTooltipRepeticao(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
                                                             )
                                                           }
                                                           exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
@@ -3140,6 +3229,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                             ehUltimoDiaLetivoDoAno,
                                                             calendarioMesConsiderado,
                                                             ehRecreioNasFerias(),
+                                                            categoriasDeMedicao,
                                                           )}
                                                           defaultValue={defaultValue(
                                                             column,

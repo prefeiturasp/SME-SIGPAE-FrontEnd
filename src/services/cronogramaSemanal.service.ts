@@ -10,6 +10,11 @@ export const getCronogramaSemanal = async (uuid: string) => {
   return await axios.get(`/cronogramas-semanais/${uuid}/`);
 };
 
+export const getListagemCronogramasSemanal = async (params) => {
+  const url = `/cronogramas-semanais/`;
+  return await axios.get(url, { params });
+};
+
 export const criarCronogramaSemanalRascunho = async (
   payload: CronogramaSemanalCreate,
   config = {},
@@ -23,6 +28,14 @@ export const atualizarCronogramaSemanalRascunho = async (
   config = {},
 ) => {
   return await axios.patch(`/cronogramas-semanais/${uuid}/`, payload, config);
+};
+
+export const darCienciaCronogramaSemanal = async (
+  uuid: string,
+  config = {},
+) => {
+  const url = `/cronogramas-semanais/${uuid}/fornecedor-ciente/`;
+  return axios.patch(url, config);
 };
 
 export const getCronogramasMensalAssinados = async (): Promise<{
@@ -44,3 +57,19 @@ export const getCronogramaMensalDetalhado = async (uuid: string) => {
     toastError(getMensagemDeErro(error.response?.status));
   }
 };
+
+export const assinarEEnviarCronogramaSemanal = async (
+  uuid: string,
+  payload: CronogramaSemanalCreate,
+  password: string,
+  config = {},
+) => {
+  return await axios.patch(
+    `/cronogramas-semanais/${uuid}/assinar-e-enviar/`,
+    { ...payload, password },
+    config,
+  );
+};
+
+export const getRascunhosCronogramaSemanal = async () =>
+  await axios.get("/cronogramas-semanais/rascunhos/");

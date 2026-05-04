@@ -58,6 +58,8 @@ import {
   getDashboardMedicaoInicialResultados,
   getDashboardMedicaoInicialTotalizadores,
   getMesesAnosSolicitacoesMedicaoinicial,
+  getTotalUnidadesDRE,
+  getTotalUnidadesDRERecreioNasFerias,
 } from "src/services/medicaoInicial/dashboard.service";
 import { updateSolicitacaoMedicaoInicial } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import {
@@ -129,8 +131,18 @@ export const AcompanhamentoDeLancamentos = () => {
 
   const { meusDados } = useContext(MeusDadosContext);
   const DEFAULT_STATE = usuarioEhEscolaTerceirizadaQualquerPerfil() ? [] : null;
+  const usuarioPossuiSeletorDRE =
+    usuarioEhMedicao() ||
+    usuarioEhCODAENutriManifestacao() ||
+    usuarioEhQualquerCODAE() ||
+    usuarioEhDinutreDiretoria() ||
+    usuarioEhCODAEGabinete() ||
+    usuarioEhEmpresaTerceirizada() ||
+    usuarioEhCoordenadorNutriSupervisao() ||
+    usuarioEhAdministradorNutriSupervisao();
 
   const [dadosDashboard, setDadosDashboard] = useState(null);
+  const [totalUnidadesDRE, setTotalUnidadesDRE] = useState(null);
   const [statusSelecionado, setStatusSelecionado] = useState(
     searchParams.get("status"),
   );
@@ -182,6 +194,33 @@ export const AcompanhamentoDeLancamentos = () => {
     }
 
     return `${MESES[parseInt(mesAnoObj.mes, 10) - 1]} - ${mesAnoObj.ano}`;
+  };
+
+  const getTotalUnidadesDREAsync = async (
+    mesAnoFiltro,
+    recreioNasFeriasFiltro,
+  ) => {
+    if (!(usuarioPossuiSeletorDRE && diretoriaRegional && mesAnoFiltro)) {
+      return;
+    }
+
+    const [mesSelecionado, anoSelecionado] = mesAnoFiltro.split("_");
+    const responseTotalUnidadesDRE = recreioNasFeriasFiltro
+      ? await getTotalUnidadesDRERecreioNasFerias({
+          recreio_nas_ferias_uuid: recreioNasFeriasFiltro,
+          dre_uuid: diretoriaRegional,
+        })
+      : await getTotalUnidadesDRE({
+          mes: mesSelecionado,
+          ano: anoSelecionado,
+          dre_uuid: diretoriaRegional,
+        });
+
+    if (responseTotalUnidadesDRE?.status === HTTP_STATUS.OK) {
+      setTotalUnidadesDRE(responseTotalUnidadesDRE.data);
+    } else {
+      setTotalUnidadesDRE(null);
+    }
   };
 
   const getDashboardMedicaoInicialAsync = async (params = {}) => {
@@ -239,6 +278,8 @@ export const AcompanhamentoDeLancamentos = () => {
       if (recreioNasFeriasFiltro) {
         filtrosDashboard.recreio_nas_ferias = recreioNasFeriasFiltro;
       }
+
+      await getTotalUnidadesDREAsync(mesAnoFiltro, recreioNasFeriasFiltro);
 
       const responseDre =
         await getDashboardMedicaoInicialTotalizadores(filtrosDashboard);
@@ -793,14 +834,7 @@ export const AcompanhamentoDeLancamentos = () => {
               <form onSubmit={handleSubmit}>
                 <div className="card mt-3">
                   <div className="container-dre-mes mt-3">
-                    {usuarioEhMedicao() ||
-                    usuarioEhCODAENutriManifestacao() ||
-                    usuarioEhQualquerCODAE() ||
-                    usuarioEhDinutreDiretoria() ||
-                    usuarioEhCODAEGabinete() ||
-                    usuarioEhEmpresaTerceirizada() ||
-                    usuarioEhCoordenadorNutriSupervisao() ||
-                    usuarioEhAdministradorNutriSupervisao() ? (
+                    {usuarioPossuiSeletorDRE ? (
                       <label className="label label-seletor-dre">
                         <span className="required-asterisk">* </span>
                         Diretorias Regionais de Educação
@@ -816,6 +850,7 @@ export const AcompanhamentoDeLancamentos = () => {
                               value || undefined,
                             );
                             setDiretoriaRegional(value || undefined);
+                            setTotalUnidadesDRE(null);
                             setStatusSelecionado(null);
                             setResultados(null);
                             setMudancaDre(true);
@@ -896,6 +931,7 @@ export const AcompanhamentoDeLancamentos = () => {
                             );
                             setMesAno(mesAnoValue);
                             setRecreioNasFerias(recreioSelecionado);
+                            setTotalUnidadesDRE(null);
                             setMudancaDre(false);
                             setStatusSelecionado(null);
                             setResultados(null);
@@ -921,6 +957,14 @@ export const AcompanhamentoDeLancamentos = () => {
                     )}
                   </div>
                   <div className="card-body">
+                    {usuarioPossuiSeletorDRE && totalUnidadesDRE > 0 && (
+                      <div className="label-unidades-dre mb-3 fw-bold">
+                        {recreioNasFerias
+                          ? "Total de Unidades com Recreio nas Férias da DRE"
+                          : "Total de Unidades da DRE"}
+                        : {totalUnidadesDRE}
+                      </div>
+                    )}
                     <div className="d-flex row row-cols-1">
                       {exibirDashboard() &&
                         dadosDashboard &&

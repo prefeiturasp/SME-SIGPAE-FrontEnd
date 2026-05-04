@@ -14,6 +14,7 @@ import CadastrarCronogramaSemanal from "src/components/screens/PreRecebimento/Cr
 import {
   mockCronogramasMensalAssinados,
   mockCronogramaMensalDetalhado,
+  mockCronogramaSemanalDetalhe,
 } from "src/mocks/services/cronogramaSemanal.service";
 
 const mockNavigate = jest.fn();
@@ -37,6 +38,10 @@ beforeEach(() => {
   mock
     .onPatch("/cronogramas-semanais/rascunho/uuid-edicao-123/")
     .reply(200, { uuid: "uuid-edicao-123" });
+  mock
+    .onPatch(/\/cronogramas-semanais\/.+\/assinar-e-enviar\//)
+    .reply(200, { uuid: "novo-uuid-123", status: "ENVIADO_AO_FORNECEDOR" });
+  mock.onGet("/cronogramas-semanais/rascunhos/").reply(200, { results: [] });
 });
 
 afterEach(() => {
@@ -113,8 +118,27 @@ const preencherProgramacao = async () => {
     fireEvent.change(selectMes, { target: { value: "03/2026" } });
   }
 
+  // Preencher datas
+  const inputsDataInicio = screen.getAllByPlaceholderText("");
+  const dataInicioInput = inputsDataInicio.find(
+    (input: any) => input.getAttribute("type") === "text" && !input.value,
+  );
+  if (dataInicioInput) {
+    fireEvent.change(dataInicioInput, { target: { value: "01/03/2026" } });
+  }
+
+  const dataFimInput = inputsDataInicio.find(
+    (input: any) =>
+      input !== dataInicioInput &&
+      input.getAttribute("type") === "text" &&
+      !input.value,
+  );
+  if (dataFimInput) {
+    fireEvent.change(dataFimInput, { target: { value: "31/03/2026" } });
+  }
+
   const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
-  fireEvent.change(inputQtd, { target: { value: "1000" } });
+  fireEvent.change(inputQtd, { target: { value: "500" } });
 };
 
 describe("CadastrarCronogramaSemanal", () => {
@@ -313,6 +337,9 @@ describe("CadastrarCronogramaSemanal", () => {
       mock
         .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
         .reply(500);
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
@@ -335,6 +362,9 @@ describe("CadastrarCronogramaSemanal", () => {
       mock
         .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
         .timeout();
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
@@ -356,6 +386,9 @@ describe("CadastrarCronogramaSemanal", () => {
       mock
         .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
         .networkError();
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
@@ -533,6 +566,9 @@ describe("CadastrarCronogramaSemanal", () => {
         .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
         .reply(200, mockCronogramasMensalAssinados);
       mock.onGet("/cronogramas/cronograma-uuid-1/").reply(500);
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
@@ -585,6 +621,9 @@ describe("CadastrarCronogramaSemanal", () => {
         .onGet("/cronogramas/cronograma-uuid-1/")
         .reply(200, mockCronogramaMensalDetalhado);
       mock.onPost("/cronogramas-semanais/rascunho/").reply(500);
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
 
       await act(async () => {
         render(
@@ -650,6 +689,532 @@ describe("CadastrarCronogramaSemanal", () => {
           expect(mock.history.post.length).toBeGreaterThan(0);
         },
         { timeout: 5000 },
+      );
+    });
+  });
+
+  describe("Botão Assinar e Enviar", () => {
+    it("não exibe botão assinar e enviar sem cronograma mensal", async () => {
+      await setup();
+      expect(screen.queryByText("Assinar e Enviar")).not.toBeInTheDocument();
+    });
+
+    it("exibe botão assinar e enviar após selecionar cronograma", async () => {
+      await setup();
+      await selecionarCronograma();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+    });
+
+    it("botão assinar e enviar desabilitado após selecionar cronograma sem programação completa", async () => {
+      await setup();
+      await selecionarCronograma();
+
+      await waitFor(() => {
+        const botaoAssinar = screen
+          .getByText("Assinar e Enviar")
+          .closest("button");
+        expect(botaoAssinar).toBeDisabled();
+      });
+    });
+
+    it("botão assinar e enviar habilitado após preencher programação completa com quantidade correta", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        const botaoAssinar = screen
+          .getByText("Assinar e Enviar")
+          .closest("button");
+        expect(botaoAssinar).not.toBeDisabled();
+      });
+    });
+
+    it("clicar no botão abre modal de confirmação", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            "Deseja salvar o Cadastro do Cronograma e enviar para aprovação?",
+          ),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("botão Continuar Editando fecha modal", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
+      });
+
+      const botaoContinuar = screen.getByText("Continuar Editando");
+      fireEvent.click(botaoContinuar);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Assinar Cronograma"),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it("botão Salvar e Enviar abre tela de senha", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
+      });
+
+      const botaoSalvarEnviar = screen.getByText("Salvar e Enviar");
+      fireEvent.click(botaoSalvarEnviar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Confirme sua senha")).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText("Digite sua senha"),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("confirma senha com sucesso redireciona para listagem", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Salvar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoSalvarEnviar = screen.getByText("Salvar e Enviar");
+      fireEvent.click(botaoSalvarEnviar);
+
+      await waitFor(() => {
+        expect(
+          screen.getByPlaceholderText("Digite sua senha"),
+        ).toBeInTheDocument();
+      });
+
+      const senhaInput = screen.getByPlaceholderText("Digite sua senha");
+      fireEvent.change(senhaInput, { target: { value: "senha123" } });
+
+      const botaoConfirmar = screen.getByText("Confirmar");
+      fireEvent.click(botaoConfirmar);
+
+      await waitFor(
+        () => {
+          expect(mockNavigate).toHaveBeenCalledWith(
+            "/pre-recebimento/cronograma-semanal-flv",
+          );
+        },
+        { timeout: 5000 },
+      );
+    });
+
+    it("senha inválida exibe toast de erro", async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock
+        .onGet("/cronogramas/cronograma-uuid-1/")
+        .reply(200, mockCronogramaMensalDetalhado);
+      mock
+        .onPost("/cronogramas-semanais/rascunho/")
+        .reply(201, { uuid: "novo-uuid-123" });
+      mock
+        .onPatch(/\/cronogramas-semanais\/.+\/assinar-e-enviar\//)
+        .reply(401, { detail: "Assinatura do cronograma não foi validada." });
+
+      await setup();
+      await preencherProgramacao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Assinar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(screen.getByText("Salvar e Enviar")).toBeInTheDocument();
+      });
+
+      const botaoSalvarEnviar = screen.getByText("Salvar e Enviar");
+      fireEvent.click(botaoSalvarEnviar);
+
+      await waitFor(() => {
+        expect(
+          screen.getByPlaceholderText("Digite sua senha"),
+        ).toBeInTheDocument();
+      });
+
+      const senhaInput = screen.getByPlaceholderText("Digite sua senha");
+      fireEvent.change(senhaInput, { target: { value: "senha_errada" } });
+
+      const botaoConfirmar = screen.getByText("Confirmar");
+      fireEvent.click(botaoConfirmar);
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("Senha inválida")).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
+    });
+  });
+
+  describe("Edição de Rascunho Existente", () => {
+    const mockCronogramaSemanalEdicao = {
+      ...mockCronogramaSemanalDetalhe,
+      uuid: "uuid-edicao-123",
+      numero: "CSW-EDIT-001",
+      status: "Rascunho",
+      cronograma_mensal: {
+        ...mockCronogramaSemanalDetalhe.cronograma_mensal,
+        uuid: "cronograma-uuid-1",
+        numero: "CR-001/2024",
+      },
+      programacoes: [
+        {
+          mes_programado: "03/2026",
+          data_inicio: "2026-03-01",
+          data_fim: "2026-03-15",
+          quantidade: 500.0,
+        },
+      ],
+    };
+
+    const setupEdicao = async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock
+        .onGet("/cronogramas/cronograma-uuid-1/")
+        .reply(200, mockCronogramaMensalDetalhado);
+      mock
+        .onGet("/cronogramas-semanais/uuid-edicao-123/")
+        .reply(200, mockCronogramaSemanalEdicao);
+      mock
+        .onPatch("/cronogramas-semanais/uuid-edicao-123/")
+        .reply(200, { uuid: "uuid-edicao-123" });
+      mock
+        .onPatch(/\/cronogramas-semanais\/.+\/assinar-e-enviar\//)
+        .reply(200, {
+          uuid: "uuid-edicao-123",
+          status: "ENVIADO_AO_FORNECEDOR",
+        });
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
+
+      await act(async () => {
+        render(
+          <MemoryRouter initialEntries={["/?uuid=uuid-edicao-123"]}>
+            <CadastrarCronogramaSemanal />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Cronograma Mensal Cadastrado"),
+        ).toBeInTheDocument();
+      });
+    };
+
+    it("carrega dados do rascunho existente com uuid na URL", async () => {
+      await setupEdicao();
+
+      await waitFor(
+        () => {
+          expect(screen.getByDisplayValue("Alface Crespa")).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
+
+      expect(
+        screen.getByDisplayValue("Hortifruti São Paulo LTDA"),
+      ).toBeInTheDocument();
+    });
+
+    it("exibe número do cronograma em modo de edição", async () => {
+      await setupEdicao();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("CSW-EDIT-001")).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
+    });
+
+    it("preenche programações do rascunho existente", async () => {
+      await setupEdicao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Mês Programado")).toBeInTheDocument();
+      });
+
+      // Verificar que há pelo menos uma programação preenchida
+      await waitFor(() => {
+        const selects = screen.getAllByText("Mês Programado");
+        expect(selects.length).toBeGreaterThanOrEqual(1);
+      });
+    });
+
+    it("preenche datas das programações corretamente ao carregar rascunho", async () => {
+      await setupEdicao();
+
+      await waitFor(() => {
+        expect(screen.getByText("Mês Programado")).toBeInTheDocument();
+      });
+
+      // Aguardar carregamento completo
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      });
+
+      await waitFor(
+        () => {
+          // Buscar inputs de data pelo valor - react-datepicker usa inputs com classe form-control
+          const dateInputs = document.querySelectorAll(
+            'input.form-control[placeholder=""]',
+          );
+          expect(dateInputs.length).toBeGreaterThanOrEqual(2);
+
+          // Verificar que os campos de data não estão vazios
+          // Os valores devem estar no formato DD/MM/YYYY
+          const valores = Array.from(dateInputs).map(
+            (input) => (input as HTMLInputElement).value,
+          );
+
+          // Deve haver pelo menos uma data preenchida
+          const temDataInicio = valores.some((v) => v === "01/03/2026");
+          const temDataFim = valores.some((v) => v === "15/03/2026");
+
+          expect(temDataInicio || temDataFim).toBe(true);
+        },
+        { timeout: 5000 },
+      );
+    });
+
+    it("atualiza rascunho existente em vez de criar novo", async () => {
+      await setupEdicao();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("botao-salvar-rascunho")).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      });
+
+      const form = screen.getByTestId("form-cronograma-semanal");
+      fireEvent.submit(form);
+
+      await waitFor(
+        () => {
+          expect(
+            mock.history.patch.some((call) =>
+              call.url?.includes("/cronogramas-semanais/uuid-edicao-123/"),
+            ),
+          ).toBe(true);
+        },
+        { timeout: 5000 },
+      );
+    });
+
+    it("exibe toast de sucesso ao atualizar rascunho", async () => {
+      await setupEdicao();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("botao-salvar-rascunho")).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      });
+
+      const form = screen.getByTestId("form-cronograma-semanal");
+      fireEvent.submit(form);
+
+      await waitFor(
+        () => {
+          expect(
+            screen.getByText("Rascunho salvo com sucesso!"),
+          ).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
+    });
+  });
+
+  describe("Seção Rascunhos", () => {
+    it("não exibe seção Rascunhos quando não há rascunhos", async () => {
+      await setup();
+      expect(screen.queryByText("Rascunhos")).not.toBeInTheDocument();
+    });
+
+    it("exibe seção Rascunhos quando há rascunhos salvos", async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock.onGet("/cronogramas-semanais/rascunhos/").reply(200, {
+        results: [
+          {
+            uuid: "rascunho-uuid-1",
+            numero: "001/2025P",
+            alterado_em: "2025-04-30T10:30:00",
+          },
+        ],
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter>
+            <CadastrarCronogramaSemanal />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Rascunhos")).toBeInTheDocument();
+      });
+    });
+
+    it("exibe seção Rascunhos quando está editando rascunho existente", async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock.onGet("/cronogramas-semanais/rascunhos/").reply(200, {
+        results: [
+          {
+            uuid: "rascunho-uuid-1",
+            numero: "001/2025P",
+            alterado_em: "2025-04-30T10:30:00",
+          },
+        ],
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter initialEntries={["/?uuid=uuid-edicao-123"]}>
+            <CadastrarCronogramaSemanal />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Rascunhos")).toBeInTheDocument();
+      });
+    });
+
+    it("exibe número do rascunho e data de salvamento", async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock.onGet("/cronogramas-semanais/rascunhos/").reply(200, {
+        results: [
+          {
+            uuid: "rascunho-uuid-1",
+            numero: "001/2025P",
+            alterado_em: "2025-04-30T10:30:00",
+          },
+        ],
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter>
+            <CadastrarCronogramaSemanal />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Rascunhos")).toBeInTheDocument();
+      });
+
+      expect(screen.getByText("Cronograma #001/2025P")).toBeInTheDocument();
+      expect(screen.getByText(/Rascunho salvo em/)).toBeInTheDocument();
+    });
+
+    it("clicar no ícone de editar navega para edição", async () => {
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock.onGet("/cronogramas-semanais/rascunhos/").reply(200, {
+        results: [
+          {
+            uuid: "rascunho-uuid-1",
+            numero: "001/2025P",
+            alterado_em: "2025-04-30T10:30:00",
+          },
+        ],
+      });
+
+      await act(async () => {
+        render(
+          <MemoryRouter>
+            <CadastrarCronogramaSemanal />
+            <ToastContainer />
+          </MemoryRouter>,
+        );
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Rascunhos")).toBeInTheDocument();
+      });
+
+      const editIcon = document.querySelector(".fa-edit");
+      expect(editIcon).toBeInTheDocument();
+      const editLink = editIcon?.closest("a");
+      expect(editLink).toHaveAttribute(
+        "href",
+        "/pre-recebimento/cadastro-cronograma-semanal?uuid=rascunho-uuid-1",
       );
     });
   });
