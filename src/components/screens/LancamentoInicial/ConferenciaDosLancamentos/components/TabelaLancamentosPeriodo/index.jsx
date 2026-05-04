@@ -268,6 +268,21 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
       ?.tipos_alimentacao?.colaboradores || [];
 
+  const getTipoAlimentacaoEmeiCemeiRecreio = () =>
+    solicitacao?.recreio_nas_ferias?.unidades_participantes.find(
+      (up) => up.cei_ou_emei === "EMEI",
+    )?.tipos_alimentacao?.infantil || [];
+
+  const getTiposAlimentacaoRecreio = () => {
+    if (ehGrupoColaboradores())
+      return getTiposAlimentacaoColaboradoresRecreio();
+    if (ehRecreioEmeiDaCemei()) return getTipoAlimentacaoEmeiCemeiRecreio();
+    return (
+      solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
+        ?.tipos_alimentacao?.inscritos || []
+    );
+  };
+
   const usaEstruturaCeiComFaixaEtaria = () =>
     (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
       (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
@@ -418,11 +433,11 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     const valoresCategoriaAlimentacao = response_valores_periodos.data.filter(
       (valor) => valor.categoria_medicao === idCategoriaAlimentacao,
     );
-
+    const tiposAlimentacaoRecreio = getTiposAlimentacaoRecreio();
     const linhasTabelaAlimentacaoCEI =
       ehRecreioNasFerias() && (ehGrupoColaboradores() || ehRecreioEmeiDaCemei())
         ? formatarLinhasTabelaAlimentacaoEmeiDaCemei(
-            getTiposAlimentacaoColaboradoresRecreio(),
+            tiposAlimentacaoRecreio,
             false,
             [],
             false,
@@ -749,10 +764,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                   setTabelaDietaEnteralRows,
                 );
               } else if (ehRecreioNasFerias()) {
-                const tiposAlimentacaoRecreio = ehGrupoColaboradores()
-                  ? getTiposAlimentacaoColaboradoresRecreio()
-                  : solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
-                      ?.tipos_alimentacao?.inscritos || [];
+                const tiposAlimentacaoRecreio = getTiposAlimentacaoRecreio();
                 const tiposAlimentacaoFormatadas =
                   formatarLinhasTabelaAlimentacao(
                     tiposAlimentacaoRecreio,
