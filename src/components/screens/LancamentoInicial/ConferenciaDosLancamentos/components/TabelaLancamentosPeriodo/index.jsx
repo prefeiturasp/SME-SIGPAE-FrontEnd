@@ -269,11 +269,11 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
       ?.tipos_alimentacao?.colaboradores || [];
 
   const usaEstruturaCeiComFaixaEtaria = () =>
-    ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
-    (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-      ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo)) ||
-    ehRecreioCeiDaCemei();
-  // &&!(ehRecreioNasFerias() && ehGrupoColaboradores());
+    (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+      (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
+        ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo)) ||
+      ehRecreioCeiDaCemei()) &&
+    !(ehRecreioNasFerias() && ehGrupoColaboradores());
 
   const getFaixasEtariasRecreio = (valoresCategoria) => {
     const faixasPorUuid = new Map();
