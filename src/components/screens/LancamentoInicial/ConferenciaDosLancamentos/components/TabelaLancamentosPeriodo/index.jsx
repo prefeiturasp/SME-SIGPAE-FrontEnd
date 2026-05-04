@@ -243,11 +243,11 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     );
   };
 
-  const ehRecreioCei = () => {
-    return (
-      ehRecreioNasFerias() && ehEscolaTipoCEI({ nome: solicitacao.escola })
-    );
-  };
+  // const ehRecreioCei = () => {
+  //   return (
+  //     ehRecreioNasFerias() && ehEscolaTipoCEI({ nome: solicitacao.escola })
+  //   );
+  // };
 
   const ehRecreioCeiDaCemei = () => {
     return (
@@ -257,8 +257,12 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     );
   };
 
-  // const ehRecreioComFaixa = () => {
-  // }
+  const ehRecreioEmeiDaCemei = () => {
+    return (
+      ehRecreioCemei() &&
+      periodoGrupo?.nome_periodo_grupo === "Recreio nas Férias - 4 a 14 anos"
+    );
+  };
 
   const getTiposAlimentacaoColaboradoresRecreio = () =>
     solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
@@ -416,7 +420,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     );
 
     const linhasTabelaAlimentacaoCEI =
-      ehGrupoColaboradores() || !(ehRecreioCeiDaCemei() || ehRecreioCei())
+      ehRecreioNasFerias() && (ehGrupoColaboradores() || ehRecreioEmeiDaCemei())
         ? formatarLinhasTabelaAlimentacaoEmeiDaCemei(
             getTiposAlimentacaoColaboradoresRecreio(),
             false,
