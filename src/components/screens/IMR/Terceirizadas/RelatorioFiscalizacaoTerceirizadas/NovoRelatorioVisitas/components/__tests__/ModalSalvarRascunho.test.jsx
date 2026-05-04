@@ -14,7 +14,7 @@ describe("Testes de comportamentos componente - ModalSalvarRascunho (Novo RelatÃ
     value: "9f1c2a7e-3b44-4d91-8a6e-5c2f7b9e1a3d",
   };
 
-  const renderComponent = (show = true) =>
+  const setup = (show = true) =>
     render(
       <ModalSalvarRascunho
         show={show}
@@ -30,7 +30,7 @@ describe("Testes de comportamentos componente - ModalSalvarRascunho (Novo RelatÃ
   });
 
   it("deve renderizar o tÃ­tulo e o texto corretamente quando show = true", () => {
-    renderComponent(true);
+    setup(true);
 
     expect(screen.getByText("Salvar Rascunho")).toBeInTheDocument();
 
@@ -42,13 +42,13 @@ describe("Testes de comportamentos componente - ModalSalvarRascunho (Novo RelatÃ
   });
 
   it("nÃ£o deve renderizar o modal quando show = false", () => {
-    renderComponent(false);
+    setup(false);
 
     expect(screen.queryByText("Salvar Rascunho")).not.toBeInTheDocument();
   });
 
   it("deve fechar o modal ao clicar no botÃ£o de fechar", () => {
-    renderComponent(true);
+    setup(true);
 
     const botaoFechar = screen.getByRole("button", { name: /close/i });
 
@@ -58,7 +58,7 @@ describe("Testes de comportamentos componente - ModalSalvarRascunho (Novo RelatÃ
   });
 
   it("deve clicar em 'NÃ£o' e chamar handleClose", () => {
-    renderComponent(true);
+    setup(true);
 
     const botaoNao = screen.getByRole("button", { name: /NÃ£o/i });
 
@@ -71,7 +71,7 @@ describe("Testes de comportamentos componente - ModalSalvarRascunho (Novo RelatÃ
   it("deve clicar em 'Sim', chamar salvarRascunho com values e depois fechar o modal", async () => {
     salvarRascunho.mockResolvedValue();
 
-    renderComponent(true);
+    setup(true);
 
     const botaoSim = screen.getByRole("button", { name: /Sim/i });
 
