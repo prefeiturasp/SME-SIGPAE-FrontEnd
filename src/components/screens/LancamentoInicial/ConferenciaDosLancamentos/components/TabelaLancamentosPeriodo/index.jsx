@@ -237,15 +237,39 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
   const ehGrupoColaboradores = () =>
     periodoGrupo?.nome_periodo_grupo === "Colaboradores";
 
+  const ehRecreioCemei = () => {
+    return (
+      ehRecreioNasFerias() && ehEscolaTipoCEMEI({ nome: solicitacao.escola })
+    );
+  };
+
+  const ehRecreioCei = () => {
+    return (
+      ehRecreioNasFerias() && ehEscolaTipoCEI({ nome: solicitacao.escola })
+    );
+  };
+
+  const ehRecreioCeiDaCemei = () => {
+    return (
+      ehRecreioCemei() &&
+      periodoGrupo?.nome_periodo_grupo ===
+        "Recreio nas Férias - de 0 a 3 anos e 11 meses"
+    );
+  };
+
+  // const ehRecreioComFaixa = () => {
+  // }
+
   const getTiposAlimentacaoColaboradoresRecreio = () =>
     solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
       ?.tipos_alimentacao?.colaboradores || [];
 
   const usaEstruturaCeiComFaixaEtaria = () =>
-    (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
-      (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-        ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo))) &&
-    !(ehRecreioNasFerias() && ehGrupoColaboradores());
+    ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+    (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
+      ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo)) ||
+    ehRecreioCeiDaCemei();
+  // &&!(ehRecreioNasFerias() && ehGrupoColaboradores());
 
   const getFaixasEtariasRecreio = (valoresCategoria) => {
     const faixasPorUuid = new Map();
@@ -392,7 +416,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     );
 
     const linhasTabelaAlimentacaoCEI =
-      ehRecreioNasFerias() && ehGrupoColaboradores()
+      ehGrupoColaboradores() || !(ehRecreioCeiDaCemei() || ehRecreioCei())
         ? formatarLinhasTabelaAlimentacaoEmeiDaCemei(
             getTiposAlimentacaoColaboradoresRecreio(),
             false,
@@ -672,7 +696,10 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           if (
             ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
             (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-              ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo))
+              ["INTEGRAL", "PARCIAL"].includes(
+                periodoGrupo.nome_periodo_grupo,
+              )) ||
+            ehRecreioCeiDaCemei()
           ) {
             formatarLinhasTabelasCEIHelper(
               periodoGrupo,
@@ -1391,6 +1418,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           tabelaSolicitacoesAlimentacaoRows ||
           tabelaEtecAlimentacaoRows ||
           ((ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+            ehRecreioCeiDaCemei() ||
             (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
               ["INTEGRAL", "PARCIAL"].includes(
                 periodoGrupo.nome_periodo_grupo,
