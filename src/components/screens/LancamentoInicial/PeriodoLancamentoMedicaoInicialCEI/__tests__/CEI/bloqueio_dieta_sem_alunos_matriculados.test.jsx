@@ -315,7 +315,9 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
       }
     });
 
-    it("deve desabilitar todos os campos do dia 11 e validar valores de matriculados e dietas", async () => {
+    it("deve desabilitar campos de ALIMENTAÇÃO e de DIETA do dia 11 quando não existe log de matriculados", async () => {
+      // Dia 11 não possui log de matriculados (excluído do mock) → sem log em ALIMENTAÇÃO
+      // → campos de DIETA devem permanecer bloqueados mesmo com dietas_autorizadas > 0
       await awaitServices();
       const semana2Element = screen.getByText("Semana 2");
       fireEvent.click(semana2Element);
@@ -339,6 +341,7 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
       );
       expect(dieta).toHaveValue("4");
 
+      // frequencia de DIETA bloqueada: sem log de ALIMENTAÇÃO para esse dia
       await assertCampos(["frequencia"], dia, faixaDieta, 4, false);
     });
   });
