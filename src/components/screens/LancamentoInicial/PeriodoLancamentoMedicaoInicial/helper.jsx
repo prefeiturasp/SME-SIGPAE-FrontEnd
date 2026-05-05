@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, parse, isWithinInterval, isValid } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -19,6 +19,7 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
 import { ALUNOS_EMEBS, FUNDAMENTAL_EMEBS, INFANTIL_EMEBS } from "../constants";
+import { verificarMesAnteriorOuPosterior } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/validacoes";
 
 export const formatarPayloadPeriodoLancamento = (
   values,
@@ -1230,6 +1231,38 @@ export const validacaoSemana = (dia, semanaSelecionada) => {
   );
 };
 
+export const exibirCheckBox = (
+  column,
+  semanaSelecionada,
+  informacoesRecreio = {},
+) => {
+  if (informacoesRecreio?.inicio && informacoesRecreio?.fim) {
+    const { inicio, fim } = informacoesRecreio;
+    const dataInicio = parse(inicio, "dd/MM/yyyy", new Date());
+    const dataFim = parse(fim, "dd/MM/yyyy", new Date());
+    const dataColumn = parse(
+      `${column.dia}/${column.mes}/${column.ano}`,
+      "dd/MM/yyyy",
+      new Date(),
+    );
+
+    if (!isValid(dataInicio) || !isValid(dataFim) || !isValid(dataColumn)) {
+      return false;
+    }
+    if (dataInicio > dataFim) {
+      return false;
+    }
+    return isWithinInterval(dataColumn, {
+      start: dataInicio,
+      end: dataFim,
+    });
+  }
+  return !(
+    (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) ||
+    ([4, 5, 6].includes(Number(semanaSelecionada)) && Number(column.dia) < 10)
+  );
+};
+
 export const defaultValue = (
   column,
   row,
@@ -1244,13 +1277,16 @@ export const defaultValue = (
 ) => {
   let result = null;
   let valorLancamento = null;
-
   if (
     usaEstruturaCeiComFaixaEtaria &&
     solicitacao &&
     (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
       (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-        ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo)))
+        [
+          "INTEGRAL",
+          "PARCIAL",
+          "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+        ].includes(periodoGrupo.nome_periodo_grupo)))
   ) {
     valorLancamento = valoresLancamentos.find(
       (valor) =>
@@ -1283,19 +1319,29 @@ export const defaultValue = (
   if (valorLancamento) {
     result = valorLancamento.valor;
   }
-  if (
-    !solicitacao?.recreio_nas_ferias &&
-    Number(semanaSelecionada) === 1 &&
-    Number(column.dia) > 20
-  ) {
-    result = "Mês anterior";
-  }
-  if (
-    !solicitacao?.recreio_nas_ferias &&
-    [4, 5, 6].includes(Number(semanaSelecionada)) &&
-    Number(column.dia) < 10
-  ) {
-    result = "Mês posterior";
+
+  if (solicitacao?.recreio_nas_ferias) {
+    const data = `01/${solicitacao.mes}/${solicitacao.ano}`;
+    const mesAnoConsiderado = parse(data, "dd/MM/yyyy", new Date(), {
+      locale: ptBR,
+    });
+    const verificaMes = verificarMesAnteriorOuPosterior(
+      column,
+      mesAnoConsiderado,
+    );
+    if (verificaMes) {
+      result = verificaMes;
+    }
+  } else {
+    if (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) {
+      result = "Mês anterior";
+    }
+    if (
+      [4, 5, 6].includes(Number(semanaSelecionada)) &&
+      Number(column.dia) < 10
+    ) {
+      result = "Mês posterior";
+    }
   }
 
   if (form && periodoGrupo) {
@@ -1304,7 +1350,11 @@ export const defaultValue = (
       solicitacao &&
       (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
         (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-          ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo)))
+          [
+            "INTEGRAL",
+            "PARCIAL",
+            "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+          ].includes(periodoGrupo.nome_periodo_grupo)))
     ) {
       form.change(
         `${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${

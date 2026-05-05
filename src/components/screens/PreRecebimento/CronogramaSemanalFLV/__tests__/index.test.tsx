@@ -15,8 +15,6 @@ import { mockListaSimplesTerceirizadas } from "src/mocks/services/terceirizada.s
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
 import { localStorageMock } from "src/mocks/localStorageMock";
 
-import { debug } from "jest-preview";
-
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 describe("CronogramaSemanalFLV - Component", () => {
@@ -325,9 +323,6 @@ describe("CronogramaSemanalFLV - Component - Usuário Fornecedor", () => {
 
   it("exibe filtros corretos para fornecedor", async () => {
     await setupFornecedor();
-
-    debug();
-
     await waitFor(() => {
       expect(screen.getByText("Filtrar por Produto")).toBeInTheDocument();
       expect(

@@ -43,6 +43,7 @@ import {
   getSolicitacoesSuspensoesAutorizadasAsync,
   tabAlunosEmebs,
   validacaoSemana,
+  exibirCheckBox,
 } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import {
   formatarLinhasTabelaAlimentacaoCEI,
@@ -237,14 +238,51 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
   const ehGrupoColaboradores = () =>
     periodoGrupo?.nome_periodo_grupo === "Colaboradores";
 
+  const ehRecreioCemei = () => {
+    return (
+      ehRecreioNasFerias() && ehEscolaTipoCEMEI({ nome: solicitacao.escola })
+    );
+  };
+
+  const ehRecreioCeiDaCemei = () => {
+    return (
+      ehRecreioCemei() &&
+      periodoGrupo?.nome_periodo_grupo ===
+        "Recreio nas Férias - de 0 a 3 anos e 11 meses"
+    );
+  };
+
+  const ehRecreioEmeiDaCemei = () => {
+    return (
+      ehRecreioCemei() &&
+      periodoGrupo?.nome_periodo_grupo === "Recreio nas Férias - 4 a 14 anos"
+    );
+  };
+
   const getTiposAlimentacaoColaboradoresRecreio = () =>
     solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
       ?.tipos_alimentacao?.colaboradores || [];
 
+  const getTipoAlimentacaoEmeiCemeiRecreio = () =>
+    solicitacao?.recreio_nas_ferias?.unidades_participantes.find(
+      (up) => up.cei_ou_emei === "EMEI",
+    )?.tipos_alimentacao?.infantil || [];
+
+  const getTiposAlimentacaoRecreio = () => {
+    if (ehGrupoColaboradores())
+      return getTiposAlimentacaoColaboradoresRecreio();
+    if (ehRecreioEmeiDaCemei()) return getTipoAlimentacaoEmeiCemeiRecreio();
+    return (
+      solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
+        ?.tipos_alimentacao?.inscritos || []
+    );
+  };
+
   const usaEstruturaCeiComFaixaEtaria = () =>
     (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
       (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-        ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo))) &&
+        ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo)) ||
+      ehRecreioCeiDaCemei()) &&
     !(ehRecreioNasFerias() && ehGrupoColaboradores());
 
   const getFaixasEtariasRecreio = (valoresCategoria) => {
@@ -350,7 +388,10 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
         setCategoriasDeMedicao(categoriasMedicaoLocal);
       }
 
-      if (ehEscolaTipoCEI({ nome: solicitacao.escola })) {
+      if (
+        ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+        ehRecreioCeiDaCemei()
+      ) {
         categoriasMedicaoLocal = response_categorias_medicao.data.filter(
           (cat) =>
             !cat.nome.includes("SOLICITAÇÕES") && !cat.nome.includes("ENTERAL"),
@@ -390,11 +431,11 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     const valoresCategoriaAlimentacao = response_valores_periodos.data.filter(
       (valor) => valor.categoria_medicao === idCategoriaAlimentacao,
     );
-
+    const tiposAlimentacaoRecreio = getTiposAlimentacaoRecreio();
     const linhasTabelaAlimentacaoCEI =
-      ehRecreioNasFerias() && ehGrupoColaboradores()
+      ehRecreioNasFerias() && (ehGrupoColaboradores() || ehRecreioEmeiDaCemei())
         ? formatarLinhasTabelaAlimentacaoEmeiDaCemei(
-            getTiposAlimentacaoColaboradoresRecreio(),
+            tiposAlimentacaoRecreio,
             false,
             [],
             false,
@@ -672,7 +713,10 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           if (
             ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
             (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-              ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo))
+              ["INTEGRAL", "PARCIAL"].includes(
+                periodoGrupo.nome_periodo_grupo,
+              )) ||
+            ehRecreioCeiDaCemei()
           ) {
             formatarLinhasTabelasCEIHelper(
               periodoGrupo,
@@ -718,10 +762,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                   setTabelaDietaEnteralRows,
                 );
               } else if (ehRecreioNasFerias()) {
-                const tiposAlimentacaoRecreio = ehGrupoColaboradores()
-                  ? getTiposAlimentacaoColaboradoresRecreio()
-                  : solicitacao?.recreio_nas_ferias?.unidades_participantes?.[0]
-                      ?.tipos_alimentacao?.inscritos || [];
+                const tiposAlimentacaoRecreio = getTiposAlimentacaoRecreio();
                 const tiposAlimentacaoFormatadas =
                   formatarLinhasTabelaAlimentacao(
                     tiposAlimentacaoRecreio,
@@ -898,11 +939,21 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
         7 * (Number(semanaSelecionada) - 1),
       );
 
-      diasSemana = Array.from({ length: 7 }, (_, index) =>
-        format(addDays(inicioSemanaSelecionada, index), "dd"),
-      );
+      diasSemana = Array.from({ length: 7 }, (_, index) => {
+        const data = addDays(inicioSemanaSelecionada, index);
+        return {
+          dia: format(data, "dd"),
+          mes: format(data, "MM"),
+          ano: format(data, "yyyy"),
+        };
+      });
       week = weekColumns.map((column) => {
-        return { ...column, dia: diasSemana[column.position] };
+        return {
+          ...column,
+          dia: diasSemana[column.position].dia,
+          mes: diasSemana[column.position].mes,
+          ano: diasSemana[column.position].ano,
+        };
       });
       setWeekColumns(week);
       return;
@@ -1391,6 +1442,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           tabelaSolicitacoesAlimentacaoRows ||
           tabelaEtecAlimentacaoRows ||
           ((ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+            ehRecreioCeiDaCemei() ||
             (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
               ["INTEGRAL", "PARCIAL"].includes(
                 periodoGrupo.nome_periodo_grupo,
@@ -1431,7 +1483,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 categoriasDeMedicao.map((categoria, idx) => [
                   <div key={categoria.id}>
                     <b
-                      className={`pb-2 section-title ${ehEscolaTipoCEI({ nome: solicitacao.escola }) ? "com-linha" : ""}`}
+                      className={`pb-2 section-title ${ehEscolaTipoCEI({ nome: solicitacao.escola }) || ehRecreioCeiDaCemei() ? "com-linha" : ""}`}
                       data-testid={`categoria-${categoria.nome}`}
                     >
                       {categoria.nome}
@@ -1447,10 +1499,11 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                           {weekColumns.map((column) => {
                             const idBase = `ckbox_dias_semana__dia_${column.dia}__categoria_${categoria.id}__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(0, 5)}`;
                             return modoCorrecao &&
-                              !validacaoSemana(
-                                column.dia,
-                                semanaSelecionada,
-                              ) ? (
+                              exibirCheckBox(column, semanaSelecionada, {
+                                inicio:
+                                  solicitacao?.recreio_nas_ferias?.data_inicio,
+                                fim: solicitacao?.recreio_nas_ferias?.data_fim,
+                              }) ? (
                               <div
                                 className="dias-semana-tabela"
                                 key={column.dia}
