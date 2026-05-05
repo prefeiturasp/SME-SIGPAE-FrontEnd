@@ -23,7 +23,6 @@ import {
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEMEI } from "src/mocks/services/cadastroTipoAlimentacao.service/CEMEI/vinculosTipoAlimentacaoPeriodoEscolar";
 
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
@@ -169,52 +168,182 @@ describe("Teste Conferência de Lançamentos - CEMEI - Recreio nas Férias", () 
     mock.reset();
   });
 
-  it("renderiza dados iniciais", async () => {
+  it("renderiza as informações da tela", async () => {
     await setupConferencia({
       solicitacao: mockSolicitacaoRecreioCEMEI,
       periodosGruposMedicao: mockPeriodosGruposMedicaoRecreioCEMEI,
       valoresMedicao: [],
     });
 
-    preview.debug();
+    expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
+    expect(screen.getByTestId("input-mes-lancamento")).toHaveValue(
+      "Recreio nas Férias - JAN 2026",
+    );
+    expect(screen.getByText("Unidade Educacional")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Unidade Educacional")).toHaveValue(
+      "CEMEI SUZANA CAMPOS TAUIL",
+    );
+    expect(
+      screen.getByText("Progresso de validação de refeições informadas"),
+    ).toBeInTheDocument();
+    const el = screen.getByText(/status de progresso:/i);
+    expect(el).toHaveTextContent("Recebido para análise");
+    expect(
+      screen.getByText("Acompanhamento do lançamento"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Recreio nas Férias - de 0 a 3 anos e 11 meses"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Recreio nas Férias - 4 a 14 anos"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Colaboradores")).toBeInTheDocument();
+
+    expect(screen.getAllByText("Pendente de Análise")).toHaveLength(3);
+    expect(screen.getAllByText("VISUALIZAR")).toHaveLength(3);
+
+    const buttonExportarPdf = document.querySelector(
+      '[data-cy="Exportar PDF"]',
+    );
+    expect(buttonExportarPdf).toBeInTheDocument();
+    expect(buttonExportarPdf).not.toBeDisabled();
+
+    const buttonSolicitarCorrecao = document.querySelector(
+      '[data-cy="Solicitar Correção"]',
+    );
+    expect(buttonSolicitarCorrecao).toBeInTheDocument();
+    expect(buttonSolicitarCorrecao).toBeDisabled();
+
+    const buttonEnviarParaCodae = document.querySelector(
+      '[data-cy="Enviar para CODAE"]',
+    );
+    expect(buttonEnviarParaCodae).toBeInTheDocument();
+    expect(buttonEnviarParaCodae).toBeDisabled();
+
+    const buttonCienteCorrecoes = document.querySelector(
+      '[data-cy="Ciente das Correções"]',
+    );
+    expect(buttonCienteCorrecoes).toBeInTheDocument();
+    expect(buttonCienteCorrecoes).toBeDisabled();
   });
 
-  describe("Recreio nas Férias - de 0 a 3 anos e 11 meses", () => {
-    it("renderiza Participantes e faixas etárias", async () => {
-      await setupConferencia({
-        solicitacao: mockSolicitacaoRecreioCEMEI,
-        periodosGruposMedicao: mockPeriodosGruposMedicaoRecreioCEMEI,
-        valoresMedicao: mockValoresMedicoaRecreioCEIdaCEMEI,
-      });
-
-      await abrirLancamento("Recreio nas Férias - de 0 a 3 anos e 11 meses");
-      preview.debug();
+  it("renderiza Recreio nas Férias - de 0 a 3 anos e 11 meses", async () => {
+    await setupConferencia({
+      solicitacao: mockSolicitacaoRecreioCEMEI,
+      periodosGruposMedicao: mockPeriodosGruposMedicaoRecreioCEMEI,
+      valoresMedicao: mockValoresMedicoaRecreioCEIdaCEMEI,
     });
+
+    await abrirLancamento("Recreio nas Férias - de 0 a 3 anos e 11 meses");
+
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+    expect(screen.getByText("Participantes")).toBeInTheDocument();
+    expect(screen.queryByText("Matriculados")).not.toBeInTheDocument();
+    expect(screen.getAllByText("00 meses").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("01 a 03 meses").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("04 a 05 meses").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("06 meses").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("07 a 11 meses").length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText("01 ano a 03 anos e 11 meses").length,
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByText("04 anos a 06 anos").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
+
+    expect(
+      screen.getByTestId(
+        "participantes__faixa_null__dia_01__categoria_1__uuid_medicao_periodo_grupo_68f54",
+      ),
+    ).toHaveAttribute("value", "50");
+
+    expect(
+      screen.getByTestId(
+        "participantes__faixa_null__dia_02__categoria_1__uuid_medicao_periodo_grupo_68f54",
+      ),
+    ).toHaveAttribute("value", "42");
+
+    expect(
+      screen.getByTestId(
+        "frequencia__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece__dia_02__categoria_1__uuid_medicao_periodo_grupo_68f54",
+      ),
+    ).toHaveAttribute("value", "7");
   });
 
-  describe("Recreio nas Férias - 4 a 14 anos", () => {
-    it("renderiza Participantes e alimentações", async () => {
-      await setupConferencia({
-        solicitacao: mockSolicitacaoRecreioCEMEI,
-        periodosGruposMedicao: mockPeriodosGruposMedicaoRecreioCEMEI,
-        valoresMedicao: mockValoresMedicoaRecreioEMEIdaCEMEI,
-      });
-
-      await abrirLancamento("Recreio nas Férias - 4 a 14 anos");
-      preview.debug();
+  it("renderiza Recreio nas Férias - 4 a 14 anos", async () => {
+    await setupConferencia({
+      solicitacao: mockSolicitacaoRecreioCEMEI,
+      periodosGruposMedicao: mockPeriodosGruposMedicaoRecreioCEMEI,
+      valoresMedicao: mockValoresMedicoaRecreioEMEIdaCEMEI,
     });
+
+    await abrirLancamento("Recreio nas Férias - 4 a 14 anos");
+
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+    expect(screen.getByText("Participantes")).toBeInTheDocument();
+    expect(screen.queryByText("Matriculados")).not.toBeInTheDocument();
+    expect(screen.getByText("Refeição 1ª Oferta")).toBeInTheDocument();
+    expect(screen.getByText("Repetição Refeição")).toBeInTheDocument();
+    expect(screen.getByText("Sobremesa 1º Oferta")).toBeInTheDocument();
+    expect(screen.getByText("Repetição Sobremesa")).toBeInTheDocument();
+
+    expect(screen.getAllByText("Lanche 4h").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Lanche").length).toBeGreaterThan(0);
+
+    expect(
+      screen.getByTestId(
+        "participantes__dia_02__categoria_1__uuid_medicao_periodo_grupo_4ddc0",
+      ),
+    ).toHaveAttribute("value", "150");
+
+    expect(
+      screen.getByTestId(
+        "frequencia__dia_02__categoria_1__uuid_medicao_periodo_grupo_4ddc0",
+      ),
+    ).toHaveAttribute("value", "150");
+
+    expect(
+      screen.getByTestId(
+        "lanche__dia_02__categoria_1__uuid_medicao_periodo_grupo_4ddc0",
+      ),
+    ).toHaveAttribute("value", "100");
   });
 
-  describe("Colaboradores", () => {
-    it("renderiza Participantes e alimentações", async () => {
-      await setupConferencia({
-        solicitacao: mockSolicitacaoRecreioCEMEI,
-        periodosGruposMedicao: mockPeriodosGruposMedicaoRecreioCEMEI,
-        valoresMedicao: mockValoresMedicoaRecreioColaboradores,
-      });
-
-      await abrirLancamento("Colaboradores");
-      preview.debug();
+  it("renderiza Recreio nas Férias - Colaboradores", async () => {
+    await setupConferencia({
+      solicitacao: mockSolicitacaoRecreioCEMEI,
+      periodosGruposMedicao: mockPeriodosGruposMedicaoRecreioCEMEI,
+      valoresMedicao: mockValoresMedicoaRecreioColaboradores,
     });
+
+    await abrirLancamento("Colaboradores");
+
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+    expect(screen.getByText("Participantes")).toBeInTheDocument();
+    expect(screen.queryByText("Matriculados")).not.toBeInTheDocument();
+    expect(screen.getByText("Lanche 4h")).toBeInTheDocument();
+    expect(screen.getByText("Lanche")).toBeInTheDocument();
+    expect(screen.getByText("Refeição 1ª Oferta")).toBeInTheDocument();
+    expect(screen.getByText("Repetição Refeição")).toBeInTheDocument();
+    expect(screen.getByText("Sobremesa 1º Oferta")).toBeInTheDocument();
+    expect(screen.getByText("Repetição Sobremesa")).toBeInTheDocument();
+
+    expect(
+      screen.getByTestId(
+        "participantes__dia_02__categoria_1__uuid_medicao_periodo_grupo_b6c65",
+      ),
+    ).toHaveAttribute("value", "27");
+
+    expect(
+      screen.getByTestId(
+        "frequencia__dia_02__categoria_1__uuid_medicao_periodo_grupo_b6c65",
+      ),
+    ).toHaveAttribute("value", "25");
+
+    expect(
+      screen.getByTestId(
+        "lanche_4h__dia_02__categoria_1__uuid_medicao_periodo_grupo_b6c65",
+      ),
+    ).toHaveAttribute("value", "24");
   });
 });
