@@ -1,4 +1,4 @@
-import { format, parse, isWithinInterval } from "date-fns";
+import { format, parse, isWithinInterval, isValid } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -1245,6 +1245,13 @@ export const exibirCheckBox = (
       "dd/MM/yyyy",
       new Date(),
     );
+
+    if (!isValid(dataInicio) || !isValid(dataFim) || !isValid(dataColumn)) {
+      return false;
+    }
+    if (dataInicio > dataFim) {
+      return false;
+    }
     return isWithinInterval(dataColumn, {
       start: dataInicio,
       end: dataFim,

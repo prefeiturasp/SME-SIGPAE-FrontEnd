@@ -277,7 +277,7 @@ describe("Teste Conferência de Lançamentos - EMEF - Recreio nas Férias", () =
     ).toHaveAttribute("value", "10");
   });
 
-  it.only("renderiza semanas corretamente para recreio nas férias (02/01 a 15/01)", async () => {
+  it("renderiza semanas corretamente para recreio nas férias (02/01 a 15/01)", async () => {
     await setupConferencia({
       solicitacao: mockSolicitacaoRecreioEMEF,
       periodosGruposMedicao: mockPeriodosGruposMedicaoRecreioEMEF,
