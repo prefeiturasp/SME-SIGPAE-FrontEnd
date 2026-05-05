@@ -299,13 +299,31 @@ describe("desabilitarField CEI/CEMEI", () => {
   });
 
   describe("Regras dietas especias bloquedas quando não existe log de matriculados", () => {
-    it("deve desabilitar DIETA quando valorAlimentacao é undefined", () => {
+    it("deve desabilitar DIETA quando NÃO existe nenhum log de ALIMENTAÇÃO para o dia (qualquer faixa)", () => {
+      // Logs de dieta chegam antes de alimentação; sem log em alimentação, bloquear dieta
       const a = baseArgs();
 
       a.nomeCategoria = "DIETA ESPECIAL";
+      // Remove a única chave de log de ALIMENTAÇÃO para o dia
       delete a.values["matriculados__faixa_1__dia_1__categoria_1"];
 
       expect(call(a)).toBe(true);
+    });
+
+    it("não deve desabilitar DIETA quando log de ALIMENTAÇÃO existe com valor zero (todos alunos em dieta)", () => {
+      // Regra: se existe algum log de ALIMENTAÇÃO para o dia (mesmo que valor = 0),
+      // libera o lançamento de DIETA.
+      const a = baseArgs();
+
+      a.nomeCategoria = "DIETA ESPECIAL";
+      // Usa mês diferente para evitar bloqueio por "dia passado no mês atual"
+      a.mesAnoConsiderado = new Date(2023, 8, 1); // setembro 2023
+      a.mesAnoDefault = new Date(2023, 10, 1); // novembro 2023
+      // Log existe mas com valor zero (ex.: 1 aluno − 1 dieta = 0)
+      a.values["matriculados__faixa_1__dia_1__categoria_1"] = "0";
+      a.values["dietas_autorizadas__faixa_1__dia_1__categoria_1"] = "5";
+
+      expect(call(a)).toBe(false);
     });
 
     it("deve desabilitar DIETA quando valorAlimentacao é null", () => {
@@ -379,17 +397,17 @@ describe("desabilitarField CEI/CEMEI", () => {
       expect(call(a)).toBe(true);
     });
 
-    it("deve usar faixa_null quando ehRecreioNasFerias = true e bloquear DIETA quando valorAlimentacao inválido", () => {
+    it("deve bloquear DIETA em recreio quando NÃO existe nenhum log de ALIMENTAÇÃO para o dia", () => {
+      // Sem chave participantes__faixa_* para o dia → sem log de alimentação → bloqueia dieta
       const a = baseArgs();
 
       a.dia = 1;
       a.nomeCategoria = "DIETA ESPECIAL";
       a.ehRecreioNasFerias = true;
 
-      // remove chave padrão para garantir que só a nova estrutura será usada
+      // Remove a chave de matriculados (prefixo 'participantes' p/ recreio)
+      // e garante que não há nenhuma chave participantes__faixa_* para o dia
       delete a.values["matriculados__faixa_1__dia_1__categoria_1"];
-      // chave esperada com faixa_null
-      a.values["participantes__faixa_null__dia_1__categoria_1"] = 0;
 
       expect(call(a)).toBe(true);
     });
