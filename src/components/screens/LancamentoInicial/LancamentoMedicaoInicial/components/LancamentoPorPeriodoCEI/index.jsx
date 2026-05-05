@@ -631,7 +631,10 @@ export const LancamentoPorPeriodoCEI = ({
                         !usuarioEhEscolaTerceirizadaDiretor() ||
                         naoPodeFinalizar
                       }
-                      onClick={() => onClickFinalizarMedicao()}
+                      onClick={() => {
+                        setJustificativaSemLancamentos("");
+                        onClickFinalizarMedicao();
+                      }}
                     />
                   </div>
                 </div>
