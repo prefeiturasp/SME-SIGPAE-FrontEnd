@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -19,6 +19,7 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
 import { ALUNOS_EMEBS, FUNDAMENTAL_EMEBS, INFANTIL_EMEBS } from "../constants";
+import { verificarMesAnteriorOuPosterior } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/validacoes";
 
 export const formatarPayloadPeriodoLancamento = (
   values,
@@ -1286,19 +1287,29 @@ export const defaultValue = (
   if (valorLancamento) {
     result = valorLancamento.valor;
   }
-  if (
-    !solicitacao?.recreio_nas_ferias &&
-    Number(semanaSelecionada) === 1 &&
-    Number(column.dia) > 20
-  ) {
-    result = "Mês anterior";
-  }
-  if (
-    !solicitacao?.recreio_nas_ferias &&
-    [4, 5, 6].includes(Number(semanaSelecionada)) &&
-    Number(column.dia) < 10
-  ) {
-    result = "Mês posterior";
+
+  if (solicitacao?.recreio_nas_ferias) {
+    const data = `01/${solicitacao.mes}/${solicitacao.ano}`;
+    const mesAnoConsiderado = parse(data, "dd/MM/yyyy", new Date(), {
+      locale: ptBR,
+    });
+    const verificaMes = verificarMesAnteriorOuPosterior(
+      column,
+      mesAnoConsiderado,
+    );
+    if (verificaMes) {
+      result = verificaMes;
+    }
+  } else {
+    if (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) {
+      result = "Mês anterior";
+    }
+    if (
+      [4, 5, 6].includes(Number(semanaSelecionada)) &&
+      Number(column.dia) < 10
+    ) {
+      result = "Mês posterior";
+    }
   }
 
   if (form && periodoGrupo) {

@@ -938,11 +938,21 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
         7 * (Number(semanaSelecionada) - 1),
       );
 
-      diasSemana = Array.from({ length: 7 }, (_, index) =>
-        format(addDays(inicioSemanaSelecionada, index), "dd"),
-      );
+      diasSemana = Array.from({ length: 7 }, (_, index) => {
+        const data = addDays(inicioSemanaSelecionada, index);
+        return {
+          dia: format(data, "dd"),
+          mes: format(data, "MM"),
+          ano: format(data, "yyyy"),
+        };
+      });
       week = weekColumns.map((column) => {
-        return { ...column, dia: diasSemana[column.position] };
+        return {
+          ...column,
+          dia: diasSemana[column.position].dia,
+          mes: diasSemana[column.position].mes,
+          ano: diasSemana[column.position].ano,
+        };
       });
       setWeekColumns(week);
       return;
