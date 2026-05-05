@@ -1,4 +1,4 @@
-import { format, parse } from "date-fns";
+import { format, parse, isWithinInterval } from "date-fns";
 import { ptBR } from "date-fns/locale/pt-BR";
 import HTTP_STATUS from "http-status-codes";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -1228,6 +1228,31 @@ export const validacaoSemana = (dia, semanaSelecionada) => {
   return (
     (Number(semanaSelecionada) === 1 && Number(dia) > 20) ||
     ([4, 5, 6].includes(Number(semanaSelecionada)) && Number(dia) < 10)
+  );
+};
+
+export const exibirCheckBox = (
+  column,
+  semanaSelecionada,
+  informacoesRecreio = {},
+) => {
+  if (informacoesRecreio?.inicio && informacoesRecreio?.fim) {
+    const { inicio, fim } = informacoesRecreio;
+    const dataInicio = parse(inicio, "dd/MM/yyyy", new Date());
+    const dataFim = parse(fim, "dd/MM/yyyy", new Date());
+    const dataColumn = parse(
+      `${column.dia}/${column.mes}/${column.ano}`,
+      "dd/MM/yyyy",
+      new Date(),
+    );
+    return isWithinInterval(dataColumn, {
+      start: dataInicio,
+      end: dataFim,
+    });
+  }
+  return !(
+    (Number(semanaSelecionada) === 1 && Number(column.dia) > 20) ||
+    ([4, 5, 6].includes(Number(semanaSelecionada)) && Number(column.dia) < 10)
   );
 };
 

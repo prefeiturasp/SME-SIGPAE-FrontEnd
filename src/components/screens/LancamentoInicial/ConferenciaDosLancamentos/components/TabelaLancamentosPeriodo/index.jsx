@@ -43,6 +43,7 @@ import {
   getSolicitacoesSuspensoesAutorizadasAsync,
   tabAlunosEmebs,
   validacaoSemana,
+  exibirCheckBox,
 } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import {
   formatarLinhasTabelaAlimentacaoCEI,
@@ -1498,10 +1499,11 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                           {weekColumns.map((column) => {
                             const idBase = `ckbox_dias_semana__dia_${column.dia}__categoria_${categoria.id}__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(0, 5)}`;
                             return modoCorrecao &&
-                              !validacaoSemana(
-                                column.dia,
-                                semanaSelecionada,
-                              ) ? (
+                              exibirCheckBox(column, semanaSelecionada, {
+                                inicio:
+                                  solicitacao?.recreio_nas_ferias?.data_inicio,
+                                fim: solicitacao?.recreio_nas_ferias?.data_fim,
+                              }) ? (
                               <div
                                 className="dias-semana-tabela"
                                 key={column.dia}
