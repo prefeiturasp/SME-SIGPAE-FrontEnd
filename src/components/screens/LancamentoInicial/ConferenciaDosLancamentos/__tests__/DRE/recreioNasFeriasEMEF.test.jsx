@@ -24,7 +24,6 @@ import {
 import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
 import { ConferenciaDosLancamentosPage } from "src/pages/LancamentoMedicaoInicial/ConferenciaDosLancamentosPage";
 import mock from "src/services/_mock";
-import preview from "jest-preview";
 
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
@@ -285,7 +284,6 @@ describe("Teste Conferência de Lançamentos - EMEF - Recreio nas Férias", () =
     });
 
     await abrirLancamento("Recreio nas Férias");
-    preview.debug();
     expect(screen.getByText("Semana 1")).toBeInTheDocument();
     expect(screen.getByText("Semana 2")).toBeInTheDocument();
     expect(screen.getByText("Semana 3")).toBeInTheDocument();
