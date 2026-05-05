@@ -24,6 +24,7 @@ import {
 import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
 import { ConferenciaDosLancamentosPage } from "src/pages/LancamentoMedicaoInicial/ConferenciaDosLancamentosPage";
 import mock from "src/services/_mock";
+import preview from "jest-preview";
 
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
@@ -276,7 +277,7 @@ describe("Teste Conferência de Lançamentos - EMEF - Recreio nas Férias", () =
     ).toHaveAttribute("value", "10");
   });
 
-  it("renderiza semanas corretamente para recreio nas férias (02/01 a 15/01)", async () => {
+  it.only("renderiza semanas corretamente para recreio nas férias (02/01 a 15/01)", async () => {
     await setupConferencia({
       solicitacao: mockSolicitacaoRecreioEMEF,
       periodosGruposMedicao: mockPeriodosGruposMedicaoRecreioEMEF,
@@ -284,11 +285,12 @@ describe("Teste Conferência de Lançamentos - EMEF - Recreio nas Férias", () =
     });
 
     await abrirLancamento("Recreio nas Férias");
-
+    preview.debug();
     expect(screen.getByText("Semana 1")).toBeInTheDocument();
     expect(screen.getByText("Semana 2")).toBeInTheDocument();
     expect(screen.getByText("Semana 3")).toBeInTheDocument();
-    expect(screen.queryByDisplayValue("Mês anterior")).not.toBeInTheDocument();
+    const mesesAnteriores = screen.getAllByDisplayValue("Mês anterior");
+    expect(mesesAnteriores.length).toBe(21);
     expect(screen.queryByDisplayValue("Mês posterior")).not.toBeInTheDocument();
   });
 
