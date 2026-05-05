@@ -224,7 +224,9 @@ describe("Bloqueio de dietas sem log de matriculados - EMEI da CEMEI", () => {
       }
     });
 
-    it("deve desabilitar todos os campos do dia 7 e validar valores de matriculados e dietas", async () => {
+    it("deve desabilitar todos os campos do dia 7 quando não existe log de matriculados", async () => {
+      // Dia 7 não possui log de matriculados (filtrado do mock) → sem log em ALIMENTAÇÃO
+      // → campos de DIETA devem permanecer bloqueados mesmo com dietas_autorizadas > 0
       const semana2Element = screen.getByText("Semana 2");
       fireEvent.click(semana2Element);
 

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import { Field, Form } from "react-final-form";
 import { FormApi } from "final-form";
-import moment from "moment";
 
 import {
   FICHA_RECEBIMENTO,
@@ -316,7 +315,7 @@ export default () => {
     const payloadBase: Partial<FichaRecebimentoPayload> = {
       etapa: values.etapa,
       data_entrega: values.data_entrega
-        ? moment(values.data_entrega, "DD/MM/YYYY").format("YYYY-MM-DD")
+        ? converterDDMMYYYYparaYYYYMMDD(values.data_entrega)
         : undefined,
       documentos_recebimento: values.documentos_recebimento?.map(
         (x: DocumentoFicha, key: number) =>

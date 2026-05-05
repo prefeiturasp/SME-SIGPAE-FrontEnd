@@ -242,17 +242,20 @@ export const desabilitarField = (
         ? "numero_de_alunos"
         : "matriculados";
 
-    const faixa = ehRecreioNasFerias ? null : uuidFaixaEtaria;
-
-    const alunosDoDia =
+    // Bloquear DIETA apenas se NÃO existe nenhum log de ALIMENTAÇÃO para esse dia
+    // (independente da faixa etária). Logs de dieta chegam antes de alimentação.
+    const temLogAlimentacaoNoDia =
       ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation
-        ? `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`
-        : `${prefixo}__faixa_${faixa}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
-    const valorAlimentacao = values[alunosDoDia];
-    if (
-      [undefined, null, ""].includes(valorAlimentacao) ||
-      Number(valorAlimentacao) === 0
-    ) {
+        ? `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}` in
+          values
+        : Object.keys(values).some(
+            (key) =>
+              key.startsWith(`${prefixo}__faixa_`) &&
+              key.includes(
+                `__dia_${dia}__categoria_${categoriaAlimentacao?.id}`,
+              ),
+          );
+    if (!temLogAlimentacaoNoDia) {
       return true;
     }
   }
@@ -574,7 +577,11 @@ export const desabilitarField = (
       Number(
         values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
       ) === 0 ||
-      Number(values[`${prefixo}__dia_${dia}__categoria_${categoria}`]) === 0
+      // Bloquear se valor é nulo/vazio (sem alunos) ou zero em categoria não-DIETA
+      // '0' (string) em DIETA significa que todos os alunos têm dieta especial → habilitar
+      (Number(values[`${prefixo}__dia_${dia}__categoria_${categoria}`]) === 0 &&
+        (values[`${prefixo}__dia_${dia}__categoria_${categoria}`] !== "0" ||
+          !nomeCategoria.includes("DIETA")))
     ) {
       return true;
     } else if (rowName === "frequencia") {
@@ -650,11 +657,17 @@ export const desabilitarField = (
           `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
         ],
       ) === 0 ||
-      Number(
+      // Bloquear se valor é nulo/vazio (sem alunos) ou zero em categoria não-DIETA
+      // '0' (string) em DIETA significa que todos os alunos têm dieta especial → habilitar
+      (Number(
         values[
           `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
         ],
-      ) === 0
+      ) === 0 &&
+        (values[
+          `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+        ] !== "0" ||
+          !nomeCategoria.includes("DIETA")))
     ) {
       return true;
     } else if (rowName === "frequencia") {
