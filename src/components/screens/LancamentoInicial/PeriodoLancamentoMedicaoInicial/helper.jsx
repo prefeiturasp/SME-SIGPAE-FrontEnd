@@ -1244,13 +1244,16 @@ export const defaultValue = (
 ) => {
   let result = null;
   let valorLancamento = null;
-
   if (
     usaEstruturaCeiComFaixaEtaria &&
     solicitacao &&
     (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
       (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-        ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo)))
+        [
+          "INTEGRAL",
+          "PARCIAL",
+          "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+        ].includes(periodoGrupo.nome_periodo_grupo)))
   ) {
     valorLancamento = valoresLancamentos.find(
       (valor) =>
@@ -1304,7 +1307,11 @@ export const defaultValue = (
       solicitacao &&
       (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
         (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-          ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo)))
+          [
+            "INTEGRAL",
+            "PARCIAL",
+            "Recreio nas Férias - de 0 a 3 anos e 11 meses",
+          ].includes(periodoGrupo.nome_periodo_grupo)))
     ) {
       form.change(
         `${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${

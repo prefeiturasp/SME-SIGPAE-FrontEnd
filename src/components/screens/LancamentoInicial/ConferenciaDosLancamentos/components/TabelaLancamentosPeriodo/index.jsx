@@ -243,12 +243,6 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     );
   };
 
-  // const ehRecreioCei = () => {
-  //   return (
-  //     ehRecreioNasFerias() && ehEscolaTipoCEI({ nome: solicitacao.escola })
-  //   );
-  // };
-
   const ehRecreioCeiDaCemei = () => {
     return (
       ehRecreioCemei() &&
@@ -393,7 +387,10 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
         setCategoriasDeMedicao(categoriasMedicaoLocal);
       }
 
-      if (ehEscolaTipoCEI({ nome: solicitacao.escola })) {
+      if (
+        ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+        ehRecreioCeiDaCemei()
+      ) {
         categoriasMedicaoLocal = response_categorias_medicao.data.filter(
           (cat) =>
             !cat.nome.includes("SOLICITAÇÕES") && !cat.nome.includes("ENTERAL"),
@@ -1475,7 +1472,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 categoriasDeMedicao.map((categoria, idx) => [
                   <div key={categoria.id}>
                     <b
-                      className={`pb-2 section-title ${ehEscolaTipoCEI({ nome: solicitacao.escola }) ? "com-linha" : ""}`}
+                      className={`pb-2 section-title ${ehEscolaTipoCEI({ nome: solicitacao.escola }) || ehRecreioCeiDaCemei() ? "com-linha" : ""}`}
                       data-testid={`categoria-${categoria.nome}`}
                     >
                       {categoria.nome}
