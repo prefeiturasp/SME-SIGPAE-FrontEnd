@@ -30,6 +30,7 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
     tipoSolicitacao,
     loadSolicitacao,
     uuid,
+    exibirAlterar,
   } = props;
 
   const onSubmit = async (values) => {
@@ -61,28 +62,40 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
         {({ handleSubmit, submitting }) => (
           <form onSubmit={handleSubmit}>
             <Modal.Header closeButton>
-              <Modal.Title>Cancelar ou Alterar a Solicitação</Modal.Title>
+              <Modal.Title>
+                {exibirAlterar
+                  ? "Cancelar ou Alterar a Solicitação"
+                  : "Cancelar a Solicitação"}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <div className="row">
                 <div className="col-12">
                   <p className="label--red">
                     {solicitacao && mensagemCancelamento(solicitacao.status)}
-                    Deseja seguir em frente com a alteração ou cancelamento?
+                    {exibirAlterar
+                      ? "Deseja seguir em frente com a alteração ou cancelamento?"
+                      : "Deseja seguir em frente com o cancelamento?"}
                   </p>
                 </div>
               </div>
               <p>
-                Selecione a(s) data(s) para solicitar o cancelamento ou
-                alteração:
+                {exibirAlterar
+                  ? "Selecione a(s) data(s) para solicitar o cancelamento ou alteração:"
+                  : "Selecione a(s) data(s) para solicitar o cancelamento:"}
               </p>
               <p>
                 Motivo: <strong>{solicitacao.motivo.nome}</strong>
               </p>
-              {solicitacao.quantidades_periodo.map(
-                (quantidade_periodo, key) => {
+              {solicitacao.quantidades_periodo
+                .filter(
+                  (quantidade_periodo) =>
+                    !quantidade_periodo.encerrado_a_partir_de &&
+                    !quantidade_periodo.cancelado,
+                )
+                .map((quantidade_periodo, key) => {
                   return [
-                    <div key={key} className="row fw-bold">
+                    <div key={key} className="row fw-bold color-black">
                       <div className="col-1">De</div>
                       <div className="col-1">Até</div>
                       {solicitacao.motivo.nome !== "ETEC" && (
@@ -150,22 +163,26 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
                     </div>,
                     <hr key={"hr" + key} />,
                   ];
-                },
-              )}
-              <div className="d-flex align-items-center ms-3 mt-3">
-                <div className="me-3 text-nowrap">Encerrar a partir de:</div>
-                <div style={{ width: "170px" }}>
-                  <Field
-                    component={InputComData}
-                    name="encerrar_a_partir_de"
-                    required
-                    validate={required}
-                    minDate={dateDelta(1)}
-                    maxDate={getDataObj(solicitacao.data_final)}
-                    dataTestId="encerrar-a-partir-de-div"
-                  />
+                })}
+              {exibirAlterar && (
+                <div className="d-flex align-items-center ms-2 mt-3 color-black">
+                  <div className="me-3 text-nowrap">
+                    <span className="color-red fw-bold">*</span> Encerrar a
+                    partir de:
+                  </div>
+                  <div style={{ width: "170px" }}>
+                    <Field
+                      component={InputComData}
+                      name="encerrado_a_partir_de"
+                      required
+                      validate={required}
+                      minDate={dateDelta(1)}
+                      maxDate={getDataObj(solicitacao.data_final)}
+                      dataTestId="encerrar-a-partir-de-div"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="row mt-3">
                 <Field
                   component={TextArea}

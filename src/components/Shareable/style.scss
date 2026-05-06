@@ -37,6 +37,14 @@ textarea {
   min-height: 70vh;
 }
 
+.color-black {
+  color: $blackInput;
+}
+
+.color-red {
+  color: $red;
+}
+
 .dashboard-card-title {
   input.input-search {
     font-size: 14px;
@@ -52,9 +60,6 @@ textarea {
       color: $grayLight;
       padding-right: 5px;
     }
-  }
-  .color-black {
-    color: $blackInput;
   }
   i.fa-search {
     font-size: 20px;
@@ -214,8 +219,11 @@ div.caption-choices {
   white-space: nowrap;
   vertical-align: baseline;
   border-radius: 0.25rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
   .id-of-solicitation {
     font-weight: bold;
     font-size: 34px;
