@@ -17,6 +17,15 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
+jest.mock("src/components/Shareable/DatePicker", () => ({
+  InputComData: ({ input, label, dataTestId }) => (
+    <div data-testid={dataTestId}>
+      {label && <label>{label}</label>}
+      <input {...input} />
+    </div>
+  ),
+}));
+
 describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão Escola", () => {
   beforeEach(async () => {
     mock
@@ -96,28 +105,32 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
   });
 
   it("exibe modal cancela solicitação", async () => {
-    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    const botaoCancelar = screen
+      .getByText("Cancelar/Alterar")
+      .closest("button");
     fireEvent.click(botaoCancelar);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação"),
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
-          "Esta solicitação está aguardando validação pela DRE. Deseja seguir em frente com o cancelamento?",
+          "Esta solicitação está aguardando validação pela DRE. Deseja seguir em frente com a alteração ou cancelamento?",
         ),
       ).toBeInTheDocument();
     });
   });
 
   it("fecha modal cancela solicitação", async () => {
-    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    const botaoCancelar = screen
+      .getByText("Cancelar/Alterar")
+      .closest("button");
     fireEvent.click(botaoCancelar);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação"),
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
       ).toBeInTheDocument();
     });
 
@@ -126,23 +139,92 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação"),
+        screen.queryByText("Cancelar ou Alterar a Solicitação"),
       ).not.toBeInTheDocument();
     });
   });
 
-  it("cancela solicitação", async () => {
-    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+  it("exibe campo 'Encerrar a partir de' na modal de cancelamento/alteração", async () => {
+    const botaoCancelar = screen
+      .getByText("Cancelar/Alterar")
+      .closest("button");
     fireEvent.click(botaoCancelar);
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cancelamento de Solicitação"),
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId("encerrar-a-partir-de-div")).toBeInTheDocument();
+    expect(screen.getByText("Encerrar a partir de:")).toBeInTheDocument();
+  });
+
+  it("exibe novo texto de seleção de datas na modal", async () => {
+    const botaoCancelar = screen
+      .getByText("Cancelar/Alterar")
+      .closest("button");
+    fireEvent.click(botaoCancelar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Selecione a(s) data(s) para solicitar o cancelamento ou alteração:",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("não envia formulário sem preencher 'Encerrar a partir de'", async () => {
+    const botaoCancelar = screen
+      .getByText("Cancelar/Alterar")
+      .closest("button");
+    fireEvent.click(botaoCancelar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
       ).toBeInTheDocument();
     });
 
     const input = screen.getByTestId("data-cancelamento-continuo-0");
     fireEvent.click(input);
+
+    const textarea = screen.getByTestId("textarea-justificativa");
+    fireEvent.change(textarea, {
+      target: { value: "justificativa de teste" },
+    });
+
+    const botaoSim = screen.getByText("Sim").closest("button");
+    fireEvent.click(botaoSim);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("cancela solicitação", async () => {
+    const botaoCancelar = screen
+      .getByText("Cancelar/Alterar")
+      .closest("button");
+    fireEvent.click(botaoCancelar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
+      ).toBeInTheDocument();
+    });
+
+    const input = screen.getByTestId("data-cancelamento-continuo-0");
+    fireEvent.click(input);
+
+    const divEncerrar = screen.getByTestId("encerrar-a-partir-de-div");
+    const inputEncerrar = divEncerrar.querySelector("input");
+    fireEvent.change(inputEncerrar, {
+      target: { value: "07/05/2026" },
+    });
 
     const textarea = screen.getByTestId("textarea-justificativa");
     fireEvent.change(textarea, {
@@ -160,11 +242,11 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Cancelamento de Solicitação"),
+        screen.queryByText("Cancelar ou Alterar a Solicitação"),
       ).not.toBeInTheDocument();
     });
 
-    expect(screen.queryByText("Cancelar")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cancelar/Alterar")).not.toBeInTheDocument();
 
     expect(screen.getByText("Escola cancelou")).toBeInTheDocument();
     expect(screen.getByText("Histórico de cancelamento")).toBeInTheDocument();
