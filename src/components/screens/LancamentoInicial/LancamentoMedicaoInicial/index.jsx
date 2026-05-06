@@ -603,7 +603,7 @@ export default () => {
 
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
         escola.uuid,
-        { ano: dadosPeriodoInicial.ano },
+        { ano: dadosPeriodoInicial.ano, mes: dadosPeriodoInicial.mes },
       );
       setPeriodosEscolaSimples(response_vinculos.data.results);
 
@@ -798,7 +798,7 @@ export default () => {
       );
       const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
         escolaInstituicao.uuid,
-        { ano },
+        { ano, mes },
       );
       setPeriodosEscolaSimples(response_vinculos.data.results);
       await getPeriodosEscolaCemeiComAlunosEmeiAsync(
