@@ -75,7 +75,7 @@ export const Relatorio = ({ ...props }) => {
 
   const getSolicitacaoAsync = async (
     uuid_ = uuid,
-    tipoSolicitacao_ = tipoSolicitacao
+    tipoSolicitacao_ = tipoSolicitacao,
   ) => {
     setLoading(true);
     const response = await getInclusaoDeAlimentacao(uuid_, tipoSolicitacao_);
@@ -84,7 +84,7 @@ export const Relatorio = ({ ...props }) => {
       setPrazoMensagem(prazoDoPedidoMensagem(response.data.prioridade));
     } else {
       setErro(
-        "Erro ao carregar Inclusão de Alimentação. Tente novamente mais tarde."
+        "Erro ao carregar Inclusão de Alimentação. Tente novamente mais tarde.",
       );
     }
     setLoading(false);
@@ -97,14 +97,14 @@ export const Relatorio = ({ ...props }) => {
 
     if (!uuid_) {
       setErro(
-        "Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente."
+        "Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente.",
       );
       return;
     }
 
     if (!tipoSolicitacao_) {
       setErro(
-        "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente."
+        "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente.",
       );
       return;
     }
@@ -118,7 +118,7 @@ export const Relatorio = ({ ...props }) => {
     const response = await endpointAprovaSolicitacao(
       uuid,
       values.justificativa,
-      tipoSolicitacao
+      tipoSolicitacao,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess(toastAprovaMensagem);
@@ -192,8 +192,8 @@ export const Relatorio = ({ ...props }) => {
             tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEI
               ? "inclusoes-alimentacao-da-cei"
               : tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_NORMAL
-              ? "grupos-inclusao-alimentacao-normal"
-              : "inclusoes-alimentacao-continua"
+                ? "grupos-inclusao-alimentacao-normal"
+                : "inclusoes-alimentacao-continua"
           }
         />
       )}
@@ -256,10 +256,10 @@ export const Relatorio = ({ ...props }) => {
                           <div className="col-12 text-end">
                             {exibeBotaoNaoAprovar(
                               inclusaoDeAlimentacao,
-                              textoBotaoNaoAprova
+                              textoBotaoNaoAprova,
                             ) && (
                               <Botao
-                                texto={textoBotaoNaoAprova}
+                                texto={`${textoBotaoNaoAprova}${ehEscolaEInclusaoContinua() ? "/Alterar" : ""}`}
                                 className="ms-3"
                                 onClick={() => {
                                   setRespostaSimNao("Não");
@@ -272,7 +272,7 @@ export const Relatorio = ({ ...props }) => {
                             {exibeBotaoAprovar(
                               inclusaoDeAlimentacao,
                               visao,
-                              textoBotaoAprova
+                              textoBotaoAprova,
                             ) && (
                               <Botao
                                 texto={textoBotaoAprova}
@@ -281,11 +281,11 @@ export const Relatorio = ({ ...props }) => {
                                   visao === DRE
                                     ? onSubmit(values)
                                     : exibirModalAutorizacaoAposQuestionamento(
-                                        inclusaoDeAlimentacao,
-                                        visao
-                                      )
-                                    ? setShowAutorizarModal(true)
-                                    : setShowModalCodaeAutorizar(true)
+                                          inclusaoDeAlimentacao,
+                                          visao,
+                                        )
+                                      ? setShowAutorizarModal(true)
+                                      : setShowModalCodaeAutorizar(true)
                                 }
                                 disabled={submitting}
                                 style={BUTTON_STYLE.GREEN}
@@ -295,7 +295,7 @@ export const Relatorio = ({ ...props }) => {
                             {exibirBotaoQuestionamento(
                               inclusaoDeAlimentacao,
                               visao,
-                              tipoPerfil
+                              tipoPerfil,
                             ) && (
                               <>
                                 {inclusaoDeAlimentacao.status ===
@@ -335,7 +335,7 @@ export const Relatorio = ({ ...props }) => {
                             )}
                             {exibirBotaoMarcarConferencia(
                               inclusaoDeAlimentacao,
-                              visao
+                              visao,
                             ) && (
                               <div className="form-group float-end mt-4">
                                 {inclusaoDeAlimentacao.terceirizada_conferiu_gestao ? (

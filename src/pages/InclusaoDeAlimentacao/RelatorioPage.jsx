@@ -1,30 +1,26 @@
+import HTTP_STATUS from "http-status-codes";
+import { useEffect, useState } from "react";
 import { Relatorio } from "src/components/InclusaoDeAlimentacao/Relatorio";
+import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import { ModalCancelarInclusaoAlimentacao } from "src/components/Shareable/ModalCancelarInclusaoAlimentacao";
 import { ModalCODAEAutoriza } from "src/components/Shareable/ModalCODAEAutoriza";
-import HTTP_STATUS from "http-status-codes";
-import React, { useEffect, useState } from "react";
+import { ModalCODAEQuestiona } from "src/components/Shareable/ModalCODAEQuestiona";
+import { ModalNaoValidarSolicitacao } from "src/components/Shareable/ModalNaoValidarSolicitacaoReduxForm";
+import ModalNegarSolicitacao from "src/components/Shareable/ModalNegarSolicitacao";
+import { ModalTerceirizadaRespondeQuestionamento } from "src/components/Shareable/ModalTerceirizadaRespondeQuestionamento";
+import Page from "src/components/Shareable/Page/Page";
+import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "src/configs/constants";
+import { HOME } from "src/constants/config";
 import {
-  // CODAE
   codaeAutorizarSolicitacaoDeInclusaoDeAlimentacao,
   codaeNegarSolicitacaoDeInclusaoDeAlimentacao,
   codaeQuestionarSolicitacaoDeInclusaoDeAlimentacao,
   dreReprovarSolicitacaoDeInclusaoDeAlimentacao,
-  // DRE
   dreValidarSolicitacaoDeInclusaoDeAlimentacao,
-  // escola
   escolaCancelarSolicitacaoDeInclusaoDeAlimentacao,
-  // terceirizada
   terceirizadaResponderQuestionamentoDeInclusaoDeAlimentacao,
 } from "src/services/inclusaoDeAlimentacao";
 import { getMotivosDREnaoValida } from "src/services/relatorios";
-import Breadcrumb from "../../components/Shareable/Breadcrumb";
-import { ModalCODAEQuestiona } from "../../components/Shareable/ModalCODAEQuestiona";
-import { ModalNaoValidarSolicitacao } from "../../components/Shareable/ModalNaoValidarSolicitacaoReduxForm";
-import ModalNegarSolicitacao from "../../components/Shareable/ModalNegarSolicitacao";
-import { ModalTerceirizadaRespondeQuestionamento } from "../../components/Shareable/ModalTerceirizadaRespondeQuestionamento";
-import Page from "../../components/Shareable/Page/Page";
-import { CODAE, DRE, ESCOLA, TERCEIRIZADA } from "../../configs/constants";
-import { HOME } from "../../constants/config";
 
 export const RelatorioBase = ({ ...props }) => {
   const [motivosDREnaoValida, setMotivosDREnaoValida] = useState();
