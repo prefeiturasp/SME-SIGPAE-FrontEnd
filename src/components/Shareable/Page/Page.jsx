@@ -81,8 +81,8 @@ export const Page = ({ ...props }) => {
   };
 
   const mostrarModalCestaBasica = () => {
-    let dataInicial = new Date("2025-11-03T00:00:00");
-    let dataFinal = new Date("2025-12-06T00:00:00");
+    let dataInicial = new Date("2026-06-01T00:00:00");
+    let dataFinal = new Date("2026-06-30T00:00:00");
     let now = new Date();
 
     if (!ENVIRONMENT.includes("production")) {
