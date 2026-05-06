@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { mockInclusaoContinuaCancelada } from "src/mocks/InclusaoAlimentacao/mockInclusaoContinuaCancelada";
+import { mockInclusaoContinuaAlterada } from "src/mocks/InclusaoAlimentacao/mockInclusaoContinuaAlterada";
 import { mockInclusaoContinuaPrazoLimite } from "src/mocks/InclusaoAlimentacao/mockInclusaoContinuaPrazoLimite";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
@@ -253,5 +254,162 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
     expect(
       screen.getByText("MANHA - Lanche - 100 - justificativa: xablau"),
     ).toBeInTheDocument();
+  });
+
+  it("exibe 'Encerramento previsto para' quando encerrado_a_partir_de está preenchido", async () => {
+    mock
+      .onGet(
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
+      )
+      .replyOnce(200, mockInclusaoContinuaAlterada);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+        </MemoryRouter>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Encerramento previsto para:/),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/31\/10\/2025/)).toBeInTheDocument();
+    });
+  });
+});
+
+describe("HistoricoAlteracao - Inclusão Contínua - Visão Escola", () => {
+  beforeEach(async () => {
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
+    mock
+      .onGet(
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
+      )
+      .replyOnce(200, mockInclusaoContinuaAlterada);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+
+    const search = `?uuid=a64f5054-873c-46bc-aefa-43966029a1a4&ehInclusaoContinua=true&tipoSolicitacao=solicitacao-continua`;
+    window.history.pushState({}, "", search);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("exibe seção 'Histórico de alteração' quando há encerrado_a_partir_de", async () => {
+    await waitFor(() => {
+      expect(screen.getByText("Histórico de alteração")).toBeInTheDocument();
+    });
+  });
+
+  it("exibe os dois logs de alteração com data e descrição", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText(/07\/10\/2025 15:00:08 - Escola alterou a data fim/),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/07\/10\/2025 15:00:18 - Escola alterou a data fim/),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("exibe linha MANHA com encerramento previsto", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /MANHA - Lanche - 100 - Encerramento previsto para: 31\/10\/2025/,
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("exibe linha TARDE com encerramento previsto", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /TARDE - Lanche - 100 - Encerramento previsto para: 15\/11\/2025/,
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("exibe as justificativas de cada alteração", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "O projeto não será mais ofertado no período da manhã.",
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Encerramento do projeto no período da tarde."),
+      ).toBeInTheDocument();
+    });
+  });
+});
+
+describe("HistoricoAlteracao ausente - Inclusão Contínua sem encerrado_a_partir_de", () => {
+  it("não exibe 'Histórico de alteração' quando não há encerrado_a_partir_de", async () => {
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
+    mock
+      .onGet(
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
+      )
+      .replyOnce(200, mockInclusaoContinuaPrazoLimite);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+
+    window.history.pushState(
+      {},
+      "",
+      `?uuid=a64f5054-873c-46bc-aefa-43966029a1a4&ehInclusaoContinua=true&tipoSolicitacao=solicitacao-continua`,
+    );
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+        </MemoryRouter>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Histórico de alteração"),
+      ).not.toBeInTheDocument();
+    });
   });
 });
