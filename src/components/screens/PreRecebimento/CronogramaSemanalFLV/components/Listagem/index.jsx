@@ -10,6 +10,7 @@ import { Tooltip } from "antd";
 import { formataNome } from "./helpers";
 import {
   PRE_RECEBIMENTO,
+  ALTERAR_CRONOGRAMA_SEMANAL,
   DETALHE_CRONOGRAMA_SEMANAL,
   CADASTRO_CRONOGRAMA_SEMANAL,
 } from "src/configs/constants";
@@ -92,22 +93,35 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
                       </span>
                     </NavLink>
                   ) : (
-                    <NavLink
-                      className="float-start"
-                      to={`/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
-                    >
-                      <span className="link-acoes green">
-                        {ehFornecedor &&
-                        cronograma.status === "Enviado ao Fornecedor" ? (
-                          <i
-                            className="fas fa-file-signature"
-                            title="Assinar"
-                          />
-                        ) : (
-                          <i className="fas fa-eye" title="Detalhar" />
+                    <>
+                      <NavLink
+                        className="float-start"
+                        to={`/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
+                      >
+                        <span className="link-acoes green">
+                          {ehFornecedor &&
+                          cronograma.status === "Enviado ao Fornecedor" ? (
+                            <i
+                              className="fas fa-file-signature"
+                              title="Assinar"
+                            />
+                          ) : (
+                            <i className="fas fa-eye" title="Detalhar" />
+                          )}
+                        </span>
+                      </NavLink>
+                      {!ehFornecedor &&
+                        cronograma.status === "Fornecedor Ciente" && (
+                          <NavLink
+                            className="float-start ms-1"
+                            to={`/${PRE_RECEBIMENTO}/${ALTERAR_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
+                          >
+                            <span className="link-acoes laranja">
+                              <i className="fas fa-edit" title="Editar" />
+                            </span>
+                          </NavLink>
                         )}
-                      </span>
-                    </NavLink>
+                    </>
                   )}
                 </div>
               </div>
