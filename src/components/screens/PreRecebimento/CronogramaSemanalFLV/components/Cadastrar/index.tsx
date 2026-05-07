@@ -502,52 +502,24 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
         ?.abreviacao ||
       "";
 
-    if (edicao) {
-      const quantidadeEstimada = calcularQuantidadeEstimada(programacoes);
-
-      return (
-        <div className="row justify-content-end">
-          <div className="col-auto texto-alimento-faltante">
-            Quantidade estimada{" "}
-            <b className="mensagem-verde">
-              {formataMilharDecimal(quantidadeEstimada?.toString())} {unidade}
-            </b>
-            {diferenca !== 0 && (
-              <>
-                {". "}
-                <b className="mensagem-laranja">
-                  Diferença de {formataMilharDecimal((-diferenca)?.toString())}{" "}
-                  {unidade}
-                </b>
-              </>
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    const textoPadrao = (
-      <div>
-        Faltam
-        <span className="fw-bold">
-          &nbsp;
-          {formataMilharDecimal(Math.abs(diferenca)?.toString())}
-          &nbsp;
-        </span>
-        para programar
-      </div>
-    );
-
-    const textoQuantidadeMaior = <div>Quantidade maior que a prevista</div>;
+    const quantidadeEstimada = calcularQuantidadeEstimada(programacoes);
 
     return (
-      <div className="row">
-        <div
-          className={`col-12 texto-alimento-faltante ${
-            diferenca === 0 ? "mensagem-verde" : "mensagem-vermelho"
-          }`}
-        >
-          {diferenca < 0 ? textoQuantidadeMaior : textoPadrao}
+      <div className="row justify-content-end">
+        <div className="col-auto texto-alimento-faltante">
+          Quantidade estimada{" "}
+          <b className="mensagem-verde">
+            {formataMilharDecimal(quantidadeEstimada?.toString())} {unidade}
+          </b>
+          {diferenca !== 0 && (
+            <>
+              {". "}
+              <b className="mensagem-laranja">
+                Diferença de {formataMilharDecimal((-diferenca)?.toString())}{" "}
+                {unidade}
+              </b>
+            </>
+          )}
         </div>
       </div>
     );
@@ -558,11 +530,9 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       return false;
     }
 
-    if (!edicao) {
-      const diferenca = calcularDiferenca(values.programacoes);
-      if (diferenca !== 0) {
-        return false;
-      }
+    const diferenca = calcularDiferenca(values.programacoes);
+    if (diferenca !== 0) {
+      return false;
     }
 
     return true;
