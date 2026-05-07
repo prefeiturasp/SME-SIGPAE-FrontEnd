@@ -24,6 +24,7 @@ import {
 import {
   getPeriodosInclusaoContinua,
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
+  getSolicitacoesInclusoesAutorizadasEscola,
   getSolicitacoesKitLanchesAutorizadasEscola,
   getMatriculadosPeriodo,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
@@ -90,6 +91,8 @@ export const LancamentoPorPeriodoCEI = ({
   const [showModalEnviarCorrecao, setShowModalEnviarCorrecao] = useState(false);
   const [desabilitaSim, setDesabilitaSim] = useState(false);
   const [periodosInclusaoContinua, setPeriodosInclusaoContinua] =
+    useState(undefined);
+  const [inclusoesAutorizadasPP, setInclusoesAutorizadasPP] =
     useState(undefined);
   const [
     solicitacoesKitLanchesAutorizadas,
@@ -278,6 +281,11 @@ export const LancamentoPorPeriodoCEI = ({
     });
     if (response.status === HTTP_STATUS.OK) {
       setPeriodosInclusaoContinua(response.data.periodos);
+      if (response.data.periodos) {
+        await getInclusoesAutorizadasPPAsync(
+          Object.keys(response.data.periodos),
+        );
+      }
     } else {
       setErroAPI(
         "Erro ao carregar períodos de inclusão contínua. Tente novamente mais tarde.",
@@ -327,6 +335,23 @@ export const LancamentoPorPeriodoCEI = ({
         }
       }
     };
+
+  const getInclusoesAutorizadasPPAsync = async (periodosChaves) => {
+    if (!ehEscolaTipoCEMEI(escolaInstituicao) || !periodosChaves) {
+      return;
+    }
+    const params = {};
+    params["escola_uuid"] = escolaInstituicao.uuid;
+    params["tipo_solicitacao"] = "Inclusão de";
+    params["mes"] = mes;
+    params["ano"] = ano;
+    params["periodos_escolares"] = periodosChaves;
+    params["tipo_doc"] = "INC_ALIMENTA_CONTINUA";
+    const response = await getSolicitacoesInclusoesAutorizadasEscola(params);
+    if (response.status === HTTP_STATUS.OK) {
+      setInclusoesAutorizadasPP(response.data.results);
+    }
+  };
 
   useEffect(() => {
     if (ehEscolaTipoCEMEI(escolaInstituicao)) {
@@ -395,9 +420,36 @@ export const LancamentoPorPeriodoCEI = ({
       }
     });
 
-    return removeObjetosDuplicados(tiposAlimentacao, "nome").filter(
+    tiposAlimentacao = removeObjetosDuplicados(tiposAlimentacao, "nome").filter(
       (alimentacao) => alimentacao.nome !== "Lanche Emergencial",
     );
+
+    if (inclusoesAutorizadasPP?.length > 0) {
+      const tiposNaInclusao = new Set();
+      inclusoesAutorizadasPP.forEach((inclusao) => {
+        inclusao.alimentacoes.split(", ").forEach((ali) => {
+          if (!tiposNaInclusao.has(ali)) {
+            tiposNaInclusao.add(ali);
+          }
+        });
+      });
+      tiposNaInclusao.forEach((nomeOriginal) => {
+        const nomeExibicao = {
+          lanche_4h: "Lanche 4h",
+          lanche: "Lanche",
+          refeicao: "Refeição",
+          sobremesa: "Sobremesa",
+        }[nomeOriginal];
+        if (
+          nomeExibicao &&
+          !tiposAlimentacao.find((t) => t.nome === nomeExibicao)
+        ) {
+          tiposAlimentacao.push({ nome: nomeExibicao, uuid: null });
+        }
+      });
+    }
+
+    return tiposAlimentacao;
   };
 
   const renderBotaoFinalizarSemLancamentos = () => {
