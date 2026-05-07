@@ -488,16 +488,18 @@ describe("CadastrarCronogramaSemanal", () => {
       await selecionarCronograma();
 
       await waitFor(() => {
-        expect(screen.getByText(/Faltam/i)).toBeInTheDocument();
+        expect(screen.getByText(/Quantidade estimada/i)).toBeInTheDocument();
       });
 
       const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
       fireEvent.change(inputQtd, { target: { value: "1000" } });
 
       await waitFor(() => {
-        const textoFaltante = screen.getByText(/Faltam|Quantidade maior/i);
-        const elementoTexto = textoFaltante.closest(".texto-alimento-faltante");
+        const elementoTexto = document.querySelector(
+          ".texto-alimento-faltante",
+        );
         expect(elementoTexto).toBeInTheDocument();
+        expect(screen.getByText(/Diferença de/i)).toBeInTheDocument();
       });
     });
 
