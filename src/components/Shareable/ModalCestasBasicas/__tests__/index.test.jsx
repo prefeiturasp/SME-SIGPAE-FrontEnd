@@ -11,7 +11,7 @@ describe("Testes de comportamentos do componente - ModalCestasBasicas", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    jest.setSystemTime(new Date("2025-11-03T10:00:00Z"));
+    jest.setSystemTime(new Date("2026-06-01T10:00:00Z"));
     localStorage.clear();
   });
 
@@ -53,7 +53,7 @@ describe("Testes de comportamentos do componente - ModalCestasBasicas", () => {
   it("deve conter o texto informativo completo", async () => {
     await setup();
 
-    expect(screen.getByText(/03\/11\/2025/i)).toBeInTheDocument();
+    expect(screen.getByText(/01\/06\/2026/i)).toBeInTheDocument();
     expect(
       screen.getByText(/Rede Municipal de Ensino de São Paulo/i),
     ).toBeInTheDocument();
