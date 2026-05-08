@@ -654,7 +654,8 @@ export const desabilitarField = (
         ) &&
         values[chaveDietasAutorizadasNoDia] !== undefined &&
         values[chaveDietasAutorizadasNoDia] !== null &&
-        values[chaveDietasAutorizadasNoDia] !== "";
+        values[chaveDietasAutorizadasNoDia] !== "" &&
+        values[chaveDietasAutorizadasNoDia] !== "0";
 
       if (validacaoSemana(dia) || !validacaoDiaLetivoCalendario(dia)) {
         return true;
