@@ -17,6 +17,20 @@ import * as RelatoriosInclusaoDeAlimentacao from "src/pages/InclusaoDeAlimentaca
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
+import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { getDiasUteis } from "src/services/diasUteis.service";
+
+jest.mock("src/services/diasUteis.service", () => ({
+  getDiasUteis: jest.fn().mockResolvedValue({
+    status: 200,
+    data: {
+      proximos_dois_dias_uteis: "2026-05-13",
+      proximos_cinco_dias_uteis: "2026-05-15",
+    },
+  }),
+  getFeriadosAno: jest.fn(),
+  getFeriadosAnoAtualEProximo: jest.fn(),
+}));
 
 jest.mock("src/components/Shareable/DatePicker", () => ({
   InputComData: ({ input, label, dataTestId }) => (
@@ -34,6 +48,9 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
       .reply(200, mockMeusDadosEscolaEMEFPericles);
     mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
     mock
+      .onGet("/dias-uteis/")
+      .reply(200, { proximos_dois_dias_uteis: "2026-05-13" });
+    mock
       .onGet(
         "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
       )
@@ -48,22 +65,36 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
     localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    // Prevent Page's useEffect from making the getMeusDados HTTP call so that
+    // meusDados arrives synchronously through the Context.Provider below.
+    localStorage.setItem("meusDados", "true");
+
+    getDiasUteis.mockClear();
 
     const search = `?uuid=a64f5054-873c-46bc-aefa-43966029a1a4&ehInclusaoContinua=true&tipoSolicitacao=solicitacao-continua`;
     window.history.pushState({}, "", search);
 
     await act(async () => {
       render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
+        <MeusDadosContext.Provider
+          value={{
+            meusDados: mockMeusDadosEscolaEMEFPericles,
+            setMeusDados: jest.fn(),
           }}
         >
-          <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
-        </MemoryRouter>,
+          <MemoryRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+          </MemoryRouter>
+        </MeusDadosContext.Provider>,
       );
     });
+    // flush async effects (getDiasUteisAsync → setProximosDoisDiasUteis)
+    await act(async () => {});
   });
 
   it("renderiza título da página `Inclusão de Alimentação - Solicitação # A64F5`", async () => {
@@ -106,9 +137,8 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
   });
 
   it("exibe modal cancela solicitação", async () => {
-    const botaoCancelar = screen
-      .getByText("Cancelar/Alterar")
-      .closest("button");
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
     fireEvent.click(botaoCancelar);
 
     await waitFor(() => {
@@ -124,9 +154,8 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
   });
 
   it("fecha modal cancela solicitação", async () => {
-    const botaoCancelar = screen
-      .getByText("Cancelar/Alterar")
-      .closest("button");
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
     fireEvent.click(botaoCancelar);
 
     await waitFor(() => {
@@ -146,9 +175,8 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
   });
 
   it("exibe campo 'Encerrar a partir de' na modal de cancelamento/alteração", async () => {
-    const botaoCancelar = screen
-      .getByText("Cancelar/Alterar")
-      .closest("button");
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
     fireEvent.click(botaoCancelar);
 
     await waitFor(() => {
@@ -162,9 +190,8 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
   });
 
   it("exibe novo texto de seleção de datas na modal", async () => {
-    const botaoCancelar = screen
-      .getByText("Cancelar/Alterar")
-      .closest("button");
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
     fireEvent.click(botaoCancelar);
 
     await waitFor(() => {
@@ -177,9 +204,8 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
   });
 
   it("não envia formulário sem preencher 'Encerrar a partir de'", async () => {
-    const botaoCancelar = screen
-      .getByText("Cancelar/Alterar")
-      .closest("button");
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
     fireEvent.click(botaoCancelar);
 
     await waitFor(() => {
@@ -207,9 +233,8 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
   });
 
   it("cancela solicitação", async () => {
-    const botaoCancelar = screen
-      .getByText("Cancelar/Alterar")
-      .closest("button");
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
     fireEvent.click(botaoCancelar);
 
     await waitFor(() => {
@@ -247,7 +272,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
       ).not.toBeInTheDocument();
     });
 
-    expect(screen.queryByText("Cancelar/Alterar")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cancelar")).not.toBeInTheDocument();
 
     expect(screen.getByText("Escola cancelou")).toBeInTheDocument();
     expect(screen.getByText("Histórico de cancelamento")).toBeInTheDocument();
@@ -278,9 +303,9 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Encerramento previsto para:/),
-      ).toBeInTheDocument();
-      expect(screen.getByText(/31\/10\/2025/)).toBeInTheDocument();
+        screen.getAllByText(/Encerramento previsto para:/).length,
+      ).toBeGreaterThan(0);
+      expect(screen.getAllByText(/31\/10\/2025/).length).toBeGreaterThan(0);
     });
   });
 });

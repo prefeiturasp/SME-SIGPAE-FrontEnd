@@ -39,6 +39,14 @@ export const mockInclusaoContinuaAlterada = {
   logs: [
     ...mockInclusaoContinuaPrazoLimite.logs,
     {
+      status_evento_explicacao: "CODAE autorizou",
+      usuario: usuarioEscola,
+      criado_em: "01/04/2025 10:00:00",
+      descricao: "",
+      justificativa: "Autorizado pela CODAE.",
+      resposta_sim_nao: true,
+    },
+    {
       status_evento_explicacao: "Escola alterou",
       usuario: usuarioEscola,
       criado_em: "07/10/2025 15:00:08",
