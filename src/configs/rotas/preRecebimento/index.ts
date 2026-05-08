@@ -40,6 +40,7 @@ import CadastroCronogramaPage from "src/pages/PreRecebimento/CadastroCronogramaP
 import CadastroDocumentosRecebimentoPage from "src/pages/PreRecebimento/CadastroDocumentosRecebimentoPage";
 import CadastroLayoutEmbalagemPage from "src/pages/PreRecebimento/CadastroLayoutEmbalagemPage";
 import CalendarioCronogramaPage from "src/pages/PreRecebimento/CalendarioCronogramaPage";
+import CalendarioCronogramaPontoPontoPage from "src/pages/PreRecebimento/CalendarioCronogramaPontoPontoPage";
 import StatusDocumentoAprovados from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoAprovados";
 import StatusDocumentoEnviadosParaCorrecao from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoEnviadosParaCorrecao";
 import StatusDocumentoPendenteAprovacao from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoPendenteAprovacao";
@@ -322,6 +323,14 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     path: `/${constants.PRE_RECEBIMENTO}/${constants.CALENDARIO_CRONOGRAMA}`,
     component: CalendarioCronogramaPage,
     tipoUsuario: usuarioComAcessoAoCalendarioCronograma(),
+  },
+  {
+    path: `/${constants.PRE_RECEBIMENTO}/${constants.CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`,
+    component: CalendarioCronogramaPontoPontoPage,
+    tipoUsuario:
+      usuarioEhCronograma() ||
+      usuarioEhDilogQualidade() ||
+      usuarioEhCodaeDilog(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.RELATORIO_CRONOGRAMA}`,
