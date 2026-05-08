@@ -28,8 +28,10 @@ import HTTP_STATUS from "http-status-codes";
 import React, { useContext, useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import { getInclusaoDeAlimentacao } from "src/services/inclusaoDeAlimentacao";
+import { getDiasUteis } from "src/services/diasUteis.service";
 import { CorpoRelatorio } from "./componentes/CorpoRelatorio";
 import { HistoricoCancelamento } from "./componentes/HistoricoCancelamento";
+import { HistoricoAlteracao } from "./componentes/HistoricoAlteracao";
 import { ModalCancelarInclusaoContinua } from "./componentes/ModalCancelarInclusaoContinua";
 import {
   exibeBotaoAprovar,
@@ -57,6 +59,7 @@ export const Relatorio = ({ ...props }) => {
 
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
+  const [proximosDoisDiasUteis, setProximosDoisDiasUteis] = useState(null);
 
   const {
     endpointAprovaSolicitacao,
@@ -75,7 +78,7 @@ export const Relatorio = ({ ...props }) => {
 
   const getSolicitacaoAsync = async (
     uuid_ = uuid,
-    tipoSolicitacao_ = tipoSolicitacao
+    tipoSolicitacao_ = tipoSolicitacao,
   ) => {
     setLoading(true);
     const response = await getInclusaoDeAlimentacao(uuid_, tipoSolicitacao_);
@@ -84,11 +87,29 @@ export const Relatorio = ({ ...props }) => {
       setPrazoMensagem(prazoDoPedidoMensagem(response.data.prioridade));
     } else {
       setErro(
-        "Erro ao carregar Inclusão de Alimentação. Tente novamente mais tarde."
+        "Erro ao carregar Inclusão de Alimentação. Tente novamente mais tarde.",
       );
     }
     setLoading(false);
   };
+
+  const getDiasUteisAsync = async () => {
+    const response = await getDiasUteis({
+      escola_uuid: meusDados.vinculo_atual.instituicao.uuid,
+    });
+    if (response.status === HTTP_STATUS.OK) {
+      const [ano, mes, dia] = response.data.proximos_dois_dias_uteis.split("-");
+      setProximosDoisDiasUteis(
+        new Date(Number(ano), Number(mes) - 1, Number(dia)),
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (meusDados && usuarioEhEscolaTerceirizadaQualquerPerfil()) {
+      getDiasUteisAsync();
+    }
+  }, [meusDados]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -97,14 +118,14 @@ export const Relatorio = ({ ...props }) => {
 
     if (!uuid_) {
       setErro(
-        "Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente."
+        "Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente.",
       );
       return;
     }
 
     if (!tipoSolicitacao_) {
       setErro(
-        "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente."
+        "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente.",
       );
       return;
     }
@@ -118,7 +139,7 @@ export const Relatorio = ({ ...props }) => {
     const response = await endpointAprovaSolicitacao(
       uuid,
       values.justificativa,
-      tipoSolicitacao
+      tipoSolicitacao,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess(toastAprovaMensagem);
@@ -154,6 +175,25 @@ export const Relatorio = ({ ...props }) => {
     ? ModalCancelarInclusaoContinua
     : ModalNaoAprova;
 
+  const exibirAlterar = (() => {
+    if (
+      !ehEscolaEInclusaoContinua() ||
+      !inclusaoDeAlimentacao?.data_inicial ||
+      !proximosDoisDiasUteis
+    )
+      return false;
+    const [dia, mes, ano] = inclusaoDeAlimentacao.data_inicial.split("/");
+    const dataInicial = new Date(Number(ano), Number(mes) - 1, Number(dia));
+    return proximosDoisDiasUteis > dataInicial;
+  })();
+
+  const todasQPCanceladasOuEncerradas =
+    ehEscolaEInclusaoContinua() &&
+    !!inclusaoDeAlimentacao?.quantidades_periodo?.length &&
+    inclusaoDeAlimentacao.quantidades_periodo.every(
+      (qp) => qp.cancelado || qp.encerrado_a_partir_de,
+    );
+
   const tipoPerfil = localStorage.getItem("tipo_perfil");
 
   return (
@@ -169,6 +209,7 @@ export const Relatorio = ({ ...props }) => {
           uuid={uuid}
           tipoSolicitacao={tipoSolicitacao}
           motivosDREnaoValida={motivosDREnaoValida}
+          exibirAlterar={exibirAlterar}
         />
       )}
       {ModalQuestionamento && (
@@ -192,8 +233,8 @@ export const Relatorio = ({ ...props }) => {
             tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEI
               ? "inclusoes-alimentacao-da-cei"
               : tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_NORMAL
-              ? "grupos-inclusao-alimentacao-normal"
-              : "inclusoes-alimentacao-continua"
+                ? "grupos-inclusao-alimentacao-normal"
+                : "inclusoes-alimentacao-continua"
           }
         />
       )}
@@ -243,6 +284,9 @@ export const Relatorio = ({ ...props }) => {
                       <HistoricoCancelamento
                         inclusaoDeAlimentacao={inclusaoDeAlimentacao}
                       />
+                      <HistoricoAlteracao
+                        inclusaoDeAlimentacao={inclusaoDeAlimentacao}
+                      />
                       {inclusaoDeAlimentacao.status !== "ESCOLA_CANCELOU" && (
                         <RelatorioHistoricoJustificativaEscola
                           solicitacao={inclusaoDeAlimentacao}
@@ -256,10 +300,10 @@ export const Relatorio = ({ ...props }) => {
                           <div className="col-12 text-end">
                             {exibeBotaoNaoAprovar(
                               inclusaoDeAlimentacao,
-                              textoBotaoNaoAprova
+                              textoBotaoNaoAprova,
                             ) && (
                               <Botao
-                                texto={textoBotaoNaoAprova}
+                                texto={`${textoBotaoNaoAprova}${ehEscolaEInclusaoContinua() && exibirAlterar && inclusaoDeAlimentacao.status === "CODAE_AUTORIZADO" ? "/Alterar" : ""}`}
                                 className="ms-3"
                                 onClick={() => {
                                   setRespostaSimNao("Não");
@@ -267,12 +311,13 @@ export const Relatorio = ({ ...props }) => {
                                 }}
                                 type={BUTTON_TYPE.BUTTON}
                                 style={BUTTON_STYLE.GREEN_OUTLINE}
+                                disabled={todasQPCanceladasOuEncerradas}
                               />
                             )}
                             {exibeBotaoAprovar(
                               inclusaoDeAlimentacao,
                               visao,
-                              textoBotaoAprova
+                              textoBotaoAprova,
                             ) && (
                               <Botao
                                 texto={textoBotaoAprova}
@@ -281,11 +326,11 @@ export const Relatorio = ({ ...props }) => {
                                   visao === DRE
                                     ? onSubmit(values)
                                     : exibirModalAutorizacaoAposQuestionamento(
-                                        inclusaoDeAlimentacao,
-                                        visao
-                                      )
-                                    ? setShowAutorizarModal(true)
-                                    : setShowModalCodaeAutorizar(true)
+                                          inclusaoDeAlimentacao,
+                                          visao,
+                                        )
+                                      ? setShowAutorizarModal(true)
+                                      : setShowModalCodaeAutorizar(true)
                                 }
                                 disabled={submitting}
                                 style={BUTTON_STYLE.GREEN}
@@ -295,7 +340,7 @@ export const Relatorio = ({ ...props }) => {
                             {exibirBotaoQuestionamento(
                               inclusaoDeAlimentacao,
                               visao,
-                              tipoPerfil
+                              tipoPerfil,
                             ) && (
                               <>
                                 {inclusaoDeAlimentacao.status ===
@@ -335,7 +380,7 @@ export const Relatorio = ({ ...props }) => {
                             )}
                             {exibirBotaoMarcarConferencia(
                               inclusaoDeAlimentacao,
-                              visao
+                              visao,
                             ) && (
                               <div className="form-group float-end mt-4">
                                 {inclusaoDeAlimentacao.terceirizada_conferiu_gestao ? (

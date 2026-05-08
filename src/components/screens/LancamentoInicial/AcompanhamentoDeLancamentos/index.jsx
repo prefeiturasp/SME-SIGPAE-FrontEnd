@@ -200,7 +200,13 @@ export const AcompanhamentoDeLancamentos = () => {
     mesAnoFiltro,
     recreioNasFeriasFiltro,
   ) => {
-    if (!(usuarioPossuiSeletorDRE && diretoriaRegional && mesAnoFiltro)) {
+    const dreUUID = usuarioEhDRE()
+      ? meusDados?.vinculo_atual?.instituicao?.uuid
+      : diretoriaRegional;
+
+    if (
+      !((usuarioPossuiSeletorDRE || usuarioEhDRE()) && dreUUID && mesAnoFiltro)
+    ) {
       return;
     }
 
@@ -208,12 +214,12 @@ export const AcompanhamentoDeLancamentos = () => {
     const responseTotalUnidadesDRE = recreioNasFeriasFiltro
       ? await getTotalUnidadesDRERecreioNasFerias({
           recreio_nas_ferias_uuid: recreioNasFeriasFiltro,
-          dre_uuid: diretoriaRegional,
+          dre_uuid: dreUUID,
         })
       : await getTotalUnidadesDRE({
           mes: mesSelecionado,
           ano: anoSelecionado,
-          dre_uuid: diretoriaRegional,
+          dre_uuid: dreUUID,
         });
 
     if (responseTotalUnidadesDRE?.status === HTTP_STATUS.OK) {
@@ -957,14 +963,15 @@ export const AcompanhamentoDeLancamentos = () => {
                     )}
                   </div>
                   <div className="card-body">
-                    {usuarioPossuiSeletorDRE && totalUnidadesDRE > 0 && (
-                      <div className="label-unidades-dre mb-3 fw-bold">
-                        {recreioNasFerias
-                          ? "Total de Unidades com Recreio nas Férias da DRE"
-                          : "Total de Unidades da DRE"}
-                        : {totalUnidadesDRE}
-                      </div>
-                    )}
+                    {(usuarioPossuiSeletorDRE || usuarioEhDRE()) &&
+                      totalUnidadesDRE > 0 && (
+                        <div className="label-unidades-dre mb-3 fw-bold">
+                          {recreioNasFerias
+                            ? "Total de Unidades com Recreio nas Férias da DRE"
+                            : "Total de Unidades da DRE"}
+                          : {totalUnidadesDRE}
+                        </div>
+                      )}
                     <div className="d-flex row row-cols-1">
                       {exibirDashboard() &&
                         dadosDashboard &&
