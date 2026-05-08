@@ -1597,3 +1597,47 @@ export const existeAlteracaoLPR = (alteracoesAlimentacaoAutorizadas, dia) =>
   alteracoesAlimentacaoAutorizadas.some(
     (alteracao) => alteracao.dia === dia && alteracao.motivo.includes("LPR"),
   );
+
+/**
+ * Filtra categorias de medição com base nos tipos de alimentação disponíveis para o contexto do Recreio nas Férias.
+ *
+ * Regras de negócio aplicadas:
+ * - Remove categorias contendo "ENTERAL" quando não existir:
+ *   - "lanche"
+ *   - "lanche_4h"
+ *   - "refeicao"
+ *
+ * - Remove categorias contendo "DIETA ESPECIAL" quando não existir:
+ *   - "lanche"
+ *   - "lanche_4h"
+ *
+ * - Categorias "ENTERAL" são preservadas na segunda regra.
+ *
+ * @param {Array<{id: number, nome: string, ativo: boolean, uuid: string}>} responseCategoriasMedicao - Categorias disponíveis
+ * @param {{Array<{name: string, nome: string, uuid: string|null}>}} tiposAlimentacao - Tipos de alimentação ativos
+ *
+ * @returns  {Array<Object>} Categorias filtradas contendo apenas as categorias permitidas conforme regras de negócio
+ */
+export const trataCategoriasMedicaoRecreio = (
+  responseCategoriasMedicao,
+  tiposAlimentacao,
+) => {
+  const tipos = new Set(tiposAlimentacao.map(({ name }) => name));
+  const temLanche = tipos.has("lanche") || tipos.has("lanche_4h");
+
+  const temRefeicao = tipos.has("refeicao");
+
+  return responseCategoriasMedicao.filter(({ nome }) => {
+    const ehDietaEnteral = nome.includes("ENTERAL");
+    const ehDietaEspecial = nome.includes("DIETA ESPECIAL");
+
+    if (!temLanche && !temRefeicao && ehDietaEnteral) {
+      return false;
+    }
+
+    if (!temLanche && ehDietaEspecial && !ehDietaEnteral) {
+      return false;
+    }
+    return true;
+  });
+};
