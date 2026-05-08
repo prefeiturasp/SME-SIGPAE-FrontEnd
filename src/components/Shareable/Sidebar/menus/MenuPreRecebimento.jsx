@@ -1,5 +1,6 @@
 import {
   CALENDARIO_CRONOGRAMA,
+  CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL,
   CRONOGRAMA_ENTREGA,
   CRONOGRAMA_SEMANAL_FLV,
   DOCUMENTOS_RECEBIMENTO,
@@ -28,6 +29,7 @@ import {
   usuarioEhDilogDiretoria,
   usuarioEhEmpresaFornecedor,
   usuarioEhPreRecebimento,
+  usuarioEhDilogQualidade,
 } from "src/helpers/utilities";
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
@@ -79,6 +81,15 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
       {usuarioComAcessoAoCalendarioCronograma() && (
         <LeafItem to={`/${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA}`}>
           Calendário de Cronogramas
+        </LeafItem>
+      )}
+      {(usuarioEhCronograma() ||
+        usuarioEhDilogQualidade() ||
+        usuarioEhCodaeDilog()) && (
+        <LeafItem
+          to={`/${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`}
+        >
+          Calendário de Cronogramas Ponto a Ponto Semanal
         </LeafItem>
       )}
       {usuarioEhEmpresaFornecedor() && (
