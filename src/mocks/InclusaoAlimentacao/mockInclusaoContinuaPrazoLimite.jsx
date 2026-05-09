@@ -69,6 +69,7 @@ export const mockInclusaoContinuaPrazoLimite = {
       numero_alunos: 100,
       observacao: "<p>observação da inclusão</p>",
       cancelado_por: null,
+      encerrado_a_partir_de: null,
       grupo_inclusao_normal: null,
       inclusao_alimentacao_continua: 265,
     },

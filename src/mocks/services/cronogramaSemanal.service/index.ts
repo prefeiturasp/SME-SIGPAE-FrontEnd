@@ -1,4 +1,7 @@
-export { mockCronogramasMensalAssinados } from "./mockGetCronogramasMensalAssinados";
+export {
+  mockCronogramasMensalAssinados,
+  mockGetCronogramasMensalAssinados2,
+} from "./mockGetCronogramasMensalAssinados";
 export {
   mockCronogramaMensalDetalhado,
   mockCronogramaMensalDetalhadoComEtapasMultiplas,
@@ -7,3 +10,4 @@ export {
   mockCronogramaSemanalDetalhe,
   mockCronogramaSemanalDetalheEnviado,
 } from "./mockGetCronogramaSemanalDetalhe";
+export { mockGetCronogramaSemanalCiente } from "./mockGetCronogramaSemanalCiente";

@@ -19,8 +19,10 @@ import {
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
 import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockMeusDadosDRE } from "src/mocks/meusDados/diretoria_regional";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockMeusDadosSuperUsuarioMedicao } from "src/mocks/meusDados/superUsuarioMedicao";
+import { mockMeusDadosTerceirizada } from "src/mocks/meusDados/terceirizada";
 import { mockGetTiposUnidadeEscolar } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
 import { mockGetEscolaTercTotal } from "src/mocks/services/escola.service/mockGetEscolasTercTotal";
 import { mockGetLotesSimples } from "src/mocks/services/lote.service/mockGetLotesSimples";
@@ -399,6 +401,73 @@ describe("AcompanhamentoDeLancamentos", () => {
           ),
         ),
       ).toHaveLength(0);
+    });
+
+    it("deve exibir a label com total de unidades da DRE para usuário DRE ao selecionar mês", async () => {
+      cleanup();
+      mock.reset();
+      setupMocks();
+      mock.onGet("/grupos-unidade-escolar/por-dre/").reply(200, { grupos: [] });
+      localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
+      await renderComponent(mockMeusDadosDRE);
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId("div-select-mes-referencia"),
+        ).toBeInTheDocument(),
+      );
+
+      const divMesReferencia = screen.getByTestId("div-select-mes-referencia");
+      const selectMesReferencia = divMesReferencia.querySelector("select");
+      await act(async () => {
+        fireEvent.change(selectMesReferencia, {
+          target: { value: "03_2025" },
+        });
+      });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Total de Unidades da DRE: 100"),
+        ).toBeInTheDocument(),
+      );
+
+      const requisicoesTotal = mock.history.get.filter((request) =>
+        request.url.includes(
+          "medicao-inicial/historico-acesso-ue/total-por-dre/",
+        ),
+      );
+      expect(requisicoesTotal.length).toBeGreaterThan(0);
+      expect(requisicoesTotal[0].params).toEqual(
+        expect.objectContaining({
+          dre_uuid: "3972e0e9-2d8e-472a-9dfa-30cd219a6d9a",
+        }),
+      );
+    });
+
+    it("deve exibir a label com total de unidades da DRE para usuário Terceirizada ao selecionar DRE e mês", async () => {
+      cleanup();
+      mock.reset();
+      setupMocks();
+      localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
+      localStorage.setItem("perfil", PERFIL.USUARIO_EMPRESA);
+      localStorage.setItem("tipo_servico", TIPO_SERVICO.TERCEIRIZADA);
+      await renderComponent(mockMeusDadosTerceirizada);
+
+      await selecionarDRE();
+
+      const divMesReferencia = screen.getByTestId("div-select-mes-referencia");
+      const selectMesReferencia = divMesReferencia.querySelector("select");
+      await act(async () => {
+        fireEvent.change(selectMesReferencia, {
+          target: { value: "03_2025" },
+        });
+      });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Total de Unidades da DRE: 100"),
+        ).toBeInTheDocument(),
+      );
     });
 
     const setMesReferencia = () => {
