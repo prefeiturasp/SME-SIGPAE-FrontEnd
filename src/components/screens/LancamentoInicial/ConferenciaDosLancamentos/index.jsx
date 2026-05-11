@@ -421,7 +421,12 @@ export const ConferenciaDosLancamentos = () => {
     const escolaUuid = location.state.escolaUuid;
     const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
       escolaUuid,
-      { ano: anoSolicitacao, mes: mesSolicitacao, escola: escolaUuid },
+      {
+        ano: anoSolicitacao,
+        mes: mesSolicitacao,
+        mes_inclusao_continua: mesSolicitacao,
+        escola: escolaUuid,
+      },
     );
     if (response_vinculos.status === HTTP_STATUS.OK) {
       setPeriodosSimples(response_vinculos.data.results);
