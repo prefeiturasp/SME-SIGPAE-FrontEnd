@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { CustomToolbar } from "src/components/Shareable/CalendarioCronograma/componentes/CustomToolbar";
+import { CustomToolbar } from "src/components/Shareable/CustomToolbar";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import { formataComoEventos } from "src/components/Shareable/CalendarioCronograma/helpers";
 import { Spin, Tooltip } from "antd";
-import { ModalCronograma } from "src/components/Shareable/CalendarioCronograma/componentes/ModalCronograma";
+import { ModalCronograma } from "src/components/Shareable/ModalCronograma";
 import "src/components/Shareable/CalendarioCronograma/style.scss";
 import {
   ItemCalendario,
