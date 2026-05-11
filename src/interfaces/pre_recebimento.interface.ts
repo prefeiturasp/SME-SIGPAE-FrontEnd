@@ -292,18 +292,29 @@ export interface DadosCronogramaFichaTecnica extends FichaTecnicaSimples {
 
 export interface EtapaCalendario {
   data_programada: string;
-  etapa: string;
+  etapa?: string;
   nome_fornecedor: string;
   nome_produto: string;
   numero_cronograma: string;
   numero_empenho: string;
-  parte: string;
+  parte?: string;
   quantidade: number;
   uuid: string;
   uuid_cronograma: string;
   status: string;
   unidade_medida: string;
   programa_leve_leite: boolean;
+  local?: string;
+}
+
+export interface ItemCalendario<T> {
+  title: string;
+  data: string;
+  start: Date;
+  end: Date;
+  allDay: boolean;
+  programa_leve_leite?: boolean;
+  objeto: T;
 }
 
 export interface CardItem {
