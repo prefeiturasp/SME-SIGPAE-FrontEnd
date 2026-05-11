@@ -41,6 +41,11 @@ jest.mock("src/components/Shareable/DatePicker", () => ({
   ),
 }));
 
+const mockInclusaoContinuaPrazoLimiteEmAberto = {
+  ...mockInclusaoContinuaPrazoLimite,
+  data_final: "12/03/2035",
+};
+
 describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão Escola", () => {
   beforeEach(async () => {
     mock
@@ -54,7 +59,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
       .onGet(
         "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
       )
-      .replyOnce(200, mockInclusaoContinuaPrazoLimite);
+      .replyOnce(200, mockInclusaoContinuaPrazoLimiteEmAberto);
     mock
       .onPatch(
         "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/escola-cancela-pedido-48h-antes/",
@@ -117,7 +122,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
     expect(screen.getByText("05/03/2025")).toBeInTheDocument();
 
     expect(screen.getByText("Até")).toBeInTheDocument();
-    expect(screen.getByText("12/03/2025")).toBeInTheDocument();
+    expect(screen.getByText("12/03/2035")).toBeInTheDocument();
   });
 
   it("renderiza tabela com período, tipos de alimentação e nº de alunos", async () => {
@@ -307,6 +312,60 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
       ).toBeGreaterThan(0);
       expect(screen.getAllByText(/31\/10\/2025/).length).toBeGreaterThan(0);
     });
+  });
+});
+
+describe("Relatório Inclusão de Alimentação - Inclusão Contínua vencida - Visão Escola", () => {
+  it("desabilita o botão Cancelar quando a data final já passou", async () => {
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
+    mock.onGet("/notificacoes/").reply(200, []);
+    mock.onGet("/notificacoes/quantidade-nao-lidos/").reply(200, 0);
+    mock
+      .onGet("/dias-uteis/")
+      .reply(200, { proximos_dois_dias_uteis: "2026-05-13" });
+    mock
+      .onGet(
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
+      )
+      .replyOnce(200, mockInclusaoContinuaPrazoLimite);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("meusDados", "true");
+
+    getDiasUteis.mockClear();
+
+    const search = `?uuid=a64f5054-873c-46bc-aefa-43966029a1a4&ehInclusaoContinua=true&tipoSolicitacao=solicitacao-continua`;
+    window.history.pushState({}, "", search);
+
+    await act(async () => {
+      render(
+        <MeusDadosContext.Provider
+          value={{
+            meusDados: mockMeusDadosEscolaEMEFPericles,
+            setMeusDados: jest.fn(),
+          }}
+        >
+          <MemoryRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+          </MemoryRouter>
+        </MeusDadosContext.Provider>,
+      );
+    });
+
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+
+    expect(screen.getByText("Cancelar").closest("button")).toBeDisabled();
   });
 });
 

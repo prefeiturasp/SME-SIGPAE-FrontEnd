@@ -20,6 +20,7 @@ import {
 } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
+  getDataObj,
   prazoDoPedidoMensagem,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
   visualizaBotoesDoFluxo,
@@ -194,6 +195,17 @@ export const Relatorio = ({ ...props }) => {
       (qp) => qp.cancelado || qp.encerrado_a_partir_de,
     );
 
+  const dataFinalJaPassou = (() => {
+    if (!ehEscolaEInclusaoContinua() || !inclusaoDeAlimentacao?.data_final) {
+      return false;
+    }
+
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    return getDataObj(inclusaoDeAlimentacao.data_final) < hoje;
+  })();
+
   const tipoPerfil = localStorage.getItem("tipo_perfil");
 
   return (
@@ -311,7 +323,10 @@ export const Relatorio = ({ ...props }) => {
                                 }}
                                 type={BUTTON_TYPE.BUTTON}
                                 style={BUTTON_STYLE.GREEN_OUTLINE}
-                                disabled={todasQPCanceladasOuEncerradas}
+                                disabled={
+                                  todasQPCanceladasOuEncerradas ||
+                                  dataFinalJaPassou
+                                }
                               />
                             )}
                             {exibeBotaoAprovar(

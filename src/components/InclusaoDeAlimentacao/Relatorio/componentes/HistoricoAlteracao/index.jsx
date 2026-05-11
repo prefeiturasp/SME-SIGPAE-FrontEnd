@@ -16,7 +16,7 @@ export const HistoricoAlteracao = ({ inclusaoDeAlimentacao }) => {
   return (
     <>
       <hr />
-      <p>
+      <div>
         <strong>Histórico de alteração</strong>
         {logsAlteracao.map((log, logKey) => {
           const quantidadesDessaAlteracao = quantidadesComEncerramento.filter(
@@ -46,7 +46,7 @@ export const HistoricoAlteracao = ({ inclusaoDeAlimentacao }) => {
             </div>
           );
         })}
-      </p>
+      </div>
     </>
   );
 };
