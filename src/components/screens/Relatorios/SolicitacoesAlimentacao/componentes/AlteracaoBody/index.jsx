@@ -138,7 +138,7 @@ export const AlteracaoBody = ({ ...props }) => {
               </div>
             )}
             {solicitacao.datas_intervalo.find(
-              (data_intervalo) => data_intervalo.cancelado_justificativa
+              (data_intervalo) => data_intervalo.cancelado_justificativa,
             ) && (
               <>
                 <hr />
@@ -146,7 +146,8 @@ export const AlteracaoBody = ({ ...props }) => {
                   <strong>Histórico de cancelamento</strong>
                   {solicitacao.datas_intervalo
                     .filter(
-                      (data_intervalo) => data_intervalo.cancelado_justificativa
+                      (data_intervalo) =>
+                        data_intervalo.cancelado_justificativa,
                     )
                     .map((data_intervalo, key) => {
                       return (
