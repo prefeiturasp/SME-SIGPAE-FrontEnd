@@ -12,7 +12,10 @@ import {
 } from "src/interfaces/pre_recebimento.interface";
 import { ResponseCalendarioCronograma } from "src/interfaces/responses.interface";
 import { getInterrupcoesProgramadas } from "src/services/cronograma.service";
-import { formataComoEventos } from "src/components/Shareable/CalendarioCronogramaPontoPonto/helpers";
+import {
+  ehMesmoDia,
+  formataComoEventos,
+} from "src/components/Shareable/CalendarioCronogramaPontoPonto/helpers";
 import { ItemCalendarioInterrupcao, ParametrosCalendario } from "./interfaces";
 
 interface Props {
@@ -59,7 +62,10 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
     try {
       const [responseObjetos, responseInterrupcoes] = await Promise.all([
         getObjetos(params),
-        getInterrupcoesProgramadas(params),
+        getInterrupcoesProgramadas({
+          ...params,
+          motivo: ["FERIADO", "EMENDA"],
+        }),
       ]);
 
       if (responseObjetos.status === HTTP_STATUS.OK) {
@@ -78,9 +84,15 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
           const dataInicio = new Date(ano, mes - 1, dia, 0, 0, 0);
           const dataFim = new Date(ano, mes - 1, dia, 1, 0, 0); // 1 hora de duração para garantir visibilidade
 
+          let title = "INTERRUPÇÃO";
+
+          if (item.motivo === "FERIADO" || item.motivo === "EMENDA") {
+            title = item.motivo;
+          }
+
           return {
             uuid: item.uuid,
-            title: `INTERRUPÇÃO DE ENTREGA`,
+            title,
             start: dataInicio,
             end: dataFim,
             allDay: true,
@@ -99,6 +111,9 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
   };
 
   const handleSelecionarEvento = (evento: EventoCalendario) => {
+    if ("isInterrupcao" in evento && evento.isInterrupcao) {
+      return;
+    }
     setEventoAtual(evento as ItemCalendario<EtapaCalendario>);
     setExibirModalCronograma(true);
   };
@@ -144,10 +159,13 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
     return <>{children}</>;
   };
 
-  const todosEventos: EventoCalendario[] = [
-    ...interrupcoes,
-    ...(itensCalendario || []),
-  ];
+  const itensFiltrados = (itensCalendario || []).filter((item) => {
+    return !interrupcoes.some((interrupcao) =>
+      ehMesmoDia(item.start, interrupcao.start),
+    );
+  });
+
+  const todosEventos: EventoCalendario[] = [...interrupcoes, ...itensFiltrados];
 
   return (
     <div className="card calendario-sobremesa mt-3">
