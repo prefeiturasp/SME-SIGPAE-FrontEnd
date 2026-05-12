@@ -127,16 +127,6 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
       };
     }
 
-    const item = evento as ItemCalendario<EtapaCalendario>;
-
-    if (
-      item.programa_leve_leite ||
-      (item.objeto && (item.objeto as any).programa_leve_leite)
-    ) {
-      return {
-        className: "programa-leve-leite",
-      };
-    }
     return {};
   };
 
