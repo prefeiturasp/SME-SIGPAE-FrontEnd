@@ -89,7 +89,7 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
         <LeafItem
           to={`/${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`}
         >
-          Calendário de Cronogramas Ponto a Ponto Semanal
+          Calendário Ponto a Ponto
         </LeafItem>
       )}
       {usuarioEhEmpresaFornecedor() && (
