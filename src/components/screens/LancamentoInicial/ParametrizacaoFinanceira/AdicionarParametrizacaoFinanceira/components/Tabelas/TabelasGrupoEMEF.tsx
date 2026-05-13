@@ -18,9 +18,10 @@ export default ({
   grupoSelecionado,
   bloqueiaEdicao,
 }: Props) => {
-  const REFEICAO = tiposAlimentacao.find((e: TipoAlimentacao) =>
-    normalizar(e.nome),
+  const REFEICAO = tiposAlimentacao.find(
+    (e: TipoAlimentacao) => normalizar(e.nome) === "refeicao",
   );
+
   const _TIPOS_SEM_REFEICAO = tiposAlimentacao.filter(
     (e: TipoAlimentacao) => normalizar(e.nome) !== normalizar("Refeição"),
   );
