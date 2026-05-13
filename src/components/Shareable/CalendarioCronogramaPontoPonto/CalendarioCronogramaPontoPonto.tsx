@@ -184,7 +184,6 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
                   localizer={localizer}
                   events={todosEventos}
                   onSelectEvent={handleSelecionarEvento}
-                  // onSelectSlot={handleSelecionarSlot}
                   eventPropGetter={obterEstiloEvento}
                   components={{
                     toolbar: CustomToolbar,

@@ -156,16 +156,18 @@ export const CalendarioCronograma: React.FC<Props> = ({
     event: EventoCalendario;
     children: React.ReactNode;
   }) => {
+    let tooltipTitle = "";
     if ("isInterrupcao" in event && event.isInterrupcao) {
       const textoPrincipal = event.descricao_motivo
         ? `${event.motivo_display}: ${event.descricao_motivo}`
         : event.motivo_display;
 
-      const tooltipTitle = `${textoPrincipal} - ${event.tipo_calendario_display}`;
-
-      return <Tooltip title={tooltipTitle}>{children}</Tooltip>;
+      tooltipTitle = `${textoPrincipal} - ${event.tipo_calendario_display}`;
+    } else {
+      tooltipTitle = event.title;
     }
-    return <>{children}</>;
+
+    return <Tooltip title={tooltipTitle}>{children}</Tooltip>;
   };
 
   const todosEventos: EventoCalendario[] = [
