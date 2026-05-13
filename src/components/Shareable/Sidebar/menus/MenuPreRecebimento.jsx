@@ -82,7 +82,7 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
           Calendário de Cronogramas
         </LeafItem>
       )}
-      {usuarioComAcessoAoCalendarioCronograma && (
+      {usuarioComAcessoAoCalendarioCronograma() && (
         <LeafItem
           to={`/${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`}
         >
