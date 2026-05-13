@@ -29,7 +29,6 @@ import {
   usuarioEhDilogDiretoria,
   usuarioEhEmpresaFornecedor,
   usuarioEhPreRecebimento,
-  usuarioEhDilogQualidade,
 } from "src/helpers/utilities";
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
@@ -83,9 +82,7 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
           Calendário de Cronogramas
         </LeafItem>
       )}
-      {(usuarioEhCronograma() ||
-        usuarioEhDilogQualidade() ||
-        usuarioEhCodaeDilog()) && (
+      {usuarioComAcessoAoCalendarioCronograma && (
         <LeafItem
           to={`/${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`}
         >

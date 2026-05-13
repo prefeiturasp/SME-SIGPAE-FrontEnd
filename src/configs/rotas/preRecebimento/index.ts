@@ -328,10 +328,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`,
     component: CalendarioCronogramaPontoPontoPage,
-    tipoUsuario:
-      usuarioEhCronograma() ||
-      usuarioEhDilogQualidade() ||
-      usuarioEhCodaeDilog(),
+    tipoUsuario: usuarioComAcessoAoCalendarioCronograma(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.RELATORIO_CRONOGRAMA}`,
