@@ -1,3 +1,7 @@
+import {
+  TipoAlimentacao,
+  ValorTabela,
+} from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { normalizar } from "../ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
 
 export const listaAlimentacoes = (tipoDieta: string, cieja: boolean) => {
@@ -19,4 +23,23 @@ export const prioridadeAlimentacao = (nome: string) => {
   if (n === "lanche") return 3;
 
   return 99;
+};
+
+export const buscarCampoEMEF = (
+  valor: ValorTabela,
+  tipo: TipoAlimentacao,
+  tipo_valor: string,
+) => {
+  if (tipo.nome_campo) {
+    return (
+      normalizar(valor.nome_campo) === normalizar(tipo.nome_campo) &&
+      valor.tipo_valor === tipo_valor
+    );
+  }
+
+  return (
+    (valor.tipo_alimentacao?.uuid === tipo.uuid ||
+      valor.nome_campo === "kit_lanche") &&
+    valor.tipo_valor === tipo_valor
+  );
 };
