@@ -30,9 +30,9 @@ export const buscarCampoEMEF = (
   tipo: TipoAlimentacao,
   tipo_valor: string,
 ) => {
-  if (tipo.nome_campo) {
+  if (tipo.tipo_refeicao) {
     return (
-      normalizar(valor.nome_campo) === normalizar(tipo.nome_campo) &&
+      normalizar(valor.nome_campo).includes(tipo.tipo_refeicao) &&
       valor.tipo_valor === tipo_valor
     );
   }

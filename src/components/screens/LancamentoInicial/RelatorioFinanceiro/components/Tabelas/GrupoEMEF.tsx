@@ -31,14 +31,14 @@ export default ({
     return normalizar(e.nome) === "refeicao";
   };
 
-  const montarTiposRefeicao = (emef: string, eja: string) => [
+  const montarTiposRefeicao = () => [
     {
-      nome_campo: emef,
+      tipo_refeicao: "emef",
       uuid: REFEICAO.uuid,
       nome: "Refeição",
     },
     {
-      nome_campo: eja,
+      tipo_refeicao: "eja",
       uuid: REFEICAO.uuid,
       nome: "Refeição EJA",
     },
@@ -58,10 +58,7 @@ export default ({
     if (!REFEICAO) return [];
 
     return [
-      ...montarTiposRefeicao(
-        "refeição_-_ceu_emef,_ceu_gestão,_emef,_emefm",
-        "refeição_-_eja",
-      ),
+      ...montarTiposRefeicao(),
       ..._TIPOS_SEM_REFEICAO,
       { uuid: "Kit Lanche", nome: "Kit Lanche" },
     ];
@@ -71,10 +68,7 @@ export default ({
     if (!REFEICAO) return [];
 
     return [
-      ...montarTiposRefeicao(
-        "refeição_-_dieta_enteral_-_ceu_emef,_ceu_gestão,_emef,_emefm",
-        "refeição_-_dieta_enteral_-_eja",
-      ),
+      ...montarTiposRefeicao(),
       ..._TIPOS_SEM_REFEICAO,
       { uuid: "Kit Lanche", nome: "Kit Lanche" },
     ];

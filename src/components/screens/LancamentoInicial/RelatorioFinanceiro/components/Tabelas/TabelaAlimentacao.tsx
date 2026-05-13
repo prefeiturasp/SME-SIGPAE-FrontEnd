@@ -101,7 +101,7 @@ export const TabelaAlimentacao = forwardRef<TabelaAlimentacaoHandle, Props>(
             valorTotalGeral += valorTotal;
 
             return (
-              <tr key={`${tipo.uuid}${tipo?.nome_campo}`}>
+              <tr key={`${tipo.uuid}${tipo?.tipo_refeicao}`}>
                 <td className="col-tipo">
                   <b>{nomeExibicao.toUpperCase()}</b>
                 </td>
