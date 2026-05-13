@@ -13,7 +13,7 @@ import {
 } from "src/interfaces/pre_recebimento.interface";
 import {
   ALTERACAO_CRONOGRAMA,
-  CRONOGRAMA_ENTREGA,
+  ALTERAR_CRONOGRAMA_SEMANAL,
   PRE_RECEBIMENTO,
 } from "../../../configs/constants";
 import {
@@ -109,7 +109,9 @@ export const ModalCronograma: React.FC<Props> = ({
                 texto="Alterar"
                 type={BUTTON_TYPE.BUTTON}
                 onClick={() => {
-                  navigate(`/${PRE_RECEBIMENTO}/${CRONOGRAMA_ENTREGA}`);
+                  navigate(
+                    `/${PRE_RECEBIMENTO}/${ALTERAR_CRONOGRAMA_SEMANAL}?uuid=${event.objeto.uuid_cronograma}`,
+                  );
                 }}
                 style={BUTTON_STYLE.GREEN_OUTLINE}
                 className="ms-3"
