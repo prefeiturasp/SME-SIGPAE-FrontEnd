@@ -1,6 +1,7 @@
 export interface ParametrosCalendario {
   ano: number;
   mes: number;
+  status?: string;
 }
 
 export interface ItemCalendarioInterrupcao {

@@ -61,7 +61,7 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
     setCarregandoDiasCalendario(true);
     try {
       const [responseObjetos, responseInterrupcoes] = await Promise.all([
-        getObjetos(params),
+        getObjetos({ ...params, status: "FORNECEDOR_CIENTE" }),
         getInterrupcoesProgramadas({
           ...params,
           motivo: ["FERIADO", "EMENDA"],
