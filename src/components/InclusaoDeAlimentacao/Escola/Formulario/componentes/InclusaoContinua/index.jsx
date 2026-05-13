@@ -163,6 +163,7 @@ export const Recorrencia = ({
       values.dias_semana.length === 0 ||
       !values.periodo_escolar ||
       !valueTipoAlimentacao ||
+      valueTipoAlimentacao.length === 0 ||
       !values.numero_alunos
     ) {
       toastError(

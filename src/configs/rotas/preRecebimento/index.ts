@@ -16,6 +16,7 @@ import {
   usuarioEhDilogVisualizacao,
 } from "src/helpers/utilities";
 
+import AlterarCronogramaSemanalPage from "src/pages/PreRecebimento/AlterarCronogramaSemanalPage";
 import CadastroCronogramaSemanalPage from "src/pages/PreRecebimento/CadastroCronogramaSemanalPage";
 import CronogramaSemanalFLVPage from "src/pages/PreRecebimento/CronogramaSemanalFLVPage";
 import DetalharCronogramaSemanalPage from "src/pages/PreRecebimento/DetalharCronogramaSemanalPage";
@@ -458,5 +459,10 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog(),
+  },
+  {
+    path: `/${constants.PRE_RECEBIMENTO}/${constants.ALTERAR_CRONOGRAMA_SEMANAL}`,
+    component: AlterarCronogramaSemanalPage,
+    tipoUsuario: usuarioEhCronograma() || usuarioEhCodaeDilog(),
   },
 ];

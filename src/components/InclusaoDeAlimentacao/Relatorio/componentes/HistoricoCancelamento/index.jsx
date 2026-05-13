@@ -8,7 +8,10 @@ export const HistoricoCancelamento = ({ ...props }) => {
       inclusaoDeAlimentacao.inclusoes ||
       inclusaoDeAlimentacao.dias_motivos_da_inclusao_cei ||
       inclusaoDeAlimentacao.quantidades_periodo
-    ).find((inclusao) => inclusao.cancelado_justificativa) && (
+    ).find(
+      (inclusao) =>
+        inclusao.cancelado_justificativa && !inclusao.encerrado_a_partir_de,
+    ) && (
       <>
         <hr />
         <p>
@@ -18,7 +21,11 @@ export const HistoricoCancelamento = ({ ...props }) => {
             inclusaoDeAlimentacao.dias_motivos_da_inclusao_cei ||
             inclusaoDeAlimentacao.quantidades_periodo
           )
-            .filter((inclusao) => inclusao.cancelado_justificativa)
+            .filter(
+              (inclusao) =>
+                inclusao.cancelado_justificativa &&
+                !inclusao.encerrado_a_partir_de,
+            )
             .map((inclusao, key) => {
               return (
                 <div key={key}>

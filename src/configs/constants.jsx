@@ -268,6 +268,7 @@ export const RELATORIO_CRONOGRAMA = "relatorio-cronograma";
 export const CRONOGRAMA_SEMANAL_FLV = "cronograma-semanal-flv";
 export const CADASTRO_CRONOGRAMA_SEMANAL = "cadastro-cronograma-semanal";
 export const DETALHE_CRONOGRAMA_SEMANAL = "detalhe-cronograma-semanal";
+export const ALTERAR_CRONOGRAMA_SEMANAL = "alterar-cronograma-semanal";
 
 export const LAYOUT_EMBALAGEM = "layout-embalagem";
 export const CADASTRO_LAYOUT_EMBALAGEM = "cadastro-layout-embalagem";

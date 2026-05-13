@@ -31,6 +31,7 @@ import {
   criarCronogramaSemanalRascunho,
   atualizarCronogramaSemanalRascunho,
   assinarEEnviarCronogramaSemanal,
+  alterarCronogramaSemanal,
   getRascunhosCronogramaSemanal,
 } from "src/services/cronogramaSemanal.service";
 import {
@@ -79,6 +80,7 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [carregando, setCarregando] = useState(false);
+  const [edicao, setEdicao] = useState(false);
   const [showModalAssinatura, setShowModalAssinatura] = useState(false);
   const [loadingAssinatura, setLoadingAssinatura] = useState(false);
   const [cronogramasMensal, setCronogramasMensal] = useState<
@@ -140,6 +142,10 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       if (response && response.data) {
         const cronograma = response.data as CronogramaSemanalDetalhado;
         setNumeroCronograma(cronograma.numero);
+
+        if (cronograma.status === "Fornecedor Ciente") {
+          setEdicao(true);
+        }
 
         const cronogramaMensal = cronograma.cronograma_mensal;
         if (cronogramaMensal) {
@@ -428,6 +434,22 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       let response;
       let cronogramaUuid = rascunhoUuid;
 
+      if (edicao) {
+        response = await alterarCronogramaSemanal(
+          cronogramaUuid,
+          payload,
+          password,
+          { skipAuthRefresh: true },
+        );
+
+        if (response && response.status === 200) {
+          toastSuccess("Cronograma alterado com sucesso!");
+          setShowModalAssinatura(false);
+          navigate(`/${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`);
+        }
+        return;
+      }
+
       if (!rascunhoUuid) {
         const rascunhoResponse = await criarCronogramaSemanalRascunho(payload, {
           skipAuthRefresh: true,
@@ -474,29 +496,30 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
 
   const textoFaltante = (programacoes: FormValues["programacoes"]) => {
     const diferenca = calcularDiferenca(programacoes);
+    const unidade =
+      (cronogramaMensalSelecionado as any)?.unidade_medida?.abreviacao ||
+      (cronogramaMensalSelecionado as any)?.ficha_tecnica?.unidade_medida
+        ?.abreviacao ||
+      "";
 
-    const textoPadrao = (
-      <div>
-        Faltam
-        <span className="fw-bold">
-          &nbsp;
-          {formataMilharDecimal(Math.abs(diferenca)?.toString())}
-          &nbsp;
-        </span>
-        para programar
-      </div>
-    );
-
-    const textoQuantidadeMaior = <div>Quantidade maior que a prevista</div>;
+    const quantidadeEstimada = calcularQuantidadeEstimada(programacoes);
 
     return (
-      <div className="row">
-        <div
-          className={`col-12 texto-alimento-faltante ${
-            diferenca === 0 ? "mensagem-verde" : "mensagem-vermelho"
-          }`}
-        >
-          {diferenca < 0 ? textoQuantidadeMaior : textoPadrao}
+      <div className="row justify-content-end">
+        <div className="col-auto texto-alimento-faltante">
+          Quantidade estimada{" "}
+          <b className="mensagem-verde">
+            {formataMilharDecimal(quantidadeEstimada?.toString())} {unidade}
+          </b>
+          {diferenca !== 0 && (
+            <>
+              {". "}
+              <b className="mensagem-laranja">
+                Diferença de {formataMilharDecimal((-diferenca)?.toString())}{" "}
+                {unidade}
+              </b>
+            </>
+          )}
         </div>
       </div>
     );
@@ -517,10 +540,12 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
 
   return (
     <>
-      <Rascunhos
-        listaRascunhos={listaRascunhos}
-        editarRoute={`/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA_SEMANAL}`}
-      />
+      {!edicao && (
+        <Rascunhos
+          listaRascunhos={listaRascunhos}
+          editarRoute={`/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA_SEMANAL}`}
+        />
+      )}
       <Spin tip="Carregando..." spinning={carregando}>
         <div className="card mt-3 card-cadastro-cronograma-semanal">
           <div className="card-body cadastro-cronograma-semanal">
@@ -559,6 +584,7 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                           required
                           validate={required}
                           placeholder="Selecione um Cronograma Mensal"
+                          disabled={edicao}
                           dataTestId="select-cronograma-mensal"
                           inputOnChange={(value: string) => {
                             if (value) {
@@ -783,10 +809,10 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                       />
                                     </div>
                                   </div>
-
-                                  {textoFaltante(values.programacoes)}
                                 </React.Fragment>
                               ))}
+
+                              {textoFaltante(values.programacoes)}
 
                               <div className="text-center mb-2 mt-2">
                                 <Botao
@@ -821,24 +847,40 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                         <hr />
 
                         <div className="mt-4 mb-4">
-                          <Botao
-                            texto="Assinar e Enviar"
-                            type={BUTTON_TYPE.BUTTON}
-                            style={BUTTON_STYLE.GREEN}
-                            className="float-end"
-                            disabled={!formularioValido(values, errors)}
-                            onClick={() => setShowModalAssinatura(true)}
-                            dataTestId="botao-assinar-enviar"
-                          />
-                          <Botao
-                            texto="Salvar Rascunho"
-                            type={BUTTON_TYPE.BUTTON}
-                            style={BUTTON_STYLE.GREEN_OUTLINE}
-                            className="float-end me-3"
-                            disabled={!values.cronograma_mensal}
-                            onClick={() => onSubmit(values)}
-                            dataTestId="botao-salvar-rascunho"
-                          />
+                          {edicao && (
+                            <Botao
+                              texto="Enviar Alteração"
+                              type={BUTTON_TYPE.BUTTON}
+                              style={BUTTON_STYLE.GREEN}
+                              className="float-end"
+                              disabled={!formularioValido(values, errors)}
+                              onClick={() => setShowModalAssinatura(true)}
+                              dataTestId="botao-atualizar"
+                            />
+                          )}
+
+                          {!edicao && (
+                            <>
+                              <Botao
+                                texto="Assinar e Enviar"
+                                type={BUTTON_TYPE.BUTTON}
+                                style={BUTTON_STYLE.GREEN}
+                                className="float-end"
+                                disabled={!formularioValido(values, errors)}
+                                onClick={() => setShowModalAssinatura(true)}
+                                dataTestId="botao-assinar-enviar"
+                              />
+                              <Botao
+                                texto="Salvar Rascunho"
+                                type={BUTTON_TYPE.BUTTON}
+                                style={BUTTON_STYLE.GREEN_OUTLINE}
+                                className="float-end me-3"
+                                disabled={!values.cronograma_mensal}
+                                onClick={() => onSubmit(values)}
+                                dataTestId="botao-salvar-rascunho"
+                              />
+                            </>
+                          )}
                         </div>
                       </>
                     )}

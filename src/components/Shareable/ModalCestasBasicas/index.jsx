@@ -33,7 +33,7 @@ const ModalCestasBasicas = () => {
               </div>
             </div>
             <div className="col-10">
-              No dia <span className="green fw-bold">03/11/2025 </span>
+              No dia <span className="green fw-bold">01/06/2026 </span>
               iniciaremos a entrega de{" "}
               <span className="fw-bold">cestas básicas </span>
               nas Unidades Escolares destinadas aos estudantes da

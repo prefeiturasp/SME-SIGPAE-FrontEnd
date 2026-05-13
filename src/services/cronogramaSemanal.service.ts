@@ -71,5 +71,18 @@ export const assinarEEnviarCronogramaSemanal = async (
   );
 };
 
+export const alterarCronogramaSemanal = async (
+  uuid: string,
+  payload: CronogramaSemanalCreate,
+  password: string,
+  config = {},
+) => {
+  return await axios.patch(
+    `/cronogramas-semanais/${uuid}/alterar-cronograma/`,
+    { ...payload, password },
+    config,
+  );
+};
+
 export const getRascunhosCronogramaSemanal = async () =>
   await axios.get("/cronogramas-semanais/rascunhos/");

@@ -124,6 +124,7 @@ export const tipoDeStatus = (status) => {
     case "Corrigido para CODAE":
     case "Solicitação de Alteração de UE Realizada":
     case "CODAE autorizou a Alteração de UE":
+    case "Escola alterou":
       return "prosseguiu";
 
     case "CODAE pediu correção":
