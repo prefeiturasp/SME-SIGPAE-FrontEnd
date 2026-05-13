@@ -33,7 +33,6 @@ export default ({
 
   const montarTiposRefeicao = () => [
     {
-      tipo_refeicao: "emef",
       uuid: REFEICAO.uuid,
       nome: "Refeição",
     },
