@@ -1,23 +1,22 @@
-import React, { useEffect, useState } from "react";
-import HTTP_STATUS from "http-status-codes";
-import { CustomToolbar } from "src/components/Shareable/CustomToolbar";
-import { Calendar, momentLocalizer, Views } from "react-big-calendar";
-import moment from "moment";
-import { formataComoEventos } from "src/components/Shareable/CalendarioCronograma/helpers";
 import { Spin, Tooltip } from "antd";
+import HTTP_STATUS from "http-status-codes";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { Calendar, momentLocalizer, Views } from "react-big-calendar";
+import { CustomToolbar } from "src/components/Shareable/CustomToolbar";
 import { ModalCronograma } from "src/components/Shareable/ModalCronograma";
-import "src/components/Shareable/CalendarioCronograma/style.scss";
+import "src/components/Shareable/CalendarioCronogramaPontoPonto/style.scss";
 import {
+  EtapaCalendario,
   ItemCalendario,
-  ItemCalendarioInterrupcao,
-  ParametrosCalendario,
-} from "./interfaces";
-import { EtapaCalendario } from "src/interfaces/pre_recebimento.interface";
+} from "src/interfaces/pre_recebimento.interface";
 import { ResponseCalendarioCronograma } from "src/interfaces/responses.interface";
 import { getInterrupcoesProgramadas } from "src/services/cronograma.service";
-import ModalCadastrarInterrupcao from "./componentes/ModalCadastrarInterrupcao";
-import ModalDetalheInterrupcao from "./componentes/ModalDetalheInterrupcao";
-import { usuarioEhCronogramaOuCodae } from "../../../helpers/utilities";
+import {
+  ehMesmoDia,
+  formataComoEventos,
+} from "src/components/Shareable/CalendarioCronogramaPontoPonto/helpers";
+import { ItemCalendarioInterrupcao, ParametrosCalendario } from "./interfaces";
 
 interface Props {
   getObjetos: (
@@ -33,7 +32,7 @@ type EventoCalendario =
 
 const localizer = momentLocalizer(moment);
 
-export const CalendarioCronograma: React.FC<Props> = ({
+export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
   getObjetos,
   nomeObjeto,
   nomeObjetoMinusculo,
@@ -54,14 +53,6 @@ export const CalendarioCronograma: React.FC<Props> = ({
   const [mes, setMes] = useState<number>(moment().month() + 1);
   const [ano, setAno] = useState<number>(moment().year());
 
-  const [exibirModalInterrupcao, setExibirModalInterrupcao] = useState(false);
-  const [exibirModalDetalheInterrupcao, setExibirModalDetalheInterrupcao] =
-    useState(false);
-  const [dataSelecionada, setDataSelecionada] = useState<Date>(new Date());
-  const [interrupcaoSelecionada, setInterrupcaoSelecionada] = useState<
-    ItemCalendarioInterrupcao | undefined
-  >(undefined);
-
   useEffect(() => {
     carregarObjetosAsync({ mes, ano });
   }, [mes, ano]);
@@ -70,12 +61,15 @@ export const CalendarioCronograma: React.FC<Props> = ({
     setCarregandoDiasCalendario(true);
     try {
       const [responseObjetos, responseInterrupcoes] = await Promise.all([
-        getObjetos(params),
-        getInterrupcoesProgramadas(params),
+        getObjetos({ ...params, status: "FORNECEDOR_CIENTE" }),
+        getInterrupcoesProgramadas({
+          ...params,
+          motivo: ["FERIADO", "EMENDA"],
+        }),
       ]);
 
       if (responseObjetos.status === HTTP_STATUS.OK) {
-        setItensCalendario(formataComoEventos(responseObjetos.data.results));
+        setItensCalendario(formataComoEventos(responseObjetos.data));
       }
 
       const dataInterrupcoes =
@@ -90,9 +84,15 @@ export const CalendarioCronograma: React.FC<Props> = ({
           const dataInicio = new Date(ano, mes - 1, dia, 0, 0, 0);
           const dataFim = new Date(ano, mes - 1, dia, 1, 0, 0); // 1 hora de duração para garantir visibilidade
 
+          let title = "INTERRUPÇÃO";
+
+          if (item.motivo === "FERIADO" || item.motivo === "EMENDA") {
+            title = item.motivo;
+          }
+
           return {
             uuid: item.uuid,
-            title: `INTERRUPÇÃO DE ENTREGA`,
+            title,
             start: dataInicio,
             end: dataFim,
             allDay: true,
@@ -112,19 +112,10 @@ export const CalendarioCronograma: React.FC<Props> = ({
 
   const handleSelecionarEvento = (evento: EventoCalendario) => {
     if ("isInterrupcao" in evento && evento.isInterrupcao) {
-      setInterrupcaoSelecionada(evento as ItemCalendarioInterrupcao);
-      setExibirModalDetalheInterrupcao(true);
       return;
     }
     setEventoAtual(evento as ItemCalendario<EtapaCalendario>);
     setExibirModalCronograma(true);
-  };
-
-  const handleSelecionarSlot = (slotInfo: { start: Date }) => {
-    if (usuarioEhCronogramaOuCodae()) {
-      setDataSelecionada(slotInfo.start);
-      setExibirModalInterrupcao(true);
-    }
   };
 
   const obterEstiloEvento = (evento: EventoCalendario) => {
@@ -136,16 +127,6 @@ export const CalendarioCronograma: React.FC<Props> = ({
       };
     }
 
-    const item = evento as ItemCalendario<EtapaCalendario>;
-
-    if (
-      item.programa_leve_leite ||
-      (item.objeto && (item.objeto as any).programa_leve_leite)
-    ) {
-      return {
-        className: "programa-leve-leite",
-      };
-    }
     return {};
   };
 
@@ -170,10 +151,13 @@ export const CalendarioCronograma: React.FC<Props> = ({
     return <Tooltip title={tooltipTitle}>{children}</Tooltip>;
   };
 
-  const todosEventos: EventoCalendario[] = [
-    ...(itensCalendario || []),
-    ...interrupcoes,
-  ];
+  const itensFiltrados = (itensCalendario || []).filter((item) => {
+    return !interrupcoes.some((interrupcao) =>
+      ehMesmoDia(item.start, interrupcao.start),
+    );
+  });
+
+  const todosEventos: EventoCalendario[] = [...interrupcoes, ...itensFiltrados];
 
   return (
     <div className="card calendario-sobremesa mt-3">
@@ -200,15 +184,18 @@ export const CalendarioCronograma: React.FC<Props> = ({
                   localizer={localizer}
                   events={todosEventos}
                   onSelectEvent={handleSelecionarEvento}
-                  onSelectSlot={handleSelecionarSlot}
                   eventPropGetter={obterEstiloEvento}
                   components={{
                     toolbar: CustomToolbar,
                     eventWrapper: EventWrapper,
                   }}
+                  onDrillDown={() => {}}
                   messages={{
                     showMore: (target: string) => (
-                      <span className="ms-2" role="presentation">
+                      <span
+                        className="ms-2 showmore-message"
+                        role="presentation"
+                      >
                         ...{target} mais
                       </span>
                     ),
@@ -225,22 +212,7 @@ export const CalendarioCronograma: React.FC<Props> = ({
                   showModal={exibirModalCronograma}
                   closeModal={() => setExibirModalCronograma(false)}
                   event={eventoAtual}
-                />
-              )}
-              {exibirModalInterrupcao && (
-                <ModalCadastrarInterrupcao
-                  showModal={exibirModalInterrupcao}
-                  closeModal={() => setExibirModalInterrupcao(false)}
-                  dataSelecionada={dataSelecionada}
-                  onSave={() => carregarObjetosAsync({ mes, ano })}
-                />
-              )}
-              {exibirModalDetalheInterrupcao && interrupcaoSelecionada && (
-                <ModalDetalheInterrupcao
-                  showModal={exibirModalDetalheInterrupcao}
-                  closeModal={() => setExibirModalDetalheInterrupcao(false)}
-                  evento={interrupcaoSelecionada}
-                  onDelete={() => carregarObjetosAsync({ mes, ano })}
+                  ehCronogramaPontoAPonto={true}
                 />
               )}
             </>
