@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
-import { CustomToolbar } from "../../CalendarioCronograma/componentes/CustomToolbar";
+import { CustomToolbar } from "../index";
 
 describe("Teste <CustomToolbar>", () => {
   let toolbarMock;

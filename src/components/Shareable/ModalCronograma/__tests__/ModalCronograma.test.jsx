@@ -6,7 +6,7 @@ import {
   usuarioEhCodaeDilog,
   usuarioEhCronograma,
 } from "../../../../helpers/utilities";
-import { ModalCronograma } from "../../CalendarioCronograma/componentes/ModalCronograma";
+import { ModalCronograma } from "../index";
 
 jest.mock("../../../../helpers/utilities", () => ({
   usuarioEhCronograma: jest.fn(),
