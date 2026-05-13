@@ -16,6 +16,7 @@ export type FaixaEtaria = {
 export type TipoAlimentacao = {
   uuid: string;
   nome: string;
+  nome_campo?: string;
 };
 
 export type ValorTabela = {
