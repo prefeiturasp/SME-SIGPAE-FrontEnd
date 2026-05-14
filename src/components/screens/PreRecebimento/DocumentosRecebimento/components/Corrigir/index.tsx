@@ -4,7 +4,6 @@ import "./styles.scss";
 import { Field, Form } from "react-final-form";
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
-import { required } from "../../../../../../helpers/fieldValidators";
 import InputText from "src/components/Shareable/Input/InputText";
 import { downloadAndConvertToBase64 } from "../../../../../Shareable/Input/InputFile/helper";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
@@ -264,20 +263,20 @@ export default () => {
   const desabilitarBotaoSalvar = (values: Record<string, any>) => {
     const laudoInvalido = arquivosLaudoForm?.arquivosForm.length === 0;
 
-    const nenhumDocumentoSelecionado = values.tipos_de_documentos?.length === 0;
+    const documentosValidos = values.tipos_de_documentos
+      ? values.tipos_de_documentos?.every(
+          (tipoDocumento: TiposDocumentoChoices) => {
+            return (
+              arquivosDocumentosForm?.find(
+                (arquivosDocumentoForm) =>
+                  arquivosDocumentoForm.tipoDocumento === tipoDocumento,
+              )?.arquivosForm.length > 0
+            );
+          },
+        )
+      : true;
 
-    const documentosValidos = values.tipos_de_documentos?.every(
-      (tipoDocumento: TiposDocumentoChoices) => {
-        return (
-          arquivosDocumentosForm?.find(
-            (arquivosDocumentoForm) =>
-              arquivosDocumentoForm.tipoDocumento === tipoDocumento,
-          )?.arquivosForm.length > 0
-        );
-      },
-    );
-
-    return laudoInvalido || nenhumDocumentoSelecionado || !documentosValidos;
+    return laudoInvalido || !documentosValidos;
   };
 
   const filtrarArquivosDocumentosForm = (
@@ -431,8 +430,6 @@ export default () => {
                       nomeDoItemNoPlural="documentos"
                       options={OUTROS_DOCUMENTOS_OPTIONS}
                       placeholder="Selecione o documento"
-                      required
-                      validate={required}
                       onChangeEffect={() => filtrarArquivosDocumentosForm}
                     />
                   </div>
