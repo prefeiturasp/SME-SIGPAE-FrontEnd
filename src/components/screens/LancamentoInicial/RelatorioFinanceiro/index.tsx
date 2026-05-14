@@ -1,4 +1,5 @@
 import "./styles.scss";
+import HTTP_STATUS from "http-status-codes";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
@@ -14,6 +15,9 @@ import {
 import { useRelatorioFinanceiro } from "./view";
 import ModalAnalisar from "./components/ModalAnalisar";
 import { usuarioEhMedicao } from "src/helpers/utilities";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { exportarPDFAsyncRelatorioAtesteFinanceiro } from "src/services/medicaoInicial/relatorioFinanceiro.service";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 interface RelatorioSelecionado {
   uuid: string;
@@ -28,6 +32,8 @@ export function RelatorioFinanceiro() {
   const [showAnalisar, setShowAnalisar] = useState(false);
   const [relatorioSelecionado, setRelatorioSelecionado] =
     useState<RelatorioSelecionado | null>(null);
+  const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
+    useState<boolean>(false);
   const navigate = useNavigate();
 
   const {
@@ -49,6 +55,15 @@ export function RelatorioFinanceiro() {
         state: relatorio,
       },
     );
+  };
+
+  const exportarPDF = async (uuid: string) => {
+    const response = await exportarPDFAsyncRelatorioAtesteFinanceiro(uuid);
+    if (response.status === HTTP_STATUS.OK) {
+      setExibirModalCentralDownloads(true);
+    } else {
+      toastError("Erro ao exportar PDF. Tente novamente mais tarde.");
+    }
   };
 
   return (
@@ -143,13 +158,18 @@ export function RelatorioFinanceiro() {
                                     className="fas fa-eye green"
                                   />
                                 </span>
-                                <span className="px-2 cursor-pointer">
-                                  <i
-                                    title="Lançamentos Consolidados"
-                                    className="fas fa-file-excel green"
-                                  />
-                                </span>
-                                <span className="px-2 cursor-pointer">
+                                {relatorio.status === "FINALIZADO" && (
+                                  <span className="px-2 cursor-pointer">
+                                    <i
+                                      title="Lançamentos Consolidados"
+                                      className="fas fa-file-excel green"
+                                    />
+                                  </span>
+                                )}
+                                <span
+                                  className="px-2 cursor-pointer"
+                                  onClick={() => exportarPDF(relatorio.uuid)}
+                                >
                                   <i
                                     title="Ateste Financeiro"
                                     className="fas fa-file-pdf red"
@@ -207,6 +227,11 @@ export function RelatorioFinanceiro() {
                   status: ["EM_ANALISE"],
                 })
               }
+            />
+            <ModalSolicitacaoDownload
+              show={exibirModalCentralDownloads}
+              setShow={setExibirModalCentralDownloads}
+              callbackClose={() => ""}
             />
           </div>
         </div>

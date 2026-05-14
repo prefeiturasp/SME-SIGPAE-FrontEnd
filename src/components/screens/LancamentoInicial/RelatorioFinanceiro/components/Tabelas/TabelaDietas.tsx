@@ -7,7 +7,11 @@ import {
 import { formataMilharDecimal } from "src/helpers/utilities";
 import { stringDecimalToNumber } from "src/helpers/parsers";
 import { TabelaDietasHandle } from "../../types";
-import { listaAlimentacoes, prioridadeAlimentacao } from "../../helpers";
+import {
+  buscarCampoEMEF,
+  listaAlimentacoes,
+  prioridadeAlimentacao,
+} from "../../helpers";
 import { normalizar } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
 
 type Props = {
@@ -55,26 +59,29 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
       const lista = listaAlimentacoes(tipoDieta, ehCieja);
 
       return tiposAlimentacao
-        .filter((t) => lista.includes(normalizar(t.nome)))
-        .flatMap((ta) => {
+        .filter((t) => {
+          const nome = normalizar(t.nome);
+          return (
+            lista.includes(nome) ||
+            (exibeNoturno && nome.startsWith("refeicao"))
+          );
+        })
+        .map((ta) => {
           const nomeNormalizado = normalizar(ta.nome);
-          if (nomeNormalizado === "refeicao" && exibeNoturno) {
-            return [
-              { ...ta, nome: "Refeição EJA", grupo: "Dieta Enteral" },
-              { ...ta, grupo: "Dieta Enteral" },
-            ];
-          }
 
           return {
             ...ta,
-            grupo: nomeNormalizado === "refeicao" ? "Dieta Enteral" : null,
+            grupo: nomeNormalizado.includes("refeicao")
+              ? "Dieta Enteral"
+              : null,
           };
         })
         .sort(
           (a, b) =>
             prioridadeAlimentacao(a.nome) - prioridadeAlimentacao(b.nome),
         );
-    }, [tipoDieta, tiposAlimentacao, exibeNoturno, unidade]);
+    }, [tipoDieta, tiposAlimentacao, unidade]);
+
     return (
       <table className="tabela-relatorio">
         <thead>
@@ -116,18 +123,14 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
             });
 
             const valorUnitario = stringDecimalToNumber(
-              tabela?.valores.find(
-                (v: ValorTabela) =>
-                  v.tipo_alimentacao.uuid === tipo.uuid &&
-                  v.tipo_valor === "UNITARIO",
+              tabela?.valores.find((v: ValorTabela) =>
+                buscarCampoEMEF(v, tipo, "UNITARIO"),
               )?.valor ?? "0",
             );
 
             const valorAcrescimo = stringDecimalToNumber(
-              tabela?.valores.find(
-                (v: ValorTabela) =>
-                  v.tipo_alimentacao.uuid === tipo.uuid &&
-                  v.tipo_valor === "ACRESCIMO",
+              tabela?.valores.find((v: ValorTabela) =>
+                buscarCampoEMEF(v, tipo, "ACRESCIMO"),
               )?.valor ?? "0",
             );
 
@@ -151,7 +154,7 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
               <tr
                 key={`${tipoDieta
                   .replace(" ", "_")
-                  .toLowerCase()}_${tipo.uuid}`}
+                  .toLowerCase()}_${tipo.uuid}${tipo?.nome_campo}`}
               >
                 <td className="col-tipo">
                   <b>{nomeExibicao.toUpperCase()}</b>{" "}
