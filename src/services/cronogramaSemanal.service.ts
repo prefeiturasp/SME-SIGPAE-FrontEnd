@@ -1,6 +1,7 @@
 import axios from "./_base";
 import { getMensagemDeErro } from "../helpers/statusErrors";
 import { toastError } from "../components/Shareable/Toast/dialogs";
+import { saveAs } from "file-saver";
 import {
   CronogramaSemanalCreate,
   CronogramaMensalSimples,
@@ -82,6 +83,12 @@ export const alterarCronogramaSemanal = async (
     { ...payload, password },
     config,
   );
+};
+
+export const imprimirCronogramaSemanal = async (uuid, numero) => {
+  const url = `/cronogramas-semanais/${uuid}/gerar-pdf-cronograma/`;
+  const { data } = await axios.get(url, { responseType: "blob" });
+  saveAs(data, "cronograma_semanal_" + numero + ".pdf");
 };
 
 export const getRascunhosCronogramaSemanal = async () =>

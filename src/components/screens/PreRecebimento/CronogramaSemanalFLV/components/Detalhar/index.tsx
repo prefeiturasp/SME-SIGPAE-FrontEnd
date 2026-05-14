@@ -9,6 +9,7 @@ import {
 import {
   getCronogramaSemanal,
   darCienciaCronogramaSemanal,
+  imprimirCronogramaSemanal,
 } from "src/services/cronogramaSemanal.service";
 import { CronogramaSemanalDetalhado } from "src/interfaces/cronograma_semanal.interface";
 import { PRE_RECEBIMENTO, CRONOGRAMA_SEMANAL_FLV } from "src/configs/constants";
@@ -48,6 +49,19 @@ const DetalharCronogramaSemanal: React.FC = () => {
         setCarregando(false);
       }
     }
+  };
+
+  const baixarPDFCronogramaSemanal = (cronograma) => {
+    setCarregando(true);
+    let uuid = cronograma.uuid;
+    let numero = cronograma.numero;
+    imprimirCronogramaSemanal(uuid, numero)
+      .catch((error) =>
+        error.response.data.text().then((text) => toastError(text)),
+      )
+      .finally(() => {
+        setCarregando(false);
+      });
   };
 
   useEffect(() => {
@@ -288,8 +302,7 @@ const DetalharCronogramaSemanal: React.FC = () => {
                       type={BUTTON_TYPE.BUTTON}
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                       className="float-end ms-3"
-                      onClick={() => {}}
-                      tooltipExterno="Funcionalidade em desenvolvimento"
+                      onClick={() => baixarPDFCronogramaSemanal(cronograma)}
                     />
                   )}
                   <Botao
