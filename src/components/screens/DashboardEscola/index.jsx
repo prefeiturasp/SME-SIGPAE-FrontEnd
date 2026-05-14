@@ -57,25 +57,29 @@ export const DashboardEscola = () => {
   const getSolicitacoesAsync = async (params = null) => {
     setLoadingAcompanhamentoSolicitacoes(true);
 
-    const response = await getSolicitacoesPendentesEscola(params);
+    const [response, responseAutorizadas, responseNegadas, responseCanceladas] =
+      await Promise.all([
+        getSolicitacoesPendentesEscola(params),
+        getSolicitacoesAutorizadasEscola(params),
+        getSolicitacoesNegadasEscola(params),
+        getSolicitacoesCanceladasEscola(params),
+      ]);
+
     if (response.status === HTTP_STATUS.OK) {
       setAguardandoAutorizacao(ajustarFormatoLog(response.data.results));
     } else {
       setErro("Erro ao carregar solicitações aguardando autorização.");
     }
-    const responseAutorizadas = await getSolicitacoesAutorizadasEscola(params);
     if (responseAutorizadas.status === HTTP_STATUS.OK) {
       setAutorizadas(ajustarFormatoLog(responseAutorizadas.data.results));
     } else {
       setErro("Erro ao carregar solicitações autorizadas.");
     }
-    const responseNegadas = await getSolicitacoesNegadasEscola(params);
     if (responseNegadas.status === HTTP_STATUS.OK) {
       setNegadas(ajustarFormatoLog(responseNegadas.data.results));
     } else {
       setErro("Erro ao carregar solicitações negadas.");
     }
-    const responseCanceladas = await getSolicitacoesCanceladasEscola(params);
     if (responseCanceladas.status === HTTP_STATUS.OK) {
       setCanceladas(ajustarFormatoLog(responseCanceladas.data.results));
     } else {
