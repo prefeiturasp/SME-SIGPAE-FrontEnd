@@ -74,25 +74,23 @@ export const DashboardNutrimanifestacao = () => {
   const getSolicitacoesAsync = async (params = null) => {
     setLoadingAcompanhamentoSolicitacoes(true);
 
-    const response = await getSolicitacoesCanceladasNutrimanifestacao(
-      params_periodo(params)
-    );
+    const [response, responseNegadas, responseAutorizadas] = await Promise.all([
+      getSolicitacoesCanceladasNutrimanifestacao(params_periodo(params)),
+      getSolicitacoesNegadasNutrimanifestacao(params_periodo(params)),
+      getSolicitacoesAutorizadasNutrimanifestacao(params_periodo(params)),
+    ]);
+
     if (response.status === HTTP_STATUS.OK) {
       setCanceladas(ajustarFormatoLog(response.data.results));
     } else {
       setErro("Erro ao carregar solicitações canceladas");
     }
-    const responseNegadas = await getSolicitacoesNegadasNutrimanifestacao(
-      params_periodo(params)
-    );
     if (responseNegadas.status === HTTP_STATUS.OK) {
       setNegadas(ajustarFormatoLog(responseNegadas.data.results));
     } else {
       setErro("Erro ao carregar solicitações negadas");
     }
 
-    const responseAutorizadas =
-      await getSolicitacoesAutorizadasNutrimanifestacao(params_periodo(params));
     if (responseAutorizadas.status === HTTP_STATUS.OK) {
       setAutorizadas(ajustarFormatoLog(responseAutorizadas.data.results));
     } else {
