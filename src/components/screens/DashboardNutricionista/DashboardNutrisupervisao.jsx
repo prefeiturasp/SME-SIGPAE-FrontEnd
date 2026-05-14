@@ -86,48 +86,49 @@ export const DashboardNutrisupervisao = () => {
   const getSolicitacoesAsync = async (params = null) => {
     setLoadingAcompanhamentoSolicitacoes(true);
 
-    const response = await getSolicitacoesCanceladasNutrisupervisao(
-      params_periodo(params)
-    );
+    const [
+      response,
+      responseNegadas,
+      responseAutorizadas,
+      responseAguardandoAutorizacao,
+      responseAguardandoRespostaEmpresa,
+    ] = await Promise.all([
+      getSolicitacoesCanceladasNutrisupervisao(params_periodo(params)),
+      getSolicitacoesNegadasNutrisupervisao(params_periodo(params)),
+      getSolicitacoesAutorizadasNutrisupervisao(params_periodo(params)),
+      getSolicitacoesPendentesAutorizacaoNutrisupervisaoSemFiltro(params),
+      getSolicitacoesComQuestionamentoNutrisupervisao(params),
+    ]);
+
     if (response.status === HTTP_STATUS.OK) {
       setCanceladas(ajustarFormatoLog(response.data.results));
     } else {
       setErro("Erro ao carregar solicitações canceladas");
     }
 
-    const responseNegadas = await getSolicitacoesNegadasNutrisupervisao(
-      params_periodo(params)
-    );
     if (responseNegadas.status === HTTP_STATUS.OK) {
       setNegadas(ajustarFormatoLog(responseNegadas.data.results));
     } else {
       setErro("Erro ao carregar solicitações negadas");
     }
 
-    const responseAutorizadas = await getSolicitacoesAutorizadasNutrisupervisao(
-      params_periodo(params)
-    );
     if (responseAutorizadas.status === HTTP_STATUS.OK) {
       setAutorizadas(ajustarFormatoLog(responseAutorizadas.data.results));
     } else {
       setErro("Erro ao carregar solicitações autorizadas");
     }
 
-    const responseAguardandoAutorizacao =
-      await getSolicitacoesPendentesAutorizacaoNutrisupervisaoSemFiltro(params);
     if (responseAguardandoAutorizacao.status === HTTP_STATUS.OK) {
       setAguardandoAutorizacao(
-        ajustarFormatoLog(responseAguardandoAutorizacao.data.results)
+        ajustarFormatoLog(responseAguardandoAutorizacao.data.results),
       );
     } else {
       setErro("Erro ao carregar solicitações aguardando autorização");
     }
 
-    const responseAguardandoRespostaEmpresa =
-      await getSolicitacoesComQuestionamentoNutrisupervisao(params);
     if (responseAguardandoRespostaEmpresa.status === HTTP_STATUS.OK) {
       setAguardandoRespostaEmpresa(
-        ajustarFormatoLog(responseAguardandoRespostaEmpresa.data.results)
+        ajustarFormatoLog(responseAguardandoRespostaEmpresa.data.results),
       );
     } else {
       setErro("Erro ao carregar solicitações aguardando resposta da empresa");

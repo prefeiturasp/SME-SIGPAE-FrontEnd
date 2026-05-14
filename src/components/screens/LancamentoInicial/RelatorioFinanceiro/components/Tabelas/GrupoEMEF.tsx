@@ -31,6 +31,18 @@ export default ({
     return normalizar(e.nome) === "refeicao";
   };
 
+  const montarTiposRefeicao = () => [
+    {
+      uuid: REFEICAO.uuid,
+      nome: "Refeição",
+    },
+    {
+      tipo_refeicao: "eja",
+      uuid: REFEICAO.uuid,
+      nome: "Refeição EJA",
+    },
+  ];
+
   const REFEICAO = useMemo(
     () => tiposAlimentacao.find((e) => verificaRefeicao(e)),
     [tiposAlimentacao],
@@ -45,14 +57,17 @@ export default ({
     if (!REFEICAO) return [];
 
     return [
-      {
-        uuid: REFEICAO.uuid,
-        nome: "Refeição",
-      },
-      {
-        uuid: REFEICAO.uuid,
-        nome: "Refeição EJA",
-      },
+      ...montarTiposRefeicao(),
+      ..._TIPOS_SEM_REFEICAO,
+      { uuid: "Kit Lanche", nome: "Kit Lanche" },
+    ];
+  }, [REFEICAO, _TIPOS_SEM_REFEICAO]);
+
+  const _TIPOS_ALIMENTACAO_DIETAS = useMemo(() => {
+    if (!REFEICAO) return [];
+
+    return [
+      ...montarTiposRefeicao(),
       ..._TIPOS_SEM_REFEICAO,
       { uuid: "Kit Lanche", nome: "Kit Lanche" },
     ];
@@ -89,7 +104,7 @@ export default ({
         ref={refDietaA}
         tabelas={relatorioConsolidado.tabelas}
         tipoDieta="TIPO A"
-        tiposAlimentacao={tiposAlimentacao}
+        tiposAlimentacao={_TIPOS_ALIMENTACAO_DIETAS}
         totaisConsumo={totaisConsumo}
         ordem="B"
         exibeNoturno={true}
@@ -98,7 +113,7 @@ export default ({
         ref={refDietaB}
         tabelas={relatorioConsolidado.tabelas}
         tipoDieta="TIPO B"
-        tiposAlimentacao={tiposAlimentacao}
+        tiposAlimentacao={_TIPOS_SEM_REFEICAO}
         totaisConsumo={totaisConsumo}
         ordem="C"
       />

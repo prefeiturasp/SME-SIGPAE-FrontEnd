@@ -1,24 +1,25 @@
+import HTTP_STATUS from "http-status-codes";
+import { Modal } from "react-bootstrap";
+import { Field, Form } from "react-final-form";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { WEEK } from "src/configs/constants";
-import { required } from "src/helpers/fieldValidators";
-import {
-  mensagemCancelamento,
-  stringSeparadaPorVirgulas,
-} from "src/helpers/utilities";
-import React from "react";
-import { Modal } from "react-bootstrap";
-import { Field, Form } from "react-final-form";
-import moment from "moment";
+import { InputComData } from "src/components/Shareable/DatePicker";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import HTTP_STATUS from "http-status-codes";
-import { TextArea } from "src/components/Shareable/TextArea/TextArea";
+import { WEEK } from "src/configs/constants";
+import { required } from "src/helpers/fieldValidators";
+import {
+  dateDelta,
+  getDataObj,
+  mensagemCancelamento,
+  stringSeparadaPorVirgulas,
+} from "src/helpers/utilities";
 
 export const ModalCancelarInclusaoContinua = ({ ...props }) => {
   const {
@@ -29,6 +30,7 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
     tipoSolicitacao,
     loadSolicitacao,
     uuid,
+    exibirAlterar,
   } = props;
 
   const onSubmit = async (values) => {
@@ -60,25 +62,40 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
         {({ handleSubmit, submitting }) => (
           <form onSubmit={handleSubmit}>
             <Modal.Header closeButton>
-              <Modal.Title>Cancelamento de Solicitação</Modal.Title>
+              <Modal.Title>
+                {exibirAlterar
+                  ? "Cancelar ou Alterar a Solicitação"
+                  : "Cancelar a Solicitação"}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <div className="row">
                 <div className="col-12">
                   <p className="label--red">
                     {solicitacao && mensagemCancelamento(solicitacao.status)}
-                    Deseja seguir em frente com o cancelamento?
+                    {exibirAlterar
+                      ? "Deseja seguir em frente com a alteração ou cancelamento?"
+                      : "Deseja seguir em frente com o cancelamento?"}
                   </p>
                 </div>
               </div>
-              <p>Selecione a(s) data(s) para solicitar o cancelamento:</p>
+              <p>
+                {exibirAlterar
+                  ? "Selecione a(s) data(s) para solicitar o cancelamento ou alteração:"
+                  : "Selecione a(s) data(s) para solicitar o cancelamento:"}
+              </p>
               <p>
                 Motivo: <strong>{solicitacao.motivo.nome}</strong>
               </p>
-              {solicitacao.quantidades_periodo.map(
-                (quantidade_periodo, key) => {
+              {solicitacao.quantidades_periodo
+                .filter(
+                  (quantidade_periodo) =>
+                    !quantidade_periodo.encerrado_a_partir_de &&
+                    !quantidade_periodo.cancelado,
+                )
+                .map((quantidade_periodo, key) => {
                   return [
-                    <div key={key} className="row fw-bold">
+                    <div key={key} className="row fw-bold color-black">
                       <div className="col-1">De</div>
                       <div className="col-1">Até</div>
                       {solicitacao.motivo.nome !== "ETEC" && (
@@ -100,11 +117,7 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
                           name={`quantidades_periodo[${key}].cancelado`}
                           component="input"
                           data-testid={`data-cancelamento-continuo-${key}`}
-                          disabled={
-                            quantidade_periodo.cancelado ||
-                            moment(solicitacao.data_inicial, "DD/MM/YYYY") <=
-                              moment()
-                          }
+                          disabled={quantidade_periodo.cancelado}
                           type="checkbox"
                           defaultValue={quantidade_periodo.cancelado}
                         />{" "}
@@ -141,7 +154,7 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
                       <div className="col-3">
                         {stringSeparadaPorVirgulas(
                           quantidade_periodo.tipos_alimentacao,
-                          "nome"
+                          "nome",
                         )}
                       </div>
                       <div className="col-1">
@@ -150,9 +163,27 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
                     </div>,
                     <hr key={"hr" + key} />,
                   ];
-                }
+                })}
+              {exibirAlterar && (
+                <div className="d-flex align-items-center ms-2 mt-3 color-black">
+                  <div className="me-3 text-nowrap">
+                    <span className="color-red fw-bold">*</span> Encerrar a
+                    partir de:
+                  </div>
+                  <div style={{ width: "170px" }}>
+                    <Field
+                      component={InputComData}
+                      name="encerrado_a_partir_de"
+                      required
+                      validate={required}
+                      minDate={dateDelta(1)}
+                      maxDate={getDataObj(solicitacao.data_final)}
+                      dataTestId="encerrar-a-partir-de-div"
+                    />
+                  </div>
+                </div>
               )}
-              <div className="row ps-3 pe-3">
+              <div className="row mt-3">
                 <Field
                   component={TextArea}
                   dataTestId="textarea-justificativa"

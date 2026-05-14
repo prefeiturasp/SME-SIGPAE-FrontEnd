@@ -307,6 +307,18 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   let valuesInputArray = [];
 
+  const getTiposAlimentacaoInclusoesContinuas = (inclusoesAutorizadas) => {
+    const tiposAlimentacao = [];
+    inclusoesAutorizadas.forEach((inclusao) => {
+      inclusao.alimentacoes.split(", ").forEach((alimentacao) => {
+        if (!tiposAlimentacao.includes(alimentacao)) {
+          tiposAlimentacao.push(alimentacao);
+        }
+      });
+    });
+    return tiposAlimentacao;
+  };
+
   useEffect(() => {
     const mesAnoSelecionado = location.state
       ? typeof location.state.mesAnoSelecionado === "string"
@@ -558,13 +570,34 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         setLogQtdDietasAutorizadasCEI(response_log_dietas_autorizadas_cei.data);
       }
 
-      const linhasTabelaAlimentacaoCEI =
+      let tiposAlimentacaoBase = location.state.tiposAlimentacao;
+      if (
+        ehProgramasEProjetosLocation &&
+        response_inclusoes_autorizadas?.length > 0
+      ) {
+        const tiposAlimentacaoInclusaoContinua =
+          getTiposAlimentacaoInclusoesContinuas(response_inclusoes_autorizadas);
+        if (
+          tiposAlimentacaoInclusaoContinua.includes("lanche_4h") &&
+          !tiposAlimentacaoBase.find((t) => t.nome === "Lanche 4h")
+        ) {
+          tiposAlimentacaoBase = [
+            ...tiposAlimentacaoBase,
+            {
+              nome: "Lanche 4h",
+              name: "lanche_4h",
+              uuid: null,
+            },
+          ];
+        }
+      }
+      let linhasTabelaAlimentacaoCEI =
         ehEmeiDaCemeiLocation ||
         ehSolicitacoesAlimentacaoLocation ||
         ehProgramasEProjetosLocation ||
         ehGrupoColaboradores()
           ? formatarLinhasTabelaAlimentacaoEmeiDaCemei(
-              location.state.tiposAlimentacao,
+              tiposAlimentacaoBase,
               ehSolicitacoesAlimentacaoLocation,
               response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais ||
                 [],
@@ -583,9 +616,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
       let linhasTabelasDietasCEI =
         ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation
-          ? formatarLinhasTabelasDietasEmeiDaCemei(
-              location.state.tiposAlimentacao,
-            )
+          ? formatarLinhasTabelasDietasEmeiDaCemei(tiposAlimentacaoBase)
           : formatarLinhasTabelasDietasCEI(
               response_log_dietas_autorizadas_cei,
               periodoGrupo,
@@ -595,7 +626,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       let linhasTabelaDietaEnteral = [];
       if (ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) {
         linhasTabelaDietaEnteral = formatarLinhasTabelaDietaEnteral(
-          location.state.tiposAlimentacao,
+          tiposAlimentacaoBase,
           linhasTabelasDietasCEI,
         );
         setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);

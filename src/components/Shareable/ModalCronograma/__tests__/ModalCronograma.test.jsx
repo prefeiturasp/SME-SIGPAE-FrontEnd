@@ -1,13 +1,12 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { MemoryRouter } from "react-router-dom";
-import { ModalCronograma } from "../componentes/ModalCronograma";
+import { MemoryRouter, useNavigate } from "react-router-dom";
 import {
-  usuarioEhCronograma,
   usuarioEhCodaeDilog,
+  usuarioEhCronograma,
 } from "../../../../helpers/utilities";
-import { useNavigate } from "react-router-dom";
+import { ModalCronograma } from "../index";
 
 jest.mock("../../../../helpers/utilities", () => ({
   usuarioEhCronograma: jest.fn(),

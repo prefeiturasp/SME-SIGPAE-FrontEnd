@@ -1,0 +1,83 @@
+@use "src/styles/variables.scss" as *;
+
+div.calendario-sobremesa {
+  div.toolbar-container {
+    div.mes-tab {
+      text-align: center;
+      padding: 0.5em;
+      background-color: $green;
+      border-radius: 4px;
+      color: white;
+      font-weight: bold;
+      width: 3.5em;
+      cursor: pointer;
+    }
+
+    span.label-month {
+      color: $green;
+      font-weight: bold;
+      font-size: 18px;
+      margin-left: 1em;
+      margin-right: 1em;
+      width: 5em;
+    }
+  }
+
+  .showmore-message {
+    color: $green;
+    font-weight: bold;
+    cursor: default;
+  }
+
+  div.rbc-header {
+    padding: 0.5em;
+    span {
+      color: black;
+    }
+  }
+
+  button.rbc-button-link {
+    margin-top: 0.5em;
+    margin-right: 0.5em;
+    color: black;
+  }
+
+  div.rbc-event-content {
+    background-color: $green;
+    border: none;
+  }
+
+  div.rbc-event {
+    background-color: $green;
+  }
+
+  .rbc-event.programa-leve-leite {
+    background-color: #90CEFD !important;
+    border-color: #90CEFD !important;
+
+    .rbc-event-content {
+      background-color: #90CEFD !important;
+      color: black !important;
+    }
+  }
+
+  .rbc-event.interrupcao-entrega {
+    background-color: #ffcc80 !important;
+    border-color: #f57c00 !important;
+
+    .rbc-event-content {
+      background-color: #ffcc80 !important;
+      color: #000000 !important;
+    }
+  }
+
+  .rbc-event.interrupcao-entrega-ponto-a-ponto {
+    background-color: #ffe0b2 !important;
+    border-color: #fb8c00 !important;
+
+    .rbc-event-content {
+      background-color: #ffe0b2 !important;
+      color: #000000 !important;
+    }
+  }
+}

@@ -7,7 +7,7 @@ import { stringDecimalToNumber } from "src/helpers/parsers";
 import { formataMilharDecimal } from "src/helpers/utilities";
 import { forwardRef, useImperativeHandle } from "react";
 import { TabelaAlimentacaoHandle } from "../../types";
-import { prioridadeAlimentacao } from "../../helpers";
+import { buscarCampoEMEF, prioridadeAlimentacao } from "../../helpers";
 import { normalizar } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
 
 type Props = {
@@ -69,20 +69,14 @@ export const TabelaAlimentacao = forwardRef<TabelaAlimentacaoHandle, Props>(
                 : tipo.nome;
 
             const valorUnitario = stringDecimalToNumber(
-              tabela?.valores.find(
-                (v: ValorTabela) =>
-                  (v.tipo_alimentacao?.uuid === tipo.uuid ||
-                    v.nome_campo === "kit_lanche") &&
-                  v.tipo_valor === "UNITARIO",
+              tabela?.valores.find((v: ValorTabela) =>
+                buscarCampoEMEF(v, tipo, "UNITARIO"),
               )?.valor ?? "0",
             );
 
             const valorReajuste = stringDecimalToNumber(
-              tabela?.valores.find(
-                (v: ValorTabela) =>
-                  (v.tipo_alimentacao?.uuid === tipo.uuid ||
-                    v.nome_campo === "kit_lanche") &&
-                  v.tipo_valor === "REAJUSTE",
+              tabela?.valores.find((v: ValorTabela) =>
+                buscarCampoEMEF(v, tipo, "REAJUSTE"),
               )?.valor ?? "0",
             );
 
@@ -107,7 +101,7 @@ export const TabelaAlimentacao = forwardRef<TabelaAlimentacaoHandle, Props>(
             valorTotalGeral += valorTotal;
 
             return (
-              <tr key={tipo.uuid}>
+              <tr key={`${tipo.uuid}${tipo?.tipo_refeicao}`}>
                 <td className="col-tipo">
                   <b>{nomeExibicao.toUpperCase()}</b>
                 </td>

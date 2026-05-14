@@ -90,6 +90,7 @@ import {
   tabAlunosEmebs,
   textoBotaoObservacao,
   valorZeroFrequencia,
+  trataCategoriasMedicaoRecreio,
 } from "./helper";
 import "./styles.scss";
 import {
@@ -959,12 +960,21 @@ export default () => {
           );
         }
         setLogQtdDietasAutorizadas(response_log_dietas_autorizadas.data);
-        setCategoriasDeMedicao(
-          trataCategoriasMedicaoEscolaSemAlunosRegulares(
-            response_categorias_medicao,
-            tiposAlimentacaoInclusaoContinua,
-          ),
-        );
+        if (ehRecreioNasFerias()) {
+          setCategoriasDeMedicao(
+            trataCategoriasMedicaoRecreio(
+              response_categorias_medicao,
+              tiposAlimentacaoFormatadas,
+            ),
+          );
+        } else {
+          setCategoriasDeMedicao(
+            trataCategoriasMedicaoEscolaSemAlunosRegulares(
+              response_categorias_medicao,
+              tiposAlimentacaoInclusaoContinua,
+            ),
+          );
+        }
       }
 
       let grupoMedicao = location.state.grupo;

@@ -32,6 +32,7 @@ import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobrem
 import {
   getFeriadosNoMesComNome,
   getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola,
+  getDiasLetivosRecreio,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
   codaeAprovaPeriodo,
@@ -146,31 +147,44 @@ export const ConferenciaDosLancamentos = () => {
       (p) => p.periodo_escolar === "NOITE",
     );
 
-    promises.push(
-      carregarDiasCalendario(
-        escolaUuid,
-        mesSolicitacao,
-        anoSolicitacao,
-        null,
-      ).then((data) => ({ key: "DEFAULT", data, nomePeriodo: "DEFAULT" })),
-    );
-    if (temNoite) {
-      const periodoNoite = periodosSimples.find(
-        (p) => p.periodo_escolar?.nome === "NOITE",
+    if (solicitacao.recreio_nas_ferias) {
+      promises.push(
+        getDiasLetivosRecreio({
+          solictacao_uuid: solicitacao.uuid,
+        }).then((response) => ({
+          key: "DEFAULT",
+          data: response.data,
+          nomePeriodo: "DEFAULT",
+        })),
       );
-      if (periodoNoite) {
-        promises.push(
-          carregarDiasCalendario(
-            escolaUuid,
-            mesSolicitacao,
-            anoSolicitacao,
-            periodoNoite.periodo_escolar.uuid,
-          ).then((data) => ({
-            key: periodoNoite.periodo_escolar.nome,
-            data,
-            nomePeriodo: periodoNoite.periodo_escolar.nome,
-          })),
+    } else {
+      promises.push(
+        carregarDiasCalendario(
+          escolaUuid,
+          mesSolicitacao,
+          anoSolicitacao,
+          null,
+        ).then((data) => ({ key: "DEFAULT", data, nomePeriodo: "DEFAULT" })),
+      );
+
+      if (temNoite) {
+        const periodoNoite = periodosSimples.find(
+          (p) => p.periodo_escolar?.nome === "NOITE",
         );
+        if (periodoNoite) {
+          promises.push(
+            carregarDiasCalendario(
+              escolaUuid,
+              mesSolicitacao,
+              anoSolicitacao,
+              periodoNoite.periodo_escolar.uuid,
+            ).then((data) => ({
+              key: periodoNoite.periodo_escolar.nome,
+              data,
+              nomePeriodo: periodoNoite.periodo_escolar.nome,
+            })),
+          );
+        }
       }
     }
 
@@ -421,7 +435,12 @@ export const ConferenciaDosLancamentos = () => {
     const escolaUuid = location.state.escolaUuid;
     const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
       escolaUuid,
-      { ano: anoSolicitacao, mes: mesSolicitacao, escola: escolaUuid },
+      {
+        ano: anoSolicitacao,
+        mes: mesSolicitacao,
+        mes_inclusao_continua: mesSolicitacao,
+        escola: escolaUuid,
+      },
     );
     if (response_vinculos.status === HTTP_STATUS.OK) {
       setPeriodosSimples(response_vinculos.data.results);

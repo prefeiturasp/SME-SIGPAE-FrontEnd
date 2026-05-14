@@ -1,35 +1,40 @@
+import React from "react";
+import { Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import React from "react";
-import { Modal } from "react-bootstrap";
-import "./style.scss";
-import { useNavigate } from "react-router-dom";
+import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
+import {
+  EtapaCalendario,
+  ItemCalendario,
+} from "src/interfaces/pre_recebimento.interface";
 import {
   ALTERACAO_CRONOGRAMA,
+  ALTERAR_CRONOGRAMA_SEMANAL,
   PRE_RECEBIMENTO,
-} from "../../../../../configs/constants";
+} from "../../../configs/constants";
 import {
-  usuarioEhCronograma,
   usuarioEhCodaeDilog,
+  usuarioEhCronograma,
   usuarioEhDilogDiretoria,
-} from "../../../../../helpers/utilities";
-import { ItemCalendario } from "../../interfaces";
-import { EtapaCalendario } from "src/interfaces/pre_recebimento.interface";
-import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
+} from "../../../helpers/utilities";
+import "./style.scss";
 
 interface Props {
   event: ItemCalendario<EtapaCalendario>;
   showModal: boolean;
   closeModal: () => void;
+  ehCronogramaPontoAPonto?: boolean;
 }
 
 export const ModalCronograma: React.FC<Props> = ({
   event,
   showModal,
   closeModal,
+  ehCronogramaPontoAPonto = false,
 }) => {
   const navigate = useNavigate();
 
@@ -77,14 +82,18 @@ export const ModalCronograma: React.FC<Props> = ({
           </div>
         </div>
         <div className="row">
-          <div className="col-4">
-            <span className="fw-bold">Etapa: </span>
-            <span>{event.objeto.etapa}</span>
-          </div>
-          <div className="col-4">
-            <span className="fw-bold">Parte: </span>
-            <span>{event.objeto.parte}</span>
-          </div>
+          {!ehCronogramaPontoAPonto && (
+            <div className="col-4">
+              <span className="fw-bold">Etapa: </span>
+              <span>{event.objeto.etapa}</span>
+            </div>
+          )}
+          {!ehCronogramaPontoAPonto && (
+            <div className="col-4">
+              <span className="fw-bold">Parte: </span>
+              <span>{event.objeto.parte}</span>
+            </div>
+          )}
           <div className="col-4">
             <span className="fw-bold">Quantidade: </span>
             <span>
@@ -94,22 +103,36 @@ export const ModalCronograma: React.FC<Props> = ({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        {(usuarioEhCronograma() ||
-          usuarioEhDilogDiretoria() ||
-          usuarioEhCodaeDilog()) &&
-          event.objeto.status === "Assinado CODAE" && (
-            <Botao
-              texto="Alterar"
-              type={BUTTON_TYPE.BUTTON}
-              onClick={() => {
-                navigate(
-                  `/${PRE_RECEBIMENTO}/${ALTERACAO_CRONOGRAMA}?uuid=${event.objeto.uuid_cronograma}`,
-                );
-              }}
-              style={BUTTON_STYLE.GREEN_OUTLINE}
-              className="ms-3"
-            />
-          )}
+        {ehCronogramaPontoAPonto
+          ? (usuarioEhCronograma() || usuarioEhCodaeDilog()) && (
+              <Botao
+                texto="Alterar"
+                type={BUTTON_TYPE.BUTTON}
+                onClick={() => {
+                  navigate(
+                    `/${PRE_RECEBIMENTO}/${ALTERAR_CRONOGRAMA_SEMANAL}?uuid=${event.objeto.uuid_cronograma}`,
+                  );
+                }}
+                style={BUTTON_STYLE.GREEN_OUTLINE}
+                className="ms-3"
+              />
+            )
+          : (usuarioEhCronograma() ||
+              usuarioEhDilogDiretoria() ||
+              usuarioEhCodaeDilog()) &&
+            event.objeto.status === "Assinado CODAE" && (
+              <Botao
+                texto="Alterar"
+                type={BUTTON_TYPE.BUTTON}
+                onClick={() => {
+                  navigate(
+                    `/${PRE_RECEBIMENTO}/${ALTERACAO_CRONOGRAMA}?uuid=${event.objeto.uuid_cronograma}`,
+                  );
+                }}
+                style={BUTTON_STYLE.GREEN_OUTLINE}
+                className="ms-3"
+              />
+            )}
         <Botao
           texto="Fechar"
           onClick={closeModal}

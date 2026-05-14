@@ -1,5 +1,6 @@
 import {
   CALENDARIO_CRONOGRAMA,
+  CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL,
   CRONOGRAMA_ENTREGA,
   CRONOGRAMA_SEMANAL_FLV,
   DOCUMENTOS_RECEBIMENTO,
@@ -79,6 +80,13 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
       {usuarioComAcessoAoCalendarioCronograma() && (
         <LeafItem to={`/${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA}`}>
           Calendário de Cronogramas
+        </LeafItem>
+      )}
+      {usuarioComAcessoAoCalendarioCronograma() && (
+        <LeafItem
+          to={`/${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`}
+        >
+          Calendário Ponto a Ponto
         </LeafItem>
       )}
       {usuarioEhEmpresaFornecedor() && (
