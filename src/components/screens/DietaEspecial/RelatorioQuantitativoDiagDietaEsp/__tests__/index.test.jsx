@@ -156,7 +156,7 @@ const preencherFormulario = async () => {
   });
 };
 
-describe.skip("RelatorioQuantitativoDiagDietaEsp", () => {
+describe("RelatorioQuantitativoDiagDietaEsp", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
