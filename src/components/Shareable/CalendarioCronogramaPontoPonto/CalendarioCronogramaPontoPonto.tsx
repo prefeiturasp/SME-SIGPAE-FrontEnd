@@ -65,6 +65,7 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
         getInterrupcoesProgramadas({
           ...params,
           motivo: ["FERIADO", "EMENDA"],
+          tipo_calendario: ["PONTO_A_PONTO"],
         }),
       ]);
 
@@ -143,7 +144,7 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
         ? `${event.motivo_display}: ${event.descricao_motivo}`
         : event.motivo_display;
 
-      tooltipTitle = `${textoPrincipal} - ${event.tipo_calendario_display}`;
+      tooltipTitle = `${textoPrincipal}`;
     } else {
       tooltipTitle = event.title;
     }
