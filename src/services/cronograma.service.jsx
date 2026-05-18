@@ -174,6 +174,14 @@ export const getCalendarioCronogramas = async (params) => {
   }
 };
 
+export const getCalendarioCronogramasPontoPonto = async (params) => {
+  try {
+    return await axios.get("/cronogramas-semanais/calendario/", { params });
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
+};
+
 export const getListaCronogramasPraFichaRecebimento = async () => {
   try {
     return await axios.get("/cronogramas/lista-cronogramas-ficha-recebimento/");

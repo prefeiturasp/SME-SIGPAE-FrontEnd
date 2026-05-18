@@ -7,14 +7,17 @@ import {
   formataMilharDecimal,
 } from "src/helpers/utilities";
 import { Tooltip } from "antd";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { formataNome } from "./helpers";
 import {
   PRE_RECEBIMENTO,
+  ALTERAR_CRONOGRAMA_SEMANAL,
   DETALHE_CRONOGRAMA_SEMANAL,
   CADASTRO_CRONOGRAMA_SEMANAL,
 } from "src/configs/constants";
+import { imprimirCronogramaSemanal } from "src/services/cronogramaSemanal.service";
 
-const ListagemCronogramas = ({ cronogramas, ativos }) => {
+const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
   const ehFornecedor = usuarioEhEmpresaFornecedor();
 
   const statusValue = (status) => {
@@ -23,6 +26,19 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
     } else {
       return status;
     }
+  };
+
+  const baixarPDFCronogramaSemanal = (cronograma) => {
+    setCarregando(true);
+    let uuid = cronograma.uuid;
+    let numero = cronograma.numero;
+    imprimirCronogramaSemanal(uuid, numero)
+      .catch((error) =>
+        error.response.data.text().then((text) => toastError(text)),
+      )
+      .finally(() => {
+        setCarregando(false);
+      });
   };
 
   return (
@@ -92,22 +108,47 @@ const ListagemCronogramas = ({ cronogramas, ativos }) => {
                       </span>
                     </NavLink>
                   ) : (
-                    <NavLink
-                      className="float-start"
-                      to={`/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
-                    >
-                      <span className="link-acoes green">
-                        {ehFornecedor &&
-                        cronograma.status === "Enviado ao Fornecedor" ? (
-                          <i
-                            className="fas fa-file-signature"
-                            title="Assinar"
-                          />
-                        ) : (
-                          <i className="fas fa-eye" title="Detalhar" />
-                        )}
-                      </span>
-                    </NavLink>
+                    <>
+                      <NavLink
+                        className="float-start"
+                        to={`/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
+                      >
+                        <span className="link-acoes green">
+                          {ehFornecedor &&
+                          cronograma.status === "Enviado ao Fornecedor" ? (
+                            <i
+                              className="fas fa-file-signature"
+                              title="Assinar"
+                            />
+                          ) : (
+                            <i className="fas fa-eye" title="Detalhar" />
+                          )}
+                        </span>
+                      </NavLink>
+                      {cronograma.status === "Fornecedor Ciente" && (
+                        <>
+                          <span
+                            data-testid={`imprimir_${index}`}
+                            className="float-start ms-1 link-acoes green"
+                            onClick={() =>
+                              baixarPDFCronogramaSemanal(cronograma)
+                            }
+                          >
+                            <i className="fas fa-print" title="Imprimir" />
+                          </span>
+                          {!ehFornecedor && (
+                            <NavLink
+                              className="float-start ms-1"
+                              to={`/${PRE_RECEBIMENTO}/${ALTERAR_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
+                            >
+                              <span className="link-acoes laranja">
+                                <i className="fas fa-edit" title="Editar" />
+                              </span>
+                            </NavLink>
+                          )}
+                        </>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

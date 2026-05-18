@@ -7,6 +7,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
 import {
   mockCronogramaSemanalDetalhe,
@@ -16,12 +17,18 @@ import DetalharCronogramaSemanal from "../components/Detalhar";
 import mock from "src/services/_mock";
 import { localStorageMock } from "src/mocks/localStorageMock";
 
+jest.mock("src/services/cronogramaSemanal.service", () => ({
+  ...jest.requireActual("src/services/cronogramaSemanal.service"),
+  imprimirCronogramaSemanal: jest.fn(() => Promise.resolve()),
+}));
+
 const setup = async (uuid = mockCronogramaSemanalDetalhe.uuid) => {
   setWindowLocation(`?uuid=${uuid}`);
   await act(async () => {
     render(
       <MemoryRouter>
         <DetalharCronogramaSemanal />
+        <ToastContainer />
       </MemoryRouter>,
     );
   });

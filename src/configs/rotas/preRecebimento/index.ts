@@ -16,6 +16,7 @@ import {
   usuarioEhDilogVisualizacao,
 } from "src/helpers/utilities";
 
+import AlterarCronogramaSemanalPage from "src/pages/PreRecebimento/AlterarCronogramaSemanalPage";
 import CadastroCronogramaSemanalPage from "src/pages/PreRecebimento/CadastroCronogramaSemanalPage";
 import CronogramaSemanalFLVPage from "src/pages/PreRecebimento/CronogramaSemanalFLVPage";
 import DetalharCronogramaSemanalPage from "src/pages/PreRecebimento/DetalharCronogramaSemanalPage";
@@ -40,6 +41,7 @@ import CadastroCronogramaPage from "src/pages/PreRecebimento/CadastroCronogramaP
 import CadastroDocumentosRecebimentoPage from "src/pages/PreRecebimento/CadastroDocumentosRecebimentoPage";
 import CadastroLayoutEmbalagemPage from "src/pages/PreRecebimento/CadastroLayoutEmbalagemPage";
 import CalendarioCronogramaPage from "src/pages/PreRecebimento/CalendarioCronogramaPage";
+import CalendarioCronogramaPontoPontoPage from "src/pages/PreRecebimento/CalendarioCronogramaPontoPontoPage";
 import StatusDocumentoAprovados from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoAprovados";
 import StatusDocumentoEnviadosParaCorrecao from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoEnviadosParaCorrecao";
 import StatusDocumentoPendenteAprovacao from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoPendenteAprovacao";
@@ -324,6 +326,11 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     tipoUsuario: usuarioComAcessoAoCalendarioCronograma(),
   },
   {
+    path: `/${constants.PRE_RECEBIMENTO}/${constants.CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`,
+    component: CalendarioCronogramaPontoPontoPage,
+    tipoUsuario: usuarioComAcessoAoCalendarioCronograma(),
+  },
+  {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.RELATORIO_CRONOGRAMA}`,
     component: RelatorioCronogramaPage,
     tipoUsuario: usuarioComAcessoAoRelatorioCronogramas(),
@@ -449,5 +456,10 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog(),
+  },
+  {
+    path: `/${constants.PRE_RECEBIMENTO}/${constants.ALTERAR_CRONOGRAMA_SEMANAL}`,
+    component: AlterarCronogramaSemanalPage,
+    tipoUsuario: usuarioEhCronograma() || usuarioEhCodaeDilog(),
   },
 ];

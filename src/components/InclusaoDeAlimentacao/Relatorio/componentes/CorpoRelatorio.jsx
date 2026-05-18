@@ -1,38 +1,36 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
-import {
-  corDaMensagem,
-  stringSeparadaPorVirgulas,
-  ehInclusaoContinua,
-  ehInclusaoCei,
-  justificativaAoNegarSolicitacao,
-  gerarLinkRelatorio,
-} from "src/helpers/utilities";
 import Botao from "src/components/Shareable/Botao";
 import {
-  BUTTON_TYPE,
-  BUTTON_STYLE,
   BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { formataMotivosDias } from "./helper";
+import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
 import { fluxoPartindoEscola } from "src/components/Shareable/FluxoDeStatus/helper";
-import TabelaFaixaEtaria from "src/components/Shareable/TabelaFaixaEtaria";
 import { existeLogDeQuestionamentoDaCODAE } from "src/components/Shareable/RelatorioHistoricoQuestionamento/helper";
-import { getRelatorioInclusaoAlimentacao } from "src/services/relatorios";
-import { WEEK } from "src/configs/constants";
-import InclusoesCEI from "./InclusoesCEI";
-import { ToggleExpandir } from "../../../Shareable/ToggleExpandir";
 import { SolicitacoesSimilaresInclusao } from "src/components/Shareable/SolicitacoesSimilaresInclusao";
+import TabelaFaixaEtaria from "src/components/Shareable/TabelaFaixaEtaria";
+import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
+import { WEEK } from "src/configs/constants";
 import {
+  corDaMensagem,
+  ehInclusaoCei,
+  ehInclusaoContinua,
+  gerarLinkRelatorio,
+  justificativaAoNegarSolicitacao,
+  stringSeparadaPorVirgulas,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhDRE,
 } from "src/helpers/utilities";
+import { getRelatorioInclusaoAlimentacao } from "src/services/relatorios";
+import { formataMotivosDias } from "./helper";
+import InclusoesCEI from "./InclusoesCEI";
 
 const renderParteAvulsa = (
   inclusaoDeAlimentacao,
   inclusoes,
-  tipoSolicitacao
+  tipoSolicitacao,
 ) => {
   const diasMotivosFormatados = formataMotivosDias(inclusoes);
   const getDia = (dia) => {
@@ -96,7 +94,7 @@ const renderParteAvulsa = (
             .filter(
               (inclusao) =>
                 inclusao.motivo.nome.includes("Outro") ||
-                inclusao.motivo.nome.includes("Evento Específico")
+                inclusao.motivo.nome.includes("Evento Específico"),
             )
             .map((inclusao, key) => {
               return [
@@ -151,8 +149,16 @@ const renderParteAvulsa = (
   );
 };
 
-const renderParteContinua = (inclusaoDeAlimentacao) => {
+const renderParteContinua = (
+  inclusaoDeAlimentacao,
+  todasEncerradaMesmaData,
+) => {
   const { motivo, data_final, data_inicial } = inclusaoDeAlimentacao;
+  const dataEncerramento = todasEncerradaMesmaData
+    ? inclusaoDeAlimentacao.quantidades_periodo.find(
+        (q) => q.encerrado_a_partir_de,
+      )?.encerrado_a_partir_de
+    : null;
   return (
     <div>
       <div className="row">
@@ -166,7 +172,16 @@ const renderParteContinua = (inclusaoDeAlimentacao) => {
         </div>
         <div className="col-2 report-label-value">
           <p>Até</p>
-          <p className="value">{data_final}</p>
+          <p className="value">
+            {todasEncerradaMesmaData ? (
+              <>
+                <s>{data_final}</s>{" "}
+                <span className="color-red">{dataEncerramento}</span>
+              </>
+            ) : (
+              data_final
+            )}
+          </p>
         </div>
       </div>
     </div>
@@ -177,8 +192,17 @@ export const CorpoRelatorio = ({ ...props }) => {
   const { tipoSolicitacao, prazoDoPedidoMensagem, inclusaoDeAlimentacao } =
     props;
 
+  const encerradoDates = (inclusaoDeAlimentacao.quantidades_periodo || [])
+    .map((q) => q.encerrado_a_partir_de)
+    .filter(Boolean);
+  const todasEncerradaMesmaData =
+    encerradoDates.length > 0 &&
+    encerradoDates.length ===
+      (inclusaoDeAlimentacao.quantidades_periodo || []).length &&
+    encerradoDates.every((d) => d === encerradoDates[0]);
+
   const [solicitacoesSimilares, setSolicitacoesSimilares] = useState(
-    props.solicitacoesSimilares
+    props.solicitacoesSimilares,
   );
 
   const [baixandoPDF, setBaixandoPDF] = useState(false);
@@ -187,7 +211,7 @@ export const CorpoRelatorio = ({ ...props }) => {
     !inclusaoDeAlimentacao.periodo_escolar && ehInclusaoCei(tipoSolicitacao);
 
   const justificativaNegacao = justificativaAoNegarSolicitacao(
-    inclusaoDeAlimentacao.logs
+    inclusaoDeAlimentacao.logs,
   );
 
   const collapseSolicitacaoSimilar = (idxSolicitacaoSimilar) => {
@@ -197,7 +221,7 @@ export const CorpoRelatorio = ({ ...props }) => {
           solicitacaoSimilar.collapsed = !solicitacaoSimilar.collapsed;
         }
         return solicitacaoSimilar;
-      }
+      },
     );
 
     setSolicitacoesSimilares(novoSolicitacoesSimilares);
@@ -208,7 +232,7 @@ export const CorpoRelatorio = ({ ...props }) => {
       <div className="row">
         <p
           className={`col-12 title-message ${corDaMensagem(
-            prazoDoPedidoMensagem
+            prazoDoPedidoMensagem,
           )}`}
         >
           {prazoDoPedidoMensagem}
@@ -228,7 +252,7 @@ export const CorpoRelatorio = ({ ...props }) => {
               await getRelatorioInclusaoAlimentacao(
                 inclusaoDeAlimentacao.uuid,
                 tipoSolicitacao,
-                inclusaoDeAlimentacao?.escola?.nome
+                inclusaoDeAlimentacao?.escola?.nome,
               );
               setBaixandoPDF(false);
             }}
@@ -322,7 +346,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                                   ? "-cemei"
                                   : ""
                               }`,
-                              solicitacao
+                              solicitacao,
                             )}
                             target="blank"
                           >
@@ -351,7 +375,7 @@ export const CorpoRelatorio = ({ ...props }) => {
           </>
         )}
       {ehInclusaoContinua(tipoSolicitacao)
-        ? renderParteContinua(inclusaoDeAlimentacao)
+        ? renderParteContinua(inclusaoDeAlimentacao, todasEncerradaMesmaData)
         : renderParteAvulsa(
             inclusaoDeAlimentacao,
             inclusaoDeAlimentacao.inclusoes ||
@@ -362,7 +386,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                   outro_motivo: inclusaoDeAlimentacao.outro_motivo,
                 },
               ],
-            tipoSolicitacao
+            tipoSolicitacao,
           )}
       {exibirNovoComponeneteCEI ? (
         <InclusoesCEI inclusaoDeAlimentacao={inclusaoDeAlimentacao} />
@@ -386,6 +410,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                       <tr
                         className={
                           quantidade_por_periodo.cancelado ||
+                          quantidade_por_periodo.encerrado_a_partir_de ||
                           inclusaoDeAlimentacao.status === "ESCOLA_CANCELOU"
                             ? "cancelado"
                             : ""
@@ -425,7 +450,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                           <p>
                             {stringSeparadaPorVirgulas(
                               quantidade_por_periodo.tipos_alimentacao,
-                              "nome"
+                              "nome",
                             )}
                           </p>
                         </td>
@@ -447,7 +472,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                             <p>
                               <strong>Observações: </strong>
                               {!["<p></p>", "", null].includes(
-                                quantidade_por_periodo.observacao
+                                quantidade_por_periodo.observacao,
                               ) ? (
                                 <p
                                   className="value"
@@ -460,7 +485,16 @@ export const CorpoRelatorio = ({ ...props }) => {
                               )}
                             </p>
 
-                            {(quantidade_por_periodo.cancelado_justificativa ||
+                            {quantidade_por_periodo.encerrado_a_partir_de &&
+                              !todasEncerradaMesmaData && (
+                                <p className="color-red fw-bold">
+                                  Encerramento previsto para:{" "}
+                                  {quantidade_por_periodo.encerrado_a_partir_de}
+                                </p>
+                              )}
+
+                            {((quantidade_por_periodo.cancelado_justificativa &&
+                              !quantidade_por_periodo.encerrado_a_partir_de) ||
                               inclusaoDeAlimentacao.status ===
                                 "ESCOLA_CANCELOU") && (
                               <p className="justificativa-cancelamento dark-red">
@@ -469,7 +503,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                                   inclusaoDeAlimentacao.logs.find(
                                     (log) =>
                                       log.status_evento_explicacao ===
-                                      "Escola cancelou"
+                                      "Escola cancelou",
                                   ).justificativa}
                               </p>
                             )}
@@ -477,7 +511,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                         </tr>
                       ),
                     ];
-                  }
+                  },
                 )
               ) : (
                 <tr>
@@ -488,7 +522,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                   <td>
                     {stringSeparadaPorVirgulas(
                       inclusaoDeAlimentacao.tipos_alimentacao,
-                      "nome"
+                      "nome",
                     )}
                   </td>
                   <td>
@@ -496,7 +530,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                       function (acc, v) {
                         return acc + (v.quantidade || v.quantidade_alunos);
                       },
-                      0
+                      0,
                     )}
                   </td>
                 </tr>
@@ -522,7 +556,7 @@ export const CorpoRelatorio = ({ ...props }) => {
               </p>
               {
                 inclusaoDeAlimentacao.logs.find(
-                  (log) => log.status_evento_explicacao === "CODAE autorizou"
+                  (log) => log.status_evento_explicacao === "CODAE autorizou",
                 ).criado_em
               }{" "}
               - Informações da CODAE
@@ -534,7 +568,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                   __html: `${
                     inclusaoDeAlimentacao.logs.find(
                       (log) =>
-                        log.status_evento_explicacao === "CODAE autorizou"
+                        log.status_evento_explicacao === "CODAE autorizou",
                     ).justificativa || `Sem observações por parte da CODAE`
                   }`,
                 }}

@@ -208,11 +208,10 @@ describe("CorrigirDocumentosRecebimento - Testes Completos", () => {
       });
     });
 
-    it("campo de seleção de documentos é obrigatório", async () => {
+    it("campo de seleção de documentos não é obrigatório", async () => {
       await setup();
 
       await waitFor(() => {
-        expect(screen.getAllByText("*").length).toBeGreaterThan(0);
         expect(screen.getByText("Selecione o documento")).toBeInTheDocument();
       });
     });
@@ -331,6 +330,40 @@ describe("CorrigirDocumentosRecebimento - Testes Completos", () => {
       await setup();
 
       await clicarBotao("Salvar e Enviar");
+      await clicarBotao("Sim");
+
+      await waitFor(() => {
+        expect(mock.history.patch.length).toBe(1);
+        expect(mock.history.patch[0].url).toContain("/corrigir-documentos/");
+      });
+    });
+
+    it("permite submeter correção sem documentos extras (apenas Laudo)", async () => {
+      mock.onGet(/\/documentos-de-recebimento\/.*\/?/).reply(200, {
+        ...mockDadosDocumento,
+        tipos_de_documentos: [
+          {
+            tipo_documento: "LAUDO",
+            arquivos: [
+              {
+                nome: "laudo-original.pdf",
+                arquivo: "http://example.com/laudo-original.pdf",
+              },
+            ],
+          },
+        ],
+      });
+
+      await setup();
+
+      await clicarBotao("Salvar e Enviar");
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Salvar e Enviar Documentos"),
+        ).toBeInTheDocument();
+      });
+
       await clicarBotao("Sim");
 
       await waitFor(() => {
