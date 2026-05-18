@@ -116,6 +116,10 @@ const atualizaLocalStorage = (result_) => {
         .possui_escolas_com_acesso_ao_medicao_inicial,
     ),
   );
+  localStorage.setItem(
+    "possui_alunos_regulares",
+    JSON.stringify(result_.vinculo_atual.instituicao.possui_alunos_regulares),
+  );
 };
 
 const login = async (login, password) => {
@@ -180,6 +184,7 @@ const logout = () => {
   localStorage.removeItem("acesso_modulo_medicao_inicial");
   localStorage.removeItem("dre_acesso_modulo_medicao_inicial");
   localStorage.removeItem("possui_escolas_com_acesso_ao_medicao_inicial");
+  localStorage.removeItem("possui_alunos_regulares");
   window.location.href = "/login";
 };
 
