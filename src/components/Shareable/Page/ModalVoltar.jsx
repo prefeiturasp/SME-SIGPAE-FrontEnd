@@ -30,20 +30,20 @@ const ModalVoltar = ({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        <p>Deseja voltar para a tela anterior?</p>
+
         {textoModalVoltar ? (
           <p> {textoModalVoltar} </p>
         ) : (
           <p>
-            Existem informações não salvas. Ao voltar à tela anterior, as
-            informações inseridas serão perdidas.
+            Verifique se todas as informações importantes já foram salvas antes
+            de sair.
           </p>
         )}
-
-        <p>Deseja retornar a tela anterior?</p>
       </Modal.Body>
       <Modal.Footer>
         <Botao
-          texto="Voltar sem Salvar"
+          texto="Voltar à Tela Anterior"
           type={BUTTON_TYPE.BUTTON}
           onClick={() => {
             voltarPagina();
