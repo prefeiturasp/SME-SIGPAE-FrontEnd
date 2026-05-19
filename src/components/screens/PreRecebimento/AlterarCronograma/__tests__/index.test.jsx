@@ -223,14 +223,14 @@ describe("AlterarCronograma - Testes Completos", () => {
 
       await waitFor(
         () => {
-          expect(screen.getByText(/Deseja retornar/i)).toBeInTheDocument();
+          expect(screen.getByText(/Deseja voltar/i)).toBeInTheDocument();
         },
         { timeout: 5000 },
       );
 
       const botoes = screen.getAllByRole("button");
       const modalSim = botoes.find(
-        (b) => b.textContent === "Voltar sem Salvar",
+        (b) => b.textContent === "Voltar à Tela Anterior",
       );
 
       // Mock history length para forçar navigate(-1)
@@ -511,7 +511,7 @@ describe("AlterarCronograma - Testes Completos", () => {
 
       await waitFor(
         () => {
-          expect(screen.getByText(/Deseja retornar/i)).toBeInTheDocument();
+          expect(screen.getByText(/Deseja voltar/i)).toBeInTheDocument();
         },
         { timeout: 5000 },
       );
@@ -531,7 +531,7 @@ describe("AlterarCronograma - Testes Completos", () => {
 
       await waitFor(
         () => {
-          expect(screen.getByText(/Deseja retornar/i)).toBeInTheDocument();
+          expect(screen.getByText(/Deseja voltar/i)).toBeInTheDocument();
         },
         { timeout: 5000 },
       );
@@ -541,7 +541,7 @@ describe("AlterarCronograma - Testes Completos", () => {
       fireEvent.click(modalNao);
 
       await waitFor(() => {
-        expect(screen.queryByText(/Deseja retornar/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Deseja voltar/i)).not.toBeInTheDocument();
       });
     });
   });
