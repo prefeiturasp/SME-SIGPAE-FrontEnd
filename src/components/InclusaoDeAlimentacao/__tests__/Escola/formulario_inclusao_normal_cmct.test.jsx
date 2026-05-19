@@ -62,6 +62,7 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("nome_instituicao", `"CMCT VANDYR DA SILVA, PROF"`);
+    localStorage.setItem("possui_alunos_regulares", "false");
 
     await act(async () => {
       render(

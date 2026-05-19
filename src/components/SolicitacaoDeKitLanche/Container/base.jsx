@@ -28,8 +28,7 @@ import {
   escolaEhCei,
   fimDoCalendario,
   getError,
-  usuarioEhEscolaCeuGestao,
-  usuarioEhEscolaCMCT,
+  usuarioEhEscolaSemAlunosRegulares,
 } from "../../../helpers/utilities";
 import { getDietasAtivasInativasPorAluno } from "../../../services/dietaEspecial.service";
 import { Botao } from "../../Shareable/Botao";
@@ -92,7 +91,7 @@ export class SolicitacaoDeKitLanche extends Component {
 
   validarQuantidadeAlunos = (value) => {
     const { meusDados } = this.props;
-    if (!usuarioEhEscolaCeuGestao() && !usuarioEhEscolaCMCT()) {
+    if (!usuarioEhEscolaSemAlunosRegulares()) {
       const maximo = meusDados.vinculo_atual.instituicao.quantidade_alunos;
       if (value > maximo) {
         this.setState({
@@ -598,10 +597,7 @@ export class SolicitacaoDeKitLanche extends Component {
                       label="Número de alunos"
                       required
                       validate={(value) => {
-                        if (
-                          usuarioEhEscolaCeuGestao() ||
-                          usuarioEhEscolaCMCT()
-                        ) {
+                        if (usuarioEhEscolaSemAlunosRegulares()) {
                           return undefined;
                         }
                         const errors = this.validationRules
@@ -667,7 +663,7 @@ export class SolicitacaoDeKitLanche extends Component {
                   </span>
                 </div>
               </div>
-              {!usuarioEhEscolaCeuGestao() && !usuarioEhEscolaCMCT() && (
+              {!usuarioEhEscolaSemAlunosRegulares() && (
                 <Fragment>
                   <div className="form-group row sub-title">
                     <p className="dre-name">

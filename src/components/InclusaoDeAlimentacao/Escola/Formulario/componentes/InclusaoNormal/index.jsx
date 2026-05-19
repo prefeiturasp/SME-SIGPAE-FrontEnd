@@ -1,18 +1,18 @@
-import React, { useEffect } from "react";
+import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import { useEffect } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
-import Select from "src/components/Shareable/Select";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
-import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import CKEditorField from "src/components/Shareable/CKEditorField";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import InputText from "src/components/Shareable/Input/InputText";
-import CKEditorField from "src/components/Shareable/CKEditorField";
+import Select from "src/components/Shareable/Select";
+import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import {
   dataDuplicada,
   maxLength,
@@ -26,8 +26,7 @@ import {
   composeValidators,
   fimDoCalendario,
   formatarParaMultiselect,
-  usuarioEhEscolaCeuGestao,
-  usuarioEhEscolaCMCT,
+  usuarioEhEscolaSemAlunosRegulares,
 } from "src/helpers/utilities";
 import { renderizaSelectSimples } from "../../../../helper";
 import "../../style.scss";
@@ -57,7 +56,7 @@ export const DataInclusaoNormal = ({ ...props }) => {
               required
               validate={composeValidators(
                 required,
-                dataDuplicada(values[nameFieldArray || "inclusoes"])
+                dataDuplicada(values[nameFieldArray || "inclusoes"]),
               )}
               inputOnChange={(value) => {
                 if (value) {
@@ -76,8 +75,8 @@ export const DataInclusaoNormal = ({ ...props }) => {
                   form.change(
                     nameFieldArray || "inclusoes",
                     values[nameFieldArray || "inclusoes"].filter(
-                      (_, i) => i !== index
-                    )
+                      (_, i) => i !== index,
+                    ),
                   )
                 }
                 style={BUTTON_STYLE.BLUE_OUTLINE}
@@ -155,28 +154,28 @@ export const PeriodosInclusaoNormal = ({
   const onTiposAlimentacaoChanged = (values_, indice) => {
     if (ehETEC) {
       const LANCHE_4H_UUID = periodos[0].tipos_alimentacao.find(
-        (ta) => ta.nome === "Lanche 4h"
+        (ta) => ta.nome === "Lanche 4h",
       ).uuid;
       const LANCHE_EMERGENCIAL = periodos[0].tipos_alimentacao.find(
-        (ta) => ta.nome === "Lanche Emergencial"
+        (ta) => ta.nome === "Lanche Emergencial",
       ).uuid;
       const NOT_LANCHE_4H_OR_EMERGENCIAL_UUID_ARRAY =
         periodos[0].tipos_alimentacao
           .filter(
-            (ta) => ![LANCHE_4H_UUID, LANCHE_EMERGENCIAL].includes(ta.uuid)
+            (ta) => ![LANCHE_4H_UUID, LANCHE_EMERGENCIAL].includes(ta.uuid),
           )
           .map((ta) => ta.uuid);
       if (values_.at(-1) === LANCHE_4H_UUID) {
         form.change(
           `quantidades_periodo[
         ${indice}].tipos_alimentacao_selecionados`,
-          [LANCHE_4H_UUID]
+          [LANCHE_4H_UUID],
         );
       } else if (values_.at(-1) === LANCHE_EMERGENCIAL) {
         form.change(
           `quantidades_periodo[
         ${indice}].tipos_alimentacao_selecionados`,
-          [LANCHE_EMERGENCIAL]
+          [LANCHE_EMERGENCIAL],
         );
       } else if (
         !values_.at(-1) ||
@@ -187,7 +186,7 @@ export const PeriodosInclusaoNormal = ({
         form.change(
           `quantidades_periodo[
         ${indice}].tipos_alimentacao_selecionados`,
-          []
+          [],
         );
       } else if (
         NOT_LANCHE_4H_OR_EMERGENCIAL_UUID_ARRAY.includes(values_.at(-1))
@@ -195,21 +194,19 @@ export const PeriodosInclusaoNormal = ({
         form.change(
           `quantidades_periodo[
         ${indice}].tipos_alimentacao_selecionados`,
-          NOT_LANCHE_4H_OR_EMERGENCIAL_UUID_ARRAY
+          NOT_LANCHE_4H_OR_EMERGENCIAL_UUID_ARRAY,
         );
       }
     } else {
       form.change(
         `quantidades_periodo[
             ${indice}].tipos_alimentacao_selecionados`,
-        values_
+        values_,
       );
     }
   };
   const handleNumeroAlunosValidate = (motivoEspecifico, periodos, indice) => {
-    return motivoEspecifico ||
-      usuarioEhEscolaCeuGestao() ||
-      usuarioEhEscolaCMCT()
+    return motivoEspecifico || usuarioEhEscolaSemAlunosRegulares()
       ? composeValidators(naoPodeSerZero, numericInteger, required)
       : composeValidators(
           naoPodeSerZero,
@@ -217,8 +214,8 @@ export const PeriodosInclusaoNormal = ({
           required,
           maxValue(
             periodos.find((p) => p.uuid === getPeriodo(indice).uuid)
-              ?.maximo_alunos
-          )
+              ?.maximo_alunos,
+          ),
         );
   };
 
@@ -249,13 +246,13 @@ export const PeriodosInclusaoNormal = ({
                         onClick={async () => {
                           await form.change(
                             `${name}.checked`,
-                            !values.quantidades_periodo[indice][`checked`]
+                            !values.quantidades_periodo[indice][`checked`],
                           );
                           await form.change(
                             `${name}.multiselect`,
                             !values.quantidades_periodo[indice][`checked`]
                               ? "multiselect-wrapper-enabled"
-                              : "multiselect-wrapper-disabled"
+                              : "multiselect-wrapper-disabled",
                           );
                         }}
                         className="checkbox-custom"
@@ -278,7 +275,7 @@ export const PeriodosInclusaoNormal = ({
                         name={`${name}.tipos_alimentacao_selecionados`}
                         options={[
                           ...agregarDefault(
-                            getPeriodo(indice).tipos_alimentacao
+                            getPeriodo(indice).tipos_alimentacao,
                           ),
                           {
                             nome: "Refeição e Sobremesa",
@@ -303,7 +300,7 @@ export const PeriodosInclusaoNormal = ({
                           []
                         }
                         options={formatarParaMultiselect(
-                          getPeriodo(indice).tipos_alimentacao || []
+                          getPeriodo(indice).tipos_alimentacao || [],
                         )}
                         onSelectedChanged={(values_) =>
                           onTiposAlimentacaoChanged(values_, indice)
@@ -335,7 +332,7 @@ export const PeriodosInclusaoNormal = ({
                       handleNumeroAlunosValidate(
                         motivoEspecifico,
                         periodos,
-                        indice
+                        indice,
                       )
                     }
                   />
