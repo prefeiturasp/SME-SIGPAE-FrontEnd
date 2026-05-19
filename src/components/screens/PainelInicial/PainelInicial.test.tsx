@@ -50,13 +50,13 @@ describe("PainelInicial - Navegação por perfil", () => {
     "deve navegar para a rota correta ao clicar em Medição Inicial - Perfil $nome",
     async ({ localStorage: ls, expectedRoute }) => {
       Object.entries(ls).forEach(([key, value]) =>
-        localStorage.setItem(key, value)
+        localStorage.setItem(key, value),
       );
 
       render(
         <MemoryRouter>
           <PainelInicial />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
 
       const medicaoInicialCard = screen.getByText("Medição Inicial");
@@ -65,7 +65,7 @@ describe("PainelInicial - Navegação por perfil", () => {
       fireEvent.click(medicaoInicialCard);
 
       expect(mockNavigate).toHaveBeenCalledWith(expectedRoute);
-    }
+    },
   );
 
   it("não deve exibir o card de Medição Inicial para perfis não permitidos", () => {
@@ -75,9 +75,72 @@ describe("PainelInicial - Navegação por perfil", () => {
     render(
       <MemoryRouter>
         <PainelInicial />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
+    expect(screen.queryByText("Medição Inicial")).not.toBeInTheDocument();
+  });
+});
+
+describe("PainelInicial - Perfil Fornecedor", () => {
+  beforeEach(() => {
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    mockNavigate.mockClear();
+    localStorage.setItem("perfil", PERFIL.USUARIO_EMPRESA);
+    localStorage.setItem("tipo_servico", TIPO_SERVICO.FORNECEDOR);
+
+    render(
+      <MemoryRouter>
+        <PainelInicial />
+      </MemoryRouter>,
+    );
+  });
+
+  it("exibe todos os cards do fornecedor", () => {
+    expect(screen.getByText("Cronograma de Entrega")).toBeInTheDocument();
+    expect(screen.getByText("Ficha Técnica")).toBeInTheDocument();
+    expect(screen.getByText("Documentos de Recebimento")).toBeInTheDocument();
+    expect(screen.getByText("Alterações de Cronograma")).toBeInTheDocument();
+    expect(screen.getByText("Layout de Embalagem")).toBeInTheDocument();
+  });
+
+  it("navega para Cronograma de Entrega ao clicar no card", () => {
+    fireEvent.click(screen.getByText("Cronograma de Entrega"));
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "pre-recebimento/cronograma-entrega",
+    );
+  });
+
+  it("navega para Ficha Técnica ao clicar no card", () => {
+    fireEvent.click(screen.getByText("Ficha Técnica"));
+    expect(mockNavigate).toHaveBeenCalledWith("pre-recebimento/ficha-tecnica");
+  });
+
+  it("navega para Documentos de Recebimento ao clicar no card", () => {
+    fireEvent.click(screen.getByText("Documentos de Recebimento"));
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "pre-recebimento/documentos-recebimento",
+    );
+  });
+
+  it("navega para Alterações de Cronograma ao clicar no card", () => {
+    fireEvent.click(screen.getByText("Alterações de Cronograma"));
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "pre-recebimento/solicitacao-alteracao-cronograma-fornecedor",
+    );
+  });
+
+  it("navega para Layout de Embalagem ao clicar no card", () => {
+    fireEvent.click(screen.getByText("Layout de Embalagem"));
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "pre-recebimento/layout-embalagem",
+    );
+  });
+
+  it("não exibe cards de outros módulos", () => {
+    expect(screen.queryByText("Gestão de Alimentação")).not.toBeInTheDocument();
+    expect(screen.queryByText("Dieta Especial")).not.toBeInTheDocument();
+    expect(screen.queryByText("Gestão de Produto")).not.toBeInTheDocument();
     expect(screen.queryByText("Medição Inicial")).not.toBeInTheDocument();
   });
 });
