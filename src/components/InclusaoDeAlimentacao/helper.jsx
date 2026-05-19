@@ -1,6 +1,6 @@
 import {
-  usuarioEhEscolaCMCT,
   usuarioEhEscolaCIEJA,
+  usuarioEhEscolaSemAlunosRegulares,
 } from "src/helpers/utilities";
 
 export const formatarTiposDeAlimentacao = (tiposAlimentacao) => {
@@ -20,7 +20,7 @@ export const formatarPeriodosEspecificosEMEF = (periodos) => {
     // Filtrar o array 'tipos_alimentacao' para remover o objeto com nome 'Lanche Emergencial'
     if (periodo["tipos_alimentacao"]) {
       periodo["tipos_alimentacao"] = periodo["tipos_alimentacao"].filter(
-        (tipo) => tipo.nome !== "Lanche Emergencial"
+        (tipo) => tipo.nome !== "Lanche Emergencial",
       );
     }
   });
@@ -72,7 +72,7 @@ export const formatarSubmissaoSolicitacaoNormal = (values) => {
         quantidade_periodo["periodo_escolar"] = quantidade_periodo.uuid;
       }
       if (
-        usuarioEhEscolaCMCT() ||
+        usuarioEhEscolaSemAlunosRegulares() ||
         usuarioEhEscolaCIEJA() ||
         quantidade_periodo.nome === "NOITE"
       ) {
@@ -97,14 +97,14 @@ export const formatarSubmissaoSolicitacaoNormal = (values) => {
       delete quantidade_periodo.inclusao_alimentacao_continua;
     });
   values.quantidades_periodo = values.quantidades_periodo.filter(
-    (qp) => qp.checked
+    (qp) => qp.checked,
   );
   return values;
 };
 
 const retornaQuantidadeDeAlunosNoPeriodoEscolar = (
   periodoUuid,
-  periodosQuantidadeAlunos
+  periodosQuantidadeAlunos,
 ) => {
   let quantidadeAlunos = null;
   periodosQuantidadeAlunos.forEach((periodo) => {
@@ -118,16 +118,16 @@ const retornaQuantidadeDeAlunosNoPeriodoEscolar = (
 export const abstraiPeriodosComAlunosMatriculados = (
   periodos,
   periodosQuantidadeAlunos,
-  ehAlteracao
+  ehAlteracao,
 ) => {
   periodos.forEach((periodo) => {
     periodo["maximo_alunos"] = retornaQuantidadeDeAlunosNoPeriodoEscolar(
       periodo.uuid,
-      periodosQuantidadeAlunos
+      periodosQuantidadeAlunos,
     );
     if (!ehAlteracao) {
       periodo["tipos_alimentacao"] = periodo.tipos_alimentacao.filter(
-        (tipo_alimentacao) => tipo_alimentacao.nome !== "Lanche Emergencial"
+        (tipo_alimentacao) => tipo_alimentacao.nome !== "Lanche Emergencial",
       );
     }
   });
@@ -145,6 +145,8 @@ export const exibeMotivoETEC = () => {
 
 export const renderizaSelectSimples = (nomePeriodo) => {
   return (
-    usuarioEhEscolaCMCT() || usuarioEhEscolaCIEJA() || nomePeriodo === "NOITE"
+    usuarioEhEscolaSemAlunosRegulares() ||
+    usuarioEhEscolaCIEJA() ||
+    nomePeriodo === "NOITE"
   );
 };

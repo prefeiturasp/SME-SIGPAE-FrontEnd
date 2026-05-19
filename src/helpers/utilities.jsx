@@ -721,9 +721,8 @@ export const usuarioEhDRE = () => {
   return localStorage.getItem("tipo_perfil") === TIPO_PERFIL.DIRETORIA_REGIONAL;
 };
 
-export const usuarioEhEscolaCeuGestao = () => {
-  const instituicao = nomeInstituicao();
-  return instituicao?.includes("CEU GESTAO");
+export const usuarioEhEscolaSemAlunosRegulares = () => {
+  return localStorage.getItem("possui_alunos_regulares") === "false";
 };
 
 export const usuarioEhEscolaCIEJA = () => {
@@ -734,11 +733,6 @@ export const usuarioEhEscolaCIEJA = () => {
 export const usuarioEhEscolaCEMEI = () => {
   const instituicao = nomeInstituicao();
   return instituicao?.includes("CEMEI");
-};
-
-export const usuarioEhEscolaCMCT = () => {
-  const instituicao = nomeInstituicao();
-  return instituicao?.includes("CMCT");
 };
 
 export const usuarioEhCoordenadorDRE = () => {

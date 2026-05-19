@@ -1,12 +1,9 @@
-import {
-  usuarioEhEscolaCeuGestao,
-  usuarioEhEscolaCMCT,
-} from "src/helpers/utilities";
+import { usuarioEhEscolaSemAlunosRegulares } from "src/helpers/utilities";
 
 export const validarSubmissaoNormal = (
   values,
   meusDados,
-  ehMotivoEspecifico
+  ehMotivoEspecifico,
 ) => {
   if (!values.quantidades_periodo.find((qp) => qp.checked))
     return "Necessário selecionar ao menos um período";
@@ -20,7 +17,7 @@ export const validarSubmissaoNormal = (
     .forEach((quantidade_periodo) => {
       totalAlunos += parseInt(quantidade_periodo.numero_alunos);
       if (
-        (usuarioEhEscolaCMCT() &&
+        (usuarioEhEscolaSemAlunosRegulares() &&
           !quantidade_periodo.tipos_alimentacao_selecionados) ||
         quantidade_periodo.tipos_alimentacao_selecionados.length === 0
       ) {
@@ -30,13 +27,12 @@ export const validarSubmissaoNormal = (
 
   if (periodosSemTipoAlimentacao.length > 0) {
     return `Selecione ao menos um tipo de alimentação no(s) período(s) ${String(
-      periodosSemTipoAlimentacao
+      periodosSemTipoAlimentacao,
     )}`;
   }
 
   if (
-    !usuarioEhEscolaCeuGestao() &&
-    !usuarioEhEscolaCMCT() &&
+    !usuarioEhEscolaSemAlunosRegulares() &&
     !ehMotivoEspecifico &&
     meusDados.vinculo_atual.instituicao.quantidade_alunos < totalAlunos
   ) {
@@ -48,7 +44,7 @@ export const validarSubmissaoNormal = (
 export const validarSubmissaoContinua = (
   values,
   meusDados,
-  ehMotivoEspecifico
+  ehMotivoEspecifico,
 ) => {
   if (!values.quantidades_periodo)
     return "Necessário adicionar ao menos uma recorrência";
@@ -61,8 +57,7 @@ export const validarSubmissaoContinua = (
 
   if (
     !values.quantidades_periodo.find((qp) => qp.nome === "NOITE") &&
-    !usuarioEhEscolaCeuGestao() &&
-    !usuarioEhEscolaCMCT()
+    !usuarioEhEscolaSemAlunosRegulares()
   ) {
     if (
       !ehMotivoEspecifico &&
