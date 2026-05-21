@@ -131,6 +131,7 @@ describe("Test <Relatorio> - Relatório de Dieta Especial - Pendente Autorizaç�
 
     expect(screen.getAllByTestId("ckeditor-mock")).toHaveLength(2);
   });
+
   it("deve preencher informacoes_adicionais com texto padrão quando vier null", async () => {
     await awaitServices();
 
