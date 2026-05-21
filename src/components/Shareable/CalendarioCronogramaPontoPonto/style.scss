@@ -81,3 +81,24 @@ div.calendario-sobremesa {
     }
   }
 }
+
+div.agenda-tab {
+  text-align: center;
+  padding: 0.5em;
+  background-color: #d4d4d4;
+  border-radius: 4px;
+  color: #666;
+  font-weight: bold;
+  width: 5em;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+
+  &.active {
+    background-color: $green;
+    color: white;
+  }
+
+  &:hover:not(.active) {
+    background-color: #c0c0c0;
+  }
+}
