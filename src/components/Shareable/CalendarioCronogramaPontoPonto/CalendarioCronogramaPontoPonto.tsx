@@ -141,8 +141,11 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
   const handleTabMes = () => setView("month");
 
   const handleTabAgenda = () => {
-    const segunda = moment().startOf("isoWeek").toDate();
-    setDataAgenda(segunda);
+    const primeiroDiaUtil = moment([ano, mes - 1, 1]);
+    while (primeiroDiaUtil.isoWeekday() > 5) {
+      primeiroDiaUtil.add(1, "day");
+    }
+    setDataAgenda(primeiroDiaUtil.toDate());
     setView("agenda");
   };
 
@@ -282,6 +285,7 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
                 {view === "month" ? (
                   <Calendar
                     key="calendar-month"
+                    date={moment([ano, mes - 1, 1]).toDate()}
                     style={{ height: 1000 }}
                     formats={{
                       weekdayFormat: (date, culture, localizer) =>
