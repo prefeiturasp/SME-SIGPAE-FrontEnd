@@ -1,0 +1,92 @@
+@use "sass:color";
+@use "src/styles/variables.scss" as *;
+
+.agenda-semanal-view {
+  padding: 16px 0;
+}
+
+.agenda-row {
+  display: flex;
+  gap: 16px;
+  padding: 12px 8px;
+  border: 1px solid #e0e0e0;
+  min-height: 72px;
+  align-items: stretch;
+
+  &:not(:first-child) {
+    border-top: none;
+  }
+}
+
+.agenda-day-header {
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.25em 0.5em;
+  border-right: 1px solid #e0e0e0;
+  text-align: center;
+  justify-content: center;
+}
+
+.agenda-day-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.3;
+}
+
+.agenda-day-date {
+  font-weight: 600;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.3;
+}
+
+.agenda-day-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.agenda-interrupcao-tag {
+  background-color: #ffe0b2;
+  color: #bf360c;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  width: fit-content;
+  text-transform: uppercase;
+}
+
+.agenda-product-tag {
+  background-color: $green;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  width: 100%;
+  text-transform: uppercase;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &:focus-visible {
+    outline: 2px solid color.adjust($green, $lightness: -15%);
+    outline-offset: 2px;
+  }
+}
+
+.agenda-empty {
+  color: #999;
+  font-size: 13px;
+  font-style: italic;
+}
