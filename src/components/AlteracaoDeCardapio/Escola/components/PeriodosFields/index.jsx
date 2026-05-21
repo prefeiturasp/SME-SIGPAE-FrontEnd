@@ -7,10 +7,7 @@ import {
   required,
   requiredMultiselect,
 } from "src/helpers/fieldValidators";
-import {
-  usuarioEhEscolaCeuGestao,
-  usuarioEhEscolaCMCT,
-} from "src/helpers/utilities";
+import { usuarioEhEscolaSemAlunosRegulares } from "src/helpers/utilities";
 import React, { Fragment } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
@@ -55,7 +52,7 @@ export const PeriodosFields = ({ ...props }) => {
   };
 
   const handleNumeroAlunosValidate = (index) => {
-    return usuarioEhEscolaCeuGestao() || usuarioEhEscolaCMCT()
+    return usuarioEhEscolaSemAlunosRegulares()
       ? composeValidators(naoPodeSerZero, required)
       : composeValidators(
           naoPodeSerZero,

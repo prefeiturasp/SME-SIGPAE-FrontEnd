@@ -8,10 +8,21 @@ import { IconeGestaoDeProduto } from "src/components/Shareable/Icones/IconeGesta
 import { IconeMedicaoInicial } from "src/components/Shareable/Icones/IconeMedicaoInicial";
 import { IconeAbastecimento } from "./components/IconeAbastecimento";
 import { IconeSupervisaoTerceirizadas } from "./components/IconeSupervisaoTerceirizadas";
+import { IconeCronogramaEntrega } from "src/components/Shareable/Icones/IconeCronogramaEntrega";
+import { IconeFichaTecnica } from "src/components/Shareable/Icones/IconeFichaTecnica";
+import { IconeDocumentosRecebimento } from "src/components/Shareable/Icones/IconeDocumentosRecebimento";
+import { IconeAlteracoesCronograma } from "src/components/Shareable/Icones/IconeAlteracoesCronograma";
+import { IconeLayoutEmbalagem } from "src/components/Shareable/Icones/IconeLayoutEmbalagem";
 
 import {
   ACOMPANHAMENTO_DE_LANCAMENTOS,
+  CRONOGRAMA_ENTREGA,
+  DOCUMENTOS_RECEBIMENTO,
+  FICHA_TECNICA,
+  LAYOUT_EMBALAGEM,
   PAINEL_RELATORIOS_FISCALIZACAO,
+  PRE_RECEBIMENTO,
+  SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR,
   SUPERVISAO,
   TERCEIRIZADAS,
 } from "src/configs/constants";
@@ -30,6 +41,7 @@ import {
   usuarioEhEscolaAbastecimentoDiretor,
   usuarioEhEscolaTerceirizada,
   usuarioEhEscolaTerceirizadaDiretor,
+  usuarioEhEmpresaFornecedor,
   usuarioEhMedicao,
   usuarioEhNutricionistaSupervisao,
   usuarioEhOrgaoFiscalizador,
@@ -174,6 +186,58 @@ const PainelInicial = () => {
             </CardLogo>
           </Col>
         )}
+      {usuarioEhEmpresaFornecedor() && (
+        <>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Cronograma de Entrega"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/${CRONOGRAMA_ENTREGA}`)
+              }
+            >
+              <IconeCronogramaEntrega />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Alterações de Cronograma"}
+              onClick={() =>
+                navigate(
+                  `${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR}`,
+                )
+              }
+            >
+              <IconeAlteracoesCronograma />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Layout de Embalagem"}
+              onClick={() => navigate(`${PRE_RECEBIMENTO}/${LAYOUT_EMBALAGEM}`)}
+            >
+              <IconeLayoutEmbalagem />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Documentos de Recebimento"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/${DOCUMENTOS_RECEBIMENTO}`)
+              }
+            >
+              <IconeDocumentosRecebimento />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Ficha Técnica"}
+              onClick={() => navigate(`${PRE_RECEBIMENTO}/${FICHA_TECNICA}`)}
+            >
+              <IconeFichaTecnica />
+            </CardLogo>
+          </Col>
+        </>
+      )}
     </Row>
   );
 };

@@ -34,7 +34,7 @@ import {
   deepCopy,
   getError,
   usuarioEhEscolaCIEJA,
-  usuarioEhEscolaCMCT,
+  usuarioEhEscolaSemAlunosRegulares,
 } from "src/helpers/utilities";
 import {
   createInclusaoAlimentacao,
@@ -239,7 +239,9 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
 
   const renderizaSelectSimples = (nomePeriodo: string): boolean => {
     return (
-      usuarioEhEscolaCMCT() || usuarioEhEscolaCIEJA() || nomePeriodo === "NOITE"
+      usuarioEhEscolaSemAlunosRegulares() ||
+      usuarioEhEscolaCIEJA() ||
+      nomePeriodo === "NOITE"
     );
   };
 

@@ -17,8 +17,7 @@ import {
   fimDoCalendario,
   geradorUUID,
   getError,
-  usuarioEhEscolaCeuGestao,
-  usuarioEhEscolaCMCT,
+  usuarioEhEscolaSemAlunosRegulares,
 } from "src/helpers/utilities";
 import { loadFoodSuspension } from "src/reducers/suspensaoDeAlimentacaoReducer";
 import { Field, FormSection, formValueSelector, reduxForm } from "redux-form";
@@ -87,7 +86,7 @@ class FoodSuspensionEditor extends Component {
     dias_razoes[key][field] = value;
     if (field === `motivo${key}`) {
       const indiceMotivo = this.props.motivos.findIndex(
-        (motivo) => motivo.uuid === value
+        (motivo) => motivo.uuid === value,
       );
       dias_razoes[key]["outroMotivo"] =
         this.props.motivos[indiceMotivo].nome.includes("Outro");
@@ -130,7 +129,7 @@ class FoodSuspensionEditor extends Component {
     });
     this.props.change(
       `suspensoes_${period.nome}.tipo_de_refeicao`,
-      selectedOptions
+      selectedOptions,
     );
   };
 
@@ -143,7 +142,7 @@ class FoodSuspensionEditor extends Component {
     let qnt_alunos = 0;
     selectedOptions.forEach((opt) => {
       qnt_alunos += periodos[indice].alunos.filter(
-        (obj) => obj.value === opt
+        (obj) => obj.value === opt,
       )[0].quantidade_alunos;
     });
     periodos[indice].validador = [
@@ -166,7 +165,7 @@ class FoodSuspensionEditor extends Component {
         },
         function () {
           toastError("Houve um erro ao excluir o rascunho");
-        }
+        },
       );
     }
   }
@@ -202,7 +201,7 @@ class FoodSuspensionEditor extends Component {
     let novoDiasRazoes = [];
     suspensoesAlimentacao.forEach(function (suspensaoAlimentacao) {
       const idx = suspensoesAlimentacao.findIndex(
-        (value2) => value2.data === suspensaoAlimentacao.data
+        (value2) => value2.data === suspensaoAlimentacao.data,
       );
       let novoDia = {
         id: geradorUUID(),
@@ -229,7 +228,7 @@ class FoodSuspensionEditor extends Component {
       title: `Suspensão de Alimentação # ${param.suspensaoDeAlimentacao.id_externo}`,
       salvarAtualizarLbl: "Atualizar",
       dias_razoes: this.diasRazoesFromSuspensoesAlimentacao(
-        param.suspensaoDeAlimentacao.suspensoes_alimentacao
+        param.suspensaoDeAlimentacao.suspensoes_alimentacao,
       ),
       options: {
         MANHA:
@@ -280,7 +279,7 @@ class FoodSuspensionEditor extends Component {
                 uuid: tipo_alimentacao.uuid,
                 nome: tipo_alimentacao.nome,
               };
-            }
+            },
           );
         }
       });
@@ -289,7 +288,7 @@ class FoodSuspensionEditor extends Component {
 
   vinculaQuantidadeAlunosPorPeriodo = (
     periodosEQuantidadeAlunos,
-    periodoProps
+    periodoProps,
   ) => {
     periodoProps.forEach((periodo) => {
       periodosEQuantidadeAlunos.forEach((quantidade) => {
@@ -302,7 +301,7 @@ class FoodSuspensionEditor extends Component {
 
   vinculaQuantidadeAlunosPorPeriodoCeiEmei = (
     periodosEQuantidadeAlunosCeiEmei,
-    periodoProps
+    periodoProps,
   ) => {
     periodoProps.forEach((periodo) => {
       periodosEQuantidadeAlunosCeiEmei.forEach((quantidadeCeiEmei) => {
@@ -336,7 +335,7 @@ class FoodSuspensionEditor extends Component {
     let periodos = vinculos
       ? this.filtrarLancheEmergencial(
           vinculos.find((v) => v.periodo_escolar.nome === period.nome)
-            .tipos_alimentacao
+            .tipos_alimentacao,
         )
       : [];
     if (escolaEhCEMEI()) {
@@ -349,29 +348,29 @@ class FoodSuspensionEditor extends Component {
             .find(
               (v) =>
                 v.tipo_unidade_escolar.iniciais.includes("CEI") &&
-                v.periodo_escolar.nome === period.nome
+                v.periodo_escolar.nome === period.nome,
             )
             .tipos_alimentacao.concat(
               vinculos.find(
                 (v) =>
                   v.tipo_unidade_escolar.iniciais.includes("EMEI") &&
-                  v.periodo_escolar.nome === period.nome
-              ).tipos_alimentacao
-            )
+                  v.periodo_escolar.nome === period.nome,
+              ).tipos_alimentacao,
+            ),
         );
       } else if (alunosCEIouEMEI[period.nome].includes("CEI")) {
         periodos = vinculos.find(
           (v) =>
             v.tipo_unidade_escolar.iniciais.includes("CEI") &&
-            v.periodo_escolar.nome === period.nome
+            v.periodo_escolar.nome === period.nome,
         ).tipos_alimentacao;
       } else if (alunosCEIouEMEI[period.nome].includes("EMEI")) {
         periodos = this.filtrarLancheEmergencial(
           vinculos.find(
             (v) =>
               v.tipo_unidade_escolar.iniciais.includes("EMEI") &&
-              v.periodo_escolar.nome === period.nome
-          ).tipos_alimentacao
+              v.periodo_escolar.nome === period.nome,
+          ).tipos_alimentacao,
         );
       }
     }
@@ -410,7 +409,7 @@ class FoodSuspensionEditor extends Component {
           this.props.change(field + ".tipo_de_refeicao", []);
           this.props.change(field + ".numero_de_alunos", "");
         }
-      }.bind(this)
+      }.bind(this),
     );
     if (prevProps.periodos.length === 0 && this.props.periodos.length > 0) {
       const vinculo = this.props.meusDados.vinculo_atual.instituicao.uuid;
@@ -419,13 +418,13 @@ class FoodSuspensionEditor extends Component {
         this.setState({ vinculos: response.data.results });
         this.retornaPeriodosComCombos(
           response.data.results,
-          this.props.periodos
+          this.props.periodos,
         );
       });
       getQuantidaDeAlunosPorPeriodoEEscola(escola.uuid).then((response) => {
         this.vinculaQuantidadeAlunosPorPeriodo(
           response.data.results,
-          this.props.periodos
+          this.props.periodos,
         );
       });
       escolaEhCEMEI() &&
@@ -433,9 +432,9 @@ class FoodSuspensionEditor extends Component {
           (response) => {
             this.vinculaQuantidadeAlunosPorPeriodoCeiEmei(
               response.data,
-              this.props.periodos
+              this.props.periodos,
             );
-          }
+          },
         );
     }
     const { motivos, periodos, meusDados, proximos_dois_dias_uteis } =
@@ -463,7 +462,7 @@ class FoodSuspensionEditor extends Component {
       },
       function () {
         toastError("Erro ao carregar as suspensões salvas");
-      }
+      },
     );
     this.resetForm("foodSuspension");
   }
@@ -476,13 +475,13 @@ class FoodSuspensionEditor extends Component {
           toastSuccess("Suspensão de alimentação enviada com sucesso");
         } else {
           toastError(
-            `Erro ao enviar suspensão de alimentação: ${getError(res.data)}`
+            `Erro ao enviar suspensão de alimentação: ${getError(res.data)}`,
           );
         }
       },
       function () {
         toastError("Houve um erro ao enviar a suspensão de alimentação");
-      }
+      },
     );
   }
 
@@ -491,7 +490,7 @@ class FoodSuspensionEditor extends Component {
     values.dias_razoes = deepCopy(this.state.dias_razoes);
     values.dias_razoes.forEach((value) => {
       const idx = values.dias_razoes.findIndex(
-        (value2) => value2.id === value.id
+        (value2) => value2.id === value.id,
       );
       values.dias_razoes[idx]["data"] = values.dias_razoes[idx][`data${idx}`];
       values.dias_razoes[idx]["motivo"] =
@@ -522,13 +521,13 @@ class FoodSuspensionEditor extends Component {
               }
             } else {
               toastError(
-                `Erro ao enviar suspensão de alimentação: ${getError(res.data)}`
+                `Erro ao enviar suspensão de alimentação: ${getError(res.data)}`,
               );
             }
           },
           function () {
             toastError("Houve um erro ao salvar a suspensão de alimentação");
-          }
+          },
         );
       } else {
         updateSuspensaoDeAlimentacao(values.uuid, JSON.stringify(values)).then(
@@ -544,14 +543,14 @@ class FoodSuspensionEditor extends Component {
             } else {
               toastError(
                 `Erro ao atualizar a suspensão de alimentação: ${getError(
-                  res.data
-                )}`
+                  res.data,
+                )}`,
               );
             }
           },
           function () {
             toastError("Houve um erro ao atualizar a suspensão de alimentação");
-          }
+          },
         );
       }
     } else {
@@ -577,7 +576,7 @@ class FoodSuspensionEditor extends Component {
       : [];
     this.props.change(
       `suspensoes_${periodos[indice].nome}.check`,
-      periodos[indice].checked
+      periodos[indice].checked,
     );
   };
 
@@ -685,7 +684,7 @@ class FoodSuspensionEditor extends Component {
                               this.handleField(
                                 `motivo${key}`,
                                 event.target.value,
-                                key
+                                key,
                               )
                             }
                             required
@@ -703,7 +702,7 @@ class FoodSuspensionEditor extends Component {
                                 this.handleField(
                                   `outro_motivo${key}`,
                                   event.target.value,
-                                  key
+                                  key,
                                 )
                               }
                               required
@@ -745,7 +744,7 @@ class FoodSuspensionEditor extends Component {
                 {periodos.map((period, key) => {
                   this.props.change(
                     `suspensoes_${period.nome}.periodo`,
-                    period.uuid
+                    period.uuid,
                   );
                   return (
                     <FormSection key={key} name={`suspensoes_${period.nome}`}>
@@ -785,7 +784,7 @@ class FoodSuspensionEditor extends Component {
                                 onChange={(values) =>
                                   this.handleSelectedChangedAlunos(
                                     values,
-                                    period
+                                    period,
                                   )
                                 }
                                 disableSearch={true}
@@ -849,8 +848,7 @@ class FoodSuspensionEditor extends Component {
                             className="form-control"
                             required={checkMap[period.nome]}
                             validate={
-                              !usuarioEhEscolaCeuGestao() &&
-                              !usuarioEhEscolaCMCT()
+                              !usuarioEhEscolaSemAlunosRegulares()
                                 ? period.validador
                                 : checkMap[period.nome] && [
                                     naoPodeSerZero,
@@ -883,7 +881,7 @@ class FoodSuspensionEditor extends Component {
                       onClick={handleSubmit((values) =>
                         this.onSubmit({
                           ...values,
-                        })
+                        }),
                       )}
                       className="ms-3"
                       type={BUTTON_TYPE.SUBMIT}
@@ -896,7 +894,7 @@ class FoodSuspensionEditor extends Component {
                         this.onSubmit({
                           ...values,
                           status: STATUS_DRE_A_VALIDAR,
-                        })
+                        }),
                       )}
                       style={BUTTON_STYLE.GREEN}
                       className="ms-3"
@@ -935,10 +933,10 @@ const mapDispatchToProps = (dispatch) =>
     {
       loadFoodSuspension,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(FoodSuspensionEditorForm);

@@ -29,8 +29,7 @@ import {
   deepEqual,
   fimDoCalendario,
   getDataObj,
-  usuarioEhEscolaCeuGestao,
-  usuarioEhEscolaCMCT,
+  usuarioEhEscolaSemAlunosRegulares,
 } from "src/helpers/utilities";
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import "./style.scss";
@@ -171,8 +170,7 @@ export const Recorrencia = ({
       );
       return;
     } else if (
-      !usuarioEhEscolaCeuGestao() &&
-      !usuarioEhEscolaCMCT() &&
+      !usuarioEhEscolaSemAlunosRegulares() &&
       (/\D/.test(values.numero_alunos) ||
         values.numero_alunos <= 0 ||
         (() => {
@@ -357,8 +355,7 @@ export const Recorrencia = ({
             <Field
               component={InputText}
               validate={
-                !usuarioEhEscolaCeuGestao() &&
-                !usuarioEhEscolaCMCT() &&
+                !usuarioEhEscolaSemAlunosRegulares() &&
                 values.periodo_escolar &&
                 values.dias_semana &&
                 validacaoNumeroAlunos()
