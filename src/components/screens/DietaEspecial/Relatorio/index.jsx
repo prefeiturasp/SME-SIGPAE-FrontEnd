@@ -93,12 +93,16 @@ const Relatorio = ({ visao }) => {
     }
     const responseDietaEspecial = await getDietaEspecial(uuid);
     if (responseDietaEspecial.status === HTTP_STATUS.OK) {
-      setDietaEspecial(responseDietaEspecial.data);
-      setStatus(responseDietaEspecial.data.status_solicitacao);
-      setHistorico(responseDietaEspecial.data.logs);
-      await getSolicitacoesVigentes(
-        responseDietaEspecial.data.aluno.codigo_eol,
-      );
+      const { data } = responseDietaEspecial;
+      setDietaEspecial({
+        ...data,
+        informacoes_adicionais:
+          data.informacoes_adicionais ||
+          "NOTA: A Empresa tem prazo máximo de 3 dias úteis para o atendimento da alimentação específica",
+      });
+      setStatus(data.status_solicitacao);
+      setHistorico(data.logs);
+      await getSolicitacoesVigentes(data.aluno.codigo_eol);
       setCarregando(false);
     } else {
       toastError("Houve um erro ao carregar Solicitação");
