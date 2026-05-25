@@ -237,6 +237,7 @@ export default () => {
   const [msgModalErro, setMsgModalErro] = useState(null);
   const [previousValue, setPreviousValue] = useState(null);
   const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
+  const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -1665,6 +1666,9 @@ export default () => {
   ]);
 
   useEffect(() => {
+    const temErrosFormulario =
+      Object.keys(formErrorsAtualizados || {}).length > 0;
+
     if (
       formValuesAtualizados &&
       formValuesAtualizados["periodo_escolar"] === "Programas e Projetos" &&
@@ -1681,8 +1685,8 @@ export default () => {
         alunosTabSelecionada,
         weekColumns,
       );
-      setDisableBotaoSalvarLancamentos(bloquearBotao);
-      setExibirTooltip(bloquearBotao);
+      setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
+      setExibirTooltip(bloquearBotao || temErrosFormulario);
     }
 
     if (
@@ -1703,6 +1707,7 @@ export default () => {
     }
   }, [
     formValuesAtualizados,
+    formErrorsAtualizados,
     diasFrequenciaZerada,
     weekColumns,
     alunosTabSelecionada,
@@ -3094,12 +3099,13 @@ export default () => {
             render={({ handleSubmit, form, errors }) => (
               <form onSubmit={handleSubmit}>
                 <FormSpy
-                  subscription={{ values: true, active: true }}
+                  subscription={{ values: true, active: true, errors: true }}
                   onChange={(changes) => {
                     setFormValuesAtualizados({
                       week: semanaSelecionada,
                       ...changes.values,
                     });
+                    setFormErrorsAtualizados(changes.errors || {});
                   }}
                 />
                 <div className="card mt-3">
