@@ -2469,6 +2469,37 @@ export default () => {
     }
   };
 
+  const processarMudancaInput = (
+    value,
+    form,
+    dia,
+    categoria,
+    rowName,
+    column,
+    row,
+  ) => {
+    const previous = previousValue;
+
+    Promise.resolve().then(() => {
+      const { errors, values } = form.getState();
+
+      onChangeInput(
+        value,
+        previous,
+        errors,
+        values,
+        dia,
+        categoria,
+        rowName,
+        form,
+        column,
+        row,
+      );
+    });
+
+    setPreviousValue(value);
+  };
+
   const fieldValidationsTabelaAlimentacao =
     (rowName, dia, idCategoria, nomeCategoria) => (value, allValues) => {
       if (nomeCategoria.includes("SOLICITAÇÕES")) {
@@ -3479,23 +3510,14 @@ export default () => {
                                                           const value =
                                                             e.target.value;
 
-                                                          onChangeInput(
+                                                          processarMudancaInput(
                                                             value,
-                                                            previousValue,
-                                                            form.getState()
-                                                              .errors,
-                                                            form.getState()
-                                                              .values,
+                                                            form,
                                                             column.dia,
                                                             categoria,
                                                             row.name,
-                                                            form,
                                                             column,
                                                             row,
-                                                          );
-
-                                                          setPreviousValue(
-                                                            value,
                                                           );
                                                         }}
                                                       />
@@ -3875,23 +3897,14 @@ export default () => {
                                                             const value =
                                                               e.target.value;
 
-                                                            onChangeInput(
+                                                            processarMudancaInput(
                                                               value,
-                                                              previousValue,
-                                                              form.getState()
-                                                                .errors,
-                                                              form.getState()
-                                                                .values,
+                                                              form,
                                                               column.dia,
                                                               categoria,
                                                               row.name,
-                                                              form,
                                                               column,
                                                               row,
-                                                            );
-
-                                                            setPreviousValue(
-                                                              value,
                                                             );
                                                           }}
                                                         />
