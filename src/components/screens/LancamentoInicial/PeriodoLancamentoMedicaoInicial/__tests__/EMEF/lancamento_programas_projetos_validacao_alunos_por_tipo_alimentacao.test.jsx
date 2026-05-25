@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -154,5 +160,25 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
     expect(inputRefeicaoDia01).not.toHaveClass("invalid-field");
     inputRefeicaoDia01 = setInput("refeicao__dia_01__categoria_1", "21");
     expect(inputRefeicaoDia01).toHaveClass("invalid-field");
+  });
+
+  it("bloqueia salvar quando frequencia excede Número de Alunos em Programas e Projetos", async () => {
+    let inputFrequenciaDia01;
+
+    await act(async () => {
+      inputFrequenciaDia01 = setInput("frequencia__dia_01__categoria_1", "121");
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(inputFrequenciaDia01).toHaveClass("invalid-field");
+    });
+
+    await waitFor(() => {
+      const botaoSalvar = screen
+        .getByText("Salvar Lançamentos")
+        .closest("button");
+      expect(botaoSalvar).toBeDisabled();
+    });
   });
 });
