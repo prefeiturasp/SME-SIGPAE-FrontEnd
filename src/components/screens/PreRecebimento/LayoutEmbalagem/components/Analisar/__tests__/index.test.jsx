@@ -19,6 +19,7 @@ import {
   mockAnaliseLayoutEmbalagem,
   mockTodasEmbalagensLayout,
 } from "../../../../../../../mocks/services/layoutDeEmbalagem.service/Terceirizada/mockAnaliseLayoutEmbalagem";
+import { PERFIL } from "src/constants/shared";
 
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -325,5 +326,14 @@ describe("AnaliseLayoutEmbalagem - Testes Completos", () => {
         expect(screen.queryByText("LEVE LEITE - PLL")).not.toBeInTheDocument();
       });
     });
+  });
+
+  it("inclui DILOG_ABASTECIMENTO no guard useSomenteLeitura", () => {
+    // Verify the useSomenteLeitura hook was called with an array
+    // containing DILOG_ABASTECIMENTO (added in Change 2)
+    const useSomenteLeitura = require("src/hooks/useSomenteLeitura").default;
+    expect(useSomenteLeitura).toHaveBeenCalledWith(
+      expect.arrayContaining([PERFIL.DILOG_ABASTECIMENTO]),
+    );
   });
 });
