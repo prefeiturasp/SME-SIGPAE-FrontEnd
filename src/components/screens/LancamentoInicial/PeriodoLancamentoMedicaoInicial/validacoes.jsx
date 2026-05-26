@@ -1179,6 +1179,8 @@ export const validacoesTabelasDietas = (
       return total + (isNaN(valor) ? 0 : valor);
     }, 0);
 
+  const ehProgramasEProjetos = location.state.grupo === "Programas e Projetos";
+
   if (
     rowName === "frequencia" &&
     Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
@@ -1189,7 +1191,7 @@ export const validacoesTabelasDietas = (
   ) {
     if (
       !EH_INCLUSAO_SOMENTE_SOBREMESA &&
-      location.state.grupo !== "Programas e Projetos" &&
+      !ehProgramasEProjetos &&
       validacaoDiaLetivo(dia) &&
       ((maxDietasAutorizadas !== 0 && !value) ||
         (value && Number(value) !== 0)) &&
@@ -1234,7 +1236,8 @@ export const validacoesTabelasDietas = (
     value &&
     Number(value) !== 0 &&
     somaDosValoresPorCampo("lanche") >
-      maxFrequenciaAlimentacao + quantidadeLancheInclusaoAutorizadoNoDia &&
+      maxFrequenciaAlimentacao +
+        (ehProgramasEProjetos ? 0 : quantidadeLancheInclusaoAutorizadoNoDia) &&
     inputName.includes("lanche") &&
     !inputName.includes("_4h") &&
     (!alteracoesAlimentacaoAutorizadas ||
@@ -1249,7 +1252,10 @@ export const validacoesTabelasDietas = (
     value &&
     Number(value) !== 0 &&
     somaDosValoresPorCampo("lanche_4h") >
-      maxFrequenciaAlimentacao + quantidadeLanche4hInclusaoAutorizadoNoDia &&
+      maxFrequenciaAlimentacao +
+        (ehProgramasEProjetos
+          ? 0
+          : quantidadeLanche4hInclusaoAutorizadoNoDia) &&
     inputName.includes("lanche_4h") &&
     (!alteracoesAlimentacaoAutorizadas ||
       alteracoesAlimentacaoAutorizadas.length === 0 ||
