@@ -735,6 +735,11 @@ export const usuarioEhEscolaCEMEI = () => {
   return instituicao?.includes("CEMEI");
 };
 
+export const usuarioEhEscolaPFOM = () => {
+  const instituicao = nomeInstituicao();
+  return instituicao?.includes("P FOM");
+};
+
 export const usuarioEhCoordenadorDRE = () => {
   return localStorage.getItem("perfil") === PERFIL.COORDENADOR_DRE;
 };
