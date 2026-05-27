@@ -63,6 +63,7 @@ export const InputText = (props) => {
     exibeTooltipFrequenciaAlimentacaoZero,
     exibirTooltipPeriodosZeradosNoProgramasProjetos,
     exibirTooltipRefeicaoSimultanea,
+    exibirTooltipFeriado,
   } = props;
 
   const inputProps = {
@@ -167,6 +168,18 @@ export const InputText = (props) => {
           {label}
         </label>,
       ]}
+      {exibirTooltipFeriado && (
+        <Tooltip
+          title={
+            "A data selecionada corresponde a um feriado. Verifique se o apontamento está correto."
+          }
+        >
+          <i
+            data-testid="icone-tooltip-warning"
+            className="fas fa-info icone-info-warning"
+          />
+        </Tooltip>
+      )}
       {exibeTooltipPadraoRepeticaoDiasSobremesaDoce && (
         <Tooltip title={"Dia de sobremesa doce."}>
           <i className="fas fa-info icone-info-success" />
