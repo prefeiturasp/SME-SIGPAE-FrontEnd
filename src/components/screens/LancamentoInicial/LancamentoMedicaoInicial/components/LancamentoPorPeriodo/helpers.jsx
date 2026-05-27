@@ -3,6 +3,7 @@ import {
   capitalize,
   escolaNaoPossuiAlunosRegulares,
   usuarioEhDiretorUE,
+  usuarioEhEscolaPFOM,
 } from "src/helpers/utilities";
 
 export const CORES = [
@@ -204,7 +205,8 @@ export const renderBotaoEnviarCorrecao = (solicitacaoMedicaoInicial) => {
       "MEDICAO_CORRECAO_SOLICITADA_CODAE",
     ].includes(solicitacaoMedicaoInicial.status) &&
     (usuarioEhDiretorUE() ||
-      escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial))
+      escolaNaoPossuiAlunosRegulares(solicitacaoMedicaoInicial) ||
+      usuarioEhEscolaPFOM())
   );
 };
 
