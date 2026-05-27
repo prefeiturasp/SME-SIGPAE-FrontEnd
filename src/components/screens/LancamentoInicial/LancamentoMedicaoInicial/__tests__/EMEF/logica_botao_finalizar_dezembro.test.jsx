@@ -187,4 +187,45 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).not.toBeDisabled();
   });
+
+  it.each(["EMEF P FOM", "EMEI P FOM"])(
+    "Finaliza e Finaliza sem lançamentos - botões habilitados no fim do mês para usuário não diretor em %s",
+    async (tipoUnidadePfom) => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2025-12-19T10:00:00Z"));
+      jest.clearAllMocks();
+
+      localStorage.setItem("nome_instituicao", `"${tipoUnidadePfom} TESTE"`);
+      localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_UE);
+
+      await act(async () => {
+        render(
+          <MemoryRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
+            <MeusDadosContext.Provider
+              value={{
+                meusDados: mockMeusDadosEscolaEMEFPericles,
+                setMeusDados: jest.fn(),
+              }}
+            >
+              <LancamentoMedicaoInicialPage />
+              <ToastContainer />
+            </MeusDadosContext.Provider>
+          </MemoryRouter>,
+        );
+      });
+
+      const botaoFinalizarSemLancamentos = screen
+        .getByText("Finalizar sem lançamentos")
+        .closest("button");
+      const botaoFinalizar = screen.getByText("Finalizar").closest("button");
+
+      expect(botaoFinalizarSemLancamentos).not.toBeDisabled();
+      expect(botaoFinalizar).not.toBeDisabled();
+    },
+  );
 });

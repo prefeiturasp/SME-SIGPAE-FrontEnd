@@ -18,6 +18,7 @@ import {
   recreioNasFeriasComColaboradores,
   recreioNasFeriasDaMedicao,
   tiposAlimentacaoETEC,
+  usuarioEhEscolaPFOM,
   usuarioEhEscolaTerceirizadaDiretor,
 } from "src/helpers/utilities";
 import {
@@ -644,7 +645,8 @@ export const LancamentoPorPeriodo = ({
                         (!usuarioEhEscolaTerceirizadaDiretor() &&
                           !escolaNaoPossuiAlunosRegulares(
                             solicitacaoMedicaoInicial,
-                          )) ||
+                          ) &&
+                          !usuarioEhEscolaPFOM()) ||
                         comOcorrencias === "true" ||
                         naoPodeFinalizar
                       }
@@ -662,7 +664,8 @@ export const LancamentoPorPeriodo = ({
                       (!usuarioEhEscolaTerceirizadaDiretor() &&
                         !escolaNaoPossuiAlunosRegulares(
                           solicitacaoMedicaoInicial,
-                        )) ||
+                        ) &&
+                        !usuarioEhEscolaPFOM()) ||
                       naoPodeFinalizar
                     }
                     onClick={() => {
