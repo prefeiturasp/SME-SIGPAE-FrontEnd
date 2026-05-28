@@ -161,6 +161,7 @@ export const campoFrequenciaValor0ESemObservacao = (
   grupo,
   escolaEmebs = false,
   alunosTabSelecionada = null,
+  feriadosNoMes,
 ) => {
   let erro = false;
   if (
@@ -195,7 +196,8 @@ export const campoFrequenciaValor0ESemObservacao = (
     categoria.nome === "ALIMENTAÇÃO" &&
     values[`frequencia__dia_${dia}__categoria_${categoria.id}`] &&
     Number(values[`frequencia__dia_${dia}__categoria_${categoria.id}`]) === 0 &&
-    !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
+    !values[`observacoes__dia_${dia}__categoria_${categoria.id}`] &&
+    !feriadosNoMes.includes(dia)
   ) {
     erro = true;
   }
@@ -618,6 +620,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
       location.state.grupo,
       escolaEmebs,
       alunosTabSelecionada,
+      feriadosNoMes,
     ) ||
     campoComSuspensaoAutorizadaESemObservacao(
       formValuesAtualizados,
