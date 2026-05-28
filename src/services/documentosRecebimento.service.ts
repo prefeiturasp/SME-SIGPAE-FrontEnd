@@ -17,11 +17,11 @@ import { getMensagemDeErro } from "../helpers/statusErrors";
 import { toastError } from "../components/Shareable/Toast/dialogs";
 
 export const cadastraDocumentoRecebimento = async (
-  payload: DocumentosRecebimentoPayload
+  payload: DocumentosRecebimentoPayload,
 ) => await axios.post("/documentos-de-recebimento/", payload);
 
 export const detalharDocumentoRecebimento = async (
-  uuid: string
+  uuid: string,
 ): Promise<ResponseDocumentosRecebimentoDetalhado> => {
   try {
     return await axios.get(`/documentos-de-recebimento/${uuid}/`);
@@ -31,7 +31,7 @@ export const detalharDocumentoRecebimento = async (
 };
 
 export const detalharDocumentoParaAnalise = async (
-  uuid: string
+  uuid: string,
 ): Promise<ResponseDocumentosRecebimentoParaAnalise> => {
   try {
     return await axios.get(`/documentos-de-recebimento/${uuid}/`);
@@ -41,7 +41,7 @@ export const detalharDocumentoParaAnalise = async (
 };
 
 export const listarDocumentosRecebimento = async (
-  params: URLSearchParams
+  params: URLSearchParams,
 ): Promise<ResponseDocumentosRecebimento> => {
   try {
     return await axios.get("/documentos-de-recebimento/", { params });
@@ -52,7 +52,7 @@ export const listarDocumentosRecebimento = async (
 
 // Service retorna vários status diferente dentro dos resultados, filtros são apenas strings
 export const getDashboardDocumentosRecebimento = async (
-  params: FiltrosDashboardDocumentos = null
+  params: FiltrosDashboardDocumentos = null,
 ): Promise<ResponseDocumentosRecebimentoDashboard> => {
   try {
     return await axios.get(`/documentos-de-recebimento/dashboard/`, { params });
@@ -63,7 +63,7 @@ export const getDashboardDocumentosRecebimento = async (
 
 // Service retorna apenas um status nos resultados, filtros em formatos de array são transformados em parametros de URL
 export const getDashboardDocumentosRecebimentoPorStatus = async (
-  params: URLSearchParams = null
+  params: URLSearchParams = null,
 ): Promise<ResponseDocumentosPorStatusDashboard> => {
   try {
     return await axios.get(`/documentos-de-recebimento/dashboard/`, { params });
@@ -74,39 +74,39 @@ export const getDashboardDocumentosRecebimentoPorStatus = async (
 
 export const analisaDocumentoRecebimentoRascunho = async (
   payload: AnaliseDocumentoPayload,
-  uuid: string
+  uuid: string,
 ) =>
   await axios.patch(
     `/documentos-de-recebimento/${uuid}/analise-documentos-rascunho/`,
-    payload
+    payload,
   );
 
 export const analisaDocumentoRecebimento = async (
   payload: AnaliseDocumentoPayload,
-  uuid: string
+  uuid: string,
 ) =>
   await axios.patch(
     `/documentos-de-recebimento/${uuid}/analise-documentos/`,
-    payload
+    payload,
   );
 
 export const corrigirDocumentoRecebimento = async (
   payload: CorrecaoDocumentoPayload,
-  uuid: string
+  uuid: string,
 ) =>
   await axios.patch(
     `/documentos-de-recebimento/${uuid}/corrigir-documentos/`,
-    payload
+    payload,
   );
 
 export const downloadArquivoLaudoAssinado = async (
   uuid: string,
-  numero_cronograma: string
+  numero_cronograma: string,
 ) => {
   try {
     const { data } = await axios.get(
       `/documentos-de-recebimento/${uuid}/download-laudo-assinado/`,
-      { responseType: "blob" }
+      { responseType: "blob" },
     );
     saveAs(data, `laudo_cronograma_${numero_cronograma}.pdf`);
   } catch {
@@ -116,9 +116,21 @@ export const downloadArquivoLaudoAssinado = async (
 
 export const atualizarDocumentoRecebimento = async (
   payload: CorrecaoDocumentoPayload,
-  uuid: string
+  uuid: string,
 ) =>
   await axios.patch(
     `/documentos-de-recebimento/${uuid}/atualizar-documentos/`,
-    payload
+    payload,
   );
+
+export const getListagemRelatorioDocsRecebimento = async (
+  params: URLSearchParams,
+) => {
+  try {
+    return await axios.get("/documentos-de-recebimento/listagem-relatorio/", {
+      params,
+    });
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response.status));
+  }
+};

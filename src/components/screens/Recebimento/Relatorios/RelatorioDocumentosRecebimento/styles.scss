@@ -1,0 +1,21 @@
+@use "src/styles/variables.scss" as *;
+.relatorio-documento {
+  .titulo-cards {
+    font-size: 16px;
+    font-weight: 600;
+    color: $green;
+  }
+
+  .totalizador {
+    padding: 0.5em;
+    color: $green;
+    font-weight: 500;
+    border: 1px solid $green;
+    border-left: 5px solid $green;
+    border-radius: 4px;
+
+    .valor {
+      font-weight: bolder;
+    }
+  }
+}
