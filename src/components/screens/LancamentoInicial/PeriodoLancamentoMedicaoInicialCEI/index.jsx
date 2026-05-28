@@ -1305,9 +1305,12 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             null,
             weekColumns,
           );
-        setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
-        setExibirTooltip(bloquearBotao);
-      } else if (categoriasDeMedicao.length > 0) {
+        const bloquear = bloquearBotao || temErrosFormulario;
+        setDisableBotaoSalvarLancamentos(bloquear);
+        setExibirTooltip(bloquear);
+        if (bloquear) return;
+      }
+      if (categoriasDeMedicao.length > 0) {
         const bloquearBotao = weekColumns.some((week) =>
           obrigarAdiocionarFeriadoProgramasProjetos(
             week,
@@ -1317,8 +1320,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             formValuesAtualizados,
           ),
         );
-        setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
-        setExibirTooltip(bloquearBotao || temErrosFormulario);
+        const bloquear = bloquearBotao || temErrosFormulario;
+        setDisableBotaoSalvarLancamentos(bloquear);
+        setExibirTooltip(bloquear);
       }
     }
   }, [

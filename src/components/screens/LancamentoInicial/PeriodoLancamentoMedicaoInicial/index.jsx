@@ -1689,9 +1689,12 @@ export default () => {
             alunosTabSelecionada,
             weekColumns,
           );
-        setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
-        setExibirTooltip(bloquearBotao || temErrosFormulario);
-      } else if (categoriasDeMedicao.length > 0) {
+        const bloquear = bloquearBotao || temErrosFormulario;
+        setDisableBotaoSalvarLancamentos(bloquear);
+        setExibirTooltip(bloquear);
+        if (bloquear) return;
+      }
+      if (categoriasDeMedicao.length > 0) {
         const bloquearBotao = weekColumns.some((week) =>
           obrigarAdiocionarFeriadoProgramasProjetos(
             week,
@@ -1701,8 +1704,10 @@ export default () => {
             formValuesAtualizados,
           ),
         );
-        setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
-        setExibirTooltip(bloquearBotao || temErrosFormulario);
+        const bloquear = bloquearBotao || temErrosFormulario;
+        setDisableBotaoSalvarLancamentos(bloquear);
+        setExibirTooltip(bloquear);
+        if (bloquear) return;
       }
     }
 
@@ -1719,8 +1724,9 @@ export default () => {
         usuarioEhEscolaCIEJA(),
         location.state.periodo,
       );
-      setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
-      setExibirTooltip(bloquearBotao || temErrosFormulario);
+      const bloquear = bloquearBotao || temErrosFormulario;
+      setDisableBotaoSalvarLancamentos(bloquear);
+      setExibirTooltip(bloquear);
     }
   }, [
     formValuesAtualizados,
