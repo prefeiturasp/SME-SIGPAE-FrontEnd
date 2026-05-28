@@ -104,10 +104,24 @@ describe("Teste ControleDeFrequencia", () => {
   });
 
   describe("Carregamento inicial", () => {
-    it("Teste", async () => {
+    it("Deve carregar os meses e anos corretamente", async () => {
       setupMocks();
 
       await renderComponent();
+
+      await waitFor(() => {
+        expect(getMesesAnos).toHaveBeenCalled();
+      });
+    });
+
+    it("Deve exibir erro ao carregar meses de referência", async () => {
+      getMesesAnos.mockRejectedValue(new Error("Erro"));
+
+      await renderComponent();
+
+      expect(
+        screen.getByText(/Erro ao carregar meses de referência/i),
+      ).toBeInTheDocument();
     });
   });
 });
