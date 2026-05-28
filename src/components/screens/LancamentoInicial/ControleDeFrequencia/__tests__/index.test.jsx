@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -28,6 +29,12 @@ jest.mock("src/services/medicaoInicial/controleDeFrequencia.service", () => ({
   getTotalAlunosMatriculados: jest.fn(),
   imprimirRelatorioControleFrequencia: jest.fn(),
 }));
+
+jest.mock(
+  "src/components/Shareable/ModalSolicitacaoDownload",
+  () => (props) =>
+    props.show ? <div data-testid="modal-download">Modal Download</div> : null,
+);
 
 const preencherFiltros = async ({
   preencherDataInicial = true,
@@ -362,12 +369,6 @@ describe("Teste ControleDeFrequencia", () => {
 
       await preencherFiltros();
 
-      const btnFiltrar = screen.getByRole("button", {
-        name: /filtrar/i,
-      });
-
-      fireEvent.click(btnFiltrar);
-
       await waitFor(() => {
         expect(
           screen.getByText(
@@ -375,6 +376,102 @@ describe("Teste ControleDeFrequencia", () => {
           ),
         ).toBeInTheDocument();
       });
+    });
+  });
+
+  describe("Impressão relatório", () => {
+    it("Deve imprimir relatório com sucesso", async () => {
+      setupMocks();
+
+      await renderComponent();
+      preencherFiltros({ selecionarPeriodo: true });
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      const btnImprimir = within(resultado).getByRole("button", {
+        name: /imprimir/i,
+      });
+
+      expect(btnImprimir).toBeInTheDocument();
+
+      fireEvent.click(btnImprimir);
+
+      await waitFor(() => {
+        expect(imprimirRelatorioControleFrequencia).toHaveBeenCalled();
+      });
+
+      expect(screen.getByTestId("modal-download")).toBeInTheDocument();
+    });
+
+    it("Deve imprimir usando data final quando data inicial não existir", async () => {
+      setupMocks();
+
+      await renderComponent();
+
+      await preencherFiltros({
+        preencherDataInicial: false,
+      });
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      const btnImprimir = within(resultado).getByRole("button", {
+        name: /imprimir/i,
+      });
+
+      expect(btnImprimir).toBeInTheDocument();
+
+      fireEvent.click(btnImprimir);
+
+      await waitFor(() => {
+        expect(imprimirRelatorioControleFrequencia).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data_inicial: "2026-04-30",
+          }),
+        );
+      });
+      expect(screen.getByTestId("modal-download")).toBeInTheDocument();
+    });
+
+    it("Deve imprimir usando data inicial quando data final não existir", async () => {
+      setupMocks();
+
+      await renderComponent();
+
+      await preencherFiltros({
+        preencherDataFinal: false,
+      });
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      const btnImprimir = within(resultado).getByRole("button", {
+        name: /imprimir/i,
+      });
+
+      expect(btnImprimir).toBeInTheDocument();
+
+      fireEvent.click(btnImprimir);
+
+      await waitFor(() => {
+        expect(imprimirRelatorioControleFrequencia).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data_final: "2026-04-01",
+          }),
+        );
+      });
+      expect(screen.getByTestId("modal-download")).toBeInTheDocument();
+
       preview.debug();
     });
   });
