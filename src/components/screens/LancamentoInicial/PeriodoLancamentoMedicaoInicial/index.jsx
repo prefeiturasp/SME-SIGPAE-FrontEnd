@@ -1703,8 +1703,8 @@ export default () => {
             formValuesAtualizados,
           ),
         );
-        setDisableBotaoSalvarLancamentos(bloquearBotao);
-        setExibirTooltip(bloquearBotao);
+        setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
+        setExibirTooltip(bloquearBotao || temErrosFormulario);
       }
     }
 

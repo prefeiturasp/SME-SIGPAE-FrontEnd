@@ -148,7 +148,8 @@ export const InputText = (props) => {
         exibeTooltipDietasInclusaoDiaNaoLetivoCEI ||
         exibeTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI ||
         exibirTooltipPeriodosZeradosNoProgramasProjetos ||
-        exibeTooltipSuspensoesAutorizadasCEI)
+        exibeTooltipSuspensoesAutorizadasCEI ||
+        exibirTooltipFeriado)
     );
   };
 

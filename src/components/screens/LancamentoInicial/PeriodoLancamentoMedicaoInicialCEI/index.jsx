@@ -251,6 +251,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [listaDiasZerados, setListaDiasZerados] = useState([]);
   const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
   const [faixasAtivasPorTipo, setFaixasAtivasPorTipo] = useState({});
+  const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -1284,6 +1285,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   ]);
 
   useEffect(() => {
+    const temErrosFormulario =
+      Object.keys(formErrorsAtualizados || {}).length > 0;
+
     if (
       formValuesAtualizados &&
       formValuesAtualizados["periodo_escolar"] === "Programas e Projetos" &&
@@ -1301,7 +1305,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             null,
             weekColumns,
           );
-        setDisableBotaoSalvarLancamentos(bloquearBotao);
+        setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
         setExibirTooltip(bloquearBotao);
       }
 
@@ -1315,8 +1319,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             formValuesAtualizados,
           ),
         );
-        setDisableBotaoSalvarLancamentos(bloquearBotao);
-        setExibirTooltip(bloquearBotao);
+        setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
+        setExibirTooltip(bloquearBotao || temErrosFormulario);
       }
     }
   }, [
@@ -1324,6 +1328,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     diasFrequenciaZerada,
     weekColumns,
     categoriasDeMedicao,
+    formErrorsAtualizados,
   ]);
 
   const temDiaZeradoNaSemana =
@@ -2603,12 +2608,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             render={({ handleSubmit, form, errors }) => (
               <form onSubmit={handleSubmit}>
                 <FormSpy
-                  subscription={{ values: true, active: true }}
+                  subscription={{ values: true, active: true, errors: true }}
                   onChange={(changes) => {
                     setFormValuesAtualizados({
                       week: semanaSelecionada,
                       ...changes.values,
                     });
+                    setFormErrorsAtualizados(changes.errors || {});
                   }}
                 />
                 <div className="card mt-3">
