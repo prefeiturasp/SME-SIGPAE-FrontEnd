@@ -21,6 +21,8 @@ import {
   imprimirRelatorioControleFrequencia,
 } from "src/services/medicaoInicial/controleDeFrequencia.service";
 
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+
 import preview from "jest-preview";
 
 jest.mock("src/services/medicaoInicial/controleDeFrequencia.service", () => ({
@@ -35,6 +37,10 @@ jest.mock(
   () => (props) =>
     props.show ? <div data-testid="modal-download">Modal Download</div> : null,
 );
+
+jest.mock("src/components/Shareable/Toast/dialogs", () => ({
+  toastError: jest.fn(),
+}));
 
 const preencherFiltros = async ({
   preencherDataInicial = true,
@@ -473,6 +479,38 @@ describe("Teste ControleDeFrequencia", () => {
       expect(screen.getByTestId("modal-download")).toBeInTheDocument();
 
       preview.debug();
+    });
+
+    it("Deve exibir erro ao falhar impressão relatório", async () => {
+      setupMocks();
+
+      imprimirRelatorioControleFrequencia.mockRejectedValue(
+        new Error("Erro ao imprimir"),
+      );
+
+      await renderComponent();
+      preencherFiltros({ selecionarPeriodo: true });
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      const btnImprimir = within(resultado).getByRole("button", {
+        name: /imprimir/i,
+      });
+
+      expect(btnImprimir).toBeInTheDocument();
+
+      fireEvent.click(btnImprimir);
+      await waitFor(() => {
+        expect(imprimirRelatorioControleFrequencia).toHaveBeenCalled();
+
+        expect(toastError).toHaveBeenCalledWith(
+          "Erro ao imprimir pdf. Tente novamente mais tarde.",
+        );
+      });
     });
   });
 });
