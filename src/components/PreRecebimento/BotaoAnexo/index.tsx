@@ -4,7 +4,7 @@ import "./styles.scss";
 export interface Props {
   urlAnexo?: string;
   textoBotao?: string;
-  onClick?: () => void;
+  onClick?: (_e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 const BotaoAnexo: React.FC<Props> = ({ textoBotao, urlAnexo, onClick }) => {
