@@ -681,11 +681,12 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
       usuarioEhEscolaCIEJA(),
       location.state.periodo,
     ) ||
-    obrigarAdiocionarFeriadoProgramasProjetos(
-      column,
-      categoria,
-      formValuesAtualizados,
-    )
+    (location.state.grupo === "Programas e Projetos" &&
+      obrigarAdiocionarFeriadoProgramasProjetos(
+        column,
+        categoria,
+        formValuesAtualizados,
+      ))
   );
 };
 
