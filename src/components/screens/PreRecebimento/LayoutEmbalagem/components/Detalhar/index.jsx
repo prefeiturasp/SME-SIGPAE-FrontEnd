@@ -19,7 +19,10 @@ import {
   BUTTON_STYLE,
 } from "src/components/Shareable/Botao/constants";
 import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
-import { detalharLayoutEmbalagem } from "src/services/layoutEmbalagem.service";
+import {
+  detalharLayoutEmbalagem,
+  downloadImagemAssinada,
+} from "src/services/layoutEmbalagem.service";
 
 import ModalCancelarAnalise from "./components/ModalCancelarAnalise";
 import ModalCancelarCorrecao from "./components/ModalCancelarCorrecao";
@@ -38,6 +41,7 @@ export default () => {
   const [modais, setModais] = useState([]);
   const [modalCancelar, setModalCancelar] = useState(false);
   const [initialValues, setInitialValues] = useState({});
+  const [baixando, setBaixando] = useState(false);
 
   const visaoCODAE = usuarioComAcessoAoPainelEmbalagens();
 
@@ -210,18 +214,39 @@ export default () => {
   };
 
   const botoesArquivosAnexos = (arquivos) =>
-    arquivos.map((e) => (
-      <div className="w-75" key={e.arquivo}>
-        <BotaoAnexo urlAnexo={e.arquivo} />
-      </div>
-    ));
+    arquivos.map((e) => {
+      const aprovado = objeto.status === "Aprovado";
+      return (
+        <div className="w-75" key={e.uuid || e.arquivo}>
+          <BotaoAnexo
+            urlAnexo={e.arquivo}
+            onClick={
+              aprovado
+                ? (event) => {
+                    event.preventDefault();
+                    setBaixando(true);
+                    downloadImagemAssinada(
+                      objeto.uuid,
+                      e.uuid,
+                      e.nome || "download",
+                    ).finally(() => setBaixando(false));
+                  }
+                : undefined
+            }
+          />
+        </div>
+      );
+    });
 
   useEffect(() => {
     carregarDados();
   }, []);
 
   return (
-    <Spin tip="Carregando..." spinning={carregando}>
+    <Spin
+      tip={baixando ? "Baixando..." : "Carregando..."}
+      spinning={carregando || baixando}
+    >
       <div className="card mt-3 card-detalhar-layout-embalagem">
         <div className="card-body">
           {objeto.logs && (

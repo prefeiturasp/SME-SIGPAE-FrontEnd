@@ -1239,6 +1239,23 @@ export const formatarLinhasTabelasDietasEmeiDaCemei = (tiposAlimentacao) => {
   return linhasTabelasDietas;
 };
 
+/**
+ * Formata as linhas da tabela de dieta enteral adicionando a linha "Refeição"
+ * antes da última posição da lista quando o tipo de alimentação existir.
+ *
+ * A função mantém a imutabilidade do array original realizando uma cópia
+ * profunda de `linhasTabelasDietas`.
+ *
+ * @param {Array<{ uuid: string, nome: string }>} tipos_alimentacao
+ * Lista de tipos de alimentação disponíveis.
+ *
+ * @param {Array<{ nome: string, name: string, uuid: string | null }>} linhasTabelasDietas
+ * Lista base das linhas da tabela de dietas.
+ *
+ * @returns {Array<{ nome: string, name: string, uuid: string | null }>}
+ * Retorna uma nova lista contendo a linha "Refeição" inserida antes do último
+ * elemento quando o tipo existir; caso contrário, retorna a lista original copiada.
+ */
 export const formatarLinhasTabelaDietaEnteral = (
   tipos_alimentacao,
   linhasTabelasDietas,
@@ -1247,11 +1264,13 @@ export const formatarLinhasTabelaDietaEnteral = (
   const indexRefeicaoDieta = tipos_alimentacao.findIndex(
     (ali) => ali.nome === "Refeição",
   );
-  linhasTabelaDietaEnteral.splice(linhasTabelaDietaEnteral.length - 1, 0, {
-    nome: "Refeição",
-    name: "refeicao",
-    uuid: tipos_alimentacao[indexRefeicaoDieta].uuid,
-  });
+  if (indexRefeicaoDieta !== -1) {
+    linhasTabelaDietaEnteral.splice(linhasTabelaDietaEnteral.length - 1, 0, {
+      nome: "Refeição",
+      name: "refeicao",
+      uuid: tipos_alimentacao[indexRefeicaoDieta].uuid,
+    });
+  }
 
   return linhasTabelaDietaEnteral;
 };

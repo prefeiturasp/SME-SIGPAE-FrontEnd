@@ -14,6 +14,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { DETALHAMENTO_DO_LANCAMENTO } from "src/configs/constants";
+import { usuarioEhEscolaPFOM } from "src/helpers/utilities";
 import {
   getTiposDeContagemAlimentacao,
   setSolicitacaoMedicaoInicial,
@@ -52,6 +53,7 @@ export default ({
   const { Panel } = Collapse;
 
   const location = useLocation();
+  const ehEscolaPFOM = usuarioEhEscolaPFOM();
 
   useEffect(() => {
     async function fetch() {
@@ -116,7 +118,7 @@ export default ({
           </div>
           <div className="col-4 pe-0">
             <Input
-              maxLength={7}
+              maxLength={ehEscolaPFOM ? 11 : 7}
               className="mt-2"
               name={`responsavel_rf_${responsavel}`}
               data-testid={`input-responsavel-rf-${responsavel}`}
@@ -172,7 +174,11 @@ export default ({
     }
 
     if (temRFInvalido()) {
-      toastError("O campo de RF deve conter 7 números");
+      toastError(
+        ehEscolaPFOM
+          ? "O campo de RF/CPF deve conter 7 ou 11 números"
+          : "O campo de RF deve conter 7 números",
+      );
       return false;
     }
 
@@ -196,7 +202,10 @@ export default ({
       (resp) => resp.nome !== "" && resp.rf !== "",
     );
 
-    return responsaveisValidos.some((resp) => resp.rf.length !== 7);
+    return responsaveisValidos.some((resp) => {
+      const tamanhosValidos = ehEscolaPFOM ? [7, 11] : [7];
+      return !tamanhosValidos.includes(resp.rf.length);
+    });
   };
 
   const getResponsaveisPayload = () => {
@@ -333,8 +342,8 @@ export default ({
                   </label>
                   <label className="asterisk-label">*</label>
                 </div>
-                <div className="col-4 ps-0">
-                  <label>RF</label>
+                <div className="col-4">
+                  <label>RF{ehEscolaPFOM ? "/CPF" : ""}</label>
                   <label className="asterisk-label">*</label>
                 </div>
                 {renderDadosResponsaveis()}

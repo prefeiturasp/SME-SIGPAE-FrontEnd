@@ -443,6 +443,11 @@ export const ConferenciaDosLancamentos = () => {
       },
     );
     if (response_vinculos.status === HTTP_STATUS.OK) {
+      if (response_vinculos.data.results.length === 0) {
+        toastError(
+          "Não foi encontrado nenhum objeto LogAlunosMatriculadosPeriodoEscola para esta escola, no mês e ano passados como parâmetro.",
+        );
+      }
       setPeriodosSimples(response_vinculos.data.results);
     } else {
       setErroAPI(

@@ -3,7 +3,6 @@ import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
-import { CustomToolbar } from "src/components/Shareable/CustomToolbar";
 import { ModalCronograma } from "src/components/Shareable/ModalCronograma";
 import "src/components/Shareable/CalendarioCronogramaPontoPonto/style.scss";
 import {
@@ -17,6 +16,14 @@ import {
   formataComoEventos,
 } from "src/components/Shareable/CalendarioCronogramaPontoPonto/helpers";
 import { ItemCalendarioInterrupcao, ParametrosCalendario } from "./interfaces";
+import AgendaSemanalView from "./AgendaSemanalView";
+import "./AgendaSemanalView.scss";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
 
 interface Props {
   getObjetos: (
@@ -52,9 +59,21 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
     useState<boolean>(false);
   const [mes, setMes] = useState<number>(moment().month() + 1);
   const [ano, setAno] = useState<number>(moment().year());
+  const [view, setView] = useState<string>("month");
+  const [dataAgenda, setDataAgenda] = useState<Date>(new Date());
 
   useEffect(() => {
     carregarObjetosAsync({ mes, ano });
+  }, [mes, ano]);
+
+  useEffect(() => {
+    if (view === "agenda") {
+      const primeiroDia = moment([ano, mes - 1, 1]);
+      while (primeiroDia.isoWeekday() > 5) {
+        primeiroDia.add(1, "day");
+      }
+      setDataAgenda(primeiroDia.toDate());
+    }
   }, [mes, ano]);
 
   const carregarObjetosAsync = async (params: ParametrosCalendario) => {
@@ -119,6 +138,34 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
     setExibirModalCronograma(true);
   };
 
+  const handleTabMes = () => setView("month");
+
+  const handleTabAgenda = () => {
+    const primeiroDiaUtil = moment([ano, mes - 1, 1]);
+    while (primeiroDiaUtil.isoWeekday() > 5) {
+      primeiroDiaUtil.add(1, "day");
+    }
+    setDataAgenda(primeiroDiaUtil.toDate());
+    setView("agenda");
+  };
+
+  const handlePrevMonth = () => {
+    const novaData = moment([ano, mes - 1, 1]).subtract(1, "month");
+    setMes(novaData.month() + 1);
+    setAno(novaData.year());
+  };
+
+  const handleNextMonth = () => {
+    const novaData = moment([ano, mes - 1, 1]).add(1, "month");
+    setMes(novaData.month() + 1);
+    setAno(novaData.year());
+  };
+
+  const handleDrillDown = (date: Date) => {
+    setDataAgenda(date);
+    setView("agenda");
+  };
+
   const obterEstiloEvento = (evento: EventoCalendario) => {
     if ("isInterrupcao" in evento && evento.isInterrupcao) {
       const sufixo =
@@ -174,39 +221,124 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
                 tip={`Carregando dias de ${nomeObjeto}...`}
                 spinning={carregandoDiasCalendario}
               >
-                <Calendar
-                  style={{ height: 1000 }}
-                  formats={{
-                    weekdayFormat: (date, culture, localizer) =>
-                      localizer.format(date, "dddd", culture),
-                  }}
-                  selectable
-                  resizable={false}
-                  localizer={localizer}
-                  events={todosEventos}
-                  onSelectEvent={handleSelecionarEvento}
-                  eventPropGetter={obterEstiloEvento}
-                  components={{
-                    toolbar: CustomToolbar,
-                    eventWrapper: EventWrapper,
-                  }}
-                  onDrillDown={() => {}}
-                  messages={{
-                    showMore: (target: string) => (
-                      <span
-                        className="ms-2 showmore-message"
-                        role="presentation"
-                      >
-                        ...{target} mais
+                {/* Cabecalho externo com abas e navegacao */}
+                <div className="row toolbar-container mb-3">
+                  <div
+                    className="col-6"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                    }}
+                  >
+                    <div
+                      className={`mes-tab ${view === "month" ? "active" : ""}`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={handleTabMes}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleTabMes();
+                        }
+                      }}
+                    >
+                      Mês
+                    </div>
+                    <div
+                      className={`agenda-tab ${view === "agenda" ? "active" : ""}`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={handleTabAgenda}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleTabAgenda();
+                        }
+                      }}
+                    >
+                      Agenda
+                    </div>
+                  </div>
+                  <div className="col-6 text-end">
+                    <div className="back-next-buttons">
+                      <Botao
+                        type={BUTTON_TYPE.BUTTON}
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                        icon={BUTTON_ICON.ARROW_LEFT}
+                        onClick={handlePrevMonth}
+                      />
+                      <span className="label-month">
+                        {moment([ano, mes - 1, 1]).format("MMMM YYYY")}
                       </span>
-                    ),
-                  }}
-                  onNavigate={(date: Date) => {
-                    setMes(date.getMonth() + 1);
-                    setAno(date.getFullYear());
-                  }}
-                  defaultView={Views.MONTH}
-                />
+                      <Botao
+                        type={BUTTON_TYPE.BUTTON}
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                        icon={BUTTON_ICON.ARROW_RIGHT}
+                        onClick={handleNextMonth}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* View condicional */}
+                {view === "month" ? (
+                  <Calendar
+                    key="calendar-month"
+                    date={moment([ano, mes - 1, 1]).toDate()}
+                    style={{ height: 1000 }}
+                    formats={{
+                      weekdayFormat: (date, culture, localizer) =>
+                        localizer.format(date, "dddd", culture),
+                    }}
+                    selectable
+                    resizable={false}
+                    localizer={localizer}
+                    events={todosEventos}
+                    onSelectEvent={handleSelecionarEvento}
+                    onSelectSlot={(slotInfo) => handleDrillDown(slotInfo.start)}
+                    eventPropGetter={obterEstiloEvento}
+                    components={{
+                      toolbar: () => null,
+                      eventWrapper: EventWrapper,
+                    }}
+                    onDrillDown={handleDrillDown}
+                    onShowMore={(events, date) => handleDrillDown(date)}
+                    messages={{
+                      showMore: (target: any) => (
+                        <span
+                          className="ms-2 showmore-message"
+                          role="presentation"
+                        >
+                          ...{target} mais
+                        </span>
+                      ),
+                    }}
+                    onNavigate={(date: Date) => {
+                      setMes(date.getMonth() + 1);
+                      setAno(date.getFullYear());
+                    }}
+                    defaultView={Views.MONTH}
+                  />
+                ) : (
+                  <Calendar
+                    key="calendar-agenda"
+                    style={{ height: 1000 }}
+                    localizer={localizer}
+                    events={todosEventos}
+                    onSelectEvent={handleSelecionarEvento}
+                    components={{ toolbar: () => null }}
+                    views={{ agenda: AgendaSemanalView }}
+                    defaultView={"agenda" as any}
+                    date={dataAgenda}
+                    length={7}
+                    onNavigate={(date: Date) => setDataAgenda(date)}
+                    messages={{
+                      noEventsInRange:
+                        "Nenhuma entrega programada neste período.",
+                    }}
+                  />
+                )}
               </Spin>
               {exibirModalCronograma && eventoAtual && (
                 <ModalCronograma

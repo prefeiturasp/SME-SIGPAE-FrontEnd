@@ -98,6 +98,11 @@ describe("InformacoesBasicas", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.clear();
+    localStorage.setItem(
+      "nome_instituicao",
+      "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+    );
     mockGetTiposDeContagemAlimentacao.mockResolvedValue({
       data: mockTiposContagem,
     });
@@ -298,6 +303,72 @@ describe("InformacoesBasicas", () => {
 
     expect(mockToastError).toHaveBeenCalledWith(
       "Pelo menos um responsável deve ser cadastrado",
+    );
+  });
+
+  it("deve permitir salvar com CPF de 11 dígitos em escola P FOM", async () => {
+    localStorage.setItem("nome_instituicao", "EMEF P FOM LICEU VICENTINO");
+    mockSetSolicitacaoMedicaoInicial.mockResolvedValue({
+      status: HTTP_STATUS.CREATED,
+      data: {},
+    });
+
+    await act(async () => {
+      render(<InformacoesBasicas {...defaultProps} />);
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByText("Editar"));
+    });
+
+    fireEvent.change(screen.getByTestId("input-responsavel-nome-0"), {
+      target: { value: "Fulano da Silva" },
+    });
+    fireEvent.change(screen.getByTestId("input-responsavel-rf-0"), {
+      target: { value: "12345678901" },
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByText("Salvar"));
+    });
+
+    await waitFor(() => {
+      expect(mockSetSolicitacaoMedicaoInicial).toHaveBeenCalledWith(
+        expect.objectContaining({
+          responsaveis: [{ nome: "Fulano da Silva", rf: "12345678901" }],
+        }),
+      );
+    });
+
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      "Medição Inicial criada com sucesso!",
+    );
+  });
+
+  it("deve mostrar erro de RF/CPF inválido em escola P FOM", async () => {
+    localStorage.setItem("nome_instituicao", "EMEF P FOM LICEU VICENTINO");
+
+    await act(async () => {
+      render(<InformacoesBasicas {...defaultProps} />);
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByText("Editar"));
+    });
+
+    fireEvent.change(screen.getByTestId("input-responsavel-nome-0"), {
+      target: { value: "Fulano da Silva" },
+    });
+    fireEvent.change(screen.getByTestId("input-responsavel-rf-0"), {
+      target: { value: "12345678" },
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByText("Salvar"));
+    });
+
+    expect(mockToastError).toHaveBeenCalledWith(
+      "O campo de RF/CPF deve conter 7 ou 11 números",
     );
   });
 
