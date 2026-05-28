@@ -602,93 +602,91 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   escolaEmebs,
   alunosTabSelecionada,
 ) => {
-  if (
-    location.state.grupo === "Programas e Projetos" &&
-    feriadosNoMes.includes(dia)
-  ) {
-    return false;
-  } else {
-    return (
-      repeticaoSobremesaDoceComValorESemObservacao(
-        formValuesAtualizados,
-        dia,
-        categoria,
-        diasSobremesaDoce,
-        location,
-      ) ||
-      campoFrequenciaValor0ESemObservacao(
-        dia,
-        categoria,
-        formValuesAtualizados,
-        diasFrequenciaZerada,
-        location.state.grupo,
-        escolaEmebs,
-        alunosTabSelecionada,
-      ) ||
-      campoComSuspensaoAutorizadaESemObservacao(
-        formValuesAtualizados,
-        column,
-        categoria,
-        suspensoesAutorizadas,
-      ) ||
-      campoRefeicaoComRPLAutorizadaESemObservacao(
-        formValuesAtualizados,
-        column,
-        categoria,
-        alteracoesAlimentacaoAutorizadas,
-      ) ||
-      campoLancheComLPRAutorizadaESemObservacao(
-        formValuesAtualizados,
-        column,
-        categoria,
-        alteracoesAlimentacaoAutorizadas,
-      ) ||
-      camposKitLancheSolicitacoesAlimentacaoESemObservacao(
-        formValuesAtualizados,
-        column,
-        categoria,
-        kitLanchesAutorizadas,
-      ) ||
-      camposLancheEmergTabelaEtec(
-        formValuesAtualizados,
-        column,
-        categoria,
-        inclusoesEtecAutorizadas,
-        ehGrupoETECUrlParam,
-      ) ||
-      campoLancheEmergencialComZeroOuSemObservacao(
-        formValuesAtualizados,
-        column,
-        categoria,
-        alteracoesAlimentacaoAutorizadas,
-      ) ||
-      existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
-        dia,
-        categoria,
-        formValuesAtualizados,
-        alteracoesLancheEmergencialAutorizadas,
-        permissoesLancamentosEspeciaisPorDia,
-      ) ||
-      habitarBotaoAdicionar(
-        "frequencia",
-        column.dia,
-        categoria,
-        formValuesAtualizados,
-        diasFrequenciaZerada,
-        location.state.grupo,
-        escolaEmebs,
-        alunosTabSelecionada,
-      ) ||
-      refeicaoSimultaneaESemObservacao(
-        formValuesAtualizados,
-        row,
-        column,
-        categoria,
-        usuarioEhEscolaCIEJA(),
-        location.state.periodo,
-      )
-    );
-  }
+  return (
+    repeticaoSobremesaDoceComValorESemObservacao(
+      formValuesAtualizados,
+      dia,
+      categoria,
+      diasSobremesaDoce,
+      location,
+    ) ||
+    campoFrequenciaValor0ESemObservacao(
+      dia,
+      categoria,
+      formValuesAtualizados,
+      diasFrequenciaZerada,
+      location.state.grupo,
+      escolaEmebs,
+      alunosTabSelecionada,
+    ) ||
+    campoComSuspensaoAutorizadaESemObservacao(
+      formValuesAtualizados,
+      column,
+      categoria,
+      suspensoesAutorizadas,
+    ) ||
+    campoRefeicaoComRPLAutorizadaESemObservacao(
+      formValuesAtualizados,
+      column,
+      categoria,
+      alteracoesAlimentacaoAutorizadas,
+    ) ||
+    campoLancheComLPRAutorizadaESemObservacao(
+      formValuesAtualizados,
+      column,
+      categoria,
+      alteracoesAlimentacaoAutorizadas,
+    ) ||
+    camposKitLancheSolicitacoesAlimentacaoESemObservacao(
+      formValuesAtualizados,
+      column,
+      categoria,
+      kitLanchesAutorizadas,
+    ) ||
+    camposLancheEmergTabelaEtec(
+      formValuesAtualizados,
+      column,
+      categoria,
+      inclusoesEtecAutorizadas,
+      ehGrupoETECUrlParam,
+    ) ||
+    campoLancheEmergencialComZeroOuSemObservacao(
+      formValuesAtualizados,
+      column,
+      categoria,
+      alteracoesAlimentacaoAutorizadas,
+    ) ||
+    existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
+      dia,
+      categoria,
+      formValuesAtualizados,
+      alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
+    ) ||
+    habitarBotaoAdicionar(
+      "frequencia",
+      column.dia,
+      categoria,
+      formValuesAtualizados,
+      diasFrequenciaZerada,
+      location.state.grupo,
+      escolaEmebs,
+      alunosTabSelecionada,
+    ) ||
+    refeicaoSimultaneaESemObservacao(
+      formValuesAtualizados,
+      row,
+      column,
+      categoria,
+      usuarioEhEscolaCIEJA(),
+      location.state.periodo,
+    ) ||
+    obrigarAdiocionarFeriadoProgramasProjetos(
+      column,
+      categoria,
+      formValuesAtualizados,
+    )
+  );
 };
 
 export const botaoAdicionarObrigatorio = (
@@ -2652,4 +2650,56 @@ export const refeicaoSimultaneaESemObservacao = (
 
   if (!temRefeicaoOuSobremesa || !temLanche4h || temObservacao) return false;
   return true;
+};
+
+export const verificaFeriadoProgramasProjetos = (
+  row,
+  column,
+  categoria,
+  campoDesabilitado,
+  ehProgramasEProjetos,
+  validacaoDiaLetivo,
+  formValuesAtualizados,
+) => {
+  if (row.name === "frequencia") return false;
+
+  const campoApontamento = `${row.name}__dia_${column.dia}__categoria_${categoria.id}`;
+  const campoObservacao = `observacoes__dia_${column.dia}__categoria_${categoria.id}`;
+
+  const valor = formValuesAtualizados[campoApontamento];
+  const observacao = formValuesAtualizados[campoObservacao];
+
+  if (!valor || parseInt(valor) === 0 || observacao) return false;
+
+  return (
+    !campoDesabilitado &&
+    ehProgramasEProjetos &&
+    !validacaoDiaLetivo(column.dia) &&
+    !observacao
+  );
+};
+
+export const obrigarAdiocionarFeriadoProgramasProjetos = (
+  column,
+  categoria,
+  formValuesAtualizados,
+) => {
+  const sufixoCampo = `__dia_${column.dia}__categoria_${categoria.id}`;
+
+  return Object.entries(formValuesAtualizados).some(([key, value]) => {
+    if (
+      key.startsWith("observacoes__") ||
+      key.startsWith("numero_de_alunos__") ||
+      key.startsWith("matriculados__") ||
+      key.startsWith("frequencia__")
+    )
+      return false;
+
+    if (!key.includes(sufixoCampo)) return false;
+
+    const numero = Number(value);
+    if (Number.isNaN(numero) || numero === 0) return false;
+
+    return !formValuesAtualizados[`observacoes${sufixoCampo}`];
+  });
 };
