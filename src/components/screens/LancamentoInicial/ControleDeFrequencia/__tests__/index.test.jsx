@@ -317,7 +317,6 @@ describe("Teste ControleDeFrequencia", () => {
       });
 
       const resultado = screen.getByTestId("resultado-controle-frequencia");
-      preview.debug();
 
       expect(resultado).toHaveTextContent(
         "TOTAL DE MATRICULADOS NA UNIDADE EM 30/04/2026",
@@ -329,6 +328,54 @@ describe("Teste ControleDeFrequencia", () => {
 
       expect(resultado).toHaveTextContent("MATRICULADOS PERÍODO TARDE");
       expect(resultado).toHaveTextContent("50");
+    });
+
+    it("Deve exibir erro ao carregar períodos", async () => {
+      setupMocks();
+
+      getFiltros.mockRejectedValue(new Error("Erro"));
+
+      await renderComponent();
+
+      const selects = screen.getAllByRole("combobox");
+
+      fireEvent.mouseDown(selects[0]);
+
+      const optionMes = await screen.findByText(/abril 2026/i);
+
+      fireEvent.click(optionMes);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            /Erro ao carregar períodos. Tente novamente mais tarde./i,
+          ),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("Deve exibir erro ao buscar alunos matriculados", async () => {
+      setupMocks();
+
+      getTotalAlunosMatriculados.mockRejectedValue(new Error("Erro"));
+      await renderComponent();
+
+      await preencherFiltros();
+
+      const btnFiltrar = screen.getByRole("button", {
+        name: /filtrar/i,
+      });
+
+      fireEvent.click(btnFiltrar);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            /Erro ao carregar os dados dos alunos matriculados. Tente novamente mais tarde./i,
+          ),
+        ).toBeInTheDocument();
+      });
+      preview.debug();
     });
   });
 });
