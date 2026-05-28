@@ -1724,9 +1724,8 @@ export default () => {
         usuarioEhEscolaCIEJA(),
         location.state.periodo,
       );
-      const bloquear = bloquearBotao || temErrosFormulario;
-      setDisableBotaoSalvarLancamentos(bloquear);
-      setExibirTooltip(bloquear);
+      setDisableBotaoSalvarLancamentos(bloquearBotao);
+      setExibirTooltip(bloquearBotao);
     }
   }, [
     formValuesAtualizados,
