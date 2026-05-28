@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
@@ -14,12 +20,78 @@ import {
   imprimirRelatorioControleFrequencia,
 } from "src/services/medicaoInicial/controleDeFrequencia.service";
 
+import preview from "jest-preview";
+
 jest.mock("src/services/medicaoInicial/controleDeFrequencia.service", () => ({
   getMesesAnos: jest.fn(),
   getFiltros: jest.fn(),
   getTotalAlunosMatriculados: jest.fn(),
   imprimirRelatorioControleFrequencia: jest.fn(),
 }));
+
+const preencherFiltros = async ({
+  preencherDataInicial = true,
+  preencherDataFinal = true,
+  mesmaData = false,
+  selecionarPeriodo = true,
+  clicarFiltrar = true,
+} = {}) => {
+  const selects = screen.getAllByRole("combobox");
+
+  fireEvent.mouseDown(selects[0]);
+
+  const optionMes = await screen.findByText(/abril 2026/i);
+
+  fireEvent.click(optionMes);
+
+  await waitFor(() => {
+    expect(getFiltros).toHaveBeenCalled();
+  });
+
+  if (selecionarPeriodo) {
+    const dropdownHeading = document.querySelector(
+      ".multi-select .dropdown-heading",
+    );
+
+    fireEvent.click(dropdownHeading);
+
+    const optionPeriodo = await screen.findByText(/INTEGRAL/i);
+
+    fireEvent.click(optionPeriodo);
+
+    fireEvent.mouseDown(document.body);
+
+    fireEvent.click(document.body);
+  }
+
+  const campoDataInicial = screen.getByPlaceholderText("De");
+
+  const campoDataFinal = screen.getByPlaceholderText("Até");
+
+  if (preencherDataInicial) {
+    fireEvent.change(campoDataInicial, {
+      target: {
+        value: "01/04/2026",
+      },
+    });
+  }
+
+  if (preencherDataFinal) {
+    fireEvent.change(campoDataFinal, {
+      target: {
+        value: mesmaData ? "01/04/2026" : "30/04/2026",
+      },
+    });
+  }
+
+  if (clicarFiltrar) {
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /filtrar/i,
+      }),
+    );
+  }
+};
 
 describe("Teste ControleDeFrequencia", () => {
   const mockMesesAnos = {
@@ -122,6 +194,141 @@ describe("Teste ControleDeFrequencia", () => {
       expect(
         screen.getByText(/Erro ao carregar meses de referência/i),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("Filtros", () => {
+    it("Deve buscar filtros ao selecionar mês/ano", async () => {
+      setupMocks();
+
+      await renderComponent();
+
+      const selects = screen.getAllByRole("combobox");
+
+      fireEvent.mouseDown(selects[0]);
+
+      const option = await screen.findByText(/abril/i);
+
+      fireEvent.click(option);
+
+      await waitFor(() => {
+        expect(getFiltros).toHaveBeenCalled();
+      });
+    });
+
+    it("Deve buscar total de matriculados ao filtrar", async () => {
+      setupMocks();
+
+      await renderComponent();
+
+      await preencherFiltros();
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+    });
+
+    it("Deve exibir mensagem quando não houver resultados", async () => {
+      setupMocks();
+
+      getTotalAlunosMatriculados.mockResolvedValue({
+        data: {
+          total_matriculados: 0,
+          periodos: {},
+        },
+      });
+      await renderComponent();
+      await preencherFiltros();
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+      expect(resultado).toHaveTextContent("Nenhum resultado encontrado");
+    });
+
+    it("Deve considerar todos os períodos quando nenhum for selecionado", async () => {
+      setupMocks();
+
+      await renderComponent();
+      await preencherFiltros({
+        selecionarPeriodo: false,
+      });
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      expect(resultado).toHaveTextContent(
+        "TOTAL DE MATRICULADOS NA UNIDADE ENTRE 01/04/2026 E 30/04/2026",
+      );
+      expect(resultado).toHaveTextContent("150");
+
+      expect(resultado).toHaveTextContent("MATRICULADOS PERÍODO INTEGRAL");
+      expect(resultado).toHaveTextContent("100");
+
+      expect(resultado).toHaveTextContent("MATRICULADOS PERÍODO TARDE");
+      expect(resultado).toHaveTextContent("50");
+    });
+
+    it("Deve repetir data inicial quando data final não for preenchida", async () => {
+      setupMocks();
+      await renderComponent();
+
+      await preencherFiltros({
+        preencherDataFinal: false,
+      });
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data_final: "2026-04-01",
+          }),
+        );
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      expect(resultado).toHaveTextContent(
+        "TOTAL DE MATRICULADOS NA UNIDADE EM 01/04/2026",
+      );
+      expect(resultado).toHaveTextContent("150");
+
+      expect(resultado).toHaveTextContent("MATRICULADOS PERÍODO INTEGRAL");
+      expect(resultado).toHaveTextContent("100");
+
+      expect(resultado).toHaveTextContent("MATRICULADOS PERÍODO TARDE");
+      expect(resultado).toHaveTextContent("50");
+    });
+
+    it("Deve repetir data final quando data inicial não for preenchida", async () => {
+      setupMocks();
+      await renderComponent();
+
+      await preencherFiltros({
+        preencherDataInicial: false,
+      });
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+      preview.debug();
+
+      expect(resultado).toHaveTextContent(
+        "TOTAL DE MATRICULADOS NA UNIDADE EM 30/04/2026",
+      );
+      expect(resultado).toHaveTextContent("150");
+
+      expect(resultado).toHaveTextContent("MATRICULADOS PERÍODO INTEGRAL");
+      expect(resultado).toHaveTextContent("100");
+
+      expect(resultado).toHaveTextContent("MATRICULADOS PERÍODO TARDE");
+      expect(resultado).toHaveTextContent("50");
     });
   });
 });
