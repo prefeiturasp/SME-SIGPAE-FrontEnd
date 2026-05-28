@@ -176,4 +176,43 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
       );
     });
   });
+
+  it("deve exibir validação de apontamento em feriado", async () => {
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    setInput("frequencia__dia_12__categoria_1", "120");
+    setInput("lanche__dia_12__categoria_1", "120");
+
+    expect(screen.getByTestId("lanche__dia_12__categoria_1")).toHaveClass(
+      "invalid-field",
+    );
+
+    setInput("lanche__dia_12__categoria_1", "0");
+
+    expect(screen.getByTestId("lanche__dia_12__categoria_1")).not.toHaveClass(
+      "invalid-field",
+    );
+
+    setInput("lanche__dia_12__categoria_1", "120");
+
+    let botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botaoSalvar).toBeDisabled();
+
+    const inputObservacao = screen.queryByTestId(
+      "observacao__dia_12__categoria_1",
+    );
+
+    if (inputObservacao) {
+      fireEvent.change(inputObservacao, {
+        target: { value: "Feriado com lanche" },
+      });
+
+      await act(async () => {
+        fireEvent.blur(inputObservacao);
+      });
+
+      botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botaoSalvar).not.toBeDisabled();
+    }
+  });
 });
